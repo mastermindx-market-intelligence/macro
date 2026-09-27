@@ -1,0 +1,475 @@
+{
+  "file": {
+    "id": "01M2WGNCX9475G79JRKJTCM08P",
+    "name": "Mastermind Product Design System — Agentic Lab"
+  },
+  "contentHash": {
+    "tokens": "5ae876bc"
+  }
+}
+
+(
+    <div style={{ backgroundColor: 'var(--mx-dark-bg)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontFamily: 'var(--font-ui)', fontSize: '12px', fontSynthesis: 'none', gap: '28px', height: 'fit-content', lineHeight: '16px', MozOsxFontSmoothing: 'grayscale', overflow: 'clip', overflowWrap: 'anywhere', paddingBottom: '44px', paddingInline: '64px', paddingTop: '64px', WebkitFontSmoothing: 'antialiased', width: '1440px' }}>
+      <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '12px', width: '100%' }}>
+        <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.12em', lineHeight: '14px' }}>
+          PROPHET · TARGETED STATE + INTERACTION CONTRACT
+        </div>
+        <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', gap: '40px', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-display)', fontWeight: 'var(--fw-extrabold)', letterSpacing: '-0.035em', lineHeight: '50px', maxWidth: '820px' }}>
+            Nothing disappears. Every failure says what still works.
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-medium)', lineHeight: '19px', maxWidth: '360px' }}>
+            Targeted roster, access, history and interaction variants for Hong Kong + Canada.
+          </div>
+        </div>
+      </div>
+      <div style={{ boxSizing: 'border-box', display: 'flex', gap: '12px', width: '100%' }}>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px', padding: '18px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+            01 · CURRENT
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', fontWeight: 'var(--fw-semibold)', lineHeight: '20px' }}>
+            What is worth inspecting now?
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+            Top is a subset. All preserves the complete entitled roster.
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px', padding: '18px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+            02 · RESEARCH
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', fontWeight: 'var(--fw-semibold)', lineHeight: '20px' }}>
+            Why was this name shown?
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+            Optional research attention. It never permits entry.
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px', padding: '18px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+            03 · CHANGED
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', fontWeight: 'var(--fw-semibold)', lineHeight: '20px' }}>
+            Where did a name go?
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+            Read-only transitions. No stale rank, price, or action state.
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px', padding: '18px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+            04 · RECORD
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', fontWeight: 'var(--fw-semibold)', lineHeight: '20px' }}>
+            What is known or missing?
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+            Current-definition evidence stays separate from earlier eras.
+          </div>
+        </div>
+      </div>
+      <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', gap: '32px', justifyContent: 'space-between', paddingTop: '4px', width: '100%' }}>
+        <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.1em', lineHeight: '14px' }}>
+            SHARED CARD CONTRACT
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h1)', fontWeight: 'var(--fw-extrabold)', letterSpacing: '-0.025em', lineHeight: '34px' }}>
+            Same identity. Different authority.
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '19px', maxWidth: '440px' }}>
+          Stage changes content and treatment—not card anatomy. Historical rows are unmistakably non-actionable.
+        </div>
+      </div>
+      <div style={{ boxSizing: 'border-box', display: 'flex', gap: '20px', width: '100%' }}>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-panel)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', minHeight: '330px', overflow: 'clip' }}>
+          <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '20px', justifyContent: 'space-between', paddingBlock: '20px', paddingInline: '22px' }}>
+            <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.08em', lineHeight: '14px' }}>
+                HONG KONG · 0966.HK
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-bold)', lineHeight: '22px' }}>
+                China Taiping Insurance
+              </div>
+            </div>
+            <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ borderColor: 'var(--mx-dark-warn)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '6px', paddingInline: '10px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-warn)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+                  SETTING UP
+                </div>
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-micro)', lineHeight: '12px' }}>
+                Current candidate
+              </div>
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1' }}>
+            <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '18px', paddingBlock: '18px', paddingInline: '22px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px', width: '112px' }}>
+                WHY SHOWN
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', lineHeight: '20px' }}>
+                Sector leadership is improving while the entry zone is still forming.
+              </div>
+            </div>
+            <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '18px', paddingBlock: '18px', paddingInline: '22px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px', width: '112px' }}>
+                TIMING
+              </div>
+              <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '6px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-warn)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', fontWeight: 'var(--fw-bold)', lineHeight: '20px' }}>
+                  Watch — don’t chase.
+                </div>
+                <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+                  Next trigger: confirmation inside the buy zone.
+                </div>
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-num-lg)', fontWeight: 'var(--fw-extrabold)', lineHeight: '28px' }}>
+                101.00
+              </div>
+            </div>
+            <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '18px', justifyContent: 'space-between', paddingBlock: '16px', paddingInline: '22px' }}>
+              <div style={{ boxSizing: 'border-box', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
+                    Sector improving
+                  </div>
+                </div>
+                <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
+                    Turn forming
+                  </div>
+                </div>
+                <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
+                    Trend not ready
+                  </div>
+                </div>
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
+                View evidence
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-panel)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', minHeight: '330px', opacity: '0.92', overflow: 'clip' }}>
+          <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '20px', justifyContent: 'space-between', paddingBlock: '20px', paddingInline: '22px' }}>
+            <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.08em', lineHeight: '14px' }}>
+                CANADA · MTL.TO
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-bold)', lineHeight: '22px' }}>
+                Mullen Group
+              </div>
+            </div>
+            <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '6px', paddingInline: '10px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+                  RECENTLY CHANGED
+                </div>
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-micro)', lineHeight: '12px' }}>
+                Last seen · 02 Sep
+              </div>
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1' }}>
+            <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '18px', paddingBlock: '18px', paddingInline: '22px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px', width: '112px' }}>
+                WHAT CHANGED
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', lineHeight: '20px' }}>
+                Present on the prior comparable board; not present in the latest publication.
+              </div>
+            </div>
+            <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '18px', paddingBlock: '18px', paddingInline: '22px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px', width: '112px' }}>
+                CHANGE REASON
+              </div>
+              <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '6px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', fontWeight: 'var(--fw-bold)', lineHeight: '20px' }}>
+                  Reason not supplied.
+                </div>
+                <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+                  Absence does not prove a precise exit time or continuous tenure.
+                </div>
+              </div>
+            </div>
+            <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '18px', justifyContent: 'space-between', paddingBlock: '16px', paddingInline: '22px' }}>
+              <div style={{ boxSizing: 'border-box', display: 'flex', gap: '8px' }}>
+                <div style={{ borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-ctl)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
+                    No current price
+                  </div>
+                </div>
+                <div style={{ borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-ctl)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
+                    No current rank
+                  </div>
+                </div>
+                <div style={{ borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-ctl)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
+                    No action state
+                  </div>
+                </div>
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
+                Open history
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', gap: '32px', justifyContent: 'space-between', paddingTop: '4px', width: '100%' }}>
+        <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.1em', lineHeight: '14px' }}>
+            STATE + ACCESS MATRIX
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h1)', fontWeight: 'var(--fw-extrabold)', letterSpacing: '-0.025em', lineHeight: '34px' }}>
+            Every empty state says what still works.
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '19px', maxWidth: '440px' }}>
+          Clear filters is not refresh. A source outage is not an exit. Missing coverage stays visible.
+        </div>
+      </div>
+      <div style={{ boxSizing: 'border-box', display: 'flex', gap: '16px', width: '100%' }}>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', overflow: 'clip' }}>
+          <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '16px', paddingInline: '18px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.08em', lineHeight: '14px' }}>
+              CURRENT ROSTER
+            </div>
+          </div>
+          <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', paddingBlock: '14px', paddingInline: '18px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>
+              Top empty, All nonempty<br />No Top Picks right now. All 39 current names remain available.
+            </div>
+          </div>
+          <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', paddingBlock: '14px', paddingInline: '18px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>
+              Watch only<br />Nothing is ready to act on. Eight current names remain on watch.
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', paddingBlock: '14px', paddingInline: '18px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>
+              Valid zero<br />The latest publication contains zero candidates. Prior names are not treated as current.
+            </div>
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', overflow: 'clip' }}>
+          <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '16px', paddingInline: '18px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.08em', lineHeight: '14px' }}>
+              SOURCE + ACCESS
+            </div>
+          </div>
+          <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', paddingBlock: '14px', paddingInline: '18px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>
+              Stale<br />The latest publication is dated. Current timing is withheld; the roster stays visible.
+            </div>
+          </div>
+          <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', paddingBlock: '14px', paddingInline: '18px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>
+              Source failed<br />Refresh failed. Previously known names have not been marked exited.
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', paddingBlock: '14px', paddingInline: '18px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>
+              Unauthenticated<br />Sign in to inspect entitled current names. The public shell remains; paid rows stay undisclosed.
+            </div>
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', overflow: 'clip' }}>
+          <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '16px', paddingInline: '18px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.08em', lineHeight: '14px' }}>
+              FILTER + HISTORY
+            </div>
+          </div>
+          <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', paddingBlock: '14px', paddingInline: '18px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>
+              Filter empty<br />No names match these filters. Clear filters; do not refresh the source.
+            </div>
+          </div>
+          <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', paddingBlock: '14px', paddingInline: '18px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>
+              Incomplete history<br />Earlier shelves may be missing. Continuous tenure and exact exit time are unknown.
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', paddingBlock: '14px', paddingInline: '18px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px', whiteSpace: 'pre-wrap' }}>
+              Correction<br />The latest correction replaces the prior display; the earlier record remains traceable.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '14px', paddingTop: '4px', width: '100%' }}>
+        <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-info)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.12em', lineHeight: '14px' }}>
+              TARGETED ROSTER + ACCESS
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-bold)', lineHeight: '22px' }}>
+              Variants that cannot be collapsed into “empty”.
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-sm)', lineHeight: '16px' }}>
+            Each variant preserves the still-valid workflow.
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', display: 'flex', gap: '12px', width: '100%' }}>
+          <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px', padding: '16px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-info)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              SINGLETON
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-h3)', fontWeight: 'var(--fw-bold)', lineHeight: '18px' }}>
+              One current name remains
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+              Keep the card full-width and complete. Do not imply the roster failed merely because only one identity remains.
+            </div>
+          </div>
+          <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px', padding: '16px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-warn)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              BLOCKED
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-h3)', fontWeight: 'var(--fw-bold)', lineHeight: '18px' }}>
+              Still current. Timing unavailable.
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+              Keep the name findable. Show the change reason and next trigger when supplied; never treat blocked as an exit.
+            </div>
+          </div>
+          <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px', padding: '16px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-tier-ink)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              ENTITLEMENT EXPIRED
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-h3)', fontWeight: 'var(--fw-bold)', lineHeight: '18px' }}>
+              Renew access to inspect current rows
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+              Preserve the public shell and counts allowed by policy. Do not reveal paid identities or relabel hidden rows as disappeared.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '14px', paddingTop: '4px', width: '100%' }}>
+        <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-info)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.12em', lineHeight: '14px' }}>
+              INTERACTION CONTRACT
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-bold)', lineHeight: '22px' }}>
+              Evidence works with mouse, keyboard and touch.
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-sm)', lineHeight: '16px' }}>
+            No hover-only meaning. No navigation collision.
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', display: 'flex', gap: '12px', width: '100%' }}>
+          <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-link)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '2px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px', padding: '16px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              FOCUS-VISIBLE
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-h3)', fontWeight: 'var(--fw-bold)', lineHeight: '18px' }}>
+              View evidence
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+              A persistent two-pixel ring identifies the keyboard target without changing layout.
+            </div>
+          </div>
+          <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px', padding: '16px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-info)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              EXPANDED
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-h3)', fontWeight: 'var(--fw-bold)', lineHeight: '18px' }}>
+              Why shown · source details
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+              Open inline or in LENS. Preserve the originating card, trap no navigation, and close with Escape or tap.
+            </div>
+          </div>
+          <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px', opacity: '0.58', padding: '16px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              DISABLED / LOCKED
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-h3)', fontWeight: 'var(--fw-bold)', lineHeight: '18px' }}>
+              Evidence unavailable
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+              The affordance remains legible but inert. No paid content leaks into the DOM or tooltip.
+            </div>
+          </div>
+          <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '8px', padding: '16px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-info)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              TOUCH + DISMISSAL
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-h3)', fontWeight: 'var(--fw-bold)', lineHeight: '18px' }}>
+              40px target · tap outside closes
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+              Disclosure never depends on hover. Scrolling stays stable while detail opens or closes.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '14px', paddingTop: '4px', width: '100%' }}>
+        <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-info)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.12em', lineHeight: '14px' }}>
+              SOURCE TRANSITIONS
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-bold)', lineHeight: '22px' }}>
+              Freshness changes permission—not identity.
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-sm)', lineHeight: '16px' }}>
+            A source outage never emits exits.
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', display: 'flex', gap: '8px', width: '100%' }}>
+          <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '6px', padding: '14px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-ok)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              01 · FRESH
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+              Show current timing only when it is supplied.
+            </div>
+          </div>
+          <div style={{ alignContent: 'center', boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'var(--font-ui)', fontSize: '18px', lineHeight: '22px' }}>
+            →
+          </div>
+          <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '6px', padding: '14px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-warn)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              02 · STALE
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+              Keep identities; withhold current timing and show the last publication date.
+            </div>
+          </div>
+          <div style={{ alignContent: 'center', boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'var(--font-ui)', fontSize: '18px', lineHeight: '22px' }}>
+            →
+          </div>
+          <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '6px', padding: '14px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-act)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              03 · FAILED
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+              Refresh failed. Preserve prior context without implying any candidate exited.
+            </div>
+          </div>
+          <div style={{ alignContent: 'center', boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'var(--font-ui)', fontSize: '18px', lineHeight: '22px' }}>
+            →
+          </div>
+          <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '6px', padding: '14px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-info)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              04 · RECOVERED
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', display: 'inline-block', fontFamily: 'var(--font-ui)', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+              Replace stale state with the latest publication and disclose corrections.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )

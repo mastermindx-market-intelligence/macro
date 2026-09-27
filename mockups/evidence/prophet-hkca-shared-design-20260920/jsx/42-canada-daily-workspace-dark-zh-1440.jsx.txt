@@ -1,0 +1,372 @@
+{
+  "file": {
+    "id": "01M2WGNCX9475G79JRKJTCM08P",
+    "name": "Mastermind Product Design System — Agentic Lab"
+  },
+  "contentHash": {
+    "tokens": "5ae876bc"
+  }
+}
+
+(
+    <div style={{ backgroundColor: 'var(--mx-dark-bg)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', fontFamily: 'var(--font-ui)', fontSynthesis: 'none', gap: '22px', height: '1200px', MozOsxFontSmoothing: 'grayscale', overflow: 'clip', overflowWrap: 'anywhere', paddingBottom: '56px', paddingInline: '56px', paddingTop: '44px', WebkitFontSmoothing: 'antialiased', width: '1440px' }}>
+      <div style={{ alignItems: 'center', borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '24px', justifyContent: 'space-between', paddingBottom: '16px', width: '100%' }}>
+        <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '24px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-extrabold)', letterSpacing: '-0.02em', lineHeight: '22px' }}>
+            MASTERMIND
+          </div>
+          <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-btn)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '4px', padding: '4px' }}>
+            <div style={{ borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '8px', paddingInline: '12px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '16px' }}>
+                香港
+              </div>
+            </div>
+            <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '8px', paddingInline: '12px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
+                加拿大
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '14px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '16px' }}>
+            当前机会
+          </div>
+          <div style={{ borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '7px', paddingInline: '10px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              中
+            </div>
+          </div>
+          <div style={{ borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '7px', paddingInline: '10px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              深色
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', gap: '44px', justifyContent: 'space-between', paddingBottom: '8px', paddingTop: '14px', width: '100%' }}>
+        <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '820px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+            加拿大 PROPHET · 当前筛选 · 截至2026年9月3日
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-display)', fontWeight: 'var(--fw-extrabold)', lineHeight: '50px' }}>
+            17 个当前名单，尚无确认入场。
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-md)', fontWeight: 'var(--fw-semibold)', lineHeight: '22px' }}>
+            9 个符合筛选，8 个仍在观察。观察—勿追。
+          </div>
+        </div>
+        <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '280px' }}>
+          <div style={{ borderColor: 'var(--mx-dark-info)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '8px', paddingInline: '12px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-info)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              当前 · 筛选
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', display: 'flex', flexWrap: 'wrap', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', justifyContent: 'end', lineHeight: '18px', textAlign: 'right', whiteSpace: 'pre-wrap' }}>
+            仅为筛选权限<br />不代表官方精选
+          </div>
+        </div>
+      </div>
+      <div style={{ alignItems: 'center', backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '18px', justifyContent: 'space-between', padding: '12px', width: '100%' }}>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-btn)', boxSizing: 'border-box', display: 'flex', gap: '4px', padding: '4px' }}>
+          <div style={{ borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '8px', paddingInline: '12px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '16px' }}>
+              精选 0
+            </div>
+          </div>
+          <div style={{ backgroundColor: 'var(--mx-dark-link)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '8px', paddingInline: '12px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-bg)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
+              全部候选 17
+            </div>
+          </div>
+        </div>
+        <div style={{ borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-btn)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '4px', padding: '4px' }}>
+          <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '8px', paddingInline: '12px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
+              卡片
+            </div>
+          </div>
+          <div style={{ borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '8px', paddingInline: '12px' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '16px' }}>
+              表格
+            </div>
+          </div>
+        </div>
+        <div style={{ alignItems: 'center', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-btn)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexGrow: '1', minWidth: '220px', paddingBlock: '10px', paddingInline: '14px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', display: 'flex', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '16px' }}>
+            搜索当前名单
+          </div>
+        </div>
+        <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '14px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '16px' }}>
+            近期变化
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '16px' }}>
+            证据与记录
+          </div>
+        </div>
+      </div>
+      <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '10px', width: '100%' }}>
+        <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px', width: '88px' }}>
+          阶段
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderColor: 'var(--mx-dark-info)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '7px', paddingInline: '11px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-info)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+            符合筛选 9
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderColor: 'var(--mx-dark-warn)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '7px', paddingInline: '11px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-warn)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+            观察 8
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '7px', paddingInline: '11px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+            确认入场 0
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '7px', paddingInline: '11px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+            受阻 0
+          </div>
+        </div>
+        <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', display: 'flex', flexBasis: '0%', flexGrow: '1', flexWrap: 'wrap', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', justifyContent: 'end', lineHeight: '16px', textAlign: 'right' }}>
+          全部候选显示 17 个
+        </div>
+      </div>
+      <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', gap: '28px', justifyContent: 'space-between', paddingTop: '4px', width: '100%' }}>
+        <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+            当前机会
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h1)', fontWeight: 'var(--fw-extrabold)', lineHeight: '34px' }}>
+            全部候选
+          </div>
+        </div>
+        <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', fontWeight: 'var(--fw-bold)', lineHeight: '18px' }}>
+            17 个当前候选
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '16px' }}>
+            9 个符合筛选，8 个观察
+          </div>
+        </div>
+      </div>
+      <div style={{ boxSizing: 'border-box', display: 'flex', gap: '18px', width: '100%' }}>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-panel)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', minHeight: '300px', overflow: 'clip' }}>
+          <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '20px', justifyContent: 'space-between', paddingBlock: '20px', paddingInline: '22px' }}>
+            <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.08em', lineHeight: '14px' }}>
+                加拿大 · PMZ-UN.TO
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-bold)', lineHeight: '22px' }}>
+                Primaris 房地产信托
+              </div>
+            </div>
+            <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ borderColor: 'var(--mx-dark-info)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '6px', paddingInline: '10px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-info)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+                  符合筛选
+                </div>
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-micro)', lineHeight: '12px' }}>
+                当前候选
+              </div>
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1' }}>
+            <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '18px', paddingBlock: '18px', paddingInline: '22px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px', width: '112px' }}>
+                入选原因
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', lineHeight: '20px' }}>
+                符合当前筛选；发行人证据完整，但尚未确认入场。
+              </div>
+            </div>
+            <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '18px', paddingBlock: '18px', paddingInline: '22px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px', width: '112px' }}>
+                时机
+              </div>
+              <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '6px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-warn)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', fontWeight: 'var(--fw-bold)', lineHeight: '20px' }}>
+                  观察—勿追。
+                </div>
+                <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+                  下一触发：入场条件获得确认。
+                </div>
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-semibold)', lineHeight: '22px' }}>
+                当前报价不可用
+              </div>
+            </div>
+            <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '18px', justifyContent: 'space-between', paddingBlock: '16px', paddingInline: '22px' }}>
+              <div style={{ boxSizing: 'border-box', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
+                    当前筛选
+                  </div>
+                </div>
+                <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
+                    板块背景
+                  </div>
+                </div>
+                <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
+                    尚未确认入场
+                  </div>
+                </div>
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
+                查看证据
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-panel)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', minHeight: '300px', overflow: 'clip' }}>
+          <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '20px', justifyContent: 'space-between', paddingBlock: '20px', paddingInline: '22px' }}>
+            <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', letterSpacing: '0.08em', lineHeight: '14px' }}>
+                加拿大 · MTL.TO
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-bold)', lineHeight: '22px' }}>
+                Mullen 集团
+              </div>
+            </div>
+            <div style={{ alignItems: 'end', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ borderColor: 'var(--mx-dark-warn)', borderRadius: 'var(--r-pill)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', fontWeight: 'var(--fw-bold)', paddingBlock: '6px', paddingInline: '10px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-warn)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+                  观察
+                </div>
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-micro)', lineHeight: '12px' }}>
+                当前候选
+              </div>
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1' }}>
+            <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '18px', paddingBlock: '18px', paddingInline: '22px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px', width: '112px' }}>
+                入选原因
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', lineHeight: '20px' }}>
+                筛选证据仍然较强，但对齐条件仍阻止入场。
+              </div>
+            </div>
+            <div style={{ borderBottomColor: 'var(--mx-dark-line)', borderBottomStyle: 'solid', borderBottomWidth: '1px', boxSizing: 'border-box', display: 'flex', gap: '18px', paddingBlock: '18px', paddingInline: '22px' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', flexShrink: '0', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px', width: '112px' }}>
+                时机
+              </div>
+              <div style={{ boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '6px' }}>
+                <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-warn)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-body)', fontWeight: 'var(--fw-bold)', lineHeight: '20px' }}>
+                  观察—勿追。
+                </div>
+                <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+                  下一触发：对齐条件解除，并出现可用时机。
+                </div>
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h2)', fontWeight: 'var(--fw-semibold)', lineHeight: '22px' }}>
+                当前报价不可用
+              </div>
+            </div>
+            <div style={{ alignItems: 'center', boxSizing: 'border-box', display: 'flex', gap: '18px', justifyContent: 'space-between', paddingBlock: '16px', paddingInline: '22px' }}>
+              <div style={{ boxSizing: 'border-box', display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
+                    观察
+                  </div>
+                </div>
+                <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
+                    对齐受阻
+                  </div>
+                </div>
+                <div style={{ backgroundColor: 'var(--mx-dark-panel2)', borderRadius: 'var(--r-ctl)', boxSizing: 'border-box', fontWeight: 'var(--fw-semibold)', paddingBlock: '6px', paddingInline: '9px' }}>
+                  <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-semibold)', lineHeight: '14px' }}>
+                    发行人证据
+                  </div>
+                </div>
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
+                查看证据
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style={{ boxSizing: 'border-box', display: 'flex', gap: '16px', width: '100%' }}>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '12px', padding: '18px' }}>
+          <div style={{ boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              研究关注
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-micro)', lineHeight: '12px' }}>
+              可选
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h3)', fontWeight: 'var(--fw-bold)', lineHeight: '20px' }}>
+            已批准的研究来源
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+            可选研究可以解释名称；不会改变筛选状态、排名或入场权限。
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
+            打开研究
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '12px', padding: '18px' }}>
+          <div style={{ boxSizing: 'border-box', display: 'flex', gap: '12px', justifyContent: 'space-between' }}>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+              近期变化
+            </div>
+            <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-micro)', lineHeight: '12px' }}>
+              只读
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-h3)', fontWeight: 'var(--fw-bold)', lineHeight: '20px' }}>
+            存在此前可比名单记录
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+            早期层级可能缺失。准确退出时间与连续在榜时长可能未知；不携带过期操作状态。
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
+            查看变化
+          </div>
+        </div>
+        <div style={{ backgroundColor: 'var(--mx-dark-panel)', borderColor: 'var(--mx-dark-line)', borderRadius: 'var(--r-card)', borderStyle: 'solid', borderWidth: '1px', boxSizing: 'border-box', display: 'flex', flexBasis: '0%', flexDirection: 'column', flexGrow: '1', gap: '10px', padding: '18px' }}>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-label)', fontWeight: 'var(--fw-bold)', lineHeight: '14px' }}>
+            证据与记录
+          </div>
+          <div style={{ boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ boxSizing: 'border-box', display: 'flex', gap: '16px', justifyContent: 'space-between' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+                定义
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-text)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '18px' }}>
+                当前筛选
+              </div>
+            </div>
+            <div style={{ boxSizing: 'border-box', display: 'flex', gap: '16px', justifyContent: 'space-between' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+                历史
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-warn)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '18px' }}>
+                覆盖不完整
+              </div>
+            </div>
+            <div style={{ boxSizing: 'border-box', display: 'flex', gap: '16px', justifyContent: 'space-between' }}>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', lineHeight: '18px' }}>
+                计划
+              </div>
+              <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-muted)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)', lineHeight: '18px' }}>
+                此处不可用
+              </div>
+            </div>
+          </div>
+          <div style={{ boxSizing: 'border-box', color: 'var(--mx-dark-link)', fontFamily: 'system-ui, sans-serif', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-bold)', lineHeight: '16px' }}>
+            查看证据
+          </div>
+        </div>
+      </div>
+    </div>
+  )

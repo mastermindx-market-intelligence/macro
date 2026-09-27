@@ -1,0 +1,153 @@
+schema: mastermind.rig_baseline.v1
+reference_id: prophet-hkca-shared-r1
+captured_at: "2026-09-20"
+
+production:
+  route: "hk_stocks.html + canada_stocks.html"
+  live_url: "https://www.mastermind-x.com/hk_stocks.html + https://www.mastermind-x.com/canada_stocks.html"
+  source_commit: ad5be0675196666ef37165d73a18fe3730805792
+  source_paths:
+    - templates/hk.html.j2
+    - templates/canada.html.j2
+    - templates/_prophet_card.html.j2
+    - templates/stock-dashboard.css
+    - site/stock-dashboard.css
+    - site/hk-stock-v36.js
+    - site/canada-stock-v36.js
+  shared_surfaces:
+    - us_stocks.html
+    - china.html
+  note: >
+    The committed before-matrix is deterministic P0B browser-fixture evidence frozen at
+    3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86, not current production or entitled-session
+    proof. Current anonymous live inspection is a lead only. Signed-in and natural-update
+    behavior remain explicit gaps for implementation acceptance.
+
+evidence:
+  screenshots:
+    - {path: mockups/evidence/prophet-p0b-zero-fouc/b99d755b35a7df2d.png, viewport: desktop1440, theme: dark, locale: en, note: "HK deterministic before"}
+    - {path: mockups/evidence/prophet-p0b-zero-fouc/66044f1b7771ca8b.png, viewport: desktop1440, theme: light, locale: en, note: "HK deterministic before"}
+    - {path: mockups/evidence/prophet-p0b-zero-fouc/eca05f0c111a999b.png, viewport: desktop1440, theme: dark, locale: zh, note: "HK deterministic before"}
+    - {path: mockups/evidence/prophet-p0b-zero-fouc/d2d7e37864b0f72f.png, viewport: desktop1440, theme: light, locale: zh, note: "HK deterministic before"}
+    - {path: mockups/evidence/prophet-p0b-zero-fouc/000de00ee7212785.png, viewport: mobile390, theme: dark, locale: en, note: "HK deterministic before"}
+    - {path: mockups/evidence/prophet-p0b-zero-fouc/233d04b3244024d4.png, viewport: mobile390, theme: light, locale: en, note: "HK deterministic before"}
+    - {path: mockups/evidence/prophet-p0b-zero-fouc/15f09de8877c3647.png, viewport: mobile390, theme: dark, locale: zh, note: "HK deterministic before"}
+    - {path: mockups/evidence/prophet-p0b-zero-fouc/ecef1980c168f78c.png, viewport: mobile390, theme: light, locale: zh, note: "HK deterministic before"}
+    - {path: mockups/evidence/prophet-p0b-zero-fouc/3bece7a023e23a63.png, viewport: desktop1440, theme: dark, locale: en, note: "Canada deterministic before"}
+    - {path: mockups/evidence/prophet-p0b-zero-fouc/604a5a971882ba21.png, viewport: desktop1440, theme: light, locale: en, note: "Canada deterministic before"}
+    - {path: mockups/evidence/prophet-p0b-zero-fouc/d4c4f3ea9890ba16.png, viewport: desktop1440, theme: dark, locale: zh, note: "Canada deterministic before"}
+    - {path: mockups/evidence/prophet-p0b-zero-fouc/b08227d3479fa092.png, viewport: desktop1440, theme: light, locale: zh, note: "Canada deterministic before"}
+    - {path: mockups/evidence/prophet-p0b-zero-fouc/5c93f4cc913b37a6.png, viewport: mobile390, theme: dark, locale: en, note: "Canada deterministic before"}
+    - {path: mockups/evidence/prophet-p0b-zero-fouc/67d81b3dfc3a5f84.png, viewport: mobile390, theme: light, locale: en, note: "Canada deterministic before"}
+    - {path: mockups/evidence/prophet-p0b-zero-fouc/e456d7426afeea54.png, viewport: mobile390, theme: dark, locale: zh, note: "Canada deterministic before"}
+    - {path: mockups/evidence/prophet-p0b-zero-fouc/78a60ac924044b8c.png, viewport: mobile390, theme: light, locale: zh, note: "Canada deterministic before"}
+  gaps:
+    - {axis: access, value: entitled, reason: "No approved signed-in fixture or current entitled browser capture in Session D."}
+    - {axis: proof_class, value: production, reason: "Before matrix is reproducible fixture evidence. A separate anonymous-deployed HK probe proves one current interaction defect but not entitled-session correctness."}
+    - {axis: view_parity, value: HK All Grid/Table, reason: "Anonymous deployed probe: board 32 + watch 8 = 40 unique current identities, while stocktable-data and All/Table expose only 3 rows."}
+    - {axis: natural_update, value: two successive publications, reason: "Owed by B/C implementation acceptance, not reference design."}
+    - {axis: history_coverage, value: exact exit and continuous tenure, reason: "Existing HK/CA graded ledgers omit some visible shelves."}
+
+user_job: >
+  Scan the complete entitled current HK or Canada owner-visible roster, understand timing and
+  evidence, and see what changed without mistaking research, history, or absence for live authority.
+core_interactions:
+  - Inspect current cards and owner-native states.
+  - Switch language and theme without changing meaning.
+  - Use stage, search, Grid/Table, and access controls where exposed.
+  - Open evidence and record details without granting them entry authority.
+  - Continue using server-owned first-frame content when optional enhancement fails.
+
+information_hierarchy:
+  - Market and scan-session state.
+  - Current opportunity cards and timing.
+  - Stage/watch shelves and optional context.
+  - Evidence, record, and historical detail.
+
+design_lineage:
+  rulings:
+    - ref: "CHAIRMAN_NO_SUDDEN_DESERT_CONTINUITY_AMENDMENT_V1"
+      evidence: "macro#6817 issuecomment-5549201543"
+      implication: "Top is a subset; All preserves the complete current owner-visible roster; absence is not an exit."
+    - ref: "D_SHARED_PRODUCT_DESIGN_AND_UI V2"
+      evidence: "conversation attachment / planning batch prophet-hkca-recovery-fanout-20260919-sol-001"
+      implication: "One paired HK/Canada design, explicit field authority, states, EN/ZH, dark/light, 1440/390 plus targeted 320."
+    - ref: "WS:PROPHET-HK-CA-REVAMP"
+      evidence: "agentos/workstreams/WS-PROPHET-HK-CA-REVAMP.md"
+      implication: "Preserve Canada Branch-B screen semantics, era fences, shadow authority, and HK publication boundaries."
+    - ref: "User-First Design Doctrine"
+      evidence: "docs/DESIGN_DOCTRINE.md"
+      implication: "The glance tier states the signal, meaning, and permitted action in plain words."
+  rejected_variants:
+    - "A positional first-five or live-only subset labelled as the whole board."
+    - "Historical absence rendered as a precise exit reason or current action card."
+    - "Canada screen rows promoted to validated official picks."
+    - "A new candidate store, lifecycle service, or page-local component/token system."
+    - "A chat-only image or unreviewed file key used as implementation authority."
+  comments:
+    - path: "mockups/evidence/prophet-p0b-zero-fouc/manifest.json"
+      note: "The before matrix is a reproducible fixture and explicitly not production proof."
+    - path: "agentos/discoveries/DSC-PROPHET-BOARD-TENURE-COVERAGE-FLOOR.md"
+      note: "Visible shelves are not fully represented in graded ledgers; absence cannot establish continuous tenure or exact exit."
+    - path: "research/PROPHET_HK_CANADA_SHARED_PRODUCT_DESIGN_CONTRACT_2026_09_20.md"
+      note: "The paired contract separates current action, research attention, recent change, and record authority."
+    - path: "github:macro#7163 issuecomment-5749594572"
+      note: "ANONYMOUS_DEPLOYED HK evidence: owner proof declares 32 board + 8 watch = 40 unique current names; source=all Grid shows the shelves, but Table exposes only stocktable-data rows 2150.HK, 0241.HK, and 3888.HK. Returning to Grid restores the prior grid state. Live HTML was byte-identical to protected main at the observation; probe receipt SHA-256 prefix 747a698a, suffix b361."
+
+capabilities:
+  - id: authority.market_native_current
+    user_job: Read each market's current owner-native state without borrowing authority from another market or history.
+    evidence: "templates/hk.html.j2; templates/canada.html.j2; WS-PROPHET-HK-CA-REVAMP"
+    importance: core
+  - id: authority.canada_screen
+    user_job: Understand that Canada is a Branch-B screen rather than validated official picks.
+    evidence: "scripts/build_canada_library.py output contract; WS-PROPHET-HK-CA-REVAMP"
+    importance: core
+  - id: roster.actionable_current
+    user_job: Find the current names the owner presents as actionable or nearest to action.
+    evidence: "P0B rendered fixture current card populations"
+    importance: core
+  - id: roster.stage_shelves
+    user_job: Find watch, setting-up, ran, or blocked names instead of interpreting their absence as disappearance.
+    evidence: "templates/hk.html.j2; templates/canada.html.j2; September 5 continuity amendment"
+    importance: core
+  - id: card.identity_state_timing
+    user_job: See listing identity, owner state, current timing, next trigger, and current price or honest unavailability together.
+    evidence: "templates/_prophet_card.html.j2 and market-native renderers"
+    importance: core
+  - id: card.reason_evidence
+    user_job: Understand why a name is present and reach supporting evidence without mistaking evidence for authority.
+    evidence: "P0B card and LENS evidence contracts"
+    importance: core
+  - id: controls.identity_preserving_views
+    user_job: Search, filter, and switch views without silently changing identity or order.
+    evidence: "HK anonymous deployed probe: source=all Grid represents 40 current identities, while Table exposes only 3 stocktable rows; github:macro#7163 issuecomment-5749594572"
+    importance: core
+  - id: continuity.record_separation
+    user_job: Inspect track record and historical context separately from current action authority.
+    evidence: "existing board ledgers, track record sections, and history-coverage finding"
+    importance: core
+  - id: access.entitlement_boundary
+    user_job: Receive only the current roster and details permitted by the user's access tier.
+    evidence: "existing anonymous/free/paid publication and premium payload boundaries"
+    importance: core
+  - id: resilience.first_frame
+    user_job: Retain useful server-owned content when JavaScript, optional data, or enhancement fails.
+    evidence: "merged P0B first-frame ownership and degraded-state browser fixtures"
+    importance: core
+  - id: parity.theme_locale_responsive
+    user_job: Use equivalent meaning in dark or light, EN or ZH, desktop or mobile without clipping or horizontal page overflow.
+    evidence: "P0B 16-cell fixture matrix"
+    importance: core
+  - id: freshness.session_asof
+    user_job: Know the scan session, data state, and one applicable as-of without duplicated timestamps.
+    evidence: "existing DTP/session stamps and market headers"
+    importance: supporting
+  - id: research.optional_context
+    user_job: Use optional research and sector context without allowing it to redefine the current roster or entry permission.
+    evidence: "market-native research links and September 5 continuity amendment"
+    importance: supporting
+  - id: plans.real_only
+    user_job: Enter a separate plan workflow only when a verified market plan owner and real plan identity exist.
+    evidence: "Candidates are not Plans contract; no assumed HK/CA Plans backend"
+    importance: supporting
