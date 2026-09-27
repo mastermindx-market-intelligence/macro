@@ -714,13 +714,13 @@ a{color:var(--ink-link, var(--link))}
     panels.forEach(function(x){x.hidden=x.getAttribute('data-strategy-panel')!==id});
   })});
   var el=document.getElementById('vec-risk-chart'),sc=document.getElementById('vrc-score'),lab=document.getElementById('vrc-variant-label');
-  if(!el||!sc||!window.VectorChart)return;
-  var cards={};try{cards=JSON.parse(sc.getAttribute('data-cards'))}catch(e){}
+  if(!el||!window.VectorChart)return;
+  var cards={};if(sc){try{cards=JSON.parse(sc.getAttribute('data-cards'))}catch(e){}}
   function zh(){return document.documentElement.getAttribute('data-lang')==='zh'}
   var names={conservative:['Conservative','保守'],moderate:['Moderate','稳健'],aggressive:['Aggressive','进取'],optimal:['Optimal','最优']};
   function sync(v){
-    var c=cards[v];if(!c)return;
-    sc.querySelectorAll('[data-m]').forEach(function(n){var m=n.getAttribute('data-m'),x=c[m];n.textContent=(m==='cagr'||m==='maxdd'||m==='in_market')?(x+'%'):x});
+    var c=cards[v];
+    if(sc&&c){sc.querySelectorAll('[data-m]').forEach(function(n){var m=n.getAttribute('data-m'),x=c[m];n.textContent=(m==='cagr'||m==='maxdd'||m==='in_market')?(x+'%'):x})}
     if(lab){var nm=names[v]||[v,v];lab.textContent='· '+nm[zh()?1:0]+(zh()?' 变体':' variant')}
   }
   window.VectorChart.mount(el,'vector_risk_strategy.json',{onVariant:sync});

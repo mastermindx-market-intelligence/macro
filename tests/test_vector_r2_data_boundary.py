@@ -105,3 +105,13 @@ def test_r2_missing_latest_decision_keeps_past_performance_measurable() -> None:
     assert payload["missing"]["allocation_dates"]["optimal"] == ["2026-09-26"]
     assert payload["equity"]["optimal"][-1] is not None
     assert payload["issues"][0]["code"] == "ALLOCATION_GAPS"
+
+
+def test_r2_chart_mount_does_not_depend_on_performance_scorecard() -> None:
+    from pathlib import Path
+
+    source = (Path(__file__).resolve().parent.parent / "templates" / "vector.html.j2").read_text()
+
+    assert "if(!el||!window.VectorChart)return;" in source
+    assert "if(!el||!sc||!window.VectorChart)return;" not in source
+    assert "if(sc&&c)" in source
