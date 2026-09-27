@@ -13,12 +13,12 @@
     "energy_complex",
     "gold_miners",
     "industrial_distribution",
-    "insurance",
     "mag7",
     "managed_care",
     "memory_storage",
     "non_ai_tech",
     "obesity_glp1",
+    "regional_banks",
     "reshoring",
     "robotics_automation",
     "semicap_equipment",
@@ -30,8 +30,8 @@
   ],
   "held": [
     "memory_storage",
-    "cybersecurity",
     "ai_infra",
+    "cybersecurity",
     "silver_miners"
   ],
   "leader": "memory_storage",

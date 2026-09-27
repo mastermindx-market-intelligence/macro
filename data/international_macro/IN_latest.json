@@ -8,7 +8,7 @@
   "scope_en": "India national economy; Nifty 50 and Sensex are market context.",
   "scope_zh": "印度全国经济；Nifty 50与Sensex仅作市场背景。",
   "asof": "2026-09-25",
-  "built": "2026-09-26 09:21 UTC",
+  "built": "2026-09-26 21:51 UTC",
   "regime": {
     "quad": "Q3",
     "name": "Stagflation",
@@ -210,11 +210,11 @@
     "h21": 0.185,
     "measure": ">=5% index pullback within h business days (measured on this market's own history)",
     "trajectory": {
-      "intensity": 94.6,
-      "peak": 94.6,
+      "intensity": 95.2,
+      "peak": 95.2,
       "peak_days_ago": 0,
       "off_peak": 0.0,
-      "velocity": 43.7,
+      "velocity": 44.2,
       "phase": "rising",
       "reached_risk": true,
       "state_now": "risk-off",
@@ -245,9 +245,9 @@
         43.1,
         56.0,
         54.8,
-        94.6
+        95.2
       ],
-      "spark_pts": "3.0,23.0 6.9,23.0 10.8,22.7 14.7,21.7 18.7,20.1 22.6,21.3 26.5,19.5 30.4,17.8 34.3,19.4 38.2,20.1 42.1,19.4 46.0,21.0 50.0,19.8 53.9,16.5 57.8,10.8 61.7,11.2 65.6,9.9 69.5,11.6 73.4,12.8 77.3,8.9 81.3,14.6 85.2,11.7 89.1,11.9 93.0,3.0",
+      "spark_pts": "3.0,23.0 6.9,23.0 10.8,22.7 14.7,21.7 18.7,20.1 22.6,21.3 26.5,19.6 30.4,17.9 34.3,19.5 38.2,20.2 42.1,19.4 46.0,21.1 50.0,19.8 53.9,16.5 57.8,10.8 61.7,11.3 65.6,10.0 69.5,11.7 73.4,12.9 77.3,9.0 81.3,14.6 85.2,11.8 89.1,12.0 93.0,3.0",
       "spark_peak": {
         "x": 93.0,
         "y": 3.0
@@ -291,12 +291,12 @@
         "tier": "A",
         "label_en": "Rupee depreciation / outflows",
         "label_zh": "卢比贬值／资金外流",
-        "score": 95.4,
+        "score": 97.8,
         "band": "risk-off",
         "firing_legs": [
           {
             "leg": "inr_depreciation",
-            "pctile": 0.954,
+            "pctile": 0.978,
             "confirmed": true
           }
         ]
@@ -372,8 +372,8 @@
       "key": "fx",
       "label_en": "FX reference",
       "label_zh": "汇率参考",
-      "raw": 95.802,
-      "value": "95.80",
+      "raw": 96.1613,
+      "value": "96.16",
       "unit": "",
       "asof": null
     },
@@ -381,8 +381,8 @@
       "key": "fx_strength_3m",
       "label_en": "Currency strength, 3m",
       "label_zh": "货币强弱，3个月",
-      "raw": 0.5,
-      "value": "0.50%",
+      "raw": 0.12,
+      "value": "0.12%",
       "unit": "%",
       "asof": null
     },
@@ -490,7 +490,7 @@
       "title_zh": "卢比、储备与外部平衡",
       "why_en": "The buffer against oil and global-funding shocks.",
       "why_zh": "抵御油价与全球融资冲击的缓冲。",
-      "value": "95.80",
+      "value": "96.16",
       "available": true,
       "metric": "fx",
       "source_key": "rbi",

@@ -1,17 +1,17 @@
 {
   "schema": "options.prophet_shadow/v1",
-  "as_of": "2026-09-24",
-  "built_at": "2026-09-26T07:04:43.335737Z",
+  "as_of": "2026-09-25",
+  "built_at": "2026-09-26T17:41:45.842029Z",
   "decision_at": null,
-  "available_at": "2026-09-26T07:04:43.335737Z",
+  "available_at": "2026-09-26T17:41:45.842029Z",
   "pit_provenance": {
     "clock": "UTC",
     "decision_at_required_for_issued_portfolio": true,
     "decision_at_status": "not_available_in_current_pick_lab_contract",
     "available_at_status": "exact_projection_publication_time",
     "source_available_at": {
-      "flow_leaders": "2026-09-26T07:03:49.706380Z",
-      "pick_lab": "2026-09-25T18:33:03.623120Z"
+      "flow_leaders": "2026-09-26T17:40:44.228382Z",
+      "pick_lab": "2026-09-26T17:41:45.415899Z"
     },
     "promotion_ready": false,
     "reason": "An issued position requires exact decision_at and available_at on every fire. Current Pick Lab fires expose exact artifact availability when present but not an exact decision clock."
@@ -498,7 +498,7 @@
     "pick_lab": {
       "path": "site/labdata/pick_lab.json",
       "schema": "implicit",
-      "as_of": "2026-09-24",
+      "as_of": "2026-09-25",
       "available": true,
       "error": null
     },
@@ -512,7 +512,7 @@
     "options_entry_gate": {
       "path": "data/options_entry/gate.json",
       "schema": "options_entry.gate.v3",
-      "as_of": "2026-09-25 21:10 UTC",
+      "as_of": "2026-09-26 09:45 UTC",
       "available": true,
       "error": null
     },

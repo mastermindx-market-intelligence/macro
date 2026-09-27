@@ -2419,3 +2419,4 @@
 {"schema":"metabolism.key_ledger.v1","ts":"2026-09-26T09:30:18+00:00","key_id":"codex_account","cycle_id":"","stage":"risk_brain","est_tokens":15839,"outcome":"ok"}
 {"schema":"metabolism.key_ledger.v1","ts":"2026-09-26T09:30:29+00:00","key_id":"codex_account","cycle_id":"","stage":"risk_radar_review","est_tokens":14020,"outcome":"ok"}
 {"schema":"metabolism.key_ledger.v1","ts":"2026-09-26T09:49:04+00:00","key_id":"codex_account","cycle_id":"","stage":"altdata_brain","est_tokens":23844,"outcome":"ok"}
+{"schema":"metabolism.key_ledger.v1","ts":"2026-09-26T19:55:51+00:00","key_id":"codex_account","cycle_id":"","stage":"altdata_brain","est_tokens":15859,"outcome":"ok"}
