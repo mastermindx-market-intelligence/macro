@@ -4,7 +4,8 @@ Default: execute the captured build_situations function, keeping its complete bo
 unchanged; isolate parquet/config/classifier/identity/lifecycle collaborators.
 With --repo-root: import the repository's actual engine module, mock only its I/O
 boundaries and use its real classify/noise/cross-border/floor/lifecycle helpers.
-Neither mode writes the repository, starts models, calls a network or publishes.
+Both modes write local test reports only; neither rewrites production source,
+starts models, performs network I/O or publishes.
 Fixtures use invented CIKs/IDs. They reproduce the reported role shape; they are
 not exported MGLD/USCF production rows or an economic-rights assertion.
 """
@@ -14,6 +15,8 @@ from pathlib import Path
 from unittest.mock import patch
 import pandas as pd
 
+# Deliberately RED diagnostic by default; run via CLI, not repository pytest collection.
+__test__ = False
 HERE = Path(__file__).resolve().parent
 MODE = 'captured_function_isolated_collaborators'
 REPO_ROOT = None
