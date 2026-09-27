@@ -116,6 +116,7 @@ OPTION RESOLUTION (display-only)
 """
 from __future__ import annotations
 
+import copy
 import json
 import logging
 import math
@@ -901,9 +902,24 @@ def _resolve_origination_clocks(
                 f"{recorded_at!r}"
             )
         try:
-            from lib.nyse_calendar import last_session_on_or_before  # noqa: PLC0415
+            from datetime import datetime as _dt, timezone as _tz  # noqa: PLC0415
+            from lib.nyse_calendar import (  # noqa: PLC0415
+                expected_last_session,
+                last_session_on_or_before,
+            )
 
-            expected = last_session_on_or_before(date.fromisoformat(recorded_at))
+            raw_recorded = str(recorded_asof).strip()
+            try:
+                date_only_observation = date.fromisoformat(raw_recorded)
+            except ValueError:
+                date_only_observation = None
+            if date_only_observation is not None:
+                expected = last_session_on_or_before(date_only_observation)
+            else:
+                observed = _dt.fromisoformat(raw_recorded.replace("Z", "+00:00"))
+                if observed.tzinfo is None:
+                    observed = observed.replace(tzinfo=_tz.utc)
+                expected = expected_last_session(observed)
             if date.fromisoformat(price_basis_date) != expected:
                 errors.append(
                     f"price_basis_date {price_basis_date!r} is not the last completed "
@@ -4070,6 +4086,7 @@ def originate_plans(
     thetadata_store: str | None = None,
     active_keys: set[str] | None = None,
     intake_stats: dict | None = None,
+    standouts_doc: Mapping[str, Any] | None = None,
 ) -> list[dict]:
     """
     Read us_standouts.json, apply the pick rule, and return new
@@ -4094,6 +4111,10 @@ def originate_plans(
                      status, and per-candidate validation failures so the caller can
                      disclose every disposition in its artifact. Never read, only
                      written.
+    standouts_doc  : optional already-frozen board object.  When supplied, origination
+                     deep-copies this object and never re-reads ``standouts_path``.
+                     Production uses this to bind every plan to the exact immutable
+                     source bytes recorded in the Prophet provenance snapshot.
 
     Returns
     -------
@@ -4109,8 +4130,13 @@ def originate_plans(
     from engine.options_structure import validate_trade_plan  # noqa: PLC0415
 
     standouts_path = Path(standouts_path)
-    with standouts_path.open(encoding="utf-8") as f:
-        standouts = json.load(f)
+    if standouts_doc is None:
+        with standouts_path.open(encoding="utf-8") as f:
+            standouts = json.load(f)
+    else:
+        if not isinstance(standouts_doc, Mapping):
+            raise TypeError("standouts_doc must be a mapping when supplied")
+        standouts = copy.deepcopy(dict(standouts_doc))
 
     # Kept only as a legacy formation-anchor fallback.  It is never price authority;
     # `_resolve_origination_clocks` consumes the ranked-price watermark below.
@@ -4129,7 +4155,7 @@ def originate_plans(
     )
     recorded_at, price_basis_date, clock_errors = _resolve_origination_clocks(
         price_through=staleness.get("price_through"),
-        recorded_asof=asof,
+        recorded_asof=staleness.get("observed_at_utc") or asof,
         panel_mixed_vintage=bool(panel_staleness.get("mixed_vintage")),
         source_delayed=staleness.get("delayed"),
         source_unknown=staleness.get("unknown"),

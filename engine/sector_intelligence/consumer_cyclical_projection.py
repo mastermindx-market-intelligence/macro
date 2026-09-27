@@ -468,7 +468,7 @@ def _validate_case_shape(case: Mapping[str, Any]) -> None:
 # ---------------------------------------------------------------------------
 
 
-def _index_facts_by_key(
+def _index_facts_by_metric(
     facts: Sequence[Mapping[str, Any]],
 ) -> dict[str, list[tuple[int, Mapping[str, Any]]]]:
     """Group facts for pairing, preserving input order.
@@ -919,9 +919,13 @@ def _build_explanation(selected_results: Sequence[Mapping[str, Any]]) -> dict[st
     """
     keys = [str(r.get("key")) for r in selected_results]
     keys_set = set(keys)
-    has_advertising_revenue = FACT_KEY_ADVERTISING_REVENUE in keys_set
-    has_advertising_expense = FACT_KEY_ADVERTISING_EXPENSE in keys_set
-    has_total_revenue = FACT_KEY_TOTAL_REVENUE in keys_set
+    # ``selected_results`` are RESULT envelopes, so they are keyed
+    # ``<metric>_change`` — comparing them against the FACT_KEY_* constants
+    # (``advertising_revenue``) never matched, so the R6 7.1 lead was
+    # unreachable and every document fell through to the neutral lead.
+    has_advertising_revenue = RESULT_KEY_ADVERTISING_REVENUE_CHANGE in keys_set
+    has_advertising_expense = RESULT_KEY_ADVERTISING_EXPENSE_CHANGE in keys_set
+    has_total_revenue = RESULT_KEY_TOTAL_REVENUE_CHANGE in keys_set
     if has_total_revenue and has_advertising_revenue and has_advertising_expense:
         lead = _LEAD_FULL
     else:
@@ -1021,10 +1025,10 @@ def _compose_changes(
     so downstream callers can address the per-fact change results
     without colliding with the per-fact ``facts`` envelope.
     """
-    by_key = _index_facts_by_key(facts)
+    by_metric = _index_facts_by_metric(facts)
     ready_results: dict[str, dict[str, Any]] = {}
     degraded_facts: list[dict[str, Any]] = []
-    for key, candidates in by_key.items():
+    for key, candidates in by_metric.items():
         if len(candidates) < 2:
             degraded_facts.append(_degraded(key, "no_compatible_pair_for_comparison_basis"))
             continue
@@ -1124,9 +1128,13 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
     # ``selected_result_keys`` only count the READY subset.
     results_by_key: dict[str, dict[str, Any]] = dict(ready_results)
 
-    advertising_revenue_change_key = FACT_KEY_ADVERTISING_REVENUE + "_change"
-    advertising_expense_change_key = FACT_KEY_ADVERTISING_EXPENSE + "_change"
-    total_revenue_change_key = FACT_KEY_TOTAL_REVENUE + "_change"
+    # Name result keys from the RESULT_KEY_* constants, never by concatenating
+    # "_change" onto a FACT_KEY_*. The two spellings coincide today, so a drift
+    # in either would be silent — and confusing a fact identifier for a result
+    # identifier is exactly what made the R6 economic lead unreachable.
+    advertising_revenue_change_key = RESULT_KEY_ADVERTISING_REVENUE_CHANGE
+    advertising_expense_change_key = RESULT_KEY_ADVERTISING_EXPENSE_CHANGE
+    total_revenue_change_key = RESULT_KEY_TOTAL_REVENUE_CHANGE
 
     # ---- Derived: advertising_net_change ---------------------------------
     if (
@@ -1168,9 +1176,9 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
     results_by_key[RESULT_KEY_ADVERTISING_NET_CHANGE] = advertising_net
 
     # ---- Derived: advertising_current_period_net --------------------------
-    by_key_facts = _index_facts_by_key(facts)
-    ar_facts = by_key_facts.get(FACT_KEY_ADVERTISING_REVENUE, [])
-    ae_facts = by_key_facts.get(FACT_KEY_ADVERTISING_EXPENSE, [])
+    by_metric_facts = _index_facts_by_metric(facts)
+    ar_facts = by_metric_facts.get(FACT_KEY_ADVERTISING_REVENUE, [])
+    ae_facts = by_metric_facts.get(FACT_KEY_ADVERTISING_EXPENSE, [])
     ar_current: Mapping[str, Any] | None = None
     ae_current: Mapping[str, Any] | None = None
     if ar_facts:

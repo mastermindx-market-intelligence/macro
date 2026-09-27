@@ -41,8 +41,11 @@ Coverage:
 """
 from __future__ import annotations
 
+import gzip
+import hashlib
 import json
 import math
+import os
 import sys
 from datetime import date, timedelta
 from pathlib import Path
@@ -345,6 +348,87 @@ def test_weekend_recovery_keeps_publication_and_price_clocks_separate(tmp_path):
     assert plan["price_basis_date"] == plan["entry_date"] == "2026-08-07"
     assert plan["asof"] == plan["recorded_at"] == "2026-08-08"
     assert plan_clock_date(plan) == "2026-08-07"
+
+
+def test_preclose_board_uses_its_observation_clock_for_origination(tmp_path):
+    standouts = _make_standouts(
+        gate_go=False,
+        buys=[_make_buy(
+            "AAPL", score=70, act_level=3, spot=150.0, anchor="2026-06-15"
+        )],
+    )
+    standouts["as_of"] = "2026-09-14"
+    standouts["staleness"].update({
+        "price_through": "2026-09-14",
+        "observed_at_utc": "2026-09-15T15:09:00+00:00",
+        "expected_session": "2026-09-14",
+    })
+    path = tmp_path / "us_standouts.json"
+    path.write_text(json.dumps(standouts), encoding="utf-8")
+
+    plans = originate_plans(
+        standouts_path=path,
+        asof="2026-09-15",
+        existing_ids=set(),
+        thetadata_store=None,
+    )
+
+    assert len(plans) == 1
+    assert plans[0]["recorded_at"] == "2026-09-15"
+    assert plans[0]["price_basis_date"] == "2026-09-14"
+
+
+def test_lowercase_iso_time_separator_uses_timestamp_semantics(tmp_path):
+    standouts = _make_standouts(
+        gate_go=False,
+        buys=[_make_buy(
+            "AAPL", score=70, act_level=3, spot=150.0, anchor="2026-06-15"
+        )],
+    )
+    standouts["as_of"] = "2026-09-14"
+    standouts["staleness"].update({
+        "price_through": "2026-09-14",
+        "observed_at_utc": "2026-09-15t15:09:00+00:00",
+        "expected_session": "2026-09-14",
+    })
+    path = tmp_path / "us_standouts.json"
+    path.write_text(json.dumps(standouts), encoding="utf-8")
+
+    plans = originate_plans(
+        standouts_path=path,
+        asof="2026-09-15",
+        existing_ids=set(),
+        thetadata_store=None,
+    )
+
+    assert len(plans) == 1
+    assert plans[0]["price_basis_date"] == "2026-09-14"
+
+
+def test_origination_uses_supplied_frozen_board_without_rereading_path(tmp_path):
+    frozen = _make_standouts(
+        gate_go=False,
+        buys=[_make_buy(
+            "AAPL", score=70, act_level=3, spot=150.0, anchor="2026-07-02"
+        )],
+    )
+    path = tmp_path / "mutable-us-standouts.json"
+    path.write_text(json.dumps(_make_standouts(
+        gate_go=False,
+        buys=[_make_buy(
+            "MSFT", score=70, act_level=3, spot=410.0, anchor="2026-07-02"
+        )],
+    )), encoding="utf-8")
+
+    plans = originate_plans(
+        standouts_path=path,
+        standouts_doc=frozen,
+        asof="2026-07-02",
+        existing_ids=set(),
+        thetadata_store=None,
+    )
+
+    assert [plan["asset"] for plan in plans] == ["AAPL"]
 
 
 def test_tier_native_signal_dates_do_not_rekey_plan_identity(tmp_path):
@@ -1096,6 +1180,13 @@ def test_index_json_has_required_keys(tmp_path):
         assert idx["source_unknown"] is False
         assert idx["source_basis"] == "panel_majority"
         assert idx["source_mixed_vintage"] is False
+        source_bytes = standouts_path.read_bytes()
+        source_sha = hashlib.sha256(source_bytes).hexdigest()
+        source_rel = f"data/prophet/origination_sources/{source_sha}.json.gz"
+        assert idx["source_board_sha256"] == source_sha
+        assert idx["source_board_snapshot_path"] == source_rel
+        assert idx["source_board_snapshot_encoding"] == "gzip"
+        assert gzip.decompress((tmp_path / source_rel).read_bytes()) == source_bytes
     finally:
         bp.STANDOUTS_PATH = orig_standouts
         bp.SITE_PROPHET = orig_site
@@ -1105,6 +1196,81 @@ def test_index_json_has_required_keys(tmp_path):
         bp.LEDGER_PATH = orig_ledger_path
         bp.LEDGER_DIR = orig_ledger_dir
         bp.write_showcase = orig_write_showcase
+
+
+def test_source_snapshot_is_idempotent_and_collision_safe(tmp_path, monkeypatch):
+    import scripts.build_prophet as bp
+
+    board = tmp_path / "site/factordata/us_standouts.json"
+    board.parent.mkdir(parents=True)
+    board.write_bytes(b'{"as_of":"2026-09-14","buy":[]}\n')
+    monkeypatch.setattr(bp, "STANDOUTS_PATH", board)
+    monkeypatch.setattr(bp, "LEDGER_DIR", tmp_path / "data/prophet")
+
+    first_doc, first_sha, first_rel = bp._freeze_origination_source_board()
+    second_doc, second_sha, second_rel = bp._freeze_origination_source_board()
+    assert first_doc == second_doc == {"as_of": "2026-09-14", "buy": []}
+    assert (first_sha, first_rel) == (second_sha, second_rel)
+
+    snapshot = tmp_path / first_rel
+    snapshot.write_bytes(gzip.compress(b'{"collision":true}\n', compresslevel=9, mtime=0))
+    with pytest.raises(RuntimeError, match="snapshot collision"):
+        bp._freeze_origination_source_board()
+
+
+def test_source_snapshot_missing_or_malformed_board_fails_closed(tmp_path, monkeypatch):
+    import scripts.build_prophet as bp
+
+    ledger_dir = tmp_path / "data/prophet"
+    monkeypatch.setattr(bp, "LEDGER_DIR", ledger_dir)
+
+    missing = tmp_path / "site/factordata/missing.json"
+    with pytest.raises(RuntimeError, match="source board missing"):
+        bp._freeze_origination_source_board(missing)
+
+    malformed = tmp_path / "site/factordata/malformed.json"
+    malformed.parent.mkdir(parents=True, exist_ok=True)
+    malformed.write_bytes(b'{"as_of":"2026-09-14"')
+    with pytest.raises(RuntimeError, match="source board is not valid JSON"):
+        bp._freeze_origination_source_board(malformed)
+
+    assert not (ledger_dir / "origination_sources").exists()
+
+
+def test_source_snapshot_stale_pid_temp_cannot_block_publication(tmp_path, monkeypatch):
+    import scripts.build_prophet as bp
+
+    raw = b'{"as_of":"2026-09-14","buy":[]}\n'
+    board = tmp_path / "site/factordata/us_standouts.json"
+    board.parent.mkdir(parents=True)
+    board.write_bytes(raw)
+    ledger_dir = tmp_path / "data/prophet"
+    source_dir = ledger_dir / "origination_sources"
+    source_dir.mkdir(parents=True)
+    sha = hashlib.sha256(raw).hexdigest()
+    stale = source_dir / f".{sha}.{os.getpid()}.tmp"
+    stale.write_bytes(b"orphaned prior-run temp")
+
+    monkeypatch.setattr(bp, "LEDGER_DIR", ledger_dir)
+    _, got_sha, rel = bp._freeze_origination_source_board(board)
+
+    assert got_sha == sha
+    assert gzip.decompress((tmp_path / rel).read_bytes()) == raw
+    assert stale.read_bytes() == b"orphaned prior-run temp"
+
+
+def test_build_prophet_reuses_one_frozen_board_after_source_freeze():
+    import inspect
+    import scripts.build_prophet as bp
+
+    source = inspect.getsource(bp.main)
+    after_freeze = source[source.index("_freeze_origination_source_board"):]
+
+    assert "STANDOUTS_PATH.open" not in after_freeze
+    assert "standouts_doc=_standouts_doc" in after_freeze
+    assert "run_arena(\n            copy.deepcopy(_standouts_doc)" in after_freeze
+    assert "legacy_shadow_rows(\n            copy.deepcopy(_standouts_doc)" in after_freeze
+    assert '"gate_go": _read_standouts_gate_go(_standouts_doc)' in after_freeze
 
 
 def test_stale_frame_row_pauses_instructions_fresh_row_unchanged(tmp_path):

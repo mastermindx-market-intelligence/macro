@@ -70,14 +70,18 @@ do_not_redo:
   - "R1-R11, the independent reviews, R12/R13 verification, R14 reconciliation"
   - "The R8 native-staging denial: never retry, rephrase, re-home or delegate around it"
 danger_areas:
+  - "Fact keys and result keys are disjoint vocabularies that read alike, and confusing them is INVISIBLE to a numeric suite. _build_explanation tested FACT_KEY_* against the set of RESULT keys, so the economic lead was unreachable on every input while 61 tests stayed green - every asserted number was still exact, only the sentence explaining them was missing. Found by verifying from main after the merge, not by the suite."
   - "native_admitted is provenance, not a gate. Gating on it silently empties the whole vertical while its own tests stay green."
   - "A delegate's green suite can encode a world that cannot occur. Drive verification from the committed fixture, not the lane's fixtures."
   - "Duplicate keys in a Python dict literal: the LAST occurrence wins. One silently overrode a correct current_period_fact for several iterations."
   - "$defs/result is additionalProperties:false - internal carriers like value_decimal (a Decimal, not JSON-serialisable) must be stripped before emit."
   - "A new exclusive CI job must be added to CURATED_EXCLUSIVE in tests/test_ci_pack.py; that suite asserts exact set equality and takes ~4.5 min."
-prs: [7942]
+prs: [7942, 7945]
 decisions:
   - "DEC:CONSUMER-CYCLICAL-V1-CORE-EXTENDS-INCUMBENT-NOT-TRANSPORT"
+discoveries:
+  - "DSC:A-UNIVERSAL-FALLBACK-BRANCH-IS-INVISIBLE-TO-A-VALUE-ONLY-SUITE"
+  - "DSC:LANE-HOST-ELIGIBILITY-DOES-NOT-MEASURE-GIT-EGRESS"
 ---
 
 ## Cold-stranger summary
@@ -89,3 +93,19 @@ deterministic, source-coordinate-bound economic composition, under the already-m
 `contracts/sector_intelligence/` family, following the Finance T1/T2/T3 idiom that landed the same day.
 
 V1-CORE merged and green is **not** `V1 PROVEN_LIVE`. Say so when reporting it.
+
+## Where it was left
+
+Returned to Sol on the research carrier #7804 (comment `5814888647`, 2026-09-24), naming the four
+owner blockers and — the load-bearing part — correcting that carrier's standing
+`RECEIVER_ASSIGNMENT: NONE / EXECUTION_STATE: PRE_START`. That record was written before the Chairman's
+live handoff and, left standing, would have lawfully licensed a **second** Fable receiver onto the same
+operation.
+
+Post-merge live verification earned its keep: it found the economic lead unreachable on every input
+(see `danger_areas`), repaired on #7945 along with a same-class audit that hardened two further latent
+instances of the same root cause. **Verify from `main` after the merge, not from the suite** — this
+vertical has now produced two separate defects whose only symptom was invisible to green tests.
+
+Nothing further is executable at this seat. Every remaining V1 leg is owner-gated, and R15 forbids
+self-authorizing V2 LTH / V3 LULU / V4 theme journey on a V1 pass.

@@ -28,6 +28,7 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 from lib import config
+from engine import narrative_crossmarket
 
 log = logging.getLogger(__name__)
 
@@ -98,6 +99,39 @@ def _read_json(rel: str) -> dict | list | None:
 
 
 # ── Input loaders ─────────────────────────────────────────────────────────── #
+
+def _unavailable_us_theme_context(reason: str) -> dict:
+    return {
+        "schema": narrative_crossmarket.CHINA_US_CONTEXT_SCHEMA,
+        **narrative_crossmarket.CONTEXT_AUTHORITY,
+        "status": "UNAVAILABLE", "reason": reason, "themes": {}, "sources": {},
+        "validated_lead_lag": False, "historical_availability_proven": False,
+    }
+
+
+def _load_us_theme_context(today: date, *, observed_at: datetime | None = None) -> dict:
+    """Add live foreign/local observations AFTER ranking, never to its inputs.
+
+    The hub's existing `today` uses the host calendar day. A dated rebuild must
+    not acquire current theme context and falsely present it as historical input.
+    `observed_at` is injectable for deterministic tests, not an archive receipt.
+    """
+    try:
+        observed = observed_at if observed_at is not None else datetime.now(timezone.utc)
+        if observed.tzinfo is None or observed.utcoffset() is None:
+            return _unavailable_us_theme_context("INVALID_OBSERVATION_CLOCK")
+        if today != observed.astimezone().date():
+            result = _unavailable_us_theme_context("DATED_BUILD_REQUIRES_ARCHIVED_CONTEXT")
+            result["requested_build_date"] = today.isoformat()
+            result["observed_at_utc"] = observed.astimezone(timezone.utc).isoformat()
+            return result
+        return narrative_crossmarket.compute_china_us_context(
+            config.site_dir(), observed_at=observed,
+        )
+    except Exception as exc:  # noqa: BLE001 — optional context cannot erase the China command
+        log.warning("china_intel_hub: US theme context unavailable (%s)", type(exc).__name__)
+        return _unavailable_us_theme_context("CONSUMER_FAILURE")
+
 
 def _load_news_by_ticker() -> dict:
     """site/chinanews/by_ticker.json → {ticker: [headline_items]}."""
@@ -1561,6 +1595,7 @@ def _empty(today: date) -> dict:
         "as_of": today.isoformat(),
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "command": [], "discovery": [], "n_universe": 0,
+        "us_theme_context": _unavailable_us_theme_context("HUB_BUILD_FAILED"),
         "visits_coverage_start": None,
         "desks": {}, "counts": {}, "disclaimer": DISCLAIMER,
     }
@@ -1701,6 +1736,8 @@ def _build_inner(today: date, top: int) -> dict:
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "n_universe": len(all_dossiers),
         "command": command,
+        # Distinct regional theme observations; never an input to dossiers or ranking.
+        "us_theme_context": _load_us_theme_context(today),
         # Plane-level fact (P1, China Alpha Intelligence) — the visit tape's own
         # coverage_start, exposed ONCE here rather than re-derived per row by a
         # template scanning every dossier's nested visits.coverage_start.

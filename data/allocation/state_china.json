@@ -11,8 +11,8 @@
   ],
   "held": [
     "cn_ai_compute",
-    "cn_pharma_cxo",
     "cn_banks",
+    "cn_pharma_cxo",
     "cn_coal"
   ],
   "leader": "cn_ai_compute",

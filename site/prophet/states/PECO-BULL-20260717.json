@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "PECO-BULL-20260717",
-  "asof": "2026-09-24",
+  "asof": "2026-09-26",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
   "management_confidence": 24.7,
-  "raw_confidence": 24.0,
+  "raw_confidence": 24.8,
   "delta_vs_base": -35.3,
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 19.1,
+    "validity": 34.7,
     "progress": 0.0,
-    "pace": 3.1,
+    "pace": 2.0,
     "retention": 50.0,
-    "overlay": 61.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.294,
+    "dist_to_stop_r": 0.456,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 68.9,
-    "p1": -0.4709,
-    "p2": -0.2354,
+    "horizon_pct_used": 73.3,
+    "p1": -0.3625,
+    "p2": -0.1812,
     "p3": null,
-    "move_r": -0.706,
+    "move_r": -0.544,
     "mfe_r": 0.068,
     "mae_r": -0.723
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-24",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 31,
-  "tau": 0.6889
+  "days_elapsed": 33,
+  "tau": 0.7333
 }
