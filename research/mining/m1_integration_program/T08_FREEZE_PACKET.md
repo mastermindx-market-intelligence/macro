@@ -79,12 +79,60 @@ another not. `GAP` = no delivered test pins it.
 | 10 | Identity | — | UNPINNED, satisfied by absence of capability; becomes live at **T03**. See §6.1. |
 | 11 | Identity | `test_source_only_business_stays_useful` | COVERED (planned name shipped verbatim). |
 | 12 | Identity | `test_duplicate_local_asset_labels_are_not_additional_supply` | COVERED (renamed); pins both the "additional physical supply" and "independent corroboration" readings via the same dedup path. |
+| 15 | Measures | `test_composition_matches_the_frozen_truth_table[signed_loss-row9]`, `test_expected_oracle_shape_is_pinned_per_case[signed_loss-shape9]` | **ADDED 2026-09-27 — PARTIAL by construction.** Trace task **T03**, but the subject is T04a's native financial route, MERGED at #7950. Clause 1 (negatives keep their sign) pinned green through the real compose+validate route: −375 in → −375 out, `sign='-'`, no coercion. Clause 2 ("shared nonnegative fields are not bypassed") NOT EXPRESSIBLE on main — same #7870 shared-contract seam as row 01. Delivered contract's only nonnegative numerics are `request.page` (≥1) and the derived `context_block_count` (≥0), neither a financial value. |
+| 16 | Measures | `test_packet_driven_missing_required_field_withholds_row_and_mints_unqualified`, `test_ir01_both_null_definitions_no_badge_no_model_readable_field` | **ADDED 2026-09-27 — PARTIAL by construction.** Subject is the COMPARISON channel, delivered by T04a (`mining_theme_research.py:802`), not unlanded T03 code: a leg missing a required definition field withholds the row and mints `definition_unqualified:<field>`. Pinned green both ways. `currency` and `attribution` are not definition fields on main (reserved set = unit / perimeter / basis / mev), so those two clauses arrive with T03. |
+| 17 | Measures | `test_mgd17_refused_comparison_does_not_delete_the_supported_facts` | **ADDED 2026-09-27 — PARTIAL by construction.** The operative verb is "refuse dependent arithmetic" and no dependent arithmetic can exist: `economics['derived']` is literal `[]` on all 11 cases. Owes a pin in the PR that first populates `derived`. Its second clause ("without deleting supported facts") IS delivered and measured — a refused comparison leaves the supported block intact (expectations 0, blocks 1 @ 1250) — and is now **pinned green** by a test delivered in this wave, with a positive control arm; see §6.4. |
+| 19 | Economics | — (do NOT credit `test_internal_transfer_keeps_elimination_sign`) | **ADDED 2026-09-27 — GAP, reason corrected.** The construct EXISTS on main (a packet `measure='intersegment elimination', value=-120` composes a block with sign `-`), so this is not absence of capability; what is missing is a casebook FIXTURE plus T03's product-sales vs contractual-support definitions. The existing test carries an MGD-19 docstring but calls the helper `_signed_value` directly and its own comment concedes the casebook "exposes no internal-transfer row" — **a helper pin is not a pin on the composed payload.** |
+| 20 | Economics | — | **ADDED 2026-09-27 — SATISFIED by absence of capability.** `derived` is literal `[]` on all 11 cases, so no displayed derivation can lack receipts. Worth recording: the contract ALREADY mandates them — `derived[]` requires `formula_version` + `inputs` with `additionalProperties: false`, validated on every return path — so the first derivation cannot ship receiptless. The "browser does not invent arithmetic" half is unlanded T06. |
+| 21 | Economics | `test_unsupported_contract_calculation_is_missing_derivation_not_invented_value`, `test_composition_matches_the_frozen_truth_table[same_horizon_revision-row8]` | **ADDED 2026-09-27 — PARTIAL by construction.** The protected behaviour is delivered and pinned green: a same-horizon revision is refused a derivation (`next_period_outlook` → `missing_derivation`, 0 expectations, 0 blocks) rather than relabeled. PARTIAL for one honest reason — the obligation is phrased "to satisfy `assess_management_sequence`" and **that symbol does not exist anywhere in the tree**, so the motive clause cannot be tested and must not be counted. |
+| 22 | Economics | `test_rare_earth_usable_case_carries_slice_definitional_codes_only` | **ADDED 2026-09-27 — PARTIAL by construction.** Distinctness is enforced by the DELIVERED contract: `expectations[].is_range` and `.is_consensus` are `const: false`, validated on every return path, so a payload asserting consensus fails validation rather than shipping. The "labels and summaries" half is delivered too — `_BADGE_VOCABULARY` (beat/miss/improvement/above/below/confirmed/surprise) mints `definition_unqualified:headline`. PARTIAL because "house forecasts" has no delivered field at all. |
+| 23 | Economics | — | **ADDED 2026-09-27 — GAP, reason corrected.** The composer is a PASSTHROUGH for `measure` (submitted 'financing proceeds' composes verbatim), and non-interpretation is not enforcement: it can neither substitute the four kinds nor keep them distinct. Needs T03 to mint the kind vocabulary first. A test asserting the passthrough would NOT pin this. |
 | 18 | Rights | `test_missing_threshold_keeps_contract_explanation` (verbatim), `test_stream_threshold_omission_propagates_as_limitation`, `test_unsupported_contract_calculation_is_missing_derivation_not_invented_value` | PARTIAL — clause 2 (missing threshold blocks entitlement calculation) is pinned three ways. Clause 1 ("a royalty or stream is not encoded as physical mine ownership") is **satisfied by construction**: the engine models a stream only as the limitation code `stream_threshold_unknown` and carries **no ownership field at all**, so there is nothing to mis-encode. Standing condition, not a gap — see §6.3. |
 | 34 | Safety | `test_copper_complete_is_ready_and_authority_literal_false`, `test_rare_earth_complete_is_ready_and_authority_literal_false`, `test_every_fixture_is_synthetic_and_all_authority_flags_are_false` (main) | COVERED ×3. |
 | 39 | Coverage | `test_partial_coverage_industry_total_stays_null`, `test_industry_total_unknown_is_minted_iff_slice_vocab_contracts_it`, `test_industry_total_unknown_is_absent_on_w_c_slice` | COVERED — the `industry_total_unknown` family pins exactly "two witnesses do not imply complete coverage". |
 
-T02/T03/T05/T06/T07/T08 rows are not reconciled here: their tasks have not delivered, so
-their rows are legitimately `NOT_RUN` and a reconciliation would be fiction.
+**CORRECTED 2026-09-27 — the sentence that stood here was wrong and is withdrawn. It caused
+six wrong statuses.** It read: ~~"T02/T03/T05/T06/T07/T08 rows are not reconciled here: their
+tasks have not delivered, so their rows are legitimately `NOT_RUN` and a reconciliation would
+be fiction."~~
+
+That is a TASK-level rule applied to an obligation-level question — the denying-direction twin
+of the hazard `MGD_EXECUTION_STATUS.json`'s authority block already names in the crediting
+direction. **An obligation's OWNING TASK and the task delivering its SUBJECT are different
+facts.** The carrier trace's `task` field is the planned delivery slot for the TEST; it never
+says which code the obligation governs. Rows 15/16/17/19/20/21/22/23 above are the witnesses:
+every one carries trace task T03, and six of them have subjects delivered by T04a with green
+delivered tests, while this sentence told the ledger to record all of them `NOT_RUN`.
+
+**The rule that replaces it:** reconcile every row by SUBJECT, clause by clause, never by
+owning task. For each clause ask which of four places its subject lives in — (i) merged code,
+(ii) the shared assertion contract, absent until #7870, (iii) an unlanded task's code, (iv) an
+unlanded UI — and status from the closed vocabulary accordingly. `NOT_RUN` is lawful only when
+NO clause's subject is on main. Two corollaries, each of which cost a wrong verdict this wave:
+a delivered test whose docstring cites an obligation may still not PIN it (check it exercises
+the composed payload, not a helper — row 19), and a clause may be pinned while the
+obligation's OPERATIVE clause is not (row 15 clause 2). Rows whose subjects are wholly
+unlanded — the T05/T06/T07 route, client, mount and update families, and the T08 real-source
+journeys, which additionally need G2 before any live figure — remain `NOT_RUN` on that measured
+basis. Scope of what was and was NOT re-measured is recorded in the ledger's
+`scope_of_the_2026_09_27_subject_reaudit` key; do not read this table as a completed 40-row
+subject audit.
+
+## §6.4 The one unblocked pin this program could still write — DELIVERED 2026-09-27
+
+MGD-17's second clause — "refuses dependent arithmetic **without deleting supported facts**"
+— is delivered and MEASURED but asserted nowhere. On the missing-`unit` shape the composer
+returns `expectations == []` while the supported native block survives (measured: blocks 1 @
+value 1250, limitations `['definition_unqualified:unit','omitted:expectations']`, status
+`ready`), and the delivered test for that shape asserts only the withheld row. **DELIVERED in this wave** as
+`tests/test_mining_composition.py::test_mgd17_refused_comparison_does_not_delete_the_supported_facts`,
+which needed no upstream gate, no fixture and no ruling — it was the one piece of MGD coverage
+work available while #7870 and #7905 are both closed. It carries a positive CONTROL arm: the
+same bundle is composed without the bad comparison and the two native-block lists must be
+identical, because "the block survived" proves nothing if the pipeline keeps blocks
+unconditionally. Suite: **175 passed** (was 174). MGD-17 moved to `PARTIAL_BY_CONSTRUCTION`
+as a result; its operative clause stays absence-of-capability and owes a pin in the PR that
+first populates `derived`.
 
 ## §6 The two unpinned obligations, measured — neither is a code defect
 

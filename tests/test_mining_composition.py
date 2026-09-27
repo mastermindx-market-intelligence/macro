@@ -639,6 +639,45 @@ def test_packet_driven_missing_required_field_withholds_row_and_mints_unqualifie
     assert "definition_unqualified:unit" in result["limitations"]
 
 
+def test_mgd17_refused_comparison_does_not_delete_the_supported_facts():
+    """MGD-17 clause 2: a refused dependent comparison withholds its row WITHOUT deleting the
+    supported measurement facts.
+
+    The obligation's operative clause — "mismatches refuse dependent arithmetic" — is satisfied by
+    absence of capability, because ``economics["derived"]`` is the literal ``[]`` on every payload
+    and no dependent arithmetic is ever emitted. This pins the half that IS expressible today: the
+    measurement channel survives the refusal intact.
+
+    The control arm is load-bearing. "The block survived" would prove nothing if the pipeline kept
+    blocks unconditionally, so the same bundle is composed WITHOUT the bad comparison and the two
+    native-block lists are required to be identical — the refusal must change the expectations
+    channel and nothing else. ``definition_unqualified:unit`` is deliberately not in
+    ``OMISSION_TO_LIMITATION.values()``, so it must not reach ``_suppress_native_blocks``.
+    """
+    case = synthetic_case("copper_complete")
+    measurement = dict(case.bundle.financial_packets[0])
+    bad_packet = _mev_packet("sales", 1700, 1680)
+    del bad_packet["earlier_point_estimate"]["unit"]
+    del bad_packet["later_actual"]["unit"]
+
+    refused = composition.compose_mining_research(
+        case.query, _replace(case.bundle, financial_packets=(measurement, bad_packet))
+    )
+    control = composition.compose_mining_research(
+        case.query, _replace(case.bundle, financial_packets=(measurement,))
+    )
+
+    # The comparison is refused, and the refusal is named rather than silent.
+    assert refused["expectations"] == []
+    assert "definition_unqualified:unit" in refused["limitations"]
+
+    # The supported facts are not deleted, and are identical to the no-comparison control.
+    assert refused["economics"]["native_blocks"], refused["economics"]
+    assert refused["economics"]["native_blocks"] == control["economics"]["native_blocks"]
+    assert refused["summary"]["status"] != "refused"
+    _validate(refused)
+
+
 def test_packet_driven_non_numeric_value_withholds_row_and_mints_omitted_expectations():
     """A packet whose ``value`` is the string ``"quarter"`` (the BLOCKER-A fabrication)
     withholds the row and mints ``omitted:expectations`` (MINOR-I) — the
