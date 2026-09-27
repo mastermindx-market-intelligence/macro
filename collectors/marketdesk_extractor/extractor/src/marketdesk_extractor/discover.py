@@ -7,7 +7,6 @@ counted as ``SKIPPED_SEEN`` and left untouched.
 """
 from __future__ import annotations
 
-import json
 import time
 from dataclasses import dataclass, field
 
@@ -21,17 +20,6 @@ from .score import compute_priority
 from .utils import get_logger, normalize_ws
 
 log = get_logger("discover")
-
-
-def _breadcrumb_names(path_rows) -> list[str]:
-    """Project MarketDesk item-path rows to the source-native display breadcrumb."""
-    out: list[str] = []
-    for raw in path_rows or ():
-        name = raw.get("name") if isinstance(raw, dict) else raw
-        text = str(name or "").strip()
-        if text:
-            out.append(text)
-    return out
 
 
 @dataclass
@@ -108,40 +96,33 @@ def discover(
     )
 
     def self_heal(blob_id: str, row) -> None:
-        """Backfill late source metadata without inventing it downstream.
+        """Backfill a paper first seen before its data was ready.
 
-        Summary/title repair still uses ``/extra``.  The MarketDesk path endpoint
-        is the source-native owner of the breadcrumb that later derives the Vault
-        desk.  Old rows can therefore be healed in place and JSON-republished
-        without re-downloading the PDF.
-        """
-        if result.healed >= heal_limit:
+        MarketDesk generates the AI summary ASYNCHRONOUSLY (so a freshly-posted
+        paper is discovered with none) and ships some titles truncated (dropped
+        ``.EX)`` suffix). Because a seen blob_id short-circuits before item_extra
+        is ever called again — and cleanup preserves the "seen" memory — such a
+        paper would otherwise be stuck forever. Re-fetch ``/extra`` ONCE (capped
+        per run) and push the fix; if it was already vaulted, null ``vaulted_at``
+        so the vault pass re-publishes the corrected sidecar (JSON only)."""
+        if not fetch_summary or result.healed >= heal_limit:
             return
         cur_summary = (row["marketdesk_summary"] or "").strip()
         cur_title = row["title"] or ""
-        cur_breadcrumb = (row["breadcrumb"] or "").strip()
-        need_summary = fetch_summary and not cur_summary
-        need_title = fetch_summary and looks_truncated(cur_title)
-        need_breadcrumb = not cur_breadcrumb
-        if not (need_summary or need_title or need_breadcrumb):
+        need_summary = not cur_summary
+        need_title = looks_truncated(cur_title)
+        if not (need_summary or need_title):
             return
-
+        extra = client.item_extra(blob_id) or {}
         updates: dict = {}
-        if need_summary or need_title:
-            extra = client.item_extra(blob_id) or {}
-            if need_summary:
-                s = extra.get("summary")
-                if s and str(s).strip():
-                    updates["marketdesk_summary"] = normalize_ws(str(s))
-            if need_title:
-                t = extra_title(extra, cur_title)
-                if t:
-                    updates["title"] = t
-        if need_breadcrumb:
-            crumbs = _breadcrumb_names(client.item_path(blob_id))
-            if crumbs:
-                updates["breadcrumb"] = json.dumps(crumbs, ensure_ascii=False)
-
+        if need_summary:
+            s = extra.get("summary")
+            if s and str(s).strip():
+                updates["marketdesk_summary"] = normalize_ws(str(s))
+        if need_title:
+            t = extra_title(extra, cur_title)
+            if t:
+                updates["title"] = t
         if not updates:
             return
         db.update_fields(conn, blob_id, **updates)
@@ -189,9 +170,8 @@ def discover(
         summary = None
         if fetch_summary:
             summary = (client.item_extra(blob_id) or {}).get("summary")
-        breadcrumb = _breadcrumb_names(client.item_path(blob_id))
         meta = build_meta(
-            cfg, item, breadcrumb=breadcrumb, summary=summary,
+            cfg, item, summary=summary,
             is_latest=blob_id in latest_ids,
             is_top_pick=blob_id in pick_ids,
             is_saved=blob_id in saved_ids,
