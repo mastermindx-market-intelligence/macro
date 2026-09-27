@@ -83,9 +83,17 @@ next_action: >
   evidence.
   MGD_EXECUTION_STATUS.json is the program's execution record against the forty obligations and
   is the thing a wave UPDATES, not a thing a wave re-derives. Status is never inferred from a
-  test name. When T04b lands it MUST carry the two-armed MGD-08 clause 2 pin (R-MIN-34) and the
-  two-armed MGD-10 pin, because T04b carries `period` onto native blocks and that is exactly
-  what makes MGD-10 falsifiable.
+  test name. CORRECTED 2026-09-27: when T04b lands it owes the two-armed MGD-10 pin ONLY,
+  because T04b carries `period` onto native blocks and that is exactly what makes MGD-10
+  falsifiable. **MGD-08 clause 2 is CLOSED and is not T04b's to write** - it is
+  COVERED_SUITE_GREEN, so the ledger's UNPINNED count is 0 of 40. Closing it required a
+  BEHAVIOUR change and not merely a test, which R-MIN-34 had ruled unnecessary on a
+  copper-only measurement: on the rare-earth slice a wholly empty economic path reported
+  `ready` over an empty panel, because that slice's vocabulary mints
+  `stream_threshold_unknown` on every payload and the readiness clause fired on it before
+  the native-block channel was consulted. R-MIN-35 records the amendment, R-MIN-34 carries
+  an AMENDED BY marker, and T08 acceptance item 3 is amended so a lane cannot revert
+  MGD-08 to UNPINNED to satisfy it. Do NOT re-open it.
   T05/T06 stay held for #7870's route/client/mount on main plus the answer to comment
   5811889498; T08 is last; G2 real-source admission remains an incumbent/operator act.
   Standing operator items: mini2 has no WAN (a bridge0 default route shadows the real gateway;
