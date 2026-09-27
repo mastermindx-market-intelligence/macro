@@ -4128,6 +4128,13 @@ CURATED_EXCLUSIVE = {
     # and scripts/ci/daily_engine_regional_desk_builders.sh. Exclusivity
     # drops the data/** filesystem fallback and loses no owner.
     "options-skew-engine",
+    # 2026-09-15, US Sector Participation W1.  The suite imports the shared
+    # BreadthAdapter plus all six inherited siblings, the Sector Central builder,
+    # and the shipped browser client.  Inferred scope picked up an opaque scripts/**
+    # fallback when it rode unrun-scoring-engine, making an unrelated
+    # scripts/build_free_content.py PR select that job and breach the curation
+    # ratchet.  The dedicated job declares the capability's actual owner surface.
+    "sector-participation-w1",
     # 2026-08-20. `regwall-boundary` carries tests/test_regwall_json_gate.py out
     # of `tier-gate` (`gate: data`, never packed by ci.yml) and onto the merge
     # gate. It is curated for COVERAGE, not to narrow: the suite names its two

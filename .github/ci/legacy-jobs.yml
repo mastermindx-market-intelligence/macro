@@ -1347,6 +1347,9 @@ jobs:
       - "lib/numeric.py"
       - "lib/nyse_calendar.py"
       - "lib/pages.py"
+      # W1 shared package/validation authority is imported by the Sector Central
+      # build path exercised by this curated conviction-profile owner.
+      - "lib/sector_participation.py"
       - "lib/procutil.py"
       - "lib/seo.py"
       - "lib/store.py"
@@ -14496,6 +14499,7 @@ jobs:
       - name: NA-ticker pandas-sentinel guard — 18 parse sites + is_non_equity_holding truth table
         run: python -m pytest tests/test_collectors_na_sentinel.py -q
 
+
   unrun-brain-gateway:
     # the Mastermind brain gateway — routing, quota ledger, tool allowlist, SSE order.
     # Its own install: the FastAPI route tests need fastapi + starlette's TestClient
@@ -15000,6 +15004,43 @@ jobs:
         run: python -m pytest tests/test_etf_partial_nav_sleeve.py -q
       - name: sector_central board order — fast-lens rotation rank, failing open to conviction
         run: python -m pytest tests/test_sector_central.py -q
+
+  sector-participation-w1:
+    if: ${{ false }}  # executed inside ci-pack; runner-free legacy definition
+    gate: code
+    timeout-minutes: 8
+    # W1 is one deterministic product vertical: licensed response qualification,
+    # the exact US S&P owner hook, a correction-safe atomic package, and the
+    # historical Money & Breadth calendar/detail/constituent journey.  It gets a
+    # dedicated code-gated owner instead of riding unrun-scoring-engine: adding the
+    # suite there widened that job's inferred fallback scope onto unrelated scripts
+    # and breached the ordinary-PR selector ratchet.  `scope: exclusive` replaces
+    # that inference with the source/UI/consumer boundary this suite truly reads.
+    # Widening is safe; do not add generic scripts/** or templates/** claims.
+    scope: exclusive
+    paths:
+      - ".github/ci/legacy-jobs.yml"
+      - "collectors/**"
+      - "config.yml"
+      - "config/delisted_symbols.yml"
+      - "lib/**"
+      - "scripts/build_sector_central.py"
+      - "templates/sector_central.html.j2"
+      - "templates/sector_participation_20.js"
+      - "templates/si_workspace.js"
+      - "tests/test_sector_central_participation.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install W1 semantic dependencies
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests beautifulsoup4 lxml yfinance
+      - name: node must be present for shipped-client digest/refusal proof
+        run: node --version
+      - name: W1 sector participation — licensed history, atomic package, historical evidence UI
+        run: python -m pytest tests/test_sector_central_participation.py -q
 
   # ── RED-ON-ARRIVAL SWEEP, BATCH B (2026-07-27) ─────────────────────────────
   # The template-surface share of the 10 reds (docs/UNRUN_TEST_CENSUS.md §"Red on
