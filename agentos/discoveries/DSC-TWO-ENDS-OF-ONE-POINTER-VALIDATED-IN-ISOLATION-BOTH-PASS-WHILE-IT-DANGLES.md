@@ -46,7 +46,13 @@ so_what: >
   is a test whose body never invokes the unit its NAME is about; grep a suspect suite
   for test functions that construct a fixture and never call the entry point. This is
   the dual of DSC:THE-CASE-A-SUITE-USES-MOST-IS-THE-ONE-IT-NEVER-VALIDATES -- there the
-  fixture was never validated, here the fixture is the ONLY thing validated. (4) Sweep
+  fixture was never validated, here the fixture is the ONLY thing validated. (4) THE DISCRIMINATOR IS WHO WRITES THE
+  REFERENCE, not whether one exists. A CALLER-SUPPLIED reference can dangle and needs an
+  enforced relation; a MODULE-DERIVED one is safe by construction because the emitter
+  reads the referent to build it. Consumer's own `input_refs` and Finance's
+  `evidence_refs` are both module-derived and both provably cannot dangle -- only
+  `native_ref`, copied verbatim from the case, could. Audit by asking of each reference
+  field: did this value enter from outside? (5) Sweep
   the whole convention when you fix one instance: 22 test refs still used a hyphenated
   ad-hoc spelling (`src-tr-c`) that could never resolve, because a prior wave corrected
   the main fixture and never swept the helpers. Binds every GMI sector vertical copying
@@ -65,10 +71,17 @@ verified_by: >
   ci-control-plane-contracts gate runs), both cases oracle-exact at 0 schema errors,
   envelope sweep unchanged at 17 REFUSED / 4 MINTED-SCHEMA-VALID. PR #8106.
 scope: >
-  Verified on Consumer Cyclical V1 only. The per-field-blindness mechanism is generic to
-  JSON Schema and any validator without cross-field assertions; the specific field names
-  are Consumer Cyclical's. Says nothing about whether other verticals' pointers are in
-  fact dangling today -- that is the falsifier to run, not an inherited result.
+  Defect verified on Consumer Cyclical V1 only. The per-field-blindness mechanism is
+  generic to JSON Schema and any validator without cross-field assertions. The sibling
+  falsifier was then RUN rather than left open, and returned a null with a mechanism:
+  searching every tracked file for `source_records` and every `engine/`+`scripts/`+
+  `contracts/` file for a reference field, NO other module in this repo today has a
+  CALLER-SUPPLIED reference into its own source ledger. Finance Intelligence has both
+  ends (`evidence_refs` + `$defs/source_record`) but `_plane_evidence_refs`
+  (`engine/sector_intelligence/finance_projection.py:698`) DERIVES the refs from
+  `record_id` at line 714, so they cannot dangle; the mining modules carry `native_ref`
+  with no `source_records` at all, i.e. only one end. Bound of that search: literal
+  string match, tracked files only -- a dynamically assembled ref would not appear.
 confidence: verified
 ---
 
