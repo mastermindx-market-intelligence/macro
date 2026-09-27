@@ -5149,6 +5149,12 @@ jobs:
         # fresh synthetic merge against newer main.
         run: git fetch --depth=1 origin ${{ steps.contract-merge.outputs.base_sha }}
       - name: differential contract-delta gate
+        # Five differential classes on the tested merge and its base: curated
+        # closure misses and unwired suites (2026-08-19), plus the packing probes
+        # and the skip-only and trigger-closure censuses (2026-09-27). Those three
+        # depend on the whole tree, so ci-control-plane-contracts' path scope
+        # cannot see a PR that moves them. The step prints each census's seconds
+        # on both sides.
         run: >-
           python scripts/check_contract_delta.py
           --base ${{ steps.contract-merge.outputs.base_sha }}

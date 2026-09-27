@@ -166,6 +166,8 @@ jobs:
       # pyarrow only; no render deps needed for this module's own kills).
       - name: HK discovery challenger — K-D1-K-D9 (hk_discovery_v1)
         run: python -m pytest tests/test_hk_discovery_challenger.py -q
+      - name: Prophet discovery outcomes - canonical grading and degraded clocks
+        run: python -m pytest tests/test_grading.py -q
 
   board-contradictions:
     if: ${{ false }}
@@ -4816,8 +4818,11 @@ jobs:
     # every job and suite through the planner, and no exclusive list can name
     # every suite. So a PR that moves one of those verdicts without touching a
     # path below merges without running this job. Each such shape has another
-    # owner. contract-delta (ci.yml, every PR) re-runs the unrun census and the
-    # curated-closure check differentially. integration-baseline.yml runs
+    # owner. contract-delta (ci.yml, every PR) re-runs the unrun census, the
+    # curated-closure check, the packing probes and the skip-only and
+    # trigger-closure censuses differentially (probes and both censuses since
+    # 2026-09-27), so a PR that breaches a probe ceiling, adds a skip-only gate or
+    # opens a trigger gap reds on its own head. integration-baseline.yml runs
     # test_ci_pack.py and the skip-only census on every source push to main and
     # every 4 hours, and merge-on-green pauses ordinary merges while it is red.
     # Every ci.yml run on main runs this whole job; the merge sweeper dispatches
@@ -6956,16 +6961,28 @@ jobs:
         run: pip install pytest
       - name: p0b receipt-closure (pinned construction inputs require a same-diff receipt remint)
         run: |
-          if ! git fetch origin ${{ github.base_ref || 'main' }}; then
-            echo "::error title=p0b-receipt-closure::could not fetch origin/${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
-            exit 1
+          # Semantic packs already carry the planner exact tested-tree changed
+          # paths as a downloaded JSON handle. Prefer that authoritative input:
+          # re-fetching the moving base here cost the R25 candidate the entire
+          # 10-minute job budget before the gate itself could execute.
+          if [ -n "${CI_CHANGED_FILES_FILE:-}" ]; then
+            if [ ! -r "$CI_CHANGED_FILES_FILE" ]; then
+              echo "::error title=p0b-receipt-closure::configured CI_CHANGED_FILES_FILE is unreadable; refusing rather than falling back to a different comparison question."
+              exit 2
+            fi
+            python3 scripts/check_p0b_receipt_closure.py --diff-file "$CI_CHANGED_FILES_FILE"
+          else
+            if ! git fetch origin ${{ github.base_ref || 'main' }}; then
+              echo "::error title=p0b-receipt-closure::could not fetch origin/${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
+              exit 1
+            fi
+            if ! mb=$(git merge-base "origin/${{ github.base_ref || 'main' }}" HEAD); then
+              echo "::error title=p0b-receipt-closure::no merge base with ${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
+              exit 1
+            fi
+            git diff --name-only "$mb" HEAD > /tmp/p0b.changed
+            python3 scripts/check_p0b_receipt_closure.py --diff-file /tmp/p0b.changed
           fi
-          if ! mb=$(git merge-base "origin/${{ github.base_ref || 'main' }}" HEAD); then
-            echo "::error title=p0b-receipt-closure::no merge base with ${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
-            exit 1
-          fi
-          git diff --name-only "$mb" HEAD > /tmp/p0b.changed
-          python3 scripts/check_p0b_receipt_closure.py --diff-file /tmp/p0b.changed
       - name: p0b receipt-closure selftest (gate fires when a pinned path moves without receipts)
         run: python3 scripts/check_p0b_receipt_closure.py --selftest
       - name: p0b receipt-closure unit suite
@@ -12840,10 +12857,14 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 html5lib openpyxl scikit-learn
       - name: US candidate and plan source-date truth (PR-time gated journey)
         run: >-
           python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "candidate_heading_discloses_source_date or gated_candidate_journey or historical_plan_wall_does_not"
+      - name: Shared Prophet card - record identity and explicit unavailable action
+        run: python -m pytest tests/test_prophet_card_shared.py -q
+      - name: Prophet Today and Company context - owner selection and typed responses
+        run: python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "today or company_context"
       - name: stock-brief context health (R2 context must yield a nonempty batch)
         run: >-
           python -m pytest tests/test_catalyst_stock.py -q -k "build_stock_briefs_all_no_context_is_failure or build_stock_briefs_empty_result_is_failure"
@@ -13996,6 +14017,14 @@ jobs:
       - "templates/_stock_decision.css.j2"
       - "templates/_track_record_dlg.html.j2"
       - "templates/_us_board_cards.html.j2"
+      # Packet 2 plan records are rendered by dashboard.html.j2 through this
+      # partial, so the curated import closure must own it explicitly.
+      - "templates/_us_prophet_plan_cards.html.j2"
+      # Packet 2: existing shared-card tests consume these source-bound details.
+      - "templates/_prophet_setup_detail.html.j2"
+      - "templates/_us_candidate_pool_rows.html.j2"
+      - "templates/theme.js"
+      - "site/theme.js"
       - "templates/canada.html.j2"
       - "templates/china.html.j2"
       - "templates/dashboard.html.j2"
