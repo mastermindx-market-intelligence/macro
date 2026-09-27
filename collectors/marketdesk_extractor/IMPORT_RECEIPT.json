@@ -14,7 +14,7 @@
     "logs",
     "credentials and cookies"
   ],
-  "import_commit": "31981dc66e9a37419b5b7a6aecfde28808785d03",
+  "import_commit": "31981dc426f2e7fbb2b333f0fd73789f21deb8cd",
   "independent_review_required": true,
   "non_goals": [
     "No new collector, queue, scheduler, database, bucket, prefix, or publication authority.",
