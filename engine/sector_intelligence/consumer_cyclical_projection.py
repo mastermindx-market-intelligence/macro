@@ -120,6 +120,30 @@ _FORBIDDEN_COMPOUND_KEY_RE = re.compile(
     re.IGNORECASE,
 )
 
+#: Mirrors of the published contract's own constraints. The projection is
+#: the sole author of ``consumer_cyclical_intelligence_read_model.v1``
+#: documents, so anything it cannot express under these patterns is an
+#: absence to be declared -- never a value to be invented or passed
+#: through unchecked. Kept in step with the schema by
+#: ``test_module_constants_mirror_the_published_contract``.
+_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+_VALUE_TEXT_RE = re.compile(r"^-?\d+(?:\.\d+)?$")
+_SLUG_RE = re.compile(r"^[a-z][a-z0-9_]*$")
+_ALLOWED_PERIOD_KIND: frozenset[str] = frozenset(
+    {
+        "quarter",
+        "half_year",
+        "year",
+    }
+)
+_ALLOWED_DEGRADED_STATE: frozenset[str] = frozenset(
+    {
+        "available",
+        "partial",
+        "unavailable",
+    }
+)
+
 
 # ---------------------------------------------------------------------------
 # Errors
@@ -260,39 +284,27 @@ def _envelope_period_end(fact: Any) -> str:
 
 
 def _envelope_period_start(fact: Any) -> str:
-    """Period start; prefers explicit field, falls back to derived."""
+    """Period start as carried by the source fact -- never derived.
+
+    This function used to fall back to snapping ``period_end`` to a
+    calendar quarter/half/year boundary. That fallback was unreachable
+    from the suite and wrong wherever it *was* reachable: Consumer
+    Cyclical is the retail sector, whose fiscal periods are famously
+    offset from the calendar (the 4-5-4 retail calendar ends in late
+    January). A fiscal quarter ending ``2025-02-01`` derived a start of
+    ``2025-01-01`` -- a valid-looking date describing a 32-day
+    "quarter", roughly two months adrift of the truth.
+
+    A period boundary is a source-bound fact. When the source does not
+    carry one, the honest projection declares the absence through
+    ``degraded_dependencies`` rather than minting a plausible date, so
+    the empty string returned here is an admission failure handled by
+    :func:`_fact_admission_failure`, not a published value.
+    """
     if isinstance(fact, Mapping):
         raw = fact.get("period_start")
         if isinstance(raw, str) and raw:
             return raw
-    period_end = _envelope_period_end(fact)
-    kind = _envelope_period_kind(fact)
-    if not period_end or not kind:
-        return ""
-    parts = period_end.split("-")
-    if len(parts) != 3:
-        return ""
-    try:
-        year = int(parts[0])
-        month = int(parts[1])
-    except ValueError:
-        return ""
-    if kind == "quarter":
-        start_month = ((month - 1) // 3) * 3 + 1
-    elif kind == "half_year":
-        start_month = 1 if month <= 6 else 7
-    elif kind == "year":
-        start_month = 1
-    else:
-        return ""
-    return f"{year:04d}-{start_month:02d}-01"
-
-
-def _envelope_period_end_internal(fact: Any) -> str:
-    if isinstance(fact, Mapping):
-        period_end = fact.get("period_end")
-        if isinstance(period_end, str):
-            return period_end
     return ""
 
 
@@ -418,19 +430,62 @@ def _fact_ref(fact: Any, role: str) -> str:
     return ""
 
 
-def _fact_native_ref_or_default(fact: Mapping[str, Any], role: str) -> str:
-    """Build a fallback ``native_ref`` for facts that omit one.
+# ---------------------------------------------------------------------------
+# Fact admission
+# ---------------------------------------------------------------------------
 
-    The fact envelope per spec section 7 carries ``native_ref`` for
-    retained receipts; for synthetic / unit-test cases that omit it we
-    mint a deterministic label from the fact key + period role.
+
+def _fact_admission_failure(fact: Any) -> str | None:
+    """Reason this fact cannot be *published* under the contract, else ``None``.
+
+    ``_validate_case_shape`` checks only the case's top-level shape, so a
+    fact may reach the projection missing any envelope field. The emitted
+    ``facts[]`` entries are copied straight from the source, which means
+    an unpublishable fact used to travel all the way into the document
+    and break the very contract this module authors -- a
+    thousands-separated ``"365,223"``, the ordinary human spelling of a
+    financial figure, produced nine schema violations and an
+    ``unavailable`` document.
+
+    Refusal is deliberately not repair: ``"365,223"`` is not normalised
+    to ``365223`` here, because reading a separator is a source-semantics
+    decision this module has no authority to make. Note that
+    :func:`_coerce_decimal_text` already treats such a value as
+    unparseable for *computation*; this gate simply makes publication
+    agree with computation instead of publishing what it could not use.
     """
-    explicit = _envelope_native_ref(fact)
-    if explicit:
-        return explicit
-    key = fact.get("key")
-    key_text = str(key) if isinstance(key, str) and key else "unknown"
-    return "fact:" + key_text + ":" + role
+    if not isinstance(fact, Mapping):
+        return "fact_not_a_mapping"
+    if not _VALUE_TEXT_RE.match(str(fact.get("value_text") or "")):
+        return "fact_value_text_unparseable"
+    if not _DATE_RE.match(_envelope_period_end(fact)):
+        return "fact_period_end_missing_or_malformed"
+    if not _DATE_RE.match(_envelope_period_start(fact)):
+        return "fact_period_start_missing_or_malformed"
+    if _envelope_period_kind(fact) not in _ALLOWED_PERIOD_KIND:
+        return "fact_period_kind_outside_vocabulary"
+    return None
+
+
+def _partition_admissible_facts(
+    facts: Sequence[Any],
+) -> tuple[list[Any], list[tuple[str, str]]]:
+    """Split facts into publishable ones and ``(dependency, reason)`` refusals.
+
+    Refused facts are withheld from pairing as well as from emission, so
+    no result can bind an ``input_ref`` to a fact the document does not
+    carry.
+    """
+    admitted: list[Any] = []
+    refused: list[tuple[str, str]] = []
+    for fact in facts:
+        reason = _fact_admission_failure(fact)
+        if reason is None:
+            admitted.append(fact)
+            continue
+        metric = fact.get("metric") if isinstance(fact, Mapping) else None
+        refused.append((str(metric or "unknown_dependency"), reason))
+    return (admitted, refused)
 
 
 # ---------------------------------------------------------------------------
@@ -753,8 +808,20 @@ def _withheld_result(
         "comparison_basis": None,
         "state": "WITHHELD",
         "input_refs": refs,
-        "current_period_fact": None,
-        "prior_period_fact": None,
+        # A withheld result still has to satisfy ``$defs/result``, which
+        # requires ``event`` and all three period fields. These used to be
+        # dropped, so ``_finalize_result_envelope`` had nothing to read and
+        # emitted ``""`` for each -- three contract violations on an
+        # ordinary input (a flat or negative denominator withholds the
+        # share-of-revenue ratio, which is a normal retail quarter, not an
+        # edge case). Withholding a *value* never justified discarding the
+        # provenance of the facts the value would have come from.
+        "current_period_fact": _fact_to_envelope(new_fact)
+        if isinstance(new_fact, Mapping)
+        else None,
+        "prior_period_fact": _fact_to_envelope(prior_fact)
+        if isinstance(prior_fact, Mapping)
+        else None,
         "withheld_reason": reason,
     }
 
@@ -970,6 +1037,71 @@ def _check_explanation_for_forbidden(explanation: Mapping[str, Any]) -> None:
 # ---------------------------------------------------------------------------
 
 
+def _assert_document_matches_contract_shape(document: Mapping[str, Any]) -> None:
+    """Refuse to return a document that violates the contract we publish.
+
+    This is a positive control, not decoration. Every defect this module
+    has shipped so far shared one shape: a branch no test reached, whose
+    output nothing re-read. A 65-test suite stayed green while the
+    projection emitted empty dates, an out-of-vocabulary ``period_kind``
+    and non-numeric ``value_text`` -- because the suite only ever fed it
+    one pristine fixture, and never asked the document whether it
+    satisfied the schema sitting next to it in the repository.
+
+    The checks below mirror the pattern-bearing constraints of
+    ``consumer_cyclical_intelligence_read_model.v1``. They are cheap,
+    they run on every projection including the degraded ones, and they
+    fail loudly rather than publishing a plausible-looking lie.
+    """
+
+    def _bad(path: str, value: object, rule: str) -> str:
+        return f"document {path} is {value!r}, which is not {rule}"
+
+    problems: list[str] = []
+
+    for index, fact in enumerate(document.get("facts") or []):
+        at = f"facts[{index}]"
+        if not _DATE_RE.match(str(fact.get("period_end") or "")):
+            problems.append(_bad(f"{at}.period_end", fact.get("period_end"), "a date"))
+        if not _DATE_RE.match(str(fact.get("period_start") or "")):
+            problems.append(_bad(f"{at}.period_start", fact.get("period_start"), "a date"))
+        if fact.get("period_kind") not in _ALLOWED_PERIOD_KIND:
+            problems.append(_bad(f"{at}.period_kind", fact.get("period_kind"), "a period kind"))
+        if not _VALUE_TEXT_RE.match(str(fact.get("value_text") or "")):
+            problems.append(_bad(f"{at}.value_text", fact.get("value_text"), "a number"))
+        if not _SLUG_RE.match(str(fact.get("event") or "")):
+            problems.append(_bad(f"{at}.event", fact.get("event"), "a slug"))
+
+    for index, result in enumerate(document.get("results") or []):
+        at = f"results[{index}]"
+        if not _DATE_RE.match(str(result.get("period_end") or "")):
+            problems.append(_bad(f"{at}.period_end", result.get("period_end"), "a date"))
+        if not _DATE_RE.match(str(result.get("period_start") or "")):
+            problems.append(_bad(f"{at}.period_start", result.get("period_start"), "a date"))
+        if result.get("period_kind") not in _ALLOWED_PERIOD_KIND:
+            problems.append(_bad(f"{at}.period_kind", result.get("period_kind"), "a period kind"))
+        if not _SLUG_RE.match(str(result.get("event") or "")):
+            problems.append(_bad(f"{at}.event", result.get("event"), "a slug"))
+        value_text = result.get("value_text")
+        if value_text is not None and not _VALUE_TEXT_RE.match(str(value_text)):
+            problems.append(_bad(f"{at}.value_text", value_text, "a number or null"))
+
+    for index, entry in enumerate(document.get("degraded_dependencies") or []):
+        at = f"degraded_dependencies[{index}]"
+        if not _SLUG_RE.match(str(entry.get("dependency") or "")):
+            problems.append(_bad(f"{at}.dependency", entry.get("dependency"), "a slug"))
+        if entry.get("state") not in _ALLOWED_DEGRADED_STATE:
+            problems.append(_bad(f"{at}.state", entry.get("state"), "a degraded state"))
+
+    if problems:
+        raise CaseShapeError(
+            "projection would emit a document that violates "
+            + CONTRACT_ID
+            + ": "
+            + "; ".join(problems[:8])
+        )
+
+
 def _assert_no_forbidden_authority_keys(document: Mapping[str, Any]) -> None:
     """Walk the document and refuse any forbidden authority / scoring key.
 
@@ -1115,11 +1247,24 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
     _validate_case_shape(case)
 
     comparison_basis = str(case.get("comparison_basis"))
-    facts = case.get("facts") or []
+    facts, refused_facts = _partition_admissible_facts(case.get("facts") or [])
     generated_at_text = _generated_at_text(case)
     source_records = case.get("source_records") or []
 
     ready_results, degraded_facts = _compose_changes(facts, comparison_basis)
+
+    # A fact refused at admission is an absence the consumer must see, so it
+    # is declared here rather than silently dropped. Several facts share one
+    # metric (one per period role), so entries are deduplicated by dependency.
+    _declared_deps = {
+        d.get("dependency") for d in degraded_facts if isinstance(d, Mapping)
+    }
+    for _dep, _reason in refused_facts:
+        _entry = _degraded(_dep, _reason)
+        if _entry["dependency"] in _declared_deps:
+            continue
+        _declared_deps.add(_entry["dependency"])
+        degraded_facts.append(_entry)
     ready_keys = set(ready_results.keys())
 
     # ``results_by_key`` carries every emitted result, READY and
@@ -1307,8 +1452,14 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
     _omitted_keys = [
         r.get("key") for r in all_results if not r.get("inputs_present")
     ]
+    # ``_degraded`` builds a closed ``{dependency, reason, state}`` entry, so
+    # the earlier form of this set read a ``fact_key`` that never existed and
+    # was always ``{None}`` -- a deduplication guard that could not fire. It
+    # is behaviour-neutral today (the two sides use disjoint vocabularies:
+    # fact metrics here, result keys below) and is corrected so it stays that
+    # way by construction rather than by luck.
     _already_degraded = {
-        d.get("fact_key") for d in degraded_facts if isinstance(d, Mapping)
+        d.get("dependency") for d in degraded_facts if isinstance(d, Mapping)
     }
     for _key in _omitted_keys:
         if _key and _key not in _already_degraded:
@@ -1362,6 +1513,7 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
     }
 
     _assert_no_forbidden_authority_keys(document)
+    _assert_document_matches_contract_shape(document)
 
     return document
 
