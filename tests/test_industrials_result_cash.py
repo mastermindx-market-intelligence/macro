@@ -74,6 +74,55 @@ def test_build_receipt_records_transformations_with_decimal_text_factor() -> Non
     assert receipt["transformations"][0]["lineage"] == "ECB-2026Q2"
 
 
+def test_receipt_operand_refs_match_input_cell_order_and_content() -> None:
+    """Spec §1: receipt ``operand_refs`` is the ordered list of every
+    operand's owner_ref, in cell order.  Verify exact content + order.
+    """
+    cells = [
+        cell("100", metric="op", owner_ref="synthetic:cell:op", digest="a" * 64, revision="rev-A"),
+        cell("100", metric="cap", owner_ref="synthetic:cell:cap", digest="b" * 64, revision="rev-B"),
+        cell("100", metric="core", owner_ref="synthetic:cell:core", digest="c" * 64, revision="rev-C"),
+    ]
+    receipt = build_comparison_receipt("same_period", cells)
+    assert receipt["operand_refs"] == [
+        "synthetic:cell:op",
+        "synthetic:cell:cap",
+        "synthetic:cell:core",
+    ]
+
+
+def test_result_operand_refs_match_input_cell_order_and_content() -> None:
+    """Spec §1: result ``operand_refs`` carries owner_ref/revision/digest
+    of every operand in cell order.  Verify exact content + order on a
+    derivation result, not just the length.
+    """
+    cells = [
+        cell("-12", metric="operating_cash", owner_ref="synthetic:cell:op", digest="a" * 64, revision="rev-A"),
+        cell("3", metric="cash_capital_payments", owner_ref="synthetic:cell:cap", digest="b" * 64, revision="rev-B"),
+    ]
+    receipt = build_comparison_receipt("same_period", cells)
+    r = derive_result_cash(
+        "cash_after_capital_payments",
+        cells,
+        comparison_receipt=receipt,
+    )
+    assert r["operand_refs"] == [
+        {"owner_ref": "synthetic:cell:op", "revision": "rev-A", "digest": "a" * 64},
+        {"owner_ref": "synthetic:cell:cap", "revision": "rev-B", "digest": "b" * 64},
+    ]
+    # Reversed input order MUST yield a different result operand_refs order.
+    reversed_cells = list(reversed(cells))
+    r_rev = derive_result_cash(
+        "cash_after_capital_payments",
+        reversed_cells,
+        comparison_receipt=build_comparison_receipt("same_period", reversed_cells),
+    )
+    assert r_rev["operand_refs"] == [
+        {"owner_ref": "synthetic:cell:cap", "revision": "rev-B", "digest": "b" * 64},
+        {"owner_ref": "synthetic:cell:op", "revision": "rev-A", "digest": "a" * 64},
+    ]
+
+
 def test_build_receipt_unknowns_round_trip() -> None:
     """``unknowns`` is a field on the receipt — it must round-trip exactly."""
     cells = [cell("100", owner_ref="synthetic:cell:a"), cell("100", owner_ref="synthetic:cell:b")]
