@@ -3849,3 +3849,127 @@ def test_census_refuses_rather_than_auditing_an_unreadable_catalog(tmp_path,
     monkeypatch.setattr("engine.research_vault.r2_store.build_store",
                         lambda local_dir=None: store)
     assert census.main() == 1
+
+# ===========================================================================
+# Market Cognition: rights-safe Research Intelligence belief context
+# ===========================================================================
+
+def _market_cognition_belief_rio():
+    return {
+        "schema": "mastermind.research_intelligence.v1",
+        "document": {
+            "id": "belief-r1",
+            "source_type": "institutional_research",
+            "source_name": "Example Research",
+            "institution": "Example",
+            "desk": "Equity Strategy",
+            "title": "Rally review",
+            "published_at": "2026-09-24T20:00:00Z",
+            "content_sha256": "a" * 64,
+        },
+        "claims": [
+            {
+                "statement": "Clients remain cautious after the rally.",
+                "evidence": [{"quote_span": "Clients remain cautious after the rally."}],
+                "numbers": [],
+                "entities": ["clients"],
+                "horizon": "current",
+                "explicit": True,
+            },
+            {
+                "statement": "Consensus forecasts still assume slower growth.",
+                "evidence": [{"quote_span": "Consensus forecasts still assume slower growth."}],
+                "numbers": [],
+                "entities": ["consensus"],
+                "horizon": "next year",
+                "explicit": True,
+            },
+        ],
+        "analysis": {
+            "thesis": {
+                "summary": "The note describes caution despite stronger price action.",
+                "direction": "mixed",
+                "mechanism": [],
+                "conviction": "",
+                "support_claim_indices": [0, 1],
+            },
+            "assumptions": [],
+            "forecasts": [],
+            "catalysts": [],
+            "falsifiers": [],
+            "counterarguments": [],
+            "implications": [],
+            "belief_delta": {
+                "statement": "The desk is more constructive than in its prior note.",
+                "support_claim_indices": [0],
+            },
+            "consensus_relation": {
+                "statement": "The desk remains more cautious than the cited consensus view.",
+                "support_claim_indices": [1],
+            },
+            "uncertainties": [],
+        },
+        "authority": "descriptive_research_only",
+    }
+
+
+def test_market_cognition_belief_context_projects_only_grounded_relationships():
+    from engine.research_intelligence import belief_context_points
+
+    rows = belief_context_points(_market_cognition_belief_rio())
+    assert [row["relation"] for row in rows] == [
+        "belief_delta", "consensus_relation",
+    ]
+    assert [row["support_claim_indices"] for row in rows] == [[0], [1]]
+    assert all(row["schema"] == "mastermind.research_belief_context.v1" for row in rows)
+    assert all(row["source_document_id"] == "belief-r1" for row in rows)
+    assert all(row["source_content_sha256"] == "a" * 64 for row in rows)
+    assert all(row["published_at"] == "2026-09-24T20:00:00Z" for row in rows)
+    assert all(row["epistemic_layer"] == "model_synthesis" for row in rows)
+    assert all(row["text_visibility"] == "derived_summary" for row in rows)
+    assert all(row["authority"] == "descriptive_research_only" for row in rows)
+
+
+def test_market_cognition_belief_context_absence_does_not_become_neutral():
+    from engine.research_intelligence import belief_context_points
+
+    obj = _market_cognition_belief_rio()
+    obj["analysis"]["belief_delta"] = {"statement": "", "support_claim_indices": []}
+    obj["analysis"]["consensus_relation"] = {"statement": "", "support_claim_indices": []}
+    assert belief_context_points(obj) == []
+
+
+def test_market_cognition_belief_context_rejects_private_evidence_reproduction():
+    from engine.research_intelligence import belief_context_points
+
+    obj = _market_cognition_belief_rio()
+    obj["analysis"]["belief_delta"] = {
+        "statement": obj["claims"][0]["evidence"][0]["quote_span"],
+        "support_claim_indices": [0],
+    }
+    with pytest.raises(ValueError, match="belief_delta.*verbatim private evidence"):
+        belief_context_points(obj)
+
+
+def test_market_cognition_belief_context_rejects_ungrounded_source_claims():
+    from engine.research_intelligence import belief_context_points
+
+    obj = _market_cognition_belief_rio()
+    obj["claims"][0]["evidence"] = []
+    with pytest.raises(ValueError, match="grounded evidence"):
+        belief_context_points(obj)
+
+
+def test_market_cognition_belief_context_carries_no_market_authority():
+    from engine.research_intelligence import belief_context_points
+
+    encoded = json.dumps(belief_context_points(_market_cognition_belief_rio()), sort_keys=True)
+    for forbidden in (
+        '"score"', '"confidence"', '"direction"', '"rank"', '"gate"',
+        '"sizing"', '"positioning"', '"constraints"', '"market_response"',
+        '"trade"',
+    ):
+        assert forbidden not in encoded
+    assert "Clients remain cautious after the rally." not in encoded
+    assert "Consensus forecasts still assume slower growth." not in encoded
+
