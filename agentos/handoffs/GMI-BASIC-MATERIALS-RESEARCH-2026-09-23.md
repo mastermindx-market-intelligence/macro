@@ -5,14 +5,51 @@ operation_key: gmi-basic-materials-research-20260923-sol-001
 program: gmi-theme-graph
 repository: mastermindx-market-intelligence/macro
 mission_complete: false
-research_stage: R29_CONTEXT_REPAIR_CANDIDATE_VERIFIED_AWAITING_OWNER_ADOPTION
+research_stage: R30_FIF_COMPATIBILITY_PARTIAL_PATH_QUALIFIED
 finalization_classification: CHECKPOINTED_CONTINUATION
 implementation_authority: none
 ---
 
 # Basic Materials — minimum continuing frontier
 
-Updated through R29 on September 26, 2026 America/New_York; canonical review receipt is timestamped `2026-09-27T00:25:29Z`. This replaces the working frontier in place, not the research programme or implementation carriers. Full R28 evidence/frontier remains at this same path in commit `41776dacc083ff36ac6dc549720dbd05910f94d9`, blob `de4447ab8e18ba402374b486130e735724343306`; R27 is at `af738d5f06eafc7b6f9a59f334a1113c1f161673`. Rehydrate only material contradictions.
+Updated through R30 on September 26, 2026 America/New_York. R29's canonical Workbench review receipt remains timestamped `2026-09-27T00:25:29Z`. This replaces the working frontier in place, not the research programme or implementation carriers. Full R28 evidence/frontier remains at this same path in commit `41776dacc083ff36ac6dc549720dbd05910f94d9`, blob `de4447ab8e18ba402374b486130e735724343306`; R27 is at `af738d5f06eafc7b6f9a59f334a1113c1f161673`. Rehydrate only material contradictions.
+
+## R30 material result — split the financial path; do not force all Materials evidence through FIF
+
+R30 used the restored Extra High write surface to resolve a product-integration ambiguity while the Workbench source owner remains external. It makes **no #988, #7984, #7870, Paper, production, source-admission, rights or runtime change**.
+
+### Workbench dependency remains unadopted
+
+Mastermind #988 was re-read OPEN/DRAFT/unmerged at exact head `66f935a6255c0a3c2f594b97f2c471489f26d96b`; R29's combined timing/reference repair has still not been adopted into that branch. A local `source_continuity.py writer-gate` probe for operation `workbench-attended-target-context-20260925-sol-001` returned `AUTH_UNAVAILABLE` before any mutation because that local checkout lacked GitHub authentication. This is not a writer-release receipt and does not authorize taking #988 custody. The existing R29 same-PR review/evidence remains the owner input; do not duplicate it or treat Extra High as a custody grant.
+
+### Existing Financial Intelligence Fabric is a partial owner path, not a universal Materials packet
+
+At immutable Macro source `90f9fcbe31fff9fe96bd293190372d1c773fab9c`, the existing private financial packet route `POST /api/forensics/v1/financial/packet` calls the canonical `execute_financial_packet` service and returns canonical packet bytes after private auth/admission. **However, its production default `_financial_packet_provider()` returns `UnavailableFinancialPacketProvider`; that provider's contract explicitly remains unavailable until FIF-3 wires issuer packages.** The route therefore proves an owner/interface to reuse, not a live general issuer source.
+
+The core financial packet also has a closed filing-form scope: `10-K`, `10-K/A`, `10-Q`, `10-Q/A`, with the governed 50-metric US-GAAP/dei catalog and formulas. Current repository evidence shows three mandatory Materials proof companies using foreign-private-issuer current-report paths:
+
+- **Nutrien:** committed Special Situations evidence includes Form **6-K** filings; existing Earnings Wire records provide NTR Q1/Q2 transcript originals.
+- **NOVONIX:** committed evidence repeatedly identifies NOVONIX Ltd as a foreign private issuer on Form **6-K**, including the mass-production qualification sample and interim financial statements.
+- **Wheaton Precious Metals:** committed evidence identifies Wheaton as a Canadian foreign private issuer on Form **6-K**, including the Q2 precious-metal-purchase-agreement disclosure and Antamina streaming context.
+
+Those three journeys therefore cannot be declared covered merely because the v1 financial packet exists. Do not coerce their 6-K/ASX/contractual source records into a 10-K/10-Q US-GAAP packet or invent equivalent metrics. Their source-local/original-document path, rights, native identity and exact reported basis remain with incumbent evidence/Company Intelligence/GMI owners.
+
+**Weyerhaeuser is different:** current repository evidence references its 2025 10-K and 2026 Q1 10-Q, so its standard reported GAAP cells are structurally eligible for the existing packet once a real provider binds the issuer. But the governed v1 formula `free_cash_flow = net_cash_from_operating_activities - capital_expenditures` does **not** establish equivalence to the Materials requirement to compare Weyerhaeuser's actual total-investment cash with its separately adjusted distribution/FAD measure. Keep those measures separate unless exact source semantics prove the mapping. A generic FCF cell may be supporting context, never a substitute for the source-specific comparison.
+
+### Integration ruling
+
+Use **one existing financial owner, two evidence treatments**:
+
+1. **Standard filing facts where the existing FIF contract genuinely applies** (initial candidate: Weyerhaeuser 10-K/10-Q facts). Consume the canonical packet/provider when FIF-3 or its accepted successor supplies a real issuer dataset; do not fork formulas, query semantics, auth or packet storage in Materials.
+2. **Source-local / foreign-private / contractual / qualification evidence** for Nutrien, NOVONIX and Wheaton/Antamina, plus Weyerhaeuser's non-GAAP/management-defined distribution measure. Preserve original source identity, reported basis, rights and correction history through incumbent source/evidence owners and the R25 non-theme compatibility boundary. The financial packet can accompany these records where qualified; it cannot replace them.
+
+This narrows the earlier dependency interpretation: **R25's source-local assertion/ref work remains necessary, but not every Materials number must wait for a canonical-theme query path.** Eligible standard filing facts should consume FIF directly once its real provider is admitted; source-local assertions carry the original/nonstandard evidence that FIF does not own. The sector dossier projection joins the two without creating another evidence store.
+
+Mining's existing consumer seam is consistent precedent only: its `MiningOwnerBundle` already treats `financial_packets`, `event_workspaces`, assertions, identity results and native refs as separate owner inputs while refusing live admission when route/rights are unbound. Do not copy its two theme anchors into Basic Materials or treat its synthetic harness as production acceptance.
+
+**R30 proof boundary:** source inspection only. No live financial endpoint, provider, browser, original private source, rights check, economic calculation, GMI route, P5 test or production dataset was exercised. No inference is made that every filing for the named issuers uses the cited form; the claim is limited to the committed examples and the current v1 packet's closed supported-form contract.
+
+**Next action after owner returns:** (a) consume #988 repair adoption/re-review and #539 real Macro context binding; (b) separately ask/consume the existing FIF-3/provider owner for an issuer-capability answer for Weyerhaeuser and any accepted foreign-issuer extension, without creating a Materials provider; (c) keep Nutrien/NOVONIX/Wheaton originals on the source-local path and bind only metrics whose exact source/measurement semantics are accepted. No further generic "can FIF help?" survey is needed.
 
 ## Mission, current authority and ownership
 
