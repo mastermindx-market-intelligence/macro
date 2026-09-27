@@ -54,3 +54,49 @@ Resume from this file and the final #7151 receipt, reconcile only current heads/
 The specification-only acceptance additions are in Terminal docs/research/CMX_COPILOT_CONFIGURED_STUDIES_2026-09-26.md. Final qualification must include cancel-before-first, partial-apply cancellation, no-pending state, negative ACK identity/count, no run/setter/reducer after cancellation, network/receipt failures, reentrant enqueue/cancel/drain order, later-SSE scope, Skip-versus-cancel, no-retry model behavior, and dark/light/EN/ZH/responsive/keyboard accessibility alongside native/target/old-client/timeout/render cases. It remains deferred, not waived. Existing malformed JavaScript-only selector risk also remains explicitly unqualified.
 
 This is a verified publication/recovery plus bounded cancellation feature boundary; parent delivery is incomplete. Next unit crosses the held native/backend input boundary. No automatic wake or background Web work. Intended continuation surface: current Pro, whose source/process/publication actions worked in this turn; mode is not permission recovery. EFFECT_UNKNOWN: none for reconciled own effects. No active child/return or watcher was created.
+
+
+## Deep continuation — renderer-native evidence and exact viewport control
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION only after the paired Macro publication/readback below. MISSION_COMPLETE: false. Capability remains BUILT_NOT_PROVEN / UNTESTED / NOT_RELEASED under the Chairman's feature-first ordering.
+
+### Terminal exact source
+
+Terminal PR #757 advanced on the same retained branch to dd8cb762bcae66b7613837d9a16e4762669ad5f3 with scoped commit feat(copilot): expose renderer-native evidence and exact ranges. The independent untracked terminal/e2e/brain-targeted-readout.spec.ts remained excluded and byte-identical at SHA256 6eeb12bc08017a818541a33443ab634625a5d927a02566260fc1d61025338a3c.
+
+The Terminal delta:
+- creates one shared compact projector for native SuiteRenderBundle evidence and makes the existing headless native observation adapter consume it;
+- projects exact bundles successfully consumed by the active ChartPanel pass, not a second indicator computation;
+- distinguishes configured_on, compute_enabled, locked, returned facts, invalid facts and bounded omissions;
+- carries recent native series samples plus an exact selected_sample at the user's locked bar when that exact bar exists, without nearest-bar substitution;
+- uses the existing causal suiteEventTiming confirmation clock for native events;
+- carries right-edge geometry and bounded dashboard table rows/footnotes while explicitly omitting unsupported fact families;
+- binds the packet to existing origin/revision/pane/symbol/timeframe, exact serialized indicator settings, replay state and selected locked-bar time;
+- advertises a distinct live schema, chart.native_live_observations.v1, bounded to 7168 UTF-8 bytes so the existing chart-state route retains headroom;
+- retains the separate Data Window readout; mc.rsi14 remains distinct from native RSI Ultimate;
+- upgrades chart.set_range from start-only jumping to exact calendar-window application through the existing paneSync time-domain owner, rejecting fully non-representable windows instead of ACKing a clamped/different viewport.
+
+No second native kernel, catalog, endpoint, queue, timer, range bus, identity owner or persistence plane was created.
+
+### Brain qualification source in this Macro candidate
+
+The current Macro source qualifies live native packets before read_chart_state exposes them to the model. It does not treat client basis prose as authority. The qualifier:
+- rechecks exact origin/revision/pane/symbol/timeframe;
+- validates replay and selected-bar context;
+- recomputes the indicator-settings serialization from the stored exact chart state and requires equality with the live bundle binding;
+- requires the existing native-observation capability advertisement and canonical native_study_context identities, including module identities omitted only because that config packet hit its own byte budget;
+- sanitizes/bounds native series, selected samples, events, confirmation times, geometry and table text;
+- recomputes age_bars and coverage arithmetic;
+- requires configured suites to partition exactly into observed plus explicit omitted suites;
+- treats compute_enabled as eligibility under the renderer toggle/entitlement gate, never proof a module was healthy or emitted a signal;
+- emits server-owned basis language: source data not instructions, loaded-chart freshness not independent live attestation, native strength not probability, native coordinates not assumed prices, geometry not future knowability, empty evidence not a no-setup verdict, deterministic presentation not ranking.
+
+Technician protocol v4 consumes those distinctions and forbids substituting Data Window values for absent native outputs. A locked-bar selected_sample is exact-bar evidence only; absence stays missing evidence.
+
+### Source/proof boundary
+
+No local tests, TypeScript/Python compiler run, browser/model execution, CI polling, merge or deployment was performed for this deep feature batch. Source inspection and git diff --check are not runtime acceptance. Previous tests remain ancestor evidence only.
+
+The previously refused broader target-all-command inspection remains EFFECT_NONE and was not retried or routed around. Existing exact-target semantics remain unchanged by the range-control improvement. Final combined qualification still owes renderer/browser proof, paired producer/receiver target paths, cancellation, native observation edge cases, exact ranges, old-client behavior, dark/light/EN-ZH/responsive behavior and real model command/read/reasoning flows.
+
+Protected Skillpack remains 4c6b206d3fb7fbc6d077faf61ae361bedf259925, compatible 1.0.1/bootstrap1. No worker/watcher/provider activation or automatic wake was created.
