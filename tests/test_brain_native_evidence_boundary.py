@@ -73,6 +73,32 @@ def test_native_fixture_preserves_facts_without_modifying_source():
     assert state == before
 
 
+def test_native_recent_series_accepts_six_newest_first_samples():
+    state = native_state()
+    state["session"]["native_observations"]["context"]["bar_count"] = 10
+    state["session"]["native_observations"]["context"]["first_bar"] = "2026-09-15"
+    state["session"]["native_observations"]["suites"][0]["series"][0]["samples"] = [
+        {"index": i, "value": float(i)} for i in range(9, 3, -1)
+    ]
+    result = qualify(state)
+    samples = result["suites"][0]["series"][0]["samples"]
+    assert [row["index"] for row in samples] == [9, 8, 7, 6, 5, 4]
+    assert [row["age_bars"] for row in samples] == [0, 1, 2, 3, 4, 5]
+    assert result["basis"]["recent_series"] == "up_to_6_newest_source_samples_per_returned_series"
+
+
+@pytest.mark.parametrize("samples", [
+    [{"index": 9, "value": 9.0}, {"index": 9, "value": 8.0}],
+    [{"index": 8, "value": 8.0}, {"index": 9, "value": 9.0}],
+    [{"index": i, "value": float(i)} for i in range(9, 2, -1)],
+])
+def test_native_recent_series_rejects_duplicates_wrong_order_or_more_than_six(samples):
+    state = native_state()
+    state["session"]["native_observations"]["context"]["bar_count"] = 10
+    state["session"]["native_observations"]["suites"][0]["series"][0]["samples"] = samples
+    assert qualify(state)["reason"] == "native_observation_facts_invalid"
+
+
 @pytest.mark.parametrize("wire_number,value", [
     ("0.000001", 1e-6), ("1e-7", 1e-7), ("1e+21", 10**21), ("14.0", 14),
 ])
