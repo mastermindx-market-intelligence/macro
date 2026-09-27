@@ -356,7 +356,14 @@ def _summary_frame(dates: list[str], iv30_by_date: dict[str, float] | None = Non
         index=pd.to_datetime(dates))
 
 
-@pytest.mark.data_gate
+# stamp_options_state falls back to the disk loaders for the two W-C snapshot stores
+# (data/options_skew, data/options_ivspread) unless the caller injects a frame or a
+# loader. No stamp test in this file asserts on a skew or ivspread column, so each one
+# injects empty loaders: the stamp then reads nothing under data/, and the test can run
+# unmarked on the code gate.
+_NO_SNAPSHOT_STORES = {"_skew_loader": lambda: None, "_ivspread_loader": lambda: None}
+
+
 class TestStampFunnelDropsWeekendRows:
     """engine/options_stamp.stamp_options_state — feeds opt_* LEDGER columns."""
 
@@ -367,12 +374,14 @@ class TestStampFunnelDropsWeekendRows:
         dates = [FRI, SAT, SUN]
         frame = _summary_frame(dates, {FRI: 0.30, SAT: 0.99, SUN: 0.98})
         s = stamp_options_state(SUN, "FOO", read_summary=lambda t: frame,
-                                chain_dates=[], read_chain=lambda d: None)
+                                chain_dates=[], read_chain=lambda d: None,
+                                **_NO_SNAPSHOT_STORES)
         assert s["opt_iv30"] == pytest.approx(0.30), (
             f"the stamp read a non-session row (iv30={s['opt_iv30']}); Friday's 0.30 is "
             "the only legitimate value for a Sunday as_of"
         )
 
+    @pytest.mark.data_gate
     def test_the_positional_five_session_lookback_spans_five_sessions(self):
         """_vanna_hedge_5d_from_summary / _DOI_WINDOW take POSITIONAL lookbacks that are
         USED as trading-day changes. With weekend rows in, iloc[-6] is ~3 sessions back.
@@ -481,7 +490,8 @@ class TestStampFunnelDropsWeekendRows:
         monkeypatch.setattr(os_mod.nyse_calendar, "session_rows",
                             lambda df, col=None, **kw: df)
         s = os_mod.stamp_options_state(SUN, "FOO", read_summary=lambda t: frame,
-                                       chain_dates=[], read_chain=lambda d: None)
+                                       chain_dates=[], read_chain=lambda d: None,
+                                       **_NO_SNAPSHOT_STORES)
         assert s["opt_iv30"] == pytest.approx(0.98), (
             "premise failed: without the filter the stamp should read the Sunday row"
         )
@@ -564,6 +574,7 @@ def _stamp_over(window: list[date], series: list[float], ticker: str = "FOO") ->
         chain_dates=list(window),
         read_chain=lambda d: (_gap_chain_frame(ticker, call_oi=by_date[d], expiries=expiries)
                               if d in by_date else None),
+        **_NO_SNAPSHOT_STORES,
     )
 
 
@@ -600,7 +611,6 @@ class TestChainGapsAreNotSessionSpacing:
         assert _session_ordinals([_GAP_WINDOW[0], _GAP_WINDOW[0]]) is None, "duplicate date"
         assert _session_ordinals([]) is None
 
-    @pytest.mark.data_gate
     def test_the_doi_slope_is_fitted_against_sessions_not_positions(self):
         """THE DEFECT. Six snapshots spanning nine sessions: the positional fit charges the
         07-31 -> 08-06 move to a single step and reports accumulation; the session fit gives
@@ -615,7 +625,6 @@ class TestChainGapsAreNotSessionSpacing:
             "test would pass on the positional code it exists to fail"
         )
 
-    @pytest.mark.data_gate
     def test_a_dense_window_is_unchanged_by_the_ordinal_fit(self):
         """The other half of the contract: wherever the collector ran every session the
         ordinals ARE np.arange, so no already-stamped dense value may move."""
@@ -624,7 +633,6 @@ class TestChainGapsAreNotSessionSpacing:
             f"a dense window stamped {got}, not the unchanged {_POSITIONAL_SLOPE}"
         )
 
-    @pytest.mark.data_gate
     def test_the_slope_refuses_a_window_that_is_more_gap_than_observation(self):
         """`_DOI_MAX_SPAN`: at most as many sessions missing as the fit has steps. Re-
         weighting keeps the UNITS honest, not the word '5d' — past the cap there is no
@@ -647,7 +655,6 @@ class TestChainGapsAreNotSessionSpacing:
             "a window spanning 12 sessions for 6 rows was published as a 5-day slope"
         )
 
-    @pytest.mark.data_gate
     def test_the_voi_flag_refuses_an_oi_book_that_is_not_yesterdays(self):
         """`vol > YESTERDAY's OI` is the whole construction. Across the outage the baseline
         is four sessions of accrual old — a systematically lower bar — and a boolean has no
@@ -661,7 +668,6 @@ class TestChainGapsAreNotSessionSpacing:
             f"(got {dense}), or the test above proves nothing about the GAP"
         )
 
-    @pytest.mark.data_gate
     def test_front7_charm_share_refuses_a_stale_book_but_keeps_root_class(self):
         """`_ovc_from_chain`'s PIT certification rests on the study's shift(1) prior-session
         OI; across the gap it is a shift(4). root_class is taxonomy from the ticker alone and
