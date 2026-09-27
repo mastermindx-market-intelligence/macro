@@ -1084,3 +1084,13 @@ def test_agent_guidance_projects_the_same_prepared_answer_rule():
     assert "user assembly debt" in agents.lower()
     assert "prepared answer" in agents.lower()
     assert "target zero" in agents.lower()
+
+
+# R13: the constitution must describe the font stack that theme.css actually ships.
+def test_documented_font_identity_matches_the_shipped_ui_stack():
+    master = (ROOT / "research" / "MASTER_PRODUCT_DESIGN_SYSTEM_V1.md").read_text(encoding="utf-8")
+    theme = THEME.read_text(encoding="utf-8")
+    assert "--font-ui: -apple-system, BlinkMacSystemFont, Inter" in theme
+    assert "San Francisco leads on Apple" in master
+    assert "Inter remains the self-hosted cross-platform carrier" in master
+    assert "One family — Inter, self-hosted" not in master

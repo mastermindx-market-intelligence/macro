@@ -80,13 +80,15 @@ five meanings is decoration, and decoration is a defect on an institutional surf
 sanctioned ambient exception is the site aurora (§16) — brand atmosphere at `z-index:-1`,
 alpha-tuned per theme, never touching legibility.
 
-**Typography as identity.** One family — Inter, self-hosted, CN-deliverable — used across an
-extreme weight range: 900 for the wordmark and verdict words, 400–600 for everything else,
-tabular figures for every numeral column. The institutional signature is *weight contrast and
-numeric discipline*, not a second typeface. This is a deliberate choice, not a default: a serif
-display would cost mainland font delivery, fight CJK parity, and read as editorial dressing on
-what is an instrument panel. The verdict word at `--fs-display` (46px, 800, −.03em) IS the
-display face of this product.
+**Typography as identity.** One governed UI stack, not one forced webfont. **San Francisco leads on Apple**
+through the system keywords in `--font-ui`; **Inter remains the self-hosted cross-platform carrier**
+elsewhere, ahead of Segoe UI / Roboto, with the shipped CJK fallbacks preserving mainland delivery.
+Use the same extreme weight range: 900 for the wordmark and verdict words, 400–600 for everything
+else, with tabular figures for every numeral column. The institutional signature is *weight contrast
+and numeric discipline*, not a second display typeface. This is deliberate, not a browser default:
+the shared token fixes the ordered stack and a serif display would fight CJK parity and read as
+editorial dressing on what is an instrument panel. The verdict word at `--fs-display` (46px, 800,
+−.03em) IS the display face of this product.
 
 ---
 
