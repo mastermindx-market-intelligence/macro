@@ -3,10 +3,10 @@
  "is_context_only": true,
  "display_only": true,
  "authority_tier": "display",
- "as_of": "2026-09-26",
- "generated_utc": "2026-09-26T19:56:16.037388+00:00",
+ "as_of": "2026-09-27",
+ "generated_utc": "2026-09-27T05:00:15.673546+00:00",
  "spec": "research/PERSONALITY_SIGNAL_SUITE_MASTERPLAN_BY_FABLE.md §W3",
- "gate_open": false,
+ "gate_open": true,
  "uniform_rung": "2W",
  "coverage_census": {
   "codex_names": 1631,
@@ -28,8 +28,8 @@
   "agree_by_construction": 8
  },
  "ledger": {
-  "fire_rows": 4413,
-  "appended_today": 0,
+  "fire_rows": 4548,
+  "appended_today": 135,
   "graded": 0,
   "grades_advanced_today": 0
  },

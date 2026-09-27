@@ -2,7 +2,7 @@
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
   "asof": "2026-09-26",
-  "n_events_logged": 905,
+  "n_events_logged": 908,
   "n_events_graded": 578,
   "classes": [
     {
@@ -138,7 +138,7 @@
     {
       "event_type": "litigation",
       "direction": "bearish",
-      "n": 211,
+      "n": 212,
       "n_graded": 174,
       "hit_5d": 0.5057471264367817,
       "hit_21d": 0.4236111111111111,
@@ -151,7 +151,7 @@
     {
       "event_type": "macro_release",
       "direction": "informational",
-      "n": 95,
+      "n": 96,
       "n_graded": 24,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -242,7 +242,7 @@
     {
       "event_type": "product_launch",
       "direction": "bullish",
-      "n": 16,
+      "n": 17,
       "n_graded": 5,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 1380,
+    "n_sampled": 1389,
     "n_graded": 0,
     "classes": []
   }

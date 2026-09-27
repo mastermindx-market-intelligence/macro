@@ -774,11 +774,11 @@
       "available": true,
       "method": "close_proxy",
       "state": "premium",
-      "premium_pct": 0.16216220051119556,
+      "premium_pct": 0.16216220051121777,
       "price_currency": "CNY",
       "source_asof": "2026-09-24T07:30:00+00:00",
       "source_fresh": true,
-      "avg_5_pct": 0.16329117804653404,
+      "avg_5_pct": 0.16329117804653848,
       "range_30_pct": [
         -0.2582566744038006,
         0.3295594998857787

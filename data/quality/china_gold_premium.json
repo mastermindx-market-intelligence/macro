@@ -1,13 +1,13 @@
 {
   "schema": "commodity.china_gold_premium_quality.v1",
-  "checked_at": "2026-09-26T20:28:38+00:00",
+  "checked_at": "2026-09-27T07:45:10+00:00",
   "status": "available_fresh",
   "render_consistent": true,
   "machine_projection_consistent": true,
   "available": true,
   "headline_method": "close_proxy",
   "headline_state": "premium",
-  "premium_pct": 0.16216220051119556,
+  "premium_pct": 0.16216220051121777,
   "expected_display_source": "proxy",
   "rendered_display_source": "proxy",
   "expected_currency": "CNY",
@@ -55,7 +55,7 @@
       "path": "data/gold_china_basis/sge_au9999.parquet",
       "exists": true,
       "rows": 250,
-      "sha256": "05182da49b64c78224b54eeca1cd3474864ae0b654a8413d0c23e3e1fe8e77e4",
+      "sha256": "4c9ddf1424cc536991ad1ce8fde3591ad4ccc6073619bd7422d46a7733d27a58",
       "asof": "2026-09-24T07:30:00+00:00",
       "selected_asof_present": true
     },
@@ -69,7 +69,7 @@
       "path": "data/gold_china_basis/xaucny_spot.parquet",
       "exists": true,
       "rows": 262,
-      "sha256": "757324982e7ac6c2f3c8269918f623a781f669d4e4f4fc02f0209b566b57cb0f",
+      "sha256": "2bafce6db59b973a726bdaaa393e88d7a718091dc059c3b8db59c8a40cb5cce0",
       "asof": "2026-09-25T07:30:00+00:00",
       "selected_asof_present": true
     }
