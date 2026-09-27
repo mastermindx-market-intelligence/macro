@@ -1,0 +1,409 @@
+{
+  "schema": "mgd_execution_status.v1",
+  "operation": "gmi-mining-fable-ceo-m1-integration-20260924-chairman-001",
+  "purpose": "Execution status per MGD obligation for the Mining M1 integration. The canonical obligation TRACE is owned by carrier #7795 and is not reachable from main; this file is the program-owned execution record that cites it.",
+  "authority": {
+    "status_is_never_inferred_from_a_test_name": true,
+    "rationale": "Planned test names resolve 0/40 on main and 2/40 at #7950, so a name audit reports 38 false gaps. Rows are keyed by obligation id."
+  },
+  "carrier_trace": {
+    "pull_request": 7795,
+    "ref": "origin/sol/mining-principal-research-20260923",
+    "path": "research/mining/MINING_IMPLEMENTATION_TRACE_2026-09-24.json",
+    "commit": "eb6f05c097c1fd4cd1963945605d7ab7664498e2",
+    "blob": "37ccaa92c301667b176be80c3fa6fbdcece72665",
+    "sha256": "04b9635fe62ebb5cf7c2a6a713f01a4cfcbdb44235c4bd0cc0f1773070ada4ca",
+    "reachable_from_main": false,
+    "seat_may_modify": false
+  },
+  "measured_against": {
+    "origin_main": "aff8b76cba6afa6ed03298a1814b059e317070a0",
+    "delivered_pull_requests": {
+      "T01'": 7932,
+      "T04a": 7950
+    },
+    "green_gate": "python3 -m pytest tests/test_mining_composition.py -q",
+    "green_gate_result": "53 passed",
+    "suite_test_functions": 43,
+    "suite_collected_cases": 53,
+    "count_note": "43 test functions collect as 53 cases because one test is parametrized into 11. NEITHER number measures obligation coverage -- the obligation rows below are the measure."
+  },
+  "status_vocabulary": {
+    "COVERED_SUITE_GREEN": "Obligation's owning task is on main and the suite covering it is green.",
+    "UNPINNED": "Owning task is on main but NO delivered test pins this obligation. Not a code defect by itself.",
+    "SATISFIED_BY_ABSENCE_OF_CAPABILITY": "No delivered field or construct can express a violation. Becomes falsifiable when that field is minted, and owes a pin in the same PR.",
+    "PARTIAL_BY_CONSTRUCTION": "Satisfied for everything the delivered task mints; the rest is not yet expressible.",
+    "DEFERRED_LAWFUL": "Binds at a phase not yet reached. No test owed on main.",
+    "NOT_RUN": "Owning task has not landed on main."
+  },
+  "counts": {
+    "PARTIAL_BY_CONSTRUCTION": 1,
+    "NOT_RUN": 30,
+    "DEFERRED_LAWFUL": 1,
+    "UNPINNED": 1,
+    "COVERED_SUITE_GREEN": 5,
+    "SATISFIED_BY_ABSENCE_OF_CAPABILITY": 2
+  },
+  "obligations": [
+    {
+      "obligation_id": "MGD-01",
+      "family": "Reuse",
+      "owning_task": "T01",
+      "planned_test": "tests/test_mining_shared_contract.py::test_single_shared_kernel",
+      "delivered_test": null,
+      "status": "PARTIAL_BY_CONSTRUCTION",
+      "note": "Satisfied for every construct T01' actually mints; the remainder is not expressible until a later task mints the construct it would constrain."
+    },
+    {
+      "obligation_id": "MGD-02",
+      "family": "Reuse",
+      "owning_task": "T08",
+      "planned_test": "tests/test_mining_acceptance.py::test_exact_dependency_receipts",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T08 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-03",
+      "family": "Reuse",
+      "owning_task": "T06",
+      "planned_test": "tests/test_mining_ui.py::test_single_shared_mount",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T06 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-04",
+      "family": "Reuse",
+      "owning_task": "T01",
+      "planned_test": "tests/test_mining_shared_contract.py::test_legacy_sector_parity",
+      "delivered_test": null,
+      "status": "DEFERRED_LAWFUL",
+      "note": "Deferred by design, not skipped: the obligation binds at a phase this wave does not reach. No test is owed on main yet."
+    },
+    {
+      "obligation_id": "MGD-05",
+      "family": "Workflow",
+      "owning_task": "T06",
+      "planned_test": "tests/test_mining_ui.py::test_copper_without_primary_basket",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T06 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-06",
+      "family": "Workflow",
+      "owning_task": "T08",
+      "planned_test": "tests/test_mining_acceptance.py::test_w_c_real_source_journey",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T08 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-07",
+      "family": "Workflow",
+      "owning_task": "T08",
+      "planned_test": "tests/test_mining_acceptance.py::test_w_r_real_source_journey",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T08 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-08",
+      "family": "Workflow",
+      "owning_task": "T04",
+      "planned_test": "tests/test_mining_composition.py::test_two_positive_economic_paths",
+      "delivered_test": null,
+      "status": "UNPINNED",
+      "note": "Clause 1 is pinned. Clause 2 (a wholly empty economic path fails) is NOT pinned by any delivered test. R-MIN-34 rules that `degraded` + `native_blocks == []` + the named absence SATISFIES it, so the owed work is the two-armed pin in T04b, not a behaviour change. NOT a code defect."
+    },
+    {
+      "obligation_id": "MGD-09",
+      "family": "Identity",
+      "owning_task": "T04",
+      "planned_test": "tests/test_mining_composition.py::test_security_without_issuer_refuses_financial_join",
+      "delivered_test": "tests/test_mining_composition.py",
+      "status": "COVERED_SUITE_GREEN",
+      "note": "Covered by the delivered composition suite, verified green on origin/main (53 passed)."
+    },
+    {
+      "obligation_id": "MGD-10",
+      "family": "Identity",
+      "owning_task": "T04",
+      "planned_test": "tests/test_mining_composition.py::test_current_identity_not_historical_ownership",
+      "delivered_test": null,
+      "status": "SATISFIED_BY_ABSENCE_OF_CAPABILITY",
+      "note": "No `period` on native blocks and no validity window on identity at this head, so no historical-ownership claim is expressible. T04b carries `period` onto native blocks (T04B_FREEZE_PACKET 4.2), which makes this falsifiable and REQUIRES the two-armed pin in that same PR. NOT a code defect today."
+    },
+    {
+      "obligation_id": "MGD-11",
+      "family": "Identity",
+      "owning_task": "T04",
+      "planned_test": "tests/test_mining_composition.py::test_source_only_business_stays_useful",
+      "delivered_test": "tests/test_mining_composition.py",
+      "status": "COVERED_SUITE_GREEN",
+      "note": "Covered by the delivered composition suite, verified green on origin/main (53 passed)."
+    },
+    {
+      "obligation_id": "MGD-12",
+      "family": "Identity",
+      "owning_task": "T04",
+      "planned_test": "tests/test_mining_composition.py::test_shared_asset_not_duplicate_supply",
+      "delivered_test": "tests/test_mining_composition.py",
+      "status": "COVERED_SUITE_GREEN",
+      "note": "Covered by the delivered composition suite, verified green on origin/main (53 passed)."
+    },
+    {
+      "obligation_id": "MGD-13",
+      "family": "Measures",
+      "owning_task": "T02",
+      "planned_test": "tests/test_mining_witness_profiles.py::test_attribution_not_applied_twice",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T02 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-14",
+      "family": "Measures",
+      "owning_task": "T02",
+      "planned_test": "tests/test_mining_witness_profiles.py::test_production_is_not_delivery",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T02 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-15",
+      "family": "Measures",
+      "owning_task": "T03",
+      "planned_test": "tests/test_mining_economic_inputs.py::test_signed_loss_is_not_positive_profit",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T03 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-16",
+      "family": "Measures",
+      "owning_task": "T03",
+      "planned_test": "tests/test_mining_economic_inputs.py::test_two_null_bases_are_not_comparable",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T03 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-17",
+      "family": "Measures",
+      "owning_task": "T03",
+      "planned_test": "tests/test_mining_economic_inputs.py::test_incompatible_measurement_refuses_arithmetic",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T03 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-18",
+      "family": "Rights",
+      "owning_task": "T04",
+      "planned_test": "tests/test_mining_composition.py::test_missing_threshold_keeps_contract_explanation",
+      "delivered_test": null,
+      "status": "SATISFIED_BY_ABSENCE_OF_CAPABILITY",
+      "note": "Clause 1 has no field to mis-encode: no ownership field exists on any delivered row or identity. Becomes falsifiable -- and owes a pin in the same PR -- the moment that field is minted."
+    },
+    {
+      "obligation_id": "MGD-19",
+      "family": "Economics",
+      "owning_task": "T03",
+      "planned_test": "tests/test_mining_economic_inputs.py::test_ppa_and_internal_sales_not_external_revenue",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T03 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-20",
+      "family": "Economics",
+      "owning_task": "T03",
+      "planned_test": "tests/test_mining_economic_inputs.py::test_unowned_derivation_not_emitted",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T03 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-21",
+      "family": "Economics",
+      "owning_task": "T03",
+      "planned_test": "tests/test_mining_economic_inputs.py::test_same_horizon_is_not_next_outlook",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T03 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-22",
+      "family": "Economics",
+      "owning_task": "T03",
+      "planned_test": "tests/test_mining_economic_inputs.py::test_management_not_consensus",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T03 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-23",
+      "family": "Economics",
+      "owning_task": "T03",
+      "planned_test": "tests/test_mining_economic_inputs.py::test_cash_claims_not_operating_profit",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T03 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-24",
+      "family": "Change",
+      "owning_task": "T07",
+      "planned_test": "tests/test_mining_updates.py::test_retrospective_not_system_replay",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T07 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-25",
+      "family": "Change",
+      "owning_task": "T02",
+      "planned_test": "tests/test_mining_witness_profiles.py::test_date_only_not_invented_instant",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T02 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-26",
+      "family": "Change",
+      "owning_task": "T07",
+      "planned_test": "tests/test_mining_updates.py::test_target_not_aged_into_fact",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T07 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-27",
+      "family": "Change",
+      "owning_task": "T07",
+      "planned_test": "tests/test_mining_updates.py::test_new_fact_does_not_reuse_old_interpretation",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T07 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-28",
+      "family": "Change",
+      "owning_task": "T07",
+      "planned_test": "tests/test_mining_updates.py::test_pagination_revision_tuple_coherent",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T07 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-29",
+      "family": "Safety",
+      "owning_task": "T05",
+      "planned_test": "tests/test_mining_private_route.py::test_anonymous_research_never_reads_private",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T05 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-30",
+      "family": "Safety",
+      "owning_task": "T05",
+      "planned_test": "tests/test_mining_private_route.py::test_public_root_refuses_real_admission",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T05 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-31",
+      "family": "Safety",
+      "owning_task": "T05",
+      "planned_test": "tests/test_mining_private_route.py::test_warm_rights_revocation_vetoes_emission",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T05 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-32",
+      "family": "Safety",
+      "owning_task": "T06",
+      "planned_test": "tests/test_mining_ui.py::test_logout_discards_delayed_response",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T06 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-33",
+      "family": "Safety",
+      "owning_task": "T05",
+      "planned_test": "tests/test_mining_private_route.py::test_no_private_payload_or_existence_leak",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T05 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-34",
+      "family": "Safety",
+      "owning_task": "T04",
+      "planned_test": "tests/test_mining_composition.py::test_authority_literal_false",
+      "delivered_test": "tests/test_mining_composition.py",
+      "status": "COVERED_SUITE_GREEN",
+      "note": "Covered by the delivered composition suite, verified green on origin/main (53 passed)."
+    },
+    {
+      "obligation_id": "MGD-35",
+      "family": "Regression",
+      "owning_task": "T07",
+      "planned_test": "tests/test_mining_updates.py::test_incumbent_market_outputs_unchanged",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T07 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-36",
+      "family": "Regression",
+      "owning_task": "T06",
+      "planned_test": "tests/test_mining_ui.py::test_all_viewports_languages_themes",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T06 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-37",
+      "family": "Proof",
+      "owning_task": "T08",
+      "planned_test": "tests/test_mining_acceptance.py::test_real_source_update_reaches_entitled_browser",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T08 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-38",
+      "family": "Proof",
+      "owning_task": "T08",
+      "planned_test": "tests/test_mining_acceptance.py::test_honest_degradation_no_public_fallback",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T08 has not landed on main."
+    },
+    {
+      "obligation_id": "MGD-39",
+      "family": "Coverage",
+      "owning_task": "T04",
+      "planned_test": "tests/test_mining_composition.py::test_coverage_not_global_census",
+      "delivered_test": "tests/test_mining_composition.py",
+      "status": "COVERED_SUITE_GREEN",
+      "note": "Covered by the delivered composition suite, verified green on origin/main (53 passed)."
+    },
+    {
+      "obligation_id": "MGD-40",
+      "family": "Delivery",
+      "owning_task": "T08",
+      "planned_test": "tests/test_mining_acceptance.py::test_delivery_states_remain_distinct",
+      "delivered_test": null,
+      "status": "NOT_RUN",
+      "note": "Owning task T08 has not landed on main."
+    }
+  ]
+}
