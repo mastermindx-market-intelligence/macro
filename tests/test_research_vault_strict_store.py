@@ -2813,3 +2813,136 @@ def test_research_intelligence_cli_rejects_newline_rewritten_receipt_before_io(
     assert result == 2
     assert json.loads(capsys.readouterr().err)["code"] == "source_body_mismatch"
     assert not store_dir.exists()
+
+
+# R26: synthetic research conclusions must retain their exact claim identities.
+def _rio_claim_index_case():
+    import hashlib
+    from engine.research_intelligence.schema import SCHEMA
+
+    sentences = [
+        "Factory utilization increased sharply.",
+        "Inventory accumulated across distributors.",
+    ]
+    body = " ".join(sentences)
+    obj = {
+        "schema": SCHEMA,
+        "document": {
+            "id": "r26-synthetic-only",
+            "source_type": "institutional_research",
+            "source_name": "Fictional Test Desk",
+            "institution": "Fictional Test Desk",
+            "desk": "",
+            "title": "Synthetic claim-index control",
+            "published_at": "2026-09-19",
+            "content_sha256": hashlib.sha256(body.encode()).hexdigest(),
+        },
+        "claims": [
+            {"statement": sentence, "evidence": [{"quote_span": sentence}],
+             "numbers": [], "entities": [], "horizon": "", "explicit": True}
+            for sentence in sentences
+        ],
+        "analysis": {
+            "thesis": {"summary": "Operating activity strengthened.",
+                       "direction": "neutral", "mechanism": [], "conviction": "",
+                       "support_claim_indices": [0]},
+            "assumptions": [], "forecasts": [], "catalysts": [],
+            "falsifiers": [], "counterarguments": [], "implications": [],
+            "belief_delta": {}, "consensus_relation": {}, "uncertainties": [],
+        },
+        "authority": "descriptive_research_only",
+    }
+    return obj, body
+
+
+@pytest.mark.parametrize("bad", [None, {}, {"statement": "  "}, "not a claim", []])
+@pytest.mark.parametrize("require_grounded", [False, True])
+def test_rio_claim_indices_reject_structural_gaps(bad, require_grounded):
+    from engine.research_intelligence.schema import validate_rio
+
+    obj, _body = _rio_claim_index_case()
+    obj["claims"].insert(0, bad)
+    obj["analysis"]["thesis"]["support_claim_indices"] = [1]
+    with pytest.raises(ValueError, match=r"claims\[0\]"):
+        validate_rio(obj, require_grounded_claims=require_grounded)
+
+
+def test_rio_claim_indices_reject_blank_middle():
+    from engine.research_intelligence.schema import validate_rio
+
+    obj, _body = _rio_claim_index_case()
+    obj["claims"].insert(1, {"statement": ""})
+    obj["analysis"]["thesis"]["support_claim_indices"] = [1]
+    with pytest.raises(ValueError, match=r"claims\[1\]"):
+        validate_rio(obj)
+
+
+def test_rio_claim_indices_reject_trailing_malformed():
+    from engine.research_intelligence.schema import validate_rio
+
+    obj, _body = _rio_claim_index_case()
+    obj["claims"].append(None)
+    with pytest.raises(ValueError, match=r"claims\[2\]"):
+        validate_rio(obj)
+
+
+def test_rio_claim_indices_parser_does_not_retarget_conclusion():
+    from engine.research_intelligence.extractor import parse_model_output
+
+    obj, body = _rio_claim_index_case()
+    obj["claims"].insert(0, None)
+    obj["analysis"]["thesis"]["support_claim_indices"] = [1]
+    with pytest.raises(ValueError, match=r"claims\[0\]"):
+        parse_model_output(json.dumps(obj), expected_document_id=obj["document"]["id"],
+                           expected_document=obj["document"], source_body=body)
+
+
+def test_rio_claim_indices_missing_claim_cannot_gain_real_evidence():
+    from engine.research_intelligence.extractor import parse_model_output
+
+    obj, body = _rio_claim_index_case()
+    obj["claims"].insert(0, {})
+    obj["analysis"]["thesis"]["support_claim_indices"] = [0]
+    with pytest.raises(ValueError, match=r"claims\[0\]"):
+        parse_model_output(json.dumps(obj), expected_document_id=obj["document"]["id"],
+                           expected_document=obj["document"], source_body=body)
+
+
+def test_rio_claim_indices_analyzer_returns_typed_invalid_without_rio():
+    from engine.research_intelligence.extractor import analyze_document
+
+    obj, body = _rio_claim_index_case()
+    obj["claims"].insert(0, None)
+    obj["analysis"]["thesis"]["support_claim_indices"] = [1]
+    calls = []
+
+    def fake_call(*_args, **_kwargs):
+        calls.append(1)
+        return json.dumps(obj), "synthetic-test-provider", "synthetic-test-model"
+
+    result = analyze_document(obj["document"], body, model_id="synthetic-test-model", call=fake_call)
+    assert len(calls) == 1
+    assert result["state"] == "invalid_model_output"
+    assert result["rio"] is None
+    assert result["error_class"] == "ValueError"
+    assert "error" not in result
+
+
+def test_rio_claim_indices_valid_analysis_keeps_links_and_input_unchanged():
+    import copy
+    from engine.research_intelligence.extractor import parse_model_output
+    from engine.research_intelligence.schema import validate_rio
+
+    obj, body = _rio_claim_index_case()
+    obj["analysis"]["counterarguments"] = [
+        {"statement": "Inventory growth warrants caution.", "support_claim_indices": [1]}
+    ]
+    original = copy.deepcopy(obj)
+    result = parse_model_output(json.dumps(obj), expected_document_id=obj["document"]["id"],
+                                expected_document=obj["document"], source_body=body)
+    assert obj == original
+    assert result["analysis"]["thesis"]["support_claim_indices"] == [0]
+    assert result["analysis"]["counterarguments"][0]["support_claim_indices"] == [1]
+    assert result["claims"][0]["statement"] == original["claims"][0]["statement"]
+    assert result["claims"][1]["statement"] == original["claims"][1]["statement"]
+    assert validate_rio(result) == result
