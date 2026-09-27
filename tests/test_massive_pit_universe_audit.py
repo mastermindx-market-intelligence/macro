@@ -117,14 +117,14 @@ def test_reused_ticker_with_historical_cik_different_from_current_master_conflic
         master_records=current_master,
     )
 
-    assert receipt["counts"][audit.STATUS_IDENTITY_CONFLICT] == 1
-    example = receipt["examples"][audit.STATUS_IDENTITY_CONFLICT][0]
+    assert receipt["counts"][audit.STATUS_CURRENT_CIK_DIVERGENCE] == 1
+    example = receipt["examples"][audit.STATUS_CURRENT_CIK_DIVERGENCE][0]
     assert example["source_cik"] == "0001082114"
     assert example["canonical_current_cik"] == "0000060086"
     assert receipt["canonical_identity_ready"] is False
 
 
-def test_a_dated_alias_cannot_override_a_stable_id_conflict():
+def test_dated_alias_remains_authority_when_current_cik_diverges():
     source = [_source("L", cik="0001082114")]
     master = [_master("L", cik="0000060086")]
     aliases = [_alias("L", security_id=master[0]["security_id"])]
@@ -136,8 +136,10 @@ def test_a_dated_alias_cannot_override_a_stable_id_conflict():
         master_records=master,
     )
 
-    assert receipt["counts"][audit.STATUS_IDENTITY_CONFLICT] == 1
-    assert receipt["counts"][audit.STATUS_RESOLVED] == 0
+    assert receipt["counts"][audit.STATUS_RESOLVED] == 1
+    assert receipt["counts"][audit.STATUS_CURRENT_CIK_DIVERGENCE] == 0
+    assert receipt["resolved_current_cik_divergence_count"] == 1
+    assert receipt["canonical_identity_ready"] is True
 
 
 def test_missing_massive_namespace_remains_an_explicit_owner_gap():
@@ -353,7 +355,7 @@ def test_receipt_never_calls_current_cik_match_canonical_identity():
 
     assert receipt["source"]["complete"] is True
     assert receipt["identity"]["canonical_identity_ready"] is False
-    assert receipt["authority"]["source_population_canonical"] is True
+    assert receipt["authority"]["source_population_complete"] is True
     assert receipt["authority"]["canonical_identity_ready"] is False
     assert all(
         receipt["authority"][key] is False
