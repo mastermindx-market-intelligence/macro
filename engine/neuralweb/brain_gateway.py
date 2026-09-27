@@ -3537,9 +3537,64 @@ def _native_live_table_text(value: object, *, max_len: int) -> str | None:
 
 
 def _native_live_num(value: object) -> float | int | None:
-    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
         return None
-    return value
+    try:
+        return value if math.isfinite(value) else None
+    except OverflowError:
+        # JSON integers can exceed the renderer's finite Number domain.
+        return None
+
+
+def _native_live_settings_equal(wire_key: object, indicators: object) -> bool:
+    """Compare existing settings by JSON value, not JS/Python printer spelling.
+
+    This is an equality check, not a new settings identity or normalization store.
+    Object property order is immaterial; indicator order, types and every value
+    remain binding. Duplicate properties and non-JSON numeric constants refuse.
+    """
+    if not isinstance(wire_key, str) or not wire_key or not isinstance(indicators, list):
+        return False
+
+    def unique_object(pairs: list[tuple[str, object]]) -> dict:
+        out = {}
+        for key, value in pairs:
+            if key in out:
+                raise ValueError("duplicate_settings_property")
+            out[key] = value
+        return out
+
+    def reject_constant(value: str) -> None:
+        raise ValueError("non_json_settings_number")
+
+    def equal(left: object, right: object, depth: int = 0) -> bool:
+        if depth > 16:
+            return False
+        if isinstance(left, bool) or isinstance(right, bool):
+            return isinstance(left, bool) and isinstance(right, bool) and left is right
+        if left is None or right is None:
+            return left is None and right is None
+        if isinstance(left, (int, float)) or isinstance(right, (int, float)):
+            return (_native_live_num(left) is not None
+                    and _native_live_num(right) is not None and left == right)
+        if isinstance(left, str) or isinstance(right, str):
+            return isinstance(left, str) and isinstance(right, str) and left == right
+        if isinstance(left, list) and isinstance(right, list):
+            return len(left) == len(right) and all(
+                equal(a, b, depth + 1) for a, b in zip(left, right))
+        if isinstance(left, dict) and isinstance(right, dict):
+            return left.keys() == right.keys() and all(
+                equal(left[key], right[key], depth + 1) for key in left)
+        return False
+
+    try:
+        if len(wire_key.encode("utf-8")) > 8192:
+            return False
+        parsed = json.loads(wire_key, object_pairs_hook=unique_object,
+                            parse_constant=reject_constant)
+        return isinstance(parsed, list) and equal(parsed, indicators)
+    except (ValueError, TypeError, OverflowError, RecursionError):
+        return False
 
 
 def _native_live_index(value: object, bar_count: int) -> int | None:
@@ -3576,7 +3631,7 @@ def _sanitize_native_live_series(rows: object, bar_count: int, selected_index: i
         ident = _native_live_text(row.get("id"), max_len=96)
         kind = row.get("kind")
         samples = row.get("samples")
-        if ident is None or kind not in {"poly", "gradline", "columns"} or not isinstance(samples, list) or not (1 <= len(samples) <= 2):
+        if ident is None or not isinstance(kind, str) or kind not in {"poly", "gradline", "columns"} or not isinstance(samples, list) or not (1 <= len(samples) <= 2):
             return None
         clean_samples: list[dict] = []
         seen: set[int] = set()
@@ -3615,7 +3670,7 @@ def _sanitize_native_live_events(rows: object, bar_count: int) -> list[dict] | N
         event_type = _native_live_text(row.get("type"), max_len=80)
         direction = row.get("direction")
         label = row.get("label")
-        if event_type is None or direction not in {"bull", "bear", "neutral"}:
+        if event_type is None or not isinstance(direction, str) or direction not in {"bull", "bear", "neutral"}:
             return None
         if label is not None and _native_live_text(label, max_len=200) is None:
             return None
@@ -3655,7 +3710,7 @@ def _sanitize_native_live_geometry(rows: object, bar_count: int) -> list[dict] |
         ident = _native_live_text(row.get("id"), max_len=96)
         kind = row.get("kind")
         coords = row.get("coordinates")
-        if ident is None or kind not in {"line", "zone"} or not isinstance(coords, dict):
+        if ident is None or not isinstance(kind, str) or kind not in {"line", "zone"} or not isinstance(coords, dict):
             return None
         if kind == "line":
             a, b = coords.get("a"), coords.get("b")
@@ -3760,7 +3815,7 @@ def _qualified_native_live_observations(state: object) -> dict:
     if status == "refused":
         error = _native_live_text(raw.get("error"), max_len=80) or "native_observation_refused"
         return {"schema": _NATIVE_LIVE_SCHEMA, "status": "refused", "error": error}
-    if status not in {"observed", "partial"}:
+    if not isinstance(status, str) or status not in {"observed", "partial"}:
         return _native_live_unavailable("native_observation_status_invalid")
 
     binding = raw.get("binding")
@@ -3769,6 +3824,15 @@ def _qualified_native_live_observations(state: object) -> dict:
     symbol, tf = session.get("symbol"), session.get("tf")
     if not isinstance(binding, dict) or not isinstance(context, dict):
         return _native_live_unavailable("native_observation_binding_missing")
+    # Python equality alone would accept False as pane 0 or True as revision 1.
+    integer_identities = (pane, binding.get("pane_id"), context.get("pane_id"),
+                          binding.get("context_revision"))
+    if any(not isinstance(value, int) or isinstance(value, bool)
+           or value < 0 or value > 9007199254740991 for value in integer_identities):
+        return _native_live_unavailable("native_observation_binding_mismatch")
+    if (_native_live_text(symbol, max_len=64) is None
+            or _native_live_text(tf, max_len=32) is None):
+        return _native_live_unavailable("native_observation_context_mismatch")
     if (binding.get("origin_id") != origin or binding.get("context_revision") != revision
             or binding.get("pane_id") != pane or binding.get("symbol") != symbol or binding.get("tf") != tf):
         return _native_live_unavailable("native_observation_binding_mismatch")
@@ -3819,17 +3883,7 @@ def _qualified_native_live_observations(state: object) -> dict:
     if (binding.get("replay_on") is not replay.get("active")
             or binding.get("replay_idx") != replay_index):
         return _native_live_unavailable("native_observation_binding_mismatch")
-    settings_key = binding.get("settings_key")
-    if not isinstance(settings_key, str) or not settings_key or len(settings_key) > 8192:
-        return _native_live_unavailable("native_observation_binding_mismatch")
-    try:
-        expected_settings_key = json.dumps(
-            session.get("indicators") if isinstance(session.get("indicators"), list) else [],
-            ensure_ascii=False, separators=(",", ":"),
-        )
-    except Exception:
-        return _native_live_unavailable("native_observation_binding_mismatch")
-    if settings_key != expected_settings_key:
+    if not _native_live_settings_equal(binding.get("settings_key"), session.get("indicators")):
         return _native_live_unavailable("native_observation_settings_mismatch")
 
     caps = session.get("capabilities")
@@ -3845,27 +3899,41 @@ def _qualified_native_live_observations(state: object) -> dict:
     } if isinstance(indicators, list) else set()
     native_context = caps.get("native_study_context") if isinstance(caps, dict) else None
     native_rows = native_context.get("modules") if isinstance(native_context, dict) else None
+    native_omitted = native_context.get("omitted_modules") if isinstance(native_context, dict) else None
+    if (not isinstance(native_context, dict)
+            or native_context.get("schema") != "chart.native_study_context.v1"
+            or not isinstance(native_rows, list) or len(native_rows) > 64
+            or not isinstance(native_omitted, list) or len(native_omitted) > 64
+            or not isinstance(indicators, list) or len(indicators) > 64):
+        return _native_live_unavailable("native_observation_configuration_invalid")
     known_native_suites: set[str] = set()
     known_native_modules: set[str] = set()
+    known_configured_on: dict[str, bool] = {}
     if isinstance(native_rows, list):
-        for row in native_rows[:64]:
+        for row in native_rows:
             if not isinstance(row, dict):
-                continue
+                return _native_live_unavailable("native_observation_configuration_invalid")
             suite, module, ident = row.get("suite"), row.get("module"), row.get("id")
             if (isinstance(suite, str) and isinstance(module, str)
                     and _CHART_MODULE_TOKEN.fullmatch(suite) and _CHART_MODULE_TOKEN.fullmatch(module)
-                    and ident == f"{suite}/{module}"):
+                    and ident == f"{suite}/{module}" and ident not in known_native_modules
+                    and isinstance(row.get("enabled"), bool)):
                 known_native_suites.add(suite)
                 known_native_modules.add(ident)
-    native_omitted = native_context.get("omitted_modules") if isinstance(native_context, dict) else None
+                known_configured_on[ident] = row["enabled"]
+            else:
+                return _native_live_unavailable("native_observation_configuration_invalid")
     if isinstance(native_omitted, list):
-        for ident in native_omitted[:64]:
+        for ident in native_omitted:
             if not isinstance(ident, str) or "/" not in ident:
-                continue
+                return _native_live_unavailable("native_observation_configuration_invalid")
             suite, module = ident.split("/", 1)
-            if _CHART_MODULE_TOKEN.fullmatch(suite) and _CHART_MODULE_TOKEN.fullmatch(module):
+            if (_CHART_MODULE_TOKEN.fullmatch(suite) and _CHART_MODULE_TOKEN.fullmatch(module)
+                    and ident not in known_native_modules):
                 known_native_suites.add(suite)
                 known_native_modules.add(ident)
+            else:
+                return _native_live_unavailable("native_observation_configuration_invalid")
 
     raw_suites = raw.get("suites")
     raw_coverage = raw.get("coverage")
@@ -3885,6 +3953,10 @@ def _qualified_native_live_observations(state: object) -> dict:
             configured_clean.append(suite)
     if len(configured_clean) != len(configured) or len(configured_clean) > 5:
         return _native_live_unavailable("native_observation_suite_invalid")
+    # The reported packet cannot choose a smaller denominator and call it complete.
+    # Reuse the existing configuration census, including byte-budget-omitted ids.
+    if set(configured_clean) != known_native_suites & active_suites:
+        return _native_live_unavailable("native_observation_coverage_invalid")
 
     suites_out: list[dict] = []
     observed_clean: list[str] = []
@@ -3913,12 +3985,18 @@ def _qualified_native_live_observations(state: object) -> dict:
             configured_on, compute_enabled, locked = module.get("configured_on"), module.get("compute_enabled"), module.get("locked")
             if not all(isinstance(value, bool) for value in (configured_on, compute_enabled, locked)):
                 return _native_live_unavailable("native_observation_modules_invalid")
-            if compute_enabled and (not configured_on or locked):
+            if (compute_enabled and (not configured_on or locked)) or (
+                ident in known_configured_on and configured_on is not known_configured_on[ident]
+            ):
                 return _native_live_unavailable("native_observation_modules_invalid")
             partial = partial or (configured_on and not compute_enabled)
             seen_modules.add(ident)
             module_out.append({"id": ident, "configured_on": configured_on,
                                "compute_enabled": compute_enabled, "locked": locked})
+
+        expected_modules = {ident for ident in known_native_modules if ident.startswith(suite + "/")}
+        if seen_modules != expected_modules:
+            return _native_live_unavailable("native_observation_modules_invalid")
 
         series = _sanitize_native_live_series(suite_row.get("series"), bar_count, selected_index)
         events = _sanitize_native_live_events(suite_row.get("events"), bar_count)
@@ -3964,7 +4042,8 @@ def _qualified_native_live_observations(state: object) -> dict:
             return _native_live_unavailable("native_observation_coverage_invalid")
         suite, reason = row.get("suite"), row.get("reason")
         if (not isinstance(suite, str) or suite not in configured_clean or suite in observed_clean
-                or suite in omitted_names or reason not in _NATIVE_LIVE_OMIT_REASONS):
+                or suite in omitted_names or not isinstance(reason, str)
+                or reason not in _NATIVE_LIVE_OMIT_REASONS):
             return _native_live_unavailable("native_observation_coverage_invalid")
         omitted_names.add(suite)
         omitted_out.append({"suite": suite, "reason": reason})
