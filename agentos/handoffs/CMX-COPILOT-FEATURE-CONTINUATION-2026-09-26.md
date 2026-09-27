@@ -245,3 +245,65 @@ After price-window source publication, Agent OS readback, and both Draft-PR body
 Therefore the canonical durable continuation for the price-window chunk is this Agent OS file plus current PR #757/#8014 exact-source metadata/readbacks, not an asserted new #7151 comment receipt. The older #7151 comment remains useful history but is stale for this latest chunk. This correction supersedes any conditional wording above that implied the price-window #7151 frontier had already been advanced/read back.
 
 No product/source behavior changed in this correction. EFFECT_UNKNOWN remains none.
+
+
+## 2026-09-27 Extra High chunk — mounted-pane raw price context
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION after this handoff's containing commit and PR readbacks. MISSION_COMPLETE: false. Capability remains PARTIAL / BUILT_NOT_PROVEN / NOT_RELEASED. Chairman's current outer directive is continued feature-first execution in bounded chunks; test/typecheck/compiler/browser/model qualification remains deferred to the final combined pass, not waived.
+
+Protected Mastermind pin: **deed35f6b0d8794987ab9692dd8d46b1549a720f**. INDEX is compatible mastermind.sol_skillpack.v1 / 1.0.1 / bootstrap1. Required ACTIVE_EXECUTION/RECONCILE/CLOSEOUT/delivery/routing law blobs were loaded from this exact commit and match the previously consumed compatible blob identities.
+
+DIRECT_EXECUTION_REASON: **PRINCIPAL_JUDGMENT + CRITICAL_PATH_SHORTCUT** — the slice couples the incumbent renderer identity, chart-state transport, pane comparison projection and Brain structural qualifier; splitting it across a new writer would add collision/review overhead larger than the bounded change. **WHY NOT FABLE:** architecture is already frozen and the work is a path-disjoint extension of existing owners, not unresolved principal ambiguity.
+
+### Exact published source
+
+Terminal #757 advanced on the incumbent branch/worktree to **082d9e6a9c85762c876e7e615399bfc0ce0118d3** (`feat(copilot): add raw price context across panes`). Original remote branch readback matched. The independent untracked `terminal/e2e/brain-targeted-readout.spec.ts` remains untouched/excluded at SHA256 **6eeb12bc08017a818541a33443ab634625a5d927a02566260fc1d61025338a3c**.
+
+Macro #8014 advanced on the incumbent stacked branch/worktree to feature commit **e3789adac66765199b9023f792884cf79c29a2c8** (`feat(copilot): qualify raw price context across panes`). Original remote branch readback matched; Macro workspace was clean after publication.
+
+### Capability delta in source
+
+The mounted-pane read-only context now carries each **inactive pane's own raw rendered price window** alongside its already-supported renderer-native observations.
+
+Terminal:
+- every ChartPanel can publish the accepted rendered bar array it already owns; no new fetch, resample, bar store, Data Window callback or indicator computation was introduced;
+- publication is source-identity bound to the accepted symbol/timeframe and replay state;
+- a compact recent-tail signature suppresses duplicate callbacks, while a new accepted array, replay transition or live recent-bar change republishes;
+- symbol/timeframe identity changes and unmount retire that pane source; late callbacks from a prior symbol/timeframe/replay epoch are ignored;
+- Terminal stores pane sources only in a pane-indexed ref. At state-POST time the existing `buildChartPriceWindow` projector applies that pane's own paneSync viewport;
+- the active pane does **not** duplicate its root price/native packets inside pane_contexts. It carries exact references `session.price_window` and `session.native_observations`; only inactive panes embed separately projected evidence;
+- `ChartPriceWindowSource` now carries symbol/timeframe identity itself, so a stale source cannot be relabeled to the current pane;
+- no inactive pane receives mutation, Data Window value lookup, active selection, or context-revision authority.
+
+Brain:
+- active pane row must use both exact root references and may not include duplicate embedded active price/native packets;
+- inactive panes may not reference root packets; their embedded price/native packets are independently qualified by the existing owners;
+- a qualified pane price window must match the **same paneSync viewport** declared by that pane row: viewport present => visible_tail with exactly equal range; viewport absent => loaded_tail with no visible range;
+- active and inactive unavailable/partial price/native evidence makes pane_contexts partial rather than falsely complete;
+- model-visible active row keeps references instead of duplicating large packets; inactive rows carry qualified evidence;
+- basis explicitly says inactive panes provide price + native evidence only and never become command targets;
+- technician protocol advanced to **v10**, requiring each pane's symbol/timeframe/viewport/price/native basis to remain separate and applying replay/visibility/unknown-close rules to inactive panes too.
+
+### Specifications / proof boundary
+
+Authored or extended, **NOT RUN**:
+- Terminal `chartPriceWindow.test.ts`: source identity is now part of the projector contract.
+- Terminal `useChartBusPaneContexts.test.ts`: root packet references, no active duplication, inactive raw price projection.
+- Terminal `useChartBusStateMirror.test.tsx`: active price-source identity update.
+- Macro `test_brain_pane_contexts.py`: root references, inactive price qualification, active/inactive reference misuse refusal, pane-price viewport binding, read_chart_state projection.
+
+Only exact-head/remote fences, source/diff review, `git diff --check`, callback/reference contract inspection, foreign-file hash preservation, path-scoped staging, non-force commits/pushes and exact branch readbacks support this publication. No test runner, TypeScript/Python compiler, browser/model/provider execution, CI polling, merge, deployment or production config action occurred.
+
+### Durable/transport boundary
+
+The previously attempted cumulative parent comment update on **#7151 / comment 5846488699** remains action-specifically blocked before dispatch. No new platform evidence established recovery, so this chunk did **not** retry that exact comment mutation. That comment therefore remains stale after the six-sample-native chunk. Current durable truth is this Agent OS handoff plus exact PR #757/#8014 source metadata/readbacks. EFFECT_UNKNOWN: none.
+
+### Held lanes / exact next action
+
+Held actions remain untouched: shared widget Stop consumer; original-pane target freezing / legitimate-only revision adoption; selected-candle confirmation-filtered native event projection; grouped-annotation inspection; prior per-pane Data Window read. Mode/turn continuation is not permission to replay those refusals.
+
+DO_NOT_REDO all preceding accepted/published source, including active price window Terminal **dbc5002d586f139fbda2debe0cb4ae2390246d83** / Macro **38beb6e84ebb221ebb9bade42d25169c6b50b63e**, mounted-pane context, six-sample native history and earlier command/control work.
+
+Exact next chunk: first consume any genuinely new permitted recovery/return for a held semantic lane. If none exists, continue another path-disjoint read-only Copilot capability using incumbent owners. Final combined native/price/multi-pane/target/historical/cancellation/range/old-client/receipt/Stop/replay/browser/model/dark-light/EN-ZH/responsive qualification remains owed, followed by normal #8005 -> #8014 release gates.
+
+Own effects reconciled. No worker, watcher, provider activation, deployment or autonomous wake.
