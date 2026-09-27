@@ -71,3 +71,54 @@ Consume a genuinely permitted platform recovery or admitted same-operation sourc
 After feature construction and these holds are resolved, perform the deliberately deferred combined native/target/historical/cancellation/range/old-client/receipt/Stop/replay/browser/model/dark-light/EN-ZH/responsive qualification and normal #8005 -> #8014 release gates. Source publication and green CI alone are not acceptance.
 
 This boundary preserves a published host/queue interface while its planned consuming operation is explicitly held, plus a separately refused investigation. It is not elapsed-time completion, mission closure, custody transfer or a background wake. Direct execution rationale: coupled queue/widget semantics and incumbent principal source custody; another worker would overlap or reproduce held work. No Fable, runtime child or watcher was created. Intended next mode: requested Pro for remaining cross-system integration judgment; actual served-model and future capability remain unverified.
+
+
+## 2026-09-27 Extra High chunk — read-only mounted-pane context
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION after this handoff's containing commit, PR metadata and #7151 cumulative frontier are read back. MISSION_COMPLETE: false. Capability remains PARTIAL / BUILT_NOT_PROVEN / NOT_RELEASED. The Chairman requested Extra High for write-heavy progress and bounded chunks to avoid session failure; tests/typechecks/compilers/browser/model qualification remain deliberately deferred to the combined final pass, not waived.
+
+Protected Mastermind procedure pin for this chunk: `d7c949d31f3893d95822a4ee8e5e4be9edaf5593`. INDEX and all required enrolled law blobs were read from that exact commit; their blobs remain the same previously consumed compatible 1.0.1/bootstrap1 procedure versions. No Executive runtime or provider was invoked.
+
+### Exact published source
+
+Terminal #757 advanced on the same incumbent branch/worktree to **4f8035a27c83f954d4d34c68a17b58d627ba7d6e** (`feat(copilot): expose read-only mounted pane context`). Original remote branch readback matched. The unrelated untracked `terminal/e2e/brain-targeted-readout.spec.ts` remains untouched/excluded at SHA256 **6eeb12bc08017a818541a33443ab634625a5d927a02566260fc1d61025338a3c**.
+
+Macro #8014 advanced on the same incumbent branch/worktree to feature commit **58a6e59865b909086ced252198c986db3531b24d** (`feat(copilot): qualify read-only mounted pane context`). Original remote branch readback matched. The Macro workspace was clean after publication.
+
+### Capability delta in source
+
+Before this chunk, Copilot's numerical/native chart observation callback existed only for the active chart pane. A 2-pane comparison or 4-pane same-symbol MTF layout therefore did not expose the mounted sibling panes through the live chart-state read.
+
+The existing chart-state mirror now has an additive **`chart.pane_contexts.v1`** read-only projection for up to four mounted panes:
+- each row preserves its pane id, symbol, timeframe, paneSync calendar viewport, and current renderer-native observation packet when available;
+- ChartPanel remains the only native computation owner; every pane reuses the same `computeSuite()` bundle/projector path already used to paint that pane;
+- the active pane remains the sole mutation authority. Reading another pane does not activate it, retarget a command, change symbol/timeframe, or increment `ai_context_client.v1.context_revision`;
+- stale symbol/timeframe/settings/replay/locked-bar native packets become explicit unavailable evidence rather than being relabeled current;
+- malformed/duplicate/out-of-range producer rows make the cross-pane packet unavailable rather than silently shrinking the comparison;
+- single-pane layouts retain the established root chart-state shape without a multi-pane packet.
+
+The existing receipt-first payload reducer now treats `pane_contexts` as optional comparison evidence and withholds it **before** active-pane native/Data Window evidence under the 60 KiB transport budget, reporting the omission in the existing `mirror_coverage`. ACK identity, active target identity and real chart stores remain untouched.
+
+The Brain gateway structurally qualifies the packet with the same existing native-observation qualifier. It checks exact origin/revision, active pane identity, 2–4 row count, unique bounded pane ids, symbol/timeframe text and finite ordered viewport ranges. Each pane's native packet is qualified against a pane-specific view of the same session/configuration census. The active row must agree with the separately qualified root `session.native_observations`; model-visible output references that active root instead of duplicating its large packet. Output is itself bounded and carries fixed server-owned basis language: inactive panes are evidence-only, freshness is chart-loaded rather than independently live-attested, and missing/partial evidence is not negative evidence.
+
+Technician protocol advanced to v7 so multi-pane comparisons keep each pane's symbol/timeframe/evidence basis separate and never treat a read-only pane as a chart-command target.
+
+### Specifications / proof boundary
+
+Authored, **NOT RUN**:
+- Terminal `terminal/lib/__tests__/useChartBusPaneContexts.test.ts` — mounted-pane mirror/revision, single-pane compatibility and transport-priority behavior.
+- Macro `tests/test_brain_pane_contexts.py` — read-only basis, active identity/native agreement, malformed pane ids/viewports, mirror-budget omission and real `read_chart_state` consumption.
+
+Only exact-head/source fences, path-scoped staging, `git diff --check`, commits, non-force pushes and original-branch readbacks were used. No local test runner, TypeScript/Python compiler, browser/model/provider execution, CI polling, merge, deployment or production configuration action occurred. Authored test files are specifications until the deferred qualification phase.
+
+One independent exploratory read attempting to inspect the Data Window projection for a possible per-pane extension was blocked before dispatch by the platform. EFFECT_NONE; it was not retried. This chunk therefore extends multi-pane **native renderer evidence and viewport identity only**, while preserving the existing active-pane Data Window packet. Do not claim classic/Data-Window values exist for every pane.
+
+### Held work / exact next action
+
+DO_NOT_REDO all previously accepted/published source: Terminal #740/#751, Macro #7999/#8037, #8005 stale-revision repair candidate, native renderer/headless projection, exact ranges, additive study edits/selective AI clear, receipt-first delivery, command-input hardening, truthful outcomes/cancellation, and the reply-scoped queue Stop host at Terminal 05dca6c1.
+
+The previously refused actions remain held and were not replayed through Extra High: the shared widget Stop consumer, original-pane target freezing / legitimate-only revision adoption, selected-candle confirmation-filtered event projection, and grouped-annotation investigation. A mode change is not permission recovery.
+
+Next bounded chunk: first consume any genuinely permitted platform recovery or same-operation source return for one of those held semantic actions. If none exists, continue another path-disjoint product capability that materially improves Copilot without recreating control/identity/observation owners. Once feature construction ends, execute the combined native/multi-pane/target/historical/cancellation/range/old-client/receipt/Stop/replay/browser/model/dark-light/EN-ZH/responsive qualification, then normal #8005 → #8014 release gates. Green CI alone is not acceptance.
+
+Own effects in this chunk are reconciled. EFFECT_UNKNOWN: none. No child, watcher, provider activation or automatic wake was created.
