@@ -272,3 +272,80 @@ def test_capture_measure_us_omits_challenger_before_amendment_clock():
     assert out["primary_v1"]["eligible"] is True
     assert out["challenger_v1_1"]["eligible"] is False
     assert out["challenger_v1_1"]["return_bps"] is None
+
+def test_capture_late_confirmation_cannot_manufacture_prospective_event():
+    admission = _capture_admission(
+        "2026-09-26T00:26:00Z",
+        source_state="SOURCE_CONFOUNDED",
+    )
+    out = capture.amend_source_state(
+        admission,
+        source_available_at="2026-09-26T22:00:00Z",
+        observed_at="2026-09-26T22:01:00Z",
+        source_state="SOURCE_RESOLVED",
+        source_name="official",
+        source_ref="official:confirmation",
+        headline="Later authoritative confirmation of the already-known claim",
+    )
+    assert out["schema"] == capture.SCHEMA_SOURCE_AMENDMENT
+    assert out["event_id"] == admission["event_id"]
+    assert out["available_at"] == "2026-09-26T00:26:00Z"
+    assert out["measurement_anchor_at"] == "2026-09-26T00:26:00Z"
+    assert out["source_state_before"] == "SOURCE_CONFOUNDED"
+    assert out["source_state_after"] == "SOURCE_RESOLVED"
+    assert out["source_resolution"]["source_available_at"] == "2026-09-26T22:00:00Z"
+    assert out["independent_event"] is False
+    assert out["primary_v1_eligible"] is False
+    assert out["challenger_v1_1_eligible"] is False
+    assert out["clean_primary_eligible"] is False
+    assert out["outcome_state"] == "NOT_READ"
+
+
+def test_capture_source_amendment_cannot_upgrade_clean_slice():
+    admission = _capture_admission(
+        "2026-09-26T21:41:02Z",
+        source_state="SOURCE_CONFOUNDED",
+    )
+    out = capture.amend_source_state(
+        admission,
+        source_available_at="2026-09-26T21:50:00Z",
+        observed_at="2026-09-26T21:51:00Z",
+        source_state="SOURCE_RESOLVED",
+        source_name="official",
+        source_ref="official:resolution",
+        headline="Later corroboration before any target outcome is read",
+    )
+    assert out["primary_v1_eligible"] is True
+    assert out["challenger_v1_1_eligible"] is True
+    assert out["clean_primary_eligible"] is False
+    assert out["measurement_anchor_at"] == admission["available_at"]
+
+
+def test_capture_source_amendment_refuses_after_outcome_read():
+    admission = _capture_admission("2026-09-26T21:41:02Z")
+    admission["outcome_state"] = "READ"
+    with pytest.raises(capture.CaptureContractError, match="after outcome read"):
+        capture.amend_source_state(
+            admission,
+            source_available_at="2026-09-26T21:50:00Z",
+            observed_at="2026-09-26T21:51:00Z",
+            source_state="SOURCE_RESOLVED",
+            source_name="official",
+            source_ref="official:resolution",
+            headline="Late source receipt",
+        )
+
+
+def test_capture_source_amendment_refuses_resolution_before_first_disclosure():
+    admission = _capture_admission("2026-09-26T21:41:02Z")
+    with pytest.raises(capture.CaptureContractError, match="cannot predate"):
+        capture.amend_source_state(
+            admission,
+            source_available_at="2026-09-26T21:40:00Z",
+            observed_at="2026-09-26T21:40:30Z",
+            source_state="SOURCE_RESOLVED",
+            source_name="official",
+            source_ref="official:resolution",
+            headline="Impossible earlier resolution",
+        )
+

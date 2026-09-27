@@ -1,13 +1,16 @@
 """Prospective cross-session transfer capture harness.
 
-Research-only and production-inert. This module enforces the two-stage
+Research-only and production-inert. This module enforces the source-first
 prospective protocol without creating a new event, ledger, or data plane.
 
-Stage 1: admit_source_event freezes source facts and protocol eligibility only.
+Stage 1: admit_source_event freezes first-disclosure source facts and protocol
+eligibility only. Optional source resolution: amend_source_state can attach a
+later corroboration/confirmation receipt to that same event, but may not move
+the first-disclosure clock, change cohort eligibility, or mint a second event.
 Stage 2: measure_us_response reads the incumbent U.S. minute transport only and
 computes the already-frozen +5 to +35 minute constructions.
 
-Neither stage reads Hong Kong outcomes, picks controls from outcomes, persists
+No capture step reads Hong Kong outcomes, picks controls from outcomes, persists
 vendor bars, emits alerts, ranks opportunities, or grants trading authority.
 
 V1 primary:
@@ -35,6 +38,7 @@ from research import event_microstructure_study as study  # noqa: E402
 from scripts.research import replay_event_microstructure as replay  # noqa: E402
 
 SCHEMA_ADMISSION = "research.cross_session_transfer_admission.v1"
+SCHEMA_SOURCE_AMENDMENT = "research.cross_session_transfer_source_amendment.v1"
 SCHEMA_US = "research.cross_session_transfer_us_measurement.v1"
 
 V1_PROTOCOL_COMMIT = "0f9d4d88cf78b06ab9985d32be9df5c2bc929fd2"
@@ -166,6 +170,82 @@ def admit_source_event(
     }
 
 
+def amend_source_state(
+    admission: Mapping[str, Any],
+    *,
+    source_available_at: str,
+    observed_at: str,
+    source_state: str,
+    source_name: str,
+    source_ref: str,
+    headline: str,
+) -> dict[str, Any]:
+    """Attach later source resolution without moving the first-disclosure event clock."""
+    if admission.get("schema") != SCHEMA_ADMISSION:
+        raise CaptureContractError("admission schema mismatch")
+    if admission.get("outcome_state") != "NOT_READ":
+        raise CaptureContractError("source-state amendment is forbidden after outcome read")
+    if source_state not in SOURCE_STATES:
+        raise CaptureContractError(f"unsupported source_state: {source_state}")
+    if not str(source_name or "").strip():
+        raise CaptureContractError("source_name is required")
+    if not str(source_ref or "").strip():
+        raise CaptureContractError("source_ref is required")
+    if not str(headline or "").strip():
+        raise CaptureContractError("headline is required")
+
+    first_available = _utc(
+        str(admission.get("available_at") or ""),
+        "admission.available_at",
+    )
+    resolution_available = _utc(source_available_at, "source_available_at")
+    resolution_observed = _utc(observed_at, "observed_at")
+    if resolution_available < first_available:
+        raise CaptureContractError(
+            "source resolution cannot predate the frozen first-disclosure clock"
+        )
+    if resolution_observed < resolution_available:
+        raise CaptureContractError(
+            "source resolution observed_at cannot predate source_available_at"
+        )
+
+    return {
+        "schema": SCHEMA_SOURCE_AMENDMENT,
+        "authority": dict(AUTHORITY),
+        "state": admission.get("state"),
+        "event_id": str(admission.get("event_id") or ""),
+        "event_time": str(admission.get("event_time") or ""),
+        # First disclosure remains the only measurement/prospective anchor.
+        "available_at": _iso(first_available),
+        "observed_at": str(admission.get("observed_at") or ""),
+        "event_class": str(admission.get("event_class") or ""),
+        "source_state_before": str(admission.get("source_state") or ""),
+        "source_state_after": source_state,
+        "first_disclosure": {
+            "source_name": str(admission.get("source_name") or ""),
+            "source_ref": str(admission.get("source_ref") or ""),
+            "headline": str(admission.get("headline") or ""),
+        },
+        "source_resolution": {
+            "source_available_at": _iso(resolution_available),
+            "observed_at": _iso(resolution_observed),
+            "source_name": str(source_name).strip(),
+            "source_ref": str(source_ref).strip(),
+            "headline": str(headline).strip(),
+        },
+        # A later confirmation is provenance on the same event, never a fresh event.
+        "independent_event": False,
+        "measurement_anchor_at": _iso(first_available),
+        "primary_v1_eligible": admission.get("primary_v1_eligible") is True,
+        "challenger_v1_1_eligible": admission.get("challenger_v1_1_eligible") is True,
+        # Preserve the admission-time clean slice. Later corroboration cannot upgrade it.
+        "clean_primary_eligible": admission.get("clean_primary_eligible") is True,
+        "protocol_receipts": dict(admission.get("protocol_receipts") or {}),
+        "outcome_state": "NOT_READ",
+        "persistence": "none_stdout_only",
+    }
+
+
 def _window_return(points: Sequence[Mapping[str, Any]], *, anchor: datetime) -> float | None:
     rows = study._points(points)  # noqa: SLF001 - reuse one research clock kernel
     start = study._first_at_or_after(  # noqa: SLF001
@@ -272,6 +352,18 @@ def _parser() -> argparse.ArgumentParser:
     admit.add_argument("--source-ref", required=True)
     admit.add_argument("--headline", required=True)
 
+    amend = sub.add_parser(
+        "amend-source",
+        help="record later source resolution without moving first disclosure",
+    )
+    amend.add_argument("--admission-file", required=True)
+    amend.add_argument("--source-available-at", required=True)
+    amend.add_argument("--observed-at", required=True)
+    amend.add_argument("--source-state", required=True, choices=sorted(SOURCE_STATES))
+    amend.add_argument("--source-name", required=True)
+    amend.add_argument("--source-ref", required=True)
+    amend.add_argument("--headline", required=True)
+
     measure = sub.add_parser("measure-us", help="measure fixed U.S. geometry only")
     measure.add_argument("--admission-file", required=True)
     return parser
@@ -287,6 +379,18 @@ def main(argv: Sequence[str] | None = None) -> int:
                 available_at=args.available_at,
                 observed_at=args.observed_at,
                 event_class=args.event_class,
+                source_state=args.source_state,
+                source_name=args.source_name,
+                source_ref=args.source_ref,
+                headline=args.headline,
+            )
+        elif args.command == "amend-source":
+            with Path(args.admission_file).open("r", encoding="utf-8") as fh:
+                admission = json.load(fh)
+            result = amend_source_state(
+                admission,
+                source_available_at=args.source_available_at,
+                observed_at=args.observed_at,
                 source_state=args.source_state,
                 source_name=args.source_name,
                 source_ref=args.source_ref,
