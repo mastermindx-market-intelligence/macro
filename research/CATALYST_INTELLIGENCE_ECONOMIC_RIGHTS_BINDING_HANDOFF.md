@@ -64,15 +64,15 @@ Corresponding acceptance extends the existing SC-08/12/13/19/27/28 obligations: 
 
 ## 6. Final local proof and limits
 
-Final HTML SHA-256: `77d1e0f778c2a821b3459c79f7f206996521a2009df30dffadf011f044713b3c`.
+Final HTML SHA-256: `c0ed3633fd2b719a241d8e747aae86cdfa9a8b3714af002b90e6d217bced74fb`.
 
-- `R11_VALIDATION.json`: 120 passed / 0 failed. Actual controls, annual tiers, source-native terms, invalid inputs, mass conservation, source dialogs, exports, no fabricated identities, original candidate preservation and dark/light layouts at 1440/768/390/320.
+- `R11_VALIDATION.json`: 122 passed / 0 failed. Actual controls, annual tiers, source-native terms, invalid inputs, mass conservation, source dialogs, exports, no fabricated identities, original candidate preservation and dark/light layouts at 1440/768/390/320.
 - `R11_R10_COMPATIBILITY.json`: the existing R10 suite rerun against these exact R11 bytes, 180 passed / 0 failed.
 - `R11_VISUAL_SEMANTICS.json`: 3 passed / 0 failed after two visually identified defects failed first: the inherited synthetic footer on real research and zero-sales copy implying a positive flow.
 - Six feature-presence checks distinguish the new view from R10; they are structure evidence, not financial-model validation.
 - Twenty final captures cover exposure, threshold, source inspector, builder notes and first view at 1440/390 in both themes. Representative desktop/mobile and threshold views were inspected. Browser tests recorded no uncaught exceptions or network requests.
 
-All rendering uses the established isolated Chromium `set_content` path. The older file-navigation refusal was not retried. Actual file-open/reload, production routes, live source readers, full legal/source corpus, calibrated forecasts, Chinese parity and independent human design acceptance remain unproved. Test counts are repeated UI/fixture assertions, not investment performance.
+All rendering uses the established isolated Chromium `set_content` path. The older file-navigation refusal was not retried. Actual file-open/reload, production routes, live source readers, full legal/source corpus, calibrated forecasts, Chinese parity and independent human design acceptance remain unproved. Test counts are repeated UI/fixture assertions, not investment performance. Final visual review also caught an unstyled original-source link below the 44px target: a failing regression preceded reuse of the shared button class; the final suite includes both source-open and source-close target checks. Capture scroll was explicitly settled before first-view images; this is screenshot methodology, not a product repair.
 
 ## 7. Native Paper and source adoption
 
