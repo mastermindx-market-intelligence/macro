@@ -333,19 +333,26 @@ risk within seconds; responsive, keyboard and EN/ZH parity are independently che
 ## 14. Exact R8 prototype proof and limits
 
 The self-contained artifact is `CATALYST_INTELLIGENCE_R8_PROTOTYPE.html`, SHA-256
-`a42a2403442db8ca47b8dfd34821ca2f2275e236e35923510686664f31bf0ece`.
+`43081d3d612037f9713cf57839407995602e0dd880be771c7aac3c4f0f98cd1f`.
 Twelve fictional candidates, five method profiles, a mixed-stance list, sector methodology,
 Autonomous-systems cross-sector theme, company-specific study/award evidence, valuation,
 export, return-state continuity and an on-design backend blueprint work locally.
 
-Final browser report: **229 passed / 0 failed**; separate presence discrimination six passed
+Final browser report: **232 passed / 0 failed**; separate presence discrimination six passed
 versus zero/six on R7; 40 full-page theme/desktop/mobile renders and five first-read/fault
 captures. All final proof binds the same HTML. Zero page exceptions or external requests.
-Repeated viewport assertions are not 229 independent production requirements. Targeted
+Repeated viewport assertions are not 232 independent production requirements. Targeted
 negative evidence caught a wrong negative-return color, paused-engine Buy counts, lead-footer
 spacing and imprecise event-probability captions; each was repaired and rerun. A procurement
 caption test also required case-insensitive matching of CSS uppercase text; that was a test
 mechanism correction, not a hidden data repair.
+
+A later targeted negative check exposed stale stance leakage: a Buy-only filter still
+matched an unavailable-horizon or paused-engine underlying fixture. Three failing checks
+were captured before the repair. Current display status and filtering now agree: paused
+records say Review paused; unsupported assessed horizons say Not assessed; neither qualifies
+as a current Buy. All candidates remain discoverable in the full view. The 232-check final
+run and regenerated images bind the repaired artifact, not the earlier 229-check source.
 
 The R7 snapshot is preserved as a linked prior reference, not rebuilt or silently relabelled.
 Its old numerical/safety limits remain. No calibrated confidence interval, source corpus,
