@@ -135,6 +135,11 @@ def build_comparison_receipt(
     each contain ``kind`` (str), ``factor`` (decimal text) and
     ``lineage`` (str).  This is the ONLY production constructor of a
     comparison receipt in the Industrials T04 module.
+
+    An ABSENT ``checked`` argument is NOT a certification: a caller that
+    says nothing about comparability has verified nothing, so every gate
+    defaults False.  ``checked=None`` and ``checked={}`` are therefore the
+    same receipt.
     """
     if purpose not in _ALLOWED_PURPOSES:
         raise ValueError(f"unknown comparison purpose: {purpose}")
@@ -149,10 +154,12 @@ def build_comparison_receipt(
             raise ValueError("comparison operand lacks owner_ref")
         refs.append(str(owner_ref))
 
-    if checked is None:
-        checked_dict = {name: True for name in _CHECKED_FIELDS}
-    else:
-        checked_dict = {name: bool(checked.get(name, False)) for name in _CHECKED_FIELDS}
+    # Defaulting an omitted `checked` to all-True silently suppressed a REAL
+    # refusal: a quarter compared against a year qualified `ready` with no
+    # limitations, because `duration` read as verified when the caller had said
+    # nothing.  Absent qualification information is not qualification.
+    checked_in = checked or {}
+    checked_dict = {name: bool(checked_in.get(name, False)) for name in _CHECKED_FIELDS}
 
     unknown_list = [str(name) for name in unknowns]
     transforms: list[dict[str, Any]] = []

@@ -1201,3 +1201,76 @@ def _purpose_for(formula: str) -> str:
 def test_typed_absence_helper_returns_owner_shape() -> None:
     typed = typed_absence("missing_source")
     assert typed == {"absence": "missing_source"}
+
+
+# ---------------------------------------------------------------------------
+# An omitted `checked` argument is not a certification (seat probe, round 2).
+# Defaulting it to all-True let a quarter-vs-year comparison qualify `ready`
+# with no limitations, because `duration` read as verified when the caller had
+# said nothing at all about comparability.
+# ---------------------------------------------------------------------------
+
+_QUARTER = {"start": "2026-04-03", "end": "2026-07-03", "fiscal_label": "FY2026 Q2", "duration": "quarter"}
+_YEAR = {"start": "2025-07-04", "end": "2026-07-03", "fiscal_label": "FY2026", "duration": "year"}
+
+
+def test_omitted_checked_certifies_nothing() -> None:
+    receipt = build_comparison_receipt("same_period", [cell("1", owner_ref="synthetic:cell:a")])
+    assert receipt["checked"] == {
+        "basis": False,
+        "currency": False,
+        "scale": False,
+        "duration": False,
+        "perimeter": False,
+        "definition": False,
+        "source_mode": False,
+    }
+    # `checked=None` and `checked={}` are the same receipt, identity included.
+    explicit = build_comparison_receipt("same_period", [cell("1", owner_ref="synthetic:cell:a")], checked={})
+    assert receipt == explicit
+
+
+def test_omitted_checked_does_not_suppress_a_real_duration_mismatch() -> None:
+    cells = [
+        cell("100", metric="revenue", period=_QUARTER, owner_ref="synthetic:cell:qtr"),
+        cell("400", metric="revenue", period=_YEAR, owner_ref="synthetic:cell:yr"),
+    ]
+    silent = qualify_operands(
+        "same_period", cells,
+        comparison_receipt=build_comparison_receipt("same_period", cells),
+        formula="growth_pct",
+    )
+    assert silent["status"] == "refused"
+    assert "duration_mismatch" in silent["limitations"]
+
+    # The caller may still declare the comparability basis explicitly.
+    declared = qualify_operands(
+        "same_period", cells,
+        comparison_receipt=build_comparison_receipt("same_period", cells, checked={"duration": True}),
+        formula="growth_pct",
+    )
+    assert declared["status"] == "ready"
+    assert declared["limitations"] == []
+
+
+def test_omitted_checked_does_not_over_refuse_compatible_operands() -> None:
+    """The all-False default must bite only where a real difference exists —
+    two operands sharing every native field still qualify."""
+    cells = [
+        cell("100", metric="revenue", period=_QUARTER, owner_ref="synthetic:cell:a"),
+        cell("90", metric="revenue", period=_QUARTER, owner_ref="synthetic:cell:b"),
+    ]
+    q = qualify_operands(
+        "same_period", cells,
+        comparison_receipt=build_comparison_receipt("same_period", cells),
+        formula="growth_pct",
+    )
+    assert q["status"] == "ready"
+    assert q["limitations"] == []
+
+
+def test_receipt_purpose_round_trips_from_the_caller() -> None:
+    """The receipt's ``purpose`` is the caller's, never a constant."""
+    cells = [cell("1", owner_ref="synthetic:cell:a")]
+    for purpose in ("same_period", "year_over_year", "final_vs_preview", "segment_bridge", "rollforward"):
+        assert build_comparison_receipt(purpose, cells)["purpose"] == purpose
