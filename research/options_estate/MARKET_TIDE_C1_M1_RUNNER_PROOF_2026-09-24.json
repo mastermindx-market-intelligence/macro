@@ -1,0 +1,110 @@
+{
+  "operation": "market-tide-research-20260924-sol-001",
+  "research_carrier": "macro#7925 / Draft HOLD #7929",
+  "procedure_pin": "Mastermind@819abc8c23609cdded2b33f6e1bfc7854bd5c847",
+  "tested_code_head": "c2a00e4d392c9328bd8415c1f337daa9208e8934",
+  "kind": "supplied_prepared_input_research_runner",
+  "mission_complete": false,
+  "market_observations_used": 0,
+  "source_qualification_granted": false,
+  "implementation_scope": {
+    "measurement_helper": "Exact 64 structural and 69 total-return close windows; origin index 63; trailing-20 RMS, trend63, momentum5 and normalized five-session close-path downside. No acquisition, timestamps or basis invented by the arithmetic helper.",
+    "model_inputs": "N mean reference; P log(v20)/trend63/momentum5/deterioration; PE adds three schedule flags; PEI adds exactly deterioration*(CPI+NFP) and deterioration*FOMC.",
+    "fitting": "Fixed mean-squared loss plus 0.01 non-intercept ridge penalty; first three continuous columns standardized from training only; indicators/interactions not standardized; negative predictions clipped to zero.",
+    "chronology": "Monthly refit at 00:00 UTC on month day 1, a computational cutoff not a source clock. At least three full prior calendar years of supplied eligible origin coverage; five-session endpoints and label availability both strictly before cutoff; common training/test cohorts for every comparator.",
+    "source_boundary": "Existing lib.dataos.temporal.utc handles instants. Completed input cannot predate its supplied session close, missing schedule flags remain excluded, explicit fifth-session label binding is checked. Source refs and supplied roster remain claims requiring owner qualification; no caller flag grants it.",
+    "evaluation": "Event, non-event and full common-cohort MSE, secondary MAE, distinct event-date feasibility counts, annual results and leave-one-test-year-out score influence (not refitting without that year).",
+    "uncertainty": "63-session paired circular chronological-position bootstrap; 10000 PCG64 draws seed 20260924; 97.5% two-sided percentile intervals for absolute and relative MSE improvement. 21/126-session sensitivities. Excluded calendar positions remain gaps; final block truncated to original panel length; undefined draws disclosed.",
+    "authority": "Numerical hurdle diagnostics do not grant source admission, forecast publication, promotion or trade permission; all those authorities remain false/ungranted."
+  },
+  "source_files": [
+    {"path": "research/options_estate/market_tide_c1.py", "bytes": 20074, "sha256": "a1d507100615319f9c02db9dfb8ca71fac3d199a1a2aca27165c124f7caf06f4", "git_blob": "4cd4200a040d2cfbe372fd07a7d7694bdb129ea2"},
+    {"path": "tests/test_market_tide_c1.py", "bytes": 13237, "sha256": "f0eae838c3353fea24d4aa5d0376139eb513173e29b184cabc3fd0dcdda61c3a", "git_blob": "e6da925f60e0950d9372e9f2e46f137ec7716290"},
+    {"path": "tests/test_market_tide_c1_boundaries.py", "bytes": 3679, "sha256": "1293b738b1d5047af94e4fc32079a8eeacd8afaa61a02e0ee35e8aeef18f87f3", "git_blob": "d75da274311d587cd5df4550dadeb982e7b01526"}
+  ],
+  "native_environment": {
+    "device": "2b8a329e-0a82-413c-b9d0-958a7de6d836",
+    "host": "MacBook-Pro-9.ts.net lan",
+    "workspace": "/Users/chriswong/lanes/repos/macro/.claude/worktrees/market-tide-research-20260924-sol-001",
+    "interpreter": "/Users/chriswong/lanes/venv/bin/python",
+    "python": "3.12.14",
+    "numpy": "2.5.3",
+    "dependency_installations": 0,
+    "source_writer": "original GitHub branch only; native locked detached checkout updated by clean exact-commit fast-forward"
+  },
+  "red_green": {
+    "initial_test_commit": "6e274db15ad4b00ac00d1a5115f510eadbc3e7c1",
+    "initial_suite_process": 95504,
+    "initial_suite_result": "setUpClass error because implementation absent, zero behavioral tests executed; not mislabeled as 35 behavioral failures",
+    "explicit_presence_process": 368,
+    "explicit_presence_result": "one assertion failed because executable benchmark module absent",
+    "first_implementation": "7cbf66e07c32c1b6e7d11753e56241c4f3c2929e",
+    "first_green_process": 1089,
+    "first_green_tests": 35,
+    "adversarial_test_commit": "5577275f2eb01775813426d3ff5c21ffc8033017",
+    "adversarial_process": 1775,
+    "adversarial_result": "5 tests: 2 failures and 3 passing controls",
+    "proven_defects": [
+      "np.std roundoff made an exactly constant nonzero continuous column look variable; repaired with exact observed-value equality, no fitted or tuned floor",
+      "completed-close input availability earlier than the session close was accepted; repaired by bounding source availability between that close and the later decision"
+    ],
+    "additional_passing_controls": [
+      "source availability exactly at close is permissible but decision exactly at close is not an executable after-close decision",
+      "label available exactly at monthly cutoff is excluded until a later fit",
+      "optimized paired bootstrap agrees with an independent direct-index implementation on 10000 draws"
+    ],
+    "repair_commit": "c2a00e4d392c9328bd8415c1f337daa9208e8934",
+    "final_process": 3050,
+    "command": "PYTHONDONTWRITEBYTECODE=1 /Users/chriswong/lanes/venv/bin/python -m unittest discover -s tests -p 'test_market_tide_c1*.py'",
+    "final_tests": 40,
+    "final_test_failures": 0,
+    "final_test_errors": 0,
+    "final_test_result": "OK",
+    "wrapper_limitation": "After successful tests and CLI, an unrelated zsh tail assigned the read-only variable status; aggregate shell exited 1 before cleanliness commands. Tests/CLI were not rerun or misrepresented as aggregate exit 0.",
+    "cleanliness_process": 3366,
+    "cleanliness_result": "Separate same-carrier read verified git diff --check clean, git status --short empty and exact HEAD c2a00e4d392c9328bd8415c1f337daa9208e8934."
+  },
+  "synthetic_end_to_end": {
+    "fixture_factory": "tests/test_market_tide_c1.py::synthetic_packet",
+    "calendar_scope": "SYNTHETIC weekdays only; NOT an XNYS calendar or real announcement sample",
+    "command": "python -m research.options_estate.market_tide_c1 --input /dev/stdin --evaluation-at 2022-01-20T00:00:00Z",
+    "input_transport": "JSON from the committed fixture factory passed in memory to subprocess stdin; no market file or new corpus",
+    "prepared_origins": 1310,
+    "monthly_fits": 25,
+    "held_out_predictions": 528,
+    "first_test_origin": "2020-01-01",
+    "event_origins": 111,
+    "non_event_origins": 417,
+    "distinct_synthetic_event_dates": {"CPI": 48, "NFP": 40, "FOMC": 32},
+    "bootstrap_block_sizes": [63, 21, 126],
+    "draws_per_block": 10000,
+    "cli_exit": 0,
+    "cli_stderr": "",
+    "input_sha256": "f5a84e2e732244f13a1879dd8b875e0f7ad54cd16114d2a4f688deed623f60bf",
+    "stdout_bytes": 216750,
+    "stdout_sha256": "49bfd981e01e69e7b6a166973e25265f10d28fbe13c442d42ab3dc8934a26280",
+    "output_unchanged_by_boundary_repairs": true,
+    "primary_cohort_admitted": false,
+    "may_trade": false,
+    "empirical_efficacy_claim": "NONE"
+  },
+  "remaining_work": [
+    "Independent code/method review; this is principal self-review plus tests, not independent acceptance",
+    "Enroll the two new suites in the existing unrun-factor-research job in .github/ci/legacy-jobs.yml after exact shared-file custody/collision reconciliation; that inspected lane does not currently name these tests",
+    "Complete frozen diagnostic coverage: predicted-versus-observed risk strata and descriptive 1/3/10-session views; preserve no post-result threshold search",
+    "Connect one owner-qualified price/event/calendar input through the prepared-row measurement adapter; current numerical runner does not authenticate supplied claims or automatically build historical rows",
+    "Qualified cross-instrument runs remain separate; never pool SPY/QQQ/IWM as independent replications",
+    "Normal exact-head CI and full source-record acceptance remain owed; no workflow rerun, merge, deployment or production proof claimed"
+  ],
+  "preserved": {
+    "C1_M1_method_changed": false,
+    "event_consumer_changed_or_retested": false,
+    "rejected_GEX_or_price_panel_reopened": false,
+    "source_acquisition_or_market_data_read": false,
+    "earlier_refused_operations_retried": false,
+    "new_safety_refusal": false,
+    "owner_reference_inquiries": "MAS-204 fffe9f72-7379-40e9-a117-580bbb26d404 and MAS-94 356dafb3-8370-486c-b768-7db190757188 remain reference requests; no new reply or START claimed, not inspected in this implementation tranche",
+    "active_worker_or_watcher": false,
+    "unresolved_modifying_effect": false
+  }
+}
