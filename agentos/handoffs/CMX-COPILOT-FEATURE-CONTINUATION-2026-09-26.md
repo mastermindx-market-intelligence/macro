@@ -236,3 +236,12 @@ DO_NOT_REDO the preceding mounted-pane and six-sample-native work: Terminal **4f
 Exact next chunk: consume a genuinely permitted recovery/return for a held semantic action if one exists. Otherwise continue another path-disjoint Copilot capability that reuses incumbent read owners and does not widen unsafe mutation authority. Final combined native/price/multi-pane/target/historical/cancellation/range/old-client/receipt/Stop/replay/browser/model/dark-light/EN-ZH/responsive qualification remains owed, followed by normal #8005 → #8014 release gates.
 
 Own effects reconciled. EFFECT_UNKNOWN: none. No worker, watcher, provider activation, deployment or autonomous wake.
+
+
+### Post-publication transport correction — cumulative #7151 comment not advanced
+
+After price-window source publication, Agent OS readback, and both Draft-PR body readbacks, the attempted update of cumulative parent comment **#7151 / 5846488699** was blocked by the platform **before dispatch**. Read-only fetch confirms that comment still ends at the preceding six-sample-native chunk. Classify this exact comment-update action **TOOL_DEGRADED / EFFECT_NONE**; it was not retried through a smaller payload, alternate tool, carrier, worker, account or mode.
+
+Therefore the canonical durable continuation for the price-window chunk is this Agent OS file plus current PR #757/#8014 exact-source metadata/readbacks, not an asserted new #7151 comment receipt. The older #7151 comment remains useful history but is stale for this latest chunk. This correction supersedes any conditional wording above that implied the price-window #7151 frontier had already been advanced/read back.
+
+No product/source behavior changed in this correction. EFFECT_UNKNOWN remains none.
