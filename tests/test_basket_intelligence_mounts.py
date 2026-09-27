@@ -251,7 +251,30 @@ def test_common_template_has_exactly_one_aggregator_include_outside_app():
 
 def test_basket_detail_diff_is_exactly_one_inserted_line():
     """`git diff --numstat` of basket_detail.html.j2 vs. the pre-T10b head must
-    be exactly `1\\t0` — one inserted line, zero deleted lines."""
+    be exactly `1\\t0` — one inserted line, zero deleted lines.
+
+    This is the one assertion in this suite that needs *history* rather than
+    working-tree content. The added line and its position are already pinned
+    from the tree by ``test_common_template_has_exactly_one_aggregator_include
+    _outside_app``; what only a diff can show is the ``-0`` — that nothing else
+    in a template frozen by #7669 moved. A checkout that does not carry
+    ``T10B_BASE_COMMIT`` cannot evaluate that claim at all: git answers
+    ``fatal: bad revision`` with exit 128, which a bare returncode assertion
+    reports as a template regression that did not happen. Resolve the base
+    first and skip honestly when it is absent.
+    """
+    resolved = subprocess.run(
+        ["git", "rev-parse", "--verify", "--quiet",
+         f"{T10B_BASE_COMMIT}^{{commit}}"],
+        capture_output=True, text=True, cwd=str(REPO_ROOT),
+    )
+    if resolved.returncode != 0:
+        pytest.skip(
+            f"pre-T10b base {T10B_BASE_COMMIT} is not present in this checkout "
+            f"(shallow clone / grafted history), so the -0 half of L1 is not "
+            f"evaluable here; the tree-content half is covered by "
+            f"test_common_template_has_exactly_one_aggregator_include_outside_app"
+        )
     result = subprocess.run(
         ["git", "diff", "--numstat", T10B_BASE_COMMIT, "--",
          "templates/basket_detail.html.j2"],

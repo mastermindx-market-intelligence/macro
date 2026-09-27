@@ -42,8 +42,6 @@ import re
 from pathlib import Path
 from typing import Any, Mapping
 
-import jsonschema
-
 #: Frozen schema id string — also the required ``schema`` property's const.
 SCHEMA_ID = "theme_graph.curation_assertion.v1"
 
@@ -76,10 +74,27 @@ _CLOCK_RE = re.compile(
 _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 SCHEMA_PATH = _REPO_ROOT / "contracts" / "theme_graph" / "curation_assertion.v1.schema.json"
 
-#: The schema is the contract; loaded once, validated once at import so a
-#: malformed schema file fails loudly at import rather than per-payload.
+#: The schema is the contract; the FILE is loaded at import, so a malformed
+#: schema still fails loudly there. The VALIDATOR is built on first use: this
+#: module sits in the shared ``app.main`` import closure, and a hard
+#: ``import jsonschema`` here made an unprovisioned app import raise
+#: ModuleNotFoundError instead of degrading (pinned by
+#: ``test_unprovisioned_app_import_defers_biocatalyst_contract_runtime``).
+#: Deferral is the convention ``engine/options_nbbo_cohort.py`` already uses.
+#: Nothing is lost by building it lazily — constructing a Draft202012Validator
+#: never validated the schema in the first place; that is ``check_schema``.
 _SCHEMA: dict[str, Any] = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
-_VALIDATOR = jsonschema.Draft202012Validator(_SCHEMA)  # matches evidence.v1's draft
+_VALIDATOR: Any | None = None
+
+
+def _validator() -> Any:
+    """The Draft 2020-12 validator for :data:`_SCHEMA`, built once on first use."""
+    global _VALIDATOR
+    if _VALIDATOR is None:
+        from jsonschema import Draft202012Validator  # noqa: PLC0415
+
+        _VALIDATOR = Draft202012Validator(_SCHEMA)  # matches evidence.v1's draft
+    return _VALIDATOR
 
 
 class CurationAssertionError(ValueError):
@@ -256,7 +271,7 @@ def _validated_content(payload: Mapping[str, Any]) -> dict[str, Any]:
     _check_published_at_grain(data)
     _check_industrial_context(data)
 
-    errs = sorted(_VALIDATOR.iter_errors(data), key=lambda e: str(e.path))
+    errs = sorted(_validator().iter_errors(data), key=lambda e: str(e.path))
     if errs:
         raise CurationAssertionError(f"schema_violation: {errs[0].message}")
     return data
