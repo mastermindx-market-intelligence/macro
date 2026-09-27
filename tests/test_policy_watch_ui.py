@@ -1865,3 +1865,645 @@ def test_r2_market_views_fail_closed_when_snapshot_date_is_invalid(monkeypatch):
     assert "Analysis snapshot date unavailable" in views
     assert "分析快照日期不可用" in views
     assert "2026-09-12T09:22:24" not in views
+
+# --------------------------------------------------------------------------- #
+# R3 official policy-event feed — one read-only Policy Watch consumer over the
+# existing Europe/qbus producer artifacts. Discovery context is not a stage,
+# score, ranking, sizing input, or trade instruction.
+# --------------------------------------------------------------------------- #
+
+
+def _write_r3_policy_event_artifacts(root, events, coverage):
+    import pandas as pd
+
+    folder = root / "data" / "europe_news_vector"
+    folder.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(events).to_parquet(folder / "events.parquet", index=False)
+    pd.DataFrame(coverage).to_parquet(folder / "coverage.parquet", index=False)
+
+
+def _r3_event(
+    *,
+    title="Commission presents landmark India trade deal to Council for signature",
+    url="https://ec.europa.eu/commission/presscorner/detail/en/ip_26_1842",
+    source="ec_presscorner",
+    domain="ec.europa.eu",
+    jurisdiction="EU",
+    theme="trade_policy",
+    seendate="2026-09-10T22:00:00+00:00",
+    first_seen="2026-09-11T11:53:40+00:00",
+    coverage_state="COVERED",
+    timestamp_quality="PUBLISHER_STATED",
+):
+    return {
+        "event_id": "evt-" + source + "-" + theme + "-" + seendate[:10],
+        "item_id": "item-" + source + "-" + theme + "-" + seendate[:10],
+        "first_seen_utc": first_seen,
+        "seendate": seendate,
+        "fetch_clock_utc": first_seen,
+        "asof": seendate[:10],
+        "title": title,
+        "url": url,
+        "source": source,
+        "domain": domain,
+        "source_tier": 1,
+        "lang": "en",
+        "theme": theme,
+        "jurisdiction": jurisdiction,
+        "coverage_state": coverage_state,
+        "timestamp_quality": timestamp_quality,
+        "body_sha256": "a" * 64,
+        "rights_basis": "verified public reuse",
+    }
+
+
+def _r3_coverage(
+    source_key,
+    state,
+    *,
+    rights="VERIFIED_PUBLIC_REUSE",
+    checked="2026-09-13T15:35:34+00:00",
+    asof="2026-09-13",
+):
+    return {
+        "asof": asof,
+        "source_key": source_key,
+        "coverage_state": state,
+        "rights_state": rights,
+        "n_items": 10,
+        "newest_seendate": "2026-09-11T15:34:00+00:00",
+        "fetch_clock_utc": checked,
+        "detail": "",
+    }
+
+
+def test_r3_policy_event_feed_selects_recent_specific_rights_safe_events(tmp_path):
+    from datetime import datetime, timezone
+    from engine import policy_watch_current as pwc
+
+    build = getattr(pwc, "build_policy_event_feed", None)
+    assert callable(build), "Policy Watch has no consumer for the existing Europe policy-event artifacts"
+
+    _write_r3_policy_event_artifacts(
+        tmp_path,
+        [
+            _r3_event(),
+            _r3_event(
+                title="Generic commissioner remarks",
+                url="https://ec.europa.eu/commission/presscorner/detail/en/speech_26_9999",
+                theme="policy_geo_other",
+            ),
+            _r3_event(
+                title="Future-dated policy item",
+                url="https://ec.europa.eu/commission/presscorner/detail/en/ip_26_9998",
+                theme="regulatory",
+                seendate="2026-09-14T22:00:00+00:00",
+                first_seen="2026-09-14T23:00:00+00:00",
+            ),
+            _r3_event(
+                title="Excluded-source item",
+                url="https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.mp260910~x.en.html",
+                source="ecb_press",
+                domain="www.ecb.europa.eu",
+                jurisdiction="EA",
+                theme="monetary_policy",
+            ),
+            _r3_event(
+                title="Old Bank Rate item",
+                url="https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/july-2026",
+                source="boe_news",
+                domain="www.bankofengland.co.uk",
+                jurisdiction="UK",
+                theme="monetary_policy",
+                seendate="2026-07-30T11:00:00+00:00",
+                first_seen="2026-09-10T13:13:54+00:00",
+                coverage_state="DELAYED_SOURCE",
+            ),
+        ],
+        [
+            _r3_coverage("ec_presscorner", "COVERED"),
+            _r3_coverage("boe_news", "DELAYED_SOURCE"),
+            _r3_coverage("ecb_press", "SOURCE_OUTAGE", rights="UNVERIFIED_EXCLUDED"),
+        ],
+    )
+
+    view = build(tmp_path, now=datetime(2026, 9, 13, 18, 0, tzinfo=timezone.utc))
+
+    assert view["schema"] == "policy_watch_event_feed.v1"
+    assert view["state"] == "partial"
+    assert view["fresh"] is True
+    assert [row["title"] for row in view["items"]] == [
+        "Commission presents landmark India trade deal to Council for signature"
+    ]
+    item = view["items"][0]
+    assert item["source_date"] == "2026-09-10"
+    assert item["known_at"] == "2026-09-11T11:53:40Z"
+    assert item["publisher"] == "European Commission"
+    assert item["theme"] == "trade_policy"
+    assert item["jurisdiction"] == "EU"
+    assert item["url"].startswith("https://ec.europa.eu/")
+    assert {row["source_key"]: row["coverage_state"] for row in view["sources"]} == {
+        "boe_news": "DELAYED_SOURCE",
+        "ec_presscorner": "COVERED",
+    }
+    assert all(row["source_key"] != "ecb_press" for row in view["sources"])
+    assert view["coverage_checked_at"] == "2026-09-13T15:35:34Z"
+    assert view["is_context_only"] is True
+    assert view["can_rank"] is False
+    assert view["can_gate"] is False
+    assert view["can_size"] is False
+    assert view["can_trade"] is False
+
+
+def test_r3_policy_event_feed_ignores_rights_excluded_outage_for_health(tmp_path):
+    from datetime import datetime, timezone
+    from engine.policy_watch_current import build_policy_event_feed
+
+    _write_r3_policy_event_artifacts(
+        tmp_path,
+        [_r3_event()],
+        [
+            _r3_coverage("ec_presscorner", "COVERED"),
+            _r3_coverage("boe_news", "COVERED"),
+            _r3_coverage("ecb_press", "SOURCE_OUTAGE", rights="UNVERIFIED_EXCLUDED"),
+        ],
+    )
+    view = build_policy_event_feed(
+        tmp_path, now=datetime(2026, 9, 13, 18, 0, tzinfo=timezone.utc)
+    )
+    assert view["state"] == "current"
+    assert view["fresh"] is True
+    assert {row["source_key"] for row in view["sources"]} == {"ec_presscorner", "boe_news"}
+
+
+def test_r3_policy_event_feed_source_outage_keeps_saved_context_without_fresh_claim(tmp_path):
+    from datetime import datetime, timezone
+    from engine.policy_watch_current import build_policy_event_feed
+
+    _write_r3_policy_event_artifacts(
+        tmp_path,
+        [_r3_event()],
+        [
+            _r3_coverage("ec_presscorner", "SOURCE_OUTAGE"),
+            _r3_coverage("boe_news", "SOURCE_OUTAGE"),
+        ],
+    )
+    view = build_policy_event_feed(
+        tmp_path, now=datetime(2026, 9, 13, 18, 0, tzinfo=timezone.utc)
+    )
+    assert view["state"] == "source_outage"
+    assert view["fresh"] is False
+    assert len(view["items"]) == 1
+    assert view["items"][0]["source_date"] == "2026-09-10"
+
+
+def test_r3_policy_event_feed_stale_coverage_is_not_current(tmp_path):
+    from datetime import datetime, timezone
+    from engine.policy_watch_current import build_policy_event_feed
+
+    _write_r3_policy_event_artifacts(
+        tmp_path,
+        [_r3_event()],
+        [
+            _r3_coverage("ec_presscorner", "COVERED", checked="2026-09-10T00:00:00+00:00"),
+            _r3_coverage("boe_news", "COVERED", checked="2026-09-10T00:00:00+00:00"),
+        ],
+    )
+    view = build_policy_event_feed(
+        tmp_path, now=datetime(2026, 9, 13, 18, 0, tzinfo=timezone.utc)
+    )
+    assert view["state"] == "stale"
+    assert view["fresh"] is False
+    assert len(view["items"]) == 1
+
+
+def test_r3_policy_event_feed_missing_artifacts_is_typed_unavailable(tmp_path):
+    from datetime import datetime, timezone
+    from engine.policy_watch_current import build_policy_event_feed
+
+    view = build_policy_event_feed(
+        tmp_path, now=datetime(2026, 9, 13, 18, 0, tzinfo=timezone.utc)
+    )
+    assert view["state"] == "unavailable"
+    assert view["fresh"] is False
+    assert view["coverage_checked_at"] is None
+    assert view["items"] == []
+
+
+def test_r3_policy_event_feed_rejects_host_spoof_and_future_known_at(tmp_path):
+    from datetime import datetime, timezone
+    from engine.policy_watch_current import build_policy_event_feed
+
+    _write_r3_policy_event_artifacts(
+        tmp_path,
+        [
+            _r3_event(
+                title="Host spoof",
+                url="https://ec.europa.eu.example.com/commission/presscorner/detail/en/ip_26_1",
+            ),
+            _r3_event(
+                title="Future observation",
+                url="https://ec.europa.eu/commission/presscorner/detail/en/ip_26_2",
+                first_seen="2026-09-14T00:00:00+00:00",
+            ),
+        ],
+        [
+            _r3_coverage("ec_presscorner", "COVERED"),
+            _r3_coverage("boe_news", "COVERED"),
+        ],
+    )
+    view = build_policy_event_feed(
+        tmp_path, now=datetime(2026, 9, 13, 18, 0, tzinfo=timezone.utc)
+    )
+    assert view["state"] == "no_recent_events"
+    assert view["items"] == []
+
+
+def _r3_policy_event_view(state="partial"):
+    return {
+        "schema": "policy_watch_event_feed.v1",
+        "state": state,
+        "fresh": state in {"current", "partial", "no_recent_events"},
+        "coverage_checked_at": "2026-09-13T15:35:34Z",
+        "sources": [
+            {
+                "source_key": "boe_news",
+                "publisher": "Bank of England",
+                "jurisdiction": "UK",
+                "coverage_state": "DELAYED_SOURCE" if state == "partial" else "COVERED",
+                "checked_at": "2026-09-13T15:35:34Z",
+            },
+            {
+                "source_key": "ec_presscorner",
+                "publisher": "European Commission",
+                "jurisdiction": "EU",
+                "coverage_state": "COVERED",
+                "checked_at": "2026-09-13T15:35:34Z",
+            },
+        ],
+        "items": [{
+            "event_id": "evt-eu-trade-20260910",
+            "title": "Commission presents landmark India trade deal to Council for signature",
+            "url": "https://ec.europa.eu/commission/presscorner/detail/en/ip_26_1842",
+            "publisher": "European Commission",
+            "source_key": "ec_presscorner",
+            "jurisdiction": "EU",
+            "theme": "trade_policy",
+            "published_at": "2026-09-10T22:00:00Z",
+            "source_date": "2026-09-10",
+            "known_at": "2026-09-11T11:53:40Z",
+            "source_tier": 1,
+        }],
+        "is_context_only": True,
+        "can_rank": False,
+        "can_gate": False,
+        "can_size": False,
+        "can_trade": False,
+    }
+
+
+def _render_policy_watch_with_policy_events(feed_fixture, monkeypatch):
+    import scripts.build_policy_watch as bpw
+    from engine import fed_stance as _fs
+    from engine import policy_intent_desk as _pid
+    from engine import policy_rotation_check as _rotc
+
+    build = getattr(bpw, "build_policy_event_feed", None)
+    assert callable(build), "Policy Watch builder does not consume the existing policy-event feed"
+    monkeypatch.setattr(bpw, "build_policy_event_feed", lambda *args, **kwargs: feed_fixture)
+    monkeypatch.setattr(_fs, "append_history", lambda *args, **kwargs: False)
+    monkeypatch.setattr(_rotc, "append_history", lambda *args, **kwargs: False)
+    monkeypatch.setattr(_pid, "ingest_lifecycle", lambda *args, **kwargs: 0)
+    monkeypatch.setattr(_pid, "lifecycle_view", lambda *args, **kwargs: LIFECYCLE_FIXTURE)
+
+    captured = {}
+    monkeypatch.setattr(bpw, "write_page", lambda path, html: captured.setdefault("html", html))
+    assert bpw.main() == 0
+    return captured["html"]
+
+
+def test_r3_official_policy_events_render_inside_existing_policy_section(monkeypatch):
+    html = _render_policy_watch_with_policy_events(_r3_policy_event_view(), monkeypatch)
+    policy = html.split('id="policy">', 1)[1].split("</section>", 1)[0]
+
+    assert policy.count('data-policy-event-feed="1"') == 1
+    assert 'data-policy-events-state="partial"' in policy
+    assert "Official policy events" in policy and "官方政策动态" in policy
+    assert "Commission presents landmark India trade deal to Council for signature" in policy
+    assert "Trade policy" in policy and "贸易政策" in policy
+    assert "September 10, 2026" in policy and "2026年9月10日" in policy
+    assert "September 11, 2026 11:53 UTC" in policy and "2026年9月11日 11:53 UTC" in policy
+    assert "Latest source check" in policy and "最近一次来源检查" in policy
+    assert "September 13, 2026 15:35 UTC" in policy and "2026年9月13日 15:35 UTC" in policy
+    assert 'href="https://ec.europa.eu/commission/presscorner/detail/en/ip_26_1842"' in policy
+    assert "Some official sources are delayed, stale, not responding, or not yet covered." in policy
+    assert "部分官方来源可能延迟、过时、未响应或尚未覆盖。" in policy
+    assert "Discovery only — not a lifecycle stage or market signal." in policy
+    assert "仅用于发现——不是政策阶段，也不是市场信号。" in policy
+    visible = re.sub(r"<[^>]+>", " ", policy)
+    assert "trade_policy" not in visible
+    assert "DELAYED_SOURCE" not in visible
+    assert html.count('<section class="pw-section"') == 7
+    assert "World events that matter" in policy
+
+
+def test_r3_partial_feed_copy_names_each_degraded_source_condition(monkeypatch):
+    feed = _r3_policy_event_view("partial")
+    feed["sources"] = [
+        {
+            "source_key": "boe_news",
+            "publisher": "Bank of England",
+            "jurisdiction": "UK",
+            "coverage_state": "DELAYED_SOURCE",
+            "checked_at": "2026-09-13T15:35:34Z",
+        },
+        {
+            "source_key": "ec_presscorner",
+            "publisher": "European Commission",
+            "jurisdiction": "EU",
+            "coverage_state": "STALE",
+            "checked_at": "2026-09-13T15:35:34Z",
+        },
+        {
+            "source_key": "official_source_outage",
+            "publisher": "Official source C",
+            "jurisdiction": "EU",
+            "coverage_state": "SOURCE_OUTAGE",
+            "checked_at": "2026-09-13T15:35:34Z",
+        },
+        {
+            "source_key": "official_source_missing",
+            "publisher": "Official source D",
+            "jurisdiction": "EU",
+            "coverage_state": "NO_COVERAGE",
+            "checked_at": "2026-09-13T15:35:34Z",
+        },
+    ]
+    html = _render_policy_watch_with_policy_events(feed, monkeypatch)
+    policy = html.split('id="policy">', 1)[1].split("</section>", 1)[0]
+
+    assert "Some official sources are delayed, stale, not responding, or not yet covered." in policy
+    assert "部分官方来源可能延迟、过时、未响应或尚未覆盖。" in policy
+    for label in ("Delayed", "Stale", "Source outage", "No coverage"):
+        assert label in policy
+    for label in ("延迟", "已过时", "来源中断", "暂无覆盖"):
+        assert label in policy
+    assert "Some official sources are delayed." not in policy
+
+
+def test_r3_source_outage_without_saved_items_does_not_promise_rows(monkeypatch):
+    feed = _r3_policy_event_view("source_outage")
+    feed["items"] = []
+    for source in feed["sources"]:
+        source["coverage_state"] = "SOURCE_OUTAGE"
+    html = _render_policy_watch_with_policy_events(feed, monkeypatch)
+    policy = html.split('id="policy">', 1)[1].split("</section>", 1)[0]
+
+    assert (
+        "Official policy sources did not answer this time. "
+        "Saved dated items appear below when available."
+    ) in policy
+    assert "本次官方政策来源未响应。如有已保存且带日期的动态，将显示在下方。" in policy
+    assert "Saved dated items are shown below." not in policy
+    assert "以下显示已保存且带日期的动态。" not in policy
+    assert 'class="pw-policy-feed-list"' not in policy
+
+
+def test_r3_stale_feed_without_saved_items_does_not_promise_rows(monkeypatch):
+    feed = _r3_policy_event_view("stale")
+    feed["items"] = []
+    for source in feed["sources"]:
+        source["coverage_state"] = "STALE"
+    html = _render_policy_watch_with_policy_events(feed, monkeypatch)
+    policy = html.split('id="policy">', 1)[1].split("</section>", 1)[0]
+
+    assert (
+        "Source coverage has not refreshed recently. "
+        "Saved dated items appear below when available."
+    ) in policy
+    assert "来源覆盖最近未更新。如有已保存且带日期的动态，将显示在下方。" in policy
+    assert "Saved dated items are shown below." not in policy
+    assert "以下显示已保存且带日期的动态。" not in policy
+    assert 'class="pw-policy-feed-list"' not in policy
+
+def test_r3_policy_event_feed_malformed_source_tier_fails_closed_not_page_wide(tmp_path):
+    from datetime import datetime, timezone
+    from engine.policy_watch_current import build_policy_event_feed
+
+    row = _r3_event()
+    row["source_tier"] = "not-a-number"
+    _write_r3_policy_event_artifacts(
+        tmp_path,
+        [row],
+        [
+            _r3_coverage("ec_presscorner", "COVERED"),
+            _r3_coverage("boe_news", "COVERED"),
+        ],
+    )
+
+    view = build_policy_event_feed(
+        tmp_path, now=datetime(2026, 9, 13, 18, 0, tzinfo=timezone.utc)
+    )
+    assert view["state"] == "current"
+    assert len(view["items"]) == 1
+    assert view["items"][0]["source_tier"] == 99
+
+
+def test_r3_policy_event_feed_is_read_only(tmp_path):
+    import hashlib
+    from datetime import datetime, timezone
+    from engine.policy_watch_current import build_policy_event_feed
+
+    _write_r3_policy_event_artifacts(
+        tmp_path,
+        [_r3_event()],
+        [
+            _r3_coverage("ec_presscorner", "COVERED"),
+            _r3_coverage("boe_news", "COVERED"),
+        ],
+    )
+    paths = sorted((tmp_path / "data" / "europe_news_vector").glob("*.parquet"))
+    before = {path: hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
+
+    build_policy_event_feed(
+        tmp_path, now=datetime(2026, 9, 13, 18, 0, tzinfo=timezone.utc)
+    )
+
+    after = {path: hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
+    assert after == before
+    assert sorted((tmp_path / "data" / "europe_news_vector").glob("*")) == paths
+
+
+def test_r3_current_feed_copy_is_not_duplicated_and_publishers_are_bilingual(monkeypatch):
+    html = _render_policy_watch_with_policy_events(_r3_policy_event_view("current"), monkeypatch)
+    policy = html.split('id="policy">', 1)[1].split("</section>", 1)[0]
+
+    assert policy.count("Official sources answered.") == 1
+    assert policy.count("官方来源已响应。") == 1
+    assert "Original source title" in policy and "原文标题" in policy
+    assert "European Commission" in policy and "欧盟委员会" in policy
+    assert "Bank of England" in policy and "英格兰银行" in policy
+
+
+def test_r3_stale_feed_uses_typed_source_label_not_legacy_refresh_copy(monkeypatch):
+    html = _render_policy_watch_with_policy_events(_r3_policy_event_view("stale"), monkeypatch)
+    policy = html.split('id="policy">', 1)[1].split("</section>", 1)[0]
+
+    assert "Needs refresh" not in policy
+    assert "Source coverage stale" in policy
+    assert "来源覆盖已过时" in policy
+    assert "Source coverage has not refreshed recently." in policy
+
+
+def test_r3_policy_event_feed_marks_staleness_per_source(tmp_path):
+    from datetime import datetime, timezone
+    from engine.policy_watch_current import build_policy_event_feed
+
+    _write_r3_policy_event_artifacts(
+        tmp_path,
+        [_r3_event()],
+        [
+            _r3_coverage("ec_presscorner", "COVERED", checked="2026-09-13T15:35:34+00:00"),
+            _r3_coverage("boe_news", "COVERED", checked="2026-09-10T00:00:00+00:00"),
+        ],
+    )
+    view = build_policy_event_feed(
+        tmp_path, now=datetime(2026, 9, 13, 18, 0, tzinfo=timezone.utc)
+    )
+
+    assert view["state"] == "partial"
+    assert view["fresh"] is True
+    assert {row["source_key"]: row["coverage_state"] for row in view["sources"]} == {
+        "boe_news": "STALE",
+        "ec_presscorner": "COVERED",
+    }
+
+
+def test_r3_policy_event_feed_all_recent_delayed_sources_are_partial_not_fresh(tmp_path):
+    from datetime import datetime, timezone
+    from engine.policy_watch_current import build_policy_event_feed
+
+    _write_r3_policy_event_artifacts(
+        tmp_path,
+        [_r3_event()],
+        [
+            _r3_coverage("ec_presscorner", "DELAYED_SOURCE"),
+            _r3_coverage("boe_news", "DELAYED_SOURCE"),
+        ],
+    )
+    view = build_policy_event_feed(
+        tmp_path, now=datetime(2026, 9, 13, 18, 0, tzinfo=timezone.utc)
+    )
+
+    assert view["state"] == "partial"
+    assert view["fresh"] is False
+
+
+def test_r3_policy_event_display_clock_rejects_timezone_less_instants():
+    from scripts.build_policy_watch import decorate_policy_event_feed
+
+    feed = decorate_policy_event_feed({
+        "coverage_checked_at": "2026-09-13T15:35:34",
+        "items": [{"source_date": "2026-09-10", "known_at": "2026-09-11T11:53:40"}],
+        "sources": [{"checked_at": "2026-09-13T15:35:34"}],
+    })
+
+    assert feed["coverage_checked_at_en"] == ""
+    assert feed["coverage_checked_at_zh"] == ""
+    assert feed["items"][0]["known_at_en"] == ""
+    assert feed["items"][0]["known_at_zh"] == ""
+    assert feed["sources"][0]["checked_at_en"] == ""
+    assert feed["sources"][0]["checked_at_zh"] == ""
+
+
+def test_r3_policy_event_feed_does_not_mint_missing_event_identity(tmp_path):
+    from datetime import datetime, timezone
+    from engine.policy_watch_current import build_policy_event_feed
+
+    row = _r3_event()
+    row["event_id"] = ""
+    _write_r3_policy_event_artifacts(
+        tmp_path,
+        [row],
+        [
+            _r3_coverage("ec_presscorner", "COVERED"),
+            _r3_coverage("boe_news", "COVERED"),
+        ],
+    )
+    view = build_policy_event_feed(
+        tmp_path, now=datetime(2026, 9, 13, 18, 0, tzinfo=timezone.utc)
+    )
+
+    assert view["state"] == "no_recent_events"
+    assert view["items"] == []
+
+
+def test_r3_policy_event_feed_rejects_timezone_less_event_clocks(tmp_path):
+    from datetime import datetime, timezone
+    from engine.policy_watch_current import build_policy_event_feed
+
+    naive_published = _r3_event(
+        title="Naive publisher time",
+        url="https://ec.europa.eu/commission/presscorner/detail/en/ip_26_naive_1",
+        seendate="2026-09-10T22:00:00",
+    )
+    naive_known = _r3_event(
+        title="Naive first-seen time",
+        url="https://ec.europa.eu/commission/presscorner/detail/en/ip_26_naive_2",
+        first_seen="2026-09-11T11:53:40",
+    )
+    _write_r3_policy_event_artifacts(
+        tmp_path,
+        [naive_published, naive_known],
+        [
+            _r3_coverage("ec_presscorner", "COVERED"),
+            _r3_coverage("boe_news", "COVERED"),
+        ],
+    )
+    view = build_policy_event_feed(
+        tmp_path, now=datetime(2026, 9, 13, 18, 0, tzinfo=timezone.utc)
+    )
+
+    assert view["state"] == "no_recent_events"
+    assert view["items"] == []
+
+
+def test_r3_policy_event_feed_rejects_timezone_less_coverage_clock(tmp_path):
+    from datetime import datetime, timezone
+    from engine.policy_watch_current import build_policy_event_feed
+
+    _write_r3_policy_event_artifacts(
+        tmp_path,
+        [_r3_event()],
+        [
+            _r3_coverage("ec_presscorner", "COVERED", checked="2026-09-13T15:35:34"),
+            _r3_coverage("boe_news", "COVERED", checked="2026-09-13T15:35:34"),
+        ],
+    )
+    view = build_policy_event_feed(
+        tmp_path, now=datetime(2026, 9, 13, 18, 0, tzinfo=timezone.utc)
+    )
+
+    assert view["state"] == "no_coverage"
+    assert view["fresh"] is False
+    assert all(row["checked_at"] is None for row in view["sources"])
+
+
+def test_r3_policy_event_source_date_preserves_publisher_calendar_day(tmp_path):
+    from datetime import datetime, timezone
+    from engine.policy_watch_current import build_policy_event_feed
+
+    _write_r3_policy_event_artifacts(
+        tmp_path,
+        [_r3_event(seendate="2026-09-10T23:30:00-04:00")],
+        [
+            _r3_coverage("ec_presscorner", "COVERED"),
+            _r3_coverage("boe_news", "COVERED"),
+        ],
+    )
+    view = build_policy_event_feed(
+        tmp_path, now=datetime(2026, 9, 13, 18, 0, tzinfo=timezone.utc)
+    )
+
+    assert view["items"][0]["source_date"] == "2026-09-10"
+    assert view["items"][0]["published_at"] == "2026-09-11T03:30:00Z"
