@@ -8,8 +8,12 @@ answer: >
   No. Absence of a signal may never authorize a destructive act on a shared
   worktree. Only a POSITIVE completion signal may, and the canonical one is
   `HEAD` being an ancestor of `origin/main`: the commits have landed, so the
-  checkout is pure reproducible cache and removing it cannot lose work even if a
-  session is still attached to the directory. Idle windows, live-cwd scans and
+  checkout is pure reproducible cache and removing it cannot lose work. That
+  signal authorizes reclaiming the BYTES and nothing more: it protects the WORK,
+  not the SESSION, so reclaim additionally requires that nothing is attached to
+  the directory, and roots that host human-driven web conversations are never
+  auto-reclaimed at all because attachment there is undetectable. Idle windows,
+  live-cwd scans and
   reflog ages may be REPORTED for a human, and may narrow an already-authorized
   action, but may never be the authorization. Any sweeper that cannot establish
   the positive signal must fail closed and refuse.
@@ -76,6 +80,7 @@ evidence:
   - "Incident receipt: ~/.local/state/mastermind/storage-cleanup/sparse-retrofit-1790425898.json -- applied=true, min_idle=None, CONVERTED 59, and the run predates the idle gate entirely"
   - "Population shape: 810 worktrees registered; 380 born in 7d = 54/day; 359 of 380 born sparse (93%)"
   - "Correctly-gated re-measure: 27 FULL trees remain, 0.0 GiB reclaimable (20 dirty, 5 unlanded, 1 active, 1 human-root)"
+  - "Landed-pool census over 811 trees (landed_reaper.py, report-only): strict pool 48 trees / 73.2 GiB; 638 REFUSED as UNLANDED; 87 landed-but-dirty; 26 not on disk; 7 tracked-only-gate; 4 fail-closed -- i.e. 79% of worktrees never land their work, so the bloat is unmerged WORK and no completion-signal sweeper can reach most of it"
   - "Reflog entry epochs of the 59: 5 had git activity within 6h of conversion; 33 were 1-3d idle; 21 were >3d"
   - "Preservation verified on a converted tree: data 62071 / site 19511 / mockups 6573 / verify_shots 445 files still tracked in the index, git status clean"
   - "Gate fix: ~/.local/lib/mastermind/storage-cleanup/sparse_retrofit_sweep.py now requires landed() and refuses HUMAN_DRIVEN_ROOTS; launchd job booted out and --apply stripped from the plist"
@@ -105,7 +110,11 @@ there":
    already cover 93% of mints. The ChatGPT-web path drives raw shell and has no hook
    surface; do not chase it with instructions, let point 2 absorb it.
 2. **At merge — reclaim the landed checkout.** Gate: `HEAD ⊆ origin/main` **and**
-   `git status --porcelain` empty. No TTL, no idle window, no process scan, no salvage ref.
+   `git status --porcelain` empty **and nothing attached to the directory**. No TTL, no idle
+   window, no salvage ref. Measured pool: 48 trees / 73.2 GiB — necessary, and nowhere near
+   sufficient, because 638 of 811 trees are UNLANDED. That bucket belongs to
+   `refs/salvage/*` (which decouples preserving commits from freeing checkouts for ~40 bytes
+   each), and ultimately to reducing how many lanes open that never merge.
 3. **At a ceiling — a hard per-root population cap**, evicting landed-and-clean trees
    oldest-first. This is what converts unbounded growth into a bounded steady state.
 

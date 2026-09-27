@@ -404,11 +404,18 @@ them apart:
 | **ChatGPT web conversation (Sol reviews)** | **no shell at all; resumes when its human replies** | **nothing whatsoever — no threshold is safe** |
 
 **Why the positive signal is also cheaper.** It arrives for free the moment a PR
-squash-merges. It needs no TTL, no polling, no `du`, and no process scan. It is safe even
-when a session is still sitting in the directory, because every byte is reproducible from
-`origin/main`. And it collapses a step: a landed tree needs **no `refs/salvage/*` ref at
+squash-merges. It needs no TTL, no polling and no `du`. And it collapses a step: a landed tree needs **no `refs/salvage/*` ref at
 all** — `origin/main` already references its commits, so durability is automatic rather
 than purchased (contrast §"salvage" for DETACHED trees, which remains necessary there).
+
+**THE SIGNAL PROTECTS THE WORK, NOT THE SESSION.** This is the correction that matters
+most, because getting it wrong reproduces the incident in a new form. "Landed" proves the
+BYTES are reproducible; it says nothing about whether someone is standing in the directory.
+Deleting a checkout destroys the working directory of anything attached to it exactly as
+thinning it did. So reclaim requires landed **and** nothing attached — and since a
+resumable web conversation is undetectable by construction (no process, no shell, no
+reflog: it lives in a browser tab), **roots that host web sessions must never be
+auto-reclaimed at all.** A live-process scan is there to REFUSE, never to grant.
 
 **Three enforcement points; none asks "is anyone still there".**
 
@@ -427,6 +434,28 @@ than purchased (contrast §"salvage" for DETACHED trees, which remains necessary
 gate: **0.0 GiB** reclaimable across the 27 remaining FULL trees (20 carry local changes, 5
 are unlanded, 1 active, 1 in a web-session root). The reckless version looked valuable only
 because it was counting trees it had no right to touch.
+
+**Measured pool, and why point 2 is necessary but not sufficient (2026-09-26, 811 trees).**
+The landed-and-completely-clean pool is **48 trees / 73.2 GiB** — about 1.7 days of the
+~43 GiB/day accrual. The dominant refusal is the finding that reframes the whole problem:
+
+| verdict | trees |
+|---|---|
+| **UNLANDED — commits not on `origin/main`** | **638** |
+| landed but tracked modifications | 87 |
+| **ELIGIBLE (strict) — landed and completely clean** | **48** |
+| not on disk (prune candidate, zero bytes) | 26 |
+| eligible on the weaker tracked-only gate (holds untracked files) | 7 |
+| fail-closed (HEAD/ancestry unreadable) | 4 |
+| protected checkout | 1 |
+
+**79% of worktrees never land their work.** The bloat is therefore not uncollected garbage,
+it is *unmerged work* — so no completion-signal sweeper can ever reach most of it, and
+chasing a bigger sweeper is the wrong instinct. Two consequences: (a) `refs/salvage/*`
+(already minted for 534 trees) is the mechanism that matters for that bucket, because it
+decouples *preserving the commits* from *reclaiming the checkout* for ~40 bytes each — but
+it still does not license deleting under an attached session; (b) the durable fix is
+upstream of storage entirely, in **how many lanes are opened that never merge.**
 
 **Why accumulation is the real problem.** 810 worktrees registered; **54 minted per day
 sustained**, and approximately none removed, because sessions do not close their own

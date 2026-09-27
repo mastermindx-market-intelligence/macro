@@ -173,7 +173,17 @@ only — a human/Opus reviewer owns visual taste.
   removed). Retrofit-to-sparse is a one-time backlog drain, NOT an ongoing lever: correctly
   gated it yields 0.0 GiB across the 27 remaining FULL trees. Idle ages and live cwds may be
   REPORTED for a human, or narrow an action the positive signal already authorized — never
-  authorize one. See `research/WORKTREE_GC_POLICY.md` §9.
+  authorize one. **And the signal protects the WORK, not the SESSION:** deleting a checkout
+  destroys the working directory of anything attached exactly as thinning it did, so reclaim
+  requires landed AND nothing attached, and because a resumable web conversation is
+  undetectable by construction (no process, no shell, no reflog — it lives in a browser tab),
+  **roots hosting web sessions are never auto-reclaimed at all.** Measured 2026-09-26 across
+  811 trees: only **48 / 73.2 GiB** are landed-and-clean (~1.7 days of accrual), while
+  **638 are UNLANDED** — the bloat is unmerged WORK, not uncollected garbage, so no
+  completion-signal sweeper can reach most of it. For that bucket `refs/salvage/*` (534 refs
+  minted) decouples preserving the commits from freeing the checkout for ~40 bytes each, and
+  the durable fix is upstream of storage: how many lanes get opened that never merge.
+  See `research/WORKTREE_GC_POLICY.md` §9.
 - **A session worktree is planted under the checkout the SESSION was launched in**
   (2026-08-20). `.claude/hooks/worktree_create_sparse.py` used to derive its
   destination from `git rev-parse --git-common-dir`, which answers with the MAIN
