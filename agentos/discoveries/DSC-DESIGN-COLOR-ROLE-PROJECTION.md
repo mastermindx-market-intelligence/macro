@@ -137,3 +137,20 @@ Mastermind#927/comment5850272241's explicit file-wide hold. Preserve the existin
 R4 label/token/button/template effects and their source-specific limits. Continue
 through #7394; do not create another palette, component registry, writer or review
 obligation. The current cumulative continuation remains comment5846051051.
+
+
+## R7 continuation — source-state examples now executable
+
+The existing specimen panel `#specimen-state-actions` implements the prepared
+EN/ZH eight-state/five-save-outcome gallery. Native HTML inspection is functional;
+unconnected save/retry/clear/access controls remain disabled and labelled as
+fictional examples. No new state engine, event store or persistence owner.
+
+Source proof: 56 foundations tests passed with two corpus scans excluded; 20 local
+Chrome cells exercised 140 actual keyboard open/close checks, exact language,
+containment and disabled mock writes. Independent mutations detected missing
+partial state, unknown-to-retry substitution and an enabled fictional save.
+Neither these checks nor the R4/R6 outcomes prove real saving, native R5 application,
+reference approval, human comprehension or deployment. Current Paper hold remains
+Mastermind#927/5850272241, reaffirmed by5850928368. Do not replay the held native
+payloads or original cleanup. Evidence and current source are on the same #7394.

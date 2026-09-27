@@ -169,6 +169,18 @@ body.mobile-sim .wrap{ max-width:390px; box-sizing:border-box; }
   .hovercard, .hovercard:hover{ transform:none; }
   .gbtn::after{ display:none; }
 }
+
+/* R7 specimen composition only: existing State/Disclosure/Button families. */
+#specimen-state-actions .spec-state-case{ display:flex; flex-direction:column; gap:var(--sp-3); min-width:0; padding:var(--sp-4) 0; border-top:1px solid var(--line); }
+#specimen-state-actions h4{ margin:0; font-size:var(--fs-h2); line-height:1.4; }
+#specimen-state-actions p{ margin:0; color:var(--muted); font-size:var(--fs-body); text-transform:none; letter-spacing:normal; }
+#specimen-state-actions > .law{ margin:var(--sp-2) 0 var(--sp-4); }
+#specimen-state-actions .spec-state-case .mx-disc{ margin-top:auto; }
+#specimen-state-actions summary{ min-height:var(--sp-8); box-sizing:border-box; }
+#specimen-state-actions .gbtn{ align-self:flex-start; min-height:var(--sp-8); box-sizing:border-box; }
+#specimen-state-actions .spec-outcome-title{ margin-top:var(--sp-6); }
+#specimen-state-actions .spec-loading-shapes{ display:flex; gap:var(--sp-2); }
+#specimen-state-actions .spec-loading-shapes .skel{ height:14px; flex:1; }
 </style>
 </head>
 <body>
@@ -444,26 +456,28 @@ body.mobile-sim .wrap{ max-width:390px; box-sizing:border-box; }
       <p class="mockup-note l-zh">页签按任务命名；选中页签写入 URL hash；一级表格最多 8 行，配注明数量的「查看全部 N」。表格在自身容器内滚动，绝不带动页面。</p>
     </div>
 
-    <div class="panel">
-      <div class="mx-sec"><h3 class="l-en">Empty · Loading · Error · Stale</h3><h3 class="l-zh">空 · 加载 · 错误 · 滞后</h3></div>
-      <div class="mx-empty" style="border:1px dashed var(--line);border-radius:var(--r-card)">
-        <div class="mx-empty-line l-en">Quiet tape — nothing crossed a line since Friday’s close.</div>
-        <div class="mx-empty-line l-zh">盘面安静——自上周五收盘后没有信号越线。</div>
-        <div class="mx-empty-why l-en">No qualifying rows today · refreshes after the next close</div>
-        <div class="mx-empty-why l-zh">今日无符合条件的条目 · 下一收盘后刷新</div>
+    <div class="panel" id="specimen-state-actions" style="grid-column:1 / -1" aria-labelledby="specimen-state-actions-title">
+      <div class="mx-sec"><h3 id="specimen-state-actions-title"><span class="l-en">A clear state. A useful next step.</span><span class="l-zh">说清状态，给出有用的下一步。</span></h3></div>
+      <p class="law" id="specimen-state-actions-note"><span class="l-en">Fictional examples · each uses its own data. Details open here; save, retry and access buttons are not connected.</span><span class="l-zh">虚构示例 · 各示例的数据范围不同。详情可在此展开；保存、重试和权限按钮尚未连接服务。</span></p>
+      <div class="spec-grid">
+        <article class="spec-state-case" data-spec-state="partial"><h4><span class="l-en">6 of 9 above average</span><span class="l-zh">已有数据的9项中，6项高于均线</span></h4><p><span class="l-en">3 of 12 members unavailable. The rate uses only the 9 observed.</span><span class="l-zh">12项中有3项暂无数据。比例仅基于已有数据的9项。</span></p><details class="mx-disc"><summary data-spec-inspect="coverage"><span class="l-en">See coverage</span><span class="l-zh">查看数据覆盖</span></summary><div class="mx-disc-body"><p><span class="l-en">6 above average · 3 at or below · 3 unavailable.</span><span class="l-zh">6项高于均线 · 3项不高于均线 · 3项暂无数据。</span></p><p><span class="l-en">Rate basis: 6 / 9. This is not complete market breadth.</span><span class="l-zh">比例口径：6 / 9。这不代表完整的市场广度。</span></p></div></details></article>
+        <article class="spec-state-case" data-spec-state="conflicting"><h4><span class="l-en">Entry checks disagree</span><span class="l-zh">入场判断不一致</span></h4><p><span class="l-en">Entry: Ready · Extension: Wait</span><span class="l-zh">入场检查：就绪 · 偏离检查：等待</span></p><p><span class="l-en">No combined entry call. The checks answer different questions.</span><span class="l-zh">不合成为单一入场结论。两项检查回答不同问题。</span></p><details class="mx-disc"><summary data-spec-inspect="checks"><span class="l-en">Compare the checks</span><span class="l-zh">对比两项判断</span></summary><div class="mx-disc-body"><p><span class="l-en">Entry check: the example meets its timing condition. Extension check: price is too far from its reference.</span><span class="l-zh">入场检查：示例已满足择时条件。偏离检查：价格距参考位置过远。</span></p><p><span class="l-en">Same example snapshot; different methods. Keep both readings visible.</span><span class="l-zh">同一示例时点，不同方法。两项判断都应保留。</span></p></div></details></article>
+        <article class="spec-state-case" data-spec-state="empty"><h4><span class="l-en">No setups qualify</span><span class="l-zh">暂无符合条件的机会</span></h4><p><span class="l-en">All 24 checked. None meet the criteria.</span><span class="l-zh">已检查全部24项，目前均未满足条件。</span></p><details class="mx-disc"><summary data-spec-inspect="empty-scope"><span class="l-en">What was checked?</span><span class="l-zh">检查了哪些范围？</span></summary><div class="mx-disc-body"><p><span class="l-en">Complete current sample: 24 evaluated, 0 qualifying, 24 outside the criteria. No missing records were counted as failures.</span><span class="l-zh">当前示例数据完整：已评估24项，符合0项，不符合24项。没有把缺失记录计为不符合。</span></p></div></details></article>
+        <article class="spec-state-case" data-spec-state="filtered-empty"><h4><span class="l-en">No matches for 3 filters</span><span class="l-zh">没有符合这3项筛选条件的结果</span></h4><p><span class="l-en">12 items are available without these filters.</span><span class="l-zh">不应用这些筛选时，有12项结果。</span></p><details class="mx-disc"><summary data-spec-inspect="filters"><span class="l-en">See the 3 filters</span><span class="l-zh">查看这3项筛选</span></summary><div class="mx-disc-body"><p><span class="l-en">US listings · New this week · Not extended.</span><span class="l-zh">美国上市 · 本周新增 · 未过度偏离。</span></p><p><span class="l-en">Clear only these filters; keep the chosen market, view and other preferences.</span><span class="l-zh">仅清除这3项筛选，保留所选市场、视图及其他偏好。</span></p></div></details><button type="button" class="gbtn" disabled aria-describedby="specimen-state-actions-note"><span class="l-en">Clear 3 filters</span><span class="l-zh">清除这3项筛选</span></button></article>
+        <article class="spec-state-case" data-spec-state="loading"><h4><span class="l-en">Checking the latest data…</span><span class="l-zh">正在获取最新数据…</span></h4><p><span class="l-en">Other research remains available. No result is shown yet.</span><span class="l-zh">其他研究仍可查看，此项暂未得出结果。</span></p><div aria-hidden="true" class="spec-loading-shapes"><span class="skel"></span><span class="skel"></span><span class="skel"></span></div></article>
+        <article class="spec-state-case" data-spec-state="stale"><h4><span class="l-en">Latest update delayed</span><span class="l-zh">最新数据更新延迟</span></h4><p><span class="l-en">Last confirmed: 28 Aug, market close. This is not a current observation.</span><span class="l-zh">上次确认：8月28日收盘。这不是最新观测。</span></p><details class="mx-disc"><summary data-spec-inspect="dated-read"><span class="l-en">View last confirmed</span><span class="l-zh">查看上次确认的数据</span></summary><div class="mx-disc-body"><p><span class="l-en">Historical sample · 28 Aug close. The observation keeps its original date while the latest update is unavailable.</span><span class="l-zh">历史示例 · 8月28日收盘。最新数据暂不可用，旧观测保留原日期。</span></p></div></details></article>
+        <article class="spec-state-case" data-spec-state="error"><h4><span class="l-en">Latest update unavailable</span><span class="l-zh">暂时无法获取最新数据</span></h4><p><span class="l-en">Earlier evidence is still available.</span><span class="l-zh">较早的证据仍可查看。</span></p><button type="button" class="gbtn" disabled aria-describedby="specimen-state-actions-note"><span class="l-en">Try again</span><span class="l-zh">重试</span></button></article>
+        <article class="spec-state-case" data-spec-state="locked"><h4><span class="l-en">This detail requires access</span><span class="l-zh">此项详情需要相应权限</span></h4><p><span class="l-en">Only this detail is locked. The public answer and its public evidence remain available.</span><span class="l-zh">仅此项详情受限。公开结论及其公开证据仍可查看。</span></p><details class="mx-disc"><summary data-spec-inspect="public-evidence"><span class="l-en">What stays available?</span><span class="l-zh">哪些内容仍可查看？</span></summary><div class="mx-disc-body"><p><span class="l-en">The public assessment, its date, material limitations and public evidence stay outside this gate.</span><span class="l-zh">公开判读、日期、重要局限及公开证据不受此权限限制。</span></p></div></details><button type="button" class="gbtn" disabled aria-describedby="specimen-state-actions-note"><span class="l-en">View access</span><span class="l-zh">查看所需权限</span></button></article>
       </div>
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <span class="skel" style="width:38%;height:14px"></span>
-        <span class="skel" style="width:24%;height:14px"></span>
-        <span class="skel" style="width:18%;height:14px"></span>
+      <h4 class="spec-outcome-title"><span class="l-en">A request is not a completed action</span><span class="l-zh">提交请求不等于操作完成</span></h4>
+      <p class="law"><span class="l-en">Five independent saved-view examples—not a working save service or a sequence to click through.</span><span class="l-zh">以下为五种独立的保存结果示例，并非已连接的保存服务，也不是需要依次点击的流程。</span></p>
+      <div class="spec-grid">
+        <article class="spec-state-case" data-spec-save="ready"><h4><span class="l-en">Ready to save</span><span class="l-zh">可以保存</span></h4><p><span class="l-en">Keep this exact research view.</span><span class="l-zh">保存当前这份研究视图。</span></p><button type="button" class="gbtn gbtn-cta" disabled aria-describedby="specimen-state-actions-note"><span class="l-en">Save view</span><span class="l-zh">保存当前视图</span></button></article>
+        <article class="spec-state-case" data-spec-save="pending"><h4><span class="l-en">Saving…</span><span class="l-zh">正在保存…</span></h4><p><span class="l-en">You can keep researching while this view saves.</span><span class="l-zh">保存期间，您可以继续研究。</span></p><button type="button" class="gbtn" disabled aria-describedby="specimen-state-actions-note"><span class="l-en">Saving…</span><span class="l-zh">正在保存…</span></button></article>
+        <article class="spec-state-case" data-spec-save="confirmed"><h4><span class="l-en">View saved</span><span class="l-zh">视图已保存</span></h4><p><span class="l-en">Your view is in Saved views.</span><span class="l-zh">可在“已保存视图”中找到此视图。</span></p><button type="button" class="gbtn" disabled aria-describedby="specimen-state-actions-note"><span class="l-en">Open saved view</span><span class="l-zh">打开已保存的视图</span></button></article>
+        <article class="spec-state-case" data-spec-save="failed"><h4><span class="l-en">Not saved</span><span class="l-zh">未能保存</span></h4><p><span class="l-en">This view was not saved. Your current view is intact.</span><span class="l-zh">此视图未能保存，当前内容仍保留。</span></p><button type="button" class="gbtn" disabled aria-describedby="specimen-state-actions-note"><span class="l-en">Try saving again</span><span class="l-zh">重试保存</span></button></article>
+        <article class="spec-state-case" data-spec-save="unknown"><h4><span class="l-en">Save not confirmed</span><span class="l-zh">尚未确认是否保存</span></h4><p><span class="l-en">We could not confirm the save. Your current view is intact.</span><span class="l-zh">尚无法确认是否保存，当前内容仍保留。</span></p><button type="button" class="gbtn" disabled aria-describedby="specimen-state-actions-note"><span class="l-en">Check save status</span><span class="l-zh">查询保存状态</span></button><details class="mx-disc"><summary data-spec-inspect="save-result"><span class="l-en">What happens next?</span><span class="l-zh">下一步怎么处理？</span></summary><div class="mx-disc-body"><p><span class="l-en">Check whether this view was saved, without sending another save.</span><span class="l-zh">查询此视图是否已保存，不重复提交保存。</span></p></div></details></article>
       </div>
-      <div class="mx-error" style="margin-top:10px">
-        <span><b class="l-en">This read didn’t load.</b><b class="l-zh">这项读数未能加载。</b>
-        <span class="l-en"> The rest of the page is current.</span><span class="l-zh"> 页面其余部分为最新。</span></span>
-        <button class="gbtn gbtn-sm" style="margin-left:auto"><span class="l-en">Retry</span><span class="l-zh">重试</span></button>
-      </div>
-      <p class="mockup-note l-en">Loading = skeleton at true geometry, no words. Empty = full sentence + why. Error names what failed AND what still works, with retry. Never a bare “—”, never pipeline telemetry.</p>
-      <p class="mockup-note l-zh">加载 = 真实几何骨架屏，无文字。空态 = 完整句子 + 原因。错误要说明什么坏了、什么仍可用，并给重试。禁止裸「—」，禁止流水线术语。</p>
     </div>
 
     <div class="panel">

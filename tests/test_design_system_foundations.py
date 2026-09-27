@@ -659,3 +659,66 @@ def test_specimen_binds_the_existing_mobile_spine_preview(specimen):
     # preview adapter. The specimen must use the adapter, not copy production CSS.
     assert re.search(r'<div class="wrap mockup-spine-390">', specimen)
     assert not re.search(r'<body[^>]*class="[^"]*page-macro', specimen)
+
+
+# R7: prepared recoveries are examples in the incumbent specimen, not a save engine.
+def _prepared_case(specimen, kind, name):
+    block = re.search(r'<article\b[^>]*data-spec-' + kind + r'="' + name + r'"[^>]*>(.*?)</article>', specimen, re.S)
+    assert block, f"Missing existing-component example: {kind}/{name}"
+    return block.group(1)
+
+
+@pytest.mark.parametrize("state", ["loading", "stale", "error", "empty", "filtered-empty", "partial", "conflicting", "locked"])
+def test_prepared_recovery_state_is_bilingual_and_explicit(specimen, state):
+    body = _prepared_case(specimen, "state", state)
+    assert 'class="l-en"' in body and 'class="l-zh"' in body
+    assert not re.search(r'\brole="(?:alert|status)"', body), "Static gallery examples must not announce fictional events"
+
+
+@pytest.mark.parametrize("outcome", ["ready", "pending", "confirmed", "failed", "unknown"])
+def test_prepared_save_examples_cannot_submit_fictional_actions(specimen, outcome):
+    body = _prepared_case(specimen, "save", outcome)
+    buttons = re.findall(r'<button\b([^>]*)>', body)
+    assert buttons and all('type="button"' in x and re.search(r'\bdisabled(?:\s|=|$)', x) for x in buttons)
+    assert 'class="l-en"' in body and 'class="l-zh"' in body
+    assert 'onclick=' not in body and '<form' not in body
+    if outcome == "unknown":
+        assert "Check save status" in body and "查询保存状态" in body
+        assert "Try saving again" not in body
+
+
+def test_prepared_recovery_denominators_and_caveats_are_not_hidden(specimen):
+    partial = _prepared_case(specimen, "state", "partial")
+    at_rest = partial.split('<details', 1)[0]
+    assert "6 of 9 above average" in at_rest and "3 of 12" in at_rest
+    assert "6 / 9" in partial and "6 / 12" not in partial
+    assert "All 24 checked" in _prepared_case(specimen, "state", "empty")
+    assert "12 items" in _prepared_case(specimen, "state", "filtered-empty")
+    conflicting = _prepared_case(specimen, "state", "conflicting").split('<details', 1)[0]
+    assert "Entry: Ready" in conflicting and "Extension: Wait" in conflicting
+    assert "No combined entry call" in conflicting
+
+
+def test_prepared_recovery_uses_native_inspection_not_nested_modals(specimen):
+    for state in ["stale", "empty", "filtered-empty", "partial", "conflicting", "locked"]:
+        body = _prepared_case(specimen, "state", state)
+        assert '<details class="mx-disc"' in body
+        assert '<summary' in body and 'data-spec-inspect=' in body
+        assert not re.search(r'<details[^>]*>.*<details', body, re.S)
+        assert '<dialog' not in body
+    assert 'id="specimen-state-actions-note"' in specimen
+    assert "Fictional examples" in specimen and "not connected" in specimen
+
+
+def test_prepared_recovery_does_not_add_a_persistence_or_state_engine(specimen):
+    script = "\n".join(re.findall(r'<script\b[^>]*>(.*?)</script>', specimen, re.S))
+    assert not re.search(r'localStorage|sessionStorage|fetch\(|XMLHttpRequest|setInterval', script)
+    assert "data-spec-save" not in script and "data-spec-state" not in script
+
+
+def test_prepared_samples_keep_internal_delivery_language_out_of_customer_copy(specimen):
+    samples = re.findall(r'<article\b[^>]*data-spec-(?:state|save)="[^"]+"[^>]*>(.*?)</article>', specimen, re.S)
+    assert samples
+    forbidden = ("owner confirms", "original request", "effect is unknown", "保存服务", "原请求")
+    for body in samples:
+        assert not any(term in body for term in forbidden), "Customer examples must not expose delivery plumbing"

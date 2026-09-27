@@ -73,3 +73,24 @@ Native target: file `01M2WGNCX9475G79JRKJTCM08P`, existing system page `p-1-0`, 
 A complete-source zero must not render for a failed feed. Filter removal must restore the known items without resetting unrelated context. Partial coverage must preserve both the usable and expected populations. Conflicting checks must retain both states and their scopes. Stale data must retain its old observation date. Failed save may retry only after the original effect is known; unknown save exposes status lookup, never another submission. Successful save must open the exact saved view. Inspection/dismissal must restore the task in keyboard and touch flows. Lock styling must not hide public evidence.
 
 Native schema/content/color checks, rendered author review, implemented keyboard/state behavior, independent review and cold-user comprehension are five different observations. Record each honestly. Native/mobile/locale proof remains unperformed until the actual corresponding result is captured and inspected.
+
+
+## R7 executable projection
+
+The existing specimen's State/Loading/Error panel now contains these eight data
+states and five save outcomes at `#specimen-state-actions`, with EN/ZH twins.
+The gallery is for reviewing independent fictional examples, not a proposed
+customer screen that shows thirteen states simultaneously. Real disclosures let
+reviewers inspect coverage, filters, dated/public evidence and conflicting reads
+without leaving their place. They compose existing `.mx-disc` and `.gbtn` families;
+no new state or persistence engine is introduced.
+
+All save/retry/clear/access controls are explicitly unconnected and disabled in
+this fixture. Inspecting a sample does not verify any save or alert backend.
+Actual production Clear filters / View population / Check save status must bind
+the corresponding existing owner and scope; the fixture does not substitute for
+that integration. Unknown results never become retries merely because time passed.
+
+Native status remains NOT_APPLIED_TO_PAPER. The shared-file hold has not been
+resolved by this source work. See R7 in the existing readability record for exact
+browser/source checks, retained screenshots and proof limits.

@@ -396,3 +396,84 @@ R4 native edits and R3 contrast evidence are preserved, not replayed.
 Owned browser controllers ended after the bounded probes; OS exiting child
 entries remained at the final observation. Shutdown signals are not claimed as
 process disappearance. No user browser, new worker or watcher was targeted.
+
+
+## 10. R7 — executable prepared recoveries, not another state engine
+
+**Implemented in the existing specimen; NOT_APPLIED_TO_PAPER / NOT_DEPLOYED.**
+The shared-file hold remains explicit at Mastermind#927/5850272241 and its later
+5850928368/5850959738 coordination. This phase performed zero native mutations,
+no token writes, no Figma access and no specialist-page changes.
+
+The existing State/Loading/Error panel in `mockups/design_system/specimen.html`
+is extended in place at `#specimen-state-actions`; it is not a replacement
+specimen or registry. Eight bilingual examples distinguish loading, stale, error,
+true empty, filtered empty, partial, conflicting checks and locked detail. Five
+saved-view outcomes remain separately labelled: ready, pending, confirmed, failed
+and unknown. All sample populations and values are explicitly fictional.
+
+Partial coverage and conflicting readings stay visible before disclosure. The
+partial example uses six of nine observed members, with three of twelve unavailable;
+it never silently changes the denominator. The comparison shows Entry: Ready and
+Extension: Wait together, with no combined entry instruction. The lock example
+keeps the public assessment and public evidence outside the gate.
+
+Seven real native HTML disclosures open in this same component: coverage, check
+comparison, inspected population, active filters, dated evidence, public content
+and unknown-save recovery. There are no nested dialogs, new client-side state
+engines or new routes. Save/retry/filter-clear/access buttons are deliberately
+unconnected and disabled; they cannot submit or pretend to have completed an action.
+The gallery tells readers that distinction. This is not live persistence, an alert
+activation path or a trade service. R5's production integration contracts remain.
+
+A copy refinement removed internal delivery language from the customer examples:
+“Your view is in Saved views”, “Your current view is intact” and “You can keep
+researching” replace references to owners and original request plumbing. The
+underlying requirement to reconcile uncertain results without a duplicate remains
+in the existing supporting contract and the unknown-result inspection.
+
+### Proof and limits
+
+Seventeen checks were added to the existing CI-enrolled foundations suite, not a
+new runner. Initial sixteen-case qualification produced **15 failures / 1 pass**
+against the old specimen; the extra customer-language check separately failed
+before the copy refinement. Final bounded foundations: **56 passed / 2 deselected**
+on both the branch source and current-main integrated composition. The two
+whole-template-corpus scans remain explicitly unrun locally, as in R6.
+
+Discriminating mutations independently caught removal of partial state, replacement
+of unknown-result checking with retry, and an enabled fictional save control.
+Those mutations produced 3, 1 and 1 failures respectively and were restored before
+publication. No production theme/JS was changed; the specimen script is unchanged.
+
+Actual local Chrome qualification passed **20/20 cells** at
+320/360/390/768/1440 CSS pixels x dark/light x EN/ZH. Each exercised all seven
+new disclosures using Enter and Space, for **140 open/close checks**, preserving
+focus and avoiding nested overflow. All cells checked document containment,
+visible/document language, eight data examples, five save examples, disabled
+unconnected controls and no URL/storage changes from attempting those controls.
+Zero JavaScript exceptions were recorded. This is local-file browser evidence
+with outbound HTTP(S) blocked, not screen-reader, physical touch, Safari, production
+transport, actual saving or intended-user comprehension proof.
+
+The current-main integration retains its additional regime-spine examples and
+source-owned mobile preview. Exact tested source hashes live beside the report.
+Final source/ref integration equality is recorded in the cumulative PR checkpoint;
+an unchanged-file equality check is not falsely reported as another browser run.
+
+Actual desktop states/actions and phone Chinese/unknown-save screenshots were
+opened and inspected. An initial extended crop intersected the sticky specimen
+bar; a later immediate post-scroll capture omitted some glass-control labels.
+Those captures are diagnostic, not acceptance evidence. A bounded settled-paint
+capture on the same unchanged source confirmed all three state-action labels
+visible, with their disabled property intact; no CSS workaround was applied.
+The final settled desktop shot and actual viewport captures are the retained images.
+
+Evidence: `mockups/refs/design_system/state-action-r7-20260926/`.
+These are ordinary source/tests/captures, not a new approval or lifecycle registry.
+The native R5 proposal remains unapplied. Runtime owner binding, exact saved-object
+readback, reference acceptance, independent review and cold-reader task validation
+remain separate obligations. Existing foreground test controllers ended; owned
+Chrome child entries remained in exiting OS states with zero observed CPU/RSS.
+Do not confuse shutdown requests with confirmed disappearance or restart/kill
+someone else's browser to erase this residual.

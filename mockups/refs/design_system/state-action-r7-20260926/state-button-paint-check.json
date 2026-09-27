@@ -1,0 +1,53 @@
+[
+  {
+    "text": "Clear 3 filters",
+    "disabled": true,
+    "color": "color(srgb 0.843137 0.862745 0.890196 / 0.9)",
+    "opacity": "1",
+    "visible": true,
+    "rect": {
+      "x": 143.5,
+      "y": 522.765625,
+      "width": 114.734375,
+      "height": 44,
+      "top": 522.765625,
+      "right": 258.234375,
+      "bottom": 566.765625,
+      "left": 143.5
+    }
+  },
+  {
+    "text": "Try again",
+    "disabled": true,
+    "color": "color(srgb 0.843137 0.862745 0.890196 / 0.9)",
+    "opacity": "1",
+    "visible": true,
+    "rect": {
+      "x": 143.5,
+      "y": 687.25,
+      "width": 87.46875,
+      "height": 44,
+      "top": 687.25,
+      "right": 230.96875,
+      "bottom": 731.25,
+      "left": 143.5
+    }
+  },
+  {
+    "text": "View access",
+    "disabled": true,
+    "color": "color(srgb 0.843137 0.862745 0.890196 / 0.9)",
+    "opacity": "1",
+    "visible": true,
+    "rect": {
+      "x": 530.15625,
+      "y": 766.9375,
+      "width": 106.875,
+      "height": 44,
+      "top": 766.9375,
+      "right": 637.03125,
+      "bottom": 810.9375,
+      "left": 530.15625
+    }
+  }
+]

@@ -1,0 +1,9 @@
+............F...                                                         [100%]
+=================================== FAILURES ===================================
+_____ test_prepared_save_examples_cannot_submit_fictional_actions[unknown] _____
+tests/test_design_system_foundations.py:686: in test_prepared_save_examples_cannot_submit_fictional_actions
+    assert "Check save status" in body and "查询保存状态" in body
+E   assert ('Check save status' in '<h4><span class="l-en">Save not confirmed</span><span class="l-zh">尚未确认是否保存</span></h4><p><span class="l-en">Check th...other save while its effect is unknown.</span><span class="l-zh">查询原请求结果。在结果未明确前，不创建新的保存请求。</span></p></div></details>')
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_prepared_save_examples_cannot_submit_fictional_actions[unknown]
+1 failed, 15 passed, 41 deselected in 0.03s
