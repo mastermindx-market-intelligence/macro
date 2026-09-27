@@ -1,132 +1,108 @@
-# Policy Watch — cumulative design checkpoint (R4)
+# Policy Watch — cumulative design checkpoint (R5)
 
-Operation: `policy-watch-redesign-20260926-sol-001`. Fixed public-source snapshot: **26 September 2026**. The existing checkpoint path and Macro draft PR #8048 remain the continuity owner.
+Operation: `policy-watch-redesign-20260926-sol-001`. Existing owner: Macro draft PR **#8048**, branch `sol/policy-watch-redesign-study-20260926`. This existing checkpoint path remains the continuation owner. Fixed public-source snapshot: **26 September 2026**.
 
-**CHECKPOINTED_CONTINUATION · MISSION_COMPLETE: false · PARTIAL.** R4 produced a working, self-contained interactive review prototype with 126 passing offline assertions, while the native Paper update remains partial after an explicit pre-dispatch block. The prototype is **NOT_APPLIED_TO_PAPER / NOT_DEPLOYED**. It does not replace the canonical canvas, certify production readiness, establish human comprehension or claim award quality.
+**CHECKPOINTED_CONTINUATION · MISSION_COMPLETE: false · PARTIAL.** R5 corrected the independent review prototype to the customer-facing design system and passed its verification. The prepared native Paper color correction did not dispatch because M1 reported DESKTOP_BUSY. The review artifact remains **NOT_APPLIED_TO_PAPER / NOT_DEPLOYED**. Neither this checkpoint nor offline tests grant design acceptance, production readiness, human comprehension proof or an award-quality verdict.
 
-## Mission, authority and current decision
+## 1. Chairman ruling — design-system scope
 
-The Chairman commissioned premium, advanced-but-simple Policy Watch mockups and repeatedly emphasized immediate comprehension. R4 therefore prioritizes actual change, meaning, evidence limits and next action rather than decorative slogans or increasing artboard count. This is permitted reversible design work; no production release, scoring change or new runtime control plane was commissioned.
+The current Chairman instruction is explicit: **Noir is only for Mastermind OS administration. Policy Watch is not part of a customer-facing Paper migration to Noir.** The earlier achromatic/inverse-button interpretation was incorrect and is superseded. This is a scope correction, not permission to modify the admin system or shared consumer tokens.
 
-Protected Mastermind/master was observed at `4c6b206d3fb7fbc6d077faf61ae361bedf259925`, successor of `a31f49f4056943124cc0e7e42349e46feee444c7`. Current INDEX and required Paper workflow/connection, active-execution/delegation/cold-start/closeout companions were loaded or checked against identical previously loaded blobs at the same pin. INDEX is compatible Skillpack 1.0.1/bootstrap 1. The intervening source change is fleet placement, not the Paper workflow. Initial Macro source audit pin remains `a240da85dde8eacf2efb27f3416e19176b91b787`.
+Retain the existing customer graphite/light surfaces, blue interaction and provenance roles, amber caution, and the house component family. A dark theme is not itself Noir; do not delete dark mode as the correction. Do not substitute decorative saturation, bullish/bearish policy colors, premium-purple accents or new shared token values. Preserve the accepted scope of fact-first wording, source clocks, uncertainty, progressive disclosure, EN/ZH and robust failure behavior. The prior R1 preservation map and narrative-versus-structured-falsifier scoring question remain open.
 
-Source branch: `sol/policy-watch-redesign-study-20260926`. Prior cumulative checkpoint: `452dbd5c3b2dfdad620616749f665f0617d1327a`. Interim R4 effect checkpoint is PR comment **5851974650**. R4 prototype digest/verification metadata was committed in `research/POLICY_WATCH_R4_PROTOTYPE_EVIDENCE_2026-09-26.json` at `bbf99ea9db8c577e7c22479b8433745ad566e038`.
+Current protected Mastermind/master pin: **`fda6ed3911cdda24eb63b2ccbe1b174121cf404f`**, protection observed. INDEX and relevant Paper/execution/cold-start/delegation/closeout companions were read at this pin or checked against identical previously loaded blobs. Compatible Skillpack: 1.0.1/bootstrap 1. This does not grant new runtime or deployment authority.
 
-Sol retained the attended design for principal judgment and continuity of the bound M1 carrier. No Fable/provider worker, watcher, background execution or custody transfer was started. Actual served model/mode is not independently attested; keep the current working surface, not a mode/account/host switch to obtain a denied effect.
+Consumer theme source inspected: Macro **`b95cfc873a4de44e0f2fae15be30f777077a8151`**, `templates/theme.css` and `mockups/refs/design_system/c8c/README.md`. Initial R1 page audit pin remains `a240da85dde8eacf2efb27f3416e19176b91b787`.
 
-## Native Paper — exact current state
+Native references inspected read-only on M1: **Archetype E · Intelligence Desk · Governed Starter**, node `1W2-0`, and **Confluence Screener · Governed Reference**, node `RFJ-0`. Shared Paper token content hash remains **`bba69475`**. The first reference's JSX is `r5-reference-intelligence-jsx.receipt.json`; native reference screenshots are `dbde9cfb678a08a75dd48125fb6bfee0521e5cdc371881249698f4cb095b51c6.jpg` and `efe824a5f02bf9872aec9a7a5e03db227270560828c0a35a93c9d66acc23d899.jpg` under the existing M1 screenshot directory. Reference placeholders are not Policy Watch data.
 
-File: **MASTERMIND PAGES**, `01M2WGNCX9475G79JRKJTCM08P`. Page `p-J-1`, **Policy Watch · Decision Desk · R1 Study · 2026-09-26**.
+Sol retained this bounded correction for principal design judgment and continuity of the attended M1 carrier. No Fable/provider worker, watcher or background execution was started. Current served mode is not independently attested; no mode/account/host switch was used to obtain a denied effect.
+
+## 2. R5 independent prototype — actual changes and proof
+
+The local prototype now matches the core customer tokens: dark canvas/panel/text `#0F1115`/`#181B21`/`#D7DCE3`; light canvas/panel/text `#F7F8FA`/`#FFFFFF`/`#1C2430`; the existing muted/border/information/link tokens are restored as well. Primary controls are blue-tinted, blue-outlined and use readable blue ink rather than solid inverse monochrome. Selected views, source labels and provenance are blue. Unmeasured market effects are amber. Successful local-save feedback is green only after a save result, never a market stance.
+
+The fill/outline/sheen are local consumer-role derivations of the existing palette, not new shared Paper tokens. Native references and `templates/theme.css` informed the correction. No source facts, dates, forecasts, routing, note persistence contract or background data calls were added. A byte-level comparison confirmed that the only JavaScript difference from R4 is `el.dataset.kind=type` in the existing simulated-state renderer.
+
+Tests exposed two additional defects before repair: stronger hover tint reduced primary text contrast below the chosen threshold; the quiet-state selector had no corresponding DOM state attribute. Hover now strengthens only the outline while keeping the contrast-safe fill, and quiet/no-new receives its explicit neutral state instead of the amber source-delay treatment.
+
+**Current results: 54 consumer-system assertions PASS and 126 offline interaction/layout assertions PASS.** The latter includes 80 combinations: four views × two themes × two languages × five widths (320/390/768/1024/1440). The former covers core token equality, non-inverse primary controls, blue navigation/provenance, amber evidence limits, normal/hover contrast, quiet versus delayed state surfaces and recovery. Both suites report zero automatic network requests and zero JavaScript errors in their tested paths.
+
+Measured primary text/background contrast is approximately **4.90:1 dark** and **5.26:1 light**, in both languages and including hover. These are particular measured pairs, not a full text/non-text contrast audit or WCAG certification. No user comprehension study was run. Screenshot inspection covered the final light/dark desktop briefing, dark English mobile, light Chinese mobile and the 320-pixel evidence dialog; it does not imply that every matrix combination received human visual review.
+
+R5 preserved four functioning review views, source comparison, keyboard dialog tabs/Escape/focus restoration, search/reset, first-screen mobile actions and confirmed local-only notes. Existing 126 assertions were rerun after the final CSS/JS correction. Normal and failure behavior remain fixtures, not current service health.
+
+Testing used the separate offline Playwright `set_content` operation on inline authored bytes. R5 did not navigate to the previously restricted local HTTP route or alter browser policy. Success-path storage uses an explicitly labelled in-memory Storage double in the harness only; the delivered application contains no double. Actual opaque-origin storage failure was separately tested. Real-origin persistence, account integration, deployed navigation and live source health are still unproven.
+
+## 3. R5 delivered artifact identities
+
+The source is in the conversation ZIP, not production repository paths. The previous R4 HTML/ZIP were preserved. The repository records the current ruling, evidence identities and continuation; do not infer that it contains the standalone HTML bytes.
+
+| Artifact | Conversation path | Bytes | SHA-256 |
+|---|---|---:|---|
+| Standalone R5 HTML | `/mnt/data/policy_watch_r5_review/policy-watch-review.html` | 78559 | `af9feaf0b303cec07b5fe51ded22d93bd4404b0876be0dd5b908f3c392b31f4d` |
+| Full R5 review package | `/mnt/data/policy_watch_r5_review.zip` | 1942712 | `b80bf9a26c6a995c71559fcbea6d53ebf38a582e4260928125684f4a01e930bc` |
+| Consumer-system verification | `policy_watch_r5_review/evidence/consumer-system-verification.json` | 3416 | `c0895a7c1b3127f219203b41fd52c92098d12a54a925e2d496beabf7ee63b14b` |
+| Offline interaction/layout verification | `policy_watch_r5_review/evidence/verification-offline.json` | 6152 | `cc9e866ab48b0f39196107bf633b86be212163308af96644f1bcf4a1957dd8e4` |
+| Package file manifest | `policy_watch_r5_review/evidence/manifest.json` | 5612 | `5c7eb35f2ead3ed871ea3acde235c40b5737ea99062f9713e026f47dfcb941c7` |
+| Consumer role mapping | `policy_watch_r5_review/CONSUMER_DESIGN_SYSTEM.md` | 3286 | `fcee8ec36d213f29f3f576ea819583dd8e4cc94298a54e2b7a30607c6a198b22` |
+
+The offline result JSON digest matches R4 because the same named assertions and empty error/request arrays passed again; `offline-regression-r5.txt` is this revision's actual rerun. This is not a reused R4 test claim. New evidence also includes `consumer-system-red.txt`, `consumer-state-red.txt`, `consumer-state-green.txt`, `behavior-diff.json`, fresh screenshots and an explicitly labelled native-preparation status—not a fabricated mutation receipt. No fonts, credentials or user account records are distributed. ZIP integrity was checked.
+
+## 4. Native Paper — unchanged by R5
+
+File: **MASTERMIND PAGES**, `01M2WGNCX9475G79JRKJTCM08P`. Page: **`p-J-1`**, still **Policy Watch · Decision Desk · R1 Study · 2026-09-26**.
 https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-J-1
 
-Last complete census: 14 artboards, ten populated primary candidates and four held. R4 created no new artboard. Do not describe 14 completed screens. Desktop widths are 1440 and mobile 390; fit-content heights can be reported null on the inactive page, not zero.
+Last full census remains 14 artboards: ten populated primary candidates and four held, not 14 completed screens. No new artboard was made in R5.
 
-| Primary candidate | Artboard | Current proof boundary |
-|---|---|---|
-| Briefing dark desktop | `1AF7-1` | R2 render was reviewed; R4 copy/style/summary/nav edits now invalidate that final appearance proof. Nav is appended at bottom, not positioned correctly. |
-| Briefing light desktop | `1EW6-1` | R2 render was reviewed; R4 paired copy/style edits need new proof. New nav and summary are NOT applied. |
-| Evidence workspace dark | `1EZH-1` | Unchanged R2 final screenshot reviewed |
-| Evidence workspace light | `1FU3-1` | Unchanged R2 final screenshot reviewed |
-| Mobile briefing dark | `1EZI-1` | Unchanged R2 final screenshot reviewed |
-| Mobile briefing light | `1FWV-1` | Unchanged R2 final screenshot reviewed |
-| Calendar light desktop | `1GUQ-1` | R3 initial screenshot reviewed; fit-content fix applied, final native screenshot still blocked |
-| Calls & evidence dark desktop | `1GUR-1` | R3 initial screenshot reviewed; fit-content and chip fixes applied, final screenshot still blocked |
-| Calendar light mobile | `1H27-1` | Native content/JSX verified; no final native screenshot review |
-| Research dark mobile | `1H28-1` | Native content/JSX verified; no final native screenshot review |
+| Primary root | Current native state/proof |
+|---|---|
+| `1AF7-1` dark briefing | R4 copy/style and summary `1NKJ-1` applied; dark nav `1NK7-1` remains appended at bottom. Needs final native layout proof. |
+| `1EW6-1` light briefing | R4 paired copy/style applied; new light nav and summary absent. Needs final native proof. |
+| `1EZH-1` dark evidence | Unchanged R2 final screenshot observed. |
+| `1FU3-1` light evidence | Unchanged R2 final screenshot observed. |
+| `1EZI-1` dark mobile briefing | Unchanged R2 final screenshot observed. |
+| `1FWV-1` light mobile briefing | Unchanged R2 final screenshot observed. |
+| `1GUQ-1` light desktop Calendar | R3 initial render observed; fit-content fix applied, final screenshot gate remains. |
+| `1GUR-1` dark desktop Calls & evidence | R3 initial render observed; fit-content/chip fixes applied, final screenshot gate remains. |
+| `1H27-1` light mobile Calendar | R3 native content/JSX verified; final native render gate remains. |
+| `1H28-1` dark mobile research | R3 native content/JSX verified; final native render gate remains. |
 
-Held roots: `1G0G-1` policy-map reservation and `1G0H-1` recovery-state reservation, both empty 400×120 at y1350; `1H4C-1` Calendar theme counterpart and `1H83-1` research theme counterpart, unconverted/unreviewed duplicates explicitly named HELD. No Chinese Paper clones or R3 mobile-theme clones were created. Their refused effects remain held.
+Held roots are excluded from the correction: `1G0G-1` policy-map reservation and `1G0H-1` recovery reservation (empty 400×120 at y1350); `1H4C-1` Calendar and `1H83-1` research theme duplicates (unconverted/unreviewed, named HELD). No Chinese Paper clones or R3 mobile-theme clones exist.
 
-### R4 native changes with successful receipts
+### R5 prepared correction and technical blocker
 
-`policy-watch-r4-brief-copy` and `policy-watch-r4-brief-style` updated the existing paired desktop briefings: compact Policy Watch title; direct Clearing deadlines extended headline; explicit historical SEC announcement date; shorter primary-source section; relevant upcoming meeting/deadline/research questions in place of generic navigation cards. No shared tokens changed.
+Original carrier: **M1 Studio RDC**, device `37db60bd-f84d-4521-ae9e-47c575d9ba86`. Current RDC access and allowed artifact paths were observed. The pinned runtime private-owner/non-symlink predicates, executable, RUNTIME receipt and bridge digest were verified in a focused successful check. Runtime root is `/Users/chriswong/.local/share/mastermind-paper/runtime/v4`; bridge SHA-256 `0d889a071cc7add29a98d8418ab48300b8fe65f9460174a7e552ff9b0f4dac27`. Catalog `paper-desktop` 0.5.12 / `ca90a537ee97f3e371ac945a8a3b9a928ba7fac9ffaeb67e31491075a0790570` reported accepted_for_write. These facts do not lift earlier denied effects.
 
-`policy-watch-r4-nav-dark` inserted **`1NK7-1`**, a local navigation frame, into the dark body **at its end**. `policy-watch-r4-summary-dark` inserted **`1NKJ-1`**, a three-answer summary, into the dark story header. All four returned APPLIED_RESPONSE_OBSERVED and their original responses were saved.
+Artifact home remains `/Users/chriswong/.local/share/mastermind/ops/policy-watch-redesign-20260926-sol-001/`.
 
-The following subsequent batch was explicitly blocked before dispatch: move `1NK7-1` before `1EJB-1`, insert light nav, insert light summary, capture dark R4 screenshot. None of that batch ran. Thus **dark nav is not at its intended position; light nav/summary are absent; R4 appearance is not visually proven**. The batch was not retried, shortened into a replay or moved to another carrier. No ambiguous dispatched effect is known.
+Prepared **`r5-consumer-roles.args.json`** contains 30 style groups for 13 current primary controls across all ten populated roots, plus existing navigation/evidence ink. The controls and their child Text IDs were individually read back and confirmed to belong to the intended primary roots. They are listed in `r5-button-candidates.json`; original node responses are `r5-button-*.receipt.json` and style response `r5-button-styles-before.receipt.json`. The page-wide initial style search was truncated and overbroad; it was not treated as exhaustive or applied blindly.
 
-## Independent R4 interactive prototype
+Planned exact operation key: **`policy-watch-r5-consumer-color-roles`**. Its preflight shell (PID 20467) exited 1 at the CONNECTED/file-bound assertion, before reaching `bridge.py edit`. The one bounded diagnostic (PID 20626) returned **DESKTOP_BUSY**, with no file identity or write binding. **Zero R5 native mutation dispatches; EFFECT_NONE.** This is an observed technical busy condition, not a new safety denial or ambiguous dispatched effect. The prepared correction is not counted as applied and has no successful mutation receipt. Do not unlock, clear another writer, switch carriers or claim the guard passed.
 
-After the Paper block, an independent sandbox-local prototype advanced interaction and readability testing. This does NOT authorize or accomplish any refused native Paper edit. It is a downloadable review artifact, not production source and not an alternative lifecycle, data ingestion, auth, calendar or alert system.
+A separate current-turn read/print diagnostic of existing style/receipt material was explicitly platform-blocked before dispatch and was not retried. Earlier denials remain scoped as below. Studio Direct/M2 was inspected read-only for capability; no M2 mutation or fallback replay occurred.
 
-The four functioning views are Briefing, a two-topic searchable Policy map, Calendar, and Calls & evidence. The evidence dialog provides comparison, official sources and a confirmed local-only review note. The prototype includes English/Chinese and dark/light, same-document history, filter/reset, keyboard tabs, Escape/focus restoration, truthful source-delay/quiet/analysis-unavailable examples, and save-failure handling. Three notebook entries are clearly illustrative, not user records. Source data are a fixed September 26 snapshot, not a fresh/live feed.
+## 5. Preserved effects, evidence and refusal fences
 
-The action moved ahead of supporting analysis in actual DOM order. It is above the first 844-pixel screen at both 320 and 390 widths in EN/ZH checks. A real failing mobile-fold assertion preceded the repair. A failing repeat-confirmation assertion exposed duplicate note submission; after repair a saved note cannot be submitted again without editing. Text or date edits mark the draft unsaved. A failing date-wrap assertion preceded the narrow meeting-date repair. Chinese date labels were also visually repaired to avoid an orphaned final day character.
+R4 successes: `policy-watch-r4-brief-copy`, `policy-watch-r4-brief-style`, `policy-watch-r4-nav-dark`, `policy-watch-r4-summary-dark`. Their original M1 responses remain. The later R4 batch moving dark nav before `1EJB-1`, inserting light nav/summary and capturing the dark screenshot was refused before dispatch. None of those effects ran. The new color correction does not silently perform them.
 
-### Delivered artifact identities
+R3 successes include original Calendar/research/mobile content, desktop/mobile fit-content fixes, intrinsic status-chip fixes and native source exports. A summary-parser syntax failure occurred after mobile fit-content succeeded; original `r3-mobile-fit.receipt.json` reconciled it and the mutation was not rerun. R3 theme-conversion/cloning and final primary-root screenshot requests were refused before dispatch. Earlier R2 policy-map/recovery-state content, Chinese-clone and old-indicator-release refusals remain held. No safety/permission denial is a fallback invitation.
 
-The prototype source is **delivered in the conversation ZIP, not committed to production paths**. The repository evidence JSON preserves exact digests. Do not infer that GitHub contains the HTML source merely because it contains its manifest.
+R3-only indicator release succeeded via `policy-watch-r3-finish-new-nodes` for `[1GUQ-1,1GUR-1,1H27-1,1H28-1,1H4C-1,1H83-1]`. Old R2/R4 indicator obligations remain unconfirmed for `[1AF7-1,1EW6-1,1EZH-1,1FU3-1,1EZI-1,1FWV-1,1G0G-1,1G0H-1]`; no R5 release was attempted. A prior `finish01` predates these edits and is not their closeout. No ambiguous dispatched Paper mutation is currently known.
 
-| Artifact | Conversation path | SHA-256 |
-|---|---|---|
-| Self-contained HTML, 74,691 bytes | `/mnt/data/policy_watch_r4_review/policy-watch-review.html` | `ca5c89f6d910d1e08dd48a557992a3be4337f2041ecee4dca00e44109231615b` |
-| Full review ZIP, 2,326,278 bytes, 37 members | `/mnt/data/policy_watch_r4_review.zip` | `cda7c46ac9e6b4e5e1313e4cfada33d93f49da8b8525d7ca6d457aa50628ce9a` |
-| Offline verification JSON, 6,152 bytes | `/mnt/data/policy_watch_r4_review/evidence/verification-offline.json` | `cc9e866ab48b0f39196107bf633b86be212163308af96644f1bcf4a1957dd8e4` |
-| Production-readiness contract, 9,205 bytes | `/mnt/data/policy_watch_r4_review/PRODUCTION_READINESS.md` | `a8cd770b85c3d6be5c8edadd66bd27fef386d3279439350fbfcdb667524eb8f9` |
-| File digest manifest, 6,144 bytes | `/mnt/data/policy_watch_r4_review/evidence/manifest.json` | `7c6f1d4d1bef6154a21c48f629083fbfed5762b0df064e2532d2e0e6839f4633` |
+Native source exports remain `r2-jsx-{brief-dark,brief-light,detail-dark,detail-light,mobile-dark,mobile-light}.receipt.json` and `r3-{calendar,ledger,mobile-calendar,mobile-ledger}-jsx.receipt.json`. R3 receipt digests: Calendar `d9852119d2b0f1c72389b70b125e8e3bdaa2b8a1400dd5b949e9cc7a36468906`; research `142ecc2b6ad6cc5a056e22c55304679148845567235c8d7a1c7c51454d137f7f`; mobile Calendar `1e4411c204aee3a1285ee9133eb81abb903fd40501e53b8eaef2dacfb348b1fe`; mobile research `d50b855ef332b0f1c61543c27e6e2b291f8002df177dea066728eac681ef4877`. These are reference exports, not deployed components.
 
-The ZIP includes editable HTML/CSS/JavaScript, the standalone HTML, tests, screenshots, original red/green evidence, README and production-readiness obligations. It does not contain font files, credentials or live account data. Source links are only followed upon deliberate selection; there are zero automatic network requests in the tested path.
+Original native screenshots remain under M1 `screenshots/`: R2 dark briefing `043c607da24f0847f2129cee3b70ae3497a941e4b659a3a86fd66c9c5d914c61.jpg`, light briefing `c610319d6f59708dd11eaf384fb75a05c494774cb982265fb2058a7fea933c6c.jpg` (both appearances subsequently invalidated by R4 edits); dark evidence `04a698974b51117f688c7a3550766a9a981ead6cb183bd3e133201b537bb1cd9.jpg`; light evidence `1d5030c275253340519585579c0a1c62eda9970a426a49c402358972dbe26dba.jpg`; dark mobile `73f1b5740bbd45fd5d6160c899bcf17300ce9514b482365c26f72847a7cc0b0e.jpg`; light mobile `bac4c285c7b551527dcc4ac3fd0933e65494cf005d341231fdeebbf881c58eca.jpg`; R3 initial Calendar `a93f1d0cf6504633ebf7df299020a30aee6d74c66cfdd57792e66adab80589c4.jpg` and research `0d42cf37d5addad578a12108ca63aa4ca6b5984798ae9cf4274d4ce9a147e4a3.jpg` (not post-fix proof). Preserve them; do not claim R5 native renders.
 
-### Verification — distinguish real evidence from fixtures
+## 6. Continuation and production boundary
 
-**126 offline assertions passed; 80 are the four views × two themes × two languages × five widths (320/390/768/1024/1440).** Other checks cover first-screen action position, unsplit dates, same-document navigation/Back, source links, dialog tabs/Escape/focus, search/reset, state distinctions and confirmation/failure semantics. This count is not 126 independent user studies.
+The new R5 customer-system review artifact and its tests are the verified delta. The native correction is ready but blocked at its actual busy guard. Other native gaps also retain their separate explicit refusal fences. Adding more unreviewed artboards or replaying old denied effects is not the next action.
 
-Chromium administrator policy blocked the original local-HTTP route test with `net::ERR_BLOCKED_BY_ADMINISTRATOR`. The policy was not changed; no proxy, alternate origin, account or host was used to reach that URL. A separate supported offline Playwright `set_content` operation rendered already-authored inline bytes in the initial in-memory document with zero navigation/network requests. The failed route log remains in `evidence/test-run-01.txt`.
+**Exact next action after evidenced M1 availability:** inspect the original file and original prepared operation/receipt state; if still undispatched, with the current source/custody/permission/snapshot gates satisfied, apply `r5-consumer-roles.args.json` once through its existing M1 operation key. Verify the targeted color-role readback and native rendering without silently replaying older refused screenshot/layout operations. Old refused requests require their own evidenced permitted recovery. Never bypass the desktop guard or move EFFECT_UNKNOWN work.
 
-Success-path storage and application-initialization restoration use an **explicit in-memory Storage test double in the harness only**. The downloadable application contains no test double. Actual opaque-origin storage-unavailable behavior was tested separately without the double; failed saves retained drafts. Real-origin localStorage, actual reload persistence, production account persistence and deployed routing remain unverified. Do not imply they passed.
+Keep the current working surface for bounded execution; no mode change grants access and none is requested to evade a denial. No automatic wake, watcher, custody transfer, production deployment or source lease release is claimed.
 
-Actual local prototype screenshots were inspected for desktop and EN/ZH mobile hierarchy, the four-view contact sheet and mobile evidence rendering. These are **not Paper screenshots**. Full human comprehension, screen-reader/zoom/contrast auditing and live-data/deployed-path proof remain outstanding. The README and readiness contract spell out integration owners, source clock semantics, state matrix, UX/accessibility requirements, auth/rights, note idempotency, and release gates.
+DO_NOT_REDO: existing native content/effect receipts, R3 release, preserved R4 functional improvements and the current R5 verified palette/role correction. Required remaining proof: exact native R5 application, old R4 nav placement/light summary, R3 final renders, held destination/state/theme/bilingual obligations, human comprehension, full accessibility, real-origin persistence, current producer/entitlement integration and deployed journey/failure proof.
 
-## Public-source anchors and semantics
-
-Fresh R4 primary-source checks distinguish announcement from later document update:
-- SEC announcement issued **25 February 2025**, one-year deadline extension and additional preparation/validation time: https://www.sec.gov/newsroom/press-releases/2025-43-sec-extends-compliance-dates-provides-temporary-exemption-rule-related-clearing-us-treasury
-- SEC implementation overview, eligible cash deadline **31 December 2026**, eligible repo deadline **30 June 2027**, shown reviewed/updated **23 September 2026**: https://www.sec.gov/featured-topics/treasury-clearing-implementation
-- Federal Reserve meeting calendar, **27–28 October 2026** and **8–9 December 2026**, the latter marked with projections: https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm
-- Offline renderer documentation: https://playwright.dev/python/docs/api/class-page#page-set-content
-
-A later page update is not the announcement date. An official milestone is not a measured return, a causal conclusion or a trade signal. No politician ranking, policy endorsement, election forecast, invented rate, portfolio exposure or live acquisition receipt is included.
-
-## Original M1 carrier, receipts and preserved evidence
-
-All native Paper effects remain on **M1 Studio/RDC**, device `37db60bd-f84d-4521-ae9e-47c575d9ba86`. Runtime root `/Users/chriswong/.local/share/mastermind-paper/runtime/v4`; bridge SHA-256 `0d889a071cc7add29a98d8418ab48300b8fe65f9460174a7e552ff9b0f4dac27`. Paper reported 0.5.12 and exact file binding. Shared token hash remains `bba69475`. The current RDC allowlist includes the ops/runtime directories. Resource access does not lift platform refusals.
-
-Existing M1 artifact home:
-`/Users/chriswong/.local/share/mastermind/ops/policy-watch-redesign-20260926-sol-001/`
-
-R2/R3 native HTML/JSX/receipts stay there. R4 authoring helper `r4_prepare.py` prepared arguments only. The four successful R4 modifications are in `r4-{brief-copy,brief-style,nav-dark,summary-dark}.receipt.json`. Current-node prechecks are `r4-pre-<node>.json`. Do not execute prepared-but-unapplied argument files merely because they exist.
-
-R3 JSX receipt digests remain:
-- `r3-calendar-jsx.receipt.json`: `d9852119d2b0f1c72389b70b125e8e3bdaa2b8a1400dd5b949e9cc7a36468906`
-- `r3-ledger-jsx.receipt.json`: `142ecc2b6ad6cc5a056e22c55304679148845567235c8d7a1c7c51454d137f7f`
-- `r3-mobile-calendar-jsx.receipt.json`: `1e4411c204aee3a1285ee9133eb81abb903fd40501e53b8eaef2dacfb348b1fe`
-- `r3-mobile-ledger-jsx.receipt.json`: `d50b855ef332b0f1c61543c27e6e2b291f8002df177dea066728eac681ef4877`
-
-R2 source receipts: `r2-jsx-{brief-dark,brief-light,detail-dark,detail-light,mobile-dark,mobile-light}.receipt.json`. The two desktop-brief versions are historical after the R4 edits, not current exact source.
-
-Native screenshot filenames under M1 `screenshots/`:
-- R2 dark briefing (historical after R4): `043c607da24f0847f2129cee3b70ae3497a941e4b659a3a86fd66c9c5d914c61.jpg`
-- R2 light briefing (historical after R4): `c610319d6f59708dd11eaf384fb75a05c494774cb982265fb2058a7fea933c6c.jpg`
-- R2 dark evidence: `04a698974b51117f688c7a3550766a9a981ead6cb183bd3e133201b537bb1cd9.jpg`
-- R2 light evidence: `1d5030c275253340519585579c0a1c62eda9970a426a49c402358972dbe26dba.jpg`
-- R2 dark mobile: `73f1b5740bbd45fd5d6160c899bcf17300ce9514b482365c26f72847a7cc0b0e.jpg`
-- R2 light mobile: `bac4c285c7b551527dcc4ac3fd0933e65494cf005d341231fdeebbf881c58eca.jpg`
-- R3 Calendar initial before fit repair: `a93f1d0cf6504633ebf7df299020a30aee6d74c66cfdd57792e66adab80589c4.jpg`
-- R3 research initial before fit/chip repair: `0d42cf37d5addad578a12108ca63aa4ca6b5984798ae9cf4274d4ce9a147e4a3.jpg`
-
-Native image filenames identify artifacts; no separate image digest computation was claimed for these M1 files. Sandbox prototype image digests are in its own manifest and must not be substituted for native proof.
-
-## Refusal fences and indicator custody
-
-All older refused logical effects remain held: R2 policy-map/recovery-state writes, Chinese cloning and old eight-node indicator release; R3 theme conversion/renaming/icon/mobile-clone batch and final four-primary-root screenshot capture; R4 positioning/light-nav/light-summary/screenshot batch. Neither unrelated read/write success nor a new turn grants permission to retry. No cross-carrier replay occurred.
-
-R3 output-summary parser failure was reconciled by reading `r3-mobile-fit.receipt.json`: the exact fit-content mutation succeeded and was not rerun. All R3 content, both desktop fit repairs, intrinsic chip fixes and mobile fit changes remain applied.
-
-R3-only indicators were released successfully via `policy-watch-r3-finish-new-nodes`, exact set `[1GUQ-1,1GUR-1,1H27-1,1H28-1,1H4C-1,1H83-1]`. Old R2 release remains unconfirmed for `[1AF7-1,1EW6-1,1EZH-1,1FU3-1,1EZI-1,1FWV-1,1G0G-1,1G0H-1]`; current R4 edits do not resolve it. No blanket release or hidden custody transfer is claimed.
-
-## Exact next action and completion boundary
-
-This boundary delivers a concrete tested interactive review artifact and records all partial native effects. Further unreviewed canvas expansion is not useful while native verification/placement effects remain refused. The primary next action is **obtain evidenced permitted recovery for the original M1 Paper actions, then reconcile and complete the exact R4 dark-nav placement/light additions and capture native renders**. Do not blindly replay the blocked batch. Thereafter consume the R3 final-review, held destination/state/theme and bilingual obligations rather than rebuilding prior successful work.
-
-Independent review can open the supplied standalone prototype and judge the fact-first hierarchy and primary journey. The prototype's five-second/30-second comprehension targets need actual user testing; its local-storage success requires permitted real-origin qualification. No automatic wake is armed. No mode, account or host switch is proposed to bypass a denial.
-
-DO_NOT_REDO: acknowledged Paper effects; unchanged R2 evidence/mobile layouts; R3 applied source/fixes and indicator release; the packaged prototype's passing checks unless relevant bytes change. The R1 preservation map and narrative-versus-structured-falsifier scoring question remain open. Production implementation requires current source/authority/custody review, real data/auth/rights integration, exact-head tests, independent review and deployed browser proof. No production file, ingress, score, auth, alert scheduler, merge, deployment, worker or watcher was changed by this turn.
+The original public-source dates remain historical study inputs; R5 performed no new financial/legal analysis and did not promote them to current news. No production source, ingestion, scoring, auth, scheduler, provider, worker, watcher, merge or deployment changed. Green offline tests are not production acceptance.
