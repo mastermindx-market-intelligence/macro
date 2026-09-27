@@ -163,6 +163,42 @@ def test_receipt_id_differs_when_only_transformations_differ() -> None:
     assert base["receipt_id"] != with_transforms["receipt_id"]
 
 
+def test_receipt_id_differs_when_only_checked_differs() -> None:
+    """Identity binds ``checked`` — a receipt declaring one gate checked and
+    another declaring it NOT checked declare different comparisons.
+    """
+    cells = [cell("100", owner_ref="synthetic:cell:a"), cell("100", owner_ref="synthetic:cell:b")]
+    checked_one = build_comparison_receipt("same_period", cells, checked={"currency": True})
+    checked_other = build_comparison_receipt("same_period", cells, checked={"currency": False})
+    assert checked_one["receipt_id"] != checked_other["receipt_id"]
+
+
+def test_receipt_id_differs_when_only_purpose_differs() -> None:
+    """Identity binds ``purpose`` — a same_period comparison is a different
+    receipt than a year_over_year comparison even over the same cells.
+    """
+    cells = [cell("100", owner_ref="synthetic:cell:a"), cell("100", owner_ref="synthetic:cell:b")]
+    same_period = build_comparison_receipt("same_period", cells)
+    year_over_year = build_comparison_receipt("year_over_year", cells)
+    assert same_period["receipt_id"] != year_over_year["receipt_id"]
+
+
+def test_receipt_id_stable_for_identical_inputs() -> None:
+    """Identity is stable — identical inputs produce identical receipt_id."""
+    cells = [cell("100", owner_ref="synthetic:cell:a"), cell("100", owner_ref="synthetic:cell:b")]
+    first = build_comparison_receipt(
+        "same_period",
+        cells,
+        checked={"basis": True, "currency": True},
+    )
+    second = build_comparison_receipt(
+        "same_period",
+        cells,
+        checked={"currency": True, "basis": True},  # different insertion order
+    )
+    assert first["receipt_id"] == second["receipt_id"]
+
+
 def test_build_receipt_rejects_unknown_purpose() -> None:
     with pytest.raises(ValueError):
         build_comparison_receipt("not_a_purpose", [cell("1")])
