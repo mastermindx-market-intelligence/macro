@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AEO-BULL-20260415",
-  "asof": "2026-09-18",
-  "phase": "invalidated",
-  "detection_phase": "invalidated",
-  "management_confidence": 12.7,
-  "raw_confidence": 8.0,
-  "delta_vs_base": -47.3,
-  "recommended_action": "invalidated",
-  "human_state": "Invalidated",
+  "asof": "2026-09-26",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 29.4,
+  "raw_confidence": 35.9,
+  "delta_vs_base": -30.6,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 0.0,
+    "validity": 62.9,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 67.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.271,
+    "dist_to_stop_r": 0.71,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 140.0,
-    "p1": -0.8473,
-    "p2": -0.4237,
+    "horizon_pct_used": 157.8,
+    "p1": -0.1935,
+    "p2": -0.0968,
     "p3": null,
-    "move_r": -1.271,
+    "move_r": -0.29,
     "mfe_r": 0.832,
     "mae_r": -1.613
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-20",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 63,
-  "tau": 1.4
+  "days_elapsed": 71,
+  "tau": 1.5778
 }

@@ -1,0 +1,116 @@
+{
+  "proof_class": "full_real_B1_replay_after_real_whole_archive_refresh_and_actual_v2_TURN_WATCH",
+  "base_source": "bd93ee84583e6c6bea2b342bbf38cba0b9eb23e9",
+  "v2_source": "0e57dc01e494475802c62fc664924236544abb90",
+  "recorded_at": "2026-09-17T00:01:32Z",
+  "production": false,
+  "nightly_write_requested": false,
+  "changed_input_files": [],
+  "new_data_files": [],
+  "error": null,
+  "receipt": {
+    "schema": "prophet.candidate_episode_reconcile_receipt/v1",
+    "mode": "replay",
+    "gate": {
+      "nightly_requested": false,
+      "nightly_advance_enabled": false
+    },
+    "durable_write": false,
+    "recorded_at": "2026-09-17T00:01:32Z",
+    "definition_era": "candidate-episode-v1-2026-08-25",
+    "source_hashes": {
+      "data/prophet_doors/flags.jsonl": "sha256:183ee2898eca130bc7b6fbbdaff58ff0abb6e7b30b9ba4115841681e7ab61ab2",
+      "data/reference/security_master.parquet": "sha256:5bd6753919730e7ad5e526253747784ad02d4c10e93fe32413617704b6452ae5",
+      "data/reference/vendor_aliases.parquet": "sha256:6bc38a68a00e51db0d6124f71938168e0968a841502aae84fe4a34169beda9b8",
+      "data/us_prophet_rank/candidates/2026-07.parquet": "sha256:1890fed2039d86203f4557c324912a429c729c713444c6ddb4e5fb1be984cf33",
+      "data/us_prophet_rank/candidates/2026-08.parquet": "sha256:690aa6c02961743217e767758dc0e525d3dd4fa4a0895dc58213589a860ccdc0",
+      "data/us_prophet_rank/candidates/2026-09.parquet": "sha256:91d862568dc609ec73cede2b4671a2692100ea0d3c9034ffe9bbe84324d521b5",
+      "data/us_prophet_rank/episode_inputs/turn_watch/2026-09-16.json": "sha256:29410882be1b8e1159dd4ae1389c0ccafc44eeb60c888aa04b1559b101bdd5b6"
+    },
+    "source_counts": {
+      "candidate": {
+        "input": 1530,
+        "mapped": 64,
+        "suppressed": 1466
+      },
+      "doors": {
+        "input": 1,
+        "mapped": 1,
+        "suppressed": 0
+      },
+      "entry_radar": {
+        "input": 0,
+        "mapped": 0,
+        "suppressed": 0
+      },
+      "turn_watch": {
+        "input": 2901,
+        "mapped": 233,
+        "suppressed": 2668
+      }
+    },
+    "counts": {
+      "input": 4432,
+      "mapped": 298,
+      "suppressed": 4134,
+      "ledger_suppressions": 27642,
+      "old_events": 3840,
+      "new_events": 4138,
+      "appended_events": 298
+    },
+    "ledger_sha256": "sha256:86e46231abbe6ca9a26ed860d5f0b605e2d2be3e12eb97bb1efac9a5d802b272",
+    "projection_hashes": {
+      "all_candidates.json": "sha256:4a59491212e3544eec4693dc800f19dfe243d9f92e0eed0cc32ec142cd2ccbab",
+      "current.parquet": "sha256:8be60b4b50fbf0af2ebfd06ac19a4701ef9c756c03f2fbdc75e3dab68b61a090"
+    },
+    "source_receipts": [
+      {
+        "source": "turn_watch",
+        "status": "ok",
+        "rows": 2901,
+        "files": [
+          {
+            "path": "data/us_prophet_rank/episode_inputs/turn_watch/2026-09-16.json",
+            "sha256": "sha256:29410882be1b8e1159dd4ae1389c0ccafc44eeb60c888aa04b1559b101bdd5b6"
+          }
+        ]
+      },
+      {
+        "source": "candidate",
+        "status": "ok",
+        "rows": 1530,
+        "files": [
+          {
+            "path": "data/us_prophet_rank/candidates/2026-07.parquet",
+            "sha256": "sha256:1890fed2039d86203f4557c324912a429c729c713444c6ddb4e5fb1be984cf33"
+          },
+          {
+            "path": "data/us_prophet_rank/candidates/2026-08.parquet",
+            "sha256": "sha256:690aa6c02961743217e767758dc0e525d3dd4fa4a0895dc58213589a860ccdc0"
+          },
+          {
+            "path": "data/us_prophet_rank/candidates/2026-09.parquet",
+            "sha256": "sha256:91d862568dc609ec73cede2b4671a2692100ea0d3c9034ffe9bbe84324d521b5"
+          }
+        ]
+      },
+      {
+        "source": "doors",
+        "status": "ok",
+        "rows": 1,
+        "files": [
+          {
+            "path": "data/prophet_doors/flags.jsonl",
+            "sha256": "sha256:183ee2898eca130bc7b6fbbdaff58ff0abb6e7b30b9ba4115841681e7ab61ab2"
+          }
+        ]
+      },
+      {
+        "source": "entry_radar",
+        "status": "degraded",
+        "reason": "MISSING_SOURCE_FILE"
+      }
+    ]
+  },
+  "seconds": 109.82
+}

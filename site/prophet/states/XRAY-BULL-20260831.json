@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "XRAY-BULL-20260831",
-  "asof": "2026-09-18",
+  "asof": "2026-09-26",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 15.7,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 67.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -5.694,
+    "dist_to_stop_r": -6.269,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 40.0,
-    "p1": -4.4621,
-    "p2": -2.2313,
+    "horizon_pct_used": 57.8,
+    "p1": -4.8453,
+    "p2": -2.423,
     "p3": null,
-    "move_r": -6.694,
+    "move_r": -7.269,
     "mfe_r": 0.862,
     "mae_r": -7.351
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-31",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 18,
-  "tau": 0.4
+  "days_elapsed": 26,
+  "tau": 0.5778
 }

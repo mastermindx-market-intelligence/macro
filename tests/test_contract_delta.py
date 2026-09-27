@@ -27,6 +27,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 
 import json
+import os
 import signal
 import subprocess
 from pathlib import Path
@@ -198,7 +199,7 @@ def test_head_findings_binds_exact_tree_inventory(
     def closure_findings(path: Path):
         assert events[-1][0] == "enter"
         assert path == manifest
-        return {"unrun-picks-boards": ["site/theme.css"]}
+        return {"unrun-picks-boards": ["site/theme.css"]}  # ci-trigger-closure: data — fixture finding name, never opened
 
     def suite_findings():
         assert events[-1][0] == "enter"
@@ -208,7 +209,7 @@ def test_head_findings_binds_exact_tree_inventory(
     monkeypatch.setattr(CCD, "gated_unrun_suites", suite_findings)
 
     assert CCD._head_findings() == {
-        "closure": {"unrun-picks-boards": ["site/theme.css"]},
+        "closure": {"unrun-picks-boards": ["site/theme.css"]},  # ci-trigger-closure: data — fixture finding name, never opened
         "suites": ["tests/test_unwired.py"],
     }
     assert [event[0] for event in events] == ["write", "enter", "exit"]
@@ -285,15 +286,124 @@ def test_ci_yml_carries_a_contract_delta_job_gated_to_pull_request() -> None:
     assert job.get("timeout-minutes", 0) >= 45
 
 
-def test_contract_delta_run_step_calls_the_script_with_base() -> None:
+def test_contract_delta_binds_to_the_exact_tested_merge_parent() -> None:
+    """A long-lived PR must compare against the base GitHub actually tested.
+
+    `pull_request.base.sha` is the PR event's historical base snapshot.  GitHub's
+    pull-request checkout is instead the synthetic merge commit whose first parent
+    is the current tested base and whose second parent is the exact PR head.  The
+    gate must derive from that immutable merge object so current-main debt remains
+    inherited while candidate-added debt remains introduced.
+    """
     jobs = _ci_jobs()
     job = jobs["contract-delta"]
+    resolver = _step_named(job, "resolve the exact tested PR merge base")
+    assert resolver is not None
+    assert resolver.get("env", {}).get("EXPECTED_PR_HEAD") == (
+        "${{ github.event.pull_request.head.sha }}"
+    )
+    resolver_run = resolver.get("run", "")
+    assert "git rev-parse HEAD" in resolver_run
+    assert "GITHUB_SHA" in resolver_run
+    assert "git cat-file -p HEAD" in resolver_run
+    assert "sed -n 's/^parent //p'" in resolver_run
+    assert '"$#" -ne 2' in resolver_run
+    assert '"$tested_head" != "$EXPECTED_PR_HEAD"' in resolver_run
+    assert 'base_sha=$tested_base' in resolver_run
+
     blob = "\n".join(
         step.get("run", "") for step in job.get("steps", []) if isinstance(step, dict)
     )
     assert "scripts/check_contract_delta.py" in blob
     assert "--base" in blob
-    assert "github.event.pull_request.base.sha" in blob
+    assert "steps.contract-merge.outputs.base_sha" in blob
+    assert "github.event.pull_request.base.sha" not in blob
+
+
+def test_contract_delta_merge_resolver_selects_current_tested_base(
+    tmp_path: Path,
+) -> None:
+    """Main movement after PR creation must be inherited, not candidate debt.
+
+    Build the exact topology that exposed #7496: a candidate forks from an old
+    base, main moves independently, and GitHub tests a two-parent synthetic merge.
+    The workflow resolver must return the synthetic merge's first parent (current
+    tested main), never the old creation base, and must bind the second parent to
+    the exact PR head.
+    """
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "init", "-b", "main"], cwd=repo, check=True, capture_output=True)
+    _git("config", "user.email", "contract-delta@example.invalid", cwd=repo)
+    _git("config", "user.name", "Contract Delta Test", cwd=repo)
+
+    (repo / "root.txt").write_text("root\n", encoding="utf-8")
+    _git("add", "root.txt", cwd=repo)
+    _git("commit", "-m", "creation base", cwd=repo)
+    creation_base = _git("rev-parse", "HEAD", cwd=repo).strip()
+
+    _git("switch", "-c", "candidate", cwd=repo)
+    (repo / "candidate.txt").write_text("candidate debt\n", encoding="utf-8")
+    _git("add", "candidate.txt", cwd=repo)
+    _git("commit", "-m", "candidate", cwd=repo)
+    pr_head = _git("rev-parse", "HEAD", cwd=repo).strip()
+
+    _git("switch", "main", cwd=repo)
+    (repo / "main-debt.txt").write_text("current main debt\n", encoding="utf-8")
+    _git("add", "main-debt.txt", cwd=repo)
+    _git("commit", "-m", "main moved after PR creation", cwd=repo)
+    tested_base = _git("rev-parse", "HEAD", cwd=repo).strip()
+    assert tested_base != creation_base
+
+    _git("merge", "--no-ff", "candidate", "-m", "synthetic tested merge", cwd=repo)
+    tested_merge = _git("rev-parse", "HEAD", cwd=repo).strip()
+    # actions/checkout@v4 with fetch-depth: 1 marks the tested merge itself as a
+    # shallow boundary.  Revision-walking commands then hide its parents even
+    # though the raw commit object still carries both `parent` headers.  Reproduce
+    # that hosted topology so this regression cannot accidentally pass only in a
+    # full local clone.
+    (repo / ".git" / "shallow").write_text(tested_merge + "\n", encoding="utf-8")
+    assert _git("show", "-s", "--format=%P", "HEAD", cwd=repo).strip() == ""
+    raw_parents = [
+        line.split(" ", 1)[1]
+        for line in _git("cat-file", "-p", "HEAD", cwd=repo).splitlines()
+        if line.startswith("parent ")
+    ]
+    assert raw_parents == [tested_base, pr_head]
+
+    resolver = _step_named(_ci_jobs()["contract-delta"], "resolve the exact tested PR merge base")
+    assert resolver is not None
+    output = tmp_path / "github-output"
+    env = {
+        **os.environ,
+        "GITHUB_SHA": tested_merge,
+        "EXPECTED_PR_HEAD": pr_head,
+        "GITHUB_OUTPUT": str(output),
+    }
+    subprocess.run(
+        ["bash", "-c", resolver["run"]],
+        cwd=repo,
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    resolved = dict(
+        line.split("=", 1) for line in output.read_text(encoding="utf-8").splitlines()
+    )
+    assert resolved == {"base_sha": tested_base, "head_sha": pr_head}
+    assert resolved["base_sha"] != creation_base
+
+    bad = subprocess.run(
+        ["bash", "-c", resolver["run"]],
+        cwd=repo,
+        env={**env, "EXPECTED_PR_HEAD": creation_base},
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert bad.returncode != 0
+    assert "second parent does not match the exact PR head" in bad.stderr
 
 
 def test_ci_gate_needs_contract_delta() -> None:
@@ -320,15 +430,21 @@ def test_ci_gate_enforcement_step_treats_skip_as_ok() -> None:
     assert '!= "success"' not in run and '!="success"' not in run
 
 
-def test_legacy_jobs_workflow_yaml_job_runs_the_new_suite() -> None:
+def test_legacy_jobs_ci_control_plane_job_runs_the_new_suite() -> None:
     """This file must be wired somewhere, or audit_unrun_tests.py's own gate --
-    the very lane this gate exists to make pre-mergeable -- would flag it."""
+    the very lane this gate exists to make pre-mergeable -- would flag it.
+
+    Its home moved from workflow-yaml (gate: data, never run on a pull request)
+    to ci-control-plane-contracts on 2026-09-25, and it must stay on the code
+    gate: a contract for a PR gate that only runs after the merge proves
+    nothing about the PR."""
     doc = yaml.safe_load(MANIFEST.read_text())
-    job = doc["jobs"]["workflow-yaml"]
+    job = doc["jobs"]["ci-control-plane-contracts"]
     blob = "\n".join(
         step.get("run", "") for step in job.get("steps", []) if isinstance(step, dict)
     )
     assert "tests/test_contract_delta.py" in blob
+    assert job.get("gate", "code") == "code"
 
 
 # ─────────────────────────────────────────────────────────────────────────────

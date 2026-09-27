@@ -434,6 +434,15 @@ def run_rest_battery(prober: RestProber, probe_day: str | None = None) -> dict[s
     p("indices_snapshot", "/v3/snapshot/indices", params={"ticker.any_of": INDEX_SYM},
       evidence=_ev_results)
     p("fx_prev", "/v2/aggs/ticker/C:EURUSD/prev", evidence=_ev_aggs)
+    # Exact product endpoint used by the China physical-gold close basis. Keep
+    # this in the existing entitlement manifest rather than creating a second
+    # product-specific capability ledger.
+    p(
+        "fx_gold_cny_minute",
+        f"/v2/aggs/ticker/C:XAUCNY/range/1/minute/{day}/{day}",
+        params={"limit": 5},
+        evidence=_ev_aggs,
+    )
     p("crypto_prev", "/v2/aggs/ticker/X:BTCUSD/prev", evidence=_ev_aggs)
 
     return prober.results

@@ -1,0 +1,33 @@
+{
+  "schema": "special_situations.premium.v1",
+  "parser_version": "special-situations-premium/1.0.0",
+  "scored": false,
+  "is_context_only": true,
+  "disclaimer": "Context only \u2014 an event-tracking display of public filings, not a signal, recommendation, or sizing input.",
+  "built": "2026-09-26 18:06 UTC",
+  "status": "computed",
+  "refusal": null,
+  "ticker": "WEAV",
+  "issuer_key": "cik:1609151",
+  "company": "Weave Communications, Inc.",
+  "category": "Acquisitions",
+  "currency": "USD",
+  "offer_price": 7.4,
+  "offer_accession": "0001140361-26-037628",
+  "offer_filing_date": "2026-09-25",
+  "offer_form_type": "DEFM14A",
+  "offer_price_provenance": "filing_terms_extracted",
+  "announcement_filing_date": "2026-09-15",
+  "unaffected_price": 7.309999942779541,
+  "unaffected_price_date": "2026-08-19",
+  "premium_pct": 1.2,
+  "amendment_vintage": {
+    "form_type": "DEFM14A",
+    "is_amendment": false,
+    "n_amendments": 0,
+    "filings_in_deal": 2
+  },
+  "source_url": "https://www.sec.gov/Archives/edgar/data/1609151/000114036126037628/0001140361-26-037628-index.htm",
+  "null_en": null,
+  "null_zh": null
+}

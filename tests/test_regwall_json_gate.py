@@ -7,9 +7,11 @@ ingest carve-outs stay explicit and public.
 """
 from __future__ import annotations
 
+from fnmatch import fnmatchcase
 import re
 from pathlib import Path
 
+import pytest
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -148,3 +150,64 @@ def test_html_documents_are_served_open_not_registration_gated():
         assert wall not in open_handler, f"@open_html routes pages through {wall}"
     # Payloads: the asset wall is untouched and still fail-closed.
     assert "rewrite /api/regwall/check" in _extract_block(text, "handle @reg_asset")
+
+
+@pytest.mark.parametrize(("asset", "cache_matcher", "other_cache_matcher"), (
+    ("/stock-dashboard.css", "@public_versioned", "@watchlist_shell_versioned"),
+    ("/hk-stock-v36.js", "@watchlist_shell_versioned", "@public_versioned"),
+    ("/canada-stock-v36.js", "@watchlist_shell_versioned", "@public_versioned"),
+))
+def test_hkca_shell_dependencies_are_public_with_stamp_aware_cache(
+    asset, cache_matcher, other_cache_matcher
+):
+    """The three public shell files keep the cache lane implied by their stamp."""
+    policy = yaml.safe_load(POLICY_FILE.read_text(encoding="utf-8"))
+    assert policy["public"]["exact"].count(asset) == 1
+    assert asset not in policy["free_registered"]["exact"]
+    source = _read_caddyfile()
+    for matcher in ("@reg_asset", "@reg_asset_err", "@public_static"):
+        assert asset in _path_tokens(_extract_block(source, matcher)), matcher
+    assert asset in _path_tokens(_extract_block(source, cache_matcher)), cache_matcher
+    assert asset not in _path_tokens(_extract_block(source, other_cache_matcher)), (
+        f"{asset} must not be served by both cache lanes"
+    )
+
+
+@pytest.mark.parametrize("payload", (
+    "/factordata/hk_standouts.json", "/factordata/canada_standouts.json",
+    "/hkstockdata/0700_HK.json", "/canadastockdata/ATRL_TO.json",
+))
+def test_hkca_shell_restoration_keeps_analytical_payloads_private(payload):
+    """Opening presentation files never opens board or per-stock evidence."""
+    source = _read_caddyfile()
+    assert not any(fnmatchcase(payload, rule) for rule in _public_policy_tokens())
+    for matcher in (
+        "@reg_asset", "@reg_asset_err", "@public_static",
+        "@public_versioned", "@watchlist_shell_versioned",
+    ):
+        rules = _path_tokens(_extract_block(source, matcher))
+        assert not any(fnmatchcase(payload, rule) for rule in rules), matcher
+
+
+def test_prophet_leader_observation_source_is_early_paid_and_pricing_disclosed():
+    """The tier-preview wall is honest only when the raw ticker map cannot bypass it."""
+    policy = yaml.safe_load(POLICY_FILE.read_text(encoding="utf-8"))
+    source = "/anticipationdata/us_leader_pullback.json"
+
+    assert source in policy["premium"]["enforced_early"]["exact"]
+    assert source not in policy["public"]["exact"]
+    assert source not in policy["free_registered"]["exact"]
+    assert not any(
+        source.startswith(prefix)
+        for section in ("public", "free_registered")
+        for prefix in policy[section]["prefixes"]
+    )
+
+    plans = (REPO_ROOT / "templates" / "plans.html.j2").read_text(
+        encoding="utf-8"
+    )
+    assert "leaders waiting for entry" in plans
+    assert "领涨股" in plans
+    assert "1 before signup" in plans
+    assert "3 / list / day" in plans
+    assert "Full book" in plans

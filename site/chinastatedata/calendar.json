@@ -1,31 +1,19 @@
 {
   "schema": "china_calendar.v1",
-  "asof": "2026-09-18",
-  "generated_at_utc": "2026-09-18T12:50:53.535611+00:00",
+  "asof": "2026-09-24",
+  "generated_at_utc": "2026-09-26T13:11:22.420052+00:00",
   "horizon_days": 45,
   "entries": [
     {
-      "date": "2026-09-21",
+      "date": "2026-09-24",
       "window_end": null,
-      "etype": "LPR",
-      "label_en": "LPR fix (loan prime rate)",
-      "label_zh": "LPR 报价（贷款市场报价利率）",
+      "etype": "omo_mlf_tender",
+      "label_en": "PBoC MLF tender — 1年期, RMB 800bn",
+      "label_zh": "央行中期借贷便利（MLF）操作：1年期，8,000亿元",
       "region": "cn",
       "impact": "high",
-      "source_class": "rule",
-      "source": "engine.china_event_calendar",
-      "approx": false
-    },
-    {
-      "date": "2026-09-22",
-      "window_end": null,
-      "etype": "HK_CPI",
-      "label_en": "HK CPI (composite)",
-      "label_zh": "香港 CPI（综合）",
-      "region": "hk",
-      "impact": "high",
-      "source_class": "static",
-      "source": "engine.hk_event_calendar",
+      "source_class": "feed",
+      "source": "china_omo.operations",
       "approx": false
     },
     {
@@ -351,10 +339,33 @@
       "source_class": "rule",
       "source": "engine.hk_event_calendar",
       "approx": false
+    },
+    {
+      "date": "2026-11-04",
+      "window_end": null,
+      "etype": "CAIXIN_S",
+      "label_en": "Caixin Services PMI",
+      "label_zh": "财新服务业 PMI",
+      "region": "cn",
+      "impact": "medium",
+      "source_class": "rule",
+      "source": "engine.china_event_calendar",
+      "approx": false
+    },
+    {
+      "date": "2026-11-06",
+      "window_end": null,
+      "etype": "US_NFP",
+      "label_en": "US payrolls (NFP)",
+      "label_zh": "美国非农就业",
+      "region": "hk",
+      "impact": "high",
+      "source_class": "rule",
+      "source": "engine.hk_event_calendar",
+      "approx": false
     }
   ],
   "data_gaps": [
-    "china_omo store holds no announced operation inside the horizon (the tape is present; the PBoC simply has nothing pending)",
     "china_earnings store holds no reporting month inside the horizon"
   ],
   "authority": {

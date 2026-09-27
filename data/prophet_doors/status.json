@@ -1,33 +1,62 @@
 {
-  "appended": 2,
-  "asof": "2026-09-17",
+  "appended": 7,
+  "asof": "2026-09-25",
   "candidates": {
     "R": 0,
-    "T": 0,
+    "T": 19,
     "W": 4
   },
   "deduped": {
     "R": 0,
-    "T": 0,
-    "W": 2
+    "T": 12,
+    "W": 4
   },
   "dry_run": false,
   "feature_source": {
     "enabled": true,
     "foresight": {
-      "consulted": false
+      "asof": "2026-09-26",
+      "consulted": true,
+      "n_keys": 27,
+      "n_themes": 18,
+      "ok": true,
+      "reason": null,
+      "source": "site/basketdata/foresight_cascade.json"
     },
     "ignition": {
       "coil_min_sessions": 293,
-      "consulted": false,
-      "null_reasons": {},
+      "consulted": true,
+      "null_reasons": {
+        "ohlcv_absent": 20
+      },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
-      "themes_read": {},
+      "themes_read": {
+        "Industrial Automation": {
+          "theme_thrust_frac": 0.2143,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "Nanotechnology": {
+          "theme_thrust_frac": 0.1176,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "Semiconductors": {
+          "theme_thrust_frac": 0.2647,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "Space Tech": {
+          "theme_thrust_frac": 0.05,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        }
+      },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 0,
-      "tickers_read": 0
+      "tickers_ok": 101,
+      "tickers_read": 121
     },
     "keys": [
       "relay_count_3d",
@@ -45,22 +74,28 @@
       "theme_thrust_reason"
     ],
     "relay": {
-      "consulted": false
+      "consulted": true,
+      "high_lookback": 63,
+      "members_indexed": 129,
+      "n_covered": 87,
+      "reason": null,
+      "window_sessions": 21
     },
     "turnover": {
-      "consulted": false
+      "consulted": true,
+      "last_session": "2026-09-25",
+      "n_tickers": 1547,
+      "ok": true,
+      "reason": null,
+      "source": "data/{breadth,midcap_breadth,smallcap_breadth}/_volume_cache.parquet",
+      "window_max": 60
     }
   },
   "feature_source_w": {
     "atlas": {
-      "consulted": true,
-      "direction": "bull",
-      "grid": "W",
-      "horizon": "13w",
-      "n_asked": 2,
-      "n_covered": 2,
-      "reason": null,
-      "source": "engine.event_atlas.receipt"
+      "consulted": false,
+      "n_asked": 0,
+      "n_covered": 0
     },
     "enabled": true,
     "keys": [
@@ -82,53 +117,58 @@
   },
   "flag_tickers": {
     "R": [],
-    "T": [],
-    "W": [
-      "AZN",
-      "ECHO"
-    ]
+    "T": [
+      "ACLS",
+      "AMAT",
+      "LRCX",
+      "IRDM",
+      "AME",
+      "ROK",
+      "VECO"
+    ],
+    "W": []
   },
-  "n_universe": 1496,
+  "n_universe": 1492,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-18 20:37:42",
-  "runtime_s": 121.3,
+  "run_utc": "2026-09-26 22:28:40",
+  "runtime_s": 105.9,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": -1,
-    "asof": "2026-09-18",
-    "n_members": 75,
+    "age_days": 0,
+    "asof": "2026-09-25",
+    "n_members": 129,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 3.655,
+        "emerging_score": 4.214,
         "rank": 1,
-        "theme": "Education Technology"
+        "theme": "Semiconductors"
       },
       {
-        "emerging_score": 2.544,
+        "emerging_score": 2.367,
         "rank": 2,
-        "theme": "Cybersecurity"
+        "theme": "Quantum Computing"
       },
       {
-        "emerging_score": 1.301,
+        "emerging_score": 2.084,
         "rank": 3,
-        "theme": "Biometrics"
-      },
-      {
-        "emerging_score": 1.154,
-        "rank": 4,
-        "theme": "Mega-Cap"
-      },
-      {
-        "emerging_score": 1.045,
-        "rank": 5,
         "theme": "Space Tech"
+      },
+      {
+        "emerging_score": 1.559,
+        "rank": 4,
+        "theme": "Industrial Automation"
+      },
+      {
+        "emerging_score": 1.55,
+        "rank": 5,
+        "theme": "Nanotechnology"
       }
     ]
   },
@@ -138,18 +178,18 @@
       "3B"
     ],
     "aligned": 4,
-    "asof_max": "2026-09-18",
-    "asof_mismatch": 4,
-    "asof_run": "2026-09-17",
+    "asof_max": "2026-09-25",
+    "asof_mismatch": 0,
+    "asof_run": "2026-09-25",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 22.3,
+    "runtime_s": 20.3,
     "skipped": 4,
     "source": "baskets/membership.json",
-    "state_turn": 77,
+    "state_turn": 67,
     "universe_n": 717
   }
 }

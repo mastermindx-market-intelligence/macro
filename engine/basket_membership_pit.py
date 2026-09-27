@@ -333,8 +333,13 @@ def _read_json(path: Path) -> object | None:
         return None
 
 
-def read_history(suite: str) -> pd.DataFrame:
-    """The PIT history frame for ``suite`` (empty frame when absent/unreadable)."""
+def read_history(suite: str, *, strict: bool = False) -> pd.DataFrame:
+    """The PIT history frame for ``suite``.
+
+    An absent owner store is an honest empty-history boundary.  An existing but
+    unreadable store is different: callers on a publication path may request
+    ``strict=True`` so corruption fails closed instead of masquerading as absence.
+    """
     p = history_path(suite)
     try:
         if not p.exists():
@@ -346,6 +351,8 @@ def read_history(suite: str) -> pd.DataFrame:
         return df
     except Exception as exc:  # noqa: BLE001
         log.warning("basket_membership_pit: history read failed for %s (%s)", suite, exc)
+        if strict:
+            raise
         return pd.DataFrame(columns=list(COLUMNS))
 
 

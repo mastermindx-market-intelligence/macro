@@ -83,6 +83,11 @@ public:
     # rows are omitted server-side and render only counts + the trial CTA, so
     # the public shell contains no premium ticker payload.
     - /confluence_screener.html
+    # Research-priority list (B-F06-4). Anonymous readers see the list and the
+    # exposure null; signed-in readers overlay holdings client-side. No premium
+    # payload and no per-user server path.
+    - /research_screener.html
+    - /research_screener.css
     # Public acquisition dashboards. macro/start expose the broad market read;
     # macro drill-downs still require registration. us_stocks applies the
     # anonymous=1 / Free=3 / paid=full summary preview in tier_preview.js.
@@ -105,6 +110,22 @@ public:
     - /biocatalyst.html
     - /biocatalyst.css
     - /biocatalyst.js
+    # WTI Live Trace presentation assets only; every current value is served
+    # by authenticated /api/ontology/explorer/v1, never by these files.
+    - /ontology.css
+    - /ontology.js
+    - /stock-dashboard.css
+    - /hk-stock-v36.js
+    - /canada-stock-v36.js
+    # Finance Intelligence is the same shell/payload split. The HTML and its
+    # paired presentation/client assets carry no read-model payload; the
+    # same-origin read-model route remains behind authenticated, no-store
+    # enforcement at integration time. Per Chairman directive 2026-09-24
+    # relayed from Astra CEO, Finance ships no private store, no publish
+    # lane, and no serving route — only the static shell is public.
+    - /finance_intelligence.html
+    - /finance_intelligence.css
+    - /finance_intelligence.js
     # Tier-preview shells, promoted from free_registered to ANONYMOUS-public
     # (SEO_SUPERCHARGE_MASTERPLAN §A1/W1a). The pages themselves are preview
     # SHELLS: honest totals + methodology + a small newest-first preview slice +
@@ -261,6 +282,7 @@ public:
     - /tablesort.js
     - /charts.js
     - /risk_state_live.js
+    - /china_risk_state_live.js
     - /release_publications_live.js
     - /heatmap.js
     - /stocktable.js
@@ -679,6 +701,10 @@ premium:
       # scripts/build_china_altdata.py read it off disk), so gating the URL closes
       # a direct-link leak without breaking anything.
       - /chinaspecialdata/special.json
+      # Prophet's full leader-observation roster. The public US page server-renders only
+      # the configured preview; paid rows hydrate through /premiumdata/us_stocks.json.
+      # Locking this raw ticker map prevents a direct-URL bypass of that same product wall.
+      - /anticipationdata/us_leader_pullback.json
     prefixes:
       - /premiumdata/
       # Canonical/public projection twins may be published for controlled

@@ -325,3 +325,27 @@
 {"asof": "2026-09-18", "domain": "china", "field": "china_fe_band", "from_value": "Neutral", "to_value": "Greed", "macro_context_id": "01fbf10df63ca59a"}
 {"asof": "2026-09-18", "domain": "canada", "field": "canada_overlay_state", "from_value": "Risk-off", "to_value": "Neutral", "macro_context_id": "01fbf10df63ca59a"}
 {"asof": "2026-09-18", "domain": "canada", "field": "canada_cycle_tag", "from_value": "mid", "to_value": "late", "macro_context_id": "01fbf10df63ca59a"}
+{"asof": "2026-09-23", "domain": "us", "field": "us_liquidity_quality", "from_value": "stress-expansion", "to_value": "contracting", "macro_context_id": "4c88b183131134ed"}
+{"asof": "2026-09-23", "domain": "us", "field": "us_liquidity_overlay", "from_value": "expanding", "to_value": "contracting", "macro_context_id": "4c88b183131134ed"}
+{"asof": "2026-09-23", "domain": "us", "field": "us_vrp_state", "from_value": "normal", "to_value": "thin (vol underpriced \u2014 fragile)", "macro_context_id": "4c88b183131134ed"}
+{"asof": "2026-09-23", "domain": "us", "field": "cross_asset_verdict", "from_value": "diverge", "to_value": "confirm", "macro_context_id": "4c88b183131134ed"}
+{"asof": "2026-09-23", "domain": "fx", "field": "usd_trend", "from_value": "down", "to_value": "mixed", "macro_context_id": "4c88b183131134ed"}
+{"asof": "2026-09-23", "domain": "fx", "field": "fx_regime_radar", "from_value": "intervention_risk", "to_value": null, "macro_context_id": "4c88b183131134ed"}
+{"asof": "2026-09-23", "domain": "bonds", "field": "bond_curve_lean", "from_value": "neutral", "to_value": "steepener", "macro_context_id": "4c88b183131134ed"}
+{"asof": "2026-09-23", "domain": "commodity", "field": "commodity_regime", "from_value": "Stagflation", "to_value": "Reflation", "macro_context_id": "4c88b183131134ed"}
+{"asof": "2026-09-23", "domain": "commodity", "field": "commodity_favored", "from_value": "Gold, Silver", "to_value": "Copper, Oil \u00b7 WTI, Silver", "macro_context_id": "4c88b183131134ed"}
+{"asof": "2026-09-23", "domain": "commodity", "field": "silver_action", "from_value": "HOLD", "to_value": "SELL", "macro_context_id": "4c88b183131134ed"}
+{"asof": "2026-09-23", "domain": "china", "field": "china_fe_band", "from_value": "Greed", "to_value": "Neutral", "macro_context_id": "4c88b183131134ed"}
+{"asof": "2026-09-23", "domain": "dispersion", "field": "dispersion_state", "from_value": "neutral", "to_value": "lean_out", "macro_context_id": "4c88b183131134ed"}
+{"asof": "2026-09-25", "domain": "us", "field": "us_risk_radar", "from_value": "calm", "to_value": "caution", "macro_context_id": "e03e9b65fefb8175"}
+{"asof": "2026-09-25", "domain": "us", "field": "us_rate_pressure", "from_value": "pressure", "to_value": "panic", "macro_context_id": "e03e9b65fefb8175"}
+{"asof": "2026-09-25", "domain": "us", "field": "us_vrp_state", "from_value": "thin (vol underpriced \u2014 fragile)", "to_value": "normal", "macro_context_id": "e03e9b65fefb8175"}
+{"asof": "2026-09-25", "domain": "us", "field": "cross_asset_verdict", "from_value": "confirm", "to_value": "diverge", "macro_context_id": "e03e9b65fefb8175"}
+{"asof": "2026-09-25", "domain": "fx", "field": "fx_regime_radar", "from_value": null, "to_value": "intervention_risk", "macro_context_id": "e03e9b65fefb8175"}
+{"asof": "2026-09-25", "domain": "canada", "field": "canada_cycle_tag", "from_value": "late", "to_value": "mid", "macro_context_id": "e03e9b65fefb8175"}
+{"asof": "2026-09-26", "domain": "us", "field": "us_quad", "from_value": "Q3", "to_value": "Q2", "macro_context_id": "582c64b90047a0d7"}
+{"asof": "2026-09-26", "domain": "us", "field": "us_transition_state", "from_value": "TRANSITIONING", "to_value": "NEW_REGIME", "macro_context_id": "582c64b90047a0d7"}
+{"asof": "2026-09-26", "domain": "us", "field": "us_liquidity_quality", "from_value": "contracting", "to_value": "stress-expansion", "macro_context_id": "582c64b90047a0d7"}
+{"asof": "2026-09-26", "domain": "us", "field": "us_liquidity_overlay", "from_value": "contracting", "to_value": "expanding", "macro_context_id": "582c64b90047a0d7"}
+{"asof": "2026-09-26", "domain": "market", "field": "market_state_verdict", "from_value": "RISK_ON", "to_value": "MIXED", "macro_context_id": "582c64b90047a0d7"}
+{"asof": "2026-09-26", "domain": "bonds", "field": "bond_curve_lean", "from_value": "steepener", "to_value": "neutral", "macro_context_id": "582c64b90047a0d7"}

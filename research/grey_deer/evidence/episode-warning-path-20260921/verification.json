@@ -1,0 +1,144 @@
+{
+  "schema": "mastermind.risk_radar_episode_warning_path.verification.v1",
+  "protocol_commit": "31b05b7dda4be22be2ee55217aecfd475d2ed569",
+  "source_head_before_result_commit": "31b05b7dda4be22be2ee55217aecfd475d2ed569",
+  "source_base": "6105f18284e2d28d6b670dd83db4e9215028ec8b",
+  "protected_skillpack_commit": "3e66e43258f34db240d5bff76f54148c7af84ee4",
+  "input_sha256": {
+    "data/yahoo/SPY.parquet": "cb67cebc79518e6c8de3c558c5a0c18ec252389054b2f8394b354e88a7af0ea0",
+    "data/fred/BAMLH0A0HYM2.parquet": "dd60951fe1ef3e88b9202e4a0bef7c4a56d96382d6e2b28056fdf615786e4690",
+    "data/yahoo/HYG.parquet": "b89d528b2c8d7e3d3c2fa8f64b2b6992e95ca0f8b0d58933876730a4a9c1c8da",
+    "data/yahoo/TLT.parquet": "3d09f656e49ba4d3ee5f205fcd8a7c650c36e3f46d98295d2b29b9e3256bccd5",
+    "data/yahoo/_MOVE.parquet": "03bd5adfbf7c4ca75bed2584159621a3d20ed62387365c8a92ab745831dff125",
+    "data/fred/DFII10.parquet": "99984d0539e17de3e07aac6b7db7b80913ca43352084cfb701ff6ad9d2c7e2c2",
+    "data/yahoo/SMH.parquet": "d9b0aa2d02b4a480876002fbb640384ce49c00a0093488b4259bf09abeaff81b",
+    "data/yahoo/XLU.parquet": "60ba05b2d9b202e21eaaa788aba8540c46cabcd0f2b4d3b32e6ca40263aed2be",
+    "data/yahoo/XLP.parquet": "bcbe35e985ce39b120b9a93d9a26432c7aced21cb7d9b46315278049091a610c",
+    "data/yahoo/XLY.parquet": "48ba37b15e76c8a20c1bcb64350c72c86a852a1f0d24e18ad4190178dfbc3b27",
+    "data/yahoo/_VIX.parquet": "7899aa84d8b4cb5de1845df541f552dce2096af0b981fc91b2e655095b987b6c",
+    "data/yahoo/_VIX3M.parquet": "0304d258dd25725e6a8c03d50ec1e109da5871844bd24cd6f659a972ab3030d1",
+    "data/yahoo/_VIX9D.parquet": "2cda964c2314c661b0322ce3aeae7be84cf013656588b51f7c918240258a9d07",
+    "data/cboe/putcall.parquet": "a53c2342ce72f7ff580213318ca307df7d753e70d7a97eee8defa1c6d9788e61",
+    "data/cboe/gex.parquet": "0bfb04b88db610c14b7fcbd74d0dfbbcb5ac4fa5509758ed1b12dd242a0b8c94",
+    "data/fred/DEXJPUS.parquet": "79704861e8c851c81b4bb1b35a0d849e2dbfb063ff92d47c02f4581411563003",
+    "data/breadth/breadth.parquet": "9abc810d386888665697bce850a4d05498dbad61658a076bceea328174d55855"
+  },
+  "outputs_sha256": {
+    "reports/risk-radar-episode-atlas.md": "6945b3444c92ad42a2fbaa435b125a9ee38ac20d0cd53cfca433298070c7f3b5",
+    "reports/risk_radar_episode_atlas.json": "e07e0567b32b97ece04ba3bf7045875f6e86313d226092ce50e9cdf1e1fcffca",
+    "scripts/research/risk_radar_episode_atlas.py": "a8d756765a1749f67ea53ca5752762c80ea141e72936b06ef78ef2b6bebddfdb",
+    "tests/test_risk_radar.py": "6b7c6555e7806eb6b375ee916114ad1381053dde475c3632918ced6a31aef253",
+    "research/grey_deer/RISK_RADAR_EPISODE_WARNING_PATH_PREREG_2026-09-21.md": "8e5045e5ce827ee862d3dbdcf24ccc31aa49d75d79519b569a7c3761143b7fb3",
+    "research/grey_deer/RISK_RADAR_EPISODE_WARNING_PATH_RESULTS_2026-09-21.md": "6040a2ec233d85d77c6d25b7bb9c7a9ca185f51095636d749ebf572092fca2cf"
+  },
+  "tests": {
+    "command": "python3 -m pytest tests/test_risk_radar.py -q",
+    "result": "51 passed, 5 non-fatal pytest temp-cleanup warnings"
+  },
+  "compile": "python3 -m py_compile scripts/research/risk_radar_episode_atlas.py: pass",
+  "diff_check": "git diff --check: pass",
+  "causal_spot_check": {
+    "status": "pass",
+    "episode": "COVID-2020",
+    "leg": "bubble_ext",
+    "date": "2020-02-11",
+    "recomputed_truncated": 0.998016,
+    "precomputed_full_frame": 0.998016,
+    "diff": 0.0,
+    "note": "Causal percentile is identical when derived from truncated vs full frame \u2014 confirms leak-free."
+  },
+  "warning_summary": [
+    {
+      "episode": "2018Q4 selloff",
+      "reference_date": "2018-09-20",
+      "states": {
+        "T-21": "caution",
+        "T-5": "calm",
+        "T-1": "calm",
+        "T0": "watch",
+        "T+5": "calm"
+      },
+      "gate_t0": "closed",
+      "warning_sessions_21": 8,
+      "known_sessions_21": 22,
+      "loud_sessions_21": 0,
+      "warning_run_to_t0": 0,
+      "h21_max_loss": -0.0687
+    },
+    {
+      "episode": "COVID-2020",
+      "reference_date": "2020-02-19",
+      "states": {
+        "T-21": "caution",
+        "T-5": "caution",
+        "T-1": "caution",
+        "T0": "caution",
+        "T+5": "caution"
+      },
+      "gate_t0": "closed",
+      "warning_sessions_21": 22,
+      "known_sessions_21": 22,
+      "loud_sessions_21": 0,
+      "warning_run_to_t0": 22,
+      "h21_max_loss": -0.2911
+    },
+    {
+      "episode": "2022 bear market",
+      "reference_date": "2022-01-03",
+      "states": {
+        "T-21": "caution",
+        "T-5": "caution",
+        "T-1": "caution",
+        "T0": "caution",
+        "T+5": "caution"
+      },
+      "gate_t0": "closed",
+      "warning_sessions_21": 22,
+      "known_sessions_21": 22,
+      "loud_sessions_21": 0,
+      "warning_run_to_t0": 22,
+      "h21_max_loss": -0.0973
+    },
+    {
+      "episode": "SVB March-2023",
+      "reference_date": "2023-02-02",
+      "states": {
+        "T-21": "risk-off",
+        "T-5": "caution",
+        "T-1": "caution",
+        "T0": "caution",
+        "T+5": "caution"
+      },
+      "gate_t0": "closed",
+      "warning_sessions_21": 18,
+      "known_sessions_21": 22,
+      "loud_sessions_21": 2,
+      "warning_run_to_t0": 10,
+      "h21_max_loss": -0.0529
+    },
+    {
+      "episode": "Aug-2024 yen-carry",
+      "reference_date": "2024-07-16",
+      "states": {
+        "T-21": "caution",
+        "T-5": "caution",
+        "T-1": "caution",
+        "T0": "caution",
+        "T+5": "caution"
+      },
+      "gate_t0": "closed",
+      "warning_sessions_21": 22,
+      "known_sessions_21": 22,
+      "loud_sessions_21": 0,
+      "warning_run_to_t0": 22,
+      "h21_max_loss": -0.0841
+    }
+  ],
+  "claims": {
+    "historical_reconstruction": true,
+    "genuinely_issued_forecasts": false,
+    "current_model_validated": false,
+    "live_model_changed": false,
+    "probability_or_policy_changed": false
+  }
+}

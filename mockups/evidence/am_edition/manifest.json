@@ -1,0 +1,231 @@
+{
+  "schema": "mastermind.p0_evidence.v2",
+  "generated_at": "2026-09-25T02:57:12Z",
+  "tool": {
+    "module_ref": "scripts/capture_am_edition_evidence.py",
+    "module_sha256": "5057f3eb7c261d3e1c989f186ed28d89db9a55c02b86ad8c401a4d7fa4b82ff6"
+  },
+  "target": "am_edition.html",
+  "head": "21a0a50075efd64f7efd4ce12a5c344d6dc1d98b",
+  "axes": {
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "access": [
+      "anonymous"
+    ],
+    "subjects": [
+      "full"
+    ]
+  },
+  "selection": {
+    "page": "am_edition.html",
+    "access": "anonymous"
+  },
+  "aliases": {
+    "full-dark-en-desktop.png": "shots/6644c1341a52994d6156ee7331ebae49b9297f9e4b9be437c48d97fb67fbda31.png",
+    "full-light-en-desktop.png": "shots/9a6567e813f431cdd52ab058e0c3d16fd6a6ef1a6c1c0160455da1b1c51408d6.png",
+    "full-dark-zh-desktop.png": "shots/5683fbb3da97fa69cd0effa5e5998f29ed9ef911d5916eb60069ae44db86f1e0.png",
+    "full-light-zh-desktop.png": "shots/d76f195a6f2f4b285d4cddc1318a466eeace45b91f34eef70b3afbe914e6286f.png",
+    "full-dark-en-mobile.png": "shots/aa7b3a5911ed1ca76bbce4688dda667aeb68e89512efe347d694618daed29a2c.png",
+    "full-light-en-mobile.png": "shots/09d32bb61f0d58e1025eed58e918ae00a42edc3fe52dcfd59e9136dd94dccfdb.png",
+    "full-dark-zh-mobile.png": "shots/06635e997ae1aab63c104dcaaf3d3e02434f7948111152faa8f90c27c68659e7.png",
+    "full-light-zh-mobile.png": "shots/e1c3c031b1871ed5c98231c8d4a839ed201016687201a401449c9324bd44bf5d.png"
+  },
+  "excluded": [],
+  "outcome": "captured",
+  "totals": {
+    "rest_cells": 8,
+    "rest_required": 8,
+    "pages": 1
+  },
+  "honesty": {
+    "access": "anonymous only",
+    "gaps": "Uncaptured cells are retained with a failure reason.",
+    "authority": "This tool captures screenshots; it scores nothing.",
+    "page": "templates/am_edition.html.j2 rendered from the am_edition.v1 fixture view-model (no live data/ or site/ reads). Omitted from live: the daily bake, write_page asset optimization, and dynamic live-quote hydration."
+  },
+  "pages": [
+    {
+      "page_id": "am_edition.html",
+      "route": "/am_edition.html",
+      "registry_route": "/am_edition.html",
+      "route_kind": "am_edition",
+      "subject": "full",
+      "selector": "body",
+      "states": [
+        {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": null,
+          "subject": "full",
+          "captured": true,
+          "file": "shots/6644c1341a52994d6156ee7331ebae49b9297f9e4b9be437c48d97fb67fbda31.png",
+          "alias": "full-dark-en-desktop.png",
+          "sha256": "6644c1341a52994d6156ee7331ebae49b9297f9e4b9be437c48d97fb67fbda31",
+          "bytes": 316623,
+          "width": 1440,
+          "height": 1740,
+          "applied_theme": "dark",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "desktop",
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": null,
+          "subject": "full",
+          "captured": true,
+          "file": "shots/9a6567e813f431cdd52ab058e0c3d16fd6a6ef1a6c1c0160455da1b1c51408d6.png",
+          "alias": "full-light-en-desktop.png",
+          "sha256": "9a6567e813f431cdd52ab058e0c3d16fd6a6ef1a6c1c0160455da1b1c51408d6",
+          "bytes": 309390,
+          "width": 1440,
+          "height": 1740,
+          "applied_theme": "light",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "desktop",
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": null,
+          "subject": "full",
+          "captured": true,
+          "file": "shots/5683fbb3da97fa69cd0effa5e5998f29ed9ef911d5916eb60069ae44db86f1e0.png",
+          "alias": "full-dark-zh-desktop.png",
+          "sha256": "5683fbb3da97fa69cd0effa5e5998f29ed9ef911d5916eb60069ae44db86f1e0",
+          "bytes": 314473,
+          "width": 1440,
+          "height": 1740,
+          "applied_theme": "dark",
+          "applied_locale": "zh"
+        },
+        {
+          "viewport": "desktop",
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 1440,
+          "viewport_height": 900,
+          "force_state": null,
+          "subject": "full",
+          "captured": true,
+          "file": "shots/d76f195a6f2f4b285d4cddc1318a466eeace45b91f34eef70b3afbe914e6286f.png",
+          "alias": "full-light-zh-desktop.png",
+          "sha256": "d76f195a6f2f4b285d4cddc1318a466eeace45b91f34eef70b3afbe914e6286f",
+          "bytes": 310401,
+          "width": 1440,
+          "height": 1740,
+          "applied_theme": "light",
+          "applied_locale": "zh"
+        },
+        {
+          "viewport": "mobile",
+          "locale": "en",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "force_state": null,
+          "subject": "full",
+          "captured": true,
+          "file": "shots/aa7b3a5911ed1ca76bbce4688dda667aeb68e89512efe347d694618daed29a2c.png",
+          "alias": "full-dark-en-mobile.png",
+          "sha256": "aa7b3a5911ed1ca76bbce4688dda667aeb68e89512efe347d694618daed29a2c",
+          "bytes": 234937,
+          "width": 390,
+          "height": 2079,
+          "applied_theme": "dark",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "mobile",
+          "locale": "en",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "force_state": null,
+          "subject": "full",
+          "captured": true,
+          "file": "shots/09d32bb61f0d58e1025eed58e918ae00a42edc3fe52dcfd59e9136dd94dccfdb.png",
+          "alias": "full-light-en-mobile.png",
+          "sha256": "09d32bb61f0d58e1025eed58e918ae00a42edc3fe52dcfd59e9136dd94dccfdb",
+          "bytes": 231878,
+          "width": 390,
+          "height": 2079,
+          "applied_theme": "light",
+          "applied_locale": "en"
+        },
+        {
+          "viewport": "mobile",
+          "locale": "zh",
+          "theme": "dark",
+          "access": "anonymous",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "force_state": null,
+          "subject": "full",
+          "captured": true,
+          "file": "shots/06635e997ae1aab63c104dcaaf3d3e02434f7948111152faa8f90c27c68659e7.png",
+          "alias": "full-dark-zh-mobile.png",
+          "sha256": "06635e997ae1aab63c104dcaaf3d3e02434f7948111152faa8f90c27c68659e7",
+          "bytes": 231971,
+          "width": 390,
+          "height": 1987,
+          "applied_theme": "dark",
+          "applied_locale": "zh"
+        },
+        {
+          "viewport": "mobile",
+          "locale": "zh",
+          "theme": "light",
+          "access": "anonymous",
+          "viewport_width": 390,
+          "viewport_height": 844,
+          "force_state": null,
+          "subject": "full",
+          "captured": true,
+          "file": "shots/e1c3c031b1871ed5c98231c8d4a839ed201016687201a401449c9324bd44bf5d.png",
+          "alias": "full-light-zh-mobile.png",
+          "sha256": "e1c3c031b1871ed5c98231c8d4a839ed201016687201a401449c9324bd44bf5d",
+          "bytes": 230912,
+          "width": 390,
+          "height": 1987,
+          "applied_theme": "light",
+          "applied_locale": "zh"
+        }
+      ],
+      "metrics": {},
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": []
+    }
+  ]
+}

@@ -17,10 +17,11 @@ Nine caller modules were identified:
   engine/commodity_news.py, engine/missing_tape_gdelt.py, collectors/hk_gdelt.py
 
 engine/missing_tape_gdelt.py and collectors/hk_gdelt.py use the timeline (not
-artlist) endpoint with their own Session/urllib transport, and engine/macro_news.py
-keeps its own fetch loop (separate lane owns its rework) — those three pace
-through the PUBLIC wait_turn() gate below instead of get_articles, so the whole
-repo still shares ONE per-IP budget.
+artlist) endpoint with their own Session/urllib transport — those two pace through
+the PUBLIC wait_turn() gate below instead of get_articles, so the whole repo still
+shares ONE per-IP budget.  engine/macro_news.py no longer has a fetch loop of its
+own: like engine/news_vector.py it fans its bounded sub-queries out through
+get_articles, so every macro request is paced and breaker-guarded here.
 
 THROTTLE MECHANISM
 ------------------

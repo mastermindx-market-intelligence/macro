@@ -1,0 +1,36 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____ test_extract_cycle_quotes_latest_row_missing_quote_time_stays_missing _____
+
+    def test_extract_cycle_quotes_latest_row_missing_quote_time_stays_missing():
+        tape = pd.DataFrame([
+            {
+                "expiration": "2026-07-13", "strike": 600.0, "right": "C",
+                "trade_timestamp": "2026-07-06T10:00:00",
+                "quote_timestamp": "2026-07-06T09:59:59.500",
+                "bid": 5.0, "ask": 5.2,
+            },
+            {
+                "expiration": "2026-07-13", "strike": 600.0, "right": "C",
+                "trade_timestamp": "2026-07-06T10:05:00",
+                "quote_timestamp": None,
+                "bid": 6.0, "ask": 6.4,
+            },
+        ])
+        q = extract_cycle_quotes(
+            tape, None, session_date="2026-07-06",
+            observed_at="2026-07-06T14:06:00Z", near_dte_cap_days=90,
+        )
+        assert len(q) == 1
+        assert q[0]["mid"] == 6.2
+        assert q[0]["trade_at"] == "2026-07-06T14:05:00Z"
+        # Whole-row identity law: never borrow the prior row's quote timestamp.
+>       assert q[0]["quote_at"] is None
+E       AssertionError: assert '2026-07-06T13:59:59.500000Z' is None
+
+tests/test_flow_surface.py:842: AssertionError
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, agentos, browser, calibration, content, data, docs, finviz_themes, knowledge, mockups, properties, reports, requirements, site, templates, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_flow_surface.py::test_extract_cycle_quotes_latest_row_missing_quote_time_stays_missing
+1 failed in 2.17s

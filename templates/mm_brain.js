@@ -215,12 +215,10 @@
     #mmb-panel.max .mmb-rail,#mmb-panel.max .mmb-threads,
     .mmb-tk-row,.mmb-tk-h .lb.mmb-swap,.mmb-tk-h .mmb-tk-ic::after,
     .mmb-recap.on .mmb-recap-list,.mmb-cards .mmb-cardp,.mmb-hero h1,.mmb-hero p,
-    .mmb-sugg .mmb-sug,.mmb-rpill.on svg .dv{animation:none}
+    .mmb-sugg .mmb-sug{animation:none}
     #mmb-panel{transition:opacity .18s ease!important}
-    .mmb-chip,.mmb-chip::after,.mmb-cardp,.mmb-cardp .ci svg,.mmb-seg button,.mmb-rpill,
-    .mmb-rtip,.mmb-send,.mmb-box,.mmb-sug,.mmb-tbtn{transition:none}
-    /* the tip still appears, it just does not travel */
-    .mmb-rtip{transform:none}}
+    .mmb-chip,.mmb-chip::after,.mmb-cardp,.mmb-cardp .ci svg,.mmb-seg button,
+    .mmb-send,.mmb-box,.mmb-sug,.mmb-tbtn{transition:none}}
   #mmb-launch .ll{font:650 13.5px/1 var(--mmb-font);color:var(--mmb-text);white-space:nowrap}
   #mmb-launch .lk{font:600 11px/1 var(--mmb-font);color:var(--mmb-muted);margin-top:3px;white-space:nowrap}
   #mmb-launch .lt{display:flex;flex-direction:column}
@@ -319,49 +317,6 @@
   @keyframes mmb-dotpulse{0%,100%{opacity:1}50%{opacity:.45}}
   @media(prefers-reduced-motion:reduce){.mmb-head .dot.busy{animation:none}}
   .mmb-head .sp{flex:1}
-  /* Deep Research is the third stop on the depth control, not a separate mode: the
-     gateway forces lane='pro' for mode='research', so arming it lights Pro too. That
-     pair is the point — Pro in the signature blue says which bucket is being spent,
-     Deep in violet says this is a longer pass on top of it. Violet is already this
-     widget's "in flight / going deeper" accent (the caret, the busy dot, the ledger's
-     live arc), so the two lit stops read as one sentence rather than as a contradiction.
-     At REST it stays inert like its neighbours — the standing violet tint that used to
-     read as "already on" with Fast selected is a state setLane/setResearch make
-     impossible, and it is not coming back through the hover either. */
-  .mmb-rpill{position:relative;display:inline-flex;align-items:center;gap:5px;font:600 11.5px/1 var(--mmb-font);cursor:pointer;white-space:nowrap;flex:none;
-    color:var(--mmb-muted);background:transparent;border:none;border-radius:999px;padding:5px 11px 5px 9px;
-    transition:color .16s var(--mmb-ease-tint),background .16s var(--mmb-ease-tint),box-shadow .16s var(--mmb-ease-tint)}
-  .mmb-rpill svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
-  .mmb-rpill:hover{color:color-mix(in srgb,var(--mmb-text) 80%,var(--mmb-muted));background:color-mix(in srgb,var(--mmb-ink) 7%,transparent)}
-  .mmb-rpill.on,.mmb-rpill.on:hover{background:linear-gradient(180deg,color-mix(in srgb,var(--mmb-violet) 88%,#fff),var(--mmb-violet));
-    color:#fff;box-shadow:0 2px 10px -3px color-mix(in srgb,var(--mmb-violet) 70%,transparent)}
-  .mmb-rpill:focus-visible{outline:2px solid color-mix(in srgb,var(--mmb-info) 70%,transparent);outline-offset:2px}
-  /* a hairline before the third stop: Fast/Pro are alternatives to each other, Deep is a
-     step past both — the divider says so without a second control */
-  .mmb-rpill::before{content:'';position:absolute;left:-1px;top:5px;bottom:5px;width:1px;
-    background:color-mix(in srgb,var(--mmb-ink) 12%,transparent)}
-  .mmb-rpill.on::before,.mmb-rpill:hover::before{opacity:0}
-  /* phones: the label gives way to the mark alone (aria-label carries the name) */
-  @media(max-width:560px){.mmb-rpill .mmb-l{display:none}.mmb-rpill{padding:5px 8px}}
-  /* Arming it plays the mark's own meaning once: the two chevrons travel down through
-     the rule they sit under. One 520ms gesture on a deliberate click, never a loop. */
-  .mmb-rpill.on svg .dv{animation:mmb-dive .52s var(--mmb-ease) both}
-  @keyframes mmb-dive{0%{transform:translateY(-3px);opacity:.25}100%{transform:none;opacity:1}}
-  .mmb-rpill.mmb-off{display:none}
-  /* What the toggle actually changes, in plain words — the doctrine's Tier-2 home for
-     mechanics. It opens UPWARD: the control sits on the composer, so a tip below it would
-     land off the panel; and left-anchored rather than centred, because the third stop is
-     near the panel's left edge in the compact box. */
-  .mmb-rtip{position:absolute;bottom:calc(100% + 10px);left:-6px;transform:translateY(4px);z-index:12;width:min(258px,68vw);white-space:normal;
-    pointer-events:none;opacity:0;visibility:hidden;text-align:left;
-    font:400 11.5px/1.55 var(--mmb-font);color:var(--mmb-text);
-    background:color-mix(in srgb,var(--mmb-panel) 96%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
-    border:1px solid var(--mmb-line);border-radius:12px;padding:10px 12px;box-shadow:var(--mmb-shadow-pop);
-    transition:opacity .18s var(--mmb-ease),transform .18s var(--mmb-ease),visibility 0s linear .18s}
-  .mmb-rpill:hover .mmb-rtip,.mmb-rpill:focus-visible .mmb-rtip{opacity:1;visibility:visible;transform:none;transition-delay:0s,0s,0s}
-  .mmb-rtip b{display:block;font:700 11.5px/1.4 var(--mmb-font);color:color-mix(in srgb,var(--mmb-text) 96%,var(--mmb-hi));margin-bottom:3px}
-  .mmb-rtip .cost{display:block;margin-top:5px;color:var(--mmb-muted)}
-  @media(max-width:560px){.mmb-rtip{display:none}}
   #mmb-panel.max .mmb-menu,#mmb-panel.max .mmb-sidescrim{display:none}
   #mmb-panel:not(.max) .mmb-rail{display:none}
   #mmb-panel:not(.max) .mmb-threads{position:absolute;left:0;top:0;bottom:0;width:236px;z-index:6;display:block;
@@ -810,13 +765,15 @@
      also the moment the user is about to press Enter and expect it to go. */
   .mmb-hint{display:none;font:11px/1 var(--mmb-font);color:var(--mmb-muted);white-space:nowrap;opacity:.85;min-width:0;overflow:hidden;text-overflow:ellipsis}
   .mmb-box.mmb-typing .mmb-hint{display:inline}
-  /* ── depth control (Fast / Pro / Deep) ────────────────────────────────────────
-     The three stops are not "cheap / dear / dearer", they are how deep the desk digs for
-     one question — so the marks are a depth family, drawn in this file rather than borrowed
-     from the emoji table: Fast is a single strike, Pro a cut stone with several faces, Deep
-     descends through the surface line. Fast and Pro take solid fills instead of the outline
-     language the rest of the chrome uses — at 12px a 1.8-stroke mark silts up, and these are
-     identity badges rather than affordances. */
+  /* ── depth control (Fast / Pro) ───────────────────────────────────────────────
+     The two stops are not "cheap / dear", they are how deep the desk digs for one
+     question — so the marks are a depth family, drawn in this file rather than borrowed
+     from the emoji table: Fast is a single strike, Pro a cut stone with several faces.
+     Both take solid fills instead of the outline language the rest of the chrome uses —
+     at 12px a 1.8-stroke mark silts up, and these are identity badges rather than
+     affordances. The family's third mark (a descent through the surface line) still
+     exists, but it now sits on the research row: research is a grounding MODE that
+     rides on Pro, not a third depth, and it reads as a sentence rather than as a stop. */
   .mmb-seg{display:flex;flex:none;gap:2px;padding:2px;border-radius:999px;background:color-mix(in srgb,var(--mmb-ink) 5%,transparent);border:1px solid var(--mmb-line)}
   .mmb-seg button{display:inline-flex;align-items:center;gap:5px;border:none;background:transparent;color:var(--mmb-muted);
     font:600 11.5px/1 var(--mmb-font);padding:5px 11px 5px 9px;border-radius:999px;cursor:pointer;white-space:nowrap;
@@ -901,13 +858,17 @@
   .mmb-sug:hover{border-color:color-mix(in srgb,var(--mmb-info) 40%,transparent);background:color-mix(in srgb,var(--mmb-info) 8%,transparent);color:var(--mmb-text);transform:translateX(2px)}
   .mmb-sug:active{transform:translateX(2px) scale(.99)}
   .mmb-sug .g{color:var(--mmb-muted);margin-right:6px}
-  /* "explain this panel" hover affordance on dashboard island cards */
-  .mmb-exp{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:50%;cursor:pointer;padding:0;
-    background:var(--mmb-exp-bg);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
-    border:1px solid var(--mmb-line);box-shadow:var(--mmb-exp-shadow);display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .15s,border-color .15s,box-shadow .15s;z-index:5}
-  .mmb-exp svg{width:12px;height:12px;fill:var(--mmb-exp-fg);opacity:.9}
-  .sx:hover .mmb-exp{opacity:1;pointer-events:auto}
-  .mmb-exp:hover{border-color:color-mix(in srgb,var(--mmb-info) 45%,transparent);box-shadow:0 0 12px -4px var(--mmb-info)}
+  /* "explain this panel" affordance on dashboard island cards */
+  .mmb-exp{position:absolute;top:6px;right:6px;width:40px;height:40px;border-radius:var(--r-pill,999px);cursor:pointer;padding:0;
+    background:var(--mmb-exp-bg,var(--panel));-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);touch-action:manipulation;
+    border:1px solid var(--mmb-line,var(--line));box-shadow:var(--mmb-exp-shadow,none);display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .15s,border-color .15s,box-shadow .15s;z-index:5}
+  html[data-theme="light"] .mmb-exp{background:var(--mmb-exp-bg,var(--panel));box-shadow:var(--mmb-exp-shadow,0 4px 12px -4px color-mix(in srgb,var(--text) 20%,transparent))}
+  .mmb-exp svg{width:12px;height:12px;fill:var(--mmb-exp-fg,var(--link));opacity:.9}
+  .sx:hover .mmb-exp,.sx:focus-within .mmb-exp,.mmb-exp:focus-visible{opacity:1;pointer-events:auto}
+  .mmb-exp:hover{border-color:color-mix(in srgb,var(--mmb-info,var(--link)) 45%,transparent);box-shadow:0 0 12px -4px var(--mmb-info,var(--link))}
+  .mmb-exp:focus-visible{outline:2px solid color-mix(in srgb,var(--mmb-info,var(--link)) 70%,transparent);outline-offset:2px}
+  @media (hover:none),(pointer:coarse){.mmb-exp{opacity:1;pointer-events:auto}}
+  @media(prefers-reduced-motion:reduce){.mmb-exp{transition:none}}
   `;
 
   /* ── glyphs ── */
@@ -918,19 +879,8 @@
   var CHECK = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4 4 10-10"/></svg>';
   function ic(p) { return '<svg viewBox="0 0 24 24">' + p + '</svg>'; }
 
-  /* ── depth marks ─────────────────────────────────────────────────────────────
-     Fast, Pro and Deep Research are not three prices — they are three depths on ONE
-     axis: how far down the desk goes for a single question. So they are drawn as a
-     family rather than picked out of the emoji table (⚡ / ◈, which read as two
-     unrelated stickers and rendered as somebody else's typeface on every OS):
-
-       Fast      one strike — a single pass over the tape
-       Pro       a cut stone — the same question turned to several faces
-       Research  a descent — through the surface line and down two levels below it
-
-     Fast/Pro are solid: at 12px a 1.8-stroke mark silts up, and these two are identity
-     badges rather than affordances. Research keeps the outline language because it sits
-     in the header among the outline icons. */
+  /* Fast and Pro share the depth-control glyph family. Research keeps its
+     own glyph in the answer activity ledger, not a banner in the composer. */
   var MARK_FAST = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.9 2 5 13.6h4.9L8.6 22l8.8-11.9h-4.9z"/></svg>';
   var MARK_PRO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.3 20.5 9 12 21.7 3.5 9z"/>' +
     '<path class="fc" d="M3.5 9h17M12 2.3 9.1 9 12 21.7 14.9 9z"/></svg>';
@@ -1103,26 +1053,11 @@
             '<textarea class="mmb-ta" id="mmb-ta" rows="1" maxlength="2000" data-ph-en="Ask about any dashboard, signal, or ticker…" data-ph-zh="询问任意看板、信号或标的…" placeholder="' + L('Ask about any dashboard, signal, or ticker…', '询问任意看板、信号或标的…') + '"></textarea>' +
             '<input type="file" id="mmb-file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>' +
             '<div class="mmb-tools">' +
-              /* ── one control, one axis ────────────────────────────────────────────
-                 Fast, Pro and Deep Research are three stops on the same question —
-                 how deep should the desk go — so they are one control, not a segmented
-                 pair plus a pill parked in the header. Two things got better by moving
-                 it: the three depth marks now read as the family they are, and the
-                 header stopped truncating its own title ("Mastermin…") to make room. */
+              /* One control, one axis: Fast and Pro choose answer depth. */
               '<div class="mmb-seg" id="mmb-lane" role="group" aria-label="' + L('Answer depth', '回答深度') + '">' +
                 '<button data-lane="fast" class="on" aria-pressed="true">' + MARK_FAST + LB('Fast', '快速') + '</button>' +
                 '<button data-lane="pro" aria-pressed="false">' + MARK_PRO + '<span>Pro</span></button>' +
-                '<button class="mmb-rpill mmb-off" data-act="research" aria-pressed="false" aria-label="' + L('Deep Research', '深度研究') + '">' +
-                  ic(MARK_RESEARCH) + LB('Deep', '深度') +
-                  /* Tier-2 home for the mechanics (DESIGN_DOCTRINE §1): what the toggle
-                     actually changes, in plain words, with its price stated rather than
-                     discovered. aria-hidden + the aria-label above keep the accessible
-                     name at "Deep Research" instead of a paragraph. */
-                  '<span class="mmb-rtip" aria-hidden="true"><b>' + LB('A deeper pass on the same desk', '同一批资料，再深挖一遍') + '</b>' +
-                  LB('It can look up around twice as many sources, then writes a structured read that ends on a clear stance.',
-                     '可查阅约两倍的资料，并写成结构化研判，最后给出明确立场。') +
-                  '<span class="cost">' + LB('Runs on Pro · uses one Pro message', '走 Pro 通道 · 消耗一条 Pro 消息') + '</span></span>' +
-                '</button></div>' +
+              '</div>' +
               /* aria-hidden: the send button's own label already says it — one announcement, not two */
               '<span class="mmb-hint" id="mmb-hint" aria-hidden="true">' + LB(SEND_KEYS + ' to send', SEND_KEYS + ' 发送') + '</span>' +
               '<div class="sp"></div>' +
@@ -1141,7 +1076,7 @@
   var scrim = $('#mmb-scrim'), panel = $('#mmb-panel'), scroll = $('#mmb-scroll'),
       ta = $('#mmb-ta'), sendBtn = $('#mmb-send'), qEl = $('#mmb-q'), ctxEl = $('#mmb-ctx'),
       upgradeEl = $('#mmb-upgrade'), tlist = $('#mmb-tlist'), launch = $('#mmb-launch'),
-      researchBtn = $('.mmb-rpill'), thumbsEl = $('#mmb-thumbs'), fileEl = $('#mmb-file'),
+      thumbsEl = $('#mmb-thumbs'), fileEl = $('#mmb-file'),
       searchWrap = $('#mmb-search'), searchIn = $('#mmb-search-in'), boxEl = $('.mmb-box'),
       ctxInspEl = $('#mmb-ctxinsp'), ctxInspBody = $('#mmb-ctxinsp-body'), ctxInspRev = $('#mmb-ctxinsp-rev');
 
@@ -2008,7 +1943,6 @@
         if (!authed) enterGuest(d.tier === 'guest');
         /* limit < 0 = unlimited (operator allowlist) → Pro eligible; limit 0 = lane locked. */
         proEligible = !!(quotas.pro && quotas.pro.limit !== 0);
-        researchBtn.classList.toggle('mmb-off', !proEligible);
         restorePrefs();   /* re-apply the remembered lane (or clear it if Pro just lapsed) */
         renderQuota();
       }).catch(function () { if (!authed) enterGuest(false); });
@@ -2280,7 +2214,9 @@
     root.querySelectorAll('[data-ph-en]').forEach(function (el) { el.placeholder = zh() ? el.getAttribute('data-ph-zh') : el.getAttribute('data-ph-en'); });
     paintPlaceholder();   /* an armed research pass keeps its own prompt through the switch */
     if (launch) launch.setAttribute('aria-label', zh() ? '问操盘大脑' : 'Ask Mastermind');  /* orb-only on phones: keep its accessible name in sync */
-    researchBtn.setAttribute('aria-label', L('Deep Research', '深度研究'));   /* label shortens to the mark on phones */
+    /* The research row needs no re-stamp here: its sentence is a dual-language LB()
+       span, so the sweep above already repainted both the visible label and — with no
+       aria-label overriding it — the accessible name. */
     if ($('#mmb-emptystate')) renderEmpty();
     paintThreads();   /* self-routes to the guest sign-in prompt when in guest mode */
     renderQuota();     /* refresh the meter's title in the new language sense */
@@ -3032,22 +2968,20 @@
     }
   }
 
-  /* ── lane + Deep Research ────────────────────────────────────────────────────
-     One state machine, because the two controls describe the SAME choice: Deep
-     Research runs on Pro (the gateway forces lane='pro' for mode='research'), so
-     "Fast" and a lit Deep Research pill can never both be true. Picking Pro is a
-     deliberate act — it costs Pro quota — so it is remembered rather than reset to
-     Fast on the next page load. */
+  /* ── lane + research mode ────────────────────────────────────────────────────
+     One state machine, because the two controls describe the SAME choice: research
+     mode runs on Pro (the gateway forces lane='pro' for mode='research'), so "Fast"
+     and a lit research row can never both be true. Picking Pro is a deliberate act —
+     it costs Pro quota — so it is remembered rather than reset to Fast on the next
+     page load. */
   function paintLane() {
-    /* [data-lane] only — the third stop is Deep Research, and a blanket sweep over
-       #mmb-lane button would strip the class paintResearch() had just put on it. */
+    /* Keep the depth paint scoped to its two data-lane controls. */
     root.querySelectorAll('#mmb-lane button[data-lane]').forEach(function (b) {
       var on = b.dataset.lane === lane;
       b.classList.toggle('on', on);
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
   }
-  function paintResearch() { researchBtn.classList.toggle('on', researchMode); researchBtn.setAttribute('aria-pressed', researchMode ? 'true' : 'false'); }
   /* The composer says what the armed mode expects of it. A research pass is a question you
      ask once and come back to — not a one-line follow-up — and the box is the only surface
      that can say so at the moment it matters. Sourced from the data-ph-* pair when off, so
@@ -3060,12 +2994,12 @@
   function setLane(next) {
     lane = next === 'pro' ? 'pro' : 'fast';
     if (lane === 'fast' && researchMode) researchMode = false;   /* mutually exclusive */
-    paintLane(); paintResearch(); paintPlaceholder(); savePrefs(); renderQuota();
+    paintLane(); paintPlaceholder(); savePrefs(); renderQuota();
   }
   function setResearch(on) {
     researchMode = !!on;
     if (researchMode) lane = 'pro';                              /* research IS the Pro lane */
-    paintLane(); paintResearch(); paintPlaceholder(); savePrefs(); renderQuota();
+    paintLane(); paintPlaceholder(); savePrefs(); renderQuota();
   }
 
   /* Lane + Deep Research are USER choices, not per-page defaults. The widget is
@@ -3086,7 +3020,7 @@
   }
   function restorePrefs() {
     if (!proEligible) {
-      if (lane === 'pro' || researchMode) { lane = 'fast'; researchMode = false; paintLane(); paintResearch(); savePrefs(); }
+      if (lane === 'pro' || researchMode) { lane = 'fast'; researchMode = false; paintLane(); savePrefs(); }
       return;
     }
     var p = null; try { p = JSON.parse(localStorage.getItem(PREF_KEY) || 'null'); } catch (e) {}
@@ -3271,7 +3205,6 @@
     var a = t.dataset.act;
     if (a === 'close') close(); else if (a === 'max') toggleMax(); else if (a === 'side') toggleSide();
     else if (a === 'new') newChat();
-    else if (a === 'research') { if (guestMode) showUpgrade({ feature: 'pro' }); else setResearch(!researchMode); }
     else if (a === 'home') location.href = (ANCHOR === 'top' ? 'https://www.mastermind-x.com/' : '') + 'macro.html';
     else if (a === 'search') toggleSearch();
     else if (a === 'search-clear') { searchIn.value = ''; paintThreads(); searchIn.focus(); }
@@ -3820,7 +3753,7 @@
     send(L('Explain the "' + t + '" panel — what is it showing right now, and what should I do about it?',
            '解释「' + t + '」面板 — 它现在显示什么？我该怎么做？'));
   }
-  /* inject a hover "ask the Brain" orb into each dashboard island card face.
+  /* inject an "ask the Brain" orb into each dashboard island card face.
      No-op on pages without .sx island cards (Terminal, plain pages). */
   function initExplain() {
     var faces = root.ownerDocument ? DOC.querySelectorAll('.sx[id^="sx-"] .mx5-card-face, .sx[id^="sx-"] .sxg-face') : [];
@@ -3830,7 +3763,8 @@
       if (face.querySelector('.mmb-exp')) return; /* one per host */
       var cs = (DOC.defaultView || window).getComputedStyle(face);
       if (cs && cs.position === 'static') face.style.position = 'relative';
-      var btn = DOC.createElement('button'); btn.className = 'mmb-exp'; btn.type = 'button'; btn.title = 'Ask the Brain';
+      var btn = DOC.createElement('button'); btn.className = 'mmb-exp'; btn.type = 'button';
+      btn.title = L('Ask the Brain', '询问 Mastermind AI'); btn.setAttribute('aria-label', btn.title);
       btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="' + ORB_PATH + '"/></svg>';
       btn.addEventListener('click', function (e) {
         e.stopPropagation(); e.preventDefault();

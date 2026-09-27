@@ -1,0 +1,19 @@
+{# ── FINANCE T9 ENTRY POINT · Financials launch module ──────────────────────────
+   Launch module that lands on the Financials basket detail page (basket id
+   us_sector_financials) inside the guarded {% if ... %} block. Sister to
+   `_finance_sector_deep_dive.html.j2` — same plain-link-only discipline: no
+   theme semantics, no watchlist, no call. Renders inside the basket page's
+   `.panel` module idiom so a reader sees it as a peer of the existing modules.
+   The link uses the `../` prefix the basket page already uses for sibling
+   pages (basket pages live under site/basket/, finance_intelligence.html sits
+   at the site root).                                                  #}
+<div class="panel" data-finance-launch>
+  <div class="tc-nameline">
+    <span class="tc-name"><span class="l-en">Finance Intelligence dossier</span><span class="l-zh">金融情报档案</span></span>
+    <span class="badge clean"><span class="l-en">Sector deep dive</span><span class="l-zh">行业深度</span></span>
+  </div>
+  <p class="tc-story"><span class="l-en">Go deeper than the participation gauge: the rerating map, system views and evidence for the financial rails.</span><span class="l-zh">比「参与度表盘」再深入一层：金融体系的重估地图、系统视图与证据。</span></p>
+  <div class="tc-foot">
+    <a class="tc-stance" href="../finance_intelligence.html"><span class="bdot"></span><span class="l-en">Open the dossier</span><span class="l-zh">打开档案</span></a>
+  </div>
+</div>

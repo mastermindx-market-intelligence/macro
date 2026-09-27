@@ -1,21 +1,78 @@
 {
   "schema": "ai_desk.v1",
   "is_context_only": true,
-  "generated_at": "2026-09-17T09:05:10.930414+00:00",
-  "state_asof": "2026-09-16",
+  "generated_at": "2026-09-25T20:54:32.995080+00:00",
+  "state_asof": "2026-09-24",
   "model": "deepseek-v4-pro",
   "served_by": "deepseek",
-  "regime_context": "As of 2026-09-16 the detectors are display-only: VIX at 17.7 (56th percentile) is mid-range, flow verdict is 'display_only' with no directional flags on any sector or basket, and the regime snap is dormant (snap=false) despite mild fear rebuilding. The only honest read is where cross-sectional flow is concentrating now \u2014 not what will happen next.",
-  "theses": [],
+  "regime_context": "Flow detector is display-only with no sector crossing the cohesion or directional gate; the dominant cluster (Consumer Discretionary/Staples, Financials, Real Estate) is broad and low-cohesion. Regime snap is dormant with VIX at the 13th percentile and fear rebuilding but no relief trigger.",
+  "theses": [
+    {
+      "id": "2026-09-24-20260925205432-1",
+      "subject": "Health Care",
+      "lean": "avoid",
+      "conviction": "low",
+      "horizon_d": 21,
+      "thesis": "Health Care is the only sector flagged in 'cooling' with a negative flow_score (-0.873) and falling cohesion; leadership is highly concentrated in MRNA and ALHC (HHI 0.495), suggesting a single-name idiosyncratic move rather than a sector theme. The opportunity and structural analysts both read this as avoid.",
+      "evidence": [
+        "flow.sectors.Health Care stage='cooling', flow_score=-0.873",
+        "Health Care leadership HHI=0.495 (MRNA share=0.39, ALHC share=0.58)",
+        "cohesion_chg=-0.034, cohesion_gate.cohering=false",
+        "Opportunity analyst: 'concentration in a narrow MRNA/ALHC leadership\u2014flow is rotating away'",
+        "Structural analyst: 'high HHI (0.495) driven by MRNA and ALHC single-name moves'"
+      ],
+      "dissent": "Cooling stage and flow scores have no validated forward edge (rank-IC ~0 per guardrails), so the negative flow_score is descriptive only and provides no tradable signal; the sector could mean-revert or grind sideways just as easily as decline.",
+      "falsifier": {
+        "text": "Health Care breadth broadens materially (HHI drops below ~0.3) and cohesion rebounds above its 20d mean, indicating the single-name concentration is fading and the sector read is rotating back to neutral",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "XLV",
+          "vs": "SPY",
+          "op": ">",
+          "threshold": 0.05,
+          "horizon_d": 21
+        }
+      },
+      "check_by": "2026-10-23"
+    },
+    {
+      "id": "2026-09-24-20260925205432-2",
+      "subject": "Consumer Discretionary",
+      "lean": "avoid",
+      "conviction": "low",
+      "horizon_d": 21,
+      "thesis": "Consumer Discretionary sits in the dominant cluster with Staples (top-pair corr 0.75) but carries a near-zero RS percentile (0.004) and low cohesion (0.203), with leadership dominated by a GME single-name spike. The cluster membership is descriptive only, and all analysts read this as no-directional or avoid.",
+      "evidence": [
+        "flow.sectors.Consumer Discretionary rs_pctile=0.004",
+        "Consumer Discretionary leadership top is GME (ret_20d=0.392) but alpha=-0.74",
+        "cluster.top_pair=[Consumer Discretionary, Consumer Staples], top_pair_corr=0.75 (coincident grouping)",
+        "Skeptic: 'the cluster is coincident low-momentum grouping, not a tradeable edge'",
+        "Structural: 'rs_pctile 0.004 and cohesion 0.203 with negative alpha leaders'"
+      ],
+      "dissent": "The 0.75 correlation with Staples could signal genuine rotation into consumer names if Staples stabilizes; the top-pair co-movement is real today and dismissing it as purely coincident may miss a nascent defensive rotation.",
+      "falsifier": {
+        "text": "Consumer Discretionary RS percentile rises above 0.4 and cohesion jumps above 0.35 with breadth expanding, indicating the cluster read is translating into actual relative strength rather than a low-momentum coincidence",
+        "check": {
+          "kind": "rel_return",
+          "subject_ticker": "XLY",
+          "vs": "SPY",
+          "op": ">",
+          "threshold": 0.05,
+          "horizon_d": 21
+        }
+      },
+      "check_by": "2026-10-23"
+    }
+  ],
   "source_verdicts": {
     "flow": "display_only",
     "regime_snap": "coincident"
   },
   "track_record": {
     "schema": "ai_desk_track_record.v1",
-    "as_of": "2026-09-17",
+    "as_of": "2026-09-25",
     "scored_total": 59,
-    "open": 4,
+    "open": 7,
     "unscored_soft": 0,
     "expired": 0,
     "overall": {
@@ -80,7 +137,7 @@
         "dir_accuracy": 0.5
       }
     },
-    "calibration_note": "59 scored, hit-rate 0.932 (directional accuracy 0.644). Chance alone would land a hit-rate near 0.898 (directional accuracy near 0.4911) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
+    "calibration_note": "59 scored, hit-rate 0.932 (directional accuracy 0.644). Chance alone would land a hit-rate near 0.8979 (directional accuracy near 0.4911) on these exact conditions \u2014 judge the numbers above against that bar, not one-half.",
     "recent": [
       {
         "id": "2026-07-31-20260806225234-3",
@@ -173,7 +230,7 @@
         "check_by": "2026-08-28"
       }
     ],
-    "calibration_note_zh": "\u5df2\u8bc4\u5206 59 \u6761\uff0c\u547d\u4e2d\u7387 0.932\uff08\u65b9\u5411\u51c6\u786e\u7387 0.644\uff09\u3002\u540c\u6837\u6761\u4ef6\u4e0b\uff0c\u65e0\u6280\u80fd\u5224\u65ad\u51ed\u673a\u4f1a\u5373\u53ef\u8fbe\u5230\u7ea6 0.898 \u7684\u547d\u4e2d\u7387\uff08\u65b9\u5411\u51c6\u786e\u7387\u7ea6 0.4911\uff09\u2014\u2014\u4e0a\u8ff0\u6570\u5b57\u5e94\u4e0e\u8be5\u57fa\u7ebf\u6bd4\u8f83\uff0c\u800c\u975e 0.5\u3002"
+    "calibration_note_zh": "\u5df2\u8bc4\u5206 59 \u6761\uff0c\u547d\u4e2d\u7387 0.932\uff08\u65b9\u5411\u51c6\u786e\u7387 0.644\uff09\u3002\u540c\u6837\u6761\u4ef6\u4e0b\uff0c\u65e0\u6280\u80fd\u5224\u65ad\u51ed\u673a\u4f1a\u5373\u53ef\u8fbe\u5230\u7ea6 0.8979 \u7684\u547d\u4e2d\u7387\uff08\u65b9\u5411\u51c6\u786e\u7387\u7ea6 0.4911\uff09\u2014\u2014\u4e0a\u8ff0\u6570\u5b57\u5e94\u4e0e\u8be5\u57fa\u7ebf\u6bd4\u8f83\uff0c\u800c\u975e 0.5\u3002"
   },
   "passport": {
     "state": "measured",
@@ -188,147 +245,147 @@
     "tooltip_en": "Earned from a matured forward track record (spine-graded)."
   },
   "confidence": "low",
-  "raw_text": "{\n  \"regime_context\": \"As of 2026-09-16 the detectors are display-only: VIX at 17.7 (56th percentile) is mid-range, flow verdict is 'display_only' with no directional flags on any sector or basket, and the regime snap is dormant (snap=false) despite mild fear rebuilding. The only honest read is where cross-sectional flow is concentrating now \u2014 not what will happen next.\",\n  \"theses\": [],\n  \"confidence\": \"low\"\n}",
+  "raw_text": "{\n  \"regime_context\": \"Flow detector is display-only with no sector crossing the cohesion or directional gate; the dominant cluster (Consumer Discretionary/Staples, Financials, Real Estate) is broad and low-cohesion. Regime snap is dormant with VIX at the 13th percentile and fear rebuilding but no relief trigger.\",\n  \"theses\": [\n    {\n      \"subject\": \"Health Care\",\n      \"lean\": \"avoid\",\n      \"conviction\": \"low\",\n      \"horizon_d\": 21,\n      \"thesis\": \"Health Care is the only sector flagged in 'cooling' with a negative flow_score (-0.873) and falling cohesion; leadership is highly concentrated in MRNA and ALHC (HHI 0.495), suggesting a single-name idiosyncratic move rather than a sector theme. The opportunity and structural analysts both read this as avoid.\",\n      \"evidence\": [\n        \"flow.sectors.Health Care stage='cooling', flow_score=-0.873\",\n        \"Health Care leadership HHI=0.495 (MRNA share=0.39, ALHC share=0.58)\",\n        \"cohesion_chg=-0.034, cohesion_gate.cohering=false\",\n        \"Opportunity analyst: 'concentration in a narrow MRNA/ALHC leadership\u2014flow is rotating away'\",\n        \"Structural analyst: 'high HHI (0.495) driven by MRNA and ALHC single-name moves'\"\n      ],\n      \"dissent\": \"Cooling stage and flow scores have no validated forward edge (rank-IC ~0 per guardrails), so the negative flow_score is descriptive only and provides no tradable signal; the sector could mean-revert or grind sideways just as easily as decline.\",\n      \"falsifier_text\": \"Health Care breadth broadens materially (HHI drops below ~0.3) and cohesion rebounds above its 20d mean, indicating the single-name concentration is fading and the sector read is rotating back to neutral\"\n    },\n    {\n      \"subject\": \"Consumer Discretionary\",\n      \"lean\": \"avoid\",\n      \"conviction\": \"low\",\n      \"horizon_d\": 21,\n      \"thesis\": \"Consumer Discretionary sits in the dominant cluster with Staples (top-pair corr 0.75) but carries a near-zero RS percentile (0.004) and low cohesion (0.203), with leadership dominated by a GME single-name spike. The cluster membership is descriptive only, and all analysts read this as no-directional or avoid.\",\n      \"evidence\": [\n        \"flow.sectors.Consumer Discretionary rs_pctile=0.004\",\n        \"Consumer Discretionary leadership top is GME (ret_20d=0.392) but alpha=-0.74\",\n        \"cluster.top_pair=[Consumer Discretionary, Consumer Staples], top_pair_corr=0.75 (coincident grouping)\",\n        \"Skeptic: 'the cluster is coincident low-momentum grouping, not a tradeable edge'\",\n        \"Structural: 'rs_pctile 0.004 and cohesion 0.203 with negative alpha leaders'\"\n      ],\n      \"dissent\": \"The 0.75 correlation with Staples could signal genuine rotation into consumer names if Staples stabilizes; the top-pair co-movement is real today and dismissing it as purely coincident may miss a nascent defensive rotation.\",\n      \"falsifier_text\": \"Consumer Discretionary RS percentile rises above 0.4 and cohesion jumps above 0.35 with breadth expanding, indicating the cluster read is translating into actual relative strength rather than a low-momentum coincidence\"\n    }\n  ],\n  \"confidence\": \"low\"\n}",
   "degraded_reason": null,
   "disclaimer": "AI desk note \u2014 context only, never scored or sized. The detectors it reads are DISPLAY-ONLY (flow has no validated forward edge; the relief snap is coincident). Each lean is a fallible, CHECKABLE judgement with a check-by date, not a trade recommendation or a position size.",
   "panel": {
     "opportunity": {
-      "stance": "This lens shows a mixed regime with no directional signals validated: VIX is mid-range (17.7, 56th percentile) so the stress-conditional edge is dormant, and every sector/basket is marked directional=false with low confidence. The only honest read is that flow is most concentrated in Energy and Health Care at very high relative-strength percentiles, while Utilities, Real Estate, Retail, Industrials, and Housing sit at extreme bottoms.",
+      "stance": "Flow is concentrating in a handful of tech-adjacent themes (Cybersecurity, Crypto, AI Software) and a broad Consumer Discretionary/Staples/Financials/Real Estate cluster, but no sector crosses the cohesion or directional gate; the relief snap is dormant with fear rebuilding. This lens supports description only, not a forward lean.",
       "candidates": [
         {
-          "subject": "Energy",
+          "subject": "Information Technology",
           "lean": "none",
-          "rationale": "RS percentile at 0.948 with confirmed stage but low cohesion (0.352) and no directional flag, so concentration is visible but unvalidated.",
+          "rationale": "Highest sector RS percentile (0.833) with broad leadership led by INTC/AMD, but cohesion is low and directional confidence is weak, so no durable lean is supported.",
           "strength": "weak"
         },
         {
           "subject": "Health Care",
-          "lean": "none",
-          "rationale": "RS percentile at 0.94 and confirmed stage, but cohesion is very low (0.129) and leadership is empty, making the read concentration-only.",
-          "strength": "weak"
-        },
-        {
-          "subject": "Utilities",
-          "lean": "none",
-          "rationale": "RS percentile at rock-bottom 0.008 with quiet stage and no directional flag, indicating persistent underperformance without a validated reversal signal.",
-          "strength": "weak"
-        },
-        {
-          "subject": "Real Estate",
-          "lean": "none",
-          "rationale": "RS percentile at 0.028 and emerging stage with negative cohesion change (-0.071), but flow_score of 0.493 is concentration-only and not directional.",
-          "strength": "weak"
+          "lean": "avoid",
+          "rationale": "Cooling with negative flow score (-0.873), declining cohesion, and concentration in a narrow MRNA/ALHC leadership\u2014flow is rotating away rather than building.",
+          "strength": "moderate"
         },
         {
           "subject": "Consumer Discretionary",
           "lean": "none",
-          "rationale": "RS percentile at 0.067 and bottom-quartile flow concentration, with no cohesion gate or directional flag to support a lean.",
+          "rationale": "Part of the dominant cluster with top-pair correlation to Staples, but RS percentile is near zero and cohesion is low, so the cluster read is descriptive only.",
+          "strength": "weak"
+        },
+        {
+          "subject": "Consumer Staples",
+          "lean": "none",
+          "rationale": "Cluster membership and top-pair correlation (0.75) with Discretionary suggest co-movement, but RS percentile is depressed and cohesion is falling\u2014no directional edge.",
+          "strength": "weak"
+        },
+        {
+          "subject": "VIX",
+          "lean": "fade-fear",
+          "rationale": "VIX is at the 13th percentile with fear rebuilding and no relief snap triggered, but the regime is not elevated so a fear call lacks stress-contingent support.",
+          "strength": "weak"
+        }
+      ],
+      "key_risk": "A sudden volatility expansion or stress event would flip the dormant relief snap and invalidate the current non-directional read, as the lens's only historical edge is stress-conditional."
+    },
+    "skeptic": {
+      "stance": "This lens is display-only with no validated forward edge (rank-IC ~0), and the regime snap is dormant with no relief trigger. Today's sector read shows no cohering, low-quality directional signals\u2014every apparent cluster or leader is a survivorship or coincident artifact.",
+      "candidates": [
+        {
+          "subject": "Information Technology",
+          "lean": "avoid",
+          "rationale": "RS pctile 0.83 but cohesion 0.196 (non-cohering) and leadership is single-name INTC-driven (+44% 20d), a classic narrow leadership trap.",
+          "strength": "moderate"
+        },
+        {
+          "subject": "Health Care",
+          "lean": "avoid",
+          "rationale": "Stage 'cooling' with flow_score -0.873 and HHI 0.495; the move is MRNA/ALHC idiosyncratic, not a sector theme.",
+          "strength": "moderate"
+        },
+        {
+          "subject": "Cyber security",
+          "lean": "avoid",
+          "rationale": "Basket shows cohering gate true and rs_pctile 0.996, but this is a hindsight-curated basket with read_quality 0.43 and no forward edge\u2014survivorship artifact.",
+          "strength": "strong"
+        },
+        {
+          "subject": "Crypto & Digital Assets",
+          "lean": "avoid",
+          "rationale": "Cohesion 0.656 and rs_pctile 0.897 but dominated by MSTR (share 0.36, alpha null); single-name, not a diversifiable theme.",
+          "strength": "moderate"
+        },
+        {
+          "subject": "Consumer Discretionary",
+          "lean": "fade-fear",
+          "rationale": "Appears in dominant cluster with Staples (corr 0.75) but rs_pctile 0.004 and GME-driven top; the 'cluster' is coincident low-momentum grouping, not a tradeable edge.",
           "strength": "weak"
         },
         {
           "subject": "VIX",
           "lean": "none",
-          "rationale": "Regime snap is dormant (snap=false) with fear rebuilding but no relief trigger, so there is no honest fade-fear signal despite low velocity percentile.",
+          "rationale": "VIX at 15.0 (13th pctile), regime dormant, fear_rebuilding true but no snap\u2014no fear call warranted.",
           "strength": "weak"
         }
       ],
-      "key_risk": "A sudden volatility spike would activate the stress-conditional flow edge and overturn this lens's null read, since the only de-confounded signal is stress-driven dispersion/rotation-recovery."
+      "key_risk": "A sudden stress spike (high-VIX regime) could flip this lens from dormant to stress-conditional dispersion mode, where the coincident 20d signal occasionally shows a transient edge that this display-only read would miss."
     },
-    "skeptic": {
-      "stance": "Display-only flow: every listed signal is either coincident, a single-name artifact, or unvalidated. Real Estate's 'emerging' tag is a trap \u2014 rs_pctile 0.028, cohesion collapsing, and no leadership breadth. The Mag7 and Crypto 'emerging' flags are pure META/MSTR concentration.",
+    "base_rate": {
+      "stance": "Flow lens is display-only and unconditional here: no sector has a validated directional or cohering read, and the regime snap is dormant. I read the broad cluster and high relative-strength percentiles as coincident description, not edge.",
       "candidates": [
         {
-          "subject": "Real Estate",
-          "lean": "avoid",
-          "rationale": "Tagged 'emerging' with accel_z 1.018 but rs_pctile 0.028, cohesion 0.279 falling, and zero leadership names \u2014 a statistical noise flag, not a theme.",
-          "strength": "strong"
-        },
-        {
           "subject": "Information Technology",
-          "lean": "fade-fear",
-          "rationale": "rs_pctile 0.869 with zero cohering and 'directional false' \u2014 high relative strength is already fully priced-in; the equal-weight basket is now 'cooling' with negative flow_score, a mean-reversion trap.",
-          "strength": "moderate"
+          "lean": "none",
+          "rationale": "High RS percentile (0.833) but cohesion is low and gate is non-cohering; forward edge is not validated.",
+          "strength": "weak"
         },
         {
           "subject": "Health Care",
-          "lean": "avoid",
-          "rationale": "'Confirmed' with rs_pctile 0.94 is survivorship art; the EW basket's 0.3 share sitting in MRNA (+131% 20d, alpha 1.37) means it's a single-ticker mirage, not sector breadth.",
-          "strength": "strong"
+          "lean": "underweight",
+          "rationale": "Cooling with negative flow_score and falling cohesion, but the lens has no forward edge so this is only a descriptive flag.",
+          "strength": "weak"
         },
         {
           "subject": "Consumer Staples",
-          "lean": "fade-fear",
-          "rationale": "rs_pctile 0.107 and top-pair correlation with Real Estate (0.75) is a coincident defensive-flight snapshot, not a predictive edge \u2014 the 'dominant cluster' is a lagging indicator of the selloff.",
-          "strength": "moderate"
+          "lean": "none",
+          "rationale": "Part of the dominant cluster but RS percentile near bottom; no cohering gate to support a call.",
+          "strength": "weak"
         },
         {
-          "subject": "Energy",
-          "lean": "avoid",
-          "rationale": "rs_pctile 0.948 but cohesion 0.352 falling and directional false; the 'confirmed' stage is a 20d artifact that has already reverted in prior instantiations.",
+          "subject": "VIX",
+          "lean": "none",
+          "rationale": "VIX at 15 (13th percentile) with snap dormant and no relief magnitude; no fear-fade setup present.",
           "strength": "weak"
         }
       ],
-      "key_risk": "If regime flips to high-VIX, stress-conditional cohesion becomes the only edge with IC +0.236 \u2014 then this lens's 'all traps' read misses a real dispersion recovery."
-    },
-    "base_rate": {
-      "stance": "This lens has no validated forward edge: the flow is display-only (rank-IC ~0) and the relief snap is dormant, so I anchor on base rates and treat all sector/basket movement as coincident dispersion, not signal.",
-      "candidates": [
-        {
-          "subject": "Energy",
-          "lean": "none",
-          "rationale": "High rs_pctile (0.948) is descriptive only; directional flag is false and read quality is moderate, so no forward lean is justified.",
-          "strength": "weak"
-        },
-        {
-          "subject": "Utilities",
-          "lean": "none",
-          "rationale": "rs_pctile 0.008 is a coincident snapshot, not a forecast, and the flow lens has no directional authority.",
-          "strength": "weak"
-        },
-        {
-          "subject": "Real Estate",
-          "lean": "none",
-          "rationale": "Emerging sector read shows weak cohesion (0.279) and non-directional, with low rs_pctile; base rates give no edge to act.",
-          "strength": "weak"
-        }
-      ],
-      "key_risk": "A volatility regime shift that turns the display-only flow signal into a stress-conditional edge \u2014 this lens only carries information in high-VIX conditions, so confirmation would require elevated VIX."
+      "key_risk": "The only thing that would upgrade this lens is a stress-conditional regime (high VIX) with a cohering, validated directional signal \u2014 absent that, any sector read is noise."
     },
     "structural": {
-      "stance": "The cross-group map shows a defensive rate-sensitive cluster (Real Estate, Consumer Staples, Financials, Consumer Discretionary) with the strongest pair being Real Estate\u2013Staples (corr 0.75), but every sector's cohesion gate is non-cohering and leadership breadth is empty, so this is a co-movement of laggards in a low-VIX mixed regime, not a supply-chain or theme lead. The only genuinely broad, cohering read is in hindsight-curated baskets (Cybersecurity, Crypto, Retail, etc.), which the guardrails forbid treating as transfers to sector leadership.",
+      "stance": "The dominant cluster (Consumer Discretionary/Staples, Financials, Real Estate) is a low-cohesion, broad-regime grouping with weak directional confidence across all members; no sector-level co-movement currently clears the cohesion gate, so this is a dispersion/recovery map, not a theme spread.",
       "candidates": [
         {
-          "subject": "Real Estate",
+          "subject": "Health Care",
           "lean": "avoid",
-          "rationale": "Appears as an emerging sector with weak cohesion (0.279, falling) and no leadership breadth, so the dominant-cluster membership is a low-HHI laggard co-movement, not a durable steer.",
+          "rationale": "Cooling with high HHI (0.495) driven by MRNA and ALHC single-name moves; cohesion is low and falling, so the sector read is a narrow mirage.",
           "strength": "moderate"
         },
         {
-          "subject": "Consumer Staples",
-          "lean": "avoid",
-          "rationale": "Half of the top pair (RE\u2013Staples), but non-cohering with rs_pctile at 0.107 and no leadership names, indicating the cluster read is a defensive clump rather than a genuine spread.",
+          "subject": "Consumer Discretionary",
+          "lean": "none",
+          "rationale": "Part of the dominant cluster but rs_pctile 0.004 and cohesion 0.203 with negative alpha leaders; no directional edge from this lens.",
           "strength": "weak"
         },
         {
           "subject": "Financials",
           "lean": "none",
-          "rationale": "Sits in the dominant cluster with neutral relative strength (rs_pctile 0.599) but non-cohering and zero leadership, so no structural basis for a lean.",
-          "strength": "weak"
-        },
-        {
-          "subject": "Consumer Discretionary",
-          "lean": "none",
-          "rationale": "Cluster member with low read quality (0.47), low rs_pctile (0.067), and non-cohering gate; no genuine breadth or leadership to act on.",
+          "rationale": "Cluster member with low cohesion (0.267) and negative alpha in top names (HOOD, COIN); no structural signal.",
           "strength": "weak"
         },
         {
           "subject": "Information Technology",
-          "lean": "avoid",
-          "rationale": "Confirmed but non-cohering sector with rs_pctile 0.869 and empty leadership; the high relative strength in tech is not supported by internal co-movement or a forward edge from this lens.",
+          "lean": "none",
+          "rationale": "Broad leadership (HHI 0.063) but cohesion gate fails (0.196) and directional confidence is low; relative strength is a single-name artifact (INTC, AMD).",
           "strength": "weak"
         }
       ],
-      "key_risk": "If the low-VIX mixed regime shifts into a stress-conditional dispersion event (high VIX), the cohesion gates could flip to 'cohering' and reveal a real rotation lead inside the dominant cluster that this display-only read would miss."
+      "key_risk": "A genuine stress event could flip the cohesion gate to cohering and reveal a real supply-chain/theme spread that this calm-regime read is currently blind to."
     }
   }
 }

@@ -2887,13 +2887,24 @@ def _tool_run_chart_detection(params: dict) -> dict:
     }
 
 
-def _flat_command(result: dict) -> dict:
-    """Flat 'command' SSE event from a chart-command tool result — mirrors the annotate
-    emitter (fields at top level, not nested under 'payload'). The Terminal reads
-    ev.symbol / ev.tf / ev.indicator / ev.on / ev.kind directly (v1) or the v2 envelope
-    (ev.op / ev.id / ev.args / ev.caption) so internal-only keys (client_executed, note)
-    are stripped and the rest kept flat."""
-    return {k: v for k, v in result.items() if k not in ("client_executed", "note")}
+def _flat_command(
+    result: dict, *, batch_id: str | None = None, seq: int | None = None,
+) -> dict:
+    """Build the client wire command from a validated tool result.
+
+    v1 commands already carry their client fields.  v2 tool results deliberately
+    exclude transport identity; the host binds on/batch_id/seq at the response edge.
+    """
+    flat = {k: v for k, v in result.items() if k not in ("client_executed", "note")}
+    if flat.get("v") == 2:
+        if not isinstance(batch_id, str) or not batch_id or len(batch_id) > 40:
+            raise ValueError("v2 chart command requires host batch_id")
+        if not isinstance(seq, int) or isinstance(seq, bool) or seq < 0:
+            raise ValueError("v2 chart command requires host seq")
+        flat["on"] = True
+        flat["batch_id"] = batch_id
+        flat["seq"] = seq
+    return flat
 
 
 # ---------------------------------------------------------------------------
@@ -3026,13 +3037,8 @@ def _tool_chart_command(params: dict) -> dict:
         envelope["args"] = args
     if caption is not None:
         envelope["caption"] = caption
-    # Optional batch coordination fields, passed through when present and well-typed.
-    for opt_key in ("batch_id", "seq"):
-        v = params.get(opt_key)
-        if opt_key == "seq" and isinstance(v, int) and not isinstance(v, bool):
-            envelope[opt_key] = v
-        elif opt_key == "batch_id" and isinstance(v, str) and v[:40]:
-            envelope[opt_key] = v[:40]
+    # Transport identity is host-owned and added only by _flat_command at the
+    # streaming/non-streaming response boundary. Model input can never choose it.
     envelope["note"] = "display only — server performed no action"
     return envelope
 
@@ -3836,6 +3842,410 @@ def _all_brain_tool_schemas(
     if internals_allowed:
         schemas = schemas + _internals_tool_schemas()
     return schemas
+
+
+def _fast_visible_tool_schemas(
+    full_schemas: list[dict],
+    message: str,
+    context_ticker: str | None,
+    *,
+    lane: str,
+    mode: str,
+    page: str,
+    internals_allowed: bool,
+) -> list[dict]:
+    """Narrow model visibility for qualified Fast/chat profiles only.
+
+    Authorization is deliberately upstream: ``full_schemas`` must already be the complete
+    entitlement/page/session-gated surface from ``_all_brain_tool_schemas``.  This helper
+    only removes names from what the model sees.  It can never add a withheld tool.
+
+    Unknown/specialist profiles, Terminal, Pro/Research, and internals sessions fail open
+    to the byte-equivalent full authorized list.  If a qualified family drifts and names a
+    tool absent from the current authorized surface, fail open rather than partially narrow.
+    """
+    if (
+        lane != "fast"
+        or mode != "chat"
+        or str(page).lower() == "terminal"
+        or internals_allowed
+    ):
+        return full_schemas
+
+    from engine.neuralweb.ask_brain import (  # noqa: PLC0415
+        _fast_visible_tool_names,
+        _question_profile,
+    )
+
+    profile = _question_profile(message, context_ticker)
+    visible_names = _fast_visible_tool_names(profile)
+    if visible_names is None:
+        return full_schemas
+
+    authorized_names = {
+        schema.get("name") for schema in full_schemas if isinstance(schema, dict)
+    }
+    missing = [name for name in visible_names if name not in authorized_names]
+    if missing:
+        log.warning(
+            "brain_gateway: Fast visibility fail-open for profile %s; missing schemas=%s",
+            profile.name,
+            ",".join(missing),
+        )
+        return full_schemas
+
+    allowed = set(visible_names)
+    return [schema for schema in full_schemas if schema.get("name") in allowed]
+
+
+_EVIDENCE_FAMILY_LABELS = {
+    "single_name_current": "single-name",
+    "macro_rates": "macro/rates",
+    "options_single_name": "options",
+    "portfolio_current": "portfolio",
+    "theme_current": "theme",
+}
+
+# Contradiction readers add metadata but never satisfy primary family coverage by
+# themselves. This preserves "we checked for disagreement" without pretending that a
+# contradiction ledger is the underlying options/portfolio/macro observation.
+_EVIDENCE_FAMILY_CONTRADICTION_READS: dict[str, tuple[str, ...]] = {
+    "single_name_current": ("read_contradictions",),
+    "macro_rates": ("read_contradictions",),
+    "options_single_name": ("list_options_contradictions",),
+    "portfolio_current": ("list_factor_contradictions", "read_contradictions"),
+    "theme_current": (),
+}
+
+
+def _fast_evidence_requirements(
+    visible_schemas: list[dict],
+    message: str,
+    context_ticker: str | None,
+    *,
+    lane: str,
+    mode: str,
+    page: str,
+    internals_allowed: bool,
+) -> dict[str, tuple[str, ...]] | None:
+    """Request-local evidence contract for the same profiles progressive visibility owns.
+
+    None means fail open: specialist/ambiguous, Pro/Research, Terminal, internals, or
+    schema drift. A dict means the turn is qualified and each named family has at least
+    one authorized witness available on this exact model-visible surface.
+    """
+    if (
+        lane != "fast"
+        or mode != "chat"
+        or str(page).lower() == "terminal"
+        or internals_allowed
+    ):
+        return None
+    from engine.neuralweb.ask_brain import (  # noqa: PLC0415
+        _fast_required_evidence_families,
+        _question_profile,
+    )
+
+    profile = _question_profile(message, context_ticker)
+    required = _fast_required_evidence_families(profile)
+    if required is None:
+        return None
+
+    visible_names = {
+        schema.get("name") for schema in visible_schemas if isinstance(schema, dict)
+    }
+    for family, witnesses in required.items():
+        if not any(name in visible_names for name in witnesses):
+            log.warning(
+                "brain_gateway: Fast evidence gate fail-open for profile %s; "
+                "family %s has no authorized visible witness",
+                profile.name,
+                family,
+            )
+            return None
+    return required
+
+
+def _evidence_probe_has_positive_marker(probe: str, accepted: set[str]) -> bool:
+    """Match a positive status marker without treating explicit negation as adverse."""
+    tokens = tuple(part for part in str(probe or "").split("_") if part)
+    neg_before = {"no", "not", "without"}
+    neg_after = {"free", "false", "none", "absent"}
+    for marker in accepted:
+        marker_tokens = tuple(part for part in marker.split("_") if part)
+        if not marker_tokens:
+            continue
+        width = len(marker_tokens)
+        for index in range(0, len(tokens) - width + 1):
+            if tokens[index:index + width] != marker_tokens:
+                continue
+            previous = tokens[index - 1] if index else ""
+            following = tokens[index + width] if index + width < len(tokens) else ""
+            if previous in neg_before or following in neg_after:
+                continue
+            return True
+    return False
+
+def _evidence_result_conditions(result: Any) -> tuple[str, ...]:
+    """Return every adverse producer condition encoded by one attempted read.
+
+    A primary witness can be simultaneously partial/stale/conflicted. Preserve every
+    condition so a sibling AVAILABLE witness may satisfy coverage without erasing the
+    adverse evidence the synthesis still needs to disclose.
+    """
+    if result is None:
+        return ("UNAVAILABLE",)
+    if not isinstance(result, dict):
+        # An empty list can be a valid "read succeeded, no rows" result. Availability is
+        # about whether the family was actually read, not whether it contained findings.
+        return ()
+
+    probes: list[str] = []
+    for key in (
+        "coverage_state", "coverageState", "freshness_status", "freshness",
+        "status", "state", "null_reason", "error",
+    ):
+        val = result.get(key)
+        if isinstance(val, str) and val.strip():
+            probes.append(val.strip().lower().replace("-", "_").replace(" ", "_"))
+
+    found: set[str] = set()
+    if any(_evidence_probe_has_positive_marker(
+        probe, {"conflict", "conflicted", "conflicting"}
+    ) for probe in probes):
+        found.add("CONFLICTED")
+    if any(_evidence_probe_has_positive_marker(
+        probe, {"partial", "partially"}
+    ) for probe in probes):
+        found.add("PARTIAL")
+    if any(_evidence_probe_has_positive_marker(probe, {"stale"}) for probe in probes):
+        found.add("STALE")
+    if any("not_applicable" in probe for probe in probes):
+        found.add("NOT_APPLICABLE")
+    if any("not_covered" in probe for probe in probes):
+        found.add("NOT_COVERED")
+
+    error_value = result.get("error")
+    normalized_error = (
+        str(error_value).strip().lower().replace("-", "_").replace(" ", "_")
+        if isinstance(error_value, str) else ""
+    )
+    has_error = bool(error_value) and normalized_error not in {
+        "none", "no_error", "false", "not_applicable",
+    }
+    unavailable_markers = {
+        "unavailable", "source_unavailable", "rights_blocked",
+        "producer_degraded", "fetch_failed", "read_failed",
+    }
+    if has_error or any(
+        _evidence_probe_has_positive_marker(probe, unavailable_markers)
+        for probe in probes
+    ):
+        found.add("UNAVAILABLE")
+
+    order = (
+        "CONFLICTED", "PARTIAL", "STALE", "NOT_APPLICABLE",
+        "UNAVAILABLE", "NOT_COVERED",
+    )
+    return tuple(state for state in order if state in found)
+
+def _evidence_result_state(result: Any) -> str:
+    """One primary state for coverage while retaining compound conditions separately."""
+    conditions = _evidence_result_conditions(result)
+    return conditions[0] if conditions else "AVAILABLE"
+
+
+def _evidence_coverage_receipt(
+    required: dict[str, tuple[str, ...]] | None,
+    observations: list[tuple[str, Any]],
+) -> dict:
+    """Build a bounded in-memory family receipt from actual tool results."""
+    if required is None:
+        return {"qualified": False, "families": []}
+
+    rows: list[dict] = []
+    precedence = {
+        "AVAILABLE": 6,
+        "CONFLICTED": 5,
+        "PARTIAL": 4,
+        "STALE": 3,
+        "NOT_APPLICABLE": 2,
+        "UNAVAILABLE": 1,
+        "NOT_COVERED": 0,
+    }
+    for family, witnesses in required.items():
+        witness_set = set(witnesses)
+        attempted: list[str] = []
+        states: list[str] = []
+        conditions_seen: set[str] = set()
+        as_of: list[str] = []
+        contradicted = False
+        contradiction_reads = set(_EVIDENCE_FAMILY_CONTRADICTION_READS.get(family, ()))
+        for tool_name, result in observations:
+            if tool_name in contradiction_reads and isinstance(result, dict):
+                contradicted = contradicted or bool(
+                    result.get("contradictions") or result.get("conflicts")
+                )
+            if tool_name not in witness_set:
+                continue
+            attempted.append(tool_name)
+            conditions_i = _evidence_result_conditions(result)
+            conditions_seen.update(conditions_i)
+            state_i = _evidence_result_state(result)
+            states.append(state_i)
+            contradicted = contradicted or "CONFLICTED" in conditions_i
+            if isinstance(result, dict):
+                for key in ("as_of", "generated_at", "updated_at"):
+                    val = result.get(key)
+                    if isinstance(val, str) and val and val not in as_of:
+                        as_of.append(val)
+                contradicted = contradicted or bool(
+                    result.get("contradictions") or result.get("conflicts")
+                )
+        state = max(states, key=lambda x: precedence.get(x, -1)) if states else "NOT_COVERED"
+        freshness = (
+            "STALE_PRESENT" if "STALE" in conditions_seen
+            else ("CURRENT_OR_UNSPECIFIED" if states else "NOT_OBSERVED")
+        )
+        condition_order = (
+            "CONFLICTED", "PARTIAL", "STALE", "NOT_APPLICABLE",
+            "UNAVAILABLE", "NOT_COVERED",
+        )
+        conditions = [c for c in condition_order if c in conditions_seen]
+        rows.append({
+            "family": family,
+            "label": _EVIDENCE_FAMILY_LABELS.get(family, family.replace("_", " ")),
+            "state": state,
+            "freshness": freshness,
+            "conditions": conditions,
+            "attempted": sorted(set(attempted)),
+            "as_of": as_of[:3],
+            "contradicted": contradicted,
+        })
+    return {"qualified": True, "families": rows}
+
+
+def _evidence_coverage_missing(receipt: dict) -> list[dict]:
+    """Families never read at all; attempted unavailable/stale reads are disclosed, not retried."""
+    return [
+        row for row in receipt.get("families", [])
+        if isinstance(row, dict) and row.get("state") == "NOT_COVERED"
+    ]
+
+
+def _evidence_coverage_gate_message(receipt: dict) -> str:
+    missing = _evidence_coverage_missing(receipt)
+    labels = ", ".join(str(row.get("label") or row.get("family")) for row in missing)
+    return (
+        "Before answering, evidence coverage is incomplete for: "
+        f"{labels}. Retrieve at least one relevant already-authorized read for EACH "
+        "missing family in one batch. If a read says unavailable, stale, conflicted, "
+        "partial, or not applicable, preserve that state rather than guessing. "
+        "This is one repair pass; if a family still cannot be read, disclose the gap "
+        "plainly in the answer."
+    )
+
+
+def _evidence_coverage_synthesis_message(receipt: dict) -> str:
+    rows = receipt.get("families", []) if isinstance(receipt, dict) else []
+    if not rows:
+        return "Please synthesize your findings and answer my question."
+    parts: list[str] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        item = f"{row.get('label') or row.get('family')}: {row.get('state', 'NOT_COVERED')}"
+        for condition in row.get("conditions", []):
+            if condition != row.get("state"):
+                item += f" + {condition}_PRESENT"
+        if row.get("contradicted") and "CONFLICTED" not in row.get("conditions", []):
+            item += " + CONTRADICTION_PRESENT"
+        parts.append(item)
+    summary = "; ".join(parts)
+    return (
+        "Please synthesize your findings and answer my question. Evidence coverage "
+        f"at synthesis is: {summary}. Never fill a NOT_COVERED/UNAVAILABLE gap with "
+        "inference presented as fact; disclose stale, partial, conflicted, or unavailable "
+        "evidence when it materially affects the conclusion."
+    )
+
+
+def _evidence_coverage_fallback_answer(receipt: dict, *, lang: str = "en") -> str:
+    """Deterministic fail-closed reply when the one repair pass returns no prose."""
+    rows = receipt.get("families", []) if isinstance(receipt, dict) else []
+    parts: list[str] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        label = str(row.get("label") or row.get("family") or "evidence")
+        state = str(row.get("state") or "NOT_COVERED").lower().replace("_", " ")
+        extras = [
+            str(condition).lower().replace("_", " ")
+            for condition in row.get("conditions", [])
+            if condition != row.get("state")
+        ]
+        if extras:
+            state += " (" + ", ".join(extras) + " also present)"
+        parts.append(f"{label}: {state}")
+    summary = "; ".join(parts) or "required evidence: not covered"
+    if str(lang).lower().startswith("zh"):
+        return (
+            "证据覆盖修复后仍无法生成有依据的答案。"
+            f"证据状态：{summary}。"
+            "我不会用未经支持的推断填补缺失或不可用的证据。"
+        )
+    return (
+        "I couldn't produce a supported answer after the evidence-coverage repair. "
+        f"Evidence status — {summary}. "
+        "I won't fill missing or unavailable evidence with unsupported inference."
+    )
+
+
+def _evidence_coverage_disclosure(receipt: dict, *, lang: str = "en") -> str:
+    """Deterministic user-visible caveat for any qualified adverse evidence state."""
+    rows = receipt.get("families", []) if isinstance(receipt, dict) else []
+    parts: list[str] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        state = str(row.get("state") or "NOT_COVERED")
+        conditions = [str(c) for c in row.get("conditions", []) if c]
+        contradicted = bool(row.get("contradicted"))
+        if state == "AVAILABLE" and not conditions and not contradicted:
+            continue
+        label = str(row.get("label") or row.get("family") or "evidence")
+        detail = state.lower().replace("_", " ")
+        extras = [c.lower().replace("_", " ") + " present" for c in conditions if c != state]
+        if contradicted and "CONFLICTED" not in conditions and state != "CONFLICTED":
+            extras.append("contradiction present")
+        if extras:
+            detail += " (" + ", ".join(extras) + ")"
+        parts.append(f"{label}: {detail}")
+    if not parts:
+        return ""
+    summary = "; ".join(parts)
+    if str(lang).lower().startswith("zh"):
+        return f"证据提示 — {summary}。"
+    return f"Evidence caveat — {summary}."
+
+
+def _append_evidence_coverage_disclosure(answer: str, receipt: dict, *, lang: str = "en") -> str:
+    """Insert deterministic evidence disclosure before the existing [NEXT] suggestion block."""
+    disclosure = _evidence_coverage_disclosure(receipt, lang=lang)
+    if not disclosure:
+        return answer
+    lines = str(answer or "").split("\n")
+    marker_idx = -1
+    for index, line in enumerate(lines):
+        if line.strip() == "[NEXT]":
+            marker_idx = index
+    if marker_idx >= 0:
+        body = "\n".join(lines[:marker_idx]).rstrip()
+        tail = "\n".join(lines[marker_idx:])
+        prefix = f"{body}\n\n" if body else ""
+        return f"{prefix}{disclosure}\n{tail}"
+    body = str(answer or "").rstrip()
+    return f"{body}\n\n{disclosure}" if body else disclosure
 
 
 _CHART_COMMAND_SYSTEM_DIRECTIVE = """
@@ -5967,6 +6377,26 @@ def _run_brain_loop(
         internals_allowed=internals_ok,
         user_id=user_id,
     )
+    tool_schemas = _fast_visible_tool_schemas(
+        tool_schemas,
+        message,
+        safe_sym,
+        lane=lane,
+        mode=mode,
+        page=safe_page,
+        internals_allowed=internals_ok,
+    )
+    evidence_required = _fast_evidence_requirements(
+        tool_schemas,
+        message,
+        safe_sym,
+        lane=lane,
+        mode=mode,
+        page=safe_page,
+        internals_allowed=internals_ok,
+    )
+    evidence_observations: list[tuple[str, Any]] = []
+    evidence_gate_issued = False
     system_prompt = _build_system_prompt(mode, safe_page, internals_allowed=internals_ok, lane=lane)
     system_prompt = system_prompt + _doctrine_block_for(safe_page, message)  # CMX W4
     # W3: the account's stored answer LENGTH, ahead of the analyst block so the protocol's
@@ -6051,6 +6481,8 @@ def _run_brain_loop(
 
     answer_text = ""
     tool_call_count = 0
+    command_batch_id = f"brain_{uuid.uuid4().hex[:16]}"
+    command_seq = 0
     last_resp = None  # track to extract usage from final response
     _cands = _turn_providers(client, model, providers)  # failover order (OAuth tokens)
     def _pmk(m):  # per-candidate model params — Claude-only / DeepSeek-only (see _create_failover)
@@ -6090,6 +6522,18 @@ def _run_brain_loop(
 
         stop_reason = getattr(resp, "stop_reason", None)
         if stop_reason == "end_turn":
+            receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
+            if not evidence_gate_issued and _evidence_coverage_missing(receipt):
+                messages.append({
+                    "role": "user",
+                    "content": _evidence_coverage_gate_message(receipt),
+                })
+                # The previous text was explicitly rejected as under-covered. Never let a
+                # textless repair response resurrect it as the final non-stream answer.
+                answer_text = ""
+                evidence_gate_issued = True
+                _timing_round(timing, _round_model_ms, _round_tools)
+                continue
             _timing_round(timing, _round_model_ms, _round_tools)
             break
         if stop_reason != "tool_use":
@@ -6125,14 +6569,19 @@ def _run_brain_loop(
         for block, result in zip(tool_blocks, round_results):
             tool_name = block.name
             tool_id = block.id
+            evidence_observations.append((tool_name, result))
 
             # Collect annotate_chart payloads for the response
             if tool_name == "annotate_chart" and result.get("client_executed"):
                 annotations.append(result)
 
-            # Collect chart-command payloads (W6b)
+            # Collect chart-command payloads (W6b). v2 wire identity is host-owned.
             if tool_name in _CHART_COMMAND_TOOLS and result.get("client_executed"):
-                commands.append(result)
+                if result.get("v") == 2:
+                    commands.append(_flat_command(result, batch_id=command_batch_id, seq=command_seq))
+                    command_seq += 1
+                else:
+                    commands.append(_flat_command(result))
 
             # Collect inline chart payloads (W6c) — the CLIENT keeps the whole picture;
             # only the model-visible tool_result below is fenced down to a stub.
@@ -6163,7 +6612,11 @@ def _run_brain_loop(
     # no-more-tools synthesis turn so chat() returns a real answer.
     if last_resp is not None and getattr(last_resp, "stop_reason", None) == "tool_use":
         _synth_t0 = time.monotonic()
-        messages.append({"role": "user", "content": "Please synthesize your findings and answer my question."})
+        receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
+        messages.append({
+            "role": "user",
+            "content": _evidence_coverage_synthesis_message(receipt),
+        })
         try:
             resp, model = _create_failover(
                 _cands,
@@ -6181,6 +6634,14 @@ def _run_brain_loop(
         except Exception as exc:  # noqa: BLE001
             log.warning("brain_gateway: synthesis pass failed (%s) — keeping last text", exc)
         _timing_stamp(timing, "synthesis_ms", _synth_t0)
+
+    receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
+    if evidence_gate_issued and not answer_text.strip():
+        answer_text = _evidence_coverage_fallback_answer(receipt, lang=turn_lang)
+    else:
+        answer_text = _append_evidence_coverage_disclosure(
+            answer_text, receipt, lang=turn_lang
+        )
 
     # Extract usage from the final response (fix #1: never zeros)
     usage_dict: dict = {}
@@ -6826,6 +7287,26 @@ def _run_brain_loop_stream(
         internals_allowed=internals_ok,
         user_id=user_id,
     )
+    tool_schemas = _fast_visible_tool_schemas(
+        tool_schemas,
+        message,
+        safe_sym,
+        lane=lane,
+        mode=mode,
+        page=safe_page,
+        internals_allowed=internals_ok,
+    )
+    evidence_required = _fast_evidence_requirements(
+        tool_schemas,
+        message,
+        safe_sym,
+        lane=lane,
+        mode=mode,
+        page=safe_page,
+        internals_allowed=internals_ok,
+    )
+    evidence_observations: list[tuple[str, Any]] = []
+    evidence_gate_issued = False
     system_prompt = _build_system_prompt(mode, safe_page, internals_allowed=internals_ok, lane=lane)
     system_prompt = system_prompt + _doctrine_block_for(safe_page, message)  # CMX W4
     # W3: the account's stored answer LENGTH, ahead of the analyst block so the protocol's
@@ -6907,6 +7388,8 @@ def _run_brain_loop_stream(
     _cache_control_last_message(messages)
 
     tool_call_count = 0
+    command_batch_id = f"brain_{uuid.uuid4().hex[:16]}"
+    command_seq = 0
     last_resp_content: list = []
     thinking_trace: list[dict] = []  # log-only reasoning capture (see thinking_out)
     resp = None  # initialise so post-loop guard is safe
@@ -7085,6 +7568,18 @@ def _run_brain_loop_stream(
             _emitted = ""
 
         if stop_reason == "end_turn":
+            receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
+            if not evidence_gate_issued and _evidence_coverage_missing(receipt):
+                if _emitted:
+                    yield _wipe_event()
+                    _emitted = ""
+                messages.append({
+                    "role": "user",
+                    "content": _evidence_coverage_gate_message(receipt),
+                })
+                evidence_gate_issued = True
+                _timing_round(timing, _round_model_ms, _round_tools)
+                continue
             _timing_round(timing, _round_model_ms, _round_tools)
             break
         if stop_reason != "tool_use":
@@ -7125,20 +7620,25 @@ def _run_brain_loop_stream(
             _tools_ms_by_id.get(str(getattr(b, "id", "")),
                                 {"name": str(getattr(b, "name", "")), "ms": 0})
             for b in tool_blocks)
-
         for block, result in zip(tool_blocks, round_results):
             tool_name = block.name
             tool_id = block.id
+            evidence_observations.append((tool_name, result))
 
             if tool_name == "annotate_chart" and result.get("client_executed"):
                 annotations.append(result)
                 # Emit annotate event immediately
                 yield f"data: {json.dumps({'type': 'annotate', 'symbol': result.get('symbol', ''), 'annotations': result.get('annotations', [])})}\n\n"
 
-            # Chart-command bus (W6b): emit FLAT 'command' SSE event immediately
-            # (mirrors the annotate emitter above — top-level fields, no 'payload' nesting).
+            # Chart-command bus (W6b): emit FLAT 'command' SSE event immediately.
+            # v2 transport identity is generated by this Brain turn, never by model prose.
             if tool_name in _CHART_COMMAND_TOOLS and result.get("client_executed"):
-                yield f"data: {json.dumps(_flat_command(result))}\n\n"
+                if result.get("v") == 2:
+                    wire = _flat_command(result, batch_id=command_batch_id, seq=command_seq)
+                    command_seq += 1
+                else:
+                    wire = _flat_command(result)
+                yield f"data: {json.dumps(wire)}\n\n"
 
             # Inline chart (W6c): emit 'chart' SSE event when svg is non-empty
             if tool_name == "render_inline_chart" and result.get("client_executed"):
@@ -7187,7 +7687,11 @@ def _run_brain_loop_stream(
     need_synthesis = last_stop == "tool_use"
     if need_synthesis:
         _synth_t0 = time.monotonic()
-        messages.append({"role": "user", "content": "Please synthesize your findings and answer my question."})
+        receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
+        messages.append({
+            "role": "user",
+            "content": _evidence_coverage_synthesis_message(receipt),
+        })
         yield _status_event("synthesis", _t0, _STAGE_LABELS["synthesis"])
         # Stream with OAuth-token failover. Text now goes out as it is written, so a
         # candidate that dies MID-BODY cannot simply restart with a fresh buffer the way
@@ -7333,6 +7837,14 @@ def _run_brain_loop_stream(
         for block in last_resp_content:
             if getattr(block, "type", "") == "text":
                 full_answer += block.text
+
+    receipt = _evidence_coverage_receipt(evidence_required, evidence_observations)
+    if evidence_gate_issued and not full_answer.strip():
+        full_answer = _evidence_coverage_fallback_answer(receipt, lang=turn_lang)
+    else:
+        full_answer = _append_evidence_coverage_disclosure(
+            full_answer, receipt, lang=turn_lang
+        )
 
     yield _status_event("review", _t0, _STAGE_LABELS["review"])
 
@@ -8965,7 +9477,7 @@ def chat(
     # Chart-command bus (W6b): include FLAT commands in non-stream response (same shape
     # as the streamed 'command' events, so both API surfaces agree).
     if commands:
-        result["commands"] = [_flat_command(c) for c in commands]
+        result["commands"] = commands
     # Inline charts (W6c): include chart payloads in non-stream response
     if charts:
         result["charts"] = charts

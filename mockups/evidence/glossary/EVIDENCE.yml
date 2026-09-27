@@ -1,4 +1,6 @@
 schema: mastermind.page_evidence_receipt.v1
 changed_paths:
   - templates/glossary.html.j2
+  - lib/glossary.py
+  - site/glossary.html
 manifest: mockups/evidence/glossary/manifest.json

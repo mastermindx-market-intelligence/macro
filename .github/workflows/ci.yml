@@ -153,6 +153,7 @@ on:
       # Close and Send-reply buttons (support replies could not be sent at all).
       # Listed by name so a test-only edit still triggers the lane that runs it.
       - "tests/test_admin_inline_handler_attrs.py"
+      - "tests/test_admin_navigation_ux.py"
       # Absolute-path prune guard (#3802): a walk excluding ".claude"/"worktrees"
       # via `path.parts` also matches the checkout's own path and scans nothing.
       # Named so a test-only edit still triggers the lane that runs it.
@@ -648,6 +649,8 @@ on:
       - "scripts/build_ai_adjacency_tag.py"
       - "engine/breadth_split.py"
       - "tests/test_vsb_surface.py"
+      - "tests/test_ud_b2_w1_vw_fold.py"
+      - "tests/test_ud_b2_w1_red_first_proof.py"
       - "scripts/build_site.py"
       - "templates/dashboard.html.j2"
       - "tests/test_missing_tape.py"
@@ -663,6 +666,8 @@ on:
       # covered by engine/** and templates/**; name the suite so a test-only edit
       # still starts the owner job.
       - "tests/test_market_score_authority_2026_08_12.py"
+      - "tests/test_sector_pulse.py"
+      - "tests/test_macro_sector_desk.py"
       # #5481 folded the China Policy Watch express-render guards into this
       # canonical suite. Name the test half explicitly beside its owner job;
       # collectors/**, engine/**, scripts/**, and templates/** cover its subjects.
@@ -1098,6 +1103,12 @@ on:
       - "tests/test_usaspending_awards.py"
       - "tests/test_usaspending_subawards.py"
       - "tests/test_census_trade.py"
+      # MO-B F09-10 USGS MCS collector + critical-minerals supply projection.
+      - "tests/test_usgs_mcs.py"
+      - "config/usgs_mcs_sources.yml"
+      - "collectors/usgs_mcs.py"
+      - "engine/critical_minerals_supply.py"
+      - "tests/fixtures/usgs_mcs/**"
       # Darkness backfill 2026-08-06: these nineteen suites were named by NO
       # pack, NO workflow, and no catch-all sweep, so editing one could not even
       # fire ci.yml.  They include the forward award-event spine's own state
@@ -1184,6 +1195,10 @@ on:
       # test pins producer (AST) + template consumer, so the builder must trigger CI.
       - "scripts/build_stock_library.py"
       - "tests/test_sector_pulse_wiring.py"
+      # Shared leadership clock: source edits and regression-only edits both run.
+      - "engine/sector_pulse.py"
+      - "tests/test_sector_pulse.py"
+      - "tests/test_sector_pulse_observation_clock.py"
       # Options Alpha W1.3/W-C/W-OVC stamp + entry-state guards: engine files are
       # covered by engine/**, but the test files need explicit paths so a test-only
       # change (e.g. the 2026-07-23 W-OVC fixture re-anchor) still re-runs the
@@ -1408,8 +1423,9 @@ on:
       # as the et_gate entry above; workflow files are already path-covered).
       - "tests/test_workflow_file_size.py"
       # 2026-08-13 US nightly cron redundancy (the CN five-slot idiom, ported). The
-      # actor and its suite must reach the workflow-yaml job when either is edited
-      # alone; the workflow it schedules is already covered by ".github/workflows/**".
+      # actor and its suite must reach the ci-control-plane-contracts job when either
+      # is edited alone; the workflow it schedules is already covered by
+      # ".github/workflows/**".
       - "scripts/nightly_backstop.py"
       - "tests/test_nightly_backstop.py"
       # 2026-08-13 nightly liveness dead-man switch — the other half of the same
@@ -1534,11 +1550,11 @@ on:
       - "tests/test_china_board_watch_lane.py"
       - "tests/test_risk_state_live_session_floor.py"
       # Hosted-runner packing contract: changes to the orchestrator or its
-      # fail-closed tests must exercise the workflow-yaml legacy job below.
+      # fail-closed tests must exercise the ci-control-plane-contracts legacy job.
       - "scripts/run_ci_pack.py"
       - "tests/test_ci_pack.py"
       # Same contract for the MERGE orchestrator, and the same #3488 shape: the
-      # workflow-yaml job above runs tests/test_merge_on_green.py, but neither the
+      # ci-control-plane-contracts job runs tests/test_merge_on_green.py, but neither the
       # sweeper nor its tests could start it — a PR editing the thing that decides
       # every merge in this repo published no pack check at all, so the sweeper
       # reported it "unproven" and would never merge it (measured on #4968, which
@@ -1546,14 +1562,14 @@ on:
       # a guard that reviews as covered and runs never.
       - "scripts/merge_on_green.py"
       - "tests/test_merge_on_green.py"
-      # SKIP-ONLY suite guard (job: workflow-yaml). scripts/*.py already reaches
+      # SKIP-ONLY suite guard (job: ci-control-plane-contracts). scripts/*.py already reaches
       # the checker; these two are the other halves. requirements.txt matters
       # because a `-r requirements.txt` install line is how several jobs declare
       # what they provide — dropping a package there can strand a skip gate, and
       # the trigger has to reach the guard for it to say so.
       - "tests/test_check_skip_only_suites.py"
       - "requirements.txt"
-      # TRIGGER-CLOSURE guard (job: workflow-yaml). scripts/*.py already reaches
+      # TRIGGER-CLOSURE guard (job: ci-control-plane-contracts). scripts/*.py already reaches
       # the checker; this is its other half, per the same two-halves law the guard
       # enforces on everything else.
       - "tests/test_ci_trigger_closure.py"
@@ -1562,7 +1578,7 @@ on:
       # either still reaches the lane that proves it.
       - "scripts/check_vintage_pin_fence.py"
       - "tests/test_vintage_pin_fence.py"
-      # UNRUN-CENSUS discovery (job: workflow-yaml). scripts/*.py reaches
+      # UNRUN-CENSUS discovery (job: ci-control-plane-contracts). scripts/*.py reaches
       # audit_unrun_tests.py itself; this is the test half. The census owns suite
       # discovery for all THREE darkness guards, so a regression here re-blinds
       # every one of them at once — which is what tests/ scoping did until #4693.
@@ -1889,8 +1905,11 @@ on:
       - "docs/**"
       - "tests/test_house_law_registry.py"
       - "tests/test_append_only_assertions.py"
-      # validated-claims guard: wire as PR gate so unearned 'validated' claims
-      # are caught before merge (not just in the nightly calibration run).
+      # validated-claims guard (BC-2): an edit to the checker or its allowlist
+      # re-proves the gate. The PR-gate wiring is the gate:code pack jobs
+      # validated-claims-source (the --scope source scan of templates/, engine/,
+      # lib/) and validated-claims-contract (the checker's suites), 2026-09-25;
+      # the full scan of the rendered tree stays on the data gate.
       - "scripts/check_validated_claims.py"
       - "data/regime/validated_claims_allowlist.json"
       # The third-party-sink exemption's own suite (#3770). Named so an edit to
@@ -2416,6 +2435,10 @@ on:
       # engine/marketing/** and the scripts entries cover the rest.
       - "mockups/x-ads-2026-07/**"
       - "mockups/x-mobile-ads-2026-07/**"
+      # The P0B browser receipts: p0b-receipt-closure (#7971) selects on this root,
+      # but no trigger matched it, so a receipt-only PR never started the run that
+      # grades those receipts (the pack suite's startability audit, red since #7971).
+      - "mockups/evidence/prophet-p0b-zero-fouc/**"
       - "tests/test_marketing_ad_plane_o.py"
       - "tests/test_marketing_persona_model.py"
       - "tests/test_marketing_reply_arming.py"
@@ -3538,6 +3561,8 @@ on:
       - "tests/test_release_integration_2b.py"
       - "tests/test_release_integration_w11g.py"
       - "tests/test_release_market_context.py"
+      - "tests/test_kalshi_releases.py"
+      - "collectors/kalshi_releases.py"
       - "scripts/build_release_forecast.py"
       - "scripts/check_hazard_model_freshness.py"
       # Unrun backfill 2026-08-03: CPI bridge, official-event live client,
@@ -3682,6 +3707,7 @@ on:
       - "scripts/build_china_pick_lab.py"
       - "scripts/build_pick_lab.py"
       - "scripts/build_stock_board_v2.py"
+      - "engine/ledger_clock.py"
       - "scripts/grade_bottom_calls.py"
       - "engine/us_board_rank.py"
       # The CN candidate store is the SUBJECT of test_cn_prophet_candidates_schema.py,
@@ -4825,7 +4851,26 @@ jobs:
           # (It rode a job output into this step's `env:` until 2026-08-14, when
           # 350,264 bytes of paths met execve's 131,072-byte MAX_ARG_STRLEN and
           # killed all twelve packs at launch — run 31775693780.)
-          filter: blob:none
+          #
+          # NO `filter: blob:none` here — on purpose (2026-09-23,
+          # DSC:CI-PROMISOR-OBJECT-FETCH-TRUNCATION). A pack materialises every
+          # tracked file (105k blobs, ~5 GiB — legacy suites read committed site/
+          # artifacts), so a blobless fetch saves nothing: `git checkout` then
+          # lazily fetches the whole tree's blobs in ONE unretried, unresumable
+          # promisor request (an explicit --stdin want-list of every OID). Three
+          # such requests died at 65–67 minutes on 2026-09-23 — "N bytes of body
+          # are still expected / early EOF / fetch-pack: invalid index-pack
+          # output", then "could not fetch 20ced735… from promisor remote" —
+          # runs 35876013221 (ci-pack-0), 35885173966 (ci-pack-4), 35886408213
+          # (ci-pack-11). The OID named is merely the FIRST index entry
+          # (.agents/skills/macro-sparse-worktree/SKILL.md, 2,349 bytes, intact):
+          # git dies on the first still-missing promisor object once the batch
+          # fails. Unfiltered, the same bytes ride `git fetch`, which
+          # actions/checkout retries (RetryHelper 3×, 10–20 s) and which the
+          # server packs as an ordinary single-commit want; `git checkout` then
+          # touches no network. scripts/run_ci_pack.py's base-replay hydration
+          # is a no-op without a promisor remote — its exact-base
+          # `fetch --depth=1` brings the base's differing blobs itself.
           fetch-depth: 1
       - uses: actions/setup-python@v5
         if: (github.event.pull_request.head.repo.full_name != github.repository || vars.CI_EXECUTION_ROUTE != 'pc')
@@ -5065,15 +5110,48 @@ jobs:
         # neither scripts/run_ci_pack.py's inference nor
         # scripts/audit_unrun_tests.py's census imports the product data stack.
         run: pip install pytest pyyaml
-      - name: fetch the PR's base commit
+      - name: resolve the exact tested PR merge base
+        id: contract-merge
+        shell: bash
+        env:
+          EXPECTED_PR_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          tested_merge=$(git rev-parse HEAD)
+          if [ "$tested_merge" != "$GITHUB_SHA" ]; then
+            echo "::error title=contract-delta::checkout HEAD does not match GITHUB_SHA" >&2
+            exit 1
+          fi
+          # `actions/checkout` uses fetch-depth: 1 above, so Git marks this merge
+          # commit as a shallow boundary and revision-walking formats such as `%P`
+          # hide its parents. Read the immutable raw commit headers instead; they
+          # retain the exact parent OIDs even before either parent object is fetched.
+          parents=$(git cat-file -p HEAD | sed -n 's/^parent //p')
+          set -- $parents
+          if [ "$#" -ne 2 ]; then
+            echo "::error title=contract-delta::PR checkout is not an exact two-parent tested merge" >&2
+            exit 1
+          fi
+          tested_base=$1
+          tested_head=$2
+          if [ "$tested_head" != "$EXPECTED_PR_HEAD" ]; then
+            echo "::error title=contract-delta::tested merge second parent does not match the exact PR head" >&2
+            exit 1
+          fi
+          echo "base_sha=$tested_base" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$tested_head" >> "$GITHUB_OUTPUT"
+      - name: fetch the exact tested PR merge base
         # check_contract_delta.py materializes the base tree itself (a detached
-        # `git worktree add`), which needs the base commit's object present
-        # locally — the fetch-depth: 1 checkout above only guarantees the head.
-        run: git fetch --depth=1 origin ${{ github.event.pull_request.base.sha }}
+        # `git worktree add`), which needs the tested merge's first-parent object
+        # present locally — the fetch-depth: 1 merge checkout may omit that parent.
+        # Do not use pull_request.base.sha here: on a long-lived PR that event
+        # field can remain the creation-era base even though GitHub has tested a
+        # fresh synthetic merge against newer main.
+        run: git fetch --depth=1 origin ${{ steps.contract-merge.outputs.base_sha }}
       - name: differential contract-delta gate
         run: >-
           python scripts/check_contract_delta.py
-          --base ${{ github.event.pull_request.base.sha }}
+          --base ${{ steps.contract-merge.outputs.base_sha }}
   # ONE STABLE NAME FOR "CI SAID YES" (Wave B, 2026-08-11). Every other check name
   # in this workflow is now conditional: `ci-pack-N` exists only when the plan
   # selected pack N, and the whole matrix is skipped on a proven no-work PR. That

@@ -422,7 +422,7 @@ jobs:
         # design; the `||` guard covers an import/interpreter failure it cannot catch.
         timeout-minutes: 12
         run: |
-          python -m scripts.backfill_yahoo_universe --cap 400 --budget-s 480 \
+          python -m scripts.backfill_yahoo_universe --cap 400 --batch-size 160 --refresh-all --budget-s 480 \
             || echo "::warning::yahoo universe backfill failed (non-fatal) — hub price coverage does not advance tonight"
       - name: audit massive_stock_day store (content tripwire — loud, never blocks the night)
         # This lane runs --exclude-group asia, and scripts/collect.py skips the WHOLE
@@ -1625,6 +1625,25 @@ jobs:
         run: |
           python -m engine.theme_trade_flows \
             || echo "::warning::theme_trade_flows rollup failed (non-fatal)"
+      - name: MO-B F09-10 — USGS Mineral Commodity Summaries ingest (non-fatal)
+        timeout-minutes: 5
+        continue-on-error: true
+        if: ${{ vars.USGS_MCS_ENABLED == 'true' }}
+        # Keyless ScienceBase NMIC annual release. Off the render path.
+        # Outputs data/usgs_mcs/ staged by this job's `git add data/ … site/basketdata/` commit step.
+        run: |
+          python -m collectors.usgs_mcs \
+            || echo "::warning::usgs_mcs ingest failed (non-fatal)"
+      - name: MO-B F09-10 — critical-minerals supply-concentration rollup (non-fatal)
+        timeout-minutes: 5
+        continue-on-error: true
+        if: ${{ vars.USGS_MCS_ENABLED == 'true' }}
+        # Pure in-memory projection of the parquet above. Honest null when absent.
+        # Writes data/neuralweb/critical_minerals_supply.json + site/basketdata/critical_minerals_supply.json
+        # (staged via `git add data/ … site/basketdata/` below).
+        run: |
+          python -m engine.critical_minerals_supply \
+            || echo "::warning::critical_minerals_supply rollup failed (non-fatal)"
       - name: TIL W10 — ClinicalTrials.gov theme pipeline ingest (non-fatal)
         # Cap: measured 6.6s; 10m covers a slow CT.gov night and bounds a stalled fetch.
         timeout-minutes: 10
@@ -1973,8 +1992,9 @@ jobs:
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: python -m scripts.fetch_r2 --dirs subsectorohlc,subsectorohlc_nasdaq,subsectorohlc_russell || echo "::warning::subsectorohlc R2 restore failed (non-fatal — index_leadership skips loudly and keeps the last committed board)"
-      # restore-keys REMOVED from all five breadth caches below — the SAME defect the
-      # china per-name OHLC store 25 lines down already fixed (CN-SYS W5a).
+      # Historical Aug-06 repair removed prefix restores from five breadth caches.
+      # Sep-16 completes Git authority: tracked US panels are not cache-restored
+      # by readers at all; the separate Russell and HK handoffs remain below.
       #
       # A prefix restore-key matches the newest cache under that prefix from ANY prior run,
       # so this job laid a stale parquet on top of the fresh one `collect` had committed
@@ -2005,21 +2025,10 @@ jobs:
       # key that collect saved. Keep that producer/consumer key byte-identical; the old
       # `russell-closes-engine-*` key was a guaranteed cold-runner miss and cut ~1,220 names
       # from the keep-FIRST name-score stamp (2026-08-10..14 incident).
-      - name: restore breadth close cache (stock search library needs constituent closes)
-        uses: actions/cache@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-engine-${{ github.run_id }}
-      - name: restore smallcap (S&P 600) breadth close cache (stock library needs constituent closes)
-        uses: actions/cache@v4
-        with:
-          path: data/smallcap_breadth/_closes_cache.parquet
-          key: smallcap-closes-engine-${{ github.run_id }}
-      - name: restore midcap (S&P 400) breadth close cache (stock library needs constituent closes)
-        uses: actions/cache@v4
-        with:
-          path: data/midcap_breadth/_closes_cache.parquet
-          key: midcap-closes-engine-${{ github.run_id }}
+      # The S&P 500/600/400 panels are Git-tracked committed inputs. Engine reads
+      # their checkout bytes and must never overlay them from Actions cache. Only
+      # daily.collect may seed them because it refreshes and commits the canonical
+      # files. The gitignored Russell same-run handoff remains cache-backed.
       - name: restore Russell 2000 breadth close cache (stock library needs constituent closes)
         uses: actions/cache/restore@v4
         with:
@@ -2157,9 +2166,89 @@ jobs:
           MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
         run: |
           python -m scripts.build_sp500_heatmap --refresh-caps-only || echo "::warning title=sp500 heatmap cap refresh::rc!=0 (non-fatal — previous cache/fallbacks remain)"
+      - name: Leader-pullback coverage (§6.9 R4 publisher — MUST precede build_prophet)
+        # Publishes site/anticipationdata/us_leader_pullback.json: the engine.us_leader_pullback
+        # organ's per-name state over the graded universe, evaluated on a run-wide PIT
+        # cross-sectional RS percentile (the organ refuses to reach for one itself, so a
+        # single-name call can never leak a cross-section).
+        #
+        # ORDER IS LOAD-BEARING. engine.us_early_turn resolves the EARLY-TURN starter tier's
+        # LEADER licence from this file at ORIGINATION time. #5007 shipped the organ and #5105
+        # shipped the intake, but nothing published the artifact — so the leader half read {}
+        # on every production run and was structurally incapable of admitting anything, while
+        # the washout half (us_basket_turn) worked. The price-store freshness gate above
+        # settles/heals the only source this publisher reads (data/yahoo), so this runs
+        # BEFORE build_site. That makes the dashboard consume this run's truth instead of
+        # the prior committed artifact. The narrow checkpoint immediately below makes that
+        # truth durable before the long engine/render tail can strand it.
+        #
+        # DISPLAY TIER. Advances NO ledger and writes no data/ path. A degraded input
+        # publishes fewer names with their reasons printed; a RUN-WIDE data failure publishes
+        # nothing and leaves the previous artifact in place, because a board of nulls and a
+        # broken price store look identical from downstream. Measured 2026-08-09: ~39s over
+        # 680 graded names (budget 600s, self-reported and ::warning past it).
+        timeout-minutes: 12
+        continue-on-error: true
+        run: |
+          set +e
+          echo "::group::build_leader_pullback_coverage (EARLY-TURN leader licence)"
+          python -m scripts.build_leader_pullback_coverage > "$RUNNER_TEMP/leader_pullback_coverage.log" 2>&1; rc=$?
+          cat "$RUNNER_TEMP/leader_pullback_coverage.log"
+          echo "::endgroup::"
+          if [ "$rc" -ne 0 ]; then echo "::warning title=build_leader_pullback_coverage::rc=$rc (non-fatal — the intake keeps yesterday's coverage until tomorrow's run)"; fi
+          exit 0
+      - name: checkpoint leader-pullback source to main (durable before engine tail)
+        id: leader_checkpoint
+        # Same publisher, same artifact, same main branch: this is an early durability
+        # checkpoint for the source build above, not a second source/store/control plane.
+        # It validates the incumbent source contract and publishes ONLY the one existing
+        # leader artifact. A stale/failed source or same-path race is refused fail-closed.
+        continue-on-error: true
+        timeout-minutes: 10
+        run: bash scripts/ci/daily_engine_leader_checkpoint.sh
+      - name: restore accepted leader source for downstream consumers
+        id: leader_accepted_source
+        if: always()
+        timeout-minutes: 3
+        continue-on-error: true
+        # The publisher/checkpoint remains non-fatal to the wider nightly, but no
+        # dashboard or Prophet consumer may read runner-local leader bytes that were
+        # refused, raced, or failed to reach canonical main. Rehydrate this one existing
+        # source from current accepted main after the checkpoint attempt. If the
+        # checkpoint landed, these are its exact bytes; if it did not, these are the
+        # prior/newer accepted bytes. Either way downstream derivation is source-bound.
+        run: |
+          set -euo pipefail
+          LEADER_PATH="site/anticipationdata/us_leader_pullback.json"
+          EVENT_REF="${GITHUB_REF:-}"
+          SOURCE_BRANCH="$(git symbolic-ref --short -q HEAD || true)"
+          if [ "$EVENT_REF" != "refs/heads/main" ] \
+            || [ "$SOURCE_BRANCH" != "main" ]; then
+            echo "::warning title=Leader downstream source withheld::off-main event/checkout cannot advance leader-derived outputs"
+            exit 0
+          fi
+          git fetch origin +refs/heads/main:refs/remotes/origin/main
+          ACCEPTED_LEADER_SHA="$(git rev-parse origin/main)"
+          git checkout "$ACCEPTED_LEADER_SHA" -- "$LEADER_PATH"
+          RESTORE_MISMATCH=false
+          if ! git diff --cached --quiet "$ACCEPTED_LEADER_SHA" -- "$LEADER_PATH" \
+            || ! git diff --quiet -- "$LEADER_PATH"; then
+            RESTORE_MISMATCH=true
+          fi
+          # Keep accepted bytes in the worktree for downstream readers, but do not
+          # stage them against this job's older checkout-time HEAD.
+          git reset -q -- "$LEADER_PATH"
+          if [ "$RESTORE_MISMATCH" = "true" ]; then
+            echo "::error title=Leader downstream source mismatch::worktree could not be made byte-equivalent to accepted main; leader-derived outputs withheld"
+            exit 1
+          fi
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+          echo "accepted_sha=$ACCEPTED_LEADER_SHA" >> "$GITHUB_OUTPUT"
+          echo "accepted_blob=$(git rev-parse "$ACCEPTED_LEADER_SHA:$LEADER_PATH")" >> "$GITHUB_OUTPUT"
       - name: timings band — engine-core (W2)
         run: python3 scripts/nightly_timings.py mark --band engine-core || echo "::warning::timings band mark failed (non-fatal)"
       - name: run regime engine + build dashboard + daily brief (resilient)
+        if: steps.leader_accepted_source.outputs.ready == 'true'
         # Self-diagnosing + deploy-resilient: each builder runs isolated; a failure
         # is surfaced as a ::error:: annotation (readable on the run page + via the
         # public check-runs API) AND appended to the run Summary with its traceback,
@@ -2253,38 +2342,35 @@ jobs:
           cat "$RUNNER_TEMP/flip_confirmation.log"
           if [ "$rc" -ne 0 ]; then echo "::warning title=build_flip_confirmation::rc=$rc (non-fatal)"; fi
           exit 0
-      - name: Leader-pullback coverage (§6.9 R4 publisher — MUST precede build_prophet)
-        # Publishes site/anticipationdata/us_leader_pullback.json: the engine.us_leader_pullback
-        # organ's per-name state over the graded universe, evaluated on a run-wide PIT
-        # cross-sectional RS percentile (the organ refuses to reach for one itself, so a
-        # single-name call can never leak a cross-section).
-        #
-        # ORDER IS LOAD-BEARING. engine.us_early_turn resolves the EARLY-TURN starter tier's
-        # LEADER licence from this file at ORIGINATION time. #5007 shipped the organ and #5105
-        # shipped the intake, but nothing published the artifact — so the leader half read {}
-        # on every production run and was structurally incapable of admitting anything, while
-        # the washout half (us_basket_turn) worked. Scheduled after build_site (the price
-        # store is settled) and immediately before the Prophet band.
-        #
-        # DISPLAY TIER. Advances NO ledger and writes no data/ path. A degraded input
-        # publishes fewer names with their reasons printed; a RUN-WIDE data failure publishes
-        # nothing and leaves the previous artifact in place, because a board of nulls and a
-        # broken price store look identical from downstream. Measured 2026-08-09: ~39s over
-        # 680 graded names (budget 600s, self-reported and ::warning past it).
-        timeout-minutes: 12
+      - name: Restore EquityDesk earnings history (read-only; BEFORE Prophet originates)
+        # The Prophet hold-leash's earnings arm reads EquityDesk's native
+        # earnings_call_sent from data/earnings_calls/history.parquet. This shim already
+        # ran on this runner — but ~840 lines LOWER, inside cl_stage, i.e. AFTER Prophet
+        # had already originated against an absent store, so every plan carried
+        # ec_source_state=unavailable and the promoted tilt could never become eligible
+        # (production logs, 2026-09-17). Hydrating here is the workflow half of the
+        # repair; the later call stays put and is a content-hash no-op.
+        # READ-ONLY: the shim only get_object/download_file. The Prophet generation step
+        # below still carries NO R2 credentials — that publish boundary is unchanged.
+        # NEVER FATAL: absent creds / absent object exit 0 and Prophet degrades to the
+        # documented honest null (leash 1.0, ec_source_state=unavailable + reason).
+        # Rationale in full: scripts/report_prophet_earnings_source.py.
+        timeout-minutes: 6
         continue-on-error: true
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
         run: |
-          set +e
-          echo "::group::build_leader_pullback_coverage (EARLY-TURN leader licence)"
-          python -m scripts.build_leader_pullback_coverage > "$RUNNER_TEMP/leader_pullback_coverage.log" 2>&1; rc=$?
-          cat "$RUNNER_TEMP/leader_pullback_coverage.log"
-          echo "::endgroup::"
-          if [ "$rc" -ne 0 ]; then echo "::warning title=build_leader_pullback_coverage::rc=$rc (non-fatal — the intake keeps yesterday's coverage until tomorrow's run)"; fi
+          python -m scripts.fetch_earnings_scores || echo "::warning title=fetch_earnings_scores::rc≠0 before Prophet (non-fatal — the hold-tilt stays at leash 1.0 and every plan discloses ec_source_state=unavailable)"
+          python3 scripts/report_prophet_earnings_source.py || echo "::warning title=prophet_earnings_source::source report failed (non-fatal)"
           exit 0
       - name: timings band — prophet (W2)
         run: python3 scripts/nightly_timings.py mark --band prophet || echo "::warning::timings band mark failed (non-fatal)"
       - name: Prophet nightly (plan refresh + ledger advancement; R2 after checkpoint)
         id: prophet_nightly
+        if: steps.leader_accepted_source.outputs.ready == 'true'
         # AFTER build_site: reads site/factordata/us_standouts.json (just written).
         # Originates new prophet.trade_plan/v1 envelopes, runs the management engine
         # for every active plan, advances the forward outcome ledger (nightly is the
@@ -2315,6 +2401,7 @@ jobs:
         run: bash scripts/ci/daily_engine_prophet_nightly.sh
       - name: prophet-board-acceptance (post-publish alarm, never a gate)
         id: prophet_board_acceptance
+        if: steps.leader_accepted_source.outputs.ready == 'true'
         # Same job, same runner, same bytes as the "Prophet nightly" step just
         # above — placed immediately after it and BEFORE the checkpoint commit
         # below so there is no cross-job pull race and no window where a later
@@ -2651,6 +2738,7 @@ jobs:
           git clean -fd -- \
             site/prophet \
             data/prophet/origination_receipts \
+            data/prophet/origination_sources \
             data/prophet_arena \
             data/prophet_stage_shadow
           RESTORE_MISMATCH=false
@@ -3154,6 +3242,15 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         # Body extracted verbatim to scripts/ci/daily_engine_regional_desk_builders.sh (512KB processing-cap diet 2026-08-12 — tests/test_workflow_file_size.py).
         run: bash scripts/ci/daily_engine_regional_desk_builders.sh
+      # Durable core checkpoint (incident run 35547644919): the coherent builder
+      # band completed, but a later best-effort tail exhausted the 300-minute job
+      # cap before the sole broad publisher. Persist the core public tree here;
+      # the existing final publisher remains the second cut for later tail outputs.
+      - name: checkpoint core engine outputs to main (durable before tail desks)
+        if: always()
+        timeout-minutes: 25
+        continue-on-error: true
+        run: bash scripts/ci/daily_engine_commit_outputs.sh
       # Runs AFTER the band that contains `build_baskets --snapshot`, so it grades THIS
       # run's stamp rather than last night's. The plane it watches can die with every
       # signal green: both snapshot writers are content-deduped, so "membership has not
@@ -3301,6 +3398,21 @@ jobs:
         # The extracted helper keeps the five-file candidate unreachable until the
         # metadata replay is accepted, and keeps this workflow below GitHub's cap.
         run: bash scripts/ci/options_signal_nightly.sh publish-episode
+      - name: OIP catalyst links — bind the session's events to earnings/FOMC catalysts (context-only)
+        id: options_catalyst_links
+        if: always()
+        continue-on-error: true
+        timeout-minutes: 5
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        # consumes only the date-keyed events stage already read by the episode step
+        # writes site/options_catalyst_links/ only
+        # all authority false
+        # first production caller of engine/options_catalyst_link.py
+        run: python -m scripts.build_options_catalyst_links || echo "::warning::build_options_catalyst_links non-fatal failure"
       - name: OIP campaign v2 — checkpoint the exact three canonical ledgers
         id: options_signal_campaign_publish
         if: >-
@@ -3752,7 +3864,20 @@ jobs:
         # landed by the "commit engine outputs" step below (git add data/ site/) — like every
         # sibling forward ledger, the committed store is what lets cohorts accrue night to
         # night. Idempotent per as_of. Resilient.
-        run: python -m scripts.grade_bottom_calls --nightly || true
+        #
+        # NOT `|| true` (2026-09-18). This step stays non-fatal to the nightly — nothing here
+        # gates the dashboard deploy — but a bare `|| true` made failure INVISIBLE, and that is
+        # not a hypothetical: the advancer raised `TypeError: Cannot compare tz-naive and
+        # tz-aware timestamps` on EVERY run from birth, before its first write, so neither
+        # data/bottom_ledger/rows.parquet nor site/factordata/us_bottom_ledger.json ever
+        # existed while this step reported success every night. The advancer now also stamps
+        # site/factordata/us_bottom_ledger.json with `advance.status` ∈ {advanced, read_only,
+        # failed}, so the artifact itself says whether tonight advanced — a failed run can no
+        # longer masquerade as a quiet one. Annotation must start the line (CLAUDE.md).
+        run: |
+          python -m scripts.grade_bottom_calls --nightly || {
+            echo "::error title=bottom-ledger-advance-failed::Bottom Ledger forward advance FAILED — no flag was accrued and no grade was frozen tonight. data/bottom_ledger/rows.parquet is unchanged and site/factordata/us_bottom_ledger.json carries advance.status=failed. Non-fatal to the nightly by design; fix scripts/grade_bottom_calls.py."
+          }
       - name: Options-state stamp on board ledger (Options Alpha W1.3; context-only)
         # Stamps the freshly-graded + accumulated retro_grades.parquet with the eight nullable
         # opt_* options-state columns (PIT: only positioning data with as-of ≤ each fire's as_of).
@@ -4063,6 +4188,20 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           THESIS_MONITOR_ENABLE: ${{ secrets.THESIS_MONITOR_ENABLE }}
         run: python -m scripts.run_thesis_condition_monitor || echo "::warning::thesis condition monitor failed (non-fatal)"
+      - name: recurring briefs producer (F11 — each subscription its brief or an honest miss)
+        # AFTER 'brain briefing tunnel (build_briefing)' and AFTER the thesis
+        # condition monitor (the step whose comment names public.alert_outbox).
+        # Slot = site/intelligence/briefing.json field as_of. Writes
+        # public.brief_deliveries only (insert on conflict do nothing).
+        # Fail-soft: absent creds/tables -> typed miss, 0 rows, exit 0.
+        # Dormant unless RECURRING_BRIEFS_ENABLE=1. No second cron.
+        env:
+          # Reuse the incumbent repo service-role secret already consumed by
+          # production Supabase jobs. The producer's SUPABASE_URL has a reviewed
+          # project default, so do not inject an absent secret as an empty string.
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          RECURRING_BRIEFS_ENABLE: ${{ secrets.RECURRING_BRIEFS_ENABLE }}
+        run: python -m scripts.build_recurring_briefs --cadence daily_after_us_close || echo "::warning::recurring briefs producer failed (non-fatal)"
       - name: notify (telegram/discord; skips when secrets absent)
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -4752,27 +4891,11 @@ jobs:
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
       - run: pip install -r requirements.txt
-      # build_factor_series._closes() reads these breadth close caches (broad =
-      # breadth+smallcap+midcap, narrow = breadth). Restore-only — the collect job
-      # produces/saves them.
-      - name: restore breadth (S&P 500) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-fseries-${{ github.run_id }}
-          restore-keys: breadth-closes-
-      - name: restore smallcap (S&P 600) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/smallcap_breadth/_closes_cache.parquet
-          key: smallcap-closes-fseries-${{ github.run_id }}
-          restore-keys: smallcap-closes-
-      - name: restore midcap (S&P 400) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/midcap_breadth/_closes_cache.parquet
-          key: midcap-closes-fseries-${{ github.run_id }}
-          restore-keys: midcap-closes-
+      # build_factor_series._closes() reads the Git-tracked S&P 500/600/400
+      # panels (broad = breadth+smallcap+midcap, narrow = breadth) directly from
+      # checkout. This reader must never overlay them from Actions cache. Only
+      # daily.collect may seed those panels because it refreshes and commits the
+      # canonical files.
       - name: factor return series (build_factor_series)
         run: python -m scripts.build_factor_series || echo "factor series skipped (additive)"
       - name: commit factor series
@@ -4841,12 +4964,9 @@ jobs:
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
       - run: pip install -r requirements.txt
-      - name: restore breadth (S&P 500) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-fseries-${{ github.run_id }}
-          restore-keys: breadth-closes-
+      # Factor-panel reads the Git-tracked S&P 500/600/400 panels directly from
+      # checkout. It must never overlay them from Actions cache; only daily.collect
+      # may seed those panels because it refreshes and commits the canonical files.
       # FIX-8 (RULING-C nightly bounds): pin to 10 trading days back so a cold
       # runner never silently rebuilds a year. The one-shot deep backfill
       # (--start 2020-01-01, ~25 min) MUST be run once manually before the panel
@@ -5802,27 +5922,23 @@ jobs:
           echo "$VENV/bin" >> "$GITHUB_PATH"
           "$VENV/bin/python" -m pip install --quiet --upgrade pip
       - run: pip install -r requirements.txt
-      # the per-stock technical-signal leg reads constituent closes; restore-only.
-      - name: restore breadth (S&P 500) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/breadth/_closes_cache.parquet
-          key: breadth-closes-briefs-${{ github.run_id }}
-          restore-keys: breadth-closes-
-      - name: restore smallcap (S&P 600) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/smallcap_breadth/_closes_cache.parquet
-          key: smallcap-closes-briefs-${{ github.run_id }}
-          restore-keys: smallcap-closes-
-      - name: restore midcap (S&P 400) close cache
-        uses: actions/cache/restore@v4
-        with:
-          path: data/midcap_breadth/_closes_cache.parquet
-          key: midcap-closes-briefs-${{ github.run_id }}
-          restore-keys: midcap-closes-
+      # Catalyst-stock context is R2-only (site/stockdata is gitignored), so a
+      # clean stock_briefs checkout has no deterministic ladder record to brief.
+      # Restore the EXISTING store before the model leaf runs. Fail this additive
+      # job on a missing/incomplete restore instead of publishing a green batch of
+      # no_context records; publish does not depend on stock_briefs.
+      - name: restore stockdata context for AI stock briefs
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: python -m scripts.fetch_r2 --dirs stockdata
+      # The per-stock technical-signal leg reads the Git-tracked S&P 500/600/400
+      # panels directly from checkout. This reader must never overlay them from
+      # Actions cache; only daily.collect may seed, refresh and commit those files.
       - name: precompute AI stock briefs (build_stock_briefs)
-        run: python -m scripts.build_stock_briefs || echo "stock briefs skipped (additive)"
+        run: python -m scripts.build_stock_briefs
       - name: commit stock briefs
         run: |
           . "${GITHUB_WORKSPACE:-.}/scripts/ci/push_retry.sh"

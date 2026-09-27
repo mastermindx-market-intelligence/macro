@@ -1,17 +1,17 @@
 {
-  "as_of": "2026-09-11",
+  "as_of": "2026-09-23",
   "evaluator_version": "W7b-PR3",
   "dry_run": false,
   "n_due": 1,
   "results": [
     {
-      "id": "cortex-2026-08-14-in-low-volatility-regimes-negative-10-d-5df4be",
-      "claim_shape": "conditional_regime",
+      "id": "cortex-2026-08-26-when-the-confirmed-us-regime-label-remai-3fe580",
+      "claim_shape": "entry_quality",
       "verdict": "uncomputable-metric",
       "n": 0,
       "metric_value": null,
       "detail": {
-        "gate_error": "metric 'breadth_deterioration_21d_auc' is not computable by this evaluator",
+        "gate_error": "metric 'matched_mean_signed_excess_difference_21d' is not computable by this evaluator",
         "supported_metrics": [
           "excess_mean",
           "excess_mean_difference",
@@ -25,9 +25,9 @@
         "evaluator_version": "W7b-PR3"
       },
       "gate": {
-        "metric": "breadth_deterioration_21d_auc",
-        "threshold": 0.55,
-        "min_n": 35,
+        "metric": "matched_mean_signed_excess_difference_21d",
+        "threshold": -0.02,
+        "min_n": 30,
         "horizon_d": 21,
         "direction_expected": -1
       },

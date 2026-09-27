@@ -1,0 +1,305 @@
+{
+  "axes": {
+    "access": [
+      "anonymous"
+    ],
+    "force_states": [],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    }
+  },
+  "excluded": [],
+  "generated_at": "2026-09-22T06:30:00Z",
+  "honesty": {
+    "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
+    "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
+    "gaps": "states that were not captured are recorded with a reason; nothing is inferred for them"
+  },
+  "outcome": "captured",
+  "pages": [
+    {
+      "console_errors": [],
+      "failed_responses": [],
+      "gaps": [
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "free"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "essential"
+        },
+        {
+          "captured": false,
+          "dimension": "access",
+          "reason": "requires authenticated session; not automatable without approved fixtures",
+          "value": "pro"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "loading"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "empty"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "stale"
+        },
+        {
+          "captured": false,
+          "dimension": "page_state",
+          "reason": "state not synthesizable against static output",
+          "value": "error"
+        }
+      ],
+      "metrics": {
+        "asof_present": true,
+        "by_viewport": {
+          "desktop": {
+            "document_height_px": 964,
+            "elements_wider_than_viewport": 0,
+            "horizontal_overflow": false
+          },
+          "mobile": {
+            "document_height_px": 876,
+            "elements_wider_than_viewport": 7,
+            "horizontal_overflow": false
+          }
+        },
+        "console_error_count": 0,
+        "document_height_px": 964,
+        "duplicate_heading_texts": [],
+        "elements_wider_than_viewport": 0,
+        "heading_counts": {
+          "h1": 0,
+          "h2": 0,
+          "h3": 1,
+          "h4": 0,
+          "h5": 0,
+          "h6": 0
+        },
+        "horizontal_overflow": false,
+        "long_paragraph_count": 0,
+        "measured_in": {
+          "access": "anonymous",
+          "locale": "en",
+          "theme": "dark",
+          "viewport": "desktop"
+        },
+        "panel_count": 0,
+        "payload_bytes_total": 267468,
+        "raw_slug_hit_count": 0,
+        "raw_slug_hits": [],
+        "request_count": 2,
+        "screenshot_completion": 1.0,
+        "section_count": 2,
+        "source_present": false,
+        "todo_placeholder_hit_count": 0,
+        "todo_placeholder_hits": [],
+        "visible_word_count": 56
+      },
+      "page_id": "component.html",
+      "registry_route": "/component.html",
+      "route": "/component.html",
+      "route_kind": "explicit_override",
+      "states": [
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 176245,
+          "captured": true,
+          "file": "a184adc2940c7023.png",
+          "force_state": null,
+          "height": 964,
+          "locale": "en",
+          "sha256": "a184adc2940c70231afcf229653785cc212bb233bf99819f4d96a8c92b399e3f",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 158028,
+          "captured": true,
+          "file": "3b39149f30ba9df9.png",
+          "force_state": null,
+          "height": 964,
+          "locale": "en",
+          "sha256": "3b39149f30ba9df964cb636417d9be8866559c92c42ceeae8a899a3a2b59edbd",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 176294,
+          "captured": true,
+          "file": "e2ef91b5782bb8d9.png",
+          "force_state": null,
+          "height": 964,
+          "locale": "zh",
+          "sha256": "e2ef91b5782bb8d93d68d82163e1f8ff093f24376227da792fbbdd7bcdb14e42",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 158709,
+          "captured": true,
+          "file": "69f92c80b78e1c78.png",
+          "force_state": null,
+          "height": 964,
+          "locale": "zh",
+          "sha256": "69f92c80b78e1c7804eeba248602ab13a892e8e8c8425faeae42d7183e99fae4",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 79949,
+          "captured": true,
+          "file": "a2c06179b8fc35d5.png",
+          "force_state": null,
+          "height": 876,
+          "locale": "en",
+          "sha256": "a2c06179b8fc35d510c23f2de374770e8cde8db6f286b8ecfc33d75d4b9e217f",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 73983,
+          "captured": true,
+          "file": "f8b726444d7581fb.png",
+          "force_state": null,
+          "height": 876,
+          "locale": "en",
+          "sha256": "f8b726444d7581fb74304b2f2a0003f535ed7fbc1e7a3303db067509fd4ae325",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 82274,
+          "captured": true,
+          "file": "24d5c6ebff3c502a.png",
+          "force_state": null,
+          "height": 876,
+          "locale": "zh",
+          "sha256": "24d5c6ebff3c502aec7a733d0a68968d9a362bceb70add8f21b2648d68b1de4a",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 76648,
+          "captured": true,
+          "file": "4cbad7ec0e60b236.png",
+          "force_state": null,
+          "height": 876,
+          "locale": "zh",
+          "sha256": "4cbad7ec0e60b236d3976cae621fa630c5ad097bcdb3eabd8043c03254a893b5",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        }
+      ]
+    }
+  ],
+  "schema": "mastermind.p0_evidence.v2",
+  "selection": {
+    "explicit_routes": [
+      "/component.html"
+    ],
+    "max_pages": 1,
+    "mode": "explicit_routes",
+    "note": "--routes overrode registry selection; the --priority and --repo filters were not applied",
+    "priority": null,
+    "registry": "data/product_experience/page_registry.json",
+    "registry_rows": 0,
+    "repo": null,
+    "selected": 1
+  },
+  "target": {
+    "base_url": null,
+    "kind": "site_dir",
+    "resolved_gitdir_or_none": null,
+    "resolved_sha_or_none": null,
+    "resolved_sha_source": "no git directory was found at or above --site-dir; nothing resolved",
+    "site_dir": "/Volumes/Mastermind/agent-evidence/risk-radar-probability-evidence-depth-20260922-v2"
+  },
+  "tool": {
+    "module_ref": "scripts/capture_page_evidence.py",
+    "module_sha256": "8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16",
+    "user_agent": "mastermind-page-census/1.0 (internal product observability)",
+    "version": "1.3.0"
+  },
+  "totals": {
+    "pages": 1,
+    "states_attempted": 8,
+    "states_captured": 8
+  }
+}

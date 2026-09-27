@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SOUN-BULL-20260805",
-  "asof": "2026-09-18",
-  "phase": "pre_trigger",
-  "detection_phase": "pre_trigger",
-  "management_confidence": 30.7,
-  "raw_confidence": 30.0,
-  "delta_vs_base": -29.3,
-  "recommended_action": "wait",
-  "human_state": "Approaching Trigger",
+  "asof": "2026-09-26",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 24.8,
+  "raw_confidence": 24.1,
+  "delta_vs_base": -35.2,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 5.8,
+    "validity": 10.4,
     "progress": 0.0,
-    "pace": 0.0,
-    "retention": 50.0,
-    "overlay": 55.0
+    "pace": 23.3,
+    "retention": 0.0,
+    "overlay": 47.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.161,
+    "dist_to_stop_r": 0.209,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 93.3,
-    "p1": -0.5596,
-    "p2": -0.2798,
+    "horizon_pct_used": 111.1,
+    "p1": -0.5274,
+    "p2": -0.2637,
     "p3": null,
-    "move_r": -0.839,
+    "move_r": -0.791,
     "mfe_r": 0.0,
     "mae_r": -0.869
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 42,
-  "tau": 0.9333
+  "days_elapsed": 50,
+  "tau": 1.1111
 }

@@ -1,6 +1,6 @@
 {
 "schema":"edgar.geo_revenue.v1",
-"updated":"2026-09-19T02:44:30.158025+00:00",
+"updated":"2026-09-26T14:47:56.174365+00:00",
 "by_ticker":{
 "AAPL":{
 "foreign_pct":63.5,
@@ -1421,11 +1421,11 @@
 ]
 },
 "CSCO":{
-"foreign_pct":46.3,
-"asof":"2025-07-26",
-"source":"10-K 2025-07-26",
-"fy":2025,
-"accession":"0000858877-25-000111",
+"foreign_pct":45.7,
+"asof":"2026-07-25",
+"source":"10-K 2026-07-25",
+"fy":2026,
+"accession":"0000858877-26-000132",
 "method":"us_member",
 "concept":"RevenueFromContractWithCustomerExcludingAssessedTax",
 "by_region":[
@@ -1433,7 +1433,7 @@
 "key":"US",
 "label":"US",
 "cls":"us",
-"pct":53.7
+"pct":54.3
 }
 ]
 },
@@ -27995,25 +27995,25 @@
 ]
 },
 "MBUU":{
-"foreign_pct":6.1,
-"asof":"2025-06-30",
-"source":"10-K 2025-06-30",
-"fy":2025,
-"accession":"0001590976-25-000080",
-"method":"foreign_agg",
+"foreign_pct":16.5,
+"asof":"2026-06-30",
+"source":"10-K 2026-06-30",
+"fy":2026,
+"accession":"0001590976-26-000037",
+"method":"us_member",
 "concept":"RevenueFromContractWithCustomerExcludingAssessedTax",
 "by_region":[
 {
-"key":"NorthAmerica",
-"label":"North America",
-"cls":"mixed",
-"pct":93.9
+"key":"US",
+"label":"US",
+"cls":"us",
+"pct":83.5
 },
 {
-"key":"International",
-"label":"International",
+"key":"NonUs",
+"label":"Non Us",
 "cls":"foreign_total",
-"pct":6.1
+"pct":16.5
 }
 ]
 },
@@ -28106,11 +28106,11 @@
 ]
 },
 "MTRX":{
-"foreign_pct":6.5,
-"asof":"2025-06-30",
-"source":"10-K 2025-06-30",
-"fy":2025,
-"accession":"0000866273-25-000069",
+"foreign_pct":5.2,
+"asof":"2026-06-30",
+"source":"10-K 2026-06-30",
+"fy":2026,
+"accession":"0000866273-26-000057",
 "method":"us_member",
 "concept":"Revenues",
 "by_region":[
@@ -28118,19 +28118,19 @@
 "key":"US",
 "label":"US",
 "cls":"us",
-"pct":93.5
+"pct":94.8
 },
 {
 "key":"CA",
 "label":"CA",
 "cls":"dm",
-"pct":5.4
+"pct":4.4
 },
 {
 "key":"Otherinternational",
 "label":"Otherinternational",
 "cls":"mixed",
-"pct":1.1
+"pct":0.8
 }
 ]
 },
@@ -29429,11 +29429,11 @@
 ]
 },
 "IBEX":{
-"foreign_pct":3.7,
-"asof":"2025-06-30",
-"source":"10-K 2025-06-30",
-"fy":2025,
-"accession":"0001720420-25-000027",
+"foreign_pct":3.3,
+"asof":"2026-06-30",
+"source":"10-K 2026-06-30",
+"fy":2026,
+"accession":"0001720420-26-000025",
 "method":"us_member",
 "concept":"RevenueFromContractWithCustomerExcludingAssessedTax",
 "by_region":[
@@ -29441,31 +29441,31 @@
 "key":"US",
 "label":"US",
 "cls":"us",
-"pct":96.3
+"pct":96.7
 },
 {
 "key":"Offshore",
 "label":"Offshore",
 "cls":"mixed",
-"pct":50.6
-},
-{
-"key":"Nearshore",
-"label":"Nearshore",
-"cls":"mixed",
-"pct":25.1
+"pct":50.8
 },
 {
 "key":"Onshore",
 "label":"Onshore",
 "cls":"mixed",
-"pct":24.4
+"pct":26.3
+},
+{
+"key":"Nearshore",
+"label":"Nearshore",
+"cls":"mixed",
+"pct":22.9
 },
 {
 "key":"NonUs",
 "label":"Non Us",
 "cls":"foreign_total",
-"pct":3.7
+"pct":3.3
 }
 ]
 },

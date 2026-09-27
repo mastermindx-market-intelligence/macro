@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "AZO-BULL-20260625",
-  "asof": "2026-09-18",
+  "asof": "2026-09-26",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 18.6,
@@ -10,27 +10,27 @@
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 0.2,
+    "validity": 2.6,
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 67.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.036,
+    "dist_to_stop_r": 0.111,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 153.3,
-    "p1": -0.6425,
-    "p2": -0.3212,
+    "horizon_pct_used": 171.1,
+    "p1": -0.5927,
+    "p2": -0.2963,
     "p3": null,
-    "move_r": -0.964,
+    "move_r": -0.889,
     "mfe_r": 0.359,
-    "mae_r": -1.066
+    "mae_r": -1.195
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Phase: invalidated \u2192 overtime",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 81.02011718750009,
-  "_mae": -240.4400878906249,
+  "_mae": -269.3499999999999,
   "_max_p1": 0.23955919394302305,
   "_first_trigger_ts": "2026-07-11",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 69,
-  "tau": 1.5333
+  "days_elapsed": 77,
+  "tau": 1.7111
 }

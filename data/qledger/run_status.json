@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-09-19T03:01:28.782967+00:00",
-  "as_of": "2026-09-18",
-  "n_open": 102296,
-  "n_graded_today": 734,
-  "n_blocked_by_coverage": 43917,
-  "n_ungradeable": 14,
-  "n_already_graded": 131419,
+  "generated_at": "2026-09-26T19:24:11.739120+00:00",
+  "as_of": "2026-09-26",
+  "n_open": 112650,
+  "n_graded_today": 0,
+  "n_blocked_by_coverage": 42599,
+  "n_ungradeable": 18,
+  "n_already_graded": 149124,
   "clock_unresolvable_claims": {
-    "n": 18,
+    "n": 19,
     "by_reason": {
       "clock_unresolvable:mixed_markets": 12,
-      "clock_unresolvable:unsupported_exchange_suffix:.BJ": 6
+      "clock_unresolvable:unsupported_exchange_suffix:.BJ": 7
     },
     "by_family": {
-      "cn_special_sits": 6,
+      "cn_special_sits": 7,
       "us_importance_v0": 6,
       "us_importance_v0_pit": 6
     }
@@ -29,7 +29,7 @@
     "grader_quiet_days": 0
   },
   "regime_stamp_backfill": {
-    "n_claims": 102315,
+    "n_claims": 112670,
     "n_backfilled": 0,
     "n_unstamped": 6673,
     "n_precoverage": 4361

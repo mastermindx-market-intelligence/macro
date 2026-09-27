@@ -487,7 +487,7 @@
     // Keep the dynamic dependency cache-safe too. theme.js itself is
     // content-hashed in every page; this explicit release key prevents a
     // year-cached account.js from pinning an older navigation loader.
-    s.src = pfx + 'account.js?v=20260814-sf-inter-font-upgrade'; s.async = true;
+    s.src = pfx + 'account.js?v=20260913-account-actions'; s.async = true;
     document.head.appendChild(s);
   })();
 
@@ -1421,7 +1421,8 @@
     /* extra specificity so the tap-flight beats the idle bob above */
     "button.nav-totop.launch svg{animation:nav-totop-launch .5s cubic-bezier(.5,0,.6,1)}",
     "@media (max-width:900px){",
-      ".nav-toggle{display:inline-flex;align-items:center;justify-content:center;width:42px;height:34px;padding:0;flex:none;cursor:pointer;border-radius:10px;border:1px solid var(--line,var(--grid));background:var(--panel2,var(--card));color:var(--text,var(--ink));-webkit-tap-highlight-color:transparent}",
+      ".nav-toggle{display:inline-flex;align-items:center;justify-content:center;width:42px;height:40px;padding:0;flex:none;cursor:pointer;border-radius:var(--r-sm,10px);border:1px solid var(--line,var(--grid));background:var(--panel2,var(--card));color:var(--text,var(--ink));-webkit-tap-highlight-color:transparent;touch-action:manipulation}",
+      ".nav-toggle:focus-visible{outline:2px solid currentColor;outline-offset:2px}",
       ".nav-toggle-bars,.nav-toggle-bars::before,.nav-toggle-bars::after{content:'';display:block;width:18px;height:2px;border-radius:2px;background:currentColor;transition:transform .22s ease,opacity .2s ease}",
       ".nav-toggle-bars{position:relative}",
       ".nav-toggle-bars::before{position:absolute;left:0;top:-6px}",
@@ -4098,7 +4099,8 @@
        the gear — no trip to screen-centre — and follows it on scroll. No scrim;
        click-outside / Esc / a second click on the gear closes it. */
     '.nav-settings{position:relative;display:inline-flex;flex:none}',
-    '.nav-settings-btn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;flex:none;cursor:pointer;border-radius:50%;border:1px solid var(--line,var(--grid));background:var(--panel2,var(--card));color:var(--text,var(--ink));transition:border-color .2s,color .2s,background .2s,transform .16s ease,box-shadow .18s ease;-webkit-tap-highlight-color:transparent}',
+    '.nav-settings-btn{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;padding:0;flex:none;cursor:pointer;border-radius:var(--r-pill,999px);border:1px solid var(--line,var(--grid));background:var(--panel2,var(--card));color:var(--text,var(--ink));transition:border-color .2s,color .2s,background .2s,transform .16s ease,box-shadow .18s ease;-webkit-tap-highlight-color:transparent;touch-action:manipulation}',
+    '.nav-settings-btn:focus-visible{outline:2px solid currentColor;outline-offset:2px}',
     '.nav-settings-btn:hover{border-color:var(--link,var(--blue));color:var(--ink-link, var(--link,var(--blue)));transform:translateY(-1px);box-shadow:0 5px 14px -6px color-mix(in srgb,var(--link,var(--blue)) 45%,transparent)}',
     '.nav-settings-btn:active{transform:translateY(0);box-shadow:none}',
     '.nav-settings-btn[aria-expanded="true"]{border-color:var(--link,var(--blue));color:var(--ink-link, var(--link,var(--blue)));background:color-mix(in srgb,var(--link,var(--blue)) 13%,var(--panel2,var(--card)))}',
@@ -4125,12 +4127,12 @@
     '}',
     '.settings-head{display:flex;align-items:center;gap:8px;margin:0;padding:0 2px 2px}',
     '.settings-head h2{margin:0;padding:0;border:0;font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;line-height:1.2;color:var(--muted,var(--ink-3))}',
-    '.settings-close{width:24px;height:24px;border-radius:7px;border:1px solid transparent;background:transparent;color:var(--muted,var(--ink-3));cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none;transition:background .18s,color .18s}',
+    '.settings-close{width:40px;height:40px;border-radius:var(--r-sm,10px);border:1px solid transparent;background:transparent;color:var(--muted,var(--ink-3));cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none;transition:background .18s,color .18s;touch-action:manipulation}',
     '.settings-close:hover{background:var(--panel2,var(--card));color:var(--text,var(--ink))}',
     '.settings-close svg{width:15px;height:15px}',
     '.settings-close:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
     /* expand-to-dashboard button: sits at the header end, pushed right with the close */
-    '.settings-expand{margin-left:auto;width:24px;height:24px;border-radius:7px;border:1px solid transparent;background:transparent;color:var(--muted,var(--ink-3));cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none;transition:background .18s,color .18s}',
+    '.settings-expand{margin-left:auto;width:40px;height:40px;border-radius:var(--r-sm,10px);border:1px solid transparent;background:transparent;color:var(--muted,var(--ink-3));cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none;transition:background .18s,color .18s;touch-action:manipulation}',
     '.settings-expand:hover{background:var(--panel2,var(--card));color:var(--ink-link, var(--link,var(--blue)))}',
     '.settings-expand svg{width:15px;height:15px}',
     '.settings-expand:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
@@ -4153,7 +4155,8 @@
     '.settings-pop .theme-switch .knob::before{content:"🌙"}',
     'html[data-theme="light"] .settings-pop .theme-switch .knob{transform:translateX(29px);background:#285fff}',
     'html[data-theme="light"] .settings-pop .theme-switch .knob::before{content:"☀️"}',
-    '.settings-pop .lang-toggle{display:inline-flex;position:relative;background:var(--bg,var(--card));border:1px solid var(--line,var(--grid));border-radius:999px;padding:3px;flex:none;cursor:pointer}',
+    '.settings-pop .lang-toggle{display:inline-flex;align-items:center;position:relative;min-height:40px;background:var(--bg,var(--card));border:1px solid var(--line,var(--grid));border-radius:var(--r-pill,999px);padding:3px;flex:none;cursor:pointer;touch-action:manipulation}',
+    '.settings-pop .lang-toggle:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
     '.settings-pop .lang-toggle .pill{position:absolute;top:3px;left:3px;width:calc(50% - 3px);height:calc(100% - 6px);border-radius:999px;background:var(--link,var(--blue));transition:transform .34s cubic-bezier(.34,1.4,.5,1)}',
     'html[data-lang="zh"] .settings-pop .lang-toggle .pill{transform:translateX(100%)}',
     '.settings-pop .lang-toggle .opt{position:relative;z-index:1;min-width:30px;text-align:center;padding:3px 11px;font-size:11.5px;font-weight:600;color:var(--muted,var(--ink-3));transition:color .25s;user-select:none}',
@@ -4164,6 +4167,8 @@
     '.settings-acct .sa-d{font-size:11.5px;color:var(--muted,var(--ink-3));line-height:1.5;margin:0 0 9px}',
     '.settings-acct .sa-btns{display:flex;gap:8px}',
     '.settings-acct .sa-btn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 10px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:not-allowed;border:1px solid var(--line,var(--grid));font-family:inherit}',
+    '.settings-acct .sa-btn{min-height:40px;touch-action:manipulation}',
+    '.settings-acct .sa-btn:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
     '.settings-acct .sa-btn .sr-ic{color:inherit}',
     '.settings-acct .sa-btn.ghost{background:transparent;color:var(--text,var(--ink))}',
     '.settings-acct .sa-btn.solid{background:var(--link,var(--blue));border-color:var(--link,var(--blue));color:#fff;opacity:.92}',
@@ -4174,15 +4179,19 @@
     '.settings-acct .sa-btn.solid:hover{filter:brightness(1.07);opacity:1}',
     '.settings-acct-in{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:11px;background:var(--panel2,var(--card));border:1px solid var(--line,var(--grid))}',
     '.settings-acct-in .sa-avatar{flex:none;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--link,var(--blue,#4f8cff)),color-mix(in srgb,var(--link,var(--blue,#4f8cff)) 55%,#9b5cff))}',
-    '.settings-acct-in .sr-main{flex:1;min-width:0}',
+    '.settings-acct-in .sr-main{flex:1;min-width:0;min-height:40px;display:flex;flex-direction:column;justify-content:center;border-radius:var(--r-sm,10px);touch-action:manipulation}',
+    '.settings-acct-in .sr-main[role="button"]:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
     '.settings-acct-in .sr-lbl{display:block;font-size:13px;font-weight:700;color:var(--text,var(--ink));overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
     '.settings-acct-in .sr-desc{display:block;font-size:11px;color:var(--muted,var(--ink-3));margin-top:1px}',
     '.settings-acct-in .sa-signout{flex:none;padding:7px 11px;border-radius:9px;border:1px solid var(--line,var(--grid));background:transparent;color:var(--text,var(--ink));font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:border-color .18s,color .18s}',
+    '.settings-acct-in .sa-signout{min-height:40px;touch-action:manipulation}',
+    '.settings-acct-in .sa-signout:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
     '.settings-acct-in .sa-signout:hover{border-color:var(--down,#ff5c6c);color:var(--ink-down, var(--down,#ff5c6c))}',
     '@media (prefers-reduced-motion:reduce){.settings-pop{transition:opacity .14s ease,visibility 0s linear .14s}.settings-pop.open,.nav-settings:not(.settings-dismissed):hover .settings-pop,.nav-settings:focus-within .nav-settings-btn[aria-expanded="true"] + .settings-pop{transition:opacity .14s ease}.nav-settings-btn:hover svg,.nav-settings-btn[aria-expanded="true"] svg,.nav-settings:not(.settings-dismissed):hover .nav-settings-btn svg,.nav-settings:focus-within .nav-settings-btn[aria-expanded="true"] svg{transform:none}}',
     /* ---- three-way theme segment + on/off toggle (shared by fx and live-prices) */
     '.set-theme-seg{display:inline-flex;background:var(--bg,var(--card));border:1px solid var(--line,var(--grid));border-radius:999px;padding:3px;gap:2px;flex:none}',
     '.set-seg-btn{padding:3px 10px;border:none;border-radius:999px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;background:transparent;color:var(--muted,var(--ink-3));transition:background .2s,color .2s;white-space:nowrap}',
+    '.set-seg-btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;touch-action:manipulation}',
     '.set-seg-btn.active{background:var(--link,var(--blue));color:#fff}',
     '.set-seg-btn:hover:not(.active){background:color-mix(in srgb,var(--text,#fff) 9%,transparent);color:var(--text,var(--ink))}',
     '.set-seg-btn:focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:2px}',
@@ -5091,7 +5100,9 @@
       // Keyboard operability (WCAG 2.1 SC 2.1.1): make the lang-toggle reachable and
       // operable via keyboard without breaking existing CSS.
       if (!t.hasAttribute('tabindex')) t.setAttribute('tabindex', '0');
-      if (!t.getAttribute('role')) t.setAttribute('role', 'switch');
+      // The template historically labelled this as a group even though the whole pill
+      // is one two-state control. Override stale markup so aria-checked has valid switch semantics.
+      if (t.getAttribute('role') !== 'switch') t.setAttribute('role', 'switch');
       // aria-checked reflects zh = true / en = false; synced on langchange + immediately
       function _syncLangAria() {
         var zh = (docEl.getAttribute('data-lang') || 'en') === 'zh';
@@ -5456,11 +5467,16 @@
     '.lens-term:hover,.lens-term.lens-on,.lens-term:focus-visible{color:var(--ink-info, var(--info,var(--blue,#5b9bf0)));' +
       'border-bottom:1px solid var(--info,var(--blue,#5b9bf0));background:color-mix(in srgb,var(--info,var(--blue,#5b9bf0)) 9%,transparent);outline:none}' +
     /* upgraded legacy "?" icons pick up the same live hover accent as .lens-q */
-    'span.help.help-upgraded{cursor:help;transition:color .18s,border-color .18s,background .18s,box-shadow .22s}' +
+    'span.help.help-upgraded{position:relative;cursor:help;touch-action:manipulation;' +
+      'transition:color .18s,border-color .18s,background .18s,box-shadow .22s}' +
     'span.help.help-upgraded:hover,span.help.help-upgraded.lens-on{color:var(--ink-info, var(--info,var(--blue,#5b9bf0)));' +
       'border-color:color-mix(in srgb,var(--info,var(--blue,#5b9bf0)) 55%,transparent);' +
       'background:color-mix(in srgb,var(--info,var(--blue,#5b9bf0)) 13%,transparent);' +
       'box-shadow:0 0 0 3px color-mix(in srgb,var(--info,var(--blue,#5b9bf0)) 12%,transparent)}' +
+    'span.help.help-upgraded:focus-visible{color:var(--info,var(--blue));border-color:currentColor;' +
+      'outline:2px solid currentColor;outline-offset:3px}' +
+    '@media (hover:none),(pointer:coarse){span.help.help-upgraded::before{content:"";position:absolute;' +
+      'left:50%;top:50%;width:40px;height:40px;transform:translate(-50%,-50%);border-radius:var(--r-pill,999px)}}' +
     /* One glass shell, shared with the rotation hover card and the heatmap card so
        every popup on a page reads as one component. --glass-* are theme-aware
        (theme.css rebinds them for light); the dark values stay inlined as fallbacks
@@ -5534,9 +5550,11 @@
       '.lens-pop.open{transform:none}' +
       '.lens-grab{display:block;width:38px;height:4px;border-radius:2px;margin:10px auto 2px;' +
         'background:color-mix(in srgb,var(--lens-text) 22%,transparent)}' +
-      '.lens-x{display:grid;place-items:center;position:absolute;top:10px;right:12px;width:26px;height:26px;' +
+      '.lens-x{display:grid;place-items:center;position:absolute;top:8px;right:8px;z-index:2;width:40px;height:40px;' +
         'border-radius:50%;border:0;padding:0;font:600 11px/1 var(--font-ui,Inter,sans-serif);' +
         'color:var(--lens-mut);background:color-mix(in srgb,var(--lens-mut) 14%,transparent);cursor:pointer}' +
+      '.lens-x{touch-action:manipulation}' +
+      '.lens-x:focus-visible{outline:2px solid var(--lens-accent);outline-offset:-3px;color:var(--lens-text)}' +
       '.lens-hd{padding-top:8px}' +
       '.lens-ill{width:38px;height:38px}' +
       '.lens-ttl{padding:8px 18px 0;font-size:14px}' +
@@ -5655,7 +5673,11 @@
     pop.textContent = '';
     var grab = document.createElement('div'); grab.className = 'lens-grab'; pop.appendChild(grab);
     var x = document.createElement('button'); x.type = 'button'; x.className = 'lens-x';
-    x.setAttribute('aria-label', 'Close'); x.textContent = '✕'; pop.appendChild(x);
+    x.setAttribute(
+      'aria-label',
+      document.documentElement.getAttribute('data-lang') === 'zh' ? '关闭' : 'Close'
+    );
+    x.textContent = '✕'; pop.appendChild(x);
     if (c.rich) {
       pop.classList.remove('lens-plain');
       var wrap = document.createElement('div'); wrap.innerHTML = c.rich;
@@ -5779,7 +5801,24 @@
     // bare data-tip chips: desktop clicks pass through (hover already shows the tip)
   }, true);
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && isOpen()) hide();
+    if (e.key === 'Escape' && isOpen()) { hide(); return; }
+    if ((e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') &&
+        e.target && e.target.closest) {
+      var help = e.target.closest('span.help.help-upgraded');
+      if (help && contentFor(help)) {
+        e.preventDefault();
+        e.stopPropagation();
+        show(help);
+      }
+    }
+  });
+  document.addEventListener('langchange', function () {
+    if (!pop) return;
+    var x = pop.querySelector('.lens-x');
+    if (x) x.setAttribute(
+      'aria-label',
+      document.documentElement.getAttribute('data-lang') === 'zh' ? '关闭' : 'Close'
+    );
   });
   window.addEventListener('scroll', function () {
     // The floating card FOLLOWS its trigger; it hides only when the trigger leaves
@@ -5841,13 +5880,24 @@
     if (!en) return false;
     el.setAttribute('data-tip-en', en);
     el.setAttribute('data-tip-zh', zh || en);
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('role', 'button');
     el.classList.add('help-upgraded');
+    syncUpgradedHelpLabel(el);
     return true;
+  }
+  function syncUpgradedHelpLabel(el) {
+    if (!el) return;
+    var zh = document.documentElement.getAttribute('data-lang') === 'zh';
+    el.setAttribute('aria-label', zh ? '更多信息' : 'More information');
   }
   function upgradeHelpIcons(root) {
     var icons = (root || document).querySelectorAll('span.help:not([data-tip-en])');
     for (var i = 0; i < icons.length; i++) upgradeOne(icons[i]);
   }
+  document.addEventListener('langchange', function () {
+    document.querySelectorAll('span.help.help-upgraded').forEach(syncUpgradedHelpLabel);
+  });
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () { upgradeHelpIcons(); });
   } else {

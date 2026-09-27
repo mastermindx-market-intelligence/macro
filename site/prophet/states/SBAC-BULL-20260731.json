@@ -1,32 +1,32 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SBAC-BULL-20260731",
-  "asof": "2026-09-18",
-  "phase": "triggered_pre_t1",
-  "detection_phase": "triggered_pre_t1",
-  "management_confidence": 34.7,
-  "raw_confidence": 33.4,
-  "delta_vs_base": -25.3,
-  "recommended_action": "hold",
-  "human_state": "Stalling",
+  "asof": "2026-09-26",
+  "phase": "overtime",
+  "detection_phase": "overtime",
+  "management_confidence": 30.2,
+  "raw_confidence": 27.8,
+  "delta_vs_base": -29.8,
+  "recommended_action": "trim",
+  "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 71.7,
+    "validity": 17.9,
     "progress": 0.0,
-    "pace": 0.0,
-    "retention": 50.0,
-    "overlay": 61.0
+    "pace": 23.3,
+    "retention": 0.0,
+    "overlay": 56.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.782,
+    "dist_to_stop_r": 0.279,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 93.3,
-    "p1": -0.1456,
-    "p2": -0.0728,
+    "horizon_pct_used": 111.1,
+    "p1": -0.4804,
+    "p2": -0.2402,
     "p3": null,
-    "move_r": -0.218,
+    "move_r": -0.721,
     "mfe_r": 0.281,
-    "mae_r": -0.218
+    "mae_r": -0.73
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 6.9499969482421875,
-  "_mae": -5.410003662109375,
+  "_mae": -18.089996337890625,
   "_max_p1": 0.1870541501343611,
   "_first_trigger_ts": "2026-08-13",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 42,
-  "tau": 0.9333
+  "days_elapsed": 50,
+  "tau": 1.1111
 }

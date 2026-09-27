@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-09-18",
+  "as_of": "2026-09-26",
   "item_count": 8,
   "counts_by_severity": {
     "P2": 7,
@@ -12,7 +12,7 @@
       "summary_en": "Tension: briefing-divergences",
       "summary_zh": "矛盾张力：briefing-divergences",
       "evidence_path": "site/neuralwebdata/confluence_graph.json",
-      "as_of": "2026-09-18"
+      "as_of": "2026-09-26"
     },
     {
       "kind": "contradiction_tension",
@@ -20,55 +20,55 @@
       "summary_en": "Tension: cross_asset_confirm-diverge",
       "summary_zh": "矛盾张力：cross_asset_confirm-diverge",
       "evidence_path": "site/neuralwebdata/confluence_graph.json",
-      "as_of": "2026-09-18"
+      "as_of": "2026-09-26"
     },
     {
       "kind": "lobe_sla_breach",
       "severity": "P2",
-      "summary_en": "Lobe 'confluence-graph' overdue: 67h old vs 30h SLA (2.2×)",
-      "summary_zh": "脉叶 'confluence-graph' 过期：67小时，SLA 30小时（2.2倍）",
+      "summary_en": "Lobe 'confluence-graph' overdue: 68h old vs 30h SLA (2.3×)",
+      "summary_zh": "脉叶 'confluence-graph' 过期：68小时，SLA 30小时（2.3倍）",
       "evidence_path": "site/neuralwebdata/health.json",
-      "as_of": "2026-09-18"
+      "as_of": "2026-09-26"
     },
     {
       "kind": "lobe_sla_breach",
       "severity": "P2",
-      "summary_en": "Lobe 'neuralweb-mastermind-context' overdue: 427h old vs 30h SLA (14.2×)",
-      "summary_zh": "脉叶 'neuralweb-mastermind-context' 过期：427小时，SLA 30小时（14.2倍）",
+      "summary_en": "Lobe 'neuralweb-mastermind-context' overdue: 620h old vs 30h SLA (20.7×)",
+      "summary_zh": "脉叶 'neuralweb-mastermind-context' 过期：620小时，SLA 30小时（20.7倍）",
       "evidence_path": "site/neuralwebdata/health.json",
-      "as_of": "2026-09-18"
+      "as_of": "2026-09-26"
     },
     {
       "kind": "lobe_sla_breach",
       "severity": "P2",
-      "summary_en": "Lobe 'site-neuralweb-mastermind-context' overdue: 427h old vs 30h SLA (14.2×)",
-      "summary_zh": "脉叶 'site-neuralweb-mastermind-context' 过期：427小时，SLA 30小时（14.2倍）",
+      "summary_en": "Lobe 'site-neuralweb-mastermind-context' overdue: 620h old vs 30h SLA (20.7×)",
+      "summary_zh": "脉叶 'site-neuralweb-mastermind-context' 过期：620小时，SLA 30小时（20.7倍）",
       "evidence_path": "site/neuralwebdata/health.json",
-      "as_of": "2026-09-18"
+      "as_of": "2026-09-26"
     },
     {
       "kind": "lobe_sla_breach",
       "severity": "P2",
-      "summary_en": "Lobe 'site-confluence-graph' overdue: 91h old vs 30h SLA (3.0×)",
-      "summary_zh": "脉叶 'site-confluence-graph' 过期：91小时，SLA 30小时（3.0倍）",
+      "summary_en": "Lobe 'site-confluence-graph' overdue: 68h old vs 30h SLA (2.3×)",
+      "summary_zh": "脉叶 'site-confluence-graph' 过期：68小时，SLA 30小时（2.3倍）",
       "evidence_path": "site/neuralwebdata/health.json",
-      "as_of": "2026-09-18"
+      "as_of": "2026-09-26"
     },
     {
       "kind": "regime_indeterminate",
       "severity": "P2",
-      "summary_en": "Regime indeterminate: Q3 confidence 14% (below 25% threshold)",
-      "summary_zh": "周期不明确：Q3 置信度 14%（低于25%阈值）",
+      "summary_en": "Regime indeterminate: Q2 confidence 20% (below 25% threshold)",
+      "summary_zh": "周期不明确：Q2 置信度 20%（低于25%阈值）",
       "evidence_path": "data/neuralweb/world_state.json",
-      "as_of": "2026-09-18"
+      "as_of": "2026-09-26"
     },
     {
       "kind": "evidence_clock_overdue",
       "severity": "P3",
-      "summary_en": "29 evidence clock(s) overdue; top: qledger:placebo",
-      "summary_zh": "29 个证据时钟逾期；最高优先级：qledger:placebo",
+      "summary_en": "70 evidence clock(s) overdue; top: qledger:placebo",
+      "summary_zh": "70 个证据时钟逾期；最高优先级：qledger:placebo",
       "evidence_path": "data/neuralweb/evidence_clock.json",
-      "as_of": "2026-09-18"
+      "as_of": "2026-09-26"
     }
   ],
   "caveats": [
@@ -79,7 +79,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_attention_deterministic.py",
-  "produced_at": "2026-09-18T19:00:18Z",
-  "inputs_hash": "sha256:56a61d3282a7e18cc49afa9f2f1b32fa86343025ee34b7f508b59b9f82eb624b",
+  "produced_at": "2026-09-26T20:26:55Z",
+  "inputs_hash": "sha256:e960983ad2ff92b9ba39764c12fce4b14e4ba773bca88a08bdab509b82d761ea",
   "tier": "display"
 }

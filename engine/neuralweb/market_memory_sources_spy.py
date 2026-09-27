@@ -136,6 +136,7 @@ class SealObservation:
     observed_at: datetime
     status: str  # "valid_bar" | "no_bar" | "transport_error" | "malformed"
     digest: str | None  # sha256 of canonical results[] bytes, or None
+    reason: str | None = None  # bounded diagnostic category for rejected observations
 
 
 @dataclass(frozen=True)

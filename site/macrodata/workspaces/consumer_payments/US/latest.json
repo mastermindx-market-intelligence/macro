@@ -92,12 +92,8 @@
       "zh": null
     },
     "coverage_ratio": 1.0,
-    "degraded": [
-      "consumer_sentiment"
-    ],
-    "reasons": [
-      "worst_required_source_freshness=STALE_SOURCE"
-    ],
+    "degraded": [],
+    "reasons": [],
     "required": [
       {
         "component_id": "retail_sales",
@@ -113,15 +109,15 @@
       },
       {
         "component_id": "consumer_sentiment",
-        "freshness": "STALE_SOURCE",
+        "freshness": "CURRENT",
         "label": {
           "en": "Consumer sentiment (Michigan)",
           "zh": "消费者信心（密歇根大学）"
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-07-01",
-        "status": "PARTIAL"
+        "source_asof": "2026-08-01",
+        "status": "PRESENT"
       },
       {
         "component_id": "consumer_credit_total",
@@ -208,8 +204,8 @@
         "status": "PRESENT"
       }
     ],
-    "state": "STALE_SOURCE",
-    "worst_freshness": "STALE_SOURCE"
+    "state": "CURRENT",
+    "worst_freshness": "CURRENT"
   },
   "axes": {
     "items": [
@@ -407,15 +403,15 @@
         "prior_value": 5.0092
       },
       {
-        "current_value": 55.2,
-        "delta": 0.0,
+        "current_value": 51.7,
+        "delta": -3.5,
         "metric_id": "consumer_sentiment_level",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 55.2
       },
       {
-        "current_value": -10.5348,
-        "delta": 0.0,
+        "current_value": -11.1684,
+        "delta": -0.6336,
         "metric_id": "consumer_sentiment_yoy",
         "note": "same method version; numeric comparison permitted",
         "prior_value": -10.5348
@@ -445,7 +441,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "consumer_payments-US-04e1f36a55c0bac1"
+    "predecessor_generation_id": "consumer_payments-US-71765a04f4d1db62"
   },
   "drivers": {
     "balance_sheet": [
@@ -538,11 +534,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-18T15:39:55Z",
+    "built_at": "2026-09-26T16:36:52Z",
     "calculation_as_of": "2026-08-01",
-    "code_version": "5cf4c43b5e81d86bc71d86b269c8e3540aa58829",
-    "content_sha256": "41542b1960ebcc3652c0abf69401947acaa901bf8482be5919a96d62b3151447",
-    "generation_id": "consumer_payments-US-41542b1960ebcc36",
+    "code_version": "dfc33bd922faab4ea09089fad779f4df3ceb01e0",
+    "content_sha256": "2b4a40c82b4a2294cbf0b1cefa6cbd8f024366a0bf3e00efa635906974e2659e",
+    "generation_id": "consumer_payments-US-2b4a40c82b4a2294",
     "producer": "engine.market_os.macro_workspaces.consumer_payments",
     "rendered_at": null
   },
@@ -566,7 +562,9 @@
       "dx": 3.14,
       "dy": 0.0,
       "null_reason": null,
-      "status": "PRESENT"
+      "status": "PRESENT",
+      "x_axis_id": "cash_flow_momentum",
+      "y_axis_id": "credit_stress"
     },
     "prior_state": {
       "effective_date": "2026-07-01",
@@ -605,15 +603,15 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "HIGH",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
         "horizon": "current",
         "implication_id": "headline_computed",
         "text": {
-          "en": "Consumer & Payments reads B - Strong cash-flow momentum / High credit stress (cash-flow momentum x=70.68, credit stress y=50.83, boundary 50).",
-          "zh": "消费与支付读数为 B - 现金流动能强 / 信贷压力高（现金流动能 x=70.68，信贷压力 y=50.83，分界 50）。"
+          "en": "Consumer & Payments reads B - Strong cash-flow momentum / High credit stress (cash-flow momentum 70.7, credit stress 50.8, boundary 50).",
+          "zh": "消费与支付读数为 B - 现金流动能强 / 信贷压力高（现金流动能 70.7，信贷压力 50.8，分界 50）。"
         },
         "trace_ref": "engine.market_os.macro_workspaces.consumer_payments#headline"
       },
@@ -627,7 +625,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "HIGH",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -649,15 +647,15 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "HIGH",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
         "horizon": "current",
         "implication_id": "sentiment_read",
         "text": {
-          "en": "University of Michigan consumer sentiment reads 55.2, -10.5% YoY.",
-          "zh": "密歇根大学消费者信心指数读数为55.2，同比-10.5%。"
+          "en": "University of Michigan consumer sentiment reads 51.7, -11.2% YoY.",
+          "zh": "密歇根大学消费者信心指数读数为51.7，同比-11.2%。"
         },
         "trace_ref": "data/fred/UMCSENT.parquet"
       },
@@ -671,7 +669,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "HIGH",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -694,7 +692,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "HIGH",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -717,7 +715,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "HIGH",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -739,7 +737,7 @@
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "HIGH",
-          "source_health": "LOW"
+          "source_health": "HIGH"
         },
         "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
@@ -879,21 +877,21 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-07-01",
+        "calculation_as_of": "2026-08-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.UMCSENT.umich_sentiment",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_confident",
-        "freshness": "STALE_SOURCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "consumer_sentiment_level",
         "model_version": "consumer_payments.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-07-01",
+        "observed_at": "2026-08-01",
         "owner_ref": "data/fred/UMCSENT.parquet",
         "reference_id": "mastermind.market_reference/v1#consumer_sentiment_level",
-        "reference_period": "2026-07-01",
+        "reference_period": "2026-08-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -908,28 +906,28 @@
           "value": null
         },
         "unit": "index_1966q1_100",
-        "value": 55.2,
+        "value": 51.7,
         "value_type": "index"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "yoy_pct_change",
-        "calculation_as_of": "2026-07-01",
+        "calculation_as_of": "2026-08-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.UMCSENT.umich_sentiment",
         "definition_version": "1.0.0",
         "direction_semantics": "higher_more_confident",
-        "freshness": "STALE_SOURCE",
+        "freshness": "CURRENT",
         "market_session": null,
         "metric_id": "consumer_sentiment_yoy",
         "model_version": "consumer_payments.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-07-01",
+        "observed_at": "2026-08-01",
         "owner_ref": "data/fred/UMCSENT.parquet",
         "reference_id": "mastermind.market_reference/v1#consumer_sentiment_yoy",
-        "reference_period": "2026-07-01",
+        "reference_period": "2026-08-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -944,7 +942,7 @@
           "value": null
         },
         "unit": "percent",
-        "value": -10.5348,
+        "value": -11.1684,
         "value_type": "percent"
       },
       {
@@ -2442,14 +2440,14 @@
         "definition_id": null,
         "definition_version": null,
         "first_known_at": null,
-        "freshness": "STALE_SOURCE",
+        "freshness": "CURRENT",
         "label": {
           "en": "Consumer sentiment (University of Michigan, via FRED)",
           "zh": "消费者信心（密歇根大学，经FRED）"
         },
         "owner_ref": "collectors.fred[UMCSENT]",
         "provider": "University of Michigan / FRED",
-        "reference_period": "2026-07-01",
+        "reference_period": "2026-08-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",

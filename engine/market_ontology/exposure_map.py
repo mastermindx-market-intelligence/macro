@@ -2,8 +2,8 @@
 
 Authority ceiling: ``research_display_only``. This module originates no score, rank,
 confidence, weight, ordering-by-magnitude, gate, size or trade semantic. It is a
-read-only projection of edges the theme graph already holds, at a caller-supplied
-as-of date, rights-filtered through the owner's own gate
+read-only projection of edges the theme graph already holds, at caller-supplied
+effective and knowledge dates, rights-filtered through the owner's own gate
 (``engine.theme_graph.rights``). Nothing in the scoring path imports it, and it
 imports nothing from the scoring core (test 13 enforces both directions).
 
@@ -43,8 +43,9 @@ _EDGE_READER = "engine.theme_graph.store.read_edges(latest_belief=False)"
 _IDENTITY_READER = "engine.theme_graph.store.read_identity_resolution(latest=True)"
 _CHAIN_READER = "engine.transmission_chains.load_chains()"
 _BELIEF_COLLAPSE = (
-    "max belief_time <= asof per edge_id (null belief_time never eligible); "
-    "ties on computed_at then src then dst"
+    "max belief_time <= knowledge_cutoff per edge_id "
+    "(null belief_time never eligible); ties on computed_at then src then dst; "
+    "then valid_from <= asof < valid_to"
 )
 
 # --- §3.1 id grammars (closed allowlist) -----------------------------------------
@@ -168,6 +169,10 @@ _REASONS: dict[str, tuple[str, str]] = {
         "A later update to this link exists but is not used for this date.",
         "该关联存在更晚的更新，但未用于此日期。",
     ),
+    "BELIEF_AFTER_KNOWLEDGE_CUTOFF": (
+        "A later update to this link was not known by the requested knowledge cutoff.",
+        "该关联存在更晚的更新，但在所请求的知识截止时间之前尚不可知。",
+    ),
     "IDENTITY_COLLISION": (
         "Two different identifiers resolved to the same security here.",
         "此处两个不同的标识符指向了同一证券。",
@@ -246,6 +251,7 @@ class ThemeExposure:
 class ExposureMap:
     schema: str
     asof: datetime.date
+    knowledge_cutoff: datetime.date
     shock: Shock
     themes: tuple[ThemeExposure, ...]
     unavailable: Mapping[str, Any] | None
@@ -397,17 +403,27 @@ def _edge_row_order_key(row: Mapping[str, Any]) -> tuple[str, str, str, str]:
 
 
 def _collapse_and_filter_edges(
-    raw_rows: list[Mapping[str, Any]], asof: datetime.date,
+    raw_rows: list[Mapping[str, Any]],
+    asof: datetime.date,
+    knowledge_cutoff: datetime.date | None = None,
 ) -> tuple[dict[str, dict[str, Any]], list[dict[str, Any]]]:
-    """Group raw edge rows by edge_id, collapse to the belief in view at ``asof``,
-    then apply the point-in-time filter (§3.4). Returns (in_view_by_edge_id,
-    clock_mismatch_abstentions).
+    """Collapse at the knowledge cutoff, then filter at the effective ``asof``.
+
+    ``knowledge_cutoff`` defaults to ``asof`` for the original one-clock API.
+    Filtering knowledge BEFORE max-belief selection preserves the earlier open
+    belief when a later closure existed but was not knowable yet. Returns
+    (in_view_by_edge_id, clock_mismatch_abstentions).
 
     Candidate rows are sorted by ``(edge_id, computed_at, src, dst)`` before any
-    grouping or first-wins logic so the BELIEF_AFTER_ASOF attribution set cannot
-    depend on input order. Every distinct future ``dst`` for an edge receives
+    grouping or first-wins logic so future-belief attribution cannot depend on
+    input order. Every distinct future ``dst`` for an edge receives
     the abstention — not whichever row happened to arrive first.
     """
+    cutoff = knowledge_cutoff or asof
+    future_code = (
+        "BELIEF_AFTER_ASOF" if knowledge_cutoff is None
+        else "BELIEF_AFTER_KNOWLEDGE_CUTOFF"
+    )
     by_id: dict[str, list[Mapping[str, Any]]] = {}
     abstentions: list[dict[str, Any]] = []
     for row in sorted(raw_rows, key=_edge_row_order_key):
@@ -431,9 +447,9 @@ def _collapse_and_filter_edges(
             if belief is None:
                 # Knowability is untyped: a null belief_time is never eligible
                 # at any as-of (fail closed). This is what makes
-                # "max belief_time <= asof per edge_id" true by construction.
+                # "max belief_time <= knowledge_cutoff per edge_id" is true.
                 unknown.append(row)
-            elif belief > asof:
+            elif belief > cutoff:
                 future.append(row)
             else:
                 eligible.append(row)
@@ -452,7 +468,7 @@ def _collapse_and_filter_edges(
                 for row in future
             })
             for dst in dsts:
-                entry = _unavailable("BELIEF_AFTER_ASOF", subject_id=eid)
+                entry = _unavailable(future_code, subject_id=eid)
                 entry["_dst"] = dst
                 abstentions.append(entry)
         if not eligible:
@@ -614,7 +630,7 @@ def _compose_theme(
 ) -> dict[str, Any]:
 
     def _with_clock(entry: dict[str, Any], relevant: set[str]) -> dict[str, Any]:
-        # Attach BELIEF_AFTER_ASOF (and any other clock) abstentions whose excluded
+        # Attach future-belief (and any other clock) abstentions whose excluded
         # edge terminated at this theme OR at a bridge node (basket / local theme)
         # this theme actually walked through — so a dropped bridge edge is never a
         # silent discard (B2): the surface can always say why a path is missing.
@@ -835,14 +851,23 @@ def compose_exposure_map(
     shock_spec: ShockSpec,
     *,
     asof: datetime.date | str,
+    knowledge_cutoff: datetime.date | str | None = None,
     chain_loader: Callable[[], Mapping[str, Mapping[str, Any]]] | None = None,
     family_resolver: Callable[[object], str | None] | None = None,
     assert_allowed: Callable[[str], None] | None = None,
 ) -> ExposureMap:
-    """Pure projection. No clock, no network, no LLM, no write. Never raises for a
-    data reason — an absent store, an unknown shock, a rights refusal and an
-    unresolved id are all TYPED NULLS in the returned value."""
+    """Pure projection with separate effective and knowledge dates.
+
+    ``asof`` filters valid time. ``knowledge_cutoff`` filters belief time before
+    latest-belief collapse and defaults to ``asof`` for backward compatibility.
+    No ambient clock, network, LLM or write is used. Data unavailability returns
+    typed nulls rather than raising.
+    """
     asof_date = _parse_asof(asof)
+    knowledge_cutoff_date = (
+        _parse_asof(knowledge_cutoff)
+        if knowledge_cutoff is not None else asof_date
+    )
     chain_loader = chain_loader or _default_chain_loader
     family_resolver = family_resolver or _default_family_resolver
     assert_allowed = assert_allowed or _default_assert_allowed
@@ -870,7 +895,8 @@ def compose_exposure_map(
             declared_by=shock_spec.declared_by, note=shock_spec.note,
         )
         return ExposureMap(
-            schema=SCHEMA_ID, asof=asof_date, shock=shock, themes=(),
+            schema=SCHEMA_ID, asof=asof_date,
+            knowledge_cutoff=knowledge_cutoff_date, shock=shock, themes=(),
             unavailable=_unavailable("SHOCK_UNKNOWN", subject_id=shock_spec.shock_id),
             provenance=provenance,
         )
@@ -886,7 +912,8 @@ def compose_exposure_map(
 
     if not shock_spec.theme_node_ids:
         return ExposureMap(
-            schema=SCHEMA_ID, asof=asof_date, shock=shock, themes=(),
+            schema=SCHEMA_ID, asof=asof_date,
+            knowledge_cutoff=knowledge_cutoff_date, shock=shock, themes=(),
             unavailable=_unavailable("NO_THEMES_DECLARED"),
             provenance=provenance,
         )
@@ -901,12 +928,16 @@ def compose_exposure_map(
         provenance = {**provenance, "store_meta": meta}
     except Exception:
         return ExposureMap(
-            schema=SCHEMA_ID, asof=asof_date, shock=shock, themes=(),
+            schema=SCHEMA_ID, asof=asof_date,
+            knowledge_cutoff=knowledge_cutoff_date, shock=shock, themes=(),
             unavailable=_unavailable("STORE_UNAVAILABLE"),
             provenance=provenance,
         )
 
-    edges_by_id, clock_abstentions = _collapse_and_filter_edges(raw_edges, asof_date)
+    edges_by_id, clock_abstentions = _collapse_and_filter_edges(
+        raw_edges, asof_date,
+        None if knowledge_cutoff is None else knowledge_cutoff_date,
+    )
     member_of_by_dst = _index_by_dst(edges_by_id, "MEMBER_OF")
     expresses_by_dst = _index_by_dst(edges_by_id, "EXPRESSES")
     tracks_by_dst = _index_by_dst(edges_by_id, "TRACKS")
@@ -951,7 +982,8 @@ def compose_exposure_map(
     )
 
     return ExposureMap(
-        schema=SCHEMA_ID, asof=asof_date, shock=shock, themes=themes,
+        schema=SCHEMA_ID, asof=asof_date,
+        knowledge_cutoff=knowledge_cutoff_date, shock=shock, themes=themes,
         unavailable=None, provenance=provenance,
     )
 
@@ -982,6 +1014,7 @@ def to_json(exposure_map: ExposureMap) -> dict[str, Any]:
     return {
         "schema": exposure_map.schema,
         "asof": exposure_map.asof.isoformat(),
+        "knowledge_cutoff": exposure_map.knowledge_cutoff.isoformat(),
         "authority_ceiling": AUTHORITY_CEILING,
         "display_only": True,
         "shock": _shock_json(exposure_map.shock),

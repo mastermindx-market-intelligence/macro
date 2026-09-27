@@ -16,8 +16,10 @@ kill the rest (per-module try/except); the adapter raises when the token is
 present and EVERY module failed (a real API outage the breaker should see), or
 when the vendor REJECTED the token and nothing landed rows (see fetch()).
 Token absent → ``expected_failure`` is set so the runner reports 'blocked',
-never a breaker-counted failure. Token present but rejected is NOT expected —
-it is an outage, and ``expected_failure`` stays unset so the breaker counts it.
+never a breaker-counted failure. Token present but rejected, or a runner-side
+DNS/network/TLS transport outage before any vendor response, is NOT expected —
+neither is a quiet data day, and ``expected_failure`` stays unset so the breaker
+counts it while preserving the two remedies as distinct.
 
 HEARTBEAT LIVENESS (2026-08-05). The heartbeat is stamped ``utcnow()``, so it is
 fresh whether or not anything was collected, and the runner's freshness machinery
@@ -68,6 +70,11 @@ class ChinaTushareAdapter(Adapter):
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
         if not tushare_client.enabled():
             raise RuntimeError("TUSHARE_TOKEN absent — gated tushare plane skipped")
+        # Other China adapters in the same collect process also use this shared client.
+        # Diagnose only failures produced inside THIS adapter's seven-module window; a
+        # stale ConnectionError from an earlier consumer must not relabel an import or
+        # entitlement miss here as a transport outage. Auth remains latched separately.
+        tushare_client.clear_transport_error()
         rows: dict[str, float] = {}
         errors: list[str] = []
         for mod_name in _MODULES:
@@ -109,6 +116,28 @@ class ChinaTushareAdapter(Adapter):
             # here prefixes the line (tests/test_gh_annotation_line_start.py).
             print(f"::error title=tushare-auth-rejected::{detail}", flush=True)
             raise RuntimeError(detail)
+        # TRANSPORT OUTAGE — the 2026-09-10→09-19 failure class. Every endpoint
+        # returned None because requests never received an HTTP response (the Mac Studio
+        # resolver could not reach its configured DNS servers). The old all-zero warning
+        # named expired membership / exhausted points / denied plan, sending diagnosis at
+        # the account when the token was never presented to Tushare at all. Keep the
+        # remedies disjoint: do not rotate a credential on evidence that only proves the
+        # runner could not reach the vendor. Raise so run_status records the exact outage.
+        transport = tushare_client.last_transport_error()
+        if transport and not any(v > 0 for v in rows.values()):
+            api_name = transport.get("api_name") or "unknown"
+            kind = transport.get("kind") or "transport"
+            exc = transport.get("exception") or "request failure"
+            detail = (f"tushare transport outage before vendor response: {kind}/{exc} on "
+                      f"{api_name}. This establishes a pre-response transport-path failure "
+                      "(runner DNS/network/TLS or vendor reachability); it does not establish "
+                      "a bad TUSHARE_TOKEN, exhausted 积分, or missing endpoint entitlement. "
+                      "data/tushare/*.parquet is frozen this run; verify the runner resolver/"
+                      "connectivity and vendor reachability, then rerun asia-close. Adjudicate "
+                      "the credential/tier only after a vendor response; do not rotate the "
+                      "credential based on this receipt")
+            print(f"::error title=tushare-transport-outage::{detail}", flush=True)
+            raise RuntimeError(detail)
         if errors and len(errors) == len(_MODULES):
             raise RuntimeError(f"all tushare sub-modules failed: {'; '.join(errors[:3])}")
         if not any(v > 0 for v in rows.values()):
@@ -128,8 +157,9 @@ class ChinaTushareAdapter(Adapter):
             # nights with nothing red anywhere.
             print("::warning title=china-tushare-zero-collection::TUSHARE_TOKEN is set but "
                   f"all {len(_MODULES)} tushare modules collected 0 rows — the API returned "
-                  "nothing across every endpoint (expired membership, exhausted 积分, or a "
-                  "denied plan). data/tushare/*.parquet is FROZEN this run; every CN surface "
+                  "nothing across every endpoint, with no auth rejection or transport failure "
+                  "classified (check endpoint entitlement / 积分 / plan coverage). "
+                  "data/tushare/*.parquet is FROZEN this run; every CN surface "
                   "fed by it (flow velocity, chips, margin, valuation, moneyflow) silently "
                   "serves its last vintage.", flush=True)
             log.warning("china_tushare: gate open but every module collected 0 rows")
@@ -139,6 +169,14 @@ class ChinaTushareAdapter(Adapter):
             log.warning("china_tushare: vendor auth rejection on %s (code=%s %s) but %d module(s) "
                         "still returned rows — not raising; check TUSHARE_TOKEN",
                         auth.get("api_name"), auth.get("code"), auth.get("msg"),
+                        sum(1 for v in rows.values() if v > 0))
+        if transport:
+            # PARTIAL: a later endpoint hit transport trouble after another module landed rows.
+            # Preserve the warning, but the plane produced useful data and must not fail the night.
+            log.warning("china_tushare: transport failure on %s (%s/%s) but %d module(s) "
+                        "still returned rows — not raising; inspect the transport path",
+                        transport.get("api_name"), transport.get("kind"),
+                        transport.get("exception"),
                         sum(1 for v in rows.values() if v > 0))
         hb = pd.DataFrame([rows], index=[pd.Timestamp.utcnow().normalize().tz_localize(None)])
         return {"run_log": hb}

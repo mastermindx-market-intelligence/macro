@@ -24,10 +24,13 @@ Missing credentials → exit 1 (systemd oneshot failure, not a silent skip).
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import os
+import re
 import stat
+import subprocess
 import sys
 import time as time_module
 from collections.abc import Callable, Mapping
@@ -50,6 +53,175 @@ _DEFAULT_STORE_ROOT = Path("/var/lib/macro-market-memory/state/sources-spy-rest-
 _DEFAULT_REPOSITORY_ROOT = Path("/opt/macro")
 
 _MAX_CREDENTIAL_BYTES = 4096
+
+# D1: diagnostics are part of the existing stdout/journal run receipt.  These
+# bounds apply only to the diagnostic projection; the observations used by the
+# seal predicate remain complete and are never truncated before evaluation.
+_DIAGNOSTIC_SCHEMA = "market_memory.spy_rest_source_diagnostic.v1"
+_MAX_DIAGNOSTIC_OBSERVATIONS = 128
+_MAX_DIAGNOSTIC_REASON_CHARS = 160
+_MAX_DIAGNOSTIC_BYTES = 16_384
+_COMMIT_RE = re.compile(r"[a-f0-9]{40}(?:[a-f0-9]{24})?\Z")
+
+
+# ---------------------------------------------------------------------------
+# Bounded causal diagnostics
+# ---------------------------------------------------------------------------
+
+
+def _bounded_text(value: object, *, limit: int = _MAX_DIAGNOSTIC_REASON_CHARS) -> str:
+    """Return a deterministic, bounded diagnostic string.
+
+    Diagnostics must never copy a provider body or an unbounded exception into
+    the journal receipt.  Callers pass only typed categories or predicate
+    reasons; this final bound is the last disclosure guard.
+    """
+
+    text = str(value)
+    if len(text) <= limit:
+        return text
+    return text[: max(0, limit - 3)] + "..."
+
+
+def _implementation_revision() -> str:
+    """Resolve the exact installed revision without making it a gate.
+
+    The service runs from a Git checkout, so ``HEAD`` is the strongest
+    implementation identity.  A source digest fallback keeps local fixtures
+    and unusual deployed images diagnosable without turning a receipt failure
+    into a source-admission failure.
+    """
+
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(_REPO), "rev-parse", "--verify", "HEAD^{commit}"],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=0.25,
+        )
+        commit = result.stdout.strip().lower()
+        if _COMMIT_RE.fullmatch(commit):
+            return commit
+    except (OSError, subprocess.SubprocessError):
+        pass
+
+    try:
+        digest = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+    except OSError:
+        return "unresolved"
+    return f"source-sha256:{digest}"
+
+
+def _diagnostic_bytes(value: Mapping[str, Any]) -> bytes:
+    return json.dumps(value, ensure_ascii=True, separators=(",", ":"), sort_keys=True).encode(
+        "utf-8"
+    )
+
+
+def _build_run_diagnostics(
+    *,
+    session: date,
+    seal_open: datetime,
+    seal_close: datetime,
+    run_started_at: datetime,
+    sealed_at: str,
+    seal_state: Any,
+    observations: list[Any],
+    run_status: str,
+    implementation_revision: str,
+) -> dict[str, Any]:
+    """Project a bounded, secret-free explanation of one seal run.
+
+    ``observations`` is the complete list used by ``evaluate_seal_predicate``.
+    Only the returned diagnostic projection is capped, so a receipt cannot
+    alter the actual admission predicate or create a new market generation.
+    """
+
+    window = {
+        "open": seal_open.isoformat().replace("+00:00", "Z"),
+        "close": seal_close.isoformat().replace("+00:00", "Z"),
+    }
+    request_core = {
+        "source_id": "massive_rest:SPY:unadjusted_daily",
+        "session": session.isoformat(),
+        "window": window,
+        "run_started_at": run_started_at.isoformat().replace("+00:00", "Z"),
+        "implementation_revision": implementation_revision,
+    }
+    request_id = "mmsrun_" + hashlib.sha256(_diagnostic_bytes(request_core)).hexdigest()
+
+    predicate_result = "eligible" if seal_state.opportunity_eligible else "not_eligible"
+    valid_digests = sorted(
+        {
+            obs.digest
+            for obs in observations
+            if getattr(obs, "status", None) == "valid_bar" and getattr(obs, "digest", None)
+        }
+    )
+    observation_rows = [
+        {
+            "observed_at": obs.observed_at.isoformat().replace("+00:00", "Z"),
+            "result": _bounded_text(getattr(obs, "status", "unknown"), limit=48),
+            "failure_reason": (
+                None
+                if getattr(obs, "status", None) == "valid_bar"
+                else _bounded_text(getattr(obs, "reason", None) or getattr(obs, "status", "unknown"), limit=48)
+            ),
+            "result_identity": {"digest": getattr(obs, "digest", None)},
+        }
+        for obs in observations
+    ]
+
+    text_truncated = len(seal_state.reason) > _MAX_DIAGNOSTIC_REASON_CHARS
+
+    def assemble(rows: list[dict[str, Any]], truncated: bool) -> dict[str, Any]:
+        return {
+            "schema": _DIAGNOSTIC_SCHEMA,
+            "run_status": run_status,
+            "request": {
+                "request_id": request_id,
+                "source_id": request_core["source_id"],
+                "endpoint": f"/v2/aggs/ticker/SPY/range/1/day/{session}/{session}",
+                "params": {"adjusted": "false"},
+                "session": session.isoformat(),
+                "observed_at": run_started_at.isoformat().replace("+00:00", "Z"),
+                "seal_window": window,
+            },
+            "predicate": {
+                "id": "rest_daily_bar_stability.v1",
+                "result": predicate_result,
+                "reason": _bounded_text(seal_state.reason),
+                "result_identity": {
+                    "bar_digest": seal_state.bar_digest,
+                    "valid_digest_count": len(valid_digests),
+                    "valid_digests": valid_digests[:_MAX_DIAGNOSTIC_OBSERVATIONS],
+                },
+            },
+            "implementation_revision": implementation_revision,
+            "sealed_at": sealed_at,
+            "observations": rows,
+            "completeness": {
+                "complete": not (truncated or text_truncated),
+                "truncated": truncated or text_truncated,
+                "predicate_reason_truncated": text_truncated,
+                "observation_count": len(observation_rows),
+                "included_observation_count": len(rows),
+                "max_observations": _MAX_DIAGNOSTIC_OBSERVATIONS,
+                "max_bytes": _MAX_DIAGNOSTIC_BYTES,
+                "reason_limit_chars": _MAX_DIAGNOSTIC_REASON_CHARS,
+                "observation_reason_limit_chars": 48,
+            },
+        }
+
+    rows = observation_rows[:_MAX_DIAGNOSTIC_OBSERVATIONS]
+    truncated = len(rows) != len(observation_rows)
+    result = assemble(rows, truncated)
+    while len(_diagnostic_bytes(result)) > _MAX_DIAGNOSTIC_BYTES and rows:
+        rows = rows[:-1]
+        truncated = True
+        result = assemble(rows, truncated)
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -166,7 +338,7 @@ def _fetch_spy_daily_bar(
     try:
         payload = fetcher(path, params)
     except Exception as exc:  # noqa: BLE001
-        log.warning("transport error fetching SPY daily bar: %s", exc)
+        log.warning("transport error fetching SPY daily bar: %s", type(exc).__name__)
         return "transport_error", []
 
     if payload is None:
@@ -179,12 +351,12 @@ def _fetch_spy_daily_bar(
     results = payload.get("results")
 
     if status not in ("ok", "success"):
-        if not results:
-            return "no_bar", []
         return "malformed", []
 
-    if not isinstance(results, list):
+    if results is None or results == []:
         return "no_bar", []
+    if not isinstance(results, list):
+        return "malformed", []
 
     return "ok_results", results
 
@@ -296,6 +468,7 @@ def _collect_seal_observations(
                 observed_at=now,
                 status="transport_error",
                 digest=None,
+                reason="transport_error",
             )
         else:
             raw_status, results = _fetch_spy_daily_bar(session, fetcher)
@@ -304,18 +477,21 @@ def _collect_seal_observations(
                     observed_at=now,
                     status="transport_error",
                     digest=None,
+                    reason="transport_error",
                 )
-            elif raw_status == "no_bar" or not results:
+            elif raw_status == "no_bar":
                 obs = SealObservation(
                     observed_at=now,
                     status="no_bar",
                     digest=None,
+                    reason="no_bar",
                 )
             elif raw_status == "malformed":
                 obs = SealObservation(
                     observed_at=now,
                     status="malformed",
                     digest=None,
+                    reason="malformed_response",
                 )
             else:
                 # ok_results — validate
@@ -324,31 +500,35 @@ def _collect_seal_observations(
                         observed_at=now,
                         status="malformed",
                         digest=None,
+                        reason="malformed_result_count",
                     )
                 else:
                     valid, reason = _validate_single_bar(results[0], session_date=session)
                     if not valid:
-                        log.debug("bar validation failed: %s", reason)
+                        log.debug("bar validation failed: malformed_bar")
                         obs = SealObservation(
                             observed_at=now,
                             status="malformed",
                             digest=None,
+                            reason="malformed_bar",
                         )
                     else:
                         try:
                             digest = _results_digest(results)
                         except Exception as exc:  # noqa: BLE001
-                            log.warning("digest error: %s", exc)
+                            log.warning("digest error: %s", type(exc).__name__)
                             obs = SealObservation(
                                 observed_at=now,
                                 status="malformed",
                                 digest=None,
+                                reason="malformed_digest",
                             )
                         else:
                             obs = SealObservation(
                                 observed_at=now,
                                 status="valid_bar",
                                 digest=digest,
+                                reason=None,
                             )
                             # Cache the results for this digest (M5)
                             results_cache[digest] = list(results)
@@ -400,7 +580,10 @@ def ingest_spy_rest_source(
     clock_fn = clock or (lambda: datetime.now(timezone.utc))
     sleep_fn = sleeper or time_module.sleep
 
+    # Freeze this before polling: /opt/macro may advance during the window.
+    implementation_revision = _implementation_revision()
     now = clock_fn()
+    run_started_at = now
 
     if session is None:
         derived = session_for_seal_time(now)
@@ -472,6 +655,17 @@ def ingest_spy_rest_source(
     )
 
     if not seal_state.opportunity_eligible:
+        diagnostics = _build_run_diagnostics(
+            session=session,
+            seal_open=seal_open,
+            seal_close=seal_close,
+            run_started_at=run_started_at,
+            sealed_at=sealed_at,
+            seal_state=seal_state,
+            observations=raw_observations,
+            run_status="not_eligible",
+            implementation_revision=implementation_revision,
+        )
         return {
             "schema": "market_memory.spy_rest_source_intake_run.v1",
             "status": "not_eligible",
@@ -480,6 +674,7 @@ def ingest_spy_rest_source(
             "reason": seal_state.reason,
             "generation_id": None,
             "created": False,
+            "diagnostics": diagnostics,
         }
 
     # Use the cached in-window results whose digest satisfied the predicate (M5).
@@ -488,6 +683,17 @@ def ingest_spy_rest_source(
     # generation; they must not mutate the sealed object.
     results = results_cache.get(seal_state.bar_digest or "")
     if not results:
+        diagnostics = _build_run_diagnostics(
+            session=session,
+            seal_open=seal_open,
+            seal_close=seal_close,
+            run_started_at=run_started_at,
+            sealed_at=sealed_at,
+            seal_state=seal_state,
+            observations=raw_observations,
+            run_status="post_seal_fetch_failed",
+            implementation_revision=implementation_revision,
+        )
         return {
             "schema": "market_memory.spy_rest_source_intake_run.v1",
             "status": "post_seal_fetch_failed",
@@ -496,6 +702,7 @@ def ingest_spy_rest_source(
             "reason": "sealed digest not found in in-window results cache",
             "generation_id": None,
             "created": False,
+            "diagnostics": diagnostics,
         }
 
     # Build lookback closes: try the store first, then fall back to REST (M6).
@@ -544,13 +751,27 @@ def ingest_spy_rest_source(
         observed_at=observed_at,
     )
 
+    run_status = "created" if stored.created else "already_present"
+    diagnostics = _build_run_diagnostics(
+        session=session,
+        seal_open=seal_open,
+        seal_close=seal_close,
+        run_started_at=run_started_at,
+        sealed_at=sealed_at,
+        seal_state=seal_state,
+        observations=raw_observations,
+        run_status=run_status,
+        implementation_revision=implementation_revision,
+    )
+
     return {
         "schema": "market_memory.spy_rest_source_intake_run.v1",
-        "status": "created" if stored.created else "already_present",
+        "status": run_status,
         "session": session.isoformat(),
         "source_id": "massive_rest:SPY:unadjusted_daily",
         "generation_id": stored.generation_id,
         "created": stored.created,
+        "diagnostics": diagnostics,
     }
 
 

@@ -1,0 +1,11 @@
+{
+  "empty_id": "e6",
+  "section": "inflation",
+  "workspace_id": "inflation_system",
+  "region": "US",
+  "source": "site/macrodata/workspaces/inflation_system/US/latest.json",
+  "path_through": "scripts/build_macro_suite_pages.build_hub after read_workspace",
+  "trigger": "In-memory injection after read_workspace: snapshot.entitlement='Research'. The snapshot contract is additionalProperties:false, so this key cannot travel through validated JSON; the real builder's _entitlement_plan reads it on the in-memory entry and emits E6 (why interpolates the plan name).",
+  "selector": "#inflation [data-mc-empty='e6']",
+  "expected_title_en": "Included in a higher plan"
+}

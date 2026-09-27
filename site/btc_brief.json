@@ -2,38 +2,37 @@
   "schema": "master_brief.v2",
   "lens": "btc",
   "is_context_only": true,
-  "generated_at": "2026-09-17T09:04:42.282861+00:00",
-  "model": "deepseek-v4-pro",
-  "served_by": "deepseek",
-  "state_asof": "2026-09-17",
+  "generated_at": "2026-09-26T09:26:15.220259+00:00",
+  "model": "gpt-5.6-sol",
+  "served_by": "codex",
+  "state_asof": "2026-09-26",
   "tldr": [
-    "System: Risk-on, low-risk map",
-    "Price: $63,481 with momentum up",
-    "Cycle: Late, markdown watch ahead",
-    "Liquidity: Flows support, macro mixed",
-    "What to do: Watch \u2014 don't chase"
+    "Risk stays low: Bitcoin\u2019s trend and market structure remain healthy.",
+    "Flows support: ETF buying continues while leverage remains normal.",
+    "Cycle caution: Fair value meets a late-cycle markdown phase.",
+    "What to do: Act"
   ],
-  "summary": "Bitcoin is advancing on strong momentum while the cycle clock says late-stage caution.",
-  "regime_read": "The map still says risk-on, with the system's risk dial low and momentum positive. Structure is constructive, which means the trend is intact. But the cycle clock sits deep in the late markdown phase \u2014 around three weeks from its next turn date \u2014 and the impulse reading has turned negative. That combination of a healthy trend and a tired cycle is the tension to watch. The dominant driver today is liquidity; global money supply is expanding and the bond desk reads conditions as healthy, which is a tailwind for Bitcoin. The US macro picture is more mixed, with slow growth and sticky inflation.",
+  "summary": "The system keeps its full tactical allocation, backed by trend and ETF demand, but late-cycle timing calls for discipline.",
+  "regime_read": "The macro map sits in Reflation, with global liquidity still expanding. The next transition direction is unclear because the required signal is missing.\n\nBitcoin remains risk-on with constructive structure and low risk. ETF demand is the main support, while shrinking near-term liquidity and high real yields limit comfort.",
   "conflicts": [
-    "Momentum: Trend is up and structure says constructive, but the cycle clock is late-stage markdown \u2014 strength may be tired.",
-    "Liquidity: Global money is expanding while the macro map prints stagflation \u2014 stimulus against slow growth.",
-    "ETF tracker: Flows are neutral and volume quiet, yet stablecoins are rising \u2014 new money may arrive through other doors."
+    "Liquidity split: Global money is expanding, but near-term net liquidity is shrinking \u2014 the tailwind is real but uneven.",
+    "Demand split: ETF buying is strong, but the Coinbase price discount shows softer direct US demand \u2014 support is not broad.",
+    "Cycle split: Price structure is constructive, but the markdown phase is nearly complete \u2014 trend strength faces a timing test."
   ],
   "rotation_check": null,
   "transmission": [
-    "If stablecoin growth keeps rising \u2192 sidelined cash is moving toward crypto.",
-    "If impulse stays negative while price rises \u2192 the rally may be running on thinner support."
+    "If ETF accumulation keeps up \u2192 steady spot demand can support the constructive trend.",
+    "If near-term liquidity keeps shrinking \u2192 Bitcoin may struggle despite the broader global expansion."
   ],
   "watch_items": [
-    "Next cycle turn in about three weeks: signals whether markdown resumes",
-    "Momentum staying positive: confirms trend continuation",
-    "ETF flows turning positive: would confirm new demand",
-    "Bond health staying strong: keeps the liquidity door open"
+    "October 5 pivot: A clean hold would strengthen the constructive trend.",
+    "ETF reversal: Falling flows would remove the clearest demand support.",
+    "Credit widening: Continued deterioration would raise broader risk pressure.",
+    "Leverage jump: Crowding would make any pullback more violent."
   ],
   "confidence": "medium",
   "theses": [],
-  "raw_text": "{\n  \"tldr\": [\n    \"System: Risk-on, low-risk map\",\n    \"Price: $63,481 with momentum up\",\n    \"Cycle: Late, markdown watch ahead\",\n    \"Liquidity: Flows support, macro mixed\",\n    \"What to do: Watch \u2014 don't chase\"\n  ],\n  \"summary\": \"Bitcoin is advancing on strong momentum while the cycle clock says late-stage caution.\",\n  \"regime_read\": \"The map still says risk-on, with the system's risk dial low and momentum positive. Structure is constructive, which means the trend is intact. But the cycle clock sits deep in the late markdown phase \u2014 around three weeks from its next turn date \u2014 and the impulse reading has turned negative. That combination of a healthy trend and a tired cycle is the tension to watch. The dominant driver today is liquidity; global money supply is expanding and the bond desk reads conditions as healthy, which is a tailwind for Bitcoin. The US macro picture is more mixed, with slow growth and sticky inflation.\",\n  \"conflicts\": [\n    \"Momentum: Trend is up and structure says constructive, but the cycle clock is late-stage markdown \u2014 strength may be tired.\",\n    \"Liquidity: Global money is expanding while the macro map prints stagflation \u2014 stimulus against slow growth.\",\n    \"ETF tracker: Flows are neutral and volume quiet, yet stablecoins are rising \u2014 new money may arrive through other doors.\"\n  ],\n  \"transmission\": [\n    \"If stablecoin growth keeps rising \u2192 sidelined cash is moving toward crypto.\",\n    \"If impulse stays negative while price rises \u2192 the rally may be running on thinner support.\"\n  ],\n  \"watch_items\": [\n    \"Next cycle turn in about three weeks: signals whether markdown resumes\",\n    \"Momentum staying positive: confirms trend continuation\",\n    \"ETF flows turning positive: would confirm new demand\",\n    \"Bond health staying strong: keeps the liquidity door open\"\n  ],\n  \"confidence\": \"medium\"\n}",
+  "raw_text": "{\"tldr\":[\"Risk stays low: Bitcoin\u2019s trend and market structure remain healthy.\",\"Flows support: ETF buying continues while leverage remains normal.\",\"Cycle caution: Fair value meets a late-cycle markdown phase.\",\"What to do: Act\"],\"summary\":\"The system keeps its full tactical allocation, backed by trend and ETF demand, but late-cycle timing calls for discipline.\",\"regime_read\":\"The macro map sits in Reflation, with global liquidity still expanding. The next transition direction is unclear because the required signal is missing.\\n\\nBitcoin remains risk-on with constructive structure and low risk. ETF demand is the main support, while shrinking near-term liquidity and high real yields limit comfort.\",\"conflicts\":[\"Liquidity split: Global money is expanding, but near-term net liquidity is shrinking \u2014 the tailwind is real but uneven.\",\"Demand split: ETF buying is strong, but the Coinbase price discount shows softer direct US demand \u2014 support is not broad.\",\"Cycle split: Price structure is constructive, but the markdown phase is nearly complete \u2014 trend strength faces a timing test.\"],\"transmission\":[\"If ETF accumulation keeps up \u2192 steady spot demand can support the constructive trend.\",\"If near-term liquidity keeps shrinking \u2192 Bitcoin may struggle despite the broader global expansion.\"],\"watch_items\":[\"October 5 pivot: A clean hold would strengthen the constructive trend.\",\"ETF reversal: Falling flows would remove the clearest demand support.\",\"Credit widening: Continued deterioration would raise broader risk pressure.\",\"Leverage jump: Crowding would make any pullback more violent.\"],\"confidence\":\"medium\"}",
   "degraded_reason": null,
   "disclaimer": "Context only \u2014 not a signal. This is an AI-generated SYNTHESIS of the dashboards' own deterministic outputs. It does not feed any score, signal or allocation, and it can be wrong or overconfident. Use it as a research read; verify every claim against the underlying dashboard it cites. Effective sample sizes on macro regimes are small \u2014 treat cross-asset 'reads' as odds, not forecasts.",
   "style_flags": [],
@@ -53,8 +52,8 @@
       "key": "cycle",
       "label_en": "Cycle clock",
       "label_zh": "\u5468\u671f\u65f6\u949f",
-      "value_en": "Late decline \u00b7 ~95% through",
-      "value_zh": "\u4e0b\u884c\u540e\u6bb5 \u00b7 \u7ea695%\u8fdb\u5ea6",
+      "value_en": "Late decline \u00b7 ~98% through",
+      "value_zh": "\u4e0b\u884c\u540e\u6bb5 \u00b7 \u7ea698%\u8fdb\u5ea6",
       "tone": "warn"
     },
     {
@@ -77,9 +76,9 @@
       "key": "etf",
       "label_en": "ETF flows",
       "label_zh": "ETF\u8d44\u91d1",
-      "value_en": "Flat",
-      "value_zh": "\u6301\u5e73",
-      "tone": "neutral"
+      "value_en": "Money coming in",
+      "value_zh": "\u8d44\u91d1\u6d41\u5165",
+      "tone": "good"
     },
     {
       "key": "liquidity",
@@ -91,30 +90,29 @@
     }
   ],
   "zh": {
-    "summary": "\u6bd4\u7279\u5e01\u5728\u5f3a\u52b2\u52a8\u80fd\u4e0b\u8d70\u9ad8\uff0c\u800c\u5468\u671f\u949f\u663e\u793a\u540e\u671f\u8c28\u614e\u3002",
-    "regime_read": "\u5730\u56fe\u4ecd\u663e\u793a\u98ce\u9669\u504f\u597d\uff0c\u7cfb\u7edf\u98ce\u9669\u504f\u5ea6\u4f4e\u4e14\u52a8\u80fd\u4e3a\u6b63\u3002\u7ed3\u6784\u5177\u6709\u5efa\u8bbe\u6027\uff0c\u610f\u5473\u7740\u8d8b\u52bf\u5b8c\u597d\u3002\u4f46\u5468\u671f\u949f\u6df1\u5904\u4e8e\u540e\u671f\u6d3e\u53d1\u9636\u6bb5\u2014\u2014\u8ddd\u4e0b\u4e00\u4e2a\u8f6c\u6298\u65e5\u7ea6\u4e09\u5468\u2014\u2014\u4e14\u52a8\u80fd\u8bfb\u6570\u5df2\u8f6c\u4e3a\u8d1f\u503c\u3002\u5065\u5eb7\u8d8b\u52bf\u4e0e\u75b2\u60eb\u5468\u671f\u7684\u7ec4\u5408\u6b63\u662f\u9700\u8981\u5173\u6ce8\u7684\u7d27\u5f20\u70b9\u3002\u4eca\u5929\u7684\u4e3b\u5bfc\u9a71\u52a8\u56e0\u7d20\u662f\u6d41\u52a8\u6027\uff1b\u5168\u7403\u8d27\u5e01\u4f9b\u5e94\u6b63\u5728\u6269\u5f20\uff0c\u503a\u5238\u90e8\u95e8\u8ba4\u4e3a\u72b6\u51b5\u5065\u5eb7\uff0c\u8fd9\u5bf9\u6bd4\u7279\u5e01\u662f\u987a\u98ce\u3002\u7f8e\u56fd\u5b8f\u89c2\u56fe\u666f\u5219\u66f4\u4e3a\u590d\u6742\uff0c\u589e\u957f\u7f13\u6162\u4e14\u901a\u80c0\u7c98\u6ede\u3002",
+    "summary": "\u7cfb\u7edf\u7ef4\u6301\u5168\u90e8\u6218\u672f\u914d\u7f6e\uff0c\u8d8b\u52bf\u548cETF\u9700\u6c42\u63d0\u4f9b\u652f\u6491\uff0c\u4f46\u5468\u671f\u540e\u6bb5\u7684\u65f6\u70b9\u8981\u6c42\u4fdd\u6301\u7eaa\u5f8b\u3002",
+    "regime_read": "\u5b8f\u89c2\u56fe\u666f\u5904\u4e8e\u518d\u901a\u80c0\u9636\u6bb5\uff0c\u5168\u7403\u6d41\u52a8\u6027\u4ecd\u5728\u6269\u5f20\u3002\u7531\u4e8e\u7f3a\u5c11\u5fc5\u8981\u4fe1\u53f7\uff0c\u4e0b\u4e00\u6b65\u8f6c\u5411\u5c1a\u4e0d\u660e\u786e\u3002\n\nBitcoin\u4ecd\u5904\u4e8e\u98ce\u9669\u504f\u597d\u72b6\u6001\uff0c\u7ed3\u6784\u5411\u597d\u4e14\u98ce\u9669\u8f83\u4f4e\u3002ETF\u9700\u6c42\u662f\u4e3b\u8981\u652f\u6491\uff0c\u800c\u8fd1\u671f\u6d41\u52a8\u6027\u6536\u7f29\u548c\u5b9e\u9645\u6536\u76ca\u7387\u9ad8\u4f01\u9650\u5236\u4e86\u4e50\u89c2\u7a7a\u95f4\u3002",
     "rotation_check": null,
     "tldr": [
-      "\u7cfb\u7edf\uff1a\u98ce\u9669\u504f\u597d\uff0c\u4f4e\u98ce\u9669\u56fe\u8c31",
-      "\u4ef7\u683c\uff1a63\uff0c481\u7f8e\u5143\uff0c\u52a8\u80fd\u5411\u4e0a",
-      "\u5468\u671f\uff1a\u665a\u671f\uff0c\u7559\u610f\u540e\u5e02\u4e0b\u8c03",
-      "\u6d41\u52a8\u6027\uff1a\u8d44\u91d1\u6d41\u63d0\u4f9b\u652f\u6491\uff0c\u5b8f\u89c2\u4fe1\u53f7\u4e0d\u4e00",
-      "\u64cd\u4f5c\u5efa\u8bae\uff1a\u89c2\u671b\u2014\u2014\u4e0d\u8981\u8ffd\u9ad8"
+      "\u98ce\u9669\u4ecd\u4f4e\uff1aBitcoin \u7684\u8d8b\u52bf\u548c\u5e02\u573a\u7ed3\u6784\u4f9d\u7136\u5065\u5eb7\u3002",
+      "\u8d44\u91d1\u6d41\u652f\u6491\uff1aETF\u4e70\u76d8\u6301\u7eed\uff0c\u6760\u6746\u4ecd\u5904\u4e8e\u6b63\u5e38\u6c34\u5e73\u3002",
+      "\u5468\u671f\u8b66\u793a\uff1a\u516c\u5141\u4ef7\u503c\u906d\u9047\u5468\u671f\u540e\u6bb5\u7684\u4f30\u503c\u4e0b\u8c03\u9636\u6bb5\u3002",
+      "\u5e94\u5bf9\u63aa\u65bd\uff1a\u884c\u52a8"
     ],
     "conflicts": [
-      "\u52a8\u80fd\uff1a\u8d8b\u52bf\u5411\u4e0a\u4e14\u7ed3\u6784\u5177\u5efa\u8bbe\u6027\uff0c\u4f46\u5468\u671f\u949f\u5904\u4e8e\u540e\u671f\u6d3e\u53d1\u2014\u2014\u5f3a\u52bf\u53ef\u80fd\u5df2\u663e\u75b2\u6001\u3002",
-      "\u6d41\u52a8\u6027\uff1a\u5168\u7403\u8d27\u5e01\u6b63\u5728\u6269\u5f20\uff0c\u800c\u5b8f\u89c2\u5730\u56fe\u663e\u793a\u6ede\u80c0\u2014\u2014\u523a\u6fc0\u4e0e\u589e\u957f\u7f13\u6162\u5e76\u5b58\u3002",
-      "ETF\u8ffd\u8e2a\uff1a\u8d44\u91d1\u6d41\u4e2d\u6027\u4e14\u6210\u4ea4\u91cf\u6e05\u6de1\uff0c\u4f46\u7a33\u5b9a\u5e01\u5728\u4e0a\u5347\u2014\u2014\u65b0\u8d44\u91d1\u53ef\u80fd\u901a\u8fc7\u5176\u4ed6\u6e20\u9053\u8fdb\u5165\u3002"
+      "\u6d41\u52a8\u6027\u5206\u5316\uff1a\u5168\u7403\u8d27\u5e01\u4f9b\u5e94\u6b63\u5728\u6269\u5f20\uff0c\u4f46\u8fd1\u671f\u51c0\u6d41\u52a8\u6027\u6b63\u5728\u6536\u7f29\u2014\u2014\u5229\u597d\u786e\u5b9e\u5b58\u5728\uff0c\u4f46\u5e76\u4e0d\u5747\u8861\u3002",
+      "\u9700\u6c42\u5206\u5316\uff1aETF\u4e70\u76d8\u5f3a\u52b2\uff0c\u4f46Coinbase\u4ef7\u683c\u6298\u4ef7\u663e\u793a\u7f8e\u56fd\u76f4\u63a5\u9700\u6c42\u8f83\u5f31\u2014\u2014\u652f\u6491\u5e76\u4e0d\u5e7f\u6cdb\u3002",
+      "\u5468\u671f\u5206\u5316\uff1a\u4ef7\u683c\u7ed3\u6784\u5411\u597d\uff0c\u4f46\u4e0b\u8dcc\u9636\u6bb5\u5df2\u63a5\u8fd1\u5c3e\u58f0\u2014\u2014\u8d8b\u52bf\u5f3a\u5ea6\u6b63\u9762\u4e34\u65f6\u70b9\u8003\u9a8c\u3002"
     ],
     "transmission": [
-      "\u5982\u679c\u7a33\u5b9a\u5e01\u589e\u957f\u6301\u7eed\u4e0a\u5347 \u2192 \u89c2\u671b\u8d44\u91d1\u6b63\u5728\u6d41\u5411\u52a0\u5bc6\u8d44\u4ea7\u3002",
-      "\u5982\u679c\u51b2\u91cf\u4fdd\u6301\u4e3a\u8d1f\u800c\u4ef7\u683c\u4e0a\u5347 \u2192 \u6da8\u52bf\u53ef\u80fd\u662f\u5728\u8f83\u5f31\u652f\u6491\u4e0b\u8fd0\u884c\u3002"
+      "\u5982\u679cETF\u6301\u7eed\u589e\u6301 \u2192 \u7a33\u5b9a\u7684\u73b0\u8d27\u9700\u6c42\u53ef\u652f\u6491\u5411\u597d\u8d8b\u52bf\u3002",
+      "\u82e5\u77ed\u671f\u6d41\u52a8\u6027\u6301\u7eed\u6536\u7f29\uff0c\u5373\u4f7f\u5168\u7403\u6574\u4f53\u6269\u5f20\uff0cBitcoin \u4ecd\u53ef\u80fd\u627f\u538b\u3002"
     ],
     "watch_items": [
-      "\u4e0b\u4e00\u4e2a\u5468\u671f\u62d0\u70b9\u7ea6\u5728\u4e09\u5468\u540e\uff1a\u4fe1\u53f7\u5c06\u8868\u660e\u964d\u4ef7\u662f\u5426\u6062\u590d",
-      "\u52a8\u91cf\u4fdd\u6301\u4e3a\u6b63\uff1a\u786e\u8ba4\u8d8b\u52bf\u5ef6\u7eed",
-      "ETF\u8d44\u91d1\u6d41\u8f6c\u6b63\uff1a\u5c06\u786e\u8ba4\u65b0\u9700\u6c42",
-      "\u503a\u5238\u5065\u5eb7\u72b6\u51b5\u4fdd\u6301\u5f3a\u52b2\uff1a\u4fdd\u6301\u6d41\u52a8\u6027\u5927\u95e8\u655e\u5f00"
+      "10\u67085\u65e5\u8f6c\u6298\u70b9\uff1a\u82e5\u80fd\u7a33\u7a33\u5b88\u4f4f\uff0c\u5c06\u5f3a\u5316\u79ef\u6781\u8d8b\u52bf\u3002",
+      "ETF\u9006\u8f6c\uff1a\u8d44\u91d1\u6d41\u5165\u4e0b\u964d\u5c06\u524a\u5f31\u6700\u660e\u786e\u7684\u9700\u6c42\u652f\u6491\u3002",
+      "\u4fe1\u7528\u5229\u5dee\u8d70\u9614\uff1a\u6301\u7eed\u6076\u5316\u5c06\u52a0\u5927\u5168\u5e02\u573a\u98ce\u9669\u538b\u529b\u3002",
+      "\u6760\u6746\u8dc3\u5347\uff1a\u4ea4\u6613\u62e5\u6324\u5c06\u4f7f\u4efb\u4f55\u56de\u8c03\u66f4\u52a0\u5267\u70c8\u3002"
     ]
   }
 }

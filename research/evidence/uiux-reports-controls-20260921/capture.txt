@@ -1,0 +1,4 @@
+outcome: captured
+pages: 1  states: 24/24 captured
+manifest: /tmp/uiux-reports-next/fixture/mockups/evidence/uiux-reports-controls-20260921/manifest.json
+smells: /tmp/uiux-reports-next/fixture/mockups/evidence/uiux-reports-controls-20260921/smells.json

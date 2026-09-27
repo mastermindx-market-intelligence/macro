@@ -847,3 +847,131 @@ def test_forward_ledger_accrues_and_is_same_day_idempotent(tmp_path):
     # records inputs only — never an outcome or a direction
     rec = _json.loads(two[0])
     assert "direction" not in rec and "score" not in rec and "outcome" not in rec
+
+
+# UIUX native browse controls: public presentation only, no change to ranking/filter math.
+def _desk_ui_source():
+    return (pathlib.Path(__file__).resolve().parents[1] / 'templates/darkpool.html.j2').read_text()
+
+
+def _desk_ui_fragment(start, end):
+    from jinja2 import Environment
+    src = _desk_ui_source()
+    preamble = src[:src.index('<!DOCTYPE html>')]
+    first = src.index(start)
+    return Environment(autoescape=True).from_string(preamble + src[first:src.index(end, first)]).render(n_tickers_total=372)
+
+
+def test_desk_ui_presets_are_native_pressed_buttons():
+    import re
+    html = _desk_ui_fragment('<div class="presets-row"', '<div class="filters-row">')
+    assert len(re.findall(r'<button[^>]*class="chip preset"', html)) == 4
+    assert html.count('aria-pressed="false"') == 4
+    assert 'role="group"' in html
+    assert '<span class="chip preset"' not in html
+
+
+def test_desk_ui_sort_buttons_do_not_wrap_explanatory_tips():
+    import re
+    html = _desk_ui_fragment('<thead>', '<tbody id="dp-tbody">')
+    assert html.count('class="dp-sort"') == 13
+    assert html.count('scope="col"') == 14
+    for body in re.findall(r'<button[^>]*class="dp-sort"[^>]*>(.*?)</button>', html, re.S):
+        assert 'tip-wrap' not in body
+        assert 'l-en' in body and 'l-zh' in body
+    src = _desk_ui_source()
+    handlers = src[src.index("document.querySelectorAll('#dp-table .dp-sort')"):src.index("['dp-search'")]
+    assert "button.addEventListener('click'" in handlers
+    assert "th.addEventListener('click'" not in handlers
+    assert 'keydown' not in handlers
+
+
+def test_desk_ui_active_sort_and_preset_states_are_projected_once():
+    src = _desk_ui_source()
+    sync = src[src.index('function syncDeskControls'):src.index('function renderTable')]
+    assert "setAttribute('aria-pressed', String(selected))" in sync
+    assert "setAttribute('aria-sort', sortDir === -1 ? 'descending' : 'ascending')" in sync
+    assert "removeAttribute('aria-sort')" in sync
+    render = src[src.index('function renderTable'):src.index("document.querySelectorAll('#dp-table .dp-sort')")]
+    assert 'syncDeskControls();' in render
+
+
+@pytest.mark.parametrize('field', ['dp-search', 'dp-min-share', 'dp-trend', 'dp-norm'])
+def test_desk_ui_filter_fields_have_visible_labels(field):
+    html = _desk_ui_fragment('<div class="filters-row">', '<div id="dp-row-count"')
+    assert f'<label for="{field}">' in html
+    assert 'l-en' in html and 'l-zh' in html
+
+
+def test_desk_ui_clear_restores_search_without_stealing_preset_focus():
+    src = _desk_ui_source()
+    assert "if (focusSearch) document.getElementById('dp-search').focus()" in src
+    assert "addEventListener('click', function() { clearFilters(true); })" in src
+    assert 'if (activePreset === p) { clearFilters(false); return; }' in src
+    assert "document.getElementById('dp-clear').click()" not in src
+
+
+def test_desk_ui_locale_updates_accessible_names_without_replacing_controls():
+    src = _desk_ui_source()
+    locale = src[src.index('function updatePlaceholders'):src.index("document.addEventListener('langchange', updatePlaceholders)")]
+    assert "'.dp-shell [data-label-en]'" in locale
+    assert "el.setAttribute('aria-label'" in locale
+    assert 'innerHTML' not in locale
+    assert 'MutationObserver' not in locale
+
+
+def test_desk_ui_empty_results_remain_explained_and_announced():
+    src = _desk_ui_source()
+    assert 'role="status" aria-live="polite" aria-atomic="true"' in src
+    assert 'No matching stocks. Adjust or clear the filters.' in src
+    assert '没有匹配的股票。请调整或清除筛选。' in src
+    assert 'class="dp-empty"' in src
+    assert 'sorted.length ? sorted.map(renderRow)' in src
+    assert 'allRows.length ?' in src
+    assert 'No stock data is available in this snapshot.' in src
+    assert '当前快照暂无股票数据。' in src
+
+
+def test_desk_ui_summary_and_touch_targets_do_not_use_fragmented_copy():
+    html = _desk_ui_fragment('<summary class="dp-desk-summary">', '<div class="sb">')
+    assert 'Browse all stocks' in html and '浏览全部股票' in html
+    assert '372' in html
+    assert 'tracked rows — sortable desk' not in html
+    src = _desk_ui_source()
+    assert '.shelf summary.dp-desk-summary{display:grid;' in src
+    assert 'min-height:40px' in src
+    assert '#dp-table .dp-sort:focus-visible' in src
+    assert 'outline:2px solid currentColor' in src
+
+
+def test_desk_ui_published_script_and_stylesheet_match_template():
+    import re, hashlib
+    root = pathlib.Path(__file__).resolve().parents[1]
+    src = _desk_ui_source()
+    html = (root / 'site/darkpool.html').read_text()
+    script = re.compile(r"<script>\s*\(function\(\) \{\s*'use strict';.*?</script>", re.S)
+    assert script.search(src).group(0) == script.search(html).group(0)
+    style = re.search(r'<style>(.*?)</style>', src, re.S).group(1).strip()
+    matches = []
+    for ref in re.findall(r'assets/css/([0-9a-f]{8})\.css\?v=\1', html):
+        path = root / 'site/assets/css' / (ref + '.css')
+        if path.is_file() and '.dp-desk-summary' in path.read_text():
+            matches.append(path)
+            assert hashlib.sha256(path.read_bytes()).hexdigest()[:8] == ref
+            assert path.read_text().strip() == style
+    assert len(matches) == 1
+
+
+def test_desk_ui_snapshot_status_wraps_after_language_switch():
+    src = _desk_ui_source()
+    assert '.dp-asof { max-width:100%; }' in src
+    assert '.dp-asof .l-en,.dp-asof .l-zh { white-space:normal; min-width:0; }' in src
+    assert '.dp-asof .l-en,.dp-asof .l-zh { white-space:nowrap; }' not in src
+
+
+def test_desk_ui_keeps_ticker_visible_while_scrolling():
+    src = _desk_ui_source()
+    assert '#dp-table th:first-child,#dp-table tr:not(.dp-empty)>td:first-child{position:sticky;left:0;' in src
+    assert 'background:var(--panel);box-shadow:1px 0 0 var(--line)' in src
+    assert '#dp-table th:first-child{z-index:2}' in src
+    assert '#dp-table tr:not(.dp-empty):hover>td:first-child{background:var(--panel2)}' in src

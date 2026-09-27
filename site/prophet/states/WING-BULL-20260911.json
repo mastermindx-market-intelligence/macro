@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "WING-BULL-20260911",
-  "asof": "2026-09-18",
+  "asof": "2026-09-26",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 15.2,
@@ -13,20 +13,20 @@
     "validity": 0.0,
     "progress": 0.0,
     "pace": 0.0,
-    "retention": 36.7,
-    "overlay": 61.0
+    "retention": 32.0,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -1.82,
+    "dist_to_stop_r": -2.811,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 15.6,
-    "p1": -1.8799,
-    "p2": -0.9399,
+    "horizon_pct_used": 33.3,
+    "p1": -2.5408,
+    "p2": -1.2704,
     "p3": null,
-    "move_r": -2.82,
+    "move_r": -3.811,
     "mfe_r": 0.0,
-    "mae_r": -3.437
+    "mae_r": -4.071
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.0,
-  "_mae": -16.26000366210937,
+  "_mae": -19.26000366210937,
   "_max_p1": 0.0,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 7,
-  "tau": 0.1556
+  "days_elapsed": 15,
+  "tau": 0.3333
 }

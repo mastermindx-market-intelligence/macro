@@ -8,6 +8,24 @@
       "blob": "4821c1be63abce236a2a4415504ab96c19abd7ac"
     },
     "templates/theme.css": {
+      "sha256": "d58d35e93758ada2123553f88ea6652e66ec11c116b031679a82b80951f8a478",
+      "blob": "41f0c3bdea3979faf4a57f2a98e31a4df54a5973"
+    },
+    "templates/tier_preview.css": {
+      "sha256": "d390f5999f642821569c8ddd0a14516d699e01b589365692faf40cb32f0aa592",
+      "blob": "9cc9afa897cd1578780cd49ba088750b70a8cc28"
+    },
+    "tests/test_design_system_foundations.py": {
+      "sha256": "5e61d7e3dd851507e1511369ddb58160abf12cbe15f5825b8f773b2320bea165",
+      "blob": "552214eca2fb1036c232906a41341d5d199000dc"
+    }
+  },
+  "source_branch_files": {
+    "mockups/design_system/specimen.html": {
+      "sha256": "11fafdc6502496f53e1443b2dcd8286c115e466712e10b12237d115baa91469b",
+      "blob": "4821c1be63abce236a2a4415504ab96c19abd7ac"
+    },
+    "templates/theme.css": {
       "sha256": "d41ce2d4027dbd176c1511f497c968651787da80ff0c35d7a972ece1bbc965e0",
       "blob": "138b4031143ae0f559bac218a58476199c71401d"
     },
@@ -19,5 +37,8 @@
       "sha256": "5e61d7e3dd851507e1511369ddb58160abf12cbe15f5825b8f773b2320bea165",
       "blob": "552214eca2fb1036c232906a41341d5d199000dc"
     }
-  }
+  },
+  "browser_transport": "isolated local file using integrated/ inputs",
+  "correction": "The initial files field listed branch-source inputs; the browser used integrated-source inputs. The theme identity is corrected to 41f0c3bdea3979faf4a57f2a98e31a4df54a5973. Measurements unchanged.",
+  "qualified_source_head": "2fd4f1774a782f237d3424b0bd18799237ad6b79"
 }

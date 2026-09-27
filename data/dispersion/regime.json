@@ -1,9 +1,9 @@
 {
-  "as_of": "2026-09-18",
-  "state": "neutral",
-  "dispersion_pctile": 0.4,
+  "as_of": "2026-09-26",
+  "state": "lean_out",
+  "dispersion_pctile": 0.3,
   "avg_corr": 0.06,
-  "shadow_gross_mult": 1.0,
+  "shadow_gross_mult": 0.75,
   "gross_mult_live": 1.0,
   "passport": {
     "basis": "prior",
@@ -357,17 +357,47 @@
       "state": "neutral",
       "dispersion_pctile": 0.4,
       "avg_corr": 0.06
+    },
+    {
+      "as_of": "2026-09-22",
+      "state": "lean_out",
+      "dispersion_pctile": 0.31,
+      "avg_corr": 0.06
+    },
+    {
+      "as_of": "2026-09-23",
+      "state": "lean_out",
+      "dispersion_pctile": 0.3,
+      "avg_corr": 0.06
+    },
+    {
+      "as_of": "2026-09-24",
+      "state": "lean_out",
+      "dispersion_pctile": 0.32,
+      "avg_corr": 0.06
+    },
+    {
+      "as_of": "2026-09-25",
+      "state": "lean_out",
+      "dispersion_pctile": 0.31,
+      "avg_corr": 0.06
+    },
+    {
+      "as_of": "2026-09-26",
+      "state": "lean_out",
+      "dispersion_pctile": 0.3,
+      "avg_corr": 0.06
     }
   ],
-  "label": "Mixed selection backdrop",
-  "label_zh": "\u9009\u80a1\u73af\u5883\u4e2d\u6027",
+  "label": "Macro tape \u2014 selection muted",
+  "label_zh": "\u5b8f\u89c2\u4e3b\u5bfc \u2014 \u9009\u80a1\u5f31\u5316",
   "eigen": {
     "basis": "trailing_252d_fixed",
-    "n_names_used": 1488,
+    "n_names_used": 1476,
     "n_days_used": 252,
-    "dominant_equity_pc_share": 0.1713,
-    "effective_universe_bets_pr": 23.5,
-    "idio_dispersion_share": 0.7483,
+    "dominant_equity_pc_share": 0.1707,
+    "effective_universe_bets_pr": 23.54,
+    "idio_dispersion_share": 0.7115,
     "sector_pc_loadings": null,
     "note": "sector map not wired (deferred); display-only \u2014 DISP-EIGEN-1 registered, activation DEFERRED pending DISP-GATE-1 non-stationarity resolution",
     "display_only": true

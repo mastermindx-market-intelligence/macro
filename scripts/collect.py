@@ -243,6 +243,7 @@ def all_adapters() -> dict:
         ("china_qvix", "collectors.china_qvix", "ChinaQvixAdapter"),           # 300/50ETF option-implied vol ("China VIX") — fear/euphoria + drawdown
         ("china_credit", "collectors.china_credit", "ChinaCreditAdapter"),     # 社融 TSF (PBoC direct; mofcom mirror froze at 2026-04 — 2026-07 repair)
         ("china_tushare", "collectors.china_tushare", "ChinaTushareAdapter"),  # gated Tushare plane (mktcap/moneyflow/margin/chips) — never CI-invoked before, froze 2026-06-21
+        ("gold_china_basis", "collectors.china_gold_basis", "ChinaGoldBasisAdapter"),  # Gold product source: SGE Au99.99 vs licensed global XAU/CNY; US-nightly lane already carries both credentials
         ("china_property", "collectors.china_property", "ChinaPropertyAdapter"),  # 70-city price breadth + climate + CGB + rebar/iron-ore
         ("china_pboc", "collectors.china_pboc", "ChinaPbocAdapter"),           # PBoC corridor legs: FX reserves+gold / repo fixings FR007 / USD-CNY ref (engine/china_policy_watch.py)
         ("china_yield_spread", "collectors.china_yield_spread", "ChinaYieldSpreadAdapter"),  # CN vs US sovereign curve + slope + CN-US spread — ACCRUING (no engine consumer yet)

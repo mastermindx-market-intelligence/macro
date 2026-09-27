@@ -6,15 +6,14 @@
     "cn_banks",
     "cn_coal",
     "cn_consumer_elec",
-    "cn_gold",
     "cn_pharma_cxo",
     "cn_semis"
   ],
   "held": [
     "cn_ai_compute",
-    "cn_gold",
     "cn_banks",
-    "cn_pharma_cxo"
+    "cn_pharma_cxo",
+    "cn_coal"
   ],
   "leader": "cn_ai_compute",
   "names": {

@@ -8,14 +8,27 @@ CI_EXECUTION_ROUTE=pc fallback; candidate-authored jobs may not address the runn
 group or supply executor identity. Existing production self-hosted lanes are left
 untouched.
 
-It also owns the label-DECLARATION boundary (rules R11/R12, added 2026-08-17): every
-literal ``runs-on`` label in every workflow must be declared in
+It also owns the label-DECLARATION boundary (rules R11/R12/R15): every literal
+``runs-on`` label in every workflow must be declared in
 ``.github/runner-policy.yml``'s ``label_registry``, and a label whose registry entry
-is ``orphaned`` may not be used by a scheduled workflow without a dated
-``scheduled_use_waiver``. See the registry's own header comment for why — a runner
-label lives only in GitHub's runners-API state, so deregistering a host silently
-orphans every label it carried, and a cron job queued on a dead label can hold its
-concurrency group hostage for 24h (research/PROPHET_OUTAGE_2026_08_17_POSTMORTEM.md).
+is ``orphaned`` may not be used by an AUTOMATICALLY TRIGGERED workflow without a
+dated waiver. See the registry's own header comment for why — a runner label lives
+only in GitHub's runners-API state, so deregistering a host silently orphans every
+label it carried, and a job queued on a dead label can hold its concurrency group
+hostage for 24h (research/PROPHET_OUTAGE_2026_08_17_POSTMORTEM.md).
+
+R15 (added 2026-09-25) widens R12's ``schedule:``-only gate to every unattended
+trigger. The 2026-09-25 render-lane outage ran for three days through the gap:
+``render.yml`` and ``engine-render.yml`` are ``push``-only, so R12 skipped them by
+trigger before it ever looked at the label. ``push`` is not a softer trigger than
+``schedule`` — main takes ~25 pushes a day here against one cron line — so a
+push-only lane on a dead label wedges harder
+(research/RENDER_LANE_OUTAGE_2026_09_25_POSTMORTEM.md).
+
+NEITHER RULE CAN SEE A DEATH NOBODY RECORDED. ``status`` is hand-maintained (listing
+runners needs an admin token CI does not carry), so these are DECLARATION gates that
+fire when a human writes a death down. The live-state dead-man switch for the same
+class is ``scripts/check_runner_queue_hostage.py``.
 
 Rule R14 (added 2026-09-01) owns the live/pending capacity boundary for the PC CI
 pool. ``pool_topology.pc-ci.slots`` is the live, routable inventory and stays at
@@ -357,12 +370,30 @@ def _label_registry_hygiene_findings(label_registry: dict) -> list[Finding]:
     return findings
 
 
+#: Triggers that fire with nobody watching. A job queued on a dead label by any of
+#: these holds its concurrency group until GitHub's 24h kill, and every firing behind
+#: it is superseded as `pending` — the 2026-08-17 (schedule) and 2026-09-25 (push)
+#: outages are the same mechanism reached through different doors.
+AUTOMATIC_TRIGGERS = {"schedule", "push", "repository_dispatch"}
+
+
+def _orphan_use_waived(entry: dict) -> bool:
+    """A dated waiver under either key. ``scheduled_use_waiver`` is the original R12
+    key and keeps working; ``automatic_use_waiver`` is its R15 spelling."""
+    for key in ("scheduled_use_waiver", "automatic_use_waiver"):
+        waiver = entry.get(key)
+        if isinstance(waiver, dict) and waiver.get("reason") and waiver.get("since"):
+            return True
+    return False
+
+
 def _label_registry_findings(registry: dict, documents: dict[str, dict]) -> list[Finding]:
-    """R11 (every used label is declared) + R12 (no scheduled use of an orphan)."""
+    """R11 (every used label is declared) + R12/R15 (no unattended use of an orphan)."""
     label_registry = registry.get("label_registry") or {}
     findings = _label_registry_hygiene_findings(label_registry)
     for relative, document in documents.items():
-        has_schedule = "schedule" in triggers(document)
+        automatic = triggers(document) & AUTOMATIC_TRIGGERS
+        has_schedule = "schedule" in automatic
         for job_id, job in (document.get("jobs") or {}).items():
             if not isinstance(job, dict):
                 continue
@@ -376,21 +407,25 @@ def _label_registry_findings(registry: dict, documents: dict[str, dict]) -> list
                         )
                     )
                     continue
-                if not has_schedule or not isinstance(entry, dict):
+                if not automatic or not isinstance(entry, dict):
                     continue
                 if entry.get("status") != "orphaned":
                     continue
-                waiver = entry.get("scheduled_use_waiver")
-                waived = (
-                    isinstance(waiver, dict)
-                    and bool(waiver.get("reason"))
-                    and bool(waiver.get("since"))
-                )
-                if not waived:
+                if _orphan_use_waived(entry):
+                    continue
+                if has_schedule:
                     findings.append(
                         Finding(
                             "R12",
                             f"{relative}:{job_id} schedules onto orphaned label {label!r} — a queued job on a dead label can hold its cron concurrency group for 24h",
+                        )
+                    )
+                else:
+                    fired = "/".join(sorted(automatic))
+                    findings.append(
+                        Finding(
+                            "R15",
+                            f"{relative}:{job_id} is triggered by {fired} onto orphaned label {label!r} — an unattended job on a dead label holds its concurrency group until GitHub's 24h kill while every firing behind it is superseded (the 2026-09-25 render-lane outage)",
                         )
                     )
     return findings
@@ -720,6 +755,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
         trust_gate = trusted_jobs.get("trust-gate") or {}
         plan_job = trusted_jobs.get("plan") or {}
         trusted_job = trusted_jobs.get(trusted_job_id) or {}
+        hosted_compat_job = trusted_jobs.get("legacy-hosted-pack") or {}
         trigger_config = trusted_document.get(
             "on", trusted_document.get(True, {})
         )
@@ -765,6 +801,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             "BASE_REF": "${{ github.base_ref }}",
             "EVENT_PR_NUMBER": "${{ github.event.pull_request.number }}",
             "DISPATCH_PR_NUMBER": "${{ inputs.pr_number }}",
+            "REQUESTED_ROUTE": "${{ vars.CI_EXECUTION_ROUTE }}",
         }
         executable_refusals_are_exact = {
             'test "$REPOSITORY" = mastermindx-market-intelligence/macro || {',
@@ -782,6 +819,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             "pr_number": "${{ steps.admit.outputs.pr_number }}",
             "mode": "${{ steps.admit.outputs.mode }}",
             "semantic_workflow": "${{ steps.admit.outputs.semantic_workflow }}",
+            "execution_route": "${{ steps.admit.outputs.execution_route }}",
         }
         plan_text = str(plan_job)
         selector = next(
@@ -798,8 +836,11 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
                 "${{ needs.trust-gate.outputs.control_sha }}",
                 "${{ needs.trust-gate.outputs.pr_number }}",
                 "${{ needs.trust-gate.outputs.semantic_workflow }}",
+                "${{ needs.trust-gate.outputs.execution_route }}",
                 "${{ github.event_name }}",
             )
+        ) and plan_job.get("outputs", {}).get("execution_route") == (
+            "${{ needs.trust-gate.outputs.execution_route }}"
         ) and selector.get("env") == {
             "EXECUTION_MODE": "${{ needs.trust-gate.outputs.mode }}",
             "FULL_MATRIX": "${{ steps.plan.outputs.matrix }}",
@@ -826,8 +867,76 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             or trusted_job.get("runs-on")
             != {"group": "macro-home-canary", "labels": "ci-linux"}
             or (trusted_job.get("strategy") or {}).get("max-parallel") != 3
+            or trusted_job.get("if") != "needs.plan.outputs.execution_route == 'pc'"
         ):
-            findings.append(Finding("R13", "P3B-B trusted pack lost its selected group, label, or three-slot bound"))
+            findings.append(Finding("R13", "P3B-B trusted pack lost its selected group, label, three-slot bound, or explicit PC route"))
+
+        hosted_compat_steps = hosted_compat_job.get("steps") or []
+        hosted_compat_execute = next(
+            (
+                step
+                for step in hosted_compat_steps
+                if isinstance(step, dict)
+                and step.get("name")
+                == "execute the frozen logical pack and retain its semantic result"
+            ),
+            {},
+        )
+        hosted_compat_upload = next(
+            (
+                step
+                for step in hosted_compat_steps
+                if isinstance(step, dict)
+                and step.get("name") == "publish the legacy caller semantic fragment"
+            ),
+            {},
+        )
+        hosted_compat_text = str(hosted_compat_execute.get("run", ""))
+        hosted_compat_is_exact = (
+            isinstance(hosted_compat_job, dict)
+            and hosted_compat_job.get("needs") == "plan"
+            and hosted_compat_job.get("if")
+            == "needs.plan.outputs.execution_route == 'hosted'"
+            and hosted_compat_job.get("runs-on") == HOSTED
+            and (hosted_compat_job.get("strategy") or {}).get("fail-fast") is False
+            and "max-parallel" not in (hosted_compat_job.get("strategy") or {})
+            and (hosted_compat_job.get("strategy") or {}).get("matrix")
+            == "${{ fromJSON(needs.plan.outputs.matrix) }}"
+            and hosted_compat_execute.get("env", {}).get(
+                "MASTERMIND_TRUSTED_CI_REPO_ROOT"
+            )
+            == "${{ github.workspace }}"
+            and all(
+                token in hosted_compat_text
+                for token in (
+                    '"$RUNNER_TEMP/trusted-ci-control/scripts/run_ci_pack.py"',
+                    '--plan-json "$RUNNER_TEMP/trusted-ci-plan/plan.json"',
+                    '--expect-plan-sha "${{ needs.plan.outputs.plan_sha }}"',
+                    '--expect-tested-tree-sha "${{ needs.plan.outputs.tested_sha }}"',
+                    '--expect-subject-head-sha "${{ needs.plan.outputs.head_sha }}"',
+                    '--expect-base-sha "${{ needs.plan.outputs.base_sha }}"',
+                    "--base-replay-budget-seconds 900",
+                    "set +e",
+                    "pack_rc=$?",
+                    'test -s "$RUNNER_TEMP/ci-semantic-fragments/trusted-fragment.json"',
+                )
+            )
+            and "exit $pack_rc" not in hosted_compat_text
+            and hosted_compat_upload.get("uses") == "actions/upload-artifact@v4"
+            and (hosted_compat_upload.get("with") or {}).get("name")
+            == "trusted-ci-fragment-${{ matrix.pack }}"
+            and (hosted_compat_upload.get("with") or {}).get("path")
+            == "${{ runner.temp }}/ci-semantic-fragments/trusted-fragment.json"
+            and (hosted_compat_upload.get("with") or {}).get("if-no-files-found")
+            == "error"
+        )
+        if not hosted_compat_is_exact:
+            findings.append(
+                Finding(
+                    "R13",
+                    "legacy same-repo callers must use the protected hosted compatibility pack and preserve the trusted fragment contract",
+                )
+            )
         ci_document = documents.get(".github/workflows/ci.yml") or {}
         ci_jobs = ci_document.get("jobs") or {}
         trusted_call = ci_jobs.get("trusted-ci")

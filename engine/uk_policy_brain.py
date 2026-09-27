@@ -231,26 +231,33 @@ def _parse_search_results(raw: bytes) -> list[dict]:
     return out
 
 
-def collect(max_age_days: float = 4.0) -> list[dict]:
-    """Current HM Treasury GOV.UK announcements, newest-first, filtered to the
-    recent window. Never raises; returns [] on any failure."""
+def _in_window(item: dict, cutoff: float) -> bool:
+    """True when the item has no usable timestamp, or was published at/after cutoff."""
+    try:
+        ts = datetime.fromisoformat(item["published"]).timestamp() if item.get("published") else None
+    except Exception:  # noqa: BLE001
+        ts = None
+    return ts is None or ts >= cutoff
+
+
+def collect(max_age_days: float = 4.0, *, window: bool = True) -> list[dict]:
+    """Current HM Treasury GOV.UK announcements, newest-first.
+
+    When window is True, keep the historical age cut (undated items stay).
+    When window is False, return every parsed item with no age cut. Never
+    raises; returns [] on any failure.
+    """
     try:
         raw = _fetch(SEARCH_URL, timeout=_cfg().get("timeout", 15))
         items = _parse_search_results(raw) if raw else []
         if not items:
             raw2 = _fetch(FALLBACK_ATOM_URL, timeout=_cfg().get("timeout", 15))
             items = _parse_atom(raw2) if raw2 else []
-        cutoff = datetime.now(timezone.utc).timestamp() - max_age_days * 86400
-        fresh = []
-        for it in items:
-            try:
-                ts = datetime.fromisoformat(it["published"]).timestamp() if it.get("published") else None
-            except Exception:  # noqa: BLE001
-                ts = None
-            if ts is None or ts >= cutoff:
-                fresh.append(it)
-        fresh.sort(key=lambda x: x.get("published") or "", reverse=True)
-        return fresh
+        if window:
+            cutoff = datetime.now(timezone.utc).timestamp() - max_age_days * 86400
+            items = [it for it in items if _in_window(it, cutoff)]
+        items.sort(key=lambda x: x.get("published") or "", reverse=True)
+        return items
     except Exception as e:  # noqa: BLE001 — degrade, never raise
         log.debug("uk_policy collect failed (%s)", e)
         return []
@@ -559,24 +566,54 @@ def _persist(record: dict, root: Path) -> None:
         log.warning("uk_policy persist failed: %s", e)
 
 
+def _log_verdict(record: dict) -> None:
+    """One INFO line per verdict so a sentinel log always shows the desk's state."""
+    log.info("uk_policy: state=%s headline=%r", record.get("state"), record.get("headline"))
+
+
 def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict | None:
     """Gather -> evaluate -> persist. Returns None when the gate is off (unless
     force). NEVER raises into the caller — every failure degrades to a typed
-    'source_outage' record when a prior record exists, else None."""
+    'source_outage' record when a prior record exists, else None.
+
+    A reachable feed whose items are all older than the window is not an
+    outage. That quiet cycle persists state no_new (from the prior record, or
+    from the newest parsed item when there is no prior) and does not call the
+    model.
+    """
     root = Path(root) if root else config.ROOT
     cfg = _cfg()
     if not force and not enabled():
         return None
     try:
         state = load_processed(root)
-        items = collect(cfg.get("max_age_days", 4.0))
+        max_age = cfg.get("max_age_days", 4.0)
+        cutoff = datetime.now(timezone.utc).timestamp() - max_age * 86400
+        all_items = collect(max_age, window=False)
+        items = [it for it in all_items if _in_window(it, cutoff)]
         prior = latest(root)
-        if not items:
+        if not all_items:
+            log.warning(
+                "uk_policy: feed empty — search and atom returned nothing; %s",
+                "prior kept as source_outage" if prior else "no prior, nothing written",
+            )
             record = dict(prior) if prior else None
             if record is not None:
                 record["state"] = _typed_state("source_outage")
-            if persist and record is not None:
+                if persist:
+                    _persist(record, root)
+                _log_verdict(record)
+            return record
+        if not items:
+            # Reachable feed, nothing inside the window. Do not spend a model call.
+            record = dict(prior) if prior else _base_record(all_items[0], cfg)
+            record["state"] = _typed_state("no_new")
+            if persist:
                 _persist(record, root)
+            log.info(
+                "uk_policy: state=no_new (quiet window %.1fd) headline=%r",
+                max_age, record.get("headline"),
+            )
             return record
         fresh = new_items(items, state)
         if not fresh:
@@ -585,6 +622,7 @@ def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict
             record["state"] = _typed_state("no_new")
             if persist:
                 _persist(record, root)
+            _log_verdict(record)
             return record
         item = fresh[0]
         item = dict(item)
@@ -604,6 +642,7 @@ def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict
         if persist:
             save_processed(root, state)
             _persist(record, root)
+        _log_verdict(record)
         return record
     except Exception as e:  # noqa: BLE001 — degrade-never-raise
         log.warning("uk_policy run failed: %s", e)
@@ -614,6 +653,7 @@ def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict
                 prior["state"] = _typed_state("source_outage")
                 if persist:
                     _persist(prior, root)
+                _log_verdict(prior)
                 return prior
         except Exception:  # noqa: BLE001
             pass
