@@ -278,3 +278,95 @@ Native Paper file is `01M2WGNCX9475G79JRKJTCM08P`. The guarded adapter was conne
 5. Preserve old snapshots and unaffected cases.
 6. Independently review the semantics and run real producer→consumer tests.
 7. Only then consider adopting related F09 transaction-term work or user-facing rollout through the incumbent owners.
+
+## 12. R2.1 classifier root cause — event family and registrant role are separate axes
+
+Current source makes the USCF failure deterministic:
+
+- `collectors/special_situations.py::SS_CLASSIFY_SYSTEM` asks the LLM for both an event
+  `category` and **the registrant's role**, constrained to
+  `acquirer | target | seller | issuer | filer | none`.
+- `enrich_classify()` persists those answers separately as `llm_category` and
+  `llm_role`.
+- `engine/special_situations.py::build_situations()` currently promotes every
+  `LLM_PROMOTABLE` category to `status=ok`, copies `llm_role` to `role`, and assigns
+  the category/stage **without any role/category compatibility gate**.
+- The observed USO cache is therefore internally self-describing rather than mysterious:
+  `category=Going-Private`, `role=none`, high confidence. The model recognized the
+  parent transaction in the document and also said the registrant was not a direct party;
+  the projection layer discarded the distinction by treating category as a security fact.
+
+**Ruling:** classification answers “what corporate event does this document evidence?”.
+Security projection separately answers “how is this registrant/security related to that event?”.
+Neither axis may overwrite the other.
+
+For a direct-economics family, an incompatible or missing registrant role has three lawful
+outcomes:
+
+1. **direct** — family-specific role evidence establishes the registrant as a direct event
+   security;
+2. **affected** — an incumbent owner has bound a typed indirect relationship to the canonical
+   transaction;
+3. **withheld / relationship_unresolved** — the source observation remains available, but no
+   direct security-level event economics, merger-arb math, delisting semantics, setup prior or
+   independent-confirmation count is emitted yet.
+
+A generic `role != target -> drop` rule is rejected. Acquirer, seller, issuer and target roles
+have different legitimacy by event family, and an indirect disclosure can be economically material.
+The family-specific adapter supplies its admitted direct roles; Special Situations does not invent one
+universal role matrix.
+
+The research reference now pins this with `route_registrant_event()`: Going-Private + `target`
+remains direct; Going-Private + `none` is withheld absent a relationship; the same row becomes
+indirect affected context only after `affected_through_general_partner_control` is bound.
+
+## 13. R2.1 owner-seam census — do not force this into the wrong existing contract
+
+A bounded current-source census found no accepted generic transaction→affected-security relationship
+contract on Macro main:
+
+- `engine/company_intelligence/events.py::company_event.v1` is issuer-keyed but its canonical
+  identity is `(company_id, fiscal_period, event_type)`; even `corporate_action` requires a fiscal
+  period. It is an earnings/company-event spine, not a general agreement/transaction identity.
+  Reusing it for M&A by inventing a fiscal period would corrupt identity semantics.
+- Earnings research names `relationship_edge.v1`, but the current capability ledger still marks
+  relationship extraction **SPEC_ONLY**. It is not a live write seam.
+- Semiconductor Theme Intelligence #7870 currently carries
+  `theme_graph.curation_assertion.v1` with an `OWNERSHIP_EVENT` predicate and typed source,
+  temporal, correction and authority fields. That contract is theme-curation evidence, scoped to its
+  theme/research workflow; it does not establish canonical corporate-transaction identity and must not
+  be repurposed silently.
+- Technology ex-Semiconductors #7891 carries a Draft
+  `technology_economic_change.v1` dossier with useful design precedents — closed source refs,
+  identity bindings, relationships, coverage accounting, corrections and an all-false authority
+  ceiling — but it is explicitly Technology-domain and remains Draft. It is a design reference, not
+  Special Situations authority.
+- Earlier Energy planning referred to a generic `economic_change_dossier.v1`, then explicitly
+  withdrew registration and deferred to the Semiconductors base. The current #7870 file set no longer
+  contains that generic dossier contract.
+
+**Owner ruling:** Special Situations keeps its existing append-only filing observations and does not
+mint a replacement graph/schema. The first production vertical must ask the incumbent semantic/GMI
+owner for the smallest accepted way to bind a canonical corporate transaction to direct and indirect
+economic subjects. If the shared base lands before implementation, consume it. If no accepted seam
+exists at execution time, raise the bounded owner decision and keep incompatible registrant
+projections withheld rather than creating a private Special Situations relationship registry.
+
+Ownership/control facts may later be projected into an accepted GMI relationship/economic-change
+surface, but transaction identity and lifecycle remain event-specific; persistent ownership topology
+and episodic transaction state are not the same object.
+
+## 14. R2.1 executable evidence
+
+The new role-routing reference was added RED-first:
+
+- RED remote branch test: import failed because `route_registrant_event` did not exist.
+- First implementation serialization was rejected by Python with a syntax error before any behavioral
+  assertion; this was repaired as a reference-file serialization defect and is not counted as GREEN.
+- Final exact remote-branch archive: **9 tests passed / 0 failed**, including three new role-routing
+  cases:
+  - incompatible direct-event role -> `withheld / relationship_unresolved`;
+  - owner-bound indirect relation -> `affected`, never direct target;
+  - compatible target role -> direct.
+
+This remains research-only proof. It does not prove the current production engine is repaired.
