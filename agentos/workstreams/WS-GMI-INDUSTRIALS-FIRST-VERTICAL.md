@@ -37,7 +37,7 @@ waves:
     status: in_progress
     pr: 8062
     depends_on: [IND-W1]
-    next_action: "T04 half is DONE - MERGED 2026-09-27 06:04Z as 50549f8e839eff38a86568cbc2beb9d29fe0de81 from cd46f9452c77 (the adjudicated 0e3344a9071f plus one base-refresh merge; module and suite byte-identical), ci-gate and all twelve packs green on run 36296953418. Only the T02 half of this wave remains, and it is BLOCKED: it edits issuer_profiles.py / event_workspace.py / refresh_event_workspaces.py, which #7870 (base owner) and #7905 (held under audit) both edit - do not dispatch it until those release the seam."
+    next_action: "T04 half is DONE - MERGED 2026-09-27 06:04Z as 50549f8e839eff38a86568cbc2beb9d29fe0de81 from cd46f9452c77 (the adjudicated 0e3344a9071f plus one base-refresh merge; module and suite byte-identical), ci-gate and all twelve packs green on run 36296953418. Only the T02 half of this wave remains, and it is BLOCKED: it edits issuer_profiles.py / event_workspace.py / event_workspace_build.py / refresh_event_workspaces.py - FOUR seam files, not the three this record used to list. Re-checked 2026-09-27: #7905 (OPEN/DRAFT b6808dfcc166) holds only issuer_profiles.py; #7870 (OPEN/DRAFT a0d7b054ff23) holds all four. Do not dispatch T02 until they release the seam."
   - id: IND-W3
     title: "T03 case extractors, THEN T05 editions and comparisons (NOT parallel)"
     status: todo
@@ -78,7 +78,7 @@ do_not_redo:
   - "Never put implementation on the research carrier #7789; never edit #7870's branch."
   - "T01 (#7924, merged c5e6f0bb5d39) and T04 (#8062, MERGED 50549f8e839e) are adjudicated closed and DELIVERED - T01 after five lane rounds and three READ_ONLY red-teams, T04 after two lane rounds that each self-reported PASS and each carried defects (round 1: five blockers and two majors; round 2: B6, the sixth blocker, which no reviewer saw). Do not re-review either finding set and do not re-derive T04's arithmetic, which was clean throughout and deliberately left alone. Reviews: reviews/OPUS_T01_REDTEAM_2026-09-24.md, reviews/OPUS_T04_REDTEAM_2026-09-26.md."
 landmines:
-  - "Shared files (issuer_profiles.py, event_workspace.py, refresh_event_workspaces.py, private_publication.py, app/earnings.py, the shared theme-research client/mount) stay owned by their incumbent workstreams and are touched at named seams only, serialized behind #7870 and #7905."
+  - "Shared files (issuer_profiles.py, event_workspace.py, event_workspace_build.py, refresh_event_workspaces.py, private_publication.py, app/earnings.py, the shared theme-research client/mount) stay owned by their incumbent workstreams and are touched at named seams only, serialized behind #7870 and #7905."
   - "Sparse worktrees truncate data/ and site/ on write."
   - "A red pack on an Industrials PR may be a SIBLING seat's dangling agentos artifacts: entry, not your diff: self-mod-fence is always-on and refuses any [phantom-artifact] string anywhere in the store, so it reds any PR whose merge ref predates the referenced file. #8062 lost one run that way. Triage the path at origin/main AND at refs/pull/<N>/merge before touching code; the cure is a base refresh, and rerunning the job reuses the stale merge commit."
   - "A new test wired into a gate:code run line without its paths: entry reds contract-delta fleet-wide."
