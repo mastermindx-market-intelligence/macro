@@ -71,6 +71,11 @@ _TITLE_SECURITY_SUBJECT = re.compile(
     r"^(?P<label>[A-Z][A-Za-z0-9&.,'’+/\-–— ]{1,63})\s+"
     r"\((?P<ticker>[A-Z][A-Z0-9]{0,4}(?:\.[A-Z]{1,4})?)\)(?:\s|$)"
 )
+_COMPANY_DESIGNATORS = frozenset({
+    "INC", "INC.", "CORP", "CORP.", "CORPORATION", "CO", "CO.", "COMPANY",
+    "LTD", "LTD.", "LIMITED", "PLC", "GROUP", "HOLDING", "HOLDINGS", "SE",
+    "S.E.", "AG", "NV", "N.V.", "SA", "S.A.", "LLC", "LP", "L.P.",
+})
 
 
 def _sidecar_ticker(value: object) -> tuple[str, str | None]:
@@ -106,11 +111,27 @@ def _strict_title_ticker(value: object) -> str | None:
     if match is None:
         return None
     label = " ".join(match.group("label").split())
-    if not any(ch.islower() for ch in label):
+    words = label.split()
+    if not words:
         return None
-    words = label.replace("/", " ").split()
-    last = words[-1].strip(".,") if words else ""
-    if len(words) >= 4 and last.isalpha() and last.isupper() and len(last) <= 5:
+
+    # Two deliberately narrow admitted forms:
+    #   1. a single mixed-case brand (CrowdStrike, AstraZeneca, Carrefour);
+    #   2. a multi-word name ending in an explicit company/legal designator.
+    # Generic research concepts such as "Brazilian Real (BRL)" and
+    # "Transformational Innovation Opportunities (TRIO)" are therefore refused
+    # even if their acronym happens to collide with a real listed symbol.
+    single_brand = (
+        len(words) == 1
+        and len(label) >= 5
+        and any(ch.islower() for ch in label)
+    )
+    designator = (
+        len(words) >= 2
+        and words[-1].upper() in _COMPANY_DESIGNATORS
+        and any(ch.islower() for ch in label)
+    )
+    if not (single_brand or designator):
         return None
     return match.group("ticker").upper()
 
