@@ -307,3 +307,83 @@ DO_NOT_REDO all preceding accepted/published source, including active price wind
 Exact next chunk: first consume any genuinely new permitted recovery/return for a held semantic lane. If none exists, continue another path-disjoint read-only Copilot capability using incumbent owners. Final combined native/price/multi-pane/target/historical/cancellation/range/old-client/receipt/Stop/replay/browser/model/dark-light/EN-ZH/responsive qualification remains owed, followed by normal #8005 -> #8014 release gates.
 
 Own effects reconciled. No worker, watcher, provider activation, deployment or autonomous wake.
+
+
+## 2026-09-27 Extra High chunk — chart presentation context
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION after this handoff's containing commit and exact PR/source readbacks. MISSION_COMPLETE: false. Capability remains PARTIAL / BUILT_NOT_PROVEN / NOT_RELEASED. Chairman continues feature-first execution in bounded chunks; local tests/typechecks/compilers/browser/model qualification remain deliberately deferred to the final combined pass and are not waived.
+
+Protected Mastermind pin for this chunk: **c01d890f6536539496f2d6744f3143ff49da296d**. INDEX is compatible `mastermind.sol_skillpack.v1` / 1.0.1 / bootstrap1. Required COLD_START, ACTIVE_EXECUTION, RECONCILE_STATE, CLOSEOUT, delivery and dialogue/routing law blobs were loaded from this exact commit. Their blob identities remain byte-identical to the previously consumed compatible procedures. The optional bootstrap supporting reference was unavailable through the installed skill URI; no claim is made that it was loaded. Protected INDEX source ownership law remained available and governed this source operation.
+
+DIRECT_EXECUTION_REASON: **PRINCIPAL_JUDGMENT + CRITICAL_PATH_SHORTCUT** — this slice joins the incumbent ChartPane renderer/settings owner, chart-state transport, mounted-pane projection and Brain sanitizer in one bounded interface. A new writer would add source collision/review overhead larger than the change. **WHY NOT FABLE:** architecture is frozen and no unresolved principal ambiguity requires scarce Fable capacity.
+
+### Exact published source
+
+Terminal #757 advanced on the same incumbent branch/worktree to **1811dc68aa4af20e7bd91b3b827670f5181a50cc** (`feat(copilot): expose chart presentation context`). Exact original-branch readback matched. The independent untracked `terminal/e2e/brain-targeted-readout.spec.ts` remains untouched/excluded at SHA256 **6eeb12bc08017a818541a33443ab634625a5d927a02566260fc1d61025338a3c**.
+
+Macro #8014 advanced on the same incumbent stacked branch/worktree to feature commit **35734c7f0d234baa89619b316739aa55b3ec68ff** (`feat(copilot): qualify chart presentation context`). Exact original-branch readback matched; Macro workspace was clean after publication.
+
+### Capability delta in source
+
+The existing chart-state mirror now carries additive **`chart.presentation.v1`** read-only context so Copilot can distinguish underlying market evidence from the way Terminal currently renders it.
+
+Terminal projection:
+- source is committed ChartPane/ChartFrameBar state already driving the renderer; no DOM scraping, screenshot/OCR, second settings store, mutation command or control owner;
+- presentation waits for BOTH shell preference hydration and pane-local chart-settings hydration, preventing transient defaults from being telemetered as the user's committed view;
+- exact identity is pane id + symbol + timeframe. Terminal also rejects late callbacks whose chart type, replay state or day-trade mode no longer matches the current pane;
+- chart type is closed to candles / hollow / heikin / bars / line / line-markers / step / area / baseline;
+- price scale is closed to normal / log / percent / indexed-to-100 plus invert, side and autoscale;
+- session view carries replay, day-trade mode and extended-hours requested/eligible/effective. Extended-hours eligibility is effective only on supported intraday panes, matching the renderer's intraday fetch path rather than a merely requested daily checkbox;
+- display projection is only interpretation-relevant booleans/precision: price/last-value lines, grid, OHLC, volume, indicator titles, watermark, candle body/border/wicks and extended price line;
+- Visual Intelligence carries its five boolean layer toggles only;
+- active comparison overlays are capped at four and preserve symbol, price-vs-percent mode, normalized fixed color, line style, width, and actual visible/hidden state from the existing compare hidden owner;
+- arbitrary chart titles, labels, background/theme strings and other UI prose are excluded. Comparison color is retained only to identify a plotted overlay;
+- output basis explicitly says `control_authority:none` and `render_application:committed_settings_not_pixel_attestation`.
+
+Single/multi-pane transport:
+- the root active chart carries one `session.presentation`;
+- active `pane_contexts` references `session.presentation`, `session.price_window` and `session.native_observations` instead of duplicating large root packets;
+- inactive mounted panes embed their own presentation/price/native evidence independently;
+- presentation is optional transport evidence: under chart-state budget pressure the reducer withholds `pane_contexts` first, then root `presentation`, before active price/native/Data Window packets or command receipts; `mirror_coverage.omitted_fields` structurally permits `presentation`.
+
+Brain qualification:
+- exact connected origin/revision and root symbol/timeframe/pane identity remain required;
+- all chart-type/scale/session/display/Visual Intelligence/comparison enums, booleans, fixed color/style/width/visibility and extended-hours consistency are revalidated server-side;
+- arbitrary client labels/basis prose are discarded and replaced by fixed server semantics;
+- presentation replay must agree with the same pane's qualified price-window basis (`replay_slice` vs loaded chart cache). Contradictions fail presentation closed rather than choosing the convenient packet;
+- active pane rows must use root refs when root presentation is observed and may not duplicate embedded active packets;
+- inactive panes may never borrow root refs; their presentation is independently qualified;
+- pre-presentation/older clients remain compatible: missing presentation becomes explicit unavailable evidence and pane context degrades to PARTIAL rather than becoming invalid;
+- missing/partial presentation/price/native evidence propagates PARTIAL rather than false-complete comparison.
+
+Technician protocol advanced to **v11**:
+- presentation is evidence, never control authority;
+- log/percent/indexed/inverted scales change visual geometry, not raw-price arithmetic;
+- line/area/baseline do not visibly expose candle bodies/wicks despite raw OHLCV being available;
+- Heikin-Ashi bodies are transformed presentation while `price_window` remains underlying raw market OHLCV; Heikin visual O/C must never be quoted as source-market O/C;
+- comparison `visible:false` means configured-but-hidden; percent comparison overlays may be rescaled and are not direct compared-symbol price coordinates;
+- multi-pane presentation/replay/extended-hours/price/native bases stay distinct.
+
+### Specifications / proof boundary
+
+Authored or extended, **NOT RUN**:
+- Terminal `terminal/lib/__tests__/chartPresentation.test.ts` — chart type, scale, extended-hours, comparisons and malformed projection.
+- Terminal `chartStatePayload.test.ts` — presentation is withheld before numerical evidence under transport pressure while ACKs survive.
+- Terminal `useChartBusPaneContexts.test.ts` — active root presentation ref, inactive embedded presentation and no active duplication.
+- Terminal `useChartBusStateMirror.test.tsx` — single-pane presentation mirror without inventing pane context.
+- Macro `tests/test_brain_presentation.py` — structural sanitization, arbitrary-prose stripping, invalid enums/compare forms, replay-vs-price mismatch and real `read_chart_state` replacement.
+- Macro `tests/test_brain_pane_contexts.py` — active/inactive presentation refs, old-client compatibility, replay-vs-price consistency and pane projection.
+
+Only exact-head/remote fences, source/diff review, `git diff --check`, schema/transport/reference inspections, foreign-file hash preservation, path-scoped staging, non-force commits/pushes and exact branch readbacks support this publication. No test runner, TypeScript/Python compiler, browser/model/provider execution, CI polling, merge, deployment or production configuration action occurred.
+
+### Durable / held boundaries
+
+The cumulative parent #7151 comment update remains action-specifically blocked from the earlier pre-dispatch refusal. No new platform recovery evidence appeared, so this turn did **not** retry that exact effect. Current durable truth is this Agent OS handoff plus exact PR #757/#8014 source metadata/readbacks. EFFECT_UNKNOWN: none.
+
+Held semantic actions remain untouched: shared widget Stop consumer; original-pane target freezing / legitimate-only revision adoption; selected-candle confirmation-filtered native event projection; grouped-annotation inspection; prior per-pane classic Data Window read. A new turn/model mode is not permission to replay those refusals.
+
+DO_NOT_REDO all preceding accepted/published source, including mounted-pane raw price Terminal **082d9e6a9c85762c876e7e615399bfc0ce0118d3** / Macro **e3789adac66765199b9023f792884cf79c29a2c8**, root price window, mounted native context, six-sample native history and older command/control work.
+
+Exact next chunk: first consume genuinely new permitted recovery/return for one held semantic lane if such evidence exists. Otherwise continue another path-disjoint read/intelligence capability using incumbent owners and without widening mutation authority. Final combined native/price/presentation/multi-pane/target/historical/cancellation/range/old-client/receipt/Stop/replay/browser/model/dark-light/EN-ZH/responsive qualification remains owed, followed by normal #8005 -> #8014 release gates.
+
+Own effects reconciled. No worker, watcher, provider activation, deployment or autonomous wake.
