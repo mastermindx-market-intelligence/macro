@@ -1,12 +1,12 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "DAVE-BULL-20260824",
-  "asof": "2026-09-25",
+  "asof": "2026-09-26",
   "phase": "invalidated",
   "detection_phase": "invalidated",
-  "management_confidence": 11.2,
+  "management_confidence": 10.1,
   "raw_confidence": 8.0,
-  "delta_vs_base": -48.8,
+  "delta_vs_base": -49.9,
   "recommended_action": "invalidated",
   "human_state": "Invalidated",
   "components": {
@@ -17,16 +17,16 @@
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.005,
+    "dist_to_stop_r": -0.051,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 71.1,
-    "p1": -0.6703,
-    "p2": -0.3351,
+    "horizon_pct_used": 73.3,
+    "p1": -0.701,
+    "p2": -0.3505,
     "p3": null,
-    "move_r": -1.005,
+    "move_r": -1.051,
     "mfe_r": 1.045,
-    "mae_r": -1.005
+    "mae_r": -1.051
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 29.729998779296864,
-  "_mae": -28.60999755859376,
+  "_mae": -29.91999511718751,
   "_max_p1": 0.696539997265779,
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 32,
-  "tau": 0.7111
+  "days_elapsed": 33,
+  "tau": 0.7333
 }

@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "LIVN-BULL-20260818",
-  "asof": "2026-09-25",
+  "asof": "2026-09-26",
   "phase": "triggered_pre_t1",
   "detection_phase": "triggered_pre_t1",
   "management_confidence": 26.8,
@@ -10,23 +10,23 @@
   "recommended_action": "hold",
   "human_state": "Stalling",
   "components": {
-    "validity": 12.2,
+    "validity": 1.0,
     "progress": 0.0,
-    "pace": 0.2,
+    "pace": 0.1,
     "retention": 50.0,
-    "overlay": 53.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.225,
+    "dist_to_stop_r": 0.072,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 84.4,
-    "p1": -0.517,
-    "p2": -0.2585,
+    "horizon_pct_used": 86.7,
+    "p1": -0.6184,
+    "p2": -0.3092,
     "p3": null,
-    "move_r": -0.775,
+    "move_r": -0.928,
     "mfe_r": 0.729,
-    "mae_r": -0.869
+    "mae_r": -0.928
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 2.540001525878907,
-  "_mae": -3.025000915527343,
+  "_mae": -3.2300027465820307,
   "_max_p1": 0.4863294642488519,
   "_first_trigger_ts": "2026-08-18",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 38,
-  "tau": 0.8444
+  "days_elapsed": 39,
+  "tau": 0.8667
 }

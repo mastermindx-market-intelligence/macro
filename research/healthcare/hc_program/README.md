@@ -37,3 +37,58 @@ Lane labels `hc_*` on the B-kit `remote_lane_v8.sh` fabric (hosts m1 / mb / mini
 - 2026-09-24 ~10:40Z — Independent review R1 returned (D1 REQUEST_CHANGES → 15 repairs adjudicated into seat rulings; package HOLD scoped to D2–D4, consumed). Frozen probe suite committed RED on carrier PR #7930 (`6a929f59`). D1 unlocked; START recorded on #7788.
 - 2026-09-24 ~11:40Z — Agent OS workstream `WS-GMI-HEALTHCARE` delivered by lane `hc_agentos_records` (PR #7933, armed). Records PR #7928 merged (`5ab62e1b`).
 - 2026-09-24 ~13:20Z — T02 lane r1 (mb, GLM-5.3) delivered `ab640a6a` on #7930 (sweep qualification + observation sidecar + drip receipt + gate:code job `healthcare-fda-supply`): 8/8 T02 probes green, 6 T01 probes still red by design, generation suite 22 green. Contract-delta RED (generation suite imports `scripts.build_foresight` → closure smear into the exclusive job). Exact-head Opus red-team REJECTED (`reviews/OPUS_T02_PR_REVIEW_R1_2026-09-24.md`: B1 absent-age re-stamping, B2 retention can drop live rows, B3 torn pair raises into the build, B4 failed refresh clobbers the sidecar, B5 malformed upstream keys raise, M1 sweep clock impurity, M2 cold start mis-read as inconsistent, N1 drop counter). Its eight probes frozen RED as `tests/test_fda_supply_probes_t02r.py` (`ce29c9b9`, seat commit). Adjudicated into rulings R-T02R2-01…12; ONE combined repair lane `hc_t02_r2_repair` (closure fix + eight repairs + job wiring) queued on mb 13:28Z.
+- 2026-09-24 ~15:30Z–19:25Z — T02 repair rounds r2/r3/r4 (mb) each gated by an exact-head Opus red-team and seat-frozen RED probes (`tests/test_fda_supply_probes_t02r.py`, `…_t02r2.py`, `…_t02r3.py`); the round-2 generation-less probe was amended by the seat to the seam ruling (R-T02R4-02) — recorded in the test docstring.
+- 2026-09-24 ~16:43Z–20:33Z — T01 delivered (r1), red-teamed (REJECT: literal `None`, failed refresh hiding a retained capture, silent generation drop), repaired (r2 on mb), then the FINAL exact-head red-team of `28b986d4` found the seam-level root cause (observation reader never emitted `qualified`; torn pair / cold start rendered "no matching records") → probes `…_t01r.py`, `…_final.py` frozen → r3 on m1 → head `9abf409a`.
+- 2026-09-24 20:50Z — Opus acceptance at `9abf409a`: ACCEPT (0B/0M/3m). Seat verification 135 passed; contract-delta 0 introduced; #7930 READY + merge-on-green.
+- 2026-09-26 — merge window, two days after acceptance. The carrier was `mergeable: CONFLICTING` (never red, never labelled — the sweeper refuses a conflict silently, R-D1-MERGE-00) on exactly one file: `tests/test_ci_pack.py`'s shared `CURATED_EXCLUSIVE` registry, where GMI Mining registered at the same position; resolved additively as `f9258b0d` with no D1-owned file moved. Re-running the job's eight suites on the merged head then exposed one wall-clock-rotted assertion (`captured 32 d ago` rendered `34 d ago`, because the fixture was pinned to a calendar date while `compute_fda_scarcity` reads the real clock) → seat repair `4a6cf768` anchors the fixture to that same clock (R-D1-MERGE-01); the six frozen probe files untouched. Verified at `4a6cf768`: 127 passed over the eight suites (40 probes + 25 + 62 — the accepted head's counts), `--validate-only` exit 0 over 236 legacy jobs. That head then reported exactly one red of its own: `ci-pack-8`'s `design-governance`, `templates/foresight.html.j2:581 [emoji] emoji U+1F48A` — DEBT ADOPTION, because this PR's only change to that file is the chip's ZH label and `--mode enforce-added` scores the lines a diff ADDS (`healthcare-fda-supply` is in pack 9, which passed). Seat repair `871b6d36` moves the glyph to the sanctioned kind rather than deleting it: 💊 U+1F48A → ⚕ U+2695, inside the Misc-Symbols band the ratchet reports but never blocks, alongside the ⚖ ⚠ ⚑ already in that same chip row, and monochrome so it reads in both theme art directions (R-D1-MERGE-02, `DSC:A-DESIGN-RATCHET-REPORTS-WIDER-THAN-IT-BLOCKS`). Verified at `871b6d36`: enforce-added 0 blocking over the full 9,374-line PR diff, design-governance's four unit suites 190 passed / 2 skipped, three guard selftests OK, the eight D1 suites still 127 passed. Then the seat ran the COMMITTED PRODUCTION FEED through the engine in the post-merge state (parquet at origin/main `5e921b1c`, no sidecar yet) and found the accepted head rendering a false sentence: live composition current=9 / resolved=0 / discontinued=5 rendered `FDA: mixed — current 9 / resolved 0` with title "The FDA reports both current and resolved shortages." — asserting records that do not exist and hiding five discontinuations, on a program whose law is "discontinuation ≠ resolution". MIXED fires for `current and (resolved or discontinued)` but the copy hard-coded "resolved"; every MIXED fixture in the eight suites used current + resolved, so the branch the live feed takes was never exercised — through six Opus rounds and an exact-head ACCEPT. Seat repair `5f7ae25c` (display only) enumerates the non-zero components, leaving the current+resolved rendering byte-identical, plus seat-frozen `tests/test_fda_supply_probes_mixed.py` (5 tests, 3 proven RED pre-fix) wired into the job (R-D1-MERGE-03, `DSC:A-SYNTHETIC-FIXTURES-NEVER-REACHED-THE-BRANCH-THE-LIVE-FEED-TAKES`). Verified at `5f7ae25c`: 132 passed over nine suites, CI's exact ratchet command 0 blocking, `--validate-only` 236 jobs. Squash-merged by the seat 2026-09-27 02:45:57Z as main `1c85f27bfe7e` (15 files, +3993/-293) on CONCLUDED green — pending=0, `mergeStateStatus: CLEAN`, and the one remaining red is the fleet-wide `ci-authority/codex/merge-queue-pilot` inactive-base-context check that is red on every sibling carrier. `render.yml` run 36289463335 fired on the push at exactly that SHA (02:46:00Z) and is the covering run; live proof (nightly `fda_shortages: observation ...` receipt + `data/fda/shortages.parquet.observation.json` sidecar + the rendered chip EN/ZH dark/light) is owed before D1 is reported done, and `#7788` PRODUCTION_PROOF waits on it.
+
+## D2 preflight (2026-09-27) — done BEFORE any D2 write, from the tree not the wave order
+
+Ruling `R-D2-PRE-01`. The release map above says D2 is "held until #7870's shared foundation
+lands on `main`". That is true and confirmed, but it is not the whole gate, and the seat
+resolved the difference from the tree before commissioning anything.
+
+**Symbol resolution** — T03's `Consumes/produces` names five functions; each was resolved
+against `origin/main` (`386c98edda2c`) and the base carrier head (`a0d7b054ff23`, fetched as
+`refs/hc/pr7870`), by `git grep -l "def <name>" <ref> -- '*.py'`:
+
+| T03 symbol (as the plan names it) | on `main` | on #7870 | actual signature matches plan |
+|---|---|---|---|
+| `validate_assertion(payload, *, allow_unstamped=False)` | absent | `engine/theme_graph/curation_assertion.py:280` | yes, incl. keyword-only default |
+| `curation_revision(payload)` | absent | same file `:121` | yes |
+| `encode_assertion(payload)` | absent | same file `:305` | yes |
+| `decode_assertion(value)` | absent | same file `:322` | yes |
+| `source_ref_for(payload)` | absent | same file `:345` | yes |
+
+So the plan's identifiers are real, not not-yet-minted, and the merge gate is correctly
+stated: none of the five is reachable from `main` today.
+
+**The half that is NOT satisfied by the merge.** T03 is a *version-aware* consumption —
+"explicit `schema` selects the branch", v1/v1.1 discriminator — and the v1.1 half does not
+exist on the base carrier. `contracts/theme_graph/` holds ten `*.v1.schema.json` files and no
+v1.1 file; `curation_assertion.py` pins one frozen `SCHEMA_ID =
+"theme_graph.curation_assertion.v1"` (`:46`) with no version branch, and its owner check
+(`:539`) RAISES `k1_owner_schema_drift` unless the owner row advertises exactly that single
+schema — the module refuses a two-version owner as of today. v1.1 exists only as the base
+owner's proposal document, whose own state line reads **`V1_1: PROPOSED_NOT_BUILT`** and which
+says of itself "**Not** live data admission, not a schema enrollment, not code."
+
+**Seat ruling.** When #7870 lands, T03 is scoped to **v1-only consumption**; its v1.1 branch is
+DEFERRED to the base owner building v1.1, and is recorded as deferred rather than dropped.
+Healthcare mints no v1.1 schema, no dispatcher and no adapter — the standing Chairman/Astra
+directive gives the shared base to #7870 and forbids verticals minting shell/evidence/rights
+vocabularies, and the plan's own C0 gate says "No adapter is synthesized from this checklist."
+Nothing here asks the base owner to reorder their program for this vertical, and nothing was
+posted to #7870: the owner has already published the state line above.
+
+**C0 is ten supplied facts, not a merge.** Re-evaluate this checklist at merge time, on the
+existing PR/Agent OS record (plan line 72) — accepted source commit + owned paths · v1/v1.1
+discriminator + supported payload · native mint/reader signatures · registered private binding
++ classification · original-source family resolver · request/response profile + generation
+semantics · common client/mount contract · source-writer/collision disposition · independent
+review · remaining runtime proof. Item 2 is the one this preflight has already answered
+(v1 supplied, v1.1 not built); the other nine are unevaluated and a bare merge does not
+discharge them. Missing private-runtime proof may hold live admission while authorized
+synthetic source work proceeds.
+
+Recorded as `DSC:D2-WAITS-ON-A-BUILT-V1-1-NOT-ONLY-ON-THE-BASE-MERGE` (with falsifier).

@@ -199,7 +199,7 @@ def test_head_findings_binds_exact_tree_inventory(
     def closure_findings(path: Path):
         assert events[-1][0] == "enter"
         assert path == manifest
-        return {"unrun-picks-boards": ["site/theme.css"]}
+        return {"unrun-picks-boards": ["site/theme.css"]}  # ci-trigger-closure: data — fixture finding name, never opened
 
     def suite_findings():
         assert events[-1][0] == "enter"
@@ -209,7 +209,7 @@ def test_head_findings_binds_exact_tree_inventory(
     monkeypatch.setattr(CCD, "gated_unrun_suites", suite_findings)
 
     assert CCD._head_findings() == {
-        "closure": {"unrun-picks-boards": ["site/theme.css"]},
+        "closure": {"unrun-picks-boards": ["site/theme.css"]},  # ci-trigger-closure: data — fixture finding name, never opened
         "suites": ["tests/test_unwired.py"],
     }
     assert [event[0] for event in events] == ["write", "enter", "exit"]
@@ -430,15 +430,21 @@ def test_ci_gate_enforcement_step_treats_skip_as_ok() -> None:
     assert '!= "success"' not in run and '!="success"' not in run
 
 
-def test_legacy_jobs_workflow_yaml_job_runs_the_new_suite() -> None:
+def test_legacy_jobs_ci_control_plane_job_runs_the_new_suite() -> None:
     """This file must be wired somewhere, or audit_unrun_tests.py's own gate --
-    the very lane this gate exists to make pre-mergeable -- would flag it."""
+    the very lane this gate exists to make pre-mergeable -- would flag it.
+
+    Its home moved from workflow-yaml (gate: data, never run on a pull request)
+    to ci-control-plane-contracts on 2026-09-25, and it must stay on the code
+    gate: a contract for a PR gate that only runs after the merge proves
+    nothing about the PR."""
     doc = yaml.safe_load(MANIFEST.read_text())
-    job = doc["jobs"]["workflow-yaml"]
+    job = doc["jobs"]["ci-control-plane-contracts"]
     blob = "\n".join(
         step.get("run", "") for step in job.get("steps", []) if isinstance(step, dict)
     )
     assert "tests/test_contract_delta.py" in blob
+    assert job.get("gate", "code") == "code"
 
 
 # ─────────────────────────────────────────────────────────────────────────────

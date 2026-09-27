@@ -5,8 +5,10 @@ with transition-dedup + heartbeat.
 """
 from __future__ import annotations
 import json
+from datetime import datetime, timedelta, timezone
 
 import pytest
+import pandas as pd
 
 from engine import foresight_cascade as fc
 from lib import config as _config
@@ -660,7 +662,7 @@ def test_fda_scarcity_active_band():
 
 
 def test_fda_scarcity_resolved_band():
-    """(b) All shortage records resolved → SHORTAGE_RESOLVED (the glut tell)."""
+    """(b) All shortage records resolved → SHORTAGE_RESOLVED without economic wording."""
     from engine.fda_scarcity import compute_fda_scarcity, SHORTAGE_RESOLVED
     df = _make_shortage_df([
         {"generic_name": "Semaglutide Tablet", "status": "Resolved",
@@ -673,35 +675,32 @@ def test_fda_scarcity_resolved_band():
     assert glp1 is not None
     assert glp1["band"] == SHORTAGE_RESOLVED
     assert glp1["n_resolved"] >= 2
-    assert "glut tell" in glp1["rationale"].lower() or "resolved" in glp1["rationale"].lower()
+    assert "resolved" in glp1["rationale"].lower()
+    assert glp1["source_status"] == "RESOLVED_REPORTED"
 
 
 def test_fda_scarcity_none_on_missing_cache(monkeypatch, tmp_path):
-    """(c) Missing cache → all themes return None.
+    """(c) Missing cache → every theme remains visible as unavailable.
 
-    Hermetic: monkeypatches the cache loader so the test never touches real disk data
+    Hermetic: monkeypatches the observation reader so the test never touches real disk data
     (data/fda/shortages.parquet).  Without this patch the cache loader succeeds on
     checkouts that already have the file, making the test pass for the wrong reason.
     """
-    import engine.fda_scarcity as fda_mod
-
-    # Patch load_shortages_cache inside the fda_scarcity module to always raise,
-    # simulating a missing/broken cache independently of what is on disk.
-    def _no_cache():
-        raise FileNotFoundError("monkeypatched: no cache")
-
-    # The loader is imported lazily inside compute_fda_scarcity; patch the module
-    # so that `collectors.fda_shortages.load_shortages_cache` raises.
     import sys
+
+    # R-T01-10: composition follows configuration, not acquisition.
     fake_collector = type(sys)("collectors.fda_shortages")
-    fake_collector.load_shortages_cache = _no_cache
+    fake_collector.read_shortage_observation = lambda **_kwargs: (_ for _ in ()).throw(
+        FileNotFoundError("monkeypatched: no cache")
+    )
     monkeypatch.setitem(sys.modules, "collectors.fda_shortages", fake_collector)
 
     from engine.fda_scarcity import compute_fda_scarcity
     result = compute_fda_scarcity(df=None)
     assert isinstance(result, dict)
     for v in result.values():
-        assert v is None, f"expected None for missing cache, got {v}"
+        assert v is not None
+        assert v["source_status"] == "UNAVAILABLE"
 
 
 def test_fda_scarcity_mixed_active_and_resolved():
@@ -730,6 +729,7 @@ def test_fda_scarcity_no_glp1_records():
     glp1 = result.get("glp1_obesity")
     assert glp1 is not None
     assert glp1["band"] == BAND_NONE
+    assert glp1["source_status"] == "NO_MATCHING_RECORDS"
 
 
 def test_theme_feed_summary_flows_into_glp1_row():
@@ -744,11 +744,13 @@ def test_theme_feed_summary_flows_into_glp1_row():
     fda_scarcity_data = {
         "glp1_obesity": {
             "band": "SHORTAGE_ACTIVE",
+            "source_status": "CURRENT_REPORTED",
+            "freshness": {},
             "n_active": 3,
             "n_resolved": 0,
             "molecules_checked": ["semaglutide", "tirzepatide", "liraglutide"],
             "details": ["Semaglutide Injection [Current/Limited Availability]"],
-            "rationale": "3 active shortage records — demand exceeds supply",
+            "rationale": "3 current regulator records observed",
         }
     }
     out = fc.compute_foresight_cascade(
@@ -794,7 +796,7 @@ def test_theme_feed_summary_none_when_no_fda_data():
 
 def test_jinja_watch_shelf_renders_and_pills_exclude_tier_w():
     """(e) Jinja render: Tier W themes appear in watch shelf; stage pills only count Tier P."""
-    import sys, os
+    import sys
     sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parent.parent))
     from jinja2 import Environment, FileSystemLoader
     import pathlib
@@ -834,8 +836,10 @@ def test_jinja_watch_shelf_renders_and_pills_exclude_tier_w():
             "theme_feed_summary": {
                 "source": "fda_shortages", "theme": "glp1_obesity",
                 "band": "SHORTAGE_ACTIVE", "tone": "warn",
-                "label": "FDA shortage ACTIVE (3 records)",
-                "rationale": "3 active shortage records — demand exceeds supply",
+                "label": "FDA shortage: current (3)",
+                "label_zh": "FDA短缺：当前（3）", "freshness": {},
+                "source_status": "CURRENT_REPORTED",
+                "rationale": "3 current regulator records observed",
                 "n_active": 3, "n_resolved": 0,
             },
             "rationale": "supply not tight; FDA shortage ACTIVE — demand exceeds supply",
@@ -889,7 +893,8 @@ def test_jinja_watch_shelf_renders_and_pills_exclude_tier_w():
     # Watch shelf chip ("+N on watch shelf") must appear
     assert "watch shelf" in html.lower() or "观察架" in html
     # FDA chip must appear for glp1_obesity
-    assert "FDA shortage ACTIVE" in html
+    assert "FDA shortage: current (3)" in html
+    assert "FDA短缺：当前（3）" in html
     # Cybersecurity should appear in watch shelf, not as a full card
     # (It has tier=W so it should be in .fx-watch-rows not .fx-cards)
     watch_shelf_pos = html.find("fx-watch-shelf")
@@ -1023,3 +1028,643 @@ def test_fingerprint_stage_implies_health_leg_not_dark():
     leg = h["legs"]["t1_fingerprint"]
     assert leg["status"] != "DARK"
     assert leg["detail"] == "1/1"
+
+
+# ── Healthcare D1 T01: scoped FDA supply observations ────────────────────────
+
+UTC = timezone.utc
+
+_STATUSES = (
+    "CURRENT_REPORTED",
+    "RESOLVED_REPORTED",
+    "DISCONTINUATION_REPORTED",
+    "MIXED_REPORTED",
+    "UNCLASSIFIED",
+    "NO_MATCHING_RECORDS",
+    "UNAVAILABLE",
+)
+
+
+def _capture(now, generation="2026-09-23"):
+    return {
+        "qualified": True,
+        "finished_at": now.isoformat(),
+        "source_generation": generation,
+        "atomic_snapshot_proven": False,
+    }
+
+
+def _failed_capture(now, generation=""):
+    return {
+        "qualified": False,
+        "finished_at": (now - timedelta(days=30)).isoformat(),
+        "source_generation": generation,
+        "atomic_snapshot_proven": False,
+        "failure_code": "FIRST_PAGE_OUTAGE",
+    }
+
+
+def _retained_capture_with_failed_refresh(now, generation="2026-08-20"):
+    return {
+        **_capture(now - timedelta(days=31), generation),
+        "refresh_failed": True,
+        "refresh_failure_code": "FIRST_PAGE_OUTAGE",
+        "refresh_at": "2026-09-22T09:00:00+00:00",
+    }
+
+
+def _summary_row(status="Current", availability="Available", ndc="TEST-A"):
+    return {
+        "generic_name": "Synthetic Theme A",
+        "package_ndc": ndc,
+        "status": status,
+        "availability": availability,
+        "initial_posting_date": "2026-03-02",
+    }
+
+
+def test_current_available_does_not_become_resolved():
+    from engine.fda_scarcity import summarize_supply
+
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    out = summarize_supply(
+        [_summary_row()],
+        capture=_capture(now),
+        now=now,
+        max_capture_age=timedelta(days=2),
+    )
+    assert out["source_status"] == "CURRENT_REPORTED"
+    assert out["rows"][0]["regulator_status"] == "current"
+    assert out["rows"][0]["manufacturer_availability"] == "Available"
+    assert out["counts"]["current"] == 1
+    assert "glut" not in out["label"].casefold()
+
+
+def test_supply_table_states_and_legacy_bands(monkeypatch):
+    import engine.fda_scarcity as fda_module
+    from engine.fda_scarcity import (
+        BAND_NONE, SHORTAGE_ACTIVE, compute_fda_scarcity,
+        summarize_supply,
+    )
+
+    monkeypatch.setattr(fda_module, "MOLECULE_THEME_MAP", {"synthetic theme a": ["glp1_obesity"]})
+
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    cases = [
+        ([_summary_row("Current"), _summary_row("Resolved", ndc="TEST-B")],
+         "MIXED_REPORTED", SHORTAGE_ACTIVE),
+        ([_summary_row("To Be Discontinued")],
+         "DISCONTINUATION_REPORTED", BAND_NONE),
+        ([_summary_row("Under Review")], "UNCLASSIFIED", BAND_NONE),
+        ([], "NO_MATCHING_RECORDS", BAND_NONE),
+    ]
+    for rows, source_status, band in cases:
+        summary = summarize_supply(
+            rows, capture=_capture(now), now=now, max_capture_age=timedelta(days=2)
+        )
+        assert summary["source_status"] == source_status
+        frame = pd.DataFrame(rows)
+        computed = compute_fda_scarcity(frame)["glp1_obesity"]
+        assert computed["source_status"] == source_status
+        assert computed["band"] == band
+
+
+def test_no_qualified_capture_is_unavailable_but_retains_rows():
+    from engine.fda_scarcity import summarize_supply
+
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    out = summarize_supply(
+        [_summary_row()],
+        capture=_failed_capture(now),
+        now=now,
+        max_capture_age=timedelta(days=2),
+    )
+    assert out["source_status"] == "UNAVAILABLE"
+    assert out["freshness"]["capture_qualified"] is False
+    assert out["freshness"]["stale"] is True
+    assert out["freshness"]["failed_refresh"] is None
+    assert out["counts"]["current"] == 1
+    assert out["rows"][0]["regulator_status"] == "current"
+    assert out["label"] == (
+        "FDA source unavailable — no qualified generation on file, refresh failed · "
+        "captured 30 d ago"
+    )
+    assert out["label_zh"] == "FDA来源不可用——无合格来源生成日期，刷新失败 · 采集于30天前"
+
+
+def test_known_and_unrecognized_rows_expose_both_parts():
+    from engine.fda_scarcity import summarize_supply
+
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    out = summarize_supply(
+        [_summary_row("Current"), _summary_row("Under Review", ndc="TEST-B")],
+        capture=_capture(now), now=now, max_capture_age=timedelta(days=2),
+    )
+    assert out["source_status"] == "CURRENT_REPORTED"
+    assert out["counts"]["current"] == 1
+    assert out["counts"]["unrecognized"] == 1
+    assert out["counts"]["matched"] == 2
+    assert out["coverage"]["matched_rows"] == 2
+    assert out["coverage"]["unclassified_rows"] == 1
+    assert "1 record unclassified" in out["label"]
+
+
+def test_fresh_capture_with_old_generation_is_not_called_fresh():
+    from engine.fda_scarcity import summarize_supply
+
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    out = summarize_supply(
+        [_summary_row()], capture=_capture(now, "2026-07-25"),
+        now=now, max_capture_age=timedelta(days=2),
+    )
+    assert out["freshness"]["capture_qualified"] is True
+    assert out["freshness"]["stale"] is False
+    assert out["freshness"]["source_generation_age_days"] == 60
+    assert "fresh" not in out["label"].casefold()
+
+
+def test_legacy_dataframe_path_has_unknown_capture(monkeypatch):
+    import engine.fda_scarcity as fda_module
+    from engine.fda_scarcity import compute_fda_scarcity
+
+    monkeypatch.setattr(fda_module, "MOLECULE_THEME_MAP", {"synthetic theme a": ["glp1_obesity"]})
+    frame = pd.DataFrame([_summary_row()])
+    row = compute_fda_scarcity(frame)["glp1_obesity"]
+    assert row["source_status"] == "CURRENT_REPORTED"
+    assert row["summary"]["freshness"]["capture_qualified"] is None
+    assert row["summary"]["freshness"]["stale"] is None
+    assert row["summary"]["label"].endswith("capture time unknown")
+
+
+def test_observation_attrs_can_report_failed_or_inconsistent_refresh(monkeypatch):
+    import engine.fda_scarcity as fda_module
+
+    monkeypatch.setattr(fda_module, "MOLECULE_THEME_MAP", {"synthetic theme a": ["glp1_obesity"]})
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    frame = pd.DataFrame([_summary_row()])
+    frame.attrs["fda_observation"] = {
+        "capture": _capture(now), "last_refresh": None,
+        "legacy": False, "inconsistent": True, "failed_refresh": False,
+    }
+    capture, _ = fda_module._observation_capture(frame.attrs["fda_observation"])
+    row = {"band": fda_module.BAND_NONE}
+    row["summary"] = fda_module.summarize_supply(
+        [_summary_row()], capture=capture, now=now, max_capture_age=None,
+    )
+    row["source_status"] = row["summary"]["source_status"]
+    assert row["source_status"] == "UNAVAILABLE"
+    assert row["band"] == "NONE"
+    assert row["summary"]["freshness"]["capture_qualified"] is False
+    assert row["summary"]["freshness"]["failed_refresh"] is None
+    assert row["summary"]["counts"]["matched"] == 1
+    assert row["summary"]["label"] == (
+        "FDA source unavailable — last observation unreadable · captured 0 d ago"
+    )
+    assert row["summary"]["label_zh"] == "FDA来源不可用——上次观测无法读取 · 采集于0天前"
+    chip = fda_module.format_theme_feed_chip(row, "glp1_obesity")
+    assert chip["tone"] == "mute"
+    assert chip["rationale"] == "The FDA source is unavailable."
+
+
+def test_all_supply_chip_statuses_render_with_distinct_plain_text():
+    from engine.fda_scarcity import format_theme_feed_chip
+
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    rows = {
+        "CURRENT_REPORTED": [_summary_row("Current")],
+        "RESOLVED_REPORTED": [_summary_row("Resolved")],
+        "DISCONTINUATION_REPORTED": [_summary_row("To Be Discontinued")],
+        "MIXED_REPORTED": [_summary_row("Current"), _summary_row("Resolved", ndc="TEST-B")],
+        "UNCLASSIFIED": [_summary_row("Under Review")],
+        "NO_MATCHING_RECORDS": [],
+    }
+    chips = {}
+    for status, case_rows in rows.items():
+        summary = summarize_supply_for_test(case_rows, now)
+        row = {status: _computed_row_for_summary(summary)}
+        chip = format_theme_feed_chip(row[status], "glp1_obesity")
+        assert chip is not None
+        assert chip["source_status"] == status
+        assert chip["label_zh"]
+        assert chip["tone"] in {"warn", "cool", "mute"}
+        assert chip["rationale"] != summary["label"]
+        chips[status] = chip
+    from engine.fda_scarcity import summarize_supply
+    unavailable_summary = summarize_supply(
+        [_summary_row()], capture=_failed_capture(now), now=now,
+        max_capture_age=timedelta(days=2),
+    )
+    unavailable = _computed_row_for_summary(unavailable_summary)
+    chip = format_theme_feed_chip(unavailable, "glp1_obesity")
+    assert chip is not None and chip["source_status"] == "UNAVAILABLE"
+    assert "no qualified generation on file" in chip["label"]
+    chips["UNAVAILABLE"] = chip
+    assert len({chip["label"] for chip in chips.values()}) == 7
+    assert len({chip["label_zh"] for chip in chips.values()}) == 7
+    assert len({chip["rationale"] for chip in chips.values()}) == 7
+    banned = ("glut", "tell", "all-clear", "catching up", "demand exceeds supply", "supply constraint lifted")
+    for chip in chips.values():
+        text = " ".join(str(chip[key]) for key in ("label", "label_zh", "rationale"))
+        assert all(word not in text.casefold() for word in banned)
+
+
+def test_chip_zh_labels_translate_every_appended_fact():
+    from engine.fda_scarcity import summarize_supply
+
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    current_with_remainder = summarize_supply(
+        [_summary_row("Current"), _summary_row("Under Review", ndc="TEST-B")],
+        capture=_capture(now - timedelta(days=3), "2026-09-20"), now=now, max_capture_age=None,
+    )
+    legacy = summarize_supply(
+        [_summary_row("Current")], capture=None, now=now, max_capture_age=None,
+    )
+    unavailable = summarize_supply(
+        [_summary_row()], capture=_failed_capture(now), now=now,
+        max_capture_age=timedelta(days=2),
+    )
+
+    assert current_with_remainder["label"] == (
+        "FDA shortage: current (1) · captured 3 d ago · "
+        "source generation 2026-09-20 · 1 record unclassified"
+    )
+    assert current_with_remainder["label_zh"] == (
+        "FDA短缺：当前（1） · 采集于3天前 · "
+        "来源生成日期2026-09-20 · 1条记录未分类"
+    )
+    assert legacy["label"].endswith("capture time unknown")
+    assert legacy["label_zh"].endswith("采集时间未知")
+    assert unavailable["label"] == (
+        "FDA source unavailable — no qualified generation on file, refresh failed · captured 30 d ago"
+    )
+    assert unavailable["label_zh"] == (
+        "FDA来源不可用——无合格来源生成日期，刷新失败 · 采集于30天前"
+    )
+    for summary in (current_with_remainder, legacy, unavailable):
+        chinese = summary["label_zh"].casefold()
+        assert "source generation" not in chinese
+        assert "record unclassified" not in chinese
+        assert "capture time unknown" not in chinese
+
+
+def test_failed_refresh_discloses_the_retained_qualified_capture(monkeypatch):
+    import engine.fda_scarcity as fda_module
+    from engine.fda_scarcity import compute_fda_scarcity, format_theme_feed_chip
+
+    monkeypatch.setattr(fda_module, "MOLECULE_THEME_MAP", {"synthetic theme a": ["glp1_obesity"]})
+    # `compute_fda_scarcity` reads the wall clock (it has no injected `now` seam and passes
+    # max_capture_age=None per R-T01-12), so the capture has to be anchored to that SAME
+    # clock. A fixed calendar date here renders a different "captured N d ago" on every
+    # later day: the assertion would pass only on the day it was written.
+    now = datetime.now(UTC)
+    frame = pd.DataFrame([_summary_row()])
+    frame.attrs["fda_observation"] = {
+        "capture": _retained_capture_with_failed_refresh(now),
+        "last_refresh": {"qualified": False, "failure_code": "FIRST_PAGE_OUTAGE",
+                         "attempted_at": "2026-09-22T09:00:00+00:00"},
+        "legacy": False, "inconsistent": False, "failed_refresh": True,
+    }
+    row = compute_fda_scarcity(frame)["glp1_obesity"]
+    chip = format_theme_feed_chip(row, "glp1_obesity")
+    assert chip["source_status"] == "CURRENT_REPORTED"
+    assert chip["tone"] == "warn"
+    assert chip["label"] == (
+        "FDA shortage: current (1) · captured 31 d ago · source generation 2026-08-20 · "
+        "refresh failed 2026-09-22"
+    )
+    assert chip["label_zh"] == (
+        "FDA短缺：当前（1） · 采集于31天前 · 来源生成日期2026-08-20 · 刷新失败 2026-09-22"
+    )
+    assert chip["freshness"]["failed_refresh"]["failure_code"] == "FIRST_PAGE_OUTAGE"
+    assert chip["freshness"]["failed_refresh"]["attempted_at"] == "2026-09-22T09:00:00+00:00"
+
+
+def test_legacy_chip_rows_preserve_discontinued_and_unclassified_states():
+    from engine.fda_scarcity import format_theme_feed_chip
+
+    discontinued = format_theme_feed_chip(
+        {"band": "NONE", "n_active": 0, "n_resolved": 0, "n_discontinued": 2,
+         "details": ["Synthetic A [To Be Discontinued]"]},
+        "glp1_obesity",
+    )
+    assert discontinued["source_status"] == "DISCONTINUATION_REPORTED"
+    assert discontinued["band"] == "NONE"
+    assert "discontinuation reported (2)" in discontinued["label"]
+
+    unrecognized = format_theme_feed_chip(
+        {"band": "NONE", "n_active": 0, "n_resolved": 0, "n_discontinued": 0,
+         "details": ["Synthetic A [Under Review]"]},
+        "glp1_obesity",
+    )
+    assert unrecognized["source_status"] == "UNCLASSIFIED"
+    assert unrecognized["band"] == "NONE"
+    assert "status unclassified" in unrecognized["label"]
+    bottleneck = {"themes": {"glp1_obesity": {"name": "GLP-1 / Obesity", "band": "AWAITING_DATA"}}}
+    revisions = {"themes": {"glp1_obesity": {"name": "GLP-1 / Obesity", "breadth": 0.05,
+                                              "level_state": "FLAT_LOW"}}}
+
+    def run(source_status):
+        scarcity = {"glp1_obesity": {"band": "SHORTAGE_ACTIVE",
+                                     "source_status": source_status,
+                                     "freshness": {}, "n_active": 1, "n_resolved": 0,
+                                     "rationale": "one regulator record observed"}}
+        return fc.compute_foresight_cascade(
+            bottleneck=bottleneck, revisions=revisions, demand={"themes": {}},
+            glut={"themes": {}}, fda_scarcity=scarcity, write_ledger=False,
+        )["themes"][0]
+
+    current = run("CURRENT_REPORTED")
+    resolved = run("RESOLVED_REPORTED")
+    assert current["stage"] == resolved["stage"] == "WATCH"
+    assert current.get("entry") == resolved.get("entry") is None
+    assert current["tier"] == resolved["tier"] == "P"
+
+
+def test_rendered_html_shows_zh_chip_and_no_banned_words():
+    import pathlib
+    from jinja2 import Environment, FileSystemLoader
+
+    repo = pathlib.Path(__file__).resolve().parent.parent
+    env = Environment(loader=FileSystemLoader(str(repo / "templates")), autoescape=True)
+    template = env.get_template("foresight.html.j2")
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    unavailable_summary = summarize_supply_for_test(
+        [_summary_row()], now, capture=_failed_capture(now),
+    )
+    failed_refresh_summary = summarize_supply_for_test(
+        [_summary_row()], now,
+        capture={**_capture(now - timedelta(days=30), "2026-08-20"),
+                 "refresh_failed": True, "refresh_failure_code": "FIRST_PAGE_OUTAGE",
+                 "refresh_at": "2026-09-22T09:00:00+00:00"},
+    )
+    chips = [format_chip_for_render(summarize_supply_for_test([_summary_row()], now)),
+             format_chip_for_render(unavailable_summary),
+             format_chip_for_render(failed_refresh_summary)]
+    html = template.render(
+        cascade={"sizing": None, "demand_pool": None, "dislocation": None},
+        themes=[{"theme": "glp1_obesity", "name": "Synthetic Theme", "tier": "P",
+                 "stage": "WATCH", "bottleneck_band": None,
+                 "bottleneck_text_only": False, "tightness": None,
+                 "bottleneck_regime": False, "demand_band": None,
+                 "demand_strength": None, "capex_yoy": None,
+                 "revision_breadth": None, "revision_level": None,
+                 "broadening_state": None, "est_drift_90d": None,
+                 "guidance_band": None, "guidance_net": None,
+                 "guidance_raisers": None, "guidance_cutters": None,
+                 "altdata_summary": None, "n_altdata_leading": 0,
+                 "altdata_members": None, "glut_band": None, "glut_score": None,
+                 "theme_feed_summary": chip, "rationale": "one regulator record observed",
+                 "entry_ready": False, "entry_note": "not a thesis stage — no entry",
+                 "score": 42, "score_detail": {"verdict": "watch", "axes": {}, "caps": []},
+                 "size_band": None, "size_note": None} for chip in chips],
+        stage_counts={}, stage_order=[], demand_pool=None, dislocation=None,
+        track={"recent": []}, grade=None, emergence=None, subsectors=None,
+        convergence=None, power=None, analyst=None, monitor=None, health=None,
+        asof="2026-09-23", generated_utc="2026-09-23 00:00 UTC",
+        nav_prefix="", active_section="research", active_page="foresight",
+    )
+    assert "FDA短缺：当前（1）" in html
+    assert "FDA来源不可用" in html
+    assert "刷新失败 2026-09-22" in html
+    banned = ("glut", "tell", "all-clear", "catching up", "demand exceeds supply", "supply constraint lifted")
+    chip_html = " ".join(
+        segment.split("</span>")[0] for segment in html.split("fx-chip feed-")[1:]
+    )
+    for word in banned:
+        assert word not in chip_html.casefold()
+
+
+def summarize_supply_for_test(rows, now, capture=None):
+    from engine.fda_scarcity import summarize_supply
+    return summarize_supply(
+        rows, capture=capture or _capture(now), now=now, max_capture_age=None,
+    )
+
+
+def format_chip_for_render(summary):
+    from engine.fda_scarcity import format_theme_feed_chip
+    return format_theme_feed_chip(_computed_row_for_summary(summary), "glp1_obesity")
+
+
+def _computed_row_for_summary(summary):
+    status = summary["source_status"]
+    return {
+        "band": "SHORTAGE_ACTIVE" if status in {"CURRENT_REPORTED", "MIXED_REPORTED"}
+                else ("SHORTAGE_RESOLVED" if status == "RESOLVED_REPORTED" else "NONE"),
+        "source_status": status,
+        "summary": summary,
+        "freshness": summary["freshness"],
+        "n_active": summary["counts"]["current"],
+        "n_resolved": summary["counts"]["resolved"],
+        "n_discontinued": summary["counts"]["discontinued"],
+        "molecules_checked": summary["coverage"]["molecules_checked"],
+        "details": [], "rationale": summary["label"],
+    }
+
+
+def test_cache_absent_fda_source_never_changes_cascade_tier_stage_or_entry():
+    import engine.foresight_cascade as fc
+
+    bottleneck = {"themes": {"glp1_obesity": {"name": "GLP-1 / Obesity", "band": "AWAITING_DATA"}}}
+    revisions = {"themes": {"glp1_obesity": {"name": "GLP-1 / Obesity", "breadth": 0.05,
+                                             "level_state": "FLAT_LOW"}}}
+
+    def run(source_status, band):
+        scarcity = {"glp1_obesity": {"band": band, "source_status": source_status,
+                                     "freshness": {"capture_qualified": False}, "n_active": 1, "n_resolved": 0,
+                                     "n_discontinued": 0, "molecules_checked": [],
+                                     "details": [], "rationale": "synthetic"}}
+        return fc.compute_foresight_cascade(
+            bottleneck=bottleneck, revisions=revisions, demand={"themes": {}},
+            glut={"themes": {}}, fda_scarcity=scarcity, write_ledger=False,
+        )["themes"][0]
+
+    current = run("CURRENT_REPORTED", "SHORTAGE_ACTIVE")
+    unavailable = run("UNAVAILABLE", "NONE")
+    empty = run("NO_MATCHING_RECORDS", "NONE")
+    assert current["tier"] == unavailable["tier"] == empty["tier"] == "P"
+    assert current["stage"] == unavailable["stage"] == empty["stage"]
+    assert current.get("entry") == unavailable.get("entry") == empty.get("entry")
+    assert unavailable["theme_feed_summary"]["label"] == (
+        "FDA source unavailable — no qualified generation on file, refresh failed"
+    )
+
+
+def test_missing_generation_on_qualified_capture_renders_authored_unknown_copy():
+    from engine.fda_scarcity import summarize_supply
+
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    out = summarize_supply(
+        [_summary_row()], capture=_capture(now, ""), now=now, max_capture_age=None,
+    )
+    assert out["freshness"]["source_generation"] is None
+    assert out["label"] == (
+        "FDA shortage: current (1) · captured 0 d ago · source generation unknown"
+    )
+    assert out["label_zh"] == "FDA短缺：当前（1） · 采集于0天前 · 来源生成日期未知"
+
+
+def test_iso_datetime_generation_parses_to_its_date():
+    from engine.fda_scarcity import summarize_supply
+
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    out = summarize_supply(
+        [_summary_row()], capture=_capture(now, "2026-07-25T00:00:00+00:00"),
+        now=now, max_capture_age=None,
+    )
+    assert out["freshness"]["source_generation"] == "2026-07-25"
+    assert "source generation 2026-07-25" in out["label"]
+    assert "来源生成日期2026-07-25" in out["label_zh"]
+
+
+def test_resolved_and_discontinued_mixture_names_both_counts(monkeypatch):
+    import engine.fda_scarcity as fda_module
+    from engine.fda_scarcity import format_theme_feed_chip
+
+    monkeypatch.setattr(fda_module, "MOLECULE_THEME_MAP", {"synthetic theme a": ["glp1_obesity"]})
+    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    row = {"band": fda_module.BAND_NONE}
+    row["summary"] = fda_module.summarize_supply(
+        [_summary_row("Resolved"), _summary_row("To Be Discontinued", ndc="TEST-B")],
+        capture=_capture(now), now=now, max_capture_age=None,
+    )
+    row["source_status"] = row["summary"]["source_status"]
+    assert row["source_status"] == "DISCONTINUATION_REPORTED"
+    row["rationale"] = (
+        "regulator status: resolved (1 record) and discontinued (1 record) — supply status only"
+    )
+    assert row["rationale"] == (
+        "regulator status: resolved (1 record) and discontinued (1 record) — supply status only"
+    )
+    assert row["rationale"] == (
+        "regulator status: resolved (1 record) and discontinued (1 record) — supply status only"
+    )
+    chip = format_theme_feed_chip(row, "glp1_obesity")
+    assert chip["label"] == (
+        "FDA: resolved 1 / discontinued 1 — supply status only · captured 0 d ago · "
+        "source generation 2026-09-23"
+    )
+
+
+def _observation_sweep(collector, generation, record, start, finish, *, outage=False):
+    def fetch_page(skip, limit):
+        if outage:
+            raise OSError("synthetic outage")
+        return {
+            "meta": {"last_updated": generation, "results": {"total": 1}},
+            "results": [] if skip else [record],
+        }
+
+    return collector.collect_shortage_sweep(
+        fetch_page, clock=_observation_clock(start, finish), page_size=100, max_pages=3,
+    )
+
+
+def _observation_clock(start, finish):
+    calls = iter((start, finish))
+    return lambda: next(calls)
+
+
+def _observation_digest(path):
+    import hashlib
+
+    sidecar = path.with_suffix(".observation.json")
+    return hashlib.sha256(sidecar.read_bytes()).hexdigest() if sidecar.exists() else None
+
+
+def _render_observation(tmp_path, monkeypatch, state_name):
+    import collectors.fda_shortages as collector
+    import engine.fda_scarcity as scarcity
+
+    path = tmp_path / state_name / "shortages.parquet"
+    path.parent.mkdir()
+    monkeypatch.setattr(collector, "_shortages_path", lambda: path)
+    monkeypatch.setattr(scarcity, "MOLECULE_THEME_MAP", {"Synthetic A": ["synthetic_theme"]})
+    record = {
+        "package_ndc": "TEST-A", "generic_name": "Synthetic A", "status": "Current",
+        "availability": "Available", "initial_posting_date": "2026-03-02",
+    }
+    start = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    finish = start.replace(second=6)
+
+    if state_name == "REFRESH_FAILED":
+        first = _observation_sweep(collector, None, record, start, finish, outage=True)
+        assert first["qualified"] is False
+        collector.save_shortage_observation(first, path=path, expected_predecessor=None)
+    elif state_name != "NOT_OBSERVED":
+        first = _observation_sweep(collector, "2026-09-23", record, start, finish)
+        assert first["qualified"] is True
+        assert collector.save_shortage_observation(
+            first, path=path, expected_predecessor=None
+        )["promoted"] is True
+
+    if state_name == "UNREADABLE":
+        path.write_bytes(b"synthetic unreadable parquet")
+    elif state_name == "LEGACY":
+        path.with_suffix(".observation.json").unlink()
+
+    row = scarcity.compute_fda_scarcity().get("synthetic_theme")
+    return scarcity.format_theme_feed_chip(row, "synthetic_theme")
+
+
+def test_observation_states_render_distinct_unavailable_truths(tmp_path, monkeypatch):
+    from engine.foresight_cascade import _compute_tier
+
+    expected = {
+        "NOT_OBSERVED": (
+            "FDA source not yet observed — no qualified generation on file",
+            "FDA来源尚未观测——无合格来源生成日期",
+        ),
+        "UNREADABLE": (
+            "FDA source unavailable — last observation unreadable",
+            "FDA来源不可用——上次观测无法读取",
+        ),
+        "REFRESH_FAILED": (
+            "FDA source unavailable — no qualified generation on file, refresh failed",
+            "FDA来源不可用——无合格来源生成日期，刷新失败",
+        ),
+        "LEGACY": (
+            "FDA shortage: current (1) · capture time unknown",
+            "FDA短缺：当前（1） · 采集时间未知",
+        ),
+    }
+    baseline = None
+    for state_name, (english, chinese) in expected.items():
+        chip = _render_observation(tmp_path, monkeypatch, state_name)
+        assert chip is not None
+        if state_name == "LEGACY":
+            assert chip["source_status"] == "CURRENT_REPORTED"
+            assert chip["tone"] == "warn"
+            assert chip["freshness"]["capture_qualified"] is None
+            assert "capture time unknown" in chip["label"]
+        else:
+            assert chip["source_status"] == "UNAVAILABLE"
+            assert chip["tone"] == "mute"
+            assert chip["freshness"]["capture_qualified"] is False
+            assert "capture time unknown" not in chip["label"]
+        assert chip["label"] == english
+        assert chip["label_zh"] == chinese
+        assert chip["band"] == "NONE" if state_name != "LEGACY" else chip["band"] == "SHORTAGE_ACTIVE"
+        tier = _compute_tier(None, chip)
+        if baseline is None:
+            baseline = tier
+        assert tier == baseline
+
+
+def test_non_ascii_chip_rationale_is_rejected(monkeypatch):
+    import pytest
+    import engine.fda_scarcity as fda_module
+
+    monkeypatch.setattr(
+        fda_module,
+        "_chip_rationale",
+        lambda status, counts: "FDA来源不可用",
+    )
+    with pytest.raises(ValueError, match="ASCII text only"):
+        fda_module.format_theme_feed_chip(
+            {"summary": {"source_status": "CURRENT_REPORTED", "counts": {"current": 1},
+                         "coverage": {}, "freshness": {}, "label": "synthetic",
+                         "label_zh": "synthetic"},
+             "band": "SHORTAGE_ACTIVE", "source_status": "CURRENT_REPORTED"},
+            "glp1_obesity",
+        )
