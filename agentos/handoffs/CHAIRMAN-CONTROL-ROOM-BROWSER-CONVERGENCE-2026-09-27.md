@@ -4,108 +4,113 @@ session: browser-continuity-convergence-20260927-astra-001
 model: sol
 ended_because: ci_handoff
 mission: >
-  Deliver governed persistent-authenticated browser use and service-owned Source
+  Deliver governed persistent authenticated browser use and service-owned Source
   Continuity evidence through existing owners, including intended Chat invocation,
   release-consumer acceptance and one useful authenticated UI workflow.
 state_before: >
-  Browser R1-R3 was published at57a55ba5 and writer authenticated HTTP at7d4146fb,
-  neither adopted nor production-proven. Credential readiness had source approval
-  5329708160. Target repaired head87a6831c still needed fresh review.
+  Browser R1-R3 was published at57a55ba5, writer HTTP and pagination at6e05572f,
+  and target repair at53778f18. None was adopted or production-proven.
+  Credential readiness retained source approval5329708160. The concrete GitHub
+  installation provider was missing; original GHP2 head55155d33 still awaited review.
 changed:
-  - path: mastermind:control_plane/workbench_attended_context.py
-    what: Refuse signed references with an issue time later than current time after between-call clock rollback.
-  - path: mastermind:tests/test_attended_context_time_origin.py
-    what: Add two rollback discriminators and equal-time or later-time positive controls.
-  - path: mastermind:scripts/source_continuity.py
-    what: Collect every bounded branch-rule page through existing pagination and read-budget owners.
+  - path: mastermind:integrations/mastermind_github_app/read_installation_identity.py
+    what: Add a disarmed concrete read-installation provider and custody-supplied RSA signer without ambient credential discovery.
   - path: mastermind:integrations/mastermind_github_app/writer_gate_port.py
-    what: Validate generated owner-page URLs and consistent terminal pagination metadata without following upstream links.
-  - path: mastermind:tests/test_writer_gate_pagination.py
-    what: Cover second-page restrictions, completeness, empty terminal probes, expiry, drift, failed pages, budgets and endpoint confinement.
+    what: Preserve credential-issuance uncertainty as a closed distinct error with no canonical writer-gate receipt.
+  - path: mastermind:tests/test_github_read_installation_identity.py
+    what: Verify exact installation and token scope, identity, expiry, concurrency, cancellation and no reissuance through an uncertain instance.
+  - path: mastermind:tests/test_github_read_identity_http_composition.py
+    what: Prove actual local signed-caller HTTP authentication composes with the concrete credential provider and canonical writer verifier using synthetic remote responses.
+  - path: mastermind:integrations/mastermind_github_app/adapter.py
+    what: In a separate original-core repair proposal, keep read-only reconciliation unknown until exact complete applied evidence exists.
+  - path: mastermind:tests/test_github_patch_reconciliation_terminality.py
+    what: Sample negative reconciliation before the original pending request settles, including reconstructed gateway, unavailable or moved write owner and expired execution token.
 verified:
-  - claim: Prior target-context repairs remain valid on the incumbent source.
-    command: pytest tests/test_workbench_attended_context.py tests/test_attended_context_resolution_time.py tests/test_review_boundaries.py tests/test_ref_boundary_edges.py
-    result: 52 passed on87a6831ce94d8fdc7eea85c3e1e1299ee8b98f20; prior timing, size and Unicode findings were not reopened.
-  - claim: The proposed target repair discriminates a between-call clock-origin defect.
-    command: Run the four incumbent suites with the new time-origin cases before and after the two-line source repair.
-    result: Before54 passed and2 failed; afterward56 passed at53778f186930d18824edd19602e2edfef311bdb8. REQUEST_CHANGES review5329827138 is submitted and read back on87a6831c. Repair authorship is not independent approval.
-  - claim: The former rule census omitted second-page restrictions and the proposed collector covers all bounded pages.
-    command: pytest tests/test_writer_gate_pagination.py before and after repair.
-    result: Isolated initial RED9 failures and1 pass; the final empty-terminal-link discriminator also failed before its refinement. Final pagination suite has27 cases.
-  - claim: Writer pagination composes with the existing Source Continuity, app and authentication tests.
-    command: pytest -q -o addopts='' -p no:cacheprovider tests/test_writer_gate_pagination.py tests/test_github_writer_gate_http.py tests/test_github_writer_gate_port.py tests/test_github_writer_gate_server.py tests/test_source_continuity*.py tests/test_mastermind_github_app.py tests/test_business_mcp_auth_mcp_adapter.py tests/test_business_mcp_auth_jwt_verifier.py tests/test_business_mcp_auth_policy_subclass.py --tb=short
-    result: 763 passed, zero failures, errors or skips at6e05572f897f4a0f5e98283abaa688c2d2cb9673. Syntax and diff checks pass. Remote and credential-provider responses are synthetic. This supersedes the intermediate760-case campaign.
-  - claim: Both new source proposals have definite publication receipts.
-    command: studio_git_commit_current_changes and studio_git_push_current_branch on each registered operation with exact expected head.
-    result: APPLIED with matching local and remote heads and clean=true for target53778f18 and writer6e05572f; no incumbent source branch overwritten.
-  - claim: Earlier browser, authentication and credential-review proof remains preserved.
-    command: Prior exact-head campaigns in Mastermind PR940/comment5852810158, PR409/comment5854158934 and PR663/review5329708160.
-    result: Browser57a55ba5 retains463 passed and one inherited skip; writer7d4146fb retains329 passed including20 signed-JWT HTTP cases; credential44f061e6 retains232 passed including540 observations in one matrix and APPROVED review5329708160.
+  - claim: The concrete read-installation provider composes with the existing writer service.
+    command: pytest -q -o addopts='' -p no:cacheprovider tests/test_github_read_installation_identity.py tests/test_github_read_identity_http_composition.py tests/test_writer_gate_pagination.py tests/test_github_writer_gate_http.py tests/test_github_writer_gate_port.py tests/test_github_writer_gate_server.py tests/test_source_continuity*.py tests/test_mastermind_github_app.py tests/test_business_mcp_auth_mcp_adapter.py tests/test_business_mcp_auth_jwt_verifier.py tests/test_business_mcp_auth_policy_subclass.py --tb=short
+    result: 808 passed with zero failures, errors or skips at7fdd689d2e0cac2b4407d2193d19151fa287743b. Forty provider and five composed HTTP cases are new. All remote identities, keys and responses are synthetic; actual local RSA and ASGI/MCP verification is used.
+  - claim: New credential boundaries discriminated the missing component and incomplete first implementation.
+    command: Run the component and additional identity, error-projection, JSON content-type and JWT-deadline regressions before their respective repairs.
+    result: Initial missing-component1FAIL; provider33PASS; expanded35PASS/8FAIL then43PASS; two later transport/deadline failures before fixes. Final808 result supersedes intermediate counts and is not added to them.
+  - claim: Original GHP2 read-only reconciliation prematurely returns terminal no-effect evidence.
+    command: Run the unchanged head55155d33 owning/compiler/release suites plus test_reconcile_before_settlement.py.
+    result: Original257PASS; with independent same-gateway and reconstructed-gateway cases257PASS/2FAIL. Both returnNOT_APPLIED before the first pending request later becomesAPPLIED, with native mutation count1.
+  - claim: The bounded core repair preserves uncertainty and later positive reconciliation.
+    command: pytest -q -o addopts='' -p no:cacheprovider tests/test_mastermind_github_app.py tests/test_github_patch_reconciliation_terminality.py tests/test_github_exact_edit.py tests/test_github_release_assessment.py --tb=short
+    result: Seven new cases failed before repair; final264PASS/0FAIL/0ERROR/0SKIP at49917c21cf88095f777a1e79883e2d1ec7815cd3. Removing only the guard makes all seven fail; exact restoration returns264PASS. Current-head REQUEST_CHANGES review5330076741 was submitted and read back.
+  - claim: Both new source candidates have definite publication receipts.
+    command: studio_git_commit_current_changes and studio_git_push_current_branch on their registered operations with expected heads.
+    result: APPLIED with matching local and remote heads and clean=true for7fdd689d and49917c21. Neither incumbent PR branch was overwritten.
+  - claim: The exposed Executive route is not presently a usable dispatch path.
+    command: Discover Mastermind_Executive_V2 and call executive_state once.
+    result: Tool exposed; ok=false, mode=readonly, error=backend_unavailable, installed Executive reader unavailable. No submit or worker dispatch was attempted; this is not a claim that every fabric route is down.
 unverified:
-  - claim: The proposals have independent acceptance and incumbent-carrier adoption.
-    what_would_verify: Existing owners accept reviewed source through PR940, PR409 and PR988 under current custody with required integrated hosted security checks.
-  - claim: The writer-gate is deployed and callable from the intended Chat surface.
-    what_would_verify: Existing deployment binds real approved authentication, current target resolver and scoped installation identity, then produces a canonical receipt consumed by release procedure.
-  - claim: Authenticated browser use is production-proven.
-    what_would_verify: Dedicated-profile login survives owned restart, stale and concurrent controllers refuse, accepted target and network policy holds, and a useful UI-required workflow completes without secret output.
+  - claim: Credential issuance is durably fenced across process restart and generation replacement.
+    what_would_verify: Bind the concrete provider to an admitted existing credential-owner issuance and reconciliation operation using canonical RuntimeStore Event transactions; qualify restart, concurrency, generation and source-admission behavior before supplying live credentials.
+  - claim: Published source proposals are independently accepted and adopted into their incumbent release paths.
+    what_would_verify: Qualified source custody and independent review of Browser57a55ba5, writer7fdd689d, core49917c21 and target53778f18 through their existing PRs, followed by required current-base hosted checks.
+  - claim: The service and authenticated browser are production-proven.
+    what_would_verify: Real approved service identity and current target binding, intended-Chat writer-gate invocation, release-consumer receipt, and dedicated-profile restart plus useful authenticated UI workflow with accepted network and target policy.
 unresolved:
-  - Independent approval and adoption of the browser, writer and target repair proposals remain unobserved.
-  - The exact filtered source-custody census was safety-blocked before execution and not retried; this cannot establish writer absence or release.
-  - Real service identity, deployment target binding, intended-Chat invocation and release-consumer proof remain outstanding.
-  - Browser cross-store, profile and host fencing plus network and target confinement remain separate gates.
-  - Prior whole-repository collection errors for vendored engine.signal_archive and lib remain recorded; unchanged failures were not rerun and no whole-repository pass is claimed.
+  - The new provider seals only its own instance after possible credential issuance. A process restart or replacement provider does not reconcile that effect; live credentials remain held.
+  - The original #409 core remains at55155d33 with current REQUEST_CHANGES review5330076741; the repaired49917c21 proposal is not independently approved.
+  - Browser, writer and target source acceptance, incumbent adoption and integrated hosted security proof remain outstanding.
+  - The review workspace release for browser-ghp2-core-review-20260927-astra-001 was safety-blocked before execution. It was not retried and the workspace is not claimed removed.
+  - Prior denied human-gh, source-map, evidence-packaging, detailed Browser integrated-delta inspection and filtered source-custody census remain denied and were not retried.
+  - Prior whole-repository collection failures for vendored engine.signal_archive and lib remain recorded; no new whole-repository pass is claimed.
 next_actions:
-  - Fresh-read protected INDEX and material returns on the existing carriers without repeating accepted source investigations.
-  - Obtain independent review and lawful adoption of Browser57a55ba5, writer6e05572f and target53778f18 through PR940, PR409 and PR988 with current source and integrated security evidence.
-  - Reconcile source custody only through a currently permitted owner route; do not retry denied census or earlier inspections through another tool or account.
-  - After source acceptance, bind real service-owned identity and current target into the existing authenticated writer deployment and prove intended-Chat invocation plus release-consumer use.
-  - Compose accepted target, credential, profile and network owners for dedicated-profile restart and useful authenticated UI proof.
+  - Fresh-pin protected INDEX, recover these exact published heads and consume only material review or source-custody changes on the existing carriers.
+  - Have independent review assess core49917c21 and writer7fdd689d on #409 and the existing Browser and target proposals on #940 and #988; do not approve the current author's repairs or create replacement implementation PRs.
+  - Bind a current admitted credential operation to the existing RuntimeStore transaction, append_event and get_event_by_command_id owner before enabling installation-token issuance; do not substitute the never-raise run_events telemetry log or an app-local retry ledger.
+  - Resolve release custody only through permitted existing-owner routes; do not retry denied cleanup or census operations through another carrier.
+  - After source and runtime gates clear, compose real service identity and target into the existing deployment, prove intended-Chat writer-gate invocation and release consumption, then dedicated-profile restart and a useful authenticated UI workflow.
 do_not_redo:
-  - Preserve Browser R1 4aecefb7, R2 cd7df55e and R3 57a55ba5; native-process proof used synthetic MCP and owner records, not Chrome or a real website.
-  - Preserve writer c8f25281, authenticated7d4146fb and paginationff332ca5 plus6e05572f; do not create another collector or verifier.
-  - Preserve target proposal53778f18 and review5329827138; prior timing, encoded-size and Unicode repairs already pass.
-  - Preserve credential source approval5329708160 and its independent evidence; review alone is not release or enrollment.
-  - Preserve PR473 Rust no-source diagnosis5852807240 without scanner waiver or placeholder Rust.
-  - Do not retry denied human-gh, source-map, evidence-packaging, detailed Browser integrated-delta inspection or filtered custody census through another carrier.
+  - Preserve Browser R1-R3 at57a55ba5 and its463PASS/1 inheritedSKIP native-process proof; those tests used synthetic MCP and owner facts, not Chrome or a real website.
+  - Preserve writer7fdd689d and its808PASS proof; earlier c8f25281,7d4146fb,ff332ca5 and6e05572f remain lineage, not separate new implementations.
+  - Preserve core49917c21 and review5330076741; the seven discriminators and mutation check are complete. This is not exhaustive approval of every GHP2 behavior.
+  - Preserve target53778f18 and review5329827138, plus credential44f061e6 approval5329708160 and its232PASS proof.
+  - Preserve PR473 Rust no-source diagnosis5852807240 without a scanner waiver or placeholder Rust.
+  - Reuse the pinned Python environment; do not repeat unchanged whole-repository collection failures as progress.
+  - Do not retry any of the explicitly denied actions, including this turn's review-workspace release, through another tool, account or mode.
 danger_areas:
-  - Canonical fact acquisition now changes for pagination; the pure verifier and receipt remain unchanged. Earlier collector-unchanged claims are superseded only on this point.
-  - Read budgets and permission failures cannot become partial ACTIVE or invented UNAVAILABLE receipts.
-  - These are proposals on managed branches, not accepted protected releases or installed services.
-  - A refused source-custody observation is not evidence of writer absence, termination or transfer.
-  - Browser retention closes agent tool admission but does not suspend page timers or network activity and does not prove global profile or host fencing.
+  - Token issuance is a credential-mutating POST, even though the acquired token is repository-read-only. An in-memory seal alone is not a durable owner fence.
+  - The new core reconciliation intentionally treats a negative history snapshot as unknown even for a never-invoked expired preparation; no terminal-no-send owner evidence is available through that stateless interface.
+  - Retained browser pages may continue their own timers and network activity. Same-store process proof is not cross-store, profile, host or network confinement.
+  - Source publication, independent review, merge, installation, logged-in state and real-path acceptance are distinct.
 ---
 
 ## §0 State — what is true right now
 
-MISSION_COMPLETE: false. FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION.
+MISSION_COMPLETE: false. FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION. Two coherent source increments are published with definite receipts: concrete scoped read-service installation identity and a narrow repair of false terminality in the original GitHub app's read-only reconciliation. Neither is deployed or independently accepted.
 
-Two bounded repairs are published and tested: target-reference temporal origin and complete bounded rule acquisition. The target remains a change request against the incumbent PR; the writer remains a reviewed-source proposal awaiting independent acceptance. Neither is adopted or deployed. No production credential, GitHub observation or authenticated website workflow occurred.
+The session continued past the first published checkpoint into the core review, repair, mutation proof and an existing-owner investigation. The next meaningful unit is credential-domain runtime admission and durable issuance/recovery composition, not another local protocol rewrite. That unit crosses the existing runtime/credential/source-custody boundary. Runtime read currently fails; source holds and action-specific denials remain explicit. No autonomous wake, live worker or background execution is claimed. No actual modifying operation has an unresolved execution response.
 
-Protected procedure consumed and re-read unchanged: Mastermind deed35f6b0d8794987ab9692dd8d46b1549a720f, compatible Skillpack1.0.1/bootstrap1. All modifying effects have definite receipts; EFFECT_UNKNOWN is none. No external worker, reviewer, watcher or background execution was started. This is the source-validation/publication boundary before deeper service-identity, deployment and release integration, not mission completion.
+Current protected Mastermind is d9585ed814d758d26120592a68916b17c81f54fc. Fresh INDEX remains1.0.1/bootstrap1; all required recovery, active, delegation, review, delivery and closeout blobs match the consumed c01d890f6536539496f2d6744f3143ff49da296d revision. The inspected Executive runtime blob is also identical. No mode change or permission grant occurred.
 
 ## §1 What is LEFT — in order
 
-The principal retains end-to-end integration. Consume independent review and current source custody, adopt qualified source through existing carriers, then prove the real service and authenticated browser paths. Repeated review pings or redesign are not substitutes.
+Independent acceptance and lawful adoption remain required before installation. The writer credential component additionally requires a durable existing-owner issuance fence and real current principal/target binding; do not supply live keys merely to test it. The ultimate acceptance still requires a real intended-Chat writer-gate receipt consumed by release, plus persistent dedicated browser authentication and a useful UI-required workflow.
 
-Exact pointers:
+Current source pointers:
 
-- Browser operation browser-continuity-convergence-20260927-astra-001; branch sol/web-browser-continuity-convergence-20260927-astra-001; head57a55ba5d192e1a3923861557de168da03f55b54; carrier#940/comment5852810158.
-- Writer operation browser-writer-gate-service-20260927-astra-001; branch sol/web-browser-writer-gate-service-20260927-astra-001; head6e05572f897f4a0f5e98283abaa688c2d2cb9673; carrier#409/comment5854158934. Parentff332ca5897cd721c630c8de49b17f72d784c6c5 adds canonical pagination;6e05572f refines empty terminal-page metadata only.
-- Target review/repair operation browser-target-review-20260927-astra-001; branch sol/web-browser-target-review-20260927-astra-001; head53778f186930d18824edd19602e2edfef311bdb8; incumbent#988 at87a6831ce94d8fdc7eea85c3e1e1299ee8b98f20 has exact review5329827138 requesting changes.
-- Credential#663 at44f061e63597a18178de9c1fdb4fecb70175dea2 retains approval5329708160. Browser-law#473 and every source/release gate remain separate.
+- Browser proposal57a55ba5d192e1a3923861557de168da03f55b54; incumbent PR940. Parent operation browser-continuity-convergence-20260927-astra-001.
+- Writer proposal7fdd689d2e0cac2b4407d2193d19151fa287743b; incumbent PR409; operation browser-writer-gate-service-20260927-astra-001. R4 evidence comment5855306388; earlier review packet5854158934.
+- Core repair49917c21cf88095f777a1e79883e2d1ec7815cd3; incumbent PR409 at55155d33a51921a3b6d2cae2db49d31703a80b8a; operation browser-ghp2-core-review-20260927-astra-001; review5330076741. Do not count this author as the repair's independent reviewer.
+- Target proposal53778f186930d18824edd19602e2edfef311bdb8; PR988 at87a6831ce94d8fdc7eea85c3e1e1299ee8b98f20; operation browser-target-review-20260927-astra-001; review5329827138.
+- Credential readiness PR663 at44f061e63597a18178de9c1fdb4fecb70175dea2 retains independent approval5329708160, not release. PR473 remains a separate governed-browser law release dependency.
 
 ## §2 What will bite you
 
-Managed workspaces are /Volumes/Mastermind/agent-workspaces/web/ followed by the three operation IDs. Reuse them. Evidence roots are /Volumes/Mastermind/evidence/ followed by the IDs. Final writer receipts are pagination-release.log/.xml; intermediate760-case receipts remain pagination-final.log/.xml. Target proof is review-red.log and repair-green.log; browser proof remains r3-release-candidate.log/.xml. Reuse the pinned Python environment in the Browser workspace.
+Managed workspaces are under /Volumes/Mastermind/agent-workspaces/web/ followed by the operation IDs. Core review workspace release was blocked and not retried; its last definite source state is clean, published49917c21. Existing branch history is not source-writer transfer.
 
-No human/default profile, cookie database, password manager or human gh credential was borrowed. Real service provisioning and login or MFA may later require an exact authorized human ceremony, never credentials in chat.
+Evidence roots are /Volumes/Mastermind/evidence/ plus the operation ID. New writer final proof is identity-full.log/.xml. Core proof is terminality-final.log/.xml, with terminality-mutant.log and original review.log/.xml retained. Source plans live at the corresponding published commits. The pinned test interpreter remains in the Browser operation's .venv.
 
 ## §3 What was decided and found
 
-Source Continuity alone generates and bounds page requests. The app validates owner endpoints and pagination metadata without following arbitrary links. A second-page restriction now changes the original verdict. Incomplete or failed coverage cannot produce a partial positive gate. Exactly full final pages can be followed by an empty proof page whose last link points to the preceding page; broader backward-link inconsistencies still refuse.
+The installation provider reuses the existing GitHub token-provider contract and transport with deployment-supplied custody, rather than borrowing personal auth. The original core's immediate possible-send repair was insufficient because later negative reconciliation could still clear uncertainty. The new proposal repairs that read-only path without a second effect store.
 
-The target repair checks signed issue time directly without introducing stored clocks, permission or a new target owner. The source-custody census denial was preserved rather than interpreted as an empty estate or permission to take over.
+A bounded source inspection found canonical RuntimeStore BEGIN IMMEDIATE transactions, unique-command Event writes and same-transaction get_event_by_command_id; these are the correct durability primitives. No admitted concrete credential-issuance binding was established. control_plane/run_events.py is never-raise telemetry and is not a substitute. The existing Mosyle sealed-file reader demonstrates custody checks, not GitHub issuance authority. No production database or credential file was opened.
 
 ## §4 Not in scope — do not adopt
 
-Do not create a competing browser, GitHub, profile or effect plane; widen Worker Browser B1; use Opera or another carrier around a refusal; or label synthetic tests as production acceptance. No protected merge, installation, permission grant, real service credential or authenticated UI action occurred.
+Do not recreate BrowserResource, widen Worker Browser B1, create an Opera control plane, bootstrap a new runtime/credential database, add an unbounded event census, use human gh/Keychain/cookies, or treat a source proposal as live enrollment. No protected merge, real installation token, permission change, production listener, browser profile or authenticated website action occurred. Keep the current working source/test surface for continuation; no autonomous executor is running after this turn.
