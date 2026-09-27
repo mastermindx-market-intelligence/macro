@@ -403,7 +403,7 @@ def test_verify_installed_rejects_executable_mode_drift(tmp_path: Path) -> None:
         backup_dir=backup_dir,
     )
     active_plist = launch_agents / "com.mastermindx.research-trickle.plist"
-    active_plist.chmod(0o644)
+    active_plist.chmod(0o600)
 
     readback = installer.verify_installed(
         source_root=CANONICAL_ROOT,
