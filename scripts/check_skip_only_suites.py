@@ -546,6 +546,16 @@ def census(jobs: list[dict] | None = None) -> list[dict]:
     return rows
 
 
+def skip_only_findings(rows: list[dict] | None = None) -> list[dict]:
+    """The rows this guard fails on: a gate that no job naming its suite satisfies.
+
+    ``main`` and ``scripts/check_contract_delta.py`` both call this, so the gate
+    here and contract-delta's differential copy of it cannot drift apart.
+    """
+    rows = census() if rows is None else rows
+    return [r for r in rows if r["status"] == "SKIP-ONLY"]
+
+
 def _print_row(row: dict) -> None:
     needs = ", ".join(row["needs"])
     detail = f" (needs {needs})" if needs != row["gate"] else ""
@@ -583,7 +593,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.json:
         args.json.write_text(json.dumps(rows, indent=1))
 
-    bad = [r for r in rows if r["status"] == "SKIP-ONLY"]
+    bad = skip_only_findings(rows)
     unrun = [r for r in rows if r["status"] == "UNRUN"]
     ok = [r for r in rows if r["status"] == "OK"]
 
