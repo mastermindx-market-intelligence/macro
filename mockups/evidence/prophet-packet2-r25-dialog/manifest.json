@@ -10,6 +10,13 @@
         "name": "dialog-focus",
         "spec": "dialog-focus:focus(.pvs-close)",
         "value": ".pvs-close"
+      },
+      {
+        "attribute": null,
+        "kind": "hover",
+        "name": "dialog-hover",
+        "spec": "dialog-hover:hover(.pvs-audit>summary)",
+        "value": ".pvs-audit>summary"
       }
     ],
     "locales": [
@@ -32,7 +39,7 @@
     }
   },
   "excluded": [],
-  "generated_at": "2026-09-27T10:30:00Z",
+  "generated_at": "2026-09-27T12:50:00Z",
   "honesty": {
     "access": "anonymous only; no credential is entered, stored, or synthesized, so no premium payload can enter these artifacts",
     "authority": "this tool measures and screenshots; it scores, ranks, and judges nothing",
@@ -123,7 +130,7 @@
           "viewport": "desktop"
         },
         "panel_count": 0,
-        "payload_bytes_total": 245245,
+        "payload_bytes_total": 40320,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 3,
@@ -176,6 +183,24 @@
         },
         {
           "access": "anonymous",
+          "applied_force_state": "dialog-hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 155786,
+          "captured": true,
+          "file": "86fb544e090ae6dc--dialog-hover.png",
+          "force_state": "dialog-hover",
+          "height": 900,
+          "locale": "en",
+          "sha256": "86fb544e090ae6dc25250c8388f8d2c7f06e60555e4b317ba5ad3b7cf65f35fa",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
           "bytes": 182538,
@@ -200,6 +225,24 @@
           "captured": true,
           "file": "57233ab9540a6503--dialog-focus.png",
           "force_state": "dialog-focus",
+          "height": 900,
+          "locale": "en",
+          "sha256": "57233ab9540a6503a397c184bbe374b9ff5ae8ca896e0cb4ee3895805929850a",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "dialog-hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 182538,
+          "captured": true,
+          "file": "57233ab9540a6503--dialog-hover.png",
+          "force_state": "dialog-hover",
           "height": 900,
           "locale": "en",
           "sha256": "57233ab9540a6503a397c184bbe374b9ff5ae8ca896e0cb4ee3895805929850a",
@@ -246,6 +289,24 @@
         },
         {
           "access": "anonymous",
+          "applied_force_state": "dialog-hover",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 149025,
+          "captured": true,
+          "file": "ce872ff95db5b202--dialog-hover.png",
+          "force_state": "dialog-hover",
+          "height": 900,
+          "locale": "zh",
+          "sha256": "ce872ff95db5b202929073b07fe4466e6d2564689547d6c5943dac77d505d969",
+          "theme": "dark",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
           "bytes": 172435,
@@ -270,6 +331,24 @@
           "captured": true,
           "file": "348a80f9f54daa2e--dialog-focus.png",
           "force_state": "dialog-focus",
+          "height": 900,
+          "locale": "zh",
+          "sha256": "348a80f9f54daa2e0cc54875e8fa29f97ff20a43d4fba52695445dd96a0c8e78",
+          "theme": "light",
+          "viewport": "desktop",
+          "viewport_height": 900,
+          "viewport_width": 1440,
+          "width": 1440
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "dialog-hover",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 172435,
+          "captured": true,
+          "file": "348a80f9f54daa2e--dialog-hover.png",
+          "force_state": "dialog-hover",
           "height": 900,
           "locale": "zh",
           "sha256": "348a80f9f54daa2e0cc54875e8fa29f97ff20a43d4fba52695445dd96a0c8e78",
@@ -316,6 +395,24 @@
         },
         {
           "access": "anonymous",
+          "applied_force_state": "dialog-hover",
+          "applied_locale": "en",
+          "applied_theme": "dark",
+          "bytes": 72914,
+          "captured": true,
+          "file": "cdc03b9ff5aad798--dialog-hover.png",
+          "force_state": "dialog-hover",
+          "height": 844,
+          "locale": "en",
+          "sha256": "cdc03b9ff5aad798fe8b7a635cd32b805c0f4b2b53a130d0c09ee8e785442871",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
           "applied_locale": "en",
           "applied_theme": "light",
           "bytes": 74691,
@@ -343,6 +440,24 @@
           "height": 844,
           "locale": "en",
           "sha256": "bcdc4ea9e769c37f09c832262bf6a95dde73aec004aa8e16d2b081d6e13374ea",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "dialog-hover",
+          "applied_locale": "en",
+          "applied_theme": "light",
+          "bytes": 77339,
+          "captured": true,
+          "file": "9504243ec2be196d--dialog-hover.png",
+          "force_state": "dialog-hover",
+          "height": 844,
+          "locale": "en",
+          "sha256": "9504243ec2be196d3aba2205837341cc55a4c6ddc35cb741e0c9d6e351794bc4",
           "theme": "light",
           "viewport": "mobile",
           "viewport_height": 844,
@@ -386,6 +501,24 @@
         },
         {
           "access": "anonymous",
+          "applied_force_state": "dialog-hover",
+          "applied_locale": "zh",
+          "applied_theme": "dark",
+          "bytes": 70504,
+          "captured": true,
+          "file": "bc9ff4e40921b0e1--dialog-hover.png",
+          "force_state": "dialog-hover",
+          "height": 844,
+          "locale": "zh",
+          "sha256": "bc9ff4e40921b0e143776f6908d5447631e68f8f191bf82565eeeec71eb8d3c2",
+          "theme": "dark",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
+        },
+        {
+          "access": "anonymous",
           "applied_locale": "zh",
           "applied_theme": "light",
           "bytes": 72017,
@@ -418,6 +551,24 @@
           "viewport_height": 844,
           "viewport_width": 390,
           "width": 390
+        },
+        {
+          "access": "anonymous",
+          "applied_force_state": "dialog-hover",
+          "applied_locale": "zh",
+          "applied_theme": "light",
+          "bytes": 75884,
+          "captured": true,
+          "file": "db42ca661650ab7d--dialog-hover.png",
+          "force_state": "dialog-hover",
+          "height": 844,
+          "locale": "zh",
+          "sha256": "db42ca661650ab7dd70454089521dbba5fe29f0d09312399399b205dcbc0328b",
+          "theme": "light",
+          "viewport": "mobile",
+          "viewport_height": 844,
+          "viewport_width": 390,
+          "width": 390
         }
       ]
     }
@@ -440,7 +591,7 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Volumes/Mastermind/repos/sol-biocatalyst-6389-recovery/.git/worktrees/prophet-packet2-r20-qualification",
-    "resolved_sha_or_none": "52edc5e8db51e14e07b0a71c19a31cbc0f89a4ba",
+    "resolved_sha_or_none": "c4eff88b45b76cd363086fd71b06eb39ece437c7",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Volumes/Mastermind/repos/sol-biocatalyst-6389-recovery/.git/worktrees/prophet-packet2-r20-qualification (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
     "site_dir": "/Volumes/Mastermind/worktrees/prophet-packet2-r20-qualification"
   },
@@ -452,7 +603,7 @@
   },
   "totals": {
     "pages": 1,
-    "states_attempted": 16,
-    "states_captured": 16
+    "states_attempted": 24,
+    "states_captured": 24
   }
 }

@@ -6764,7 +6764,7 @@ jobs:
         run: pip install pytest
       - name: p0b receipt-closure (pinned construction inputs require a same-diff receipt remint)
         run: |
-          # Semantic packs already carry the planner's exact tested-tree changed
+          # Semantic packs already carry the planner exact tested-tree changed
           # paths as a downloaded JSON handle. Prefer that authoritative input:
           # re-fetching the moving base here cost the R25 candidate the entire
           # 10-minute job budget before the gate itself could execute.
@@ -6773,7 +6773,7 @@ jobs:
               echo "::error title=p0b-receipt-closure::configured CI_CHANGED_FILES_FILE is unreadable; refusing rather than falling back to a different comparison question."
               exit 2
             fi
-            cp "$CI_CHANGED_FILES_FILE" /tmp/p0b.changed
+            python3 scripts/check_p0b_receipt_closure.py --diff-file "$CI_CHANGED_FILES_FILE"
           else
             if ! git fetch origin ${{ github.base_ref || 'main' }}; then
               echo "::error title=p0b-receipt-closure::could not fetch origin/${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
@@ -6784,8 +6784,8 @@ jobs:
               exit 1
             fi
             git diff --name-only "$mb" HEAD > /tmp/p0b.changed
+            python3 scripts/check_p0b_receipt_closure.py --diff-file /tmp/p0b.changed
           fi
-          python3 scripts/check_p0b_receipt_closure.py --diff-file /tmp/p0b.changed
       - name: p0b receipt-closure selftest (gate fires when a pinned path moves without receipts)
         run: python3 scripts/check_p0b_receipt_closure.py --selftest
       - name: p0b receipt-closure unit suite
