@@ -241,3 +241,65 @@ independent method review.
 
 Research/design remains a checkpointed continuation rather than a completion claim; forecast promotion
 is not qualified and production acceptance is unchanged.
+
+## R2.1 continuation delta — classifier role boundary resolved
+
+Current-source inspection closed the immediate root-cause question:
+
+- `SS_CLASSIFY_SYSTEM` already asks separately for event `category` and **registrant role**.
+- `enrich_classify()` persists `llm_category` + `llm_role`.
+- `build_situations()` promotes every admitted `llm_category` but does not gate the direct
+  security projection on role compatibility.
+- The real USO cached verdict was internally consistent with the source:
+  `Going-Private / role=none / high confidence`. The engine converted a document-level event
+  family into a registrant-level direct event despite the role answer.
+
+The frozen repair semantics are now **direct | affected | withheld**:
+
+1. family-compatible direct role -> direct security event;
+2. owner-bound typed indirect relationship -> affected context only;
+3. otherwise -> source observation retained, direct projection withheld as
+   `relationship_unresolved`.
+
+Dropping every `role=none` row is forbidden because the USCF disclosures are economically relevant.
+Likewise, `role != target` is not a universal rule; direct roles differ by event family.
+
+### Owner seam census
+
+No accepted generic transaction→affected-security relationship contract was found on current main.
+
+- Company Intelligence `company_event.v1` is fiscal-period keyed and is not a lawful generic
+  transaction identity.
+- Earnings `relationship_edge.v1` is still spec-only.
+- Semiconductor #7870 currently provides theme-curation/Theme Research primitives, including an
+  `OWNERSHIP_EVENT` assertion, but not a canonical generic corporate transaction relation.
+- Technology #7891 has a Draft domain-specific economic-change dossier whose source/identity/
+  relationship/coverage patterns are useful design references but not shared authority.
+
+Therefore the first implementation must consume a generic shared seam **if it has landed by execution
+time**, or obtain the smallest incumbent-owner extension. Until then, incompatible direct-event rows
+stay withheld rather than spawning a Special Situations-private relation registry.
+
+### Executable reference delta
+
+New RED was witnessed on exact remote bytes: the test module could not import
+`route_registrant_event` because the function did not exist.
+
+The first code write serialized escaped newlines and failed with a Python `SyntaxError`; that defect
+was repaired and is not counted as functional GREEN.
+
+Final exact-branch rerun at `f0483bd1cb1f312d8aa3e40a0ebe68396b13eec8`:
+**9 tests passed / 0 failed**, including:
+- incompatible direct-event role -> withheld;
+- bound controller/GP relationship -> affected, never target;
+- compatible target role -> direct.
+
+Subsequent research/plan commits only document this already-tested semantic result; no production
+module has been changed.
+
+### Updated next action
+
+Codex must begin with a **real promotion-path RED test**, not by implementing the pure reference:
+construct an 8-K whose `llm_category=Going-Private` and `llm_role=none`, prove current
+`build_situations()` incorrectly emits a direct situation, then integrate the owner-adjudicated
+relationship seam. The MGLD/USCF source remains the first real-shaped acceptance fixture.
