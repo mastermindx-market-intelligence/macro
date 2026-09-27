@@ -309,9 +309,23 @@ jobs:
     # 2026-09-22 integration-baseline main-red repair: exact owner closure.
     # Exclusive replaces opaque fallback inference; the curated-closure gate
     # fails if a future import is not covered by this declaration.
+    #
+    # 2026-09-24 lane A3 (round-5 MINOR 4): the legacy-jobs `paths:` here
+    # was widened to declare the worktree-sparse helper module because
+    # an earlier round's real-artifact byte-identity test used a dynamic
+    # importlib load to call that helper. Round 5 redirects that test
+    # at the COMMITTED fixture tree (under `tests/fixtures/`, never
+    # under `data/` or `site/`), so the helper call is gone — but the
+    # path declaration is KEPT to satisfy the `Widen … never narrow`
+    # rule (a path the gate already trusts cannot be removed without
+    # another widening). The justification that "the contract-delta
+    # gate follows that import edge" was the prior round's claim and
+    # is no longer the active reason — the path stays for parity.
     scope: exclusive
     paths:
       - "config.yml"
+      - "config/market_reference.yml"
+      - "config/sparse_worktree.json"
       - "data/market_state/latest.json"
       - "data/neuralweb/market_plane.json"
       - "data/regime/latest.json"
@@ -323,6 +337,7 @@ jobs:
       - "lib/pages.py"
       - "scripts/__init__.py"
       - "scripts/build_am_edition.py"
+      - "scripts/worktree_sparse.py"
       - "site/am_edition.html"
       - "site/am_edition.json"
       - "site/live/quotes.json"
@@ -332,7 +347,40 @@ jobs:
       - "site/regime.json"
       - "site/release_forecast.json"
       - "templates/am_edition.html.j2"
+      - "tests/fixtures/am_edition_fixture/capture_legacy_snapshot.py"
+      - "tests/fixtures/am_edition_fixture/data/market_state/latest.json"
+      - "tests/fixtures/am_edition_fixture/data/neuralweb/market_plane.json"
+      - "tests/fixtures/am_edition_fixture/data/regime/latest.json"
+      - "tests/fixtures/am_edition_fixture/data/release_forecast/latest.json"
+      - "tests/fixtures/am_edition_fixture/site/live/quotes.json"
+      - "tests/fixtures/am_edition_fixture/site/master_brief.json"
+      - "tests/fixtures/am_edition_legacy_snapshot_dd20710c.json"
       - "tests/test_am_edition_producer.py"
+      # 2026-09-24 A-MOR-2b lane B (VPS premarket owner): the live lane wraps
+      # the producer and shares its import graph (scripts.build_am_edition) so
+      # it rides the producer gate. The contract-delta differential gate refuses
+      # a head that would let GitHub allocate a duplicate runner alongside the
+      # packed trusted-executor dispatch, so both suites must complete here.
+      - "scripts/am_edition_live.py"
+      - "tests/test_am_edition_live.py"
+      # MINOR 6 fix: the three B6 Caddy-boundary assertions used to live
+      # below tests/test_caddy_hub_boundary.py's module-level
+      # pytest.importorskip("fastapi") and so were skipped on a thin venv.
+      # Extracting them to a sibling module lets the thin venv — and the
+      # packed trusted-executor dispatch — pick them up; the suite still
+      # imports scripts.check_caddy_hub_boundary, same env.
+      - "tests/test_caddy_hub_boundary_am_edition.py"
+      # ...and that suite's closure, now that the step below runs it (2026-09-25:
+      # #7972 declared the suite but no run: step named it, so the unrun census
+      # flagged it once the census ran on the code gate).
+      - "scripts/check_caddy_hub_boundary.py"
+      - "app/deploy/Caddyfile"
+      # 2026-09-25 seat heal of the inherited contract-delta notices from
+      # #7972: tests/test_am_edition_live.py names the systemd unit/timer and
+      # the deploy updater literally, so the producer job must own them too.
+      - "app/deploy/macro-am-edition.service"
+      - "app/deploy/macro-am-edition.timer"
+      - "app/deploy/update.sh"
     # AM Edition premarket producer contract (A-MO-W2-3): per-source clocks,
     # six states (incl. CLOSED), no generated_at laundering. Disabled from direct
     # execution like every sibling job in this family — contract-delta's
@@ -347,8 +395,8 @@ jobs:
       - name: install test deps
         # pyyaml: scripts.build_am_edition imports lib.config, which imports yaml.
         run: pip install pytest pyyaml jinja2
-      - name: AM Edition producer contract (per-source clocks, six states, no laundering)
-        run: python -m pytest tests/test_am_edition_producer.py -q
+      - name: AM Edition producer + lane-B live contract (per-source clocks, six states, no laundering, served-artifact chmod 0o644, freshest-wins under Z/naive ISO stamps)
+        run: python -m pytest tests/test_am_edition_producer.py tests/test_am_edition_live.py tests/test_caddy_hub_boundary_am_edition.py -q
 
   all-exports-resolve:
     if: ${{ false }}
@@ -2214,6 +2262,8 @@ jobs:
     # 846 tracked / 127 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/narrative_crossmarket.py"
+      - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -2635,6 +2685,19 @@ jobs:
       - "scripts/capture_am_edition_evidence.py"
       - "tests/test_am_edition_page.py"
       - "tests/test_am_edition_producer.py"
+      # MOR-2b lane C seat round 2026-09-25 (contract-delta): the am_edition
+      # page suite now renders the aibrief band through tests/test_aibrief_page
+      # (its closure reaches the shared theme/nav/landing CSS), reads the shared
+      # MOR-2b block include and the aibrief page/CSS, and runs the design
+      # checker as a subprocess on the added CSS.
+      - "scripts/check_design_system.py"
+      - "templates/_aibrief_css.j2"
+      - "templates/_mor2b_blocks_css.j2"
+      - "templates/aibrief.html.j2"
+      - "templates/landing.css"
+      - "templates/navigation-refresh.css"
+      - "templates/theme.css"
+      - "tests/test_aibrief_page.py"
       # F13-1 closure widening 2026-09-09 (contract-delta): build_site's
       # source-bound help directory now also validates the public
       # glossary page against this template.
@@ -3152,12 +3215,26 @@ jobs:
       # house-law registry census (post-#2297 fix): run the statement-tape schema
       # guard itself against the committed registry, not just its pytest coverage.
       # It stays in THIS job — `config/house_law_checks.yml` names this job as its
-      # ci_wiring — and it is deliberately LAST: it is the only step here that is not
-      # pytest, and the sweep above is the thing most likely to be red, so ordering it
-      # first would have bought nothing. Its own pytest coverage
+      # ci_wiring — and it deliberately runs after the sweep: it is the only step here
+      # that is not pytest, and the sweep above is the thing most likely to be red, so
+      # ordering it first would have bought nothing. Its own pytest coverage
       # (tests/test_statement_tape.py) is inside the sweep, one step above.
       - name: statement-tape schema guard (FL-E / FC-R9)
         run: python -m scripts.check_statement_tape
+      # #7603's rendered dead-reference targets: site/am_edition.html must exist, and the
+      # HK pages must link the in-page #sector-rotation anchor, never the retired
+      # sector_ranking.html. It reads rendered pages under site/, so it runs on this data
+      # gate. It follows the statement-tape guard so that a red here can never hide a
+      # registered house-law guard.
+      - name: rendered dead-reference targets (#7603)
+        run: python -m pytest tests/test_render_dead_ref_targets.py -q
+      # The data_gate half of three suites whose other half runs in workflow-yaml on the
+      # code gate (2026-09-25). Each test selected here reads a real store under data/
+      # or a rendered page under site/, so its verdict can move with a nightly commit and
+      # no code change. tests/conftest.py registers the marker. LAST, for the same reason
+      # as the step above.
+      - name: options + render assertions that read committed data (the data_gate half)
+        run: python -m pytest tests/test_options_session_guards.py tests/test_options_unit_seams.py tests/test_render_dead_asset_gate.py -m data_gate -q
 
   stock-dashboard-first-frame:
     if: ${{ false }}
@@ -3600,6 +3677,9 @@ jobs:
         run: pip install pytest pandas numpy pyyaml requests
       - name: china_news collector tests (incl. adapter-registered-without-akshare)
         run: python -m pytest tests/test_china_news.py -q
+      - name: optional news provider semantics and actual ordering consumer
+        # Source-only fixtures: no live data, vendor credentials or activation.
+        run: python -m pytest tests/test_news_ai_feed_contract.py -q
       - name: strict SEC filing parser, extraction, and sealed attestation contracts
         run: |
           python -m pytest \
@@ -4456,6 +4536,7 @@ jobs:
       - "scripts/build_chart_data.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
+      - "scripts/build_finance_intelligence_page.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_intelligence_registry.py"
       - "scripts/build_live_overlay.py"
@@ -4700,44 +4781,154 @@ jobs:
       - name: CN board-append lane gate (fail-closed CN_LANE — board/ripening/audit/event-latch)
         run: python -m pytest tests/test_cn_board_lane_gate.py -q
 
-  workflow-yaml:
-    if: ${{ false }}
-    gate: data
-    # Every .github/workflows/* file must load as YAML and carry on: + jobs:.
-    # An unparseable workflow file makes GitHub stamp a FAILED zero-job run on
-    # every push to every branch carrying it (metabolism-agenda.yml col-0
-    # incident: ~325 failed runs 07-10→07-11, introduced #2135, repaired #2260).
-    # dag-conformance above only yaml-loads workflows declared as dag.yml lanes,
-    # so non-lane workflow files had no parse guard at all — this closes that gap.
+  ci-control-plane-contracts:
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    scope: exclusive
+    # The CI control plane's own contracts, on the PR code gate (2026-09-25). Every
+    # step below ran in workflow-yaml until then, and workflow-yaml was gate: data.
+    # ci.yml's ci-pack runs gate: code only, so none of these ran on a pull request;
+    # they ran on data-health's schedule, after the merge. Two measured costs:
+    # test_derived_scopes_are_startable_by_the_ci_workflow was red on main from #7971
+    # until #7998, and #8010 added a job selected by engine/** that breached the
+    # packing probes in test_exclusive_curation_narrows_ordinary_code_prs and still
+    # merged green.
+    # Every verdict here is a function of the PR tree
+    # (research/CI_MERGE_GATE_RELIABILITY_ROOT_CAUSE_2026_08_19.md): manifest
+    # structure, pack ceilings, trigger startability, exclusive-curation closure,
+    # CURATED_EXCLUSIVE equality, and the unrun, skip-only and trigger-closure
+    # censuses. Measured with an audit hook on every step, test_ci_pack.py's 135
+    # tests included: no step makes a Python-level network call, and the only
+    # opens under data/ or site/ are audit_unrun_tests.py's report tier reading a
+    # few site/ files. No verdict depends on them: that script's exit code comes
+    # only from the unrun, baseline and waiver sets. Every step also passes with
+    # GIT_ALLOW_PROTOCOL=file, so no git subprocess reaches a remote: they run
+    # against temporary local repositories or against this checkout itself.
+    # EXCLUSIVE, not inferred. These suites read most of the repository, so an
+    # inferred job would be selected by nearly every PR and add one job to every
+    # packing probe, and those probes sit at their ceilings. The paths below are
+    # the suites' import closure plus the files they read directly.
+    # check_ci_trigger_closure.py and test_ci_pack.py's curated-closure test (both
+    # run below) red when that list falls behind.
+    # WHAT THE PATHS CANNOT COVER. Some verdicts here depend on the whole tree, not
+    # on the files listed below. The packing probes, the always-on list, the
+    # inference checks and the unrun, skip-only and trigger-closure censuses walk
+    # every job and suite through the planner, and no exclusive list can name
+    # every suite. So a PR that moves one of those verdicts without touching a
+    # path below merges without running this job. Each such shape has another
+    # owner. contract-delta (ci.yml, every PR) re-runs the unrun census and the
+    # curated-closure check differentially. integration-baseline.yml runs
+    # test_ci_pack.py and the skip-only census on every source push to main and
+    # every 4 hours, and merge-on-green pauses ordinary merges while it is red.
+    # Every ci.yml run on main runs this whole job; the merge sweeper dispatches
+    # one when its main proof goes stale. A PR that edits the manifest or the
+    # planner, the shape of #7971 and #8010, reds here, on its own head.
     runs-on: ubuntu-latest
+    paths:
+      - ".github/ci/legacy-jobs.yml"
+      - ".github/workflows/**"
+      - "scripts/run_ci_pack.py"
+      - "scripts/ci_*.py"
+      - "scripts/audit_unrun_tests.py"
+      - "scripts/check_ci_trigger_closure.py"
+      - "scripts/check_runner_policy.py"
+      - "scripts/check_skip_only_suites.py"
+      - "scripts/check_workflow_yaml.py"
+      - "scripts/nightly_backstop.py"
+      - "tests/test_audit_unrun_tests.py"
+      - "tests/test_check_conflict_markers.py"
+      - "tests/test_check_skip_only_suites.py"
+      - "tests/test_ci_canary_tools.py"
+      - "tests/test_ci_canary_workflows.py"
+      - "tests/test_ci_gate_reliability_report.py"
+      - "tests/test_ci_pack.py"
+      - "tests/test_ci_pack_semantic.py"
+      - "tests/test_ci_plan_workflow.py"
+      - "tests/test_ci_semantic_proof.py"
+      - "tests/test_ci_trigger_closure.py"
+      - "tests/test_contract_delta.py"
+      - "tests/test_merge_on_green.py"
+      - "tests/test_merge_on_green_semantic.py"
+      - "tests/test_nightly_backstop.py"
+      - "tests/test_release_hold_text.py"
+      - "tests/test_run_ci_pack_fetch_fallback.py"
+      - "tests/test_runner_policy.py"
+      - "tests/test_trusted_ci_executor_workflow.py"
+      - "tests/test_trusted_ci_production_route.py"
+      # What the suites above import or read. `scope: exclusive` replaces
+      # inference, so a file missing here is one whose change never starts this
+      # job; test_curated_exclusive_scopes_cover_their_own_import_closure reds on it.
+      - "scripts/__init__.py"
+      - "scripts/workflow_run_source.py"
+      - "scripts/worktree_sparse.py"
+      - "config/sparse_worktree.json"
+      - "lib/nyse_calendar.py"
+      - "scripts/check_conflict_markers.py"
+      - "scripts/check_contract_delta.py"
+      - "scripts/merge_on_green.py"
+      - "scripts/gh_path_filter.py"
+      - "scripts/capture_ci_canary_receipt.py"
+      - "scripts/compare_ci_canary_receipts.py"
+      - "scripts/monitor_ci_host_resources.py"
+      - "scripts/resolve_ci_canary_ref.py"
+      - "scripts/select_ci_canary_packs.py"
+      - "ops/runner-host/**"
+      - ".claude/workflows/release_hold_text.py"
+      - "research/MARKET_ONTOLOGY_META_CEO_CHARTER_2026_09_06.md"
+      - "config/house_law_checks.yml"
+      # The unrun census's own inputs: a waiver or baseline edit changes its verdict.
+      - "config/unrun_test_baseline.json"
+      - "config/unrun_test_waivers.yml"
+      # tests/test_ci_pack.py imports the P0B receipt verifier, which imports the
+      # stock-dashboard fixture renderer. These are that import's closure.
+      - "scripts/check_p0b_receipt_closure.py"
+      - "scripts/render_stock_dashboard_fixture.py"
+      - "scripts/verify_stock_dashboard_mobile_layout.cjs"
+      - "site/stock-dashboard.css"
+      - "site/factordata/canada_standouts.json"
+      - "site/factordata/hk_standouts.json"
+      - "engine/__init__.py"
+      - "engine/i18n.py"
+      # Parsed or existence-checked subjects, never imported. Each is marked
+      # `# ci-trigger-closure: data` where a suite names it, so its own imports
+      # are not followed; the file itself is still a trigger.
+      - "collectors/fred.py"
+      - "contracts/government_revenue/*.schema.json"
+      - "engine/capital_structure/document_terms.py"
+      - "engine/government_revenue/workspace.py"
+      - "engine/market_state.py"
+      - "engine/signal_quality.py"
+      - "lib/config.py"
+      - "scripts/build_news.py"
+      - "scripts/build_signal_quality.py"
+      - "config/causal_priors.yml"
+      - "config/marketing.yml"
+      - "config/press_sources.yml"
+      - "research/DO_NOT_REBUILD.md"
+      - "research/cn_prophet_audit/sector_intel_exante_test.py"
+      - "research/prophet_us_audit/reclaim_veto_packet.py"
+      - "research/prophet_us_audit/test_label_grading_battery.py"
+      - "research/signal_engine/test_breadth_consume.py"
+      - "research/signal_engine/test_buy_filters.py"
+      - "research/signal_engine/test_buyfilter.py"
+      - "scripts/research/test_run_w4_controls_fingerprints.py"
+      - "tests/test_chart_render_inline.py"
+      - "tests/test_us_reclaim_veto_packet.py"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      # Deps grew 2026-07-30 (#3977). This job was `pytest pyyaml` — right for the
-      # workflow-YAML steps — but OIP E8 attached five options suites whose assertions are
-      # DATA-layer: they build DataFrames, round-trip parquet, and drive builders that
-      # render templates and fetch over HTTP. Only the first added step ran before ci-pack-1
-      # died, so its `No module named 'jinja2'` hid four more steps that would have failed
-      # the same way on pandas/jinja2/requests. Verified minimal by installing one package
-      # at a time in a clean venv (2026-07-30): pytest+pyyaml alone collects none of the
-      # four; +pandas leaves parquet writes failing; +pyarrow leaves 15 jinja2 and 11
-      # requests failures; the set below runs all five green (31+52+38+33+23 = 177 tests).
-      # numpy is transitive via pandas and named for the record, as causal-factory does.
-      # NOT patched with importorskip anywhere — a suite that skips in the only job naming
-      # it executes NOWHERE while reading green, which is the class the
-      # check_skip_only_suites.py steps below exist to catch.
+      # pytest + pyyaml only. Every suite below collects and passes with nothing else
+      # installed (measured 2026-09-25 in a clean venv holding exactly these two). The
+      # data stack in workflow-yaml's install is for its options suites. It is not
+      # needed here, and check_skip_only_suites.py below reds if a suite here ever
+      # starts to skip for a package this line does not install.
       - name: install minimal deps
-        run: pip install pytest pyyaml pandas numpy pyarrow jinja2 requests
-      - name: check_workflow_yaml selftest
-        run: python scripts/check_workflow_yaml.py --selftest
-      - name: "all workflow files must parse with on:/jobs: blocks"
-        run: python scripts/check_workflow_yaml.py .github/workflows
-      # ci.yml's Wave B job graph (2026-08-11), wired here because the step above is
-      # the closest existing owner: both read .github/workflows/ as their subject and
-      # both need only pytest+pyyaml, already installed above. A parse gate proves the
-      # file LOADS; this proves it still says what it has to say. `ci-plan` now emits
+        run: pip install pytest pyyaml
+      # ci.yml's Wave B job graph (2026-08-11), first wired in workflow-yaml beside
+      # the workflow parse gate: both read .github/workflows/ as their subject. A
+      # parse gate proves the file LOADS; this proves it still says what it has to say. `ci-plan` now emits
       # the pack matrix, so a PR may publish a SUBSET of ci-pack-0..11 and `ci-gate`
       # is the only name that concludes on every non-closed event — the affirmative
       # success `scripts/merge_on_green.py` requires (#4779, absence of red is not a
@@ -4805,10 +4996,13 @@ jobs:
       # read as unrun WARN to be pruned; they never red, so the PR that wires a suite is
       # never punished for wiring it. Grandfathering the 969 rather than gating them is
       # deliberate — running them all would blow the ci-pack budget; what this buys is
-      # the ratchet on the 970th. Enumeration stays EXPLICIT for the same reason the
-      # install-line comments above give: a glob runner would auto-run unvetted suites
-      # and re-create the ERROR-at-collection class those comments document, so a new
-      # suite is wired into the job that owns its subject, by hand, on purpose.
+      # the ratchet on the 970th. Enumeration stays EXPLICIT for the reason
+      # workflow-yaml's install-line comment gives: a glob runner would auto-run unvetted
+      # suites and re-create the ERROR-at-collection class that comment documents, so a
+      # new suite is wired into the job that owns its subject, by hand, on purpose.
+      # Tree-pure: its exit code depends only on the manifest's run: steps, the suites
+      # the tree holds, and the two config files. The site/ files it opens feed the
+      # severity tiers of its report, never the exit code.
       - name: "no suite may be named by zero run: steps (baseline-gated)"
         run: python scripts/audit_unrun_tests.py
       - name: unrun-census discovery unit tests
@@ -4851,6 +5045,51 @@ jobs:
         run: python scripts/check_ci_trigger_closure.py
       - name: trigger-closure guard unit tests
         run: python -m pytest tests/test_ci_trigger_closure.py -q
+
+  workflow-yaml:
+    if: ${{ false }}
+    gate: code
+    # Every .github/workflows/* file must load as YAML and carry on: + jobs:.
+    # An unparseable workflow file makes GitHub stamp a FAILED zero-job run on
+    # every push to every branch carrying it (metabolism-agenda.yml col-0
+    # incident: ~325 failed runs 07-10→07-11, introduced #2135, repaired #2260).
+    # dag-conformance above only yaml-loads workflows declared as dag.yml lanes,
+    # so non-lane workflow files had no parse guard at all — this closes that gap.
+    # GATE (2026-09-25): gate: code. This job was gate: data, so ci.yml's ci-pack
+    # (gate: code only) never ran it on a pull request. Its CI control-plane
+    # contracts moved to ci-control-plane-contracts, above. What stays is also a
+    # function of the tree: the workflow parse gate, render-lane wiring contracts
+    # that read workflow/dag/builder text, the options suites' fixture-built
+    # tests, and the sparse-worktree suites, which build synthetic git repos
+    # under tmp_path. The options and dead-asset tests that read a real store
+    # under data/ or a rendered page under site/ carry @pytest.mark.data_gate
+    # (tests/conftest.py). They are deselected here and run in
+    # engine-render-guards on the data gate.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # Deps grew 2026-07-30 (#3977). This job was `pytest pyyaml` — right for the
+      # workflow-YAML steps — but OIP E8 attached five options suites whose assertions are
+      # DATA-layer: they build DataFrames, round-trip parquet, and drive builders that
+      # render templates and fetch over HTTP. Only the first added step ran before ci-pack-1
+      # died, so its `No module named 'jinja2'` hid four more steps that would have failed
+      # the same way on pandas/jinja2/requests. Verified minimal by installing one package
+      # at a time in a clean venv (2026-07-30): pytest+pyyaml alone collects none of the
+      # four; +pandas leaves parquet writes failing; +pyarrow leaves 15 jinja2 and 11
+      # requests failures; the set below runs all five green (31+52+38+33+23 = 177 tests).
+      # numpy is transitive via pandas and named for the record, as causal-factory does.
+      # NOT patched with importorskip anywhere — a suite that skips in the only job naming
+      # it executes NOWHERE while reading green, which is the class
+      # check_skip_only_suites.py (ci-control-plane-contracts) exists to catch.
+      - name: install minimal deps
+        run: pip install pytest pyyaml pandas numpy pyarrow jinja2 requests
+      - name: check_workflow_yaml selftest
+        run: python scripts/check_workflow_yaml.py --selftest
+      - name: "all workflow files must parse with on:/jobs: blocks"
+        run: python scripts/check_workflow_yaml.py .github/workflows
       # render.yml's per-scope publish wiring. #3718 fixed the international
       # dashboard never publishing because `intl` was missing from the render
       # lane's scope list, and shipped this suite as the guard — but no `run:`
@@ -4870,7 +5109,7 @@ jobs:
       - name: "render workflow size ceiling and builder ownership"
         run: python -m pytest tests/test_render_run_size_cap.py tests/test_render_builder_ownership.py -q
       - name: render publication dead-asset fences
-        run: python -m pytest tests/test_render_dead_asset_gate.py -q
+        run: python -m pytest tests/test_render_dead_asset_gate.py -q -m "not data_gate"
       # Same class, second instance (2026-07-27). build_canada was invoked by NO
       # workflow at all: site/canada.html existed only as a side effect of a
       # swallowed try/except inside build_vector, so a canada-only fix could ride a
@@ -4895,14 +5134,16 @@ jobs:
       # #3721 weekend-row class. The options stores accrue non-session rows that RECOMPUTE
       # IV/spot/walls off a stale price; unfiltered they corrupt .iloc[-1], percentile
       # windows and positional lookbacks — including the n_obs count that gates
-      # call_skew_rich into the CROWDED state.
+      # call_skew_rich into the CROWDED state. The tests that read the real stores
+      # carry @pytest.mark.data_gate and run in engine-render-guards; the ones here are
+      # fixture-built. The same split applies to the seams and dead-asset suites.
       - name: options readers must session-filter dated stores
-        run: python -m pytest tests/test_options_session_guards.py -q
+        run: python -m pytest tests/test_options_session_guards.py -q -m "not data_gate"
       # The ×100 class, hit twice. Both incidents survived tests whose FIXTURES encoded
       # the bug, so this suite asserts against fixture-shaped AND prod-shaped inputs and
       # simulates a newest-vintage-only flip.
       - name: options ingestion seams must assert percent-vs-fraction
-        run: python -m pytest tests/test_options_unit_seams.py -q
+        run: python -m pytest tests/test_options_unit_seams.py -q -m "not data_gate"
       # R8 one coverage shape across the four family builders; pins the honesty rules
       # (unknown stays None, never a fabricated 100%; staleness is calendar-derived).
       - name: options coverage object contract
@@ -4922,7 +5163,7 @@ jobs:
       - name: render-lane scope contract (flow_desk must stay express-wired)
         run: python -m pytest tests/test_render_flow_desk_scope.py -q
       # Sparse session-worktree profile (policy R8). #5531 landed the suite
-      # named by no run: step — the same class the census above now gates —
+      # named by no run: step — the same class the unrun census now gates —
       # so pack-1 went red on every PR the moment it merged. It belongs HERE
       # with the other worktree/CI-profile steps: its subject is
       # scripts/worktree_sparse.py + the WorktreeCreate hook, and the sibling
@@ -4941,7 +5182,7 @@ jobs:
       - name: sparse worktree add/full lock preflight + truncation repair (never worse than it started)
         run: python -m pytest tests/test_worktree_sparse_add_lock_safety.py -q
       # VACUOUS guards: the same lie audit_unrun_tests.py catches, one layer down.
-      # A suite that never runs is caught above; a guard that RUNS, walks a tree
+      # A suite that never runs is caught by the unrun census; a guard that RUNS, walks a tree
       # that is not checked out, finds nothing and prints its affirmative OK is
       # not — it reports green over an empty set. Session worktrees are sparse by
       # default (policy R8, scripts/worktree_sparse.py), and seven check_*.py
@@ -5121,6 +5362,18 @@ jobs:
         run: python3 scripts/check_nightly_liveness.py --selftest
       - name: nightly liveness dead-man switch (checks + wiring pins)
         run: python -m pytest tests/test_nightly_liveness.py -q
+      # Third instrument in the same lane, added 2026-09-25. The two above watch
+      # daily.yml; this one watches the QUEUE, which is what neither of them can
+      # see. daily.yml routes `macstudio` — a live label — so it ran green through
+      # the entire 2026-09-23→25 render outage and the liveness guard correctly said
+      # nothing while `render-linux` had zero carriers and three lanes sat dark for
+      # three days. Registered BY NAME here because this file is the pack manifest:
+      # a suite nobody names is a suite CI never runs, so an unregistered watchdog
+      # test is a watchdog that silently stops being true.
+      - name: runner queue hostage guard selftest (scripts/check_runner_queue_hostage.py)
+        run: python3 scripts/check_runner_queue_hostage.py --selftest
+      - name: runner queue hostage dead-man switch (checks + wiring pins)
+        run: python -m pytest tests/test_runner_queue_hostage.py -q
 
   push-retry-policy:
     if: ${{ false }}
@@ -5198,6 +5451,38 @@ jobs:
         run: python -m pytest tests/test_transmission_calibration.py -q
       - name: transmission proposals — W5 Loop-C (pack + ingest + gate + Article 1/2)
         run: python -m pytest tests/test_transmission_proposals.py -q
+
+  ontology-explorer:
+    if: ${{ false }}
+    gate: code
+    # F04-X1 WTI Live Trace: the request-time composer
+    # (engine/ontology_explorer.py), its authenticated router
+    # (app/ontology_explorer.py) and the public-safe shell builder. Placed
+    # beside the transmission-chains owner because the trace it composes reads
+    # that chain library; scope is INFERRED, not curated, and that is
+    # deliberate — see the note below.
+    #
+    # NOT `scope: exclusive`. app/ontology_explorer.py resolves shared auth via
+    # `from app.main import require_user` (function-scoped, but scope inference
+    # walks the AST scope-insensitively), so this job's honest import closure is
+    # most of app/, engine/ and lib/ — measured at roughly 500 files. A curated
+    # exclusive scope would therefore have to enumerate ~500 paths and would
+    # re-select the job on nearly every change in the repository, which is the
+    # opposite of what exclusive scoping is for. `gate: code` keeps these four
+    # suites ON the merge gate: they are this feature's entire proof.
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 fastapi httpx
+      - name: ontology explorer — composer contract, owner episode, receipts
+        run: python -m pytest tests/test_ontology_explorer_contract.py -q
+      - name: ontology explorer — identity, private transport, public shell
+        run: python -m pytest tests/test_ontology_explorer_identity.py tests/test_ontology_explorer_transport.py tests/test_ontology_explorer_shell.py -q
 
   research-factory-authority:
     if: ${{ false }}
@@ -5535,6 +5820,94 @@ jobs:
       - "engine/sector_intelligence/finance_overlap.py"
       - "tests/test_finance_overlap.py"
       - "engine/sector_intelligence/contracts.py"
+      - "engine/sector_intelligence/finance_projection.py"
+      - "tests/test_finance_intelligence_projection.py"
+      # FIN-T9 entry points — sector deep-dive card on the Theme Tracker
+      # + Financials launch module (skip-mode while PR #7669 is OPEN).
+      - "templates/_finance_sector_deep_dive.html.j2"
+      - "templates/_finance_financials_launch.html.j2"
+      - "templates/state_of_themes.html.j2"
+      - "tests/test_finance_entry_points.py"
+      # Finance T8 page + hydration suites: unwired since #7952 (contract-delta listed both as inherited gaps)
+      - "templates/finance_intelligence.html.j2"
+      - "templates/finance_intelligence.js"
+      - "templates/finance_intelligence.css"
+      - "scripts/build_finance_intelligence_page.py"
+      - "tests/test_finance_intelligence_page.py"
+      - "tests/test_finance_intelligence_hydration.py"
+      - "tests/finance_intelligence_hydration_harness.js"
+      # direct (non-.py) reads of the page suite: public-access map + committed site copy
+      - "config/site_access.yml"
+      - "site/finance_intelligence.html"
+      - "contracts/sector_intelligence/**"
+      - "data/sector_intelligence/fixtures/**"
+      # import closure of engine/sector_intelligence/__init__.py (launch_slo_verifier ->
+      # earnings_narrative -> biocatalyst); listed so the exclusive scope covers itself.
+      - "collectors/biocatalyst/drugs_at_fda.py"
+      - "config/biocatalyst_sources.yml"
+      - "config/earnings_story_promotion.yml"
+      - "contracts/capital_structure_projection.schema.json"
+      - "engine/biocatalyst/discovery.py"
+      - "engine/biocatalyst/endpoint_alignment.py"
+      - "engine/biocatalyst/fixed_cohort.py"
+      - "engine/biocatalyst/regulatory.py"
+      - "engine/biocatalyst/storage.py"
+      - "engine/biocatalyst/trial_screen.py"
+      - "engine/biocatalyst/trials.py"
+      - "engine/earnings_narrative/biocatalyst_transcript_adapter.py"
+      - "engine/earnings_narrative/context_packets.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/private_publication.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/neuralweb/earnings_context_reader.py"
+      - "engine/press/earnings_adapter.py"
+      - "engine/research_vault/r2_store.py"
+      - "engine/sector_intelligence/__init__.py"
+      - "engine/sector_intelligence/launch_slo_verifier.py"
+      # import closure of tests/test_finance_entry_points.py — exercises
+      # scripts.build_state_of_themes (theme Tracker live render) to assert the
+      # canonical theme count is unchanged; that build module imports engine/
+      # theme_graph/store.py and lib/pages.py transitively. Widening is the
+      # safe direction per tests/test_ci_pack.py::test_curated_exclusive_scopes
+      # _cover_their_own_import_closure.
+      - "engine/__init__.py"
+      - "engine/research_priority_ordering.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/store.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/pages.py"
+      - "scripts/build_state_of_themes.py"
+      - "site/basketdata/foresight_cascade.json"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest jsonschema referencing pyyaml jinja2
+      - name: finance intelligence page + hydration tests
+        run: python -m pytest tests/test_finance_intelligence_page.py tests/test_finance_intelligence_hydration.py -q
+      - name: finance intelligence contract tests
+        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py -q
+
+
+  consumer-cyclical-economic-change:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "contracts/sector_intelligence/consumer_cyclical_intelligence_read_model.v1.schema.json"
+      - "data/sector_intelligence/fixtures/consumer_cyclical_intelligence_read_model.v1.valid.json"
+      - "tests/test_consumer_cyclical_intelligence_read_model_contract.py"
+      - "engine/sector_intelligence/consumer_cyclical_projection.py"
+      - "tests/test_consumer_cyclical_projection.py"
+      - "engine/sector_intelligence/contracts.py"
       - "contracts/sector_intelligence/**"
       - "data/sector_intelligence/fixtures/**"
       # import closure of engine/sector_intelligence/__init__.py (launch_slo_verifier ->
@@ -5572,8 +5945,8 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest jsonschema referencing pyyaml
-      - name: finance intelligence contract tests
-        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py -q
+      - name: consumer cyclical economic change contract + projection tests
+        run: python -m pytest tests/test_consumer_cyclical_intelligence_read_model_contract.py tests/test_consumer_cyclical_projection.py -q
 
   flow-signals-ledger:
     if: ${{ false }}
@@ -6142,10 +6515,14 @@ jobs:
   validated-claims:
     if: ${{ false }}
     gate: data
-    # BC-2 PR gate: the word "validated" in user-facing surfaces must trace to a
-    # backed claim. This is the PR-time companion to the nightly calibration run
-    # (cycle-calibration.yml/calibrate). A sibling builder is fixing the current
-    # findings — wire it regardless; final verification happens after both land.
+    # BC-2 FULL SCAN — the data-gate half. The word "validated" in user-facing
+    # surfaces must trace to a backed claim. This job walks EVERY surface,
+    # including the rendered site/ tree, site/prophet JSON and the registry rows
+    # the nightly rewrites, so a data commit alone can move its verdict: it stays
+    # `gate: data` and runs on the data-health lane after the nightly. The PR-tree
+    # half (templates/, engine/, lib/, the top-level page builders
+    # scripts/build_*.py + scripts/render_*.py, and the allowlist) is graded
+    # before merge by validated-claims-source below, which is `gate: code`.
     # Law source: CLAUDE.md ("The word 'validated' in user-facing text is CI-enforced").
     runs-on: ubuntu-latest
     steps:
@@ -6165,6 +6542,278 @@ jobs:
         run: python3 scripts/check_design_system.py --self-check
       - name: design-system ratchet R0 (report-only drift census over templates/)
         run: python3 scripts/check_design_system.py --mode report
+
+  validated-claims-source:
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    scope: exclusive
+    # BC-2 MERGE GATE — the PR-tree half of validated-claims above. Until
+    # 2026-09-25 every BC-2 execution was `gate: data` (this job's sibling,
+    # engine-render-guards' suite sweep, and unrun-subsector-themes' subprocess
+    # scan), and the merge gate packs only `gate: code` jobs, so NOTHING graded a
+    # claim before merge: 75 unearned claims merged green across a dozen PRs
+    # between 2026-08-25 and 2026-09-24 and were healed in one batch (#7979).
+    # `--scope source` walks only templates/, engine/, lib/ and the top-level
+    # page builders scripts/build_*.py + scripts/render_*.py (never the rest of
+    # scripts/ — PAGE BUILDERS in the checker) — roots no data commit writes
+    # (the render-public `?v=` re-stamps on three plain-copy pages cannot spell
+    # the token) — through the SAME matcher, negation, masks and
+    # `surfaces`-enforced allowlist as the full scan, and refuses the one backing
+    # that reads data (a cited artifact's validated:true), so its verdict is a
+    # function of the PR's own tree (see the SCAN SCOPE block in the checker).
+    # Deliberately scan-only: this job rides every templates/**, engine/** and
+    # page-builder PR by design — those PRs are its subject — so it carries only
+    # the two cheap checker steps, and the checker's unit suites ride
+    # validated-claims-contract below, selected by the files that can change
+    # their verdict. CURATED SCOPE: the scanned roots, the checker, the
+    # allowlist, and the literal files the checker names (inference's closure);
+    # site/** and data/** edits otherwise do not select it, because they cannot
+    # move its verdict.
+    paths:
+      - "templates/**"
+      - "engine/**"
+      - "lib/**"
+      # Top level only: a single `*` never crosses `/`, the same cut as the
+      # checker's glob (not rglob) walk of scripts/.
+      - "scripts/build_*.py"
+      - "scripts/render_*.py"
+      - "scripts/check_validated_claims.py"
+      - "data/regime/validated_claims_allowlist.json"
+      # Closure: rendered pages the checker names literally (the registry
+      # payloads and the third-party render targets). Selection only — the
+      # source scope never reads them.
+      - "site/china_news.html"
+      - "site/leader_radar.html"
+      - "site/measurementdata/measurement_data.js"
+      - "site/news.html"
+      - "site/research/index.html"
+      - "site/research_vault.html"
+      - "site/sector_cycles_china_dna_data.js"
+      - "site/sector_cycles_china_narr_data.js"
+      - "site/sector_cycles_dna_data.js"
+      - "site/sector_cycles_narr_data.js"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: validated-claims selftest (gate fires on synthetic unearned claim)
+        run: python3 scripts/check_validated_claims.py --selftest
+      - name: no unearned 'validated' claims in PR-authored source copy (templates/, engine/, lib/, page builders)
+        run: python3 scripts/check_validated_claims.py --scope source
+
+  validated-claims-contract:
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    scope: exclusive
+    # BC-2's checker contract on the merge gate — the matcher, negation and
+    # structural masks, the `surfaces`-enforced allowlist, the third-party and
+    # registry scopes, and the source/full scope split — so a PR that edits the
+    # checker, the allowlist or a suite cannot weaken the gate and merge green.
+    # These suites were run only by engine-render-guards (gate: data). Their
+    # live-tree cases are DESELECTED here, because they read the rendered site/
+    # tree, the full estate scan, or the nightly registries; engine-render-guards
+    # still runs every case after merge. CURATED SCOPE: the checker, the
+    # allowlist, the suites, and their measured import closure plus the files
+    # they read by name — not templates/** or engine/** wholesale, whose PRs
+    # validated-claims-source already grades.
+    paths:
+      - "scripts/check_validated_claims.py"
+      - "data/regime/validated_claims_allowlist.json"
+      - "tests/test_validated_claims_*.py"
+      # Measured closure of the six suites (2026-09-25, full checkout): the
+      # engine.flow_signing and engine.china_news imports and the files the
+      # suites and those modules name literally. A subpackage is globbed only
+      # where the closure already covers most of it; elsewhere the files are
+      # exact, so an unrelated engine edit does not select this job.
+      - "collectors/base.py"
+      - "collectors/equity_earnings.py"
+      - "collectors/massive_flatfiles.py"
+      - "collectors/massive_stock_day.py"
+      - "collectors/sp_index_changes.py"
+      - "config/ai_pricing.yml"
+      - "config/capability_manifest.yml"
+      - "config/cycle_pattern/consumer_matrix.yml"
+      - "config/dag.yml"
+      - "config/dataset_registry.yml"
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "config/intelligence_workspace/datapoints.v1.json"
+      - "config/synapse.yml"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "contracts/intelligence_workspace/datapoint_registry.schema.json"
+      - "contracts/intelligence_workspace/datapoint_value.schema.json"
+      - "contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json"
+      - "engine/__init__.py"
+      - "engine/btc_alerts.py"
+      - "engine/btc_impulse_radar.py"
+      - "engine/btc_impulse_radar_backtest.py"
+      - "engine/btc_leverage_cascade.py"
+      - "engine/canon.py"
+      - "engine/china_news.py"
+      - "engine/cn_newswires.py"
+      - "engine/codex_lane/runner.py"
+      - "engine/codex_provider.py"
+      - "engine/company_intelligence/**"
+      - "engine/conditions.py"
+      - "engine/confluence_tiers.py"
+      - "engine/cycle_pattern/consumer_authority.py"
+      - "engine/cycle_pattern/imce_prospective.py"
+      - "engine/cycle_pattern/truths.py"
+      - "engine/cycles.py"
+      - "engine/dislocation.py"
+      - "engine/earnings_catalyst.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/earnings_release/**"
+      - "engine/extension.py"
+      - "engine/flow_signing.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/gdelt_client.py"
+      - "engine/grading.py"
+      - "engine/htf_durability.py"
+      - "engine/hysteresis.py"
+      - "engine/i18n.py"
+      - "engine/index_changes.py"
+      - "engine/indicators.py"
+      - "engine/intelligence_workspace/**"
+      - "engine/ledger_lane.py"
+      - "engine/marketing/accounts.py"
+      - "engine/marketing/authority.py"
+      - "engine/marketing/campaign_compiler.py"
+      - "engine/marketing/charter.py"
+      - "engine/marketing/claims.py"
+      - "engine/marketing/cmo.py"
+      - "engine/marketing/departments.py"
+      - "engine/marketing/economics.py"
+      - "engine/marketing/events.py"
+      - "engine/marketing/ledgers.py"
+      - "engine/marketing/opportunity_bus.py"
+      - "engine/marketing/publication.py"
+      - "engine/marketing/state.py"
+      - "engine/neuralweb/company_intelligence_reader.py"
+      - "engine/neuralweb/key_pool.py"
+      - "engine/neuralweb/native_facts.py"
+      - "engine/news_translate.py"
+      - "engine/press/earnings_adapter.py"
+      - "engine/quote_resolution.py"
+      - "engine/research_implication_card.py"
+      - "engine/seasonality/foundation.py"
+      - "engine/seasonality/program_watch.py"
+      - "engine/session_anchor.py"
+      - "engine/session_digest.py"
+      - "engine/signal_gate.py"
+      - "engine/signal_quality.py"
+      - "engine/stock_identity/plane.py"
+      - "engine/synthetic_control.py"
+      - "engine/technicals.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/store.py"
+      - "engine/trial_ledger.py"
+      - "engine/universe_history.py"
+      - "engine/validation.py"
+      - "engine/vol_forecast.py"
+      - "engine/vol_regime.py"
+      - "lib/__init__.py"
+      - "lib/ai_costs.py"
+      - "lib/config.py"
+      - "lib/dataos/**"
+      - "lib/massive_ticker.py"
+      - "lib/nyse_calendar.py"
+      - "lib/pages.py"
+      - "lib/store.py"
+      - "research/DISLOCATION_VALIDATION.md"
+      - "research/HINCL2_PREREG.md"
+      - "research/SEASONALITY_BIOCATALYST_INTEGRATION_SEAM.md"
+      - "research/SEASONALITY_PROGRAM_HANDOFF_2026-08-02.md"
+      - "research/SYNTHETIC_CONTROL_PHASE0.md"
+      - "research/VECTOR_IMPULSE_PREDICTION.md"
+      - "research/cycle_masterplan/PREREGISTRATION.md"
+      - "research/cycle_masterplan/W42_HAZARD_VERDICT.md"
+      - "research/entry_timing/WAVE2_REPORT.md"
+      - "research/imce/IMCE_A4P_ORDER_SOFTNESS_STATE_CONSTRUCTION_V1.md"
+      - "research/imce/IMCE_HB0_SOURCE_DEFINITION_CENSUS_V1.md"
+      - "scripts/build_measurement.py"
+      - "scripts/ci/daily_engine_regional_desk_builders.sh"
+      - "scripts/hincl2_event_study.py"
+      - "scripts/replay_standout_pipeline.py"
+      - "scripts/synthetic_control_phase0.py"
+      - "site/alerts.html"
+      - "site/allocation_canada.html"
+      - "site/alt_data.html"
+      - "site/basket_china/cn_autos.html"
+      - "site/basketdata/fear_greed.json"
+      - "site/china.html"
+      - "site/china_news.html"
+      - "site/china_stocks.html"
+      - "site/cycle_app.js"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/etf_board_track.json"
+      - "site/factordata/us_standouts.json"
+      - "site/forex.html"
+      - "site/index.html"
+      - "site/leader_radar.html"
+      - "site/macro.html"
+      - "site/measurementdata/measurement_data.js"
+      - "site/news.html"
+      - "site/prophet/showcase.json"
+      - "site/research/index.html"
+      - "site/research_vault.html"
+      - "site/seasonalitydata/index.json"
+      - "site/sector_cycles_china_dna_data.js"
+      - "site/sector_cycles_china_narr_data.js"
+      - "site/sector_cycles_dna_data.js"
+      - "site/sector_cycles_narr_data.js"
+      - "site/sectors/XLB.html"
+      - "site/signal_lab.html"
+      - "site/stock_seasonality.html"
+      - "site/us_stocks.html"
+      - "templates/_desk_grader_panel.html.j2"
+      - "templates/anticipation.html.j2"
+      - "templates/canada.html.j2"
+      - "templates/china_news.html.j2"
+      - "templates/dashboard.html.j2"
+      - "templates/discovery.html.j2"
+      - "templates/finance_intelligence.js"
+      - "templates/forex.html.j2"
+      - "templates/hk.html.j2"
+      - "templates/research_index.html.j2"
+      - "templates/research_report.html.j2"
+      - "templates/research_vault.html.j2"
+      - "templates/sector_central.html.j2"
+      - "templates/sector_cycles.js"
+      - "templates/spvector.html.j2"
+      - "templates/stock_seasonality.html.j2"
+      - "templates/stockview.js"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pandas numpy pyarrow pyyaml
+      - name: validated-claims suites (PR-tree cases; live site/ + registry cases stay on the data gate)
+        run: >-
+          python -m pytest
+          tests/test_validated_claims_source_scope.py
+          tests/test_validated_claims_engine.py
+          tests/test_validated_claims_structural_scope.py
+          tests/test_validated_claims_surfaces.py
+          tests/test_validated_claims_thirdparty.py
+          tests/test_validated_claims_registry_source.py -q
+          --deselect tests/test_validated_claims_surfaces.py::test_the_live_tree_is_clean
+          --deselect tests/test_validated_claims_thirdparty.py::test_real_tree_is_green_without_a_per_quote_allowlist_entry
+          --deselect tests/test_validated_claims_thirdparty.py::test_the_live_syndicated_renders_are_covered_by_the_skip
+          --deselect tests/test_validated_claims_thirdparty.py::test_every_mapped_render_target_exists_in_the_live_tree
+          --deselect tests/test_validated_claims_registry_source.py::test_every_spec_glob_resolves_against_the_tree
+          --deselect tests/test_validated_claims_registry_source.py::test_every_spec_payload_exists_and_is_scanned
+          --deselect tests/test_validated_claims_registry_source.py::test_the_committed_registries_are_clean
 
   design-governance:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
@@ -6202,7 +6851,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pyyaml
       - name: design governance unit suites
-        run: python3 -m pytest tests/test_check_design_system.py tests/test_check_runtime_style_injection.py tests/test_check_ui_visual_evidence.py tests/test_check_p0b_receipt_closure.py tests/test_freshness_chips_language_invariant.py -q
+        run: python3 -m pytest tests/test_check_design_system.py tests/test_check_runtime_style_injection.py tests/test_check_ui_visual_evidence.py tests/test_freshness_chips_language_invariant.py -q
       - name: design-system ratchet selftest (each rule fires on its own fixture)
         run: python3 scripts/check_design_system.py --self-check
       - name: runtime-style injection guard selftest (gate fires on planted injection)
@@ -6235,24 +6884,92 @@ jobs:
           fi
           git diff --unified=0 "$mb" HEAD -- templates site > /tmp/ui.diff
           python3 scripts/check_ui_visual_evidence.py --diff-file /tmp/ui.diff
-      # P0B receipt closure: #7603 changed templates/hk.html.j2 without reminting
-      # the browser receipts (same class as #7500 / navigation-refresh.css).
-      # Derive the pin set FROM the receipts at runtime; a pinned path in the
-      # PR diff without the receipts that pin it fails closed.
-      - name: p0b receipt-closure selftest (gate fires when a pinned path moves without receipts)
-        run: python3 scripts/check_p0b_receipt_closure.py --selftest
+      # The P0B receipt-closure gate used to be two trailing steps here
+      # (#7613). It is now its own job, `p0b-receipt-closure` below: the pack
+      # runner skips every later step of a logical job once one step fails,
+      # so on #6872 (2026-09-24) the forward-only design ratchet's five
+      # findings SHADOWED the receipt gap — the closure step never executed,
+      # its verdict was never printed, and main went red on ci-pack-9 for
+      # hours. Independent gates need independent jobs.
+
+  p0b-receipt-closure:
+    if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
+    gate: code
+    # ui.p0b_receipt_closure (config/house_law_checks.yml). A change to any
+    # path the committed P0B browser receipts pin
+    # (mockups/evidence/prophet-p0b-zero-fouc/mobile-layout*.json:
+    # construction_inputs, loaded_assets, verifier.path, and
+    # rendered-fixture.json's recipe inputs) must re-mint those receipts in
+    # the same diff, or tests/test_stock_dashboard_first_frame.py reds on pure
+    # main and every fresh merge-ref inherits it (#7500, #7603, #6872).
+    #
+    # OWN JOB, deliberately (2026-09-24, #6872 postmortem). The gate first
+    # shipped as trailing steps on design-governance (#7613). Two defects:
+    #   1. run_ci_pack.py skips the remaining steps of a logical job after the
+    #      first failing step, so a design-ratchet red on the same PR hid the
+    #      receipt verdict entirely (#6872: 5 color-mix findings on
+    #      templates/ontology.css ran first; the closure step never executed).
+    #   2. "unscoped" is not "always-on": infer_job_scopes derives a scope from
+    #      the job's commands, and mockups/ is outside every opaque scan root,
+    #      so a diff that changed ONLY the rendered fixture or a receipt input
+    #      selected 3/158 jobs and skipped design-governance altogether.
+    #
+    # CURATED SCOPE. The pin set is derived at runtime from the receipts, so the
+    # declaration below names the ROOTS every pin lives under plus the gate's
+    # own import closure. It is bound to the receipts by
+    # tests/test_ci_pack.py::test_p0b_receipt_closure_job_owns_every_receipt_pinned_path,
+    # which derives the live pin set from the committed receipts and fails when
+    # any pinned path stops selecting this job — a receipt that later pins a
+    # path outside these roots must widen this list in the same PR.
+    #
+    # The gate step runs FIRST so its verdict is printed whatever the selftest
+    # or unit suite do; those two guard the gate's own correctness and still
+    # red the job on their own. fetch-depth 0 + explicit base fetch is
+    # load-bearing: the diff needs `git merge-base`, and a missing base fails
+    # closed rather than guarding nothing.
+    scope: exclusive
+    paths:
+      # the gate, its unit suite, and its import closure
+      - "scripts/check_p0b_receipt_closure.py"
+      - "tests/test_check_p0b_receipt_closure.py"
+      - "scripts/worktree_sparse.py"
+      - "config/sparse_worktree.json"
+      - "engine/__init__.py"
+      # the receipts, the rendered fixture, and every fixture input they pin
+      - "mockups/evidence/prophet-p0b-zero-fouc/**"
+      # receipt-pinned construction inputs, loaded assets, recipe, verifier
+      - "templates/**"
+      - "site/**"
+      - "engine/i18n.py"
+      - "scripts/render_stock_dashboard_fixture.py"
+      - "scripts/verify_stock_dashboard_mobile_layout.cjs"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest
       - name: p0b receipt-closure (pinned construction inputs require a same-diff receipt remint)
         run: |
           if ! git fetch origin ${{ github.base_ref || 'main' }}; then
-            echo "::error title=design-governance::could not fetch origin/${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
+            echo "::error title=p0b-receipt-closure::could not fetch origin/${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
             exit 1
           fi
           if ! mb=$(git merge-base "origin/${{ github.base_ref || 'main' }}" HEAD); then
-            echo "::error title=design-governance::no merge base with ${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
+            echo "::error title=p0b-receipt-closure::no merge base with ${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
             exit 1
           fi
           git diff --name-only "$mb" HEAD > /tmp/p0b.changed
           python3 scripts/check_p0b_receipt_closure.py --diff-file /tmp/p0b.changed
+      - name: p0b receipt-closure selftest (gate fires when a pinned path moves without receipts)
+        run: python3 scripts/check_p0b_receipt_closure.py --selftest
+      - name: p0b receipt-closure unit suite
+        run: python3 -m pytest tests/test_check_p0b_receipt_closure.py -q
 
   template-site-sync:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
@@ -8123,6 +8840,8 @@ jobs:
     # genuine import edges.
     scope: exclusive
     paths:
+      - "engine/narrative_crossmarket.py"
+      - "engine/ontology_explorer.py"
       # P1 leader-observation closure widening 2026-09-20 (contract-delta):
       # the existing Prophet serving/build paths now import the leader-pullback
       # projection through the canonical Turn Organ dependency chain.
@@ -8555,6 +9274,7 @@ jobs:
       - "scripts/build_chart_data.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
+      - "scripts/build_finance_intelligence_page.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_live_overlay.py"
       # F01 R1B closure widening 2026-09-04 (contract-delta): imported by
@@ -8753,6 +9473,8 @@ jobs:
     # 846 tracked / 74 concrete.
     scope: exclusive
     paths:
+      - "engine/narrative_crossmarket.py"
+      - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -9139,6 +9861,7 @@ jobs:
         run: >
           python -m pytest
           tests/test_sector_intelligence_contracts.py
+          tests/test_sector_dossier_contract.py
           tests/test_launch_slo_evidence_verifier.py
           tests/test_biocatalyst_d0a_design_contract.py
           tests/test_biocatalyst_acceptance_v2.py
@@ -10378,6 +11101,14 @@ jobs:
       # immediately above.
       - name: public glossary directory (view-model contract + rendered-page wiring)
         run: python -m pytest tests/test_glossary.py tests/test_glossary_contract.py tests/test_glossary_letter_rail_js.py -q
+      # Finance Intelligence site-builder hook (2026-09-25). The suite reads
+      # scripts/build_site.py as TEXT, and this job already owns the site builder, so
+      # hosting it here adds no owned path and no packing-probe match. #8010 ran it
+      # in its own job instead. That job matched every one-file probe in
+      # tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs
+      # (templates/index.html 134/133), which turned integration-baseline red on main.
+      - name: finance intelligence site-builder wiring (build_site carries the render hook)
+        run: python -m pytest tests/test_finance_intelligence_site_wiring.py -q
 
   press-lane:
     if: ${{ false }}  # executed inside ci-pack; keep the legacy status definition runner-free
@@ -10786,7 +11517,7 @@ jobs:
       - name: data/stocks retention fetch + per-name freshness audit
         run: python -m pytest tests/test_stock_price_retention.py tests/test_audit_stocks_freshness.py -q
       - name: stock-library freshness demotion (frozen-feed scan admission)
-        run: python -m pytest tests/test_stock_library_freshness.py -q
+        run: python -m pytest tests/test_stock_library_freshness.py tests/test_us_completed_session_panel.py -q
 
   defense-rail-laws:
     # D6-A + D6-B1 defense acquisition rails — the two commissioned law
@@ -11197,9 +11928,14 @@ jobs:
     # no named closure file was removed.
     scope: exclusive
     paths:
+      - "engine/narrative_crossmarket.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
+      # F04-X1 closure widening 2026-09-24 (contract-delta): app/main.py mounts the
+      # ontology explorer router, so this curated job's app import closure now
+      # reaches the F04 engine module.
+      - "engine/ontology_explorer.py"
       # B-F07-2 closure widening 2026-09-09 (contract-delta)
       - "engine/valuation_assumptions.py"
       # B-F07-3 closure widening 2026-09-19 (contract-delta)
@@ -11995,7 +12731,7 @@ jobs:
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
       - name: master brain / AI desk / alt-data / risk brains behind the shipped desk verdicts
-        run: python -m pytest tests/test_admin_brief_gate.py tests/test_ai_desk_panel.py tests/test_altdata_intel.py tests/test_altdata_price_truth.py tests/test_china_intel_hub.py tests/test_master_brain.py tests/test_master_brain_ladder.py tests/test_master_brain_zh_ladder.py tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py tests/test_risk_brain.py tests/test_risk_radar_review.py tests/test_risk_radar_probability_walkforward.py tests/test_shock_deescalation.py tests/test_w7_llm_determinism.py -q
+        run: python -m pytest tests/test_admin_brief_gate.py tests/test_ai_desk_panel.py tests/test_altdata_intel.py tests/test_altdata_price_truth.py tests/test_china_intel_hub.py tests/test_china_intel_hub_command.py tests/test_narrative_crossmarket.py tests/test_master_brain.py tests/test_master_brain_ladder.py tests/test_master_brain_zh_ladder.py tests/test_master_brain_policy.py tests/test_master_brain_producer.py tests/test_master_brain_scorer.py tests/test_risk_brain.py tests/test_risk_radar_review.py tests/test_risk_radar_probability_walkforward.py tests/test_shock_deescalation.py tests/test_w7_llm_determinism.py -q
       # China Alpha Intelligence P1 (#6050): the china_intel_hub dossier's
       # descriptive-only visits block — joins the china_intel_hub owner lane.
       # test_china_intel_visits_render.py is the SOL-repair template render
@@ -12126,6 +12862,11 @@ jobs:
         # real `originate_plans` reading the real artifact off disk (~5s serial), so the
         # pair must be able to red each other on the same head.
         run: python -m pytest tests/test_us_leader_pullback_coverage.py -q
+      # #7180 completed-session source binding is a code contract, not nightly data
+      # freshness. Keep the suite in this existing Prophet code gate so PR packs can
+      # exercise the same source/date clipping and frozen-object law before merge.
+      - name: US completed-session source binding (closed-session panel + frozen source)
+        run: python -m pytest tests/test_us_completed_session_panel.py -q
       - name: leader-observation projection (strict source status, no-rank authority, summary privacy)
         run: python -m pytest tests/test_us_leader_observation_projection.py -q
       # Prophet V4 B3 candidate-state core + owner-fact adapters. Keep this in the
@@ -12539,6 +13280,9 @@ jobs:
       - "engine/flow_regime.py"
       - "engine/hk_global.py"
       - "engine/hk_global_beta.py"
+      # #7277 closure widening: HK native intelligence is imported by the
+      # picks/boards family; curated exclusive scope must cover its own closure.
+      - "engine/hk_native_intelligence.py"
       - "engine/international_macro_dashboard.py"
       - "engine/intl_bonds.py"
       - "engine/intl_compare.py"
@@ -13128,6 +13872,7 @@ jobs:
       - "scripts/build_crossmarket.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
+      - "scripts/build_finance_intelligence_page.py"
       - "scripts/build_hk.py"
       - "scripts/build_hk_library.py"
       - "scripts/build_index_leadership.py"
@@ -13283,6 +14028,7 @@ jobs:
       - "tests/test_cn_track_ledger_eras.py"
       - "tests/test_confluence_veto_leg_telemetry.py"
       - "tests/test_dashboard_template_render.py"
+      - "tests/test_macro_sector_desk.py"
       # us_stocks S2 compression (W7-A 7056 heal): tests/test_us_stocks_s2_compression.py
       # renders the same dashboard.html.j2 template (mode=stocks) and imports engine.i18n,
       # which the job's `engine/i18n.py` and `engine/holdings_signals.py` paths already
@@ -14731,6 +15477,8 @@ jobs:
     # 846 tracked / 74 concrete. Subject packages stay globbed.
     scope: exclusive
     paths:
+      - "engine/narrative_crossmarket.py"
+      - "engine/ontology_explorer.py"
       # F07 B-F07-1 closure widening 2026-09-06 (contract-delta): valuation
       # scenario V1 pure module now sits in the shared engine/* import closure.
       - "engine/valuation_scenario.py"
@@ -16440,6 +17188,25 @@ jobs:
       - name: install regime-strip test dependencies
         run: pip install pytest pyyaml jinja2 pillow beautifulsoup4 numpy pandas pyarrow
       - name: markets risk-regime strip + cycle-stage mobile detail
+        # The whole suite runs here, fresh-render byte guard included.
+        # That guard baked IN PLACE and compared the live result against the
+        # committed site/markets.html, so it read data/regime + data/market_state
+        # — which closing-bell's scope=close render rewrites WITHOUT re-baking
+        # the page. Between that commit and the next render.yml bake it reddened
+        # every merge ref on a tree no PR had touched, so #7971 deselected it
+        # here and ran it on a `gate: data` twin instead.
+        #
+        # #7986 removed the live read. The guard now recovers the branch each
+        # strip row took from the committed page's own mx-stance modifiers,
+        # bakes into tmp_path with those views pinned in place of the three
+        # _persisted_ms_view reads, and normalises the lane-owned optimize_assets
+        # markup (`?v=` stamps, preload hints, `defer`) on both sides. A
+        # data-only commit can no longer flip it; what fails it is a template,
+        # partial or scripts/build_markets.py edit shipped without re-baking the
+        # page. That is a CODE verdict, so it belongs on the merge gate, where
+        # the PR that caused it can act on it. The data-gated twin is retired,
+        # not moved: post-#7986 it would assert exactly what this step asserts,
+        # because it no longer reads the feeds it was split out for.
         run: python -m pytest tests/test_markets_regime_strip.py tests/test_markets_cyc_stage_mobile.py -q
 
   dashboard-render-contract:
@@ -16470,8 +17237,10 @@ jobs:
     # An unlisted closure file is an uncovered path. No tests/** catch-all.
     scope: exclusive
     paths:
-      # The seven suites the step runs, plus helper suites they import.
+      # The eight suites the step runs, plus helper suites they import.
       - "tests/test_dashboard_template_render.py"
+      # #7798: source-dated Hottest Desk leadership/recommendation contract.
+      - "tests/test_macro_sector_desk.py"
       # #7859: volatility-placement tests used to live only in gate:data
       # engine-render-guards, which PR packs do not execute. This code-gate
       # owner already owns dashboard.html.j2 and the committed macro projection.
@@ -16485,6 +17254,8 @@ jobs:
       - "tests/test_theme_tape.py"
       - "tests/test_us_board_priority_ui.py"
       # Templates the renders load by name.
+      - "templates/_macro_sector_desk.html.j2"
+      - "templates/dashboard.html.j2"
       - "templates/_navlinks.html.j2"
       - "templates/_public_footer.html.j2"
       - "templates/_public_nav.html.j2"
@@ -16541,6 +17312,7 @@ jobs:
       - "scripts/build_chart_data.py"
       - "scripts/build_debt_maturity.py"
       - "scripts/build_fundamental_forensics.py"
+      - "scripts/build_finance_intelligence_page.py"
       - "scripts/build_index_leadership.py"
       - "scripts/build_live_overlay.py"
       - "scripts/build_macro_suite_pages.py"
@@ -16596,11 +17368,12 @@ jobs:
       # persisted-view fixture). markupsafe arrives with jinja2, numpy with
       # pandas. Never importorskip.
       - name: install dashboard render-contract test dependencies
-        run: pip install pytest pyyaml jinja2 pandas plotly pyarrow requests
+        run: pip install pytest pyyaml jinja2 beautifulsoup4 pandas plotly pyarrow requests
       - name: dashboard.html.j2 rendered-HTML contract + volatility detail + UD-B2-W2 spine bindings
         run: >-
           python -m pytest
           tests/test_dashboard_template_render.py
+          tests/test_macro_sector_desk.py
           tests/test_macro_risk_dialog.py
           tests/test_risk_envelope_radar_integration.py
           tests/test_us_stocks_s2_compression.py
@@ -16834,3 +17607,38 @@ jobs:
             tests/test_payoff_lab_launchd.py \
             tests/test_options_skew_backfill.py \
             -q
+  mining-economic-dossier:
+    # GMI MINING M1 integration (Fable Meta-CEO seat 664a0650, WS:GMI-MINING-M1-INTEGRATION,
+    # ruling R-MIN-02/R-MIN-26, 2026-09-24). T01' consumption harness: the synthetic
+    # casebook, the closed delivery-input validator and the typed route_unbound client
+    # (engine/market_ontology/mining_dependency_binding.py). Later Mining task PRs APPEND
+    # their own suites and paths to this ONE block (never to a sibling sector's job).
+    # Gate-code pure: the suites import the standard library, jsonschema/pyyaml, the Mining
+    # modules and, through engine/market_ontology/__init__.py, exposure_map.py (stdlib-only);
+    # the shared-contract probe imports engine.theme_graph lazily and degrades to a typed
+    # refusal when it is absent. Every fixture is synthetic; no data/ or site/ input.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "tests/mining_casebook.py"
+      - "tests/test_mining_shared_contract.py"
+      - "tests/test_mining_shared_contract_probes.py"
+      - "tests/fixtures/mining_economic_dossier/**"
+      - "engine/market_ontology/mining_dependency_binding.py"
+      - "engine/market_ontology/__init__.py"
+      - "engine/market_ontology/exposure_map.py"
+      - "engine/theme_graph/__init__.py"
+      - "engine/theme_graph/curation_assertion.py"
+      - "tests/__init__.py"
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps for the Mining economic-dossier suites
+        run: pip install pytest jsonschema pyyaml
+      - name: mining economic dossier — shared-contract harness
+        run: TZ=UTC python -m pytest tests/test_mining_shared_contract.py tests/test_mining_shared_contract_probes.py -q

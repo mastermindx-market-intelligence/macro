@@ -1,7 +1,7 @@
 {
   "schema": "research_vault.catalog.v1",
-  "generated_at": "2026-09-24T11:27:42.287980+00:00",
-  "count": 2775,
+  "generated_at": "2026-09-27T00:00:21.608968+00:00",
+  "count": 2778,
   "institutions": [
     "ABN Amro",
     "Academy Securities",
@@ -159,6 +159,66 @@
       "tickers": [],
       "top_pick": false,
       "pages": 47,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-e3vti2g2ljc-0ef099",
+      "title": "JPM Washington Policy perspectives",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T09:26:31Z",
+      "summary_points": [
+        "House Flip Consensus: 90% odds Democrats gain House control (214-162), shifting legislative power on spending/regulation with immediate policy execution implications.",
+        "Iran Conflict Energy Shock: Brent oil at $100-110/bbl (vs $75-100 baseline) from Strait of Hormuz/Houthi threats, driving 8mm bpd shipping risk and second-largest financial concern.",
+        "Affordability Dominance: 31% cite cost of living/inflation as top financial issue (vs 27% historical), with 71% disapproving of Trump’s economic handling—directly pressuring consumer spending and equity valuations.",
+        "Policy Execution Gaps: Unmet promises (e.g., 10Y UST yield at -0.50% vs 4.00% policy rates, FY2026-27 deficit at 6.5% GDP vs target) eroding credibility amid affordability crisis.",
+        "Tariff Burden Surge: Midwest/Southeast manufacturing tariff costs tripled (IPMCI), with Midwest at 11% and Southeast at 9.6%—threatening transportation equipment and supply chains."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 24,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-o6pszie7tyj-26f51f",
+      "title": "JPM The rise of tech in Brazil",
+      "institution": "J.P. Morgan",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T09:26:23Z",
+      "summary_points": [
+        "Brazil’s tech investment structural shift: Software services now 9.5% of investment (up from <5% in 2011), driving IAI recovery; tech-intensive sector shows R²=0.81 vs GDP (vs 0.49 without software), decoupling from industrial cycles.",
+        "Tech resilience vs oil volatility: Oil platform imports caused recent IAI volatility, but software investment remains robust (growing while construction lags), making tech tracking critical for portfolio positioning.",
+        "New monthly data release: J.P.",
+        "Morgan’s Consumption Activity Index (CAI) launches monthly as key investment proxy, complementing core CPI for portfolio management."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
+      "language": "en",
+      "needs_metadata": false
+    },
+    {
+      "id": "marketdesk-zrm6c8wob07-dcdeeb",
+      "title": "The Point for Europe: Thursday, 24 September 2026",
+      "institution": "Citi",
+      "side": "sell",
+      "desk": "",
+      "published_at": "2026-09-24T09:19:16Z",
+      "summary_points": [
+        "MTU Aero Engines Upgrade: Fundamental upgrade driven by improved cash conversion (55%→80-90% by 2030) via LTSAs with Safran, narrowing gap and +c8.5% CAGR 2026-31E.",
+        "UBS Capital Legislation: Policy-driven risk requiring ~$17bn capital raise under Swiss law (90%/10% CET1/AT1 split), lowering CET1 ratio to ~14%.",
+        "Nordic Banks Valuation Risk: Overvalued at 13-14x PE vs European peers' 10x, priced for perfection amid Swedish tax concerns and ECB rate expectations."
+      ],
+      "tags": [],
+      "tickers": [],
+      "top_pick": false,
+      "pages": 7,
       "language": "en",
       "needs_metadata": false
     },

@@ -1,25 +1,25 @@
 {
-  "as_of": "2026-09-23",
+  "as_of": "2026-09-26",
   "schema": "cn_audit_scoreboard.v1",
   "taxonomy_version": "v2",
   "board_definition": "cn_prophet_v4",
-  "total_matured": 110,
+  "total_matured": 133,
   "cells": [
     {
       "stratum": "Q4",
-      "raw_n": 110,
+      "raw_n": 133,
       "effective_n": 1,
       "state": "ACCRUING",
       "us_proxy": false
     }
   ],
   "outcome_cause_mix": {
-    "idio_break": 43,
-    "mixed": 40,
-    "idio_alpha": 27
+    "idio_break": 52,
+    "mixed": 46,
+    "idio_alpha": 35
   },
   "process_fault_mix": {
-    "clean": 110
+    "clean": 133
   },
   "taxonomy_constants": {
     "IDIO_BREAK_PP": -0.04,

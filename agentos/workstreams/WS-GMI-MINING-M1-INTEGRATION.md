@@ -31,11 +31,12 @@ depends_on:
 waves:
   - id: MIN-W1
     title: "T01' consumption harness: synthetic casebook, dependency-binding validator, typed route_unbound client, gate:code job mining-economic-dossier"
-    status: in_progress
-    next_action: "Fold the Opus seam audit into R-MIN-10+, dispatch lane min_t01_harness, red-team the PR, merge on concluded green."
+    status: done
+    next_action: "DONE 2026-09-24 12:52Z — PR #7932 merged at ee908cb8f0b5 after the Opus R1 red-team (REJECT -> probes frozen RED -> seat repair, R-MIN-29/30); 67 tests verified on origin/main."
   - id: MIN-W2
     title: "T02 FCX/MP native profile factories + byte receipts (after CDV-1 #7905 merges) || T04a closed Mining definitions, own schema, synthetic composition"
-    status: todo
+    status: in_progress
+    next_action: "Lane min_t04a_definitions dispatched on mb (MiniMax-M3) 2026-09-24 12:56Z; on its PR: Opus red-team, freeze probes RED on REJECT, merge on concluded green. T02 lane (args pre-minted) dispatches once #7905 is on main."
     depends_on: [MIN-W1]
   - id: MIN-W3
     title: "T03 definition-safe economic inputs (signed blocks, missing_derivation, IR-01/IR-02 consumer rules) -> T04b integrated positive witnesses"
@@ -51,8 +52,9 @@ waves:
     depends_on: [MIN-W4]
     next_action: "Wait for Semiconductor B's shared route/client/mount on main and the incumbent-intake G2 source admission; never build against #7870's branch."
 next_action: >
-  Consume the Opus READ_ONLY seam audit into R-MIN-10+, finalize the T01' packet,
-  dispatch min_t01_harness through the admission-wait dispatcher, post START on #7795.
+  MIN-W2: consume the min_t04a_definitions lane PR (Opus red-team before readiness), dispatch
+  min_t02_witness_profiles once #7905 merges, then T03 -> T04b -> T07 with the same review law;
+  T05/T06/T08 stay held for the shared route/client/mount on main and G2 source admission.
 artifacts:
   - agentos/handoffs/GMI-MINING-2026-09-24-m1-integration.md
   - research/mining/m1_integration_program/rulings/R-MIN-2026-09-24-wave1.md

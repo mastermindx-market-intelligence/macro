@@ -1,68 +1,106 @@
 {
   "schema": "reflexivity_overlay.v1",
   "is_context_only": true,
-  "as_of": "2026-09-23",
-  "generated_utc": "2026-09-24T07:39:48Z",
+  "as_of": "2026-09-25",
+  "generated_utc": "2026-09-26T17:41:46Z",
   "note": "Risk-clustering read: 'is this the same hidden trade?'. NOT an alpha claim. Board-level, held-agnostic (US only, v1). Display-only per R-F / Signal Commons R7.",
   "factor_caveat": "Per-name secondary betas (oil/usd/btc/gold/china) are OOS-unstable and excluded. Similarity uses high-tier factors only (mkt/growth/size/rates, scope=single). Trust the MEMBERSHIP leg more than the factor leg for individual names.",
   "board_concentration": {
-    "n": 7,
-    "n_eff": 2.97,
+    "n": 3,
+    "n_eff": 3.0,
     "basis": "membership-jaccard+high-tier-factor-cosine",
-    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 7 candidates \u2248 2.97 independent bets."
+    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 3 candidates \u2248 3.0 independent bets."
   },
-  "same_thesis_groups": [
-    {
-      "members": [
-        "COHU",
-        "DOCN",
-        "NVDA",
-        "PLTR"
-      ],
-      "size": 4,
-      "basis": "factor-cosine",
-      "label": "Information Technology"
-    }
-  ],
-  "earnings_coverage_frac": 0.857,
+  "same_thesis_groups": [],
+  "earnings_coverage_frac": 0.667,
   "by_ticker": {
-    "NVDA": {
-      "verdict": "duplicate",
-      "max_similarity": 0.9804,
+    "STX": {
+      "verdict": "new",
+      "max_similarity": 0.0,
       "basis": "membership+high-tier-factor",
       "nearest": [
         {
-          "ticker": "PLTR",
-          "combined": 0.9804,
-          "membership_jaccard": 0.25,
-          "factor_cosine": 0.9804,
+          "ticker": "SBH",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.0,
           "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "basket:us_sector_tech",
-            "sector:Information Technology"
-          ],
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "BJ",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.14<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        }
+      ],
+      "earnings_leg": {
+        "next_date": "2026-10-27",
+        "same_week_peers": [],
+        "has_data": true
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Distinct bet \u2014 nearest peer SBH at 0% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 SBH\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
+    },
+    "SBH": {
+      "verdict": "new",
+      "max_similarity": 0.0,
+      "basis": "membership+high-tier-factor",
+      "nearest": [
+        {
+          "ticker": "STX",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.0,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "BJ",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.14<0.2",
+          "shared_groups": [],
+          "same_earnings_week": false
+        }
+      ],
+      "earnings_leg": {
+        "next_date": "2026-11-12",
+        "same_week_peers": [],
+        "has_data": true
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Distinct bet \u2014 nearest peer STX at 0% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 STX\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
+    },
+    "BJ": {
+      "verdict": "new",
+      "max_similarity": 0.0,
+      "basis": "membership-only:r2=0.14<0.2",
+      "nearest": [
+        {
+          "ticker": "STX",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.14<0.2",
+          "shared_groups": [],
           "same_earnings_week": null
         },
         {
-          "ticker": "DOCN",
-          "combined": 0.7998,
-          "membership_jaccard": 0.1667,
-          "factor_cosine": 0.7998,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "sector:Information Technology"
-          ],
-          "same_earnings_week": null
-        },
-        {
-          "ticker": "COHU",
-          "combined": 0.7358,
-          "membership_jaccard": 0.1429,
-          "factor_cosine": 0.7358,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "sector:Information Technology"
-          ],
+          "ticker": "SBH",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.14<0.2",
+          "shared_groups": [],
           "same_earnings_week": null
         }
       ],
@@ -72,471 +110,30 @@
         "has_data": false
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as PLTR \u2014 us_sector_tech, Information Technology (similarity 98%).",
-      "why_zh": "\u4e0e PLTR \u62bc\u6ce8\u76f8\u540c \u2014 us_sector_tech\u3001Information Technology\uff08\u76f8\u4f3c\u5ea6 98%\uff09\u3002"
-    },
-    "COHU": {
-      "verdict": "duplicate",
-      "max_similarity": 0.9897,
-      "basis": "membership+high-tier-factor",
-      "nearest": [
-        {
-          "ticker": "DOCN",
-          "combined": 0.9897,
-          "membership_jaccard": 0.5,
-          "factor_cosine": 0.9897,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "sector:Information Technology"
-          ],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "PLTR",
-          "combined": 0.7385,
-          "membership_jaccard": 0.2,
-          "factor_cosine": 0.7385,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "sector:Information Technology"
-          ],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "NVDA",
-          "combined": 0.7358,
-          "membership_jaccard": 0.1429,
-          "factor_cosine": 0.7358,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "sector:Information Technology"
-          ],
-          "same_earnings_week": false
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-11-04",
-        "same_week_peers": [
-          "DOCN",
-          "GRMN",
-          "PLTR",
-          "SONO"
-        ],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as DOCN \u2014 Information Technology (similarity 99%).",
-      "why_zh": "\u4e0e DOCN \u62bc\u6ce8\u76f8\u540c \u2014 Information Technology\uff08\u76f8\u4f3c\u5ea6 99%\uff09\u3002"
-    },
-    "SONO": {
-      "verdict": "partial",
-      "max_similarity": 0.5,
-      "basis": "membership-only:r2=0.16<0.2",
-      "nearest": [
-        {
-          "ticker": "GRMN",
-          "combined": 0.5,
-          "membership_jaccard": 0.5,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.16<0.2",
-          "shared_groups": [
-            "sector:Consumer Discretionary"
-          ],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "NVDA",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.16<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "COHU",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.16<0.2",
-          "shared_groups": [],
-          "same_earnings_week": true
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-11-04",
-        "same_week_peers": [
-          "COHU",
-          "DOCN",
-          "GRMN",
-          "PLTR"
-        ],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Partial overlap with GRMN \u2014 Consumer Discretionary (similarity 50%).",
-      "why_zh": "\u4e0e GRMN \u90e8\u5206\u91cd\u53e0 \u2014 Consumer Discretionary\uff08\u76f8\u4f3c\u5ea6 50%\uff09\u3002"
-    },
-    "DOCN": {
-      "verdict": "duplicate",
-      "max_similarity": 0.9897,
-      "basis": "membership+high-tier-factor",
-      "nearest": [
-        {
-          "ticker": "COHU",
-          "combined": 0.9897,
-          "membership_jaccard": 0.5,
-          "factor_cosine": 0.9897,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "sector:Information Technology"
-          ],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "NVDA",
-          "combined": 0.7998,
-          "membership_jaccard": 0.1667,
-          "factor_cosine": 0.7998,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "sector:Information Technology"
-          ],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "PLTR",
-          "combined": 0.7897,
-          "membership_jaccard": 0.25,
-          "factor_cosine": 0.7897,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "sector:Information Technology"
-          ],
-          "same_earnings_week": true
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-11-04",
-        "same_week_peers": [
-          "COHU",
-          "GRMN",
-          "PLTR",
-          "SONO"
-        ],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as COHU \u2014 Information Technology (similarity 99%).",
-      "why_zh": "\u4e0e COHU \u62bc\u6ce8\u76f8\u540c \u2014 Information Technology\uff08\u76f8\u4f3c\u5ea6 99%\uff09\u3002"
-    },
-    "MEDP": {
-      "verdict": "new",
-      "max_similarity": 0.0,
-      "basis": "membership-only:r2=0.08<0.2",
-      "nearest": [
-        {
-          "ticker": "NVDA",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.08<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "COHU",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.08<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "SONO",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.16<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-10-28",
-        "same_week_peers": [],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Distinct bet \u2014 nearest peer NVDA at 0% similarity.",
-      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 NVDA\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
-    },
-    "GRMN": {
-      "verdict": "partial",
-      "max_similarity": 0.5,
-      "basis": "membership+high-tier-factor",
-      "nearest": [
-        {
-          "ticker": "SONO",
-          "combined": 0.5,
-          "membership_jaccard": 0.5,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.16<0.2",
-          "shared_groups": [
-            "sector:Consumer Discretionary"
-          ],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "PLTR",
-          "combined": 0.4099,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.4099,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "NVDA",
-          "combined": 0.2361,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.2361,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": false
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-11-04",
-        "same_week_peers": [
-          "COHU",
-          "DOCN",
-          "PLTR",
-          "SONO"
-        ],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Partial overlap with SONO \u2014 Consumer Discretionary (similarity 50%).",
-      "why_zh": "\u4e0e SONO \u90e8\u5206\u91cd\u53e0 \u2014 Consumer Discretionary\uff08\u76f8\u4f3c\u5ea6 50%\uff09\u3002"
-    },
-    "PLTR": {
-      "verdict": "duplicate",
-      "max_similarity": 0.9804,
-      "basis": "membership+high-tier-factor",
-      "nearest": [
-        {
-          "ticker": "NVDA",
-          "combined": 0.9804,
-          "membership_jaccard": 0.25,
-          "factor_cosine": 0.9804,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "basket:us_sector_tech",
-            "sector:Information Technology"
-          ],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "DOCN",
-          "combined": 0.7897,
-          "membership_jaccard": 0.25,
-          "factor_cosine": 0.7897,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "sector:Information Technology"
-          ],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "COHU",
-          "combined": 0.7385,
-          "membership_jaccard": 0.2,
-          "factor_cosine": 0.7385,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "sector:Information Technology"
-          ],
-          "same_earnings_week": true
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-11-02",
-        "same_week_peers": [
-          "COHU",
-          "DOCN",
-          "GRMN",
-          "SONO"
-        ],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as NVDA \u2014 us_sector_tech, Information Technology (similarity 98%).",
-      "why_zh": "\u4e0e NVDA \u62bc\u6ce8\u76f8\u540c \u2014 us_sector_tech\u3001Information Technology\uff08\u76f8\u4f3c\u5ea6 98%\uff09\u3002"
+      "why_en": "Distinct bet \u2014 nearest peer STX at 0% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 STX\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
     }
   },
   "pair_basis": {
-    "NVDA__COHU": {
-      "membership_jaccard": 0.1429,
-      "factor_cosine": 0.7358,
-      "combined": 0.7358,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": [
-        "sector:Information Technology"
-      ]
-    },
-    "NVDA__SONO": {
+    "STX__SBH": {
       "membership_jaccard": 0.0,
-      "factor_cosine": null,
+      "factor_cosine": 0.0,
       "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.16<0.2",
-      "shared_groups": []
-    },
-    "NVDA__DOCN": {
-      "membership_jaccard": 0.1667,
-      "factor_cosine": 0.7998,
-      "combined": 0.7998,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": [
-        "sector:Information Technology"
-      ]
-    },
-    "NVDA__MEDP": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": []
-    },
-    "NVDA__GRMN": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": 0.2361,
-      "combined": 0.2361,
       "factor_basis": "high-tier-factors:4of4",
       "shared_groups": []
     },
-    "NVDA__PLTR": {
-      "membership_jaccard": 0.25,
-      "factor_cosine": 0.9804,
-      "combined": 0.9804,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": [
-        "basket:us_sector_tech",
-        "sector:Information Technology"
-      ]
-    },
-    "COHU__SONO": {
+    "STX__BJ": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.16<0.2",
+      "factor_basis": "beta-read-thin:r2=0.14<0.2",
       "shared_groups": []
     },
-    "COHU__DOCN": {
-      "membership_jaccard": 0.5,
-      "factor_cosine": 0.9897,
-      "combined": 0.9897,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": [
-        "sector:Information Technology"
-      ]
-    },
-    "COHU__MEDP": {
+    "SBH__BJ": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": []
-    },
-    "COHU__GRMN": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": 0.0551,
-      "combined": 0.0551,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": []
-    },
-    "COHU__PLTR": {
-      "membership_jaccard": 0.2,
-      "factor_cosine": 0.7385,
-      "combined": 0.7385,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": [
-        "sector:Information Technology"
-      ]
-    },
-    "SONO__DOCN": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.16<0.2",
-      "shared_groups": []
-    },
-    "SONO__MEDP": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.16<0.2",
-      "shared_groups": []
-    },
-    "SONO__GRMN": {
-      "membership_jaccard": 0.5,
-      "factor_cosine": null,
-      "combined": 0.5,
-      "factor_basis": "beta-read-thin:r2=0.16<0.2",
-      "shared_groups": [
-        "sector:Consumer Discretionary"
-      ]
-    },
-    "SONO__PLTR": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.16<0.2",
-      "shared_groups": []
-    },
-    "DOCN__MEDP": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": []
-    },
-    "DOCN__GRMN": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": 0.0565,
-      "combined": 0.0565,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": []
-    },
-    "DOCN__PLTR": {
-      "membership_jaccard": 0.25,
-      "factor_cosine": 0.7897,
-      "combined": 0.7897,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": [
-        "sector:Information Technology"
-      ]
-    },
-    "MEDP__GRMN": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": []
-    },
-    "MEDP__PLTR": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": []
-    },
-    "GRMN__PLTR": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": 0.4099,
-      "combined": 0.4099,
-      "factor_basis": "high-tier-factors:4of4",
+      "factor_basis": "beta-read-thin:r2=0.14<0.2",
       "shared_groups": []
     }
   },
@@ -548,8 +145,8 @@
     "new_note": "similarity < 0.35 \u2192 distinct bet"
   },
   "n_eff_by_lane": {
-    "entry_open": 2.7,
-    "setting_up": 1.7
+    "entry_open": 2.0,
+    "setting_up": 1.0
   },
   "source_passport": {
     "factor_betas": {
@@ -560,7 +157,7 @@
     "us_standouts_v2": {
       "path": "site/factordata/us_standouts_v2.json",
       "found": true,
-      "as_of": "2026-09-23"
+      "as_of": "2026-09-25"
     },
     "membership": {
       "path": "data/baskets/membership.json",

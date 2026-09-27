@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.cortex_probation.v1",
-  "as_of": "2026-09-24",
+  "as_of": "2026-09-26",
   "granted": false,
   "tier": "A0/A1 shadow",
   "reason": "insufficient-n: n=8 < min_n=25",
@@ -12,8 +12,8 @@
     "n": 8,
     "hits": 0,
     "base_rate": 0.5,
-    "ungradeable": 88,
-    "total_rows": 96
+    "ungradeable": 91,
+    "total_rows": 99
   },
   "is_context_only": true
 }

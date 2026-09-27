@@ -38,6 +38,12 @@ verified:
   - claim: "No shared-owner return to Mining request 5809893850 exists on #7870."
     command: "gh api repos/.../issues/7870/comments | select(.id > 5809893850)"
     result: "seven later comments, all sibling-sector notices (Finance, Industrials, Energy, Robotics, Consumer, GMI Wave1, Tech ex-Semis)."
+  - claim: "T01' consumption harness is on origin/main and green: binding module (limit 1..100, import_module shared-contract probe), casebook, suite + frozen Opus probes, gate:code job mining-economic-dossier with CURATED_EXCLUSIVE entry."
+    command: "git cat-file -e origin/main:<path> for the five artifacts; TZ=UTC python -m pytest tests/test_mining_shared_contract.py tests/test_mining_shared_contract_probes.py -q in a venv built from `pip install pytest jsonschema pyyaml`"
+    result: "PR #7932 merged ee908cb8f0b5 2026-09-24T12:52:49Z on 26 concluded checks / 0 red; 67 passed at ee908cb8."
+  - claim: "The Opus R1 red-team of #7932 was consumed by freeze-then-repair, not by self-written tests."
+    command: "git log --oneline origin/main -- tests/test_mining_shared_contract_probes.py"
+    result: "probe freeze commit (9/10 RED at a27a7262) precedes the repair commit; report at research/mining/m1_integration_program/reviews/OPUS_T01_PR_REVIEW_R1_2026-09-24.md."
 unverified:
   - "Runtime liveness of any shared candidate component; deployed privacy; native source capture clocks."
 unresolved:
@@ -45,16 +51,19 @@ unresolved:
   - "G2/G3/G4: native FCX/MP bytes, spans, identities and governed economic objects unqualified."
   - "G5/G6: private route/client/mount not on main; source custody with incumbents."
 next_actions:
-  - "Lanes: min_t01_harness queued on mini2 (T01' harness + CI job); min_t04a_content_r2 repairing #7922 per the Opus R1 review; merge #7922 after seat grep-verification of the verbatim repairs."
+  - "Lane min_t04a_definitions running on mb (MiniMax-M3, dispatched 2026-09-24 12:56Z; ground truth ~/lanes/ext/lanes_min_t04a_definitions.stdout on mb): on its PR run the Opus READ_ONLY red-team, freeze probes RED on REJECT, merge on concluded green, verify on main."
+  - "Lane args pre-minted in the B-kit ext/ dir (gated): min_t02_witness_profiles (after #7905 + T01' on main), min_t03_economic_inputs (after T02), min_t07_updates (after T02+T03+T04)."
   - "Shared-owner answer to the T06 mount/entry questions (#7870 comment 5811889498) gates T06; never re-ask."
   - "T02 after #7905 merges; T04a in parallel; then T03 -> T04b -> T07; hold T05/T06/T08 for the shared route/mount and G2 admission."
 do_not_redo:
   - "Never re-ACK #7795 (pickup = comment 5811520293); never repeat 5809893850 on #7870."
   - "Never put implementation on #7795; never edit #7870's branch or any file it owns."
+  - "T01' (#7932) is accepted work: do not rebuild the casebook, the binding validator or the CI job; extend them by appending (later Mining PRs append suites/paths to the ONE mining-economic-dossier block)."
+  - "Never statically import a #7870-only module (engine.theme_graph.curation_assertion): tests/test_first_party_import_names.py reds ci-pack-5 on it — string-import through importlib.import_module inside try/except ImportError (R-MIN-29)."
 danger_areas:
   - "legacy-jobs.yml / test_ci_pack.py are contested by many open PRs - append at END, rebase before push."
   - "A lane returning STATUS: PASS with tests it wrote itself is not proof; the Opus red-team + frozen probes are."
-prs: [7795, 7921, 7922]
+prs: [7795, 7921, 7922, 7932]
 decisions: []
 discoveries: []
 ---
