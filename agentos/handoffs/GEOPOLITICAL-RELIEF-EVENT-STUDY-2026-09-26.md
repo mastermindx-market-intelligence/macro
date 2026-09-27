@@ -25,8 +25,9 @@ changed:
       SMH-minus-QQQ as the V1 primary and fixing the candidate-family count at two.
   - path: research/CROSS_SESSION_SOURCE_CORPUS_AMENDMENT_2026-09-26.json
     what: >-
-      Append the pre-protocol WSJ rejection report as development-only SOURCE_CONFOUNDED evidence
-      without mutating the frozen source census or reading outcomes.
+      Append source-only pre-protocol discoveries without mutating the frozen source census or
+      reading outcomes: the WSJ Iran rejection report and the clean Saudi/Houthi interception
+      cluster whose 01:00Z first disclosure predates both V1 and V1.1.
   - path: research/HK_INTRADAY_HANDOFF_SOURCE_AMENDMENT_V2_2026-09-26.json
     what: >-
       Freeze the existing Terminal Tencent HK one-minute owner as a versioned replacement for the
@@ -162,6 +163,7 @@ do_not_redo:
   - "Do not treat V1.1 as a development winner from its higher raw hit rate; on common controls its event-minus-control uplift does not dominate V1, and its extra correctness is one development event."
   - "Do not bypass the pre-HK gate or substitute a scheduled/future U.S. session for an observed source-covered control session; PENDING stays PENDING and blocks HSI reads."
   - "Do not certify the source-completeness cutoff's own UTC calendar date as a control day; the full date is incomplete until the next UTC midnight."
+  - "Do not promote the Sep-26 Saudi/Houthi interception into V1 or V1.1; its exact first disclosure at 01:00Z predates both protocol freezes and its market outcomes remain uninspected."
 danger_areas:
   - "A later positive Hong Kong move must not overwrite CAUSAL_REJECTED, CONFLICTED, or DATA_GAP evidence states."
   - "AkShare/Eastmoney remains degraded and is DO_NOT_RETRY in this research lane. Tencent recent-session capability is now proven through the existing Terminal owner; the three target development rows have been read and are permanently development-only, never prospective evidence."
@@ -780,12 +782,17 @@ Exact current-code proof at `bed67302...`:
 
 ### Current-source accrual state
 
-A bounded current-source check on 2026-09-27 found no new qualifying post-V1.1 event. Reuters'
-Sept. 27 Iran report describes Trump's later public confirmation of the same rejection already
-reported by the Wall Street Journal before the V1.1 freeze, while Iran continued to await formal
-mediator transmission. Under the hardened source-clock law this is provenance on the existing
-development event, not a fresh prospective observation.
+A bounded current-source check on 2026-09-27 found no new qualifying post-V1.1 event.
 
+Two tempting candidates were resolved without reading market outcomes:
+- Trump's later public rejection of Iran's proposal is a confirmation of the WSJ rejection report
+  already public before V1.1, so it remains provenance on the existing development event.
+- the Saudi-led coalition's interception of a Houthi missile/drone attack is a clean cross-family
+  source event, but the first official coalition post was at **2026-09-26T01:00:00Z**, before both
+  V1 and V1.1 freezes. It is appended source-only to
+  `research/CROSS_SESSION_SOURCE_CORPUS_AMENDMENT_2026-09-26.json` and is not prospective evidence.
+
+No U.S., oil, semiconductor, HSI, HK-intraday, or other market outcome was read for the Houthi event.
 This is a bounded source check, not a population no-event claim.
 
 ### Finalization boundary

@@ -62,11 +62,53 @@
         }
       ],
       "measurement_status": "SOURCE_ONLY — no U.S., oil, semiconductor, HSI, or HK-intraday outcome read is authorized by this amendment"
+    },
+    {
+      "event_id": "2026-09-26-saudi-coalition-intercepts-houthi-attack",
+      "available_at": "2026-09-26T01:00:00Z",
+      "available_at_basis": "Saudi-led coalition spokesperson Turki al-Maliki posted the first interception statement at 04:00 Saudi time (UTC+3); Arab News preserved that source clock. Follow-up missile statements arrived about 30 and 50 minutes later.",
+      "direction": "implementation_escalation",
+      "family": "houthi_saudi_red_sea_escalation",
+      "event_role": "official_interception_of_houthi_missile_drone_attack",
+      "source_quality_state": "SOURCE_RESOLVED",
+      "origin_authority": "saudi_led_coalition_spokesperson_turki_al_maliki",
+      "dissemination_channel": "official_coalition_x_posts",
+      "clock_quality": "exact_official_post_clock_via_contemporaneous_local_report",
+      "corroboration_state": "Reuters and multiple regional outlets independently report the same official coalition statements and the two-drone/two-ballistic-missile sequence.",
+      "conflict_state": "none_identified_in_bounded_source_check",
+      "narrative_family_eligibility": "physical_security_or_escalation_in_active_red_sea_saudi_houthi_risk_channel",
+      "prospective_eligible": false,
+      "prospective_v1_eligible": false,
+      "prospective_v1_1_eligible": false,
+      "prospective_exclusion_reason": "first public disclosure 2026-09-26T01:00:00Z predates both V1 (11:16:23Z) and V1.1 (21:41:01Z) protocol freezes",
+      "outcome_context_exposed": false,
+      "previously_inspected": false,
+      "source_receipts": [
+        {
+          "outlet": "Arab News",
+          "published_date": "2026-09-26",
+          "source_clock": "04:00 Saudi time / 01:00 UTC",
+          "evidence": "contemporaneous report quotes coalition spokesperson's first X post announcing two drones toward Riyadh were intercepted; later posts added ballistic missiles toward Khamis Mushait"
+        },
+        {
+          "outlet": "Reuters syndication",
+          "published_date": "2026-09-26",
+          "evidence": "reports the Saudi-led coalition intercepted two ballistic missiles and two drones and attributes the announcements to coalition social-media posts"
+        }
+      ],
+      "measurement_status": "SOURCE_ONLY — no U.S., oil, semiconductor, HSI, HK-intraday, or other market outcome has been read for this event"
     }
   ],
   "bounded_post_boundary_search": {
-    "status": "NO_QUALIFYING_POST_BOUNDARY_EVENT_IDENTIFIED",
-    "as_of_date": "2026-09-26",
-    "note": "A bounded current-source search did not identify a source-resolved material geopolitical repricing event with an exact public clock after 2026-09-26T11:16:23Z. This is not a completeness or no-event population claim."
+    "status": "NO_QUALIFYING_POST_V1_1_EVENT_IDENTIFIED",
+    "as_of_date": "2026-09-27",
+    "v1_1_boundary_utc": "2026-09-26T21:41:01Z",
+    "note": "A bounded source-only sweep across Iran/Hormuz, Red Sea/Houthi, Russia/Ukraine, Gaza/Israel and Taiwan/China identified no material source-resolved event with first disclosure after the V1.1 boundary. The Saudi/Houthi interception resolved in this amendment first disclosed at 01:00 UTC on Sep 26 and is development/history only. This is not a completeness or population no-event claim."
+  },
+  "continuation_receipt": {
+    "protected_master_pin": "4c6b206d3fb7fbc6d077faf61ae361bedf259925",
+    "skillpack_index_blob": "94d1af402598894372858793a5b1931019c5fa77",
+    "appended_at_pr_head": "e4375607725bc04e0e80132fe87cd06557d0d2ab",
+    "note": "This continuation appends source-only evidence without mutating the frozen parent census or prospective geometry."
   }
 }
