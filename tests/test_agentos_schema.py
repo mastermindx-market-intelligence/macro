@@ -78,6 +78,39 @@ def _patch(path: Path, old: str, new: str) -> None:
     path.write_text(text.replace(old, new, 1), encoding="utf-8")
 
 
+def _findings(
+    result: subprocess.CompletedProcess[str], rule: str, *, on: str
+) -> list[str]:
+    """Validator lines for ``rule`` that name ``on`` — a record filename or a cited path.
+
+    Use this for every WARNING-tier assertion.  A bare ``rule in result.stdout`` is a
+    substring test over a validate of the WHOLE store, so it answers a question about
+    every OTHER record too, and warning-tier rules legitimately fire on the committed
+    store: measured on clean main 2026-09-27, 71 `phantom-owns-path`, 20
+    `phantom-artifact`, one `active-but-complete`, one `blocked-without-cause`.  The set
+    also moves with the ENVIRONMENT — an absent sibling checkout, or a sparse worktree
+    whose omitted `data/`/`site/`/`verify_shots/` make every artifact under them read as
+    phantom — so the same assertion answers differently in CI and on a dev machine.
+
+    That coupling breaks both ways, and both were live here:
+
+    * the negative form (`not in`) turned one in-flight sibling PR's stale `artifacts:`
+      entry into a repo-wide red.  `validate` treats a phantom as a warning and still
+      exits 0, so nobody saw it until `self-mod-fence` — an ALWAYS-ON job — ran this
+      file (#8060, run 36288860409: `ci-pack-0` -> `ci-gate` failure on this one test).
+    * the positive form (`in`) passes on an UNMUTATED store once any unrelated record
+      emits the marker, which is why two of the three `state_rules` cases below had no
+      power at all by 2026-09-27.
+
+    Error-tier assertions stay unscoped on purpose: `test_committed_store_is_valid` pins
+    the store at "0 error(s)", so an error marker can only have come from the mutation.
+    """
+    return [
+        line for line in result.stdout.splitlines()
+        if f"[{rule}]" in line and on in line
+    ]
+
+
 # --------------------------------------------------------------- green path
 
 
@@ -264,8 +297,13 @@ def test_a_one_sided_supersession_warns_but_never_blocks(store: Path) -> None:
     )
     result = _validate(store)
     assert result.returncode == 0, result.stdout
-    assert "one-sided-supersession" in result.stdout
-    assert "::warning" in result.stdout
+    emitted = _findings(result, "one-sided-supersession", on="DEC-AGENTOS-FILE-PER-RECORD.md")
+    assert emitted, (
+        "the record carrying `superseded_by` must be the one warned about:\n"
+        + result.stdout
+    )
+    for line in emitted:
+        assert line.startswith("::warning"), f"reported at the wrong tier: {line!r}"
 
 
 # ------------------------------------------------- invariant I4, both ways
@@ -280,7 +318,7 @@ def test_warning_never_blocks(store: Path) -> None:
     )
     result = _validate(store)
     assert result.returncode == 0, result.stdout
-    assert "stale-claim" in result.stdout
+    assert _findings(result, "stale-claim", on="WS-PROPHET-US-ENTRY-TIMING.md"), result.stdout
 
 
 # ------------------------------------- the hard/soft line, and why it moved
@@ -340,7 +378,13 @@ def test_state_rules_warn_and_do_not_block(
         f"{rule} still hard-fails; a fleet-wide unscoped check must not gate on work "
         f"state:\n{result.stdout}"
     )
-    assert rule in result.stdout, f"{rule} was demoted into silence:\n{result.stdout}"
+    assert _findings(result, rule, on=Path(rel).name), (
+        f"{rule} was demoted into silence on the record this case mutates.  Scoped to "
+        f"{Path(rel).name} on purpose: the committed store already emits "
+        f"`active-but-complete` and `blocked-without-cause` on unrelated records, so an "
+        f"unscoped `{rule} in stdout` passed here against an UNMUTATED store "
+        f"(measured 2026-09-27):\n{result.stdout}"
+    )
 
 
 def test_clean_merge_of_two_valid_states_validates(store: Path, tmp_path: Path) -> None:
@@ -578,14 +622,23 @@ def test_handoff_citation_counts_against_discovery_gc(store: Path) -> None:
         ORPHAN_DISCOVERY, encoding="utf-8")
     without = _validate(store)
     assert without.returncode == 0, without.stdout
-    assert "uncited-discovery" in without.stdout, without.stdout
+    assert _findings(without, "uncited-discovery", on="DSC-ORPHAN-PROBE"), without.stdout
 
     _write_handoff(store, HANDOFF.replace(
         "unverified: []\n",
         "unverified: []\ndiscoveries: [DSC:ORPHAN-PROBE]\n"))
     with_citation = _validate(store)
     assert with_citation.returncode == 0, with_citation.stdout
-    assert "uncited-discovery" not in with_citation.stdout
+    assert not _findings(with_citation, "uncited-discovery", on="DSC-ORPHAN-PROBE"), (
+        "the handoff citation must clear THIS discovery:\n" + with_citation.stdout
+    )
+
+
+# Fixture subjects.  Every assertion below is scoped to one of these, never to the
+# marker alone — see `_findings`.
+IN_REPO_PHANTOM = "research/NO_SUCH_DOC.md"
+CROSS_REPO_PHANTOM = "terminal:app/routes/portfolio.tsx"
+GHOST_OWNS_PATH = "engine/ghost_dir"
 
 
 def test_phantom_artifact_warns(store: Path) -> None:
@@ -593,36 +646,61 @@ def test_phantom_artifact_warns(store: Path) -> None:
     _patch(
         store / "workstreams" / "WS-PROPHET-US-ENTRY-TIMING.md",
         "landmines:",
-        "artifacts:\n  - research/NO_SUCH_DOC.md\nlandmines:",
+        f"artifacts:\n  - {IN_REPO_PHANTOM}\nlandmines:",
     )
     result = _validate(store)
     assert result.returncode == 0, "phantom paths are hygiene, not schema — must not block"
-    assert "phantom-artifact" in result.stdout
+    assert _findings(result, "phantom-artifact", on=IN_REPO_PHANTOM), result.stdout
 
 
 def test_phantom_owns_path_warns(store: Path) -> None:
     _patch(
         store / "workstreams" / "WS-PROPHET-US-ENTRY-TIMING.md",
         "  - engine/prophet_*.py",
-        "  - engine/ghost_dir/*.py",
+        f"  - {GHOST_OWNS_PATH}/*.py",
     )
     result = _validate(store)
     assert result.returncode == 0
-    assert "phantom-owns-path" in result.stdout
+    assert _findings(result, "phantom-owns-path", on=GHOST_OWNS_PATH), result.stdout
 
 
 def test_cross_repo_path_is_unchecked_when_that_checkout_is_absent(
     store: Path, tmp_path: Path
 ) -> None:
-    """An absent sibling checkout is unknowable, not wrong (I4) — no warning."""
+    """An absent sibling checkout is unknowable, not wrong (I4) — no warning.
+
+    Scoped to the entries THIS fixture writes.  The subject is the cross-repo one; the
+    in-repo phantom beside it and the present-checkout run below are the positive
+    controls, so the test cannot be satisfied by a validator that warns about nothing.
+    """
     _patch(
         store / "workstreams" / "WS-PROPHET-US-ENTRY-TIMING.md",
         "landmines:",
-        "artifacts:\n  - terminal:app/routes/portfolio.tsx\nlandmines:",
+        f"artifacts:\n  - {CROSS_REPO_PHANTOM}\n  - {IN_REPO_PHANTOM}\nlandmines:",
     )
-    result = _validate(store, MACRO_TERMINAL_REPO=str(tmp_path / "no-such-checkout"))
-    assert result.returncode == 0
-    assert "phantom-artifact" not in result.stdout
+    absent = _validate(store, MACRO_TERMINAL_REPO=str(tmp_path / "no-such-checkout"))
+    assert absent.returncode == 0
+    assert not _findings(absent, "phantom-artifact", on=CROSS_REPO_PHANTOM), (
+        "an absent sibling checkout leaves the path UNCHECKED (I4); it is not a phantom:\n"
+        + absent.stdout
+    )
+    assert _findings(absent, "phantom-artifact", on=IN_REPO_PHANTOM), (
+        "positive control — the in-repo phantom in the SAME record must still warn, or "
+        "the assertion above would hold against a validator that checks nothing:\n"
+        + absent.stdout
+    )
+
+    # The mirror, and the control that actually pins fail-open: point the env var at a
+    # checkout that EXISTS and lacks the path.  The join stops being skipped and the very
+    # same entry must warn — so dropping the `root is None` guard fails here, rather than
+    # merely ceasing to be exercised.
+    present = tmp_path / "terminal-checkout"
+    present.mkdir()
+    checked = _validate(store, MACRO_TERMINAL_REPO=str(present))
+    assert checked.returncode == 0, "still a warning, never a hard failure"
+    assert _findings(checked, "phantom-artifact", on=CROSS_REPO_PHANTOM), (
+        "a PRESENT sibling checkout lacking the path must warn:\n" + checked.stdout
+    )
 
 
 def test_cross_repo_path_is_resolved_against_its_own_repo(store: Path, tmp_path: Path) -> None:
@@ -642,7 +720,7 @@ def test_cross_repo_path_is_resolved_against_its_own_repo(store: Path, tmp_path:
     assert (REPO / "scripts" / "agentos.py").exists(), "the path must exist in MACRO"
     result = _validate(store, MACRO_TERMINAL_REPO=str(terminal))
     assert result.returncode == 0, "still a warning, never a hard failure"
-    assert "phantom-artifact" in result.stdout, (
+    assert _findings(result, "phantom-artifact", on="terminal:scripts/agentos.py"), (
         "a Terminal path that exists only in Macro must not read as present:\n"
         + result.stdout
     )
@@ -656,11 +734,23 @@ def test_absent_store_exits_zero(tmp_path: Path) -> None:
 
 
 def test_quiet_suppresses_warnings_but_not_errors(store: Path) -> None:
+    """--quiet hides the warning LINES; it must not stop the checking.
+
+    The bare `"stale-claim" not in stdout` this replaces was unfalsifiable: it held just
+    as well if the rule had been deleted.  So the loud run below is the positive control,
+    and the summary count keeps `--quiet` honest about having still looked.
+    """
     _patch(
         store / "workstreams" / "WS-PROPHET-US-ENTRY-TIMING.md",
         "landmines:",
         "claim:\n  by: claude/ghost\n  at: 2025-01-01\n  expires: 2025-01-02\nlandmines:",
     )
+    loud = _validate(store)
+    assert _findings(loud, "stale-claim", on="WS-PROPHET-US-ENTRY-TIMING.md"), (
+        "positive control — the fixture must produce the warning that --quiet then "
+        "suppresses:\n" + loud.stdout
+    )
+
     result = subprocess.run(
         [sys.executable, str(CLI), "validate", "--root", str(store), "--quiet"],
         capture_output=True,
@@ -668,7 +758,14 @@ def test_quiet_suppresses_warnings_but_not_errors(store: Path) -> None:
         cwd=REPO,
     )
     assert result.returncode == 0
-    assert "stale-claim" not in result.stdout
+    assert not _findings(result, "stale-claim", on="WS-PROPHET-US-ENTRY-TIMING.md"), result.stdout
+    # The mode contract itself, and uncoupled from any particular record: no warning
+    # annotation survives --quiet, while the summary still counts what was found.
+    assert not [ln for ln in result.stdout.splitlines() if ln.startswith("::warning")], \
+        result.stdout
+    assert "0 warning(s)" not in result.stdout, (
+        "--quiet must suppress the display, not the detection:\n" + result.stdout
+    )
 
 
 # ------------------------------------------------------ house annotation law
