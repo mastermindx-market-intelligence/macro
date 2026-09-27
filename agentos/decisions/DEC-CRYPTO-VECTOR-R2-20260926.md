@@ -256,3 +256,49 @@ MISSION_COMPLETE: false
 DO_NOT_REDO: R1, accepted P0A, native R2 boards 01–11, reviewed supporting Crypto deepening screens, current CI enrollment, or the now-verified allocation-gap source logic. No production deployment, live alert, trade, save action or worker/watch cycle was created.
 
 Exact next action after publishing this checkpoint: consume exact-head PR CI/fences for `e17c55ad8…` plus this records update; if source tests remain green, obtain production/generated-route browser evidence for the gap state when a permitted browser fixture/action exists, then continue H5 budget identity / qualified Crypto ranking integration without touching open #7645/#7849 custody. If the Paper adapter pin changes and `accepted_for_write=true`, apply reviewed boards 12–16 natively and screenshot-review them.
+
+
+## Governance repair and gap-state browser proof — 2026-09-27
+
+Exact-head `74f7a043a701bcf11a1ddfcac8982650db16b136` fences completed successfully, while CI run `36296186669` failed only in `ci-pack-10` / design-governance. Root cause was six forward-only design ratchet findings introduced by the R2 Vector front-door work: five literal radii and one inline `--vchart-h` custom-property literal in `templates/vector.html.j2`. All other CI packs succeeded. The failing design-governance unit/selftest/base-replay surfaces themselves were healthy.
+
+The repair reused existing house tokens instead of creating a new style plane:
+- wordmark control radius -> `var(--r-btn,10px)`;
+- as-of dot and exposure rail -> `var(--r-pill,999px)`;
+- tape and Overview card radii -> `var(--r-card,12px)`;
+- removed the page-local `--vchart-h:470px` override and returned to the existing chart adapter default.
+
+Fresh forward-only ratchet against the current working candidate: **0 blocking findings**.
+
+The repository's canonical `scripts/capture_page_evidence.py` owner then captured the actual generated Vector fixture at desktop 1440x900 and mobile 390x844, both dark/light and EN/ZH: **8/8 required states captured**. Durable evidence owner:
+`mockups/evidence/crypto-vector-r2-actual-20260927/EVIDENCE.yml`
+with manifest `mockups/evidence/crypto-vector-r2-actual-20260927/manifest.json`. The owning receipt names `templates/vector.html.j2`. Local `check_ui_visual_evidence.py` passed against the full branch UI diff after that receipt was present.
+
+Source/evidence commit: `155348673c2266f55e8fb1f5cf4ea7135e3a475e`.
+
+Fresh consolidated verification on the final source/evidence bytes completed with exit 0:
+- forward-only design ratchet: 0 blocking;
+- visual evidence gate: PASS;
+- exact existing Vector pytest pack: **88 passed, 5 skipped, 0 failed**;
+- Python compile, JavaScript syntax, Jinja parse and `git diff --check`: PASS.
+Warnings remain from the existing `Timestamp.utcnow` deprecation and temporary Chromium cleanup; no warning-free claim is made.
+
+The controlled partial-allocation-gap browser route is now also proven on the source semantics:
+- gap payload: `valid=true`, `performance_valid=false`, issue `ALLOCATION_GAPS`;
+- 1440/390 × dark/light × EN/ZH: all eight combinations HTTP 200, no horizontal overflow, 15 chart canvases mounted, gap disclosure visible, simulation-unavailable state present, no `#vrc-score` simulation metrics, no page JS errors;
+- crosshair at missing-decision date `2026-09-20`: Price $83,640; Risk 45; **Allocation —**; **vs HODL 1.02×** because the prior known allocation still governed that close;
+- next date `2026-09-21`: Price $83,521; Risk 45; Allocation 20%; **vs HODL —** because the missing 20-Sep decision governs the next return interval and cumulative strategy performance is no longer knowable.
+
+These are controlled generated-fixture receipts, not production-route acceptance. Shell-only fixture request failures for some fonts/account/terminal overlay assets remain recorded in the evidence manifest.
+
+### Visual blocker discovered during evidence review
+
+The committed canonical screenshots visibly include the shared theme.js Brain boot launcher. On the desktop Vector capture it sits over the right-side evidence area; the mobile capture also places the launcher/orb over high-value Vector content. A raw crop of the committed desktop PNG confirmed the launcher is in the screenshot bytes, not merely the ChatGPT image viewer. Repository tracing identifies the owner as the existing `theme.js` `#mmb-boot` / `mm_brain.js` launcher, not Vector markup.
+
+No launcher behavior or shared Brain code was changed in this continuation. Existing production patterns show that Macro Command reserves a gutter on desktop and suppresses the global FAB on mobile when an in-page analyst entry exists, while `mm_brain.js` supports host-provided `anchor:'top'`. Changing Vector's chat entry is a bounded UX design decision and remains pending Chairman approval under the active brainstorming gate; do not silently hide or fork Brain.
+
+Paper write remains independently blocked at `paper-desktop 0.5.12`, observed catalog `8cd27488a3adfc19c6c36d4349b75feebc71c159253c47f8a0f8d50c27043deb`, accepted write pin `ca90a537ee97f3e371ac945a8a3b9a928ba7fac9ffaeb67e31491075a0790570`, `accepted_for_write=false`. No native boards 12–16 exist.
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+Next implementation action requiring design approval: replace the floating Brain launcher on Vector with one explicit in-page Ask Mastermind entry that reuses the existing boot/open owner, suppressing the floating stub/launcher on Vector only. After approval, implement TDD-first, recapture the 8-state evidence matrix, rerun design/visual gates and exact Vector pack, then consume exact-head PR CI/fences.

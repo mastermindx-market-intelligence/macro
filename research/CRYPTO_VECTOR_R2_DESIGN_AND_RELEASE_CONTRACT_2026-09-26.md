@@ -470,3 +470,27 @@ A controlled actual-template browser matrix was run on the no-gap R2 path at 144
 ### Remaining production gates
 
 This improves truth-preserving degradation but does not complete the broader Crypto/Vector release. Still required: exact-head PR CI/fences; production/generated-route gap-state browser proof; qualified Crypto asset ranking and source clocks; H5 canonical total-budget identity; existing saved-review/Alert Center integration; Paper boards 12–16 once its schema pin is accepted; and representative user comprehension/task completion.
+
+
+## Governance/evidence closure and partial-gap browser receipt — 2026-09-27
+
+The R2 source hardening is accompanied by a canonical page-evidence receipt rather than ad-hoc screenshots. `scripts/capture_page_evidence.py` captured `vector.html` at required desktop/mobile, dark/light and EN/ZH states (8/8) from the generated controlled fixture. Receipt:
+`mockups/evidence/crypto-vector-r2-actual-20260927/EVIDENCE.yml`; manifest:
+`mockups/evidence/crypto-vector-r2-actual-20260927/manifest.json`.
+
+Commit `155348673c2266f55e8fb1f5cf4ea7135e3a475e` replaces R2-introduced literal radius decisions with existing house radius tokens and removes the page-local chart-height custom-property override. The forward-only design ratchet reports zero blocking findings and the visual-evidence gate accepts the new receipt.
+
+Fresh final local verification:
+- exact Vector test pack: **88 passed, 5 skipped, 0 failed**;
+- design ratchet: 0 blocking;
+- visual evidence gate: PASS;
+- Python/JS/Jinja/diff syntax checks: PASS.
+The test run still emits existing deprecation/temporary-browser cleanup warnings.
+
+The allocation-gap path has separate behavioral browser evidence. A synthetic missing decision on 2026-09-20 leaves the chart active and preserves the allocation gap as unknown. The missing date itself can still show strategy performance through that close because 19-Sep allocation governed the interval. On 21-Sep, the next allocation may be known while strategy-vs-HODL is unknown because the missing 20-Sep decision governed that return. Eight responsive/theme/language gap-route combinations mounted the chart with no page-wide overflow and withheld full-history simulation when `performance_valid=false`.
+
+### Brain launcher visual review finding
+
+Canonical screenshots surface a shared-chrome collision: the `theme.js` Brain boot launcher can cover Vector evidence/chart content. It is not owned by Vector and is not silently removed here. Existing site patterns support an in-page analyst entry that programmatically activates the same Brain owner while page CSS suppresses the redundant global launcher. That bounded interaction design is proposed next; implementation waits for explicit approval, after which evidence must be recaptured.
+
+No production route, Paper canvas application, H5 authority closure, review save, alert activation or user-task study is claimed complete.
