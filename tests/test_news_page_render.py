@@ -828,6 +828,27 @@ def test_news_story_brief_survives_live_payload_refresh_when_story_still_exists(
     assert "closeDrawer(false)" in block
 
 
+def test_news_priority_queue_and_story_brief_controls_localize_accessible_names():
+    html = _render_full()
+    assert 'id="nxPriorityQueue"' in html
+    assert 'data-label-zh="优先队列"' in html
+    assert "'nxPriorityQueue'" in html
+    assert 'data-label-zh="关闭事件简报"' in html
+
+
+def test_news_story_tickers_strip_optional_dollar_before_display_and_linking():
+    src = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
+    assert src.count("replace(/^\$/,'')") >= 2
+
+
+def test_news_mobile_ranked_rows_pin_grid_items_to_readable_columns():
+    html = _render_full()
+    assert ".nxi-rank{ grid-column:1; grid-row:1; }" in html
+    assert ".nxi-row-copy{ grid-column:2; grid-row:1; }" in html
+    assert ".nxi-row-status{ grid-column:2; grid-row:2;" in html
+    assert ".nxi-row-context{ grid-column:2; grid-row:3; }" in html
+
+
 def test_news_story_brief_has_accessible_modal_and_focus_recovery_contract():
     html = _render_full()
     assert 'id="nxIntelDrawer"' in html

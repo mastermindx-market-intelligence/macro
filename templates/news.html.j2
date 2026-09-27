@@ -778,7 +778,10 @@ body.nxi-drawer-open{ overflow:hidden; }
   .nx-hero{ grid-template-columns:1fr; }
   .nx-lead{ min-height:0; }
   .nxi-open{ grid-template-columns:40px minmax(0,1fr) 90px; gap:10px; }
-  .nxi-row-context{ grid-column:2 / 4; }
+  .nxi-rank{ grid-column:1; grid-row:1; }
+  .nxi-row-copy{ grid-column:2; grid-row:1; }
+  .nxi-row-status{ grid-column:3; grid-row:1; }
+  .nxi-row-context{ grid-column:2 / 4; grid-row:2; }
 }
 @media(max-width:560px){
   .nx-title{ font-size:30px; }
@@ -801,9 +804,11 @@ body.nxi-drawer-open{ overflow:hidden; }
   .nxi-filter{ flex:0 0 auto; }
   .nxi-result-count{ margin-left:auto; }
   .nxi-list{ padding:0 16px 8px; }
-  .nxi-open{ grid-template-columns:32px minmax(0,1fr); gap:10px; padding:14px 0; }
-  .nxi-row-status{ grid-column:1; grid-row:1; justify-self:start; margin-top:22px; font-size:9px; }
-  .nxi-row-context{ grid-column:2; }
+  .nxi-open{ grid-template-columns:32px minmax(0,1fr); gap:8px 10px; padding:14px 0; }
+  .nxi-rank{ grid-column:1; grid-row:1; }
+  .nxi-row-copy{ grid-column:2; grid-row:1; }
+  .nxi-row-status{ grid-column:2; grid-row:2; justify-self:start; margin-top:0; font-size:9px; }
+  .nxi-row-context{ grid-column:2; grid-row:3; }
   .nxi-drawer{ inset:0; width:100vw; max-width:100vw; min-width:0; box-sizing:border-box; border-left:0; }
   .nxi-drawer-head{ width:100%; min-width:0; box-sizing:border-box; min-height:58px; padding:11px 18px; }
   .nxi-drawer-scroll{ width:100%; min-width:0; box-sizing:border-box; padding:18px 18px 28px; overflow-x:hidden; }
@@ -841,7 +846,7 @@ body.nxi-drawer-open{ overflow:hidden; }
     </div>
   </article>
 
-  <aside class="nx-movers" aria-label="{{ 'Priority queue' }}">
+  <aside class="nx-movers" id="nxPriorityQueue" aria-label="Priority queue" data-label-en="Priority queue" data-label-zh="优先队列">
     <div class="nx-movers-hd">{{ t('Priority queue','优先队列') }}</div>
     {% for m in MOVERS %}
     <a class="nx-mover" href="{{ m.url }}" target="_blank" rel="noopener">
@@ -1225,7 +1230,7 @@ body.nxi-drawer-open{ overflow:hidden; }
       s.placeholder = s.getAttribute(zh?'data-ph-zh':'data-ph-en') || s.placeholder;
       s.setAttribute('aria-label',s.getAttribute(zh?'data-label-zh':'data-label-en') || s.getAttribute('aria-label'));
     }
-    ['nxSeg','nxIntelToolbar','nxIntelClose'].forEach(function(id){
+    ['nxSeg','nxIntelToolbar','nxIntelClose','nxPriorityQueue'].forEach(function(id){
       var el=document.getElementById(id); if(!el) return;
       el.setAttribute('aria-label',el.getAttribute(zh?'data-label-zh':'data-label-en') || el.getAttribute('aria-label'));
     });
@@ -1588,7 +1593,7 @@ body.nxi-drawer-open{ overflow:hidden; }
         owned.appendChild(facts); drawerBody.appendChild(owned);
       }
 
-      var tickers=(story.tickers||[]).map(function(t){return String(t||'').replace(/^$/,'');}).filter(Boolean);
+      var tickers=(story.tickers||[]).map(function(t){return String(t||'').replace(/^\$/,'');}).filter(Boolean);
       if(tickers.length){
         var linked=section(tx('Linked assets','相关标的')), assets=el('div','nxi-drawer-assets');
         tickers.slice(0,8).forEach(function(t){
@@ -1668,7 +1673,7 @@ body.nxi-drawer-open{ overflow:hidden; }
         if(ctx[k]) context.appendChild(el('span','nxi-chip',knownContext(ctx[k])));
       });
       (story.tickers||[]).slice(0,3).forEach(function(t){
-        context.appendChild(el('span','nxi-chip ticker','$'+String(t).replace(/^$/,'')));
+        context.appendChild(el('span','nxi-chip ticker','$'+String(t).replace(/^\$/,'')));
       });
       open.appendChild(context);
 
