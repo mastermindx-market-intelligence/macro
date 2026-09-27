@@ -213,3 +213,8 @@ Exact next action: after a relevant adapter/schema change is evidenced, re-read 
 The independent Crypto-deepening study has one additional reviewed screen: `crypto_deepening_asset-detail_r1.png`. It defines intended Paper board 15 Asset Detail / SOL after the write gate recovers. The screen synchronizes SOL/USD, SOL/BTC and spot-participation panes on the same dates but separate scales; treats liquidity as separate evidence; gives supporting and weakening evidence equal visual weight; links existing Event Intelligence without predicting direction; and separates Save dated review from optional follow behavior. The values are synthetic design fixtures and no user action or model authority was created.
 
 The full intended native sequence after Paper write acceptance is now: 12 Market Pulse → 13 Asset Explorer → 14 Capital & Leverage → 15 Asset Detail / SOL. Do not mint new Paper IDs or claim these boards exist until the guarded adapter reports `accepted_for_write=true` and the native effects are screenshot-reviewed.
+
+
+The supporting Crypto study now covers all four top-level Crypto research jobs plus one asset-detail workspace: Market Pulse, Asset Explorer, Capital & Leverage, Asset Detail / SOL, and Events. The reviewed Events preview explicitly separates before/during/after-event work, source/timing certainty and unknown price direction. It reuses Event Intelligence conceptually and creates no event/alert authority.
+
+Supporting visual hashes are recorded in the research contract. The intended Paper sequence after write-pin acceptance is now boards 12 Market Pulse, 13 Asset Explorer, 14 Capital & Leverage, 15 Asset Detail / SOL, 16 Events. No such native board IDs exist yet from this continuation.

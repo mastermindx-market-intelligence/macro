@@ -392,3 +392,57 @@ Asset Detail hardening cases:
 - relative price and volume agree but liquidity qualification fails.
 
 Do not collapse those states into one strength score. Preserve the qualified observations, their limits and the selected comparison basis.
+
+
+### Events — intended Paper board 16 after write gate recovery
+
+Supporting preview: `crypto_deepening_events_r1.png`, `NOT_APPLIED_TO_PAPER`.
+
+Job: help users prepare for scheduled Crypto catalysts without turning a calendar into a directional forecast.
+
+The screen uses a 14-day sourced timeline, an explicit selected-event inspector and a three-phase workflow:
+
+1. **Before the event** — capture a clean baseline: price basis, relative ratio, liquidity, volume, leverage coverage, current source state and unanswered questions.
+2. **During the event** — keep actual timing, source status, delay/cancel/revision state visible. A schedule revision updates the event record; it must not rewrite the saved baseline.
+3. **After the event** — compare qualified later observations with the saved baseline. Do not label correlation as event causation.
+
+The illustrative timeline shows three qualified upcoming events and one timing/source gap held out of the scheduled list. A reported event without sufficient timing confirmation belongs in coverage review, not as a “catalyst” with a guessed timestamp.
+
+Event semantics:
+- asset/event scope comes from existing Event Intelligence ownership;
+- source records and timing are inspectable;
+- “known” describes event mechanics only;
+- price direction and magnitude remain explicitly unknown;
+- presence of an unlock, upgrade, governance event or macro release is not a bullish/bearish signal;
+- event terms can be revised, cancelled or delayed without mutating earlier saved reviews.
+
+The selected-event rail shows **what is known**, **what is not known**, assets in scope and source count. The user can open the existing Event Intelligence record, save a pre-event research review and optionally draft/follow event-status changes through existing alert ownership. Opening an event must not activate an alert.
+
+Event hardening cases:
+- source date changes after a saved pre-event review;
+- one source cancels while another remains stale;
+- event time exists only in a local timezone and DST conversion differs;
+- event status is “expected” rather than confirmed;
+- the event is asset-wide but a venue-specific maintenance window is not;
+- token unlock amount/unit is revised;
+- an event occurs but one market-data source is delayed afterward;
+- post-event price change is visible while event causality remains unproven;
+- duplicate Event Intelligence records refer to the same underlying event;
+- user saves/reopens an event review after the event passes;
+- alert subscription terms become unsupported or entitlement changes.
+
+The production Events tab must reuse Event Intelligence and existing review/alert owners. No new event calendar, causal model, notification plane or LLM event predictor is authorized.
+
+### Visual-study evidence receipt
+
+Supporting visual source:
+- `crypto_deepening_preview.html` SHA-256 `5a4e32883fe17d4bc3fab5c1c94e615e1607a73efa303314ad067da2ffe62bc4`.
+
+Reviewed screenshots:
+- Market Pulse r3: `166ad003f7c1a21b767f28000bfde33ff329748364bd4119bc0aa6643c533546`
+- Asset Explorer r2: `e039aea489bdd819187b43a60cdf287c119a6bc530831d9f0d2de37742462885`
+- Capital & Leverage r3: `6ce0be6a350ce75ba440235622a2b5b3105306397881e832f5a7284727ee2fb0`
+- Asset Detail r1: `ebe45059d17efa5d46b5e4cd2e516c6598f4a4052f985f56db38eb85461e377b`
+- Events r1: `f4987a791b76dc81fcb23bbaff195cb86a84bebed54f4561b04f4f034dff0a8a`
+
+These receipts prove the local preview bytes reviewed in this continuation. They do not prove Paper application, production implementation, data qualification or user acceptance.
