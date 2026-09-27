@@ -136,3 +136,21 @@ Prior held effects stay: US resize/China duplication; UJ4 popup; UP4 mobile list
 ## Recovery without rework
 
 Resume from this checkpoint and stock_review_probe/README.md. Consume the stock-inspection review and existing combined desktop direction; do not repeat the census, historical baseline, code scaffolds or completed Paper study. The next gated execution is the prepared behavioral browser suite and original missing core interactions once genuine permitted recovery is established. The original source gates and integrated visual acceptance precede production implementation and real overview-to-security-save-return proof. Independent source-owner adjudication may continue where actually disjoint, but no further unrelated concept or status-only audit is the default next action.
+
+
+## Current continuation — R18 exact-membership observation (2026-09-27)
+
+MISSION_COMPLETE: false. This is a source-review candidate, not a release or working UI claim.
+The earlier eight-board/R1 account above is historical. Native R16 chooser1UE1-1 and uncertain-result1V82-1 remain composed on the same Paper page; desktop1TPI-1 and long-list1VG1-1 remain partial. R17 recovered their exact effects and scoped finish. Preserve all earlier denied operations.
+
+This increment adds `WatchStore.symbols.inspect(listId, symbol)` to the existing store and mirrors the site copy. It performs only exact-owned-list and exact-symbol reads, with the incumbent auth epoch/client and configured read deadline. It neither resubmits nor settles the original save/outbox. The result separates explicit read recheck from write retry. No existing write/auth/retry implementation is replaced.
+
+The R15–R17 write/retry candidates remain separate and unadopted. This increment is intentionally based on the original shared WatchStore blob2933cca572afc01d5108a521b4c3aff0a6502f0d, also current at Macro39c84a1a35836fcde5cf170b3237ebc118a6af4b. Do not quietly merge the disputed retry semantics into this read-only slice.
+
+Proof: all137 unchanged legacy regressions pass; new Node observation suite35pass/1fail. The failing assertion attributes the legitimate onAuthUser(null) `local` event to the read. The attempted assertion correction was platform-blocked, so that assertion stays visible/unskipped. The portable pytest wrapper therefore remains red. No full-green CI or independent acceptance is claimed. A pytest atexit cleanup-recursion warning was separate environment evidence, not a product correction.
+
+Read `research/market_os/WATCHLIST_MEMBERSHIP_OBSERVATION.md` for state-to-UI mapping and exact limits. The registered Node test reuses the existing multilist provider double. New results are observed presence, not attribution of an earlier INSERT. No live account, network service, RLS or real browser behavior was exercised by the test doubles.
+
+Next: resolve the held test assertion through an actually permitted recovery, review the exact additive source and current-base compatibility, then bind Frame41's existing UI action to the method through the incumbent identity/auth/modal owners. Native work requires a permitted current M1 runtime check; another designer's page is not a generic stop condition. No production release or automated retry follows from these sources.
+
+Detailed R18 evidence/continuation: #7949/comment5855459179. Prior R17 return5855235676; cumulative coordination #6817/comment5845809194. Same workstream, branch and handoff; no new custody/persistence owner. Current procedure pin Mastermind@d9585ed814d758d26120592a68916b17c81f54fc / compatible INDEX94d1af402598894372858793a5b1931019c5fa77.

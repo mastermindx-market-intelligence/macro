@@ -710,6 +710,78 @@
      (watchlist_id, symbol) — 0001_init.sql indexes watchlist_id alone — so a blind
      insert leaves a real duplicate row that only read-time dedupe hides. Reading first
      makes the dedupe authoritative instead of cosmetic. */
+  /* Observe exact owned-list membership without resubmitting a save.
+     This is a read result, not a receipt for an earlier INSERT. In particular,
+     absence never permits retry, and no outbox entry is cleared here. */
+  function symbolInspect(listId, symbol) {
+    var valid = typeof listId === 'string' && typeof symbol === 'string';
+    var lid = valid ? listId.trim() : '';
+    var ticker = valid ? symbol.trim() : '';
+    var epoch = authEpoch, uid = user && user.id, client = sb;
+    var name = null, ended = false;
+    function current() {
+      return epoch === authEpoch && uid === (user && user.id) && client === sb;
+    }
+    function answer(state, membership) {
+      var redacted = state === 'stale-session' || state === 'no-session' || state === 'invalid';
+      return {
+        state: state, membership: membership || 'unknown',
+        listId: redacted ? null : lid, symbol: redacted ? null : ticker,
+        listName: redacted ? null : name,
+        observedAt: state === 'present' || state === 'not-confirmed' ? nowISO() : null,
+        readRetryAllowed: state === 'present' || state === 'not-confirmed' || state === 'unavailable',
+        writeRetryAllowed: false
+      };
+    }
+    if (!valid || !lid || !ticker) return Promise.resolve(answer('invalid'));
+    if (!uid || !client) return Promise.resolve(answer('no-session'));
+    var work = Promise.resolve().then(function () {
+      if (!current()) return answer('stale-session');
+      if (ended) return answer('unavailable');
+      return client.from('watchlists').select('id,name,user_id')
+        .eq('id', lid).eq('user_id', uid).then(function (owned) {
+          if (!current()) return answer('stale-session');
+          if (ended) return answer('unavailable');
+          if (!owned || owned.error || !Array.isArray(owned.data) || owned.data.length !== 1) {
+            return answer('unavailable');
+          }
+          var row = owned.data[0];
+          if (!row || row.id !== lid || row.user_id !== uid) return answer('unavailable');
+          name = typeof row.name === 'string' ? row.name : null;
+          return client.from('watchlist_symbols').select('watchlist_id,symbol')
+            .eq('watchlist_id', lid).eq('symbol', ticker).then(function (observed) {
+              if (!current()) return answer('stale-session');
+          if (ended) return answer('unavailable');
+              if (!observed || observed.error || !Array.isArray(observed.data)) return answer('unavailable');
+              var rows = observed.data;
+              // Do not let a malformed, mismatched or broadly scoped response
+              // confirm another list/security or turn into a useful empty set.
+              if (!rows.every(function (item) {
+                return item && item.watchlist_id === lid && item.symbol === ticker;
+              })) return answer('unavailable');
+              return rows.length ? answer('present', 'present') : answer('not-confirmed', 'absent');
+            });
+        });
+    }).catch(function () {
+      // Provider errors do not disclose SQL, account IDs or another user's list.
+      return answer(current() ? 'unavailable' : 'stale-session');
+    });
+    // Reuse the store's configured read deadline. No timer retries the operation.
+    // Late ownership responses cannot start a second read after this result closes.
+    return new Promise(function (resolve) {
+      var timer = setTimeout(function () {
+        ended = true;
+        resolve(answer(current() ? 'unavailable' : 'stale-session'));
+      }, PF_CLOUD_DEADLINE_MS);
+      work.then(function (value) {
+        if (ended) return;
+        ended = true;
+        clearTimeout(timer);
+        resolve(value);
+      });
+    });
+  }
+
   function symbolAdd(listId, symbol) {
     var t = String(symbol == null ? '' : symbol).trim();
     if (!listId || !t) return Promise.reject(new Error('bad-args'));
@@ -1954,6 +2026,7 @@
     },
     symbols: {
       list: symbolsFetch,            // server read; also refreshes the list's cache
+      inspect: symbolInspect,       // observation only; never a write or retry receipt
       add: symbolAdd,
       remove: symbolRemove,
       push: pushList                 // full-membership diff, scoped to one list
