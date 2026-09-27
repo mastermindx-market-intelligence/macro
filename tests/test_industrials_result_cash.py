@@ -74,6 +74,46 @@ def test_build_receipt_records_transformations_with_decimal_text_factor() -> Non
     assert receipt["transformations"][0]["lineage"] == "ECB-2026Q2"
 
 
+def test_build_receipt_unknowns_round_trip() -> None:
+    """``unknowns`` is a field on the receipt — it must round-trip exactly."""
+    cells = [cell("100", owner_ref="synthetic:cell:a"), cell("100", owner_ref="synthetic:cell:b")]
+    receipt = build_comparison_receipt(
+        "same_period",
+        cells,
+        unknowns=("basis", "currency"),
+    )
+    assert receipt["unknowns"] == ["basis", "currency"]
+
+
+def test_receipt_id_differs_when_only_unknowns_differ() -> None:
+    """Identity binds ``unknowns`` — two receipts disclosing different
+    unknowns share no receipt_id (the digest covers them).
+    """
+    cells = [cell("100", owner_ref="synthetic:cell:a"), cell("100", owner_ref="synthetic:cell:b")]
+    base = build_comparison_receipt("same_period", cells)
+    with_unknowns = build_comparison_receipt(
+        "same_period",
+        cells,
+        unknowns=("basis",),
+    )
+    assert base["receipt_id"] != with_unknowns["receipt_id"]
+
+
+def test_receipt_id_differs_when_only_transformations_differ() -> None:
+    """Identity binds ``transformations`` — a different declared conversion
+    declares a different comparison was run; the digest must reflect it.
+    """
+    cells = [cell("100", owner_ref="synthetic:cell:a"), cell("100", owner_ref="synthetic:cell:b")]
+    base = build_comparison_receipt("same_period", cells)
+    with_transforms = build_comparison_receipt(
+        "same_period",
+        cells,
+        checked={"currency": True},
+        transformations=({"kind": "currency_convert", "factor": "0.92", "lineage": "ECB-2026Q2"},),
+    )
+    assert base["receipt_id"] != with_transforms["receipt_id"]
+
+
 def test_build_receipt_rejects_unknown_purpose() -> None:
     with pytest.raises(ValueError):
         build_comparison_receipt("not_a_purpose", [cell("1")])

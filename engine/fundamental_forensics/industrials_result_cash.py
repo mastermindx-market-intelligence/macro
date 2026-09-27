@@ -175,8 +175,12 @@ def build_comparison_receipt(
             raise ValueError("transformation lineage must be a string")
         transforms.append({"kind": kind, "factor": factor, "lineage": lineage})
 
-    digest_input = purpose + "|" + "|".join(refs) + "|" + "|".join(
-        f"{k}:{int(v)}" for k, v in sorted(checked_dict.items())
+    digest_input = (
+        purpose + "|"
+        + "|".join(refs) + "|"
+        + "|".join(f"{k}:{int(v)}" for k, v in sorted(checked_dict.items())) + "|"
+        + "|".join(sorted(unknown_list)) + "|"
+        + "|".join(f"{t['kind']}:{t['factor']}:{t['lineage']}" for t in transforms)
     )
     receipt_id = "synthetic:comparison:" + _sha256_text(digest_input)[:16]
 
