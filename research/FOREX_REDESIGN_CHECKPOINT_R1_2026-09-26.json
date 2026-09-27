@@ -1,7 +1,7 @@
 {
   "status": "CHECKPOINTED_CONTINUATION",
   "mission_complete": false,
-  "revision": "R2 answer-first interactive candidate",
+  "revision": "R3 glance-first decision candidate",
   "observed_date_utc": "2026-09-27",
   "scope": "Continue the Chairman's Forex redesign: an instantly understandable, visually refined and robust research journey. This is a design candidate, not a production release.",
   "authority_boundary": "Current outer Chairman continuation supplies this task's intent. This record grants no successor lease, admission, denied-effect replay, production or trading authority.",
@@ -18,59 +18,104 @@
     "index_blob": "94d1af402598894372858793a5b1931019c5fa77",
     "skillpack_version": "1.0.1",
     "bootstrap_major": 1,
-    "research_inputs": ["docs/DESIGN_DOCTRINE.md", "reports/forex-calibration.md"],
+    "research_inputs": [
+      "docs/DESIGN_DOCTRINE.md",
+      "reports/forex-calibration.md"
+    ],
     "calibration_sample_end": "2026-06-18"
   },
   "artifact": {
-    "role": "Immutable qualification archive only; not an authoritative Drive state mirror or a new Agent OS",
-    "drive_file_id": "1pBd2GyQekG8D72rNCzMtJ9PSuQZSmh9E",
-    "drive_url": "https://drive.google.com/file/d/1pBd2GyQekG8D72rNCzMtJ9PSuQZSmh9E/view",
-    "file_name": "Forex_R2_Design_and_Verification_2026-09-26.zip",
+    "role": "Immutable R3 qualification archive only; not an authoritative Drive state mirror or a new Agent OS",
+    "drive_file_id": "1FMG2g4Lv4o6EW-Bu8A_ojo3T3vJIjn2k",
+    "drive_url": "https://drive.google.com/file/d/1FMG2g4Lv4o6EW-Bu8A_ojo3T3vJIjn2k/view",
+    "file_name": "Forex_R3_Design_and_Verification_2026-09-26.zip",
     "shared_on_readback": false,
-    "size_bytes": 1118923,
-    "sha256": "4e7ecb9d0a9505e7a1550c08d070ad4b68150e977247f0a51d54de8574c9fa73",
-    "verification": "Downloaded from Drive and hashed; identical to the original archive. All 55 manifest entries and ZIP integrity verified.",
-    "zip_entries": 56,
-    "root": "Forex_R2/",
+    "size_bytes": 2417156,
+    "sha256": "c7b3f2a2379b49e787019324e2ebe67ec48570f77e732d35d232312ae1cd8a42",
+    "verification": "Uploaded once as a new Drive file, downloaded again, and matched by exact byte count and SHA-256. ZIP contains 64 entries; all 63 manifest-tracked entries plus MANIFEST.sha256.json were verified with zero mismatches.",
+    "zip_entries": 64,
+    "manifest_entries": 63,
+    "root": "Forex_R3/",
     "entry_point": "Forex_R2_Interactive_Preview.html",
-    "entry_point_sha256": "1fe814cc9e77135cb719f9df9efe7be1bc93c3c3cee5fd1df0ba9bf4998969d4",
-    "source_files": ["app.js", "model.js", "fixture.js", "styles.css", "index.html", "build_preview.py"],
+    "entry_point_legacy_name_note": "The self-contained entry filename is retained from R2 so the verified build/test harness is not renamed during a design-only refinement.",
+    "entry_point_sha256": "37945958f318daa1d1658c1a3cf755a3da624f60034a1d249f3c1abc80a0f89c",
+    "source_files": [
+      "app.js",
+      "model.js",
+      "fixture.js",
+      "styles.css",
+      "index.html",
+      "build_preview.py",
+      "tests/r3_experience.py"
+    ],
     "handoff": "PRODUCTION_HANDOFF.md",
     "brief_and_execution": "DESIGN_AND_EXECUTION.md",
     "qualification": "evidence/final-qualification.json",
+    "visual_review": "evidence/R3_VISUAL_REVIEW.md",
     "manifest": "MANIFEST.sha256.json",
-    "immutable_archive_note": "The package's planning file accurately ends before external publication. This GitHub checkpoint records the subsequent archive upload and verified download without rewriting that archive."
+    "immutable_archive_note": "R2 remains immutable and separately addressable; R3 is a new archive rather than an overwrite."
   },
   "verified_delta": [
-    "One first-read answer, qualification and primary investigation action; one-month currency breadth no longer mixed with a 63-day dollar headline.",
-    "All nine currencies remain visible on a common zero-anchored scale; search preserves the original comparison scale and population.",
-    "Working currency detail, two-currency comparison, changes, research and prepared-watch review; theme and EN/ZH primary flow, with signed values preserved and locale-appropriate directional colors.",
-    "Native Back/Forward preserves edited search, cleared search, expanded research, unreviewed watch conditions and reviewed drafts in tested flows. Native browser history retains scroll without a second scroll registry.",
-    "Stale detail retains its own visible qualification. Incomplete input cannot retain the fresh-data sidebar. Changed leadership changes headline and action; wrong-horizon values are withheld rather than converted to zero.",
-    "JPY cheapness is descriptive, not bullish evidence; rate gaps use percentage points; correlations are associations, not odds.",
-    "Watch activation is disabled without the existing backend. No saved state, active watch count, live notification or trade is fabricated."
+    "R2 truth and interaction contracts are preserved: one-month/USD ranking, exact signed values, missing-data honesty, Back/Forward state, disabled unconnected activation and no new trade authority.",
+    "R3 hero now exposes exactly three glance facts: leader, breadth and principal constraint. The default example reads JPY +1.9%, 7/9 currencies below USD, and a −2.9 pp JPY short-rate disadvantage.",
+    "Desktop replaces stacked side cards with one composed 'What matters next' panel; cross-asset context becomes a compact secondary action instead of a competing dashboard card.",
+    "At narrow widths the attention panel moves before the full nine-currency table, so consequential investigation precedes the long reference list.",
+    "JPY detail now presents a two-sided evidence balance: 'What stands out' versus 'What pushes back'. Historical cheapness remains explicitly 'Not bullish evidence'; rate and intervention constraints remain visible.",
+    "Dark/light and EN/ZH layouts remain deliberate; Chinese keeps red-up/green-down while signs and source values remain unchanged."
   ],
   "qualification": {
+    "r3_experience_checks": "PASS_AFTER_RED",
+    "r3_red_finding": "The R2 candidate lacked the three-fact glance rail, used two stacked side cards, placed mobile priorities below the long table, and lacked the balanced JPY evidence structure.",
     "model_tests_passed": 31,
     "browser_matrix_cells_passed": 20,
     "browser_matrix_assertions": 1040,
-    "normal_widths_px": [320, 390, 768, 1440],
-    "themes": ["dark", "light"],
-    "locales": ["en", "zh"],
+    "normal_widths_px": [
+      320,
+      390,
+      768,
+      1440
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
     "extra_cells": "390px doubled text size across both themes and both locales",
     "modal_history_checks_passed": 15,
     "native_forward_checks_passed": 6,
     "changed_input_checks_passed": 6,
     "claim_boundary_checks_passed": 5,
-    "contrast_and_direction_observations_passed": 176,
+    "contrast_and_direction_observations_passed": 168,
     "minimum_measured_text_contrast": 4.5207,
     "final_screenshots": 8,
-    "final_screenshots_examined": ["final-overview-mobile-zh.png", "final-yen-detail.png", "final-comparison-mobile.png", "final-overview-light.png"],
+    "final_screenshots_examined": [
+      "final-overview-dark.png",
+      "final-overview-light.png",
+      "final-overview-mobile-en.png",
+      "final-overview-mobile-zh.png",
+      "final-yen-detail.png"
+    ],
     "final_capture_javascript_errors": 0,
     "final_capture_outbound_requests": 0,
-    "transport": "Own authored HTML rendered with Playwright page.set_content in about:blank; network requests aborted. Not a served production route.",
-    "interruption": "An aggregate local test command reached its tool timeout during the matrix. No related processes remained. Completed receipts were preserved and only the missing matrix was rerun standalone successfully.",
-    "excluded_proof": ["Paper R2 application", "production-shaped live data", "deployed routing and reload/deep-link", "real watch persistence", "source rights clearance", "assistive technology", "physical touch", "native browser zoom", "Safari or Firefox", "intended-user comprehension", "whole-repository production suite"]
+    "bundle_sha256": "37945958f318daa1d1658c1a3cf755a3da624f60034a1d249f3c1abc80a0f89c",
+    "transport": "Own authored HTML rendered with Playwright page.set_content in about:blank; outbound requests aborted. Not a served production route.",
+    "interruption": "A combined command hit the tool timeout while entering the browser matrix; model tests had already completed. The matrix was then run standalone and passed 20/20 cells with 1,040 checks. No source change was made in response to the timeout.",
+    "excluded_proof": [
+      "Paper R3 application",
+      "production-shaped live data",
+      "deployed routing and reload/deep-link",
+      "real watch persistence",
+      "source rights clearance",
+      "assistive technology",
+      "physical touch",
+      "native browser zoom",
+      "Safari or Firefox",
+      "intended-user comprehension",
+      "whole-repository production suite"
+    ]
   },
   "native_frontier": {
     "file_id": "01M2WGNCX9475G79JRKJTCM08P",
@@ -78,19 +123,42 @@
     "page_name": "Forex · Guided Intelligence · R1 · 2026-09-26",
     "observed_artboards": 18,
     "observed_nodes": 2267,
-    "artboard_ids": ["1AAP-1", "1AMJ-1", "1DRM-1", "1DVA-1", "1MWN-0", "1L3U-0", "1N0G-0", "1E5L-1", "1E80-1", "1EAB-1", "1LFQ-0", "1LPE-0", "1LVN-0", "1M7M-0", "1MD7-0", "1MHH-0", "1MKQ-0", "1MQ4-0"],
+    "artboard_ids": [
+      "1AAP-1",
+      "1AMJ-1",
+      "1DRM-1",
+      "1DVA-1",
+      "1MWN-0",
+      "1L3U-0",
+      "1N0G-0",
+      "1E5L-1",
+      "1E80-1",
+      "1EAB-1",
+      "1LFQ-0",
+      "1LPE-0",
+      "1LVN-0",
+      "1M7M-0",
+      "1MD7-0",
+      "1MHH-0",
+      "1MKQ-0",
+      "1MQ4-0"
+    ],
     "last_prior_applied_operation": "forex-r1-20260926-duplicate-mobile-light-zh",
     "last_prior_effect": "Source 1L3U-0 duplicated to 1N0G-0; duplicate exists but remains unfinished for light ZH. Do not duplicate it again.",
     "original_effect_carrier": "Studio Direct C2 Personal for the recorded last prior effect",
     "paper_writes_this_continuation": 0,
-    "hold": "Mastermind #927 comment 5851924329 retains the file-wide Policy R2 custody/window obligation; Macro #8048 comment 5851974650 does not release it.",
-    "hold_refs": ["https://github.com/mastermindx-market-intelligence/Mastermind/pull/927#issuecomment-5851924329", "https://github.com/mastermindx-market-intelligence/macro/pull/8048#issuecomment-5851974650"],
+    "hold": "Latest consumed Mastermind #927 comment 5852164955 confirms that the prior Policy R2 file-window/indicator obligation is still not released. Connection, Extra High mode and write-schema readiness do not clear custody.",
+    "hold_refs": [
+      "https://github.com/mastermindx-market-intelligence/Mastermind/pull/927#issuecomment-5852164955",
+      "https://github.com/mastermindx-market-intelligence/Mastermind/pull/927#issuecomment-5851924329",
+      "https://github.com/mastermindx-market-intelligence/macro/pull/8048#issuecomment-5851974650"
+    ],
     "permission_rule": "Connection and write binding are not custody release. Preserve all original Forex and Policy refusal fences. No denied-effect replay, carrier switch or other-session indicator cleanup is authorized by this record.",
     "legacy_checkpoint_supersession": "The initial two-artboard R1 local checkpoint and its host/carrier observations are historical only. The current census and last prior operation above supersede its state counts, not its refusal fences."
   },
   "effects": {
-    "new_drive_archive": "Uploaded once and reconciled by exact download/hash",
-    "github_change_scope": "This evidence checkpoint on a new isolated source-artifact branch; no production source changed",
+    "new_drive_archive": "R3 uploaded once as a new Drive file and reconciled by exact download/hash; R2 archive untouched.",
+    "github_change_scope": "This cumulative checkpoint only; no production source, frontend, engine, data or deployment path changed.",
     "effect_unknown_in_this_continuation": [],
     "worker_or_watcher_started": false,
     "runtime_or_admission_changed": false,
@@ -99,15 +167,37 @@
     "merge_or_deployment_performed": false
   },
   "open_material_gates": [
-    "Genuine shared-file custody release and current action permission before native edits; the local HTML is not a proven Paper payload.",
+    "Genuine shared-file custody release and current action permission before native edits; the R3 HTML is not a proven Paper payload.",
     "Actual existing FX view-model and latest.json source contract, freshness and licensing integration; no new data engine or score.",
     "Actual existing watch/alert owner, authenticated persistence, failed/unknown-save reconciliation and exact event-return proof.",
     "Producer/documentation adjudication: CONTEXT is described as unweighted while some printed CONTEXT rows have nonzero weights; no UI reweighting performed.",
     "Served-path browser, accessibility and intended-user cold-reader comprehension evidence."
   ],
-  "do_not_redo": ["Do not recreate 1N0G-0 or restart R1 artboards.", "Do not duplicate the archive or replace its bytes during this continuation.", "Do not clear other sessions' indicators or use another carrier to replay a refused effect.", "Do not replace the existing FX engine, event ledger, watch owner, theme or navigation authority.", "Do not call local green tests native or production acceptance."],
-  "boundary": "Substantial independently executable R2 design/qualification slice and full archive are preserved; native integration is held by the exact shared-file owner gate. The parent mission remains incomplete and no unattended execution is claimed.",
-  "next_action": "After a genuine original-owner/canonical custody return and current permission reconciliation, re-pin procedure and apply the smallest R2 first-read/rank-chart slice to the existing dark/light overview boards; inspect real screenshots, then adapt the existing mobile/locale boards. Preserve IDs and the pending duplicate.",
-  "resume_surface": "A current Chairman-authorized Mastermind session reading this GitHub checkpoint, the exact private qualification archive, and minimum fresh custody/source state.",
-  "mode": {"observed_selected_mode": "UNKNOWN", "direct_work_reason": "PRINCIPAL_JUDGMENT / LOWER_TOTAL_OVERHEAD", "next_phase_preference": "Extra High for tool-intensive native integration and browser verification after custody clears; no mode switch resolves the current hold."}
+  "do_not_redo": [
+    "Do not recreate 1N0G-0 or restart R1 artboards.",
+    "Do not overwrite or replace the immutable R2 archive; R3 has its own Drive identity.",
+    "Do not clear other sessions' indicators or use another carrier to replay a refused effect.",
+    "Do not replace the existing FX engine, event ledger, watch owner, theme or navigation authority.",
+    "Do not call local green tests native or production acceptance.",
+    "Do not regress mobile ordering: investigation priorities precede the nine-currency reference table at narrow widths.",
+    "Do not promote JPY historical cheapness into bullish evidence."
+  ],
+  "boundary": "R3 glance-first design/qualification is preserved in a new immutable archive and cumulative GitHub checkpoint; native integration is held by the exact shared-file custody gate. Parent mission remains incomplete and no unattended execution is claimed.",
+  "next_action": "After a genuine original-owner/canonical custody return and current permission reconciliation, re-pin procedure and apply the smallest R3 overview slice to existing dark/light boards: three-fact hero plus composed attention panel plus fixed-scale ranking. Inspect real native screenshots before adapting existing mobile/locale boards and finishing 1N0G-0.",
+  "resume_surface": "A current Chairman-authorized Mastermind session reading this cumulative checkpoint, the immutable R3 archive and minimum fresh custody/source state.",
+  "mode": {
+    "user_reported_selected_mode": "Extra High",
+    "platform_served_identity": "UNKNOWN",
+    "direct_work_reason": "PRINCIPAL_JUDGMENT / LOWER_TOTAL_OVERHEAD",
+    "next_phase_preference": "Retain Extra High for tool-intensive native integration once custody clears; mode alone never clears custody."
+  },
+  "native_r3": "NOT_APPLIED_TO_PAPER",
+  "prior_artifact": {
+    "revision": "R2 answer-first interactive candidate",
+    "drive_file_id": "1pBd2GyQekG8D72rNCzMtJ9PSuQZSmh9E",
+    "file_name": "Forex_R2_Design_and_Verification_2026-09-26.zip",
+    "size_bytes": 1118923,
+    "sha256": "4e7ecb9d0a9505e7a1550c08d070ad4b68150e977247f0a51d54de8574c9fa73",
+    "disposition": "IMMUTABLE_DO_NOT_OVERWRITE"
+  }
 }
