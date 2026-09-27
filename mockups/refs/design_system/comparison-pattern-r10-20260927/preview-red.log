@@ -1,0 +1,13 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________ test_spine_comparison_material_preview_uses_the_same_example _________
+tests/test_design_system_foundations.py:985: in test_spine_comparison_material_preview_uses_the_same_example
+    assert _spine_geometry(preview) == _spine_geometry(_spine_rows(specimen, 'ud-b1')[0])
+tests/test_design_system_foundations.py:914: in _spine_geometry
+    return (percent('mx-spine-prev', 'left'), percent('mx-spine-mark', 'left'),
+tests/test_design_system_foundations.py:911: in percent
+    tag = next(a for _, a in _specimen_tab_nodes(row) if cls in a.get('class', '').split())
+E   StopIteration
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_spine_comparison_material_preview_uses_the_same_example
+1 failed, 90 deselected in 0.12s

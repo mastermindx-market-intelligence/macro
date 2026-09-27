@@ -214,6 +214,21 @@ body.mobile-sim .wrap{ max-width:390px; box-sizing:border-box; }
 .spec-answer .mx-tbl tbody td{ font-size:var(--fs-body); }
 #specimen-main:focus-visible{ outline:none; }
 #specimen-main:focus-visible .spec-start h1{ outline:2px solid var(--link); outline-offset:var(--sp-2); }
+
+/* Reference-only comparison presentation; production still owns mx-spine. */
+#spec-spine-comparison .mx-sec{ flex-wrap:wrap; }
+#spec-spine-context,#spec-spine-limit,#spec-spine-legend{ color:var(--muted); font-size:var(--fs-sm); margin:var(--sp-3) 0; }
+#spec-spine-summary{ font-size:var(--fs-body); color:var(--text); margin:var(--sp-2) 0; }
+#spec-spine-details,#spec-spine-anatomy{ margin-top:var(--sp-4); }
+#spec-spine-comparison summary{ min-height:var(--sp-8); box-sizing:border-box; }
+#spec-spine-values{ min-width:0; table-layout:fixed; font-size:var(--fs-body); }
+#spec-spine-values caption{ text-align:left; padding:var(--sp-3) 0; font-size:var(--fs-sm); }
+#spec-spine-values th,#spec-spine-values td{ padding:var(--sp-2) 6px; }
+#spec-spine-values th:first-child{ width:40%; }
+#spec-spine-values th[scope="row"]{ font-size:var(--fs-body); font-weight:var(--fw-medium,500); text-transform:none; letter-spacing:normal; color:var(--text); overflow-wrap:anywhere; }
+#spec-spine-values .tnum{ text-align:right; white-space:nowrap; }
+
+.wrap:not(.mockup-spine-390) #spec-spine-comparison [data-spec="ud-b1"] .mx-spine-row[data-null="1"] > .mx-spine-stance{ grid-column:4; }
 </style>
 </head>
 <body>
@@ -693,55 +708,51 @@ body.mobile-sim .wrap{ max-width:390px; box-sizing:border-box; }
 </section>
 
 <!-- ══ 6.5 · REGIME SPINE — UD-B1 .mx-spine ══ -->
-<section class="spec-sec">
-  <h2 class="l-en">6.5 · Regime spine (.mx-spine) — the Unified Macro Dashboard signature</h2>
-  <h2 class="l-zh">6.5 · 状态脊柱（.mx-spine）— 统一宏观仪表盘的签名元素</h2>
-  <p class="law l-en">One horizontal scale (Risk-off ←→ Risk-on) reused identically by five market rows. The
-  marker takes its <b>stance ink</b>, never a category hue; travel uses muted measurement ink plus an
-  explicit arrow — never --up/--down, which dodges the 红涨绿跌 flip (a travel figure means the same
-  thing in both languages). Zone ticks at 25/50/75 are notches, not labels; the axis is anchored in
-  <b>words</b> (Risk-off · Neutral · Risk-on), never in a bare 0–100. Subject market is the only marked
-  subject — one per spine. Null row uses a dashed rail and a "Read being updated" chip.</p>
-  <p class="law l-zh">同一水平标尺（避险←→趋险）由五个市场行共用。标记取其<b>立场墨色</b>，绝不取分类色相；
-  移动值使用中性测量墨色并显式带箭头——绝不取 --up/--down，从而回避红涨绿跌翻转（移动值在两种语言下含义一致）。
-  25/50/75 处的分区为刻度而非标签；轴线锚定于<b>文字</b>（避险·中性·趋险），而非裸 0–100。
-  主体市场是唯一被标出的主体——每个脊柱仅一个。空值行使用虚线轨道与「判读更新中」徽章。</p>
+<section class="spec-sec" id="spec-spine-comparison" tabindex="-1">
+  <h2 class="l-en">6.5 · Compare movement on one scale</h2>
+  <h2 class="l-zh">6.5 · 在同一标尺上比较变化</h2>
+
+
 
   <div class="panel">
-    <div class="mx-sec"><h3 class="l-en">Spine — 5 markets on one shared scale</h3><h3 class="l-zh">脊柱 — 五市场共用同一标尺</h3><span class="mx-asof tnum">08-12</span></div>
+    <p id="spec-spine-context"><span class="l-en">Fictional example · <time datetime="2026-07-12">12 Jul</time> → <time datetime="2026-08-12">12 Aug 2026</time></span><span class="l-zh">虚构示例 · <time datetime="2026-07-12">2026年7月12日</time> → <time datetime="2026-08-12">8月12日</time></span></p>
+    <div class="mx-sec"><h3 class="l-en">Mixed movement. No broad shift.</h3><h3 class="l-zh">变化分化，没有一致转向。</h3></div>
+    <p id="spec-spine-summary"><span class="l-en">2 toward risk-on · 2 toward risk-off · 1 unavailable</span><span class="l-zh">2项趋向风险偏好上升 · 2项趋向下降 · 1项暂无数据</span></p>
+    <p id="spec-spine-limit"><span class="l-en">Score points, not price returns and not probabilities. The example stance is a separate assessment.</span><span class="l-zh">分值变化，不是价格回报，也不是概率。示例立场是另一项独立判断。</span></p>
+    <p id="spec-spine-legend"><span class="l-en">Hollow = earlier · Solid = later · Line = the change</span><span class="l-zh">空心为前值 · 实心为后值 · 连线为变化</span></p>
 
-    <div class="mx-spine" data-spec="ud-b1">
+    <div class="mx-spine" data-spec="ud-b1" aria-describedby="spec-spine-context spec-spine-summary">
       <div class="mx-spine-head" aria-hidden="true">
         <span><span class="l-en">Market</span><span class="l-zh">市场</span></span>
-        <span><span class="l-en">Where it sits today</span><span class="l-zh">今日位置</span></span>
+        <span><span class="l-en">Later position</span><span class="l-zh">后值位置</span></span>
         <span><span class="l-en">Moved</span><span class="l-zh">本月移动</span></span>
-        <span><span class="l-en">What to do</span><span class="l-zh">该怎么做</span></span>
+        <span><span class="l-en">Example stance</span><span class="l-zh">示例立场</span></span>
       </div>
 
       <div class="mx-spine-row" data-subject="1" data-stance="protect">
         <div class="mx-spine-name"><span class="l-en">US stocks</span><span class="l-zh">美股</span><small class="tnum">72</small></div>
-        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:84%"></div><div class="mx-spine-conn" style="left:78%;width:6%"></div><div class="mx-spine-mark" style="left:72%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:78%"></div><div class="mx-spine-conn" style="left:72%;width:6%"></div><div class="mx-spine-mark" style="left:72%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
         <div class="mx-spine-travel"><span class="mx-spine-arrow">←</span><span class="tnum">−6</span></div>
         <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Protect gains</span><span class="l-zh">保护收益</span></span></div>
       </div>
 
       <div class="mx-spine-row" data-stance="watch">
         <div class="mx-spine-name"><span class="l-en">Hong Kong</span><span class="l-zh">香港</span><small class="tnum">61</small></div>
-        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:50%"></div><div class="mx-spine-conn" style="left:56%;width:5%"></div><div class="mx-spine-mark" style="left:61%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:56%"></div><div class="mx-spine-conn" style="left:56%;width:5%"></div><div class="mx-spine-mark" style="left:61%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
         <div class="mx-spine-travel"><span class="mx-spine-arrow">→</span><span class="tnum">+5</span></div>
         <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Watch — don’t chase</span><span class="l-zh">观察，勿追</span></span></div>
       </div>
 
       <div class="mx-spine-row" data-stance="get-ready">
         <div class="mx-spine-name"><span class="l-en">China A-shares</span><span class="l-zh">A股</span><small class="tnum">58</small></div>
-        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:42%"></div><div class="mx-spine-conn" style="left:49%;width:9%"></div><div class="mx-spine-mark" style="left:58%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:49%"></div><div class="mx-spine-conn" style="left:49%;width:9%"></div><div class="mx-spine-mark" style="left:58%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
         <div class="mx-spine-travel"><span class="mx-spine-arrow">→</span><span class="tnum">+9</span></div>
         <div class="mx-spine-stance"><span class="mx-stance mx-stance--ok"><span class="l-en">Get ready</span><span class="l-zh">准备行动</span></span></div>
       </div>
 
       <div class="mx-spine-row" data-stance="stand-aside">
         <div class="mx-spine-name"><span class="l-en">Government bonds</span><span class="l-zh">国债</span><small class="tnum">38</small></div>
-        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:46%"></div><div class="mx-spine-conn" style="left:42%;width:4%"></div><div class="mx-spine-mark" style="left:38%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:42%"></div><div class="mx-spine-conn" style="left:38%;width:4%"></div><div class="mx-spine-mark" style="left:38%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
         <div class="mx-spine-travel"><span class="mx-spine-arrow">←</span><span class="tnum">−4</span></div>
         <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">Stand aside</span><span class="l-zh">暂时观望</span></span></div>
       </div>
@@ -750,12 +761,31 @@ body.mobile-sim .wrap{ max-width:390px; box-sizing:border-box; }
         <div class="mx-spine-name"><span class="l-en">Commodities</span><span class="l-zh">大宗商品</span><small>—</small></div>
         <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
         
-        <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">Read being updated</span><span class="l-zh">判读更新中</span></span></div>
+        <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">No score</span><span class="l-zh">暂无分值</span></span></div>
       </div>
     </div>
 
-    <p class="mockup-note l-en" style="margin-top:14px">Footnote (once): <em>Positions are this week’s read on a shared scale — not price performance.</em></p>
-    <p class="mockup-note l-zh" style="margin-top:14px">脚注（仅一次）：<em>位置是本周在同一标尺上的判读，并非价格涨跌幅。</em></p>
+    <details class="mx-disc" id="spec-spine-details">
+      <summary id="spec-spine-inspect"><span class="l-en">Read the exact values</span><span class="l-zh">查看准确数值</span></summary>
+      <div class="mx-disc-body"><div class="mx-tblbox"><table class="mx-tbl" id="spec-spine-values">
+        <caption><span class="l-en">Fictional values · score points · 12 Jul → 12 Aug 2026. Missing is not zero.</span><span class="l-zh">虚构分值 · 2026年7月12日 → 8月12日。缺失不按零处理。</span></caption>
+        <thead><tr><th scope="col"><span class="l-en">Market</span><span class="l-zh">市场</span></th><th scope="col"><time datetime="2026-07-12"><span class="l-en">Jul<br>12</span><span class="l-zh">7月<br>12日</span></time></th><th scope="col"><time datetime="2026-08-12"><span class="l-en">Aug<br>12</span><span class="l-zh">8月<br>12日</span></time></th><th scope="col"><span class="l-en">Δ pts</span><span class="l-zh">变化</span></th></tr></thead>
+        <tbody><tr data-spec-spine-market="us"><th scope="row"><span class="l-en">US stocks</span><span class="l-zh">美股</span></th><td class="tnum">78</td><td class="tnum">72</td><td class="tnum">−6</td></tr>
+<tr data-spec-spine-market="hk"><th scope="row"><span class="l-en">Hong Kong</span><span class="l-zh">香港</span></th><td class="tnum">56</td><td class="tnum">61</td><td class="tnum">+5</td></tr>
+<tr data-spec-spine-market="cn"><th scope="row"><span class="l-en">China A-shares</span><span class="l-zh">A股</span></th><td class="tnum">49</td><td class="tnum">58</td><td class="tnum">+9</td></tr>
+<tr data-spec-spine-market="bonds"><th scope="row"><span class="l-en">Government bonds</span><span class="l-zh">国债</span></th><td class="tnum">42</td><td class="tnum">38</td><td class="tnum">−4</td></tr>
+<tr data-spec-spine-market="commodities"><th scope="row"><span class="l-en">Commodities</span><span class="l-zh">大宗商品</span></th><td colspan="3"><span class="l-en">Unavailable</span><span class="l-zh">暂无数据</span></td></tr></tbody>
+      </table></div></div>
+    </details>
+    <details class="mx-disc" id="spec-spine-anatomy"><summary><span class="l-en">How to use this comparison pattern</span><span class="l-zh">如何使用此比较模式</span></summary><div class="mx-disc-body">  <p class="law l-en">One horizontal scale (Risk-off ←→ Risk-on) reused identically by five market rows. The
+  marker takes its <b>stance ink</b>, never a category hue; travel uses muted measurement ink plus an
+  explicit arrow — never --up/--down, which dodges the 红涨绿跌 flip (a travel figure means the same
+  thing in both languages). Zone ticks at 25/50/75 are notches, not labels; the axis is anchored in
+  <b>words</b> (Risk-off · Neutral · Risk-on), never in a bare 0–100. Subject market is the only marked
+  subject — one per spine. Null row uses a dashed rail and a "No score" chip.</p>  <p class="law l-zh">同一水平标尺（避险←→趋险）由五个市场行共用。标记取其<b>立场墨色</b>，绝不取分类色相；
+  移动值使用中性测量墨色并显式带箭头——绝不取 --up/--down，从而回避红涨绿跌翻转（移动值在两种语言下含义一致）。
+  25/50/75 处的分区为刻度而非标签；轴线锚定于<b>文字</b>（避险·中性·趋险），而非裸 0–100。
+  主体市场是唯一被标出的主体——每个脊柱仅一个。空值行使用虚线轨道与「暂无分值」徽章。</p></div></details>
   </div>
 
   <div class="panel">
@@ -764,7 +794,12 @@ body.mobile-sim .wrap{ max-width:390px; box-sizing:border-box; }
     rung (raw fill fails 4.5:1 as text on white), and the subject marker becomes a 2px ring (a bloom becomes a pastel stain on white). Same numbers; same shape — different material.</p>
     <p class="mockup-note l-zh">浅色下轨道加 1px 描边（白色上中性段易消失）、移动墨色改用 <code>--ink-*</code> 档位（裸填充在白色上达不到 4.5:1）、主体标记改为 2px 环（光晕在白底会变成淡色污点）。同一数字，同一形状——不同材质。</p>
     <div class="mx-tier-blurred--spec" aria-hidden="true" style="pointer-events:none">
-      <div class="mx-spine-row" data-stance="get-ready"><div class="mx-spine-name"><span>US stocks</span><small class="tnum">72</small></div><div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-mark" style="left:72%"></div></div></div><div class="mx-spine-travel"><span>→</span><span class="tnum">+5</span></div><div class="mx-spine-stance"><span class="mx-stance"><span>Get ready</span></span></div></div>
+      <div class="mx-spine-row" data-subject="1" data-stance="protect">
+        <div class="mx-spine-name"><span class="l-en">US stocks</span><span class="l-zh">美股</span><small class="tnum">72</small></div>
+        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:78%"></div><div class="mx-spine-conn" style="left:72%;width:6%"></div><div class="mx-spine-mark" style="left:72%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+        <div class="mx-spine-travel"><span class="mx-spine-arrow">←</span><span class="tnum">−6</span></div>
+        <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Protect gains</span><span class="l-zh">保护收益</span></span></div>
+      </div>
     </div>
     <p class="mockup-note l-en" style="margin-top:8px">Locked tier preview — exact spec §11 item 4 recipe: <code>blur(5px) saturate(.35) opacity .42</code>.</p>
     <p class="mockup-note l-zh" style="margin-top:8px">锁定层预览——严格按照规范 §11 第 4 条配方：<code>blur(5px) saturate(.35) opacity .42</code>。</p>
@@ -776,23 +811,23 @@ body.mobile-sim .wrap{ max-width:390px; box-sizing:border-box; }
       row 1 = name + stance chip; row 2 = the shared rail + travel figure. The head row hides; the stance column moves into the name row.
       Numbers survive; table geometry does not.</p>
     <p class="mockup-note l-zh">依规范 §7，390 视口下表格几何无法保留——每行在卡片上变为两行：第一行 = 名称 + 立场徽章；第二行 = 共享标尺 + 移动数字。表头隐藏；立场列并入名称行。数字保留；表格几何不再。</p>
-    <div class="mobile-sim mockup-spine-390" style="border:1px solid var(--line); border-radius:var(--r-card); padding:8px;">
+    <div class="mobile-sim mockup-spine-390" style="max-width:390px;box-sizing:border-box;border:1px solid var(--line); border-radius:var(--r-card); padding:8px;">
       <div class="mx-spine" data-spec="ud-b1-390">
         <div class="mx-spine-row" data-subject="1" data-stance="protect">
           <div class="mx-spine-name"><span class="l-en">US stocks</span><span class="l-zh">美股</span></div>
           <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Protect gains</span><span class="l-zh">保护收益</span></span></div>
-          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-mark" style="left:72%"></div></div></div>
+          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:78%"></div><div class="mx-spine-conn" style="left:72%;width:6%"></div><div class="mx-spine-mark" style="left:72%"></div></div></div>
           <div class="mx-spine-travel"><span class="mx-spine-arrow">←</span><span class="tnum">−6</span></div>
         </div>
         <div class="mx-spine-row" data-stance="watch">
           <div class="mx-spine-name"><span class="l-en">Hong Kong</span><span class="l-zh">香港</span></div>
           <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Watch — don’t chase</span><span class="l-zh">观察，勿追</span></span></div>
-          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-mark" style="left:61%"></div></div></div>
+          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:56%"></div><div class="mx-spine-conn" style="left:56%;width:5%"></div><div class="mx-spine-mark" style="left:61%"></div></div></div>
           <div class="mx-spine-travel"><span class="mx-spine-arrow">→</span><span class="tnum">+5</span></div>
         </div>
         <div class="mx-spine-row" data-null="1">
           <div class="mx-spine-name"><span class="l-en">Commodities</span><span class="l-zh">大宗商品</span></div>
-          <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">Read being updated</span><span class="l-zh">判读更新中</span></span></div>
+          <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">No score</span><span class="l-zh">暂无分值</span></span></div>
           <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div></div>
           
         </div>
@@ -894,12 +929,17 @@ document.getElementById('t-width').onclick = function(){
 /* Only measure this reference header: anchors remain native browser navigation. */
 (function(){
   var bar = document.querySelector('.bar');
+  var stage = document.querySelector('.wrap');
   function fitReferenceAnchors(){
     root.style.setProperty('--spec-header-height', Math.ceil(bar.getBoundingClientRect().height) + 'px');
+    stage.classList.toggle('mockup-spine-390', stage.getBoundingClientRect().width <= 640);
   }
   fitReferenceAnchors();
-  if (window.ResizeObserver) new ResizeObserver(fitReferenceAnchors).observe(bar);
-  else window.addEventListener('resize', fitReferenceAnchors);
+  if (window.ResizeObserver) {
+    var referenceObserver = new ResizeObserver(fitReferenceAnchors);
+    referenceObserver.observe(bar);
+    referenceObserver.observe(stage);
+  } else window.addEventListener('resize', fitReferenceAnchors);
 })();
 </script>
 </body>

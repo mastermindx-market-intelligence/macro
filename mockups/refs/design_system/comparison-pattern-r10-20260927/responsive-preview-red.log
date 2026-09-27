@@ -1,0 +1,9 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__________ test_spine_comparison_preview_mode_follows_available_width __________
+tests/test_design_system_foundations.py:992: in test_spine_comparison_preview_mode_follows_available_width
+    assert "stage.classList.toggle('mockup-spine-390', stage.getBoundingClientRect().width <= 640)" in scripts
+E   assert "stage.classList.toggle('mockup-spine-390', stage.getBoundingClientRect().width <= 640)" in "\n/* Specimen-only toggles — mirrors theme.js attribute mechanics without importing it. */\nvar root = document.docum...zeObserver(fitReferenceAnchors).observe(bar);\n  else window.addEventListener('resize', fitReferenceAnchors);\n})();\n"
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_spine_comparison_preview_mode_follows_available_width
+1 failed, 91 deselected in 0.11s

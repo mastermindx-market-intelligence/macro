@@ -881,10 +881,136 @@ def test_specimen_unavailable_spine_has_no_orphan_travel_cell(specimen):
     # An extra travel cell creates an implicit column on text enlargement.
     assert 'data-null="1"' in specimen
     assert '<div class="mx-spine-travel"><span class="muted">—</span></div>' not in specimen
-    assert 'Read being updated' in specimen
+    assert 'Unavailable' in specimen and '暂无数据' in specimen  # A missing read does not imply an active refresh.
 
 
 def test_specimen_prepared_answer_reuses_the_existing_verdict_primitive(specimen):
     body = _specimen_prepared_answer(specimen)
     assert 'class="spec-answer mx-vh"' in body
     assert 'class="mx-vh-word"' in body and 'class="mx-vh-clause"' in body
+
+
+# Quantitative comparison examples must encode the numbers they actually state.
+def _spine_examples(specimen):
+    return specimen.split('<!-- ══ 6.5', 1)[1].split('<!-- ══ 7 ·', 1)[0]
+
+
+def _spine_group(specimen, group):
+    part = _spine_examples(specimen).split(f'data-spec="{group}"', 1)[1]
+    return part.split('</div>\n\n    <p', 1)[0] if group == 'ud-b1' else part
+
+
+def _spine_rows(specimen, group):
+    part = _spine_group(specimen, group)
+    limit = 5 if group == 'ud-b1' else 3
+    return re.split(r'(?=<div class="mx-spine-row")', part)[1:limit+1]
+
+
+def _spine_geometry(row):
+    def percent(cls, prop):
+        tag = next(a for _, a in _specimen_tab_nodes(row) if cls in a.get('class', '').split())
+        return float(re.search(rf'(?:^|;)\s*{prop}:([\d.]+)%', tag['style']).group(1))
+    travel = re.search(r'class="mx-spine-travel".*?<span class="tnum">([^<]+)</span>', row, re.S)
+    return (percent('mx-spine-prev', 'left'), percent('mx-spine-mark', 'left'),
+            percent('mx-spine-conn', 'left'), percent('mx-spine-conn', 'width'),
+            float(travel.group(1).replace('−', '-')))
+
+
+@pytest.mark.parametrize('row_number', range(4))
+def test_spine_comparison_markers_connector_and_change_agree(specimen, row_number):
+    row = _spine_rows(specimen, 'ud-b1')[row_number]
+    previous, current, start, distance, change = _spine_geometry(row)
+    assert current - previous == change, 'Earlier marker disagrees with stated change'
+    assert start == min(previous, current), 'Connector must begin at the lower endpoint'
+    assert distance == abs(change), 'Connector length must equal the stated movement'
+    assert 0 <= min(previous, current) <= max(previous, current) <= 100
+    assert ('←' if change < 0 else '→') in row
+
+
+@pytest.mark.parametrize('row_number', [0, 1])
+def test_spine_comparison_narrow_examples_preserve_both_endpoints(specimen, row_number):
+    assert _spine_geometry(_spine_rows(specimen, 'ud-b1-390')[row_number]) == _spine_geometry(_spine_rows(specimen, 'ud-b1')[row_number])
+
+
+def test_spine_comparison_exposes_complete_same_window_values(specimen):
+    section = _spine_examples(specimen)
+    assert 'id="spec-spine-values"' in section and 'id="spec-spine-context"' in section
+    assert '2026-07-12' in section and '2026-08-12' in section
+    assert 'Fictional' in section and '虚构' in section
+    assert 'Score points' in section and '分值' in section
+    table = section.split('id="spec-spine-values"', 1)[1].split('</table>', 1)[0]
+    caption = re.search(r'<caption>(.*?)</caption>', table, re.S).group(1)
+    assert 'Fictional values' in caption and '虚构分值' in caption and '2026' in caption
+    rows = re.findall(r'<tr data-spec-spine-market="([^"]+)">(.*?)</tr>', table, re.S)
+    assert len(rows) == 5
+    for i, (_, row) in enumerate(rows[:4]):
+        nums = re.findall(r'<td class="tnum">([+−\d.]+)</td>', row)
+        assert len(nums) == 3
+        earlier, current, change = [float(x.replace('−', '-')) for x in nums]
+        expected = _spine_geometry(_spine_rows(specimen, 'ud-b1')[i])
+        assert (earlier, current, change) == (expected[0], expected[1], expected[4])
+    assert 'Unavailable' in rows[-1][1] and '暂无数据' in rows[-1][1]
+    assert not re.search(r'<td[^>]*>\s*0\s*</td>', rows[-1][1])
+
+
+def test_spine_comparison_summary_is_not_a_trade_or_return_estimate(specimen):
+    section = _spine_examples(specimen)
+    assert 'id="spec-spine-summary"' in section
+    summary = section.split('id="spec-spine-summary"', 1)[1].split('</p>', 1)[0]
+    assert '2 toward risk-on' in summary and '2 toward risk-off' in summary and '1 unavailable' in summary
+    assert 'not price returns' in section and 'not probabilities' in section
+    assert 'Example stance' in section and '示例立场' in section
+
+
+def test_spine_comparison_values_are_native_readable_disclosure(specimen):
+    section = _spine_examples(specimen)
+    assert re.search(r'<details[^>]+id="spec-spine-details"', section)
+    assert 'id="spec-spine-inspect"' in section
+    assert re.search(r'<table class="mx-tbl" id="spec-spine-values"', section)
+    assert '<caption>' in section and 'scope="col"' in section and 'scope="row"' in section
+    assert 'aria-describedby="spec-spine-context spec-spine-summary"' in section
+    assert 'role="dialog"' not in section and 'aria-hidden="true" id="spec-spine-values"' not in section
+
+
+def test_spine_comparison_null_rows_never_grow_measured_marks(specimen):
+    for group in ['ud-b1', 'ud-b1-390']:
+        row = _spine_rows(specimen, group)[-1]
+        assert 'data-null="1"' in row
+        for cls in ['mx-spine-mark', 'mx-spine-prev', 'mx-spine-conn', 'mx-spine-travel']:
+            assert not any(cls in a.get('class', '').split() for _, a in _specimen_tab_nodes(row))
+
+
+def test_spine_comparison_material_preview_uses_the_same_example(specimen):
+    section = _spine_examples(specimen)
+    preview = section.split('class="mx-tier-blurred--spec"', 1)[1].split('<p class="mockup-note', 1)[0]
+    assert 'aria-hidden="true"' in preview
+    assert _spine_geometry(preview) == _spine_geometry(_spine_rows(specimen, 'ud-b1')[0])
+    assert 'Protect gains' in preview and '保护收益' in preview
+
+
+def test_spine_comparison_preview_mode_follows_available_width(specimen):
+    # The class is a safe stacked no-JS fallback, not a permanent desktop mode.
+    scripts = "\n".join(re.findall(r"<script\b[^>]*>(.*?)</script>", specimen, re.S))
+    assert "stage.classList.toggle('mockup-spine-390', stage.getBoundingClientRect().width <= 640)" in scripts
+    assert 'referenceObserver.observe(stage)' in scripts
+    assert 'referenceObserver.observe(bar)' in scripts
+
+
+def test_spine_comparison_missing_stance_keeps_its_desktop_column(specimen):
+    compact = re.sub(r'\s+', '', specimen)
+    assert '.wrap:not(.mockup-spine-390)#spec-spine-comparison[data-spec="ud-b1"].mx-spine-row[data-null="1"]>.mx-spine-stance{grid-column:4;}' in compact
+    for group in ['ud-b1', 'ud-b1-390']:
+        row = _spine_rows(specimen, group)[-1]
+        assert 'No score' in row and '暂无分值' in row
+
+
+def test_spine_comparison_phone_preview_has_a_real_phone_bound(specimen):
+    nodes = _specimen_tab_nodes(_spine_examples(specimen))
+    frame = next(a for _,a in nodes if {'mobile-sim','mockup-spine-390'} <= set(a.get('class','').split()))
+    style = re.sub(r'\s+', '', frame.get('style',''))
+    assert 'max-width:390px' in style and 'box-sizing:border-box' in style
+
+
+def test_spine_comparison_value_headers_carry_machine_readable_dates(specimen):
+    table = _spine_examples(specimen).split('id="spec-spine-values"', 1)[1].split('</table>', 1)[0]
+    assert '<time datetime="2026-07-12">' in table and '<time datetime="2026-08-12">' in table
