@@ -78,6 +78,31 @@ telemetry with no threshold and no alarm; `tests/test_us_prophet_grades.py` grep
 `engine`/`scripts`/`app`/`admin`/`lib`/`collectors` module to pin that nothing else touches
 the grade store at all.
 
+## Prospective identity, cycle and peer-evidence capture
+
+The nightly row now also freezes the source inputs that the Q05/B09/B06 evaluation seam
+needs **forward only**. Nothing is backfilled into prior parts:
+
+- `security_id`, `issuer_id` and the provisional `identity_epoch` projection are read
+  through the existing B1/Data OS identity reader, with the exact alias/master source
+  receipts and typed resolution state. This is a prospective capture of the nightly
+  owner's current answer, not a historical issuer reconstruction or a second allocator.
+- `cycle_state` and `cycle_label` are copied from the existing owner board row, with a
+  content receipt for `engine.cycles.STATE_DISPLAY`. The evaluation owner maps this
+  existing vocabulary into BASING/MOMENTUM/OTHER; Context Vector originates no new label.
+- the exact `membership.json` bytes, version, curation date and declared weighting are
+  stamped beside the existing PIT `added <= asof < removed` memberships.
+- research-group admission is deliberately stricter than the existing display
+  `theme_primary_id`: only **one** active PIT membership with supported equal weighting
+  becomes `theme_capture_group_id`. The exact sorted member roster, member-set digest,
+  count and equal member weight travel with that row. Overlap is `AMBIGUOUS_OVERLAP`;
+  the strongest current theme is never selected as a historical research group merely
+  because it ranked first.
+
+These fields do not open an experiment by themselves. Rights, correction lineage,
+calendar/price basis, population coverage, preregistration and the protected outcome gate
+remain separate requirements. Null and typed-unavailable rows stay in all denominators.
+
 ## Integrity rules
 
 | Rule | Mechanism |
@@ -94,7 +119,9 @@ the grade store at all.
 `grades/YYYY-MM/YYYY-MM-DD.parquet`. One row per **(candidate row, horizon)** across the
 **H=10 / 21 / 42 / 63** session ladder: `stamp_date`, `ticker`, `board_definition`,
 `horizon`, `graded_asof`, `entry_price`, `fill_date`, `mark_date`, `fwd_ret`, `bench`,
-`bench_ret`, `excess_spy`, `fwd_mfe`, `fwd_mdd`, plus two conditioning columns:
+`bench_ret`, `excess_spy`, `fwd_mfe`, `fwd_mdd`, plus benchmark-calendar witness fields
+(`bench_calendar_state`, `bench_inserted_session_count`, `bench_missing_sessions`) and two
+conditioning columns:
 
 | Column | Values | Why |
 |---|---|---|
@@ -102,10 +129,16 @@ the grade store at all.
 | `signal_class` (+ `signal_label`) | `basing` · `momentum` · `other` | a basing pick and a momentum pick are different bets. Operator ruling 2026-08-05: *"they take time to base… but our board only measures for 10 day results??"* Mapped from the board's **existing** cycle vocabulary (`engine/cycles.py::STATE_DISPLAY`) — nothing new is stamped. An unmapped label classes `other` with the label **preserved** |
 
 Both columns are **resolved from the candidates store by name and then VALIDATED by value**;
-a name match alone is never trusted. Neither has landed in that store yet (a sibling lane
-owns writing them), so today every row carries a null cohort and `signal_class='other'` with
-a null label — and the run prints a `::warning` naming exactly what is missing. The scorecard
-reports that state as `unsplit` / unavailable rather than calling it `curated`.
+a name match alone is never trusted. `universe_tier` is already stamped. After this prospective
+capture lands, new nightly rows also carry `cycle_state`/`cycle_label`; prior parts remain null
+forever and therefore continue to report `signal_class='other'` with a null label plus an explicit
+missing-source warning. The scorecard reports historical absence as `unsplit` / unavailable rather
+than calling it measured `curated` or reconstructing a label from today's board.
+
+The benchmark witness likewise does not change the incumbent forward-fill return ruler. It records,
+per realized fill-to-mark window, whether exact SPY observations existed on every candidate session.
+A research protocol requiring same-calendar excess may admit only `EXACT_NO_INSERTION`; existing
+historical rows without the witness remain unknown rather than silently certified.
 
 ### The chartered-horizon prereg (fixed BEFORE any long-horizon data matured)
 

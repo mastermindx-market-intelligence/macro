@@ -200,17 +200,16 @@ CHARTERED_HORIZON = {
 
 #: The label column carrying the cycle state.  Resolved + VALIDATED exactly like the cohort
 #: discriminator: a name match alone is never trusted, the values must intersect
-#: :data:`SIGNAL_CLASS_BY_LABEL`.  The candidates store does not carry it yet — the live
-#: board ROW does, as its ``label``/``state`` fields — so until a sibling lane stamps it
-#: into the PIT store, every row classes as ``other`` with the absence DISCLOSED, never
-#: presented as a measured "other".  (The board artifact is named by role, not by path:
-#: this module never reads it, and a path literal here would register as a consumer of an
-#: artifact it does not consume.)
+#: :data:`SIGNAL_CLASS_BY_LABEL`.  The prospective Context Vector capture now carries
+#: ``cycle_state``/``cycle_label`` directly from the owner board row.  Older PIT parts remain
+#: null forever under the no-backfill law, so the resolver continues to disclose absence
+#: rather than presenting a historical null as a measured ``other``.
 SIGNAL_LABEL_CANDIDATES = ("cycle_state", "cycle_label", "label", "state")
 
 _OBJECT_COLUMNS = ("stamp_date", "ticker", "board_definition", "fill_date", "mark_date",
                    "bench", "graded_asof", "schema", DISCRIMINATOR_COLUMN,
-                   "signal_class", "signal_label")
+                   "signal_class", "signal_label", "bench_calendar_state",
+                   "bench_missing_sessions")
 
 
 # --------------------------------------------------------------------------- #
@@ -427,7 +426,19 @@ def grade_row(close: pd.Series, bench: pd.Series | None, stamp_date: Any,
     if fwd.get("entry_price") is None:
         return out
 
-    bench_aligned = bench.reindex(series.index).ffill() if bench is not None else None
+    bench_raw_aligned = None
+    bench_aligned = None
+    if bench is not None:
+        bench_series = bench.dropna()
+        if not isinstance(bench_series.index, pd.DatetimeIndex):
+            bench_series = bench_series.copy()
+            bench_series.index = pd.to_datetime(bench_series.index)
+        bench_series = bench_series.sort_index()
+        bench_raw_aligned = bench_series.reindex(series.index)
+        # Preserve the incumbent ruler exactly.  The additive witness below records
+        # whether this forward fill inserted any benchmark observations inside each
+        # realized fill-to-mark window; it does not rewrite frozen historical grades.
+        bench_aligned = bench_raw_aligned.ffill()
     bench_fwd = (forward_metrics(bench_aligned, stamp_date, horizons=horizons)
                  if bench_aligned is not None else {})
 
@@ -440,6 +451,23 @@ def grade_row(close: pd.Series, bench: pd.Series | None, stamp_date: Any,
         if fill_pos + horizon >= len(series) or series.index[fill_pos + horizon] > last_bar:
             continue
         bench_ret = bench_fwd.get(f"fwd_ret_{horizon}")
+        if bench_raw_aligned is None:
+            bench_calendar_state = "UNAVAILABLE"
+            bench_inserted_session_count = None
+            bench_missing_sessions = None
+        else:
+            window_index = series.index[fill_pos: fill_pos + horizon + 1]
+            exact_window = bench_raw_aligned.reindex(window_index)
+            missing_index = window_index[exact_window.isna().to_numpy()]
+            bench_inserted_session_count = int(len(missing_index))
+            bench_calendar_state = (
+                "EXACT_NO_INSERTION" if bench_inserted_session_count == 0
+                else "INSERTED_OR_MISSING"
+            )
+            bench_missing_sessions = (
+                "|".join(str(value.date()) for value in missing_index)
+                if bench_inserted_session_count else None
+            )
         out[horizon] = {
             "horizon": int(horizon),
             "entry_price": round(float(fwd["entry_price"]), 6),
@@ -450,6 +478,9 @@ def grade_row(close: pd.Series, bench: pd.Series | None, stamp_date: Any,
             "bench_ret": (round(float(bench_ret), 6) if bench_ret is not None else None),
             "excess_spy": (round(float(ret) - float(bench_ret), 6)
                            if bench_ret is not None else None),
+            "bench_calendar_state": bench_calendar_state,
+            "bench_inserted_session_count": bench_inserted_session_count,
+            "bench_missing_sessions": bench_missing_sessions,
             "fwd_mfe": (round(float(fwd[f"fwd_mfe_{horizon}"]), 6)
                         if fwd.get(f"fwd_mfe_{horizon}") is not None else None),
             "fwd_mdd": (round(float(fwd[f"fwd_mdd_{horizon}"]), 6)

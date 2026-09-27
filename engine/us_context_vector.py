@@ -62,6 +62,8 @@ A null here means "not measured for this name tonight", never "false"
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
+from dataclasses import dataclass
+from hashlib import sha256
 import json
 import logging
 import math
@@ -193,6 +195,25 @@ POOL_COLUMNS = (
 #: theme membership exactly as ``us_board_rank.THEME_ID_EXCLUDE_PREFIX`` does.
 THEME_ID_EXCLUDE_PREFIX = "us_sector_"
 
+#: Research capture never chooses the strongest of overlapping groups.  A source-qualified
+#: group is available only when exactly one active PIT membership exists and its declared
+#: weighting is supported.  This preserves overlap as missingness rather than hindsight.
+CAPTURE_GROUP_RULE = "SOLE_ACTIVE_PIT_MEMBERSHIP_ONLY_V1"
+MEMBERSHIP_BASIS = "MEMBER_ADDED_LTE_ASOF_AND_REMOVED_GT_ASOF"
+
+
+@dataclass(frozen=True)
+class BasketMembershipSnapshot:
+    """One exact content-addressed membership read at a decision cut."""
+
+    members: dict[str, list[str]]
+    weighting_by_basket: dict[str, str | None]
+    source_sha256: str | None
+    version: str | None
+    curated: str | None
+    state: str
+
+
 #: Trailing window for the S-A turnover percentile stand-in.
 TURNOVER_WINDOW_20D = 20
 
@@ -307,32 +328,88 @@ def _mapping(value: Any) -> Mapping[str, Any]:
     return value if isinstance(value, Mapping) else {}
 
 
+def cycle_vocabulary_sha256() -> str | None:
+    """Content receipt for the existing cycle display vocabulary, or ``None``."""
+    try:
+        from engine import cycles
+
+        payload = json.dumps(
+            cycles.STATE_DISPLAY, sort_keys=True, ensure_ascii=False,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        return "sha256:" + sha256(payload).hexdigest()
+    except Exception as exc:  # noqa: BLE001 — an optional provenance receipt
+        log.warning("us_context_vector: cycle vocabulary receipt unavailable (%s)", exc)
+        return None
+
+
+def identity_capture(
+    tickers: Iterable[str], asof: str, root: Any = None,
+) -> tuple[dict[str, dict[str, object]], dict[str, object]]:
+    """Capture the existing Data OS identity projection for this decision night.
+
+    The loader and projection are reused from the canonical B1 intake seam.  No identity
+    allocation, historical inference or retroactive candidate-store rewrite occurs here.
+    Missing sources fail soft and stamp an explicit unavailable state on every row.
+    """
+    data_root = config.data_dir() if root is None else (root / "data")
+    try:
+        from engine import us_candidate_episode_intake as intake
+
+        spine = intake.load_identity_spine(data_root)
+        rows = {str(ticker): intake.identity_fields(spine, ticker, asof)
+                for ticker in tickers}
+        receipts = {str(item.get("path") or ""): str(item.get("sha256") or "")
+                    for item in spine.source_receipts}
+        alias = next((value for path, value in receipts.items()
+                      if path.endswith("vendor_aliases.parquet")), None)
+        master = next((value for path, value in receipts.items()
+                       if path.endswith("security_master.parquet")), None)
+        return rows, {
+            "state": "AVAILABLE",
+            "alias_sha256": alias,
+            "master_sha256": master,
+        }
+    except Exception as exc:  # noqa: BLE001 — telemetry must not break the nightly
+        log.warning("us_context_vector: prospective identity capture unavailable (%s)", exc)
+        return {}, {"state": "SOURCE_UNAVAILABLE",
+                    "alias_sha256": None, "master_sha256": None}
+
+
 # --------------------------------------------------------------------------- #
 # theme block — curated baskets, relay, foresight stage
 # --------------------------------------------------------------------------- #
 
-def basket_membership(asof: str, root: Any = None) -> dict[str, list[str]]:
-    """PIT curated-basket membership: ``basket_id -> [ticker, ...]``.
+def basket_membership_snapshot(asof: str, root: Any = None) -> BasketMembershipSnapshot:
+    """Read one exact PIT membership snapshot plus its source/weighting receipt.
 
-    Honors ``added``/``removed`` against ``asof`` and drops the ``us_sector_``
-    GICS pseudo-baskets.  Reads ``data/baskets/membership.json``.
+    The member filter is unchanged: ``added <= asof < removed`` and structural
+    ``us_sector_`` pseudo-baskets are excluded.  The source bytes are hashed before
+    parsing so a future study can bind the exact taxonomy it saw rather than paste a
+    current group list onto an old date.
     """
     base = config.data_dir() if root is None else (root / "data")
     path = base / "baskets" / "membership.json"
     if not path.exists():
-        return {}
+        return BasketMembershipSnapshot({}, {}, None, None, None, "SOURCE_UNAVAILABLE")
     try:
-        doc = json.loads(path.read_text())
+        payload = path.read_bytes()
+        doc = json.loads(payload)
     except Exception as exc:  # noqa: BLE001 — absent/malformed theme data ships no chips
         log.warning("us_context_vector: membership.json unreadable (%s)", exc)
-        return {}
+        return BasketMembershipSnapshot({}, {}, None, None, None, "SOURCE_UNAVAILABLE")
+    if not isinstance(doc, Mapping):
+        return BasketMembershipSnapshot({}, {}, None, None, None, "SOURCE_UNAVAILABLE")
     day = _date(asof) or ""
     out: dict[str, list[str]] = {}
+    weighting: dict[str, str | None] = {}
     for basket_id, basket in (_mapping(doc.get("baskets"))).items():
-        if str(basket_id).startswith(THEME_ID_EXCLUDE_PREFIX):
+        basket_key = str(basket_id)
+        if basket_key.startswith(THEME_ID_EXCLUDE_PREFIX):
             continue
+        basket = _mapping(basket)
         members: list[str] = []
-        for member in (_mapping(basket).get("members") or ()):
+        for member in (basket.get("members") or ()):
             member = _mapping(member)
             ticker = _text(member.get("ticker"))
             if not ticker:
@@ -344,8 +421,21 @@ def basket_membership(asof: str, root: Any = None) -> dict[str, list[str]]:
                 continue
             members.append(ticker)
         if members:
-            out[str(basket_id)] = members
-    return out
+            out[basket_key] = members
+            weighting[basket_key] = _text(basket.get("weighting"))
+    return BasketMembershipSnapshot(
+        members=out,
+        weighting_by_basket=weighting,
+        source_sha256="sha256:" + sha256(payload).hexdigest(),
+        version=_text(doc.get("version")),
+        curated=_text(doc.get("curated")),
+        state="AVAILABLE",
+    )
+
+
+def basket_membership(asof: str, root: Any = None) -> dict[str, list[str]]:
+    """PIT curated-basket membership: ``basket_id -> [ticker, ...]``."""
+    return basket_membership_snapshot(asof, root=root).members
 
 
 def basket_to_foresight(root: Any = None) -> dict[str, str]:
@@ -857,7 +947,10 @@ def build_records(
     ext_map: Mapping[str, Mapping[str, Any]] | None = None,
     blackout_map: Mapping[str, Mapping[str, Any]] | None = None,
     event_rows: Mapping[str, Mapping[str, Any]] | None = None,
+    identity_rows: Mapping[str, Mapping[str, Any]] | None = None,
+    identity_meta: Mapping[str, Any] | None = None,
     theme_ids: Mapping[str, list[str]] | None = None,
+    membership_meta: Mapping[str, Any] | None = None,
     theme_pulse: Mapping[str, Mapping[str, Any]] | None = None,
     relay: Mapping[str, Mapping[str, Any]] | None = None,
     foresight_by_basket: Mapping[str, str] | None = None,
@@ -913,7 +1006,10 @@ def build_records(
     ext_map = ext_map or {}
     blackout_map = blackout_map or {}
     event_rows = event_rows or {}
+    identity_rows = identity_rows or {}
+    identity_meta = identity_meta or {}
     theme_ids = theme_ids or {}
+    membership_meta = membership_meta or {}
     theme_pulse = theme_pulse or {}
     relay = relay or {}
     foresight_by_basket = foresight_by_basket or {}
@@ -927,6 +1023,12 @@ def build_records(
     attention_z = attention_z or {}
     short_flow = short_flow or {}
     hub_rows = hub_rows or {}
+    cycle_vocab_receipt = cycle_vocabulary_sha256()
+    membership_state = _text(membership_meta.get("state")) or (
+        "AVAILABLE" if theme_ids else "SOURCE_UNAVAILABLE"
+    )
+    weighting_by_basket = _mapping(membership_meta.get("weighting_by_basket"))
+    members_by_basket = _mapping(membership_meta.get("members_by_basket"))
 
     records: list[dict[str, Any]] = []
     for ticker in sorted(verdicts):
@@ -944,9 +1046,45 @@ def build_records(
         relay_row = _mapping(relay.get(ticker))
         event = _mapping(event_rows.get(ticker))
         flow = _mapping(turnover.get(ticker))
+        identity = _mapping(identity_rows.get(ticker))
 
         memberships = [b for b in (theme_ids.get(ticker) or ())
                        if not str(b).startswith(THEME_ID_EXCLUDE_PREFIX)]
+        capture_group_id = None
+        capture_group_weighting = None
+        capture_member_tickers = None
+        capture_member_count = None
+        capture_member_set_sha256 = None
+        capture_member_weight = None
+        if membership_state != "AVAILABLE":
+            capture_group_state = "SOURCE_UNAVAILABLE"
+        elif not memberships:
+            capture_group_state = "NO_ACTIVE_MEMBERSHIP"
+        elif len(memberships) > 1:
+            capture_group_state = "AMBIGUOUS_OVERLAP"
+        else:
+            sole_group = str(memberships[0])
+            capture_group_weighting = _text(weighting_by_basket.get(sole_group))
+            if capture_group_weighting != "equal":
+                capture_group_state = "UNSUPPORTED_WEIGHTING"
+                capture_group_weighting = None
+            else:
+                members = sorted({str(value).strip() for value in
+                                  (members_by_basket.get(sole_group) or ())
+                                  if str(value).strip()})
+                if not members or ticker not in members:
+                    capture_group_state = "MEMBERSHIP_ROSTER_INCOHERENT"
+                    capture_group_weighting = None
+                else:
+                    capture_group_id = sole_group
+                    capture_group_state = "SOLE_ACTIVE_MEMBERSHIP"
+                    capture_member_tickers = "|".join(members)
+                    capture_member_count = len(members)
+                    capture_member_set_sha256 = "sha256:" + sha256(
+                        json.dumps(members, ensure_ascii=True,
+                                   separators=(",", ":")).encode("utf-8")
+                    ).hexdigest()
+                    capture_member_weight = round(1.0 / len(members), 12)
         # foresight stage joins basket -> foresight theme via the curated
         # crosswalk ONLY; an unmapped basket contributes no stage (no fuzzy join).
         stage = None
@@ -968,6 +1106,21 @@ def build_records(
             "sector": _text(meta.get("sector")),
             "board_definition": board_definition,
             "lane": _text(lane_by_ticker.get(ticker)) or "not_on_board",
+            # Canonical Data OS identity captured prospectively at this decision cut.
+            # Null/unavailable is preserved; no present-day master is pasted backward.
+            "security_id": _text(identity.get("security_id")),
+            "issuer_id": _text(identity.get("issuer_id")),
+            "identity_epoch": _text(identity.get("identity_epoch")),
+            "identity_epoch_state": _text(identity.get("identity_epoch_state")),
+            "identity_spec_schema": _text(identity.get("identity_spec_schema")),
+            "identity_spec_hash": _text(identity.get("identity_spec_hash")),
+            "identity_capture_state": _text(identity.get("identity_capture_state")) or (
+                "IDENTITY_UNAVAILABLE" if identity_meta.get("state") == "AVAILABLE"
+                else "SOURCE_UNAVAILABLE"
+            ),
+            "identity_capture_basis": _text(identity.get("identity_capture_basis")),
+            "identity_alias_source_sha256": _text(identity_meta.get("alias_sha256")),
+            "identity_master_source_sha256": _text(identity_meta.get("master_sha256")),
             "eligible": bool(verdict.get("eligible")),
             "buyable": bool(is_buyable(dict(verdict))) if verdict else False,
             "tier_cascade": _text(verdict.get("tier_cascade")),
@@ -993,6 +1146,12 @@ def build_records(
             "near_miss_reason": _text(verdict.get("near_miss_reason")),
             "signal_asof": _date(verdict.get("asof")),
             "stage": _text(board.get("stage") or profile.get("stage")),
+            # Owner-issued cycle vocabulary already present on the nightly board row.
+            # The evaluation owner maps it to BASING/MOMENTUM/OTHER; this store only
+            # captures the source label and its exact vocabulary receipt.
+            "cycle_state": _text(board.get("state")),
+            "cycle_label": _text(board.get("label")),
+            "cycle_label_vocab_sha256": cycle_vocab_receipt,
             "alpha": _finite(profile.get("alpha")),
             "alpha_percentile": _finite(prophet.get("alpha_percentile")),
             "prophet_score": _finite(prophet.get("score")),
@@ -1016,8 +1175,26 @@ def build_records(
             # the membership source actually loaded.  If it did not, every name
             # would otherwise get a confident 0 — a missing file rendering as
             # evidence.  Null it instead.
-            "theme_membership_count": len(memberships) if theme_ids else None,
+            "theme_membership_count": len(memberships) if membership_state == "AVAILABLE" else None,
             "theme_membership_ids": _ids(memberships),
+            "theme_membership_source_sha256": _text(membership_meta.get("source_sha256")),
+            "theme_membership_source_version": _text(membership_meta.get("version")),
+            "theme_membership_source_curated": _date(membership_meta.get("curated")),
+            "theme_membership_basis": (
+                MEMBERSHIP_BASIS if membership_state == "AVAILABLE" else None
+            ),
+            "theme_capture_group_id": capture_group_id,
+            "theme_capture_group_state": capture_group_state,
+            "theme_capture_group_rule": (
+                CAPTURE_GROUP_RULE if membership_state == "AVAILABLE" else None
+            ),
+            "theme_capture_group_weighting": capture_group_weighting,
+            "theme_capture_member_tickers": capture_member_tickers,
+            "theme_capture_member_count": capture_member_count,
+            "theme_capture_member_set_sha256": capture_member_set_sha256,
+            "theme_capture_member_weight": capture_member_weight,
+            # Display context only: this is the strongest nightly basket and MUST NOT
+            # become the prospective research group when memberships overlap.
             "theme_primary_id": _text(pulse.get("id")),
             "theme_primary_name": _text(pulse.get("name")),
             # the basket engine's own nightly rotation rank (1 = strongest of 47)
@@ -1256,6 +1433,9 @@ def context_dimension_frame(
 
 _OBJECT_COLUMNS = (
     "stamp_date", "ticker", "tier", "name", "sector", "board_definition", "lane",
+    "security_id", "issuer_id", "identity_epoch", "identity_epoch_state",
+    "identity_spec_schema", "identity_spec_hash", "identity_capture_state",
+    "identity_capture_basis", "identity_alias_source_sha256", "identity_master_source_sha256",
     # The retired v2 scorer's own stamp (`us_prophet_v2_shadow`).  Board provenance,
     # so it sits with `board_definition` — and it is exactly the case this tuple was
     # written for: null on every off-board row AND on every degraded night, so a month
@@ -1263,7 +1443,12 @@ _OBJECT_COLUMNS = (
     # otherwise read back float and collide with the next month's strings.
     "prophet_shadow_definition",
     "tier_cascade", "tier_sub", "gate_state", "gate_reason", "near_miss_reason",
-    "signal_asof", "stage", "theme_membership_ids", "theme_primary_id",
+    "signal_asof", "stage", "cycle_state", "cycle_label", "cycle_label_vocab_sha256",
+    "theme_membership_ids", "theme_membership_source_sha256",
+    "theme_membership_source_version", "theme_membership_source_curated",
+    "theme_membership_basis", "theme_capture_group_id", "theme_capture_group_state",
+    "theme_capture_group_rule", "theme_capture_group_weighting",
+    "theme_capture_member_tickers", "theme_capture_member_set_sha256", "theme_primary_id",
     "theme_primary_name", "theme_label", "theme_reco", "relay_basket_id",
     "foresight_stage", "regime_dispersion_state", "regime_market_quad",
     "regime_quad_name", "regime_vol_regime", "context_dims",
@@ -1487,7 +1672,9 @@ def append_candidates(
 
     try:
         tickers = sorted(verdicts)
-        membership = basket_membership(stamp_date, root=root)
+        membership_snapshot = basket_membership_snapshot(stamp_date, root=root)
+        membership = membership_snapshot.members
+        identity_rows, identity_meta = identity_capture(tickers, stamp_date, root=root)
         theme_ids: dict[str, list[str]] = {}
         for basket_id, members in membership.items():
             for ticker in members:
@@ -1529,7 +1716,17 @@ def append_candidates(
             ext_map=ext_map,
             blackout_map=blackout_map,
             event_rows=event_rows,
+            identity_rows=identity_rows,
+            identity_meta=identity_meta,
             theme_ids=theme_ids,
+            membership_meta={
+                "state": membership_snapshot.state,
+                "source_sha256": membership_snapshot.source_sha256,
+                "version": membership_snapshot.version,
+                "curated": membership_snapshot.curated,
+                "weighting_by_basket": membership_snapshot.weighting_by_basket,
+                "members_by_basket": membership_snapshot.members,
+            },
             theme_pulse=theme_pulse,
             relay=relay,
             foresight_by_basket=basket_to_foresight(root=root),

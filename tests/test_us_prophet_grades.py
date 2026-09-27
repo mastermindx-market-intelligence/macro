@@ -372,6 +372,29 @@ class TestRulerSemantics:
         mark = upg.grade_row(_panel(idx)["AAA"], None, str(idx[3].date()))[10]
         assert mark["bench_ret"] is None and mark["excess_spy"] is None
         assert mark["fwd_ret"] is not None, "absolute marks still grade without SPY"
+        assert mark["bench_calendar_state"] == "UNAVAILABLE"
+        assert mark["bench_inserted_session_count"] is None
+        assert mark["bench_missing_sessions"] is None
+
+    def test_exact_spy_calendar_witness_records_zero_insertions(self):
+        idx = _calendar()
+        mark = upg.grade_row(
+            _panel(idx)["AAA"], _bench(idx), str(idx[3].date()), horizons=(10,)
+        )[10]
+        assert mark["bench_calendar_state"] == "EXACT_NO_INSERTION"
+        assert mark["bench_inserted_session_count"] == 0
+        assert mark["bench_missing_sessions"] is None
+
+    def test_spy_forward_fill_is_visible_on_the_exact_horizon_window(self):
+        idx = _calendar()
+        bench = _bench(idx).drop(index=idx[10])
+        mark = upg.grade_row(
+            _panel(idx)["AAA"], bench, str(idx[3].date()), horizons=(10,)
+        )[10]
+        assert mark["bench_calendar_state"] == "INSERTED_OR_MISSING"
+        assert mark["bench_inserted_session_count"] == 1
+        assert mark["bench_missing_sessions"] == str(idx[10].date())
+        assert mark["bench_ret"] is not None  # incumbent ffill mark remains; witness gates use
 
     def test_excess_is_the_difference_of_the_two_graded_legs(self):
         idx = _calendar()
