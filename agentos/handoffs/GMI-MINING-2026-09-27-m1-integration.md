@@ -24,7 +24,7 @@ changed:
   - path: research/mining/m1_integration_program/T02_FREEZE_PACKET.md
     what: "Moved from the session scratchpad into the program record so it survives the session."
   - path: research/mining/m1_integration_program/T03_FREEZE_PACKET.md
-    what: "Same. Carries the exact truth table, the six anti-letter-gaming rules, and the MGD-10 obligation added 09-27."
+    what: "Same. Carries the exact truth table, the six anti-letter-gaming rules, and the MGD-10 obligation added 09-27. Plus a new §0 fixing a VACUOUSLY SATISFIABLE guard the seat found by auditing every packet symbol against main: the truth table asserted `assess_management_sequence` is never called, and that symbol exists nowhere in code - only in audit prose - so the guard would have reported green for free while the real projector ran. Corrected to the measured seam (extract_guidance stays bound to _no_guidance, issuer_profiles.py:177)."
   - path: research/mining/m1_integration_program/T04B_FREEZE_PACKET.md
     what: "Same. SEAT-AUTHORED because neither audit ever froze a T04b spec - Audit B wrote ONE spec for all of T04 and the a/b split is R-MIN-05's. Freezes four seams a lane would otherwise decide silently."
   - path: research/mining/m1_integration_program/T07_FREEZE_PACKET.md
@@ -53,6 +53,9 @@ verified:
   - claim: "#8060 was merged MID-FLIGHT. The docs-only --admin exception did NOT apply."
     command: "gh run view 36288860409 --json jobs; gh api repos/.../commits/1081ffed2fe --jq .commit.committer.date"
     result: "ci-plan SUCCESS in 3m56s planning contract-delta + ci-pack-0 + ci-pack-1, all in_progress at the 02:56:02Z merge; head committed 02:33:16Z, run created 02:33:32Z (16s later); two earlier runs on the branch cancelled by the seat's own pushes"
+  - claim: "Every code symbol the four dispatch packets name was resolved against main, and exactly two turned out to be audit vocabulary rather than code - one of them inside an assertion, which made that assertion vacuously satisfiable."
+    command: "grep -rl <symbol> engine tests contracts, for each identifier extracted from T02/T03/T04B/T07_FREEZE_PACKET.md"
+    result: "assess_management_sequence and projector_unbound appear ONLY in audit prose, the rulings and the packets - never in code; T03's truth table asserted the former is 'never called', which greps to nothing and passes for free. Fixed against the measured seam (issuer_profiles.py:151 _no_guidance, :177 extract_guidance). fcx_issuer/mp_issuer/mining_private_registry/fcx_profile/mp_profile correctly resolve nowhere because T02 mints them - now stated as the T03 preflight rather than left ambiguous. profile_for_ticker resolves in the SHARED issuer_profiles.py, not the mining module, consistent with it being #7905's hunk. Every T04b and T07 symbol resolves."
   - claim: "The mid-flight defect is isolated to #8060 and did not affect the seat's other merges."
     command: "gh run list --workflow ci.yml --branch claude/mining-seat-wave2-records (selected on #8053 head ea29419ab81)"
     result: "run 36283494517 completed / success, created 00:46:08Z; #8060's sibling #8053 merged 01:31:59Z, i.e. after its own proof concluded"

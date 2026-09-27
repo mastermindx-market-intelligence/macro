@@ -9,6 +9,33 @@ were passed by *satisfying the letter* of count/flag probes (`_leg()` filled bot
 legs from `period_kind`, so every leg published the string `"quarter"` while row-count and
 `is_range` probes went green). This packet exists to make that impossible for T03.
 
+## 0. ADDED 2026-09-27 — which names in this packet resolve on main, and which do not
+
+Measured against `origin/main` after #7950 merged, because a packet that names a symbol the tree
+does not have sends a lane into invention (the T04a round-2 fabrication failure), and an
+assertion on a nonexistent name **passes for free**.
+
+- **`assess_management_sequence` and `projector_unbound` are audit VOCABULARY, not code.** They
+  appear only in Audit A/B prose, the rulings and this packet — nowhere in `engine/`, `tests/` or
+  `contracts/`. An earlier version of §3's truth table asserted *"`assess_management_sequence` is
+  never called"*, which is **vacuously satisfiable**: grep finds nothing, the guard reports green,
+  and the real projector could be called freely. That row is corrected.
+  The real seam is measured: `engine/company_intelligence/issuer_profiles.py:151` defines
+  `_no_guidance` and `:177` binds `extract_guidance: GuidanceExtractor = _no_guidance`. Assert
+  **that** — the mining profiles leave the default in place. `projector_unbound` stays usable as
+  the name of the typed refusal T03 MINTS, but it is a thing to create, not to look up.
+- **`fcx_issuer()`, `mp_issuer()`, `mining_private_registry()`, `fcx_profile()`, `mp_profile()`,
+  `FCX_CIK`, `MP_CIK`, `MINING_TICKERS` resolve NOWHERE on main, and that is CORRECT** — T02
+  mints `mining_issuer_profiles.py` and T03 only extends it (§2). But a lane that greps them and
+  finds nothing cannot distinguish *not yet minted* from *wrong name*, so: if these are absent,
+  T02 has not landed and **T03 is not dispatchable**. That is the preflight, not a naming bug.
+- **`profile_for_ticker` DOES resolve — in the shared incumbent
+  `engine/company_intelligence/issuer_profiles.py`, not in `mining_issuer_profiles.py`.**
+  Consistent with Audit A F3: the private-branch hunk is CDV-1 #7905's own. Do not re-add it.
+- `compose_mining_research` and `parse_mining_literal` resolve in
+  `engine/market_ontology/mining_theme_research.py` on main (T04a). This packet may **not**
+  import `engine/market_ontology/*` — every assertion on them belongs to T04.
+
 ## 1. Scope (binding, R-MIN-20)
 
 T03 owns exactly `engine/company_intelligence/mining_issuer_profiles.py` and
@@ -65,7 +92,7 @@ and per row `(metric, value, unit, period, basis)` with the **literal numeric va
 | ambiguous / duplicate / unaddressable cell | N−1 | `["no_span_addressable_evidence"]` | — |
 | document body not held | 0 | `["document_bytes_not_held"]` | — |
 | accession unjoinable | 0 | `["unjoinable_filing_identity"]` | — |
-| W-C: prior point estimate + actual, **no** `next_outlook` | both reported values present | typed `projector_unbound` refusal | `assess_management_sequence` is **never called**; no invented range, midpoint or badge (R-MIN-16) |
+| W-C: prior point estimate + actual, **no** `next_outlook` | both reported values present | typed `projector_unbound` refusal | the profile's `extract_guidance` stays bound to `_no_guidance` (`issuer_profiles.py:177`, measured); no invented range, midpoint or badge (R-MIN-16). **Do NOT assert on `assess_management_sequence`** — see §0. |
 | two events, same metric | distinct `fact_id`s | `[]` | `fact_id` derives from `(event_id, metric, period, basis)` — a borrowed id is REFUSED (R-MIN-17) |
 
 Absence reasons are closed to the 14-word `ABSENCE_REASONS` vocabulary (R-MIN-15).
