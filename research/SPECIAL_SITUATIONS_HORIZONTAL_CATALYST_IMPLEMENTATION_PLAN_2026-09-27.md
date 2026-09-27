@@ -267,3 +267,55 @@ Every slice returns:
 - exact next dependency.
 
 Do not call dispatch START, CI acceptance, merge production proof, or Paper output shipped software.
+
+## R2.1 implementation amendment — category/role routing and owner dependency
+
+This amendment is binding on Tasks 1–2.
+
+### Root cause now proven from current source
+
+The LLM classifier already returns **two independent facts**: document event category and registrant
+role. Current `build_situations()` promotes the category without checking whether the registrant role
+can lawfully carry that family as a direct security event. Therefore Task 1 is not “teach the LLM a
+new label”; it is “preserve the category/role distinction through projection.”
+
+### Task 1 additional RED cases
+
+- [ ] Going-Private + registrant role `none` must not create a direct-target security projection.
+- [ ] The same source observation must remain recoverable for relationship resolution; it must not be
+      silently dropped.
+- [ ] Once an incumbent owner binds `affected_through_general_partner_control`, the fund receives
+      indirect affected context but no target cash consideration, target delisting stage or target arb.
+- [ ] Going-Private + owner-supported direct target role remains a direct event.
+- [ ] The tests must exercise the real promotion path from `llm_category/llm_role`, not only a helper.
+
+### Task 2 owner decision is now narrower
+
+Do **not** route this into current `company_event.v1`: its identity is fiscal-period keyed and would
+require inventing a period for a transaction. Do **not** implement the Earnings
+`relationship_edge.v1` research spec locally. Do **not** consume Technology's Draft domain schema as
+a shared contract.
+
+At execution time:
+
+1. fresh-read the current shared GMI/market-ontology owner;
+2. if an accepted generic transaction/economic-change relationship seam has landed, consume it;
+3. otherwise request the smallest owner-native extension carrying transaction ref, typed direct/affected
+   roles, source receipts, clocks/corrections and authority ceiling;
+4. while unresolved, emit `relationship_unresolved` and withhold direct security economics.
+
+The reference `route_registrant_event(category, registrant_role, direct_roles, affected_relation)`
+defines the safe interim behavior; the production owner chooses the actual schema/API.
+
+### Family role matrices are owned semantics, not one global shortcut
+
+Each family must freeze its direct-role compatibility separately. A target take-private is not the
+same relation as an acquirer-side acquisition, seller-side divestiture, issuer tender, activist filer,
+or indirectly affected controller change. Implementers may not generalize the MGLD rule into
+`role != target -> skip`.
+
+### Verification addition
+
+Before Task 2 can be accepted, a test must prove all three projection states on a real-shaped fixture:
+`direct | affected | withheld`, and every affected row must remain incapable of borrowing direct
+target offer/delisting/arb fields.
