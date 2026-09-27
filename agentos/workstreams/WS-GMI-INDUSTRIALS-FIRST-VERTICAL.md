@@ -7,7 +7,7 @@ objective: >
   Exponent and Pentair dossiers pass the T09 real-path proofs (two journeys, correction,
   revocation, ordinary refresh, non-interference) with every one of the 56 inherited
   requirements executed — never a merged slice alone.
-status: awaiting_ci
+status: blocked
 program: earnings-intelligence
 repos: [macro]
 owner: fable-meta-ceo
@@ -37,7 +37,7 @@ waves:
     status: in_progress
     pr: 8062
     depends_on: [IND-W1]
-    next_action: "T04 half is adjudicated closed over two rounds and awaits ci-gate on head 0e3344a9071f. T02 half is BLOCKED: it edits issuer_profiles.py / event_workspace.py / refresh_event_workspaces.py, which #7870 (base owner) and #7905 (held under audit) both edit - do not dispatch it until those release the seam."
+    next_action: "T04 half is DONE - MERGED 2026-09-27 06:04Z as 50549f8e839eff38a86568cbc2beb9d29fe0de81 from cd46f9452c77 (the adjudicated 0e3344a9071f plus one base-refresh merge; module and suite byte-identical), ci-gate and all twelve packs green on run 36296953418. Only the T02 half of this wave remains, and it is BLOCKED: it edits issuer_profiles.py / event_workspace.py / refresh_event_workspaces.py, which #7870 (base owner) and #7905 (held under audit) both edit - do not dispatch it until those release the seam."
   - id: IND-W3
     title: "T03 case extractors, THEN T05 editions and comparisons (NOT parallel)"
     status: todo
@@ -54,8 +54,9 @@ waves:
     depends_on: [IND-W4]
     next_action: "Wait for Semiconductor B's shared route family and aggregator on main; never build against #7870's branch."
 next_action: >
-  Land #8062 (T04) once its ci-gate concludes green, then patch the checkpoint with the
-  merge sha. After that the Industrials product chain has no dispatchable lane: T02 waits
+  T04 is MERGED (50549f8e839e) and its records are landed, so the Industrials product
+  chain now has NO dispatchable lane and the honest program state is
+  ALL_SCOPED_LANES_BLOCKED: T02 waits
   on the shared seam held by #7870 and #7905, T03 waits on T02, T05 on T03, T06 on T01-T05,
   T07-T09 on Semiconductor B reaching main (G1). The unblocking act is not owned by this
   program - re-check both PRs' changed-file lists before dispatching T02, and never edit
@@ -65,18 +66,21 @@ artifacts:
   - research/industrials/first_vertical_program/rulings/R-IND-2026-09-24-wave1.md
   - research/industrials/first_vertical_program/reviews/OPUS_T01_REDTEAM_2026-09-24.md
   - research/industrials/first_vertical_program/reviews/OPUS_T04_REDTEAM_2026-09-26.md
+  - research/industrials/first_vertical_program/rulings/R-IND-2026-09-26-t05-source-editions.md
+  - research/industrials/first_vertical_program/rulings/R-IND-2026-09-26-t06-financial-dossier.md
 carrier:
   operation: gmi-industrials-fable-ceo-e2e-20260924-chairman-001
   research_pr: 7789
-  records_pr: [7912, 7915, 7919, 8070, 8072, 8073]
+  records_pr: [7912, 7915, 7919, 8070, 8072, 8073, 8075, 8077]
 do_not_redo:
   - "Research Waves 1-14, the nine-task plan (blob a5462dc7) and the 56-requirement traceability are frozen - do not re-research Industrials economics."
   - "R14-01..R14-05, the R4 private-mechanism choice and the #7669 aggregator choice are decided - never reopen the GET route or a direct mount."
   - "Never put implementation on the research carrier #7789; never edit #7870's branch."
-  - "T01 (#7924) and T04 (#8062) are adjudicated closed - T01 after five lane rounds and three READ_ONLY red-teams, T04 after two lane rounds that each self-reported PASS and each carried defects (six blockers, then a seventh). Do not re-review either finding set and do not re-derive T04's arithmetic, which was clean throughout and deliberately left alone. Reviews: reviews/OPUS_T01_REDTEAM_2026-09-24.md, reviews/OPUS_T04_REDTEAM_2026-09-26.md."
+  - "T01 (#7924, merged c5e6f0bb5d39) and T04 (#8062, MERGED 50549f8e839e) are adjudicated closed and DELIVERED - T01 after five lane rounds and three READ_ONLY red-teams, T04 after two lane rounds that each self-reported PASS and each carried defects (round 1: five blockers and two majors; round 2: B6, the sixth blocker, which no reviewer saw). Do not re-review either finding set and do not re-derive T04's arithmetic, which was clean throughout and deliberately left alone. Reviews: reviews/OPUS_T01_REDTEAM_2026-09-24.md, reviews/OPUS_T04_REDTEAM_2026-09-26.md."
 landmines:
   - "Shared files (issuer_profiles.py, event_workspace.py, refresh_event_workspaces.py, private_publication.py, app/earnings.py, the shared theme-research client/mount) stay owned by their incumbent workstreams and are touched at named seams only, serialized behind #7870 and #7905."
   - "Sparse worktrees truncate data/ and site/ on write."
+  - "A red pack on an Industrials PR may be a SIBLING seat's dangling agentos artifacts: entry, not your diff: self-mod-fence is always-on and refuses any [phantom-artifact] string anywhere in the store, so it reds any PR whose merge ref predates the referenced file. #8062 lost one run that way. Triage the path at origin/main AND at refs/pull/<N>/merge before touching code; the cure is a base refresh, and rerunning the job reuses the stale merge commit."
   - "A new test wired into a gate:code run line without its paths: entry reds contract-delta fleet-wide."
   - "The sec_edgar rationale is not blanket clearance for issuer-authored text (A14-06)."
   - "No live Exponent/Pentair figure may become a fixture or a native receipt before G2."
