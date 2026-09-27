@@ -833,7 +833,10 @@ def _chart_command_tool_schemas() -> list[dict]:
                 "it supports), and existing drawings. Choose indicators and timeframes ONLY from the "
                 "reported capabilities. study_context describes configured native module identities, NOT computed values, "
                 "output health or trading edge. native_parameters describes settings; indicator_edit describes safe patch support. "
-                "session.data_readout is a bounded projection of the existing chart Data Window. "
+                "session.data_readout is a bounded projection of the existing chart Data Window. session.price_window "
+                "is a server-qualified read-only tail of the exact active rendered OHLCV bars (up to 12, oldest to newest); "
+                "when a viewport is available it contains only the visible tail and never substitutes off-screen latest bars. "
+                "Its last bar may still be developing because close status is not attested. "
                 "session.native_observations is a separately qualified projection of exact native IndicatorCanvas bundles "
                 "the client reports it rendered; use its status, coverage, age_bars and basis literally. A returned native series "
                 "may carry up to six newest raw source samples (newest first) plus an exact locked-bar selected_sample when available. "
@@ -3345,7 +3348,7 @@ def _qualified_chart_mirror_coverage(session: dict) -> dict | None:
             or not isinstance(raw.get("partial"), bool)):
         return invalid
     omitted = raw.get("omitted_fields")
-    allowed = {"pane_contexts", "native_observations", "data_readout", "capabilities.native_parameters"}
+    allowed = {"pane_contexts", "price_window", "native_observations", "data_readout", "capabilities.native_parameters"}
     if (not isinstance(omitted, list) or len(omitted) > len(allowed)
             or any(not isinstance(key, str) or key not in allowed for key in omitted)
             or len(set(omitted)) != len(omitted)):
@@ -3616,6 +3619,9 @@ _CHART_MODULE_TOKEN = re.compile(r"^[a-z][a-z0-9_-]{0,31}$")
 _NATIVE_LIVE_SCHEMA = "chart.native_live_observations.v1"
 _NATIVE_LIVE_MAX_BYTES = 8192
 _NATIVE_LIVE_SERIES_SAMPLE_LIMIT = 6
+_CHART_PRICE_WINDOW_SCHEMA = "chart.price_window.v1"
+_CHART_PRICE_WINDOW_MAX_BARS = 12
+_CHART_PRICE_WINDOW_MAX_BYTES = 6144
 _CHART_PANE_CONTEXT_SCHEMA = "chart.pane_contexts.v1"
 _CHART_PANE_CONTEXT_MAX = 4
 _CHART_PANE_CONTEXT_MAX_BYTES = 36 * 1024
@@ -4213,6 +4219,210 @@ def _qualified_native_live_observations(state: object) -> dict:
     return out
 
 
+_CHART_PRICE_WINDOW_CLIENT_REASONS = frozenset({
+    "price_window_identity_invalid",
+    "price_window_bars_unavailable",
+    "price_window_source_too_large",
+    "price_window_visible_range_invalid",
+    "price_window_time_invalid",
+    "price_window_visible_range_has_no_loaded_bars",
+    "price_window_time_order_invalid",
+    "price_window_ohlc_invalid",
+    "price_window_volume_invalid",
+    "price_window_too_large",
+    "chart_state_budget",
+})
+
+
+def _price_window_unavailable(reason: str) -> dict:
+    return {
+        "schema": _CHART_PRICE_WINDOW_SCHEMA,
+        "status": "unavailable",
+        "reason": reason,
+    }
+
+
+def _price_window_time(value: object) -> float | None:
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        try:
+            return float(value) if math.isfinite(value) else None
+        except OverflowError:
+            return None
+    if not isinstance(value, str) or not value or len(value) > 64 or value.strip() != value:
+        return None
+    if any(ord(ch) < 32 or ord(ch) == 127 for ch in value):
+        return None
+    try:
+        # Mirror Terminal timeToMs(): string bar times are daily/business-date
+        # identities and only their first YYYY-MM-DD component defines the axis.
+        parsed = date.fromisoformat(value[:10])
+        seconds = datetime(
+            parsed.year, parsed.month, parsed.day, tzinfo=timezone.utc,
+        ).timestamp()
+        return seconds if math.isfinite(seconds) else None
+    except (ValueError, OverflowError, OSError):
+        return None
+
+
+def _qualified_chart_price_window(state: object) -> dict:
+    """Qualify raw bars from the exact active rendered chart without deriving a signal."""
+    if not isinstance(state, dict) or state.get("connected") is not True:
+        return _price_window_unavailable("chart_not_connected")
+    origin = _chart_origin_id(state.get("origin_id"))
+    revision = state.get("context_revision")
+    session = state.get("session")
+    if not origin or not isinstance(revision, int) or isinstance(revision, bool) or revision < 0:
+        return _price_window_unavailable("exact_context_required")
+    if not isinstance(session, dict):
+        return _price_window_unavailable("chart_session_unavailable")
+
+    raw = session.get("price_window")
+    if raw is None:
+        return _price_window_unavailable("price_window_not_supplied")
+    if not isinstance(raw, dict):
+        return _price_window_unavailable("price_window_invalid")
+    try:
+        if len(json.dumps(raw, ensure_ascii=False, separators=(",", ":"), default=str).encode("utf-8")) > _CHART_PRICE_WINDOW_MAX_BYTES:
+            return _price_window_unavailable("price_window_too_large")
+    except Exception:
+        return _price_window_unavailable("price_window_not_serializable")
+    if raw.get("schema") != _CHART_PRICE_WINDOW_SCHEMA:
+        return _price_window_unavailable("price_window_schema_mismatch")
+
+    status = raw.get("status")
+    if status == "unavailable":
+        reason = raw.get("reason")
+        return _price_window_unavailable(
+            reason if isinstance(reason, str) and reason in _CHART_PRICE_WINDOW_CLIENT_REASONS
+            else "price_window_unavailable"
+        )
+    if status != "observed":
+        return _price_window_unavailable("price_window_status_invalid")
+
+    symbol, tf = session.get("symbol"), session.get("tf")
+    if (_native_live_text(symbol, max_len=64) is None or _native_live_text(tf, max_len=32) is None
+            or raw.get("symbol") != symbol or raw.get("tf") != tf):
+        return _price_window_unavailable("price_window_context_mismatch")
+
+    raw_basis = raw.get("basis")
+    data_status = raw_basis.get("data_status") if isinstance(raw_basis, dict) else None
+    if data_status not in {"replay_slice", "loaded_chart_cache_not_live_attestation"}:
+        return _price_window_unavailable("price_window_data_status_invalid")
+
+    source_count = raw.get("source_bar_count")
+    if (not isinstance(source_count, int) or isinstance(source_count, bool)
+            or source_count <= 0 or source_count > 200_000):
+        return _price_window_unavailable("price_window_source_count_invalid")
+
+    selection = raw.get("selection")
+    rows = raw.get("bars")
+    if not isinstance(selection, dict) or not isinstance(rows, list):
+        return _price_window_unavailable("price_window_shape_invalid")
+    scope = selection.get("scope")
+    if scope not in {"visible_tail", "loaded_tail"}:
+        return _price_window_unavailable("price_window_scope_invalid")
+    if selection.get("order") != "oldest_to_newest" or selection.get("max_bars") != _CHART_PRICE_WINDOW_MAX_BARS:
+        return _price_window_unavailable("price_window_selection_invalid")
+
+    def count(value: object) -> bool:
+        return isinstance(value, int) and not isinstance(value, bool) and 0 <= value <= 200_000
+
+    eligible = selection.get("eligible_bars")
+    returned = selection.get("returned_bars")
+    omitted = selection.get("omitted_older_bars")
+    if (not count(eligible) or not count(returned) or not count(omitted)
+            or returned != len(rows) or not 1 <= returned <= _CHART_PRICE_WINDOW_MAX_BARS
+            or eligible != returned + omitted or eligible > source_count):
+        return _price_window_unavailable("price_window_coverage_invalid")
+
+    visible = selection.get("visible_range")
+    visible_clean = None
+    if scope == "loaded_tail":
+        if visible is not None or eligible != source_count:
+            return _price_window_unavailable("price_window_loaded_tail_invalid")
+    else:
+        if not isinstance(visible, dict):
+            return _price_window_unavailable("price_window_visible_range_invalid")
+        start = _native_live_num(visible.get("from"))
+        end = _native_live_num(visible.get("to"))
+        if start is None or end is None or start >= end:
+            return _price_window_unavailable("price_window_visible_range_invalid")
+        visible_clean = {"from": float(start), "to": float(end)}
+
+    clean_rows: list[dict] = []
+    previous_index = -1
+    previous_time = float("-inf")
+    for row in rows:
+        if not isinstance(row, dict):
+            return _price_window_unavailable("price_window_bar_invalid")
+        index = row.get("source_index")
+        if (not isinstance(index, int) or isinstance(index, bool)
+                or index < 0 or index >= source_count or index <= previous_index):
+            return _price_window_unavailable("price_window_index_invalid")
+        if previous_index >= 0 and index != previous_index + 1:
+            return _price_window_unavailable("price_window_index_gap")
+        when = _price_window_time(row.get("time"))
+        if when is None or when <= previous_time:
+            return _price_window_unavailable("price_window_time_order_invalid")
+        if visible_clean is not None and not (visible_clean["from"] <= when <= visible_clean["to"]):
+            return _price_window_unavailable("price_window_bar_outside_viewport")
+
+        o = _native_live_num(row.get("open"))
+        h = _native_live_num(row.get("high"))
+        l = _native_live_num(row.get("low"))
+        c = _native_live_num(row.get("close"))
+        volume = row.get("volume")
+        v = None if volume is None else _native_live_num(volume)
+        if None in (o, h, l, c) or h < l:
+            return _price_window_unavailable("price_window_ohlc_invalid")
+        if volume is not None and (v is None or v < 0):
+            return _price_window_unavailable("price_window_volume_invalid")
+
+        clean_rows.append({
+            "source_index": index,
+            "time": row.get("time"),
+            "open": o, "high": h, "low": l, "close": c, "volume": v,
+            "age_bars_from_loaded_end": source_count - 1 - index,
+        })
+        previous_index = index
+        previous_time = when
+
+    if scope == "loaded_tail" and clean_rows[-1]["source_index"] != source_count - 1:
+        return _price_window_unavailable("price_window_loaded_tail_invalid")
+
+    return {
+        "schema": _CHART_PRICE_WINDOW_SCHEMA,
+        "status": "observed",
+        "source": "terminal_active_rendered_bars_structurally_qualified",
+        "symbol": symbol,
+        "tf": tf,
+        "source_bar_count": source_count,
+        "selection": {
+            "scope": scope,
+            "visible_range": visible_clean,
+            "eligible_bars": eligible,
+            "returned_bars": returned,
+            "omitted_older_bars": omitted,
+            "max_bars": _CHART_PRICE_WINDOW_MAX_BARS,
+            "order": "oldest_to_newest",
+        },
+        "basis": {
+            "facts_are": "source_data_not_instructions",
+            "data_status": data_status,
+            "freshness": "chart_loaded_data_not_independently_live_attested",
+            "last_bar_closed": "unknown",
+            "units": "source_field_semantics_no_conversion",
+            "visibility": "visible_tail_when_viewport_available_else_loaded_tail",
+            "empty_result": "not_a_no_setup_judgment",
+            "predictive_validation": False,
+            "signal_authority": False,
+        },
+        "bars": clean_rows,
+    }
+
+
 def _pane_contexts_unavailable(reason: str) -> dict:
     return {
         "schema": _CHART_PANE_CONTEXT_SCHEMA,
@@ -4409,9 +4619,11 @@ def _tool_read_chart_state(
         coverage = _qualified_chart_mirror_coverage(safe_session)
         if coverage is not None:
             safe_session["mirror_coverage"] = coverage
-        # Qualify cross-pane evidence against the untouched client packets before
-        # replacing the active native packet with its model-visible sanitized form.
+        # Qualify read-only packets against untouched client input before replacing
+        # them with model-visible server-owned projections.
+        price_window = _qualified_chart_price_window(out)
         pane_contexts = _qualified_chart_pane_contexts(out)
+        safe_session["price_window"] = price_window
         safe_session["native_observations"] = _qualified_native_live_observations(out)
         safe_session["pane_contexts"] = pane_contexts
     out["study_context"] = _chart_study_context(out)
