@@ -1,0 +1,181 @@
+{
+  "research_only": true,
+  "as_of": "2026-09-23",
+  "sources": [
+    {
+      "id": "W5-S01",
+      "published_at": "2026-07-29",
+      "period": "Q2 2026; quarter-end backlog; exact fiscal endpoint not asserted",
+      "url": "https://investorrelations.gd.com/news/press-release-details/2026/General-Dynamics-Reports-Second-Quarter-2026-Financial-Results/default.aspx"
+    },
+    {
+      "id": "W5-S02",
+      "published_at": "2026-07-21",
+      "period": "Quarter ended 2026-06-30; full-year guidance",
+      "url": "https://www.sec.gov/Archives/edgar/data/1133421/000113342126000033/noc-06302026xearningsrelea.htm"
+    },
+    {
+      "id": "W5-S03",
+      "published_at": "2026-07-21",
+      "period": "As of 2026-06-30; forecast recognition intervals",
+      "url": "https://www.sec.gov/Archives/edgar/data/1133421/000113342126000034/noc-20260630.htm"
+    },
+    {
+      "id": "W5-S04",
+      "published_at": "2026-07-23",
+      "period": "Quarter ended 2026-06-28; current versus April FY2026 guidance",
+      "url": "https://investors.lockheedmartin.com/news-releases/news-release-details/lockheed-martin-reports-second-quarter-2026-financial-results"
+    },
+    {
+      "id": "W5-S05",
+      "published_at": "2026-07-30",
+      "period": "Quarter and six months ended 2026-06-30",
+      "url": "https://www.sec.gov/Archives/edgar/data/1501585/000150158526000045/hii2026q2earningsrelease.htm"
+    },
+    {
+      "id": "W5-S06",
+      "published_at": "2026-07-30",
+      "period": "2026-06-30 versus 2025-12-31 balance sheets",
+      "url": "https://www.sec.gov/Archives/edgar/data/1501585/000150158526000047/hii-20260630.htm"
+    },
+    {
+      "id": "W5-S07",
+      "published_at": "2026-07-30",
+      "period": "Half year ended 2026-06-30",
+      "url": "https://www.baesystems.com/en-sa/article/2026-half-year-results"
+    },
+    {
+      "id": "W5-S08",
+      "published_at": "2026-08-06",
+      "period": "Half year ended 2026-06-30",
+      "url": "https://www.rheinmetall.com/en/media/news-watch/news/2026/08/2026-08-06-rheinmetall-news-half-yearly-financial-report-h1"
+    },
+    {
+      "id": "W5-S09",
+      "published_at": "2026-05-04",
+      "period": "Preliminary Q1 2026; expectations attributed by issuer",
+      "url": "https://www.rheinmetall.com/en/ir-data/rheinmetall_ag__preliminary_operating_margin_in_line_with_market_expectation__revenue_below_market_expectation_despite_growth_due_to_delays_into_q2_2026_full_year_forecast_reaffirmed/1047770"
+    },
+    {
+      "id": "W5-S10",
+      "published_at": "2026-07-17",
+      "period": "Quarter ended 2026-06-30",
+      "url": "https://www.saab.com/newsroom/press-releases/2026/saab-q2-results-2026-strong-order-bookings-reinforce-market-position"
+    },
+    {
+      "id": "W5-S11",
+      "published_at": "2026-03-13",
+      "period": "Effective 2026-04-01",
+      "url": "https://www.saab.com/newsroom/press-releases/2026/saab-strengthens-its-naval-offer-with-new-organisation"
+    },
+    {
+      "id": "W5-S12",
+      "published_at": "2026-07-29",
+      "period": "Quarter ended July 2026 under issuer calendar",
+      "url": "https://investors.l3harris.com/news/news-details/2026/L3Harris-Technologies-Reports-Robust-Second-Quarter-2026-Results/default.aspx"
+    },
+    {
+      "id": "W5-S13",
+      "published_at": "2026-08-03",
+      "period": "Quarter ended 2026-06-30; post-period acquisition",
+      "url": "https://investors.bwxt.com/news-releases/news-release-details/bwx-technologies-reports-second-quarter-2026-results"
+    },
+    {
+      "id": "W5-S14",
+      "published_at": "2025-08-04",
+      "period": "Historical 2025 disclosure, not current orders",
+      "url": "https://investors.bwxt.com/news-releases/news-release-details/bwx-technologies-reports-second-quarter-2025-results"
+    },
+    {
+      "id": "W5-S15",
+      "published_at": "2026-08-04",
+      "period": "Quarter ended 2026-07-03",
+      "url": "https://investors.leidos.com/news-releases/news-release-details/leidos-delivers-strong-second-quarter-and-enhances-full-year"
+    },
+    {
+      "id": "W5-S16",
+      "published_at": "2026-08-05",
+      "period": "Quarter and year ended 2026-06-30",
+      "url": "https://investor.caci.com/2026-08-05-CACI-Reports-Results-for-Its-Fiscal-2026-Fourth-Quarter-and-Full-Year-and-Issues-Fiscal-Year-2027-Guidance"
+    },
+    {
+      "id": "W5-S17",
+      "published_at": "2026-07-30",
+      "period": "Quarter ended 2026-06-30",
+      "url": "https://www.leonardodrs.com/news/press-releases/leonardo-drs-announces-financial-results-for-second-quarter-2026/"
+    },
+    {
+      "id": "W5-S18",
+      "published_at": "2026-07-29",
+      "period": "Half year ended 2026-06-30",
+      "url": "https://www.fincantieri.com/en/newsroom/press-releases/2026/first-half-2026-results-approved"
+    },
+    {
+      "id": "W5-S19",
+      "published_at": "2026-07-02",
+      "period": "Programs in reviewed sample; not a public-equity universe",
+      "url": "https://www.gao.gov/products/gao-26-108457"
+    },
+    {
+      "id": "W5-S20",
+      "published_at": "unknown",
+      "period": "Base FAR page FAC 2026-01; contract-specific applicability required; FAC effective 2026-03-13, not original publication",
+      "url": "https://www.acquisition.gov/far/16.202-1",
+      "effective_at": "2026-03-13"
+    },
+    {
+      "id": "W5-S21",
+      "published_at": "unknown",
+      "period": "Base FAR page FAC 2026-01; FAC effective 2026-03-13, not original publication",
+      "url": "https://www.acquisition.gov/far/16.301-1",
+      "effective_at": "2026-03-13"
+    },
+    {
+      "id": "W5-S22",
+      "published_at": "unknown",
+      "period": "Base FAR page FAC 2026-01; FAC effective 2026-03-13, not original publication",
+      "url": "https://www.acquisition.gov/far/16.306",
+      "effective_at": "2026-03-13"
+    },
+    {
+      "id": "W5-S23",
+      "published_at": "unknown",
+      "period": "Base FAR page FAC 2026-01; FAC effective 2026-03-13, not original publication",
+      "url": "https://www.acquisition.gov/far/16.403-1",
+      "effective_at": "2026-03-13"
+    },
+    {
+      "id": "W5-S24",
+      "published_at": "unknown",
+      "period": "Base FAR page FAC 2026-01; FAC effective 2026-03-13, not original publication",
+      "url": "https://www.acquisition.gov/far/16.504",
+      "effective_at": "2026-03-13"
+    },
+    {
+      "id": "W5-S25",
+      "published_at": "unknown",
+      "period": "Base FAR page FAC 2026-01; FAC effective 2026-03-13, not original publication",
+      "url": "https://www.acquisition.gov/far/32.1004",
+      "effective_at": "2026-03-13"
+    },
+    {
+      "id": "W5-S26",
+      "published_at": "unknown",
+      "period": "Separate guide/version namespace observed 2026-09-23",
+      "url": "https://www.acquisition.gov/far-overhaul/far-part-deviation-guide/far-overhaul-part-16"
+    },
+    {
+      "id": "W5-S27",
+      "published_at": "unknown",
+      "period": "Base FAR page FAC 2026-01; incorporated contract governs; FAC effective 2026-03-13, not original publication",
+      "url": "https://www.acquisition.gov/far/52.249-2",
+      "effective_at": "2026-03-13"
+    }
+  ],
+  "source_corrections": {
+    "as_of": "2026-09-23",
+    "supersedes_only": "S01 guessed fiscal endpoint, S18 unqualified horizon conflict, S20-S25/S27 effective-versus-publication date labels in first register; all economic data remain unchanged."
+  },
+  "canonical_register_commit": "00b20827273abf73377f47929e8e63c053094fb4",
+  "retention": "not_established"
+}
