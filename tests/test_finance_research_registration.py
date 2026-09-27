@@ -972,40 +972,44 @@ def test_load_bundle_with_binding_double_without_bundle_unavailable_type_is_shar
 
 
 def test_finance_registration_refusal_class_contract_holds_for_every_call_site():
-    """R5 (class contract): every :class:`FinanceRegistrationRefusal` the
-    adapter can raise must satisfy ``str(exc) == exc.code`` AND have NO
-    whitespace in ``.code`` (mirrors :class:`ResearchRefusal`). No call
-    site may pass a sentence as the code — the prefix and the body live
-    in the BundleUnavailable message in load_bundle's binding-present
-    branch (see test above)."""
-    reg = _import_reg()
+    """R5 (class contract): ``str(exc) == exc.code`` with no whitespace in
+    ``.code`` for every refusal the adapter can raise. The call sites are read
+    from the adapter's own source, so a site that passes a sentence goes red
+    here; a list of codes written into this test would pass whatever the
+    adapter raised (the round-2 version did, on 1d307ec0's sentence code)."""
+    import ast
 
-    # 1. Direct construction with a valid bare code carries the contract.
+    reg = _import_reg()
     err = reg.FinanceRegistrationRefusal("some_code")
     assert isinstance(err, ValueError)
     assert str(err) == err.code == "some_code"
-    assert not any(ch.isspace() for ch in err.code)
 
-    # 2. A bare code with whitespace is rejected by the class — it
-    # constructs without error, but the class contract test asserts that
-    # no CALL SITE passes one. Walk every constant on the module and the
-    # Finance-only code surface and assert none carries whitespace.
-    codes = {
-        "shared_shell_unavailable",
-        "sealed_input_unavailable:run_context",
-        "vertical_registration_refused:ValueError",
-    }
-    for code in codes:
-        assert not any(ch.isspace() for ch in code), code
-
-    # 3. Every refusal the adapter raises in the route carries
-    # str(exc) == exc.code and no whitespace in .code — exercise the
-    # full raise surface through the type itself.
-    for code in codes:
+    tree = ast.parse(Path(reg.__file__).read_text(encoding="utf-8"))
+    codes = []
+    for node in ast.walk(tree):
+        if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                and node.func.id in {"FinanceRegistrationRefusal", "_refuse"}):
+            continue
+        site = f"line {node.lineno}: {ast.unparse(node)}"
+        assert len(node.args) == 1 and not node.keywords, site
+        arg = node.args[0]
+        if isinstance(arg, ast.Name) and arg.id == "code":
+            continue  # _refuse forwarding its own parameter
+        if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
+            code = arg.value
+        elif isinstance(arg, ast.JoinedStr):
+            # f"<prefix>:{type(exc).__name__}"; a class name carries no whitespace.
+            assert all(isinstance(v, ast.Constant) or ast.unparse(v.value) == "type(exc).__name__"
+                       for v in arg.values), site
+            code = "".join(v.value for v in arg.values if isinstance(v, ast.Constant))
+        else:
+            raise AssertionError(f"refusal code is not a literal: {site}")
+        assert code and not any(ch.isspace() for ch in code), site
         exc = reg.FinanceRegistrationRefusal(code)
-        assert str(exc) == exc.code
-        assert not any(ch.isspace() for ch in exc.code)
-
+        assert str(exc) == exc.code == code
+        codes.append(code)
+    # Positive control: the walk reached the adapter's raise sites.
+    assert len(codes) >= 10, codes
 
 # ---------------------------------------------------------------------------
 # 9. Contracts
