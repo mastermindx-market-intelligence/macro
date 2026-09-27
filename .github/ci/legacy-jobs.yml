@@ -14228,6 +14228,60 @@ jobs:
       - name: B4 entry-policy calibration preregistration law (A1 amendment, six distinct cells, single primary endpoint)
         run: python -m pytest tests/test_b4_entry_policy_calibration_prereg.py -q
 
+  healthcare-fda-supply:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "tests/test_foresight_cascade.py"
+      - "tests/test_fda_shortages_generation.py"
+      - "tests/test_fda_supply_probes.py"
+      - "tests/test_fda_supply_probes_t02r.py"
+      - "tests/test_fda_supply_probes_t02r2.py"
+      - "tests/test_fda_supply_probes_t01r.py"
+      - "tests/test_fda_supply_probes_t02r3.py"
+      - "tests/test_fda_supply_probes_final.py"
+      - "tests/test_fda_supply_probes_mixed.py"
+      - "collectors/fda_shortages.py"
+      - "engine/fda_scarcity.py"
+      - "engine/foresight_cascade.py"
+      - "scripts/build_foresight.py"
+      - "collectors/__init__.py"
+      - "templates/foresight.html.j2"
+      - "engine/__init__.py"
+      - "engine/altdata_confirmers.py"
+      - "engine/bottleneck.py"
+      - "engine/demand_capex.py"
+      - "engine/demand_chain.py"
+      - "engine/foresight_earliness.py"
+      - "engine/foresight_enb.py"
+      - "engine/foresight_health.py"
+      - "engine/foresight_score.py"
+      - "engine/foresight_sizing.py"
+      - "engine/glut_watch.py"
+      - "engine/guidance_gap.py"
+      - "engine/ledger_lane.py"
+      - "engine/news_flow.py"
+      - "engine/policy_calendar.py"
+      - "engine/theme_fingerprint.py"
+      - "engine/theme_revisions.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/store.py"
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps for the FDA supply suites
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
+      - name: FDA foresight cascade and qualified observation suites
+        run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py -q
+      - name: FDA supply acceptance probes
+        run: python -m pytest tests/test_fda_supply_probes.py tests/test_fda_supply_probes_t02r.py tests/test_fda_supply_probes_t02r2.py tests/test_fda_supply_probes_t01r.py tests/test_fda_supply_probes_t02r3.py tests/test_fda_supply_probes_final.py tests/test_fda_supply_probes_mixed.py -q
+
   prophet-us-context-and-grades:
     # PROPHET US §W7 — the full-population candidate record: the PIT context store that
     # REMEMBERS each night's score, the forward grader that says what those names then did,
