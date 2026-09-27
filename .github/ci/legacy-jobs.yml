@@ -27,6 +27,36 @@
 # unscoped — always-on is correct, not lazy.
 # ---------------------------------------------------------------------------
 jobs:
+  catalyst-intelligence-reference:
+    if: ${{ false }}
+    gate: code
+    # Research-contract regressions: no live sources, model fitting, or publication.
+    # Separate pytest processes preserve the two packages' local-import boundaries.
+    scope: exclusive
+    paths:
+      - ".github/ci/legacy-jobs.yml"
+      - "research/catalyst_intelligence_reference/f07_conditional_equity/**"
+      - "research/catalyst_intelligence_reference/registrant_role/consumer_review/**"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: install isolated reference test dependencies
+        run: pip install pytest jinja2
+      - name: conditional-equity and independent-review regressions
+        run: >-
+          python -m pytest -q
+          research/catalyst_intelligence_reference/f07_conditional_equity/test_f07_scenario_reference.py
+          research/catalyst_intelligence_reference/f07_conditional_equity/test_f07_review_regressions.py
+      - name: related-evidence consumer and rendering regressions
+        run: >-
+          python -m pytest -q
+          research/catalyst_intelligence_reference/registrant_role/consumer_review/test_review_projection.py
+          research/catalyst_intelligence_reference/registrant_role/consumer_review/test_observed_engine_consumer.py
+          research/catalyst_intelligence_reference/registrant_role/consumer_review/test_render_reference.py
+
   yahoo-daily-archive-refresh:
     if: ${{ false }}
     gate: code
