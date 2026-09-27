@@ -132,8 +132,8 @@ def test_init_db_adds_breadcrumb_to_legacy_table(tmp_path: Path) -> None:
     path = tmp_path / "legacy.sqlite"
     conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
-    conn.execute("CREATE TABLE papers (id INTEGER PRIMARY KEY, blob_id TEXT UNIQUE)")
-    conn.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
+    legacy_schema = db.SCHEMA.replace("    breadcrumb            TEXT,\n", "")
+    conn.executescript(legacy_schema)
     conn.commit()
 
     db.init_db(conn)
