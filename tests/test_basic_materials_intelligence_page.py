@@ -69,3 +69,10 @@ def test_future_sector_entry_partial_is_not_a_theme_mount():
     assert 'data-lane="sector-deep-dive"' in part
     assert 'theme:basic_materials' not in part
     assert 'canonical theme' not in part.lower()
+
+def test_css_uses_only_shared_theme_tokens_it_claims():
+    css=read('basic_materials_intelligence.css')
+    for forbidden in ('var(--border)', 'var(--surface)', 'var(--accent)'):
+        assert forbidden not in css
+    for required in ('var(--line)', 'var(--panel)', 'var(--info)'):
+        assert required in css
