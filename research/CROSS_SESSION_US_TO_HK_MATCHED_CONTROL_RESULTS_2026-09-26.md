@@ -302,6 +302,57 @@ historical event corpus. The clean path remains the frozen future prospective pr
 separately governed public-source historical corpus is preregistered before its market outcomes are
 inspected.
 
+
+## 4G. Common-control candidate fairness audit
+
+V1 and V1.1 do not have identical matched-control coverage: QQQ-minus-SPY needs only SPY/QQQ,
+while SMH-minus-QQQ also needs SMH. Comparing the two candidates on their independently available
+control rows can therefore mix candidate behavior with missing-data coverage.
+
+A fairness audit retained **only the exact matched-control rows where SPY, QQQ, SMH, and the HSI
+target were all simultaneously available**. No event, clock, date, tolerance, source, or candidate
+definition changed.
+
+Common complete controls, all parents:
+- n = **20**
+- SMH-minus-QQQ sign agreement = **10/20 = 50.0%**
+- QQQ-minus-SPY sign agreement = **12/20 = 60.0%**
+- SMH-minus-QQQ Pearson / Spearman = **-0.181 / -0.317**
+- QQQ-minus-SPY Pearson / Spearman = **-0.423 / -0.311**
+
+Common complete controls, clean-primary parents:
+- n = **13**
+- SMH-minus-QQQ sign agreement = **5/13 = 38.5%**
+- QQQ-minus-SPY sign agreement = **8/13 = 61.5%**
+- SMH-minus-QQQ Pearson / Spearman = **-0.500 / -0.736**
+- QQQ-minus-SPY Pearson / Spearman = **-0.730 / -0.453**
+
+Against these identical control denominators:
+
+| Candidate | Event agreement | Common-control agreement | Event-minus-control |
+|---|---:|---:|---:|
+| SMH-minus-QQQ, all | 75.0% | 50.0% | **+25.0 pp** |
+| QQQ-minus-SPY, all | 83.3% | 60.0% | **+23.3 pp** |
+| SMH-minus-QQQ, clean | 71.4% | 38.5% | **+32.9 pp** |
+| QQQ-minus-SPY, clean | 85.7% | 61.5% | **+24.2 pp** |
+
+Parent-event collapse over those same common rows:
+- all parents (n=11): mean control agreement **54.5% V1** vs **63.6% V1.1**;
+  V1.1-minus-V1 parent-control difference = **+9.1 pp**;
+- clean parents (n=7): **42.9% V1** vs **64.3% V1.1**;
+  V1.1-minus-V1 parent-control difference = **+21.4 pp**.
+
+Interpretation:
+
+- the challenger still has the higher raw event sign-agreement rate;
+- but ordinary same-clock controls also agree more often under QQQ-minus-SPY;
+- therefore **V1.1 does not dominate V1 on matched-control uplift** in development evidence;
+- the broader growth/technology interpretation remains scientifically useful, but the prospective
+  comparison must retain both frozen families rather than treating V1.1 as an already-selected winner.
+
+This is a candidate-fairness audit over the already-frozen two-family design, not a third model,
+threshold, benchmark, or promotion rule.
+
 ## 5. Missingness
 
 Four pre-frozen matched controls remained missing under the exact-clock law:
@@ -357,16 +408,22 @@ prospective sample survives.
 
 ## 8. Next gate
 
-Freeze a new **future-event prospective cross-session transfer protocol** before any future
-HK outcome is read. Do not open or repurpose the existing V2 prospective holdout.
+The future-event protocol is now frozen under:
+- V1: `CROSS_SESSION_TRANSFER_PROSPECTIVE_PROTOCOL_2026-09-26.md`;
+- V1.1: `CROSS_SESSION_TRANSFER_PROSPECTIVE_AMENDMENT_V1_1_2026-09-26.md`.
 
-The future protocol must:
-- use source clocks as observed;
-- compute U.S. response with the already-frozen +5->+35 geometry;
-- record the next HSI open before any tuning;
-- predeclare event-family inclusion and contamination handling;
-- keep matched controls;
-- keep regional first-5m as a separate capability-gated endpoint;
-- publish every qualifying future event, including failures and data gaps.
+The next scientific gate is **prospective accrual**, not another development predictor search.
+
+For every qualifying future event:
+- preserve the first-disclosure source clock and any later source-resolution receipt without
+  moving that clock or minting a second event;
+- compute both frozen U.S. candidates on the same admitted population and +5->+35 geometry;
+- retain the frozen same-clock matched-control law;
+- measure HSI next-cash-open without tuning;
+- keep Tencent HK first-5m as a secondary capability-gated diagnostic only;
+- publish failures, conflicts, and data gaps as faithfully as positive outcomes.
+
+Before n=10 there is no pooled winner claim. At n>=10 only the preregistered descriptive review is
+allowed; the first formal clustered review remains n>=20.
 
 No score, alert, ranking, sizing, trade, portfolio, or execution authority is granted.
