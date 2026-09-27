@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "NVDA-BULL-20260805",
-  "asof": "2026-09-24",
+  "asof": "2026-09-26",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 39.9,
@@ -11,20 +11,20 @@
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
     "validity": 100.0,
-    "progress": 3.0,
-    "pace": 26.0,
-    "retention": 23.7,
-    "overlay": 61.0
+    "progress": 2.3,
+    "pace": 23.3,
+    "retention": 16.8,
+    "overlay": 56.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.024,
-    "dist_to_t1_r": 1.476,
-    "dist_to_t2_r": 2.976,
-    "horizon_pct_used": 106.7,
-    "p1": 0.0157,
-    "p2": 0.0079,
+    "dist_to_stop_r": 1.017,
+    "dist_to_t1_r": 1.483,
+    "dist_to_t2_r": 2.983,
+    "horizon_pct_used": 111.1,
+    "p1": 0.0112,
+    "p2": 0.0056,
     "p3": null,
-    "move_r": 0.024,
+    "move_r": 0.017,
     "mfe_r": 0.099,
     "mae_r": -0.243
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-08-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 48,
-  "tau": 1.0667
+  "days_elapsed": 50,
+  "tau": 1.1111
 }

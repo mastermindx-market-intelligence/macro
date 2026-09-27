@@ -36,18 +36,21 @@ unresolved:
   - "T07-T09 wait for Semiconductor B's route family and aggregator on main."
   - "sec_edgar source/use qualification for verbatim filing text (A14-06) is owed by the rights owner."
 next_actions:
-  - "Adjudicate the T01 lane return (branch claude/ind-t01-dependency-binding): Opus READ_ONLY red-team, then merge on concluded green."
-  - "Merge #7915 (seam rulings); adjudicate the DEC records lane return."
-  - "Then T02 || T04, T03 || T05, T06; hold T07-T09 for B."
+  - "Adjudicate the T04 lane return (branch claude/ind-t04-result-cash): Opus READ_ONLY red-team, then merge on concluded green."
+  - "Dispatch T02 (claude/ind-t02-issuer-enrollment) only after #7905 merges; patch rulings_t02.md to the dispatch-time state of #7905/#7870."
+  - "Then T03 || T05, then T06; hold T07-T09 for Semiconductor B (consume #7870 by exact head sha)."
 do_not_redo:
   - "Research Waves 1-14, the nine-task plan (blob a5462dc7) and the 56-requirement traceability are frozen."
   - "R14-01..R14-05, the R4 private-mechanism choice and the #7669 aggregator choice are decided; never reopen the GET route or a direct mount."
   - "Never put product code on #7789; never edit #7870's branch."
+  - "T01 (#7924, merged c5e6f0bb5d39) is delivered and triple red-teamed: helper API load_case/case, cell, typed_absence, comparison, dossier_inputs, publication_harness (publish requires stage_dir=tmp_path), issuer_registry, shared_identity; validator validate_delivery_inputs(inputs, *, registry, research_hosts) + DELIVERY_REFUSAL_REASONS; CI job industrials-result-cash carries the TRANSITIVE closure - consume, never re-derive, never trim."
 danger_areas:
   - "Sparse worktrees truncate data/ and site/ on write."
   - "issuer_profiles.py / event_workspace.py / refresh_event_workspaces.py are shared with #7870 and #7905 - serialize."
   - "A test wired into a gate:code run line without its paths: entry reds contract-delta fleet-wide; a copied recipe carries the donor's pip deps."
-prs: [7789, 7912]
+  - "Existing-PR repair lanes: pin C0 to a DESCENDANT of a sha, never an exact head - round 2 of ind_t01_r3 stalled on an exact pin."
+  - "GLM lanes (glm-codex/glm-5.3) collapsed twice on this program (word salad, rc=0); use minimax/MiniMax-M3 on m1/mb and treat the Opus READ_ONLY red-team as the real gate - MiniMax reviews against a stale base mint phantom blockers."
+prs: [7789, 7912, 7915, 7919, 7924]
 decisions: []
 discoveries: []
 ---
@@ -66,8 +69,9 @@ Procedure: Mastermind protected `docs/sol_skills/INDEX.md` re-read at `origin/ma
 | ACK | DONE 08:13Z | #7789 comment 5810419863 |
 | START | DONE 08:39Z | #7789 comment 5810768684 |
 | Implementation carrier | task PRs off fresh `origin/main`, merged in dependency order; continuity = this file on `main` (CDV-1 precedent) | records #7912 merged `acbf3cf2`; #7915 (seam rulings) |
-| T01 lane | `ind_t01_binding` queued on m1 (admission-wait, both slots held by siblings at 08:38Z); args `$K/ext/args_ind_t01_binding.json`; watcher armed | seat scratchpad `lanes/dispatch_m1_ind_t01_binding.v4.log` |
-| Records lane | `ind_agentos_records` (DEC only; WS minted in #7912) queued on mini2 | `lanes/dispatch_mini2_ind_agentos_records.v4.log` |
+| T01 | MERGED `c5e6f0bb5d39` (PR #7924) after five lane rounds (GLM r1 pushed 275fe5ec but gutted `__init__.py`; GLM r2 collapsed; MiniMax r3-r5 per-step repairs) and three Opus READ_ONLY red-teams (`reviews/OPUS_T01_REDTEAM_2026-09-24.md`, `OPUS_T01_RECHECK_2026-09-24.md`, `OPUS_T01_RECHECK3_2026-09-24.md`); seat merged main by hand at the contested CI-file EOF (e381c109) | 22 owned files; CI green on the merge ref |
+| Records | DONE - #7912 `acbf3cf2` (WS + checkpoint), #7915 `b38ba86e` (audit + R-IND-10..22), #7919 `83223aa5` (DEC-IND-FIRST-VERTICAL-CARRIER-AND-ORDERING) | `agentos/decisions/DEC-IND-FIRST-VERTICAL-CARRIER-AND-ORDERING.md` |
+| T04 lane | QUEUED 2026-09-27 01:37Z via admission_wait_dispatch.sh mb ind_t04_result_cash 2 24 (mb was at 2/2 markers; minimax/MiniMax-M3, 2 rounds, branch claude/ind-t04-result-cash). m1 lanes unusable (~/lanes volume wedged 09-27), mini2 WAN dead. | `$K/ext/args_ind_t04_result_cash.json`; rulings R6-R9 pin T01 actuals (R9: no harness get(slug); true requests provenance; primaryDocument is a bare filename) |
 | G1 shared consumption | HELD for T07/T08 (B's route/mount not built); OPEN for T01–T06 synthetic + incumbent-owner work | #7870 head `70fde3c79956` has no `app/theme_research.py`, no `_basket_intelligence_mounts.html.j2` |
 | G2 real inputs | HELD — real EXPO/PNR identity, source receipts, clocks not yet bound | T02/T03 real admission |
 | G3 private role/rights | HELD — R4 mechanism selected, unproven; `sec_edgar` scope per A14-06 | T07 |
@@ -88,7 +92,7 @@ Labor = external lanes via the B-kit (`$K=~/.claude/projects/-Users-chriswong-Do
 
 | Wave | Tasks | Branch / lane | Gate |
 |---|---|---|---|
-| W1 | T01 helpers + fixtures + `validate_delivery_inputs` + new gate:code job `industrials-result-cash` | `claude/ind-t01-dependency-binding` / `ind_t01_binding` | G1-synthetic |
+| W1 | T01 helpers + fixtures + `validate_delivery_inputs` + new gate:code job `industrials-result-cash` | `claude/ind-t01-dependency-binding` / `ind_t01_binding` -> MERGED `c5e6f0bb5d39` (#7924) | G1-synthetic DONE |
 | W2 | T02 issuer profiles ∥ T04 pure result-to-cash module (path-disjoint) | `claude/ind-t02-issuer-enrollment`, `claude/ind-t04-result-cash` | T01 merged |
 | W3 | T03 case extractors ∥ T05 editions/comparisons | `claude/ind-t03-source-facts`, `claude/ind-t05-source-history` | T02, T04 merged |
 | W4 | T06 closed dossier contract + adapter | `claude/ind-t06-financial-dossier` | T03, T05 merged; B's profile pattern |
