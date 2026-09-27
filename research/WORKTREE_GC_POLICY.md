@@ -569,6 +569,32 @@ they are correctly, and permanently, KEEP. `refs/salvage/*` (534 refs) still mat
 bucket — it decouples *preserving the commits* from *reclaiming the checkout* for ~40 bytes
 each — but it licenses nothing under an attached session.
 
+### Open ratification gates as of 2026-09-27 — both are OPERATOR acts, neither is taken
+
+Measured inventory of what they unlock: `research/WORKTREE_RECLAIM_CANDIDATES_2026_09_27.md`
+(**82 trees / 87.3 GiB**, every row with its landed proof). For contrast the armed sweeper at
+its shipped scope freed **1.5 GiB**.
+
+| # | gate | exact change | blast radius | unlocks |
+|---|---|---|---|---|
+| 1 | widen `roots` | add `/Volumes/Mastermind/agent-workspaces` and `/Volumes/Mastermind/worktrees` to `config/worktree_gc.json` `roots` | armed deleter goes from 227 → 807 trees in scope | 41 trees / 60.8 GiB |
+| 2 | stop treating a content-free lock as operator intent | CODE in `scripts/worktree_gc.py`: a new opt-in config key (default = today's behaviour, honour every lock) that exempts only the two provably content-free reasons, **plus** `git worktree unlock` before the `remove --force` at line ~706 | touches `scripts/**`, i.e. the CI-authority inventory — a merged head there triggers the authority freeze, clearable only by a green `ci.yml` on a main descendant | a further 41 trees / 26.6 GiB, and ends the permanent exemption of the whole external-SSD population |
+
+Gate 2 is worthless without gate 1 (the roots belt at line ~682 still refuses those paths), and
+gate 1 delivers only its own 60.8 GiB without gate 2. Neither is a consequence of the
+2026-09-27 signal correction; do not infer authorization from it.
+
+A third item is **design work, not a gate**: the 318 detached lanes need a lane-exit receipt (a
+positive "my output was consumed" signal written by the lane itself). Nothing in this law can
+reach them until one exists.
+
+**No program in `config/mastermind_programs.yml` owns fleet worktree storage.** That is why
+this doc, `scripts/worktree_gc.py`, `config/worktree_gc.json`, the sparse hooks and the
+host-local `~/.local/lib/mastermind/storage-cleanup/**` have no accountable seat, and why the
+two gates above have sat open while the volume kept filling. Assigning an owner is a
+prerequisite for the per-root population cap in R6, not a separate nicety —
+a cap is a standing policy and a standing policy needs someone to hold it.
+
 **Why accumulation is the real problem.** ~810 worktrees registered; **54 minted per day
 sustained**, and approximately none removed. Two independent causes, and only the first is
 about sessions: sessions do not close their own worktrees and that is not fixable by
