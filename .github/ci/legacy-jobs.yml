@@ -17589,3 +17589,79 @@ jobs:
         run: pip install pytest jsonschema pyyaml
       - name: mining economic dossier — shared-contract harness
         run: TZ=UTC python -m pytest tests/test_mining_shared_contract.py tests/test_mining_shared_contract_probes.py -q
+
+  industrials-result-cash:
+    # GMI INDUSTRIALS first vertical, T01 (R-IND-02, PR #7924): synthetic result-to-cash
+    # corpus, helper harness and the delivery-input validator. One exclusive gate:code job
+    # for the whole Industrials program; every later task adds its suite to `paths:` and
+    # the run line (never a second job). Disabled entry: the file is a pack inventory
+    # read by scripts/run_ci_pack.py.
+    if: ${{ false }}
+    gate: code
+    # CURATED SCOPE (2026-09-24, step 6): the suite, its helper, the fixture corpus, the
+    # owned validator module, and the TRANSITIVE import closure that
+    # `tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure`
+    # computes from `tests/test_industrials_dependency_binding.py` and
+    # `tests/industrials_result_cash_helpers.py`. Recompute the closure whenever the
+    # suite's imports change (the named test asserts every transitively-needed module
+    # is listed under `paths:` below).
+    scope: exclusive
+    paths:
+      - "tests/test_industrials_dependency_binding.py"
+      - "tests/industrials_result_cash_helpers.py"
+      - "tests/fixtures/industrials_result_cash/**"
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/financial_dossier.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/earnings_narrative/context_packets.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/private_publication.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/earnings_transcript_intake.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/company_intelligence_reader.py"
+      - "engine/press/earnings_adapter.py"
+      - "engine/research_vault/r2_store.py"
+      - "scripts/publish_company_intelligence_r2.py"
+      - "scripts/refresh_event_workspaces.py"
+    timeout-minutes: 6
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps for the Industrials result-to-cash suite
+        # pyyaml: engine.earnings_narrative.promotion imports yaml (transitive via
+        # engine.company_intelligence.documents -> ..earnings_narrative.contracts).
+        # requests: scripts.refresh_event_workspaces imports
+        # engine.neuralweb.company_intelligence_reader at module scope (:77), and that
+        # module imports requests at module scope (:21). The lazy import inside
+        # _http_get is NOT the binding reason — a lazy-only need would not fail here.
+        # Stated identically in clean-venv proof below.
+        run: pip install pytest pyyaml requests
+      - name: Industrials synthetic dependency binding (T01)
+        run: python -m pytest tests/test_industrials_dependency_binding.py -q
