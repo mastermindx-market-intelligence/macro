@@ -188,6 +188,99 @@ def test_run_refresh_fail_sources_is_causal_not_coincidental() -> None:
     assert ok["exhibit_url"].endswith("/synthetic-exhibit.htm")
 
 
+def test_members_is_not_an_empty_stub_after_enrollment() -> None:
+    """Anti-vacuity guard for T02's mandated preservation assertion.
+
+    `members()` shipped as `return set()`, so `before <= h.members()` could never
+    fail. This pins the property that makes that assertion able to grade anything:
+    after a successful refresh the harness reports the cases it actually holds.
+    """
+    harness = publication_harness()
+    assert harness.members() == set()
+    harness.run_refresh({"case_a": "edition_1", "case_b": "edition_1"})
+    assert harness.members() == {"case_a", "case_b"}
+
+
+def test_ordinary_refresh_preserves_unrelated_and_carried_case() -> None:
+    """The frozen plan's T02 two-run test (plan blob a5462dc7, section T02).
+
+    The plan's own snippet snapshots `before = h.members()` BEFORE the first
+    refresh, where it is necessarily empty and `before <= h.members()` holds for
+    free. The snapshot is taken here after enrollment instead, which is the only
+    form in which the assertion can fail.
+    """
+    harness = publication_harness()
+    harness.run_refresh({"case_a": "edition_1", "case_b": "edition_1"})
+    before = harness.members()
+    assert before == {"case_a", "case_b"}
+
+    harness.run_refresh({"case_b": "edition_2"}, fail_sources=("case_a",))
+
+    assert before <= harness.members()
+    assert harness.get("case_a")["edition"] == "edition_1"
+    assert harness.get("case_b")["edition"] == "edition_2"
+
+
+def test_carried_case_is_marked_stale_and_never_restamped() -> None:
+    """A source failure may mark a carried object stale, never restamp it as newly
+    observed (plan T02). The observation stamp comes from the owner's result, so a
+    silent re-observation would move it."""
+    harness = publication_harness()
+    harness.run_refresh({"case_a": "edition_1"})
+    observed = harness.get("case_a")["observed_acceptance"]
+    assert observed, harness.get("case_a")
+
+    harness.run_refresh({"case_a": "edition_2"}, fail_sources=("case_a",))
+
+    carried = harness.get("case_a")
+    assert carried["edition"] == "edition_1", carried
+    assert carried["stale"] is True, carried
+    assert carried["observed_acceptance"] == observed, carried
+
+
+def test_refused_case_with_no_predecessor_is_never_invented() -> None:
+    """A failing source must not conjure an enrollment. The refused case stays
+    absent and `get` raises rather than answering with a blank record."""
+    harness = publication_harness()
+    result = harness.run_refresh({"case_a": "edition_1"}, fail_sources=("case_a",))
+    assert result["status"] == "unavailable"
+    assert result["source"] == "case_a"
+    assert harness.members() == set()
+    with pytest.raises(KeyError):
+        harness.get("case_a")
+
+
+def test_per_case_fail_source_is_causal_not_global() -> None:
+    """`fail_sources` names CASES, not the whole refresh: an unnamed case in the
+    same call still advances, and dropping the name flips the named case to
+    advancing on the very next call."""
+    harness = publication_harness()
+    harness.run_refresh({"case_a": "edition_1", "case_b": "edition_1"})
+
+    harness.run_refresh(
+        {"case_a": "edition_2", "case_b": "edition_2"}, fail_sources=("case_a",)
+    )
+    assert harness.get("case_a")["edition"] == "edition_1"
+    assert harness.get("case_b")["edition"] == "edition_2"
+    assert harness.get("case_b")["stale"] is False
+
+    harness.run_refresh({"case_a": "edition_2"}, fail_sources=())
+    advanced = harness.get("case_a")
+    assert advanced["edition"] == "edition_2", advanced
+    assert advanced["stale"] is False, advanced
+
+
+def test_get_returns_a_copy_that_cannot_rewrite_harness_state() -> None:
+    """An assertion must not be able to pass by editing the evidence it reads."""
+    harness = publication_harness()
+    harness.run_refresh({"case_a": "edition_1"})
+    record = harness.get("case_a")
+    record["edition"] = "edition_99"
+    record["stale"] = True
+    assert harness.get("case_a")["edition"] == "edition_1"
+    assert harness.get("case_a")["stale"] is False
+
+
 def test_top_level_refusal_reasons_are_closed_set_or_unknown_field() -> None:
     from engine.company_intelligence.financial_dossier import (
         DELIVERY_REFUSAL_REASONS,

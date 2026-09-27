@@ -435,6 +435,27 @@ def _fact_ref(fact: Any, role: str) -> str:
 # ---------------------------------------------------------------------------
 
 
+_ALLOWED_KIND: frozenset[str] = frozenset({"expense_line", "revenue_line"})
+
+# Contract-required envelope fields the source must SPELL, in the module's
+# own reading order. ``event`` is here rather than left to
+# ``_assert_document_matches_contract_shape``: an absent ``event`` used to
+# raise ``CaseShapeError`` and kill the whole case, where every sibling
+# omission withholds one fact and declares it. One bad fact is not a bad
+# case.
+_REQUIRED_SOURCE_TEXT_FIELDS: tuple[str, ...] = (
+    "basis",
+    "definition",
+    "display_quantum",
+    "event",
+    "key",
+    "metric",
+    "perimeter",
+    "role",
+    "unit",
+)
+
+
 def _fact_admission_failure(fact: Any) -> str | None:
     """Reason this fact cannot be *published* under the contract, else ``None``.
 
@@ -464,6 +485,45 @@ def _fact_admission_failure(fact: Any) -> str | None:
         return "fact_period_start_missing_or_malformed"
     if _envelope_period_kind(fact) not in _ALLOWED_PERIOD_KIND:
         return "fact_period_kind_outside_vocabulary"
+
+    # The four checks above guard every field whose ``_envelope_*`` reader
+    # answers a missing source value with an EMPTY sentinel. The rest of the
+    # contract-required envelope is not so lucky: ``_envelope_kind`` answers
+    # ``"financial"``, ``_envelope_unit`` answers ``"USD"``,
+    # ``_envelope_sign_convention`` answers ``"signed_as_reported"`` and
+    # ``_envelope_scale`` answers ``0`` -- all plausible-looking values rather
+    # than sentinels, so no emptiness check could ever have caught them and
+    # the fact sailed into a document this module then declared ``ready``.
+    # Measured on the merged tree: dropping one required field from one fact
+    # produced a ``ready`` document with ``degraded_dependencies: []`` that
+    # violated this module's own contract for ``basis``, ``definition``,
+    # ``display_quantum``, ``evidence``, ``key``, ``kind``, ``perimeter`` and
+    # ``role`` -- and, worse, VALIDATED while lying for ``unit`` (a EUR
+    # issuer published as USD), ``sign_convention`` (assumed, never read) and
+    # ``scale_power10`` (thousands published as units).
+    #
+    # Same ruling as the period boundary, same reason: a minted envelope is a
+    # source-semantics decision this module has no authority to make. Refusal
+    # is not repair -- the fact is withheld and declared, never guessed at.
+    for _field in _REQUIRED_SOURCE_TEXT_FIELDS:
+        _raw = fact.get(_field)
+        if not isinstance(_raw, str) or not _raw:
+            return "fact_" + _field + "_missing_or_malformed"
+    if fact.get("kind") not in _ALLOWED_KIND:
+        return "fact_kind_outside_vocabulary"
+    if fact.get("sign_convention") not in _SIGN_CONVENTION_ENUM:
+        return "fact_sign_convention_missing_or_malformed"
+    # Accept exactly what ``_envelope_scale`` can already read unambiguously;
+    # this closes the fabricated ``0``, it does not tighten the source
+    # grammar. A digit string was always usable and stays usable.
+    _scale = fact.get("scale_power10")
+    if not (
+        (isinstance(_scale, int) and not isinstance(_scale, bool))
+        or (isinstance(_scale, str) and _scale.lstrip("-").isdigit())
+    ):
+        return "fact_scale_power10_missing_or_malformed"
+    if not isinstance(fact.get("evidence"), Mapping):
+        return "fact_evidence_missing_or_malformed"
     return None
 
 

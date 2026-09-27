@@ -29,6 +29,7 @@ decisions:
 discoveries:
   - "DSC:A-UNIVERSAL-FALLBACK-BRANCH-IS-INVISIBLE-TO-A-VALUE-ONLY-SUITE"
   - "DSC:THE-CASE-A-SUITE-USES-MOST-IS-THE-ONE-IT-NEVER-VALIDATES"
+  - "DSC:A-MINTING-DEFAULT-IS-INVISIBLE-TO-AN-EMPTINESS-GATE"
 waves:
   - id: CC-V1-CORE
     title: "V1-CORE deterministic composition"
@@ -73,6 +74,31 @@ waves:
       _compose_changes keys that reason on the METRIC - exactly what a refusal
       is keyed on - so the effect landed first and deduplicated the cause away.
       Suite 72 -> 76.
+  - id: CC-V1-MINTED-ENVELOPE-REFUSAL
+    title: "Admission gate completes its own class"
+    status: done
+    next_action: >
+      The CC-V1-ENVELOPE-INTEGRITY gate closed 4 of the ~13 holes in its class,
+      because it was generalized from readers that answer an absent source value
+      with an EMPTY sentinel and is therefore structurally blind to readers that
+      MINT one. A sweep of all 21 contract-required fact fields against merged
+      main - planting a distinctive value, confirming it propagates, then
+      dropping it - measured 9 that produce a "ready" document carrying schema
+      violations, 3 that VALIDATE WHILE LYING (unit -> "USD",
+      sign_convention -> "signed_as_reported", scale_power10 -> 0 publishing
+      thousands as units - all legal values, so no downstream consumer can ever
+      recover the truth), 4 that mint the contract's own "unknown" and are
+      deliberately left alone, and 1 (event) that killed the whole case with
+      CaseShapeError. Closed in the module's existing idiom: nine spelled text
+      fields, the kind enum by VALUE, sign_convention, a scale_power10 that
+      accepts exactly what _envelope_scale can already read, and an evidence
+      mapping - each withholding one fact and declaring it through the open
+      degraded_dependencies reason vocabulary, so no contract change was owed
+      and event stopped killing its case. The same instrument on the repaired
+      tree reads 17 refused / 4 minted-and-honest / 0 violations / 0 cases
+      killed. See DSC:A-MINTING-DEFAULT-IS-INVISIBLE-TO-AN-EMPTINESS-GATE.
+      Suite 76 -> 102; reverting the engine alone fails 26 and passes 76, and
+      all 26 are the four new tests; 8 mutants all killed.
   - id: CC-V1-ENTITLED
     title: "V1 entitled + browser legs"
     status: todo
@@ -136,6 +162,15 @@ landmines:
     against a mutant that deleted the behaviour it claimed to pin, and the same
     vacuity then made reverting the real engine fix look safe. Mutate one side.
   - >
+    An admission gate is scoped by what each READER does on absence, never by
+    the list the gate already carries. Four sentinel-returning readers grew a
+    gate that asks "is this field empty?" - a question that is unanswerable for
+    a reader whose purpose is to never be empty. Enumerate the _envelope_*
+    readers, not the existing arms. And a reason spelled missing_or_malformed
+    needs BOTH tests: mutant M6 (emptiness half deleted) survived all fourteen
+    absence tests that existed then, and died only once present-but-empty
+    cases were added.
+  - >
     period_start must never be derived from period_end. Consumer Cyclical is
     retail: 4-5-4 fiscal quarters are offset from the calendar by design, so
     calendar-snapping produced valid-looking 32-day "quarters". The derivation
@@ -145,18 +180,28 @@ do_not_redo:
   - "The R8 native-staging denial: never retry, rephrase, re-home or delegate around it"
   - "The V1 boundary adjudication itself - see DEC:CONSUMER-CYCLICAL-V1-CORE-EXTENDS-INCUMBENT-NOT-TRANSPORT"
 next_action: >
-  Nothing ungated remains at this seat. Both cases the projection can be handed
-  - the synthetic _plnt_case() and the committed fixture - now validate at zero
-  violations against the contract this module authors, with the R6 7.1 golden
-  oracle exact on both. The remaining V1 legs are all owner-gated.
+  No ungated WIRING lane exists and none has appeared: all four blockers below
+  are still OPEN or DRAFT, V1-CORE has zero runtime callers on main (git grep
+  for consumer_cyclical_projection outside its own suite returns nothing - it is
+  merged, correct and inert by design until #7780 rules on the mount), and the
+  two gate PRs that moved on 2026-09-27 carry Semiconductor traffic, not a
+  Consumer release.
+  .
+  What that claim did NOT cover, and what CC-V1-MINTED-ENVELOPE-REFUSAL then
+  found, is ungated CORRECTNESS work inside owns_paths. Re-testing "nothing
+  ungated remains" by observation rather than by memory is the move that found
+  it; do that before repeating the claim. As of that wave both cases the
+  projection can be handed - the synthetic _plnt_case() and the committed
+  fixture - validate at zero violations with the R6 7.1 golden oracle exact,
+  AND no contract-required envelope field can be minted from a silent source.
   .
   Returned to Sol on carrier #7804 (comment 5814888647, 2026-09-24) naming the
   four blockers below and correcting that carrier's standing
   RECEIVER_ASSIGNMENT NONE, which would otherwise have licensed a second Fable
-  receiver onto the same operation. Nothing further is executable at this seat:
-  the remaining V1 legs are all owner-gated. Do not widen into V2 LTH / V3 LULU
-  / V4 theme journey - R15 forbids self-authorizing them on a V1 pass, and the
-  next modifying wave takes its own continuation edge.
+  receiver onto the same operation. ACCEPTANCE is Sol's and has not been given.
+  Do not widen into V2 LTH / V3 LULU / V4 theme journey - R15 forbids
+  self-authorizing them on a V1 pass, and the next modifying wave takes its own
+  continuation edge.
 ---
 
 ## Scope

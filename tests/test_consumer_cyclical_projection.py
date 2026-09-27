@@ -1352,3 +1352,147 @@ def test_every_native_ref_resolves_to_a_declared_source_record() -> None:
     for fact in case["facts"]:
         ref = fact.get("native_ref")
         assert ref in declared, (fact["key"], ref, sorted(declared))
+
+
+# Every contract-required envelope field the source must SPELL. Dropping any
+# one of these from a fact used to produce a document this module declared
+# ``ready`` -- eight of them violating the very contract it authors, and three
+# of them VALIDATING while lying.
+_MINTABLE_ENVELOPE_FIELDS = (
+    "basis",
+    "definition",
+    "display_quantum",
+    "event",
+    "evidence",
+    "key",
+    "kind",
+    "metric",
+    "perimeter",
+    "role",
+    "scale_power10",
+    "sign_convention",
+    "unit",
+)
+
+
+@_pytest.mark.parametrize("field", _MINTABLE_ENVELOPE_FIELDS)
+def test_no_required_envelope_field_is_ever_minted(field: str) -> None:
+    """A fact missing a required envelope field is withheld, never guessed at.
+
+    The admission gate originally guarded only the four fields whose
+    ``_envelope_*`` reader answers absence with an EMPTY sentinel
+    (``value_text``, ``period_start``, ``period_end``, ``period_kind``). Every
+    other required field had a reader that answered with a plausible-looking
+    value instead -- ``kind`` -> ``"financial"`` (not even in its own enum),
+    ``unit`` -> ``"USD"``, ``sign_convention`` -> ``"signed_as_reported"``,
+    ``scale_power10`` -> ``0``, the rest -> ``""``/``None``. No emptiness check
+    could catch a non-empty fabrication, and nothing in the suite executed
+    those lines, so the fabrications shipped.
+
+    Measured on the merged tree before this gate: ``basis``, ``definition``,
+    ``display_quantum``, ``evidence``, ``key``, ``kind``, ``perimeter`` and
+    ``role`` each produced a ``ready`` document carrying schema violations
+    with ``degraded_dependencies == []``; ``event`` killed the whole case with
+    ``CaseShapeError``.
+    """
+    case = _plnt_case()
+    admitted = len(case["facts"]) - 1
+    del case["facts"][0][field]
+    document = project_economic_change(case)
+
+    assert list(_validator().iter_errors(document)) == [], (
+        f"dropping {field!r} published a document that violates the contract"
+    )
+    assert document["degraded_dependencies"], (
+        f"dropping {field!r} was absorbed silently -- nothing was declared"
+    )
+    # The load-bearing assertion. Without it this test passes for
+    # ``scale_power10`` on the unfixed engine: dropping it from ONE side of a
+    # pair already degraded that pair for a DIFFERENT reason (mismatched
+    # scale), which satisfied both checks above while the fabricated ``0``
+    # sailed into the document. Counting is what proves the fact was refused
+    # rather than published -- and it works for ``key`` too, where the victim
+    # cannot be identified by the field that is missing.
+    assert len(document["facts"]) == admitted, (
+        f"dropping {field!r} left {len(document['facts'])} facts published, "
+        f"expected {admitted} -- the unpublishable fact was not withheld"
+    )
+
+
+def test_the_three_silent_fabrications_are_refused_not_published() -> None:
+    """``unit``/``sign_convention``/``scale_power10`` are the dangerous ones.
+
+    Their minted defaults are all SCHEMA-VALID, so unlike ``kind`` they raise
+    no violation -- the document validates cleanly while misstating what the
+    numbers mean. A EUR issuer would be published as USD; a sign convention
+    would be assumed rather than read; figures in thousands would be published
+    as units. Nothing downstream could detect any of the three.
+    """
+    for field, fabrication in (
+        ("unit", "USD"),
+        ("sign_convention", "signed_as_reported"),
+        ("scale_power10", 0),
+    ):
+        case = _plnt_case()
+        victim_key = case["facts"][0]["key"]
+        del case["facts"][0][field]
+        document = project_economic_change(case)
+
+        # The fact must not appear at all -- not with the source's value, and
+        # above all not with the fabricated one.
+        published = [f for f in document["facts"] if f["key"] == victim_key]
+        assert published == [], (
+            f"{field!r} was missing at source yet the fact was published as "
+            f"{[f.get(field) for f in published]!r} (fabrication: {fabrication!r})"
+        )
+        reasons = {d["reason"] for d in document["degraded_dependencies"]}
+        assert f"fact_{field}_missing_or_malformed" in reasons, reasons
+
+
+@_pytest.mark.parametrize(
+    "field",
+    tuple(f for f in _MINTABLE_ENVELOPE_FIELDS if f not in ("evidence", "scale_power10")),
+)
+def test_a_present_but_empty_envelope_field_is_refused_too(field: str) -> None:
+    """``missing_or_malformed`` has to mean both words.
+
+    Deleting a field yields ``None``, which fails an ``isinstance(str)`` test
+    on its own -- so a gate that checked ONLY the type would pass every
+    absence test while still admitting ``basis: ""``. That matters precisely
+    here: ``""`` is the exact value the old ``_envelope_*`` readers handed
+    back, so an upstream that learned to spell the key without filling it in
+    would walk straight through. Mutation control: dropping the emptiness
+    half of the check survives the absence tests and is killed only by this
+    one.
+    """
+    case = _plnt_case()
+    admitted = len(case["facts"]) - 1
+    case["facts"][0][field] = ""
+    document = project_economic_change(case)
+
+    assert list(_validator().iter_errors(document)) == [], field
+    assert len(document["facts"]) == admitted, (
+        f"an empty {field!r} was published rather than refused"
+    )
+
+
+def test_a_kind_outside_the_contract_enum_is_refused_by_value() -> None:
+    """The original defect was a VALUE, not an absence.
+
+    ``_envelope_kind`` minted ``"financial"`` -- a string the contract's own
+    ``kind`` enum (``revenue_line``/``expense_line``) does not contain. A gate
+    that merely required ``kind`` to be a non-empty string would admit it
+    again, and every absence test would still pass. Only checking membership
+    catches it, so this test pins the enum and not just the presence.
+    """
+    case = _plnt_case()
+    admitted = len(case["facts"]) - 1
+    case["facts"][0]["kind"] = "financial"
+    document = project_economic_change(case)
+
+    assert list(_validator().iter_errors(document)) == []
+    assert len(document["facts"]) == admitted, (
+        "'financial' was admitted -- the gate checks presence, not vocabulary"
+    )
+    reasons = {d["reason"] for d in document["degraded_dependencies"]}
+    assert "fact_kind_outside_vocabulary" in reasons, reasons
