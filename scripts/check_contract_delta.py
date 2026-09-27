@@ -160,12 +160,16 @@ module itself ships `null` for that class: nothing can be inherited from a
 tree without the guard, so every head finding in the class counts as
 introduced, and a notice says so.
 
-COST. Measured on a 24-core development Mac, per tree, after the closure census
-has warmed the planner's per-file analysis caches: probes ~28 s, skip_only
-~16 s, trigger_gaps ~21 s, against ~119 s for closure + suites, so roughly +55%
-on each side. The head and the base still overlap, so the wall-clock cost is
-about the same fraction. `run()` prints every census's seconds on both sides so
-each CI log carries the real hosted-runner figure.
+COST. Measured per tree (side), after the closure census has warmed the
+planner's per-file analysis caches. On a 24-core development Mac: probes
+~28 s, skip_only ~16 s, trigger_gaps ~21 s, against ~113-137 s for closure +
+suites. On ci.yml's hosted 2-core runner (PR #8102, 2026-09-27): probes
+~130-150 s, skip_only ~24 s, trigger_gaps ~41 s, against ~300-330 s for
+closure + suites. The head and the base overlap, and the gate step went from
+334-350 s on five PRs that day to 559 s. The job stays off the critical path:
+the pack matrix it runs beside takes ~30 min, and its timeout is 45. `run()`
+prints every census's seconds on both sides, so each CI log carries its own
+figure.
 """
 from __future__ import annotations
 
@@ -266,18 +270,67 @@ def _is_ceiling(value: Any) -> bool:
     return type(value) is int and value > 0  # `type(...) is int` refuses bool
 
 
+def _probe_spec_bindings(tree: ast.Module) -> dict[str, int]:
+    """How many times each spec name is bound anywhere in the module.
+
+    The test measures whatever the name holds at import time; this gate reads one
+    literal. They agree only while that literal is the name's single binding, so a
+    `+=`, a nested or conditional rebinding, an import, a loop target or a def of
+    the same name must refuse rather than be silently ignored. A bare annotation
+    (`PACKING_PROBES: tuple`) assigns nothing and is not counted.
+    """
+    counts = dict.fromkeys(_PROBE_SPEC_NAMES, 0)
+    declarations = {
+        id(node.target)
+        for node in ast.walk(tree)
+        if isinstance(node, ast.AnnAssign) and node.value is None
+    }
+    match_captures = tuple(
+        getattr(ast, name) for name in ("MatchAs", "MatchStar") if hasattr(ast, name)
+    )
+    for node in ast.walk(tree):
+        names: list[str] = []
+        if isinstance(node, ast.Name) and isinstance(node.ctx, (ast.Store, ast.Del)):
+            if id(node) not in declarations:
+                names.append(node.id)
+        elif isinstance(node, ast.alias):
+            names.append((node.asname or node.name).split(".")[0])
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            names.append(node.name)
+        elif isinstance(node, ast.ExceptHandler) and node.name:
+            names.append(node.name)
+        elif match_captures and isinstance(node, match_captures) and node.name:
+            names.append(node.name)
+        elif hasattr(ast, "MatchMapping") and isinstance(node, ast.MatchMapping) and node.rest:
+            names.append(node.rest)
+        for name in names:
+            if name in counts:
+                counts[name] += 1
+    return counts
+
+
 def packing_probe_spec(suite: Path) -> dict[str, Any]:
     """The packing-probe ceilings, read from `suite` without importing it.
 
     tests/test_ci_pack.py owns them as plain module-level literals. The result
     is JSON-safe because it is handed to the base worker on its command line.
-    A missing, computed, or malformed value is a refusal, never an empty probe
-    set: an empty set would pass every PR without measuring anything.
+    A missing, computed, rebound, or malformed value is a refusal, never an
+    empty or partial probe set: that would pass PRs without measuring them.
     """
     try:
         tree = ast.parse(suite.read_text(encoding="utf-8"), filename=str(suite))
     except (OSError, SyntaxError, ValueError) as exc:
         raise ContractDeltaError(f"cannot read the packing probes from {suite}: {exc}") from exc
+    rebound = {name: n for name, n in _probe_spec_bindings(tree).items() if n > 1}
+    if rebound:
+        raise ContractDeltaError(
+            f"{suite}: "
+            + ", ".join(f"{name} is bound {n} times" for name, n in sorted(rebound.items()))
+            + " — keep exactly one plain module-level assignment of each. contract-delta"
+            " reads that one literal, so any other binding (+=, a nested or conditional"
+            " rebinding, an import) would change what the test measures but not what"
+            " this gate measures"
+        )
     values: dict[str, Any] = {}
     for node in tree.body:
         if isinstance(node, ast.Assign):

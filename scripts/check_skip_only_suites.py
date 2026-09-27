@@ -81,6 +81,7 @@ from scripts.audit_unrun_tests import (  # noqa: E402
     WORKFLOWS,
     defines_tests,
     discover_suites,
+    suite_source,
 )
 from scripts.run_ci_pack import (  # noqa: E402
     ManifestError,
@@ -250,10 +251,15 @@ def _skipif_conditions(tree: ast.Module) -> list[tuple[str, ast.expr]]:
     return out
 
 
-def skip_gates(path: Path) -> dict[str, list[str]]:
-    """Modules whose absence makes tests in ``path`` skip → why, for the report."""
+def skip_gates(path: Path, source: str | None = None) -> dict[str, list[str]]:
+    """Modules whose absence makes tests in ``path`` skip → why, for the report.
+
+    ``source`` is the suite's text when the caller already holds it; ``census``
+    passes what ``suite_source`` read, so a suite with no working copy is parsed
+    from git instead of raising on the missing file.
+    """
     try:
-        tree = ast.parse(path.read_text(errors="ignore"))
+        tree = ast.parse(path.read_text(errors="ignore") if source is None else source)
     except SyntaxError:
         return {}
     gates: dict[str, list[str]] = {}
@@ -513,7 +519,18 @@ def census(jobs: list[dict] | None = None) -> list[dict]:
     rows: list[dict] = []
     for rel_test in discover_suites():
         path = ROOT / rel_test
-        gates = skip_gates(path)
+        # discover_suites() finds suites the checkout does not materialize (it
+        # reads them from git), and contract-delta's CI checkout omits site/ and
+        # data/, so read the bytes the same way: disk first, then git. None means
+        # the bytes the discovery just read are gone, which refuses; it is never
+        # an empty gate set.
+        source = suite_source(rel_test, ROOT)
+        if source is None:
+            raise RuntimeError(
+                f"{rel_test}: discovered as a suite, but this checkout can no longer "
+                f"read its bytes (neither on disk nor from git)"
+            )
+        gates = skip_gates(path, source)
         if not gates:
             continue
         # Exact repo-relative path first, bare basename as the compatibility

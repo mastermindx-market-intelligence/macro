@@ -949,6 +949,7 @@ def test_probe_spec_accepts_an_annotated_literal(tmp_path: Path) -> None:
         "PACKING_PROBES = (('', 1, 2),)\nPACKING_PROBE_MAX_PACKS = 10\n",
         "PACKING_PROBES = (('a.py', 1, 2),)\nPACKING_PROBE_MAX_PACKS = '10'\n",
         "PACKING_PROBES = (('a.py', 1, 2),\nPACKING_PROBE_MAX_PACKS = 10\n",
+        "if True:\n    PACKING_PROBES = (('a.py', 1, 2),)\nPACKING_PROBE_MAX_PACKS = 10\n",
     ],
 )
 def test_a_malformed_probe_spec_is_a_refusal(tmp_path: Path, source: str) -> None:
@@ -957,6 +958,43 @@ def test_a_malformed_probe_spec_is_a_refusal(tmp_path: Path, source: str) -> Non
     suite.write_text(source)
     with pytest.raises(CCD.ContractDeltaError):
         CCD.packing_probe_spec(suite)
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        "PACKING_PROBES += (('b.py', 3, 4),)\n",
+        "if True:\n    PACKING_PROBES = (('b.py', 3, 4),)\n",
+        "try:\n    pass\nexcept ImportError:\n    PACKING_PROBE_MAX_PACKS = 99\n",
+        "for PACKING_PROBES in [()]:\n    pass\n",
+        "from os import sep as PACKING_PROBE_MAX_PACKS\n",
+        "def PACKING_PROBES():\n    return ()\n",
+        "del PACKING_PROBES\n",
+    ],
+)
+def test_a_rebound_probe_spec_is_a_refusal(tmp_path: Path, extra: str) -> None:
+    """The test measures a name's final value; this gate reads one literal.
+
+    Without this refusal a `+=` or a nested rebinding was silently ignored: the
+    gate measured `a.py` alone while the test measured `a.py` and `b.py` (the
+    Opus review of this change measured exactly that).
+    """
+    suite = tmp_path / "test_ci_pack.py"
+    suite.write_text(
+        "PACKING_PROBES = (('a.py', 1, 2),)\nPACKING_PROBE_MAX_PACKS = 10\n" + extra
+    )
+    with pytest.raises(CCD.ContractDeltaError, match="bound 2 times"):
+        CCD.packing_probe_spec(suite)
+
+
+def test_a_bare_annotation_is_not_a_second_binding(tmp_path: Path) -> None:
+    suite = tmp_path / "test_ci_pack.py"
+    suite.write_text(
+        "PACKING_PROBES: tuple\n"
+        "PACKING_PROBES = (('a.py', 1, 2),)\n"
+        "PACKING_PROBE_MAX_PACKS = 10\n"
+    )
+    assert CCD.packing_probe_spec(suite) == {"probes": [["a.py", 1, 2]], "max_packs": 10}
 
 
 def test_a_missing_probe_suite_is_a_refusal(tmp_path: Path) -> None:
