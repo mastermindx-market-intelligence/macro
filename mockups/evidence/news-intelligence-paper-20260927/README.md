@@ -11,6 +11,7 @@ Primary manifest: `manifest.json`
 Story Brief manifest: `brief-manifest.json`
 - same candidate page rendered with a deterministic `intelligence.desk/v1` fixture
 - capture-only harness opens the first Story Brief after production hydration
+- the proof shell hides underlying page siblings after open so full-page capture records the fixed viewport rather than a misleading long-page composite; production source is unchanged
 - eight cells: desktop/mobile × EN/ZH × dark/light
 - 8/8 attempted states captured
 

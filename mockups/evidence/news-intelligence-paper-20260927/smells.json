@@ -1,6 +1,6 @@
 {
   "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
-  "generated_at": "2026-09-27T04:02:00Z",
+  "generated_at": "2026-09-27T04:20:00Z",
   "metric_notes": {
     "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
     "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
@@ -50,7 +50,7 @@
           "viewport": "desktop"
         },
         "panel_count": 3,
-        "payload_bytes_total": 775585,
+        "payload_bytes_total": 573621,
         "raw_slug_hit_count": 0,
         "raw_slug_hits": [],
         "request_count": 16,
@@ -70,7 +70,7 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/news-intelligence-paper-20260926-sol",
-    "resolved_sha_or_none": "817d5e32c5aa36b4c1fbd5bea3c734f32feff1a8",
+    "resolved_sha_or_none": "095439a773073f534dbd522800180f915d905d27",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/news-intelligence-paper-20260926-sol (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
     "site_dir": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/news-intelligence-paper-20260926-sol/site"
   },
