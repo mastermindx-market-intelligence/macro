@@ -52,8 +52,27 @@ waves:
       vocabulary, and an end-of-projection self-check raises CaseShapeError
       rather than returning a contract-violating document. See
       DEC:CONSUMER-CYCLICAL-REFUSES-FACTS-IT-CANNOT-PUBLISH. Suite 65 -> 72.
-      OPEN: the synthetic _plnt_case() still carries 102 violations on fields
-      the gate does not police - see the follow-up in next_action.
+      The 102 residual violations it left open are CLOSED by
+      CC-V1-CASE-RECONCILIATION below.
+  - id: CC-V1-CASE-RECONCILIATION
+    title: "Synthetic case reconciled with its own contract"
+    status: done
+    next_action: >
+      _plnt_case() 102 violations -> 0, golden oracle exact on both the
+      synthetic and fixture cases. Six one-key source_record stubs became the
+      single real Exhibit 99.1 record the committed fixture asserts (a results
+      press release carries the prior-year comparatives in the same table, so
+      six facts genuinely share one document); perimeter stopped holding the
+      contract id; kind stopped defaulting to "financial", a value its own enum
+      does not contain; display_quantum became a quantum instead of a unit
+      label; subject lost three keys a closed object rejects and gained
+      subject_type; and the two facts of a pair stopped sharing one bare
+      FACT_KEY_* spelling, which had been publishing non-unique input_refs.
+      One engine change: a refusal now supersedes the
+      no_compatible_pair_for_comparison_basis it caused, because
+      _compose_changes keys that reason on the METRIC - exactly what a refusal
+      is keyed on - so the effect landed first and deduplicated the cause away.
+      Suite 72 -> 76.
   - id: CC-V1-ENTITLED
     title: "V1 entitled + browser legs"
     status: todo
@@ -99,6 +118,24 @@ landmines:
     too strict". Narrowing the instrument to restore green is the vice this
     workstream has already committed once.
   - >
+    input_refs names the fact KEY (see _fact_ref) and the contract declares it
+    uniqueItems, so the two facts of a pair must not share a key. Spelling both
+    sides with one bare FACT_KEY_* constant published
+    ["advertising_expense", "advertising_expense"] for every same-metric
+    change. Pinned by test_the_two_facts_of_a_pair_never_share_a_key.
+  - >
+    native_ref and source_records[].record_id are spelled in two places and the
+    contract validates each in isolation, so both patterns pass while the
+    pointer dangles. Pinned by
+    test_every_native_ref_resolves_to_a_declared_source_record.
+  - >
+    A test that mutates BOTH sides of a pair cannot observe a
+    cause-versus-effect collision, because removing the metric entirely means
+    _compose_changes never declares anything to collide with. The first version
+    of test_a_refusal_names_its_cause_not_only_its_effect did that, passed
+    against a mutant that deleted the behaviour it claimed to pin, and the same
+    vacuity then made reverting the real engine fix look safe. Mutate one side.
+  - >
     period_start must never be derived from period_end. Consumer Cyclical is
     retail: 4-5-4 fiscal quarters are offset from the calendar by design, so
     calendar-snapping produced valid-looking 32-day "quarters". The derivation
@@ -108,15 +145,10 @@ do_not_redo:
   - "The R8 native-staging denial: never retry, rephrase, re-home or delegate around it"
   - "The V1 boundary adjudication itself - see DEC:CONSUMER-CYCLICAL-V1-CORE-EXTENDS-INCUMBENT-NOT-TRANSPORT"
 next_action: >
-  OPEN AND OWNED BY THIS WORKSTREAM (does not need any external gate): reconcile
-  the synthetic _plnt_case() with its own contract. 102 violations remain on
-  fields the admission gate deliberately does not police - definition,
-  display_quantum, kind, perimeter, source_records, subject, and duplicate
-  input_refs from two facts sharing a key. Measured, not estimated: run
-  `python3 -c` over jsonschema Draft202012Validator against
-  contracts/sector_intelligence/consumer_cyclical_intelligence_read_model.v1.schema.json.
-  It ripples into ~40 assertions, which is why it was deferred rather than
-  rushed in behind the admission gate.
+  Nothing ungated remains at this seat. Both cases the projection can be handed
+  - the synthetic _plnt_case() and the committed fixture - now validate at zero
+  violations against the contract this module authors, with the R6 7.1 golden
+  oracle exact on both. The remaining V1 legs are all owner-gated.
   .
   Returned to Sol on carrier #7804 (comment 5814888647, 2026-09-24) naming the
   four blockers below and correcting that carrier's standing

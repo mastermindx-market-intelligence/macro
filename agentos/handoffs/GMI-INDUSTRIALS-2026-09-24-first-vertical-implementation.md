@@ -21,6 +21,10 @@ changed:
     what: "R-IND-00..07 wave-1 rulings (base ownership, carrier model, CI job, fixture law, ordering, A14 consumption)."
   - path: research/industrials/first_vertical_program/reviews/OPUS_T04_REDTEAM_2026-09-26.md
     what: "T04 two-round adversarial adjudication: six blockers (B1-B6) with reproductions, per-cure mutation re-verification, the disproved laundering hypothesis, and the binding rules for T03/T05/T06."
+  - path: research/industrials/first_vertical_program/rulings/R-IND-2026-09-26-t05-source-editions.md
+    what: "T05 dispatch rulings R1-R8 moved out of the seat scratchpad into the repo: the T04 as-built surface (R6), the round-2/round-3 consumption rules (R7), and the ORDERING correction (R8) that makes T05 non-dispatchable on T04 alone."
+  - path: research/industrials/first_vertical_program/rulings/R-IND-2026-09-26-t06-financial-dossier.md
+    what: "T06 dispatch rulings R1-R8 moved out of the seat scratchpad into the repo: contract registration, the legacy-jobs seam, the T04 as-built narrowing of R3 (R7), and the same consumption rules (R8)."
 verified:
   - claim: "Package member hashes and both research verifiers pass."
     command: "python3 verify_wave14.py; python3 verify_wave13.py"
@@ -105,7 +109,7 @@ Procedure: Mastermind protected `docs/sol_skills/INDEX.md` re-read at `origin/ma
 
 Astra/Chairman ruling 2026-09-24 ~07:50Z (relayed): Semiconductor B (#7870) owns the shared base; sector verticals extend incumbent owners and integrate later. Consumed here as R-IND-00: Industrials mints NO shell, evidence, rights, route or mount vocabulary; T01–T06 extend Company Intelligence / Fundamental Forensics / Earnings owners only; T07–T09 wait for B's route family and aggregator on `main`.
 
-Rulings R-IND-01..07 (carrier, CI job, fixture law, ordering, A14 consumption) and R-IND-10..22 (seam rulings from the Opus READ_ONLY audit, `reviews/OPUS_PLAN_SEAM_AUDIT_2026-09-24.md`) are in `research/industrials/first_vertical_program/rulings/R-IND-2026-09-24-wave1.md`. Headline seam facts: extractors live in a sibling `industrials_profiles.py` on #7905's idiom; T02 branches after #7905 merges; discovery population, `guidance_history` delegation, the shared contract, the POST route and the aggregator mount are all behind #7870 (consume by exact head sha); T06 mints a per-sector contract on #7891's precedent; T07/T08 HELD.
+Rulings R-IND-01..07 (carrier, CI job, fixture law, ordering, A14 consumption) and R-IND-10..22 (seam rulings from the Opus READ_ONLY audit, `reviews/OPUS_PLAN_SEAM_AUDIT_2026-09-24.md`) are in `research/industrials/first_vertical_program/rulings/R-IND-2026-09-24-wave1.md`. Headline seam facts: extractors live in a sibling `industrials_profiles.py` on #7905's idiom; T02 branches after #7905 merges; discovery population, `guidance_history` delegation, the shared contract, the POST route and the aggregator mount are all behind #7870 (consume by exact head sha); T06 mints a per-sector contract on #7891's precedent; T07/T08 HELD. The T05 and T06 dispatch rulings are now repo records too — `rulings/R-IND-2026-09-26-t05-source-editions.md` and `rulings/R-IND-2026-09-26-t06-financial-dossier.md` — each carrying the T04 as-built surface verified at `0e3344a9071f` and the rule that a dispatching seat re-verifies those exported names in its own C0 gate. Every other packet in this program still lives only in the seat scratchpad and dies with the session.
 
 ## 3. Fabric and hosts (as of 08:15Z)
 

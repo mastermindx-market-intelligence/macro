@@ -1256,15 +1256,28 @@ def project_economic_change(case: Mapping[str, Any]) -> dict[str, Any]:
     # A fact refused at admission is an absence the consumer must see, so it
     # is declared here rather than silently dropped. Several facts share one
     # metric (one per period role), so entries are deduplicated by dependency.
-    _declared_deps = {
-        d.get("dependency") for d in degraded_facts if isinstance(d, Mapping)
-    }
+    #
+    # A refusal SUPERSEDES ``no_compatible_pair_for_comparison_basis`` for the
+    # same dependency rather than losing to it. Both describe one event from
+    # two ends -- the pair is incomplete *because* a side was refused -- and
+    # ``_compose_changes`` keys that reason on the METRIC, which is exactly
+    # what a refusal is keyed on, so the effect lands first and the cause is
+    # deduplicated away. Reporting only the effect tells a consumer there was
+    # no pair to find, when in fact there was one and this module declined to
+    # read half of it. Any other pre-existing reason is left alone; it was not
+    # caused by this refusal.
+    _entry_by_dep: dict[Any, dict[str, Any]] = {}
+    for _d in degraded_facts:
+        if isinstance(_d, Mapping):
+            _entry_by_dep.setdefault(_d.get("dependency"), _d)  # type: ignore[arg-type]
     for _dep, _reason in refused_facts:
         _entry = _degraded(_dep, _reason)
-        if _entry["dependency"] in _declared_deps:
-            continue
-        _declared_deps.add(_entry["dependency"])
-        degraded_facts.append(_entry)
+        _existing = _entry_by_dep.get(_entry["dependency"])
+        if _existing is None:
+            _entry_by_dep[_entry["dependency"]] = _entry
+            degraded_facts.append(_entry)
+        elif _existing.get("reason") == "no_compatible_pair_for_comparison_basis":
+            _existing["reason"] = _entry["reason"]
     ready_keys = set(ready_results.keys())
 
     # ``results_by_key`` carries every emitted result, READY and
