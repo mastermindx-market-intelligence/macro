@@ -375,3 +375,91 @@ partial tree — `live-quotes.yml`, `marketing-press-wire.yml`, `marketing-hot-t
 Standing rule regardless: **a green from a `site/`/`data/` guard in a sparse worktree
 means nothing** — run them after `python3 scripts/worktree_sparse.py full`, which is also
 what CI does.
+
+## §9. Only a POSITIVE completion signal authorizes reclaim (R9 — incident 2026-09-26)
+
+`DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM`.
+
+**The law.** Absence of a signal — an idle window, no process holding a cwd, a stale
+reflog — may NEVER authorize a destructive act on a shared worktree. Only a positive
+completion signal may, and the canonical one is **`HEAD` an ancestor of `origin/main`**.
+
+**What it cost to learn.** On 2026-09-26 at 05:31 a host-local sparse sweep converted 59
+FULL worktrees, stripping `data/`, `site/`, `mockups/`, `verify_shots/` off disk on an
+"idle ≥ 24 h" gate. 34 were under the ungoverned mint root `/Volumes/Mastermind/worktrees/`
+— 12 named `sol-*`, 13 `review-*`/`pr*`. Essentially every ChatGPT-web session died in the
+early AM and most were unrecoverable: a web session hits a path that is suddenly absent,
+cannot diagnose it, wedges, and errors cascade. No commits were lost — omitted paths stay
+tracked in the index (verified: 62,071 `data/` + 19,511 `site/` + 6,573 `mockups/` + 445
+`verify_shots/` files still tracked, `git status` clean) — but the SESSIONS were, and those
+are the more expensive asset.
+
+**Why the obvious fix is the wrong one.** "Use 72 h instead" preserves the defect and only
+lowers its firing rate. Idleness means two incompatible things and a sweeper cannot tell
+them apart:
+
+| Session kind | Shell between tool calls | What 24 h of silence means |
+|---|---|---|
+| Claude Code / Codex / fabric lane | exits | genuinely dead |
+| **ChatGPT web conversation (Sol reviews)** | **no shell at all; resumes when its human replies** | **nothing whatsoever — no threshold is safe** |
+
+**Why the positive signal is also cheaper.** It arrives for free the moment a PR
+squash-merges. It needs no TTL, no polling and no `du`. And it collapses a step: a landed tree needs **no `refs/salvage/*` ref at
+all** — `origin/main` already references its commits, so durability is automatic rather
+than purchased (contrast §"salvage" for DETACHED trees, which remains necessary there).
+
+**THE SIGNAL PROTECTS THE WORK, NOT THE SESSION.** This is the correction that matters
+most, because getting it wrong reproduces the incident in a new form. "Landed" proves the
+BYTES are reproducible; it says nothing about whether someone is standing in the directory.
+Deleting a checkout destroys the working directory of anything attached to it exactly as
+thinning it did. So reclaim requires landed **and** nothing attached — and since a
+resumable web conversation is undetectable by construction (no process, no shell, no
+reflog: it lives in a browser tab), **roots that host web sessions must never be
+auto-reclaimed at all.** A live-process scan is there to REFUSE, never to grant.
+
+**Three enforcement points; none asks "is anyone still there".**
+
+1. **At birth — cheap by default.** Measured 2026-09-26: **359 of 380 trees born in 7 days
+   were already sparse (93%)**, ~0.45 GiB vs ~7.5 GiB full. The `WorktreeCreate` /
+   `SessionStart` hooks (§8) do this. The ChatGPT-web path drives raw shell and has no hook
+   surface — do not chase it with instructions; let point 2 absorb it.
+2. **At merge — reclaim the landed checkout.** Gate: `HEAD ⊆ origin/main` **and**
+   `git status --porcelain` empty. This is the only mechanism that produces real outflow.
+3. **At a ceiling — a hard per-root population cap**, evicting landed-and-clean trees
+   oldest-first. This is what converts unbounded growth into a bounded steady state, and it
+   is the pattern GitHub enforces for Codespaces (org-level retention period + maximum idle
+   timeout) precisely because per-user discipline does not hold at fleet scale.
+
+**Sparsification is a one-time backlog drain, not a lever.** Re-measured with the corrected
+gate: **0.0 GiB** reclaimable across the 27 remaining FULL trees (20 carry local changes, 5
+are unlanded, 1 active, 1 in a web-session root). The reckless version looked valuable only
+because it was counting trees it had no right to touch.
+
+**Measured pool, and why point 2 is necessary but not sufficient (2026-09-26, 811 trees).**
+The landed-and-completely-clean pool is **48 trees / 73.2 GiB** — about 1.7 days of the
+~43 GiB/day accrual. The dominant refusal is the finding that reframes the whole problem:
+
+| verdict | trees |
+|---|---|
+| **UNLANDED — commits not on `origin/main`** | **638** |
+| landed but tracked modifications | 87 |
+| **ELIGIBLE (strict) — landed and completely clean** | **48** |
+| not on disk (prune candidate, zero bytes) | 26 |
+| eligible on the weaker tracked-only gate (holds untracked files) | 7 |
+| fail-closed (HEAD/ancestry unreadable) | 4 |
+| protected checkout | 1 |
+
+**79% of worktrees never land their work.** The bloat is therefore not uncollected garbage,
+it is *unmerged work* — so no completion-signal sweeper can ever reach most of it, and
+chasing a bigger sweeper is the wrong instinct. Two consequences: (a) `refs/salvage/*`
+(already minted for 534 trees) is the mechanism that matters for that bucket, because it
+decouples *preserving the commits* from *reclaiming the checkout* for ~40 bytes each — but
+it still does not license deleting under an attached session; (b) the durable fix is
+upstream of storage entirely, in **how many lanes are opened that never merge.**
+
+**Why accumulation is the real problem.** 810 worktrees registered; **54 minted per day
+sustained**, and approximately none removed, because sessions do not close their own
+worktrees and that is not fixable by instruction. Reporting an idle age, a live cwd, or a
+reflog epoch stays useful — for a human reading a report, or to narrow an action the
+positive signal has already authorized. It is never the authorization.
+
