@@ -47,9 +47,11 @@ changed:
       semiconductor-specific handoff rather than rescuing it.
   - path: scripts/research/capture_cross_session_transfer.py
     what: >-
-      Harden source-state transitions so a later confirmation remains provenance on the existing
-      event: first-disclosure available_at, V1/V1.1 eligibility, measurement anchor, and clean-slice
-      membership cannot move, and no second event is minted by the amendment path.
+      Complete the research-only prospective execution path: preserve first-disclosure clock law;
+      deterministically freeze prior/next same-clock matched controls only from source-covered
+      observed SMH sessions; measure event/control U.S. V1+V1.1 geometry; fail closed until all
+      required pre-HK receipts agree; then score the frozen HSI next-open endpoint through ephemeral
+      Yahoo ^HSI adjusted OHLC with zero persistence or product/trading authority.
   - path: agentos/handoffs/GEOPOLITICAL-RELIEF-EVENT-STUDY-2026-09-26.md
     what: >-
       Repair the durable continuation record to the current AgentOS handoff schema, bind it to the
@@ -115,19 +117,29 @@ verified:
     result: >-
       Exact capture/replay suite at e815bdf4cb5454efb1ed50341ddca72452143909 passed 16/16;
       the sparse exact-head verifier was removed after the run.
+  - claim: >-
+      The completed prospective capture path refuses incomplete matched controls before any HSI
+      transport, preserves <=10 observed-session control distance with admitted-event-date exclusion,
+      measures selected controls at the exact source clock, and scores HSI only after the pre-HK gate.
+    command: >-
+      python3 -m pytest -q tests/test_event_microstructure_replay.py
+    result: >-
+      Exact sparse-worktree verification at e72c6bd2e9a69cc89a2b6918792f53c76370b432 passed
+      30/30 tests; pending-control tests prove zero HSI transport calls, DATA_GAP remains explicit,
+      and the temporary verifier worktree was removed.
 unverified:
-  - "The current post-fairness/handoff head still requires exact-head hosted ci and fences before the carrier can be called fully green."
+  - "The current post-harness closeout head still requires exact-head hosted ci and fences before the carrier can be called fully green."
   - "Prospective cross-session transfer generalization on future events remains unproven."
   - "The QQQ-minus-SPY challenger has zero prospective observations at this amendment boundary."
   - "Prospective operational HK-intraday capture through Tencent's roughly five-session retention window remains unproven on a qualifying future event."
 unresolved:
-  - "Current PR head must clear exact-head ci + fences after the source-clock/fairness closeout before the research carrier is considered fully green."
+  - "Current PR head must clear exact-head ci + fences after the completed prospective harness checkpoint before the research carrier is considered fully green."
   - "The source census remains retrieval_incomplete, so timing-frequency population claims remain blocked."
   - "The prospective hypothesis remains concentrated in the 2026 Iran/Hormuz family and needs future-event evidence."
 next_actions:
-  - "Consume exact-head ci/fences for the current source-clock/fairness closeout; repair only new branch-owned failures."
+  - "Consume exact-head ci/fences for the completed prospective harness checkpoint; repair only new branch-owned failures."
   - "If exact-head checks clear, preserve PR #8012 as the DRAFT frozen development/prospective carrier and do no further development predictor search."
-  - "Admit the next qualifying future event only under frozen V1/V1.1 and checkpoint its source-first receipt before reading the HSI outcome; later confirmations remain amendments to that event and cannot move first disclosure, eligibility, or the clean slice. Record both US candidate families and frozen matched controls without tuning."
+  - "On the next qualifying future event, run the existing capture harness in sequence: source admission -> event U.S. measurement -> matched-control freeze once observed-session/source coverage is terminal -> selected control U.S. measurements -> pre-HK gate -> HSI score. Later confirmations remain amendments to the same first-disclosure event."
   - "If the secondary HK intraday endpoint is used prospectively, use only the frozen Terminal Tencent owner while the required session remains in its recent-window coverage; HSI next-open remains primary and source failure remains DATA_GAP."
 do_not_redo:
   - "Do not reopen or repurpose the existing Narrative Repricing V2 prospective holdout."
@@ -138,6 +150,7 @@ do_not_redo:
   - "Do not add another development predictor family, benchmark, time bucket, or threshold from the now-open HK intraday target outcomes."
   - "Do not retry the degraded AkShare/Eastmoney HK source in this research lane while the source state is unchanged; the frozen Tencent amendment is the current secondary-source path."
   - "Do not treat V1.1 as a development winner from its higher raw hit rate; on common controls its event-minus-control uplift does not dominate V1, and its extra correctness is one development event."
+  - "Do not bypass the pre-HK gate or substitute a scheduled/future U.S. session for an observed source-covered control session; PENDING stays PENDING and blocks HSI reads."
 danger_areas:
   - "A later positive Hong Kong move must not overwrite CAUSAL_REJECTED, CONFLICTED, or DATA_GAP evidence states."
   - "AkShare/Eastmoney remains degraded and is DO_NOT_RETRY in this research lane. Tencent recent-session capability is now proven through the existing Terminal owner; the three target development rows have been read and are permanently development-only, never prospective evidence."
@@ -700,4 +713,77 @@ Exact continuation:
 3. On the first qualifying future event, checkpoint source admission before any HSI target read.
 4. Record both frozen U.S. families on the same event population; use matched controls exactly as frozen.
 5. Publish failures and DATA_GAP rows; no product/trading promotion before prospective review.
+
+## 2026-09-27 continuation addendum — prospective execution harness complete
+
+### Capability delta
+
+Before this continuation, the frozen V1/V1.1 science existed but the research harness could only
+freeze source facts and measure the event U.S. leg. A future operator could still accidentally:
+- choose a “next” control before that session/source day was complete;
+- read HSI before selected control measurements existed;
+- reimplement the HSI endpoint outside the frozen sequence.
+
+The bounded research path now enforces the full prospective order in
+`scripts/research/capture_cross_session_transfer.py`:
+
+1. `admit_source_event` — freeze first disclosure and V1/V1.1 eligibility.
+2. `amend_source_state` — later source resolution stays on the same immutable event clock.
+3. `freeze_matched_controls` — calendar-only selection from observed SMH sessions, excluding every
+   admitted source-event date, <=10 observed-session distance, with exact UTC clock reuse.
+   A next side remains `PENDING_OBSERVED_SESSION` until source coverage through that day exists.
+4. `measure_us_response` / `measure_control_us_response` — only SPY/QQQ/SMH at frozen geometry;
+   no HK outcome read.
+5. `gate_hk_outcome_read` — requires identity/clock-consistent admission, event U.S., terminal
+   control selection and every selected control U.S. receipt. PENDING fails closed.
+6. `score_hsi_outcome` — invokes the gate **before transport**, then reads only ephemeral
+   Yahoo/yfinance `^HSI` adjusted OHLC needed for event/control close -> first later open.
+   No forward fill, no store write, no pooled claim, no product/trading authority.
+
+The canonical `collectors/hk_prices.py` HK store is not mutated: it intentionally persists only
+adjusted close + volume and therefore cannot provide the protocol's open. The scorer reuses the same
+existing Yahoo provider family ephemerally, matching the development evidence basis and avoiding a
+second HK database.
+
+Implementation commits:
+- `9331a438331a5cd968723892b8adcb35891009cc` — prospective matched-control freeze + exact-clock
+  U.S. control measurement;
+- `8d6ebef0f87d912436ca2791ba5047108118e900` — pre-HK readiness gate;
+- `e72c6bd2e9a69cc89a2b6918792f53c76370b432` — gated HSI outcome scoring.
+
+Exact local proof at `e72c6bd2...`:
+- `tests/test_event_microstructure_replay.py`: **30 passed**;
+- pending controls trigger zero HSI transport calls;
+- selected-control date/clock mismatches are refused;
+- ten excluded next sessions resolve to DATA_GAP rather than replacement;
+- missing HSI anchor stays DATA_GAP;
+- conflicting duplicate HSI OHLC is refused;
+- sparse verifier cleanup: PASS.
+
+### Current-source accrual state
+
+A bounded current-source check on 2026-09-27 found no new qualifying post-V1.1 event. Reuters'
+Sept. 27 Iran report describes Trump's later public confirmation of the same rejection already
+reported by the Wall Street Journal before the V1.1 freeze, while Iran continued to await formal
+mediator transmission. Under the hardened source-clock law this is provenance on the existing
+development event, not a fresh prospective observation.
+
+This is a bounded source check, not a population no-event claim.
+
+### Finalization boundary
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+
+The bounded **development-to-prospective harness build** is complete and locally proven.
+The parent pattern-analysis mission remains incomplete because prospective generalization has zero
+qualifying post-V1.1 observations and exact current-head hosted CI/fences must still be consumed.
+
+Primary next action:
+- after exact-head hosted checks are green, preserve PR #8012 DRAFT and wait for the first qualifying
+  future event; then execute the frozen capture sequence above without retrospective tuning.
+
+Independent parallel action:
+- source-corpus completeness may improve through existing owners without opening the V2 holdout or
+  changing the two-family prospective design.
 
