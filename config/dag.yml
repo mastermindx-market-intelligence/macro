@@ -1698,6 +1698,22 @@ lanes:
           night's (moved from standout_audit_us, which needs: engine and therefore always
           ran after this whole job finished). This placement also supplies the
           COLLECT_LANE=nightly sentinel the B2 state_log write-path lane gate requires.
+      - id: capability_health
+        module: scripts.build_capability_health
+        note: >
+          non-fatal; F13 V1 capability health & freshness projection (macro #6861) — a
+          deterministic READ-ONLY join over receipts that already exist: output_health's
+          resolved view (composed off scripts.build_output_health.build, neither
+          engine/output_health.py nor scripts/build_output_health.py edited),
+          data/run_status.json's per-source nightly lane clocks and its top-level
+          stale_series frozen-tail rows, provider telemetry and the freshness sentinel.
+          Writes exactly one display-tier artifact, data/capability_health/state.json —
+          no new store, ledger, scheduler, retry, probe or incident plane. Fail-closed
+          loader: a malformed / missing-id / duplicate-id / cyclic / unresolvable-depends_on
+          config/capability_health.yml raises and writes nothing, so the last committed
+          artifact stands. Declared here because the live daily.yml engine step runs
+          immediately after chronicle_spine (a receipt it may join later) and before the
+          commit-publish timing band; ordering is not load-bearing today.
       - id: build_nw_mastermind_context
         module: scripts.build_nw_mastermind_context
         note: non-fatal; NW→Mastermind context bridge (macro #1567) — declares the live daily.yml engine step that was added without a dag.yml entry (merge-race drift)
