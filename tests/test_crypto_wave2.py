@@ -8,7 +8,7 @@ import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 
 from collectors.crypto_misc import CryptoUniverseAdapter
-from engine.btc_decision import build_decision
+from engine.btc_decision import build_decision, project_budget
 from engine.crypto_market_state import build_market_state
 from engine.crypto_universe import breadth_read, load_universe
 from scripts import build_crypto, build_vector
@@ -423,3 +423,53 @@ def test_h5_build_consumes_cockpit_decision_without_recomputing_authority():
     assert "btc_decision.build_decision" not in source
     assert 'e0.get("decision")' in source
     assert "CANONICAL_DECISION_AS_OF_MISMATCH" in source
+
+
+def test_h5_class_split_cannot_raise_or_lower_total_budget(monkeypatch):
+    index = pd.to_datetime(["2026-07-28", "2026-07-29"])
+    _patch_h5_split_context(monkeypatch, index)
+    signals = pd.DataFrame(
+        {"close": [100.0, 110.0], "alloc_optimal": [1.0, 1.0]},
+        index=index,
+    )
+
+    for exposure in (0, 17, 40, 73, 100):
+        out = build_crypto._allocation(
+            signals,
+            {"btc_dominance": 58.0},
+            _decision_projection(exposure),
+        )
+        assert out["available"] is True
+        assert out["exposure"] == exposure
+        assert out["btc"] + out["eth"] + out["alts"] == exposure
+        assert out["cash"] == 100 - exposure
+
+
+def test_h5_named_override_consumes_final_not_raw_budget(monkeypatch):
+    index = pd.to_datetime(["2026-07-28", "2026-07-29"])
+    _patch_h5_split_context(monkeypatch, index)
+    signals = pd.DataFrame(
+        {
+            "close": [100.0, 110.0],
+            "alloc_optimal": [0.8, 0.4],
+            "alloc_optimal_raw": [0.8, 0.8],
+            "override_active": [False, True],
+            "override_id": [None, "risk-brake"],
+        },
+        index=index,
+    )
+    decision = build_decision(signals, {"band": "NEUTRAL"})
+    assert decision["status"] == "ok"
+    assert decision["final"]["exposure_pct"] == 40
+    assert decision["raw_model"]["exposure_pct"] == 80
+
+    out = build_crypto._allocation(
+        signals,
+        {"btc_dominance": 58.0},
+        project_budget(decision),
+    )
+
+    assert out["available"] is True
+    assert out["exposure"] == 40
+    assert out["btc"] + out["eth"] + out["alts"] == 40
+    assert out["cash"] == 60

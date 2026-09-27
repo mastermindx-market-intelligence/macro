@@ -40,10 +40,11 @@ waves:
       authority or the existing class split during that template integration.
     note: >
       Source implementation is BUILT_NOT_PROVEN at
-      fc93f8e7eeec8c70b285191aa2374e88f71332c3: build_crypto no longer reads
-      alloc_optimal as H5 total-budget authority; btc.decision/v1 now projects the
-      canonical budget into crypto.cockpit/v1 and the existing class overlay only
-      splits an available target.
+      26fd88c7dad5448f69e6096037cf099d96d0c01e: build_vector projects the
+      canonical btc.decision/v1 budget into crypto.cockpit/v1, and build_crypto
+      consumes that exact receipt only. It rejects stale as-of dates and never
+      recomputes total-budget authority from raw signals; the existing class overlay
+      only splits an available target.
 next_action: >
   Keep PR #8050 as the source carrier for the implemented canonical H5 budget
   seam. After its exact-head CI/fences return, reconcile #7645's Crypto template
@@ -223,3 +224,10 @@ P0B source authority is now **BUILT_NOT_PROVEN** at `fc93f8e7eeec8c70b285191aa23
 Local verification on the candidate: Crypto CI-owner tests **34 passed**; Vector CI-owner tests **95 passed**; Python compile and diff checks passed. These are local receipts, not exact-head GitHub acceptance.
 
 Open #7645 owns the current Crypto template/publication bytes, so H5 unavailable-state UI integration and real browser acceptance remain fenced there. Do not touch #7645's template from this carrier and do not call P0B complete until that ownership is reconciled, exact-head checks pass, and the real generated H5 path proves valid-zero, unavailable/integrity-failure and happy-path states.
+
+
+## 2026-09-27 current continuation
+
+P0B source authority remains `BUILT_NOT_PROVEN` at local candidate `26fd88c7dad5448f69e6096037cf099d96d0c01e`. Additional adversarial tests now cover exact-budget conservation, named override final-vs-raw authority, stale decision dates and the fail-closed `project_budget()` projection. Combined Vector/Crypto authority regression pack: 147 passed locally.
+
+The only user-facing P0B blocker is still template custody plus real-route proof: #7645 remains open and owns `templates/crypto.html.j2` / `site/crypto.html`. Do not edit those paths from PR #8050 while that carrier remains unreconciled. After custody clears, add the explicit H5 unavailable state and prove valid-zero, canonical-unavailable/integrity-failure and happy-path allocations in EN/ZH and both themes before accepting P0B.

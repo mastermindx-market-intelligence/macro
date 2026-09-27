@@ -130,3 +130,41 @@ The first broader Crypto run in the intentionally sparse worktree had four envir
 Open PR #7645 still owns `templates/crypto.html.j2` / `site/crypto.html`. This source carrier deliberately did **not** touch those paths. The current H5 template cannot truthfully render the new unavailable allocation object because it assumes numeric percentages. Therefore P0B is **BUILT_NOT_PROVEN**, not complete.
 
 Exact next integration action after #7645 is reconciled: add one explicit H5 unavailable state to the accepted Crypto template, consuming `allocation.available` / canonical decision metadata without changing the class split or total-budget authority; then prove valid 0%, integrity-invalid/unavailable, and happy-path allocations on the real generated route in EN/ZH and both themes. Only after exact-head CI/fences and real H5 browser proof may P0B be accepted.
+
+
+## Exact-receipt refinement — supersedes fc93 as current P0B source head
+
+Commit `26fd88c7dad5448f69e6096037cf099d96d0c01e` supersedes `fc93f8e7eeec8c70b285191aa2374e88f71332c3` as the current P0B source candidate. The earlier commit established the correct owner and fail-closed split; this refinement removes the final recomputation seam.
+
+The production pipeline already guarantees Vector before Crypto in daily/render/engine-render. Therefore `build_crypto` now consumes the exact `crypto.cockpit/v1.decision` receipt emitted by the preceding Vector build. It no longer imports or invokes `btc_decision.build_decision`. The class split also requires `decision.as_of` to equal the Vector signals date; a stale otherwise-valid receipt returns `CANONICAL_DECISION_AS_OF_MISMATCH` and the build fails closed.
+
+Test fixtures that directly build Crypto now stage a minimal valid cockpit DecisionState receipt, matching the real pipeline dependency rather than relying on hidden recomputation.
+
+Fresh current-source verification:
+- focused exact-receipt cases: **3 passed**;
+- full Crypto CI-owner pack: **36 passed, 0 failed**;
+- Python compile and diff checks: PASS.
+
+This is still BUILT_NOT_PROVEN because #7645 owns the H5 template and the real unavailable-state rendering/browser proof remains pending.
+
+
+### 2026-09-27 Extra High verification refinement
+
+Current protected Mastermind law for this continuation is `90402d76494707ca4d385076a007b2de78d23a20`; INDEX blob `94d1af402598894372858793a5b1931019c5fa77`, Skillpack 1.0.1 / bootstrap major 1. The Chairman's live `Continue` instruction supplies present intent for the already-assigned Crypto production-readiness mission. Current law supersedes the older redundant Executive-request prerequisite for routine, custody-clear source work; it does not waive source collision, CI, effect or release gates.
+
+The current P0B source candidate remains `26fd88c7dad5448f69e6096037cf099d96d0c01e`. Additional adversarial coverage added on top of that candidate proves:
+
+- the class overlay cannot raise or lower the canonical total budget: for canonical 0/17/40/73/100% exposures, BTC+ETH+alts equals exactly the canonical exposure and cash is the residual;
+- a named override may legitimately make raw model exposure differ from final exposure, and H5 consumes the final canonical 40% rather than the raw 80%;
+- a canonical decision with a stale `as_of` is rejected with `CANONICAL_DECISION_AS_OF_MISMATCH`;
+- `project_budget()` preserves a valid 0% target, suppresses diagnostic final exposure when DecisionState integrity fails, and rejects missing/noncanonical decision objects.
+
+Fresh combined local regression receipt after de-duplicating tests already present in `26fd88c7`: **147 passed, 0 failed** across the exact Vector authority/R2 pack plus every `tests/test_crypto_*.py` suite. Existing Pandas deprecation and temporary Chromium cleanup warnings remain and are not asserted resolved. Standalone `test_crypto_build_is_lightweight_and_live_wired` also passed independently.
+
+Bypass census on current bytes:
+- `scripts/build_crypto.py` contains zero `alloc_optimal` references;
+- `crypto.cockpit/v1.authority.sizing_source` is `btc.decision/v1.final.exposure_pct`;
+- `build_crypto` consumes `e0["decision"]` and does not import/call `btc_decision.build_decision`;
+- `build_vector` names `crypto.html:H5` as a cockpit consumer.
+
+Open PR #7645 remains open at `74298e32bbbbc7f00884ece259455b9bbe46fd6f` and still owns `templates/crypto.html.j2` / `site/crypto.html`. This carrier does not edit those paths. P0B therefore remains `BUILT_NOT_PROVEN`: source authority is closed locally, but live H5 unavailable-state presentation and browser proof remain blocked on template custody reconciliation.
