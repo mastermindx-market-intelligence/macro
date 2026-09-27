@@ -31,6 +31,12 @@ changed:
     what: "Same."
   - path: research/mining/m1_integration_program/T08_FREEZE_PACKET.md
     what: "Same, plus a new §8 recording what this wave landed against its §3 gap, §5 table and §6 findings, and retracting a seat summary that had said '6 COVERED' where §5 itself says 5."
+  - path: agentos/workstreams/WS-GMI-MINING-M1-INTEGRATION.md
+    what: "Advanced at the wave boundary. MIN-W2 and the top-level next_action both still described #7950 as READY-not-merged at head 64a0b1dd - a head two revisions stale and a state two ladder rungs behind the evidence. Now records T04a at PRODUCTION_PROOF, states the dispatch position explicitly, and adds the two do_not_redo entries and two landmines this wave paid for."
+  - path: agentos/handoffs/GMI-MINING-2026-09-26-m1-integration.md
+    what: "CORRECTED AT SOURCE rather than only superseded. A refuted claim that still reads as standing guidance gets applied by the next lane that finds it - the same defect as R-MIN-33f. An appended correction banner refutes its '#7950 unblocks T04b' line and its '>= 8 ci-pack-*' watcher prescription, and states that nothing else in it is withdrawn."
+  - path: "research/mining/m1_integration_program/rulings/R-MIN-2026-09-24-wave1.md (second edit)"
+    what: "R-MIN-33f's own row now says 'clause 2 AMENDED BY R-MIN-33g' in its header cell and carries the amendment inline. Adjacency was not a correction: 33g sits on the next line, but 33f's own text still told a reader to use the unsatisfiable pack floor and said nothing about re-reading after a push."
 verified:
   - claim: "PR #7950 merged on CONCLUDED green, not mid-flight - the distinction this session learned the hard way."
     command: "gh run list --workflow ci.yml --branch claude/min-t04a-definitions --json headSha,status,conclusion (selected on head c05368b31a6)"
@@ -56,7 +62,8 @@ unverified:
   - claim: "This records PR itself reaches MERGED."
     what_would_verify: "The corrected watcher (scratchpad/watch_pr.sh, keyed on the run's own status for the exact head sha) exits 0, then the files resolve on origin/main."
 unresolved:
-  - "R-MIN-33f's shipped text still reads as standing law on its own. R-MIN-33g amends it in the same table, but a lane reading 33f alone would still apply the unsatisfiable pack-presence floor. A future records wave should consider editing 33f in place with a pointer rather than relying on adjacency."
+  - "#8060's post-merge proof run 36288860409 had not concluded when this wave was assembled: ci-plan, contract-delta and ci-pack-1 all SUCCESS, ci-pack-0 still running. No red so far, but main's state under that merge is not yet proven either way."
+  - "T02 cannot start and nothing in this program can advance past it until CDV-1 #7905 reaches main. That is another seat's DRAFT under its own audit, so this program has no lever on it at all - not a lane to work, a dependency to wait out."
 next_actions:
   - "Own THIS records PR to MERGED, then verify the files on origin/main. Use the corrected watcher: the expected check set is the ci.yml RUN's job list for the exact head sha and completion is that run's status == completed. Do NOT use a constant pack floor (R-MIN-33g) and do NOT read zero packs as proof that no packs will come - ci-plan takes about four minutes to publish the plan."
   - "Wait out watcher byclvs37e on run 36288860409 (#8060's post-merge proof). If any of contract-delta / ci-pack-0 / ci-pack-1 concludes failure, main is red from this seat's mid-flight merge and this seat owns the heal - one PR carrying every fix that pack needs (CLAUDE.md 'Healing a red pack')."
