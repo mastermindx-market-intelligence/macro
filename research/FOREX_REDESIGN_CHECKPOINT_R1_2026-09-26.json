@@ -193,7 +193,7 @@
     "Do not let stale detail reuse a fresh stance or hide the age qualification."
   ],
   "boundary": "R4 glance-first/degraded-state design and qualification are preserved in a new immutable archive and this cumulative checkpoint; native integration is held by exact shared-file custody. Parent mission remains incomplete and no unattended execution is claimed.",
-  "next_action": "Paper lane: after genuine original-owner/canonical custody release and current permission reconciliation, apply the smallest R4 existing-board slice and inspect native dark/light screenshots. Production lane: once #7409/#7466 source custody is reconciled, start tests-first on FX-R4-SEM-01 (single 1m-vs-USD basis) and the R4 glance view-model; do not rewrite the engine/template wholesale.",
+  "next_action": "Production lane: when a current-main source carrier is lawfully admitted, create tests/test_forex_r4_contract.py and start RED on FX-R4-SEM-01 plus FX-R4-DATA-01 using the proposed pure helpers; scripts/build_forex.py is not currently collision-owned by the known open Forex PRs. Do not touch templates/forex.html.j2 or tests/test_build_forex_stance.py until #7409 is consumed/composed, and do not touch shared theme files until #7466 is consumed/composed. Paper lane remains held until genuine #927 custody release.",
   "resume_surface": "A current Chairman-authorized Mastermind session reading this cumulative checkpoint, immutable R4 archive, latest #927 custody return, and current production source owners #7409/#7466.",
   "mode": {
     "user_reported_selected_mode": "Extra High",
@@ -348,6 +348,143 @@
       "No source-rights assumption from current availability.",
       "No trade recommendation or promotion of historical cheapness into predictive support.",
       "No production mutation until exact source-collision ownership is reconciled."
+    ],
+    "freshness_contract": {
+      "pattern_owner": "Reuse the existing product freshness pattern shape demonstrated by engine/hk_freshness.py; do not import HK-specific sources, thresholds, calendar, persistence or state file.",
+      "forex_vm_shape": {
+        "checked_at": "ISO timestamp for the composed Forex readiness evaluation",
+        "asof": "overall latest trustworthy completed FX observation date",
+        "dependencies": "mapping of named existing Forex dependencies to {asof, lag_days_or_sessions, state, critical, note?}",
+        "dependency_states": [
+          "fresh",
+          "slow",
+          "stale",
+          "missing",
+          "error"
+        ],
+        "verdict": [
+          "ok",
+          "degraded",
+          "stale"
+        ],
+        "banner_message": "plain EN/ZH meaning for Tier 1 when verdict != ok",
+        "action_policy": "map actions to required dependencies; stale/missing/error disables only the dependent action",
+        "last_trustworthy_values": "preserved with original signs/units; never converted to neutral/zero"
+      },
+      "aggregation_rule": [
+        "A stale/error critical price or coherence dependency can force page verdict stale.",
+        "A missing/stale noncritical research dependency yields degraded when core price/context remains trustworthy.",
+        "The detail route consumes the same readiness verdict/receipts as the overview so deep-link navigation cannot bypass the stale qualification.",
+        "Freshness evaluation is deterministic and presentation-owned; no LLM decides freshness or action availability."
+      ],
+      "non_goals": [
+        "No Forex-specific freshness daemon/service.",
+        "No second state-history or retry registry.",
+        "No reuse of HK-specific 2/4/5-day thresholds or HK trading calendar.",
+        "No hiding stale values merely because current-data actions are disabled."
+      ]
+    },
+    "proposed_interfaces": {
+      "_r4_currency_rows(strength: dict, horizon: str = '1m') -> dict": [
+        "Return {basis:'vs_usd', horizon, rows, domain} from strength.horizons[horizon].",
+        "Each row uses vs_usd_pct for order, visible value and bar geometry; row.strength is not mixed into this surface.",
+        "USD is the zero reference and is not counted as a ranked non-USD currency.",
+        "Missing/nonfinite values remain unavailable and do not become 0."
+      ],
+      "_r4_pair_identity(pair_vm: dict, meta: dict) -> dict": [
+        "Return assessed_currency/base, display_pair, quote_currency, invert/quote_orientation, signed_currency_move_vs_usd and displayed_quote_move separately.",
+        "For inverted market quotes such as USD/JPY, pair direction and JPY direction remain explicit rather than algebraically guessed by the template."
+      ],
+      "_r4_rate_gap(carry_diff: float|None, base: str, quote_ccy: str, locale: str) -> dict": [
+        "Return side/favored_currency, abs_gap_pp and plain label; never return 'Paid to hold'.",
+        "A negative base-vs-US differential must say rates favor USD (or the actual opposite leg), preserving the original signed receipt."
+      ],
+      "_r4_liquidity_display(liquidity: dict|None) -> dict": [
+        "Normalize the existing canonical dollar-framed liquidity result into one display state whose label, explanation and signed net change cannot contradict.",
+        "Do not recompute WALCL-RRP-TGA or change engine sign conventions."
+      ],
+      "_r4_readiness(...) -> dict": [
+        "Compose existing Forex source/artifact timestamps into the freshness_contract above.",
+        "Keep the function pure for unit tests; write/persistence remains with existing build/artifact owners only."
+      ],
+      "_r4_glance_vm(...) -> dict": [
+        "Compose leader, breadth, principal constraint, attention items, currency rows and readiness from existing VM fields.",
+        "No new score or recommendation authority."
+      ]
+    },
+    "test_ownership": {
+      "new_noncolliding_file": "tests/test_forex_r4_contract.py",
+      "rationale": "Use a dedicated R4 contract suite for new producer/view-model semantics so current #7409 ownership of tests/test_build_forex_stance.py is not displaced.",
+      "tests": [
+        {
+          "name": "test_currency_rows_use_one_month_vs_usd_for_rank_value_and_bar",
+          "proves": "FX-R4-SEM-01",
+          "red_condition": "A fixture where cross-sectional strength order differs from vs_usd_pct order must fail against the current mixed-basis rendering contract."
+        },
+        {
+          "name": "test_currency_rows_keep_missing_move_unavailable",
+          "proves": "No fabricated zero / honest partial ranking",
+          "red_condition": "None/NaN vs_usd_pct cannot become a zero-width neutral row or affect breadth denominator."
+        },
+        {
+          "name": "test_usdjpy_exports_pair_quote_and_jpy_direction_separately",
+          "proves": "FX-R4-SEM-02",
+          "red_condition": "A lower USD/JPY quote with stronger JPY must expose both directions explicitly rather than one ambiguous signed change."
+        },
+        {
+          "name": "test_liquidity_supportive_drain_never_renders_as_adding",
+          "proves": "FX-R4-SEM-03",
+          "red_condition": "Existing {dir:'supportive', net_chg_bn:positive-dollar-framed} must not produce copy saying net liquidity is adding."
+        },
+        {
+          "name": "test_negative_rate_gap_names_favored_side_not_paid_to_hold",
+          "proves": "FX-R4-SEM-04",
+          "red_condition": "Negative JPY carry_diff must render 'rates favor USD' semantics and never 'Paid to hold'."
+        },
+        {
+          "name": "test_readiness_stale_core_preserves_values_and_blocks_current_action",
+          "proves": "FX-R4-DATA-01",
+          "red_condition": "Stale core input keeps last value/sign but verdict is stale and current-data watch action is unavailable."
+        },
+        {
+          "name": "test_readiness_partial_research_feed_degrades_without_blocking_independent_navigation",
+          "proves": "FX-R4-DATA-01 lane-local degradation",
+          "red_condition": "Missing noncritical positioning/value input must be degraded/partial rather than whole-page stale or neutralized."
+        },
+        {
+          "name": "test_glance_breadth_denominator_excludes_usd_and_unavailable_rows",
+          "proves": "R4 leader/breadth truth",
+          "red_condition": "Illustrative 7/9 cannot be reproduced by counting USD or missing rows."
+        }
+      ],
+      "existing_suites_to_extend_only_after_owner_reconciliation": {
+        "tests/test_forex.py": [
+          "Producer arithmetic/orientation invariants only; keep engine semantics separate from presentation."
+        ],
+        "tests/test_forex_context_bus.py": [
+          "Pin additive latest.json readiness/glance contract once the producer fields exist."
+        ],
+        "tests/test_build_forex_stance.py": [
+          "Render/Tier-1 stance contract only after #7409 is consumed/composed; do not edit this file while its owner remains open."
+        ]
+      },
+      "render_contract_after_template_owner_consumed": [
+        "Tier-1 hero has stance + ≤4-word headline + ≤14-word qualification.",
+        "Exactly three glance facts before analytical depth.",
+        "At narrow widths What matters next precedes the full ranking.",
+        "Stale detail shows age warning and Stand aside/older-data before evidence.",
+        "Negative rate gap never contains 'Paid to hold'.",
+        "ZH keeps sign/value identity while directional color convention remains red-up/green-down."
+      ]
+    },
+    "implementation_sequence": [
+      "1. On a current-main implementation carrier, add tests/test_forex_r4_contract.py and observe the SEM-01/readiness tests fail for the intended missing interfaces.",
+      "2. Implement pure R4 helper/view-model functions in scripts/build_forex.py (or a small existing-style helper module only if current code organization requires it); do not touch templates/theme yet.",
+      "3. Extend latest.json additively with R4 glance/readiness fields and pin in tests/test_forex_context_bus.py.",
+      "4. Reconcile/consume #7409 before modifying templates/forex.html.j2 or tests/test_build_forex_stance.py; retain its tooltip repair.",
+      "5. Reconcile/consume #7466 before theme-layer changes; reuse accepted shared light tokens/materials.",
+      "6. Port the smallest answer-first overview/detail markup, then served-path browser proof across theme/locale/width and degraded states.",
+      "7. Only after source integration passes should the same semantics be projected to Paper when the #927 custody hold has independently cleared."
     ]
   }
 }
