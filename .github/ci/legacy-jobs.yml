@@ -16635,6 +16635,11 @@ jobs:
       - tests/test_dataos_quality.py
       - tests/test_dataos_registry.py
       - tests/test_dataos_temporal.py
+      # Market Experience PIT-universe qualification stays in the canonical Data OS
+      # lane: network/parquet access is lazy, while the unit suite pins identity refusal
+      # semantics without materializing data/ or adding a second identity plane.
+      - scripts/audit_massive_pit_universe.py
+      - tests/test_massive_pit_universe_audit.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -16644,7 +16649,7 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pyyaml
-      - name: Data OS identity / temporal / price-basis / nulls / registry / quality contracts
+      - name: Data OS identity / temporal / price-basis / nulls / registry / quality / PIT-universe contracts
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_dataos_identity.py
@@ -16652,7 +16657,8 @@ jobs:
           tests/test_dataos_price.py
           tests/test_dataos_nulls.py
           tests/test_dataos_registry.py
-          tests/test_dataos_quality.py -q -rs
+          tests/test_dataos_quality.py
+          tests/test_massive_pit_universe_audit.py -q -rs
 
   dataos-identity-seams:
     # DOS-1.2 — the identity seam gate. `config/identity_seams.yml` declares every surface
