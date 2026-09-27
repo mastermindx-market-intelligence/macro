@@ -17647,6 +17647,8 @@ jobs:
       - "engine/research_vault/r2_store.py"
       - "scripts/publish_company_intelligence_r2.py"
       - "scripts/refresh_event_workspaces.py"
+      - "engine/fundamental_forensics/industrials_result_cash.py"
+      - "tests/test_industrials_result_cash.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -17664,4 +17666,4 @@ jobs:
         # Stated identically in clean-venv proof below.
         run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
-        run: python -m pytest tests/test_industrials_dependency_binding.py -q
+        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py -q
