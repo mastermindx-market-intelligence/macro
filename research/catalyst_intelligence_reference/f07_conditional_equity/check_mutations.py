@@ -23,7 +23,13 @@ MUTATIONS={
                                               "dividend = n['distributions_paid'] / opening_shares"),
     'missing_probability_becomes_zero': ("_s(expected) if expected is not None else None","_s(expected) if expected is not None else '0'"),
     'grant_ranking_authority': ("'can_rank':False","'can_rank':True"),
-    'permit_future_input': ("if _iso(packet['known_at'], 'known_at') > at:","if False and _iso(packet['known_at'], 'known_at') > at:"),
+    'pe_proceeds_disappear': ("if new_shares != 0:","if False and new_shares != 0:"),
+    'preinformation_entry': ("if quote_at < known_at:","if False and quote_at < known_at:"),
+    'different_security_quote': ("if _text(quote['subject_ref'], 'quote.subject_ref') != packet['subject_ref']:","if False and _text(quote['subject_ref'], 'quote.subject_ref') != packet['subject_ref']:"),
+    'different_share_basis': ("if _text(quote['share_basis_ref'], 'quote.share_basis_ref') != packet['share_basis_ref']:","if False and _text(quote['share_basis_ref'], 'quote.share_basis_ref') != packet['share_basis_ref']:"),
+    'unsupported_conversion': ("if _d(quote['common_shares_per_unit'], 'quote.common_shares_per_unit', positive=True) != 1:","if False and _d(quote['common_shares_per_unit'], 'quote.common_shares_per_unit', positive=True) != 1:"),
+    'discard_replay_inputs': ("'input_envelope':envelope","'input_envelope':{}"),
+    'permit_future_input': ("if known_at > at:","if False and known_at > at:"),
 }
 
 
@@ -38,6 +44,7 @@ def main() -> int:
         with tempfile.TemporaryDirectory(prefix='f07-mutant-') as td:
             root=Path(td);(root/'f07_scenario_reference.py').write_text(changed)
             shutil.copy2(HERE/'test_f07_scenario_reference.py',root/'test_f07_scenario_reference.py')
+            shutil.copy2(HERE/'test_f07_review_regressions.py',root/'test_f07_review_regressions.py')
             p=subprocess.run([sys.executable,'-m','pytest','-q','--tb=no','--junitxml=result.xml'],cwd=root,capture_output=True,text=True,timeout=20)
             tree=ET.parse(root/'result.xml').getroot()
             suites=list(tree.iter('testsuite'))
