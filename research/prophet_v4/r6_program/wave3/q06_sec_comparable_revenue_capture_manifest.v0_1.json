@@ -131,5 +131,35 @@
     "packet4_adapter_edits": false,
     "paper_edits": false
   },
-  "next_action": "independent source-method review; on acceptance Packet3 registers one prospective trial"
+  "next_action": "independent source-method review; on acceptance Packet3 registers one prospective trial",
+  "external_primary_checks": {
+    "checked_at_utc": "2026-09-27T03:40:01.558619+00:00",
+    "scope": "current official source-access and public-use boundary spot check; not a replacement rights grant",
+    "US_SEC": {
+      "official_refs": [
+        "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+        "https://www.sec.gov/newsroom/press-releases/2021-159"
+      ],
+      "supports": "unauthenticated public submissions/XBRL APIs covering 8-K, 20-F, 40-F and 6-K families; real-time intraday updates and nightly bulk publication",
+      "does_not_support": "blanket exhibit-body model/redistribution rights, exact capture clocks, fiscal comparability or correction lineage"
+    },
+    "HK_HKEX": {
+      "official_refs": [
+        "https://www1.hkexnews.hk/search/titlesearch.xhtml"
+      ],
+      "supports": "official exact release-time, stock, category and linked result/report metadata",
+      "does_not_support": "bulk body retention/model-use rights, numeric field extraction, complete history or immutable revision lineage"
+    },
+    "CA_SEDAR_PLUS": {
+      "official_refs": [
+        "https://systems.securities-administrators.ca/onlinehelp/general-help/getting-started/general-public-access/",
+        "https://systems.securities-administrators.ca/terms-of-use/"
+      ],
+      "supports": "manual public search/download availability",
+      "blocks": "public-site database construction/storage plus scraping or automated reproduction of multiple pieces under current Terms of Use",
+      "required_next": "written permission, licensed distribution access or another lawful first-party feed with clocks, identity, correction, retention and model-use review"
+    },
+    "authority_change": false,
+    "collector_authorized": false
+  }
 }

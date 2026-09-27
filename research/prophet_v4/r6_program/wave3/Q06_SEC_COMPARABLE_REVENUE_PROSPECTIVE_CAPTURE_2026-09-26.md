@@ -253,6 +253,28 @@ SEC-reporting foreign private issuers may enter the US SEC construction through 
 6-K where identity and source rules pass. That does not establish China/HK/Canada
 native-market transportability or trading feasibility.
 
+### Current primary-authority spot check — access is not a blanket rights grant
+
+Checked on 2026-09-27 UTC against current official pages:
+
+| Authority | Current fact established | What it does **not** establish |
+|---|---|---|
+| U.S. SEC EDGAR API documentation | `data.sec.gov` exposes unauthenticated REST JSON for filer submissions and XBRL facts from 8-K, 20-F, 40-F and 6-K families; submissions are updated through the day and bulk structures are republished nightly | It does not replace the source-family rights register, exact exhibit-body receipt, correction chain, fiscal comparability or decision-time capture required by this study |
+| HKEX Listed Company Information Title Search | The official search exposes exact release timestamps, stock identity, document category and linked result/report documents; current examples include interim results and interim reports | It does not establish lawful bulk body retention/model use, a numeric comparable-field parser, historical completeness or immutable revision lineage |
+| SEDAR+ public access and Terms of Use | The public can search and download documents, but the official terms prohibit constructing/storing a database from Public Information and prohibit scraping or automated reproduction of multiple pieces from the public website | Public browser availability is not an automated source grant; Canada remains blocked until written permission, licensed distribution access or another lawful first-party feed passes clocks, identity, correction, retention and model-use review |
+
+Official references:
+
+- `https://www.sec.gov/search-filings/edgar-application-programming-interfaces`
+- `https://www.sec.gov/newsroom/press-releases/2021-159`
+- `https://www1.hkexnews.hk/search/titlesearch.xhtml`
+- `https://systems.securities-administrators.ca/onlinehelp/general-help/getting-started/general-public-access/`
+- `https://systems.securities-administrators.ca/terms-of-use/`
+
+These checks strengthen source feasibility and the Canada refusal; they do not
+promote any market to confirmatory-ready, change the five-rights determinations,
+or authorize a new collector.
+
 ## 8. Prioritized missing-data decision
 
 The highest-value acquisition is **not consensus**. It is lawful immutable
