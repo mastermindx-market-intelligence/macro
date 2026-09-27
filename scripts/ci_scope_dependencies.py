@@ -454,10 +454,12 @@ def _checkout_bases(tree: ast.Module) -> set[str]:
     return bases
 
 
-def _docstring_ids(tree: ast.Module) -> set[int]:
+def _docstring_ids(
+    tree: ast.Module, *, nodes: tuple[ast.AST, ...] | None = None
+) -> set[int]:
     """Identities of Constant nodes that are docstrings, so prose is excluded."""
     out: set[int] = set()
-    for node in ast.walk(tree):
+    for node in nodes if nodes is not None else ast.walk(tree):
         if not isinstance(
             node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
         ):
@@ -473,7 +475,9 @@ def _docstring_ids(tree: ast.Module) -> set[int]:
     return out
 
 
-def _data_lines(source: str, tree: ast.Module) -> set[int]:
+def _data_lines(
+    source: str, tree: ast.Module, *, nodes: tuple[ast.AST, ...] | None = None
+) -> set[int]:
     """Lines a ``# ci-trigger-closure: data`` comment excludes from reads."""
     try:
         comments = [
@@ -486,14 +490,15 @@ def _data_lines(source: str, tree: ast.Module) -> set[int]:
     if not comments:
         return set()
 
+    walk_nodes = nodes if nodes is not None else tuple(ast.walk(tree))
     literal_lines = {
         node.lineno
-        for node in ast.walk(tree)
+        for node in walk_nodes
         if isinstance(node, ast.Constant)
         and isinstance(node.value, str)
         and _PATH_LITERAL.fullmatch(node.value.strip())
     }
-    statements = [node for node in ast.walk(tree) if isinstance(node, ast.stmt)]
+    statements = [node for node in walk_nodes if isinstance(node, ast.stmt)]
 
     def span(node: ast.stmt) -> range:
         return range(node.lineno, (node.end_lineno or node.lineno) + 1)
@@ -531,7 +536,12 @@ def _resolve(module: str) -> list[str]:
 
 
 def direct_reads(
-    path: Path, *, collect_data: dict[str, str] | None = None
+    path: Path,
+    *,
+    collect_data: dict[str, str] | None = None,
+    _source: str | None = None,
+    _tree: ast.Module | None = None,
+    _nodes: tuple[ast.AST, ...] | None = None,
 ) -> dict[str, str]:
     """Return existing direct first-party reads with source-line provenance.
 
@@ -549,16 +559,17 @@ def direct_reads(
             collect_data.setdefault(rel, f"{kind} at line {line}")
 
     try:
-        source = path.read_text(errors="ignore")
-        tree = ast.parse(source)
+        source = _source if _source is not None else path.read_text(errors="ignore")
+        tree = _tree if _tree is not None else ast.parse(source)
     except SyntaxError:
         return files
 
+    walk_nodes = _nodes if _nodes is not None else tuple(ast.walk(tree))
     bases = _checkout_bases(tree)
-    docstrings = _docstring_ids(tree)
-    data_lines = _data_lines(source, tree)
+    docstrings = _docstring_ids(tree, nodes=walk_nodes)
+    data_lines = _data_lines(source, tree, nodes=walk_nodes)
 
-    for node in ast.walk(tree):
+    for node in walk_nodes:
         names: list[str] = []
         if isinstance(node, ast.Import):
             names = [alias.name for alias in node.names]
@@ -677,10 +688,12 @@ def _relative_import_modules(rel: str, node: ast.ImportFrom) -> list[str]:
     return [base, *(f"{base}.{alias.name}" for alias in node.names)]
 
 
-def _all_existing_import_reads(rel: str, tree: ast.Module) -> set[str]:
+def _all_existing_import_reads(
+    rel: str, tree: ast.Module, *, nodes: tuple[ast.AST, ...] | None = None
+) -> set[str]:
     """Resolve absolute and relative imports from any repository package."""
     out: set[str] = set()
-    for node in ast.walk(tree):
+    for node in nodes if nodes is not None else ast.walk(tree):
         names: list[str] = []
         if isinstance(node, ast.Import):
             names = [alias.name for alias in node.names]
@@ -708,7 +721,9 @@ def _all_existing_import_reads(rel: str, tree: ast.Module) -> set[str]:
     return out
 
 
-def _traversal_provenance(tree: ast.Module) -> tuple[set[str], set[str]]:
+def _traversal_provenance(
+    tree: ast.Module, *, nodes: tuple[ast.AST, ...] | None = None
+) -> tuple[set[str], set[str]]:
     """Names that prove a bare traversal call really is ``os``/``glob``.
 
     Returns the names imported FROM ``os``/``glob`` and the names bound to a
@@ -717,7 +732,7 @@ def _traversal_provenance(tree: ast.Module) -> tuple[set[str], set[str]]:
     """
     imported: set[str] = set()
     local: set[str] = set()
-    for node in ast.walk(tree):
+    for node in nodes if nodes is not None else ast.walk(tree):
         if isinstance(node, ast.ImportFrom) and node.module in {"os", "glob", "os.path"}:
             imported.update(
                 alias.asname or alias.name
@@ -810,12 +825,15 @@ def _traversal_suffixes(node: ast.Call) -> frozenset[str]:
     return frozenset(suffixes)
 
 
-def _source_ambiguities(path: Path, tree: ast.Module) -> set[str]:
+def _source_ambiguities(
+    path: Path, tree: ast.Module, *, nodes: tuple[ast.AST, ...] | None = None
+) -> set[str]:
     """Opaque edges that require an always-on job instead of a guessed scope."""
+    walk_nodes = nodes if nodes is not None else tuple(ast.walk(tree))
     findings: set[str] = set()
     subprocess_modules: set[str] = {"subprocess"}
     subprocess_calls: set[str] = set()
-    for node in ast.walk(tree):
+    for node in walk_nodes:
         if isinstance(node, ast.Import):
             for alias in node.names:
                 if alias.name == "subprocess":
@@ -824,9 +842,9 @@ def _source_ambiguities(path: Path, tree: ast.Module) -> set[str]:
             subprocess_calls.update(alias.asname or alias.name for alias in node.names)
 
     rel = path.relative_to(ROOT).as_posix()
-    docstrings = _docstring_ids(tree)
+    docstrings = _docstring_ids(tree, nodes=walk_nodes)
     module_scan_roots: set[str] = set()
-    for candidate in ast.walk(tree):
+    for candidate in walk_nodes:
         if (
             isinstance(candidate, ast.Constant)
             and isinstance(candidate.value, str)
@@ -844,9 +862,9 @@ def _source_ambiguities(path: Path, tree: ast.Module) -> set[str]:
             "data_dir", "data_root",
         }:
             module_scan_roots.add("data")
-    imported_traversals, local_traversals = _traversal_provenance(tree)
+    imported_traversals, local_traversals = _traversal_provenance(tree, nodes=walk_nodes)
     module_has_code_scan = False
-    for candidate in ast.walk(tree):
+    for candidate in walk_nodes:
         if not isinstance(candidate, ast.Call):
             continue
         if not _is_traversal_call(candidate, imported_traversals, local_traversals):
@@ -859,7 +877,7 @@ def _source_ambiguities(path: Path, tree: ast.Module) -> set[str]:
         if any(_CODE_SUFFIX_RE.search(value) for value in strings):
             module_has_code_scan = True
 
-    for node in ast.walk(tree):
+    for node in walk_nodes:
         if not isinstance(node, ast.Call):
             continue
         func = node.func
@@ -917,12 +935,18 @@ def _selector_file_analysis(rel: str) -> tuple[tuple[str, ...], tuple[str, ...]]
     path = require_materialized_file(
         ROOT / rel, reason=f"selector analysis of {rel}"
     )
+    source = path.read_text(errors="ignore")
     try:
-        tree = ast.parse(path.read_text(errors="ignore"))
+        tree = ast.parse(source)
     except SyntaxError as exc:
         return (), (f"{rel}:{exc.lineno or 0}: syntax error",)
-    reads = set(direct_reads(path)) | _all_existing_import_reads(rel, tree)
-    return tuple(sorted(reads)), tuple(sorted(_source_ambiguities(path, tree)))
+    nodes = tuple(ast.walk(tree))
+    reads = set(
+        direct_reads(path, _source=source, _tree=tree, _nodes=nodes)
+    ) | _all_existing_import_reads(rel, tree, nodes=nodes)
+    return tuple(sorted(reads)), tuple(
+        sorted(_source_ambiguities(path, tree, nodes=nodes))
+    )
 
 
 def pytest_invocation_ambiguities(command: str) -> tuple[str, ...]:
