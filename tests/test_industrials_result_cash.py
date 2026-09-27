@@ -959,6 +959,164 @@ def test_underlying_arithmetic_uses_decimal_string_comparison() -> None:
 
 
 # ---------------------------------------------------------------------------
+# B1 — production receipt fed into the derivation consumer
+# ---------------------------------------------------------------------------
+# For EACH of the five comparability gates, two tests assert the receipt
+# round-trip:
+#   (a) production build_comparison_receipt(..., checked={}) → derive refuses
+#       with the gate's named limitation.
+#   (b) production build_comparison_receipt(..., checked={<gate>: True})
+#       [+ required transformation for scale / currency] → derive proceeds
+#       with r["receipt_ref"] == receipt["receipt_id"].
+
+
+def test_b1_basis_gate_refuses_with_production_receipt_checked_empty() -> None:
+    cells = [
+        cell("100", metric="revenue_current", basis={"accounting": "GAAP", "recast": "as_reported"}),
+        cell("100", metric="revenue_prior", basis={"accounting": "GAAP"}),  # recast missing
+    ]
+    receipt = build_comparison_receipt("year_over_year", cells, checked={})
+    r = derive_result_cash("growth_pct", cells, comparison_receipt=receipt)
+    assert r["status"] == "refused"
+    assert "required_basis_unknown" in r["limitations"]
+    assert r["receipt_ref"] == receipt["receipt_id"]
+
+
+def test_b1_basis_gate_proceeds_with_production_receipt_checked_basis() -> None:
+    cells = [
+        cell("110", metric="revenue_current", basis={"accounting": "GAAP", "recast": "as_reported"}),
+        cell("100", metric="revenue_prior", basis={"accounting": "GAAP", "recast": "as_reported"}),
+    ]
+    receipt = build_comparison_receipt("year_over_year", cells, checked={"basis": True})
+    r = derive_result_cash("growth_pct", cells, comparison_receipt=receipt)
+    assert r["status"] == "ready"
+    assert r["value"] == "10"
+    assert r["receipt_ref"] == receipt["receipt_id"]
+
+
+def test_b1_perimeter_gate_refuses_with_production_receipt_checked_empty() -> None:
+    cells = [
+        cell("20", metric="gross_profit", business_dimensions={"perimeter": "company"}),
+        cell("100", metric="revenue", business_dimensions={"perimeter": "segment:alpha"}),
+    ]
+    receipt = build_comparison_receipt("same_period", cells, checked={})
+    r = derive_result_cash("margin_pct", cells, comparison_receipt=receipt)
+    assert r["status"] == "refused"
+    assert "perimeter_mismatch" in r["limitations"]
+    assert r["receipt_ref"] == receipt["receipt_id"]
+
+
+def test_b1_perimeter_gate_proceeds_with_production_receipt_checked_perimeter() -> None:
+    cells = [
+        cell("20", metric="gross_profit", business_dimensions={"perimeter": "company"}),
+        cell("100", metric="revenue", business_dimensions={"perimeter": "segment:alpha"}),
+    ]
+    receipt = build_comparison_receipt("same_period", cells, checked={"perimeter": True})
+    r = derive_result_cash("margin_pct", cells, comparison_receipt=receipt)
+    assert r["status"] == "ready"
+    assert r["receipt_ref"] == receipt["receipt_id"]
+
+
+def test_b1_duration_gate_refuses_with_production_receipt_checked_empty() -> None:
+    cells = [
+        cell(
+            "100",
+            metric="revenue_h1",
+            period={"start": "2026-01-01", "end": "2026-06-30", "fiscal_label": "FY26 H1", "duration": "half_year"},
+        ),
+        cell(
+            "100",
+            metric="revenue_q2",
+            period={"start": "2026-04-01", "end": "2026-06-30", "fiscal_label": "FY26 Q2", "duration": "quarter"},
+        ),
+    ]
+    receipt = build_comparison_receipt("year_over_year", cells, checked={})
+    r = derive_result_cash("growth_pct", cells, comparison_receipt=receipt)
+    assert r["status"] == "refused"
+    assert "duration_mismatch" in r["limitations"]
+    assert r["receipt_ref"] == receipt["receipt_id"]
+
+
+def test_b1_duration_gate_proceeds_with_production_receipt_checked_duration() -> None:
+    cells = [
+        cell(
+            "100",
+            metric="revenue_h1",
+            period={"start": "2026-01-01", "end": "2026-06-30", "fiscal_label": "FY26 H1", "duration": "half_year"},
+        ),
+        cell(
+            "100",
+            metric="revenue_q2",
+            period={"start": "2026-04-01", "end": "2026-06-30", "fiscal_label": "FY26 Q2", "duration": "quarter"},
+        ),
+    ]
+    receipt = build_comparison_receipt("year_over_year", cells, checked={"duration": True})
+    r = derive_result_cash("growth_pct", cells, comparison_receipt=receipt)
+    assert r["status"] == "ready"
+    assert r["receipt_ref"] == receipt["receipt_id"]
+
+
+def test_b1_scale_gate_refuses_with_production_receipt_checked_empty() -> None:
+    cells = [
+        cell("100", metric="revenue_current", scale=1, currency="USD"),
+        cell("100", metric="revenue_prior", scale=1000, currency="USD"),
+    ]
+    receipt = build_comparison_receipt("year_over_year", cells, checked={})
+    r = derive_result_cash("growth_pct", cells, comparison_receipt=receipt)
+    assert r["status"] == "refused"
+    assert "scale_mismatch" in r["limitations"]
+    assert r["receipt_ref"] == receipt["receipt_id"]
+
+
+def test_b1_scale_gate_proceeds_with_production_receipt_checked_scale_with_transform() -> None:
+    cells = [
+        cell("100", metric="revenue_current", scale=1, currency="USD"),
+        cell("100", metric="revenue_prior", scale=1000, currency="USD"),
+    ]
+    receipt = build_comparison_receipt(
+        "year_over_year",
+        cells,
+        checked={"scale": True},
+        transformations=(
+            {"kind": "scale_normalize", "factor": "0.001", "lineage": "USD-thousands->millions"},
+        ),
+    )
+    r = derive_result_cash("growth_pct", cells, comparison_receipt=receipt)
+    assert r["status"] == "ready"
+    assert r["receipt_ref"] == receipt["receipt_id"]
+
+
+def test_b1_currency_gate_refuses_with_production_receipt_checked_empty() -> None:
+    cells = [
+        cell("100", metric="revenue_current", currency="USD"),
+        cell("100", metric="revenue_prior", currency="EUR"),
+    ]
+    receipt = build_comparison_receipt("year_over_year", cells, checked={})
+    r = derive_result_cash("growth_pct", cells, comparison_receipt=receipt)
+    assert r["status"] == "refused"
+    assert "currency_mismatch" in r["limitations"]
+    assert r["receipt_ref"] == receipt["receipt_id"]
+
+
+def test_b1_currency_gate_proceeds_with_production_receipt_checked_currency_with_transform() -> None:
+    cells = [
+        cell("100", metric="revenue_current", currency="USD"),
+        cell("100", metric="revenue_prior", currency="EUR"),
+    ]
+    receipt = build_comparison_receipt(
+        "year_over_year",
+        cells,
+        checked={"currency": True},
+        transformations=(
+            {"kind": "currency_convert", "factor": "0.92", "lineage": "ECB-2026Q2"},
+        ),
+    )
+    r = derive_result_cash("growth_pct", cells, comparison_receipt=receipt)
+    assert r["status"] == "ready"
+    assert r["receipt_ref"] == receipt["receipt_id"]
+
+
+# ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
