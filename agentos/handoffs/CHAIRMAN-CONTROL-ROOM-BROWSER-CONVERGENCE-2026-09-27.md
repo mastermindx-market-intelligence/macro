@@ -59,7 +59,7 @@ next_actions:
 do_not_redo:
   - Preserve published receipt-recovery repair 4aecefb7 and same-store fence cd7df55e; do not restart the BrowserResource design.
   - Preserve the published writer-gate port and protocol factory c8f25281, their 229-test proof and the unchanged original GitHub app files.
-  - Preserve PR473 Rust CodeQL diagnosis in comment5852807240: exit32 because the old head has no Rust sources; do not waive scanning or manufacture placeholder Rust.
+  - "Preserve PR473 Rust CodeQL diagnosis in comment5852807240: exit32 because the old head has no Rust sources; do not waive scanning or manufacture placeholder Rust."
   - Reuse the existing pinned Python environment; do not repeat the unchanged full-repository collection failure as a progress cycle.
   - Do not retry the denied human-gh fallback or prior source-map/evidence-packaging operations through another tool, account or mode.
 danger_areas:
