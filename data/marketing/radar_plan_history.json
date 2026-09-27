@@ -2,6 +2,26 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-09-27",
+      "tickers": [
+        "AEIS",
+        "AMKR",
+        "CNM",
+        "COHU",
+        "KLAC",
+        "MOG-A",
+        "PDFS",
+        "QDEL",
+        "REXR",
+        "SHO",
+        "SIG",
+        "STRL",
+        "VTRS",
+        "WABC",
+        "XRAY"
+      ]
+    },
+    {
       "as_of": "2026-09-26",
       "tickers": [
         "AAPL",
@@ -133,36 +153,6 @@
         "UPWK",
         "WHR",
         "XRAY"
-      ]
-    },
-    {
-      "as_of": "2026-09-20",
-      "tickers": [
-        "AIZ",
-        "ANIP",
-        "C",
-        "CARR",
-        "CHRW",
-        "CNM",
-        "DG",
-        "EBAY",
-        "FIBK",
-        "FIX",
-        "GATX",
-        "HAFC",
-        "HPE",
-        "ITW",
-        "LMB",
-        "LUMN",
-        "MO",
-        "PLMR",
-        "REXR",
-        "SHO",
-        "SPCX",
-        "TJX",
-        "TTD",
-        "VTRS",
-        "XBP"
       ]
     }
   ]
