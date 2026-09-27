@@ -2259,6 +2259,7 @@ jobs:
       # store), which a page builder must not inherit.
       - "engine/market_ontology/theme_research_mounts.py"
       - "templates/_theme_research_section.html.j2"
+      - "templates/_theme_research_mounts.html.j2"
       - "tests/test_theme_research_mount_context.py"
       - "config/theme_crosswalk.yml"
       # Hook 2 on the Theme Tracker: the page mounts one section per
@@ -15740,6 +15741,7 @@ jobs:
       # mount renders — anchor, slices, schema ids, bilingual copy.
       - "engine/market_ontology/theme_research_mounts.py"
       - "templates/_theme_research_section.html.j2"
+      - "templates/_theme_research_mounts.html.j2"
       - "templates/basket_detail.html.j2"
       - "tests/test_basket_intelligence_mounts.py"
       - "tests/test_subsector_confluence.py"

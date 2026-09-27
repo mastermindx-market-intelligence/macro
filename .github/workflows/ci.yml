@@ -1891,6 +1891,7 @@ on:
       # through, and the suite that proves a second vertical needs neither.
       - "engine/market_ontology/theme_research_mounts.py"
       - "templates/_theme_research_section.html.j2"
+      - "templates/_theme_research_mounts.html.j2"
       - "tests/test_theme_research_mount_context.py"
       - "scripts/build_theme_detail.py"
       - "tests/test_theme_tracker_research_mounts.py"

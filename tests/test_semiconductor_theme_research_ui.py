@@ -41,6 +41,7 @@ JS_PATH = REPO_ROOT / "site" / "assets" / "js" / "theme-research.js"
 SCHEMA_PATH = (REPO_ROOT / "contracts" / "market_ontology"
                / "semiconductor_theme_research.v1.schema.json")
 CSS_PATH = REPO_ROOT / "site" / "assets" / "css" / "theme-research.css"
+AGGREGATOR = "_theme_research_mounts.html.j2"
 TPL_PATH = REPO_ROOT / "templates" / "state_of_themes.html.j2"
 
 HAS_NODE = shutil.which("node") is not None
@@ -502,11 +503,10 @@ def _render_page(tmp_path: Path) -> str:
     document = json.loads(state.read_text(encoding="utf-8"))
     document["themes"][0] = {**document["themes"][0], "theme_id": "ai_semiconductors"}
     state.write_text(json.dumps(document), encoding="utf-8")
-    section = TPL_PATH.parent / "_theme_research_section.html.j2"
-    if section.exists():
-        (root / "templates" / "_theme_research_section.html.j2").write_bytes(
-            section.read_bytes()
-        )
+    for partial in ("_theme_research_section.html.j2", "_theme_research_mounts.html.j2"):
+        source = TPL_PATH.parent / partial
+        if source.exists():
+            (root / "templates" / partial).write_bytes(source.read_bytes())
     return sot.render(root)
 
 
@@ -555,12 +555,30 @@ def test_template_source_mounts_through_the_shared_partial():
     not at all. The position is unchanged — still inside the lanes branch,
     immediately before the disclosure."""
     tpl = TPL_PATH.read_text(encoding="utf-8")
-    loop = ('{% for tr_mount in theme_research_mounts or [] %}'
-            '{% include "_theme_research_section.html.j2" ignore missing %}{% endfor %}')
-    assert tpl.count(loop) == 1, "the page must mount through the shared partial, once"
-    assert tpl.index(loop) < tpl.index('<p class="sot-disclosure">')
+    include = '{%% include "%s" ignore missing %%}' % AGGREGATOR
+    assert tpl.count(include) == 1, "the page must mount through the aggregator, once"
+    assert tpl.index(include) < tpl.index('<p class="sot-disclosure">')
     assert "data-theme-research-mount" not in tpl, (
         "the mount literal belongs to the section partial, not to this page"
+    )
+    # The per-vertical loop lives in the aggregator, never inline on this page.
+    # This page's LAST `endfor` is the lanes loop, and
+    # tests/test_finance_entry_points.py locates that loop with rfind, so an
+    # inline loop here moves their anchor past the finance include and fails
+    # their ordering guard while the invariant it protects still holds.
+    assert "tr_mount" not in tpl, (
+        "the per-vertical loop belongs to the aggregator: an inline loop here "
+        "moves the last `endfor` and breaks test_finance_entry_points' anchor"
+    )
+    assert tpl.rfind("{% endfor %}") < tpl.index(include), (
+        "the last `endfor` on this page must precede the aggregator include"
+    )
+    agg = (TPL_PATH.parent / AGGREGATOR).read_text(encoding="utf-8")
+    loop = ('{% for tr_mount in theme_research_mounts or [] %}'
+            '{% include "_theme_research_section.html.j2" ignore missing %}{% endfor %}')
+    assert agg.count(loop) == 1, "the aggregator must own the loop, exactly once"
+    assert "data-theme-research-mount" not in agg, (
+        "the mount literal belongs to the section partial, not to the aggregator"
     )
     # ALL NINE registration strings, not a sample. An independent review
     # re-inserted the vertical's bilingual title and both schema ids above the

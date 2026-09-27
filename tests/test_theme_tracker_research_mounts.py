@@ -54,11 +54,10 @@ def _root(tmp_path: Path, theme_ids: list[str], *, with_partial: bool = True) ->
     document["n_themes"] = len(theme_ids)
     state.write_text(json.dumps(document), encoding="utf-8")
 
-    section = REPO_ROOT / "templates" / "_theme_research_section.html.j2"
-    if with_partial and section.exists():
-        (root / "templates" / "_theme_research_section.html.j2").write_bytes(
-            section.read_bytes()
-        )
+    for partial in ("_theme_research_section.html.j2", "_theme_research_mounts.html.j2"):
+        source = REPO_ROOT / "templates" / partial
+        if with_partial and source.exists():
+            (root / "templates" / partial).write_bytes(source.read_bytes())
     return root
 
 
