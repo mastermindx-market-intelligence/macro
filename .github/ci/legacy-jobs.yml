@@ -6142,7 +6142,13 @@ jobs:
       # theme_graph/store.py and lib/pages.py transitively. Widening is the
       # safe direction per tests/test_ci_pack.py::test_curated_exclusive_scopes
       # _cover_their_own_import_closure.
+      # Shared hook 2 (#7870): scripts.build_state_of_themes renders theme-research
+      # mounts, so this job's closure now reaches the stdlib-only mount leaf and the
+      # crosswalk a mount resolves its PRIMARY basket claim against. Widening only —
+      # same safe direction the closure note above already takes.
+      - "config/theme_crosswalk.yml"
       - "engine/__init__.py"
+      - "engine/market_ontology/theme_research_mounts.py"
       - "engine/research_priority_ordering.py"
       - "engine/theme_graph/__init__.py"
       - "engine/theme_graph/store.py"
