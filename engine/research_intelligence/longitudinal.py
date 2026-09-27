@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-import re
 from datetime import date, datetime, timezone
+import re
 from typing import Any
 
 from engine.research_vault.sidecar import canon_institution, institution_is_desk
@@ -68,8 +68,8 @@ class PredecessorSelection:
 
 
 _TITLE_SECURITY_SUBJECT = re.compile(
-    r"^(?P<label>[A-Z][A-Za-z0-9&.,'’+\\/\-–— ]{1,63})\\s+"
-    r"\\((?P<ticker>[A-Z][A-Z0-9]{0,4}(?:\\.[A-Z]{1,4})?)\\)(?:\\s|$)"
+    r"^(?P<label>[A-Z][A-Za-z0-9&.,'’+/\-–— ]{1,63})\s+"
+    r"\((?P<ticker>[A-Z][A-Z0-9]{0,4}(?:\.[A-Z]{1,4})?)\)(?:\s|$)"
 )
 
 
