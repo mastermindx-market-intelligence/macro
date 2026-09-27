@@ -9,7 +9,8 @@ later corroboration/confirmation receipt to that same event, but may not move
 the first-disclosure clock, change cohort eligibility, or mint a second event.
 Stage 2: freeze_matched_controls deterministically selects the frozen prior/next
 same-clock controls from completed observed SMH sessions plus admitted-event dates.
-It refuses to treat a future/partially covered session as a clean control.
+It requires an exact source-completeness cutoff and refuses to certify the cutoff's
+still-open UTC calendar day, preventing a late same-day event from contaminating a control.
 Stage 3: measure_us_response and measure_control_us_response read the incumbent
 U.S. minute transport only and compute the already-frozen +5 to +35 minute constructions.
 Stage 4: gate_hk_outcome_read validates that source admission, control selection,
@@ -351,7 +352,7 @@ def freeze_matched_controls(
     *,
     observed_session_dates: Sequence[Any],
     admitted_event_dates: Sequence[Any],
-    source_coverage_through: str,
+    source_coverage_complete_through: str,
 ) -> dict[str, Any]:
     """Freeze calendar-only matched controls without inspecting any return or HK outcome."""
     if admission.get("schema") != SCHEMA_ADMISSION:
@@ -363,9 +364,18 @@ def freeze_matched_controls(
 
     available = _utc(str(admission.get("available_at") or ""), "admission.available_at")
     event_date = available.date()
-    coverage = _day(source_coverage_through, "source_coverage_through")
+    coverage_cutoff = _utc(
+        source_coverage_complete_through,
+        "source_coverage_complete_through",
+    )
+    # A control date is clean only after the ENTIRE UTC calendar date has elapsed.
+    # The cutoff's own date is therefore never certified, even when the cutoff is
+    # late in that day. Example: 2026-10-03T00:00Z certifies through 2026-10-02.
+    coverage = coverage_cutoff.date() - timedelta(days=1)
     if coverage < event_date:
-        raise CaptureContractError("source coverage cannot predate the admitted event date")
+        raise CaptureContractError(
+            "source completeness cutoff must certify the full admitted event date"
+        )
 
     sessions = _date_values(observed_session_dates, "observed_session_dates")
     admitted = _date_values(admitted_event_dates, "admitted_event_dates")
@@ -415,8 +425,8 @@ def freeze_matched_controls(
         "event_available_at": _iso(available),
         "event_date": event_date.isoformat(),
         "clock_utc": available.strftime("%H:%M:%SZ"),
-        "source_coverage_through": coverage.isoformat(),
-        "source_coverage_asserted_complete_through": coverage.isoformat(),
+        "source_coverage_complete_through": _iso(coverage_cutoff),
+        "source_coverage_certified_calendar_through": coverage.isoformat(),
         "selection_law": {
             "session_source": "observed_smh_sessions_only",
             "exclude_every_admitted_source_event_date": True,
@@ -1005,7 +1015,7 @@ def _parser() -> argparse.ArgumentParser:
     controls.add_argument("--admission-file", required=True)
     controls.add_argument("--session-calendar-file", required=True)
     controls.add_argument("--admitted-event-dates-file", required=True)
-    controls.add_argument("--source-coverage-through", required=True)
+    controls.add_argument("--source-coverage-complete-through", required=True)
 
     measure = sub.add_parser("measure-us", help="measure fixed U.S. geometry only")
     measure.add_argument("--admission-file", required=True)
@@ -1088,7 +1098,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 admission,
                 observed_session_dates=session_dates,
                 admitted_event_dates=admitted_dates,
-                source_coverage_through=args.source_coverage_through,
+                source_coverage_complete_through=args.source_coverage_complete_through,
             )
         elif args.command == "measure-control-us":
             with Path(args.admission_file).open("r", encoding="utf-8") as fh:

@@ -368,7 +368,7 @@ def test_capture_freeze_controls_reuses_exact_clock_and_counts_excluded_sessions
             "2026-09-30",
             "2026-10-01",
         ],
-        source_coverage_through="2026-10-02",
+        source_coverage_complete_through="2026-10-03T00:00:00Z",
     )
     assert controls["state"] == "COMPLETE"
     assert controls["prior"] == {
@@ -398,7 +398,7 @@ def test_capture_freeze_controls_keeps_next_pending_until_source_coverage_catche
             "2026-10-01",
         ],
         admitted_event_dates=["2026-09-29"],
-        source_coverage_through="2026-09-29",
+        source_coverage_complete_through="2026-09-30T00:00:00Z",
     )
     assert controls["prior"]["status"] == "SELECTED"
     assert controls["next"]["status"] == "PENDING_OBSERVED_SESSION"
@@ -427,7 +427,7 @@ def test_capture_freeze_controls_returns_data_gap_after_ten_excluded_next_sessio
         admission,
         observed_session_dates=sessions,
         admitted_event_dates=["2026-09-29", *excluded_next],
-        source_coverage_through="2026-10-13",
+        source_coverage_complete_through="2026-10-14T00:00:00Z",
     )
     assert controls["next"]["status"] == "DATA_GAP"
     assert controls["next"]["control_date"] is None
@@ -443,7 +443,7 @@ def test_capture_measure_control_us_uses_frozen_control_date_and_exact_clock_onl
             "2026-09-30",
         ],
         admitted_event_dates=["2026-09-29"],
-        source_coverage_through="2026-09-30",
+        source_coverage_complete_through="2026-10-01T00:00:00Z",
     )
     calls = []
     fixtures = {
@@ -486,7 +486,7 @@ def test_capture_measure_control_us_refuses_pending_side_before_transport():
         admission,
         observed_session_dates=["2026-09-28", "2026-09-29"],
         admitted_event_dates=["2026-09-29"],
-        source_coverage_through="2026-09-29",
+        source_coverage_complete_through="2026-09-30T00:00:00Z",
     )
     calls = []
 
@@ -530,7 +530,7 @@ def test_capture_hk_gate_refuses_pending_next_control():
         admission,
         observed_session_dates=["2026-09-28", "2026-09-29"],
         admitted_event_dates=["2026-09-29"],
-        source_coverage_through="2026-09-29",
+        source_coverage_complete_through="2026-09-30T00:00:00Z",
     )
     with pytest.raises(capture.CaptureContractError, match="still pending"):
         capture.gate_hk_outcome_read(
@@ -549,7 +549,7 @@ def test_capture_hk_gate_requires_every_selected_control_measurement():
         admission,
         observed_session_dates=["2026-09-28", "2026-09-29", "2026-09-30"],
         admitted_event_dates=["2026-09-29"],
-        source_coverage_through="2026-09-30",
+        source_coverage_complete_through="2026-10-01T00:00:00Z",
     )
     with pytest.raises(capture.CaptureContractError, match="next selected control measurement"):
         capture.gate_hk_outcome_read(
@@ -568,7 +568,7 @@ def test_capture_hk_gate_accepts_complete_pre_outcome_receipts():
         admission,
         observed_session_dates=["2026-09-28", "2026-09-29", "2026-09-30"],
         admitted_event_dates=["2026-09-29"],
-        source_coverage_through="2026-09-30",
+        source_coverage_complete_through="2026-10-01T00:00:00Z",
     )
     out = capture.gate_hk_outcome_read(
         admission,
@@ -609,7 +609,7 @@ def test_capture_hk_gate_accepts_terminal_control_data_gap_without_fake_receipt(
         admission,
         observed_session_dates=sessions,
         admitted_event_dates=["2026-09-29", *sessions[2:12]],
-        source_coverage_through="2026-10-13",
+        source_coverage_complete_through="2026-10-14T00:00:00Z",
     )
     out = capture.gate_hk_outcome_read(
         admission,
@@ -632,7 +632,7 @@ def test_capture_hk_gate_rejects_wrong_control_clock():
         admission,
         observed_session_dates=["2026-09-28", "2026-09-29", "2026-09-30"],
         admitted_event_dates=["2026-09-29"],
-        source_coverage_through="2026-09-30",
+        source_coverage_complete_through="2026-10-01T00:00:00Z",
     )
     prior = _minimal_control_us_measurement(admission, controls, "prior")
     prior["control_anchor_at"] = "2026-09-28T15:18:00Z"
@@ -684,7 +684,7 @@ def test_capture_score_hsi_refuses_pending_before_transport_call():
         admission,
         observed_session_dates=["2026-09-28", "2026-09-29"],
         admitted_event_dates=["2026-09-29"],
-        source_coverage_through="2026-09-29",
+        source_coverage_complete_through="2026-09-30T00:00:00Z",
     )
     calls = []
 
@@ -716,7 +716,7 @@ def test_capture_score_hsi_measures_event_and_selected_controls_after_gate():
         admission,
         observed_session_dates=["2026-09-28", "2026-09-29", "2026-09-30"],
         admitted_event_dates=["2026-09-29"],
-        source_coverage_through="2026-09-30",
+        source_coverage_complete_through="2026-10-01T00:00:00Z",
     )
     event_us = _full_measurement(
         admission["event_id"],
@@ -773,7 +773,7 @@ def test_capture_score_hsi_keeps_missing_anchor_as_data_gap():
         admission,
         observed_session_dates=["2026-09-28", "2026-09-29", "2026-09-30"],
         admitted_event_dates=["2026-09-29"],
-        source_coverage_through="2026-09-30",
+        source_coverage_complete_through="2026-10-01T00:00:00Z",
     )
     event_us = _full_measurement(
         admission["event_id"],
@@ -814,7 +814,7 @@ def test_capture_score_hsi_rejects_conflicting_duplicate_ohlc():
         admission,
         observed_session_dates=["2026-09-28", "2026-09-29", "2026-09-30"],
         admitted_event_dates=["2026-09-29"],
-        source_coverage_through="2026-09-30",
+        source_coverage_complete_through="2026-10-01T00:00:00Z",
     )
     event_us = _full_measurement(
         admission["event_id"],
@@ -843,5 +843,50 @@ def test_capture_score_hsi_rejects_conflicting_duplicate_ohlc():
             prior_control_measurement=prior_us,
             next_control_measurement=next_us,
             transport=transport,
+        )
+
+def test_capture_freeze_controls_does_not_certify_partial_cutoff_day():
+    admission = _capture_admission("2026-09-29T15:17:00Z")
+    kwargs = {
+        "admission": admission,
+        "observed_session_dates": [
+            "2026-09-28",
+            "2026-09-29",
+            "2026-09-30",
+            "2026-10-01",
+            "2026-10-02",
+        ],
+        "admitted_event_dates": [
+            "2026-09-29",
+            "2026-09-30",
+            "2026-10-01",
+        ],
+    }
+    partial = capture.freeze_matched_controls(
+        **kwargs,
+        source_coverage_complete_through="2026-10-02T18:00:00Z",
+    )
+    assert partial["source_coverage_complete_through"] == "2026-10-02T18:00:00Z"
+    assert partial["source_coverage_certified_calendar_through"] == "2026-10-01"
+    assert partial["next"]["status"] == "PENDING_OBSERVED_SESSION"
+    assert partial["next"]["control_date"] is None
+
+    complete = capture.freeze_matched_controls(
+        **kwargs,
+        source_coverage_complete_through="2026-10-03T00:00:00Z",
+    )
+    assert complete["source_coverage_certified_calendar_through"] == "2026-10-02"
+    assert complete["next"]["status"] == "SELECTED"
+    assert complete["next"]["control_date"] == "2026-10-02"
+
+
+def test_capture_freeze_controls_requires_full_event_date_source_coverage():
+    admission = _capture_admission("2026-09-29T15:17:00Z")
+    with pytest.raises(capture.CaptureContractError, match="full admitted event date"):
+        capture.freeze_matched_controls(
+            admission,
+            observed_session_dates=["2026-09-28", "2026-09-29"],
+            admitted_event_dates=["2026-09-29"],
+            source_coverage_complete_through="2026-09-29T23:59:59Z",
         )
 
