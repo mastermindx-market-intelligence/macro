@@ -4694,8 +4694,26 @@ jobs:
     # sweeper requires an affirmative pass, since absence of red is not a pass
     # (#4779), so a PR whose only packs were skipped would otherwise read unproven
     # and never merge.
+    # `!cancelled()`, NOT `always()`. This clause exists to survive a SKIPPED
+    # `trusted-ci` (the hosted route never runs it) and a FAILED sibling — both of
+    # which `!cancelled()` permits identically. `always()` additionally opts the job
+    # out of run cancellation, which silently defeated this workflow's own
+    # `cancel-in-progress: true` above: measured over 9 superseded pull_request runs,
+    # 108/108 pack jobs concluded success/failure and ZERO concluded `cancelled`,
+    # burning a mean 57 runner-minutes each AFTER a newer commit had already
+    # obsoleted them (max 161; packs ran up to 29 minutes past supersession).
+    # `contract-delta`, same runs, no `always()`, cancelled within 16 s — that
+    # asymmetry is the proof the cancel signal did arrive and this clause ate it.
+    # The concurrency comment above already states the intent this restores:
+    # "A newer proof-producing event obsoletes the older packs; cancelling them is
+    # pure savings." `workflow_dispatch` is unaffected — it sets
+    # cancel-in-progress: false, so main's proof is never cancelled and
+    # `!cancelled()` is true there for exactly the runs `always()` was true.
+    # Downstream is already correct for this: scripts/merge_on_green.py treats
+    # `cancelled` as INCOMPLETE ("a superseded/cancelled runner is not evidence
+    # against the pull request"), a branch it could not previously reach.
     if: >-
-      always() && needs.ci-plan.result == 'success' &&
+      !cancelled() && needs.ci-plan.result == 'success' &&
       needs.ci-plan.outputs.has_work == 'true' &&
       (github.event.pull_request.head.repo.full_name != github.repository ||
       vars.CI_EXECUTION_ROUTE != 'pc' ||

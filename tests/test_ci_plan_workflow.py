@@ -325,12 +325,45 @@ def test_ci_pack_is_gated_on_an_affirmative_has_work() -> None:
     """
     condition = _job("ci-pack")["if"]
     assert condition == (
-        "always() && needs.ci-plan.result == 'success' && "
+        "!cancelled() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
         "(github.event.pull_request.head.repo.full_name != github.repository || "
         "vars.CI_EXECUTION_ROUTE != 'pc' || "
         "needs.trusted-ci.result == 'success')"
     )
+
+
+
+def test_ci_pack_cancels_with_the_run_instead_of_outliving_it() -> None:
+    """`always()` here silently defeated `cancel-in-progress: true`.
+
+    A job-level `always()` opts the job out of run cancellation, so a newer commit
+    on the same pull request replaced the run while all twelve packs kept executing
+    to natural completion. Measured over 9 superseded `pull_request` runs: 108/108
+    pack jobs concluded success/failure and ZERO concluded `cancelled`, burning a
+    mean 57 runner-minutes apiece after the head that justified them was already
+    obsolete. `contract-delta` — same runs, same cancel signal, no `always()` —
+    died within 16 s, which is what proves the signal arrived and this clause ate it.
+
+    `!cancelled()` is the exact replacement: it still runs when `trusted-ci` is
+    SKIPPED (the hosted route never runs it) and when a need FAILED, which is the
+    only reason `always()` was here, while restoring cancellation. Guard both
+    halves, because reverting to `always()` reintroduces silent waste that no
+    red check would ever surface.
+    """
+    condition = _job("ci-pack")["if"]
+    assert condition.startswith("!cancelled() &&"), condition
+    assert "always()" not in condition, (
+        "always() opts ci-pack out of run cancellation and reinstates the "
+        "superseded-run burn; use !cancelled() to keep the skipped/failed-need "
+        "behaviour without outliving the run"
+    )
+    # The two behaviours `always()` was actually load-bearing for must survive.
+    assert "needs.trusted-ci.result == 'success'" in condition
+    assert "needs.ci-plan.result == 'success'" in condition
+    # `ci-gate` keeps `always()` on purpose: it must publish a verdict even when
+    # the packs it adjudicates were skipped or cancelled.
+    assert _job("ci-gate")["if"].startswith("always()")
 
 
 def test_ci_pack_passes_pack_count_twelve() -> None:
