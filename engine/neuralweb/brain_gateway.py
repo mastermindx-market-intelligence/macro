@@ -3066,35 +3066,122 @@ def validate_v2_batch(ops: list) -> str | None:
 # ---------------------------------------------------------------------------
 # CMX W2 — ChartSession store (in-process, TTL, thread-safe; masterplan §2.2)
 # ---------------------------------------------------------------------------
-# Latest chart state POST per (user_id, client), kept in memory only (no DB, no files).
-# read_chart_state reads it; the POST /api/brain/chart/state route writes it. TTL prunes
-# stale sessions on access so the dict cannot grow unbounded.
-
-_CHART_STATE_TTL = 600.0          # seconds a session is considered live
-_CHART_STATE_CAP = 4000           # hard cap on stored sessions (oldest evicted)
-_chart_state_store: dict[tuple[str, str], dict] = {}
+# Latest chart state POST per (user_id, client, origin_id), kept in memory only
+# (no DB, no files).  origin_id is the existing ai_context_client.v1 mount identity;
+# legacy callers use the empty origin.  ACKs live inside the SAME record — no receipt DB.
+#
+# read_chart_state selects the server-compiled origin for the Brain turn. TTL prunes stale
+# sessions on access so the dict cannot grow unbounded.
+_CHART_STATE_TTL = 600.0
+_CHART_STATE_CAP = 4000
+_CHART_ACK_HISTORY_CAP = 64
+_CHART_ACK_ERROR_MAX = 120
+_chart_state_store: dict[tuple[str, str, str], dict] = {}
 _chart_state_lock = threading.Lock()
 
 
-def _chart_state_key(user_id: str, client: str) -> tuple[str, str]:
-    return (str(user_id or ""), str(client or ""))
+def _chart_origin_id(value: object) -> str:
+    """Canonical opaque mount id. Empty means legacy/no-origin; invalid non-empty → empty."""
+    if not isinstance(value, str):
+        return ""
+    v = value.strip()
+    if not v or len(v) > 64 or any(ord(ch) < 32 or ord(ch) == 127 for ch in v):
+        return ""
+    return v
 
 
-def put_chart_state(user_id: str, client: str, session: dict) -> dict:
-    """Store the latest chart-state POST for (user_id, client). Returns the stored record.
+def _chart_state_key(user_id: str, client: str, origin_id: str = "") -> tuple[str, str, str]:
+    return (str(user_id or ""), str(client or ""), _chart_origin_id(origin_id))
 
-    Overwrites any prior state for the pair and stamps a monotonic updated_at. Prunes
-    expired entries and enforces the cap on write. Never raises.
+
+def _sanitize_chart_ack(value: object) -> dict | None:
+    """Bound one Terminal ACK to the fields the Brain may safely consume."""
+    if not isinstance(value, dict):
+        return None
+    batch = value.get("batch_id")
+    seq = value.get("seq")
+    ack_id = value.get("id")
+    ok = value.get("ok")
+    if not isinstance(batch, str) or not batch or len(batch) > 40:
+        return None
+    if not isinstance(seq, int) or isinstance(seq, bool) or seq < 0:
+        return None
+    if ack_id is not None and (
+        not isinstance(ack_id, str)
+        or not ack_id.startswith("ai_")
+        or len(ack_id) > 64
+    ):
+        return None
+    if not isinstance(ok, bool):
+        return None
+    out: dict = {"batch_id": batch, "seq": seq, "id": ack_id, "ok": ok}
+    err = value.get("error")
+    if isinstance(err, str) and err:
+        clean = "".join(ch if ord(ch) >= 32 and ord(ch) != 127 else " " for ch in err)
+        out["error"] = clean.strip()[:_CHART_ACK_ERROR_MAX]
+    return out
+
+
+def _merge_chart_acks(existing: list[dict], incoming: object) -> list[dict]:
+    """Deduplicate by host batch/sequence; newest receipt wins; keep a bounded tail."""
+    ordered: dict[tuple[str, int], dict] = {}
+    for raw in [*(existing or []), *((incoming or []) if isinstance(incoming, list) else [])]:
+        ack = _sanitize_chart_ack(raw)
+        if ack is None:
+            continue
+        key = (ack["batch_id"], ack["seq"])
+        if key in ordered:
+            ordered.pop(key, None)
+        ordered[key] = ack
+    return list(ordered.values())[-_CHART_ACK_HISTORY_CAP:]
+
+
+def put_chart_state(
+    user_id: str,
+    client: str,
+    session: dict,
+    *,
+    origin_id: str = "",
+    context_revision: int | None = None,
+    acks: list[dict] | None = None,
+) -> dict:
+    """Store one mount's latest chart state and bounded ACK receipts.
+
+    A newer context revision starts a new target epoch and does not inherit ACK
+    history from the prior symbol/timeframe. A same-revision state-only POST keeps
+    prior ACKs. For an unexpired versioned origin, an older or missing revision is
+    ignored without refreshing TTL or importing stale ACKs. The legacy empty-origin
+    behavior is unchanged; this in-memory owner adds no persistent revision watermark.
     """
     now = time.monotonic()
-    key = _chart_state_key(user_id, client)
-    record = {"session": session, "updated_at": now}
+    origin = _chart_origin_id(origin_id)
+    rev = context_revision if isinstance(context_revision, int) and not isinstance(context_revision, bool) and context_revision >= 0 else None
+    key = _chart_state_key(user_id, client, origin)
     with _chart_state_lock:
-        # Prune expired.
-        expired = [k for k, v in _chart_state_store.items() if now - v.get("updated_at", 0) > _CHART_STATE_TTL]
+        expired = [k for k, v in _chart_state_store.items()
+                   if now - v.get("updated_at", 0) > _CHART_STATE_TTL]
         for k in expired:
             _chart_state_store.pop(k, None)
-        # Cap: evict oldest-inserted if at ceiling and this is a new key.
+
+        prior = _chart_state_store.get(key)
+        prior_rev = prior.get("context_revision") if prior is not None else None
+        if origin and isinstance(prior_rev, int) and (rev is None or rev < prior_rev):
+            # Concurrent HTTP mirrors may arrive after a newer symbol/timeframe.
+            # Ignore the whole stale snapshot: importing its ACKs would cross target
+            # epochs, and refreshing updated_at would make old telemetry look fresh.
+            return prior
+        prior_acks = (
+            list(prior.get("acks") or [])
+            if prior is not None and prior.get("context_revision") == rev
+            else []
+        )
+        record = {
+            "session": session,
+            "origin_id": origin,
+            "context_revision": rev,
+            "acks": _merge_chart_acks(prior_acks, acks),
+            "updated_at": now,
+        }
         if key not in _chart_state_store and len(_chart_state_store) >= _CHART_STATE_CAP:
             try:
                 _chart_state_store.pop(next(iter(_chart_state_store)))
@@ -3104,10 +3191,12 @@ def put_chart_state(user_id: str, client: str, session: dict) -> dict:
     return record
 
 
-def get_chart_state(user_id: str, client: str) -> dict | None:
-    """Return the live session dict for (user_id, client), or None if absent/expired."""
+def get_chart_state_record(
+    user_id: str, client: str, *, origin_id: str = "",
+) -> dict | None:
+    """Return the live record for one exact mount (or the empty-origin legacy mount)."""
     now = time.monotonic()
-    key = _chart_state_key(user_id, client)
+    key = _chart_state_key(user_id, client, origin_id)
     with _chart_state_lock:
         rec = _chart_state_store.get(key)
         if rec is None:
@@ -3115,23 +3204,55 @@ def get_chart_state(user_id: str, client: str) -> dict | None:
         if now - rec.get("updated_at", 0) > _CHART_STATE_TTL:
             _chart_state_store.pop(key, None)
             return None
-        return rec.get("session")
+        return {
+            "session": rec.get("session"),
+            "origin_id": rec.get("origin_id") or "",
+            "context_revision": rec.get("context_revision"),
+            "acks": list(rec.get("acks") or []),
+            "updated_at": rec.get("updated_at"),
+        }
 
 
-def _tool_read_chart_state(user_id: str, client: str) -> dict:
-    """Read the caller's live chart state (masterplan §2.2/§2.3).
+def get_chart_state(user_id: str, client: str, origin_id: str = "") -> dict | None:
+    """Backward-compatible session-only read; origin defaults to the legacy empty mount."""
+    rec = get_chart_state_record(user_id, client, origin_id=origin_id)
+    return rec.get("session") if rec else None
 
-    Terminal client only: the dashboard has no live chart, so a non-terminal client always
-    gets {connected: false}. When connected, returns the stored session (symbol/tf/indicators/
-    visible_range/capabilities/drawings) so the agent chooses indicators & TFs from the
-    reported capabilities rather than hallucinating names.
-    """
+
+def _tool_read_chart_state(
+    user_id: str,
+    client: str,
+    *,
+    origin_id: str = "",
+    context_revision: int | None = None,
+) -> dict:
+    """Read only the chart state bound to this server-compiled Terminal origin."""
     if (client or "").strip().lower() != "terminal":
         return {"connected": False}
-    session = get_chart_state(user_id, "terminal")
-    if not session:
+    rec = get_chart_state_record(user_id, "terminal", origin_id=origin_id)
+    if not rec:
+        if origin_id:
+            return {"connected": False, "reason": "origin_not_connected", "origin_id": origin_id}
         return {"connected": False}
-    return {"connected": True, "session": session}
+
+    observed_rev = rec.get("context_revision")
+    if context_revision is not None and observed_rev != context_revision:
+        return {
+            "connected": False,
+            "reason": "context_revision_mismatch",
+            "origin_id": origin_id,
+            "expected_context_revision": context_revision,
+            "observed_context_revision": observed_rev,
+        }
+    out = {
+        "connected": True,
+        "session": rec.get("session"),
+        "acks": rec.get("acks") or [],
+    }
+    if origin_id:
+        out["origin_id"] = origin_id
+        out["context_revision"] = observed_rev
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -3546,6 +3667,8 @@ def _dispatch_brain_tool(
     user_id: str = "",
     internals_ok: bool = False,
     chart_client: str = "",
+    chart_origin_id: str = "",
+    chart_context_revision: int | None = None,
 ) -> dict:
     """Dispatch a brain gateway tool call.
 
@@ -3765,7 +3888,11 @@ def _dispatch_brain_tool(
         if tool_name == "measure_line":
             return _tool_measure_line(tool_params, root)
         if tool_name == "read_chart_state":
-            return _tool_read_chart_state(user_id, chart_client)
+            return _tool_read_chart_state(
+                user_id, chart_client,
+                origin_id=chart_origin_id,
+                context_revision=chart_context_revision,
+            )
 
     # CXI-R23a internals tools — authorization enforced at execution boundary, not just
     # by schema-omission.  A non-allowlisted session that somehow names an internals tool
@@ -6359,6 +6486,7 @@ def _run_brain_loop(
 
     # CXI-R23a: compute once per loop
     internals_ok = _internals_allowed(user_email)
+    chart_origin_id, chart_context_revision = _chart_turn_identity(context)
 
     # Fix #5: sanitize context fields before interpolation
     raw_page = (context or {}).get("page") or ""
@@ -6555,6 +6683,8 @@ def _run_brain_loop(
                     name, params, root, terminal_data_dir, terminal_hub_url,
                     user_id=user_id, internals_ok=internals_ok,
                     chart_client=("terminal" if safe_page == "terminal" else ""),
+                    chart_origin_id=chart_origin_id,
+                    chart_context_revision=chart_context_revision,
                 ),
             )
             _tools_ms_by_id[str(getattr(b, "id", ""))] = {
@@ -7271,6 +7401,7 @@ def _run_brain_loop_stream(
 
     # CXI-R23a: compute once per loop
     internals_ok = _internals_allowed(user_email)
+    chart_origin_id, chart_context_revision = _chart_turn_identity(context)
 
     # Fix #5: sanitize context fields before interpolation
     raw_page = (context or {}).get("page") or ""
@@ -7609,6 +7740,8 @@ def _run_brain_loop_stream(
                     name, params, root, terminal_data_dir, terminal_hub_url,
                     user_id=user_id, internals_ok=internals_ok,
                     chart_client=("terminal" if safe_page == "terminal" else ""),
+                    chart_origin_id=chart_origin_id,
+                    chart_context_revision=chart_context_revision,
                 ),
             )
             _tools_ms_by_id[str(getattr(b, "id", ""))] = {
@@ -7990,6 +8123,36 @@ def _server_turn_context(context: dict | None, *, account_prefs: dict | None = N
     if prefs:
         out[_SERVER_CONTEXT_KEY] = {"account_prefs": prefs}
     return out
+
+
+def _bind_chart_turn_identity(context: dict | None, envelope: dict | None) -> dict:
+    """Attach the validated ai-context mount identity to the server-only turn block."""
+    src = context if isinstance(context, dict) else {}
+    out = dict(src)
+    srv = dict(src.get(_SERVER_CONTEXT_KEY) or {}) if isinstance(src.get(_SERVER_CONTEXT_KEY), dict) else {}
+    origin = envelope.get("origin") if isinstance(envelope, dict) else None
+    if isinstance(origin, dict) and origin.get("legacy") is False:
+        origin_id = _chart_origin_id(origin.get("origin_id"))
+        revision = origin.get("context_revision")
+        if origin_id and isinstance(revision, int) and not isinstance(revision, bool) and revision >= 0:
+            srv["chart_origin_id"] = origin_id
+            srv["chart_context_revision"] = revision
+    if srv:
+        out[_SERVER_CONTEXT_KEY] = srv
+    return out
+
+
+def _chart_turn_identity(context: dict | None) -> tuple[str, int | None]:
+    """Read the server-bound Terminal origin; never consult model/tool input."""
+    src = context if isinstance(context, dict) else {}
+    srv = src.get(_SERVER_CONTEXT_KEY)
+    if not isinstance(srv, dict):
+        return "", None
+    origin_id = _chart_origin_id(srv.get("chart_origin_id"))
+    revision = srv.get("chart_context_revision")
+    if not isinstance(revision, int) or isinstance(revision, bool) or revision < 0:
+        revision = None
+    return origin_id, revision
 
 
 def _mark_image_gated(context: dict | None) -> dict:
@@ -9163,6 +9326,7 @@ def chat(
     from engine.intelligence_workspace import context_compiler as _ctx_compiler  # noqa: PLC0415
     _ctx_envelope = _ctx_compiler.compile_envelope(clean_msg, context)
     _ctx_receipt = _ctx_compiler.compile_receipt(_ctx_envelope)
+    context = _bind_chart_turn_identity(context, _ctx_envelope)
 
     # 3d. Instant routing decision. W1-B plans registered native facts first; the
     #     existing quote-only W5 route remains the non-US compatibility island. Both
@@ -9644,6 +9808,7 @@ def chat_stream(
     from engine.intelligence_workspace import context_compiler as _ctx_compiler  # noqa: PLC0415
     _ctx_envelope = _ctx_compiler.compile_envelope(clean_msg, context)
     _ctx_receipt = _ctx_compiler.compile_receipt(_ctx_envelope)
+    context = _bind_chart_turn_identity(context, _ctx_envelope)
     _ctx_receipt_event = "data: " + json.dumps({"type": "context_receipt", **_ctx_receipt}) + "\n\n"
 
     # 2d. Instant routing decision — W1-B native facts first, then the preserved
