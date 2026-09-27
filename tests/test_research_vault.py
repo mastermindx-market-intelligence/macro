@@ -3993,6 +3993,8 @@ def _w5_aliases():
         AliasRow("membership", "ABC", "SEC:US-XNAS-ABC.2", date(2026, 6, 1), None),
         AliasRow("membership", "META", "SEC:US-XNAS-META", None, None),
         AliasRow("membership", "MSFT", "SEC:US-XNAS-MSFT", None, None),
+        AliasRow("membership", "CRWD", "SEC:US-XNAS-CRWD", None, None),
+        AliasRow("membership", "B", "SEC:US-XNYS-B", None, None),
     ])
 
 
@@ -4196,3 +4198,68 @@ def test_w5_duplicate_conflicting_report_id_fails_closed():
     result = select_predecessor(current, [first, conflicting], _w5_aliases())
     assert result.state == ABSTAIN_CONFLICTING_REPORT_RECORD
     assert result.predecessor is None
+
+
+def test_w5_strict_title_subject_unlocks_empty_ticker_sidecar():
+    from engine.research_intelligence.longitudinal import ELIGIBLE, resolve_stream_observation
+
+    report = {
+        "id": "crwd-title-subject",
+        "institution": "BlackRock",
+        "desk": "US Equity Research",
+        "tickers": [],
+        "title": "CrowdStrike (CRWD) Fal.con 2026 product takeaways",
+        "published_at": "2026-09-08T13:16:24Z",
+    }
+
+    result = resolve_stream_observation(report, _w5_aliases())
+    assert result.state == ELIGIBLE
+    assert result.observation is not None
+    assert result.observation.security_id == "SEC:US-XNAS-CRWD"
+    assert result.observation.ticker_at_observation == "CRWD"
+    assert result.observation.ticker_source == "source_title_explicit_ticker"
+
+
+def test_w5_title_subject_refuses_late_parenthetical_macro_collision():
+    from engine.research_intelligence.longitudinal import (
+        ABSTAIN_NO_EXACT_SECURITY_SUBJECT,
+        resolve_stream_observation,
+    )
+
+    report = {
+        "id": "macro-fcnr",
+        "institution": "BlackRock",
+        "desk": "Macro Strategy",
+        "tickers": [],
+        "title": "Trade Update Closing our short THB INR for a small gain, as RBI brings forward FCNR(B) deadline",
+        "published_at": "2026-08-18T16:25:40Z",
+    }
+
+    # B is deliberately present in the alias table. A generic parenthetical regex
+    # would therefore create a false security subject; the strict leading-title
+    # grammar must refuse it before identity resolution.
+    assert (
+        resolve_stream_observation(report, _w5_aliases()).state
+        == ABSTAIN_NO_EXACT_SECURITY_SUBJECT
+    )
+
+
+def test_w5_sidecar_and_explicit_title_subject_conflict_fails_closed():
+    from engine.research_intelligence.longitudinal import (
+        ABSTAIN_SUBJECT_CONFLICT,
+        resolve_stream_observation,
+    )
+
+    report = {
+        "id": "subject-conflict",
+        "institution": "BlackRock",
+        "desk": "US Equity Research",
+        "tickers": ["MSFT"],
+        "title": "Meta Platforms Inc. (META) post-rally review",
+        "published_at": "2026-09-08T13:16:24Z",
+    }
+
+    assert (
+        resolve_stream_observation(report, _w5_aliases()).state
+        == ABSTAIN_SUBJECT_CONFLICT
+    )
