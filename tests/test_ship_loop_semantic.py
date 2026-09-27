@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import importlib.util
 import io
+import json
+import subprocess
 import zipfile
 from pathlib import Path
 from types import SimpleNamespace
@@ -23,6 +25,138 @@ HEAD = "a" * 40
 BASE = "b" * 40
 MERGE = "c" * 40
 WITNESS_TREE = "d" * 40
+
+
+def _git(repo: Path, *args: str) -> str:
+    return subprocess.run(
+        ("git", *args),
+        cwd=repo,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=True,
+    ).stdout.strip()
+
+
+def _root_fixture(tmp_path: Path) -> Path:
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git(repo, "init", "-b", "main")
+    _git(repo, "config", "user.name", "Test")
+    _git(repo, "config", "user.email", "test@example.com")
+    (repo / "kept.txt").write_text("baseline\\n", encoding="utf-8")
+    _git(repo, "add", "kept.txt")
+    _git(repo, "commit", "-m", "initial")
+    return repo
+
+
+def _linked_root_fixture(tmp_path: Path) -> tuple[Path, Path]:
+    primary = _root_fixture(tmp_path)
+    worktree = tmp_path / "session-worktree"
+    _git(primary, "worktree", "add", "-b", "claude/delivery-root", str(worktree))
+    return primary, worktree
+
+
+def test_delivery_root_rejects_primary_even_on_claude_branch(tmp_path):
+    primary = _root_fixture(tmp_path)
+    _git(primary, "checkout", "-b", "claude/primary-is-still-shared")
+
+    admitted, reason = GUARD._delivery_root_admission(primary)
+
+    assert admitted is False
+    assert "primary/shared checkout" in reason
+
+
+def test_delivery_root_accepts_linked_claude_worktree(tmp_path):
+    _primary, worktree = _linked_root_fixture(tmp_path)
+    assert GUARD._delivery_root_admission(worktree) == (True, "")
+
+
+def test_quarantined_root_denies_bash_before_side_effect(tmp_path, capsys):
+    primary = _root_fixture(tmp_path)
+
+    GUARD._pre_tool_use(
+        primary,
+        tmp_path / "state.json",
+        {"hook_event_name": "PreToolUse", "tool_name": "Bash"},
+    )
+
+    out = json.loads(capsys.readouterr().out.strip())
+    specific = out["hookSpecificOutput"]
+    assert specific["permissionDecision"] == "deny"
+    assert "SESSION ROOT QUARANTINE" in specific["permissionDecisionReason"]
+    assert "fresh worktree-backed Claude session" in specific["permissionDecisionReason"]
+
+
+def test_admitted_worktree_does_not_intercept_bash(tmp_path, capsys):
+    _primary, worktree = _linked_root_fixture(tmp_path)
+
+    GUARD._pre_tool_use(
+        worktree,
+        tmp_path / "state.json",
+        {"hook_event_name": "PreToolUse", "tool_name": "Bash"},
+    )
+
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_quarantined_session_stops_cleanly_when_shared_main_moves(
+    monkeypatch, tmp_path, capsys
+):
+    primary = _root_fixture(tmp_path)
+    state_path = tmp_path / "state.json"
+
+    GUARD._session_start(
+        primary,
+        state_path,
+        {"hook_event_name": "SessionStart", "source": "startup"},
+    )
+    start = json.loads(capsys.readouterr().out.strip())
+    assert "SESSION ROOT QUARANTINE" in start["hookSpecificOutput"]["additionalContext"]
+    state = GUARD._load(state_path)
+    assert state["root_admission_v"] == GUARD._ROOT_ADMISSION_VERSION
+    assert state["root_admitted"] is False
+
+    (primary / "bot.txt").write_text("independent publication\\n", encoding="utf-8")
+    _git(primary, "add", "bot.txt")
+    _git(primary, "commit", "-m", "bot: move shared main")
+    monkeypatch.setattr(
+        GUARD,
+        "_github_slug",
+        lambda *_a: pytest.fail("a quarantined root reached GitHub"),
+    )
+
+    GUARD._stop(
+        primary,
+        state_path,
+        {
+            "hook_event_name": "Stop",
+            "last_assistant_message": "SESSION END: DURABLE_EXECUTION_RUNNING",
+        },
+    )
+
+    assert capsys.readouterr().out.strip() == ""
+
+
+def test_settings_gate_effectful_tools_before_existing_guards():
+    settings = json.loads((ROOT / ".claude" / "settings.json").read_text(encoding="utf-8"))
+    admission = [
+        group for group in settings["hooks"]["PreToolUse"]
+        if "ship_loop_guard.py" in json.dumps(group)
+    ]
+    assert len(admission) == 1
+    matcher = admission[0]["matcher"]
+    for required in (
+        "Bash",
+        "Edit",
+        "Write",
+        "Agent",
+        "Workflow",
+        "Skill",
+        "EnterWorktree",
+        "mcp__.*",
+    ):
+        assert required in matcher
 
 
 def _check(name: str, conclusion: str, *, details: bool = False) -> dict:
