@@ -1,6 +1,6 @@
 # D07 Evidence-Class Register Draft (2026-09-24)
 
-STATUS: DRAFT — the seat has not ruled on this register.
+STATUS: ADOPTED as register v1 by R6-D07-01 (2026-09-27); row-level nulls remain open remedies.
 
 SOURCE_SHA = `cde1e7e5e0cd7134f88a7f78dbeec614976c5090`
 
