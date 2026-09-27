@@ -8,7 +8,7 @@ answer: >
   because the shared registry imports a vertical's composer eagerly at
   registry-import time; and the registry entry MUST use a lazy loader wrapper
   that defers the owner-bundle import inside a function body, never a top-level
-  import, with the composer itself staying free of third-party top-level
+  import, with the composer itself staying free of third-party imports
   imports. (7) Merge is not acceptance, and a green main is not acceptance
   either. (10) No split re-land: the carrier re-lands whole, behind the shared
   foundation PR #7870, or not at all. Read-only retrieval of the reverted paths
@@ -66,7 +66,7 @@ evidence:
   - "gh api repos/{o}/{r}/pulls/8013/files --paginate; then contents/<path>?ref=36efe9c92b96 and ?ref=main by EXIT CODE for each: retrievable=35, not_retrievable=0, present_on_main=0, instrument positively controlled"
   - "engine/market_ontology/theme_research_mounts.py:135 anchor_theme_id=\"ai_semiconductors\" (the only literal DECLARED anchor) and engine/market_ontology/theme_research_registry.py:169 _MOUNTS[\"ai_semiconductors\"] (the only ENROLMENT), both at #7870 head a0d7b054ff23"
   - "engine/theme_graph/curation_assertion.py 27838B at 1e38d5c955dc to 28610B at a0d7b054ff23: module-level import jsonschema plus eager Draft202012Validator replaced by a deferred _validator() accessor, pinned by test_unprovisioned_app_import_defers_biocatalyst_contract_runtime"
-  - "Import audit of the Robotics modules at 36efe9c92b96: composer 60749B has stdlib plus ONE first-party import at :45; owner bundle 12407B defers engine.theme_graph.rights at :197. Zero third-party top-level imports in either."
+  - "Import audit of the Robotics modules at 36efe9c92b96, re-measured by AST walk 2026-09-27 after a column-anchored grep undercounted it: the composer (60749B) has 8 stdlib/__future__ imports plus TWO first-party ones that execute at import time - engine.theme_graph.curation_assertion at :45 and engine.market_ontology.semiconductor_theme_research at :123 inside a module-level try at :122 - and defers engine.theme_graph.identity at :68. The owner bundle (12407B) has 3 stdlib plus TWO import-time first-party - engine.market_ontology.robotics_theme_research at :156 and engine.market_ontology.theme_research_binding at :162 inside a module-level try at :161 - and defers engine.theme_graph.rights at :197. THIRD-PARTY imports anywhere in either file, deferred sites included: zero. A try-wrapped import still executes at import time and is not exempt from the repo static sweep; the two sites this audit first missed are named in #8013 own body among the four absences that broke main. Classify by AST parent chain, never by a line-anchored grep."
   - "agentos/handoffs/GMI-THEME-GRAPH-2026-09-27-robotics-reland-hold.md"
 affects:
   - "WS:GMI-THEME-GRAPH"
