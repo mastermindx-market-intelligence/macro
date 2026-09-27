@@ -25,8 +25,10 @@ owns_paths:
   - research/consumer_cyclical/v1/**
 decisions:
   - "DEC:CONSUMER-CYCLICAL-V1-CORE-EXTENDS-INCUMBENT-NOT-TRANSPORT"
+  - "DEC:CONSUMER-CYCLICAL-REFUSES-FACTS-IT-CANNOT-PUBLISH"
 discoveries:
   - "DSC:A-UNIVERSAL-FALLBACK-BRANCH-IS-INVISIBLE-TO-A-VALUE-ONLY-SUITE"
+  - "DSC:THE-CASE-A-SUITE-USES-MOST-IS-THE-ONE-IT-NEVER-VALIDATES"
 waves:
   - id: CC-V1-CORE
     title: "V1-CORE deterministic composition"
@@ -37,6 +39,21 @@ waves:
       false facts, 0 schema errors, 61 tests green on the merged tree. That live
       verification then found the economic lead unreachable on every input (see
       landmines); repaired plus a same-class hardening pass on PR #7945, 65 tests.
+  - id: CC-V1-ENVELOPE-INTEGRITY
+    title: "Fact admission gate + document self-check"
+    status: done
+    next_action: >
+      A coverage audit of the merged module (110/723 executable lines never
+      executed under the full owned suite) escalated into the finding that the
+      projection publishes documents violating the contract it authors, on
+      ordinary inputs - most damningly a thousands separator in a financial
+      figure. Repaired by refusing rather than repairing: unpublishable facts
+      are withheld and declared through the existing degraded_dependencies
+      vocabulary, and an end-of-projection self-check raises CaseShapeError
+      rather than returning a contract-violating document. See
+      DEC:CONSUMER-CYCLICAL-REFUSES-FACTS-IT-CANNOT-PUBLISH. Suite 65 -> 72.
+      OPEN: the synthetic _plnt_case() still carries 102 violations on fields
+      the gate does not police - see the follow-up in next_action.
   - id: CC-V1-ENTITLED
     title: "V1 entitled + browser legs"
     status: todo
@@ -73,11 +90,34 @@ landmines:
     properties.contract_id.const or the shared registry enumeration reds; a new
     exclusive CI job name must be added to CURATED_EXCLUSIVE in
     tests/test_ci_pack.py, which asserts exact set equality.
+  - >
+    The suite's own fixture builders are the least-validated inputs in the
+    project. _plnt_case() drove most of the 65 green tests while producing 128
+    schema violations, because every assertion read a computed NUMBER and none
+    read the document's SHAPE. When the self-check landed, 26 tests went red -
+    the correct reading is "the helper was always wrong", never "the check is
+    too strict". Narrowing the instrument to restore green is the vice this
+    workstream has already committed once.
+  - >
+    period_start must never be derived from period_end. Consumer Cyclical is
+    retail: 4-5-4 fiscal quarters are offset from the calendar by design, so
+    calendar-snapping produced valid-looking 32-day "quarters". The derivation
+    was unreachable when deleted, which is exactly why it survived review.
 do_not_redo:
   - "R1-R11, the independent reviews, R12/R13 verification, R14 reconciliation"
   - "The R8 native-staging denial: never retry, rephrase, re-home or delegate around it"
   - "The V1 boundary adjudication itself - see DEC:CONSUMER-CYCLICAL-V1-CORE-EXTENDS-INCUMBENT-NOT-TRANSPORT"
 next_action: >
+  OPEN AND OWNED BY THIS WORKSTREAM (does not need any external gate): reconcile
+  the synthetic _plnt_case() with its own contract. 102 violations remain on
+  fields the admission gate deliberately does not police - definition,
+  display_quantum, kind, perimeter, source_records, subject, and duplicate
+  input_refs from two facts sharing a key. Measured, not estimated: run
+  `python3 -c` over jsonschema Draft202012Validator against
+  contracts/sector_intelligence/consumer_cyclical_intelligence_read_model.v1.schema.json.
+  It ripples into ~40 assertions, which is why it was deferred rather than
+  rushed in behind the admission gate.
+  .
   Returned to Sol on carrier #7804 (comment 5814888647, 2026-09-24) naming the
   four blockers below and correcting that carrier's standing
   RECEIVER_ASSIGNMENT NONE, which would otherwise have licensed a second Fable
