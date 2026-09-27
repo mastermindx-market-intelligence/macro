@@ -1,0 +1,457 @@
+{
+  "all_values_and_identities": "INVENTED_NONPRODUCTION",
+  "artifact_kind": "consumer_research_worked_examples_not_native_schema",
+  "authority": {
+    "can_gate": false,
+    "can_open_entry": false,
+    "can_originate": false,
+    "can_rank": false,
+    "can_size": false
+  },
+  "cases": [
+    {
+      "comparison_basis": "explicit_same_quarter_prior_year",
+      "facts": [
+        {
+          "basis": "example:issuer_defined",
+          "definition": "example:definition-v1",
+          "display_quantum": "1",
+          "event": "example:q2",
+          "evidence": {
+            "document": "https://example.invalid/example-q2",
+            "locator": "table/revenue_new",
+            "revision": "example-revision:example:q2"
+          },
+          "key": "revenue_new",
+          "kind": "financial",
+          "metric": "total_revenue",
+          "native_admitted": false,
+          "native_ref": null,
+          "perimeter": "example:consolidated",
+          "period_end": "2030-06-30",
+          "period_kind": "quarter",
+          "period_start": "2030-04-01",
+          "published_at": "2030-07-20T13:00:00-04:00",
+          "role": "actual",
+          "scale_power10": 3,
+          "sign_convention": "signed",
+          "target": null,
+          "unit": "USD",
+          "value_text": "250"
+        },
+        {
+          "basis": "example:issuer_defined",
+          "definition": "example:definition-v1",
+          "display_quantum": "1",
+          "event": "example:prior-q2",
+          "evidence": {
+            "document": "https://example.invalid/example-prior-q2",
+            "locator": "table/revenue_old",
+            "revision": "example-revision:example:prior-q2"
+          },
+          "key": "revenue_old",
+          "kind": "financial",
+          "metric": "total_revenue",
+          "native_admitted": false,
+          "native_ref": null,
+          "perimeter": "example:consolidated",
+          "period_end": "2029-06-30",
+          "period_kind": "quarter",
+          "period_start": "2029-04-01",
+          "published_at": "2029-07-20T13:00:00-04:00",
+          "role": "actual",
+          "scale_power10": 3,
+          "sign_convention": "signed",
+          "target": null,
+          "unit": "USD",
+          "value_text": "230"
+        },
+        {
+          "basis": "example:issuer_defined",
+          "definition": "example:definition-v1",
+          "display_quantum": "1",
+          "event": "example:q2",
+          "evidence": {
+            "document": "https://example.invalid/example-q2",
+            "locator": "table/fund_revenue_new",
+            "revision": "example-revision:example:q2"
+          },
+          "key": "fund_revenue_new",
+          "kind": "financial",
+          "metric": "fund_revenue",
+          "native_admitted": false,
+          "native_ref": null,
+          "perimeter": "example:consolidated",
+          "period_end": "2030-06-30",
+          "period_kind": "quarter",
+          "period_start": "2030-04-01",
+          "published_at": "2030-07-20T13:00:00-04:00",
+          "role": "actual",
+          "scale_power10": 3,
+          "sign_convention": "signed",
+          "target": null,
+          "unit": "USD",
+          "value_text": "48"
+        },
+        {
+          "basis": "example:issuer_defined",
+          "definition": "example:definition-v1",
+          "display_quantum": "1",
+          "event": "example:prior-q2",
+          "evidence": {
+            "document": "https://example.invalid/example-prior-q2",
+            "locator": "table/fund_revenue_old",
+            "revision": "example-revision:example:prior-q2"
+          },
+          "key": "fund_revenue_old",
+          "kind": "financial",
+          "metric": "fund_revenue",
+          "native_admitted": false,
+          "native_ref": null,
+          "perimeter": "example:consolidated",
+          "period_end": "2029-06-30",
+          "period_kind": "quarter",
+          "period_start": "2029-04-01",
+          "published_at": "2029-07-20T13:00:00-04:00",
+          "role": "actual",
+          "scale_power10": 3,
+          "sign_convention": "signed",
+          "target": null,
+          "unit": "USD",
+          "value_text": "40"
+        },
+        {
+          "basis": "example:issuer_defined",
+          "definition": "example:definition-v1",
+          "display_quantum": "1",
+          "event": "example:q2",
+          "evidence": {
+            "document": "https://example.invalid/example-q2",
+            "locator": "table/fund_expense_new",
+            "revision": "example-revision:example:q2"
+          },
+          "key": "fund_expense_new",
+          "kind": "financial",
+          "metric": "fund_expense",
+          "native_admitted": false,
+          "native_ref": null,
+          "perimeter": "example:consolidated",
+          "period_end": "2030-06-30",
+          "period_kind": "quarter",
+          "period_start": "2030-04-01",
+          "published_at": "2030-07-20T13:00:00-04:00",
+          "role": "actual",
+          "scale_power10": 3,
+          "sign_convention": "signed",
+          "target": null,
+          "unit": "USD",
+          "value_text": "49"
+        },
+        {
+          "basis": "example:issuer_defined",
+          "definition": "example:definition-v1",
+          "display_quantum": "1",
+          "event": "example:prior-q2",
+          "evidence": {
+            "document": "https://example.invalid/example-prior-q2",
+            "locator": "table/fund_expense_old",
+            "revision": "example-revision:example:prior-q2"
+          },
+          "key": "fund_expense_old",
+          "kind": "financial",
+          "metric": "fund_expense",
+          "native_admitted": false,
+          "native_ref": null,
+          "perimeter": "example:consolidated",
+          "period_end": "2029-06-30",
+          "period_kind": "quarter",
+          "period_start": "2029-04-01",
+          "published_at": "2029-07-20T13:00:00-04:00",
+          "role": "actual",
+          "scale_power10": 3,
+          "sign_convention": "signed",
+          "target": null,
+          "unit": "USD",
+          "value_text": "40"
+        }
+      ],
+      "interpretation": {
+        "counterevidence": "Other operating costs and business contributions are not supplied by this example.",
+        "forbidden_conclusions": [
+          "organic_growth_proven",
+          "overall_profit_change_proven",
+          "investment_signal"
+        ],
+        "next_observation": "A matched recurring-contribution bridge for the non-fund business."
+      },
+      "issuer": "EXAMPLE-A-NOT-A-REAL-ISSUER",
+      "key": "EX-PASS-THROUGH",
+      "recipe": "pass_through"
+    },
+    {
+      "comparison_basis": "same_interval_signed_cash",
+      "facts": [
+        {
+          "basis": "example:issuer_defined",
+          "definition": "example:definition-v1",
+          "display_quantum": "1",
+          "event": "example:q2",
+          "evidence": {
+            "document": "https://example.invalid/example-q2",
+            "locator": "table/operating_cash",
+            "revision": "example-revision:example:q2"
+          },
+          "key": "operating_cash",
+          "kind": "financial",
+          "metric": "operating_cash",
+          "native_admitted": false,
+          "native_ref": null,
+          "perimeter": "example:consolidated",
+          "period_end": "2030-06-30",
+          "period_kind": "half_year",
+          "period_start": "2030-01-01",
+          "published_at": "2030-07-20T13:00:00-04:00",
+          "role": "actual",
+          "scale_power10": 3,
+          "sign_convention": "signed",
+          "target": null,
+          "unit": "USD",
+          "value_text": "120"
+        },
+        {
+          "basis": "example:issuer_defined",
+          "definition": "example:definition-v1",
+          "display_quantum": "1",
+          "event": "example:q2",
+          "evidence": {
+            "document": "https://example.invalid/example-q2",
+            "locator": "table/capital_cash",
+            "revision": "example-revision:example:q2"
+          },
+          "key": "capital_cash",
+          "kind": "financial",
+          "metric": "capital_cash",
+          "native_admitted": false,
+          "native_ref": null,
+          "perimeter": "example:consolidated",
+          "period_end": "2030-06-30",
+          "period_kind": "half_year",
+          "period_start": "2030-01-01",
+          "published_at": "2030-07-20T13:00:00-04:00",
+          "role": "actual",
+          "scale_power10": 3,
+          "sign_convention": "signed",
+          "target": null,
+          "unit": "USD",
+          "value_text": "-150"
+        },
+        {
+          "basis": "example:issuer_defined",
+          "definition": "example:definition-v1",
+          "display_quantum": "1",
+          "event": "example:q2",
+          "evidence": {
+            "document": "https://example.invalid/example-q2",
+            "locator": "table/asset_proceeds",
+            "revision": "example-revision:example:q2"
+          },
+          "key": "asset_proceeds",
+          "kind": "financial",
+          "metric": "asset_proceeds",
+          "native_admitted": false,
+          "native_ref": null,
+          "perimeter": "example:consolidated",
+          "period_end": "2030-06-30",
+          "period_kind": "half_year",
+          "period_start": "2030-01-01",
+          "published_at": "2030-07-20T13:00:00-04:00",
+          "role": "actual",
+          "scale_power10": 3,
+          "sign_convention": "signed",
+          "target": null,
+          "unit": "USD",
+          "value_text": "70"
+        },
+        {
+          "basis": "example:issuer_defined",
+          "definition": "example:definition-v1",
+          "display_quantum": "1",
+          "event": "example:q2",
+          "evidence": {
+            "document": "https://example.invalid/example-q2",
+            "locator": "table/issuer_defined_total",
+            "revision": "example-revision:example:q2"
+          },
+          "key": "issuer_defined_total",
+          "kind": "financial",
+          "metric": "issuer_defined_total",
+          "native_admitted": false,
+          "native_ref": null,
+          "perimeter": "example:consolidated",
+          "period_end": "2030-06-30",
+          "period_kind": "half_year",
+          "period_start": "2030-01-01",
+          "published_at": "2030-07-20T13:00:00-04:00",
+          "role": "actual",
+          "scale_power10": 3,
+          "sign_convention": "signed",
+          "target": null,
+          "unit": "USD",
+          "value_text": "40"
+        }
+      ],
+      "interpretation": {
+        "counterevidence": "Growth versus maintenance allocation and future property obligations remain unresolved.",
+        "forbidden_conclusions": [
+          "normalized_cash_proven",
+          "maintenance_capex_estimated",
+          "investment_signal"
+        ],
+        "next_observation": "Cohort cash returns after ramp-up and the obligations created by the property transaction."
+      },
+      "issuer": "EXAMPLE-B-NOT-A-REAL-ISSUER",
+      "key": "EX-CASH",
+      "recipe": "cash_bridge"
+    },
+    {
+      "comparison_basis": "two_outlooks_same_target",
+      "facts": [
+        {
+          "basis": "example:issuer_defined",
+          "definition": "example:definition-v1",
+          "display_quantum": "1",
+          "event": "example:q1-release",
+          "evidence": {
+            "document": "https://example.invalid/example-q1-release",
+            "locator": "table/prior_low",
+            "revision": "example-revision:example:q1-release"
+          },
+          "key": "prior_low",
+          "kind": "financial",
+          "metric": "revenue_outlook_low",
+          "native_admitted": false,
+          "native_ref": null,
+          "perimeter": "example:consolidated",
+          "period_end": "2030-12-31",
+          "period_kind": "year",
+          "period_start": "2030-01-01",
+          "published_at": "2030-04-20T08:00:00-04:00",
+          "role": "outlook",
+          "scale_power10": 3,
+          "sign_convention": "signed",
+          "target": "FY2030",
+          "unit": "USD",
+          "value_text": "1000"
+        },
+        {
+          "basis": "example:issuer_defined",
+          "definition": "example:definition-v1",
+          "display_quantum": "1",
+          "event": "example:q1-release",
+          "evidence": {
+            "document": "https://example.invalid/example-q1-release",
+            "locator": "table/prior_high",
+            "revision": "example-revision:example:q1-release"
+          },
+          "key": "prior_high",
+          "kind": "financial",
+          "metric": "revenue_outlook_high",
+          "native_admitted": false,
+          "native_ref": null,
+          "perimeter": "example:consolidated",
+          "period_end": "2030-12-31",
+          "period_kind": "year",
+          "period_start": "2030-01-01",
+          "published_at": "2030-04-20T08:00:00-04:00",
+          "role": "outlook",
+          "scale_power10": 3,
+          "sign_convention": "signed",
+          "target": "FY2030",
+          "unit": "USD",
+          "value_text": "1100"
+        },
+        {
+          "basis": "example:issuer_defined",
+          "definition": "example:definition-v1",
+          "display_quantum": "1",
+          "event": "example:q2-release",
+          "evidence": {
+            "document": "https://example.invalid/example-q2-release",
+            "locator": "table/new_low",
+            "revision": "example-revision:example:q2-release"
+          },
+          "key": "new_low",
+          "kind": "financial",
+          "metric": "revenue_outlook_low",
+          "native_admitted": false,
+          "native_ref": null,
+          "perimeter": "example:consolidated",
+          "period_end": "2030-12-31",
+          "period_kind": "year",
+          "period_start": "2030-01-01",
+          "published_at": "2030-07-20T08:00:00-04:00",
+          "role": "outlook",
+          "scale_power10": 3,
+          "sign_convention": "signed",
+          "target": "FY2030",
+          "unit": "USD",
+          "value_text": "900"
+        },
+        {
+          "basis": "example:issuer_defined",
+          "definition": "example:definition-v1",
+          "display_quantum": "1",
+          "event": "example:q2-release",
+          "evidence": {
+            "document": "https://example.invalid/example-q2-release",
+            "locator": "table/new_high",
+            "revision": "example-revision:example:q2-release"
+          },
+          "key": "new_high",
+          "kind": "financial",
+          "metric": "revenue_outlook_high",
+          "native_admitted": false,
+          "native_ref": null,
+          "perimeter": "example:consolidated",
+          "period_end": "2030-12-31",
+          "period_kind": "year",
+          "period_start": "2030-01-01",
+          "published_at": "2030-07-20T08:00:00-04:00",
+          "role": "outlook",
+          "scale_power10": 3,
+          "sign_convention": "signed",
+          "target": "FY2030",
+          "unit": "USD",
+          "value_text": "950"
+        }
+      ],
+      "interpretation": {
+        "counterevidence": "No actual result or market-expectation history is included.",
+        "forbidden_conclusions": [
+          "actual_result_observed",
+          "consensus_miss",
+          "new_forecast_is_correction",
+          "investment_signal"
+        ],
+        "next_observation": "A later compatible outlook or the actual result for this same target."
+      },
+      "issuer": "EXAMPLE-C-NOT-A-REAL-ISSUER",
+      "key": "EX-OUTLOOK",
+      "recipe": "outlook_revision"
+    }
+  ],
+  "profile_contract": {
+    "content_discriminator": "consumer_economic_change.v1",
+    "profile": "consumer_cyclical",
+    "profile_version": 1,
+    "registration_status": "PENDING_SHARED_OWNER_ACCEPTANCE",
+    "route_family": [
+      "/api/themes/v1/research/query",
+      "/api/themes/v1/research/evidence"
+    ],
+    "subject_type": "company",
+    "unsupported_behavior": "REFUSE_UNSUPPORTED"
+  },
+  "research_scope_only": true,
+  "version": "R12"
+}
