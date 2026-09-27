@@ -184,9 +184,16 @@ danger_areas:
     shapes: an empty mapping, `value: None`, a non-numeric value, and a mev-only packet are
     each routed out of every channel of the dossier, yet each satisfied the predicate, so
     W-R still claimed `ready` over an empty panel. The drop site mints NO limitation, so a
-    dropped packet leaves no trace anywhere in the payload - which is STILL OWED work and is
-    the root of the one residual hole (an unrelated named omission plus a junk packet still
-    reads `ready`). When gating on 'input exists', gate on input that reached an output."
+    dropped packet leaves no trace anywhere in the payload. CORRECTED the same day: that
+    silence is a DELIBERATE ruling (R-MIN-31 §I reserves `definition_unqualified:*` for
+    DEFINITION fields and assigns a missing measurement datum to the bundle's omission
+    mapping), and the residual state it leaves - an unrelated named omission plus a junk
+    packet reading `ready` - is SATISFIED under R-MIN-34's named-absence bar, not open. Do
+    NOT 'gate on input that reached an output', which is what I first wrote here:
+    `missing_stream_threshold` submits one packet that reaches NO output - 0 native blocks
+    and 0 expectations - and plan §6 VERBATIM requires it `ready`, so a contribution gate
+    breaks the plan. Closing that state requires amending R-MIN-31 §I or plan §6, which is
+    an adjudication for the obligations' owner and never a lane's patch."
   - "A STATUS FUNCTION CANNOT HONOUR A DISTINCTION ITS ARGUMENTS CANNOT EXPRESS.
     `_summarize_status(limitations, has_native_blocks)` was asked to separate 'submitted and
     withheld' from 'submitted nothing', and both states arrive as (threshold code present,
