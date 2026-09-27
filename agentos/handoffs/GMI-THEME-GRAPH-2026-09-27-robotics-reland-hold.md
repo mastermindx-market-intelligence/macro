@@ -76,7 +76,7 @@ next_actions:
   - "WHEN #7870 MERGES: re-land the 35 paths whole from 36efe9c92b96 onto real main, in one carrier. Then gates A (136) / B (623) / C (marker line) / D (20 passed, 116 xfailed). Gate C step MUST assert stdout contains the literal 'theme graph contracts OK' - exit 0 proves nothing in either direction - and data/ must be materialised or the honest verdict is INDETERMINATE. Adding --strict is worthwhile so a breach is also non-zero, but --strict plus rc 0 still does not clear notices."
   - "THEN, as a separate post-merge additive commit: the Robotics registry entry. It MUST use the lazy loader wrapper pattern (a module-level function that defers `from engine.market_ontology.robotics_owner_bundle import ...` inside its body, with a noqa PLC0415 and a stated reason), never a top-level import - the registry sits in the shared app.main import closure and the shell owner already took 4-of-7 pack failures from exactly one hard top-level import there. The composer must also stay third-party-free at top level, because the registry imports it eagerly."
   - "Before any substantive reciprocal write: fresh-read the exact bound carrier in the same turn, and include an abort guard comparing the latest comment id. Class-M default interval is 60 minutes, hard floor 15."
-  - "Convert the twelve rulings into durable DEC records under agentos/decisions/, one per ruling with its falsifier, rather than leaving them as prose in a handoff. This record closes the immediate hazard; the DEC records are the proper home."
+  - "DONE in this same change: the two highest-consequence ruling clusters are now DEC records - DEC:GMI-ROBOTICS-RELAND-ORDERING-AND-REGISTRATION (rulings 5, 6, 7, 10 plus the lazy-wrapper requirement) and DEC:THEME-GRAPH-CONTRACTS-GATE-IS-A-MARKER-LINE (the withdrawn exit-code gate). The convention in this program is one DEC per coherent cluster, not one per ruling, following DEC:IND-FIRST-VERTICAL-CARRIER-AND-ORDERING. Rulings 8, 11 and 12 remain prose in this record; ruling 9 is void and needs none. Promote 11 and 12 together if a later lane re-opens the design-versus-defect question, since the test that separates them is the reusable part."
   - "Held lanes, in dependency order once the re-land clears: R5 real evidence qualification through the shared admission and private adapter (also the likely content of the shared owner's Q1); R5 rights seam; R6 remaining halves (registration post-merge, served API is the shell owner's file); live admission; browser and production acceptance."
 do_not_redo:
   - "The 35 reverted paths are NOT lost and do NOT need rebuilding. Every one is retrievable at 36efe9c92b96, verified by exit-code test with a positive control. Re-authoring any of them is duplicated work."
@@ -94,6 +94,9 @@ danger_areas:
   - "Full-fidelity real Robotics assertion bodies must never enter a public carrier, evidence.parquet, site/ or public R2. The repo is public; fixtures stay synthetic with example.invalid or already-public vendor pages."
   - "Builder is not reviewer, and this is mandatory. In-flight worker returns are not truth until reviewed and integrated."
 prs: [7773, 7870, 7908, 8013]
+decisions:
+  - "DEC:GMI-ROBOTICS-RELAND-ORDERING-AND-REGISTRATION"
+  - "DEC:THEME-GRAPH-CONTRACTS-GATE-IS-A-MARKER-LINE"
 ---
 
 # GMI Robotics - re-land hold, post-revert (2026-09-27)
