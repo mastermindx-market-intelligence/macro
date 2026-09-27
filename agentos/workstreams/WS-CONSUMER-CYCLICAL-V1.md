@@ -30,6 +30,9 @@ discoveries:
   - "DSC:A-UNIVERSAL-FALLBACK-BRANCH-IS-INVISIBLE-TO-A-VALUE-ONLY-SUITE"
   - "DSC:THE-CASE-A-SUITE-USES-MOST-IS-THE-ONE-IT-NEVER-VALIDATES"
   - "DSC:A-MINTING-DEFAULT-IS-INVISIBLE-TO-AN-EMPTINESS-GATE"
+  - "DSC:A-DECLARED-BASIS-IS-A-LABEL-UNTIL-SOMETHING-READS-IT"
+  - "DSC:AN-ENUMERATED-GUARD-IS-BLIND-OUTSIDE-ITS-ENUMERATION"
+  - "DSC:A-MUTATION-THAT-DIES-UPSTREAM-NEVER-TESTS-THE-GATE-YOU-AIMED-AT"
 waves:
   - id: CC-V1-CORE
     title: "V1-CORE deterministic composition"
@@ -99,6 +102,36 @@ waves:
       killed. See DSC:A-MINTING-DEFAULT-IS-INVISIBLE-TO-AN-EMPTINESS-GATE.
       Suite 76 -> 102; reverting the engine alone fails 26 and passes 76, and
       all 26 are the four new tests; 8 mutants all killed.
+  - id: CC-V1-DECLARED-BASIS-BINDING
+    title: "The declared basis binds the pair; the guard derives from the contract"
+    status: done
+    next_action: >
+      Four defects, one thesis: the module states things it does not check.
+      (A) _select_pair received comparison_basis and never read it, so a prior
+      side seven years off, a period ending before it starts, and a 30-day
+      "quarter" all published same_quarter_prior_year_change at availability
+      ready with zero schema errors - the refusal reason
+      no_compatible_pair_for_comparison_basis already existed and was
+      unreachable. Repaired with generous period BANDS, never equalities (a
+      retail 4-5-4 quarter is 13 or 14 weeks).
+      (B) Three of the four definitions say "in USD thousands" while the
+      envelope was whatever the source carried; a contradicting pair now
+      withholds with result_envelope_contradicts_stated_definition rather than
+      converting a value or rewriting prose this module does not own.
+      (C) The document self-check walked three collections and read ZERO root
+      fields - 0 of the 5 root scalars the contract constrains. Replaced with
+      validation against the published schema (the house idiom; 39 engine
+      modules already do it), and the constant-mirror test made reflective so a
+      new unpinned vocabulary fails it. That found _ALLOWED_COMPARISON_BASIS had
+      drifted to three words against the contract's enum of ONE, so two bases
+      were admitted and emitted as contract-invalid documents.
+      (D) Found BY (C), not suspected: results[*].input_refs published duplicate
+      provenance against uniqueItems in five of the module's own tests, green on
+      main for the module's whole life. Reproduced against main's unpatched
+      bytes before repair, so it is pre-existing. Deduped order-preserving at
+      _emit_result, the single point every result passes.
+      Mutation round 12/13 killed, the survivor equivalent and now pinned. Both
+      live cases unchanged (0 errors, ready, oracle exact). Suite 102 -> 111.
   - id: CC-V1-ENTITLED
     title: "V1 entitled + browser legs"
     status: todo
@@ -112,6 +145,16 @@ blocked_by:
   - "#7669 template/page custody for the company-page consumer"
   - "incumbent source owner must natively admit the PLNT Q2 2026 exhibit"
 landmines:
+  - >
+    A parameter a function RECEIVES is not a property it CHECKS. comparison_basis
+    reached _select_pair's signature and nothing in the body read it, which is
+    precisely why review passes over it - the signature reads like the check is
+    there. Name the line that reads a label before calling it enforced.
+  - >
+    A guard that hand-enumerates its checks is scoped by the enumeration, never
+    by the authority it mirrors. Do not extend the list; derive from the source
+    and add one reflective test that fails when a new item is unpinned.
+    Extending reproduces the defect at the next field.
   - >
     app/earnings.py LOOKS like an opening (merged, entitled, private/no-store)
     and is not: R15 H1 superseded direct Earnings delivery for this dossier and
@@ -202,6 +245,39 @@ next_action: >
   Do not widen into V2 LTH / V3 LULU / V4 theme journey - R15 forbids
   self-authorizing them on a V1 pass, and the next modifying wave takes its own
   continuation edge.
+  .
+  CC-V1-MINTED-ENVELOPE-REFUSAL merged as PR #8099 (squash edf7f0add1b1,
+  2026-09-27T22:00:06Z) and was proven from main's re-extracted bytes: 102
+  passed, both cases 0 errors / ready / oracle exact, and the envelope sweep 17
+  refused / 4 minted-but-honest. CC-V1-DECLARED-BASIS-BINDING follows it.
+  .
+  CC-V1-DECLARED-BASIS-BINDING merged as PR #8103 (squash 2b98cf7cfc99,
+  2026-09-27T22:36:16Z) and was proven from main's re-extracted bytes (blob
+  e9026639bf86 == origin/main's): 111 passed, both cases 0 errors / ready /
+  oracle exact, envelope sweep 17 refused / 4 minted-but-honest. Mutation 12/13
+  with W2 reported as a genuine EQUIVALENT mutant, not gamed away. Reported on
+  #7804 (comment 5860482755). ACCEPTANCE remains Sol's.
+  .
+  The correctness lane is now MUCH closer to exhausted than the previous note
+  claimed, and the specific gap that note named is CLOSED. The derive-don't-
+  enumerate method HAS since been run on the case admission path, and on pair
+  agreement. Both returned NULL, and both nulls are load-bearing. (1) Admission
+  does leave four contract-required fact fields unread
+  (native_admitted / native_ref / published_at / target), but that is ALREADY
+  ADJUDICATED by DSC:A-MINTING-DEFAULT-IS-INVISIBLE-TO-AN-EMPTINESS-GATE
+  so_what (4) - they publish the contract's own "unknown", native_admitted
+  false under-claims, and it is presently ACCURATE because R8 native staging is
+  blocked. DO_NOT_REDO: re-deriving it cost this seat ~20 minutes because the
+  probe ran before the prior DSC was read. (2) Pair agreement on unit,
+  scale_power10, sign_convention and period_kind is CHECKED - every legal-value
+  disagreement collapses the pair and declares.
+  .
+  Swept to date: 21 fact fields; 5 root scalars; basis binding; input_refs;
+  pair agreement. The honest unswept remainder is the explanation object,
+  source_records, and availability/state derivation. Anyone running that sweep
+  must first read DSC:A-MUTATION-THAT-DIES-UPSTREAM-NEVER-TESTS-THE-GATE-YOU-
+  AIMED-AT: two probes in this wave returned a vacuous green because the
+  mutation died at an earlier gate or was a no-op.
 ---
 
 ## Scope

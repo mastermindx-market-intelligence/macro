@@ -5423,6 +5423,18 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
     never drift from its server-rendered ones. Independent switch from `gate`
     (§8b: "a re-plumb, never a re-draw" — same mechanism, different array).
     """
+    # Add only the presentation for this same entitled row. Failure keeps its
+    # native flat facts, with no detail action, rather than dropping the payload.
+    def _table_row(n):
+        flat = _us_board_row_flat(n)
+        try:
+            presenter = env.get_template("_prophet_setup_detail.html.j2").module.table_action
+            flat["setup_detail"] = str(presenter(n, (us_standouts or {}).get("as_of")))
+        except Exception as exc:  # noqa: BLE001 — a missing detail is not a missing row
+            log.error("us_stocks: table detail unavailable (%s)", exc)
+            flat["setup_detail"] = None
+        return flat
+
     path = site / US_PAYLOAD_DIR / US_PAYLOAD_NAME
     path.parent.mkdir(parents=True, exist_ok=True)
     panel_blocks = panel_blocks or {}
@@ -5464,7 +5476,8 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
         try:
             cards_html = env.get_template("_us_board_cards.html.j2").render(
                 items=items, sg_any=sg_any, bs_adj=bs_adj, xu_allfeat=xu_allfeat,
-                trg_map=trg_map, rw_en=rw_en, rw_zh=rw_zh)
+                trg_map=trg_map, rw_en=rw_en, rw_zh=rw_zh,
+                setup_as_of=(us_standouts or {}).get("as_of"))
         except Exception as e:  # noqa: BLE001 — payload must still write with an
             # honest empty card block rather than aborting the whole build.
             log.error("us_stocks: locked card render failed (%s)", e)
@@ -5475,7 +5488,7 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
             "total": gate["total"], "preview": gate["preview"],
             "locked": gate["locked"], "as_of": (us_standouts or {}).get("as_of") or "",
             "cards_html": cards_html,
-            "rows": [_us_board_row_flat(n) for n in locked_rows],
+            "rows": [_table_row(n) for n in locked_rows],
         }
     if pgate:
         payload["panels"] = {k: v for k, v in pgate.items()
@@ -5734,7 +5747,8 @@ def _render_us_panel_payload(env: Environment, pgate: "dict | None", locked: dic
 
     if locked.get("candidate_pool"):
         _render("candidate_pool_html", "_us_candidate_pool_rows.html.j2",
-                rows=locked["candidate_pool"])
+                rows=locked["candidate_pool"],
+                setup_as_of=(vm.get("us_candidate_visibility") or {}).get("as_of"))
         candidate_view = vm.get("us_candidate_visibility") or {}
         out["candidate_pool_source"] = {
             "as_of": candidate_view.get("as_of"),

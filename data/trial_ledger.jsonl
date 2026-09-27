@@ -1675,3 +1675,4 @@
 {"ts": "2026-09-18T08:49:36.116723+00:00", "family": "cortex", "kind": "declared_budget", "n": 1, "reason": "cortex hypothesis registration: cortex-2026-09-18-in-low-volatility-regimes-negative-10-d-acd5d5", "config_hash": "81ffeacbbe20fbc0"}
 {"ts": "2026-09-18T19:52:35.259468+00:00", "family": "cortex", "kind": "declared_budget", "n": 1, "reason": "cortex hypothesis registration: cortex-2026-09-18-when-the-confirmed-us-quad-is-contradict-9274dc", "config_hash": "d73d710d50dfd299"}
 {"ts": "2026-09-26T20:43:48.531700+00:00", "family": "cortex", "kind": "declared_budget", "n": 1, "reason": "cortex hypothesis registration: cortex-2026-09-26-when-the-liquidity-overlay-is-expanding-fd6d5d", "config_hash": "409daec932af6040"}
+{"ts": "2026-09-27T22:32:17.457584+00:00", "family": "cortex", "kind": "declared_budget", "n": 1, "reason": "cortex hypothesis registration: cortex-2026-09-27-when-a-newly-displayed-us-q2-regime-coin-ed2a30", "config_hash": "fe0f2ac247549315"}
