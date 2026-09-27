@@ -7523,6 +7523,24 @@ jobs:
       - name: grader manifest (fitness graders + immutable configs unchanged)
         run: python3 scripts/check_grader_manifest.py
 
+  inference-host-guard:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "ops/inference-host/ubuntu/**"
+      - "tests/test_inference_host_guard.py"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest
+      - name: local inference admission guard
+        run: python -m pytest tests/test_inference_host_guard.py -q
+
   hub-a11y:
     if: ${{ false }}
     gate: data
