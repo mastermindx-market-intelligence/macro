@@ -14241,6 +14241,7 @@ jobs:
       - "tests/test_fda_supply_probes_t01r.py"
       - "tests/test_fda_supply_probes_t02r3.py"
       - "tests/test_fda_supply_probes_final.py"
+      - "tests/test_fda_supply_probes_mixed.py"
       - "collectors/fda_shortages.py"
       - "engine/fda_scarcity.py"
       - "engine/foresight_cascade.py"
@@ -14279,7 +14280,7 @@ jobs:
       - name: FDA foresight cascade and qualified observation suites
         run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py -q
       - name: FDA supply acceptance probes
-        run: python -m pytest tests/test_fda_supply_probes.py tests/test_fda_supply_probes_t02r.py tests/test_fda_supply_probes_t02r2.py tests/test_fda_supply_probes_t01r.py tests/test_fda_supply_probes_t02r3.py tests/test_fda_supply_probes_final.py -q
+        run: python -m pytest tests/test_fda_supply_probes.py tests/test_fda_supply_probes_t02r.py tests/test_fda_supply_probes_t02r2.py tests/test_fda_supply_probes_t01r.py tests/test_fda_supply_probes_t02r3.py tests/test_fda_supply_probes_final.py tests/test_fda_supply_probes_mixed.py -q
 
   prophet-us-context-and-grades:
     # PROPHET US §W7 — the full-population candidate record: the PIT context store that

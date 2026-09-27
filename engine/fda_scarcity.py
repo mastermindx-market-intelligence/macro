@@ -128,12 +128,27 @@ def _label(
         _CURRENT_REPORTED: ("FDA shortage: current ({current})", "FDA短缺：当前（{current}）"),
         _RESOLVED_REPORTED: ("FDA shortage: resolved ({resolved}) — supply status only", "FDA短缺：已解决（{resolved}）——仅供给状态"),
         _DISCONTINUATION_REPORTED: ("FDA: formulation discontinuation reported ({discontinued})", "FDA：已报告制剂停产（{discontinued}）"),
-        _MIXED_REPORTED: ("FDA: mixed — current {current} / resolved {resolved}", "FDA：混合——当前{current}／已解决{resolved}"),
+        _MIXED_REPORTED: ("FDA: mixed", "FDA：混合"),
         _UNCLASSIFIED: ("FDA: observed, status unclassified ({unrecognized})", "FDA：已观察到，状态未分类（{unrecognized}）"),
         _NO_MATCHING_RECORDS: ("FDA: no matching records", "FDA：无匹配记录"),
         _UNAVAILABLE: ("FDA source unavailable", "FDA来源不可用"),
     }
     english, chinese = labels[status]
+    if status == _MIXED_REPORTED:
+        # MIXED fires for current + (resolved OR discontinued), so the second component is
+        # not always "resolved". Naming it unconditionally printed "resolved 0" next to the
+        # word "mixed" and silently dropped the discontinuations — and under this program's
+        # semantics a discontinuation is NOT a resolution. Enumerate only what is present.
+        english_mix = [f"current {counts['current']}"]
+        chinese_mix = [f"当前{counts['current']}"]
+        if counts["resolved"]:
+            english_mix.append(f"resolved {counts['resolved']}")
+            chinese_mix.append(f"已解决{counts['resolved']}")
+        if counts["discontinued"]:
+            english_mix.append(f"discontinued {counts['discontinued']}")
+            chinese_mix.append(f"停产{counts['discontinued']}")
+        english = "FDA: mixed — " + " / ".join(english_mix)
+        chinese = "FDA：混合——" + "／".join(chinese_mix)
     if status == _DISCONTINUATION_REPORTED and counts["resolved"] and counts["discontinued"]:
         english = "FDA: resolved {resolved} / discontinued {discontinued} — supply status only"
         chinese = "FDA：已解决{resolved}／停产{discontinued}——仅供给状态"
@@ -430,6 +445,15 @@ def _chip_rationale(status, counts):
             f"The FDA reports {counts['resolved']} resolved and "
             f"{counts['discontinued']} discontinued formulations."
         )
+    if status == _MIXED_REPORTED:
+        # Same defect as the label: the fixed sentence claimed "current and resolved" even
+        # when the mixture was current + discontinued and resolved was 0.
+        if counts["resolved"] and counts["discontinued"]:
+            return ("The FDA reports current shortages, resolved shortages and "
+                    "formulation discontinuations.")
+        if counts["discontinued"]:
+            return "The FDA reports current shortages and formulation discontinuations."
+        return "The FDA reports both current and resolved shortages."
     rationales = {
         _CURRENT_REPORTED: "The FDA reports a current shortage for this theme.",
         _RESOLVED_REPORTED: "The FDA reports the shortage as resolved.",
