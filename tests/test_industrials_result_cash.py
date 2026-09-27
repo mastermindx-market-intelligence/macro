@@ -11,12 +11,10 @@ is synthetic; all numbers are invented under fictional issuers with
 from __future__ import annotations
 
 from collections.abc import Mapping
-from copy import deepcopy
 from decimal import Decimal
 
 import pytest
 
-from engine.fundamental_forensics import industrials_result_cash as t04
 from engine.fundamental_forensics.industrials_result_cash import (
     ALLOWED_FORMULAS,
     FORMULA_VERSION,
@@ -163,10 +161,20 @@ def test_cash_after_capital_payments_negative_loss_keeps_sign() -> None:
 
 
 def test_cash_after_capital_payments_refuses_typed_absence_operand() -> None:
+    # A typed-absence operand carries every native field PLUS the absence
+    # reason.  Missing, nil, ambiguous and zero are four different states;
+    # typed absence is never treated as 0.
+    absent_cell = cell(
+        "100",
+        metric="cash_capital_payments",
+        owner_ref="synthetic:cell:capex-absent",
+    )
+    absent_cell.pop("value", None)
+    absent_cell["absence"] = "missing_source"
+
     cells = [
         cell("100", metric="operating_cash"),
-        # missing operand — typed absence is NOT zero
-        {"owner_ref": "synthetic:cell:absent", "absence": "not_applicable"},
+        absent_cell,
     ]
     r = derive_result_cash(
         "cash_after_capital_payments",
@@ -183,7 +191,7 @@ def test_cash_after_capital_payments_refuses_typed_absence_operand() -> None:
 
 
 def test_growth_pct_ready_with_positive_base() -> None:
-    cells = [cell("110", metric="revenue"), cell("100", metric="revenue_prior")]
+    cells = [cell("110", metric="revenue_current"), cell("100", metric="revenue_prior")]
     r = derive_result_cash(
         "growth_pct",
         cells,
@@ -195,7 +203,7 @@ def test_growth_pct_ready_with_positive_base() -> None:
 
 
 def test_growth_pct_loss_keeps_sign() -> None:
-    cells = [cell("-50", metric="profit"), cell("100", metric="profit_prior")]
+    cells = [cell("-50", metric="profit_current"), cell("100", metric="profit_prior")]
     r = derive_result_cash(
         "growth_pct",
         cells,
@@ -206,7 +214,7 @@ def test_growth_pct_loss_keeps_sign() -> None:
 
 
 def test_growth_pct_zero_base_refuses_percentage() -> None:
-    cells = [cell("50", metric="revenue"), cell("0", metric="revenue_prior")]
+    cells = [cell("50", metric="revenue_current"), cell("0", metric="revenue_prior")]
     r = derive_result_cash(
         "growth_pct",
         cells,
@@ -219,7 +227,7 @@ def test_growth_pct_zero_base_refuses_percentage() -> None:
 
 
 def test_growth_pct_negative_base_refuses_percentage() -> None:
-    cells = [cell("50", metric="revenue"), cell("-10", metric="revenue_prior")]
+    cells = [cell("50", metric="revenue_current"), cell("-10", metric="revenue_prior")]
     r = derive_result_cash(
         "growth_pct",
         cells,
@@ -264,13 +272,18 @@ def test_margin_pct_refuses_nonpositive_denominator() -> None:
 
 def test_margin_pct_refuses_mismatched_perimeter() -> None:
     cells = [
-        cell("20", metric="gross_profit", business_dimensions={"segment": "alpha"}),
-        cell("100", metric="revenue", business_dimensions={"segment": "company"}),
+        cell("20", metric="gross_profit", business_dimensions={"perimeter": "company"}),
+        cell("100", metric="revenue", business_dimensions={"perimeter": "segment:alpha"}),
     ]
+    receipt = comparison("same_period", cells)
+    receipt = {
+        **receipt,
+        "checked": {**receipt["checked"], "perimeter": False},
+    }
     r = derive_result_cash(
         "margin_pct",
         cells,
-        comparison_receipt=comparison("same_period", cells),
+        comparison_receipt=receipt,
     )
     assert r["status"] == "refused"
     assert any("perimeter_mismatch" in lim for lim in r["limitations"])
@@ -467,8 +480,8 @@ def test_final_vs_preview_refuses_same_edition() -> None:
 
 def test_qualify_operands_refuses_unknown_basis() -> None:
     cells = [
-        cell("100", basis={"accounting": "GAAP", "recast": "as_reported"}),
-        cell("100", basis={"accounting": "GAAP"}),  # recast missing
+        cell("100", metric="revenue_current", basis={"accounting": "GAAP", "recast": "as_reported"}),
+        cell("100", metric="revenue_prior", basis={"accounting": "GAAP"}),  # recast missing
     ]
     q = qualify_operands("year_over_year", cells, comparison_receipt=comparison("year_over_year", cells))
     assert q["status"] == "refused"
@@ -477,8 +490,8 @@ def test_qualify_operands_refuses_unknown_basis() -> None:
 
 def test_qualify_operands_refuses_scale_mismatch_without_conversion() -> None:
     cells = [
-        cell("100", scale=1, currency="USD"),
-        cell("100", scale=1000, currency="USD"),
+        cell("100", metric="revenue_current", scale=1, currency="USD"),
+        cell("100", metric="revenue_prior", scale=1000, currency="USD"),
     ]
     q = qualify_operands("year_over_year", cells, comparison_receipt=comparison("year_over_year", cells))
     assert q["status"] == "refused"
@@ -487,8 +500,8 @@ def test_qualify_operands_refuses_scale_mismatch_without_conversion() -> None:
 
 def test_qualify_operands_accepts_scale_mismatch_with_exact_conversion() -> None:
     cells = [
-        cell("100", scale=1, currency="USD"),
-        cell("100", scale=1000, currency="USD"),
+        cell("100", metric="revenue_current", scale=1, currency="USD"),
+        cell("100", metric="revenue_prior", scale=1000, currency="USD"),
     ]
     receipt = comparison("year_over_year", cells)
     receipt = {
@@ -502,8 +515,8 @@ def test_qualify_operands_accepts_scale_mismatch_with_exact_conversion() -> None
 
 def test_qualify_operands_refuses_currency_mismatch_without_conversion() -> None:
     cells = [
-        cell("100", currency="USD"),
-        cell("100", currency="EUR"),
+        cell("100", metric="revenue_current", currency="USD"),
+        cell("100", metric="revenue_prior", currency="EUR"),
     ]
     q = qualify_operands("year_over_year", cells, comparison_receipt=comparison("year_over_year", cells))
     assert q["status"] == "refused"
@@ -512,10 +525,17 @@ def test_qualify_operands_refuses_currency_mismatch_without_conversion() -> None
 
 def test_qualify_operands_refuses_duration_mismatch() -> None:
     cells = [
-        cell("100", period={"start": "2026-01-01", "end": "2026-06-30", "fiscal_label": "FY26 H1", "duration": "half_year"}),
-        cell("100", period={"start": "2026-04-01", "end": "2026-06-30", "fiscal_label": "FY26 Q2", "duration": "quarter"}),
+        cell("100", metric="revenue_h1", period={"start": "2026-01-01", "end": "2026-06-30", "fiscal_label": "FY26 H1", "duration": "half_year"}),
+        cell("100", metric="revenue_q2", period={"start": "2026-04-01", "end": "2026-06-30", "fiscal_label": "FY26 Q2", "duration": "quarter"}),
     ]
-    q = qualify_operands("year_over_year", cells, comparison_receipt=comparison("year_over_year", cells))
+    # Receipt declares duration NOT checked — the module must refuse the
+    # quarter-vs-half-year subtraction.
+    receipt = comparison("year_over_year", cells)
+    receipt = {
+        **receipt,
+        "checked": {**receipt["checked"], "duration": False},
+    }
+    q = qualify_operands("year_over_year", cells, comparison_receipt=receipt)
     assert q["status"] == "refused"
     assert any("duration_mismatch" in lim for lim in q["limitations"])
 
@@ -523,8 +543,8 @@ def test_qualify_operands_refuses_duration_mismatch() -> None:
 def test_qualify_operands_refuses_equal_null_bases() -> None:
     """Equal nulls NEVER certify comparability."""
     cells = [
-        cell("100", basis={"accounting": "GAAP"}),
-        cell("100", basis={"accounting": "GAAP"}),
+        cell("100", metric="revenue_current", basis={"accounting": "GAAP"}),
+        cell("100", metric="revenue_prior", basis={"accounting": "GAAP"}),
     ]
     q = qualify_operands("year_over_year", cells, comparison_receipt=comparison("year_over_year", cells))
     # The recast field is missing on both sides — required_basis_unknown, not
@@ -534,18 +554,23 @@ def test_qualify_operands_refuses_equal_null_bases() -> None:
 
 def test_qualify_operands_refuses_perimeter_mismatch() -> None:
     cells = [
-        cell("100", business_dimensions={"perimeter": "company"}),
-        cell("100", business_dimensions={"perimeter": "segment:alpha"}),
+        cell("100", metric="revenue_current", business_dimensions={"perimeter": "company"}),
+        cell("100", metric="revenue_prior", business_dimensions={"perimeter": "segment:alpha"}),
     ]
-    q = qualify_operands("year_over_year", cells, comparison_receipt=comparison("year_over_year", cells))
+    receipt = comparison("year_over_year", cells)
+    receipt = {
+        **receipt,
+        "checked": {**receipt["checked"], "perimeter": False},
+    }
+    q = qualify_operands("year_over_year", cells, comparison_receipt=receipt)
     assert q["status"] == "refused"
     assert any("perimeter_mismatch" in lim for lim in q["limitations"])
 
 
 def test_qualify_operands_refuses_receipt_with_fewer_refs_than_used() -> None:
     cells = [
-        cell("100", owner_ref="synthetic:cell:a"),
-        cell("100", owner_ref="synthetic:cell:b"),
+        cell("100", metric="revenue_current", owner_ref="synthetic:cell:a"),
+        cell("100", metric="revenue_prior", owner_ref="synthetic:cell:b"),
     ]
     receipt = comparison("year_over_year", cells[:1])  # receipt only names 'a'
     q = qualify_operands("year_over_year", cells, comparison_receipt=receipt)
@@ -646,12 +671,24 @@ def test_missing_operand_refuses() -> None:
 
 def test_non_dict_argument_shape_raises_type_error() -> None:
     with pytest.raises(TypeError):
-        derive_result_cash("growth_pct", ["not a dict"], comparison_receipt={"purpose": "year_over_year"})
+        # comparison_receipt is a non-dict shape; the module refuses the
+        # call with TypeError rather than fabricating a comparison.
+        derive_result_cash(
+            "growth_pct",
+            [cell("1"), cell("2")],
+            comparison_receipt="not a dict",
+        )
 
 
 def test_non_list_argument_shape_raises_type_error() -> None:
     with pytest.raises(TypeError):
-        derive_result_cash("growth_pct", "not a list", comparison_receipt={"purpose": "year_over_year"})
+        # cells is a non-list shape; the module refuses the call with
+        # TypeError rather than guessing at a list-like.
+        derive_result_cash(
+            "growth_pct",
+            "not a list",
+            comparison_receipt={"purpose": "year_over_year", "receipt_id": "x", "operand_refs": ["a", "b"], "checked": {}},
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -766,5 +803,5 @@ def _purpose_for(formula: str) -> str:
 
 
 def test_typed_absence_helper_returns_owner_shape() -> None:
-    typed = typed_absence("not_applicable")
-    assert typed == {"absence": "not_applicable"}
+    typed = typed_absence("missing_source")
+    assert typed == {"absence": "missing_source"}
