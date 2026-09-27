@@ -1312,7 +1312,11 @@ def test_failed_refresh_discloses_the_retained_qualified_capture(monkeypatch):
     from engine.fda_scarcity import compute_fda_scarcity, format_theme_feed_chip
 
     monkeypatch.setattr(fda_module, "MOLECULE_THEME_MAP", {"synthetic theme a": ["glp1_obesity"]})
-    now = datetime(2026, 9, 23, 12, tzinfo=UTC)
+    # `compute_fda_scarcity` reads the wall clock (it has no injected `now` seam and passes
+    # max_capture_age=None per R-T01-12), so the capture has to be anchored to that SAME
+    # clock. A fixed calendar date here renders a different "captured N d ago" on every
+    # later day: the assertion would pass only on the day it was written.
+    now = datetime.now(UTC)
     frame = pd.DataFrame([_summary_row()])
     frame.attrs["fda_observation"] = {
         "capture": _retained_capture_with_failed_refresh(now),
@@ -1325,11 +1329,11 @@ def test_failed_refresh_discloses_the_retained_qualified_capture(monkeypatch):
     assert chip["source_status"] == "CURRENT_REPORTED"
     assert chip["tone"] == "warn"
     assert chip["label"] == (
-        "FDA shortage: current (1) · captured 32 d ago · source generation 2026-08-20 · "
+        "FDA shortage: current (1) · captured 31 d ago · source generation 2026-08-20 · "
         "refresh failed 2026-09-22"
     )
     assert chip["label_zh"] == (
-        "FDA短缺：当前（1） · 采集于32天前 · 来源生成日期2026-08-20 · 刷新失败 2026-09-22"
+        "FDA短缺：当前（1） · 采集于31天前 · 来源生成日期2026-08-20 · 刷新失败 2026-09-22"
     )
     assert chip["freshness"]["failed_refresh"]["failure_code"] == "FIRST_PAGE_OUTAGE"
     assert chip["freshness"]["failed_refresh"]["attempted_at"] == "2026-09-22T09:00:00+00:00"
