@@ -790,3 +790,101 @@ def test_specimen_tabs_simple_fundamentals_do_not_require_sideways_reading(speci
     panel = specimen.split('id="pane-fundamentals"', 1)[1].split('id="pane-filings"', 1)[0]
     assert re.search(r'<table class="mx-tbl" style="min-width:0">', panel)
     assert '>Revenue trend<' not in panel and '>Margin trend<' not in panel
+
+
+# First-use reference journey: preparation, honest comparison and direct access.
+def _specimen_prepared_answer(specimen):
+    start = specimen.index('<section class="spec-sec" id="spec-identity"')
+    return specimen[start:specimen.index('</section>', start)]
+
+
+def test_specimen_has_one_title_main_and_skip_link(specimen):
+    nodes = _specimen_tab_nodes(specimen)
+    assert sum(tag == 'h1' for tag, _ in nodes) == 1
+    assert sum(tag == 'main' for tag, _ in nodes) == 1
+    skip = next(a for tag, a in nodes if tag == 'a' and a.get('class') == 'spec-skip')
+    assert skip['href'] == '#specimen-main'
+    main = next(a for tag, a in nodes if tag == 'main')
+    assert main['id'] == 'specimen-main' and main.get('tabindex') == '-1'
+
+
+def test_specimen_task_directory_has_real_reachable_destinations(specimen):
+    nodes = _specimen_tab_nodes(specimen)
+    nav = next(a for tag, a in nodes if tag == 'nav' and a.get('id') == 'specimen-directory')
+    assert nav.get('aria-labelledby') == 'specimen-directory-title'
+    jumps = [a for tag, a in nodes if tag == 'a' and a.get('class') == 'spec-jump']
+    assert len(jumps) == 6
+    assert len({a['href'] for a in jumps}) == 6
+    for link in jumps:
+        matching = [a for _, a in nodes if a.get('id') == link['href'][1:]]
+        assert link['href'].startswith('#') and len(matching) == 1
+        assert matching[0].get('tabindex') == '-1'
+
+
+def test_specimen_answer_is_explicitly_fictional_not_live_or_trade_authority(specimen):
+    body = _specimen_prepared_answer(specimen)
+    assert 'Fictional example' in body and '虚构示例' in body
+    assert 'Index up. Breadth weak.' in body
+    assert 'dtp-chip--live' not in body and '>LIVE<' not in body and '>Act<' not in body
+    assert 'Positive index returns do not establish broad participation.' in body
+    assert body.index('Positive index returns') < body.index('<details')
+
+
+@pytest.mark.parametrize('read,value', [('index','+1.2%'),('equal-weight','−0.6%'),('participation','3 of 11')])
+def test_specimen_answer_exposes_comparable_evidence_at_rest(specimen, read, value):
+    body = _specimen_prepared_answer(specimen).split('<details', 1)[0]
+    assert 'data-spec-read="'+read+'"' in body and value in body
+    assert '5 sessions ending 28 Aug 2026' in body
+
+
+def test_specimen_complete_breakdown_reconciles_the_participation_count(specimen):
+    from decimal import Decimal
+    body = _specimen_prepared_answer(specimen)
+    nodes = _specimen_tab_nodes(body)
+    rows = [a for tag, a in nodes if tag == 'tr' and 'data-spec-change' in a]
+    assert len(rows) == 11
+    assert sum(Decimal(a['data-spec-change']) > 0 for a in rows) == 3
+    assert sum(Decimal(a['data-spec-change']) <= 0 for a in rows) == 8
+    assert 'data-spec-total="11"' in body and 'data-spec-unavailable="0"' in body
+
+
+def test_specimen_inspection_returns_to_the_same_assessment(specimen):
+    body = _specimen_prepared_answer(specimen)
+    assert '<details class="mx-disc" id="spec-sector-breakdown"' in body
+    assert 'href="#spec-answer-title"' in body
+    assert 'id="spec-answer-title" tabindex="-1"' in body
+    assert 'Inspect all 11 sectors' in body and 'Back to assessment' in body
+    assert 'role="dialog"' not in body
+
+
+def test_specimen_navigation_accounts_for_resized_header_without_hiding_content(specimen):
+    assert 'ResizeObserver' in specimen and '--spec-header-height' in specimen
+    assert 'scroll-margin-block-start' in specimen
+    assert 'scrollIntoView({behavior:' not in specimen
+    assert re.search(r'\.spec-jump[^{}]*\{[^}]*min-height:var\(--sp-8\)', specimen)
+
+
+
+def test_specimen_answer_deep_link_includes_example_and_window(specimen):
+    body = _specimen_prepared_answer(specimen)
+    assert body.index('id="spec-answer-title"') < body.index('Fictional example')
+    assert '<header id="spec-answer-title" tabindex="-1">' in body
+
+
+def test_specimen_sector_rows_use_readable_body_text(specimen):
+    row = re.sub(r"\s+", "", _rule_body(specimen, r"\.spec-answer \.mx-tbl tbody th"))
+    assert 'font-size:var(--fs-body)' in row and 'text-transform:none' in row
+
+
+def test_specimen_unavailable_spine_has_no_orphan_travel_cell(specimen):
+    # The existing narrow null-row grid has name/stance/rail, no travel area.
+    # An extra travel cell creates an implicit column on text enlargement.
+    assert 'data-null="1"' in specimen
+    assert '<div class="mx-spine-travel"><span class="muted">—</span></div>' not in specimen
+    assert 'Read being updated' in specimen
+
+
+def test_specimen_prepared_answer_reuses_the_existing_verdict_primitive(specimen):
+    body = _specimen_prepared_answer(specimen)
+    assert 'class="spec-answer mx-vh"' in body
+    assert 'class="mx-vh-word"' in body and 'class="mx-vh-clause"' in body
