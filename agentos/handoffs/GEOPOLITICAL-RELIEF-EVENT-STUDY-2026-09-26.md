@@ -48,8 +48,9 @@ changed:
   - path: scripts/research/capture_cross_session_transfer.py
     what: >-
       Complete the research-only prospective execution path: preserve first-disclosure clock law;
-      deterministically freeze prior/next same-clock matched controls only from source-covered
-      observed SMH sessions; measure event/control U.S. V1+V1.1 geometry; fail closed until all
+      deterministically freeze prior/next same-clock matched controls only from fully source-covered
+      observed SMH sessions; require an exact completeness cutoff so the cutoff's still-open UTC date
+      can never become a control; measure event/control U.S. V1+V1.1 geometry; fail closed until all
       required pre-HK receipts agree; then score the frozen HSI next-open endpoint through ephemeral
       Yahoo ^HSI adjusted OHLC with zero persistence or product/trading authority.
   - path: agentos/handoffs/GEOPOLITICAL-RELIEF-EVENT-STUDY-2026-09-26.md
@@ -127,6 +128,15 @@ verified:
       Exact sparse-worktree verification at e72c6bd2e9a69cc89a2b6918792f53c76370b432 passed
       30/30 tests; pending-control tests prove zero HSI transport calls, DATA_GAP remains explicit,
       and the temporary verifier worktree was removed.
+  - claim: >-
+      A partially elapsed source-coverage day cannot certify a matched control; only calendar dates
+      strictly earlier than the exact completeness cutoff's UTC date are eligible.
+    command: >-
+      python3 -m pytest -q tests/test_event_microstructure_study.py tests/test_event_microstructure_replay.py tests/test_cross_session_source_census.py
+    result: >-
+      Exact sparse-worktree research pack at bed673021eff31d3100ecc59780a2c32e9a17711 passed
+      57/57 tests. A 2026-10-02T18:00Z cutoff certifies only through Oct 1; Oct 2 remains PENDING
+      until a 2026-10-03T00:00Z completeness cutoff. Temporary verifier worktree removed.
 unverified:
   - "The current post-harness closeout head still requires exact-head hosted ci and fences before the carrier can be called fully green."
   - "Prospective cross-session transfer generalization on future events remains unproven."
@@ -151,6 +161,7 @@ do_not_redo:
   - "Do not retry the degraded AkShare/Eastmoney HK source in this research lane while the source state is unchanged; the frozen Tencent amendment is the current secondary-source path."
   - "Do not treat V1.1 as a development winner from its higher raw hit rate; on common controls its event-minus-control uplift does not dominate V1, and its extra correctness is one development event."
   - "Do not bypass the pre-HK gate or substitute a scheduled/future U.S. session for an observed source-covered control session; PENDING stays PENDING and blocks HSI reads."
+  - "Do not certify the source-completeness cutoff's own UTC calendar date as a control day; the full date is incomplete until the next UTC midnight."
 danger_areas:
   - "A later positive Hong Kong move must not overwrite CAUSAL_REJECTED, CONFLICTED, or DATA_GAP evidence states."
   - "AkShare/Eastmoney remains degraded and is DO_NOT_RETRY in this research lane. Tencent recent-session capability is now proven through the existing Terminal owner; the three target development rows have been read and are permanently development-only, never prospective evidence."
@@ -750,6 +761,7 @@ Implementation commits:
   U.S. control measurement;
 - `8d6ebef0f87d912436ca2791ba5047108118e900` — pre-HK readiness gate;
 - `e72c6bd2e9a69cc89a2b6918792f53c76370b432` — gated HSI outcome scoring.
+- `bed673021eff31d3100ecc59780a2c32e9a17711` — exact source-completeness cutoff; partial UTC days can never certify matched controls.
 
 Exact local proof at `e72c6bd2...`:
 - `tests/test_event_microstructure_replay.py`: **30 passed**;
@@ -758,6 +770,12 @@ Exact local proof at `e72c6bd2...`:
 - ten excluded next sessions resolve to DATA_GAP rather than replacement;
 - missing HSI anchor stays DATA_GAP;
 - conflicting duplicate HSI OHLC is refused;
+- sparse verifier cleanup: PASS.
+
+Exact current-code proof at `bed67302...`:
+- all three owned research suites: **57 passed**;
+- partial-day completeness regression: PASS;
+- complete-next-midnight eligibility regression: PASS;
 - sparse verifier cleanup: PASS.
 
 ### Current-source accrual state
@@ -775,7 +793,8 @@ This is a bounded source check, not a population no-event claim.
 FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE: false
 
-The bounded **development-to-prospective harness build** is complete and locally proven.
+The bounded **development-to-prospective harness build** is complete and locally proven, including
+the full-day source-completeness boundary at `bed67302...`.
 The parent pattern-analysis mission remains incomplete because prospective generalization has zero
 qualifying post-V1.1 observations and exact current-head hosted CI/fences must still be consumed.
 
