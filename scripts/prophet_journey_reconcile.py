@@ -79,14 +79,22 @@ Selectors / expressions and their owners:
        "overtime", "invalidated", "resolved")``); plan card id emitted by
        the prophet card macro at templates/_prophet_card.html.j2:608
        (``{% if cx.get('id') %} id="pv-{{ cx.id|e }}"{% endif %}``).
-  J9 — ``index.source_board_asof`` and ``index.asof`` — written at
-       scripts/build_prophet.py (the index top-level shape ``{"as_of",
-       "source_board_asof", "plans"}``); ``#plv-asof`` visible text is
-       filled by JS at templates/dashboard.html.j2:16378 and rendered
-       client-side via ``_plvAsOf`` (:19422), which formats a TIME-OF-DAY
-       not an ISO date — so this check emits N/A on the visible text
-       (the spec acknowledges this fallback) and reports the observed
-       text in the receipt.
+  J9 — ``index.source_board_asof`` and ``index.asof`` — written by the
+       builder at scripts/build_prophet.py:2607 ("asof" — the
+       publication stamp, with "as_of" accepted for synthetic / legacy
+       payloads) and :2609 ("source_board_asof", which must equal
+       standouts.as_of). The page's plan clock ``#plv-asof``
+       (templates/dashboard.html.j2:16378) is filled by the page JS
+       ``_plvAsOf`` at templates/dashboard.html.j2:18992, stacked at
+       :19422 — the stamp is TIME-OF-DAY ("as of 3:41 pm ET" / "截至
+       美东 15:41"), not an ISO date. PASS = (a) source_board_asof ==
+       standouts.as_of and source_board_asof <= index.asof AND (b)
+       ``#plv-asof`` is present AND non-empty (proves JS rendered the
+       panel). FAIL when either reconciliation breaks OR the panel
+       stamp is empty on a snapshot with populated index clocks.
+       N/A only when ``#plv-asof`` is absent (e.g., dialog-only
+       fixture) — the spec's "N/A with observed text" applies when the
+       node is missing, not when the value is empty.
   J10 — journey node href / data-mkt filter — the journey nodes are
        ``#us-standouts``, ``#us-candidate-pool``, the per-ticker detail
        node (``[data-setup-ticker=T]``), and the linked plan node if any
@@ -926,54 +934,106 @@ def _check_j8(soup: BeautifulSoup, index: dict[str, Any],
     ), [])
 
 
-def _check_j9(soup: BeautifulSoup, index: dict[str, Any]) -> dict[str, Any]:
-    """J9 — index clocks reconcile with standouts; page plan clock is mirrored."""
-    where = ("index.source_board_asof / index.asof vs standouts.as_of; "
-             "#plv-asof visible text "
-             "(templates/dashboard.html.j2:16378; "
-             ":19422 _plvAsOf formats TIME-OF-DAY, not ISO date — "
-             "the spec acknowledges the N/A fallback)")
-    idx_asof = index.get("as_of")
+def _check_j9(soup: BeautifulSoup, index: dict[str, Any],
+               standouts: dict[str, Any] | None = None) -> dict[str, Any]:
+    """J9 — index clocks reconcile with standouts; page plan clock rendered.
+
+    Three falsifiable rules. Each can PASS independently — the overall
+    status is PASS only when ALL three hold simultaneously, FAIL when
+    any reconciliation rule breaks OR the panel stamp is empty on a
+    snapshot with populated index clocks, and N/A when ``#plv-asof``
+    is absent (e.g., dialog-only fixture — the spec's "N/A with
+    observed text" applies to a MISSING node, not to an EMPTY stamp).
+
+    Rules
+    -----
+    R1. ``index.source_board_asof == standouts.as_of`` — same vintage.
+    R2. ``index.asof >= index.source_board_asof`` — publication stamp
+        cannot predate the source board (R2 fails when the builder
+        reran the index without refreshing the source snapshot).
+    R3. ``#plv-asof`` is present AND its visible text is non-empty —
+        the page JS ``_plvAsOf`` filled the panel stamp.
+
+    Keys
+    ----
+    Builder emits the publication clock at ``index["asof"]``
+    (scripts/build_prophet.py:2607) and the source board vintage at
+    ``index["source_board_asof"]`` (:2609). Legacy / synthetic payloads
+    carry ``as_of`` instead — the harness accepts both so a synthetic
+    test fixture does not have to mirror the builder's key spelling.
+    """
+    where = (
+        "R1 index.source_board_asof == standouts.as_of; "
+        "R2 index.asof >= index.source_board_asof "
+        "(scripts/build_prophet.py:2607 'asof' key, "
+        ":2609 'source_board_asof' key — also accepts legacy 'as_of'); "
+        "R3 #plv-asof visible text filled by _plvAsOf "
+        "(templates/dashboard.html.j2:16378 static markup; "
+        ":18992 _plvAsOf formatter; :19422 stack call). "
+        "Mirror contract: TIME-OF-DAY stamp, not ISO date."
+    )
+    # Builder key is "asof" (scripts/build_prophet.py:2607). Accept
+    # "as_of" too for synthetic / legacy fixtures (the test suite
+    # uses "as_of"; the live builder uses "asof").
+    idx_asof = index.get("asof") or index.get("as_of")
     idx_source = index.get("source_board_asof")
+    su_asof = (standouts or {}).get("as_of") if standouts else None
+
     plv = _select_first(soup, "#plv-asof")
     observed_plv = plv.get_text(" ", strip=True) if plv is not None else ""
-    notes: list[str] = []
+
     fails: list[str] = []
-    # index.source_board_asof must equal standouts.as_of.
-    # We don't have standouts in scope here — the caller passes index alone
-    # and the standouts comparison is implicit (the spec puts the source-
-    # board-asof equality check on J9's INDEX side). FAIL when both
-    # values are present and disagree.
+
+    # R1 — same vintage across the two payloads.
+    if idx_source and su_asof and idx_source != su_asof:
+        fails.append(
+            f"R1: index.source_board_asof={idx_source!r} "
+            f"!= standouts.as_of={su_asof!r}"
+        )
+    # R2 — publication stamp >= source board.
     if idx_source and idx_asof and idx_source > idx_asof:
         fails.append(
-            f"index.source_board_asof={idx_source!r} > index.asof={idx_asof!r}")
-    # Visible plan clock: the spec says "mirror the formatting the
-    # template uses (mirror it; else N/A with observed text)". The
-    # template's formatting is a TIME-OF-DAY stamp (12-hour ``H:MM pm``
-    # via _plvAsOf, dashboard.html.j2:19422), not an ISO date. We
-    # therefore emit N/A on the visible-text comparison and record the
-    # observed text — a strict pass here would be a false positive.
-    if not plv:
-        notes.append("#plv-asof node absent from snapshot")
+            f"R2: index.source_board_asof={idx_source!r} "
+            f"> index.asof={idx_asof!r} (publication predates source)"
+        )
+    # R3 — visible plan clock stamp.
+    if plv is not None and not observed_plv and (idx_source or idx_asof):
+        fails.append(
+            "R3: #plv-asof visible text empty — JS did not fill "
+            "the panel stamp before the snapshot"
+        )
+
+    observed = {
+        "index_as_of": idx_asof,
+        "index_source_board_asof": idx_source,
+        "standouts_as_of": su_asof,
+        "plv_asof_observed": observed_plv,
+        "plv_asof_present": plv is not None,
+    }
+
     if fails:
         return _check_status(
             "FAIL",
-            "index clocks reconcile; plan clock visible",
-            {"index_as_of": idx_asof,
-             "index_source_board_asof": idx_source,
-             "plv_asof_observed": observed_plv,
-             "fails": fails,
-             "notes": notes},
+            "R1+R2+R3: index clocks reconcile AND plan clock stamp rendered",
+            {**observed, "fails": fails},
             where,
         )
+
+    # N/A: node absent — the spec's "N/A with observed text" applies.
+    if plv is None:
+        return _check_status(
+            "N/A",
+            "R1+R2+R3: index clocks reconcile AND plan clock stamp rendered",
+            {**observed,
+             "reason": "#plv-asof node absent (dialog-only snapshot)"},
+            where,
+        )
+
+    # All three rules hold — clocks reconcile AND stamp rendered.
     return _check_status(
-        "N/A",
-        "index clocks reconcile; plan clock visible",
-        {"index_as_of": idx_asof,
-         "index_source_board_asof": idx_source,
-         "plv_asof_observed": observed_plv,
-         "notes": notes,
-         "plan_clock_format": "TIME-OF-DAY via _plvAsOf — not ISO date"},
+        "PASS",
+        "R1+R2+R3: index clocks reconcile AND plan clock stamp rendered",
+        observed,
         where,
     )
 
@@ -1217,7 +1277,7 @@ def run(argv: list[str] | None = None) -> int:
     j6 = _check_j6(soup, standouts, ticker)
     j7 = _check_j7(soup, standouts)
     j8, plan_ids = _check_j8(soup, index, ticker)
-    j9 = _check_j9(soup, index)
+    j9 = _check_j9(soup, index, standouts)
     j10 = _check_j10(soup, ticker, plan_ids)
     j11 = _check_j11(soup, args.locale, standouts, index, ticker, plan_ids)
     j12 = _check_j12(soup, index, standouts, ticker, plan_ids)

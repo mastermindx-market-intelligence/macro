@@ -532,18 +532,91 @@ def test_j8_fail_fabricated_link():
 
 
 def test_j9_pass_index_clocks():
+    """Clocks reconcile (R1+R2) AND #plv-asof stamp is rendered (R3) → PASS.
+
+    The harness's synthetic page emits ``<span id="plv-asof">4:00 pm ET</span>``
+    via ``_full_page`` to mirror the JS-rendered _plvAsOf stamp. R1 uses
+    the standouts.as_of passed alongside the index; R2 reads the
+    publication stamp at the builder's ``index["asof"]`` key (with
+    legacy ``as_of`` accepted); R3 sees the visible stamp.
+    """
     soup = BeautifulSoup(_full_page(), "lxml")
     ix = _index_payload()
-    chk = _pjr._check_j9(soup, ix)
-    # Always N/A: the visible plan clock formats TIME-OF-DAY, not ISO date.
-    assert chk["status"] == "N/A", chk
+    su = _standouts_payload()
+    chk = _pjr._check_j9(soup, ix, su)
+    assert chk["status"] == "PASS", chk
+    assert chk["observed"]["plv_asof_present"] is True
+    assert "4:00 pm ET" in chk["observed"]["plv_asof_observed"]
+
+
+def test_j9_pass_index_asof_key_alias():
+    """Builder emits ``asof``; legacy/synthetic fixtures use ``as_of``.
+
+    Both spellings are checked — the harness reads ``index.get("asof") or
+    index.get("as_of")`` so a real builder-shaped index (no ``as_of``)
+    still resolves the publication stamp. With ``asof=2026-09-26`` and
+    source_board_asof=2026-09-26, R2 holds and J9 PASSes.
+    """
+    soup = BeautifulSoup(_full_page(), "lxml")
+    ix = {"asof": "2026-09-26", "source_board_asof": "2026-09-26",
+          "plans": []}
+    su = {"as_of": "2026-09-26", "buy": [], "watch": [],
+          "candidate_pool": {"rows": []}}
+    chk = _pjr._check_j9(soup, ix, su)
+    assert chk["status"] == "PASS", chk
 
 
 def test_j9_fail_source_ahead_of_index():
+    """R2 fail: index.asof < source_board_asof → publication predates source."""
     soup = BeautifulSoup(_full_page(), "lxml")
     ix = _index_payload(as_of="2026-09-25", source_board_asof="2026-09-26")
     chk = _pjr._check_j9(soup, ix)
     assert chk["status"] == "FAIL", chk
+    # The R2 fail string names both sides.
+    assert any("R2" in f for f in chk["observed"]["fails"]), chk
+
+
+def test_j9_fail_source_neq_standouts():
+    """R1 fail: index.source_board_asof != standouts.as_of → vintage drift."""
+    soup = BeautifulSoup(_full_page(), "lxml")
+    ix = _index_payload(source_board_asof="2026-09-27")  # ≠ standouts default
+    su = _standouts_payload()  # as_of="2026-09-26"
+    chk = _pjr._check_j9(soup, ix, su)
+    assert chk["status"] == "FAIL", chk
+    assert any("R1" in f for f in chk["observed"]["fails"]), chk
+
+
+def test_j9_fail_empty_panel_stamp():
+    """R3 fail: #plv-asof node present but stamp empty → JS did not fill."""
+    # _full_page with cross_market=True strips the #plv-asof span entirely
+    # (== plv is None, which is N/A, not FAIL). Use a smaller override:
+    # build a synthetic page where #plv-asof exists but with empty text.
+    html = ('<!doctype html><html><body>'
+            '<span class="plv-asof" id="plv-asof"></span>'
+            '</body></html>')
+    soup = BeautifulSoup(html, "lxml")
+    ix = _index_payload()  # populated → "we expect a stamp"
+    su = _standouts_payload()
+    chk = _pjr._check_j9(soup, ix, su)
+    assert chk["status"] == "FAIL", chk
+    assert any("R3" in f for f in chk["observed"]["fails"]), chk
+
+
+def test_j9_na_missing_panel_node():
+    """#plv-asof node absent (dialog body) → N/A, NOT FAIL.
+
+    The spec's "N/A with observed text" applies when the node is missing,
+    not when it is present-but-empty (the latter is R3 FAIL because it
+    is a defect on a populated snapshot).
+    """
+    # A synthetic page with no #plv-asof node at all.
+    html = '<!doctype html><html><body><section id="us-standouts"></section></body></html>'
+    soup = BeautifulSoup(html, "lxml")
+    ix = _index_payload()
+    su = _standouts_payload()
+    chk = _pjr._check_j9(soup, ix, su)
+    assert chk["status"] == "N/A", chk
+    assert chk["observed"]["plv_asof_present"] is False
 
 
 def test_j10_pass_no_cross_market():
@@ -609,12 +682,15 @@ def test_j12_pass_alert_with_empty_sources():
 # =========================================================================== #
 # CLI exit-code tests + report schema test.
 # =========================================================================== #
-def test_cli_pass_exit_code_zero():
-    """Full PASS-on-snap path: all J1-J12 checks reconcile. Note that
-    J9 deliberately returns N/A (the visible plan-clock formats
-    TIME-OF-DAY, not ISO date — that's a known spec fall-through), so
-    the harness classifies a clean journey as PARTIAL, not strictly
-    PASS. This test reflects that honest result."""
+def test_cli_clean_journey_exit_code_zero():
+    """Clean full-page PASS path: every J1-J12 check resolves PASS.
+
+    The synthetic ``_full_page`` builder emits every journey attribute
+    (``#us-standouts`` / ``#us-candidate-pool`` / ``[data-setup-ticker]``
+    / ``#pv-PLAN1`` / ``#plv-asof``), the standouts payload is fully
+    populated, and the index payload carries the matching clocks. Every
+    check therefore reconciles; verdict = PASS; exit code = 0.
+    """
     html = _full_page(ticker="TEST1", with_plan=True,
                       pool_digest="abcdef0123456789")
     su = _standouts_payload(ticker="TEST1",
@@ -624,16 +700,17 @@ def test_cli_pass_exit_code_zero():
     rc = _pjr.run(["--page", str(page), "--standouts", str(su_p),
                    "--index", str(ix_p), "--ticker", "TEST1",
                    "--out", str(out)])
-    # PARTIAL is the honest verdict — J9 is N/A by design.
-    assert rc == 2, f"exit={rc}"
+    assert rc == 0, f"exit={rc}"
     report = json.loads(out.read_text(encoding="utf-8"))
     assert report["schema"] == _pjr.SCHEMA
-    # Every J1-J12 check present, no FAIL anywhere (all PASS or N/A).
+    # Every J1-J12 check present, all PASS, no FAIL, no N/A.
     assert {c["id"] for c in report["checks"]} == {
         f"J{i}" for i in range(1, 13)}
+    statuses = {c["status"] for c in report["checks"]}
+    assert statuses == {"PASS"}, statuses
     fail_checks = [c for c in report["checks"] if c["status"] == "FAIL"]
     assert not fail_checks, fail_checks
-    assert report["verdict"] == "PARTIAL"
+    assert report["verdict"] == "PASS"
 
 
 def test_cli_fail_exit_code_one():
@@ -937,6 +1014,13 @@ def test_cli_against_committed_fixture():
 # CLI subprocess smoke — exercises the __main__ path end-to-end.
 # =========================================================================== #
 def test_cli_subprocess_pass():
+    """Subprocess smoke: ``__main__`` entry path on a clean full page.
+
+    Exit code 0 = PASS (every J1-J12 resolves), generated_by matches
+    the script's constant. The previous rc=2 PARTIAL assumption is
+    gone — J9 now PASSes when the synthetic page's ``#plv-asof`` stamp
+    is rendered (R3 holds).
+    """
     html = _full_page(ticker="TEST1", pool_digest="abcdef0123456789")
     su = _standouts_payload(ticker="TEST1",
                             pool_digest="abcdef0123456789")
@@ -948,8 +1032,7 @@ def test_cli_subprocess_pass():
          "--ticker", "TEST1", "--out", str(out)],
         check=False, capture_output=True, text=True,
     )
-    # J9 is N/A by design → PARTIAL (rc=2).
-    assert proc.returncode == 2, (proc.stdout, proc.stderr)
+    assert proc.returncode == 0, (proc.stdout, proc.stderr)
     report = json.loads(out.read_text(encoding="utf-8"))
-    assert report["verdict"] == "PARTIAL"
+    assert report["verdict"] == "PASS"
     assert report["generated_by"] == _pjr.GENERATED_BY
