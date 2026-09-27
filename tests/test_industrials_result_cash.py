@@ -215,14 +215,38 @@ def test_ind_sf01() -> None:
         cell("-12", metric="operating_cash"),
         cell("3", metric="cash_capital_payments"),
     ]
+    # Use the PRODUCTION receipt constructor so receipt_id is a real sha256
+    # digest; the receipt_ref assertion below proves the wire-through, not
+    # just a constant-to-constant equality.
+    receipt = build_comparison_receipt("same_period", cells, checked={"basis": True})
     r = derive_result_cash(
         "cash_after_capital_payments",
         cells,
-        comparison_receipt=comparison("same_period", cells),
+        comparison_receipt=receipt,
     )
     assert r["status"] == "ready"
     assert r["value"] == "-15"
     assert len(r["operand_refs"]) == 2
+    assert r["receipt_ref"] == receipt["receipt_id"]
+
+
+def test_receipt_ref_matches_receipt_id_in_refusal() -> None:
+    """Refusal path also wires ``receipt_ref`` to ``receipt_id`` — a
+    rejection still carries the comparison receipt identity.
+    """
+    cells = [
+        cell("100", metric="operating_cash", currency="USD"),
+        cell("100", metric="cash_capital_payments", currency="EUR"),
+    ]
+    receipt = build_comparison_receipt("same_period", cells, checked={})
+    r = derive_result_cash(
+        "cash_after_capital_payments",
+        cells,
+        comparison_receipt=receipt,
+    )
+    assert r["status"] == "refused"
+    assert any("currency_mismatch" in lim for lim in r["limitations"])
+    assert r["receipt_ref"] == receipt["receipt_id"]
 
 
 # ---------------------------------------------------------------------------
