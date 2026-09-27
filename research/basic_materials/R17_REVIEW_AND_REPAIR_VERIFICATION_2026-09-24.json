@@ -1,0 +1,210 @@
+{
+  "scope": "Principal review and offline research repair only. Not independent approval, product tests or a release.",
+  "date_local": "2026-09-24",
+  "local_timezone": "America/New_York",
+  "verified_at": "2026-09-25T00:31:43.216816+00:00",
+  "parent_operation": "gmi-basic-materials-research-20260923-sol-001",
+  "review_base": "1e8993cf3fa29467732ff0488545bba21095d1da",
+  "protected_procedure": "819abc8c23609cdded2b33f6e1bfc7854bd5c847",
+  "shared_candidate": "e2f4d490915660fc6db64d750505309343e9e0e8",
+  "shared_schema_blob": "ff3928f0c54aa164ef8283d9da45af67e6a0d971",
+  "findings": [
+    {
+      "id": "R17-F01",
+      "scope": "Offline R16 assess() early-return ordering",
+      "disposition": "REPAIRED_AND_REGRESSION_VERIFIED",
+      "native_product_defect_claim": false
+    },
+    {
+      "id": "R17-F02",
+      "scope": "Packet requirement for Chairman-only delivery",
+      "disposition": "CORRECTED_TO_EXISTING_ASSIGNMENT_LAW",
+      "actual_assignment_created": false
+    }
+  ],
+  "independent_review": {
+    "operation": "gmi-basic-materials-independent-review-20260924-sol-r17-001",
+    "state": "NOT_STARTED_LOCALITY_GATE",
+    "selected_model": "qwen3.8-max",
+    "served_model": null,
+    "planner_command": "pool plan --class review --need 1",
+    "planner_grant_now": 1,
+    "picker_command": "pool pick review --pool bailian",
+    "picker_result": "POOL=bailian MODEL=qwen3.8-max REASON=ok",
+    "host_selector_command": "pool hosts qwen",
+    "host_selector_result": "argument --mode: invalid choice qwen",
+    "supported_remote_modes": [
+      "cursor",
+      "glm",
+      "glm-codex",
+      "minimax",
+      "minimax-codex"
+    ],
+    "wrapper": "pool run qwen",
+    "pid": 39580,
+    "exit_code": 78,
+    "observed_runtime_seconds": 0.14,
+    "result_line": "LOCAL_SEAT_REMOTE_REQUIRED host=m2 pool=qwen family=bailian local_only=grok,ocfree",
+    "result_sha256": "ff3342b0a4cdb4e8e79b6e5c2028ed16ae69b5cf84b661a1a3f4e0e5a34a765b",
+    "prompt_sha256": "563acdcd0b347286cbadd576deb92f210b5c7ee9b9718af59dc563f3b6238b34",
+    "staged_input_count": 7,
+    "staged_input_blobs_verified": true,
+    "inputs_unchanged": true,
+    "staging_directory": "/Volumes/Mastermind/research/basic-materials-r17-review-u3o_3ekr",
+    "staging_repl_pid": 36293,
+    "staging_repl_exit_code": 0,
+    "pickup_ack_observed": false,
+    "reviewer_start_observed": false,
+    "review_complete_observed": false,
+    "alternate_provider_retry": false,
+    "independent_reviews_completed": 0,
+    "recovery_owner": "Existing pool routing/placement owner; do not bypass native locality policy."
+  },
+  "regression": {
+    "test_first_red": {
+      "methods": 9,
+      "failed_scenarios": 20,
+      "exit_code": 1,
+      "log_identity": {
+        "bytes": 23435,
+        "git_blob": "b3d29d7c03f43a35f5a5bfa103122cf34bc6c580",
+        "sha256": "2a8de47338631de26109707191b1f8a582efc5be77ced4bc07f606301f45b9b1"
+      }
+    },
+    "post_repair": [
+      {
+        "command": "python -B R17_COMPARISON_GUARD_TESTS_2026-09-24.py",
+        "exit_code": 0,
+        "test_methods": 9,
+        "log": "R17_COMPARISON_GUARD_TESTS_2026-09-24.py.verified.log",
+        "bytes": 1435,
+        "git_blob": "83450afaf13b058372eec3399ac0a1285e24e055",
+        "sha256": "35f245b34375f82e67576fa047c85fd8e19b7ecde30269a5adcc950c4808e9b5"
+      },
+      {
+        "command": "python -B R16_CHANGE_CONTENT_TESTS_2026-09-24.py",
+        "exit_code": 0,
+        "test_methods": 6,
+        "log": "R16_CHANGE_CONTENT_TESTS_2026-09-24.py.verified.log",
+        "bytes": 718,
+        "git_blob": "e2b7cbbd3ded3bb13e67eab8abd8a37bcf772027",
+        "sha256": "02a4d8f8d752a2e8ccce3739fec91e46be376f78b5feb87e735dd8a76d3fe2e0"
+      }
+    ],
+    "new_branch_surface_scenarios": 40,
+    "original_scenarios": 38,
+    "original_refusals": 22,
+    "complete_original_outputs_identical": true,
+    "parent_output_sha256": "270b7e5c25415268ae40e7f54ad86e278b316ac0207ee2b5ba870f2e94a41b0a",
+    "current_output_sha256": "270b7e5c25415268ae40e7f54ad86e278b316ac0207ee2b5ba870f2e94a41b0a",
+    "minimal_counterexamples": [
+      {
+        "presentation": "background",
+        "before": {
+          "status": "background",
+          "kind": "newly_learned_old_source",
+          "reason": null,
+          "text": "Results exceeded analyst consensus.",
+          "evidence_ref": "fixture-r2",
+          "baseline_label": null,
+          "decision_unchanged": true,
+          "production_admitted": false,
+          "can_rank": false,
+          "can_notify": false
+        },
+        "after": {
+          "status": "refused",
+          "kind": null,
+          "reason": "consensus_baseline_required",
+          "text": null,
+          "evidence_ref": null,
+          "baseline_label": null,
+          "decision_unchanged": true,
+          "production_admitted": false,
+          "can_rank": false,
+          "can_notify": false
+        }
+      },
+      {
+        "presentation": "correction",
+        "before": {
+          "status": "eligible_context",
+          "kind": "correction",
+          "reason": null,
+          "text": "Results exceeded analyst consensus.",
+          "evidence_ref": "fixture-r2",
+          "baseline_label": null,
+          "decision_unchanged": true,
+          "production_admitted": false,
+          "can_rank": false,
+          "can_notify": false
+        },
+        "after": {
+          "status": "refused",
+          "kind": null,
+          "reason": "consensus_baseline_required",
+          "text": null,
+          "evidence_ref": null,
+          "baseline_label": null,
+          "decision_unchanged": true,
+          "production_admitted": false,
+          "can_rank": false,
+          "can_notify": false
+        }
+      }
+    ]
+  },
+  "routing_text_checks": {
+    "chairman_only_sentence_removed": true,
+    "authorized_sol_route_retained": true,
+    "existing_placement_route_retained": true,
+    "no_new_assignment": true
+  },
+  "artifacts": [
+    {
+      "path": "research/basic_materials/R16_CHANGE_CONTENT_EXERCISE_2026-09-24.py",
+      "bytes": 10220,
+      "git_blob": "104502855516b3a2522145ca7e335e7aa110a8d1",
+      "sha256": "dc665ba87996bf45fe84d0a26e7c361b5c7bfcd50ff3b8b642acd6d641e8825b"
+    },
+    {
+      "path": "research/basic_materials/R17_COMPARISON_GUARD_TESTS_2026-09-24.py",
+      "bytes": 5989,
+      "git_blob": "f4e3719cea680a3cbd86081c88905389c83c0d8f",
+      "sha256": "5f84f1a8272c685b95d5804e65e870a1dc8a56d5e6ca052cae6597da554df6a3"
+    },
+    {
+      "path": "research/basic_materials/BASIC_MATERIALS_R16_ECONOMIC_CHANGE_TO_EXISTING_CONSUMERS_2026-09-24.md",
+      "bytes": 23275,
+      "git_blob": "8bb4d0314c2915bc2b9c508db6399f072417be0e",
+      "sha256": "2765cd5a73bede2650f9b59da109c9214a1db01aec9b50b106f7db5bf761b788"
+    },
+    {
+      "path": "research/basic_materials/BASIC_MATERIALS_R17_REVIEW_FINDING_AND_DISPOSITION_2026-09-24.md",
+      "bytes": 12762,
+      "git_blob": "be043ce972d2dbca74f4272a8f367865400507be",
+      "sha256": "cce630bfb990050b86249609d2f46d6f2b307797b14fd5bc4f1b003f069ec9b6"
+    },
+    {
+      "path": "agentos/handoffs/GMI-BASIC-MATERIALS-FABLE-INTEGRATION-PACKET-2026-09-24.md",
+      "bytes": 11798,
+      "git_blob": "ab11564b902c0e9959abb3ae4eeea0bd2c6ec2d1",
+      "sha256": "18bf1dc84e523c141a2cf05e3d676b109e7042e59b2cd9c8de279cf4f2881f51"
+    }
+  ],
+  "native_product_tests": 0,
+  "native_sources_admitted": 0,
+  "browser_actions": 0,
+  "notifications": 0,
+  "independent_review_accepted": false,
+  "product_deployed": false,
+  "decision_authority": false,
+  "mission_complete": false,
+  "limits": [
+    "Fixture semantics and permissions remain assumptions, not authentic owner receipts.",
+    "No natural-language truth checking, financial forecast evaluation or predictive edge.",
+    "The existing date-only UTC convention is explicitly synthetic, not a new native timing finding.",
+    "The R13 denied browser/other-subject identity/delivery actions were not retried.",
+    "The shared schema/interface and private/live acceptance gates remain."
+  ]
+}
