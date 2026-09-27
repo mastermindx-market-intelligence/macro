@@ -3753,8 +3753,11 @@ CURATED_EXCLUSIVE = {
     # later task (T02+) appends its suite to `paths:` and the run line (never
     # a second job). The suite imports three engine modules directly
     # (documents, financial_dossier, earnings_narrative.private_publication)
-    # and reads the corpus; pyyaml is the only non-stdlib transitive need
-    # (engine.earnings_narrative.promotion -> yaml).
+    # and reads the corpus. TWO non-stdlib transitive needs, both carried by the
+    # job's install line: pyyaml (engine.earnings_narrative.promotion -> yaml) and
+    # requests (scripts.refresh_event_workspaces:77 imports
+    # engine.neuralweb.company_intelligence_reader, whose module scope imports
+    # requests at :21). A T02+ suite appended to this job must keep BOTH.
     "industrials-result-cash",
     # 2026-09-23 gate:data -> PR-gate follow-up to #7712. `dashboard-render-contract`
     # is the gate:code home for the five suites that only gate:data lanes

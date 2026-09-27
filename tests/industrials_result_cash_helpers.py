@@ -413,11 +413,14 @@ class _PublicationHarness:
         the entry flips the result to ``ok`` on the very next call.
 
         The harness serves ONLY the URLs the real seam reaches for the
-        synthetic CIK ``0000987654`` — the submissions JSON (with one 8-K
-        Item 2.02 entry pointing at ``https://example.invalid/<synthetic>.htm``),
-        that entry's archive ``-index-headers.html`` (an SGML manifest with an
-        EX-99.1), and the named exhibit itself (``https://example.invalid/<synthetic>.htm``,
-        served with the synthetic fixture bytes below). Every entry in
+        synthetic CIK ``0000987654`` — the submissions JSON (one 8-K Item 2.02
+        entry whose ``primaryDocument`` is the bare filename
+        ``synthetic-exhibit.htm``, not a URL), that entry's archive
+        ``-index-headers.html`` (an SGML manifest naming the same filename under
+        EX-99.1), and the exhibit itself. The owner, not the harness, derives the
+        SEC Archives URLs from the accession number
+        (``.../Archives/edgar/data/987654/<acc_nodash>/<filename>``) — which is
+        why the fake matches those two by suffix. Every entry in
         ``fail_sources`` is named as the ``source`` of the typed refusal; the
         first one wins.
         """
@@ -430,14 +433,14 @@ class _PublicationHarness:
         synthetic_cik = "0000987654"
         submissions_url = "https://data.sec.gov/submissions/CIK0000987654.json"
         exhibit_filename = "synthetic-exhibit.htm"
-        exhibit_url = f"https://example.invalid/{exhibit_filename}"
         # Minimal valid submissions JSON — only the fields
         # ``acquire_results_filing`` and ``submissions_rows`` read:
         #   submissions["filings"]["recent"] with parallel arrays for
         #   form / accessionNumber / filingDate / acceptanceDateTime /
         #   reportDate / items / primaryDocument. One 8-K Item 2.02 entry
-        #   whose primaryDocument is the synthetic exhibit URL the harness
-        #   serves below.
+        #   whose primaryDocument is the bare exhibit FILENAME — the owner joins
+        #   it onto the archive base it derives from the accession number, and
+        #   the fake below matches that derived URL by suffix.
         submissions_body = json.dumps({
             "filings": {
                 "recent": {
@@ -498,9 +501,6 @@ class _PublicationHarness:
 
     def members(self) -> set[str]:
         return set()
-
-    def get(self, slug: str) -> dict[str, Any]:
-        return {"slug": slug, "status": "unavailable", "reason": "refresh_seam_unbound"}
 
     def publish(self, changes: Mapping[str, Any], *, stage_dir: Path) -> dict[str, Any]:
         """Bind every owner entry point in the owner's real order.

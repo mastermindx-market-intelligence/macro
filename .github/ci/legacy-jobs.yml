@@ -16944,8 +16944,10 @@ jobs:
       - name: install deps for the Industrials result-to-cash suite
         # pyyaml: engine.earnings_narrative.promotion imports yaml (transitive via
         # engine.company_intelligence.documents -> ..earnings_narrative.contracts).
-        # requests: scripts.refresh_event_workspaces._http_get imports requests lazily
-        # (transitive via engine.company_intelligence.event_workspace -> ..refresh_event_workspaces).
+        # requests: scripts.refresh_event_workspaces imports
+        # engine.neuralweb.company_intelligence_reader at module scope (:77), and that
+        # module imports requests at module scope (:21). The lazy import inside
+        # _http_get is NOT the binding reason — a lazy-only need would not fail here.
         # Stated identically in clean-venv proof below.
         run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
