@@ -1,14 +1,14 @@
 {
   "schema": "agent_os_state.v1",
   "generator": "scripts/agentos.py status",
-  "source_records_digest": "sha256:8d7568deb83f88255efd9192417c56daf8db075395d7135747385ae7ca2848c8",
-  "generated_at": "2026-09-26T15:39:57Z",
+  "source_records_digest": "sha256:3656341399a205904b8607400044d5c8f09ac90f61d352690bbfd1d8a4ee4a0e",
+  "generated_at": "2026-09-27T04:00:57Z",
   "inputs": {
     "workstreams": 75,
     "decisions": 366,
-    "discoveries": 328,
-    "handoffs": 516,
-    "active_builds": "data/governance/active_builds.json@2026-09-26T15:39:57.825855+00:00",
+    "discoveries": 337,
+    "handoffs": 520,
+    "active_builds": "data/governance/active_builds.json@2026-09-27T04:00:56.761089+00:00",
     "active_builds_age_hours": 0.0,
     "worktrees": 1,
     "uncommitted_worktrees": [],
@@ -539,7 +539,7 @@
       "next_action": "Decide the CI gate fix (parallel viewport jobs vs build-once + next start), coordinating the required-check contexts with branch protection and merge-on-green.yml.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [
         "The Terminal responsive e2e merge gate is unreliable. E-3/E-4/E-5 are complete and verified but cannot merge; see next_actions[0] and DSC:TERMINAL-E2E-GATE-COLD-COMPILE.\n"
@@ -699,7 +699,7 @@
       "next_action": "AD-1T1 is PROVEN_LIVE and must not be reopened or rerun merely to show activity. The exact next product dependency is AD-1T2: restore the store-bearing M1 to the theta-m1 product workflow and production-prove AD-1 end to end, including the consumer/availability path needed by downstream Options Alpha PIT composition. AD-2 remains CLOSED until AD-1 production acceptance. Broken R2 sync is not an AD-1T2 prerequisite unless new evidence proves it necessary.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -914,7 +914,7 @@
       "next_action": "Await the incumbent Fable C2 ruling without adopting draft #687/#692 or changing historical E1. For D1 keep #398 frozen, consume Executive incident #386 through readiness/ARM, refresh Macro grounding, then submit/reconcile exactly one READ/A0 compose-only directive.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -1104,7 +1104,7 @@
       "next_action": "MAS-28 W1 implementation is merged and accepted as report-only / BUILT_NOT_PROVEN. The next MAS-28 operation is calibration only: run the representative frozen corpus required by MAS-28, record false positives, false negatives and incomplete observations, and return a recommendation to remain report-only, amend rules, or propose a separate bounded enforcement review. Do not arm a hard gate from W1. The pre-existing Agent OS Phase 4 W4 remains a separate high-blast-radius report-only hook wave and is still todo; this records correction does not commission it.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -1366,7 +1366,7 @@
       "next_action": "Next dependency is to commission K3-D Economic Propagation and K2-C Institutional adapter pilot as two separate bounded waves after a fresh path/authority collision census. They may proceed in parallel only if those surfaces remain genuinely disjoint. K3-D must inherit the c0 D0 rulings, including the four named DNR kills, Data OS exact-identity authority, typed abstention for unresolved identities, no fourth graph/store, and no new grader/ranker. K2-C must adopt K2-B/K1 contracts and prove owner-reader, source/rights, PIT/lineage and correction behavior without creating an institutional aggregation truth store. Do not start K5 OpportunityCase / Prophet integration until BOTH K2 and K3 are complete. K3-E merge itself authorizes no consumer wiring, Market OS UI, rank, gate, size, trade or deployment.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [
         "PROPHET-US-V4-RECOVERY",
         "PROPHET-CONDITIONAL-FUSION",
@@ -1542,7 +1542,7 @@
       "next_action": "Wave P1-AVAIL-1 (MAS-172) is done: root cause = signed-out Chairman browser, no product defect, entitled matrix re-proven PASS 2026-08-28; parked again once Sol posts terminal acceptance. No other CORE-PRODUCT wave is commissioned; P1-2 still requires a separate explicit Sol ruling. The 2026-08-26T02:00Z source/launch-soak boundary remains owned by its source-governance path: window end grants no expansion authority; exact evidence must be frozen and adjudicated before any successor source/cohort transition.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -1600,7 +1600,7 @@
       "next_action": "Recovery program complete. Preserve #6090 as the production proof and close this workstream rather than using it as an implementation catch-all. The MAS-74 post-P0 adjudication was executed 2026-08-20 by the Sol-commissioned P1-0 recharter: research/BIOCATALYST_P1_RECHARTER_AND_FIRST_VERTICAL_ARCHITECTURE_2026-08-20.md (capability ledger, first-vertical verdict Catalyst Radar — Trial Milestones, frozen first slice in research/BIOCATALYST_P1_CONTINUATION_HANDOFF_2026-08-20.md). The P1 workstream home and the verdict's ratification are returned to Sol in that document's §11. No post-P0 implementation is authorized by this closeout or by the recharter records themselves.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -1810,7 +1810,7 @@
       "next_action": "RECON-0 merged (#5909, 2026-08-19). Return to Sol for commissioning of the first bounded SNAPSHOT-ONBOARD vertical — bundled with the post-soak sequencing adjudication proposed in research/BIOCATALYST_P1_RECHARTER_AND_FIRST_VERTICAL_ARCHITECTURE_2026-08-20.md §11. Runtime biopharmcatalyst_jv_snapshot registration remains prohibited until the post-soak successor-registry / successor-launch-manifest transition.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -1913,7 +1913,7 @@
       "next_action": "Continue the already-STARTed C2-A child breathing-c2-closepass-host-lane-repair-20260829-sol-001 on canonical Slack carrier C0BSBM78V1N/1788248718.881509 with post-START sticky binding to CTO-FORGE native task 01a04bdf-7a7b-7f63-9abd-9a7c13e944c0. Preserve its exact existing local worktree/branch/effect; do not rebind, fail over, reset, stash-away, transfer, or create a replacement carrier/worktree/branch. The worker owes the frozen real-Git TDD repair and one reviewed PR candidate. Sol then independently reviews current head/main/checks; only accepted merged code may proceed to the existing Mac Studio installer plus installed-bootstrap digest and non-publishing lane-readiness preflight. C2-B, C1/D12/permanence, C3 W-L2, C5 browser proof and C6 remain separate downstream dependencies.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -2022,7 +2022,7 @@
       "next_action": "Check whether R2_ATTESTED_HISTORY_SEED_ACCESS_KEY_ID has an updated_at later than 2026-08-11T03:27:33Z; if so, dispatch attested-history-aapl-seed.yml from main, approve the protected environment, and independently admit the four downloaded artifacts with verify_fundamental_forensics_attested_history_seed_bundle.py.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [
         "Operator must replace the protected attested-history-seed environment secret R2_ATTESTED_HISTORY_SEED_ACCESS_KEY_ID with the Cloudflare R2 S3 Access Key ID for the separate Object Read & Write writer role; update its paired secret too if a new writer token is generated. The value must never enter chat or git.\n"
@@ -2219,7 +2219,7 @@
       "next_action": "W2A and W2B are PROVEN_LIVE. W2C PR #6415 merged as 5bc31a700406c2a90771d0ce86d230d28c73c86c and W2D PR #6424 merged as cadfa403033f9de338e9f490abac05eb08cbb293 after exact-head Sol release; both repairs are BUILT_NOT_PROVEN. Do not dispatch a proof run. Observe only the first natural scheduled collector -> Capital Structure chain whose checkout contains both merges. Only that chain can close W2 if it proves healthy same-day discovery/reconciliation, zero unserved LIVE work, and Capital Structure runtime below the unchanged warning. W3 and W4 remain held.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -2520,7 +2520,7 @@
       "next_action": "Advance SC1 as the current cross-session continuity frontier while leaving P0B and ASD independent. Mastermind #868 is protected/do-not-redo. #647 `00a37df9...` and #651 `3e70694f...` are source-built, exact-head CI green and current-base compatible, but both remain Draft pending genuinely independent exact-head semantic review. #651's real canonical Agent OS rerun after Macro #7619 now passes the actual semantic-freshness condition: current SC1 next action, 7,276 canonical bytes under the 8 KiB ceiling, untruncated. #836 `f5b37701...` has the durable Web-Sol semantic-ACK provenance blocker repaired on the incumbent carrier and current-base focused tests plus hosted CI green; independent exact-head review still gates source release, with 0.5.0 install/restart/live canary remaining downstream. After those source gates, wire R8 recovery plus bounded continuation into the existing Control Room and implement closed successor creation/bootstrap through existing Web-Sol, RuntimeBinding and Capacity owners. Do not create a Session OS, transcript store, second recovery database, alternate RuntimeBinding writer, or account-specific project ownership.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -2699,7 +2699,7 @@
       "next_action": "COLD-START FRONTIER (rewritten 2026-08-22 on Sol's instruction — the older \"P1 DONE / one open question\" prose is superseded by the more specific p1r2/p1r3 wave state below and must not be read as the frontier). ACTIVATION CLOSED 2026-08-20 (Sol PR-0D authority adjudication; freeze effective since Sol post-merge acceptance GO, receipt = main 49533d59b16076630ccd7d8bf48307f658db61da). DONE / PROVEN_LIVE: pr0b (#6045 squash fdbf543b2333), rights0, pr0d (Sol natural-proof adjudication 2026-08-21; #6116 squash ed28d0d992a1). P1 IS **PARTIAL**, NOT DONE. Its normal path is PROVEN_LIVE — #6050 squash c54d1b55f673 plus P1-R1 #6142 squash 650be4dfe6d5, proved on natural asia-close run 32460910383 (145 candidates -> 145 rows, exact reconciliation, production 交通银行 601328.SS card on desktop + mobile; research/china_alpha_intelligence/receipts/P1_NATURAL_RUN_RECEIPT_2026-08-21.md). Its malformed-evidence lifecycle is BUILT_NOT_PROVEN across three Sol-commissioned repairs of ONE defect family: p1r2 (#6229 squash c11b16500c15, superseded IN PART), p1r3 (#6242 squash 4e9735088638) and the p1r3a crash-consistency amendment inside the p1r3 wave entry (#6269 squash 0bcfef045517). The DSC:CHINA-VISITS-UNTYPED-ANNOUNCEMENT-ID-DROP question that the old text handed back to Sol is CLOSED — #6229 repaired that mechanism; what remains open is its successor, DSC:CHINA-VISITS-KEY-EXCLUSION-LATCH-AND-AGING-FORGETFULNESS. P1 CODE IS CLOSED (Sol FINAL CODE ADJUDICATION 2026-08-23: PASS). No further P1 implementation repair is authorized, and the three former residuals are RULED — see DEC:CHINA-COVERAGE-EXCEPTION-LEDGER §\"Sol residual rulings, 2026-08-23\" before proposing any of them: the unreadable accrued-store path is an outage-recovery concern and gets no second persistence site; the china_visits import failure stays fail-closed and the P1-relevance law must NOT be duplicated into china_filings; coverage exceptions get NO TTL/expiry/prune/operator-clear. THE ONE THING A FRESH SESSION MAY DO HERE — and it is a RECEIPT, not code: take the FIRST natural asia-close containing 0bcfef045517 with HEALTHY CNInfo transport and record the acceptance items named in the p1r3 wave entry. Do NOT rerun the lane and do NOT manufacture data to obtain one. As of 2026-08-22 production china_visits health reads upstream_degraded from a real `sse: HTTP 504 from CNInfo` with last_success_utc 2026-08-21T09:29:55Z, so the next close may degrade for that unrelated reason — a 504 run is valid failure-state evidence but is NOT the clean-path acceptance receipt, and the proof simply waits for a healthy night. Never manufacture malformed production input. STANDING GATE: P1B, L0, R1, R2, P2 and all later China Alpha execution stay CLOSED until Sol rules. Later tracks (P3-P6, R3-R4, S-lobes, L3+) charter from the masterplan at their wave boundaries. Completion law on every build wave: merge = BUILT_NOT_PROVEN; a real production receipt recorded here with immutable merge SHAs = done.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [
         "ALPHA-INTELLIGENCE-INTEGRATION",
         "EARNINGS-INTELLIGENCE-OS",
@@ -2959,7 +2959,7 @@
       "next_action": "W-TRANSPORT and W-PR-EVENT-CAUSALITY are closed. Do not reopen either for a new CI-speed, runner, branch-protection, or cancellation-system proposal. Continue W-GATE-SPLIT and W-CONTRACT-DELTA only under their existing evidence gates; W-REWRITE remains separately commissioned. Verify contract-delta appears and behaves on the next few ordinary PRs (inherited-immune, catches introduced closure/unwired defects); confirm the armed backlog fully drains post-breaker-open (21 -> 17 within an hour of the 19:06Z green). Then W3 at >=72h from the W2 merge (~08-22): trailing-100 green rate above 90% via scripts/ci_gate_reliability_report.py plus two consecutive ordinary PRs merged with no main-red-repair. W-SEMANTIC-PROOF remains stopped; W-REWRITE remains separately commissioned. W3-PLANNER-CONTAINMENT is closed; W-SELFHOSTED-BRIDGE (issue #6351, Fable COO principal) owns the permanent ci-pack materialization repair — hosted packs still run the blob:none full-tree checkout that produced the #6406 and #6286 attempt-1 checkout-only failures; do not absorb pack-checkout repairs into product PRs or reopen them here outside the #6351 sequence. P3A-R and its repaired direct-main dispatch are accepted; run 33024021850 is a closed diagnostic receipt, not a retry candidate. P3B-A is accepted on main. Complete the separate P3B-B carrier: make the exact protected-main zero-input call for same-repository PRs, retain the hosted fork implementation and hosted planner/anchors/ci-gate, and prove the new route on its own exact PR tree before P4 natural traffic.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -3122,7 +3122,7 @@
       "next_action": "Do not purchase. Resume only if a named vendor returns a written grant covering API + persist + derived-feature + customer-facing derived display of disclosure (年报 top-5 / SDB-class) edges. Otherwise leave supply-chain on the public CNInfo floor and CN-B identity work.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -3169,7 +3169,7 @@
       "next_action": "Execution owner is Fable COO under DEC:CNLI-FABLE-COO-AUTONOMOUS-EXECUTION (Chairman delegation 2026-08-25; Sol retains product thesis, architecture, evaluation law and final milestone acceptance; A5 stays Sol/Chairman). R6-0, P0-ST and DEP-CAI are done with production receipts. This PR (#6207) lands the Chairman TuShare compliance override reconciled onto current main. Next: execute DEP-EXACT per its row — dispatch tushare-spine-backfill mode=plan, then ONE bounded mode=canary, then a separate reviewed technical flip of BULK_HISTORICAL_BACKFILL_READY on canary evidence, then the resumable full-A range campaign and the sanitized completeness manifest. After DEP-EXACT: DEP-ID-ELIG, then I1A-T1..T4 / I1B / M2-R4-BATTERY / I1C-G6 / I2A per the frozen R6 wave graph. Milestone bundles return to Sol per agentos/handoffs/CN-LIMIT-ALPHA-2026-08-25-fable-coo-program.md. No live rank, score, gate, size, or public probability is authorized by any R6 record.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -3495,7 +3495,7 @@
       "next_action": "Accept or reject the CSG-GD-货物-90d pilot in CN-C_GOV_SOE_DEMAND_SOURCE_MAP.md. If accepted, C1 is a display-tier adapter only.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [
         "DEFENSE-PROCUREMENT-V3"
       ],
@@ -3559,7 +3559,7 @@
       "next_action": "Land this current-state records carrier after fresh exact-head Agent OS validation, hosted fences, semantic CI and current-main collision review. B0, C0 and Z0 are already active on separate lawful carriers. Continue C0's complete same-carrier REQUEST_REPAIR, preserve Z0's bounded falsifier work, and continue B0 only through one source-only Draft/Hold forge candidate. Watch those exact carriers for the next BLOCKED, DECISION_REQUEST or RESULT and adjudicate each return under the protected plan. Hold CI1-CI5, production profiles, services, indexes, real bundle dispatch and Control Room projection until the prerequisite consumer, supply and falsifier evidence is accepted.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -3717,7 +3717,7 @@
       "next_action": "Stay on PR #5734 (armed merge-on-green). After merge, confirm /etc/macro-sentinel.env has a human-watched channel if DELIVER was SKIP.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -3775,7 +3775,7 @@
       "next_action": "Returned to Sol on carrier #7804 (comment 5814888647, 2026-09-24) naming the four blockers below and correcting that carrier's standing RECEIVER_ASSIGNMENT NONE, which would otherwise have licensed a second Fable receiver onto the same operation. Nothing further is executable at this seat: the remaining V1 legs are all owner-gated. Do not widen into V2 LTH / V3 LULU / V4 theme journey - R15 forbids self-authorizing them on a V1 pass, and the next modifying wave takes its own continuation edge.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [
         "#7870 T09 EDGAR-family/fail-closed rights correction plus T08b/T10e/T10f/T11a",
@@ -3838,7 +3838,7 @@
       "next_action": "Land T1 (#7905) then T2 ∥ T3 → T4 → T5 ∥ T6; T7 is a merged CONTENT + CONTRACT spec awaiting the foundation host slot; readers first, producer flag last.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [
         "EARNINGS-INTELLIGENCE-OS"
       ],
@@ -3889,7 +3889,7 @@
       "next_action": "Reconcile live provider/session placement and establish one actual claimed Fable principal carrier for operation `crg-fable-principal-20260828-sol-001`. Until a lawful receiver ACK/readback or canonical Executive Job/Worker claim exists, keep it UNCLAIMED / WAITING_CAPACITY rather than calling it queued or executing. Only after claim may Sol commission CRG-NW-AUTHORITY-V1 on a fresh stable child operation key.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -4025,7 +4025,7 @@
       "next_action": "Unblock the canonical Executive OS Personal-Pro modifying path under its owning program. Current protected Mastermind 51f9942733b86e550bb9169d2a43462bd28e774f still requires B2/C2 production proof before EXECOS/CEO_REQUEST_V1 and a fresh MMX/SOL_STATE_V1 handshake. Independent S0-R1/MAS-112 and C1/MAS-109 principal provisioning remain concrete gates. Once those and all then-current COMMISSION_WAVE gates are production-proven, re-run P0B's collision fence and admit one implementation attempt. Do not create a substitute runtime carrier.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [
         "Current protected Mastermind Skillpack at 51f9942733b86e550bb9169d2a43462bd28e774f, docs/sol_skills/COMMISSION_WAVE.md, states that EXECOS/CEO_REQUEST_V1 may be used only after B2/C2 have proven it and that any missing runtime/transport gate forbids submission.\n",
@@ -4100,7 +4100,7 @@
       "next_action": "Operator fills docs/RESTORE_RUNBOOK.md §Vendor backup/PITR and §Scratch-Supabase restore receipt by creating mmx-restore-scratch-YYYYMMDD and running `python -m scripts.backup_user_tables restore --backup-id <id> --dest-db-url \"$SCRATCH_DB_URL\" --i-am-restoring-into-scratch`.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [
         "operator: confirm Supabase plan / PITR / vendor retention in the dashboard for fsldfzlxyavsuwqbceod",
@@ -4174,7 +4174,7 @@
       "next_action": "Sol's FOURTH GATE (A4P.1) closes the five escalations the third gate left open with the returns: (1) AG14 cohort-label question SETTLED by R2's three-row label truth table (named-subset labelling still governs every historical read today — the eligible historical roster is still exactly {PHM, KBH} — but the rule no longer needs a further Sol roundtrip once DHI/TOL receipts land); (2) ruling 6 (boundary receipts) stays honestly OPEN by design (R6) — registration is explicitly PERMITTED with receipts open, closed only by a future boundary-evidence wave; (3) DHI/TOL pre-FY2025 era receipting remains a named future census pass, unchanged; (4) the six minted cell IDs are RATIFIED by R3, with the sync family's market-risk cell renamed to forward_63_trading_day_drawdown_tail; (5) Treasury storage/reuse basis SETTLED GO_LIMITED by R5 (future ingestion design still not performed). A4 PROPER IS EXECUTED AND MERGED (PR #6244, 256b5695ab6a, 2026-08-22): the three rf.cycle_pattern.imce_* trial families are REGISTERED — declared_budget rows live in data/trial_ledger.jsonl, contract V1.2.1 stamped registered with pin 782b6e5703505af04ba21943b7d0a332853e286d and config_hash 05b43f9119fd1fd357d3994bd652abbc3cdff3d8. The criteria commit strictly precedes all outcome access (attested in commit 0ae5c413471a); outcome evaluation remains FENCED until boundary receipts exist (R6). SOL'S FIFTH GATE (A5 — prospective observation activation) IS EXECUTED (2026-08-22/23): A5A merged 5b8ca994de05 (PR #6270) and PROVEN LIVE — the production company-intelligence lane published R2 generation d7b994675fe59d0181643b8b carrying AAPL plus all four homebuilder workspaces under correct fiscal identities, and the production reader serves them (verified GET /api/event-workspace/DHI); A5B merged 9d14a3529d1c (PR #6281), classification BUILT_NOT_PROVEN — the forward ledger data/cycle_pattern/imce_prospective_observation_v1.jsonl is created by the first production nightly, whose successful run stamps activation_started_at; PROVEN_LIVE awaits the first natural post-activation DHI/PHM/KBH/TOL earnings event (next expected: KBH FY2026 Q3, ~late Sep 2026). Outcomes remain FENCED — the observation schema carries zero outcome fields by whitelist-tested construction. Named source-coverage gaps riding to Sol: TOL §1b sensitivity prior-year comparator not extracted by A5A — CLOSED by PR #6307 (A5C, DRAFT pending the commissioning session's merge): the source plane now emits fact_cancellation_rate_beginning_backlog_sensitivity_prior_year from the same row's prior-year cell, so engine/cycle_pattern/imce_prospective.py:161's TOL_SENSITIVITY_PRIOR_YEAR_FACT_ID lookup self-heals to a real value the moment #6307 merges, zero consumption-side code change (see wave A5C below for the receipt spans and conventions); Treasury CMT C_t leg typed-absent (GO_LIMITED permits persistence; no first-party fetcher exists yet — natural next increment); workspace vintage retrieval is latest-generation-only (re-extraction of a past event rewrites the readable facts — correction records preserve what the experiment knew, but as-of retrieval does not exist). No runner built; no outcome computed; awaiting Sol's next directive. SOL'S A5C DIRECTIVE IS EXECUTED (2026-08-23). Four merges close it: A5C gamma (TOL sensitivity prior-year + equality-ruling pin) = PR #6307 -> 3d35ec5cd5ae; A5C-alpha alpha (fail-closed correction detection pending source-revision history) = PR #6308 -> 2ee5c16724da; A5C-chain beta+ delta (manifest chain/discovery/two-clock/shared-reader honest fix, plus the production-incident heal) = PR #6322 -> 8c0608652652 and PR #6343 -> 6fa417959bf9. PRODUCTION PROOF RECEIPTS: the healed dispatch (workflow_dispatch run 32657963256) completed SUCCESS in 8.5 minutes. The live top-level marker is generation 6d56c84a3ac23b8954e59ee7, schema event_workspace_manifest.v2, event_count 5, chaining onto previous_generation_id 8351f6fa8df7507c0ff842d1 with its verified sha receipt. All five tickers' latest reads were verified live on www.mastermind-x.com: AAPL (2026Q3), DHI (2026Q3), PHM (2026Q2), KBH (2026Q2), TOL (2026Q3). The live history walk was verified end-to-end (DHI 2026Q3 gives exactly 1 revision, state complete, form 8-K, receipts present, walk terminates at the v1 root) -- the SAME walk whose pre-optimization cost was measured at 153s against the post-incident chain, the number that motivated the read_all_event_source_revisions shared-walk fix in #6343. THE PRODUCTION INCIDENT, STATED HONESTLY: dispatch run 32652474368 (the FIRST production run of #6322, before the delta heal) crawled each homebuilder issuer's SEC \"recent\" submissions block back to 2010 under the then-unbounded discovery admission rule, and published ~170 historical events before the job's 25-minute timeout killed it mid-step. Those ~170 events are now immutable chain history -- never rewritten -- and are HARMLESS: every one is pre-activation, so A5B's own activation-cutoff law makes them permanently ineligible to ever become an observation. The healed dispatch (32657963256, above) converged back to a normal 5-event nest on its very next run, confirming the delta fix. NAMED RESIDUALS (delta red-team review, not closed by this directive, not hidden): MINOR-1 -- the per-issuer discovery boundary can silently exclude a genuine BETWEEN-QUARTERS amendment (an out-of-window correction to an already-superseded fiscal period); this is fail-closed (never a false admission) but currently silent -- a ::warning is recommended future work, not yet added. MINOR-2 -- the shared walk's own docstring overclaims its complexity: generation MANIFESTS are fetched at O(hops) as documented, but per-event WORKSPACE BODIES are still fetched only where present, so the true cost is O(hops) manifests + O(revisions-found) workspace reads, not a flat O(hops) for everything; the docstring should be corrected to say so. MINOR-3 -- the None-boundary (genuine first-publish) branch's own walk cost is UNBOUNDED in principle (bounded only by the current+prior-fiscal-year row filter, not by a hop cap on that branch specifically); unreachable in practice today (every current issuer already has a represented event), but not structurally guaranteed against a future issuer onboarding with zero prior history. Chain COMPACTION remains declared future work -- the incident alone consumed roughly 35% of the 500-hop DEFAULT_MAX_CHAIN_HOPS bound; the bound is not yet at risk but is no longer purely theoretical headroom. The REPLACEMENT-8-K residual named since wave alpha is UNCHANGED and still open (a same-accession-form-class replacement filing is not distinguished from a genuine correction). A5B STATUS: BUILT_NOT_PROVEN. Activation is NOT yet stamped -- the forward ledger data/cycle_pattern/imce_prospective_observation_v1.jsonl is still absent from main as of 2026-08-23T18:40Z; it is created and activation_started_at is stamped by the FIRST production nightly that runs after this point. Sol's own promotion precondition for A5B (A5C merged AND production-verified) is NOW SATISFIED by the four merges and receipts above. Natural-event proof (a real post-activation DHI/PHM/KBH/TOL earnings event actually observed) remains outstanding -- next expected candidate is KBH FY2026 Q3, ~late September 2026. TREASURY CMT FROZEN TEMPORAL LAW, restated for the next increment (unchanged by this directive, binding on any future C_t leg work): only the official rate/date pair from a first-party Treasury/CMT source may be used; retrieved_at/first_seen_at must be the REAL wall-clock ingestion time, never inferred; publication time is NEVER inferred from the ~3:30PM ET methodology-implied release convention -- only a genuine observed retrieval timestamp counts; a decision cutoff consumes only rows whose first_seen_at is at-or-before that cutoff (never the official rate/date field for eligibility); Freddie Mac PMMS stays HELD (not sourced); FRED/ALFRED remain EXCLUDED (no store/cache/ archive of FRED content per the standing FRED clause); NAR remains PROHIBITED as a source.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [
         "STOCK-IDENTITY"
       ],
@@ -4476,7 +4476,7 @@
       "next_action": "Return W2-A to Sol and remain parked. W2-B (semantic link-group propagation) and later waves require their own explicit Chairman/Sol commission. Open external gate: an authorized signed-in production principal (plus a second account for the cross-account half) to execute the persisted-user production journeys for both the W1-C resume residual and the W2-A save/reopen/rename/ duplicate/import/export/stale-fork/isolation proofs. The W1-B latency and deep-provider residuals remain separate bounded authorities.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -4637,7 +4637,7 @@
       "next_action": "D6-B is SOL ACCEPTED / PROVEN_LIVE (2026-08-26; Macro PR #6480 comment 5432443653). WS:DEFENSE-PROCUREMENT-V3 is PARKED at the accepted D6-B authorization boundary. Exact next action: no defense mutation until an explicit Chairman/Sol commission names the next bounded wave; before any such commission is executed, re-pin the protected Sol Skillpack and current repository state and reconcile collisions. D6-C+, D7+, GAO, DOT&E, IG and every later defense rail remain UNAUTHORIZED. D5 remains CLOSED FOR PROGRAM SEQUENCING but capability state BUILT_NOT_PROVEN: the entitled D5P browser journey is deferred/nonblocking, not silently satisfied by D6-B proof. Nonblocking D6-B reliability debt remains visible in the Sol acceptance handoff: 391-byte page-fence headroom, fms-acquire commit-back retry design, staged-State/freshness cadence, the pre-existing premium.enforced_early configuration gap, and validator/dependency maintenance. None authorizes a duplicate retry/publication/event/source plane or a product expansion. Publisher-vintage alarm and fixture-freezing the D2/D3 law suites out of the unrun-government-revenue holding pen remain separate follow-ups — do not fold them into the D5R close.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -4947,7 +4947,7 @@
       "next_action": "E3-B is PROVEN_LIVE / DONE. E3-C is GENERALIZATION_REFUSED_ON_SOURCE_FORMAT — in progress, NOT complete; Sol has ruled (DEC:E3C-GOOGL-OOS-REFUSAL-SPENDS-EVENT) and nothing is awaiting Sol on that receipt. The separate method-hardening arc Sol required is now partly landed and is the live front of this workstream. TFG-0 (transcript format generalization architecture) is LANDED and SPEC_ONLY: merge a2dd436722dd0e6c6cb1e17bfa1c888c706c15d0 (#6521) froze the source-native separator/proxy/role law, a 16-revision development corpus chosen before body inspection, and an eight-revision metadata-only holdout (ranks 17-24). It added no runtime capability. TFG-1 v1 (operation tfg1-deterministic-transcript-format-hardening-20260827-v1) is TERMINAL at STOPPED_AT_DEVELOPMENT_GATE with an ACCEPTED falsifier. Implementing the frozen separator law faithfully recovered all 110 frozen handoffs with zero false negatives and exact direct-name extraction, and found three further genuine combined Q&A-opener-plus-first-question separators the frozen TFG-0 gold omitted (MBLY/2026Q2 #21, ARRY/2026Q2 #31, KREF/2026Q2 #15). Sol ruled YES/YES/YES and ratified DEC:E3FMT-DEVELOPMENT-GOLD-R2-FIRST-HANDOFF-OMISSIONS. No compiler code was written, no implementation head was frozen, and the holdout was never opened. Ratified R2 development truth is 113 structural separators / 97 direct / 6 explicit proxies / 103 source-supported / 10 unresolved / 9 source-clean calls / 7 expected-refusal calls. MBLY/2026Q2 leaves the source-clean set because #21 is a mandatory separator whose questioner is unresolved under the already-frozen placeholder + first-name-only law. Machine grading truth is research/earnings_intelligence/e3/tfg1_development_boundary_identity_adjudication_r2.json; the historical 110-boundary TFG-0 receipt is preserved unchanged as falsified evidence. TFG-1 R2 is NOT_BUILT. The successor is a distinct logical operation, tfg1-r2-deterministic-transcript-format-hardening-20260827-v1, whose sole packet is research/earnings_intelligence/e3/TFG1_R2_DETERMINISTIC_TRANSCRIPT_FORMAT_HARDENING_HANDOFF_2026-08-27.md. It may not begin until the v1 closeout PR #6555 is Sol-accepted and landed. The v1 operation key is spent and must not be reused. The eight holdout revisions remain SEALED (holdout_bodies_inspected: 0) until R2's corrected development gates are green and an exact implementation head is frozen. AAPL stays exactly 7 exchanges / 26 management answer turns / 68 replay spans and production revision admission stays AAPL-only. E3-C remains in progress: TFG completion is not E3-C completion, a fresh untouched-OOS acceptance wave (E3-OOS2) on a newly pre-registered event is still required to close it, and E3-P remains locked behind E3-C.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [
         "EARNINGS-INTELLIGENCE-OS"
       ],
@@ -5142,7 +5142,7 @@
       "next_action": "E2 arc is complete (E2-T1 Terminal + E2-D public dossier live). Return to Sol for E3 reassessment. Do not begin E3, slides, Q&A ML, publisher work, or corpus backfill from this workstream.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -5266,7 +5266,7 @@
       "next_action": "Commission A1 under the current protected Skillpack and current Macro main. The implementation must remain a derived view over canonical evidence owners and must not wait for E1 to finish; E1 accrual may be shown honestly as Accruing/insufficient evidence.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [
         "EVAL-OS-T1-ENGINE-REGISTRY",
         "EVAL-OS-OUTPUT-HEALTH"
@@ -5323,7 +5323,7 @@
       "next_action": "Place and execute fresh child eval-os-e1-thematic-cohort-recovery-20260829-sol-001 under the current protected Skillpack. Do not redo the stock repair or stock general-clock start. Close the remaining E1 truth gap: classify the real US thematic zero-output path, obtain the first lawful thematic_desk prospective clock from real production without manufacturing a thesis, and prove the real grader/cohort excludes pre-clock rows. Preserve demand_chain's runner-local control law and stock matched-control NOT STARTED state until real governed evidence changes it.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -5414,7 +5414,7 @@
       "next_action": "None for T4 output health. This bounded workstream is complete and PROVEN_LIVE. Any T7/T8 evidence-scorecard/CEO-view work is a separate Eval OS wave under the recovery architecture and requires a fresh operation/carrier; do not reopen H1 or use this workstream as score authority.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [
         "EVAL-OS-T1-ENGINE-REGISTRY"
       ],
@@ -5474,7 +5474,7 @@
       "next_action": "This bounded T1 workstream is complete. Preserve the landed registry/guard/overlay and its two deliberate output_class nulls as durable residue. Any T4 output-health work, T12 Agent OS tier interface, prospective evidence accrual, cortex two-species adjudication, options_structure curation, or T7/T8 measurement belongs to its own canonical workstream/wave and does not reopen T1.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -5553,7 +5553,7 @@
       "next_action": "Review, current-base join, validate and protect Macro PR #6690 as the sole ten-record Agent OS projection of protected F0G. Then fresh-read current protected Mastermind/Macro and ask the canonical Capacity/runtime owner to bind exactly one bounded A1 implementation carrier using the frozen mission and non-goals above. Do not call A1 QUEUED, STARTED or in progress until that live owner records the exact Job/Attempt/Worker/receiver binding.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -5680,7 +5680,7 @@
       "next_action": "VPS economical-provider track (seat Claude6 5fae71cf, Fable; Sol root C0BSBM78V1N/1789324397.992989, ruled at edges 1789694411.329219 + 1789694989.668909): TWO verticals sit DRAFT and HELD and may not be readied, merged or auto-merged without an explicit Sol acceptance ruling on that root. (1) Macro PR #7280, branch claude/provider-production-modes-20260918, head 284bd893f5fb2085d597611d065017494f3275db — production API usage modes. (2) Mastermind PR #804, branch claude/executive-service-principal-20260918, head 3b5182e2545cab671f2da2db6735b51c926baf18 — tier A1 executive service principal, which reports NOT_YET_ADMITTED by design because the intent sink refuses a typed schema, a provenance key and constraints.task_kind. A2 (actor-aware CEO gate in executive_runtime.py) and B (OpenCode native Worker) are NOT started: they collide with open PR #699 and PR #762/#590 respectively. Read DSC:EXECUTIVE-PROVENANCE-GATE-IS-SCHEMA-ONLY — the CEO provenance gate is schema-only, so an actor-aware CEO branch is a security prerequisite before any non-CEO principal is armed beyond READ/RESEARCH — and agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-18.md before touching either vertical. Protected Mastermind master is now 320f586126b7c82c843ef17612f12d40d20a42e0; executive generation 8b231e82 is installed but UNARMED/STOPPED and the next gate is HUMAN_AUTH/CREDENTIAL_READINESS.\nCEO REGIME 2026-09-17 (DEC:FABLE-SEAT-IS-CEO-COEQUAL-WITH-SOL, amended ~08:50Z): the Chairman delegated ownership and decision authority over the ENTIRE Agent Fabric program to the Fable seat (aa22a3d2, Claude8) - no separate Sol authorization inside the program; bounded by unrelated programs, shared infrastructure outside Agent Fabric, and active worker custody (Claude6 seat 5fae71cf holds the STARTed Executive-closure milestone and its manifest/symlink worktree; Claude5 keeps #710). Mastermind #716 MERGED 2026-09-17T09:32:10Z as 7e4d18c1283c95d1b5b840acb51a2d0bf3a34e67 and #665 MERGED 10:11:33Z as e878878c9a4ae2dd50a48d825e031e07e8211708 (both protected master, BUILT_NOT_PROVEN, activation Chairman-gated per the kit packet MINIMAX_CODEX_ACTIVATION_BOUNDARY_2026-09-17.md). Next act = integrate macro #7114's published first-use patch once the org-level `ci-linux` pool drains (hold retained; starvation escalated to the Chairman with exact evidence, no duplicate control plane); the #7114 and #7257 watchers are the only CI observers (no polling). Everything below is the state this record inherited on 2026-09-16 and is historical where it conflicts. Current carrier state: §10 of agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16-POST-7181-FOLD.md.\nFable principal integration, operation agent-fabric-end-to-end-fable-integration-20260913-sol-001. Protected Mastermind master is 4537f066775c73d305f82acf0643701f01f5e53c, read 2026-09-16T22:55:39Z (`gh api repos/mastermindx-market-intelligence/Mastermind/branches/master --jq .commit.sha`), replacing the 7642aea155d2817219135b24246b55c1d7611c66 pin this record inherited. It moved twice more during this session: the verified order is 0fe8074f -> 8ba7deed -> bf843961 -> e8803ba3 -> 5ee11ab1 -> 4537f066, each step measured by compare (see §8 of the handoff). Earlier pins in this record are timestamped where they were read and every \"ancestor of <older pin>\" measurement still holds against 4537f066 by transitivity. Current carrier state is in agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-16-POST-7181-FOLD.md. Principal critical path is W1-H3 (Mastermind #677, OPEN/DRAFT on the SAME child/worktree/writer; head is now 6dc2ea83bc738c2532745ef71dcde6c170c58d91 after the R80 four-path repair — SUPERSEDING the 09e53b30092400c501a508992bf942474d70d830 head and its 20:4xZ CHANGES_REQUESTED reading, both of which are historical. Seat REPAIR_RETURN at root ts 1789598965.415869: R14 APPROVE / BLOCKING 0, hosted `test` success (run 35156879220), canonical remote-complete receipt_digest 45525cd549f57646e679a04c7fbb69fb79b5955444df92db850a8cec63200530 on the third invocation, HOLD-FOR-SOL and awaiting Sol's ruling. Sol accepted the R48/R50/R68/R76 semantic closure at this head (root ts 1789588151), but **R80 (ts 1789590510.060009, durable contract comment 5704046553) is a REQUEST_REPAIR, not an acceptance** — disposition verbatim `REQUEST_REPAIR / SAME CHILD+BRANCH+WRITER / EXACT FOUR-PATH CEILING / H4 NOT_STARTED` over ops/executive_os/autonomy_control.py, tests/test_executive_autonomy_control.py, scripts/executive_os_phase1c_control_wrapper.py and tests/test_executive_launchd_config.py. The old-head `remote-complete` grant was WITHDRAWN BEFORE ACCEPTANCE; both typed results produced against 09e53b30 — the `OUT_OF_SCOPE_DIRT` refusal and the later `REMOTE_COMPLETE_VERIFIED` (receipt_digest 3edb2976…, root ts 1789591021.847339) — are HISTORICAL EVIDENCE ONLY per Sol R81 and release nothing. The no-retry rule is scoped to the OLD head 09e53b30 ONLY; R80 requires the canonical remote-complete verifier on the NEW head once one exists) and H0 prestage attempt 2 on the existing runner. Before sizing, routing, promising or reporting native Anthropic Fable/Opus capacity anywhere in this fabric, read DSC:CLAUDE-SUBSCRIPTION-HARNESS-IS-NOT-NATIVE-ANTHROPIC and re-run its four falsifier commands at the then-current protected master: the merged Claude subscription worker is a compatible-provider harness, the native path is PF1's and is NOT BUILT. Wave 1 ACP/HF1-B carriers #575/#579/#576 and HF1-C/HF1-D carriers #578/#581/#583 and the provider-fabric carrier #577 have merged on the protected master as it stood at bf843961 (and therefore on its descendants e8803ba3 / 5ee11ab1 / 4537f066) — ALL SEVEN Wave 1 carriers, see the corrected \"Wave 1 open carriers\" table below (all seven merge commits are ancestors of it) — see the HF1 umbrella wave `next_action` for the per-PR sentences; merged is not proven for any of them. Re-read every head before acting on it. Accepted Macro CF1 remains dcdd939c45b23abce5ba04f95e330ac914a3904b. Any native H0 build or root action still belongs to the CF2-H0 wave: re-pin CURRENT protected Mastermind, keep the immutable repair release 229aebce5e8d0c1c7372f5fead9c24516b027cc1, and require repair ancestry plus exact mode/blob equality for all five authenticated H0 paths before treating a pin as CARRIER_COMMIT_SHA. OCR-1 Task 4 and OCR-3 Task 1 may proceed separately on their own lawful carriers; OCR-2C Family B remains a separate architecture gate.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -5903,7 +5903,7 @@
       "next_action": "Execute the DR-PROMOTE Chairman ceremony sitting per ops/executive_os/DR_RUNBOOK.md §ceremony (standing key custody, vault PAT, optional R2, daemon arming with H0/P0, live DB first export + privileged census, full-ceremony RTO measurement). The weekly drill (dr-drill.yml) is self-sustaining; a red weekly drill is the program's regression signal. Operation carrier: mastermind-executive-os-offhost-disaster-recovery-20260830-sol-pro-001 (Chairman direct-delivery to the Fable COO session of 2026-09-01; Chairman full-completion override same date).",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -6056,7 +6056,7 @@
       "next_action": "FIF-3A4R is ACCEPTED_ARCHITECTURE / ON_MAIN / NOT_BUILT via PR #6382 (accepted head 07755cb557a53af1341d8b6323a412631af8d83e; squash merge fe8caca04b634686fc8d8707a188ea1a8477c31c; DEC:FIF-3A4R-CROSS-FILING-LINEAGE-ACCEPTED-ON-MAIN). Sol has closed the A4R research gate. Do not implement FIF-3A4 from this records closeout; implementation requires a separate Sol commission. FIF-1 remains DONE / FROZEN. FIF-2 remains DONE / FIXTURE_PROVEN SERVICE SUBSTRATE. FIF-3 remains IN_PROGRESS. FIF-3A1/A2 remain ACCEPTED / GOLDEN FIXTURE PROVEN / ON_MAIN. FIF-3A3 remains ACCEPTED / GOLDEN QUERY CONVERGENCE PROVEN / ON_MAIN. Production attested issuer service remains NOT_BUILT. Do not call FIF-3 done, do not claim production issuer coverage, and do not start another issuer from the A4R closeout.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -6362,7 +6362,7 @@
       "next_action": "Program complete (ACCEPTED-WITH-LIMITATIONS, 2026-09-04). Maintenance only: watch the second valid asia-close session confirm live transitions; see the 2026-09-04 closeout handoff for the limitation ledger.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -6578,7 +6578,7 @@
       "next_action": "ACTIVE / HOLD-FOR-SOL RECORDS RECONCILIATION. Current-quarter FF-1 is again complete in production at run_0e66732e4f506b25446a after bounded same-carrier backlog drain 42 -> 32 -> 20 -> 8 -> 0. PR #6391 is ON_MAIN as a8075391fa895ec706976cd9cb9238c7e4cbdaea, so the ANGO representational source-comparison blocker is closed in code. Preserve July plan e252f0a85c193323be128b6de2762c522a0ab86b74d8a2ed15a1f3014695e5a4, recovery_from=2026-07-12T11:23:15Z, cursor/completed 0, backlog 2,571 and null last-successful recovery receipt. After this records correction is accepted/landed, the exact next source operation is a NEW FF-1R workflow_dispatch from cursor 0. Previous-quarter weekly reconciliation stays SPEC_ONLY / NOT_BUILT and FF-2 remains FORBIDDEN / NOT_STARTED.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -6797,7 +6797,7 @@
       "next_action": "Sol reviews and either accepts the W-LIQ.1 schema/PIT limitations or specifies a bounded repair before commissioning W-LIQ.2.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -6929,7 +6929,7 @@
       "next_action": "Wave 1 closed 2026-09-24 08:29Z (T1 #7896, T3 #7900, records #7887/#7902/#7913/#7939 merged); T2 composer #7920 MERGED 11:53Z (e4ac3730). D1 CLOSED: spec FROZEN at 2e5c3df6, mockup accepted at ce7fc986 after browser proof, #7903 MERGED 14:58Z (0293b9cf) (DEC:FINANCE-DOSSIER-SPEC-SURFACE-TIERS-STATE-SCOPED-FRESHNESS-AND-ANSWER-FIRST-COMPOSITION, DSC:EXTERNAL-REPAIR-LANES-OVER-EDIT-LONG-SPECS-EVEN-WHEN-SURGICAL-CAP-THE-AUDITS-AND-LET-THE-SEAT-CLOSE). T8 shell + hydration MERGED 16:11Z (#7952, 4c191a3e) behind the builder's `FI_READ_URL = \"\"` constant, so the page stays not-connected. #7956 (6b1483f4) fixed the edge: a public shell needs FOUR Caddyfile registrations beside site_access.yml (DSC:PUBLIC-SHELL-ASSETS-NEED-FOUR-REGISTRATIONS-SITE-ACCESS-PLUS-CADDY-EDGE). The live browser proof found four more shell defects. All four fixes are MERGED and production-proven on 2026-09-25 at 1440/390 × dark/light × EN/中文: theme.js was never loaded (#7968, 5600bb63; keyboard also proven); the dark canvas was white outside the shell (#7974, c90af106); and the connected-state names now follow the page language, together with the independent Opus review response (#7973, 836379db, which carries #7969, closed as superseded) (DSC:NEW-PAGE-SHELL-DEFECTS-HIDE-FROM-TESTS-THEME-JS-CANVAS-AND-RENDER-TIME-ARIA-NAMES). T9 entries MERGED 2026-09-24 17:14Z (#7957, dafc546f). The Theme Tracker card has been LIVE since the 2026-09-25 00:48Z nightly bake (proof comment 5825108176 on #7957). Its 中文 accessible-name fix, #7977, MERGED 01:47Z (05b559b8) and goes live at the next rebuild of the page. render.yml is wedged on `render-linux` pending an operator relabel, so the nightly engine bake is the path; re-check recipe in the handoff. The Financials launch partial stays DORMANT until #7669 merges. Chairman directive (Astra CEO): Finance integrates into the Semiconductor-built shared foundation and never rebuilds base layers, so T4/T5/T6/T7 are HELD (DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE). Next: (1) confirm #7977 live after the next bake; (2) the integration wave once #7870 lands: an adapter to the foundation's source_record.v1 / evidence_claim.v1 / sector_intelligence_packet.v1 as recorded in the handoff, then set FI_READ_URL once the serving route is accepted (nothing else in the shell changes), with the three open questions for the shared owner and a connected proof that re-reads ZH aria-labels on live data; (3) wire the Financials launch include when #7669 merges; (4) the deferred review MINORs (handoff list) ride the integration wave.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [
         "GMI-THEME-GRAPH"
       ],
@@ -7055,16 +7055,16 @@
       "next_action": "Adjudicate the independent D1 review on #7788, post START naming carrier claude/healthcare-d1-fda-supply, run lanes hc_t02_fda_sweep then hc_t01_supply_meaning, run Opus red-team, merge, and verify the nightly drip and foresight chip live.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [
         "GMI-THEME-GRAPH"
       ],
       "blocked_by": [],
       "waves": {
-        "awaiting_ci": 0,
+        "awaiting_ci": 1,
         "done": 0,
         "dropped": 0,
-        "in_progress": 1,
+        "in_progress": 0,
         "todo": 3
       },
       "wait": null,
@@ -7072,10 +7072,10 @@
         {
           "id": "D1",
           "title": "T01 supply meaning in the visible FDA consumer; T02 sweep qualification and forward history; relevant T08 per-release adjudication.\n",
-          "status": "in_progress",
+          "status": "awaiting_ci",
           "depends_on": [],
           "deps_satisfied": true,
-          "next_action": "Adjudicate the independent D1 review on #7788, post START naming carrier claude/healthcare-d1-fda-supply, run lanes hc_t02_fda_sweep then hc_t01_supply_meaning, run Opus red-team, merge, then verify the nightly drip and foresight chip live.\n",
+          "next_action": "D1 is merged (PR #7930). Owed before D1 is done: the render.yml covering run for the merge SHA (templates/foresight.html.j2 changed), then live proof — the next nightly's `fda_shortages: observation ...` receipt line and the data/fda/shortages.parquet.observation.json sidecar on main, plus the rendered foresight chip in EN/ZH and dark/light — and only then PRODUCTION_PROOF on #7788.\n",
           "prs": [],
           "done_at": null,
           "wait": null
@@ -7124,7 +7124,7 @@
     {
       "key": "GMI-INDUSTRIALS-FIRST-VERTICAL",
       "title": "GMI Industrials — first vertical: Exponent/Pentair result-to-cash dossiers (Fable Meta-CEO program)",
-      "status": "active",
+      "status": "awaiting_ci",
       "program": "earnings-intelligence",
       "p0": null,
       "p0_active": null,
@@ -7134,10 +7134,10 @@
       "repos": [
         "macro"
       ],
-      "next_action": "Consume the Opus READ_ONLY seam audit into R-IND-10+, finalize the T01 packet, dispatch ind_t01_binding, post START on #7789.",
+      "next_action": "Land #8062 (T04) once its ci-gate concludes green, then patch the checkpoint with the merge sha. After that the Industrials product chain has no dispatchable lane: T02 waits on the shared seam held by #7870 and #7905, T03 waits on T02, T05 on T03, T06 on T01-T05, T07-T09 on Semiconductor B reaching main (G1). The unblocking act is not owned by this program - re-check both PRs' changed-file lists before dispatching T02, and never edit base-owned files ahead of the base.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [
         "EARNINGS-INTELLIGENCE-OS",
         "GMI-THEME-GRAPH"
@@ -7145,46 +7145,50 @@
       "blocked_by": [],
       "waves": {
         "awaiting_ci": 0,
-        "done": 0,
+        "done": 1,
         "dropped": 0,
         "in_progress": 1,
-        "todo": 4
+        "todo": 3
       },
       "wait": null,
       "wave_detail": [
         {
           "id": "IND-W1",
           "title": "T01 synthetic corpus, helper harness, delivery-input validator, gate:code job industrials-result-cash",
-          "status": "in_progress",
+          "status": "done",
           "depends_on": [],
           "deps_satisfied": true,
-          "next_action": "Dispatch lane ind_t01_binding on m1; red-team the PR; merge on concluded green.",
-          "prs": [],
-          "done_at": null,
+          "next_action": null,
+          "prs": [
+            7924
+          ],
+          "done_at": "2026-09-27T01:36:59Z",
           "wait": null
         },
         {
           "id": "IND-W2",
           "title": "T02 issuer profiles || T04 pure result-to-cash derivations",
-          "status": "todo",
+          "status": "in_progress",
           "depends_on": [
             "IND-W1"
           ],
-          "deps_satisfied": false,
-          "next_action": null,
-          "prs": [],
+          "deps_satisfied": true,
+          "next_action": "T04 half is adjudicated closed over two rounds and awaits ci-gate on head 0e3344a9071f. T02 half is BLOCKED: it edits issuer_profiles.py / event_workspace.py / refresh_event_workspaces.py, which #7870 (base owner) and #7905 (held under audit) both edit - do not dispatch it until those release the seam.",
+          "prs": [
+            8062
+          ],
           "done_at": null,
           "wait": null
         },
         {
           "id": "IND-W3",
-          "title": "T03 case extractors || T05 editions and comparisons",
+          "title": "T03 case extractors, THEN T05 editions and comparisons (NOT parallel)",
           "status": "todo",
           "depends_on": [
             "IND-W2"
           ],
           "deps_satisfied": false,
-          "next_action": null,
+          "next_action": "Sequence is T03 then T05, not T03 || T05: the frozen plan lists T03 event/document refs among T05's consumed inputs, and T05's C0 gate also demands T02's industrials_profiles.py on main. A T05 lane dispatched early invents the document-reference shape rather than returning BLOCKED. The pre-built T05 payload stays parked.",
           "prs": [],
           "done_at": null,
           "wait": null
@@ -7197,7 +7201,7 @@
             "IND-W3"
           ],
           "deps_satisfied": false,
-          "next_action": null,
+          "next_action": "T06 consumes T04 per rulings_t06.md R7-R8: quote T04's value or report T04's refusal, never re-derive; pin no receipt_id literal or golden receipt.",
           "prs": [],
           "done_at": null,
           "wait": null
@@ -7216,7 +7220,20 @@
           "wait": null
         }
       ],
-      "prs": [],
+      "prs": [
+        {
+          "number": 7924,
+          "state": "merged",
+          "wave": "IND-W1",
+          "merged_at": "2026-09-27T01:36:59Z"
+        },
+        {
+          "number": 8062,
+          "state": "open",
+          "wave": "IND-W2",
+          "merged_at": null
+        }
+      ],
       "claim": null,
       "needs_ceo": null,
       "collisions": [
@@ -7249,10 +7266,10 @@
       "repos": [
         "macro"
       ],
-      "next_action": "MIN-W2: consume the min_t04a_definitions lane PR (Opus red-team before readiness), dispatch min_t02_witness_profiles once #7905 merges, then T03 -> T04b -> T07 with the same review law; T05/T06/T08 stay held for the shared route/client/mount on main and G2 source admission.",
+      "next_action": "MIN-W2: own PR #7950 to MERGED. It is READY at head 64a0b1dd with merge-on-green armed and one watcher at 600s; the independent round-3 review is consumed and its named fixes are in that head, so the only remaining gate is concluded green (excluded reds: the spurious 'Workers Builds: macro', ci-authority/codex/merge-queue-pilot). Verify the module on origin/main after the merge - a merge is not production proof. MIN-W3 (T03) DISPATCHES ONLY AFTER #7950 MERGES, not merely delivers: its preflight needs engine/market_ontology/mining_theme_research.py to resolve on origin/main, and it appends to the SAME mining-economic-dossier CI block, so two PRs editing that block would conflict. Its args are pre-retargeted to minimax/MiniMax-M3 rounds 1 (the GLM engine collapsed 3/3 on 09-24). Then T04b integrated, then T07. Every task takes an Opus red-team under freeze-then-repair, and per R-MIN-33e that commission must carry its evidence INLINE rather than name an artifact by path, or it spends its whole budget on discovery and returns nothing. T02 waits for #7905's content to reach main (another seat's PR - never poll it). T05/T06 stay held for #7870's route/client/mount on main plus the answer to comment 5811889498; T08 is last; G2 real-source admission remains an incumbent/operator act. Standing operator items: mini2 has no WAN (a bridge0 default route shadows the real gateway; the fix needs mini2 sudo and is an OPERATOR act), mini2 MiniMax provisioning, mini2 keychain unlock for cursor-agent. Never copy the fleet token to another host.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [
         "GMI-THEME-GRAPH",
         "EARNINGS-INTELLIGENCE-OS"
@@ -7286,7 +7303,7 @@
             "MIN-W1"
           ],
           "deps_satisfied": true,
-          "next_action": "Lane min_t04a_definitions dispatched on mb (MiniMax-M3) 2026-09-24 12:56Z; on its PR: Opus red-team, freeze probes RED on REJECT, merge on concluded green. T02 lane (args pre-minted) dispatches once #7905 is on main.",
+          "next_action": "T04a is PR #7950, READY and merge-on-green armed at head 64a0b1dd, watcher at 600s. Three fabric rounds were consumed by freeze-then-repair (R1 REJECT 3B/6M; R2 REJECT 1B/5M letter-gaming - leg values synthesised from period_kind; R2 probes + the R-MIN-31 truth table frozen RED at a848ad54 before round 3 ran). Round 3 delivered real numeric legs and derived polarity, and the letter-gaming class is verified dead - reversed legs flip the polarity, so no per-pair lookup table is hiding in it. ROUND-3 REVIEW TACTIC CHANGED (R-MIN-33e): two Opus red-team spawns returned NO verdict, each exhausting its turn budget on discovery, so the SEAT ran the adversarial battery itself and delegated only scoping/severity to a READ_ONLY auditor with the code excerpt and measured outputs INLINE - 0 tool calls, 65k tokens, complete rulings, three seat severities upgraded and two defects the seat had missed. Verdict ACCEPT_AFTER_NAMED_FIXES; the seat repaired directly. Four defects fixed under R-MIN-33/33a/33b/33c: duplicate pair names published contradictory rows; a source-declared range shipped as a point estimate the schema pins const false; unit/perimeter/period were carried and never read, so 1700 Mlbs vs 1680 kt published an INVERTED polarity and a proportionate figure was relabelled consolidated; NaN passed the numeric gate and slipped the equality withhold. Probes committed RED first (9 of 13 failing at that commit), then repaired: seven Mining suites 173 passed / 0 failed with the prior 160 all still passing, pyflakes clean, contract-delta 0 introduced / 0 inherited, ci_pack curated+exclusive+mining 7 passed. Receipt: reviews/OPUS_T04A_PR_REVIEW_R3_2026-09-26.md. T02 (args pre-minted) stays gated on #7905, which another seat holds DRAFT under its own R7 audit - do not poll it.",
           "prs": [],
           "done_at": null,
           "wait": null
@@ -7354,7 +7371,7 @@
       "next_action": "After DEC:GMI-F04-BOUNDED-CHILD-ROUTING-2026-08-28 is main-canonical, Sol performs a fresh collision census for the existing D2C operation gmi-theme-pit-d2c-20260827-sol-001 first and D2D operation gmi-theme-ontology-d2d-20260827-sol-001 second by default. PREFERRED_AVENUE remains Terra unless current evidence justifies escalation. If current production placement provides a lawful RuntimeBinding, use the existing canonical admission/pickup path. Otherwise keep the relevant child PARKED / WAITING_CAPACITY with needs_placement=true and turn_owner=EXECUTIVE_PLACEMENT; do not fabricate receiver, OPEN_PICKUP, ACK, START or watcher receipts. D2D may run concurrently only if actual planned write surfaces are genuinely disjoint. D2E/W3B/W3C remain dependency-held. F04 logical COO responsibility remains active above the children; a live Fable provider conversation is required only when a principal-level ambiguity or cross-owner integration gate actually arises.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -7536,7 +7553,7 @@
       "next_action": "Finish the Chairman-authorized GD-UI-RADAR-2 source-backed button/live-context slice on claude/risk-radar-explanations-live-20260920; exact-source evidence, required CI, merge and production proof remain its release sequence. GD-UI-RADAR-1 is live and DO_NOT_REDO (PR7467, merge96d3ddf6d500). GD-3's accepted four-clock event proof remains complete. This UI continuation does not commission GD-8A/GD-8B/GD-9A, GD-4B/4C, GD-6/7 or Portfolio cutover; GD-5A/B/C remain closed. Latest receipt: agentos/handoffs/GREY-DEER-RISK-INTELLIGENCE-2026-09-20-RADAR-REMOVAL.md.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -7969,7 +7986,7 @@
       "next_action": "Take no XPV2 execution — the declared reference objective is complete and R3C is explicitly not authorized. If and when the Chairman/Sol authorizes a successor wave, open it as a fresh commission via COMMISSION_WAVE (CONTINUATION_DELTA against merged #6337, pickup 8b303a58e8c0b807ef34d1913c4cacf5bb346e2d) with the five carried R3C-owned conditions as its acceptance floor; until that authorization exists, do not treat those conditions as open executable work.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -8101,7 +8118,7 @@
       "next_action": "PR-4/#6105 is merged but BUILT_NOT_PROVEN. Execute exactly one genuine current- session production dossier: prove board-scoped quote coverage + source freshness; current-session pulse mode/coverage; the reviewed com.mastermind.liveflow M1/R2 plane advancing naturally; /api/status and dead-man semantic health; and the actual served board at desktop+narrow with live labels only when every required gate passes. Stop at the first causal failure and repair it narrowly. Keep the retired Studio fleet disarmed and AD-9 separate. Only a later records closeout may return this workstream to done.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -8218,7 +8235,7 @@
       "next_action": "Completion program governs (2026-08-28, DEC:LER-END-TO-END-COMPLETION-ARCHITECTURE-FREEZE, records carrier #6599). SUPERSEDED sequencing: the prior next_action's '#5929 OPEN and NOT YET MERGED' clause is stale — #5929 MERGED 2026-08-19T17:27:25Z (squash 9ef200f), #5995 MERGED 2026-08-19T19:51:58Z, quote-ts heal #6095 MERGED 2026-08-20T15:03:30Z, and W4.1 was genuinely commissioned 2026-08-20 (first real envelope 240/2979 usable, then warm ~5-min Lab live_forward; see W4.1 row — all receipts preserved). Commissioning did NOT complete the program: dark-gap/cold-start recovery and full-natural-RTH cadence remain open (Sol Day-5 ruling), DSC:RADAR-SPOOL-PUBLIC-R2 is unrebutted with no accepted remediation, and the canonical W5 prospective consumer is DISCONNECTED (DSC:LER-W5-PROSPECTIVE-CONSUMER-DISCONNECTED — ledger_state.json session 2026-08-27 = WAITING_FOR_LIVE_SOURCE, spool_dir=null, zero observed/live-forward/qledger; Prophet Lab live_forward is NOT W5/Eval-OS evidence). W6 stays in_progress: #5834+#5845 merged but not accepted on a non-empty real developing-RTH board; do not redesign the score. Remaining work runs as bounded child waves LER-C0..C8 under research/live_entry_radar/LIVE_ENTRY_RADAR_COMPLETION_ARCHITECTURE_MASTERPLAN_2026-08-28.md with a sustained Fable COO (one fresh operation key + one carrier + terminal watcher boundary per modifying child; graph in §Completion program below). Immediate next: after C0 (#6599) merges, start LER-C1 private evidence transport. Frozen: Prophet paths, detector formulas/hashes G0 9be89a8acc8b905c / C1 f0bbd6cf3a6e2339 / C2 d8ba60a25cfa7400 / C3 d54dc1e55c4261c8 / C4 dce21ac680233ee2 (context-only) / C5 13dec66345a0376c; F1 unbuilt/refusing. W8 = existing #5737 only (freeze a8c763dc APPROVE_WITH_CONDITIONS, reference-only; do not auto-roll W9); W9 not started before C2/C4/C5.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -8513,7 +8530,7 @@
       "next_action": "Await Sol review of C0 recovery; after terminal C0 acceptance, commission C1 separately for deterministic relevance + abstention on frozen v1.6 gold.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -8593,7 +8610,7 @@
       "next_action": "Do not start experience-v2 or v1 writers by hand. Tuesday 2026-08-25 04:00–04:32Z is the first natural M0D PROVEN_LIVE gate after the experience-v2 tmpfs/InaccessiblePaths namespace repair. M0D remains BUILT_NOT_PROVEN. If v1 is unrestored by then, grade v2 as v1_control_unavailable. Do not implement Options Audit preregistration v2 here. Do not open R2.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -8716,7 +8733,7 @@
       "next_action": "PRIMARY PRODUCT: A1B is PROVEN_LIVE / DONE. Before any A2-A6 implementation, Sol refreshes current Macro/Terminal truth and commissions one independently useful vertical; eligibility is not execution. MAINTENANCE: #6510 may proceed independently as a bounded Portfolio mode-tab count synchronization repair if fresh collision census remains clean. PARALLEL ORGANIZATIONAL WORK: the separate Market Ontology parity/fanout carrier remains independent and must preserve its own current authority, claim, and proof gates; do not infer that this workstream sync lands or dispatches it.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -8883,7 +8900,7 @@
       "next_action": "Leave overlapping-publisher atomicity as the remaining C0 item. Do not mix with W2C v2. Ordinary v1 technicals may now consume session 2026-08-21.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -8930,7 +8947,7 @@
       "next_action": "Complete exact-head CEO review of Mastermind PR #362. Require current protected master ancestry, the exact OLS-A2 source/compiler/CLI/fixture/test path family, terminal hosted proof, no unresolved review thread, and a real compilation of this exact protected Macro revision through owner-native bytes -> protected Executive Steward -> pure compiler -> protected A1 checker/report. The prior fable-004 child `mastermind-operation-assurance-a2-source-compiler-20260902-fable-004` is terminal pre-START with effect NONE after its canonical packet was absent; it is not a continuation target. If PR #362 is clean, release A2 as BUILT_NOT_PROVEN / REPORT_ONLY / PRODUCTION_INERT. Otherwise commission only the smallest repair on that existing branch. Do not start A3+.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -9114,7 +9131,7 @@
       "next_action": "OA-1T-MACRO remains BUILT_NOT_PROVEN. Natural measured source->Flow consumer proof is DO_NOT_REDO, #7279 source-clock repair is merged as fc4efb9fd9ec97cc3e65f9ff9ee157626be5683f, and #7263 shared publisher recovery is merged as its accepted release. The critical remaining publication/history chain is #7265 bounded session durability + campaign runtime, #7193 broad-writer exclusion, and the repaired-but-unmerged #7398 quarantine law followed by its owner-native effective-view implementation. Require one normal scheduled nightly plus protected-main readback proving valid effective episode/campaign/outcome receipts, raw/effective quarantine accounting and scoring.enabled=false before OA-1T-MACRO -> PROVEN_LIVE. OA-1C prereg #7290 is already protected but activation remains closed. AD-1T2 remains owned by WS:ADVANCED-DATA-OPTIONS and is currently blocked by the exact M1 host's emergency disk floor plus shared runner-admission custody. OA-1T-TERMINAL #667 is BUILT_NOT_PROVEN and waits on independent review/release + real post-merge browser proof. OA-2 records (#7395/#7401) remain no-fit gates pending their own acceptance.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -9287,7 +9304,7 @@
       "next_action": "Execute the charter-only V2-PREREG-CHARTER child first. Freeze honest full-corpus capacity, algorithmic/resource/refusal bounds, clocks/nulls/corrections and an anti-vacuity implementation acceptance packet. Do not implement v2 in the charter child. Implementation requires a separately keyed later child after Sol accepts the preregistration. Do not widen `_MAX_REFERENCES`, edit v1 in place, or recouple this owner into trusted-context publication.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -9334,7 +9351,7 @@
       "next_action": "Program complete (live receipts 2026-09-02: US 3 chips persisting 2026-08-31; CN 24 chips over 4 dates; HK 4 over 3; CA 10 over 5; Intl null pending upstream as_of). Remaining accruals are self-serve: CN's first more_actionable fossil row (self-heal floor) and the optional rank-authority-safe HK/CA ledger coverage extension, each needing its own authorization if pursued.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -9403,7 +9420,7 @@
       "next_action": "Automatic W3 accrual on the natural us_prophet_ledgers lane. Do not start PR-3E. Do not start C2/C3/C4/C5 or Prophet V4. Do not read C1-vs-shadow outcomes. Durable paired-race N=2 unmatured (stamps 2026-08-17 and 2026-08-18); matured H=10 N=0. First lawful comparison remains PENDING until 20 matured H=10 sessions. Leave the frozen 2026-08-17 W3 parts byte-identical.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -9568,7 +9585,7 @@
       "next_action": "PRESENTATION LANE — V3.8 correction COMPLETE (carrier stock-dashboard-v38-hk-ca-fable-20260826-sol-001, frozen architecture #6456 + DEC:V38-ACTION-IS-NOT-LEADERSHIP). HK V38-R1 PROVEN_LIVE 2026-08-27 (PR #6515, merge 5dad2bd41326, acceptance research/STOCK_DASHBOARD_V38_HK_ACCEPTANCE_2026-08-27.md). Canada V38-R2 PROVEN_LIVE 2026-08-27 (PR #6545, merge 1276333b37b9, acceptance research/STOCK_DASHBOARD_V38_CANADA_ACCEPTANCE_2026-08-27.md; handoff PROPHET-HK-CA-REVAMP-2026-08-27-v38-canada). Regional packet returned to Sol for final HK+Canada V3.8 acceptance. China V3.8: separate later carrier, fresh census first (§8.3). US stays decoupled and unauthorized (V4 B1→B2/B3→B4 + reconciled Cell H prerequisites). INTELLIGENCE LANE unchanged: hk-discovery CLOSED 2026-08-23 with production receipts (wave entry). Next lawful waves: hk-intel (HK-NATIVE-INTEL, depends on hk-discovery), ca-intel, ca-pit — each needs its own commissioning decision. Standing follow-up: ≈2026-08-26 verify the CA board-ledger-era-empty warning self-cleared (ledger-era wave entry); if it persists once gradable current-era rows exist, investigate — never silence.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -9798,7 +9815,7 @@
       "next_action": "PR #7180 remains the active bounded producer/source-bound carrier. Its reviewed semantic head 99b9bc18 composes conflict-free with current main 3df8685c and passes the current-base local release matrix; publish the documentation-only qualification on the same branch, require fresh terminal hosted CI and genuine independent approval, and merge only after release-owner acceptance. Then integrate existing PR #7187 and reconcile existing PR #7457 once, in that order. PR #7161 already merged as bdad6706 and is DO_NOT_REDO. Keep the parent capability BUILT_NOT_PROVEN until exact deployed-commit source, protected-serving, browser, and subsequent scheduled-refresh proof. China run 35021696056 remains proven and must not be retried.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -9884,7 +9901,7 @@
       "next_action": "Verify the 22:30Z bake (W1).",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -9973,7 +9990,7 @@
       "next_action": "R6 Fable Meta-CEO program (operation prophet-us-fable-meta-ceo-20260923-001, parent #6805, PICKUP_ACK 5793983971): wave 2 closed 2026-09-23 (handoff PROPHET-US-V4-RECOVERY-2026-09-23-r6-wave2-close.md; decisions DEC:PROPHET-US-D03-SOURCE-READINESS-SCOPE, DEC:PROPHET-US-B16-CYCLE-INTERNAL-DIAGNOSTIC-ERA, DEC:PROPHET-US-B04-EVIDENCE-DOSSIER-CONTRACT, DEC:PROPHET-US-D10-SOURCE-CUSTODY-ADMISSION). Wave 3: merge DS-PR-0a (#7849) on concluded green and live-verify theme.css; adjudicate the B20-1 component spec (#7851) after its repair lane and an Opus read-only audit; consume the pre-registered Cycle (a) diagnostic run and B04-A from the m1 window (internal-only evidence, never a pilot); rule R6-D07-01 on the D07 evidence-class register draft, then B04-B/C and DS-PR-0c on 7849's merge sha. B01 stays with the #7180 writer; B03 merged by the #7572 writer (177146dd) awaits production proof. The 2026-09-18 rotation mandate and the masterplan §21 wave graph remain in force beneath this program; never replay an old next action without reconciling the R6 records.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [
         "PROPHET-US-AVAILABILITY",
         "LIVE-ENTRY-RADAR",
@@ -10451,7 +10468,7 @@
       "next_action": "RIC F3: confirm fixed_grid_origin.v4 liveness on the first nightly data/transmission/latest.json after PR #8030 (merged 2026-09-25), then execute W3 — the display-only yield_momentum consumer block in engine/credit_momentum.py beside interim_tlt (handoff RATES-INFLATION-COMMAND-2026-09-25). RIC-F1/F2 packets still go through canonical Executive admission as disjoint operations.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -10607,7 +10624,7 @@
       "next_action": "Consume the R1A-M builder return (draft PR on claude/r1a-m-market-pulse-20260902): independent opus review, records/code repairs on the same carrier if demanded, merge, deploy through the existing Macro API/static/render owners, execute the R1A-M production/browser proof matrix (dark/light x EN/ZH x 1440/390, one-refresh-one-call, roster accounting, authority-invariance fingerprints), then begin the natural RTH + post-close acceptance evidence. R1B stays measurement-gated; do not build streaming without telemetry proving snapshot pull insufficient.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -10743,7 +10760,7 @@
       "next_action": "RWE-E0 value study once real workers use the runbook path; RWE-S0 held until the portfolio's Program 4 (supply-chain admission) has a carrier — never install devenv/Devbox/Nix on a production Mac before admission.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -10855,7 +10872,7 @@
       "next_action": "W3 is Sol-accepted and closed. Keep the overall workstream active: W2 is closed from its accepted soak plus measured storage recovery above the 200 GiB root floor. TerraMaster remains qualified only as non-secret scratch. W4 is now a bounded capability admission for at most one theta-m1 lane; its read-only census is done, but current 201.3 GiB free space, zero listeners, stale guard bytes and collect_tail runtime tail make production admission unsafe today. Recover a 225 GiB start floor or prove a lower exact peak before the one-root canary. Generic macstudio remains forbidden. The M2 temporary-pack incident is recovered with 303.6 GB unallocated and zero Git garbage; measure the producer before extending the existing runner lifecycle. The private-readiness baseline in DSC:PRIVATE-CI-HOSTED-MINUTES-REQUIRE-TWO-LEVER-CUTOVER proves that moving packs alone cannot meet the 50,000-minute allowance; after PC and cutover acceptance, measure and reduce the complete hosted estate without weakening its protected control/untrusted boundary. W4/W5 remain unstarted; do not enter either wave without fresh Chairman intent and a current authority load. Trusted-CI promotion (issue #6351) is active under the Fable COO principal: capability ledger 2026-08-26 — W3 planner containment MERGED (PR #6286, fafe8d7ee775f8b60a0229c085fb7aee6d4349e7); P0R MERGED and baseline-green; P1 ACCEPTED on pc-ci-1; P2/P2R ACCEPTED with three concurrent PC CI slots, independent render reservation, exact hosted/self-hosted fragment parity and a safe resource envelope. P3A/P3A-R main-defined executor is accepted through PR #6487 and direct proof run 33030976647. P3B-A call capability merged through PR #6496 as 904863dabc490ee95ac50153048c25dee048d90b; its exact-head hosted run 33035115527 passed all twelve packs and recorded about 180.7 hosted pack-minutes. P3B-B PR #6505 reached the real PC hooks in run 33039532309 but failed closed before steps because job `env` is unavailable to pre-job hooks; contract-delta separately caught its unwired route suite. The same carrier now uses the GitHub event payload and root-owned wrapper pass-through. Drained pc-ci-1/2/3 carry post-restart Python hash 69faac248f755829a39f6821f17015382788056991f6d1ff9046b1842e86a002 and wrapper hash d55f046e6a6a758f55e311ed73b921e007c8570cc0aba11e0cafdc31cef06dee; Exact-head run 33043922465 then exercised all twelve packs on pc-ci-1/2/3: nine passed and only packs 5/6/9 failed. The complete set is sealed-host portability, not listener-version drift: RestrictSUIDSGID blocks a real set-ID fixture, a scrubbed subprocess/replay loses the dynamic 3.12.13 library path, Git 2.43 cannot demonstrate a newer poisoning result, and detached execution needs explicit PR branch metadata. The same #6505 carrier owns all four narrow repairs; no service hardening, label, WSL sizing, render route or runner identity changes. Repaired P3B-B exact execution and P4 natural PR proofs remain unaccepted. Macro private visibility mutation remains HOLD. Live accepted PC identities are pc-ci-1/2/3 plus an independent pc-render lane; the M1 has no generic CI listener and remains reserved for its live Theta/options/research estate while W4 measures one possible capability-specific theta-m1 lane.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -10990,7 +11007,7 @@
       "next_action": "Nothing blocking. P0 is live and proven against a genuinely realtime feed (2026-08-28 13:30:46Z, measured 153.8 ms print-age floor). The one open item is a Terminal-repo question that needs its own commission — see next_actions[0].",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -11076,7 +11093,7 @@
       "next_action": "PROGRAM CLAIMED 2026-08-28: one sustained Fable COO holds operation key SI-FABLE-COO-PROGRAM-20260828 on the shared Slack program thread. Current rule: the first bounded operation is records reconciliation/acceptance of the SAME PR #6529 carrier; W3A and W3S open as separate child carriers ONLY after Sol posts CONTINUE W3 on that thread, and only after fresh current-main/changed-path collision checks; SI-W3B-ESTIMABILITY-V1 binds to W3A's metric schema and may publish no fit result.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -11360,7 +11377,7 @@
       "next_action": "W0 is merged. W1 Evidence Census and W2-0 Data/Clock Archaeology may now be independently placed on separate disjoint carriers under operation keys TOI-W1-EVIDENCE-CENSUS-V1 and TOI-W2-0-DATA-CLOCK-V1 after current collision checks. Both must return and be accepted before W3 preregistration or outcome testing. Neither operation has a Slack delivery, pickup, START or runtime effect in this reconciliation.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -11546,7 +11563,7 @@
       "next_action": "Complete exact-head validation and Sol acceptance of draft PR #6790 after the adversarial repair. Then place exactly one W1A implementation session through PREFERRED_AVENUE CTO Sol, RECEIVER_BINDING_MODE CAPACITY_SELECTABLE. Current placement is WAITING_CAPACITY / needs_placement; no Slack delivery, pickup, START, Executive Job or watcher exists.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -11692,7 +11709,7 @@
       "next_action": "No implementation action exists under this parked identity. Resolve every current reference to WS:TERMINAL-GITHUB-CANONICALIZATION; use this file only to explain historical aliases.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -11740,7 +11757,7 @@
       "next_action": "Consume natural exact-head CI for Terminal PR #496 head d19bb18a16ad0b76d8b4d57d65ecd3590ba1c747 / run 33485568892 without rerun-to-green. If the owned layout-integrity and W2-A toolbar journeys are first-attempt clean, require one independent exact-head review and Sol release ruling before merge. In parallel keep PR #497 at REQUEST_CHANGES until its real `indicator-snapshot` consumer records the generation-bound `mm:terminal-visual-ready-diagnostic` reason; do not alter render budgets/logic until that discriminator identifies the missing edge. Only after #485 makes the required Terminal check deterministic should #484 and #487 be refreshed/re-proven for release. W2 production mutation, repository-setting mutation and visibility change remain held.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -11864,7 +11881,7 @@
       "next_action": "Observe the first scheduled daily.yml run containing merge 708e87866005 and report its production evidence on the exact carrier (pre-band restore ordering in the engine log, non-zero panel, truthful non-null winner_health.v2, live page) — evidence, with acceptance resting on Chairman/Sol per the 2026-09-02 carrier record. Then park the natural-time OOT wait per masterplan §10: no polling sessions; the frozen prereg, the receipt emitter and committed receipts own the wait; R2 activates only through a final_verdict_eligible receipt under the single-look rule (~2027-07 earliest). R4's research-integration half follows R2/R3.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -11989,7 +12006,7 @@
       "next_action": "None outstanding. Compliance is settled (CHAIRMAN_VERIFIED_PRIVATE / SATISFIED) and the census is done. The only optional follow-up is an engineering one - read the privilege page (redact token) against the 2026-08-09 SKU list and resolve the ACCESS_TIER_UNVERIFIED rows. [NULL per DEC:CNLI-TUSHARE-COMPLIANCE-IS-CHAIRMAN-VERIFIED-PRIVATE - the former written-enquiry step on the five commercial questions is REMOVED; those questions survive in matrix section 3 as historical census record only and are not a task.]",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -12037,7 +12054,7 @@
       "next_action": "Use WS:MARKET-OS. After its M0 records merge, the only authorized runtime continuation is A1A Portfolio Population Truth + State Authority. This legacy record authorizes no implementation of its former W1 persistence proposal.",
       "created": "2026-09-26",
       "updated": "2026-09-26",
-      "stale_days": 0,
+      "stale_days": 1,
       "depends_on": [],
       "blocked_by": [],
       "waves": {
@@ -16552,7 +16569,7 @@
         "wave": "D1",
         "state": "in_progress",
         "reason_code": "status_in_progress",
-        "reason": "Authored wave status is in_progress.",
+        "reason": "Authored wave status is awaiting_ci.",
         "depends_on": [
           "WS:GMI-THEME-GRAPH"
         ],
@@ -16608,7 +16625,7 @@
         "wave": null,
         "state": "in_progress",
         "reason_code": "status_in_progress",
-        "reason": "Authored workstream status is active.",
+        "reason": "Authored workstream status is awaiting_ci.",
         "depends_on": [
           "WS:EARNINGS-INTELLIGENCE-OS",
           "WS:GMI-THEME-GRAPH"
@@ -16621,31 +16638,28 @@
       {
         "workstream": "GMI-INDUSTRIALS-FIRST-VERTICAL",
         "wave": "IND-W1",
-        "state": "in_progress",
-        "reason_code": "status_in_progress",
-        "reason": "Authored wave status is in_progress.",
+        "state": "done",
+        "reason_code": "status_done",
+        "reason": "Authored wave status is done.",
         "depends_on": [
           "WS:EARNINGS-INTELLIGENCE-OS",
           "WS:GMI-THEME-GRAPH"
         ],
-        "unmet_dependencies": [
-          "WS:GMI-THEME-GRAPH"
-        ],
+        "unmet_dependencies": [],
         "source": "agentos/workstreams/WS-GMI-INDUSTRIALS-FIRST-VERTICAL.md"
       },
       {
         "workstream": "GMI-INDUSTRIALS-FIRST-VERTICAL",
         "wave": "IND-W2",
-        "state": "blocked",
-        "reason_code": "unmet_dependencies",
-        "reason": "Waiting for declared dependencies: WS:GMI-INDUSTRIALS-FIRST-VERTICAL#IND-W1, WS:GMI-THEME-GRAPH.",
+        "state": "in_progress",
+        "reason_code": "status_in_progress",
+        "reason": "Authored wave status is in_progress.",
         "depends_on": [
           "WS:EARNINGS-INTELLIGENCE-OS",
           "WS:GMI-INDUSTRIALS-FIRST-VERTICAL#IND-W1",
           "WS:GMI-THEME-GRAPH"
         ],
         "unmet_dependencies": [
-          "WS:GMI-INDUSTRIALS-FIRST-VERTICAL#IND-W1",
           "WS:GMI-THEME-GRAPH"
         ],
         "source": "agentos/workstreams/WS-GMI-INDUSTRIALS-FIRST-VERTICAL.md"
@@ -20641,18 +20655,11 @@
     "agentos/workstreams/WS-GMI-FINANCE-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'tests/test_finance_owner_preservation.py' does not exist in repo 'macro'",
     "agentos/workstreams/WS-GMI-FINANCE-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'tests/test_finance_private_publication.py' does not exist in repo 'macro'",
     "agentos/workstreams/WS-GMI-FINANCE-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'tests/js/finance_intelligence.test.mjs' does not exist in repo 'macro'",
-    "agentos/workstreams/WS-GMI-HEALTHCARE.md: [phantom-owns-path] owns_paths entry 'tests/test_fda_shortages_generation.py' does not exist in repo 'macro'",
-    "agentos/workstreams/WS-GMI-HEALTHCARE.md: [phantom-owns-path] owns_paths entry 'tests/test_fda_supply_probes.py' does not exist in repo 'macro'",
     "agentos/workstreams/WS-GMI-INDUSTRIALS-FIRST-VERTICAL.md: [phantom-owns-path] owns_paths entry 'engine/company_intelligence/industrials_profiles.py' does not exist in repo 'macro'",
-    "agentos/workstreams/WS-GMI-INDUSTRIALS-FIRST-VERTICAL.md: [phantom-owns-path] owns_paths entry 'engine/company_intelligence/financial_dossier.py' does not exist in repo 'macro'",
     "agentos/workstreams/WS-GMI-INDUSTRIALS-FIRST-VERTICAL.md: [phantom-owns-path] owns_paths entry 'engine/fundamental_forensics/industrials_result_cash.py' does not exist in repo 'macro'",
     "agentos/workstreams/WS-GMI-INDUSTRIALS-FIRST-VERTICAL.md: [phantom-owns-path] owns_paths entry 'engine/market_ontology/industrials_theme_research.py' does not exist in repo 'macro'",
     "agentos/workstreams/WS-GMI-INDUSTRIALS-FIRST-VERTICAL.md: [phantom-owns-path] owns_paths entry 'contracts/company_intelligence/financial_dossier.v1.schema.json' does not exist in repo 'macro'",
-    "agentos/workstreams/WS-GMI-INDUSTRIALS-FIRST-VERTICAL.md: [phantom-owns-path] owns_paths entry 'tests/industrials_result_cash_helpers.py' does not exist in repo 'macro'",
-    "agentos/workstreams/WS-GMI-INDUSTRIALS-FIRST-VERTICAL.md: [phantom-owns-path] owns_paths entry 'tests/fixtures/industrials_result_cash/**' has no existing base 'tests/fixtures/industrials_result_cash' in repo 'macro'",
     "agentos/workstreams/WS-GMI-MINING-M1-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'engine/company_intelligence/mining_issuer_profiles.py' does not exist in repo 'macro'",
-    "agentos/workstreams/WS-GMI-MINING-M1-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'engine/market_ontology/mining_theme_research.py' does not exist in repo 'macro'",
-    "agentos/workstreams/WS-GMI-MINING-M1-INTEGRATION.md: [phantom-owns-path] owns_paths entry 'contracts/market_ontology/mining_theme_research.v1.schema.json' does not exist in repo 'macro'",
     "agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'site/live/risk_envelope.json' does not exist in repo 'macro'",
     "agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'templates/risk_envelope/' does not exist in repo 'macro'",
     "agentos/workstreams/WS-GREY-DEER-RISK-INTELLIGENCE.md: [phantom-owns-path] owns_paths entry 'tests/test_risk_envelope' does not exist in repo 'macro'",

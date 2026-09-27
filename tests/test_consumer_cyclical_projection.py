@@ -43,6 +43,34 @@ from engine.sector_intelligence.consumer_cyclical_projection import (
 # ---------------------------------------------------------------------------
 
 
+#: Stated period starts for the synthetic case. These used to be derived as
+#: ``period_end[:4] + "-01-01"``, which described a Q2 as running from 1
+#: January -- the *same* calendar-snapping mistake the projection itself was
+#: making, which is exactly why 65 green tests never caught it. The suite now
+#: states its periods instead of deriving them.
+_PERIOD_START_BY_END = {
+    "2026-06-30": "2026-04-01",
+    "2025-06-30": "2025-04-01",
+}
+
+
+#: metric -> the contract's ``kind`` vocabulary. Stated, never guessed: the
+#: helper used to omit ``kind`` entirely and let the projection default it to
+#: "financial", a value the contract's enum does not contain.
+_KIND_BY_METRIC = {
+    "total_revenue": "revenue_line",
+    "advertising_revenue": "revenue_line",
+    "advertising_expense": "expense_line",
+}
+
+#: metric -> the phrase a human would read in the exhibit's results table.
+_LABEL_BY_METRIC = {
+    "total_revenue": "Total revenue",
+    "advertising_revenue": "Advertising revenue",
+    "advertising_expense": "Advertising expense",
+}
+
+
 def _plnt_fact(
     *,
     key: str,
@@ -50,12 +78,14 @@ def _plnt_fact(
     value_text: str,
     native_ref: str,
     metric: str = "",
+    period_role: str = "",
+    kind: str = "",
     definition: str = "",
-    basis: str = "REPORTED",
-    role: str = "REPORTED_FACT",
+    basis: str = "as_reported_period_value",
+    role: str = "actual",
     unit: str = "USD",
     scale_power10: int = 3,
-    sign_convention: str = "SIGNED",
+    sign_convention: str = "signed_as_reported",
     period_kind: str = "quarter",
     # frozen-spec 4a: PLNT's exhibit is retained nowhere, so False is the only
     # state that can occur for a real fact here. native_admitted is a
@@ -67,29 +97,53 @@ def _plnt_fact(
     # Facts pair on ``metric`` (the contract keys them <metric>_current /
     # <metric>_prior); derive it from the key when a test does not say.
     metric = metric or re.sub(r"_(current|prior|new|old)$", "", key)
+    # ``input_refs`` names the fact KEY (see _fact_ref in the projection) and
+    # the contract declares it uniqueItems, so the two facts of one pair must
+    # not share a key. They did: every same-metric pair in this helper was
+    # spelled with one bare FACT_KEY_* constant, which published
+    # ["advertising_expense", "advertising_expense"]. Callers that still pass a
+    # bare key keep today's behaviour; period_role is how a pair says which
+    # side it is.
+    if period_role:
+        key = key + "_" + period_role
+    kind = kind or _KIND_BY_METRIC.get(metric, "")
+    if not definition:
+        label = _LABEL_BY_METRIC.get(metric, metric.replace("_", " ").capitalize())
+        definition = (
+            label
+            + " for the quarter ended "
+            + period_end
+            + ", as reported in PLNT's Q2 2026 results press release exhibit."
+        )
     return {
         "key": key,
+        "kind": kind,
         "metric": metric,
         "value_text": value_text,
         "unit": unit,
         "scale_power10": scale_power10,
         "sign_convention": sign_convention,
-        "period_start": period_end[:4] + "-01-01",
+        "period_start": _PERIOD_START_BY_END[period_end],
         "period_end": period_end,
         "period_kind": period_kind,
-        "event": "PLNT Q2 2026, quarter ended " + period_end,
+        "event": "plnt_q2_2026_results",
         "published_at": "2026-08-06T00:00:00Z",
         "basis": basis,
         "definition": definition,
-        "display_quantum": "USD thousands",
+        # Contract pattern ^\\d+(?:\\.\\d+)?_[a-z][a-z0-9_]*$ - a quantum, not a
+        # unit label. "USD thousands" is the unit spelled twice; the scale
+        # already lives in unit + scale_power10.
+        "display_quantum": "1_thousand",
         "native_admitted": native_admitted,
         "native_ref": native_ref,
-        "perimeter": "consumer_cyclical_intelligence_read_model.v1",
+        # Was the CONTRACT ID, copied into a field whose enum is
+        # {consolidated_company, segment, franchise_system}.
+        "perimeter": "consolidated_company",
         "role": role,
         "target": "issuer:0001637207",
         "evidence": evidence
         or {
-            "document": "plntq2202026pressreleaseex991.htm",
+            "document": "plntq22026pressreleaseex991.htm",
             "locator": "press_release_table",
             "revision": "2026-08-06",
         },
@@ -98,12 +152,14 @@ def _plnt_fact(
 
 
 def _plnt_subject() -> dict[str, Any]:
+    # $defs/subject is closed (additionalProperties false) and requires exactly
+    # issuer_cik, subject_type and ticker. company_name and fiscal_period_end
+    # were never published anywhere, and comparison_basis is a CASE field that
+    # was being shadowed here.
     return {
         "issuer_cik": "0001637207",
         "ticker": "PLNT",
-        "company_name": "Planet Fitness, Inc.",
-        "fiscal_period_end": "2026-06-30",
-        "comparison_basis": "explicit_same_quarter_prior_year",
+        "subject_type": "company",
     }
 
 
@@ -115,39 +171,45 @@ def _plnt_facts() -> list[dict[str, Any]]:
     return [
         _plnt_fact(
             key=FACT_KEY_TOTAL_REVENUE,
+            period_role="current",
             period_end="2026-06-30",
             value_text="365223",
-            native_ref="src-plntq2-2026-total_revenue-current",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_TOTAL_REVENUE,
+            period_role="prior",
             period_end="2025-06-30",
             value_text="340879",
-            native_ref="src-plntq2-2026-total_revenue-prior",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_ADVERTISING_REVENUE,
+            period_role="current",
             period_end="2026-06-30",
             value_text="32922",
-            native_ref="src-plntq2-2026-advertising_revenue-current",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_ADVERTISING_REVENUE,
+            period_role="prior",
             period_end="2025-06-30",
             value_text="22781",
-            native_ref="src-plntq2-2026-advertising_revenue-prior",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_ADVERTISING_EXPENSE,
+            period_role="current",
             period_end="2026-06-30",
             value_text="32922",
-            native_ref="src-plntq2-2026-advertising_expense-current",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_ADVERTISING_EXPENSE,
+            period_role="prior",
             period_end="2025-06-30",
             value_text="22777",
-            native_ref="src-plntq2-2026-advertising_expense-prior",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
     ]
 
@@ -160,13 +222,34 @@ def _plnt_case(**overrides: Any) -> dict[str, Any]:
         "subject": _plnt_subject(),
         "comparison_basis": "explicit_same_quarter_prior_year",
         "facts": _plnt_facts(),
+        # ONE record, not six. $defs/source_record requires twelve fields and
+        # these were one-key stubs; more importantly a results press release
+        # carries the prior-year comparatives in the same table, so six facts
+        # genuinely share one document. Values are the ones the committed
+        # fixture asserts - not invented. The clock is deliberately unlabeled
+        # and carries no Z: SEC acceptance time is not first-public time.
         "source_records": [
-            {"record_id": "src-plntq2-2026-total_revenue-current"},
-            {"record_id": "src-plntq2-2026-total_revenue-prior"},
-            {"record_id": "src-plntq2-2026-advertising_revenue-current"},
-            {"record_id": "src-plntq2-2026-advertising_revenue-prior"},
-            {"record_id": "src-plntq2-2026-advertising_expense-current"},
-            {"record_id": "src-plntq2-2026-advertising_expense-prior"},
+            {
+                "record_id": "src_plnt_q2_2026_ex991",
+                "accession_no": "0001637207-26-000042",
+                "issuer_cik": "0001637207",
+                "publisher": "U.S. Securities and Exchange Commission",
+                "source_family": "sec_edgar_exhibit",
+                "document": "plntq22026pressreleaseex991.htm",
+                "source_uri": (
+                    "https://www.sec.gov/Archives/edgar/data/1637207/"
+                    "000163720726000042/plntq22026pressreleaseex991.htm"
+                ),
+                "locator": (
+                    "Exhibit 99.1, PLNT Q2 2026 results press release, "
+                    "accession 0001637207-26-000042"
+                ),
+                "sec_acceptance_raw": "2026-08-06 06:30:44",
+                "acceptance_clock_basis": "unlabeled",
+                "observed_at": "2026-09-24",
+                # frozen-spec 4a: PLNT's exhibit is retained nowhere.
+                "retention_state": "not_retained",
+            }
         ],
     }
     case.update(overrides)
@@ -368,7 +451,7 @@ def test_dependency_local_degradation_missing_total_revenue_prior() -> None:
     """
     facts = _plnt_facts()
     facts = [f for f in facts if not (
-        f["key"] == FACT_KEY_TOTAL_REVENUE and f["period_end"] == "2025-06-30"
+        f["metric"] == FACT_KEY_TOTAL_REVENUE and f["period_end"] == "2025-06-30"
     )]
     case = _plnt_case(facts=facts)
     document = project_economic_change(case)
@@ -391,7 +474,7 @@ def test_dependency_local_degradation_unparseable_value_text() -> None:
     """A fact with unparseable ``value_text`` OMITS the result (Ruling A)."""
     facts = _plnt_facts()
     for f in facts:
-        if f["key"] == FACT_KEY_TOTAL_REVENUE and f["period_end"] == "2025-06-30":
+        if f["metric"] == FACT_KEY_TOTAL_REVENUE and f["period_end"] == "2025-06-30":
             f["value_text"] = "not-a-number"
             break
     case = _plnt_case(facts=facts)
@@ -430,7 +513,7 @@ def test_dependency_local_degradation_keeps_ready_results_distinct() -> None:
     """A single missing fact must NOT suppress unrelated ready results."""
     facts = _plnt_facts()
     facts = [f for f in facts if not (
-        f["key"] == FACT_KEY_ADVERTISING_EXPENSE and f["period_end"] == "2025-06-30"
+        f["metric"] == FACT_KEY_ADVERTISING_EXPENSE and f["period_end"] == "2025-06-30"
     )]
     case = _plnt_case(facts=facts)
     document = project_economic_change(case)
@@ -1011,3 +1094,261 @@ def test_facts_are_grouped_by_metric_not_by_key() -> None:
         "advertising_expense",
     }
     assert all(len(v) == 2 for v in grouped.values())
+
+
+# ---------------------------------------------------------------------------
+# Envelope integrity — the projection must never publish a document that
+# violates the contract it authors.
+#
+# These exist because the suite that preceded them was green while the module
+# emitted empty dates, an out-of-vocabulary period_kind and non-numeric
+# value_text: every assertion read the *numbers*, none re-read the emitted
+# document against the schema sitting beside it in the repository.
+# ---------------------------------------------------------------------------
+
+
+def _fixture_case_with(mutate) -> dict[str, Any]:
+    """The real fixture case with ``mutate`` applied to a copy of each fact."""
+    case = _fixture_case()
+    case["facts"] = [dict(fact) for fact in case["facts"]]
+    for fact in case["facts"]:
+        mutate(fact)
+    return case
+
+
+def test_thousands_separated_value_text_degrades_rather_than_breaking_the_contract() -> None:
+    """A comma is how humans write money; it must not corrupt the document."""
+    case = _fixture_case_with(
+        lambda fact: fact.__setitem__("value_text", f"{int(fact['value_text']):,}")
+    )
+    assert case["facts"][0]["value_text"] == "365,223"
+
+    document = project_economic_change(case)
+
+    assert list(_validator().iter_errors(document)) == []
+    assert document["facts"] == []
+    assert document["availability"] == "unavailable"
+    assert "fact_value_text_unparseable" in {
+        entry["reason"] for entry in document["degraded_dependencies"]
+    }
+
+
+def test_a_fact_missing_its_period_envelope_is_refused_not_silently_completed() -> None:
+    """Absent envelope fields are declared, never filled in with a guess."""
+    for field, reason in (
+        ("period_start", "fact_period_start_missing_or_malformed"),
+        ("period_kind", "fact_period_kind_outside_vocabulary"),
+        ("period_end", "fact_period_end_missing_or_malformed"),
+    ):
+        case = _fixture_case_with(lambda fact: fact.pop(field, None))
+        document = project_economic_change(case)
+
+        assert list(_validator().iter_errors(document)) == [], field
+        assert document["facts"] == [], field
+        assert reason in {
+            entry["reason"] for entry in document["degraded_dependencies"]
+        }, field
+
+
+def test_period_start_is_read_from_the_source_and_never_derived() -> None:
+    """Consumer Cyclical is the retail sector; fiscal periods are not calendar ones.
+
+    The removed fallback snapped ``period_end`` to a calendar boundary, so a
+    4-5-4 retail quarter ending 2025-02-01 derived a start of 2025-01-01 — a
+    valid-looking date describing a 32-day "quarter".
+    """
+    from engine.sector_intelligence import consumer_cyclical_projection as mod
+
+    retail_quarter = {
+        "period_end": "2025-02-01",
+        "period_kind": "quarter",
+        "value_text": "1000",
+    }
+    assert mod._envelope_period_start(retail_quarter) == ""
+    assert (
+        mod._fact_admission_failure(retail_quarter)
+        == "fact_period_start_missing_or_malformed"
+    )
+    assert mod._envelope_period_start({"period_start": "2024-11-03"}) == "2024-11-03"
+
+
+def test_a_withheld_result_still_carries_the_period_provenance_it_must() -> None:
+    """Withholding a value never justified discarding where it came from."""
+    flat = _fixture_case_with(
+        lambda fact: fact.__setitem__("value_text", "365223")
+        if fact["metric"] == "total_revenue"
+        else None
+    )
+    document = project_economic_change(flat)
+
+    assert list(_validator().iter_errors(document)) == []
+    withheld = [r for r in document["results"] if r.get("value_text") is None]
+    assert withheld, "a non-positive denominator must withhold the ratio"
+    for result in withheld:
+        assert result["period_end"], result["key"]
+        assert result["period_start"], result["key"]
+        assert result["event"], result["key"]
+
+
+def test_module_constants_mirror_the_published_contract() -> None:
+    """The runtime self-check is only as honest as its mirror of the schema."""
+    from engine.sector_intelligence import consumer_cyclical_projection as mod
+
+    schema = _json.loads(_SCHEMA.read_text())
+    defs = schema["$defs"]
+    fact = defs["fact"]["properties"]
+
+    assert mod._DATE_RE.pattern == defs["date"]["pattern"]
+    assert mod._VALUE_TEXT_RE.pattern == defs["value_text"]["pattern"]
+    assert mod._SLUG_RE.pattern == fact["event"]["pattern"]
+    assert mod._ALLOWED_PERIOD_KIND == frozenset(fact["period_kind"]["enum"])
+    assert mod._ALLOWED_DEGRADED_STATE == frozenset(
+        defs["degraded_dependency"]["properties"]["state"]["enum"]
+    )
+
+
+def test_the_document_self_check_refuses_a_contract_violating_document() -> None:
+    """The backstop needs its own falsifier, or it is one more untested guard."""
+    from engine.sector_intelligence import consumer_cyclical_projection as mod
+
+    good = project_economic_change(_fixture_case())
+    mod._assert_document_matches_contract_shape(good)
+
+    for field, bad_value in (
+        ("period_start", ""),
+        ("period_end", "2026-6-30"),
+        ("period_kind", "month"),
+        ("value_text", "1,000"),
+        ("event", "PLNT Q2 2026"),
+    ):
+        broken = _json.loads(_json.dumps(good))
+        broken["facts"][0][field] = bad_value
+        with pytest.raises(CaseShapeError) as excinfo:
+            mod._assert_document_matches_contract_shape(broken)
+        assert field in str(excinfo.value)
+        assert CONTRACT_ID in str(excinfo.value)
+
+    # Every collection the guard walks needs its own falsifier: a guard that
+    # only ever reads one of them is exactly the half-blind instrument these
+    # tests exist to prevent.
+    for field, bad_value in (
+        ("period_start", ""),
+        ("period_kind", "month"),
+        ("event", "PLNT Q2 2026"),
+        ("value_text", "1,000"),
+    ):
+        broken = _json.loads(_json.dumps(good))
+        assert broken["results"], "fixture must emit at least one result"
+        broken["results"][0][field] = bad_value
+        with pytest.raises(CaseShapeError, match=field):
+            mod._assert_document_matches_contract_shape(broken)
+
+    for field, bad_value in (("dependency", "Not A Slug"), ("state", "maybe")):
+        broken = _json.loads(_json.dumps(good))
+        broken["degraded_dependencies"] = [
+            {"dependency": "total_revenue", "reason": "r", "state": "unavailable"}
+        ]
+        broken["degraded_dependencies"][0][field] = bad_value
+        with pytest.raises(CaseShapeError, match=field):
+            mod._assert_document_matches_contract_shape(broken)
+
+
+def test_the_document_self_check_runs_on_every_projection(monkeypatch) -> None:
+    """Wiring is a separate fact from correctness; assert it separately."""
+    from engine.sector_intelligence import consumer_cyclical_projection as mod
+
+    seen: list[Any] = []
+    monkeypatch.setattr(
+        mod, "_assert_document_matches_contract_shape", lambda document: seen.append(document)
+    )
+    project_economic_change(_fixture_case())
+    assert len(seen) == 1
+    assert seen[0]["contract_id"] == CONTRACT_ID
+
+
+# ---------------------------------------------------------------------------
+# The synthetic case is an input like any other — validate it like one
+# ---------------------------------------------------------------------------
+
+
+def test_the_synthetic_case_validates_against_the_contract_too() -> None:
+    """The case this suite uses most was the one it never validated.
+
+    ``_plnt_case()`` drove most of this file while emitting a document with
+    102 violations of the contract the projection itself authors: twelve
+    required ``source_record`` fields missing, ``perimeter`` holding the
+    contract id, ``kind`` defaulted to a value outside its own enum,
+    ``display_quantum`` spelled as a unit label, a closed ``subject`` carrying
+    three extra keys, and non-unique ``input_refs``. Every assertion read a
+    computed NUMBER; not one read the document's SHAPE, so all of it was
+    invisible. This is that missing assertion.
+    """
+    document = project_economic_change(_plnt_case())
+    errors = sorted(_validator().iter_errors(document), key=lambda e: list(e.path))
+    assert errors == [], [(list(e.path), e.message) for e in errors[:5]]
+
+
+def test_the_two_facts_of_a_pair_never_share_a_key() -> None:
+    """``input_refs`` names the fact key and the contract declares it unique.
+
+    A pair spelled with one bare ``FACT_KEY_*`` constant on both sides
+    published ``["advertising_expense", "advertising_expense"]`` — an array the
+    contract rejects — for every same-metric change.
+    """
+    keys = [f["key"] for f in _plnt_case()["facts"]]
+    assert len(keys) == len(set(keys)), keys
+    document = project_economic_change(_plnt_case())
+    for result in document["results"]:
+        refs = result.get("input_refs") or []
+        assert len(refs) == len(set(refs)), (result["key"], refs)
+
+
+def test_a_refusal_names_its_cause_not_only_its_effect() -> None:
+    """A refused fact must not hide behind the absence it creates.
+
+    Refusals are deduplicated by dependency against the entries
+    ``_compose_changes`` already made. While both sides of a pair were spelled
+    with one bare ``FACT_KEY_*``, the refusal's dependency (the metric) equalled
+    the composer's (the fact key), so the composer's
+    ``no_compatible_pair_for_comparison_basis`` landed first and the admission
+    reason was dropped -- the document reported that there was no pair to find
+    when in truth there was one and this module declined to read half of it.
+    Distinct pair keys are what keep the cause visible, so this test is a
+    falsifier for the key reconciliation as much as for the refusal itself.
+    """
+    # Exactly ONE side is refused. Refusing both removes the metric from
+    # _compose_changes entirely, so no competing entry is ever made and the
+    # test cannot fail -- which is how the first version of this test passed
+    # against a mutant that deleted the behaviour it claimed to pin.
+    case = _plnt_case()
+    current = next(
+        f
+        for f in case["facts"]
+        if f["metric"] == FACT_KEY_ADVERTISING_EXPENSE and f["period_end"] == "2026-06-30"
+    )
+    current["value_text"] = "365,223"
+    document = project_economic_change(case)
+    reasons = {
+        d["dependency"]: d["reason"] for d in document["degraded_dependencies"]
+    }
+    # The METRIC names the cause...
+    assert reasons.get(FACT_KEY_ADVERTISING_EXPENSE) == "fact_value_text_unparseable", reasons
+    # ...and the effect it caused must not be reported in its place anywhere.
+    assert "no_compatible_pair_for_comparison_basis" not in reasons.values(), reasons
+
+
+def test_every_native_ref_resolves_to_a_declared_source_record() -> None:
+    """Provenance must point at something that exists.
+
+    ``native_ref`` and ``source_records[].record_id`` are spelled in two
+    places, and the contract validates each in isolation -- both patterns pass
+    happily while the pointer dangles. The helper shipped six facts pointing at
+    ``src-plntq2-2026-<metric>-<side>`` and six one-key stubs, so every pointer
+    resolved only because nothing ever tried to follow one.
+    """
+    case = _plnt_case()
+    declared = {r["record_id"] for r in case["source_records"]}
+    assert declared, "the case declares no source records at all"
+    for fact in case["facts"]:
+        ref = fact.get("native_ref")
+        assert ref in declared, (fact["key"], ref, sorted(declared))
