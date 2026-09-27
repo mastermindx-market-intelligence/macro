@@ -1,0 +1,242 @@
+{
+  "schema": "mastermind.research.finance_global_regional_casebook_prereg.v0_1",
+  "state": "PREREGISTERED_NO_OUTCOMES",
+  "operation": "gmi-finance-sector-research-20260923-sol-001",
+  "created_on": "2026-09-23",
+  "procedure_commit": "4c1b3d389286df2a4b5b98a4d4491f2c8a1263f2",
+  "reconciled_parent_head": "0b4f93ff27c74fa735744439ab741e7887db8ad8",
+  "authority": {
+    "may_rank": false,
+    "may_gate": false,
+    "may_size": false,
+    "may_trade": false,
+    "may_promote_factor": false
+  },
+  "market_windows_sessions": {
+    "estimation": [
+      -252,
+      -21
+    ],
+    "immediate": [
+      0,
+      5
+    ],
+    "short": [
+      0,
+      20
+    ],
+    "medium": [
+      0,
+      60
+    ],
+    "long": [
+      0,
+      120
+    ],
+    "one_year": [
+      0,
+      252
+    ]
+  },
+  "fundamental_windows": [
+    "last_public_pre_anchor",
+    "first_comparable_post_anchor",
+    "two_quarters",
+    "four_quarters"
+  ],
+  "allowed_outcome_labels": [
+    "SUPPORTS",
+    "CONTRADICTS",
+    "NULL",
+    "CONFOUNDED",
+    "UNAVAILABLE"
+  ],
+  "cases": [
+    {
+      "id": "R10-EU-ECB-NEGATIVE-RATE-EXIT-20220721",
+      "region": "Euro area",
+      "anchor_date": "2022-07-21",
+      "effective_date": "2022-07-27",
+      "event": "ECB raised key rates by 50bp, moving the deposit facility rate to 0%.",
+      "archetype": "RATE_NORMALIZATION",
+      "mechanism": "asset repricing and securities reinvestment versus deposit beta, TLTRO/wholesale funding, credit demand, sovereign spreads and capital",
+      "treated": "Euro-area listed banks, segmented by deposit richness, fixed/floating asset mix, wholesale funding, country and IRB/output-floor sensitivity",
+      "controls": "European insurers, exchanges, non-euro banks; within-bank matched peers by country/size/business mix",
+      "falsifier": "Banks with favorable repricing exposure fail to improve normalized NII/ROTCE or price relative to matched peers once deposit and sovereign effects are controlled.",
+      "source": "https://www.ecb.europa.eu/press/pr/date/2022/html/ecb.mp220721~53e5bdd317.en.html",
+      "outcome_label": "UNMEASURED",
+      "fixture_state": "SOURCE_IDENTIFIED_PIT_MATERIALIZATION_NOT_RUN"
+    },
+    {
+      "id": "R10-EU-CRR3-APPLICATION-20250101",
+      "region": "European Union",
+      "anchor_date": "2025-01-01",
+      "effective_date": "2025-01-01",
+      "event": "CRR3/CRD6 package entered into application, starting phased Basel III finalization/output-floor effects.",
+      "archetype": "REGULATORY_CAPITAL_REPRICING",
+      "mechanism": "RWA and capital requirements alter normalized return, distributable capital and required return",
+      "treated": "EU banks by IRB density, output-floor sensitivity, business mix and disclosed fully loaded impact",
+      "controls": "UK/Swiss/Japan banks; EU banks with minimal modeled-RWA sensitivity",
+      "falsifier": "Disclosed capital/RWA impact does not explain estimate, payout or valuation dispersion after business and macro controls.",
+      "source": "https://www.eba.europa.eu/risk-and-data-analysis/risk-analysis/risk-monitoring/crr3-crd6-dashboard",
+      "outcome_label": "UNMEASURED",
+      "fixture_state": "SOURCE_IDENTIFIED_PIT_MATERIALIZATION_NOT_RUN"
+    },
+    {
+      "id": "R10-CH-UBS-CS-CLOSE-20230612",
+      "region": "Switzerland / global wealth",
+      "anchor_date": "2023-06-12",
+      "effective_date": "2023-06-12",
+      "event": "UBS completed its acquisition of Credit Suisse.",
+      "archetype": "FORCED_CONSOLIDATION_AND_INTEGRATION",
+      "mechanism": "client/asset retention, non-core runoff, cost synergy, legal loss, capital rule and wealth-platform scale",
+      "treated": "UBS legal/security identity; business-level wealth, Swiss bank, asset management, investment bank and non-core observations",
+      "controls": "Global wealth-led banks and European investment banks; synthetic pre-deal business mix",
+      "falsifier": "Cost and scale benefits fail to exceed attrition, litigation, capital and integration costs on a per-share basis.",
+      "source": "https://www.ubs.com/global/en/media/display-page-ndp/en-20230612-ubs-credit-suisse-acquisition.html",
+      "outcome_label": "UNMEASURED",
+      "fixture_state": "SOURCE_IDENTIFIED_PIT_MATERIALIZATION_NOT_RUN"
+    },
+    {
+      "id": "R10-JP-TSE-COST-OF-CAPITAL-REQUEST-20230331",
+      "region": "Japan",
+      "anchor_date": "2023-03-31",
+      "effective_date": "2023-03-31",
+      "event": "TSE notified Prime and Standard companies of its request for cost-of-capital and stock-price-conscious management.",
+      "archetype": "GOVERNANCE_AND_CAPITAL_RETURN",
+      "mechanism": "cross-shareholding release, buybacks/dividends, portfolio restructuring and hurdle-rate discipline change expected per-share compounding/required return",
+      "treated": "Japanese financials with low P/B, excess capital, policy shares and later disclosure/implementation",
+      "controls": "Non-disclosing/weak-response financials; non-financial low-P/B cohort; prior capital-return trends",
+      "falsifier": "Disclosure/action status has no incremental relation to capital release, per-share book/EPS, or relative valuation after selection controls.",
+      "source": "https://www.jpx.co.jp/english/news/1020/e20230414-01.html",
+      "outcome_label": "UNMEASURED",
+      "fixture_state": "SOURCE_IDENTIFIED_PIT_MATERIALIZATION_NOT_RUN"
+    },
+    {
+      "id": "R10-JP-BOJ-NIRP-END-20240319",
+      "region": "Japan",
+      "anchor_date": "2024-03-19",
+      "effective_date": "2024-03-19",
+      "event": "BOJ ended the negative-interest-rate/YCC framework and adopted a 0–0.1% short-rate target.",
+      "archetype": "MONETARY_REGIME_CHANGE",
+      "mechanism": "yen asset repricing, deposit pass-through, JGB/foreign-bond marks, insurer spread/economic value and market activity",
+      "treated": "Megabanks, regionals, life/P&C insurers, brokers and JPX segmented by asset/liability duration and policy-shareholding",
+      "controls": "Japanese non-financial value stocks, foreign banks/insurers, rate-insensitive financial infrastructure",
+      "falsifier": "Reported spread/EV/capital changes do not align with pre-event balance-sheet exposure, or price effects are fully explained by broad Japan value/yen factors.",
+      "source": "https://www.boj.or.jp/en/mopo/mpmdeci/state_2024/k240319a.htm",
+      "outcome_label": "UNMEASURED",
+      "fixture_state": "SOURCE_IDENTIFIED_PIT_MATERIALIZATION_NOT_RUN"
+    },
+    {
+      "id": "R10-CN-HOUSING-POLICY-20240517",
+      "region": "Mainland China / Hong Kong",
+      "anchor_date": "2024-05-17",
+      "effective_date": "2024-05-18",
+      "event": "China reduced minimum mortgage down payments and removed national mortgage-rate floors, alongside housing support measures.",
+      "archetype": "POLICY_EASING_WITH_BALANCE_SHEET_OFFSET",
+      "mechanism": "mortgage/transaction demand and property stabilization versus NIM compression, developer/LGFV risk and policy-credit economics",
+      "treated": "Mainland state/retail banks, insurers with property exposure, Hong Kong-listed A/H financials and HKEX/Connect context",
+      "controls": "Banks with low mortgage/property exposure; non-financial property cohort; prior local easing episodes",
+      "falsifier": "Credit formation or asset-quality expectations improve without shareholder economics, or any price response is only property beta with no bank/insurer earnings bridge.",
+      "source": "https://english.www.gov.cn/news/202405/17/content_WS664706bdc6d0868f4e8e7360.html",
+      "outcome_label": "UNMEASURED",
+      "fixture_state": "SOURCE_IDENTIFIED_PIT_MATERIALIZATION_NOT_RUN"
+    },
+    {
+      "id": "R10-HK-RBC-IMPLEMENTATION-20240701",
+      "region": "Hong Kong",
+      "anchor_date": "2024-07-01",
+      "effective_date": "2024-07-01",
+      "event": "Hong Kong insurance reporting transitioned into the risk-based-capital regime in July 2024.",
+      "archetype": "INSURER_CAPITAL_REGIME_CHANGE",
+      "mechanism": "product mix, asset/liability risk, solvency surplus and disclosure change capital return and required return",
+      "treated": "Hong Kong-regulated life/general insurers with disclosed RBC transition effects",
+      "controls": "Asian insurers outside HK RBC; pre-transition historical observations retained as different regime",
+      "falsifier": "RBC transition has no material relationship to product, capital, remittance or valuation dispersion after market and rate controls.",
+      "source": "https://www.ia.org.hk/en/infocenter/statistics/annual_general_business_statistics.html",
+      "outcome_label": "UNMEASURED",
+      "fixture_state": "SOURCE_IDENTIFIED_PIT_MATERIALIZATION_NOT_RUN"
+    },
+    {
+      "id": "R10-HK-STOCK-CONNECT-ETF-20220704",
+      "region": "Hong Kong / Mainland China",
+      "anchor_date": "2022-07-04",
+      "effective_date": "2022-07-04",
+      "event": "Eligible ETFs were added to Stock Connect.",
+      "archetype": "MARKET_ACCESS_AND_INFRASTRUCTURE_EXPANSION",
+      "mechanism": "eligible universe and cross-border participation can affect turnover, custody, clearing, data and sponsor economics",
+      "treated": "HKEX and eligible ETF/market-infrastructure businesses with direct workflow exposure",
+      "controls": "Non-eligible ETFs, domestic-only venues, cash-market activity excluding ETF Connect",
+      "falsifier": "Connect ETF activity does not become material to volume/revenue, or measured price effects precede/ignore actual adoption and monetization.",
+      "source": "https://www.hkex.com.hk/Mutual-Market/Connect-Hub?sc_lang=en",
+      "outcome_label": "UNMEASURED",
+      "fixture_state": "SOURCE_IDENTIFIED_PIT_MATERIALIZATION_NOT_RUN"
+    },
+    {
+      "id": "R10-IN-RBI-CONSUMER-CREDIT-RISKWEIGHTS-20231116",
+      "region": "India",
+      "anchor_date": "2023-11-16",
+      "effective_date": "2023-11-16",
+      "event": "RBI increased risk weights on consumer credit, credit-card receivables and certain bank exposures to NBFCs.",
+      "archetype": "MACROPRUDENTIAL_CAPITAL_TIGHTENING",
+      "mechanism": "higher capital/funding cost changes growth, risk-adjusted margin, pricing, securitization and bank/NBFC linkages",
+      "treated": "Banks and NBFCs segmented by unsecured consumer/card exposure and dependence on bank funding",
+      "controls": "Secured/mortgage lenders, low-unsecured banks, nonfinancial consumer companies",
+      "falsifier": "Growth, pricing, capital or valuation dispersion is unrelated to pre-event exposure after credit-cycle controls.",
+      "source": "https://systemhealth.rbi.org.in/Scripts/PublicationsView.aspx_id%3D22349.html",
+      "outcome_label": "UNMEASURED",
+      "fixture_state": "SOURCE_IDENTIFIED_PIT_MATERIALIZATION_NOT_RUN"
+    },
+    {
+      "id": "R10-IN-PAYMENTS-BANK-RESTRICTION-20240131",
+      "region": "India",
+      "anchor_date": "2024-01-31",
+      "effective_date": "2024-03-15",
+      "event": "RBI imposed business restrictions on Paytm Payments Bank, later clarifying customer treatment.",
+      "archetype": "REGULATORY_PERMISSION_AND_OPERATIONAL_TRUST",
+      "mechanism": "loss of regulated rail/account capability can disrupt customer flows, partner migration, brand trust, cost and monetization",
+      "treated": "Paytm Payments Bank-linked issuer/ecosystem and directly dependent partners, with business/security identity separated",
+      "controls": "UPI/payment apps and banks without the restricted entity dependency; aggregate UPI adoption",
+      "falsifier": "Observed operational/customer/revenue effects are immaterial after separating ecosystem-wide UPI growth and migration to partner banks.",
+      "source": "https://systemhealth.rbi.org.in/Scripts/FS_FAQs.aspx_Id%3D164%26fn%3D2.html",
+      "outcome_label": "UNMEASURED",
+      "fixture_state": "SOURCE_IDENTIFIED_PIT_MATERIALIZATION_NOT_RUN"
+    },
+    {
+      "id": "R10-AU-APRA-SERVICEABILITY-BUFFER-20211006",
+      "region": "Australia",
+      "anchor_date": "2021-10-06",
+      "effective_date": "2021-11-01",
+      "event": "APRA raised the minimum mortgage serviceability buffer from 2.5 to 3.0 percentage points.",
+      "archetype": "BORROWER_BASED_MACROPRUDENTIAL_TIGHTENING",
+      "mechanism": "borrowing capacity and origination mix affect mortgage growth, competition, risk, market share and future loss",
+      "treated": "Australian ADIs segmented by mortgage growth, high-DTI exposure, deposit franchise and broker/direct channels",
+      "controls": "Nonbank lenders not identically constrained; New Zealand/other banks; non-mortgage financials",
+      "falsifier": "Origination/mix/market-share effects do not align with pre-event exposure, or later credit outcomes show no risk differentiation.",
+      "source": "https://www.apra.gov.au/news-and-publications/apra-increases-banks-loan-serviceability-expectations-counter-rising-risks",
+      "outcome_label": "UNMEASURED",
+      "fixture_state": "SOURCE_IDENTIFIED_PIT_MATERIALIZATION_NOT_RUN"
+    },
+    {
+      "id": "R10-KR-CORPORATE-VALUE-UP-20240226",
+      "region": "South Korea",
+      "anchor_date": "2024-02-26",
+      "effective_date": "2024-02-26",
+      "event": "Korea’s Financial Services Commission introduced the Corporate Value-up Program framework.",
+      "archetype": "GOVERNANCE_CAPITAL_RETURN_AND_DISCOUNT",
+      "mechanism": "voluntary disclosure, payout/capital plans and minority-shareholder governance can change required return and P/B discount",
+      "treated": "Korean financial holding companies with capital-return capacity and subsequent value-up plans",
+      "controls": "Non-participating financials; non-financial low-P/B cohort; prior payout trends",
+      "falsifier": "Plan/disclosure quality has no incremental relation to payout, per-share book/EPS or valuation after selection and market controls.",
+      "source": "https://fsc.go.kr/eng/pr010101/81778",
+      "outcome_label": "UNMEASURED",
+      "fixture_state": "SOURCE_IDENTIFIED_PIT_MATERIALIZATION_NOT_RUN"
+    }
+  ],
+  "summary": {
+    "cases": 12,
+    "outcomes_measured": 0,
+    "rank_trade_fields": 0
+  },
+  "next_action": "Persist R9/R10 preregistration on the same GitHub carrier, then materialize four initial PIT cases from accepted source, identity, revisions, valuation and market owners."
+}
