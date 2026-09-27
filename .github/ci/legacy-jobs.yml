@@ -3280,6 +3280,7 @@ jobs:
       - "mockups/evidence/prophet-p0b-zero-fouc/ca-js-disabled-dark-390.png"
       - "mockups/evidence/prophet-p0b-zero-fouc/ca-composer-failed-light-390.png"
       - "tests/test_stock_dashboard_first_frame.py"
+      - "tests/test_hk_canada_mobile_shell_controls.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -3289,7 +3290,7 @@ jobs:
       - name: install minimal deps
         run: pip install beautifulsoup4 jinja2 pytest
       - name: stock dashboard first-frame source contract
-        run: python -m pytest tests/test_stock_dashboard_first_frame.py -q
+        run: python -m pytest tests/test_stock_dashboard_first_frame.py tests/test_hk_canada_mobile_shell_controls.py -q
 
   prophet-lab:
     if: ${{ false }}
