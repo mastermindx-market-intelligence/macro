@@ -1468,13 +1468,13 @@ body.nxi-drawer-open #mmb-boot{ opacity:0!important; pointer-events:none!importa
     // Facts our own engines hold about the names in this story — separate
     // provenance from the press receipts above, so it gets its own group and
     // its own as-of. The `kind` slug stays machine-side; the line says it.
-    function factsGroup(story){
+    function factsGroup(story,withHeading){
       var rows=(story.engine_context||[]).filter(function(r){
         return r && typeof r==='object' && (r.line_en||r.line_zh);
       });
       if(!rows.length) return null;
       var wrap=el('div','');
-      wrap.appendChild(el('h4','',tx('From our own data','我们的数据')));
+      if(withHeading!==false) wrap.appendChild(el('h4','',tx('From our own data','我们的数据')));
       var list=el('div','nxi-facts');
       rows.slice(0,FACTS_SHOWN).forEach(function(row){
         var line=zh()?(row.line_zh||row.line_en):(row.line_en||row.line_zh);
@@ -1589,7 +1589,7 @@ body.nxi-drawer-open #mmb-boot{ opacity:0!important; pointer-events:none!importa
         var timeline=section(tx('Development','事件进展'));
         timeline.appendChild(track); drawerBody.appendChild(timeline);
       }
-      var facts=factsGroup(story);
+      var facts=factsGroup(story,false);
       if(facts){
         var owned=section(tx('From our own data','我们的数据'));
         owned.appendChild(facts); drawerBody.appendChild(owned);

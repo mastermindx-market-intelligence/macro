@@ -813,7 +813,7 @@ def test_news_intelligence_resting_rows_are_scan_first_and_depth_moves_to_brief(
     assert "why_it_matters" in drawer
     assert "Source receipts" in drawer and "来源依据" in drawer
     assert "timelineGroup(story)" in drawer
-    assert "factsGroup(story)" in drawer
+    assert "factsGroup(story,false)" in drawer
 
 
 def test_news_story_brief_survives_live_payload_refresh_when_story_still_exists():
@@ -855,6 +855,16 @@ def test_news_story_brief_suppresses_global_brain_launcher_while_open():
     assert "body.nxi-drawer-open #mmb-boot" in html
     assert "pointer-events:none!important" in html
     assert "visibility:hidden!important" in html
+
+
+def test_news_story_brief_does_not_repeat_owned_data_heading():
+    src = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
+    drawer = src.split("function openDrawer(story,trigger,keepFocus){", 1)[1].split(
+        "function storyCard(story,rank){", 1
+    )[0]
+    assert "factsGroup(story,false)" in drawer
+    assert "var owned=section(tx('From our own data','我们的数据'));" in drawer
+    assert "function factsGroup(story,withHeading)" in src
 
 
 def test_news_story_brief_has_accessible_modal_and_focus_recovery_contract():
