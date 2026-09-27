@@ -157,7 +157,8 @@ COHORTS = (COHORT_CURATED, COHORT_SCAN)
 #: 10 day results??"*  This maps the board's EXISTING cycle vocabulary
 #: (``engine.cycles.STATE_DISPLAY`` — internal state on the left, display label on the
 #: right) onto a three-way class, so the record can show basing at H=42/63 beside momentum
-#: at H=10/21.  NOTHING NEW IS STAMPED: the labels already exist on the board row.
+#: at H=10/21.  NOTHING NEW IS ORIGINATED: the labels already exist on the same-night
+#: board/setup-profile row produced from that vocabulary.
 #:
 #: The split is "not moving yet" vs "already moving":
 #:   * BOTTOM WATCH / TURN SIGNALED — the name is forming a base; the thesis needs TIME.
@@ -201,8 +202,9 @@ CHARTERED_HORIZON = {
 #: The label column carrying the cycle state.  Resolved + VALIDATED exactly like the cohort
 #: discriminator: a name match alone is never trusted, the values must intersect
 #: :data:`SIGNAL_CLASS_BY_LABEL`.  The prospective Context Vector capture now carries
-#: ``cycle_state``/``cycle_label`` directly from the owner board row.  Older PIT parts remain
-#: null forever under the no-backfill law, so the resolver continues to disclose absence
+#: ``cycle_state``/``cycle_label`` from the same-night owner board row, or from the same
+#: owner-produced setup profile when the candidate was not placed in a visible lane. Older
+#: PIT parts remain null forever under the no-backfill law, so the resolver discloses absence
 #: rather than presenting a historical null as a measured ``other``.
 SIGNAL_LABEL_CANDIDATES = ("cycle_state", "cycle_label", "label", "state")
 

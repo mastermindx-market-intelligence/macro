@@ -1146,11 +1146,12 @@ def build_records(
             "near_miss_reason": _text(verdict.get("near_miss_reason")),
             "signal_asof": _date(verdict.get("asof")),
             "stage": _text(board.get("stage") or profile.get("stage")),
-            # Owner-issued cycle vocabulary already present on the nightly board row.
-            # The evaluation owner maps it to BASING/MOMENTUM/OTHER; this store only
-            # captures the source label and its exact vocabulary receipt.
-            "cycle_state": _text(board.get("state")),
-            "cycle_label": _text(board.get("label")),
+            # Owner-issued cycle vocabulary from the same-night candidate profile.
+            # A visible board row wins when present; otherwise the setup-profile row
+            # carries the same engine.cycles state/label for candidates that did not
+            # surface in a visible lane. Nothing is inferred from future returns.
+            "cycle_state": _text(board.get("state")) or _text(profile.get("state")),
+            "cycle_label": _text(board.get("label")) or _text(profile.get("label")),
             "cycle_label_vocab_sha256": cycle_vocab_receipt,
             "alpha": _finite(profile.get("alpha")),
             "alpha_percentile": _finite(prophet.get("alpha_percentile")),

@@ -177,7 +177,7 @@ class TestProspectiveOwnerCaptureWiring:
             {"AAA": _verdict()}, "2026-07-31",
             board_definition="us_prophet_v1", is_buyable=_is_buyable,
             root=tmp_path, event_rows={}, with_context_dims=False,
-            board_rows={"AAA": {"state": "RALLY ON", "label": "UPTREND"}},
+            profile_rows={"AAA": {"state": "RALLY ON", "label": "UPTREND"}},
             theme_pulse={}, foresight_stages={}, closes=pd.DataFrame(),
             volumes=pd.DataFrame(),
         )
@@ -551,6 +551,7 @@ class TestBuildRecords:
             verdicts, stamp_date="2026-07-31",
             board_definition="us_prophet_v1", is_buyable=_is_buyable,
             board_rows={"AAA": {"state": "RALLY ON", "label": "UPTREND"}},
+            profile_rows={"AAA": {"state": "TURN SIGNALED", "label": "BOTTOMING"}},
         )
         by_ticker = {r["ticker"]: r for r in records}
         assert by_ticker["AAA"]["cycle_state"] == "RALLY ON"
@@ -558,6 +559,18 @@ class TestBuildRecords:
         assert by_ticker["AAA"]["cycle_label_vocab_sha256"].startswith("sha256:")
         assert by_ticker["BBB"]["cycle_state"] is None
         assert by_ticker["BBB"]["cycle_label"] is None
+
+    def test_cycle_label_falls_back_to_same_night_candidate_profile(self, verdicts):
+        records = ucv.build_records(
+            verdicts, stamp_date="2026-07-31",
+            board_definition="us_prophet_v1", is_buyable=_is_buyable,
+            profile_rows={"BBB": {"state": "TURN SIGNALED", "label": "BOTTOMING"}},
+        )
+        by_ticker = {r["ticker"]: r for r in records}
+        assert by_ticker["BBB"]["cycle_state"] == "TURN SIGNALED"
+        assert by_ticker["BBB"]["cycle_label"] == "BOTTOMING"
+        assert by_ticker["AAA"]["cycle_state"] is None
+        assert by_ticker["AAA"]["cycle_label"] is None
 
     def test_identity_fields_are_read_from_the_shared_data_os_projection(self, verdicts):
         identity = {
