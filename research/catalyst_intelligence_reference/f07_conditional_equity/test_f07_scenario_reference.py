@@ -19,15 +19,18 @@ def packet(method='common_earnings_multiple'):
                      'equity_issue_fees':'5','new_debt':'20','debt_repayment':'10',
                      'distributions_paid':'25'},
     }
+    if method=='common_earnings_multiple':
+        state['cash_flow'].update(new_common_shares='0',equity_issue_price=None,equity_issue_fees='0')
     down=copy.deepcopy(state);down['id']='down';down['probability']='0.4'
     down['gross_margin']='0.3';down['income_tax_expense']='10';down['other_income_claims']='0'
     if method=='operating_enterprise':down['operating_enterprise_value']='600'
-    return {'mode':'synthetic_reference','version':'fixture-v1','subject_ref':'fixture-security',
+    return {'mode':'synthetic_reference','version':'fixture-v1','subject_ref':'fixture-security','share_basis_ref':'fixture-common-unadjusted',
             'financial_ref':'fixture-finance','rights_ref':'fixture-common-claim',
             'forecast_ref':'fixture-joint-forecast','known_at':'2026-09-26T12:00:00Z',
             'as_of':'2026-09-27T12:00:00Z','horizon':'2027-03-27',
             'currency':'USD','money_unit':'currency_units',
-            'quote':{'id':'fixture-quote','observed_at':'2026-09-27T11:59:00Z',
+            'quote':{'id':'fixture-quote','subject_ref':'fixture-security',
+                     'share_basis_ref':'fixture-common-unadjusted','common_shares_per_unit':'1','observed_at':'2026-09-27T11:59:00Z',
                      'valid_until':'2026-09-27T12:01:00Z','price':'10','currency':'USD'},
             'opening_cash':'100','opening_debt':'50','opening_common_shares':'100',
             'roundtrip_cost_fraction':'0.01','probability_semantics':'illustrative_partition',
@@ -49,11 +52,11 @@ def test_pe_does_not_add_cash_or_subtract_debt_twice():
     assert run(p)['states'][0]['equity_value']==r['states'][0]['equity_value']
 
 def test_cash_debt_issuance_reconcile():
-    s=run()['states'][0]
+    s=run(packet('operating_enterprise'))['states'][0]
     assert num(s['horizon_cash'])==220
     assert num(s['horizon_debt'])==60
     assert num(s['horizon_common_shares'])==110
-    assert num(s['price_at_horizon'])==20
+    assert abs(num(s['price_at_horizon'])-D(1960)/D(110))<D('1e-24')
 
 def test_enterprise_to_common_equity_bridge():
     r=run(packet('operating_enterprise'))['states'][0]
@@ -72,8 +75,8 @@ def test_negative_enterprise_residual_is_visible_not_hidden():
 
 def test_dividend_is_per_original_share_not_terminal_average():
     r=run()['states'][0]
-    assert num(r['net_return'])==D('1.01')
-    assert num(r['gross_return'])==D('1.02')
+    assert num(r['net_return'])==D('1.21')
+    assert num(r['gross_return'])==D('1.22')
 
 def test_joint_weighting_preserves_state_dependence():
     p=packet();a=run(p)
@@ -88,7 +91,7 @@ def test_conditional_values_remain_when_probabilities_absent():
     assert r['status']=='conditional_only'
     assert r['illustrative_expected_net_return'] is None
     assert r['probability_of_positive_net_return'] is None
-    assert num(r['states'][0]['price_at_horizon'])==20
+    assert num(r['states'][0]['price_at_horizon'])==22
 
 def test_no_authority_or_live_forecast_from_reference():
     r=run()
@@ -115,7 +118,7 @@ def test_dependent_issue_price_revalues_cash_and_enterprise_equity():
 def test_company_cash_not_assumed_shareholder_distribution():
     p=packet();p['opening_cash']='5000';r=run(p)
     assert r['states'][0]['dividend_to_entry_share']=='0.2'
-    assert num(r['states'][0]['gross_return'])==D('1.02')
+    assert num(r['states'][0]['gross_return'])==D('1.22')
 
 def test_exact_version_and_binding_are_retained():
     p=packet();r=run(p)
@@ -158,6 +161,8 @@ def test_exact_version_and_binding_are_retained():
 ])
 def test_invalid_contract(path,value,code):
     p=packet();d=p
+    if path==('states',0,'cash_flow','equity_issue_price'):
+        p['states'][0]['cash_flow']['new_common_shares']='10'
     for k in path[:-1]:d=d[k]
     d[path[-1]]=value
     with pytest.raises(ContractError,match=code):run(p)
