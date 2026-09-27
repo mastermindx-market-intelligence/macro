@@ -4605,6 +4605,7 @@ jobs:
       - "tests/test_check_intelligence_registry.py"
       - "tests/test_intelligence_registry.py"
       - "tests/test_output_health.py"
+      - site/marketdata/subsector_confluence.json
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9361,6 +9362,7 @@ jobs:
     # B1/B1b/B2 command: the legacy pack runner applies timeout-minutes per
     # logical job.  Eight minutes is generous versus the serial profile while
     # still naming the responsible contract if this lane regresses.
+      - site/marketdata/subsector_confluence.json
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -15348,6 +15350,7 @@ jobs:
       - "tests/test_subsector_scan.py"
       - "tests/test_subsector_turn.py"
       - "tests/test_themes_heatmap.py"
+      - site/marketdata/subsector_confluence.json
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
