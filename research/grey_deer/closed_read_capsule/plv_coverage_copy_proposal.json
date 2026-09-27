@@ -1,0 +1,7 @@
+{
+  "disposition": "UNAPPLIED; owner must wire and verify actual PLV_DARK consumer",
+  "why": "coverage",
+  "en": "The final intraday check was incomplete, so today’s crossing result cannot be confirmed.",
+  "zh": "最后一次盘中检查不完整，无法确认今日的上穿结果。",
+  "prohibitions": ["Do not say prices are failing to update now merely because the market closed", "Do not erase a known earlier crossing from the historical event owner", "Do not treat this presentation repair as new entry authority"]
+}
