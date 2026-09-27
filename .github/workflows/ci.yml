@@ -4324,7 +4324,7 @@ on:
       - "tests/test_price_basis_graders.py"
       # ── Mastermind Data OS foundation (2026-08-12) ──────────────────────────
       # Job: dataos-foundation (.github/ci/legacy-jobs.yml). BOTH halves listed on
-      # purpose, same law as every block above: the five suites AND the modules
+      # purpose, same law as every block above: the seven suites AND the modules
       # they measure. lib/dataos/** rides the lib/** catch-all and
       # config/dataset_registry.yml rides config/**, but a catch-all is provenance
       # nobody can read — these entries are the executable record of what this job
