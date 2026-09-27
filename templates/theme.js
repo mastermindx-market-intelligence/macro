@@ -6024,7 +6024,6 @@
   function open(trigger, details, row) {
     if (!row.isConnected || !row.getClientRects().length || !trigger.getClientRects().length ||
         row.closest('[aria-hidden="true"],[hidden],.mx-tier-hidden,.mx-tier-blurred')) return;
-    build(); if (active) release(false);
     var link = row.querySelector('.pv-setup-stock-link,.pv-record-link,.ucp-identity>a,.stf-tkr');
     if (!link) return;
     var nativeHref = link.getAttribute('href');
@@ -6041,6 +6040,7 @@
     var holder = details.querySelector(':scope > template.pvs-body-source');
     var source = holder ? holder.content.querySelector('.pv-setup-body') : details.querySelector(':scope > .pv-setup-body');
     if (details.classList.contains('pv-setup-table') && !source) return;
+    build(); if (active) release(false);
     var nodes = source ? [source] : Array.from(details.children).filter(function (n) { return n.localName !== 'summary'; });
     var slot = source && source.querySelector('[data-pvs-chart]');
     if (slot) {
@@ -6075,14 +6075,15 @@
     nodes.forEach(function (n) { var home = n.parentNode, mark = document.createComment('pv-setup-home'); n.before(mark); active.moved.push({node:n,mark:mark,home:home,owner:holder || details}); target.append(n); });
     document.documentElement.classList.add('pv-setup-lock');
     if (!dialog.open) dialog.showModal(); dialog.scrollTop = 0; dialog.querySelector('.pvs-close').focus({preventScroll:true});
+    return true;
   }
   document.addEventListener('click', function (e) {
     var trigger = e.target.closest && e.target.closest('.pv-setup-inline > summary, .pv-record-detail > summary');
-    if (!trigger) return;
+    if (!trigger || !trigger.closest('#us-standouts,#us-candidate-pool')) return;
     var details = trigger.parentElement, row = details.closest('.pvcard, .ucp-row');
     if (!row && details.classList.contains('pv-setup-table') && details.closest('#us-stocktable-wrap')) row = details.closest('tr');
     if (!row) return;
-    e.preventDefault(); open(trigger, details, row);
+    if (open(trigger, details, row) === true) e.preventDefault();
   });
   // Existing owner events. The detail never decides entitlement or fetches a missing row.
   document.addEventListener('candidate-pool-hydrated', function () { dismiss(true); }, true);

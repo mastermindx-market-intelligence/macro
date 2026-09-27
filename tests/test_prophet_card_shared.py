@@ -692,3 +692,133 @@ def test_setup_detail_styles_are_explicit_opt_in_after_acceptance_repair():
     assert hashlib.sha256(css.encode()).hexdigest() == "e7dd2cf07a44230d9a1b9a82b335943070ca0bad76e6fc7c1b99aa0625a12258"
     assert ".pvs-audit" not in css
     assert ".pvs-audit" in str(card.pv_css(setup_detail=True))
+
+
+# R22: execute the actual shared controller at the enhancement boundary. A native
+# disclosure must remain untouched when its host or source declines enhancement.
+def test_r22_declined_runtime_keeps_native_default_and_allocates_nothing():
+    import json
+    import subprocess
+
+    cases = [dict(name=market, scope=market, href='stock.html#TEST_ONLY')
+             for market in ('hk-standouts', 'canada-standouts', 'china-standouts', '')]
+    cases += [dict(name='link-' + str(i), scope='us-standouts', href=href)
+              for i, href in enumerate((None, '', '/stock.html#TEST_ONLY',
+                                         'https://example.invalid/stock.html#TEST_ONLY',
+                                         'stock.html#TEST ONLY'))]
+    cases += [dict(name='missing-link', scope='us-standouts', missing_link=True),
+              dict(name='table-clock', scope='us-standouts', table=True, clock='OLD'),
+              dict(name='table-identity', scope='us-standouts', table=True, ticker='OTHER'),
+              dict(name='table-body', scope='us-standouts', table=True)]
+    harness = r'''
+const vm = require('node:vm');
+const input = JSON.parse(process.argv[1]);
+const results = input.cases.map(c => {
+  const handlers = {}; let prevented = false, allocated = 0;
+  const opted = ['us-standouts', 'us-candidate-pool'].includes(c.scope);
+  const row = {
+    isConnected:true, getClientRects:()=>[{}],
+    closest:sel=>sel === '#us-standouts' ? {dataset:{boardAsof:'CURRENT'}} : null,
+    querySelector:()=>c.missing_link ? null : {
+      getAttribute:()=>Object.hasOwn(c,'href') ? c.href : 'stock.html#TEST_ONLY'
+    }
+  };
+  const details = {
+    classList:{contains:name=>!!c.table && name === 'pv-setup-table'},
+    dataset:{setupAsof:c.clock || 'CURRENT', setupTicker:c.ticker || 'TEST_ONLY'},
+    closest:sel=>sel === '.pvcard, .ucp-row' ? (c.table ? null : row) : (sel === 'tr' ? row : {}),
+    querySelector:()=>null
+  };
+  const trigger = {parentElement:details, getClientRects:()=>[{}], closest:()=>opted ? {} : null};
+  const document = {
+    documentElement:{},
+    addEventListener:(name,fn)=>{handlers[name]=fn;},
+    createElement:()=>{allocated++; throw new Error('declined enhancement allocated a dialog');}
+  };
+  const context = {window:{addEventListener:()=>{}}, document,
+    HTMLDialogElement:function(){}, MutationObserver:class{observe(){}}, console};
+  let error = null;
+  try {
+    vm.runInNewContext(input.source, context);
+    handlers.click({target:{closest:()=>trigger}, preventDefault:()=>{prevented=true;}});
+  } catch (e) {error=String(e);}
+  return {name:c.name, prevented, allocated, error};
+});
+console.log(JSON.stringify(results));
+'''
+    for relative in ('templates/theme.js', 'site/theme.js'):
+        full = (ROOT / relative).read_text(encoding='utf-8')
+        marker = '/* Packet2: enhance existing entitled row details;'
+        assert full.count(marker) == 1
+        source = marker + full.split(marker, 1)[1]
+        run = subprocess.run(['node', '-e', harness,
+                              json.dumps({'source': source, 'cases': cases})],
+                             text=True, capture_output=True, timeout=15, check=True)
+        results = json.loads(run.stdout)
+        assert len(results) == len(cases)
+        assert all(not x['prevented'] and x['allocated'] == 0 and x['error'] is None
+                   for x in results), (relative, results)
+
+
+def test_r22_entry_headline_localization_is_explicit_and_source_bound():
+    from bs4 import BeautifulSoup
+    m = _r18_env().get_template('_prophet_setup_detail.html.j2').module
+    for localized in ('等待确认', None, '', False, 0):
+        row = {'ticker': 'TEST_ONLY', 'entry_signal': {
+            'status': 'bounce_wait', 'headline': 'Wait <for confirmation>',
+            'headline_zh': localized}}
+        s = BeautifulSoup(str(m.body(row, 'board', None)), 'html5lib')
+        read = s.select_one('[data-entry-status]')
+        assert read['data-entry-status'] == 'bounce_wait'
+        assert read.select_one('.l-en').get_text() == 'Wait <for confirmation>'
+        zh = read.select_one('.l-zh').get_text(' ', strip=True)
+        if localized == '等待确认':
+            assert zh == localized and '来源原文' not in zh
+        else:
+            assert '来源原文' in zh and 'Wait <for confirmation>' in zh
+        assert not read.select('for, script, img')
+    empty = BeautifulSoup(str(m.body({'ticker': 'TEST_ONLY'}, 'board', None)), 'html5lib')
+    assert '未提供入场读数' in empty.select_one('[data-entry-status]').get_text()
+    assert '来源原文' not in empty.select_one('[data-entry-status]').get_text()
+
+
+def test_r22_untranslated_reason_is_labelled_not_promoted_or_invented():
+    from bs4 import BeautifulSoup
+    m = _r18_env().get_template('_prophet_setup_detail.html.j2').module
+    reason = 'buy fired; forward confirmation pending <script>bad()</script>'
+    for kind in ('board', 'pool'):
+        row = {'ticker': 'TEST_ONLY', 'signal': {'reason': reason}, 'headline_reason': reason}
+        s = BeautifulSoup(str(m.body(row, kind, None)), 'html5lib')
+        original = s.select_one('.pvs-original-source')
+        assert original is not None
+        assert 'Original source' in original.get_text() and '来源原文' in original.get_text()
+        assert reason in original.get_text() and not original.select('script')
+        missing = BeautifulSoup(str(m.body({'ticker': 'TEST_ONLY'}, kind, None)), 'html5lib')
+        assert not missing.select('.pvs-original-source')
+        assert 'Not supplied' in missing.get_text()
+
+
+def test_r22_neutral_status_names_preserve_exact_raw_fields_in_one_disclosure():
+    from bs4 import BeautifulSoup
+    m = _r18_env().get_template('_prophet_setup_detail.html.j2').module
+    for stage, lane, expected in (
+            ('setting_up', 'bottoming', ('Developing', '形态形成中', 'Base formation', '筑底')),
+            ('UNKNOWN_STAGE', 'UNKNOWN_LANE', ('Unmapped status', '状态未映射')),
+            (None, None, ('Not supplied', '来源未提供'))):
+        row = {'ticker': 'TEST_ONLY', 'stage': stage, 'lane': lane}
+        s = BeautifulSoup(str(m.body(row, 'board', None)), 'html5lib')
+        assert len(s.select('details.pvs-audit')) == 1
+        audit = s.select_one('details.pvs-audit')
+        assert not audit.has_attr('open')
+        assert 'Evidence & source details' in audit.summary.get_text()
+        assert '证据与来源详情' in audit.summary.get_text()
+        human = audit.select_one('.pvs-status-read')
+        assert human is not None
+        assert all(x in human.get_text() for x in expected)
+        for key, raw in (('stage', stage), ('lane', lane)):
+            field = s.select_one('[data-source-field="' + key + '"]')
+            assert field.find_parent('details') is audit
+            text = field.dd.get_text(' ', strip=True)
+            assert text == raw if raw is not None else 'Not supplied' in text
+            if raw is not None:
+                assert raw not in human.get_text()

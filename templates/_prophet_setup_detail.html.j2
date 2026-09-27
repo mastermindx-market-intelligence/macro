@@ -11,6 +11,14 @@
 {% macro field(en, zh, v, path, money=false, boolean=false) -%}
 <div class="pvs-field" data-source-field="{{ path|e }}"><dt>{{ t(en,zh) }}</dt><dd>{{ value(v,money,boolean) }}</dd></div>
 {%- endmacro %}
+{% macro original(v) -%}
+{%- if v is string and v|trim -%}<span class="pvs-original-source">{{ t('Original source','来源原文') }} · {{ v|e }}</span>
+{%- else -%}{{ value(v) }}{%- endif -%}
+{%- endmacro %}
+{% macro status_name(v, names) -%}
+{%- if v is string and v|trim -%}{{ t(names[v][0],names[v][1]) if v in names else t('Unmapped status','状态未映射') }}
+{%- else -%}{{ value(none) }}{%- endif -%}
+{%- endmacro %}
 {% macro body(row, kind, as_of=none) -%}
 {% set es = row.get('entry_signal') if kind == 'board' and row.get('entry_signal') is mapping else {} %}
 {% set sig = row.get('signal') if kind == 'board' and row.get('signal') is mapping else {} %}
@@ -23,7 +31,7 @@
       <section class="pvs-section">
         <h3>{{ t('Entry conditions','入场条件') if kind == 'board' else t('Research candidate','研究候选') }}</h3>
         {% if kind == 'board' %}
-        <p class="pvs-read" data-entry-status="{{ (es.get('status') or '')|e }}">{{ t(es.get('headline') or 'Entry read not supplied',es.get('headline_zh') or es.get('headline') or '未提供入场读数') }}</p>
+        <p class="pvs-read" data-entry-status="{{ (es.get('status') or '')|e }}"><span class="l-en">{{ es.get('headline')|e if es.get('headline') is string and es.get('headline')|trim else 'Entry read not supplied' }}</span><span class="l-zh">{% if es.get('headline_zh') is string and es.get('headline_zh')|trim %}{{ es.get('headline_zh')|e }}{% elif es.get('headline') is string and es.get('headline')|trim %}来源原文 · {{ es.get('headline')|e }}{% else %}未提供入场读数{% endif %}</span></p>
         <div class="pvs-chart-slot" data-pvs-chart><p>{{ t('Chart available on the setup card.','可在形态卡片上查看图表。') }}</p></div>
         {% else %}
         <p class="pvs-read">{{ t('Research only · entry details unavailable','仅供研究 · 入场详情暂缺') }}</p>
@@ -43,7 +51,7 @@
     </div>
     <div>
       <section class="pvs-section"><h3>{{ t('Why it is here','入选理由') }}</h3>
-        <p>{{ value(sig.get('reason') if kind == 'board' else row.get('headline_reason')) }}</p>
+        <p>{{ original(sig.get('reason') if kind == 'board' else row.get('headline_reason')) }}</p>
       </section>
       {% if kind == 'board' %}
       <section class="pvs-section"><h3>{{ t('Technical context','技术背景') }}</h3><dl class="pvs-facts">
@@ -52,10 +60,12 @@
         {{ field('Provisional observation','暂定观察',sig.get('provisional'),'signal.provisional',boolean=true) }}
       </dl></section>{% endif %}
       <p class="pvs-availability">{{ t('Target and holding period unavailable in this view. Reward/risk and win probability are not calculated.','此视图暂无目标价与持有周期，不计算收益风险比或成功概率。') }}</p>
-      <details class="pvs-audit"><summary>{{ t('Source details & unavailable fields','来源详情与缺失字段') }}</summary>
-        <section class="pvs-section"><h3>{{ t('Setup information','形态信息') }}</h3><dl class="pvs-facts">
-          {{ field('Setup type','形态类别',row.get('lane') if kind == 'board' else none,'lane') }}
-          {{ field('Published stage','已发布阶段',row.get('stage'),'stage') }}
+      <details class="pvs-audit"><summary>{{ t('Evidence & source details','证据与来源详情') }}</summary>
+        <section class="pvs-section"><h3>{{ t('Setup information','形态信息') }}</h3>
+        <p class="pvs-status-read">{{ status_name(row.get('stage'), {'setting_up': ('Developing','形态形成中')}) }} · {{ status_name(row.get('lane') if kind == 'board' else none, {'bottoming': ('Base formation','筑底')}) }}</p>
+        <dl class="pvs-facts">
+          {{ field('Source setup type','来源形态类别',row.get('lane') if kind == 'board' else none,'lane') }}
+          {{ field('Source stage','来源阶段',row.get('stage'),'stage') }}
           {{ field('Strategy sleeve','策略分组',none,'canonical strategy binding not supplied') }}
           {{ field('Holding horizon','持有周期',none,'holding duration not supplied') }}
         </dl><p class="pvs-note">{{ t('Selection is not entry permission. Setup type is not an assigned strategy.','精选不等于入场许可，形态类别不是已分配的策略。') }}</p></section>
