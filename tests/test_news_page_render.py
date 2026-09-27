@@ -838,7 +838,7 @@ def test_news_priority_queue_and_story_brief_controls_localize_accessible_names(
 
 def test_news_story_tickers_strip_optional_dollar_before_display_and_linking():
     src = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
-    assert src.count("replace(/^\$/,'')") >= 2
+    assert src.count(r"replace(/^\$/,'')") >= 2
 
 
 def test_news_mobile_ranked_rows_pin_grid_items_to_readable_columns():
@@ -847,6 +847,14 @@ def test_news_mobile_ranked_rows_pin_grid_items_to_readable_columns():
     assert ".nxi-row-copy{ grid-column:2; grid-row:1; }" in html
     assert ".nxi-row-status{ grid-column:2; grid-row:2;" in html
     assert ".nxi-row-context{ grid-column:2; grid-row:3; }" in html
+
+
+def test_news_story_brief_suppresses_global_brain_launcher_while_open():
+    html = _render_full()
+    assert "body.nxi-drawer-open #mmb-launch" in html
+    assert "body.nxi-drawer-open #mmb-boot" in html
+    assert "pointer-events:none!important" in html
+    assert "visibility:hidden!important" in html
 
 
 def test_news_story_brief_has_accessible_modal_and_focus_recovery_contract():
