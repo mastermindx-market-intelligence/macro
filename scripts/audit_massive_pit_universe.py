@@ -29,11 +29,13 @@ currently carry a Massive historical-naming vendor namespace.  That refusal is
 the useful result: it quantifies the exact owner gap before any identity rows
 are authored.
 
-Example (production credential directory, still read-only):
+Production credential selection remains owned by the existing Market Memory source
+runtime.  This audit consumes CREDENTIALS_DIRECTORY only when that owning runtime
+already supplied it; there is deliberately no CLI credential-path override.
 
-    python3 scripts/audit_massive_pit_universe.py \
-      --date 2006-01-03 \
-      --credentials-directory /etc/macro-market-memory-spy-rest
+Example (inside the owning credential environment, still read-only):
+
+    python3 scripts/audit_massive_pit_universe.py --date 2006-01-03
 
 Tests are network-free:
     python3 -m pytest tests/test_massive_pit_universe_audit.py -q
@@ -43,7 +45,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import sys
 from collections import Counter, defaultdict
 from datetime import date
@@ -70,7 +71,7 @@ STATUS_SOURCE_DUPLICATE = "SOURCE_DUPLICATE"
 STATUS_UNSUPPORTED_MIC = "UNSUPPORTED_MIC"
 STATUS_MISSING_CANONICAL_ALIAS = "MISSING_CANONICAL_ALIAS"
 STATUS_CURRENT_CIK_MATCH_ONLY = "CURRENT_CIK_MATCH_ONLY"
-STATUS_IDENTITY_CONFLICT = "IDENTITY_CONFLICT"
+STATUS_CURRENT_CIK_DIVERGENCE = "CURRENT_CIK_DIVERGENCE"
 STATUS_AMBIGUOUS_CURRENT_MASTER = "AMBIGUOUS_CURRENT_MASTER"
 STATUS_BROKEN_CANONICAL_ALIAS = "BROKEN_CANONICAL_ALIAS"
 
@@ -81,7 +82,7 @@ STATUSES = (
     STATUS_UNSUPPORTED_MIC,
     STATUS_MISSING_CANONICAL_ALIAS,
     STATUS_CURRENT_CIK_MATCH_ONLY,
-    STATUS_IDENTITY_CONFLICT,
+    STATUS_CURRENT_CIK_DIVERGENCE,
     STATUS_AMBIGUOUS_CURRENT_MASTER,
     STATUS_BROKEN_CANONICAL_ALIAS,
 )
@@ -289,6 +290,7 @@ def audit_identity_rows(
     examples: dict[str, list[dict[str, Any]]] = {s: [] for s in STATUSES}
 
     vendor_rows = sum(1 for r in aliases_list if str(r.get("vendor") or "") == canonical_vendor)
+    resolved_current_cik_divergence_count = 0
 
     for row in source:
         mic, ticker = _source_key(row)
@@ -310,12 +312,16 @@ def audit_identity_rows(
                     status = STATUS_BROKEN_CANONICAL_ALIAS
                 else:
                     canonical_cik = _normalize_cik(master.get("issuer_cik"))
-                    if source_cik and canonical_cik and source_cik != canonical_cik:
-                        status = STATUS_IDENTITY_CONFLICT
-                    elif not stable_id_present:
+                    if not stable_id_present:
                         status = STATUS_SOURCE_ID_INCOMPLETE
                     else:
+                        # The dated Data OS alias is canonical security identity.
+                        # issuer_cik is explicitly current-only evidence, so a
+                        # historical source CIK divergence is diagnostic and may
+                        # not veto the authoritative dated alias.
                         status = STATUS_RESOLVED
+                        if source_cik and canonical_cik and source_cik != canonical_cik:
+                            resolved_current_cik_divergence_count += 1
             else:
                 candidates = current_candidates.get((mic, ticker), [])
                 if len(candidates) > 1:
@@ -324,7 +330,7 @@ def audit_identity_rows(
                     candidate = candidates[0]
                     canonical_cik = _normalize_cik(candidate.get("issuer_cik"))
                     if source_cik and canonical_cik and source_cik != canonical_cik:
-                        status = STATUS_IDENTITY_CONFLICT
+                        status = STATUS_CURRENT_CIK_DIVERGENCE
                     elif source_cik and canonical_cik and source_cik == canonical_cik:
                         # Useful evidence, but current CIK has no historical asof authority.
                         status = STATUS_CURRENT_CIK_MATCH_ONLY
@@ -359,6 +365,9 @@ def audit_identity_rows(
         "canonical_identity_ready": total > 0 and resolved == total,
         "resolved_fraction": (resolved / total) if total else 0.0,
         "current_cik_match_only_is_authority": False,
+        "resolved_current_cik_divergence_count": (
+            resolved_current_cik_divergence_count
+        ),
     }
 
 
@@ -415,7 +424,7 @@ def build_receipt(
         "source": dict(source_receipt),
         "identity": identity,
         "authority": {
-            "source_population_canonical": bool(source_receipt.get("complete")),
+            "source_population_complete": bool(source_receipt.get("complete")),
             "canonical_identity_ready": bool(identity["canonical_identity_ready"]),
             "may_write_identity": False,
             "may_train": False,
@@ -450,15 +459,7 @@ def main(argv: list[str] | None = None) -> int:
         help="Data OS vendor namespace to audit; no rows are created",
     )
     ap.add_argument("--max-pages", type=int, default=DEFAULT_MAX_PAGES)
-    ap.add_argument(
-        "--credentials-directory",
-        default=None,
-        help="existing systemd credential directory; path only, never a key value",
-    )
     args = ap.parse_args(argv)
-
-    if args.credentials_directory:
-        os.environ["CREDENTIALS_DIRECTORY"] = str(args.credentials_directory)
 
     from scripts.ingest_market_memory_sources_spy import _build_fetcher  # noqa: PLC0415
 
