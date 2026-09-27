@@ -1,0 +1,9 @@
+{
+  "schema": "mastermind.page_evidence_receipt.v1",
+  "changed_paths": [
+    "templates/transmission.html.j2",
+    "site/transmission.html",
+    "site/assets/css/807431ed.css"
+  ],
+  "manifest": "mockups/evidence/uiux-transmission-scenarios-20260923/manifest.json"
+}

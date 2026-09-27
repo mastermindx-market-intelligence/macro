@@ -1,17 +1,17 @@
 {
-  "date": "2026-09-24",
+  "date": "2026-09-25",
   "window_band": "OPEN",
-  "ipo_5y": -0.04688309997212625,
-  "spy_5y": 0.13065488492908495,
-  "gap_5y": -0.1775379849012112,
+  "ipo_5y": -0.047166782811753905,
+  "spy_5y": 0.13188134912582594,
+  "gap_5y": -0.17904813193757985,
   "priced_90d": 63,
   "spac_pct_90d": 54,
   "upcoming_n": 4,
   "verdict": "trails",
-  "lockups_approaching": 24,
+  "lockups_approaching": 28,
   "lockups_just_expired": 5,
   "next_lockup": "HMH",
   "next_lockup_company": "HMH Holding Inc",
   "next_lockup_date": "2026-09-28",
-  "built": "2026-09-25 08:19 UTC"
+  "built": "2026-09-26 21:53 UTC"
 }

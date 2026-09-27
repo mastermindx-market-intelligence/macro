@@ -36,7 +36,7 @@ waves:
   - id: MIN-W2
     title: "T02 FCX/MP native profile factories + byte receipts (after CDV-1 #7905 merges) || T04a closed Mining definitions, own schema, synthetic composition"
     status: in_progress
-    next_action: "Lane min_t04a_definitions dispatched on mb (MiniMax-M3) 2026-09-24 12:56Z; on its PR: Opus red-team, freeze probes RED on REJECT, merge on concluded green. T02 lane (args pre-minted) dispatches once #7905 is on main."
+    next_action: "T04a is PR #7950, READY and merge-on-green armed at head 64a0b1dd, watcher at 600s. Three fabric rounds were consumed by freeze-then-repair (R1 REJECT 3B/6M; R2 REJECT 1B/5M letter-gaming - leg values synthesised from period_kind; R2 probes + the R-MIN-31 truth table frozen RED at a848ad54 before round 3 ran). Round 3 delivered real numeric legs and derived polarity, and the letter-gaming class is verified dead - reversed legs flip the polarity, so no per-pair lookup table is hiding in it. ROUND-3 REVIEW TACTIC CHANGED (R-MIN-33e): two Opus red-team spawns returned NO verdict, each exhausting its turn budget on discovery, so the SEAT ran the adversarial battery itself and delegated only scoping/severity to a READ_ONLY auditor with the code excerpt and measured outputs INLINE - 0 tool calls, 65k tokens, complete rulings, three seat severities upgraded and two defects the seat had missed. Verdict ACCEPT_AFTER_NAMED_FIXES; the seat repaired directly. Four defects fixed under R-MIN-33/33a/33b/33c: duplicate pair names published contradictory rows; a source-declared range shipped as a point estimate the schema pins const false; unit/perimeter/period were carried and never read, so 1700 Mlbs vs 1680 kt published an INVERTED polarity and a proportionate figure was relabelled consolidated; NaN passed the numeric gate and slipped the equality withhold. Probes committed RED first (9 of 13 failing at that commit), then repaired: seven Mining suites 173 passed / 0 failed with the prior 160 all still passing, pyflakes clean, contract-delta 0 introduced / 0 inherited, ci_pack curated+exclusive+mining 7 passed. Receipt: reviews/OPUS_T04A_PR_REVIEW_R3_2026-09-26.md. T02 (args pre-minted) stays gated on #7905, which another seat holds DRAFT under its own R7 audit - do not poll it."
     depends_on: [MIN-W1]
   - id: MIN-W3
     title: "T03 definition-safe economic inputs (signed blocks, missing_derivation, IR-01/IR-02 consumer rules) -> T04b integrated positive witnesses"
@@ -52,11 +52,29 @@ waves:
     depends_on: [MIN-W4]
     next_action: "Wait for Semiconductor B's shared route/client/mount on main and the incumbent-intake G2 source admission; never build against #7870's branch."
 next_action: >
-  MIN-W2: consume the min_t04a_definitions lane PR (Opus red-team before readiness), dispatch
-  min_t02_witness_profiles once #7905 merges, then T03 -> T04b -> T07 with the same review law;
-  T05/T06/T08 stay held for the shared route/client/mount on main and G2 source admission.
+  MIN-W2: own PR #7950 to MERGED. It is READY at head 64a0b1dd with merge-on-green armed and
+  one watcher at 600s; the independent round-3 review is consumed and its named fixes are in
+  that head, so the only remaining gate is concluded green (excluded reds: the spurious
+  'Workers Builds: macro', ci-authority/codex/merge-queue-pilot). Verify the module on
+  origin/main after the merge - a merge is not production proof.
+  MIN-W3 (T03) DISPATCHES ONLY AFTER #7950 MERGES, not merely delivers: its preflight needs
+  engine/market_ontology/mining_theme_research.py to resolve on origin/main, and it appends to
+  the SAME mining-economic-dossier CI block, so two PRs editing that block would conflict. Its
+  args are pre-retargeted to minimax/MiniMax-M3 rounds 1 (the GLM engine collapsed 3/3 on
+  09-24). Then T04b integrated, then T07. Every task takes an Opus red-team under
+  freeze-then-repair, and per R-MIN-33e that commission must carry its evidence INLINE rather
+  than name an artifact by path, or it spends its whole budget on discovery and returns
+  nothing.
+  T02 waits for #7905's content to reach main (another seat's PR - never poll it). T05/T06
+  stay held for #7870's route/client/mount on main plus the answer to comment 5811889498; T08
+  is last; G2 real-source admission remains an incumbent/operator act.
+  Standing operator items: mini2 has no WAN (a bridge0 default route shadows the real gateway;
+  the fix needs mini2 sudo and is an OPERATOR act), mini2 MiniMax provisioning, mini2 keychain
+  unlock for cursor-agent. Never copy the fleet token to another host.
 artifacts:
   - agentos/handoffs/GMI-MINING-2026-09-24-m1-integration.md
+  - agentos/handoffs/GMI-MINING-2026-09-26-m1-integration.md
+  - research/mining/m1_integration_program/reviews/OPUS_T04A_PR_REVIEW_R3_2026-09-26.md
   - research/mining/m1_integration_program/rulings/R-MIN-2026-09-24-wave1.md
 carrier:
   operation: gmi-mining-fable-ceo-m1-integration-20260924-chairman-001

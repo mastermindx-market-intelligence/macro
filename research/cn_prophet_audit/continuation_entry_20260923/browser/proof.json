@@ -1,0 +1,1179 @@
+{
+  "proof_kind": "repository-input component; not production or historical-performance proof",
+  "input_commit": "d34993def9fa00e88c930f39a498b6ecad97455b",
+  "input_blob": "f90dcc6606f05ecb6ac8f251500ad7204f82703b",
+  "input_path": "site/chinabasketdata/baskets.json",
+  "input_sha256": "075b220d9f720b110cb1f52573547b4e244df9f2606a4079644571c97ab6f859",
+  "host_css_paths": [
+    "theme.css",
+    "illus.css",
+    "assets/css/be207544.css",
+    "assets/css/f7e9b02b.css",
+    "navigation-refresh.css"
+  ],
+  "host_body_class": "page-china mx4-grid",
+  "harness_note": "Uses the recorded host-page CSS bundles and body classes; initial theme.css-only harness was visually invalid and replaced.",
+  "input_as_of": "2026-09-22",
+  "observed_at_utc": "2026-09-23T05:00:00+00:00",
+  "clock_basis": "injected qualification clock; not historical availability proof",
+  "translation": "real engine.i18n.tr; existing untranslated-source fallbacks remain visible",
+  "member_names": {
+    "loader": "engine.china_act_now.load_member_names",
+    "count": 280,
+    "source": "site/chinabasketdata/baskets.json"
+  },
+  "raw_lanes_unchanged": true,
+  "input_unchanged": true,
+  "baseline_display": {
+    "buy_now": [],
+    "wait_pullback": [
+      "cn_pharma_cxo",
+      "cn_ai_compute",
+      "cn_semis",
+      "cn_consumer_elec"
+    ],
+    "bottoming_watch": [],
+    "reduce_avoid": [
+      "cn_solar",
+      "cn_battery",
+      "cn_metals",
+      "cn_food_bev",
+      "cn_autos",
+      "cn_med_devices",
+      "cn_baijiu",
+      "cn_appliances",
+      "cn_soe_value",
+      "cn_rare_earth",
+      "cn_gold",
+      "cn_robotics",
+      "cn_coal"
+    ]
+  },
+  "candidate_display": {
+    "buy_now": [
+      "cn_pharma_cxo"
+    ],
+    "wait_pullback": [
+      "cn_ai_compute",
+      "cn_semis",
+      "cn_consumer_elec"
+    ],
+    "bottoming_watch": [],
+    "reduce_avoid": [
+      "cn_solar",
+      "cn_battery",
+      "cn_metals",
+      "cn_food_bev",
+      "cn_autos",
+      "cn_med_devices",
+      "cn_baijiu",
+      "cn_appliances",
+      "cn_soe_value",
+      "cn_rare_earth",
+      "cn_gold",
+      "cn_robotics",
+      "cn_coal"
+    ]
+  },
+  "continuations": [
+    "cn_pharma_cxo"
+  ],
+  "captures": [
+    {
+      "scenario": "current",
+      "file": "candidate-dark-en-1440.png",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [
+        "Innovative Pharma & CXO↗\n65\nCONTINUATION\nTheme accumulation remains in favour\n+1.5% 20d · +3.7% 5d vs CSI 300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "current",
+      "file": "candidate-dark-en-390.png",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [
+        "Innovative Pharma & CXO↗\n65\nCONTINUATION\nTheme accumulation remains in favour\n+1.5% 20d · +3.7% 5d vs CSI 300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "current",
+      "file": "candidate-dark-zh-1440.png",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [
+        "创新药与CXO↗\n65\n趋势增持\n主题增持条件仍然有效\n+1.5% 20日 · +3.7% 5日 相对沪深300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "current",
+      "file": "candidate-dark-zh-390.png",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [
+        "创新药与CXO↗\n65\n趋势增持\n主题增持条件仍然有效\n+1.5% 20日 · +3.7% 5日 相对沪深300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "current",
+      "file": "candidate-light-en-1440.png",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [
+        "Innovative Pharma & CXO↗\n65\nCONTINUATION\nTheme accumulation remains in favour\n+1.5% 20d · +3.7% 5d vs CSI 300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "current",
+      "file": "candidate-light-en-390.png",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [
+        "Innovative Pharma & CXO↗\n65\nCONTINUATION\nTheme accumulation remains in favour\n+1.5% 20d · +3.7% 5d vs CSI 300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "current",
+      "file": "candidate-light-zh-1440.png",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [
+        "创新药与CXO↗\n65\n趋势增持\n主题增持条件仍然有效\n+1.5% 20日 · +3.7% 5日 相对沪深300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "current",
+      "file": "candidate-light-zh-390.png",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [
+        "创新药与CXO↗\n65\n趋势增持\n主题增持条件仍然有效\n+1.5% 20日 · +3.7% 5日 相对沪深300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "missing-members",
+      "file": "candidate-missing-members-dark-en-1440.png",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "missing-members",
+      "file": "candidate-missing-members-dark-en-390.png",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "missing-members",
+      "file": "candidate-missing-members-dark-zh-1440.png",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "missing-members",
+      "file": "candidate-missing-members-dark-zh-390.png",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "missing-members",
+      "file": "candidate-missing-members-light-en-1440.png",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "missing-members",
+      "file": "candidate-missing-members-light-en-390.png",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "missing-members",
+      "file": "candidate-missing-members-light-zh-1440.png",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "missing-members",
+      "file": "candidate-missing-members-light-zh-390.png",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "source-conflict",
+      "file": "candidate-source-conflict-dark-en-1440.png",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "source-conflict",
+      "file": "candidate-source-conflict-dark-en-390.png",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "source-conflict",
+      "file": "candidate-source-conflict-dark-zh-1440.png",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "source-conflict",
+      "file": "candidate-source-conflict-dark-zh-390.png",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "source-conflict",
+      "file": "candidate-source-conflict-light-en-1440.png",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "source-conflict",
+      "file": "candidate-source-conflict-light-en-390.png",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "source-conflict",
+      "file": "candidate-source-conflict-light-zh-1440.png",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "source-conflict",
+      "file": "candidate-source-conflict-light-zh-390.png",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "final-demotions",
+      "file": "candidate-final-demotions-dark-en-1440.png",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "final-demotions",
+      "file": "candidate-final-demotions-dark-en-390.png",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "final-demotions",
+      "file": "candidate-final-demotions-dark-zh-1440.png",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "final-demotions",
+      "file": "candidate-final-demotions-dark-zh-390.png",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "final-demotions",
+      "file": "candidate-final-demotions-light-en-1440.png",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "final-demotions",
+      "file": "candidate-final-demotions-light-en-390.png",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "final-demotions",
+      "file": "candidate-final-demotions-light-zh-1440.png",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "final-demotions",
+      "file": "candidate-final-demotions-light-zh-390.png",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "settling",
+      "file": "candidate-settling-dark-en-1440.png",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "settling",
+      "file": "candidate-settling-dark-en-390.png",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "settling",
+      "file": "candidate-settling-dark-zh-1440.png",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "settling",
+      "file": "candidate-settling-dark-zh-390.png",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "settling",
+      "file": "candidate-settling-light-en-1440.png",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "settling",
+      "file": "candidate-settling-light-en-390.png",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "settling",
+      "file": "candidate-settling-light-zh-1440.png",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "settling",
+      "file": "candidate-settling-light-zh-390.png",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [],
+      "buyRows": 0,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "duplicate-evidence",
+      "file": "candidate-duplicate-evidence-dark-en-1440.png",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [
+        "Innovative Pharma & CXO↗\n65\nCONTINUATION\nTheme accumulation remains in favour\n+1.5% 20d · +3.7% 5d vs CSI 300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "duplicate-evidence",
+      "file": "candidate-duplicate-evidence-dark-en-390.png",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [
+        "Innovative Pharma & CXO↗\n65\nCONTINUATION\nTheme accumulation remains in favour\n+1.5% 20d · +3.7% 5d vs CSI 300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "duplicate-evidence",
+      "file": "candidate-duplicate-evidence-dark-zh-1440.png",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [
+        "创新药与CXO↗\n65\n趋势增持\n主题增持条件仍然有效\n+1.5% 20日 · +3.7% 5日 相对沪深300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "duplicate-evidence",
+      "file": "candidate-duplicate-evidence-dark-zh-390.png",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "dark",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [
+        "创新药与CXO↗\n65\n趋势增持\n主题增持条件仍然有效\n+1.5% 20日 · +3.7% 5日 相对沪深300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "duplicate-evidence",
+      "file": "candidate-duplicate-evidence-light-en-1440.png",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [
+        "Innovative Pharma & CXO↗\n65\nCONTINUATION\nTheme accumulation remains in favour\n+1.5% 20d · +3.7% 5d vs CSI 300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "duplicate-evidence",
+      "file": "candidate-duplicate-evidence-light-en-390.png",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "en",
+      "overflow": false,
+      "continuationRows": [
+        "Innovative Pharma & CXO↗\n65\nCONTINUATION\nTheme accumulation remains in favour\n+1.5% 20d · +3.7% 5d vs CSI 300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "duplicate-evidence",
+      "file": "candidate-duplicate-evidence-light-zh-1440.png",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [
+        "创新药与CXO↗\n65\n趋势增持\n主题增持条件仍然有效\n+1.5% 20日 · +3.7% 5日 相对沪深300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    },
+    {
+      "scenario": "duplicate-evidence",
+      "file": "candidate-duplicate-evidence-light-zh-390.png",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "page_errors": [],
+      "actualTheme": "light",
+      "actualLanguage": "zh",
+      "overflow": false,
+      "continuationRows": [
+        "创新药与CXO↗\n65\n趋势增持\n主题增持条件仍然有效\n+1.5% 20日 · +3.7% 5日 相对沪深300"
+      ],
+      "buyRows": 1,
+      "continuationInWait": 0
+    }
+  ],
+  "hover_captures": [
+    {
+      "scenario": "current",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "file": "hover-current-dark-en-1440.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "THEME BASKET\nInnovative Pharma & CXO\nCONTINUATION\n65\nSCORE\nLEADERSHIP READ\nLeadership continuing\n20d +1.5% vs CSI 300 · all timeframes aligned up\n14 names\n20D LEAD\n+1.5%\nvs CSI 300\nBREADTH\n57%\nabove 50d\n5D LEAD\n+3.7%\nvs CSI 300\nLEADERS\nInnoCare · Tigermed · Asymchem\n→\nWHAT MATTERS\nTrend accumulation remains in favour. Check each stock’s entry separately.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 391.5,
+        "y": 139.14256286621094,
+        "width": 344,
+        "height": 420.34376525878906
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "current",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "file": "hover-current-dark-en-390.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "THEME BASKET\nInnovative Pharma & CXO\nCONTINUATION\n65\nSCORE\nLEADERSHIP READ\nLeadership continuing\n20d +1.5% vs CSI 300 · all timeframes aligned up\n14 names\n20D LEAD\n+1.5%\nvs CSI 300\nBREADTH\n57%\nabove 50d\n5D LEAD\n+3.7%\nvs CSI 300\nLEADERS\nInnoCare · Tigermed · Asymchem\n→\nWHAT MATTERS\nTrend accumulation remains in favour. Check each stock’s entry separately.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 36,
+        "y": 241.1031494140625,
+        "width": 344,
+        "height": 420.34375
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "current",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "file": "hover-current-dark-zh-1440.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "主题篮子\n创新药与CXO\n趋势增持\n65\n评分\n领先度判断\n领先趋势延续\n20d +1.5% vs CSI 300 · 多周期共振向上\n14 只成分股\n20日领先\n+1.5%\n相对沪深300\n广度\n57%\n高于50日线\n5日领先\n+3.7%\n相对沪深300\n龙头\n诺诚健华 · 泰格医药 · 凯莱英\n→\n要点\n趋势增持仍获支持，个股入场条件须分别判断。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 391.5,
+        "y": 140.1875,
+        "width": 344,
+        "height": 386.171875
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "current",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "file": "hover-current-dark-zh-390.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "主题篮子\n创新药与CXO\n趋势增持\n65\n评分\n领先度判断\n领先趋势延续\n20d +1.5% vs CSI 300 · 多周期共振向上\n14 只成分股\n20日领先\n+1.5%\n相对沪深300\n广度\n57%\n高于50日线\n5日领先\n+3.7%\n相对沪深300\n龙头\n诺诚健华 · 泰格医药 · 凯莱英\n→\n要点\n趋势增持仍获支持，个股入场条件须分别判断。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 36,
+        "y": 216.1875,
+        "width": 344,
+        "height": 386.171875
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "current",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "file": "hover-current-light-en-1440.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "THEME BASKET\nInnovative Pharma & CXO\nCONTINUATION\n65\nSCORE\nLEADERSHIP READ\nLeadership continuing\n20d +1.5% vs CSI 300 · all timeframes aligned up\n14 names\n20D LEAD\n+1.5%\nvs CSI 300\nBREADTH\n57%\nabove 50d\n5D LEAD\n+3.7%\nvs CSI 300\nLEADERS\nInnoCare · Tigermed · Asymchem\n→\nWHAT MATTERS\nTrend accumulation remains in favour. Check each stock’s entry separately.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 391.5,
+        "y": 140.1875,
+        "width": 344,
+        "height": 420.34375
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "current",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "file": "hover-current-light-en-390.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "THEME BASKET\nInnovative Pharma & CXO\nCONTINUATION\n65\nSCORE\nLEADERSHIP READ\nLeadership continuing\n20d +1.5% vs CSI 300 · all timeframes aligned up\n14 names\n20D LEAD\n+1.5%\nvs CSI 300\nBREADTH\n57%\nabove 50d\n5D LEAD\n+3.7%\nvs CSI 300\nLEADERS\nInnoCare · Tigermed · Asymchem\n→\nWHAT MATTERS\nTrend accumulation remains in favour. Check each stock’s entry separately.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 36,
+        "y": 242.1875,
+        "width": 344,
+        "height": 420.34375
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "current",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "file": "hover-current-light-zh-1440.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "主题篮子\n创新药与CXO\n趋势增持\n65\n评分\n领先度判断\n领先趋势延续\n20d +1.5% vs CSI 300 · 多周期共振向上\n14 只成分股\n20日领先\n+1.5%\n相对沪深300\n广度\n57%\n高于50日线\n5日领先\n+3.7%\n相对沪深300\n龙头\n诺诚健华 · 泰格医药 · 凯莱英\n→\n要点\n趋势增持仍获支持，个股入场条件须分别判断。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 391.5,
+        "y": 140.1875,
+        "width": 344,
+        "height": 386.171875
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "current",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "file": "hover-current-light-zh-390.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "主题篮子\n创新药与CXO\n趋势增持\n65\n评分\n领先度判断\n领先趋势延续\n20d +1.5% vs CSI 300 · 多周期共振向上\n14 只成分股\n20日领先\n+1.5%\n相对沪深300\n广度\n57%\n高于50日线\n5日领先\n+3.7%\n相对沪深300\n龙头\n诺诚健华 · 泰格医药 · 凯莱英\n→\n要点\n趋势增持仍获支持，个股入场条件须分别判断。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 36,
+        "y": 216.1875,
+        "width": 344,
+        "height": 386.171875
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "missing-members",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "file": "hover-missing-members-dark-en-1440.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "THEME BASKET\nInnovative Pharma & CXO\nDATA UNAVAILABLE\nDATA STATUS\nCurrent inputs unavailable\n→\nWHAT MATTERS\nCurrent theme inputs are unavailable. No new buy is confirmed.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 725,
+        "y": 140.1875,
+        "width": 344,
+        "height": 245.59375
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "missing-members",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "file": "hover-missing-members-dark-en-390.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "THEME BASKET\nInnovative Pharma & CXO\nDATA UNAVAILABLE\nDATA STATUS\nCurrent inputs unavailable\n→\nWHAT MATTERS\nCurrent theme inputs are unavailable. No new buy is confirmed.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 36,
+        "y": 313.125,
+        "width": 344,
+        "height": 245.59375
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "missing-members",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "file": "hover-missing-members-dark-zh-1440.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "主题篮子\n创新药与CXO\n数据暂缺\n数据状态\n当前输入暂缺\n→\n要点\n当前主题输入不可用，无法确认新的买入机会。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 725,
+        "y": 140.1875,
+        "width": 344,
+        "height": 216.171875
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "missing-members",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "file": "hover-missing-members-dark-zh-390.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "主题篮子\n创新药与CXO\n数据暂缺\n数据状态\n当前输入暂缺\n→\n要点\n当前主题输入不可用，无法确认新的买入机会。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 36,
+        "y": 287.125,
+        "width": 344,
+        "height": 216.171875
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "missing-members",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "file": "hover-missing-members-light-en-1440.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "THEME BASKET\nInnovative Pharma & CXO\nDATA UNAVAILABLE\nDATA STATUS\nCurrent inputs unavailable\n→\nWHAT MATTERS\nCurrent theme inputs are unavailable. No new buy is confirmed.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 725,
+        "y": 140.1875,
+        "width": 344,
+        "height": 245.59375
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "missing-members",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "file": "hover-missing-members-light-en-390.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "THEME BASKET\nInnovative Pharma & CXO\nDATA UNAVAILABLE\nDATA STATUS\nCurrent inputs unavailable\n→\nWHAT MATTERS\nCurrent theme inputs are unavailable. No new buy is confirmed.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 36,
+        "y": 313.125,
+        "width": 344,
+        "height": 245.59375
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "missing-members",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "file": "hover-missing-members-light-zh-1440.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "主题篮子\n创新药与CXO\n数据暂缺\n数据状态\n当前输入暂缺\n→\n要点\n当前主题输入不可用，无法确认新的买入机会。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 725,
+        "y": 140.1875,
+        "width": 344,
+        "height": 216.171875
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "missing-members",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "file": "hover-missing-members-light-zh-390.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "主题篮子\n创新药与CXO\n数据暂缺\n数据状态\n当前输入暂缺\n→\n要点\n当前主题输入不可用，无法确认新的买入机会。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 36,
+        "y": 287.125,
+        "width": 344,
+        "height": 216.171875
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "settling",
+      "theme": "dark",
+      "language": "en",
+      "width": 1440,
+      "file": "hover-settling-dark-en-1440.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "THEME BASKET\nInnovative Pharma & CXO\nSESSION SETTLING\nDATA STATUS\nSession not yet settled\n→\nWHAT MATTERS\nWait for the completed session data. No new entry is confirmed.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 725,
+        "y": 140.1875,
+        "width": 344,
+        "height": 245.59375
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "settling",
+      "theme": "dark",
+      "language": "en",
+      "width": 390,
+      "file": "hover-settling-dark-en-390.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "THEME BASKET\nInnovative Pharma & CXO\nSESSION SETTLING\nDATA STATUS\nSession not yet settled\n→\nWHAT MATTERS\nWait for the completed session data. No new entry is confirmed.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 36,
+        "y": 313.125,
+        "width": 344,
+        "height": 245.59375
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "settling",
+      "theme": "dark",
+      "language": "zh",
+      "width": 1440,
+      "file": "hover-settling-dark-zh-1440.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "主题篮子\n创新药与CXO\n交易日数据待确认\n数据状态\n交易日数据尚待确认\n→\n要点\n请等待交易日数据确认；暂无法确认新的入场机会。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 725,
+        "y": 140.1875,
+        "width": 344,
+        "height": 216.171875
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "settling",
+      "theme": "dark",
+      "language": "zh",
+      "width": 390,
+      "file": "hover-settling-dark-zh-390.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "主题篮子\n创新药与CXO\n交易日数据待确认\n数据状态\n交易日数据尚待确认\n→\n要点\n请等待交易日数据确认；暂无法确认新的入场机会。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 36,
+        "y": 286.0858154296875,
+        "width": 344,
+        "height": 216.171875
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "settling",
+      "theme": "light",
+      "language": "en",
+      "width": 1440,
+      "file": "hover-settling-light-en-1440.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "THEME BASKET\nInnovative Pharma & CXO\nSESSION SETTLING\nDATA STATUS\nSession not yet settled\n→\nWHAT MATTERS\nWait for the completed session data. No new entry is confirmed.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 725,
+        "y": 140.1875,
+        "width": 344,
+        "height": 245.59375
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "settling",
+      "theme": "light",
+      "language": "en",
+      "width": 390,
+      "file": "hover-settling-light-en-390.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "THEME BASKET\nInnovative Pharma & CXO\nSESSION SETTLING\nDATA STATUS\nSession not yet settled\n→\nWHAT MATTERS\nWait for the completed session data. No new entry is confirmed.\nClick row for holdings and full history\nOPEN ↗",
+      "bounds": {
+        "x": 36,
+        "y": 313.125,
+        "width": 344,
+        "height": 245.59375
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "settling",
+      "theme": "light",
+      "language": "zh",
+      "width": 1440,
+      "file": "hover-settling-light-zh-1440.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "主题篮子\n创新药与CXO\n交易日数据待确认\n数据状态\n交易日数据尚待确认\n→\n要点\n请等待交易日数据确认；暂无法确认新的入场机会。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 725,
+        "y": 139.1468048095703,
+        "width": 344,
+        "height": 216.17185974121094
+      },
+      "page_errors": []
+    },
+    {
+      "scenario": "settling",
+      "theme": "light",
+      "language": "zh",
+      "width": 390,
+      "file": "hover-settling-light-zh-390.png",
+      "interaction": "native keyboard-focus handler at responsive viewport",
+      "visible_text": "主题篮子\n创新药与CXO\n交易日数据待确认\n数据状态\n交易日数据尚待确认\n→\n要点\n请等待交易日数据确认；暂无法确认新的入场机会。\n点击查看持仓与完整历史\n打开 ↗",
+      "bounds": {
+        "x": 36,
+        "y": 287.125,
+        "width": 344,
+        "height": 216.171875
+      },
+      "page_errors": []
+    }
+  ],
+  "source_sha256": {
+    "engine/china_act_now.py": "0b3da78e010b9126eaf311b4dfac0013d0fb58518cf06881de41306bd1636ab0",
+    "templates/_china_act_now_board.html.j2": "bcca18fc3e979abec029579389c19adba015a4b6d4c48688ec0e35875cf55568",
+    "tests/test_china_act_now.py": "b9f732ab4a18c03d3031cb99c7f427c86a29ca55506c82fb0aafd9868265a424"
+  },
+  "negative_state_scope": "Controlled missing-member, conflict, final-demotion, unsettled-clock and duplicate-cycle fixtures derived from the frozen theme input; not production observations. Real sector/cycle input remains unqualified."
+}

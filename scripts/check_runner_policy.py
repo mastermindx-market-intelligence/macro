@@ -8,14 +8,27 @@ CI_EXECUTION_ROUTE=pc fallback; candidate-authored jobs may not address the runn
 group or supply executor identity. Existing production self-hosted lanes are left
 untouched.
 
-It also owns the label-DECLARATION boundary (rules R11/R12, added 2026-08-17): every
-literal ``runs-on`` label in every workflow must be declared in
+It also owns the label-DECLARATION boundary (rules R11/R12/R15): every literal
+``runs-on`` label in every workflow must be declared in
 ``.github/runner-policy.yml``'s ``label_registry``, and a label whose registry entry
-is ``orphaned`` may not be used by a scheduled workflow without a dated
-``scheduled_use_waiver``. See the registry's own header comment for why — a runner
-label lives only in GitHub's runners-API state, so deregistering a host silently
-orphans every label it carried, and a cron job queued on a dead label can hold its
-concurrency group hostage for 24h (research/PROPHET_OUTAGE_2026_08_17_POSTMORTEM.md).
+is ``orphaned`` may not be used by an AUTOMATICALLY TRIGGERED workflow without a
+dated waiver. See the registry's own header comment for why — a runner label lives
+only in GitHub's runners-API state, so deregistering a host silently orphans every
+label it carried, and a job queued on a dead label can hold its concurrency group
+hostage for 24h (research/PROPHET_OUTAGE_2026_08_17_POSTMORTEM.md).
+
+R15 (added 2026-09-25) widens R12's ``schedule:``-only gate to every unattended
+trigger. The 2026-09-25 render-lane outage ran for three days through the gap:
+``render.yml`` and ``engine-render.yml`` are ``push``-only, so R12 skipped them by
+trigger before it ever looked at the label. ``push`` is not a softer trigger than
+``schedule`` — main takes ~25 pushes a day here against one cron line — so a
+push-only lane on a dead label wedges harder
+(research/RENDER_LANE_OUTAGE_2026_09_25_POSTMORTEM.md).
+
+NEITHER RULE CAN SEE A DEATH NOBODY RECORDED. ``status`` is hand-maintained (listing
+runners needs an admin token CI does not carry), so these are DECLARATION gates that
+fire when a human writes a death down. The live-state dead-man switch for the same
+class is ``scripts/check_runner_queue_hostage.py``.
 
 Rule R14 (added 2026-09-01) owns the live/pending capacity boundary for the PC CI
 pool. ``pool_topology.pc-ci.slots`` is the live, routable inventory and stays at
@@ -357,12 +370,30 @@ def _label_registry_hygiene_findings(label_registry: dict) -> list[Finding]:
     return findings
 
 
+#: Triggers that fire with nobody watching. A job queued on a dead label by any of
+#: these holds its concurrency group until GitHub's 24h kill, and every firing behind
+#: it is superseded as `pending` — the 2026-08-17 (schedule) and 2026-09-25 (push)
+#: outages are the same mechanism reached through different doors.
+AUTOMATIC_TRIGGERS = {"schedule", "push", "repository_dispatch"}
+
+
+def _orphan_use_waived(entry: dict) -> bool:
+    """A dated waiver under either key. ``scheduled_use_waiver`` is the original R12
+    key and keeps working; ``automatic_use_waiver`` is its R15 spelling."""
+    for key in ("scheduled_use_waiver", "automatic_use_waiver"):
+        waiver = entry.get(key)
+        if isinstance(waiver, dict) and waiver.get("reason") and waiver.get("since"):
+            return True
+    return False
+
+
 def _label_registry_findings(registry: dict, documents: dict[str, dict]) -> list[Finding]:
-    """R11 (every used label is declared) + R12 (no scheduled use of an orphan)."""
+    """R11 (every used label is declared) + R12/R15 (no unattended use of an orphan)."""
     label_registry = registry.get("label_registry") or {}
     findings = _label_registry_hygiene_findings(label_registry)
     for relative, document in documents.items():
-        has_schedule = "schedule" in triggers(document)
+        automatic = triggers(document) & AUTOMATIC_TRIGGERS
+        has_schedule = "schedule" in automatic
         for job_id, job in (document.get("jobs") or {}).items():
             if not isinstance(job, dict):
                 continue
@@ -376,21 +407,25 @@ def _label_registry_findings(registry: dict, documents: dict[str, dict]) -> list
                         )
                     )
                     continue
-                if not has_schedule or not isinstance(entry, dict):
+                if not automatic or not isinstance(entry, dict):
                     continue
                 if entry.get("status") != "orphaned":
                     continue
-                waiver = entry.get("scheduled_use_waiver")
-                waived = (
-                    isinstance(waiver, dict)
-                    and bool(waiver.get("reason"))
-                    and bool(waiver.get("since"))
-                )
-                if not waived:
+                if _orphan_use_waived(entry):
+                    continue
+                if has_schedule:
                     findings.append(
                         Finding(
                             "R12",
                             f"{relative}:{job_id} schedules onto orphaned label {label!r} — a queued job on a dead label can hold its cron concurrency group for 24h",
+                        )
+                    )
+                else:
+                    fired = "/".join(sorted(automatic))
+                    findings.append(
+                        Finding(
+                            "R15",
+                            f"{relative}:{job_id} is triggered by {fired} onto orphaned label {label!r} — an unattended job on a dead label holds its concurrency group until GitHub's 24h kill while every firing behind it is superseded (the 2026-09-25 render-lane outage)",
                         )
                     )
     return findings
