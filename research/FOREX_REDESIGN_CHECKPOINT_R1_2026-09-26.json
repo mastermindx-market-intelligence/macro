@@ -192,8 +192,8 @@
     "Do not promote JPY historical cheapness into bullish evidence.",
     "Do not let stale detail reuse a fresh stance or hide the age qualification."
   ],
-  "boundary": "R4 glance-first/degraded-state design and qualification are preserved in a new immutable archive and this cumulative checkpoint; native integration is held by exact shared-file custody. Parent mission remains incomplete and no unattended execution is claimed.",
-  "next_action": "Production lane: when a current-main source carrier is lawfully admitted, create tests/test_forex_r4_contract.py and start RED on FX-R4-SEM-01 plus FX-R4-DATA-01 using the proposed pure helpers; scripts/build_forex.py is not currently collision-owned by the known open Forex PRs. Do not touch templates/forex.html.j2 or tests/test_build_forex_stance.py until #7409 is consumed/composed, and do not touch shared theme files until #7466 is consumed/composed. Paper lane remains held until genuine #927 custody release.",
+  "boundary": "R4 design evidence remains qualified and immutable; first current-main producer/view-model implementation child is now open as draft PR #8096 with exact-head focused proof. Parent mission remains incomplete; no merge, deployment or Paper effect.",
+  "next_action": "Continue PR #8096 on the same implementation carrier with a bounded tests-first slice for FX-R4-SEM-02/04: explicit assessed-currency vs displayed-pair orientation and sided rate-gap language. Keep templates/forex.html.j2, tests/test_build_forex_stance.py, shared theme files and Paper untouched until their incumbent owners/hold are reconciled.",
   "resume_surface": "A current Chairman-authorized Mastermind session reading this cumulative checkpoint, immutable R4 archive, latest #927 custody return, and current production source owners #7409/#7466.",
   "mode": {
     "user_reported_selected_mode": "Extra High",
@@ -223,12 +223,13 @@
   ],
   "current_recovery": {
     "procedure_repository": "mastermindx-market-intelligence/Mastermind",
-    "procedure_sha": "fda6ed3911cdda24eb63b2ccbe1b174121cf404f",
+    "procedure_sha": "3c35c5f8c4609c5bbaa4db424521facb6ad3757d",
     "procedure_parent": "4c6b206d3fb7fbc6d077faf61ae361bedf259925",
     "procedure_change_relevance": "Protected master advanced by Executive async-release-gate tests only; current INDEX/ACTIVE_EXECUTION/RECONCILE_STATE/Paper/authority procedures were fresh-read from the new exact commit before this source-mapping effect.",
-    "macro_main": "aff8b76cba6afa6ed03298a1814b059e317070a0",
+    "macro_main": "cbb4e2a49b0ba36106e96af4e0a5d5210f6e5f42",
     "paper_hold_check": "No page-21 comment exists on Mastermind #927; latest consumed page-20 owner return remains the current hold evidence. No custody release was found.",
-    "mode": "MODIFYING_AVAILABLE for this evidence-only GitHub carrier; Paper content mutation remains held."
+    "mode": "MODIFYING_AVAILABLE for this evidence-only GitHub carrier; Paper content mutation remains held.",
+    "procedure_note": "Fresh turn re-pinned protected Mastermind master; relevant Forex implementation paths were unchanged across main movement from aff8b76c... to cbb4e2a..., so prior R4 source mapping remained materially compatible."
   },
   "production_port_map": {
     "source_main": "aff8b76cba6afa6ed03298a1814b059e317070a0",
@@ -486,5 +487,39 @@
       "6. Port the smallest answer-first overview/detail markup, then served-path browser proof across theme/locale/width and degraded states.",
       "7. Only after source integration passes should the same semantics be projected to Paper when the #927 custody hold has independently cleared."
     ]
+  },
+  "implementation_child": {
+    "pr": 8096,
+    "url": "https://github.com/mastermindx-market-intelligence/macro/pull/8096",
+    "branch": "sol/forex-r4-contract-20260927-sol-001",
+    "base_sha": "cbb4e2a49b0ba36106e96af4e0a5d5210f6e5f42",
+    "head_sha": "e0cf9c7d7d6ab16695df705b20128c17727b626e",
+    "state": "OPEN_DRAFT",
+    "scope": [
+      "scripts/build_forex.py",
+      "tests/test_forex_r4_contract.py"
+    ],
+    "capability_delta": [
+      "_r4_currency_rows: one explicit vs-USD basis for rank/value/bar; USD excluded from ranked rows; missing/nonfinite values remain unavailable",
+      "_r4_readiness: critical vs secondary degradation and dependency-specific action gating"
+    ],
+    "tdd_evidence": {
+      "red": [
+        "_r4_currency_rows tests failed because helper was absent",
+        "_r4_readiness tests failed because helper was absent"
+      ],
+      "exact_head_checks": [
+        "py_compile PASS",
+        "36 focused tests passed across R4 contract + existing stance + existing context bus",
+        "git diff --check PASS"
+      ],
+      "warning": "One inherited pytest temp-cleanup permission warning for an old Chromium directory; unrelated to the source slice."
+    },
+    "collisions_preserved": [
+      "#7409 template + stance-test owner untouched",
+      "#7466 shared theme owner untouched",
+      "Paper #927 hold untouched"
+    ],
+    "merge_deploy": false
   }
 }
