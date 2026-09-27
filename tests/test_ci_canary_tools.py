@@ -4,6 +4,7 @@ import ast
 import importlib.util
 import json
 import os
+import signal
 import stat
 import subprocess
 import sys
@@ -45,6 +46,10 @@ COMPARE = load("compare_ci_canary_receipts", ROOT / "scripts" / "compare_ci_cana
 CAPTURE = load("capture_ci_canary_receipt", ROOT / "scripts" / "capture_ci_canary_receipt.py")
 MONITOR = load(
     "monitor_ci_host_resources", ROOT / "scripts" / "monitor_ci_host_resources.py"
+)
+WATCHDOG = load(
+    "runner_terminal_watchdog",
+    ROOT / "ops" / "runner-host" / "common" / "runner_terminal_watchdog.py",
 )
 
 
@@ -2974,3 +2979,282 @@ def test_cleanup_refuses_symlinked_allowlisted_root_without_deleting(
     with pytest.raises(RuntimeError, match="sealed PC CI allowlist"):
         CLEANUP.scrub_pc_state(sealed, temporary_roots=())
     assert marker.read_text(encoding="utf-8") == "untouched"
+
+
+# ── PC CI terminal-job reconciler ─────────────────────────────────────────────
+
+
+def _write_fake_proc(proc_root: Path, pid: int, ppid: int, cmdline: str, start_ticks: int) -> None:
+    root = proc_root / str(pid)
+    root.mkdir(parents=True, exist_ok=True)
+    (root / "status").write_text(f"Pid:\t{pid}\nPPid:\t{ppid}\n", encoding="utf-8")
+    # fields after comm start at field 3; starttime is field 22 => index 19.
+    after = ["S", str(ppid)] + ["0"] * 17 + [str(start_ticks)] + ["0"] * 8
+    (root / "stat").write_text(f"{pid} (runner) " + " ".join(after) + "\n", encoding="utf-8")
+    (root / "cmdline").write_bytes(cmdline.replace(" ", "\0").encode("utf-8") + b"\0")
+
+
+def test_terminal_watchdog_binds_only_one_active_job_for_exact_runner() -> None:
+    jobs = [
+        {"id": 11, "runner_name": "pc-ci-1", "status": "completed"},
+        {"id": 12, "runner_name": "pc-ci-1", "status": "in_progress"},
+        {"id": 13, "runner_name": "pc-ci-2", "status": "in_progress"},
+    ]
+    assert WATCHDOG.select_active_job(jobs, "pc-ci-1") == 12
+    assert WATCHDOG.select_active_job(jobs, "pc-ci-2") == 13
+    assert WATCHDOG.select_active_job(jobs, "pc-ci-3") is None
+    assert WATCHDOG.select_active_job(
+        jobs + [{"id": 14, "runner_name": "pc-ci-1", "status": "queued"}],
+        "pc-ci-1",
+    ) is None
+
+
+def test_terminal_watchdog_requires_exact_bound_job_runner_and_terminal_state() -> None:
+    assert WATCHDOG.bound_job_is_terminal(
+        [{"id": 12, "runner_name": "pc-ci-1", "status": "completed"}],
+        12,
+        "pc-ci-1",
+    )
+    assert not WATCHDOG.bound_job_is_terminal(
+        [{"id": 12, "runner_name": "pc-ci-2", "status": "completed"}],
+        12,
+        "pc-ci-1",
+    )
+    assert not WATCHDOG.bound_job_is_terminal(
+        [{"id": 12, "runner_name": "pc-ci-1", "status": "in_progress"}],
+        12,
+        "pc-ci-1",
+    )
+
+
+def test_terminal_watchdog_recycles_only_after_two_terminal_reads(tmp_path: Path) -> None:
+    proc_root = tmp_path / "proc"
+    _write_fake_proc(
+        proc_root,
+        100,
+        1,
+        "/opt/mastermind-ci/runner-1/bin/Runner.Listener run --startuptype service --once",
+        777,
+    )
+    _write_fake_proc(proc_root, 200, 100, "Runner.Worker spawnclient", 888)
+    runner_root = Path("/opt/mastermind-ci/runner-1")
+
+    responses = iter(
+        [
+            [{"id": 55, "runner_name": "pc-ci-1", "status": "in_progress"}],
+            [{"id": 55, "runner_name": "pc-ci-1", "status": "completed"}],
+            [{"id": 55, "runner_name": "pc-ci-1", "status": "completed"}],
+        ]
+    )
+    signals: list[tuple[int, int]] = []
+    closed: list[int] = []
+    pidfd = 901
+
+    def fetcher(_repo: str, _run: int, _attempt: int) -> list[dict]:
+        return next(responses)
+
+    def pidfd_signaler(fd: int, sig: int) -> None:
+        signals.append((fd, sig))
+        if sig == signal.SIGTERM:
+            # Model systemd observing the main listener exit and tearing down
+            # the service cgroup before escalation is needed.
+            for child in (proc_root / "100").iterdir():
+                child.unlink()
+            (proc_root / "100").rmdir()
+
+    result = WATCHDOG.monitor(
+        repository=WATCHDOG.REPOSITORY,
+        run_id=999,
+        run_attempt=1,
+        runner_name="pc-ci-1",
+        ancestor_pid=200,
+        runner_root=runner_root,
+        proc_root=proc_root,
+        fetcher=fetcher,
+        sleeper=lambda _seconds: None,
+        monotonic=lambda: 0.0,
+        pidfd_opener=lambda pid, flags: pidfd if (pid, flags) == (100, 0) else -1,
+        pidfd_signaler=pidfd_signaler,
+        pidfd_closer=closed.append,
+        initial_delay=0,
+        bind_attempts=1,
+        bind_retry=0,
+        poll_seconds=0,
+        confirm_seconds=0,
+        term_grace_seconds=0,
+        max_lifetime_seconds=1,
+    )
+    assert result == 0
+    assert signals == [(pidfd, signal.SIGTERM)]
+    assert closed == [pidfd]
+
+
+def test_terminal_watchdog_fails_safe_when_terminal_read_is_not_confirmed(tmp_path: Path) -> None:
+    proc_root = tmp_path / "proc"
+    _write_fake_proc(
+        proc_root,
+        100,
+        1,
+        "/opt/mastermind-ci/runner-1/bin/Runner.Listener run --startuptype service --once",
+        777,
+    )
+    _write_fake_proc(proc_root, 200, 100, "Runner.Worker spawnclient", 888)
+
+    responses = iter(
+        [
+            [{"id": 55, "runner_name": "pc-ci-1", "status": "in_progress"}],
+            [{"id": 55, "runner_name": "pc-ci-1", "status": "completed"}],
+            [{"id": 55, "runner_name": "pc-ci-1", "status": "in_progress"}],
+        ]
+    )
+    signals: list[tuple[int, int]] = []
+    closed: list[int] = []
+    pidfd = 902
+    clock = iter([0.0, 0.0, 2.0])
+
+    result = WATCHDOG.monitor(
+        repository=WATCHDOG.REPOSITORY,
+        run_id=999,
+        run_attempt=1,
+        runner_name="pc-ci-1",
+        ancestor_pid=200,
+        runner_root=Path("/opt/mastermind-ci/runner-1"),
+        proc_root=proc_root,
+        fetcher=lambda _repo, _run, _attempt: next(responses),
+        sleeper=lambda _seconds: None,
+        monotonic=lambda: next(clock),
+        pidfd_opener=lambda pid, flags: pidfd if (pid, flags) == (100, 0) else -1,
+        pidfd_signaler=lambda fd, sig: signals.append((fd, sig)),
+        pidfd_closer=closed.append,
+        initial_delay=0,
+        bind_attempts=1,
+        bind_retry=0,
+        poll_seconds=0,
+        confirm_seconds=0,
+        term_grace_seconds=0,
+        max_lifetime_seconds=1,
+    )
+    assert result == 0
+    assert signals == []
+    assert closed == [pidfd]
+
+
+def test_terminal_watchdog_refuses_pid_reuse_after_pidfd_open(tmp_path: Path) -> None:
+    proc_root = tmp_path / "proc"
+    _write_fake_proc(
+        proc_root,
+        100,
+        1,
+        "/opt/mastermind-ci/runner-1/bin/Runner.Listener run --startuptype service --once",
+        777,
+    )
+    _write_fake_proc(proc_root, 200, 100, "Runner.Worker spawnclient", 888)
+    signals: list[tuple[int, int]] = []
+    closed: list[int] = []
+    pidfd = 903
+
+    def opener(pid: int, flags: int) -> int:
+        assert (pid, flags) == (100, 0)
+        _write_fake_proc(
+            proc_root,
+            100,
+            1,
+            "/opt/mastermind-ci/runner-1/bin/Runner.Listener run --startuptype service --once",
+            999,
+        )
+        return pidfd
+
+    result = WATCHDOG.monitor(
+        repository=WATCHDOG.REPOSITORY,
+        run_id=999,
+        run_attempt=1,
+        runner_name="pc-ci-1",
+        ancestor_pid=200,
+        runner_root=Path("/opt/mastermind-ci/runner-1"),
+        proc_root=proc_root,
+        fetcher=lambda *_args: (_ for _ in ()).throw(AssertionError("must not fetch")),
+        sleeper=lambda _seconds: None,
+        monotonic=lambda: 0.0,
+        pidfd_opener=opener,
+        pidfd_signaler=lambda fd, sig: signals.append((fd, sig)),
+        pidfd_closer=closed.append,
+        initial_delay=0,
+        bind_attempts=1,
+        bind_retry=0,
+        poll_seconds=0,
+        confirm_seconds=0,
+        term_grace_seconds=0,
+        max_lifetime_seconds=1,
+    )
+    assert result == 0
+    assert signals == []
+    assert closed == [pidfd]
+
+
+def test_terminal_watchdog_term_and_kill_share_one_pidfd(tmp_path: Path) -> None:
+    proc_root = tmp_path / "proc"
+    _write_fake_proc(
+        proc_root,
+        100,
+        1,
+        "/opt/mastermind-ci/runner-1/bin/Runner.Listener run --startuptype service --once",
+        777,
+    )
+    _write_fake_proc(proc_root, 200, 100, "Runner.Worker spawnclient", 888)
+    responses = iter(
+        [
+            [{"id": 55, "runner_name": "pc-ci-1", "status": "in_progress"}],
+            [{"id": 55, "runner_name": "pc-ci-1", "status": "completed"}],
+            [{"id": 55, "runner_name": "pc-ci-1", "status": "completed"}],
+        ]
+    )
+    signals: list[tuple[int, int]] = []
+    closed: list[int] = []
+    pidfd = 904
+
+    result = WATCHDOG.monitor(
+        repository=WATCHDOG.REPOSITORY,
+        run_id=999,
+        run_attempt=1,
+        runner_name="pc-ci-1",
+        ancestor_pid=200,
+        runner_root=Path("/opt/mastermind-ci/runner-1"),
+        proc_root=proc_root,
+        fetcher=lambda _repo, _run, _attempt: next(responses),
+        sleeper=lambda _seconds: None,
+        monotonic=lambda: 0.0,
+        pidfd_opener=lambda pid, flags: pidfd if (pid, flags) == (100, 0) else -1,
+        pidfd_signaler=lambda fd, sig: signals.append((fd, sig)),
+        pidfd_closer=closed.append,
+        initial_delay=0,
+        bind_attempts=1,
+        bind_retry=0,
+        poll_seconds=0,
+        confirm_seconds=0,
+        term_grace_seconds=0,
+        max_lifetime_seconds=1,
+    )
+    assert result == 0
+    assert signals == [
+        (pidfd, signal.SIGTERM),
+        (pidfd, signal.SIGKILL),
+    ]
+    assert closed == [pidfd]
+
+
+def test_pc_ci_hook_arms_tokenless_terminal_watchdog_only_after_admission() -> None:
+    hook = (
+        ROOT / "ops" / "runner-host" / "common" / "runner_admission_hook.js"
+    ).read_text(encoding="utf-8")
+    assert 'const { spawn, spawnSync } = require("node:child_process");' in hook
+    assert 'result.status !== 0' in hook
+    assert 'profile === "pc-ci"' in hook
+    assert 'process.env.GITHUB_JOB || "") === "trusted-pack"' in hook
+    assert '"--run-id", runId' in hook
+    assert '"--run-attempt", runAttempt' in hook
+    assert '"--runner-name", runnerName' in hook
+    assert '"--ancestor-pid", String(process.ppid)' in hook
+    assert '"--runner-root", runnerRoot' in hook
+    assert "GITHUB_TOKEN" not in hook
+    assert 'env: { PATH: "/usr/bin:/bin", HOME: "/nonexistent" }' in hook
+    assert "child.unref()" in hook
