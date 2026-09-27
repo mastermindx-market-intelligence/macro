@@ -4377,6 +4377,11 @@ jobs:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
         timeout-minutes: 20
         run: python -m scripts.collect_release_target_vintages || echo "::warning::release target vintage collection failed (non-fatal — completion authority remains withheld until a full cohort succeeds)"
+      - name: Cycle (a) full-vintage stores (data precondition, non-fatal)
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        timeout-minutes: 20
+        run: python -m scripts.collect_cycle_vintages || echo "::warning::cycle vintage collection failed (non-fatal)"
       - name: Release Radar official CPI Table 1 receipts (truth substrate, non-fatal)
         # Collects the frozen preregistered BLS Supplemental Table 1 panel into
         # immutable content-addressed source documents and source-bound receipts.
