@@ -1,0 +1,719 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/sector_intelligence/consumer_cyclical_intelligence_read_model.v1.schema.json",
+  "title": "Consumer Cyclical Economic Change v1",
+  "contract_id": {
+    "const": "consumer_cyclical_intelligence_read_model.v1"
+  },
+  "schema_version": {
+    "const": "1.0.0"
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_id",
+    "schema_version",
+    "generated_at",
+    "subject",
+    "comparison_basis",
+    "facts",
+    "results",
+    "explanation",
+    "degraded_dependencies",
+    "source_records",
+    "availability"
+  ],
+  "properties": {
+    "availability": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "unavailable"
+      ]
+    },
+    "comparison_basis": {
+      "type": "string",
+      "enum": [
+        "explicit_same_quarter_prior_year"
+      ]
+    },
+    "contract_id": {
+      "const": "consumer_cyclical_intelligence_read_model.v1"
+    },
+    "degraded_dependencies": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/degraded_dependency"
+      }
+    },
+    "explanation": {
+      "$ref": "#/$defs/explanation"
+    },
+    "facts": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "$ref": "#/$defs/fact"
+      },
+      "description": "Source facts. May be empty ONLY for an unavailable document (see allOf): R15 requires zero ready results to render as unavailable, never empty-ready."
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/result"
+      }
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/source_record"
+      }
+    },
+    "subject": {
+      "$ref": "#/$defs/subject"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "availability": {
+            "const": "ready"
+          }
+        },
+        "required": [
+          "availability"
+        ]
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "contains": {
+              "type": "object",
+              "properties": {
+                "withheld_reason": {
+                  "type": "null"
+                }
+              },
+              "required": [
+                "withheld_reason"
+              ]
+            },
+            "minContains": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "availability": {
+            "const": "unavailable"
+          }
+        },
+        "required": [
+          "availability"
+        ]
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "degraded_dependencies": {
+            "type": "array",
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "properties": {
+          "availability": {
+            "const": "ready"
+          }
+        },
+        "required": [
+          "availability"
+        ]
+      },
+      "then": {
+        "type": "object",
+        "properties": {
+          "facts": {
+            "type": "array",
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "clock": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?(?:Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "degraded_dependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dependency",
+        "reason",
+        "state"
+      ],
+      "properties": {
+        "dependency": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "available",
+            "partial",
+            "unavailable"
+          ]
+        }
+      }
+    },
+    "explanation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "counterevidence",
+        "does_not_prove",
+        "lead",
+        "next_observation"
+      ],
+      "properties": {
+        "counterevidence": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "does_not_prove": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "lead": {
+          "type": "string",
+          "minLength": 1
+        },
+        "next_observation": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "basis",
+        "definition",
+        "display_quantum",
+        "event",
+        "evidence",
+        "key",
+        "kind",
+        "metric",
+        "native_admitted",
+        "native_ref",
+        "perimeter",
+        "period_end",
+        "period_kind",
+        "period_start",
+        "published_at",
+        "role",
+        "scale_power10",
+        "sign_convention",
+        "target",
+        "unit",
+        "value_text"
+      ],
+      "properties": {
+        "basis": {
+          "type": "string",
+          "enum": [
+            "as_reported_period_value"
+          ]
+        },
+        "definition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "display_quantum": {
+          "type": "string",
+          "pattern": "^\\d+(?:\\.\\d+)?_[a-z][a-z0-9_]*$"
+        },
+        "event": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "document",
+            "locator",
+            "revision"
+          ],
+          "properties": {
+            "document": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,119}\\.html?$"
+            },
+            "locator": {
+              "type": "string",
+              "minLength": 1
+            },
+            "revision": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "revenue_line",
+            "expense_line"
+          ]
+        },
+        "metric": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "native_admitted": {
+          "type": "boolean"
+        },
+        "native_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "perimeter": {
+          "type": "string",
+          "enum": [
+            "consolidated_company",
+            "segment",
+            "franchise_system"
+          ]
+        },
+        "period_end": {
+          "$ref": "#/$defs/date"
+        },
+        "period_kind": {
+          "type": "string",
+          "enum": [
+            "quarter",
+            "half_year",
+            "year"
+          ]
+        },
+        "period_start": {
+          "$ref": "#/$defs/date"
+        },
+        "published_at": {
+          "$ref": "#/$defs/clock"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "actual",
+            "guidance"
+          ]
+        },
+        "scale_power10": {
+          "type": "integer",
+          "minimum": -12,
+          "maximum": 12
+        },
+        "sign_convention": {
+          "$ref": "#/$defs/sign_convention"
+        },
+        "target": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "unit": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_%]{0,15}$"
+        },
+        "value_text": {
+          "$ref": "#/$defs/value_text"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "native_admitted": {
+                "const": true
+              }
+            },
+            "required": [
+              "native_admitted"
+            ]
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "native_ref": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "role": {
+                "const": "guidance"
+              }
+            },
+            "required": [
+              "role"
+            ]
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "published_at": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "basis",
+        "definition",
+        "display_quantum",
+        "event",
+        "input_refs",
+        "key",
+        "period_end",
+        "period_kind",
+        "period_start",
+        "scale_power10",
+        "sign_convention",
+        "unit",
+        "value_text",
+        "withheld_reason"
+      ],
+      "properties": {
+        "basis": {
+          "type": "string",
+          "enum": [
+            "same_quarter_prior_year_change",
+            "difference_of_change_values",
+            "same_period_difference",
+            "share_of_change_ratio"
+          ]
+        },
+        "definition": {
+          "type": "string",
+          "minLength": 1
+        },
+        "display_quantum": {
+          "type": "string",
+          "pattern": "^\\d+(?:\\.\\d+)?_[a-z][a-z0-9_]*$"
+        },
+        "event": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "input_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+          }
+        },
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "period_end": {
+          "$ref": "#/$defs/date"
+        },
+        "period_kind": {
+          "type": "string",
+          "enum": [
+            "quarter",
+            "half_year",
+            "year"
+          ]
+        },
+        "period_start": {
+          "$ref": "#/$defs/date"
+        },
+        "scale_power10": {
+          "type": "integer",
+          "minimum": -12,
+          "maximum": 12
+        },
+        "sign_convention": {
+          "$ref": "#/$defs/sign_convention"
+        },
+        "unit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z][A-Za-z0-9_%]{0,15}$"
+        },
+        "value_text": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/value_text"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "withheld_reason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "withheld_reason": {
+                "type": "null"
+              }
+            },
+            "required": [
+              "withheld_reason"
+            ]
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "value_text": {
+                "$ref": "#/$defs/value_text"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "withheld_reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "withheld_reason"
+            ]
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "value_text": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "sign_convention": {
+      "type": "string",
+      "enum": [
+        "signed_as_reported",
+        "signed_difference",
+        "unsigned_magnitude"
+      ]
+    },
+    "source_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "acceptance_clock_basis",
+        "accession_no",
+        "document",
+        "issuer_cik",
+        "locator",
+        "observed_at",
+        "publisher",
+        "record_id",
+        "retention_state",
+        "sec_acceptance_raw",
+        "source_family",
+        "source_uri"
+      ],
+      "properties": {
+        "acceptance_clock_basis": {
+          "const": "unlabeled"
+        },
+        "accession_no": {
+          "type": "string",
+          "pattern": "^\\d{10}-\\d{2}-\\d{6}$"
+        },
+        "document": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,119}\\.html?$"
+        },
+        "issuer_cik": {
+          "type": "string",
+          "pattern": "^\\d{10}$"
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observed_at": {
+          "$ref": "#/$defs/date"
+        },
+        "publisher": {
+          "type": "string",
+          "minLength": 1
+        },
+        "record_id": {
+          "type": "string",
+          "pattern": "^src_[a-z0-9_]+$"
+        },
+        "retention_state": {
+          "type": "string",
+          "enum": [
+            "retained",
+            "not_retained"
+          ]
+        },
+        "sec_acceptance_raw": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$"
+        },
+        "source_family": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "source_uri": {
+          "type": "string",
+          "format": "uri-reference",
+          "pattern": "^https://www\\.sec\\.gov/"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "retention_state": {
+                "const": "retained"
+              }
+            },
+            "required": [
+              "retention_state"
+            ]
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "retention_ref": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issuer_cik",
+        "subject_type",
+        "ticker"
+      ],
+      "properties": {
+        "issuer_cik": {
+          "type": "string",
+          "pattern": "^\\d{10}$"
+        },
+        "subject_type": {
+          "const": "company"
+        },
+        "ticker": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z.]{0,9}$"
+        }
+      }
+    },
+    "value_text": {
+      "type": "string",
+      "pattern": "^-?\\d+(?:\\.\\d+)?$"
+    }
+  }
+}

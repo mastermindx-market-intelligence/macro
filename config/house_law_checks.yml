@@ -1897,14 +1897,14 @@ checks:
     check_script: scripts/check_runner_policy.py
     ci_wiring:
       - workflow: .github/ci/legacy-jobs.yml
-        job: workflow-yaml
+        job: ci-control-plane-contracts
         lane: pr_ci
     selftest: false
     selftest_exempt_reason: >
       The checker has a mutation-focused pytest suite covering fork-route drift,
       computed migration labels, reusable-workflow delegation, trust-gate removal,
       topology overlap, and unregistered custom-label consumers; the checker and
-      suite run together in the registered workflow-yaml legacy job.
+      suite run together in the registered ci-control-plane-contracts legacy job.
     allowlist: null
     ratchet: null
     known_limits:
@@ -1962,7 +1962,7 @@ checks:
     check_script: scripts/check_skip_only_suites.py
     ci_wiring:
       - workflow: .github/workflows/ci.yml
-        job: workflow-yaml
+        job: ci-control-plane-contracts
         lane: pr_ci
     selftest: true
     allowlist: null
@@ -2026,7 +2026,7 @@ checks:
     check_script: scripts/check_ci_trigger_closure.py
     ci_wiring:
       - workflow: .github/workflows/ci.yml
-        job: workflow-yaml
+        job: ci-control-plane-contracts
         lane: pr_ci
     selftest: true
     allowlist: "inline (`# ci-trigger-closure: data` comment at the fixture site)"
@@ -2073,8 +2073,9 @@ checks:
       registry, so the meta-guard's CENSUS pass hard-failed ci-pack-2 on main and
       on every open PR head — the same shape as the flow_continuity.statement_tape
       entry below, which was registered by a post-hoc census fix for the same
-      reason. Belongs to the darkness-census family with ops.no_skip_only_suites
-      and ops.workflow_yaml_parses in the same job.
+      reason. Belongs to the darkness-census family with ops.no_skip_only_suites,
+      in the same job (ci-control-plane-contracts since 2026-09-25, on the PR code
+      gate; ops.workflow_yaml_parses stayed in workflow-yaml).
 
   - law_id: ops.government_revenue_amount_semantics
     summary: >
@@ -3184,7 +3185,7 @@ checks:
     check_script: scripts/check_p0b_receipt_closure.py
     ci_wiring:
       - workflow: .github/ci/legacy-jobs.yml
-        job: design-governance
+        job: p0b-receipt-closure
         lane: pr_ci
     selftest: true
     allowlist: null
@@ -3205,11 +3206,19 @@ checks:
         a vacuous pass over receipts it cannot see.
     owner_program: prophet-us-eyes-open
     notes: >
-      Wired as extra steps on design-governance (unscoped, gate: code,
-      fetch-depth 0) so a pinned loaded_asset outside
-      stock-dashboard-first-frame's exclusive paths — the #7500
-      navigation-refresh.css shape — still starts the gate. The checker never
-      shells out to git; the caller hands it `git diff --name-only`.
+      Its own legacy job, p0b-receipt-closure (gate: code, scope: exclusive,
+      fetch-depth 0), since the #6872 postmortem (2026-09-24). It first shipped
+      as trailing steps on design-governance (#7613), which failed twice on
+      #6872: run_ci_pack.py skips a logical job's remaining steps after the
+      first failing one, so the design ratchet's own red hid this verdict; and
+      "unscoped" is not always-on — inference derives a scope from the job's
+      commands and mockups/ sits outside every opaque scan root, so a diff
+      touching only the rendered fixture or a receipt input skipped the job.
+      The curated paths name the roots every pin lives under and are bound to
+      the committed receipts by tests/test_ci_pack.py::
+      test_p0b_receipt_closure_job_owns_every_receipt_pinned_path. The gate
+      step runs first in the job. The checker never shells out to git; the
+      caller hands it `git diff --name-only`.
   - law_id: data.append_only_assertions
     summary: >
       A historical assertion over an append-only store must not become false

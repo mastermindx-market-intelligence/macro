@@ -5,6 +5,24 @@ reads, binds each event to an earnings date and to FOMC decision dates, and
 writes a context-only histogram. It does not rank, size, gate, originate a
 signal, or open a second collector. The page that would show these links is
 a later packet.
+
+F03-W3-2 ADDITIVE CONSUMER (A-F03-W3-2):
+The envelope's new `macro_calendar` key is consumed by
+`scripts/build_options_command.py::load_catalyst_links`, which compares the
+calendar's FOMC dates to each index-card payoff-lab expiry and surfaces a
+small "Fed decision before this expiry" chip on the SPY/QQQ/IWM fold. The
+chip is display-only context — same envelope, same authority block, no new
+collector. The calendar is built from the SAME `_macro_candidates(asof,
+horizon)` list the binder already reads (the producer never opens a second
+calendar reader), so the chip's "is a Fed decision inside this expiry?"
+answer is one comparison of two dates this artifact hands the page.
+
+LAG (one nightly, by design):
+In `.github/workflows/daily.yml` this producer step runs AFTER
+`build_options_command`, so the page reads the PREVIOUS nightly's calendar.
+The chip's tooltip prints the calendar's as-of date so the reader can see
+which nightly's calendar the chip is reading. Moving the step to run before
+the page builder is out of scope for this packet (`.github/**` excluded).
 """
 from __future__ import annotations
 
@@ -243,6 +261,57 @@ def _macro_candidates(asof: date, horizon_days: int) -> list[CatalystCandidate]:
     return candidates
 
 
+def _macro_calendar(asof: date, horizon_days: int,
+                     candidates: list[CatalystCandidate] | None = None) -> dict[str, Any]:
+    """A-F03-W3-2 — the envelope's `macro_calendar` key.
+
+    Built from the SAME `_macro_candidates(asof, horizon_days)` list the
+    binder reads; the producer never opens a second calendar reader. The
+    page's catalyst-chip helper compares two dates from this dict to the
+    payoff-lab card's expiry, so the dict is intentionally flat and
+    date-only (no `known_as_of`, no `as_of_age_td`, no `locator` — none of
+    those fields change the chip's answer and none belong on the page).
+
+    `candidates` accepts the SAME `_macro_candidates(asof, horizon_days)`
+    list the binder already built (computed once per call site, shared by
+    the binder AND this calendar writer) so the envelope and the JSONL
+    links agree byte-for-byte and the producer only opens
+    `engine.event_calendar` once per nightly. When omitted, the helper
+    rebuilds the list itself — used by `_emit_no_stage` on the
+    events-outage path where no binder call exists to share with.
+
+    Shape:
+      {
+        "asof":        "<asof iso>",          # the producer's own as-of date
+        "horizon_end": "<(asof + horizon_days) iso>",
+        "source":      "engine.event_calendar", # the same source the binder reads
+        "fomc": [
+          {"date": "YYYY-MM-DD", "label": "Fed rate decision"},
+          ...
+        ],                                     # sorted by date, possibly empty
+      }
+    """
+    if candidates is None:
+        candidates = _macro_candidates(asof, horizon_days)
+    horizon_end = asof + timedelta(days=horizon_days)
+    # The envelope key is named `fomc` and labels each entry "Fed rate
+    # decision" — the consumer renders both names on the page, so any
+    # non-fomc candidate would print as a non-Fed date to users.  The
+    # current `_macro_candidates` emits fomc-only, but the filter is the
+    # load-bearing guard: a second contributor of kind `cpi`, `nfp`, or
+    # anything else would otherwise leak through with a Fed label.
+    return {
+        "asof": asof.isoformat(),
+        "horizon_end": horizon_end.isoformat(),
+        "source": "engine.event_calendar",
+        "fomc": [
+            {"date": cand.date.isoformat(), "label": "Fed rate decision"}
+            for cand in candidates
+            if getattr(cand, "kind", None) == "fomc"
+        ],
+    }
+
+
 def _distinct_roots(events: list[Mapping[str, Any]]) -> list[str]:
     roots: list[str] = []
     seen: set[str] = set()
@@ -306,6 +375,7 @@ def _envelope(
     states: list[str],
     links_path: str | None,
     include_empty_links: bool,
+    macro_calendar: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     payload: dict[str, Any] = {
         "schema": ENVELOPE_SCHEMA,
@@ -320,6 +390,20 @@ def _envelope(
         "is_context_only": True,
         "states": states,
         "links_path": links_path,
+        # A-F03-W3-2 — chip-on-the-page calendar (built from the SAME
+        # `_macro_candidates` list the binder reads).  The optional kwarg lets
+        # the no-stage path pass an empty-`fomc` calendar without re-reading
+        # the calendar reader, and the call sites that already have a real
+        # `_macro_candidates` list pass it in.
+        "macro_calendar": (
+            macro_calendar
+            if macro_calendar is not None
+            else _macro_calendar(asof, horizon_days)
+        ),
+        # _macro_calendar is appended below on the events-present path —
+        # the binder's already-built `macros` list is shared with the
+        # calendar writer so the producer opens engine.event_calendar
+        # exactly once per nightly.
     }
     if include_empty_links:
         payload["links"] = []
@@ -351,6 +435,13 @@ def _emit_no_stage(out_dir: Path, session: str | None, asof: date, horizon_days:
         states=["no_event_stage"],
         links_path=links_path,
         include_empty_links=True,
+        # On an events outage the chip must not vanish from the page; the
+        # calendar is built from the same engine.event_calendar reader the
+        # binder uses, so a missing events stage does NOT mean a missing
+        # FOMC calendar.  Passing it explicitly here (rather than letting
+        # `_envelope` build a fresh one) keeps the no-stage envelope and
+        # the events-present envelope on the SAME calendar read.
+        macro_calendar=_macro_calendar(asof, horizon_days),
     )
     _write_envelope(out_dir, envelope)
     _warn("No event stage was found for this session. 这一交易日没有找到事件阶段。")
@@ -431,6 +522,10 @@ def main(argv: list[str] | None = None) -> int:
         states=_states_for_run(identity_absent=identity_absent, store_missing=store_missing),
         links_path=jsonl.name,
         include_empty_links=False,
+        # Pass the SAME candidate list the binder already built so the
+        # envelope and the JSONL links agree byte-for-byte AND the
+        # producer opens engine.event_calendar exactly once per nightly.
+        macro_calendar=_macro_calendar(asof, horizon, candidates=macros),
     )
     _write_envelope(out_dir, envelope)
     if identity_absent:

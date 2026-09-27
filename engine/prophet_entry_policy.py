@@ -40,6 +40,21 @@ RISK_POLICY_ERA = "B4_RISK_ATR_2_0_2026_09_22"
 RISK_GATE = "risk_ceiling"
 RISK_ATR_CEILING = 2.0
 
+LIQUIDITY_POLICY_VERSION = "early-leadership-sector-rotation-nbbo-fillability-v1"
+LIQUIDITY_POLICY_ERA = "B4_NBBO_FILLABILITY_2026_09_22"
+LIQUIDITY_GATE = "liquidity_fillability"
+LIQUIDITY_MAX_FULL_SPREAD_BPS = 50.0
+LIQUIDITY_MAX_NBBO_AGE_SECONDS = 300.0
+LIQUIDITY_NBBO_SOURCE = "polygon_lastQuote"
+LIQUIDITY_SOURCE_LICENSE = "vendor_terms_personal_use"
+
+GAP_POLICY_VERSION = "early-leadership-sector-rotation-gap-velocity-v1"
+GAP_POLICY_ERA = "B4_GAP_VELOCITY_ATR_2026_09_22"
+GAP_GATE = "gap_velocity"
+GAP_MAX_OPEN_ATR = 1.5
+GAP_MAX_MOVE_FROM_OPEN_ATR = 1.0
+GAP_MAX_SESSION_MOVE_ATR = 1.5
+
 ET = ZoneInfo("America/New_York")
 _RTH_OPEN_ET = time(9, 30)
 _RTH_REGULAR_CLOSE_ET = time(16, 0)
@@ -301,6 +316,210 @@ def evaluate_risk_ceiling(
         "atr": atr_value,
         "risk_to_invalidation_atr": round(risk_atr_raw, 6),
         "risk_to_invalidation_pct": round(risk_pct_raw, 6),
+        "verdict": verdict,
+        "reason": reason,
+        "policy_receipt": policy_receipt,
+    }
+    payload["fact_receipt"] = (
+        "pepf:" + sha256(_canonical_json(payload).encode("utf-8")).hexdigest()
+    )
+    return payload
+
+
+
+def _liquidity_policy_material(strategy_definition_id: str) -> dict[str, object]:
+    return {
+        "schema": SCHEMA,
+        "gate": LIQUIDITY_GATE,
+        "strategy_id": STRATEGY_ID,
+        "strategy_definition_id": strategy_definition_id,
+        "entry_policy_version": ENTRY_POLICY_VERSION,
+        "horizon": "2_15_SESSIONS",
+        "horizon_role": "new_entry",
+        "scientific_status": "CONTROL_ONLY",
+        "authority_tier": "SHADOW_ONLY",
+        "liquidity_policy_version": LIQUIDITY_POLICY_VERSION,
+        "liquidity_policy_era": LIQUIDITY_POLICY_ERA,
+        "method": "DECISION_TIME_NBBO_SPREAD_AND_AGE_CONTROL",
+        "max_full_spread_bps": LIQUIDITY_MAX_FULL_SPREAD_BPS,
+        "max_nbbo_age_seconds": LIQUIDITY_MAX_NBBO_AGE_SECONDS,
+        "required_nbbo_source": LIQUIDITY_NBBO_SOURCE,
+        "source_license": LIQUIDITY_SOURCE_LICENSE,
+        "threshold_status": "INITIAL_OPERATION_CONSTANT_NOT_CALIBRATED",
+        "threshold_rationale": "INITIAL_CONTROL_NOT_DERIVED_FROM_REPLAY_COST_TIERS",
+        "calibration_requirement": "PROSPECTIVE_OR_OOS_SAME_TAPE_WITH_COSTS_AND_CAPACITY",
+        "capacity_status": "NOT_MODELED_IN_V1",
+        "basis_precondition": "REQUIRE_SEPARATE_ACCEPTED_IDENTITY_BASIS_OWNER",
+        "authority": {
+            "can_rank": False,
+            "can_admit_candidate": False,
+            "can_size": False,
+            "can_execute": False,
+            "can_trade": False,
+        },
+    }
+
+
+def evaluate_liquidity_fillability(
+    *,
+    strategy_definition: Mapping[str, Any],
+    decision_at: str,
+    bid_price: float,
+    ask_price: float,
+    nbbo_asof: str,
+    nbbo_source: str,
+    source_license: str,
+) -> dict[str, object]:
+    """Return the shadow/control B4 ``liquidity_fillability`` owner fact.
+
+    V1 deliberately asks only whether the observed decision-time NBBO is fresh and
+    narrow enough for the first control.  It does not claim size/capacity, and the
+    spread/age constants are operation constants pending prospective same-tape
+    calibration.  Missing source, rights, basis or quote evidence is unavailable
+    policy and must fail closed upstream rather than being repaired here.
+    """
+
+    validate_strategy_definition(strategy_definition)
+    strategy_definition_id = str(strategy_definition["strategy_definition_id"])
+    bid = _finite_positive_number(bid_price, "bid_price")
+    ask = _finite_positive_number(ask_price, "ask_price")
+    if ask <= bid:
+        raise EntryPolicyContractError("ask_price must be > bid_price")
+    if nbbo_source != LIQUIDITY_NBBO_SOURCE:
+        raise EntryPolicyContractError(
+            f"nbbo_source must be {LIQUIDITY_NBBO_SOURCE!r} for {LIQUIDITY_POLICY_ERA}"
+        )
+    if source_license != LIQUIDITY_SOURCE_LICENSE:
+        raise EntryPolicyContractError(
+            f"source_license must be {LIQUIDITY_SOURCE_LICENSE!r} for {LIQUIDITY_POLICY_ERA}"
+        )
+
+    decision = _parse_decision_at(decision_at)
+    nbbo_time = _parse_decision_at(nbbo_asof)
+    age_seconds_raw = (decision - nbbo_time).total_seconds()
+    if age_seconds_raw < 0:
+        raise EntryPolicyContractError("nbbo_asof cannot be after decision_at")
+
+    midpoint = (bid + ask) / 2.0
+    full_spread_bps_raw = 10_000.0 * (ask - bid) / midpoint
+    half_spread_bps_raw = full_spread_bps_raw / 2.0
+
+    if age_seconds_raw > LIQUIDITY_MAX_NBBO_AGE_SECONDS:
+        verdict = "FAIL"
+        reason = "NBBO_TOO_STALE_FOR_FILLABILITY_CONTROL"
+    elif full_spread_bps_raw > LIQUIDITY_MAX_FULL_SPREAD_BPS:
+        verdict = "FAIL"
+        reason = "NBBO_SPREAD_ABOVE_FILLABILITY_CONTROL"
+    else:
+        verdict = "PASS"
+        reason = "NBBO_FRESH_AND_WITHIN_SPREAD_CONTROL"
+
+    policy_material = _liquidity_policy_material(strategy_definition_id)
+    policy_receipt = "pep:" + sha256(_canonical_json(policy_material).encode("utf-8")).hexdigest()
+    payload = {
+        **policy_material,
+        "decision_at": decision.isoformat(),
+        "nbbo_asof": nbbo_time.isoformat(),
+        "nbbo_age_seconds": round(age_seconds_raw, 6),
+        "bid_price": bid,
+        "ask_price": ask,
+        "midpoint_price": round(midpoint, 6),
+        "full_spread_bps": round(full_spread_bps_raw, 6),
+        "half_spread_bps": round(half_spread_bps_raw, 6),
+        "nbbo_source": nbbo_source,
+        "verdict": verdict,
+        "reason": reason,
+        "policy_receipt": policy_receipt,
+    }
+    payload["fact_receipt"] = (
+        "pepf:" + sha256(_canonical_json(payload).encode("utf-8")).hexdigest()
+    )
+    return payload
+
+
+def _gap_policy_material(strategy_definition_id: str) -> dict[str, object]:
+    return {
+        "schema": SCHEMA,
+        "gate": GAP_GATE,
+        "strategy_id": STRATEGY_ID,
+        "strategy_definition_id": strategy_definition_id,
+        "entry_policy_version": ENTRY_POLICY_VERSION,
+        "horizon": "2_15_SESSIONS",
+        "horizon_role": "new_entry",
+        "scientific_status": "CONTROL_ONLY",
+        "authority_tier": "SHADOW_ONLY",
+        "gap_policy_version": GAP_POLICY_VERSION,
+        "gap_policy_era": GAP_POLICY_ERA,
+        "method": "OPEN_GAP_AND_DECISION_TIME_VELOCITY_ATR_CONTROL",
+        "max_open_gap_atr": GAP_MAX_OPEN_ATR,
+        "max_move_from_open_atr": GAP_MAX_MOVE_FROM_OPEN_ATR,
+        "max_session_move_atr": GAP_MAX_SESSION_MOVE_ATR,
+        "threshold_status": "INITIAL_OPERATION_CONSTANT_NOT_CALIBRATED",
+        "threshold_rationale": "INITIAL_CONTROL_NOT_DERIVED_FROM_STOCK_IDENTITY_OR_REPLAY_THRESHOLDS",
+        "calibration_requirement": "PROSPECTIVE_OR_OOS_SAME_TAPE_WITH_COSTS",
+        "price_family_precondition": "REQUIRE_SEPARATE_ACCEPTED_IDENTITY_BASIS_OWNER",
+        "direction_semantics": "ABSOLUTE_DISLOCATION_CONTROL",
+        "authority": {
+            "can_rank": False,
+            "can_admit_candidate": False,
+            "can_size": False,
+            "can_execute": False,
+            "can_trade": False,
+        },
+    }
+
+
+def evaluate_gap_velocity(
+    *,
+    strategy_definition: Mapping[str, Any],
+    current_price: float,
+    day_open: float,
+    prev_close: float,
+    atr: float,
+) -> dict[str, object]:
+    """Return the shadow/control B4 ``gap_velocity`` owner fact.
+
+    The first control measures absolute open-gap, move-from-open and total session
+    displacement in owner-supplied ATR units.  The constants are deliberately
+    uncalibrated operation constants; they cannot establish promotion or waive the
+    separate identity/basis, quote freshness, geometry or liquidity owners.
+    """
+
+    validate_strategy_definition(strategy_definition)
+    strategy_definition_id = str(strategy_definition["strategy_definition_id"])
+    price = _finite_positive_number(current_price, "current_price")
+    open_price = _finite_positive_number(day_open, "day_open")
+    prior = _finite_positive_number(prev_close, "prev_close")
+    atr_value = _finite_positive_number(atr, "atr")
+
+    open_gap_atr_raw = abs(open_price - prior) / atr_value
+    move_from_open_atr_raw = abs(price - open_price) / atr_value
+    session_move_atr_raw = abs(price - prior) / atr_value
+
+    if open_gap_atr_raw > GAP_MAX_OPEN_ATR:
+        verdict = "FAIL"
+        reason = "OPEN_GAP_ABOVE_ATR_CONTROL"
+    elif move_from_open_atr_raw > GAP_MAX_MOVE_FROM_OPEN_ATR:
+        verdict = "FAIL"
+        reason = "MOVE_FROM_OPEN_ABOVE_ATR_CONTROL"
+    elif session_move_atr_raw > GAP_MAX_SESSION_MOVE_ATR:
+        verdict = "FAIL"
+        reason = "SESSION_MOVE_ABOVE_ATR_CONTROL"
+    else:
+        verdict = "PASS"
+        reason = "GAP_AND_VELOCITY_WITHIN_ATR_CONTROL"
+
+    policy_material = _gap_policy_material(strategy_definition_id)
+    policy_receipt = "pep:" + sha256(_canonical_json(policy_material).encode("utf-8")).hexdigest()
+    payload = {
+        **policy_material,
+        "current_price": price,
+        "day_open": open_price,
+        "prev_close": prior,
+        "atr": atr_value,
+        "open_gap_atr": round(open_gap_atr_raw, 6),
+        "move_from_open_atr": round(move_from_open_atr_raw, 6),
+        "session_move_atr": round(session_move_atr_raw, 6),
         "verdict": verdict,
         "reason": reason,
         "policy_receipt": policy_receipt,

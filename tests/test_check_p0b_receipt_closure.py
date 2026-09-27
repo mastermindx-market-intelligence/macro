@@ -133,6 +133,15 @@ def test_unrelated_path_passes(tmp_path: Path) -> None:
     assert _eval(tmp_path, {"engine/unrelated.py"}) == []
 
 
+def test_parse_planner_changed_file_json_and_refuse_null() -> None:
+    planner = json.dumps([HK_TEMPLATE, HK_RECEIPT, ""])
+    assert guard.parse_changed_paths(planner) == {HK_TEMPLATE, HK_RECEIPT}
+    with pytest.raises(ValueError, match="null / unavailable"):
+        guard.parse_changed_paths("null\n")
+    with pytest.raises(ValueError, match="array of strings"):
+        guard.parse_changed_paths(json.dumps({"paths": [HK_TEMPLATE]}))
+
+
 def test_parse_name_only_and_unified_diff() -> None:
     names = guard.parse_changed_paths(f"{HK_TEMPLATE}\n{HK_RECEIPT}\n")
     assert names == {HK_TEMPLATE, HK_RECEIPT}
@@ -144,6 +153,13 @@ def test_parse_name_only_and_unified_diff() -> None:
         "+x\n"
     )
     assert guard.parse_changed_paths(unified) == {HK_TEMPLATE}
+
+
+def test_cli_refuses_null_planner_handle(tmp_path: Path) -> None:
+    _plant_receipts(tmp_path)
+    handle = tmp_path / "changed.json"
+    handle.write_text("null\n", encoding="utf-8")
+    assert guard.main(["--repo-root", str(tmp_path), "--diff-file", str(handle)]) == 2
 
 
 def test_cli_red_then_green(tmp_path: Path) -> None:

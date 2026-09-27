@@ -1,6 +1,6 @@
 """Contract for scripts/check_contract_delta.py, the differential merge-train gate.
 
-Three things are pinned here, matching the three ways this gate could quietly
+Five things are pinned here, matching the five ways this gate could quietly
 stop doing its job:
 
   1. DELTA SEMANTICS — a finding present identically on head and base must never
@@ -21,21 +21,34 @@ stop doing its job:
   4. SPARSE EXACTNESS — both head and base bind the tested commit's tracked-path
      inventory before deriving closure, so omitted non-Python leaves remain
      visible without materializing the generated-heavy site/data trees.
+  5. CONTROL-PLANE CLASSES (2026-09-27) — the packing probes, skip-only gates
+     and trigger gaps get the same delta law as 1, share their guards'
+     functions as in 2, read the probe ceilings from the one test that owns
+     them, and the base worker's bootstrap rows equal the shared functions'.
 """
 from __future__ import annotations
 
 from contextlib import contextmanager
+import copy
+from dataclasses import dataclass
+import inspect
 
 import json
 import os
 import signal
 import subprocess
+import sys
+import time
+import types
 from pathlib import Path
 
 import pytest
 import yaml
 
+from scripts import check_ci_trigger_closure as TRIGGER
 from scripts import check_contract_delta as CCD
+from scripts import check_skip_only_suites as SKIP
+from scripts import run_ci_pack as PACK
 from scripts.run_ci_pack import curated_exclusive_closure_findings as PACK_CLOSURE_FN
 from scripts.audit_unrun_tests import gated_unrun_suites as AUDIT_SUITES_FN
 import tests.test_ci_pack as test_ci_pack_module
@@ -199,7 +212,7 @@ def test_head_findings_binds_exact_tree_inventory(
     def closure_findings(path: Path):
         assert events[-1][0] == "enter"
         assert path == manifest
-        return {"unrun-picks-boards": ["site/theme.css"]}
+        return {"unrun-picks-boards": ["site/theme.css"]}  # ci-trigger-closure: data — fixture finding name, never opened
 
     def suite_findings():
         assert events[-1][0] == "enter"
@@ -209,7 +222,7 @@ def test_head_findings_binds_exact_tree_inventory(
     monkeypatch.setattr(CCD, "gated_unrun_suites", suite_findings)
 
     assert CCD._head_findings() == {
-        "closure": {"unrun-picks-boards": ["site/theme.css"]},
+        "closure": {"unrun-picks-boards": ["site/theme.css"]},  # ci-trigger-closure: data — fixture finding name, never opened
         "suites": ["tests/test_unwired.py"],
     }
     assert [event[0] for event in events] == ["write", "enter", "exit"]
@@ -430,15 +443,21 @@ def test_ci_gate_enforcement_step_treats_skip_as_ok() -> None:
     assert '!= "success"' not in run and '!="success"' not in run
 
 
-def test_legacy_jobs_workflow_yaml_job_runs_the_new_suite() -> None:
+def test_legacy_jobs_ci_control_plane_job_runs_the_new_suite() -> None:
     """This file must be wired somewhere, or audit_unrun_tests.py's own gate --
-    the very lane this gate exists to make pre-mergeable -- would flag it."""
+    the very lane this gate exists to make pre-mergeable -- would flag it.
+
+    Its home moved from workflow-yaml (gate: data, never run on a pull request)
+    to ci-control-plane-contracts on 2026-09-25, and it must stay on the code
+    gate: a contract for a PR gate that only runs after the merge proves
+    nothing about the PR."""
     doc = yaml.safe_load(MANIFEST.read_text())
-    job = doc["jobs"]["workflow-yaml"]
+    job = doc["jobs"]["ci-control-plane-contracts"]
     blob = "\n".join(
         step.get("run", "") for step in job.get("steps", []) if isinstance(step, dict)
     )
     assert "tests/test_contract_delta.py" in blob
+    assert job.get("gate", "code") == "code"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -532,3 +551,665 @@ def test_sigterm_handler_raises_system_exit() -> None:
     with pytest.raises(SystemExit) as excinfo:
         CCD._raise_on_sigterm(signal.SIGTERM, None)
     assert excinfo.value.code == 128 + signal.SIGTERM
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 5. control-plane classes (2026-09-27): packing probes, skip-only gates and
+#    trigger gaps, which ci-control-plane-contracts' path scope cannot see
+# ─────────────────────────────────────────────────────────────────────────────
+
+# The three probe NAMES, as fixtures. A bare string naming a tracked file is a
+# read to the closure census (scripts/ci_scope_dependencies.py), and
+# build_free_content.py's import closure would then land in this suite's job,
+# ci-control-plane-contracts, whose paths do not (and must not) cover it:
+# widening them would put that job on the very probes it measures. These
+# tests hand the names to fakes and never open them.
+# ci-trigger-closure: data — probe file NAMES handed to fakes, never opened
+INDEX_PROBE, FREE_CONTENT_PROBE, PLAN_BOOK_PROBE = (
+    "templates/index.html",
+    "scripts/build_free_content.py",
+    "engine/prophet/plan_book.py",
+)
+
+def _probe(
+    probe: str = INDEX_PROBE,
+    *,
+    jobs: int = 134,
+    weight: int = 5_501,
+    packs: int = 10,
+    max_jobs: int = 134,
+    max_weight: int = 5_800,
+    max_packs: int = 10,
+) -> dict:
+    """One packing-probe row; the defaults are templates/index.html on main at
+    the time of writing, at (not over) its 134-job ceiling."""
+    return {
+        "probe": probe,
+        "jobs": jobs,
+        "weight": weight,
+        "packs": packs,
+        "max_jobs": max_jobs,
+        "max_weight": max_weight,
+        "max_packs": max_packs,
+        "job_ids": [f"job-{index:03d}" for index in range(jobs)],
+        "reason": "fixture",
+    }
+
+
+def _skip_row(test: str = "tests/test_x.py", gate: str = "hypothesis") -> dict:
+    return {
+        "test": test,
+        "gate": gate,
+        "needs": [gate],
+        "why": [f"pytest.importorskip({gate!r})"],
+        "naming_jobs": ["job-b", "job-a"],
+        "satisfying_jobs": [],
+        "status": "SKIP-ONLY",
+    }
+
+
+def _gap_row(test: str = "tests/test_x.py", gaps: tuple[str, ...] = ("engine/x.py",)) -> dict:
+    return {
+        "test": test,
+        "run_by": [".github/ci/legacy-jobs.yml::job-a"],
+        "filters": [".github/workflows/fences.yml"],
+        "subjects": sorted(gaps),
+        "gaps": list(gaps),
+        "why": {gap: f"open({gap!r})" for gap in gaps},
+        "self_reachable": True,
+        "data_marked": {},
+        "status": "GAP",
+    }
+
+
+def _payload(**classes) -> dict:
+    return {
+        "closure": {},
+        "suites": [],
+        "probes": [_probe()],
+        "skip_only": [],
+        "trigger_gaps": [],
+        **classes,
+    }
+
+
+def test_a_probe_newly_over_its_ceiling_reds() -> None:
+    """The #8033 review's shape: one suite starts reading templates/index.html
+    and the probe goes from its 134-job ceiling to 135."""
+    delta = CCD.compute_delta(_payload(probes=[_probe(jobs=135)]), _payload())
+    assert delta["introduced_probes"] == [
+        CCD.ProbeFinding(INDEX_PROBE, "jobs", 135, 134, 134, ("job-134",))
+    ]
+    assert delta["inherited_probes"] == []
+    assert CCD.has_introduced_findings(delta) is True
+
+
+def test_a_probe_breach_inherited_from_the_base_does_not_red() -> None:
+    over = _payload(probes=[_probe(jobs=135)])
+    delta = CCD.compute_delta(over, copy.deepcopy(over))
+    assert delta["introduced_probes"] == []
+    assert delta["inherited_probes"] == [
+        CCD.ProbeFinding(INDEX_PROBE, "jobs", 135, 134, 135, ())
+    ]
+    assert CCD.has_introduced_findings(delta) is False
+
+
+def test_a_head_pushed_further_over_an_inherited_breach_reds() -> None:
+    """Magnitude, not just (probe, axis): an already-breached probe gives no
+    amnesty to a PR that selects still more jobs for it."""
+    delta = CCD.compute_delta(
+        _payload(probes=[_probe(jobs=136)]), _payload(probes=[_probe(jobs=135)])
+    )
+    assert delta["introduced_probes"] == [
+        CCD.ProbeFinding(INDEX_PROBE, "jobs", 136, 134, 135, ("job-135",))
+    ]
+    assert CCD.has_introduced_findings(delta) is True
+
+
+def test_a_head_that_shrinks_an_inherited_breach_does_not_red() -> None:
+    delta = CCD.compute_delta(
+        _payload(probes=[_probe(jobs=135)]), _payload(probes=[_probe(jobs=137)])
+    )
+    assert delta["introduced_probes"] == []
+    assert [finding.base for finding in delta["inherited_probes"]] == [137]
+    assert CCD.has_introduced_findings(delta) is False
+
+
+def test_a_probe_fixed_on_head_is_silent() -> None:
+    delta = CCD.compute_delta(_payload(), _payload(probes=[_probe(jobs=135)]))
+    assert delta["introduced_probes"] == [] and delta["inherited_probes"] == []
+    assert CCD.format_report(delta) == []
+
+
+def test_each_probe_axis_is_its_own_finding() -> None:
+    """Weight and packs breach without a single new job: the same jobs, heavier."""
+    head = _payload(probes=[
+        _probe(weight=5_900),
+        _probe(FREE_CONTENT_PROBE, jobs=131, weight=6_001, packs=11,
+               max_jobs=132, max_weight=9_000),
+    ])
+    base = _payload(probes=[
+        _probe(),
+        _probe(FREE_CONTENT_PROBE, jobs=131, weight=5_269, packs=9,
+               max_jobs=132, max_weight=9_000),
+    ])
+    delta = CCD.compute_delta(head, base)
+    assert delta["introduced_probes"] == [
+        CCD.ProbeFinding(FREE_CONTENT_PROBE, "packs", 11, 10, 9, ()),
+        CCD.ProbeFinding(INDEX_PROBE, "weight", 5_900, 5_800, 5_501, ()),
+    ]
+
+
+def test_a_new_skip_only_gate_reds() -> None:
+    delta = CCD.compute_delta(_payload(skip_only=[_skip_row()]), _payload())
+    assert delta["introduced_skip_only"] == [
+        CCD.SkipOnlyFinding("tests/test_x.py", "hypothesis", ("hypothesis",), ("job-a", "job-b"))
+    ]
+    assert CCD.has_introduced_findings(delta) is True
+
+
+def test_an_inherited_skip_only_gate_does_not_red() -> None:
+    same = _payload(skip_only=[_skip_row()])
+    delta = CCD.compute_delta(same, copy.deepcopy(same))
+    assert delta["introduced_skip_only"] == []
+    assert [(f.test, f.gate) for f in delta["inherited_skip_only"]] == [
+        ("tests/test_x.py", "hypothesis")
+    ]
+    assert CCD.has_introduced_findings(delta) is False
+
+
+def test_a_second_gate_on_an_already_skip_only_suite_still_reds() -> None:
+    """Identity is (suite, gate), so an inherited gate is no amnesty for a new one."""
+    delta = CCD.compute_delta(
+        _payload(skip_only=[_skip_row(), _skip_row(gate="numpy")]),
+        _payload(skip_only=[_skip_row()]),
+    )
+    assert [(f.test, f.gate) for f in delta["introduced_skip_only"]] == [("tests/test_x.py", "numpy")]
+    assert [(f.test, f.gate) for f in delta["inherited_skip_only"]] == [("tests/test_x.py", "hypothesis")]
+
+
+def test_a_new_trigger_gap_reds() -> None:
+    delta = CCD.compute_delta(_payload(trigger_gaps=[_gap_row()]), _payload())
+    assert delta["introduced_trigger_gaps"] == [
+        CCD.TriggerGapFinding(
+            "tests/test_x.py",
+            "engine/x.py",
+            "open('engine/x.py')",
+            (".github/workflows/fences.yml",),
+            (".github/ci/legacy-jobs.yml::job-a",),
+        )
+    ]
+    assert CCD.has_introduced_findings(delta) is True
+
+
+def test_an_inherited_trigger_gap_does_not_red() -> None:
+    same = _payload(trigger_gaps=[_gap_row()])
+    delta = CCD.compute_delta(same, copy.deepcopy(same))
+    assert delta["introduced_trigger_gaps"] == []
+    assert [(f.test, f.subject) for f in delta["inherited_trigger_gaps"]] == [
+        ("tests/test_x.py", "engine/x.py")
+    ]
+    assert CCD.has_introduced_findings(delta) is False
+
+
+def test_a_new_subject_on_a_suite_with_an_inherited_gap_still_reds() -> None:
+    delta = CCD.compute_delta(
+        _payload(trigger_gaps=[_gap_row(gaps=("engine/x.py", "engine/y.py"))]),
+        _payload(trigger_gaps=[_gap_row()]),
+    )
+    assert [(f.test, f.subject) for f in delta["introduced_trigger_gaps"]] == [
+        ("tests/test_x.py", "engine/y.py")
+    ]
+    assert [(f.test, f.subject) for f in delta["inherited_trigger_gaps"]] == [
+        ("tests/test_x.py", "engine/x.py")
+    ]
+
+
+def test_a_base_that_predates_a_guard_counts_every_head_finding_as_introduced() -> None:
+    """`null` is what the worker ships for a guard module the base does not
+    have: nothing can be inherited from it, and the log says why."""
+    head = _payload(skip_only=[_skip_row()])
+    base = _payload(skip_only=None)
+    delta = CCD.compute_delta(head, base)
+    assert [(f.test, f.gate) for f in delta["introduced_skip_only"]] == [("tests/test_x.py", "hypothesis")]
+    notices = [line for line in CCD.measurement_lines(head, base) if line.startswith("::notice")]
+    assert len(notices) == 1
+    assert notices[0].startswith("::notice title=contract-delta::") and "skip_only" in notices[0]
+
+
+def test_control_plane_keys_appear_only_for_the_classes_a_payload_carries() -> None:
+    delta = CCD.compute_delta(
+        {"closure": {}, "suites": [], "probes": [_probe()]},
+        {"closure": {}, "suites": []},
+    )
+    assert set(delta) == {
+        "introduced_closure", "inherited_closure", "introduced_suites",
+        "inherited_suites", "introduced_probes", "inherited_probes",
+    }
+
+
+def test_format_report_covers_the_control_plane_classes() -> None:
+    head = _payload(
+        probes=[_probe(jobs=135), _probe(PLAN_BOOK_PROBE, jobs=128, max_jobs=127)],
+        skip_only=[_skip_row(), _skip_row("tests/test_old.py")],
+        trigger_gaps=[_gap_row(), _gap_row("tests/test_old.py", ("engine/old.py",))],
+    )
+    base = _payload(
+        probes=[_probe(), _probe(PLAN_BOOK_PROBE, jobs=128, max_jobs=127)],
+        skip_only=[_skip_row("tests/test_old.py")],
+        trigger_gaps=[_gap_row("tests/test_old.py", ("engine/old.py",))],
+    )
+    lines = CCD.format_report(CCD.compute_delta(head, base))
+    errors = [line for line in lines if line.startswith("::error title=contract-delta::")]
+    notices = [line for line in lines if line.startswith("::notice title=contract-delta::")]
+    assert len(errors) == 3 and len(notices) == 3 and len(lines) == 6
+    probe_error, skip_error, gap_error = errors
+    assert INDEX_PROBE in probe_error and "135 jobs" in probe_error
+    assert "ceiling 134" in probe_error and "job-134" in probe_error
+    assert "PACKING_PROBES" in probe_error
+    assert "tests/test_x.py" in skip_error and "`hypothesis`" in skip_error
+    assert "tests/test_x.py reads engine/x.py" in gap_error
+    assert "# ci-trigger-closure: data" in gap_error
+    assert PLAN_BOOK_PROBE in notices[0] and "128" in notices[0]
+    assert "tests/test_old.py" in notices[1]
+    assert "engine/old.py" in notices[2]
+
+
+def test_measurement_lines_print_both_sides_of_every_probe_and_the_census_seconds() -> None:
+    head = _payload(probes=[_probe(jobs=135)], timings={"probes": 1.25, "closure_and_suites": 2.0})
+    base = _payload(timings={"probes": 1.0})
+    lines = CCD.measurement_lines(head, base)
+    assert lines == [
+        "contract-delta: probe templates/index.html: head 135 jobs / 5,501 s / 10 packs; "
+        "base 134 jobs / 5,501 s / 10 packs; ceilings 134 / 5,800 / 10",
+        "contract-delta: head census seconds: closure_and_suites 2.0, probes 1.2",
+        "contract-delta: base census seconds: probes 1.0",
+    ]
+
+
+def test_an_incomplete_census_is_a_refusal_not_a_pass() -> None:
+    with pytest.raises(CCD.ContractDeltaError, match="missing"):
+        CCD._require_control_plane_classes({"closure": {}, "suites": []}, "base 0123456789ab")
+    with pytest.raises(CCD.ContractDeltaError, match="malformed"):
+        CCD._require_control_plane_classes(_payload(probes={}), "head")
+    with pytest.raises(CCD.ContractDeltaError, match="guard module"):
+        CCD._require_control_plane_classes(_payload(skip_only=None), "head")
+    CCD._require_control_plane_classes(_payload(skip_only=None), "base 0123456789ab")
+
+
+def _fake_run(monkeypatch: pytest.MonkeyPatch, *, head: dict, base: dict) -> tuple[int, dict]:
+    """`run()` with every tree, git and subprocess edge replaced by fixtures."""
+    spec = {"probes": [[INDEX_PROBE, 134, 5_800]], "max_packs": 10}
+    calls: dict = {}
+
+    def start_worker(tree: Path, given_spec: dict) -> str:
+        calls["spec"] = given_spec
+        return "proc"
+
+    monkeypatch.setattr(CCD, "packing_probe_spec", lambda suite: spec)
+    monkeypatch.setattr(
+        CCD,
+        "materialize_base_tree",
+        lambda ref, *, repo_root: (Path("/base"), "b" * 40, lambda: calls.setdefault("cleaned", True)),
+    )
+    monkeypatch.setattr(CCD, "_start_worker", start_worker)
+    monkeypatch.setattr(CCD, "_finish_worker", lambda proc, tree: copy.deepcopy(base))
+    monkeypatch.setattr(
+        CCD, "_head_findings", lambda: {"closure": head["closure"], "suites": head["suites"]}
+    )
+    monkeypatch.setattr(
+        CCD,
+        "_head_control_plane_findings",
+        lambda given: {
+            **{name: copy.deepcopy(head[name]) for name in CCD.CONTROL_PLANE_CLASSES},
+            "timings": {},
+        },
+    )
+    code = CCD.run("origin/main")
+    assert calls == {"spec": spec, "cleaned": True}
+    return code, calls
+
+
+@pytest.mark.parametrize(
+    "name, finding",
+    [
+        ("probes", [_probe(jobs=135)]),
+        ("skip_only", [_skip_row()]),
+        ("trigger_gaps", [_gap_row()]),
+    ],
+)
+def test_run_reds_only_on_what_the_head_introduces(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture, name: str, finding: list
+) -> None:
+    """End to end through `run()`: introduced reds, inherited never does, fixed is silent."""
+    clean = _payload()
+    dirty = {**_payload(), name: finding}
+
+    code, _ = _fake_run(monkeypatch, head=dirty, base=clean)
+    out = capsys.readouterr().out
+    assert code == 1
+    assert "::error title=contract-delta::" in out
+    assert "contract-delta: 1 introduced, 0 inherited (base bbbbbbbbbbbb)" in out
+
+    code, _ = _fake_run(monkeypatch, head=dirty, base=dirty)
+    out = capsys.readouterr().out
+    assert code == 0, "an inherited finding must never red"
+    assert "::error" not in out and "::notice title=contract-delta::" in out
+    assert "contract-delta: 0 introduced, 1 inherited" in out
+
+    code, _ = _fake_run(monkeypatch, head=clean, base=dirty)
+    out = capsys.readouterr().out
+    assert code == 0
+    assert "::error" not in out and "::notice" not in out
+
+
+def test_packing_probe_functions_are_the_shared_implementation() -> None:
+    assert CCD.packing_probe_measurements is PACK.packing_probe_measurements
+    assert CCD.packing_probe_breaches is PACK.packing_probe_breaches
+    assert test_ci_pack_module.packing_probe_measurements is PACK.packing_probe_measurements
+    assert test_ci_pack_module.packing_probe_breaches is PACK.packing_probe_breaches
+
+
+def test_skip_only_and_trigger_gap_findings_are_the_shared_implementation() -> None:
+    """Contract-delta diffs exactly the rows each guard's own main fails on."""
+    assert CCD.skip_only_findings is SKIP.skip_only_findings
+    assert CCD.trigger_gap_findings is TRIGGER.trigger_gap_findings
+    assert "bad = skip_only_findings(rows)" in inspect.getsource(SKIP.main)
+    assert "bad = trigger_gap_findings(rows)" in inspect.getsource(TRIGGER.main)
+
+
+def test_probe_ceilings_are_read_from_the_test_that_owns_them() -> None:
+    spec = CCD.packing_probe_spec(ROOT / CCD.PACKING_PROBE_SUITE_REL)
+    assert spec == {
+        "probes": [list(probe) for probe in test_ci_pack_module.PACKING_PROBES],
+        "max_packs": test_ci_pack_module.PACKING_PROBE_MAX_PACKS,
+    }
+    assert json.loads(json.dumps(spec)) == spec, "the spec rides the worker's argv as JSON"
+
+
+def test_probe_spec_accepts_an_annotated_literal(tmp_path: Path) -> None:
+    suite = tmp_path / "test_ci_pack.py"
+    suite.write_text(
+        "PACKING_PROBES: tuple = (('a.py', 1, 2_000),)\nPACKING_PROBE_MAX_PACKS: int = 3\n"
+    )
+    assert CCD.packing_probe_spec(suite) == {"probes": [["a.py", 1, 2000]], "max_packs": 3}
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "",
+        "PACKING_PROBES = ()\nPACKING_PROBE_MAX_PACKS = 10\n",
+        "PACKING_PROBES = (('a.py', 1, 2),)\n",
+        "PACKING_PROBES = tuple([('a.py', 1, 2)])\nPACKING_PROBE_MAX_PACKS = 10\n",
+        "PACKING_PROBES = (('a.py', 1, 2), ('a.py', 3, 4))\nPACKING_PROBE_MAX_PACKS = 10\n",
+        "PACKING_PROBES = (('a.py', True, 2),)\nPACKING_PROBE_MAX_PACKS = 10\n",
+        "PACKING_PROBES = (('a.py', 0, 2),)\nPACKING_PROBE_MAX_PACKS = 10\n",
+        "PACKING_PROBES = (('a.py', 1),)\nPACKING_PROBE_MAX_PACKS = 10\n",
+        "PACKING_PROBES = (('', 1, 2),)\nPACKING_PROBE_MAX_PACKS = 10\n",
+        "PACKING_PROBES = (('a.py', 1, 2),)\nPACKING_PROBE_MAX_PACKS = '10'\n",
+        "PACKING_PROBES = (('a.py', 1, 2),\nPACKING_PROBE_MAX_PACKS = 10\n",
+        "if True:\n    PACKING_PROBES = (('a.py', 1, 2),)\nPACKING_PROBE_MAX_PACKS = 10\n",
+    ],
+)
+def test_a_malformed_probe_spec_is_a_refusal(tmp_path: Path, source: str) -> None:
+    """Never an empty probe set: that would pass every PR without measuring."""
+    suite = tmp_path / "test_ci_pack.py"
+    suite.write_text(source)
+    with pytest.raises(CCD.ContractDeltaError):
+        CCD.packing_probe_spec(suite)
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        "PACKING_PROBES += (('b.py', 3, 4),)\n",
+        "if True:\n    PACKING_PROBES = (('b.py', 3, 4),)\n",
+        "try:\n    pass\nexcept ImportError:\n    PACKING_PROBE_MAX_PACKS = 99\n",
+        "for PACKING_PROBES in [()]:\n    pass\n",
+        "from os import sep as PACKING_PROBE_MAX_PACKS\n",
+        "def PACKING_PROBES():\n    return ()\n",
+        "del PACKING_PROBES\n",
+    ],
+)
+def test_a_rebound_probe_spec_is_a_refusal(tmp_path: Path, extra: str) -> None:
+    """The test measures a name's final value; this gate reads one literal.
+
+    Without this refusal a `+=` or a nested rebinding was silently ignored: the
+    gate measured `a.py` alone while the test measured `a.py` and `b.py` (the
+    Opus review of this change measured exactly that).
+    """
+    suite = tmp_path / "test_ci_pack.py"
+    suite.write_text(
+        "PACKING_PROBES = (('a.py', 1, 2),)\nPACKING_PROBE_MAX_PACKS = 10\n" + extra
+    )
+    with pytest.raises(CCD.ContractDeltaError, match="bound 2 times"):
+        CCD.packing_probe_spec(suite)
+
+
+def test_a_bare_annotation_is_not_a_second_binding(tmp_path: Path) -> None:
+    suite = tmp_path / "test_ci_pack.py"
+    suite.write_text(
+        "PACKING_PROBES: tuple\n"
+        "PACKING_PROBES = (('a.py', 1, 2),)\n"
+        "PACKING_PROBE_MAX_PACKS = 10\n"
+    )
+    assert CCD.packing_probe_spec(suite) == {"probes": [["a.py", 1, 2]], "max_packs": 10}
+
+
+def test_a_missing_probe_suite_is_a_refusal(tmp_path: Path) -> None:
+    with pytest.raises(CCD.ContractDeltaError):
+        CCD.packing_probe_spec(tmp_path / "absent.py")
+
+
+def test_start_worker_hands_the_head_spec_to_the_base(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    seen: dict = {}
+
+    class FakePopen:
+        def __init__(self, args: list, **kwargs) -> None:
+            seen["args"], seen["kwargs"] = args, kwargs
+
+    monkeypatch.setattr(CCD.subprocess, "Popen", FakePopen)
+    spec = {"probes": [["a.py", 1, 2]], "max_packs": 3}
+    CCD._start_worker(tmp_path, spec)
+    assert seen["args"][:3] == [sys.executable, "-c", CCD._WORKER_SOURCE]
+    assert json.loads(seen["args"][3]) == spec
+    assert seen["kwargs"]["cwd"] == tmp_path
+
+
+def test_worker_emits_every_control_plane_class_from_both_branches() -> None:
+    source = CCD._WORKER_SOURCE
+    assert CCD._WORKER_CONTROL_PLANE_SOURCE in source
+    assert "SPEC = json.loads(sys.argv[1])" in source
+    assert source.count("control = _control_plane_findings()") == 2
+    assert source.count(
+        'print(json.dumps({"closure": closure, "suites": suites, **control}))'
+    ) == 2
+
+
+def test_worker_tries_the_shared_control_plane_functions_first() -> None:
+    source = CCD._WORKER_CONTROL_PLANE_SOURCE
+    for name in ("packing_probe_measurements", "skip_only_findings", "trigger_gap_findings"):
+        assert f'getattr(pack, "{name}", None)' in source or f'getattr(guard, "{name}", None)' in source
+    assert "except ImportError" not in source, "a broken guard import must red, not read as absent"
+
+
+def _worker_helpers(spec: dict, modules: dict) -> dict:
+    """The worker's control-plane helpers, exec'd against `modules` (by name).
+
+    A module mapped to an exception raises it on import; an unmapped one is
+    absent from the base.
+    """
+    def import_module(name: str):
+        found = modules.get(name)
+        if found is None:
+            raise ModuleNotFoundError(f"No module named {name!r}", name=name)
+        if isinstance(found, BaseException):
+            raise found
+        return found
+
+    namespace = {
+        "importlib": types.SimpleNamespace(import_module=import_module),
+        "time": time,
+        "MANIFEST": Path(CCD.MANIFEST_REL),
+        "SPEC": spec,
+    }
+    exec(compile(CCD._WORKER_CONTROL_PLANE_SOURCE, "<worker control plane>", "exec"), namespace)
+    return namespace
+
+
+@dataclass(frozen=True)
+class _Job:
+    job_id: str
+    weight: int
+
+
+def test_worker_probe_bootstrap_matches_the_shared_measurement(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """This PR's own base has no packing_probe_measurements, so its worker takes
+    the bootstrap. Its rows must equal the shared function's for the same
+    planner answers, or every probe would read as moved on that one run.
+
+    The weights cover the pack formula's floor (no job: 1 pack), a round-up
+    (650 s: 2 packs) and its 12-pack cap (7,000 s).
+    """
+    jobs = [_Job("a", 400), _Job("b", 250), _Job("c", 7_000)]
+    selections = {"x.html": {"a", "b"}, "y.py": {"c"}, "z.py": set()}
+
+    def load_legacy_jobs(path: Path) -> list[_Job]:
+        return list(jobs)
+
+    def infer_job_scopes(loaded: list[_Job]) -> tuple[list[_Job], str]:
+        return loaded, "note"
+
+    def select_jobs(loaded: list[_Job], changed: list[str]) -> tuple[list[_Job], str]:
+        (path,) = changed
+        return [job for job in loaded if job.job_id in selections[path]], f"because {path}"
+
+    for name, fn in (
+        ("load_legacy_jobs", load_legacy_jobs),
+        ("infer_job_scopes", infer_job_scopes),
+        ("select_jobs", select_jobs),
+    ):
+        monkeypatch.setattr(PACK, name, fn)
+    probes = [("x.html", 1, 600), ("y.py", 5, 9_000), ("z.py", 1, 1)]
+    spec = {"probes": [list(probe) for probe in probes], "max_packs": 10}
+    shared = PACK.packing_probe_measurements(Path(CCD.MANIFEST_REL), probes, max_packs=10)
+    assert [row["packs"] for row in shared] == [2, 12, 1]
+
+    predates = types.SimpleNamespace(
+        load_legacy_jobs=load_legacy_jobs,
+        infer_job_scopes=infer_job_scopes,
+        select_jobs=select_jobs,
+        PACK_TARGET_SECONDS=PACK.PACK_TARGET_SECONDS,
+    )
+    assert _worker_helpers(spec, {"scripts.run_ci_pack": predates})["_probe_rows"]() == shared
+    assert _worker_helpers(spec, {"scripts.run_ci_pack": PACK})["_probe_rows"]() == shared
+
+
+def test_worker_guard_rows_match_the_guards_own_findings() -> None:
+    skip_rows = [
+        {"test": "t1", "status": "SKIP-ONLY"},
+        {"test": "t2", "status": "OK"},
+        {"test": "t3", "status": "UNRUN"},
+    ]
+
+    def trigger_census(depth: int) -> list[dict]:
+        return [{"test": "g", "status": "GAP", "depth": depth}, {"test": "ok", "status": "OK"}]
+
+    predates = {
+        "scripts.check_skip_only_suites": types.SimpleNamespace(census=lambda: list(skip_rows)),
+        "scripts.check_ci_trigger_closure": types.SimpleNamespace(census=trigger_census),
+    }
+    helpers = _worker_helpers({}, predates)
+    assert helpers["_skip_only_rows"]() == SKIP.skip_only_findings(skip_rows)
+    assert helpers["_trigger_gap_rows"]() == TRIGGER.trigger_gap_findings(trigger_census(1))
+    assert helpers["_trigger_gap_rows"]()[0]["depth"] == 1, "the gate's census depth is 1"
+
+    canonical = _worker_helpers({}, {
+        "scripts.check_skip_only_suites": types.SimpleNamespace(skip_only_findings=lambda: ["skip"]),
+        "scripts.check_ci_trigger_closure": types.SimpleNamespace(trigger_gap_findings=lambda: ["gap"]),
+    })
+    assert canonical["_skip_only_rows"]() == ["skip"]
+    assert canonical["_trigger_gap_rows"]() == ["gap"]
+
+
+def test_worker_treats_only_a_missing_guard_as_predating_it() -> None:
+    absent = _worker_helpers({}, {})
+    assert absent["_skip_only_rows"]() is None
+    assert absent["_trigger_gap_rows"]() is None
+    broken = _worker_helpers({}, {
+        "scripts.check_skip_only_suites": ModuleNotFoundError("No module named 'numpy'", name="numpy"),
+    })
+    with pytest.raises(ModuleNotFoundError):
+        broken["_skip_only_rows"]()
+
+
+def test_worker_control_plane_payload_carries_every_class_and_its_seconds() -> None:
+    helpers = _worker_helpers({"probes": [], "max_packs": 10}, {
+        "scripts.run_ci_pack": types.SimpleNamespace(
+            packing_probe_measurements=lambda manifest, probes, max_packs: []
+        ),
+        "scripts.check_skip_only_suites": types.SimpleNamespace(skip_only_findings=lambda: []),
+        "scripts.check_ci_trigger_closure": types.SimpleNamespace(trigger_gap_findings=lambda: []),
+    })
+    payload = helpers["_control_plane_findings"]()
+    assert set(payload) == {"probes", "skip_only", "trigger_gaps", "timings"}
+    assert set(payload["timings"]) == set(CCD.CONTROL_PLANE_CLASSES)
+
+
+def test_head_control_plane_findings_bind_the_tree_inventory_and_the_head_spec(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    tree = tmp_path / "tree"
+    sha = "2" * 40
+    events: list[str] = []
+    probe_calls: list = []
+
+    monkeypatch.setattr(CCD, "ROOT", tree)
+    monkeypatch.setattr(CCD, "_git", lambda *args, cwd: sha + "\n")
+
+    def write_inventory(output: Path, tested_tree_sha: str, *, root: Path):
+        events.append("write")
+        output.write_text("fixture", encoding="utf-8")
+
+    @contextmanager
+    def activate_inventory(source: Path, tested_tree_sha: str, *, root: Path):
+        events.append("enter")
+        yield object()
+        events.append("exit")
+
+    def measure(manifest: Path, probes: list, *, max_packs: int) -> list[dict]:
+        assert events[-1] == "enter"
+        probe_calls.append((manifest, probes, max_packs))
+        return [{"probe": INDEX_PROBE, "job_ids": ("b", "a")}]
+
+    def skip_findings() -> list[dict]:
+        assert events[-1] == "enter"
+        return [{"test": "tests/test_x.py", "needs": ("numpy",)}]
+
+    def gap_findings() -> list[dict]:
+        assert events[-1] == "enter"
+        return []
+
+    monkeypatch.setattr(CCD, "write_tracked_path_inventory", write_inventory)
+    monkeypatch.setattr(CCD, "planner_tracked_path_inventory", activate_inventory)
+    monkeypatch.setattr(CCD, "packing_probe_measurements", measure)
+    monkeypatch.setattr(CCD, "skip_only_findings", skip_findings)
+    monkeypatch.setattr(CCD, "trigger_gap_findings", gap_findings)
+
+    payload = CCD._head_control_plane_findings(
+        {"probes": [[INDEX_PROBE, 134, 5_800]], "max_packs": 10}
+    )
+    assert events == ["write", "enter", "exit"]
+    assert probe_calls == [
+        (tree / CCD.MANIFEST_REL, [(INDEX_PROBE, 134, 5_800)], 10)
+    ]
+    # JSON round-tripped: tuples arrive as lists, exactly as the worker's rows do.
+    assert payload["probes"] == [{"probe": INDEX_PROBE, "job_ids": ["b", "a"]}]
+    assert payload["skip_only"] == [{"test": "tests/test_x.py", "needs": ["numpy"]}]
+    assert payload["trigger_gaps"] == []
+    assert set(payload["timings"]) == set(CCD.CONTROL_PLANE_CLASSES)

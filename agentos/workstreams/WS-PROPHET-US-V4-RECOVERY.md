@@ -676,15 +676,18 @@ waves:
     status: todo
 next_action: >
   R6 Fable Meta-CEO program (operation prophet-us-fable-meta-ceo-20260923-001, parent
-  #6805, PICKUP_ACK 5793983971): wave 1 closed 2026-09-23 (handoff
-  PROPHET-US-V4-RECOVERY-2026-09-23-r6-wave1-close.md). Wave 2: merge B20 v2 (#7839),
-  the D03 censuses (#7836/#7837) and the D05 watchlist fix (#7840) on concluded green;
-  commission B16-a (read-only allowlisted closure matrix per
-  research/prophet_v4/r6_program/rulings/R6-D03-01_SOURCE_READINESS_SCOPE_2026-09-23.md
-  §3) and the rights register under research/licenses/; B18 stays blocked until B16-b
-  admits a domain; D09 closes on B16 captures. The 2026-09-18 rotation mandate and the
-  masterplan §21 wave graph remain in force beneath this program; never replay an old
-  next action without reconciling the R6 records.
+  #6805, PICKUP_ACK 5793983971): wave 2 closed 2026-09-23 (handoff
+  PROPHET-US-V4-RECOVERY-2026-09-23-r6-wave2-close.md; decisions
+  DEC:PROPHET-US-D03-SOURCE-READINESS-SCOPE, DEC:PROPHET-US-B16-CYCLE-INTERNAL-DIAGNOSTIC-ERA,
+  DEC:PROPHET-US-B04-EVIDENCE-DOSSIER-CONTRACT, DEC:PROPHET-US-D10-SOURCE-CUSTODY-ADMISSION).
+  Wave 3: merge DS-PR-0a (#7849) on concluded green and live-verify theme.css; adjudicate the
+  B20-1 component spec (#7851) after its repair lane and an Opus read-only audit; consume the
+  pre-registered Cycle (a) diagnostic run and B04-A from the m1 window (internal-only evidence,
+  never a pilot); rule R6-D07-01 on the D07 evidence-class register draft, then B04-B/C and
+  DS-PR-0c on 7849's merge sha. B01 stays with the #7180 writer; B03 merged by the #7572 writer
+  (177146dd) awaits production proof. The 2026-09-18 rotation mandate and the masterplan §21
+  wave graph remain in force beneath this program; never replay an old next action without
+  reconciling the R6 records.
 ---
 
 ## Context

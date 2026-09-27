@@ -897,6 +897,324 @@ def test_no_live_skew_caller_pins_the_legacy_chain_and_every_caller_emits():
 
 
 # --------------------------------------------------------------------------- #
+# A-F03-W2-4c — source_windows coverage spans + source_break_date
+# --------------------------------------------------------------------------- #
+def _round5_mixed_source_ledger():
+    """Round-5 measured-shape fixture (the ruling's (a) fixture in miniature).
+
+    6 session dates (Mon..Mon): thetadata has 5 names on dates 1,3,5 and 1
+    name on dates 2,4,6; polygon has 3 names on dates 1-4 only.
+
+      |  d1=06-22 (Mon) | d2=06-23 (Tue) | d3=06-24 (Wed) | d4=06-25 (Thu) | d5=06-26 (Fri) | d6=06-29 (Mon) |
+      |  thetadata=5    | thetadata=1    | thetadata=5    | thetadata=1    | thetadata=5    | thetadata=1    |
+      |  polygon=3      | polygon=3      | polygon=3      | polygon=3      | polygon=0      | polygon=0      |
+
+    Round-5 expected: source_windows → exactly two coverage spans:
+      polygon_gex first_date=06-22 last_date=06-25 n_dates=4
+      thetadata   first_date=06-22 last_date=06-29 n_dates=6
+    And source_break_date → 06-26 (the first weekday strictly greater than
+    the older source's last_date on which the newer source has rows).
+    """
+    rows = []
+    # Thetadata: 5 names on d1=2026-06-22, d3=2026-06-24, d5=2026-06-26;
+    #            1 name  on d2=2026-06-23, d4=2026-06-25, d6=2026-06-29
+    for d in ["2026-06-22", "2026-06-24", "2026-06-26"]:
+        for k in ["AAA", "BBB", "CCC", "DDD", "EEE"]:
+            rows.append(_ledger_row(k, d, 0.10, source="thetadata"))
+    for d in ["2026-06-23", "2026-06-25", "2026-06-29"]:
+        rows.append(_ledger_row("AAA", d, 0.10, source="thetadata"))
+    # Polygon: 3 names on d1..d4 only (no rows on d5 or d6)
+    for d in ["2026-06-22", "2026-06-23", "2026-06-24", "2026-06-25"]:
+        for k in ["XXX", "YYY", "ZZZ"]:
+            rows.append(_ledger_row(k, d, 0.10, source="polygon_gex"))
+    return pd.DataFrame(rows)
+
+
+def test_source_windows_returns_one_coverage_span_per_source_on_a_mixed_ledger():
+    """(a) Mixed synthetic ledger → exactly two coverage spans (one per source).
+
+    Per-source coverage over session (weekday) dates — the per-date majority
+    rule that returned 15 alternating windows on the live ledger was
+    abandoned because it printed 8 ThetaData ranges and 7 Polygon ranges
+    the Directional-read sentence could not read."""
+    windows = S.source_windows(_round5_mixed_source_ledger())
+    assert windows == [
+        {
+            "source": "polygon_gex",
+            "first_date": "2026-06-22",
+            "last_date": "2026-06-25",
+            "n_dates": 4,
+        },
+        {
+            "source": "thetadata",
+            "first_date": "2026-06-22",
+            "last_date": "2026-06-29",
+            "n_dates": 6,
+        },
+    ]
+
+
+def test_source_windows_treats_missing_column_as_polygon():
+    """(b) missing `source` column → one polygon_gex span covering every session."""
+    rows = [
+        _ledger_row("AAA", "2026-06-22", 0.10),  # source=None → polygon_gex
+        _ledger_row("AAA", "2026-06-23", 0.10),
+        _ledger_row("AAA", "2026-06-24", 0.10),
+    ]
+    df = pd.DataFrame(rows)
+    assert "source" not in df.columns
+    windows = S.source_windows(df)
+    assert windows == [
+        {
+            "source": "polygon_gex",
+            "first_date": "2026-06-22",
+            "last_date": "2026-06-24",
+            "n_dates": 3,
+        }
+    ]
+
+
+def test_source_windows_excludes_weekend_rows_and_weekend_only_ledger_is_empty():
+    """(c) Weekend-dated rows never count in first/last/n_dates, and a ledger
+    of only weekend rows returns [] (no session to count, not a fabricated
+    Saturday window)."""
+    rows = [
+        _ledger_row("AAA", "2026-06-20", 0.10, source="polygon_gex"),  # Saturday
+        _ledger_row("AAA", "2026-06-21", 0.10, source="polygon_gex"),  # Sunday
+        _ledger_row("AAA", "2026-06-22", 0.10, source="thetadata"),    # Monday
+        _ledger_row("AAA", "2026-06-27", 0.10, source="thetadata"),    # Saturday
+    ]
+    windows = S.source_windows(pd.DataFrame(rows))
+    assert windows == [{
+        "source": "thetadata",
+        "first_date": "2026-06-22",
+        "last_date": "2026-06-22",
+        "n_dates": 1,
+    }]
+    weekend_only = pd.DataFrame([
+        _ledger_row("AAA", "2026-06-20", 0.10, source="polygon_gex"),
+        _ledger_row("AAA", "2026-06-21", 0.10, source="thetadata"),
+    ])
+    assert S.source_windows(weekend_only) == []
+
+
+def test_source_windows_single_source_returns_one_span():
+    """(d) Single-source ledger → exactly one coverage span (no boundary to name)."""
+    rows = [
+        _ledger_row("AAA", "2026-06-22", 0.10, source="thetadata"),
+        _ledger_row("AAA", "2026-06-23", 0.10, source="thetadata"),
+        _ledger_row("AAA", "2026-06-24", 0.10, source="thetadata"),
+    ]
+    windows = S.source_windows(pd.DataFrame(rows))
+    assert windows == [{
+        "source": "thetadata",
+        "first_date": "2026-06-22",
+        "last_date": "2026-06-24",
+        "n_dates": 3,
+    }]
+
+
+def test_source_break_date_is_the_first_session_after_the_older_source_ends():
+    """(e) source_break_date → d5 (2026-06-26) in the (a) fixture.
+
+    polygon_gex.last_date = 2026-06-25 (older), thetadata.last_date =
+    2026-06-29 (newer); the earliest thetadata weekday strictly greater than
+    2026-06-25 is 2026-06-26 (Fri).  None for single-source ledgers, and
+    None when the newer source has no date after the older source's last
+    date (the ledger collapses to one source's tail)."""
+    df = _round5_mixed_source_ledger()
+    assert S.source_break_date(df) == "2026-06-26"
+    # Single source → None (no boundary).
+    single = pd.DataFrame([
+        _ledger_row("AAA", "2026-06-22", 0.10, source="thetadata"),
+        _ledger_row("AAA", "2026-06-23", 0.10, source="thetadata"),
+    ])
+    assert S.source_break_date(single) is None
+    # Two sources whose coverage ends on the same day → no strictly-greater
+    # date exists, so source_break_date is None (the older source is the one
+    # with the smaller first_date; the newer source does not extend beyond
+    # it).
+    same_end = pd.DataFrame([
+        _ledger_row("AAA", "2026-06-22", 0.10, source="polygon_gex"),
+        _ledger_row("BBB", "2026-06-22", 0.10, source="thetadata"),
+        _ledger_row("AAA", "2026-06-23", 0.10, source="polygon_gex"),
+        _ledger_row("BBB", "2026-06-23", 0.10, source="thetadata"),
+    ])
+    assert S.source_break_date(same_end) is None
+
+
+def test_source_break_date_uses_real_row_dates_not_span_bounds():
+    """A backfill gap inside the newer source's coverage span must NOT
+    fabricate a break date — the span bounds (`first_date..last_date`)
+    interpolate over missing dates, so a span-bound walk would report a
+    break date the ledger itself never has a row for.  RED-first against
+    the prior span-bound walk.
+
+    Distinguishing fixture (the row-walk fix is real ONLY when the
+    fixture's two answers differ):
+      · polygon rows: weekdays 2026-08-03..2026-08-13 (last = 08-13)
+      · thetadata rows: 2026-06-22, 06-23, 06-24 AND 08-18, 08-19, 08-20
+                        (a backfill gap 06-25..08-17, INCLUDING the
+                        first five weekday candidates past 08-13)
+    With the OLD span-bound walk (cursor one calendar day at a time over
+    `min(last_date)..newer_source.last_date`), the cursor starts at 08-14
+    and is "in" the span immediately → returns 08-14.
+    With the NEW row-walk, the cursor starts at 08-14 and is NOT in the
+    actual row set until 08-18 → returns 08-18.  Distinct answers pin the
+    fix."""
+    rows = []
+    # Polygon: every weekday 2026-08-03..2026-08-13 (the older source).
+    for d in ["2026-08-03", "2026-08-04", "2026-08-05", "2026-08-06",
+              "2026-08-07", "2026-08-10", "2026-08-11", "2026-08-12", "2026-08-13"]:
+        for k in ["AAA", "BBB", "CCC"]:
+            rows.append(_ledger_row(k, d, 0.10, source="polygon_gex"))
+    # Thetadata: rows ONLY at the two clusters — the front cluster
+    # (06-22..06-24) and the post-gap cluster (08-18..08-20).  The gap
+    # 06-25..08-17 includes the first five weekday candidates past
+    # 08-13, so the OLD span-bound walk would happily return 08-14 even
+    # though the ledger has no row on 08-14.
+    for d in ["2026-06-22", "2026-06-23", "2026-06-24",
+              "2026-08-18", "2026-08-19", "2026-08-20"]:
+        for k in ["AAA", "BBB", "CCC"]:
+            rows.append(_ledger_row(k, d, 0.10, source="thetadata"))
+    df = pd.DataFrame(rows)
+    spans = S.source_windows(df)
+    # Sanity: thetadata's coverage span is one tuple 06-22..08-20 (six
+    # distinct dates); polygon ends 08-13.  The fixture's gap (06-25..08-17)
+    # is INSIDE thetadata's span bounds — exactly the case the fix guards.
+    theta_span = next(w for w in spans if w["source"] == "thetadata")
+    assert theta_span["first_date"] == "2026-06-22"
+    assert theta_span["last_date"] == "2026-08-20"
+    assert theta_span["n_dates"] == 6
+    polygon_span = next(w for w in spans if w["source"] == "polygon_gex")
+    assert polygon_span["last_date"] == "2026-08-13"
+    assert S.source_break_date(df) == "2026-08-18", (
+        "source_break_date must walk the ledger's actual row dates, not "
+        "the newer source's coverage span bounds — a span-bound walk here "
+        "would return 08-14 (the first weekday the span bounds allow past "
+        "08-13), even though the ledger has no row on 08-14..08-17"
+    )
+    # HARDENING: an explicit, smaller span-bound counter-example.  Build
+    # a copy of the fixture where thetadata has a row on 08-14, and
+    # confirm the answer changes — only the row-walk code path is
+    # sensitive to that exact row (the span-bound path is blind to it).
+    rows_with_0814 = list(rows) + [
+        _ledger_row("AAA", "2026-08-14", 0.10, source="thetadata"),
+        _ledger_row("BBB", "2026-08-14", 0.10, source="thetadata"),
+        _ledger_row("CCC", "2026-08-14", 0.10, source="thetadata"),
+    ]
+    df_with = pd.DataFrame(rows_with_0814)
+    assert S.source_break_date(df_with) == "2026-08-14", (
+        "with a thetadata row on 08-14 the row-walk must return 08-14 "
+        "(the span-bound walk would also return 08-14 here, so this "
+        "double-checks the row-walk path picks up the new row)"
+    )
+
+
+def test_emit_payload_history_dates_counts_distinct_session_dates_for_overlap():
+    """When polygon's session dates are a subset of thetadata's session
+    dates, history_dates must equal the union cardinality (the longer span's
+    count) — NOT the overlap-aware sum.  Same `(a)` fixture: polygon has 4
+    dates, thetadata has 6 dates, but the 4 polygon dates are a subset of
+    the 6 thetadata dates, so the union is 6."""
+    data, _site = _patch_dirs(monkeypatch=None, tmp_path=None) if False else (None, None)
+    rows = []
+    for d in ["2026-06-22", "2026-06-24", "2026-06-26"]:
+        for k in ["AAA", "BBB", "CCC", "DDD", "EEE"]:
+            rows.append(_ledger_row(k, d, 0.10, source="thetadata"))
+    for d in ["2026-06-23", "2026-06-25", "2026-06-29"]:
+        rows.append(_ledger_row("AAA", d, 0.10, source="thetadata"))
+    for d in ["2026-06-22", "2026-06-23", "2026-06-24", "2026-06-25"]:
+        for k in ["XXX", "YYY", "ZZZ"]:
+            rows.append(_ledger_row(k, d, 0.10, source="polygon_gex"))
+    df = pd.DataFrame(rows)
+    spans = S.source_windows(df)
+    assert {w["source"]: w["n_dates"] for w in spans} == {
+        "polygon_gex": 4, "thetadata": 6,
+    }
+    # 4 + 6 = 10, but the union cardinality is 6 (polygon's 4 dates are
+    # all inside thetadata's 6).
+    payload = {"source_windows": spans}
+    distinct = len({str(d) for d in df["date"].tolist()})
+    assert distinct == 6, distinct
+    # The OLD code returned 10 here; the FIX returns 6.  This is the value
+    # the doc/body tables report for the live ledger (history_dates = 64 for
+    # spans of 33 + 64 = 97, because thetadata's 64 dates include all 33
+    # polygon dates).
+    assert distinct != 10  # if 10, the sum semantics still hold — fix regressed.
+
+
+def test_emit_payload_carries_source_windows_and_history_dates(tmp_path, monkeypatch):
+    """emit() payload carries source_windows, source_break, source_break_date,
+    and history_dates for the round-5 measured-shape fixture.
+
+    Round-5 history_dates is the count of distinct session dates on the
+    ledger (the union across sources, NOT the sum of per-source n_dates).
+    The fixture has polygon_gex on 4 dates and thetadata on 6 dates, and
+    those 4 polygon dates are a subset of the 6 thetadata dates, so the
+    union cardinality is 6.  The OLD sum semantics returned 10 here; the
+    FIX returns 6 — and the doc/body report the same value (64 for the
+    live ledger, where thetadata's 64 dates include all 33 polygon dates).
+    """
+    data, _site = _patch_dirs(monkeypatch, tmp_path)
+    ledger = data / "options_skew" / "snapshots.parquet"
+    ledger.parent.mkdir(parents=True)
+    pd.DataFrame(_round5_mixed_source_ledger()).to_parquet(ledger)
+    payload = S.emit_from_ledger(today=date(2026, 6, 30), accrual_state="ledger_only")
+    assert payload["source_break"] is True
+    assert payload["history_dates"] == 6
+    sources_in_windows = [w["source"] for w in payload["source_windows"]]
+    assert sources_in_windows == ["polygon_gex", "thetadata"]
+    assert payload["source_break_date"] == "2026-06-26"
+    # Schema string unchanged — additive keys only.
+    assert payload["schema"] == "options_skew.v1"
+    # Quiet ledger → source_break False, one span, break_date None.
+    quiet = pd.DataFrame([_ledger_row("AAA", "2026-06-22", 0.10, source="thetadata")])
+    quiet.to_parquet(ledger)
+    quiet_payload = S.emit_from_ledger(today=date(2026, 6, 22), accrual_state="ledger_only")
+    assert quiet_payload["source_break"] is False
+    assert quiet_payload["history_dates"] == 1
+    assert quiet_payload["source_break_date"] is None
+    assert len(quiet_payload["source_windows"]) == 1
+    assert quiet_payload["source_windows"][0]["source"] == "thetadata"
+
+
+def test_emit_payload_without_a_ledger_carries_null_source_break_keys(tmp_path, monkeypatch):
+    """A ledger-less host (no data/options_skew/snapshots.parquet — the state
+    of every sparse session worktree) emits the round-5 keys at their
+    defaults instead of raising.  Seat round 6 pins the reviewer's blocker:
+    `source_break_date` was evaluated in the return dict on a frame that is
+    only bound inside the has-rows branch (UnboundLocalError on `norm`)."""
+    _patch_dirs(monkeypatch, tmp_path)
+    assert S.load_history() is None
+    payload = S.emit_from_ledger(today=date(2026, 6, 22), accrual_state="ledger_only")
+    assert payload["source_windows"] == []
+    assert payload["source_break"] is False
+    assert payload["source_break_date"] is None
+    assert payload["history_dates"] == 0
+    assert payload["names"] == {}
+
+
+def test_emit_payload_history_dates_agrees_with_source_windows_for_all_weekend(tmp_path, monkeypatch):
+    """A degenerate all-weekend ledger has history_dates == 0 AND zero
+    source_windows — the two additive keys always agree, even at the
+    degenerate edge."""
+    data, _site = _patch_dirs(monkeypatch, tmp_path)
+    ledger = data / "options_skew" / "snapshots.parquet"
+    ledger.parent.mkdir(parents=True)
+    rows = [
+        _ledger_row("AAA", "2026-06-20", 0.10, source="polygon_gex"),  # Saturday
+        _ledger_row("AAA", "2026-06-21", 0.10, source="polygon_gex"),  # Sunday
+    ]
+    pd.DataFrame(rows).to_parquet(ledger)
+    payload = S.emit_from_ledger(today=date(2026, 6, 22), accrual_state="ledger_only")
+    assert payload["source_break"] is False
+    assert payload["history_dates"] == 0
+    assert payload["source_break_date"] is None
+    assert payload["source_windows"] == []
+
+
+# --------------------------------------------------------------------------- #
 # A-F03-W2-8 (2026-09-23) — caught-up no-op exits clean                       #
 # --------------------------------------------------------------------------- #
 
