@@ -825,19 +825,50 @@ def test_mgd08_clause2_wholly_empty_economic_path_degrades_on_both_slices():
         assert len(populated["economics"]["native_blocks"]) == 1, name
         _validate(populated)
 
-        # The obligation: strip every economic packet and nothing else.
+        # The obligation, arm 1: strip every economic packet and nothing else.
         empty = composition.compose_mining_research(
             case.query, _replace(case.bundle, financial_packets=())
         )
-        economics = empty["economics"]
-        # Every content channel of the panel is empty ...
-        assert economics["native_blocks"] == [], (name, economics["native_blocks"])
-        assert economics["derived"] == [], (name, economics["derived"])
-        assert economics["reported_economic_context"]["context_block_count"] == 0, name
-        # ... so the path degrades rather than silently succeeding.
-        assert economics["status"] == "degraded", (name, economics["status"])
-        assert empty["summary"]["status"] == "degraded", (name, empty["summary"])
-        # An empty collection never becomes a fabricated total.
-        assert empty["authorized_coverage"]["industry_total"] is None, name
-        # A degraded payload is still a VALID payload, never a raised exception.
-        _validate(empty)
+        _assert_empty_path_degrades(empty, "%s/no-packets" % name)
+
+        # The obligation, arm 2: a packet the module routes out of EVERY channel must not buy
+        # readiness either. Each of these reached `ready` on W-R while the readiness clause was
+        # scoped to "a packet was submitted" rather than to a NAMED ABSENCE: an empty mapping, a
+        # None value and a non-numeric value are all dropped silently by the native-block
+        # builder, and a `management_estimate_vs_actual` packet is skipped out of native blocks
+        # outright. "Submitted" is not "contributed".
+        packet = dict(case.bundle.financial_packets[0])
+        for label, junk in (
+            ("empty-mapping", {}),
+            ("value-None", dict(packet, value=None)),
+            ("value-non-numeric", dict(packet, value="n/a")),
+            ("mev-only", {"kind": "management_estimate_vs_actual", "pair": "sales"}),
+        ):
+            junk_result = composition.compose_mining_research(
+                case.query, _replace(case.bundle, financial_packets=(junk,))
+            )
+            _assert_empty_path_degrades(junk_result, "%s/%s" % (name, label))
+
+
+def _assert_empty_path_degrades(result, label):
+    """A payload whose economic channels are all empty degrades, fabricates nothing, stays valid.
+
+    Only the INDEPENDENT channels are asserted as evidence. ``economics["derived"]`` is the
+    literal ``[]`` on every payload including the ready baseline, and
+    ``reported_economic_context.context_block_count`` is ``len(native_blocks)``, so neither is a
+    separate witness; ``economics["status"]`` and ``summary["status"]`` are the same value. The
+    two real channels are ``native_blocks`` and top-level ``expectations``.
+    """
+    economics = result["economics"]
+    assert economics["native_blocks"] == [], (label, economics["native_blocks"])
+    assert list(result.get("expectations") or []) == [], (label, result.get("expectations"))
+    # Both status fields are surfaced, because both are what a consumer reads.
+    assert economics["status"] == "degraded", (label, economics["status"])
+    assert result["summary"]["status"] == "degraded", (label, result["summary"])
+    # The glance-tier sentence may not assert retention over a panel with nothing in it.
+    assert "contract explanation is retained" not in result["summary"]["headline"], (
+        label, result["summary"]["headline"])
+    # An empty collection never becomes a fabricated total.
+    assert result["authorized_coverage"]["industry_total"] is None, label
+    # A degraded payload is still a VALID payload, never a raised exception.
+    _validate(result)

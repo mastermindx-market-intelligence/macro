@@ -1,6 +1,6 @@
 ---
 workstream: "WS:GMI-MINING-M1-INTEGRATION"
-session: claude/mining-seat-wave4
+session: claude/mining-seat-wave4 + claude/mining-seat-wave5 (one seat, 664a0650, same day)
 model: opus
 ended_because: blocked
 mission: >
@@ -17,6 +17,27 @@ state_before: >
   #7950 while its CI was in flight. Five freeze packets (T02/T03/T04b/T07/T08) written but held
   in a session scratchpad, so not durable. T02 gated on another seat's #7905; T05/T06 on #7870.
 changed:
+  - path: engine/market_ontology/mining_theme_research.py
+    what: "WAVE 5. `_summarize_status` takes a new `has_named_absence` keyword
+      (`bool(bundle.omissions)` at the sole call site) and the `stream_threshold_unknown`
+      readiness clause is scoped to it, with `has_native_blocks` tested first; the
+      duplicated `if not limitations: return 'degraded'` tail is collapsed (R-MIN-34 had
+      already measured it unreachable for this input). Closes a real defect: because the W-R
+      slice vocabulary mints `stream_threshold_unknown` on EVERY payload, the unscoped early
+      return fired before the native-block channel was consulted, so every rare-earth
+      dossier reported `ready` over a wholly empty economics panel while copper degraded on
+      identical input. Root cause: that code has TWO minting sites - the omission map (a
+      fact about the bundle) and the slice vocabulary (a per-slice CONSTANT) - and
+      `limitations` is a flat list that cannot tell them apart. Also gates the headline
+      'the contract explanation is retained' on a non-degraded status, because that
+      sentence was asserting retention over an empty panel."
+  - path: tests/test_mining_composition.py
+    what: "WAVE 5. Adds
+      `test_mgd08_clause2_wholly_empty_economic_path_degrades_on_both_slices` - MGD-08
+      clause 2, two-armed across BOTH delivered slices. The populated arm is a positive
+      control and is load-bearing: without it a pipeline that degraded everything would
+      satisfy the empty arm vacuously. Also pins that the empty collection mints no
+      fabricated `industry_total` and that a degraded payload is still schema-VALID."
   - path: research/mining/m1_integration_program/rulings/R-MIN-2026-09-24-wave1.md
     what: "R-MIN-34 tabled (MGD-08 clause 2: degraded + native_blocks == [] + the NAMED absence SATISFIES 'fails'; a hard refusal is the wrong target because it contradicts R-MIN-15 and destroys the source-only usefulness MGD-11 requires; two-armed pin specified; casebook-cannot-express construction note; the seat's own silently-ignored-override measurement error recorded against it). R-MIN-33g tabled, which AMENDS the already-shipped R-MIN-33f."
   - path: research/mining/m1_integration_program/MGD_EXECUTION_STATUS.json
@@ -38,6 +59,53 @@ changed:
   - path: "research/mining/m1_integration_program/rulings/R-MIN-2026-09-24-wave1.md (second edit)"
     what: "R-MIN-33f's own row now says 'clause 2 AMENDED BY R-MIN-33g' in its header cell and carries the amendment inline. Adjacency was not a correction: 33g sits on the next line, but 33f's own text still told a reader to use the unsatisfiable pack floor and said nothing about re-reading after a push."
 verified:
+  - claim: "MGD-08 clause 2 was NOT satisfied by the delivered code on the rare-earth
+      slice. R-MIN-34's 'NOT a code defect' held on W-C only, and its evidence cell
+      measured the copper limitation set."
+    command: "compose_mining_research on synthetic_case('copper_complete') and
+      synthetic_case('rare_earth_complete'), each with
+      dataclasses.replace(bundle, financial_packets=()); dumped summary.status,
+      economics.status, native_blocks, derived, reported_economic_context, industry_total
+      (scratchpad/probe_mgd08c.py and probe_mgd08d.py)"
+    result: "W-C summary.status 'degraded'. W-R summary.status 'ready' with native_blocks
+      0, derived [], context_block_count 0, industry_total None, and the headline 'the
+      contract explanation is retained; the stream threshold is unknown' - a readiness
+      claim over a panel with nothing in it. reported_economic_context.notes is non-empty
+      even in the copper DEGRADED dump, so it is a constant policy string and not
+      retained content."
+  - claim: "Fixing it does NOT weaken MGD-18 / R-MIN-15 / plan §6, because the two
+      obligations have DIFFERENT SUBJECTS. This is the fact that settled the
+      obligation-versus-obligation question."
+    command: "len(synthetic_case('missing_stream_threshold').bundle.financial_packets);
+      then pytest that case's pin before and after the change"
+    result: "len == 1 - a packet IS submitted and is withheld pending the threshold,
+      expected signed_native_blocks == []. So MGD-18's subject is a withheld submission and
+      clause 2's subject is a path that submitted nothing.
+      test_missing_threshold_keeps_contract_explanation stays GREEN throughout."
+  - claim: "The pin is genuinely falsifiable, and the fix changes no shipped case."
+    command: "pytest the new test before the fix; then the blast-radius sweep over all 11
+      CASE_NAMES comparing current status against the new ladder
+      (scratchpad/probe_blast_radius.py); then all 7 mining suites"
+    result: "Before: FAILED with AssertionError: ('rare_earth_complete', 'ready') - the
+      copper arm passed, so the pin is not universally red. Blast radius: ZERO of 11 cases
+      change status, because every shipped case submits >=1 packet ('source_only' submits 0
+      but mints no threshold code and was already degraded) - which is precisely why a
+      green 53-case suite never caught this. After: 174 passed across the 7 mining suites.
+      Sole importers of the module are those suites; no production consumer exists yet."
+  - claim: "An independent Opus review REFUTED the seat's first discriminator, and the
+      refutation was verified independently before being accepted. The shipped
+      discriminator is the NAMED-ABSENCE receipt, which is R-MIN-34's own bar."
+    command: "scratchpad/verify_reviewer_f1.py - re-ran the four junk-packet shapes on both
+      slices, then compared every one of the 11 casebook statuses against an
+      any-omission ladder, then checked the strict variant the review warned against"
+    result: "F1 CONFIRMED: with `has_economic_input = bool(bundle.financial_packets)`, four
+      shapes still returned `ready` on W-R with native_blocks 0 and expectations 0 - an
+      empty mapping, `value: None`, a non-numeric value, and a mev-only packet - because the
+      module routes each out of every channel while the predicate still counted it as
+      submitted. `bool(bundle.omissions)` reproduces all 11 shipped statuses with ZERO
+      mismatches and degrades all four shapes on both slices. The strict variant
+      `'stream_threshold' in omissions` was REJECTED on measurement: it flips
+      same_horizon_revision and page_generation_change to degraded. 174 passed after."
   - claim: "PR #7950 merged on CONCLUDED green, not mid-flight - the distinction this session learned the hard way."
     command: "gh run list --workflow ci.yml --branch claude/min-t04a-definitions --json headSha,status,conclusion (selected on head c05368b31a6)"
     result: "run 36288053731 completed / success; then 26 checks with 0 pending and the sole red ci-authority/codex/merge-queue-pilot (sanctioned spurious)"
@@ -80,14 +148,59 @@ next_actions:
   - "Own THIS records PR to MERGED, then verify the files on origin/main. Use the corrected watcher: the expected check set is the ci.yml RUN's job list for the exact head sha and completion is that run's status == completed. Do NOT use a constant pack floor (R-MIN-33g) and do NOT read zero packs as proof that no packs will come - ci-plan takes about four minutes to publish the plan."
   - "RESOLVED - do NOT re-open this as a heal. Run 36288860409 concluded FAILURE (ci-pack-0, then ci-gate downstream of it) and main is NOT red: the phantom-artifact that reddened it was fixed by #7950 landing the file three minutes later, and origin/main carries both halves. The inference this handoff previously stated - proof run red therefore main red therefore heal owed - is WRONG and is withdrawn. A surviving proof run tests a MERGE REF pinned to that PR's base, which is a state main has already outgrown; re-derive the failure against current main before believing it."
   - "T02 is still the only next dispatchable TASK and is still gated on #7905, another seat's DRAFT, which must never be polled. Before dispatching T02, delete plan §4 bullet 1 (Audit A F1's unauthorized source-acquisition act). Correcting the 09-26 record: #7950's merge unblocks NEITHER T03 NOR T04b - R-MIN-05 orders T01' -> (T02 || T04a) -> T03 -> T04b -> T07, so T04b comes after T03 and T03 additionally needs T02 delivered."
-  - "When T04b runs, it MUST carry the two-armed MGD-08 clause 2 pin (R-MIN-34) and the two-armed MGD-10 pin, because T04B_FREEZE_PACKET 4.2 carries period onto native blocks and that is exactly what makes MGD-10 falsifiable. Update MGD_EXECUTION_STATUS.json in the same PR - that file is the thing a wave updates, not a thing a wave re-derives."
+  - "CORRECTED 2026-09-27 (wave 5). T04b owes the two-armed MGD-10 pin ONLY. The MGD-08 clause 2 pin is DELIVERED - it is not T04b's to write, and T04B_FREEZE_PACKET 4.4 now carries a DO-NOT-RE-PIN banner. MGD-10 is still genuinely deferred: T04B_FREEZE_PACKET 4.2 carries `period` onto native blocks, and that is what makes MGD-10's second arm expressible, so the pin must land in the same PR as the field. Closing MGD-08 also required a BEHAVIOUR change (see R-MIN-35), which the superseded action did not anticipate."
   - "Operator items still open and not seat-actionable: mini2 WAN routing fix, mini2 MiniMax provisioning, mini2 keychain unlock for cursor-agent."
 do_not_redo:
+  - "Do not re-open MGD-08 clause 2, and do not revert it to UNPINNED to satisfy T08
+    acceptance item 3 - that item is amended and MGD-08 is exempt. It is
+    COVERED_SUITE_GREEN, pinned two-armed across both slices by a test that failed before
+    the fix and passes after, and R-MIN-35 records the measurement. The ledger's UNPINNED
+    count is now 0 of 40."
+  - "Do not 'restore' the unscoped `if \"stream_threshold_unknown\" in limitations:
+    return \"ready\"` early return as a fix for anything. It is what made every W-R
+    dossier claim readiness over an empty panel. R-MIN-15's intent - a missing threshold
+    must not destroy the contract explanation - is preserved by the scoped clause, and
+    test_missing_threshold_keeps_contract_explanation proves it."
   - "Do not re-spec or re-review T04a. #7950 is merged and proven green on main (53 passed). Rounds 1-3 and three Opus reviews are spent; R-MIN-31/32/33/33a-33f are tabled."
   - "Do not rebuild the shared base. #7870 owns theme-graph / evidence / rights; Mining CONSUMES it and mints no shell, evidence or rights vocabulary (R-MIN-21's DO-NOT-CREATE list is literal)."
   - "Do not re-derive the MGD partition by grepping test names. It resolves 0/40 on main and 2/40 at #7950, so a name audit reports 38 false gaps. MGD_EXECUTION_STATUS.json is keyed by obligation id for exactly this reason."
   - "Do not re-open the docs-only --admin question. It is settled by R-MIN-33g: the exception needs a diff that triggers NO RUN AT ALL, established from the Actions API."
 danger_areas:
+  - "A SLICE-LEVEL VOCABULARY CODE THAT SHORT-CIRCUITS A STATUS LADDER MAKES THAT LADDER
+    BLIND ON THAT WHOLE SLICE. `stream_threshold_unknown` is minted on every W-R payload by
+    the slice's own definitional vocabulary, so an early `return \"ready\"` keyed on it
+    answered for every rare-earth request before the native-block channel was ever read -
+    and W-C, which never mints that code, behaved correctly, so the suite's two positive
+    witnesses agreed and the defect was invisible. When a ladder branches on a limitation
+    code, check whether any slice mints that code UNCONDITIONALLY; if it does, the branch
+    is a per-slice constant, not a condition. Ordering matters as much as the predicate:
+    put the CONTENT test (has_native_blocks) above any explanatory-code test. The deeper
+    form: `stream_threshold_unknown` has TWO minting sites - the omission map, where it is a
+    fact about this bundle, and the slice vocabulary, where it is a constant - and
+    `limitations` is a FLAT LIST, so by the time the ladder reads it the provenance is gone.
+    Branch on the source (`bundle.omissions`), not on the merged list."
+  - "'SUBMITTED' IS NOT 'CONTRIBUTED'. The seat's first fix keyed readiness on
+    `bool(bundle.financial_packets)` and an Opus review refuted it with four measured
+    shapes: an empty mapping, `value: None`, a non-numeric value, and a mev-only packet are
+    each routed out of every channel of the dossier, yet each satisfied the predicate, so
+    W-R still claimed `ready` over an empty panel. The drop site mints NO limitation, so a
+    dropped packet leaves no trace anywhere in the payload - which is STILL OWED work and is
+    the root of the one residual hole (an unrelated named omission plus a junk packet still
+    reads `ready`). When gating on 'input exists', gate on input that reached an output."
+  - "A STATUS FUNCTION CANNOT HONOUR A DISTINCTION ITS ARGUMENTS CANNOT EXPRESS.
+    `_summarize_status(limitations, has_native_blocks)` was asked to separate 'submitted and
+    withheld' from 'submitted nothing', and both states arrive as (threshold code present,
+    has_native_blocks False) - identical inputs, so necessarily identical output. Before
+    ruling that a behaviour already satisfies an obligation, check that the deciding
+    function can even SEE the obligation's discriminator. R-MIN-34 ruled on behaviour it
+    measured on one slice and could not have distinguished on the other."
+  - "Two obligations that look contradictory may simply have different SUBJECTS, and the
+    fixture is where you find out. MGD-18 ('missing threshold keeps the contract explanation
+    -> ready', no native blocks) read as a direct contradiction of MGD-08 clause 2 ('a
+    wholly empty economic path fails') until `len(bundle.financial_packets) == 1` on case
+    `missing_stream_threshold` showed its subject is a WITHHELD submission, not an empty
+    path. Read the fixture's inputs before adjudicating an obligation conflict or weakening
+    either side."
   - "A case-insensitive grep for HOLD produces FALSE POSITIVES on ordinary domain vocabulary - 'threshold' and 'withholding' both contain it, and #7950's body is full of stream_threshold_unknown. A pre-merge hold check must be anchored (HOLD-FOR-SOL, word-boundary HOLD, 'do not merge'). An unanchored match nearly blocked a lawful merge here."
   - "gh api .mergeable returns EMPTY as a matter of course because GitHub computes mergeability lazily. An empty answer is not 'false' and is not a result; this seat once read blank mergeable ticks as a failing API."
   - "Never touch carrier #7795's branch sol/mining-principal-research-20260923. MGD_EXECUTION_STATUS.json deliberately CITES it (commit + blob + sha256) rather than copying or editing it."
