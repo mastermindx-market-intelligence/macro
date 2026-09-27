@@ -1,0 +1,89 @@
+"""Specification-only text, not an executable test file. Selected-event implementation remains held.
+Settings cases refer to the incumbent independently authored value-equality helper;
+source presence and matching expected behavior have not been qualified by running these cases.
+"""
+import copy
+import json
+import pytest
+from engine.neuralweb import brain_gateway as gw
+
+
+def event(confirmed=4):
+    return {"type": "cross", "direction": "bull", "label": None,
+            "native_value": 50, "native_strength": None,
+            "timing": {"anchorI": 1, "confirmedI": confirmed, "anchorT": 100, "confirmedT": confirmed * 100},
+            "age_bars": 900, "age_from_selected_bars": 900}
+
+
+def view(confirmed=4):
+    return {"index": 4, "events": [event(confirmed)],
+            "coverage": {"available": 2, "eligible": 1, "invalid": 0,
+                         "confirmed_later": 1, "returned": 1, "omitted": 0}}
+
+
+SOURCE = {"available": 2, "eligible": 2, "invalid": 0, "returned": 2, "omitted": 0}
+
+
+def test_selected_native_event_age_is_recomputed_and_input_detached():
+    raw = view()
+    before = copy.deepcopy(raw)
+    result = gw._sanitize_native_selected_events(raw, 10, 4, SOURCE)
+    assert result["events"][0]["age_from_selected_bars"] == 0
+    assert result["events"][0]["age_bars"] == 5
+    result["events"][0]["native_value"] = 0
+    assert raw == before
+
+
+@pytest.mark.parametrize("mutate", [
+    lambda v: v.update(index=True),
+    lambda v: v.update(index=5),
+    lambda v: v["coverage"].update(confirmed_later=0),
+    lambda v: v["coverage"].update(returned=0),
+    lambda v: v["coverage"].update(invalid=1),
+    lambda v: v.update(events=[event(6)]),
+    lambda v: v.update(events=[event()] * 5),
+])
+def test_selected_native_events_fail_closed(mutate):
+    raw = view()
+    mutate(raw)
+    assert gw._sanitize_native_selected_events(raw, 10, 4, SOURCE) is None
+
+
+def test_no_selected_event_claim_without_exact_bar():
+    assert gw._sanitize_native_selected_events(view(), 10, None, SOURCE) is None
+
+
+def test_selected_event_coverage_can_honestly_report_no_prior_confirmation():
+    raw = {"index": 0, "events": [], "coverage": {
+        "available": 2, "eligible": 0, "invalid": 0, "confirmed_later": 2,
+        "returned": 0, "omitted": 0}}
+    assert gw._sanitize_native_selected_events(raw, 10, 0, SOURCE)["events"] == []
+
+
+@pytest.mark.parametrize("wire,current", [
+    ('[{"name":"rsix","params":{"eng.len":14,"eng.on":true}}]',
+     [{"params": {"eng.on": True, "eng.len": 14.0}, "name": "rsix"}]),
+    ('[{"name":"x","params":{"v":1e-7}}]', [{"name": "x", "params": {"v": 0.0000001}}]),
+    ('[{"name":"x","params":{"v":0}}]', [{"name": "x", "params": {"v": -0.0}}]),
+])
+def test_native_settings_binding_compares_json_values_not_serialization(wire, current):
+    assert gw._native_live_settings_equal(wire, current)
+
+
+@pytest.mark.parametrize("wire,current", [
+    ('[{"name":"x","params":{"v":true}}]', [{"name": "x", "params": {"v": 1}}]),
+    ('[{"name":"x","params":{"v":1,"v":2}}]', [{"name": "x", "params": {"v": 2}}]),
+    ('[{"name":"x","params":{"v":NaN}}]', [{"name": "x", "params": {"v": None}}]),
+    ('[{"name":"a"},{"name":"b"}]', [{"name": "b"}, {"name": "a"}]),
+    ('[{"name":"x","params":{}}]', [{"name": "x", "params": {"v": None}}]),
+])
+def test_native_settings_binding_rejects_different_or_ambiguous_values(wire, current):
+    assert not gw._native_live_settings_equal(wire, current)
+
+
+def test_native_settings_binding_has_size_and_depth_bounds():
+    assert not gw._native_live_settings_equal(" " * 8193, [])
+    deep = [0]
+    for _ in range(20):
+        deep = [deep]
+    assert not gw._native_live_settings_equal(json.dumps(deep), deep)
