@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+import re
 from datetime import date, datetime, timezone
 from typing import Any
 
@@ -24,6 +25,8 @@ ABSTAIN_MISSING_REPORT_ID = "abstain_missing_report_id"
 ABSTAIN_MISSING_OR_INVALID_INSTITUTION = "abstain_missing_or_invalid_institution"
 ABSTAIN_MISSING_DESK = "abstain_missing_desk"
 ABSTAIN_TICKER_CARDINALITY = "abstain_ticker_cardinality"
+ABSTAIN_NO_EXACT_SECURITY_SUBJECT = "abstain_no_exact_security_subject"
+ABSTAIN_SUBJECT_CONFLICT = "abstain_subject_conflict"
 ABSTAIN_INVALID_PUBLISHED_AT = "abstain_invalid_published_at"
 ABSTAIN_UNRESOLVED_SECURITY = "abstain_unresolved_security"
 ABSTAIN_AMBIGUOUS_PREDECESSOR = "abstain_ambiguous_predecessor"
@@ -41,6 +44,7 @@ class StreamObservation:
     desk_key: str
     security_id: str
     ticker_at_observation: str
+    ticker_source: str
     published_at: datetime
     published_at_source: str
     observation_date: date
@@ -63,17 +67,67 @@ class PredecessorSelection:
     predecessor: StreamObservation | None = None
 
 
-def _one_ticker(value: object) -> str | None:
+_TITLE_SECURITY_SUBJECT = re.compile(
+    r"^(?P<label>[A-Z][A-Za-z0-9&.,'’+\\/\-–— ]{1,63})\\s+"
+    r"\\((?P<ticker>[A-Z][A-Z0-9]{0,4}(?:\\.[A-Z]{1,4})?)\\)(?:\\s|$)"
+)
+
+
+def _sidecar_ticker(value: object) -> tuple[str, str | None]:
+    if value is None:
+        return "empty", None
     if not isinstance(value, Sequence) or isinstance(value, (str, bytes, bytearray)):
-        return None
+        return "invalid", None
     tickers = {
         item.strip().upper()
         for item in value
         if isinstance(item, str) and item.strip()
     }
+    if not tickers:
+        return "empty", None
     if len(tickers) != 1:
+        return "multi", None
+    return "single", next(iter(tickers))
+
+
+def _strict_title_ticker(value: object) -> str | None:
+    """Extract only an explicit leading Company Name (TICKER) source form.
+
+    This deliberately refuses generic parenthetical-token matching. The subject
+    label must be near the start, contain lowercase letters so an all-caps macro
+    acronym is not treated as a company, and cannot end in a short all-caps token
+    after a long prose label. The Data OS alias table remains the identity owner;
+    this function only recovers an observed symbol candidate from source syntax.
+    """
+
+    if not isinstance(value, str):
         return None
-    return next(iter(tickers))
+    match = _TITLE_SECURITY_SUBJECT.match(value.strip())
+    if match is None:
+        return None
+    label = " ".join(match.group("label").split())
+    if not any(ch.islower() for ch in label):
+        return None
+    words = label.replace("/", " ").split()
+    last = words[-1].strip(".,") if words else ""
+    if len(words) >= 4 and last.isalpha() and last.isupper() and len(last) <= 5:
+        return None
+    return match.group("ticker").upper()
+
+
+def _observed_ticker(item: Mapping[str, Any]) -> tuple[str | None, str]:
+    state, sidecar = _sidecar_ticker(item.get("tickers"))
+    if state in {"invalid", "multi"}:
+        return None, ABSTAIN_TICKER_CARDINALITY
+
+    title_ticker = _strict_title_ticker(item.get("title"))
+    if sidecar is not None:
+        if title_ticker is not None and title_ticker != sidecar:
+            return None, ABSTAIN_SUBJECT_CONFLICT
+        return sidecar, "sidecar_ticker"
+    if title_ticker is not None:
+        return title_ticker, "source_title_explicit_ticker"
+    return None, ABSTAIN_NO_EXACT_SECURITY_SUBJECT
 
 
 def _published_at(value: object) -> tuple[datetime, date, str] | None:
@@ -124,9 +178,9 @@ def resolve_stream_observation(
     if not desk_key:
         return StreamResolution(ABSTAIN_MISSING_DESK)
 
-    ticker = _one_ticker(item.get("tickers"))
+    ticker, ticker_source = _observed_ticker(item)
     if ticker is None:
-        return StreamResolution(ABSTAIN_TICKER_CARDINALITY)
+        return StreamResolution(ticker_source)
 
     published = _published_at(item.get("published_at"))
     if published is None:
@@ -147,6 +201,7 @@ def resolve_stream_observation(
             desk_key=desk_key,
             security_id=security_id,
             ticker_at_observation=ticker,
+            ticker_source=ticker_source,
             published_at=published_at,
             published_at_source=published_at_source,
             observation_date=observation_date,
