@@ -86,6 +86,16 @@ verified:
       UNL, USL, BNO, CPER, UGA, UNG and USO as Going-Private and each received a special_situation
       Alt-Data channel at 0.20. The research ruling preserves the affected relationship but refuses to
       treat the funds as direct take-private targets or seven independent confirmations.
+  - claim: "The repaired handoff and reference tests validate together on the exact remote branch archive."
+    command: >
+      git fetch origin sol/special-situations-horizontal-catalyst-r2-20260927; git archive FETCH_HEAD
+      agentos scripts/agentos.py research/special_situations_horizontal_reference.py
+      tests/test_special_situations_horizontal_reference.py; then run python3 -m unittest -v
+      tests/test_special_situations_horizontal_reference.py and python3 scripts/agentos.py validate.
+    result: >
+      Reference tests: 6 passed, 0 failed. Agent OS: 1306 records (75 workstreams, 368 decisions,
+      339 discoveries, 524 handoffs), 0 errors, 739 warnings; process exit 0. The warnings are the
+      validator's existing warning census, not errors introduced by this handoff.
 unverified:
   - claim: "The current canonical Company/Event/GMI owner can already express the exact controller/general-partner affected relationship required by the MGLD/USCF vertical."
     what_would_verify: >
