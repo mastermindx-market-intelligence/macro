@@ -1,0 +1,490 @@
+{
+  "status": "CHECKPOINTED_CONTINUATION",
+  "mission_complete": false,
+  "revision": "R4 glance-first + degraded-state decision candidate",
+  "observed_date_utc": "2026-09-27",
+  "scope": "Continue the Chairman's Forex redesign: an instantly understandable, visually refined and robust research journey. This is a design candidate, not a production release.",
+  "authority_boundary": "Current outer Chairman continuation supplies this task's intent. This record grants no successor lease, admission, denied-effect replay, production or trading authority.",
+  "capability": "PARTIAL",
+  "local_candidate": "IMPLEMENTED_AND_LOCALLY_QUALIFIED",
+  "native_r2": "NOT_APPLIED_TO_PAPER",
+  "production": "NOT_DEPLOYED",
+  "source": {
+    "repository": "mastermindx-market-intelligence/macro",
+    "branch": "sol/forex-design-r2-20260926",
+    "base_sha": "8b9cee8b40fa9b009085fd114497f473a52a33da",
+    "procedure_repository": "mastermindx-market-intelligence/Mastermind",
+    "procedure_sha": "4c6b206d3fb7fbc6d077faf61ae361bedf259925",
+    "index_blob": "94d1af402598894372858793a5b1931019c5fa77",
+    "skillpack_version": "1.0.1",
+    "bootstrap_major": 1,
+    "research_inputs": [
+      "docs/DESIGN_DOCTRINE.md",
+      "reports/forex-calibration.md"
+    ],
+    "calibration_sample_end": "2026-06-18"
+  },
+  "artifact": {
+    "role": "Immutable R4 qualification archive only; not an authoritative Drive state mirror or a new Agent OS",
+    "drive_file_id": "1HX2MVVsCXe6bGHfkArKGgayrM2dgRezO",
+    "drive_url": "https://drive.google.com/file/d/1HX2MVVsCXe6bGHfkArKGgayrM2dgRezO/view",
+    "file_name": "Forex_R4_Design_and_Verification_2026-09-26.zip",
+    "shared_on_readback": false,
+    "size_bytes": 2420729,
+    "sha256": "c675b35a23b3bd37b8ac25993c9c5fb4cdffdc2ee7e2e99468b129b495f4e607",
+    "verification": "Uploaded once as a new Drive file, downloaded again, and matched by exact byte count and SHA-256. ZIP contains 67 entries; all 66 manifest-tracked entries plus MANIFEST.sha256.json were verified with zero mismatches.",
+    "zip_entries": 67,
+    "manifest_entries": 66,
+    "root": "Forex_R4/",
+    "entry_point": "Forex_R2_Interactive_Preview.html",
+    "entry_point_legacy_name_note": "Legacy self-contained entry filename retained to avoid renaming a qualified build/test harness during design refinement.",
+    "entry_point_sha256": "797301010247aca0b877d91e49dbe8c041cc503901dce1dac534c3dc8e4e7ee1",
+    "source_files": [
+      "app.js",
+      "model.js",
+      "fixture.js",
+      "styles.css",
+      "index.html",
+      "build_preview.py",
+      "tests/r3_experience.py",
+      "tests/r4_degraded.py"
+    ],
+    "handoff": "PRODUCTION_HANDOFF.md",
+    "brief_and_execution": "DESIGN_AND_EXECUTION.md",
+    "qualification": "evidence/final-qualification.json",
+    "visual_reviews": [
+      "evidence/R3_VISUAL_REVIEW.md",
+      "evidence/R4_DEGRADED_VISUAL_REVIEW.md"
+    ],
+    "manifest": "MANIFEST.sha256.json",
+    "immutable_archive_note": "R2 and R3 remain immutable and separately addressable; R4 is a new archive rather than an overwrite."
+  },
+  "verified_delta": [
+    "R3 glance hierarchy remains intact: three hero facts, one composed attention panel, mobile priorities before the long ranking, and balanced JPY evidence.",
+    "R4 promotes stale-data honesty into the detail itself: a visible warning says the snapshot is older and current conditions may differ before the user reads the retained values.",
+    "The stale-detail stance changes from the fresh 'Watch — don’t chase' to 'Stand aside · older data'; old evidence remains visible but current-data watch preparation remains disabled.",
+    "JPY last-known +1.9% and −2.9 pp values remain unchanged in the stale example; no missing/stale value is converted to neutral or zero.",
+    "Dark/light and EN/ZH behavior, fixed comparison basis, exact sign semantics, history state and claim-boundary protections remain inherited from R3."
+  ],
+  "qualification": {
+    "r3_experience_checks": "PASS_AFTER_RED",
+    "r3_red_finding": "The R2 candidate lacked the three-fact glance rail, used two stacked side cards, placed mobile priorities below the long table, and lacked the balanced JPY evidence structure.",
+    "model_tests_passed": 31,
+    "browser_matrix_cells_passed": 20,
+    "browser_matrix_assertions": 1040,
+    "normal_widths_px": [
+      320,
+      390,
+      768,
+      1440
+    ],
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "extra_cells": "390px doubled text size across both themes and both locales",
+    "modal_history_checks_passed": 15,
+    "native_forward_checks_passed": 6,
+    "changed_input_checks_passed": 6,
+    "claim_boundary_checks_passed": 5,
+    "contrast_and_direction_observations_passed": 168,
+    "minimum_measured_text_contrast": 4.5207,
+    "final_screenshots": 8,
+    "final_screenshots_examined": [
+      "final-overview-dark.png",
+      "final-overview-light.png",
+      "final-overview-mobile-en.png",
+      "final-overview-mobile-zh.png",
+      "final-yen-detail.png",
+      "final-stale-detail.png"
+    ],
+    "final_capture_javascript_errors": 0,
+    "final_capture_outbound_requests": 0,
+    "bundle_sha256": "797301010247aca0b877d91e49dbe8c041cc503901dce1dac534c3dc8e4e7ee1",
+    "transport": "Own authored HTML rendered with Playwright page.set_content in about:blank; outbound requests aborted. Not a served production route.",
+    "interruption": "The combined verifier again reached the tool timeout after R3 + 31/31 model tests while entering the long browser matrix. The matrix was run standalone and passed 20/20 cells / 1,040 checks; remaining suites were then run separately. No source change was made in response to the timeout.",
+    "excluded_proof": [
+      "Paper R3 application",
+      "production-shaped live data",
+      "deployed routing and reload/deep-link",
+      "real watch persistence",
+      "source rights clearance",
+      "assistive technology",
+      "physical touch",
+      "native browser zoom",
+      "Safari or Firefox",
+      "intended-user comprehension",
+      "whole-repository production suite"
+    ],
+    "r4_degraded_state_checks": "PASS_AFTER_RED",
+    "r4_red_finding": "After fixing the test setup to open the intentionally collapsed preview controls, the valid RED showed that stale detail did not explain why age mattered and reused the fresh Watch stance."
+  },
+  "native_frontier": {
+    "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+    "page_id": "p-N-1",
+    "page_name": "Forex · Guided Intelligence · R1 · 2026-09-26",
+    "observed_artboards": 18,
+    "observed_nodes": 2267,
+    "artboard_ids": [
+      "1AAP-1",
+      "1AMJ-1",
+      "1DRM-1",
+      "1DVA-1",
+      "1MWN-0",
+      "1L3U-0",
+      "1N0G-0",
+      "1E5L-1",
+      "1E80-1",
+      "1EAB-1",
+      "1LFQ-0",
+      "1LPE-0",
+      "1LVN-0",
+      "1M7M-0",
+      "1MD7-0",
+      "1MHH-0",
+      "1MKQ-0",
+      "1MQ4-0"
+    ],
+    "last_prior_applied_operation": "forex-r1-20260926-duplicate-mobile-light-zh",
+    "last_prior_effect": "Source 1L3U-0 duplicated to 1N0G-0; duplicate exists but remains unfinished for light ZH. Do not duplicate it again.",
+    "original_effect_carrier": "Studio Direct C2 Personal for the recorded last prior effect",
+    "paper_writes_this_continuation": 0,
+    "hold": "Latest consumed Mastermind #927 comment 5852164955 confirms that the prior Policy R2 file-window/indicator obligation is still not released. Connection, Extra High mode and write-schema readiness do not clear custody.",
+    "hold_refs": [
+      "https://github.com/mastermindx-market-intelligence/Mastermind/pull/927#issuecomment-5852164955",
+      "https://github.com/mastermindx-market-intelligence/Mastermind/pull/927#issuecomment-5851924329",
+      "https://github.com/mastermindx-market-intelligence/macro/pull/8048#issuecomment-5851974650"
+    ],
+    "permission_rule": "Connection and write binding are not custody release. Preserve all original Forex and Policy refusal fences. No denied-effect replay, carrier switch or other-session indicator cleanup is authorized by this record.",
+    "legacy_checkpoint_supersession": "The initial two-artboard R1 local checkpoint and its host/carrier observations are historical only. The current census and last prior operation above supersede its state counts, not its refusal fences."
+  },
+  "effects": {
+    "new_drive_archive": "R4 uploaded once as a new Drive file and reconciled by exact download/hash; R2 and R3 archives untouched.",
+    "github_change_scope": "Cumulative evidence checkpoint only; no production source, frontend, FX engine, data, watch or deployment path changed.",
+    "effect_unknown_in_this_continuation": [],
+    "worker_or_watcher_started": false,
+    "runtime_or_admission_changed": false,
+    "agent_os_record_created": false,
+    "agent_os_note": "No supported Forex workstream/registry identity was established; no synthetic Agent OS parent or second organizational store was created. This is a GitHub artifact continuation, not accepted organizational completion.",
+    "merge_or_deployment_performed": false
+  },
+  "open_material_gates": [
+    "Genuine shared-file custody release and current action permission before native edits; the R4 HTML is not a proven Paper payload.",
+    "Current Forex template owner #7409 must be reconciled before implementation because it changes templates/forex.html.j2 and tests/test_build_forex_stance.py.",
+    "Shared light-theme owner #7466 must be composed rather than overwritten for templates/site theme CSS/JS.",
+    "R4 production source contract is now mapped on main aff8b76c..., but implementation must repair FX-R4-SEM-01..04 and add a typed readiness/freshness block through the existing builder/view-model path.",
+    "Current template owner #7409 and shared theme owner #7466 must be reconciled/composed before production source mutation; no replacement lane.",
+    "Actual existing watch/alert owner, authenticated persistence, failed/unknown-save reconciliation and exact event-return proof.",
+    "Producer/documentation adjudication: CONTEXT is described as unweighted while some printed CONTEXT rows have nonzero weights; no UI reweighting performed.",
+    "Served-path browser, accessibility and intended-user cold-reader comprehension evidence."
+  ],
+  "do_not_redo": [
+    "Do not recreate 1N0G-0 or restart R1 artboards.",
+    "Do not overwrite or replace immutable R2 or R3 archives; R4 has its own Drive identity.",
+    "Do not clear other sessions' indicators or use another carrier to replay a refused effect.",
+    "Do not replace the existing FX engine, event ledger, watch owner, theme or navigation authority.",
+    "Do not call local green tests native or production acceptance.",
+    "Do not regress mobile ordering: investigation priorities precede the nine-currency reference table at narrow widths.",
+    "Do not promote JPY historical cheapness into bullish evidence.",
+    "Do not let stale detail reuse a fresh stance or hide the age qualification."
+  ],
+  "boundary": "R4 glance-first/degraded-state design and qualification are preserved in a new immutable archive and this cumulative checkpoint; native integration is held by exact shared-file custody. Parent mission remains incomplete and no unattended execution is claimed.",
+  "next_action": "Production lane: when a current-main source carrier is lawfully admitted, create tests/test_forex_r4_contract.py and start RED on FX-R4-SEM-01 plus FX-R4-DATA-01 using the proposed pure helpers; scripts/build_forex.py is not currently collision-owned by the known open Forex PRs. Do not touch templates/forex.html.j2 or tests/test_build_forex_stance.py until #7409 is consumed/composed, and do not touch shared theme files until #7466 is consumed/composed. Paper lane remains held until genuine #927 custody release.",
+  "resume_surface": "A current Chairman-authorized Mastermind session reading this cumulative checkpoint, immutable R4 archive, latest #927 custody return, and current production source owners #7409/#7466.",
+  "mode": {
+    "user_reported_selected_mode": "Extra High",
+    "platform_served_identity": "UNKNOWN",
+    "direct_work_reason": "PRINCIPAL_JUDGMENT / LOWER_TOTAL_OVERHEAD",
+    "next_phase_preference": "Retain Extra High for tool-intensive native integration once custody clears; mode alone never clears custody."
+  },
+  "native_r4": "NOT_APPLIED_TO_PAPER",
+  "prior_artifacts": [
+    {
+      "revision": "R2 answer-first interactive candidate",
+      "drive_file_id": "1pBd2GyQekG8D72rNCzMtJ9PSuQZSmh9E",
+      "file_name": "Forex_R2_Design_and_Verification_2026-09-26.zip",
+      "size_bytes": 1118923,
+      "sha256": "4e7ecb9d0a9505e7a1550c08d070ad4b68150e977247f0a51d54de8574c9fa73",
+      "disposition": "IMMUTABLE_DO_NOT_OVERWRITE"
+    },
+    {
+      "revision": "R3 glance-first decision candidate",
+      "drive_file_id": "1FMG2g4Lv4o6EW-Bu8A_ojo3T3vJIjn2k",
+      "file_name": "Forex_R3_Design_and_Verification_2026-09-26.zip",
+      "size_bytes": 2417156,
+      "sha256": "c7b3f2a2379b49e787019324e2ebe67ec48570f77e732d35d232312ae1cd8a42",
+      "entry_point_sha256": "37945958f318daa1d1658c1a3cf755a3da624f60034a1d249f3c1abc80a0f89c",
+      "disposition": "IMMUTABLE_DO_NOT_OVERWRITE"
+    }
+  ],
+  "current_recovery": {
+    "procedure_repository": "mastermindx-market-intelligence/Mastermind",
+    "procedure_sha": "fda6ed3911cdda24eb63b2ccbe1b174121cf404f",
+    "procedure_parent": "4c6b206d3fb7fbc6d077faf61ae361bedf259925",
+    "procedure_change_relevance": "Protected master advanced by Executive async-release-gate tests only; current INDEX/ACTIVE_EXECUTION/RECONCILE_STATE/Paper/authority procedures were fresh-read from the new exact commit before this source-mapping effect.",
+    "macro_main": "aff8b76cba6afa6ed03298a1814b059e317070a0",
+    "paper_hold_check": "No page-21 comment exists on Mastermind #927; latest consumed page-20 owner return remains the current hold evidence. No custody release was found.",
+    "mode": "MODIFYING_AVAILABLE for this evidence-only GitHub carrier; Paper content mutation remains held."
+  },
+  "production_port_map": {
+    "source_main": "aff8b76cba6afa6ed03298a1814b059e317070a0",
+    "files": {
+      "builder": "scripts/build_forex.py",
+      "template": "templates/forex.html.j2",
+      "dollar_engine": "engine/forex_dollar.py",
+      "alert_owner": "engine/forex_alerts.py",
+      "calibration": "reports/forex-calibration.md"
+    },
+    "existing_fields_to_reuse": {
+      "hero/dollar context": [
+        "dollar_vm(): regime, zone_en/zh, dollar_dir, roc(63d), risk_word, broad, dxy, dollar_day, hero_spark",
+        "_stance(): deterministic word/headline/sentence from dollar direction, active scenarios, flash/triple-red and transmission"
+      ],
+      "currency ranking": [
+        "forex_dollar.strength_meter().horizons[1m][].ccy",
+        "forex_dollar.strength_meter().horizons[1m][].vs_usd_pct",
+        "forex_dollar.strength_meter().default/order"
+      ],
+      "currency/pair detail": [
+        "pair_vm(): key,label,zh,base,quote_ccy,quote,chg,resid_chg,dollar_beta,structure_state,risk_index,shock_state,carry_diff,reer_gap,rate_diff_10y,cnh_basis,cnh_state,verdict,conviction",
+        "META: explicit assessed base currency and displayed quote identity"
+      ],
+      "attention/change digest": [
+        "fx_state.changes_today from existing forex_alerts rebuild/recent pipeline",
+        "timeline from _group_timeline(recent_events)",
+        "regime.scenarios and transmission rows"
+      ],
+      "latest.json": [
+        "asof/date, dollar_desk, transmission, strength, regime_radar, state_changes, stance, fx_state and additive pairs entries already exist"
+      ]
+    },
+    "required_repairs_before_ui_port": [
+      {
+        "id": "FX-R4-SEM-01",
+        "defect": "The current strength strip uses row.strength (excess versus average currency) for bar geometry while printing row.vs_usd_pct beside it.",
+        "required_change": "R4 comparison rows must use one declared baseline/horizon end-to-end. For the default board use 1-month vs USD for ordering, numeric label and zero-anchored bar geometry. Retain cross-sectional strength only as separate research context if desired.",
+        "owner": "Existing strength/view-model path; no new score or service."
+      },
+      {
+        "id": "FX-R4-SEM-02",
+        "defect": "Displayed market quote direction and assessed currency direction can require inversion, especially USD/JPY-style pairs.",
+        "required_change": "Export/render assessed_currency, display_pair, quote_orientation/invert, and signed base-vs-USD move explicitly. Never ask the frontend or user to infer whether pair-up means currency-up.",
+        "owner": "Existing META + pair_vm/latest.json contract."
+      },
+      {
+        "id": "FX-R4-SEM-03",
+        "defect": "Liquidity Tier-1 label and tooltip are not sourced from one semantic presentation state: supportive dollar liquidity currently renders 'Adding' even though the engine defines supportive as falling/draining net liquidity.",
+        "required_change": "Derive display label, explanation and signed change from one normalized liquidity state. Preserve the engine's canonical WALCL-RRP-TGA calculation and dollar framing; fix presentation semantics only.",
+        "owner": "Existing forex_dollar.liquidity -> dollar_desk -> template path."
+      },
+      {
+        "id": "FX-R4-SEM-04",
+        "defect": "The pair chip says 'Paid to hold' whenever carry_diff exists, including negative differentials.",
+        "required_change": "Replace with sided plain-language rate-gap copy such as 'Rates favor USD by 2.9 pp' / 'Rates favor JPY by …'. Keep exact sign and annualized unit in the receipt.",
+        "owner": "Existing pair_vm carry_diff + template."
+      },
+      {
+        "id": "FX-R4-DATA-01",
+        "defect": "The page exposes a page-level as-of and some component as-of values but no typed readiness/freshness object strong enough to drive R4 fresh/stale/partial/source-failed behavior.",
+        "required_change": "Extend the existing Forex view-model/latest artifact with a compact freshness/readiness block derived from existing source/result timestamps. It must distinguish fresh, stale, partial and failed/missing dependencies; preserve last trustworthy values and disable only dependent actions. Reuse existing freshness conventions; do not create a new service/registry.",
+        "owner": "Existing build_forex/view-model/latest.json path."
+      }
+    ],
+    "r4_minimum_vertical_slice": {
+      "builder_delta": [
+        "Compose one R4 glance view-model from existing data: leader, breadth, principal constraint, attention items, ranking rows, readiness.",
+        "Leader/breadth derive from strength.horizons[default] using vs_usd_pct only for the declared USD baseline.",
+        "Principal constraint is evidence, not trade authority; for a selected leader it can use existing signed carry_diff/rate context plus managed-market warning.",
+        "Attention items are presentation grouping over existing deterministic changes/regime states; no new event ledger or importance model."
+      ],
+      "template_delta": [
+        "Replace the current dollar-smile-first top hierarchy with R4 answer-first hero while retaining smile/method depth under disclosure/research.",
+        "Render three glance facts, one composed What matters next panel, and fixed-basis currency ranking.",
+        "On narrow widths put What matters next before the long ranking.",
+        "Pair detail starts with balanced evidence-for/evidence-against and explicit 'what changes this read'.",
+        "Stale detail must show age warning before evidence, use Stand aside/older-data stance, preserve last trustworthy values, and disable current-data watch preparation."
+      ],
+      "tests_first": [
+        "Fail if bar basis and displayed percentage differ.",
+        "Fail USDJPY inversion/orientation ambiguity.",
+        "Fail supportive/draining liquidity copy disagreement.",
+        "Fail negative carry_diff rendered as 'Paid to hold'.",
+        "Fail stale data retaining fresh stance or enabled current-data watch action.",
+        "Fail narrow layout where long ranking precedes investigation priorities.",
+        "Pin EN/ZH directional color semantics and signs."
+      ]
+    },
+    "current_collisions": {
+      "macro#7409": {
+        "head": "a6ba169c4fafd7aaf1d09e30aea49747b65e3c92",
+        "paths": [
+          "templates/forex.html.j2",
+          "tests/test_build_forex_stance.py"
+        ],
+        "note": "Tiny dark tooltip contrast repair, but it owns the exact Forex template path. Compose; do not overwrite."
+      },
+      "macro#7466": {
+        "paths": [
+          "templates/theme.css",
+          "templates/theme.js",
+          "site/theme.css",
+          "site/theme.js",
+          "lib/theme_materials.py",
+          "lib/site_assets.py"
+        ],
+        "note": "Shared light-theme/material owner. R4 must consume accepted theme behavior, not start a page-local theme fork."
+      },
+      "macro#7394": {
+        "state": "DRAFT/HOLD",
+        "note": "Shared design-system/specimen contract remains a separate owner; do not create a second component/design system."
+      }
+    },
+    "implementation_non_goals": [
+      "No new FX engine, aggregate USD score, event ledger, watcher plane, persistence store, theme system, routing system or design library.",
+      "No source-rights assumption from current availability.",
+      "No trade recommendation or promotion of historical cheapness into predictive support.",
+      "No production mutation until exact source-collision ownership is reconciled."
+    ],
+    "freshness_contract": {
+      "pattern_owner": "Reuse the existing product freshness pattern shape demonstrated by engine/hk_freshness.py; do not import HK-specific sources, thresholds, calendar, persistence or state file.",
+      "forex_vm_shape": {
+        "checked_at": "ISO timestamp for the composed Forex readiness evaluation",
+        "asof": "overall latest trustworthy completed FX observation date",
+        "dependencies": "mapping of named existing Forex dependencies to {asof, lag_days_or_sessions, state, critical, note?}",
+        "dependency_states": [
+          "fresh",
+          "slow",
+          "stale",
+          "missing",
+          "error"
+        ],
+        "verdict": [
+          "ok",
+          "degraded",
+          "stale"
+        ],
+        "banner_message": "plain EN/ZH meaning for Tier 1 when verdict != ok",
+        "action_policy": "map actions to required dependencies; stale/missing/error disables only the dependent action",
+        "last_trustworthy_values": "preserved with original signs/units; never converted to neutral/zero"
+      },
+      "aggregation_rule": [
+        "A stale/error critical price or coherence dependency can force page verdict stale.",
+        "A missing/stale noncritical research dependency yields degraded when core price/context remains trustworthy.",
+        "The detail route consumes the same readiness verdict/receipts as the overview so deep-link navigation cannot bypass the stale qualification.",
+        "Freshness evaluation is deterministic and presentation-owned; no LLM decides freshness or action availability."
+      ],
+      "non_goals": [
+        "No Forex-specific freshness daemon/service.",
+        "No second state-history or retry registry.",
+        "No reuse of HK-specific 2/4/5-day thresholds or HK trading calendar.",
+        "No hiding stale values merely because current-data actions are disabled."
+      ]
+    },
+    "proposed_interfaces": {
+      "_r4_currency_rows(strength: dict, horizon: str = '1m') -> dict": [
+        "Return {basis:'vs_usd', horizon, rows, domain} from strength.horizons[horizon].",
+        "Each row uses vs_usd_pct for order, visible value and bar geometry; row.strength is not mixed into this surface.",
+        "USD is the zero reference and is not counted as a ranked non-USD currency.",
+        "Missing/nonfinite values remain unavailable and do not become 0."
+      ],
+      "_r4_pair_identity(pair_vm: dict, meta: dict) -> dict": [
+        "Return assessed_currency/base, display_pair, quote_currency, invert/quote_orientation, signed_currency_move_vs_usd and displayed_quote_move separately.",
+        "For inverted market quotes such as USD/JPY, pair direction and JPY direction remain explicit rather than algebraically guessed by the template."
+      ],
+      "_r4_rate_gap(carry_diff: float|None, base: str, quote_ccy: str, locale: str) -> dict": [
+        "Return side/favored_currency, abs_gap_pp and plain label; never return 'Paid to hold'.",
+        "A negative base-vs-US differential must say rates favor USD (or the actual opposite leg), preserving the original signed receipt."
+      ],
+      "_r4_liquidity_display(liquidity: dict|None) -> dict": [
+        "Normalize the existing canonical dollar-framed liquidity result into one display state whose label, explanation and signed net change cannot contradict.",
+        "Do not recompute WALCL-RRP-TGA or change engine sign conventions."
+      ],
+      "_r4_readiness(...) -> dict": [
+        "Compose existing Forex source/artifact timestamps into the freshness_contract above.",
+        "Keep the function pure for unit tests; write/persistence remains with existing build/artifact owners only."
+      ],
+      "_r4_glance_vm(...) -> dict": [
+        "Compose leader, breadth, principal constraint, attention items, currency rows and readiness from existing VM fields.",
+        "No new score or recommendation authority."
+      ]
+    },
+    "test_ownership": {
+      "new_noncolliding_file": "tests/test_forex_r4_contract.py",
+      "rationale": "Use a dedicated R4 contract suite for new producer/view-model semantics so current #7409 ownership of tests/test_build_forex_stance.py is not displaced.",
+      "tests": [
+        {
+          "name": "test_currency_rows_use_one_month_vs_usd_for_rank_value_and_bar",
+          "proves": "FX-R4-SEM-01",
+          "red_condition": "A fixture where cross-sectional strength order differs from vs_usd_pct order must fail against the current mixed-basis rendering contract."
+        },
+        {
+          "name": "test_currency_rows_keep_missing_move_unavailable",
+          "proves": "No fabricated zero / honest partial ranking",
+          "red_condition": "None/NaN vs_usd_pct cannot become a zero-width neutral row or affect breadth denominator."
+        },
+        {
+          "name": "test_usdjpy_exports_pair_quote_and_jpy_direction_separately",
+          "proves": "FX-R4-SEM-02",
+          "red_condition": "A lower USD/JPY quote with stronger JPY must expose both directions explicitly rather than one ambiguous signed change."
+        },
+        {
+          "name": "test_liquidity_supportive_drain_never_renders_as_adding",
+          "proves": "FX-R4-SEM-03",
+          "red_condition": "Existing {dir:'supportive', net_chg_bn:positive-dollar-framed} must not produce copy saying net liquidity is adding."
+        },
+        {
+          "name": "test_negative_rate_gap_names_favored_side_not_paid_to_hold",
+          "proves": "FX-R4-SEM-04",
+          "red_condition": "Negative JPY carry_diff must render 'rates favor USD' semantics and never 'Paid to hold'."
+        },
+        {
+          "name": "test_readiness_stale_core_preserves_values_and_blocks_current_action",
+          "proves": "FX-R4-DATA-01",
+          "red_condition": "Stale core input keeps last value/sign but verdict is stale and current-data watch action is unavailable."
+        },
+        {
+          "name": "test_readiness_partial_research_feed_degrades_without_blocking_independent_navigation",
+          "proves": "FX-R4-DATA-01 lane-local degradation",
+          "red_condition": "Missing noncritical positioning/value input must be degraded/partial rather than whole-page stale or neutralized."
+        },
+        {
+          "name": "test_glance_breadth_denominator_excludes_usd_and_unavailable_rows",
+          "proves": "R4 leader/breadth truth",
+          "red_condition": "Illustrative 7/9 cannot be reproduced by counting USD or missing rows."
+        }
+      ],
+      "existing_suites_to_extend_only_after_owner_reconciliation": {
+        "tests/test_forex.py": [
+          "Producer arithmetic/orientation invariants only; keep engine semantics separate from presentation."
+        ],
+        "tests/test_forex_context_bus.py": [
+          "Pin additive latest.json readiness/glance contract once the producer fields exist."
+        ],
+        "tests/test_build_forex_stance.py": [
+          "Render/Tier-1 stance contract only after #7409 is consumed/composed; do not edit this file while its owner remains open."
+        ]
+      },
+      "render_contract_after_template_owner_consumed": [
+        "Tier-1 hero has stance + ≤4-word headline + ≤14-word qualification.",
+        "Exactly three glance facts before analytical depth.",
+        "At narrow widths What matters next precedes the full ranking.",
+        "Stale detail shows age warning and Stand aside/older-data before evidence.",
+        "Negative rate gap never contains 'Paid to hold'.",
+        "ZH keeps sign/value identity while directional color convention remains red-up/green-down."
+      ]
+    },
+    "implementation_sequence": [
+      "1. On a current-main implementation carrier, add tests/test_forex_r4_contract.py and observe the SEM-01/readiness tests fail for the intended missing interfaces.",
+      "2. Implement pure R4 helper/view-model functions in scripts/build_forex.py (or a small existing-style helper module only if current code organization requires it); do not touch templates/theme yet.",
+      "3. Extend latest.json additively with R4 glance/readiness fields and pin in tests/test_forex_context_bus.py.",
+      "4. Reconcile/consume #7409 before modifying templates/forex.html.j2 or tests/test_build_forex_stance.py; retain its tooltip repair.",
+      "5. Reconcile/consume #7466 before theme-layer changes; reuse accepted shared light tokens/materials.",
+      "6. Port the smallest answer-first overview/detail markup, then served-path browser proof across theme/locale/width and degraded states.",
+      "7. Only after source integration passes should the same semantics be projected to Paper when the #927 custody hold has independently cleared."
+    ]
+  }
+}
