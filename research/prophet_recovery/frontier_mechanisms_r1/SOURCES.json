@@ -1,0 +1,134 @@
+{
+  "operation": "prophet-frontier-hypotheses-20260926-sol-001",
+  "procedure_pin": "4c6b206d3fb7fbc6d077faf61ae361bedf259925",
+  "macro_source_observation": "b4068812aa38ef67b2ecdc873d5c7653275a40ad",
+  "sources": [
+    {
+      "id": "S1",
+      "source": "01_ASTRA_FRONTIER_MECHANISMS.md",
+      "kind": "Chairman-delivered assignment",
+      "lines": "3-29,33-78"
+    },
+    {
+      "id": "S2",
+      "source": "macro#6817 comment5825588412",
+      "kind": "current parent allocation/acting stewardship, read this turn"
+    },
+    {
+      "id": "S3",
+      "source": "research/prophet_v4/r6_fable_meta_ceo_handoff/effective/RESEARCH_DOCKET.md",
+      "ref": "b4068812aa38ef67b2ecdc873d5c7653275a40ad",
+      "blob": "623e2166575f151c7d2f21e1dd95a588a403928d",
+      "scope": "Q01-Q15 and Q18-Q20; targeted relevant reads"
+    },
+    {
+      "id": "S4",
+      "source": "research/prophet_v4/r6_fable_meta_ceo_handoff/effective/BUILD_PROGRAM.md",
+      "ref": "b4068812aa38ef67b2ecdc873d5c7653275a40ad",
+      "blob": "a5dcc6b2cee2b5e65a0dbde844eed074a313f1db",
+      "scope": "B06-B12 and surrounding owner boundaries"
+    },
+    {
+      "id": "S5",
+      "source": "research/prophet/cpu_leadership/CONVERGENCE_AND_DELIVERY_2026-09-21.md",
+      "ref": "b4068812aa38ef67b2ecdc873d5c7653275a40ad",
+      "scope": "published visibility/archival diagnosis; not new outcomes"
+    },
+    {
+      "id": "S6",
+      "source": "research/prophet/cpu_leadership/ENTRY_RS_THRESHOLD_FINDINGS_2026-09-21.md",
+      "ref": "b4068812aa38ef67b2ecdc873d5c7653275a40ad",
+      "blob": "777b11b72f884080434f6a02250827a0b2eb485d"
+    },
+    {
+      "id": "S7",
+      "source": "engine/us_prophet_grades.py",
+      "ref": "b4068812aa38ef67b2ecdc873d5c7653275a40ad",
+      "blob": "da7d1f625dc3d20431806502d9f36be82973ffa2",
+      "scope": "source only; no grade-store reads"
+    },
+    {
+      "id": "S8",
+      "source": "macro#7288 metadata and engine/prophet_discovery_grade.py",
+      "ref": "9d3ce14313c671098c03e7661669f77ae7f3ecd3",
+      "blob": "b7c806303b1af24fec18f9389d2adcc5f2fa6922",
+      "scope": "source/metadata only; no outcome-store reads"
+    },
+    {
+      "id": "S9",
+      "source": "research/prophet_v4/CELL_G_FLAGSHIP_VOI_MEASUREMENT_LAW_2026-08-22.md",
+      "ref": "b4068812aa38ef67b2ecdc873d5c7653275a40ad",
+      "blob": "fa48706748e8cebef8c0712fb5581e6aa9ca7e9d",
+      "scope": "coverage, concentration, dependence and multiplicity sections"
+    },
+    {
+      "id": "S10",
+      "source": "research/prophet_v4/r6_fable_meta_ceo_handoff/DECISION_RESOLUTION_PLAYBOOK.md",
+      "ref": "b4068812aa38ef67b2ecdc873d5c7653275a40ad",
+      "blob": "cf00d396d42c28af90b0b7b792665191f92defd0",
+      "scope": "D06-D10 relevant scientific/admission law"
+    },
+    {
+      "id": "S11",
+      "source": "research/prophet_v4/r6_program/wave0/OPUS_SCIENCE_SEAMS_AUDIT_2026-09-23.md",
+      "ref": "b4068812aa38ef67b2ecdc873d5c7653275a40ad",
+      "scope": "prior PARTIAL independent audit, not a review of these new cards"
+    },
+    {
+      "id": "S12",
+      "source": "agentos/workstreams/WS-PROPHET-US-V4-RECOVERY.md",
+      "ref": "b4068812aa38ef67b2ecdc873d5c7653275a40ad",
+      "blob": "f37de0a4af86b186e86d9f70c68e4719c6ceb5df",
+      "scope": "source ownership and two-clock/source-revision constraints"
+    },
+    {
+      "id": "S13",
+      "source": "research/prophet_v4/r6_fable_meta_ceo_handoff/work_cards/Q05.md",
+      "ref": "b4068812aa38ef67b2ecdc873d5c7653275a40ad",
+      "blob": "346bb39a8f48e5ac0b0f0f2bdd10734a7086b2c6"
+    },
+    {
+      "id": "S14",
+      "source": "research/prophet_v4/r6_fable_meta_ceo_handoff/work_cards/Q09.md",
+      "ref": "b4068812aa38ef67b2ecdc873d5c7653275a40ad",
+      "blob": "efd1181e68bddab7a7c4b0ac3d16c6ba9902a017"
+    },
+    {
+      "id": "S15",
+      "source": "research/prophet_v4/r6_fable_meta_ceo_handoff/work_cards/Q13.md",
+      "ref": "b4068812aa38ef67b2ecdc873d5c7653275a40ad",
+      "blob": "dac1d95baaaf12c2d92a23abcd8710620c264f2d"
+    },
+    {
+      "id": "S16",
+      "source": "research/prophet_v4/r6_fable_meta_ceo_handoff/work_cards/Q20.md",
+      "ref": "b4068812aa38ef67b2ecdc873d5c7653275a40ad",
+      "blob": "58ebe0ece8f6b57a1824de70926112a9993dd15b"
+    },
+    {
+      "id": "P1",
+      "source": "Cohen and Frazzini (2008), Economic Links and Predictable Returns, Journal of Finance",
+      "doi": "10.1111/j.1540-6261.2008.01379.x",
+      "scope": "publisher abstract; motivation only"
+    },
+    {
+      "id": "P2",
+      "source": "Hou (2007), Industry Information Diffusion and the Lead-lag Effect in Stock Returns, Review of Financial Studies",
+      "doi": "10.1093/revfin/hhm003",
+      "scope": "publisher abstract; importantly emphasizes negative information"
+    },
+    {
+      "id": "P3",
+      "source": "Analyst responsiveness and the post-earnings-announcement drift (2008), Journal of Accounting and Economics",
+      "doi": "10.1016/j.jacceco.2008.04.004",
+      "scope": "publisher abstract/introduction; not a new Prophet result"
+    },
+    {
+      "id": "P4",
+      "source": "Daniel and Moskowitz, Momentum Crashes, NBER working paper20439 (2014), published JFE (2016)",
+      "doi": "10.3386/w20439",
+      "scope": "NBER abstract; contextual risk warning, no transferred performance"
+    }
+  ],
+  "assignment_sha256": "3fbcdefec39e0f944b20f2ed770143675ea3fd142e575aefc97c0e9ad237fd3b"
+}

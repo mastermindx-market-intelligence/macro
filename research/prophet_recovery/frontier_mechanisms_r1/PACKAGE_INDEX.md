@@ -9,9 +9,9 @@ Publication carrier: Macro PR #7980 / `sol/prophet-recovery-cohort1-20260924`
 ## Durable files in this GitHub candidate
 
 - `FRONTIER_MECHANISMS_R1.md` — complete human-readable research hand-in.
-- `PACKAGE_INDEX.md` — this package/index receipt.
+- `ARTIFACT_VALIDATION.json` — artifact-only verification receipt.\n- `FRONTIER_MECHANISMS_R1.md` — complete human-readable research hand-in.\n- `H1_REGISTRATION_INTAKE.json` — non-executable H1 registration intake specimen.\n- `INDEPENDENT_CRITIC_BRIEF.md` — prepared/not-dispatched independent review brief.\n- `RETURN.md` — bounded return and continuation contract.\n- `SOURCES.json` — exact research/source index.\n- `SHA256SUMS.txt` — member integrity manifest.\n- `PACKAGE_INDEX.md` — this package/index receipt.
 
-The original chat ZIP is intentionally not committed as a binary source artifact. Its seven members remain hash-bound below; the decision-bearing report is committed in readable form, while the source-specific H1 intake is already durable on #7288 comment 5852069727 and the detailed three-card hand-in is durable on #6805 comment 5852093834.
+The original chat ZIP is intentionally not committed as a binary source artifact. All seven source members are committed below as first-class readable files; the source-specific H1 intake is also durable on #7288 comment 5852069727 and the detailed three-card hand-in is durable on #6805 comment 5852093834.
 
 ## Original package member SHA256
 
