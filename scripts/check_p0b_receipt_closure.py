@@ -64,7 +64,24 @@ def _sparse_refusal(root: Path) -> str | None:
 
 
 def parse_changed_paths(text: str) -> set[str]:
-    """Accept `git diff --name-only` output or a unified diff."""
+    """Accept planner JSON, `git diff --name-only`, or a unified diff.
+
+    Semantic packs publish their authoritative changed-path list as a JSON
+    array through CI_CHANGED_FILES_FILE.  A configured planner sentinel
+    (`null`) or malformed JSON must REFUSE rather than degrade to a harmless
+    literal path and accidentally pass the closure gate.
+    """
+    stripped = text.strip()
+    if stripped == "null":
+        raise ValueError("planner changed-file handle is null / unavailable")
+    if stripped.startswith(("[", "{")):
+        try:
+            parsed = json.loads(stripped)
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"malformed planner changed-file JSON: {exc}") from exc
+        if not isinstance(parsed, list) or not all(isinstance(path, str) for path in parsed):
+            raise ValueError("planner changed-file JSON must be an array of strings")
+        return {path for path in parsed if path}
     lines = text.splitlines()
     if any(line.startswith("diff --git ") for line in lines):
         paths: set[str] = set()
@@ -396,7 +413,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"::error title=p0b-receipt-closure::{refuse}", flush=True)
         return 2
 
-    changed = parse_changed_paths(diff_text)
+    try:
+        changed = parse_changed_paths(diff_text)
+    except ValueError as exc:
+        print(f"::error title=p0b-receipt-closure::REFUSED: {exc}", flush=True)
+        return 2
     findings = evaluate(changed, pin_sets)
     if not findings:
         return 0
