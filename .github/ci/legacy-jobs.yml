@@ -11286,8 +11286,16 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
-      - name: ad plane O + persona model + reply-desk arming
-        run: python -m pytest tests/test_marketing_ad_plane_o.py tests/test_marketing_persona_model.py tests/test_marketing_reply_arming.py -q
+      # test_marketing_persona_cross_host joins this lane (2026-09-18) rather
+      # than marketing-engine, which carries its sibling
+      # test_marketing_desk_feeds: that job is `gate: data`, and merge-gate packs
+      # select `gate: code` only, so a cross-host durability proof wired there
+      # would never run on the PR that changed the thing it proves. Import
+      # closure is stdlib + pyyaml even though the suite exec_module's
+      # scripts/marketing_publisher.py (verified: the only third-party module
+      # that entry pulls is yaml), so this lane's deps already cover it.
+      - name: ad plane O + persona model + reply-desk arming + persona cross-host durability
+        run: python -m pytest tests/test_marketing_ad_plane_o.py tests/test_marketing_persona_model.py tests/test_marketing_reply_arming.py tests/test_marketing_persona_cross_host.py -q
       - name: X ad-campaign asset manifests (desktop + mobile)
         run: python -m pytest tests/test_x_ad_campaign_assets.py tests/test_x_mobile_campaign_assets.py -q
 

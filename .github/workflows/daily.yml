@@ -5495,8 +5495,28 @@ jobs:
       # retried nightly that double-counted would silently TIGHTEN every
       # per-quirk frequency cap those counters bound.
       #
-      # A host with no spool is a no-op that exits 0 and prints a ::notice, not a
-      # failure — most runners never emit anything.
+      # CROSS-HOST RECONCILIATION (closes the XG-W3 review's F11). The spool is
+      # host-local; publication is not. The publisher runs on `macstudio-light`,
+      # this job on `macstudio`, the reply desk on the VPS, and
+      # data/marketing/personas_host/ is gitignored — so a post shipped by one
+      # host never reached the ledger advanced by another, SILENTLY, because an
+      # absent spool and an idle host leave identical evidence. Measured on main
+      # 2026-09-18: 1,138 live publications over 46 days and 7 accounts, and
+      # data/marketing/personas/ did not exist at all — every per-quirk frequency
+      # cap was reading an empty store.
+      #
+      # The step therefore also JOINS the two ledgers that ALREADY cross hosts by
+      # the git commit-back this repo has always used — data/marketing/publications.jsonl
+      # (what shipped) and data/marketing/outbox/items.jsonl (its copy) — and
+      # admits a recovered record only when sha256(text) equals the receipt's own
+      # effective_copy_hash. Both inputs are read-only here; no new transport,
+      # ledger or queue is introduced, and the publication receipt remains the
+      # sole authority on what published.
+      #
+      # A host with nothing to do is a no-op that exits 0 and prints a ::notice,
+      # not a failure. A publication that cannot be resolved is a ::warning
+      # naming the reason — never silence, which is the failure mode this repair
+      # exists to remove.
       - name: marketing — consolidate persona memory
         env:
           MARKETING_PERSONA_MEMORY_ENABLED: "1"
