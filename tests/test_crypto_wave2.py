@@ -390,12 +390,24 @@ def test_h5_missing_cockpit_projection_is_unavailable_not_zero(tmp_path):
     assert e0["decision"]["final_exposure_pct"] is None
 
 
-def test_h5_build_has_explicit_fail_closed_guard():
+def test_h5_build_keeps_page_publishable_but_never_rescues_budget():
     source = (ROOT / "scripts" / "build_crypto.py").read_text(encoding="utf-8")
 
     assert 'if not allocation.get("available"):' in source
-    assert "Crypto H5 budget unavailable" in source
+    assert '"Crypto H5 budget unavailable (' in source
+    assert "raise RuntimeError" not in source[source.index('if not allocation.get("available"):'):source.index("asset_states = build_asset_states()")]
     assert 'latest["alloc_optimal"]' not in source
+
+
+def test_h5_template_has_explicit_unavailable_state_and_canonical_copy():
+    source = (ROOT / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
+    h5 = source.split('data-shelf="H5"', 1)[1].split('data-shelf="H6"', 1)[0]
+
+    assert "{% if allocation.available %}" in h5
+    assert "{{ t('Allocation unavailable','配置暂不可用') }}" in h5
+    assert "will not infer a crypto budget or treat missing data as 0%" in h5
+    assert "btc.decision/v1" in h5
+    assert "alloc_optimal" not in h5
 
 
 def test_h5_rejects_stale_canonical_decision_even_when_status_is_ok(monkeypatch):

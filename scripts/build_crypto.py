@@ -433,9 +433,9 @@ def build(site_dir: Path | None = None) -> Path:
     decision_projection = e0.get("decision") if isinstance(e0.get("decision"), dict) else {}
     allocation = _allocation(signals, market, decision_projection)
     if not allocation.get("available"):
-        raise RuntimeError(
-            "Crypto H5 budget unavailable: "
-            f"{allocation.get('authority_error') or 'UNKNOWN'}"
+        log.warning(
+            "Crypto H5 budget unavailable (%s); rendering a non-actionable H5 state",
+            allocation.get("authority_error") or "UNKNOWN",
         )
     asset_states = build_asset_states()
     options_contract = build_btc_options()
