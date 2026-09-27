@@ -446,3 +446,27 @@ Reviewed screenshots:
 - Events r1: `f4987a791b76dc81fcb23bbaff195cb86a84bebed54f4561b04f4f034dff0a8a`
 
 These receipts prove the local preview bytes reviewed in this continuation. They do not prove Paper application, production implementation, data qualification or user acceptance.
+
+
+## Source hardening receipt — partial allocation gaps
+
+The production-facing Vector replay now distinguishes **chart validity** from **performance validity**.
+
+A missing historical allocation is no longer treated as either 0% Bitcoin or a reason to hide all otherwise-qualified price/risk history. The allocation series keeps an explicit gap. Buy/sell markers never bridge an unavailable decision. The crosshair readout uses `—` for unavailable allocation and performance. Strategy equity remains measurable on the missing-decision date because the prior allocation governed that interval; uncertainty begins on the following return interval and remains cumulative. If the latest allocation alone is missing, performance through the latest close remains measurable even though current allocation is unknown.
+
+This behavior is implemented in source commit `e17c55ad81b01d076a6ab122130bc1c545347e5a`. The page shows a gap disclosure near the synchronized instrument. Allocation simulation is displayed only when `performance_valid=true`; it is withheld when a prior missing decision makes cumulative simulation noncomparable.
+
+### Verification
+
+Fresh exact-candidate local receipts:
+- R2 data-boundary suite: **7 passed**.
+- Exact existing Vector CI pytest command: **87 passed, 5 skipped** after adding only `contracts/` and root `config.yml` to the sparse worktree. The earlier 23 failures on the same command were reproduced and traced to those omitted test dependencies; no full checkout or source workaround was used.
+- Python compile, JS syntax, Jinja parse and `git diff --check`: successful.
+
+Warnings remain from `Timestamp.utcnow` deprecation and temporary Chromium cleanup. They are not asserted resolved.
+
+A controlled actual-template browser matrix was run on the no-gap R2 path at 1440/768/390, dark/light, EN/ZH. All 12 combinations had HTTP 200, no page-wide overflow, one canonical verdict, a mounted synchronized chart, keyboard-openable source inspector, model/history separation and no page JavaScript errors. The fixture intentionally does not prove the complete production shell/network because some shell-only assets/fonts were absent. A later attempt to refresh that bounded fixture for the new gap-state branch was refused before dispatch; there is therefore no claimed browser receipt for the gap state itself.
+
+### Remaining production gates
+
+This improves truth-preserving degradation but does not complete the broader Crypto/Vector release. Still required: exact-head PR CI/fences; production/generated-route gap-state browser proof; qualified Crypto asset ranking and source clocks; H5 canonical total-budget identity; existing saved-review/Alert Center integration; Paper boards 12–16 once its schema pin is accepted; and representative user comprehension/task completion.

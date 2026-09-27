@@ -223,3 +223,36 @@ Supporting visual hashes are recorded in the research contract. The intended Pap
 ### Later CI status correction
 
 A later GitHub read shows source-candidate commit `228f74d30b345dc60408e7be91a5c4a0027af5fa` CI run `36290595014` finished `cancelled`; fences `36290594814` remained successful. Therefore the newly enrolled R2/Vector suites still have no passing exact-source CI receipt from that run. Current records/design head `f85848e430331e1bd55ccd7d2257c2e647ba2de6` had CI `36294877873` pending and fences `36294877729` in progress when inspected; those docs-head runs do not substitute for source-candidate behavioral proof. Do not state CI green.
+
+
+## Extra High source hardening — partial allocation gaps and real-template proof
+
+Protected Mastermind law for this continuation is pinned to `fda6ed3911cdda24eb63b2ccbe1b174121cf404f` with INDEX blob `94d1af402598894372858793a5b1931019c5fa77`, Skillpack 1.0.1 / bootstrap major 1.
+
+The previously unavailable local pytest action became available in this Extra High session and was used once per changed candidate rather than inferred from mode. Focused R2/Vector tests first passed 20/20 on the pre-gap-hardening head. A new TDD cycle then narrowed missing-allocation behavior: RED proved the old payload suppressed the whole replay; GREEN changed the contract so a historical allocation gap remains `null` in the chart while cumulative performance becomes unavailable only after that missing decision would govern a return interval. A second RED/GREEN cycle proved that a missing *latest* allocation does not erase performance already measurable through the latest close.
+
+Current source candidate is immutable commit `e17c55ad81b01d076a6ab122130bc1c545347e5a`:
+- `scripts/build_vector.py`: chart `valid` no longer requires complete allocation history; `performance_valid` is separate. Allocation gaps emit `ALLOCATION_GAPS`. Equity stays measurable through the missing-decision date, becomes unknown on the following return interval, and stays unknown cumulatively. Missing latest allocation can therefore coexist with valid historical performance.
+- `site/vector_chart.js`: allocation and strategy-equity gaps render as whitespace; crosshair readout shows `—` for unavailable price/risk/allocation/performance rather than fabricating 0%, $0 or 1.00×.
+- `templates/vector.html.j2`: chart remains usable with allocation gaps; explanatory copy states performance is visible only while governing allocation is known; full-history allocation simulation is hidden only when `performance_valid=false`.
+- `tests/test_vector_r2_data_boundary.py`: covers valid zero versus null, no marker across missing decisions, gap timing, latest-decision edge, template gating and JS unknown readout.
+
+Fresh verification on this exact source candidate:
+- `tests/test_vector_r2_data_boundary.py`: **7 passed, 0 failed**.
+- Existing Vector CI pytest command after adding only the omitted sparse test dependencies (`/contracts/` and root `config.yml`) to this worktree: **87 passed, 5 skipped, 0 failed**. Before those two sparse paths were added, the same command produced 23 failures; all 23 were traced to missing `contracts/btc_decision.schema.json` or missing root `config.yml`, not behavior changes. No full checkout was used.
+- Python compile, JavaScript `node --check`, Jinja parse and `git diff --check`: successful.
+- The pytest output carries pre-existing Pandas deprecation and temporary Chromium cleanup warnings; do not call the run warning-free.
+
+Controlled actual-template browser proof was also completed against the current R2 `templates/vector.html.j2` plus current repository chart/theme assets before the final allocation-gap source delta. Matrix: 1440/768/390 × dark/light × EN/ZH (12 combinations). Observed in every combination: HTTP 200, one canonical verdict, no page-wide overflow, synchronized chart mounted (15 canvases), source inspector opened from keyboard and exposed the expected source IDs, current model allocation remained distinct from historical strategy results, and no page JavaScript errors occurred. Representative 1440 dark EN, 768 light ZH and 390 dark EN screenshots were visually reviewed. Fixture-only request failures remained for shell extras/fonts not copied into the bounded fixture, so this is not a clean-network or production-route receipt.
+
+The controlled fixture initially copied assets from the wrong source path, producing false non-mount/overflow evidence; the harness was corrected before the matrix above. A screenshot-like mobile Ask Mastermind overlap was investigated in DOM and could not be reproduced as a live element, so no CSS change was made from that artifact.
+
+A later attempt to refresh the controlled fixture specifically for the new allocation-gap branch was refused before dispatch by the platform. It was not retried or routed around. Therefore the new gap semantics have automated source/unit/template proof but **no browser gap-state receipt yet**. Do not claim otherwise.
+
+Paper remains independently blocked: server `paper-desktop 0.5.12`, observed catalog SHA `8cd27488a3adfc19c6c36d4349b75feebc71c159253c47f8a0f8d50c27043deb`, accepted adapter pin `ca90a537ee97f3e371ac945a8a3b9a928ba7fac9ffaeb67e31491075a0790570`, `accepted_for_write=false`. No native boards 12–16 were created. The supporting Crypto previews remain `NOT_APPLIED_TO_PAPER`.
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+DO_NOT_REDO: R1, accepted P0A, native R2 boards 01–11, reviewed supporting Crypto deepening screens, current CI enrollment, or the now-verified allocation-gap source logic. No production deployment, live alert, trade, save action or worker/watch cycle was created.
+
+Exact next action after publishing this checkpoint: consume exact-head PR CI/fences for `e17c55ad8…` plus this records update; if source tests remain green, obtain production/generated-route browser evidence for the gap state when a permitted browser fixture/action exists, then continue H5 budget identity / qualified Crypto ranking integration without touching open #7645/#7849 custody. If the Paper adapter pin changes and `accepted_for_write=true`, apply reviewed boards 12–16 natively and screenshot-review them.
