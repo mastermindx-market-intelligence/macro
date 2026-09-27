@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-09-27T12:45:14.793019+00:00",
+  "generated_utc": "2026-09-27T22:54:14.007128+00:00",
   "as_of": "2026-09-27",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -27628,10 +27628,10 @@
         {
           "ticker": "SNOW",
           "buy_usd": 0.0,
-          "sell_usd": 911502647.0,
-          "net_usd": -911502647.0,
+          "sell_usd": 911477647.0,
+          "net_usd": -911477647.0,
           "buyers": 0,
-          "sellers": 216
+          "sellers": 215
         },
         {
           "ticker": "UMC",
@@ -28704,14 +28704,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "MSFT",
-        "mentions": 25,
-        "sentiment": 0.015
-      },
-      {
         "ticker": "QQQ",
         "mentions": 25,
         "sentiment": 0.074
+      },
+      {
+        "ticker": "MSFT",
+        "mentions": 25,
+        "sentiment": 0.015
       },
       {
         "ticker": "OKLO",

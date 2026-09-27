@@ -560,13 +560,13 @@ def test_availability_unavailable_when_only_malformed_facts() -> None:
             key=FACT_KEY_TOTAL_REVENUE,
             period_end="2026-06-30",
             value_text="not-a-number",
-            native_ref="src-bad-1",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_TOTAL_REVENUE,
             period_end="2025-06-30",
             value_text="also-bad",
-            native_ref="src-bad-2",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
     ]
     case = _plnt_case(facts=facts)
@@ -618,25 +618,25 @@ def test_ratio_withheld_on_nonpositive_denominator_zero() -> None:
             key=FACT_KEY_TOTAL_REVENUE,
             period_end="2026-06-30",
             value_text="100",
-            native_ref="src-tr-c",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_TOTAL_REVENUE,
             period_end="2025-06-30",
             value_text="100",
-            native_ref="src-tr-p",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_ADVERTISING_REVENUE,
             period_end="2026-06-30",
             value_text="50",
-            native_ref="src-ar-c",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_ADVERTISING_REVENUE,
             period_end="2025-06-30",
             value_text="40",
-            native_ref="src-ar-p",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
     ]
     document = project_economic_change(_plnt_case(facts=facts))
@@ -653,25 +653,25 @@ def test_ratio_withheld_on_negative_denominator() -> None:
             key=FACT_KEY_TOTAL_REVENUE,
             period_end="2026-06-30",
             value_text="100",
-            native_ref="src-tr-c",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_TOTAL_REVENUE,
             period_end="2025-06-30",
             value_text="200",
-            native_ref="src-tr-p",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_ADVERTISING_REVENUE,
             period_end="2026-06-30",
             value_text="50",
-            native_ref="src-ar-c",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_ADVERTISING_REVENUE,
             period_end="2025-06-30",
             value_text="40",
-            native_ref="src-ar-p",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
     ]
     document = project_economic_change(_plnt_case(facts=facts))
@@ -689,27 +689,27 @@ def test_ratio_withheld_when_denominator_envelope_includes_zero() -> None:
             key=FACT_KEY_TOTAL_REVENUE,
             period_end="2026-06-30",
             value_text="100",
-            native_ref="src-tr-c",
+            native_ref="src_plnt_q2_2026_ex991",
             rounding_envelope={"includes_zero": True},
         ),
         _plnt_fact(
             key=FACT_KEY_TOTAL_REVENUE,
             period_end="2025-06-30",
             value_text="50",
-            native_ref="src-tr-p",
+            native_ref="src_plnt_q2_2026_ex991",
             rounding_envelope={"includes_zero": True},
         ),
         _plnt_fact(
             key=FACT_KEY_ADVERTISING_REVENUE,
             period_end="2026-06-30",
             value_text="80",
-            native_ref="src-ar-c",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_ADVERTISING_REVENUE,
             period_end="2025-06-30",
             value_text="40",
-            native_ref="src-ar-p",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
     ]
     document = project_economic_change(_plnt_case(facts=facts))
@@ -730,25 +730,25 @@ def test_ratio_greater_than_100_passes_through() -> None:
             key=FACT_KEY_TOTAL_REVENUE,
             period_end="2026-06-30",
             value_text="100",
-            native_ref="src-tr-c",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_TOTAL_REVENUE,
             period_end="2025-06-30",
             value_text="50",
-            native_ref="src-tr-p",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_ADVERTISING_REVENUE,
             period_end="2026-06-30",
             value_text="200",
-            native_ref="src-ar-c",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_ADVERTISING_REVENUE,
             period_end="2025-06-30",
             value_text="40",
-            native_ref="src-ar-p",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
     ]
     document = project_economic_change(_plnt_case(facts=facts))
@@ -771,25 +771,25 @@ def test_withheld_is_never_zero_and_never_bearish() -> None:
             key=FACT_KEY_TOTAL_REVENUE,
             period_end="2026-06-30",
             value_text="100",
-            native_ref="src-tr-c",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_TOTAL_REVENUE,
             period_end="2025-06-30",
             value_text="100",
-            native_ref="src-tr-p",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_ADVERTISING_REVENUE,
             period_end="2026-06-30",
             value_text="50",
-            native_ref="src-ar-c",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
         _plnt_fact(
             key=FACT_KEY_ADVERTISING_REVENUE,
             period_end="2025-06-30",
             value_text="40",
-            native_ref="src-ar-p",
+            native_ref="src_plnt_q2_2026_ex991",
         ),
     ]
     document = project_economic_change(_plnt_case(facts=facts))
@@ -1380,6 +1380,77 @@ def test_every_native_ref_resolves_to_a_declared_source_record() -> None:
     for fact in case["facts"]:
         ref = fact.get("native_ref")
         assert ref in declared, (fact["key"], ref, sorted(declared))
+
+    # ...and the MODULE must enforce it, not merely the fixture satisfy it.
+    # This assertion is the one that was missing: the test above states a
+    # property of ``_plnt_case()``, which a caller handing over any other
+    # case is in no way bound by. Measured before the guard existed: the
+    # orphan below was emitted inside a document reporting
+    # ``availability: "ready"`` at zero schema errors.
+    orphan = "src_this_record_was_never_declared"
+    assert orphan not in declared, "probe value must not be declared"
+    dangling = _plnt_case()
+    assert dangling["facts"][0]["native_ref"] != orphan, "MUTATION WAS A NO-OP"
+    dangling["facts"][0] = dict(dangling["facts"][0], native_ref=orphan)
+    with pytest.raises(CaseShapeError) as exc:
+        project_economic_change(dangling)
+    # The DECLARED REASON must name the gate under test, not merely refuse:
+    # DSC:A-MUTATION-THAT-DIES-UPSTREAM-NEVER-TESTS-THE-GATE-YOU-AIMED-AT.
+    assert "resolves to no declared source record" in str(exc.value), exc.value
+    assert orphan in str(exc.value), exc.value
+
+
+def test_a_null_native_ref_is_still_admitted() -> None:
+    """Absence is honest; the guard must not over-tighten into it.
+
+    DSC:A-MINTING-DEFAULT-IS-INVISIBLE-TO-AN-EMPTINESS-GATE so_what (4)
+    rules that ``null`` for ``native_ref`` is the contract's own "unknown"
+    and refusing it would reject otherwise-complete facts to gain nothing.
+    The committed fixture carries six null refs, so this is the live
+    negative control on the resolution guard: it must stay green.
+    """
+    case = _fixture_case()
+    assert all(f.get("native_ref") is None for f in case["facts"]), [
+        f.get("native_ref") for f in case["facts"]
+    ]
+    document = project_economic_change(case)
+    assert document["availability"] == "ready", document["availability"]
+
+
+def test_native_ref_outside_the_record_id_vocabulary_is_refused() -> None:
+    """Both ends of one pointer must share one vocabulary.
+
+    ``source_record.record_id`` is pinned to ``^src_[a-z0-9_]+$`` while
+    ``fact.native_ref`` carried no pattern at all, so the two ends of the
+    SAME pointer were typed differently. Measured before the repair:
+    ``"SRC-NOT-LEGAL"`` -- uppercase, hyphenated, matching no record_id that
+    could ever be declared -- was accepted and emitted. That absence of a
+    vocabulary gate is why the positive control in the dangling-pointer
+    probe did not fire, and it is the structural cause of the dangle.
+    """
+    case = _plnt_case()
+    assert case["facts"][0]["native_ref"] != "SRC-NOT-LEGAL", "MUTATION WAS A NO-OP"
+    case["facts"][0] = dict(case["facts"][0], native_ref="SRC-NOT-LEGAL")
+    with pytest.raises(CaseShapeError):
+        project_economic_change(case)
+
+
+def test_native_admitted_false_is_not_a_suppression_gate() -> None:
+    """The label must never become a gate -- pinning frozen-spec 4a.
+
+    Every real V1-CORE fact carries ``native_admitted: False`` because
+    PLNT's Q2 2026 exhibit is retained nowhere, so a gate here would make
+    the module structurally incapable of its own golden case. The
+    ``_compose_changes`` docstring asserted exactly that suppression --
+    citing section 7, while the code 20 lines below refused it citing 4a --
+    so a reader who trusted the prose would have "restored" a gate that
+    breaks the frozen oracle. This test makes the prose falsifiable.
+    """
+    case = _plnt_case()
+    assert all(f.get("native_admitted") is False for f in case["facts"])
+    document = project_economic_change(case)
+    assert document["availability"] == "ready", document["availability"]
+    assert document["results"], "native_admitted False suppressed every result"
 
 
 # Every contract-required envelope field the source must SPELL. Dropping any
