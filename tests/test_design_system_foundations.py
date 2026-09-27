@@ -722,3 +722,71 @@ def test_prepared_samples_keep_internal_delivery_language_out_of_customer_copy(s
     forbidden = ("owner confirms", "original request", "effect is unknown", "保存服务", "原请求")
     for body in samples:
         assert not any(term in body for term in forbidden), "Customer examples must not expose delivery plumbing"
+
+
+# Executable-reference tab semantics; browser behavior is qualified separately.
+def _specimen_tab_nodes(specimen):
+    from html.parser import HTMLParser
+
+    class Nodes(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.items = []
+        def handle_starttag(self, tag, attrs):
+            self.items.append((tag, dict(attrs)))
+
+    parser = Nodes()
+    parser.feed(specimen)
+    return parser.items
+
+
+def test_specimen_tabs_use_distinct_reciprocal_panels(specimen):
+    nodes = _specimen_tab_nodes(specimen)
+    tabs = [a for _, a in nodes if a.get('role') == 'tab']
+    targets = [a.get('aria-controls') for a in tabs]
+    assert len(tabs) == 3 and len(set(targets)) == 3, 'Three tasks need three actual panels'
+    for tab in tabs:
+        matching = [a for _, a in nodes if a.get('id') == tab['aria-controls']]
+        assert len(matching) == 1
+        assert matching[0].get('role') == 'tabpanel'
+        assert matching[0].get('aria-labelledby') == tab['id']
+
+
+def test_specimen_tabs_have_one_initial_keyboard_entry(specimen):
+    nodes = _specimen_tab_nodes(specimen)
+    tabs = [(tag, a) for tag, a in nodes if a.get('role') == 'tab']
+    selected = [a for _, a in tabs if a.get('aria-selected') == 'true']
+    assert len(selected) == 1
+    assert all(tag == 'button' and a.get('type') == 'button' for tag, a in tabs)
+    for _, tab in tabs:
+        assert tab.get('tabindex') == ('0' if tab in selected else '-1')
+        panel = next(a for _, a in nodes if a.get('id') == tab['aria-controls'])
+        assert panel.get('tabindex') == '0'
+        assert ('hidden' in panel) == (tab not in selected)
+    tablist = next(a for _, a in nodes if a.get('role') == 'tablist')
+    assert any(a.get('id') == tablist.get('aria-labelledby') for _, a in nodes)
+
+
+@pytest.mark.parametrize('key', ['ArrowLeft', 'ArrowRight', 'Home', 'End'])
+def test_specimen_tabs_name_keyboard_navigation_keys(specimen, key):
+    scripts = '\n'.join(re.findall(r'<script\b[^>]*>(.*?)</script>', specimen, re.S))
+    assert key in scripts
+
+
+def test_specimen_tabs_restore_history_without_rebuilding_content(specimen):
+    scripts = '\n'.join(re.findall(r'<script\b[^>]*>(.*?)</script>', specimen, re.S))
+    assert 'hashchange' in scripts and 'popstate' in scripts
+    assert '.hidden =' in scripts and 'pushState' in scripts
+    assert not re.search(r'innerHTML\s*=|localStorage|sessionStorage|fetch\(', scripts)
+
+
+def test_specimen_tabs_state_the_example_boundary(specimen):
+    assert 'id="specimen-tabs-note"' in specimen
+    assert 'Fictional examples' in specimen and '虚构示例' in specimen
+    assert 'No filing examples loaded' in specimen
+
+
+def test_specimen_tabs_simple_fundamentals_do_not_require_sideways_reading(specimen):
+    panel = specimen.split('id="pane-fundamentals"', 1)[1].split('id="pane-filings"', 1)[0]
+    assert re.search(r'<table class="mx-tbl" style="min-width:0">', panel)
+    assert '>Revenue trend<' not in panel and '>Margin trend<' not in panel

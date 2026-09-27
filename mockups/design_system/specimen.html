@@ -99,8 +99,8 @@ html[data-lang="zh"] .mx-vh .mx-vh-word{ letter-spacing:0; }
 .mx-tbl td{ padding:7px 10px; border-bottom:1px solid color-mix(in srgb, var(--line) 55%, transparent); font-variant-numeric:tabular-nums; }
 .mx-tbl tr:hover td{ background:color-mix(in srgb, var(--panel2) 60%, transparent); }
 .mx-tblbox{ overflow-x:auto; }
-.mx-tabset{ display:flex; gap:2px; border-bottom:1px solid var(--line); margin-bottom:10px; }
-.mx-tabset button{ appearance:none; background:none; border:none; border-bottom:2px solid transparent;
+.mx-tabset{ display:flex; flex-wrap:wrap; gap:2px; border-bottom:1px solid var(--line); margin-bottom:10px; }
+.mx-tabset button{ min-height:var(--sp-8); appearance:none; background:none; border:none; border-bottom:2px solid transparent;
   color:var(--muted); font:600 var(--fs-sm)/1 var(--font-ui); padding:8px 12px; cursor:pointer;
   transition:color var(--t-fast) var(--ease-std), border-color var(--t-fast) var(--ease-std); }
 .mx-tabset button[aria-selected="true"]{ color:var(--text); border-bottom-color:var(--link); }
@@ -438,20 +438,38 @@ body.mobile-sim .wrap{ max-width:390px; box-sizing:border-box; }
     </div>
 
     <div class="panel">
-      <div class="mx-sec"><h3 class="l-en">Table (.mx-tbl) + Tabs (.mx-tabset)</h3><h3 class="l-zh">表格（.mx-tbl）+ 页签（.mx-tabset）</h3></div>
-      <div class="mx-tabset" role="tablist">
-        <button role="tab" id="tab-pf" aria-controls="pane-demo" aria-selected="true"><span class="l-en">Price &amp; flow</span><span class="l-zh">价格与资金</span></button>
-        <button role="tab" id="tab-fu" aria-controls="pane-demo" aria-selected="false"><span class="l-en">Fundamentals</span><span class="l-zh">基本面</span></button>
-        <button role="tab" id="tab-fi" aria-controls="pane-demo" aria-selected="false"><span class="l-en">Filings</span><span class="l-zh">公告</span></button>
+      <div class="mx-sec" id="specimen-tabs-title"><h3 class="l-en">Table (.mx-tbl) + Tabs (.mx-tabset)</h3><h3 class="l-zh">表格（.mx-tbl）+ 页签（.mx-tabset）</h3></div>
+      <p id="specimen-tabs-note" class="muted"><span class="l-en">Fictional examples. Each tab shows a different part of the same research.</span><span class="l-zh">虚构示例。各页签展示同一研究的不同内容。</span></p>
+      <div class="mx-tabset" id="specimen-research-tabs" role="tablist" aria-labelledby="specimen-tabs-title" aria-describedby="specimen-tabs-note">
+        <button type="button" role="tab" id="tab-pf" aria-controls="pane-demo" aria-selected="true" tabindex="0"><span class="l-en">Price &amp; flow</span><span class="l-zh">价格与资金</span></button>
+        <button type="button" role="tab" id="tab-fu" aria-controls="pane-fundamentals" aria-selected="false" tabindex="-1"><span class="l-en">Fundamentals</span><span class="l-zh">基本面</span></button>
+        <button type="button" role="tab" id="tab-fi" aria-controls="pane-filings" aria-selected="false" tabindex="-1"><span class="l-en">Filings</span><span class="l-zh">公告</span></button>
       </div>
-      <div class="mx-tblbox" id="pane-demo" role="tabpanel"><table class="mx-tbl">
+      <div id="pane-demo" role="tabpanel" aria-labelledby="tab-pf" tabindex="0"><p class="muted"><span class="l-en">Price examples only. Flow data is not loaded.</span><span class="l-zh">仅展示价格示例，尚未加载资金流数据。</span></p><div class="mx-tblbox"><table class="mx-tbl">
         <thead><tr><th><span class="l-en">Name</span><span class="l-zh">名称</span></th><th><span class="l-en">Stage</span><span class="l-zh">阶段</span></th><th>Δ5d</th></tr></thead>
         <tbody>
           <tr><td>NVDA</td><td><span class="l-en">Confirmed</span><span class="l-zh">已确认</span></td><td class="pos">+4.2%</td></tr>
           <tr><td>ASML</td><td><span class="l-en">Confirming</span><span class="l-zh">确认中</span></td><td class="pos">+1.1%</td></tr>
           <tr><td>COST</td><td><span class="l-en">Early</span><span class="l-zh">早期</span></td><td class="neg">−0.6%</td></tr>
         </tbody>
-      </table></div>
+      </table></div></div>
+      <div id="pane-fundamentals" role="tabpanel" aria-labelledby="tab-fu" tabindex="0" hidden>
+        <p><b class="l-en">Business improvement is not an entry signal.</b><b class="l-zh">经营改善不等于入场信号。</b></p>
+        <div class="mx-tblbox"><table class="mx-tbl" style="min-width:0">
+          <thead><tr><th><span class="l-en">Name</span><span class="l-zh">名称</span></th><th><span class="l-en">Revenue</span><span class="l-zh">收入</span></th><th><span class="l-en">Margin</span><span class="l-zh">利润率</span></th></tr></thead>
+          <tbody>
+            <tr><td>NVDA</td><td><span class="l-en">Growing</span><span class="l-zh">增长</span></td><td><span class="l-en">Improving</span><span class="l-zh">改善</span></td></tr>
+            <tr><td>ASML</td><td><span class="l-en">Uneven</span><span class="l-zh">波动</span></td><td><span class="l-en">Stable</span><span class="l-zh">稳定</span></td></tr>
+            <tr><td>COST</td><td><span class="l-en">Growing</span><span class="l-zh">增长</span></td><td><span class="l-en">Stable</span><span class="l-zh">稳定</span></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div id="pane-filings" role="tabpanel" aria-labelledby="tab-fi" tabindex="0" hidden>
+        <div class="mx-empty">
+          <div class="mx-empty-line"><span class="l-en">No filing examples loaded</span><span class="l-zh">尚未加载公告示例</span></div>
+          <div class="mx-empty-why"><span class="l-en">This is not a search result. The other research examples remain available.</span><span class="l-zh">这不是查询结果。其他研究示例仍可查看。</span></div>
+        </div>
+      </div>
       <p class="mockup-note l-en">Tabs are tasks; selected tab writes the URL hash; ≤8 rows at L1 with a counted “See all N”. Table scrolls in its own box, never the page.</p>
       <p class="mockup-note l-zh">页签按任务命名；选中页签写入 URL hash；一级表格最多 8 行，配注明数量的「查看全部 N」。表格在自身容器内滚动，绝不带动页面。</p>
     </div>
@@ -643,15 +661,53 @@ document.getElementById('t-lang').onclick = function(){
 document.getElementById('t-width').onclick = function(){
   document.body.classList.toggle('mobile-sim');
 };
-document.querySelectorAll('.mx-tabset').forEach(function(ts){
-  ts.querySelectorAll('button').forEach(function(b){
-    b.onclick = function(){
-      ts.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-selected','false'); });
-      b.setAttribute('aria-selected','true');
-      if (b.id) location.hash = b.id;   /* tab state lives in the URL hash */
-    };
+/* This reference-only example changes actual panels; production keeps its existing navigation owner.
+   Manual activation avoids history entries merely from exploring tab labels with arrow keys. */
+(function(){
+  var tablist = document.getElementById('specimen-research-tabs');
+  if (!tablist) return;
+  var tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+  var panels = tabs.map(function(tab){ return document.getElementById(tab.getAttribute('aria-controls')); });
+  if (panels.some(function(panel){ return !panel; })) return;
+  var initial = tabs.find(function(tab){ return tab.getAttribute('aria-selected') === 'true'; }) || tabs[0];
+  function activate(tab, writeHistory){
+    if (tabs.indexOf(tab) < 0) return;
+    var focused = document.activeElement;
+    var restoreFocus = tablist.contains(focused) || panels.some(function(panel, i){ return tabs[i] !== tab && panel.contains(focused); });
+    tabs.forEach(function(item, i){
+      var selected = item === tab;
+      item.setAttribute('aria-selected', String(selected));
+      item.tabIndex = selected ? 0 : -1;
+      panels[i].hidden = !selected;
+    });
+    if (restoreFocus) tab.focus({preventScroll:true});
+    if (writeHistory && location.hash !== '#' + tab.id) {
+      history.pushState(null, '', '#' + tab.id);
+    }
+  }
+  function restoreFromLocation(){
+    var tab = tabs.find(function(item){ return '#' + item.id === location.hash; });
+    if (tab) activate(tab, false);
+    else if (!location.hash) activate(initial, false);
+    // An unrelated fragment belongs to the rest of the specimen; do not overwrite it.
+  }
+  tabs.forEach(function(tab, index){
+    tab.addEventListener('click', function(){ activate(tab, true); });
+    tab.addEventListener('keydown', function(event){
+      var next;
+      if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+      else if (event.key === 'ArrowLeft') next = (index + tabs.length - 1) % tabs.length;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = tabs.length - 1;
+      else return; // Native button Enter/Space activation; Up/Down still scroll normally.
+      event.preventDefault();
+      tabs[next].focus();
+    });
   });
-});
+  window.addEventListener('hashchange', restoreFromLocation);
+  window.addEventListener('popstate', restoreFromLocation);
+  restoreFromLocation();
+})();
 </script>
 </body>
 </html>
