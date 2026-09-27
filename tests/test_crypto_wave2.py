@@ -24,7 +24,28 @@ def test_crypto_template_has_exact_governed_shelves():
 
 
 def test_crypto_build_is_lightweight_and_live_wired(tmp_path):
-    output = build_crypto.build(tmp_path / "site")
+    site = tmp_path / "site"
+    site.mkdir(parents=True, exist_ok=True)
+    signals = build_crypto.store.read("vector", "signals")
+    assert signals is not None and not signals.empty
+    decision = _decision_projection(
+        60,
+        as_of=str(pd.Timestamp(signals.index[-1]).date()),
+    )
+    (site / "crypto_cockpit.json").write_text(
+        json.dumps(
+            {
+                "decision": decision,
+                "hero": {
+                    "stance_en": "Constructive",
+                    "stance_zh": "偏积极",
+                    "exposure_pct": 60,
+                },
+                "axes": [],
+            }
+        )
+    )
+    output = build_crypto.build(site)
     html = output.read_text(encoding="utf-8")
     assert output.stat().st_size < 200 * 1024
     assert re.findall(r'data-shelf="([^"]+)"', html) == [f"H{i}" for i in range(1, 9)]
@@ -264,11 +285,18 @@ def _patch_h5_split_context(monkeypatch, index):
     )
 
 
-def _decision_projection(exposure_pct, *, status="ok", integrity_ok=True, errors=None):
+def _decision_projection(
+    exposure_pct,
+    *,
+    status="ok",
+    integrity_ok=True,
+    errors=None,
+    as_of="2026-07-29",
+):
     return {
         "schema": "btc.decision/v1",
         "status": status,
-        "as_of": "2026-07-29",
+        "as_of": as_of,
         "integrity_ok": integrity_ok,
         "final_exposure_pct": exposure_pct,
         "errors": list(errors or []),
@@ -368,3 +396,30 @@ def test_h5_build_has_explicit_fail_closed_guard():
     assert 'if not allocation.get("available"):' in source
     assert "Crypto H5 budget unavailable" in source
     assert 'latest["alloc_optimal"]' not in source
+
+
+def test_h5_rejects_stale_canonical_decision_even_when_status_is_ok(monkeypatch):
+    index = pd.to_datetime(["2026-07-28", "2026-07-29"])
+    _patch_h5_split_context(monkeypatch, index)
+    signals = pd.DataFrame(
+        {"close": [100.0, 110.0], "alloc_optimal": [0.4, 0.4]},
+        index=index,
+    )
+
+    out = build_crypto._allocation(
+        signals,
+        {"btc_dominance": 58.0},
+        _decision_projection(40, as_of="2026-07-28"),
+    )
+
+    assert out["available"] is False
+    assert out["exposure"] is None
+    assert out["authority_error"] == "CANONICAL_DECISION_AS_OF_MISMATCH"
+
+
+def test_h5_build_consumes_cockpit_decision_without_recomputing_authority():
+    source = (ROOT / "scripts" / "build_crypto.py").read_text(encoding="utf-8")
+
+    assert "btc_decision.build_decision" not in source
+    assert 'e0.get("decision")' in source
+    assert "CANONICAL_DECISION_AS_OF_MISMATCH" in source

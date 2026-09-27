@@ -18,7 +18,7 @@ from jinja2 import Environment, FileSystemLoader
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from engine import alt_cycle, btc_decision, btc_mtf  # noqa: E402
+from engine import alt_cycle, btc_mtf  # noqa: E402
 from engine.btc_options import build_contract as build_btc_options, write_contract as write_btc_options  # noqa: E402
 from engine.crypto_market_state import build_market_state  # noqa: E402
 from engine.crypto_universe import breadth_read, load_universe  # noqa: E402
@@ -231,6 +231,13 @@ def _allocation(signals: pd.DataFrame, market: dict, decision: dict) -> dict:
     if signals is None or signals.empty or "close" not in signals.columns:
         return _allocation_unavailable("CLASS_SPLIT_INPUT_UNAVAILABLE", projection)
 
+    signal_as_of = str(pd.Timestamp(signals.index[-1]).date())
+    if projection.get("as_of") != signal_as_of:
+        return _allocation_unavailable(
+            "CANONICAL_DECISION_AS_OF_MISMATCH",
+            projection,
+        )
+
     cfg = config.load()["vector"]["alt_cycle"]
     close = pd.to_numeric(signals["close"], errors="coerce").dropna()
     if close.empty:
@@ -423,12 +430,7 @@ def build(site_dir: Path | None = None) -> Path:
     breadth = breadth_read(universe)
     breadth["state_zh"] = _state_zh(breadth["state"])
     signals = store.read("vector", "signals")
-    master_context = {
-        "band": ((e0.get("hero") or {}).get("stance_en")),
-        "band_zh": ((e0.get("hero") or {}).get("stance_zh")),
-    }
-    decision_state = btc_decision.build_decision(signals, master_context)
-    decision_projection = btc_decision.project_budget(decision_state)
+    decision_projection = e0.get("decision") if isinstance(e0.get("decision"), dict) else {}
     allocation = _allocation(signals, market, decision_projection)
     if not allocation.get("available"):
         raise RuntimeError(
