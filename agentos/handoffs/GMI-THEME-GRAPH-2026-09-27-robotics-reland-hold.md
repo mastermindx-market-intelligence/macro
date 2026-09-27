@@ -93,7 +93,7 @@ danger_areas:
   - "GitHub instruments under-report SILENTLY, so every absence claim from them needs a positive control: trees truncate, `gh pr diff --name-only` 406s over 300 files, `gh api compare` caps at 250 commits AND 300 files, issue comments paginate to page 1 only, and `gh api` prints a 404 body to STDOUT so presence must be tested by EXIT CODE. `?since=` on issue comments filters on updated_at, so it catches EDITS that a comment-id high-water mark misses, and a re-emitted id is correct behaviour rather than a duplicate bug."
   - "Full-fidelity real Robotics assertion bodies must never enter a public carrier, evidence.parquet, site/ or public R2. The repo is public; fixtures stay synthetic with example.invalid or already-public vendor pages."
   - "Builder is not reviewer, and this is mandatory. In-flight worker returns are not truth until reviewed and integrated."
-prs: [7773, 7870, 7908, 8013]
+prs: [7773, 7780, 7870, 7908, 8013]
 decisions:
   - "DEC:GMI-ROBOTICS-RELAND-ORDERING-AND-REGISTRATION"
   - "DEC:THEME-GRAPH-CONTRACTS-GATE-IS-A-MARKER-LINE"
