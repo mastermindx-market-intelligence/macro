@@ -656,3 +656,542 @@ class TestForwardLogLane:
         log_path = out_dir / "forward_log.jsonl"
         lines = [l for l in log_path.read_text().strip().splitlines() if l.strip()]
         assert len(lines) == 1, f"Expected 1 line (keep-FIRST), got {len(lines)}"
+
+
+# RD2: actual collector -> incumbent store -> RIC measurement path.
+def _rd2_frames(*, shift=0.0, missing_old=None, dates=('2026-09-30', '2026-10-01'),
+                root='ZQ', cadence='monthly', capture='2026-10-02T09:00:00Z'):
+    from collectors import rate_futures as rf
+    from engine.rate_futures_repricing import attach_constituents
+    idx = pd.DatetimeIndex(dates)
+    months = [(2026 + (9 + i) // 12, (9 + i) % 12 + 1) for i in range(15)]
+    if root == 'SR3':
+        months = [(2026, 9), (2026, 12), (2027, 3), (2027, 6), (2027, 9), (2027, 12)]
+    contracts, symbols = {}, {}
+    for i, (year, month) in enumerate(months):
+        rate = 4.0 + i * 0.1
+        contracts[(year, month)] = pd.Series([100 - rate, 100 - rate - shift], index=idx)
+        symbols[(year, month)] = f'{root}{rf._MONTH_CODE[month]}{year % 100:02d}.CBT'
+    if missing_old is not None:
+        contracts[months[missing_old]].iloc[0] = float('nan')
+    path, components = rf.implied_path_with_components(contracts, [1, 3, 6, 12], 18, cadence)
+    return attach_constituents(path, components, contracts, symbols,
+        root=root, cadence=cadence, max_months=18, captured_at=capture)
+
+
+def _rd2_store(tmp_path, pair, key='zq'):
+    folder = tmp_path / 'rate_futures'
+    folder.mkdir(exist_ok=True)
+    pair[0].to_parquet(folder / f'{key}_path.parquet')
+    pair[1].to_parquet(folder / f'{key}_constituents.parquet')
+
+
+def _rd2_read(tmp_path):
+    from engine.rate_futures_repricing import build_policy_repricing
+    return build_policy_repricing(tmp_path, asof='2026-10-01',
+                                  evaluated_at='2026-10-02T10:00:00Z')
+
+
+def test_rd2_unchanged_contracts_can_move_rolling_path(tmp_path):
+    _rd2_store(tmp_path, _rd2_frames())
+    out = _rd2_read(tmp_path)['families']['zq']['horizons']['m12']
+    assert out['status'] == 'available'
+    assert out['raw_change_bp'] == pytest.approx(10)
+    assert out['matched_contract_change_bp'] == pytest.approx(0)
+    assert out['roll_change_bp'] == pytest.approx(10)
+    assert abs(out['rounding_residual_bp']) < 1e-8
+
+
+def test_rd2_fixed_weights_isolate_contract_change(tmp_path):
+    _rd2_store(tmp_path, _rd2_frames(shift=.15, dates=('2026-09-29', '2026-09-30')))
+    out = _rd2_read(tmp_path)['families']['zq']['horizons']['m12']
+    assert out['matched_contract_change_bp'] == pytest.approx(15)
+    assert out['roll_change_bp'] == pytest.approx(0)
+
+
+def test_rd2_simultaneous_repricing_and_roll_reconcile(tmp_path):
+    _rd2_store(tmp_path, _rd2_frames(shift=.15))
+    out = _rd2_read(tmp_path)['families']['zq']['horizons']['m12']
+    assert out['raw_change_bp'] == pytest.approx(25)
+    assert out['matched_contract_change_bp'] == pytest.approx(15)
+    assert out['roll_change_bp'] == pytest.approx(10)
+
+
+def test_rd2_missing_entering_quote_withholds_not_zero_fills(tmp_path):
+    _rd2_store(tmp_path, _rd2_frames(missing_old=12))
+    out = _rd2_read(tmp_path)['families']['zq']['horizons']['m12']
+    assert out['status'] == 'unavailable'
+    assert out['matched_contract_change_bp'] is None
+    assert out['reason'] == 'incomplete_matched_components'
+
+
+def test_rd2_reference_periods_and_in_progress_meaning(tmp_path):
+    from engine.rate_futures_repricing import reference_period
+    assert reference_period('ZQ', 2026, 10) == ('2026-10-01', '2026-11-01')
+    assert reference_period('SR3', 2026, 9) == ('2026-09-16', '2026-12-16')
+    _rd2_store(tmp_path, _rd2_frames(root='SR3', cadence='quarterly'), key='sofr')
+    out = _rd2_read(tmp_path)['families']['sofr']
+    assert out['rate_family'] == 'SOFR'
+    assert out['horizons']['m3']['status'] == 'available'
+    assert out['horizons']['m3']['forward_reference_only'] is False
+    assert out['historical_availability_qualified'] is False
+
+
+def test_rd2_generation_mismatch_cannot_mix_two_writes(tmp_path):
+    path, evidence = _rd2_frames()
+    path.loc[path.index[-1], '_constituents_token'] += 1
+    _rd2_store(tmp_path, (path, evidence))
+    out = _rd2_read(tmp_path)['families']['zq']
+    assert out['status'] == 'unavailable'
+    assert out['reason'] == 'generation_mismatch'
+
+
+def test_rd2_same_day_capture_never_becomes_certified_overnight(tmp_path):
+    _rd2_store(tmp_path, _rd2_frames(capture='2026-10-01T15:00:00Z'))
+    out = _rd2_read(tmp_path)['families']['zq']
+    assert out['status'] == 'unavailable'
+    assert out['reason'] == 'capture_may_include_incomplete_bar'
+
+
+def test_rd2_future_capture_is_unavailable(tmp_path):
+    _rd2_store(tmp_path, _rd2_frames(capture='2026-10-03T09:00:00Z'))
+    assert _rd2_read(tmp_path)['families']['zq']['reason'] == 'capture_after_decision'
+
+
+def test_rd2_stale_latest_is_not_flat_forecast(tmp_path):
+    from engine.rate_futures_repricing import build_policy_repricing
+    _rd2_store(tmp_path, _rd2_frames())
+    out = build_policy_repricing(tmp_path, asof='2026-10-12',
+                                evaluated_at='2026-10-12T12:00:00Z')
+    assert out['families']['zq']['reason'] == 'stale_source'
+    assert out['authority'] is False and out['can_trade'] is False
+
+
+def test_rd2_invalid_latest_does_not_fall_back_silently(tmp_path):
+    path, evidence = _rd2_frames()
+    evidence.loc[evidence.index[-1], 'snapshot_json'] = '{bad json'
+    _rd2_store(tmp_path, (path, evidence))
+    assert _rd2_read(tmp_path)['families']['zq']['status'] == 'unavailable'
+
+
+def test_rd2_missing_source_explicit_and_authority_false(tmp_path):
+    out = _rd2_read(tmp_path)
+    assert out['families']['zq']['reason'] == 'missing_source'
+    assert out['families']['sofr']['reason'] == 'missing_source'
+    assert out['can_rank'] is False and out['can_gate'] is False
+    json.dumps(out, allow_nan=False)
+
+
+def _rd2_native_fetch(monkeypatch):
+    from datetime import datetime, timezone
+    from types import SimpleNamespace
+    from collectors import rate_futures as rf
+    moment = datetime(2026, 10, 2, 9, tzinfo=timezone.utc)
+    monkeypatch.setattr(rf, 'datetime', SimpleNamespace(now=lambda tz: moment))
+    monkeypatch.setitem(sys.modules, 'yfinance', SimpleNamespace())
+    adapter = rf.RateFuturesAdapter()
+    adapter.cfg = {'horizons_m': [1, 3, 6, 12], 'max_months': 18,
+                   'roots': {'zq': {'symbol_root': 'ZQ', 'exchanges': ['CBT'],
+                                    'cadence': 'monthly', 'months': 14}}}
+    idx = pd.DatetimeIndex(['2026-09-30', '2026-10-01'])
+    entries, series = {}, {}
+    for i, contract in enumerate(rf.gen_contracts('ZQ', ['CBT'], 'monthly', 14, moment.date())):
+        quote = pd.Series([96 - .1 * i, 95.85 - .1 * i], index=idx)
+        series[(contract['year'], contract['month'])] = quote
+        entries[contract['symbols'][0]] = quote.to_frame('Close')
+    raw = pd.concat(entries, axis=1)
+    monkeypatch.setattr(adapter, '_download', lambda symbols, period, yf: raw)
+    return adapter, adapter.fetch(), rf.implied_path(series, [1, 3, 6, 12], 18, 'monthly')
+
+
+def test_rd2_native_collector_and_store_roundtrip(monkeypatch, tmp_path):
+    from lib import config, store
+    from engine import fed_path as fp
+    adapter, frames, legacy = _rd2_native_fetch(monkeypatch)
+    assert set(frames) == {'zq_path', 'zq_constituents'}
+    pd.testing.assert_frame_equal(frames['zq_path'][list(legacy.columns)], legacy)
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path)
+    for key, frame in frames.items():
+        cleaned = adapter.validate(key, frame)
+        store.upsert('rate_futures', key, cleaned)
+    out = _rd2_read(tmp_path)['families']['zq']['horizons']['m12']
+    assert out['matched_contract_change_bp'] == pytest.approx(15)
+    assert out['roll_change_bp'] == pytest.approx(10)
+    old_row, old_date = fp._read_path_row('zq_path')
+    assert old_row['m12'] == pytest.approx(legacy.iloc[-1]['m12'])
+    assert old_date == '2026-10-01'
+
+
+def test_rd2_ric_real_consumer_preserves_stance(monkeypatch, tmp_path):
+    from datetime import datetime, timezone
+    from types import SimpleNamespace
+    from engine import rates_inflation_command as ric
+    monkeypatch.setattr(ric, 'datetime', SimpleNamespace(
+        now=lambda tz: datetime(2026, 10, 2, 10, tzinfo=timezone.utc)))
+    baseline = ric.build_board(root=tmp_path)
+    _rd2_store(tmp_path, _rd2_frames(shift=.15))
+    out = ric.build_board(root=tmp_path)
+    assert out['policy_path_repricing']['families']['zq']['horizons']['m12']['roll_change_bp'] == pytest.approx(10)
+    assert out['policy_path_repricing']['can_trade'] is False
+    assert out['stance'] == baseline['stance']
+
+
+def _rd2_reseal(pair, mutate):
+    from hashlib import sha256
+    path, evidence = pair
+    stamp = evidence.index[-1]
+    payload = json.loads(evidence.loc[stamp, 'snapshot_json'])['payload']
+    mutate(payload)
+    raw = json.dumps(payload, sort_keys=True, separators=(',', ':'), allow_nan=False)
+    digest = sha256(raw.encode()).hexdigest()
+    token = int(digest[:13], 16)
+    path.loc[stamp, '_constituents_token'] = token
+    evidence.loc[stamp, '_constituents_token'] = token
+    evidence.loc[stamp, 'snapshot_json'] = json.dumps({'payload': payload, 'sha256': digest})
+    return path, evidence
+
+
+@pytest.mark.parametrize('field,value', [
+    ('rate_family', 'SOFR'), ('schema', 'unknown'),
+    ('historical_availability_qualified', True), ('weight_basis', 'exact_day_forward_rate')])
+def test_rd2_resealed_unsupported_semantics_still_fail(tmp_path, field, value):
+    _rd2_store(tmp_path, _rd2_reseal(_rd2_frames(), lambda p: p.update({field: value})))
+    assert _rd2_read(tmp_path)['families']['zq']['reason'] == 'unsupported_source_semantics'
+
+
+def test_rd2_resealed_weights_must_reconstruct_from_actual_contracts(tmp_path):
+    def alter(payload):
+        payload['components']['m12']['weights'] = {'2027-09': 1.0}
+    _rd2_store(tmp_path, _rd2_reseal(_rd2_frames(), alter))
+    assert _rd2_read(tmp_path)['families']['zq']['reason'] == 'constituent_weights_do_not_reproduce_path'
+
+
+def test_rd2_torn_numeric_correction_does_not_pass_token_only_check(tmp_path):
+    path, evidence = _rd2_frames()
+    path.loc[path.index[-1], 'm12'] += .1
+    _rd2_store(tmp_path, (path, evidence))
+    assert _rd2_read(tmp_path)['families']['zq']['reason'] == 'published_path_mismatch'
+
+
+def test_rd2_daily_cut_cannot_make_old_data_fresh_at_current_evaluation(tmp_path):
+    from engine.rate_futures_repricing import build_policy_repricing
+    _rd2_store(tmp_path, _rd2_frames())
+    out = build_policy_repricing(tmp_path, asof='2026-10-01', evaluated_at='2026-10-12T12:00:00Z')
+    assert out['families']['zq']['reason'] == 'stale_source'
+
+
+def test_rd2_batch_quotes_without_contract_identity_are_rejected(monkeypatch):
+    adapter, _, _ = _rd2_native_fetch(monkeypatch)
+    ambiguous = pd.DataFrame({'Close': [96.0, 95.9]},
+                              index=pd.DatetimeIndex(['2026-09-30', '2026-10-01']))
+    monkeypatch.setattr(adapter, '_download', lambda symbols, period, yf: ambiguous)
+    with pytest.raises(ValueError, match='batch_quotes_lack_contract_identity'):
+        adapter.fetch()
+
+
+def test_rd2_duplicate_source_dates_are_not_silently_deduplicated(tmp_path):
+    path, evidence = _rd2_frames()
+    path = pd.concat([path, path.iloc[-1:]])
+    _rd2_store(tmp_path, (path, evidence))
+    assert _rd2_read(tmp_path)['families']['zq']['reason'] == 'invalid_daily_source_grid'
+
+
+def test_rd2_incomplete_family_does_not_erase_other_family(tmp_path):
+    _rd2_store(tmp_path, _rd2_frames())
+    _rd2_store(tmp_path, _rd2_frames(root='SR3', cadence='quarterly'), key='sofr')
+    file = tmp_path / 'rate_futures' / 'sofr_constituents.parquet'
+    evidence = pd.read_parquet(file)
+    evidence.loc[evidence.index[-1], 'snapshot_json'] = 'invalid'
+    evidence.to_parquet(file)
+    out = _rd2_read(tmp_path)
+    assert out['families']['zq']['horizons']['m12']['status'] == 'available'
+    assert out['families']['sofr']['status'] == 'unavailable'
+
+
+def test_rd2_incomplete_latest_preserves_separately_dated_completed_context(tmp_path, monkeypatch):
+    from engine.rate_futures_repricing import build_policy_repricing
+    path, evidence = _rd2_frames()
+    extra_path, extra_evidence = path.iloc[-1:].copy(), evidence.iloc[-1:].copy()
+    extra_path.index = extra_evidence.index = pd.DatetimeIndex(['2026-10-02'])
+    pair = pd.concat([path, extra_path]), pd.concat([evidence, extra_evidence])
+    pair = _rd2_reseal(pair, lambda p: p.update(
+        observation_date='2026-10-02', prior_calendar_day_at_capture=False))
+    _rd2_store(tmp_path, pair)
+    calls, original = [], pd.read_parquet
+    def read_once(file, *args, **kwargs):
+        calls.append(str(file))
+        return original(file, *args, **kwargs)
+    monkeypatch.setattr(pd, 'read_parquet', read_once)
+    out = build_policy_repricing(tmp_path, asof='2026-10-02',
+                                evaluated_at='2026-10-02T10:00:00Z')['families']['zq']
+    assert out['status'] == 'unavailable'
+    assert out['reason'] == 'capture_may_include_incomplete_bar'
+    context = out['last_completed_observation_context']
+    assert context['context_only'] is True
+    assert context['observation_dates'] == ['2026-09-30', '2026-10-01']
+    assert context['horizons']['m12']['roll_change_bp'] == pytest.approx(10)
+    assert context['historical_availability_qualified'] is False
+    assert len(calls) == len(set(calls)) == 2
+
+
+def test_rd2_corrupt_latest_never_launders_prior_context(tmp_path):
+    path, evidence = _rd2_frames()
+    evidence.loc[evidence.index[-1], 'snapshot_json'] = '{}'
+    _rd2_store(tmp_path, (path, evidence))
+    out = _rd2_read(tmp_path)['families']['zq']
+    assert out['status'] == 'unavailable'
+    assert out.get('last_completed_observation_context') is None
+
+
+def test_rd2_shared_collector_runner_accepts_companion_tables(monkeypatch, tmp_path):
+    from copy import deepcopy
+    from collectors import base, rate_futures
+    from lib import config
+    adapter, frames, _ = _rd2_native_fetch(monkeypatch)
+    cfg = deepcopy(config.load())
+    cfg['storage']['run_status_file'] = 'run_status.json'
+    cfg['storage']['data_dir'] = 'data'
+    monkeypatch.setattr(config, 'ROOT', tmp_path)
+    monkeypatch.setattr(config, 'load', lambda: cfg)
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path / 'data')
+    monkeypatch.setattr(base, 'datetime', rate_futures.datetime)
+    result = base.run_adapter(adapter)
+    assert result.status == 'ok', result.error
+    assert result.rows == sum(len(frame) for frame in frames.values())
+    out = _rd2_read(tmp_path / 'data')
+    assert out['families']['zq']['horizons']['m12']['matched_contract_change_bp'] == pytest.approx(15)
+
+
+@pytest.mark.parametrize('prices', [(1e307, 2e307), (-1e307, -2e307)])
+def test_rd2_finite_quotes_cannot_publish_nonfinite_attribution(monkeypatch, tmp_path, prices):
+    from collectors import rate_futures as rf
+    from engine.rate_futures_repricing import build_policy_repricing
+    from lib import config, store
+    adapter, _, _ = _rd2_native_fetch(monkeypatch)
+    idx = pd.DatetimeIndex(['2026-09-30', '2026-10-01'])
+    contracts = rf.gen_contracts('ZQ', ['CBT'], 'monthly', 14, rf.datetime.now(None).date())
+    raw = pd.concat({c['symbols'][0]: pd.DataFrame({'Close': list(prices)}, index=idx)
+                     for c in contracts}, axis=1)
+    monkeypatch.setattr(adapter, '_download', lambda symbols, period, yf: raw)
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path)
+    for key, frame in adapter.fetch().items():
+        store.upsert(adapter.group, key, adapter.validate(key, frame))
+    out = build_policy_repricing(tmp_path, asof='2026-10-01',
+                                evaluated_at='2026-10-02T10:00:00Z')
+    horizon = out['families']['zq']['horizons']['m12']
+    assert horizon['status'] == 'unavailable'
+    assert horizon['reason'] == 'nonfinite_derived_attribution'
+    for key in ('raw_change_bp', 'matched_contract_change_bp',
+                'roll_change_bp', 'rounding_residual_bp'):
+        assert horizon[key] is None
+    assert out['authority'] is False
+    json.dumps(out, allow_nan=False)
+
+
+@pytest.mark.parametrize('empty', [pd.DataFrame(), None])
+def test_rd2_empty_second_family_keeps_valid_first_through_ric(monkeypatch, tmp_path, empty):
+    from copy import deepcopy
+    from datetime import datetime, timezone
+    from types import SimpleNamespace
+    from collectors import base, rate_futures as rf
+    from engine import rates_inflation_command as ric
+    from lib import config
+    adapter, _, _ = _rd2_native_fetch(monkeypatch)
+    download = adapter._download
+    adapter.cfg['roots']['sofr'] = {'symbol_root': 'SR3', 'exchanges': ['CME'],
+                                    'cadence': 'quarterly', 'months': 6}
+    requests = []
+    def vendor_download(symbols, **kwargs):
+        requests.append(symbols[0])
+        return download(symbols, kwargs['period'], None) if symbols[0].startswith('ZQ') else empty
+    monkeypatch.setitem(sys.modules, 'yfinance', SimpleNamespace(download=vendor_download))
+    # Exercise the actual download/retry boundary: an empty vendor response is
+    # raised inside _download, not returned by it. Do not mock that behavior away.
+    monkeypatch.setattr(adapter, '_download', rf.RateFuturesAdapter._download.__get__(adapter))
+    adapter.retries, adapter.backoff = 2, 0
+    cfg = deepcopy(config.load())
+    cfg['storage']['run_status_file'] = 'run_status.json'
+    cfg['storage']['data_dir'] = 'data'
+    monkeypatch.setattr(config, 'ROOT', tmp_path)
+    monkeypatch.setattr(config, 'load', lambda: cfg)
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path / 'data')
+    monkeypatch.setattr(base, 'datetime', rf.datetime)
+    monkeypatch.setattr(ric, 'datetime', SimpleNamespace(
+        now=lambda tz: datetime(2026, 10, 2, 10, tzinfo=timezone.utc)))
+    result = base.run_adapter(adapter)
+    assert result.status == 'ok', result.error
+    out = ric.build_board(root=tmp_path / 'data')['policy_path_repricing']
+    assert out['families']['zq']['horizons']['m12']['matched_contract_change_bp'] == pytest.approx(15)
+    assert out['families']['sofr']['reason'] == 'missing_source'
+    assert out['authority'] is False
+    assert sum(symbol.startswith('ZQ') for symbol in requests) == 1
+    assert sum(symbol.startswith('SR3') for symbol in requests) == adapter.retries
+
+
+def test_rd2_all_empty_families_still_fail_without_manufacturing_data(monkeypatch):
+    adapter, _, _ = _rd2_native_fetch(monkeypatch)
+    monkeypatch.setattr(adapter, '_download', lambda symbols, period, yf: pd.DataFrame())
+    with pytest.raises(RuntimeError, match='no implied path'):
+        adapter.fetch()
+
+
+def test_rd2_empty_family_repair_does_not_swallow_other_download_errors(monkeypatch):
+    adapter, _, _ = _rd2_native_fetch(monkeypatch)
+    def fail(symbols, period, yf):
+        raise ConnectionError('synthetic transport failure')
+    monkeypatch.setattr(adapter, '_download', fail)
+    with pytest.raises(ConnectionError, match='synthetic transport failure'):
+        adapter.fetch()
+
+
+def test_rd2_contract_strip_uses_new_york_calendar_date(monkeypatch):
+    """UTC midnight must not roll a US rate-futures strip before New York midnight."""
+    from datetime import date, datetime, timezone
+    from types import SimpleNamespace
+    from collectors import rate_futures as rf
+
+    # 2026-10-01 01:00 UTC is still 2026-09-30 21:00 in New York.
+    moment = datetime(2026, 10, 1, 1, 0, tzinfo=timezone.utc)
+    monkeypatch.setattr(rf, 'datetime', SimpleNamespace(now=lambda tz: moment))
+    monkeypatch.setitem(sys.modules, 'yfinance', SimpleNamespace())
+
+    adapter = rf.RateFuturesAdapter()
+    adapter.cfg = {
+        'horizons_m': [1, 3, 6, 12],
+        'max_months': 18,
+        'roots': {
+            'zq': {
+                'symbol_root': 'ZQ',
+                'exchanges': ['CBT'],
+                'cadence': 'monthly',
+                'months': 14,
+            }
+        },
+    }
+
+    observed_asof = []
+    real_gen = rf.gen_contracts
+
+    def capture_gen(symbol_root, exchanges, cadence, n, asof):
+        observed_asof.append(asof)
+        return real_gen(symbol_root, exchanges, cadence, n, asof)
+
+    monkeypatch.setattr(rf, 'gen_contracts', capture_gen)
+    monkeypatch.setattr(adapter, '_download',
+                        lambda symbols, period, yf: pd.DataFrame())
+
+    with pytest.raises(RuntimeError, match='no implied path'):
+        adapter.fetch()
+
+    assert observed_asof == [date(2026, 9, 30)]
+
+
+@pytest.mark.parametrize(
+    'asof,expected',
+    [
+        ('2026-03-17', (2025, 12)),
+        ('2026-03-18', (2026, 3)),
+        ('2026-04-01', (2026, 3)),
+        ('2026-05-15', (2026, 3)),
+        ('2026-06-16', (2026, 3)),
+        ('2026-06-17', (2026, 6)),
+        ('2026-07-01', (2026, 6)),
+        ('2026-08-15', (2026, 6)),
+        ('2026-09-15', (2026, 6)),
+        ('2026-09-16', (2026, 9)),
+    ],
+)
+def test_rd2_sr3_strip_starts_with_active_reference_quarter(asof, expected):
+    from datetime import date
+    from collectors import rate_futures as rf
+    from engine.rate_futures_repricing import reference_period
+
+    d = date.fromisoformat(asof)
+    contracts = rf.gen_contracts('SR3', ['CME'], 'quarterly', 4, d)
+    first = (contracts[0]['year'], contracts[0]['month'])
+    assert first == expected
+
+    start, end = reference_period('SR3', *first)
+    assert date.fromisoformat(start) <= d < date.fromisoformat(end)
+    assert [(c['year'], c['month']) for c in contracts[1:]] == [
+        ((expected[0] + (expected[1] + step - 1) // 12),
+         ((expected[1] + step - 1) % 12) + 1)
+        for step in (3, 6, 9)
+    ]
+
+
+def test_rd2_sr3_active_quarter_survives_collector_store_and_ric(monkeypatch, tmp_path):
+    from copy import deepcopy
+    from datetime import datetime, timezone
+    from types import SimpleNamespace
+    from collectors import base, rate_futures as rf
+    from engine import rates_inflation_command as ric
+    from lib import config
+
+    # April is inside the March SR3 reference quarter. The collector must retain
+    # the March-named contract instead of starting the strip at June.
+    moment = datetime(2026, 4, 2, 13, 0, tzinfo=timezone.utc)
+    monkeypatch.setattr(rf, 'datetime', SimpleNamespace(now=lambda tz: moment))
+    requested = []
+    idx = pd.DatetimeIndex(['2026-03-31', '2026-04-01'])
+
+    def vendor_download(symbols, **kwargs):
+        requested[:] = list(symbols)
+        entries = {}
+        for i, symbol in enumerate(symbols):
+            entries[symbol] = pd.DataFrame(
+                {'Close': [96.0 - .05 * i, 95.9 - .05 * i]},
+                index=idx,
+            )
+        return pd.concat(entries, axis=1)
+
+    monkeypatch.setitem(sys.modules, 'yfinance', SimpleNamespace(download=vendor_download))
+    adapter = rf.RateFuturesAdapter()
+    adapter.retries, adapter.backoff = 1, 0
+    adapter.cfg = {
+        'horizons_m': [1, 3, 6, 12],
+        'max_months': 18,
+        'roots': {
+            'sofr': {
+                'symbol_root': 'SR3',
+                'exchanges': ['CME'],
+                'cadence': 'quarterly',
+                'months': 6,
+            }
+        },
+    }
+
+    cfg = deepcopy(config.load())
+    cfg['storage']['run_status_file'] = 'run_status.json'
+    cfg['storage']['data_dir'] = 'data'
+    monkeypatch.setattr(config, 'ROOT', tmp_path)
+    monkeypatch.setattr(config, 'load', lambda: cfg)
+    monkeypatch.setattr(config, 'data_dir', lambda: tmp_path / 'data')
+    monkeypatch.setattr(base, 'datetime', rf.datetime)
+    monkeypatch.setattr(
+        ric,
+        'datetime',
+        SimpleNamespace(now=lambda tz: datetime(2026, 4, 2, 14, 0, tzinfo=timezone.utc)),
+    )
+
+    result = base.run_adapter(adapter)
+    assert result.status == 'ok', result.error
+    assert requested[0].startswith('SR3H26.')
+
+    out = ric.build_board(root=tmp_path / 'data')['policy_path_repricing']
+    sofr = out['families']['sofr']
+    assert sofr['status'] == 'partial'
+    assert sofr['horizons']['m1']['status'] == 'unavailable'
+    assert sofr['horizons']['m1']['reason'] == 'unbracketed_horizon'
+    for horizon in ('m3', 'm6', 'm12'):
+        assert sofr['horizons'][horizon]['status'] == 'available'
+    assert sofr['historical_availability_qualified'] is False
+    assert out['authority'] is False and out['can_trade'] is False
+    json.dumps(out, allow_nan=False)
+
+    evidence = pd.read_parquet(tmp_path / 'data' / 'rate_futures' / 'sofr_constituents.parquet')
+    last = json.loads(evidence.iloc[-1]['snapshot_json'])['payload']
+    assert '2026-03' in last['quotes']
+    assert last['quotes']['2026-03']['reference_period'] == [
+        '2026-03-18', '2026-06-17'
+    ]

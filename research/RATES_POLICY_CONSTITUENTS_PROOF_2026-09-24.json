@@ -1,0 +1,438 @@
+{
+  "schema": "ric.policy_constituents.qualification.v1",
+  "operation": "rates-policy-constituents-20260924-sol-002",
+  "pr": 7923,
+  "source_commit": "5c92d778ae73f557fd4d3d91ea99aa175331e388",
+  "production_files_sha256": {
+    "collectors/rate_futures.py": "38df976887bc565f41001ab970f967963ecb18aed0d8972d05f916a97211689a",
+    "engine/rate_futures_repricing.py": "cf77d27ffbf43137edaa05e356e7edbaa2867c1f09135d2b9d5a9994a4723910",
+    "engine/rates_inflation_command.py": "d4ffb1dde9b98d1ad4d0119eda710624ebe31b491b0488ce7261ddda12620c3e"
+  },
+  "local_tests": {
+    "passed": 140,
+    "warnings": 301,
+    "command": "python3 -m pytest tests/test_rates_command.py tests/test_fed_path.py tests/test_yield_momentum.py -q --disable-warnings --tb=short"
+  },
+  "native_capture": {
+    "started_at": "2026-09-24T09:54:12.148644+00:00",
+    "finished_at": "2026-09-24T09:54:16.442272+00:00",
+    "source_frames": {
+      "zq_path": {
+        "rows": 65,
+        "first_date": "2026-06-24",
+        "last_date": "2026-09-24",
+        "sha256": "a2ef485f9d6fdffcb9fd810bf4a934d3d61d11e818209f7edc4e891c156b3442"
+      },
+      "zq_constituents": {
+        "rows": 65,
+        "first_date": "2026-06-24",
+        "last_date": "2026-09-24",
+        "sha256": "eab1bf98dc98b611d13997d41c8bf359e5d74aa5294f829ccdd11e30e09562fe"
+      },
+      "sofr_path": {
+        "rows": 1,
+        "first_date": "2026-09-24",
+        "last_date": "2026-09-24",
+        "sha256": "73a5bfcf65b3bf9e22d40e0a84e0c3f8ddcf7671422a94b5cbf7cc39a2253293"
+      },
+      "sofr_constituents": {
+        "rows": 1,
+        "first_date": "2026-09-24",
+        "last_date": "2026-09-24",
+        "sha256": "1d2efe1ce81dd92591fc9d93b3ae009a53912f13ee5857de8f1e43a774a7a7d8"
+      }
+    },
+    "client_versions": {
+      "python": "3.14.7",
+      "yfinance": "1.7.0",
+      "pandas": "3.0.5"
+    }
+  },
+  "ric_measurement": {
+    "schema": "rate_futures.repricing.v1",
+    "evaluated_at": "2026-09-24T09:59:39.198782+00:00",
+    "asof": "2026-09-24",
+    "historical_availability_qualified": false,
+    "display_only": true,
+    "authority": false,
+    "can_score": false,
+    "can_rank": false,
+    "can_size": false,
+    "can_gate": false,
+    "can_trade": false,
+    "families": {
+      "zq": {
+        "status": "unavailable",
+        "reason": "capture_may_include_incomplete_bar",
+        "rate_family": "EFFR",
+        "horizons": {},
+        "historical_availability_qualified": false,
+        "display_only": true,
+        "authority": false,
+        "can_score": false,
+        "can_rank": false,
+        "can_size": false,
+        "can_gate": false,
+        "can_trade": false,
+        "last_completed_observation_context": {
+          "status": "available",
+          "reason": null,
+          "rate_family": "EFFR",
+          "horizons": {
+            "m1": {
+              "status": "available",
+              "reason": null,
+              "raw_change_bp": -0.12000000000003119,
+              "matched_contract_change_bp": -0.1247406005859375,
+              "roll_change_bp": 0.0,
+              "rounding_residual_bp": 0.004740600585906307,
+              "forward_reference_only": false,
+              "matched_previous_weight": 1.0,
+              "matched_current_weight": 1.0,
+              "causal_policy_shock": false
+            },
+            "m12": {
+              "status": "available",
+              "reason": null,
+              "raw_change_bp": 12.00000000000001,
+              "matched_contract_change_bp": 11.999893188476562,
+              "roll_change_bp": 0.0,
+              "rounding_residual_bp": 0.00010681152344815814,
+              "forward_reference_only": true,
+              "matched_previous_weight": 1.0,
+              "matched_current_weight": 1.0,
+              "causal_policy_shock": false
+            },
+            "m3": {
+              "status": "available",
+              "reason": null,
+              "raw_change_bp": 3.500000000000014,
+              "matched_contract_change_bp": 3.4999847412109375,
+              "roll_change_bp": 0.0,
+              "rounding_residual_bp": 1.5258789076710855e-05,
+              "forward_reference_only": true,
+              "matched_previous_weight": 1.0,
+              "matched_current_weight": 1.0,
+              "causal_policy_shock": false
+            },
+            "m6": {
+              "status": "available",
+              "reason": null,
+              "raw_change_bp": 5.750000000000011,
+              "matched_contract_change_bp": 5.750274658203125,
+              "roll_change_bp": 0.0,
+              "rounding_residual_bp": -0.00027465820311434186,
+              "forward_reference_only": true,
+              "matched_previous_weight": 1.0,
+              "matched_current_weight": 1.0,
+              "causal_policy_shock": false
+            }
+          },
+          "historical_availability_qualified": false,
+          "display_only": true,
+          "authority": false,
+          "can_score": false,
+          "can_rank": false,
+          "can_size": false,
+          "can_gate": false,
+          "can_trade": false,
+          "observation_dates": [
+            "2026-09-22",
+            "2026-09-23"
+          ],
+          "captured_at": [
+            "2026-09-24T09:54:15.847427+00:00",
+            "2026-09-24T09:54:15.847427+00:00"
+          ],
+          "snapshot_sha256": [
+            "06eded6b8d56f293093d141879f41f387820f5450f9fdde89dc29d14aeb7edff",
+            "3d0f9b47e51bdc9bfd02e1f4ba2b102256edb530e1a74ca1987246a6ac724482"
+          ],
+          "elapsed_calendar_days": 1,
+          "horizon_basis": "successive_retained_source_rows",
+          "evidence_basis": "same_capture_corrected_history",
+          "weight_basis": "legacy_whole_month_centres.v1",
+          "quote_kind": "provider_daily_Close_unverified_exchange_settlement",
+          "context_only": true,
+          "source_cut": "2026-09-23",
+          "current_observation_qualified": false
+        }
+      },
+      "sofr": {
+        "status": "unavailable",
+        "reason": "insufficient_endpoints",
+        "rate_family": "SOFR",
+        "horizons": {},
+        "historical_availability_qualified": false,
+        "display_only": true,
+        "authority": false,
+        "can_score": false,
+        "can_rank": false,
+        "can_size": false,
+        "can_gate": false,
+        "can_trade": false
+      }
+    },
+    "caveats": [
+      "Matched-contract changes include fixings and risk premia; not a causal policy shock.",
+      "Rolling coordinates use the incumbent whole-month centre approximation.",
+      "Provider daily Close is not authenticated exchange settlement.",
+      "Latest-vintage storage and capture clocks do not certify historical availability.",
+      "This is measured context, not a directional forecast or trading permission."
+    ]
+  },
+  "shared_runner": {
+    "status": "PASS",
+    "source_head": "5c92d778ae73f557fd4d3d91ea99aa175331e388",
+    "evaluated_at": "2026-09-24T10:05:05.739022+00:00",
+    "runner_result": {
+      "source": "rate_futures",
+      "status": "ok",
+      "rows": 132,
+      "last_date": "2026-09-24",
+      "error": null,
+      "notes": [],
+      "probed_at": null
+    },
+    "families_equal_to_direct_read": true,
+    "source": "retained_native_quote_capture",
+    "new_network_request": false,
+    "production_store_modified": false,
+    "live_production_proof": false,
+    "source_frames_sha256": {
+      "zq_constituents.parquet": "eab1bf98dc98b611d13997d41c8bf359e5d74aa5294f829ccdd11e30e09562fe",
+      "zq_path.parquet": "a2ef485f9d6fdffcb9fd810bf4a934d3d61d11e818209f7edc4e891c156b3442",
+      "sofr_path.parquet": "73a5bfcf65b3bf9e22d40e0a84e0c3f8ddcf7671422a94b5cbf7cc39a2253293",
+      "sofr_constituents.parquet": "1d2efe1ce81dd92591fc9d93b3ae009a53912f13ee5857de8f1e43a774a7a7d8"
+    }
+  },
+  "held_7521_composition": {
+    "status": "PASS",
+    "held_source": "8da98209ad4a34450745780666c48b6999f2bfb2",
+    "held_fp_sha256": "d66014f840553c06d12a6cbaa7675ae1f8f134e61d1a9e9787575d3f110cb1ac",
+    "held_ric_sha256": "a4d62366bec6181c30cf5ee9f91cac01ed627a8d2b78172e497df51310c9d032",
+    "combined_ric_sha256": "a4d4f0e5ce2346358e17c132449b1dd49d9772e7ecce3c4532977c6ec18c18e4",
+    "source_branch_mutated": false,
+    "all_legacy_fields_equal": true,
+    "scope": "same-author synthetic compatibility; not acceptance or production proof"
+  },
+  "historical_availability_qualified": false,
+  "independent_review": false,
+  "production_store_modified": false,
+  "live_production_proof": false,
+  "new_model_trials": 0,
+  "forecast_promotion": false,
+  "parent_repair": {
+    "pr": 7909,
+    "head": "748067a3631959e2dd6ffe25ebc7675ed82395ee",
+    "ci_pack_10": "SUCCESS"
+  },
+  "evidence_root": "/Volumes/Mastermind/evidence/rates-policy-constituents-20260924-sol-002",
+  "post_review_repair": {
+    "pre_repair_head": "100cf1edd70ebbdebc26348bd694aac74efe8f70",
+    "finding_comment": 5812118161,
+    "custody_continuation_comment": 5812272237,
+    "same_carrier": true,
+    "new_regression_cases": 6,
+    "selected_test_result": "147 passed, 301 warnings",
+    "market_calendar_repair": {
+      "schema": "ric.rd2.market_calendar_repair.v1",
+      "pre_repair_head": "d74c1561820a34e1268db609e0759bef76984f2c",
+      "finding": "UTC calendar date could advance the requested U.S. rate-futures contract strip before New York midnight at a month boundary.",
+      "red_test": "tests/test_rates_command.py::test_rd2_contract_strip_uses_new_york_calendar_date",
+      "red_result": "FAILED: 2026-10-01 01:00 UTC selected 2026-10-01 instead of New York date 2026-09-30.",
+      "repair": "Convert the UTC capture instant to America/New_York before deriving the contract-generation calendar date; retain UTC capture timestamps separately.",
+      "collector_sha256": "897140e12349c30a1d6817702daaab4d6d8101fb5265a218321ff32472fdcb7d",
+      "test_sha256": "e191166b6a3fd569e84db4541170964d1a752985e28c5a6818b416c60cf2e9c7",
+      "selected_test_result": "147 passed, 301 warnings",
+      "new_vendor_requests": 0,
+      "model_trials": 0,
+      "production_store_modified": false,
+      "independent_review": false
+    },
+    "native_parity": {
+      "schema": "ric.rd2.repair_native_parity.v1",
+      "status": "PASS",
+      "pre_repair_head": "100cf1edd70ebbdebc26348bd694aac74efe8f70",
+      "source_hashes": {
+        "collectors/rate_futures.py": "271f4ca75e61669a926ba406a5770c053f12aef9b758c8b429a3625d6c632d6e",
+        "engine/rate_futures_repricing.py": "05aa4b0543610008544138e7de9d4a69c4a76cfabacf52f2bc57255d76341913",
+        "tests/test_rates_command.py": "397f8ba34ddf7602149f3e445159f29f8d23a4c9c3b01b881924fc09d7d641e4"
+      },
+      "input_hashes": {
+        "rate_futures/sofr_constituents.parquet": "1d2efe1ce81dd92591fc9d93b3ae009a53912f13ee5857de8f1e43a774a7a7d8",
+        "rate_futures/sofr_path.parquet": "73a5bfcf65b3bf9e22d40e0a84e0c3f8ddcf7671422a94b5cbf7cc39a2253293",
+        "rate_futures/zq_constituents.parquet": "eab1bf98dc98b611d13997d41c8bf359e5d74aa5294f829ccdd11e30e09562fe",
+        "rate_futures/zq_path.parquet": "a2ef485f9d6fdffcb9fd810bf4a934d3d61d11e818209f7edc4e891c156b3442"
+      },
+      "legacy_and_repaired_results_identical": true,
+      "strict_json_serializable": true,
+      "new_vendor_requests": 0,
+      "model_trials": 0,
+      "production_store_modified": false,
+      "independent_review": false,
+      "families": {
+        "zq": {
+          "status": "unavailable",
+          "reason": "capture_may_include_incomplete_bar",
+          "dated_context": [
+            "2026-09-22",
+            "2026-09-23"
+          ]
+        },
+        "sofr": {
+          "status": "unavailable",
+          "reason": "insufficient_endpoints",
+          "dated_context": null
+        }
+      }
+    },
+    "source_eligibility": {
+      "schema": "ric.rates_direction.source_eligibility_audit.v1",
+      "snapshot_revision": "748067a3631959e2dd6ffe25ebc7675ed82395ee",
+      "sources": {
+        "data/fred_vintage/vintages.parquet": {
+          "git_blob": "a0999fcfd2079cf8ecbd0a3f23ce687706767446",
+          "sha256": "5d0159ef8d98bbac445cb2fd0818443dc5a795e29eceb9a745ec4792a2b92d9e",
+          "rows": 16472,
+          "columns": [
+            "series",
+            "period",
+            "value",
+            "realtime_start",
+            "realtime_end"
+          ]
+        },
+        "data/fred_vintage/release_targets/CPIAUCSL_all_vintages.parquet": {
+          "git_blob": "a1783fe9928d93976325df03f216b32a871b982d",
+          "sha256": "abc6b65a873a3d6de63d85379c86b61f71f99480354f46915c391d506970718b",
+          "rows": 292553,
+          "columns": [
+            "series",
+            "period",
+            "realtime_start",
+            "realtime_end",
+            "value",
+            "source_output_type"
+          ]
+        },
+        "data/fred_vintage/release_targets/CPILFESL_all_vintages.parquet": {
+          "git_blob": "09f6bc0e3ef9cd6571e18d1ac276ab697654ca5f",
+          "sha256": "eb38de291704a08d59e7723ac86f232db6f3ac9ce8ece91a02e18841e2489b1a",
+          "rows": 247433,
+          "columns": [
+            "series",
+            "period",
+            "realtime_start",
+            "realtime_end",
+            "value",
+            "source_output_type"
+          ]
+        },
+        "data/fred_vintage/release_targets/PAYEMS_all_vintages.parquet": {
+          "git_blob": "ec4183cfa4bbdb100f5ba39a624e69b804a1e659",
+          "sha256": "5fe02dde232efad7799d14b5331bd83d4ba2f849dc82e687bd49ade357debaee",
+          "rows": 314191,
+          "columns": [
+            "series",
+            "period",
+            "realtime_start",
+            "realtime_end",
+            "value",
+            "source_output_type"
+          ]
+        },
+        "data/release_forecast/latest.json": {
+          "git_blob": "c318ee024d8d00e4f617ec0d25f7647f338363df",
+          "sha256": "b67c9925d4ac69d0253064bc824865d745db2f18e2c3321f9c8e1892c7561fdb"
+        }
+      },
+      "series_coverage": {
+        "CPIAUCSL": {
+          "rows_in_named_vintage_store": 356,
+          "distinct_reference_periods": 356,
+          "first_availability_date": "1997-01-14",
+          "last_availability_date": "2026-09-11",
+          "availability_precision": "date_only_not_intraday_receipt"
+        },
+        "CPILFESL": {
+          "rows_in_named_vintage_store": 356,
+          "distinct_reference_periods": 356,
+          "first_availability_date": "1997-01-14",
+          "last_availability_date": "2026-09-11",
+          "availability_precision": "date_only_not_intraday_receipt"
+        },
+        "PAYEMS": {
+          "rows_in_named_vintage_store": 357,
+          "distinct_reference_periods": 357,
+          "first_availability_date": "1997-01-10",
+          "last_availability_date": "2026-09-04",
+          "availability_precision": "date_only_not_intraday_receipt"
+        },
+        "GDPNOW": {
+          "rows_in_named_vintage_store": 41,
+          "distinct_reference_periods": 41,
+          "first_availability_date": "2016-08-04",
+          "last_availability_date": "2026-07-30",
+          "availability_precision": "date_only_not_intraday_receipt"
+        },
+        "ICSA": {
+          "rows_in_named_vintage_store": 903,
+          "distinct_reference_periods": 903,
+          "first_availability_date": "2009-06-04",
+          "last_availability_date": "2026-09-17",
+          "availability_precision": "date_only_not_intraday_receipt"
+        },
+        "THREEFYTP10": {
+          "rows_in_named_vintage_store": 2618,
+          "distinct_reference_periods": 2618,
+          "first_availability_date": "2016-08-11",
+          "last_availability_date": "2026-09-22",
+          "availability_precision": "date_only_not_intraday_receipt"
+        }
+      },
+      "model_fits": 0,
+      "new_empirical_trials": 0,
+      "outcome_columns_read": false,
+      "historical_intraday_availability_certified": false,
+      "claim_scope": "Metadata for named existing files; not a census of all possible vendors or company data.",
+      "existing_mri_methodology_status": {
+        "forecast_epoch": "legacy_cross_vintage_training_target_experimental",
+        "forecast_points_changed_by_wave1": false,
+        "coherent_target_refit_status": "shadow_candidate_withheld_no_valid_current_projection",
+        "coherent_current_projection_n": 0,
+        "next_required_step": "accrue_clean_forward_scores_then_manual_adjudication",
+        "official_actuals_ref": "data/release_forecast/official_actuals.jsonl",
+        "canonical_target_store": "data/fred_vintage/release_targets/",
+        "clean_forward_cpi_n": 0,
+        "accuracy_claim": "withheld_until_clean_aligned_forward_evidence",
+        "street_consensus": "unavailable",
+        "note": "Current model points remain experimental while coherent-target challengers accrue. Official parsed metrics and same-vintage ALFRED receipts now define the truth spine."
+      },
+      "classification": {
+        "historical_macro_levels": "Existing vintages and coherent-target owners are available; reuse them.",
+        "market_consensus_surprise": "NOT_QUALIFIED: no consensus source is bound by the inspected MRI contract.",
+        "internal_benchmark_residual": "Different estimand from market surprise; separate preregistration required.",
+        "before_release_features": "Date-only vintages do not establish availability before an intraday event.",
+        "rates_policy_movement": "Use current #7923 after its repair/review; do not install the superseded sandbox implementation.",
+        "promotion": "withheld"
+      }
+    },
+    "evidence_sha256": {
+      "crosscheck.py": "2582c042cd444c99b4d920aeddde652b21dd507bea988f1800728016716b0788",
+      "crosscheck-5c92d778ae73.json": "643ef10dc1253023d69fb40f605631597c4ac660f77b9c307ffe0b02ee308c82",
+      "repair-red.log": "66f539f8b42450ba07a6f3e19709833945b1edbde743309a92bcad2161871fea",
+      "vendor-layer-red.log": "a9b81b183f115ceb97028ffd8e5a68c37fdb2a9d4929281dd0b634195fc18b96",
+      "repair-final-tests.log": "08aa6b6fdee2e0d1862ae95e05d0de1a011dd8a51665aeea50e491813bdd0d8f",
+      "native_parity.py": "a1959cc8bd586770389c078c7db1b769daf5f04cc7f8133ba8c87b93ab2e3a4e",
+      "repair_native_parity.json": "937ec89434dd3f8c37674788c8dfa4f7736890e2413e449da83aa6201ea98531",
+      "source_eligibility.py": "23a65b1fc581374695847a468d96b137967192ce3429baa7cc2c07c36d02bc6d",
+      "source_eligibility.json": "78b02c6550123a75f878d51c7589802b267f9151aac0266b0179412af8c58587"
+    },
+    "new_vendor_requests": 0,
+    "model_trials": 0,
+    "production_store_modified": false,
+    "independent_review": false,
+    "scope": "Repair + retained-input proof. Full program, required CI and independent release acceptance remain open."
+  }
+}
