@@ -107,3 +107,155 @@ def test_monitor_absent_when_chains_none():
 def test_monitor_absent_when_no_chains_list():
     html = _render({"schema": "x", "chains": []})
     assert '<p class="cm-eyebrow">' not in html
+
+
+# ── MO-J1A — affected-company continuation render-side assertions ────────
+def _enriched_subset():
+    """Render _subset() with a small VendorAliasTable that resolves the names
+    in the fixture's blast channels. The fixture has these ticker names across
+    its blast channels: AAPL, NVDA, XOM, CVX, FCX, SLB, COP, HAL, MOS, DVN,
+    PLTR, RIVN, LCID, CRWD, SNOW, TSLA, AVGO, NOW, T, VZ, CCL, AAL, CVNA.
+    Register each as an open-bounded store/* row.
+    """
+    from datetime import date as _date
+    from engine.transmission_company_continuation import enrich_display_chains
+    from lib.dataos.identity import VendorAliasTable
+
+    sec_map = {
+        "AAPL": "SEC:0:AAPL", "NVDA": "SEC:0:NVDA", "XOM": "SEC:0:XOM",
+        "CVX": "SEC:0:CVX", "FCX": "SEC:0:FCX", "SLB": "SEC:0:SLB",
+        "COP": "SEC:0:COP", "HAL": "SEC:0:HAL", "MOS": "SEC:0:MOS",
+        "DVN": "SEC:0:DVN", "PLTR": "SEC:0:PLTR", "RIVN": "SEC:0:RIVN",
+        "LCID": "SEC:0:LCID", "CRWD": "SEC:0:CRWD", "SNOW": "SEC:0:SNOW",
+        "TSLA": "SEC:0:TSLA", "AVGO": "SEC:0:AVGO", "NOW": "SEC:0:NOW",
+        "T": "SEC:0:T", "VZ": "SEC:0:VZ", "CCL": "SEC:0:CCL",
+        "AAL": "SEC:0:AAL", "CVNA": "SEC:0:CVNA",
+    }
+    rows = [
+        {"vendor": "store", "vendor_symbol": sym, "security_id": sid,
+         "valid_from": None, "valid_to": None}
+        for sym, sid in sec_map.items()
+    ]
+    aliases = VendorAliasTable.from_records(rows)
+    return enrich_display_chains(_subset(), aliases, _date(2026, 7, 23))
+
+
+def test_cos_render_linked_anchor_and_not_ranked():
+    html = _render(_enriched_subset())
+    seg = _monitor_segment(html)
+    # Linked anchor href contains the Terminal analysis URL with the canonical six keys.
+    assert "https://app.mastermind-x.com/analysis" in seg
+    assert "symbol=AAPL" in seg
+    assert "page=intelligence" in seg
+    assert "mo_chain=" in seg
+    assert "mo_channel=" in seg
+    assert "mo_asof=" in seg
+    assert "mo_security_id=" in seg
+    # "not ranked" + zh token surface in the page (Tier-1 plain-language).
+    assert "not ranked" in seg
+    assert "非排名" in seg
+    # The not-ranked label appears in the header of each cm-cos list.
+    assert seg.count("cm-cos-ranknote") >= 1
+    # The data-sid attribute rides each linked li.
+    assert "data-sid=" in seg
+
+
+def test_cos_render_unlinked_renders_plain_text_no_anchor():
+    """Build a chains fixture that mixes resolved names (linked) with names
+    absent from the alias table (unlinked, render as plain text without a CTA).
+    """
+    from datetime import date as _date
+    from engine.transmission_company_continuation import enrich_display_chains
+    from lib.dataos.identity import VendorAliasTable
+
+    chains = {
+        "schema": "transmission_chains_display.v1",
+        "asof": "2026-07-23",
+        "chains": [{
+            "id": "test_ch",
+            "label": {"en": "Test chain", "zh": "测试链"},
+            "state": "propagating",
+            "tier": "hypothesis",
+            "hops": [],
+            "blast": {
+                "channel_a": {
+                    "label": {"en": "Channel A", "zh": "通道 A"},
+                    "n": 3,
+                    "unevaluable": 5,
+                    "names": ["AAPL", "UNKNOWN1", "NVDA", "UNKNOWN2"],
+                    "cuts": {},
+                },
+            },
+            "caveats": [],
+        }],
+    }
+    # Alias table only knows AAPL/NVDA — UNKNOWN1/UNKNOWN2 will be unlinked.
+    aliases = VendorAliasTable.from_records([
+        {"vendor": "store", "vendor_symbol": "AAPL", "security_id": "SEC:0:AAPL",
+         "valid_from": None, "valid_to": None},
+        {"vendor": "store", "vendor_symbol": "NVDA", "security_id": "SEC:0:NVDA",
+         "valid_from": None, "valid_to": None},
+    ])
+    enriched = enrich_display_chains(chains, aliases, _date(2026, 7, 23))
+    html = _render(enriched)
+    seg = _monitor_segment(html)
+    # The unlinked span class appears for UNKNOWN1/UNKNOWN2 (membership
+    # visible, no CTA).
+    assert "cm-cos-plain" in seg, "unlinked names must render as cm-cos-plain"
+    # The cm-cos-list ul carries a data attribute for the JS filter.
+    assert "data-cos-list" in seg
+    # The progressive-enhancement search input is present.
+    assert seg.count('data-cos-q') >= 1
+    # Plain unlinked names appear without an anchor — they ride <span>, not <a>.
+    # Locate the cm-cos-list ul and assert that UNKNOWN1/UNKNOWN2 are inside a
+    # plain span, NOT an <a>.
+    import re
+    list_match = re.search(r'<ul class="cm-cos-list" data-cos-list>(.*?)</ul>', seg, re.DOTALL)
+    assert list_match, "cm-cos-list ul not found"
+    inner = list_match.group(1)
+    # UNKNOWN1 must be in cm-cos-plain span, not in an <a>.
+    assert "UNKNOWN1" in inner
+    assert "UNKNOWN2" in inner
+    assert '<span class="cm-cos-plain">UNKNOWN1</span>' in inner
+    assert '<span class="cm-cos-plain">UNKNOWN2</span>' in inner
+    # AAPL and NVDA must ride an anchor with the Terminal URL.
+    assert 'href="https://app.mastermind-x.com/analysis' in inner
+    assert ">AAPL<" in inner
+    assert ">NVDA<" in inner
+
+
+def test_cos_render_unevaluable_count_text_preserved():
+    html = _render(_enriched_subset())
+    seg = _monitor_segment(html)
+    # The fixture carries unevaluable=1590 for some channels, 938, 940, 1601, 1603, 1615.
+    assert "1590" in seg
+    assert "names could not be evaluated" in seg or "只无法评估" in seg
+
+
+def test_cos_render_dormant_chain_has_no_cm_cos():
+    """The fixture's vol_regime chain is dormant — it must NOT carry a cm-cos
+    details block. The spec is explicit: dormant chains get no companies key,
+    and the template asserts that.
+
+    The 3 non-dormant fixture chains have 4 + 4 + 3 = 11 blast channels
+    between them; each renders one cm-cos. The dormant chain renders 0."""
+    html = _render(_enriched_subset())
+    seg = _monitor_segment(html)
+    assert seg.count('class="cm-cos"') == 11, "expected one cm-cos per blast channel on non-dormant chains"
+    # And the dormant chain's label appears only in the cm-quiet line.
+    assert seg.count("Vol-regime shift") == 1
+
+
+def test_cos_render_no_title_attribute_carries_chinese():
+    """ZH copy rides visible l-zh spans only; title= attributes never carry
+    Chinese text (the cascade-monitor receipt rule applies to the new block
+    too)."""
+    html = _render(_enriched_subset())
+    seg = _monitor_segment(html)
+    import re
+    titles = re.findall(r'title="([^"]*)"', seg)
+    for t in titles:
+        # every character in every title must NOT be a CJK ideograph
+        for ch in t:
+            assert not (0x4E00 <= ord(ch) <= 0x9FFF), f"title= carries CJK {t!r}"
+            assert not (0x3400 <= ord(ch) <= 0x4DBF), f"title= carries CJK ext-A {t!r}"

@@ -115,6 +115,34 @@ def main() -> int:
         log.error("transmission chains subset failed: %s", e)
         chains = None
 
+    # MO-J1A — identity-safe affected-company continuation (TXI W4 cascade monitor).
+    # Load the Data OS vendor-alias artifact ONCE and project every non-dormant chain's
+    # blast-channel membership through the EXACT identity law in
+    # engine/transmission_company_continuation. Any failure → aliases=None path
+    # (companies render as unlinked membership + identity_unavailable, page never breaks).
+    if isinstance(chains, dict) and chains.get("chains"):
+        try:
+            from datetime import date as _date
+            from engine.intelligence_workspace.entity import _records
+            from engine.transmission_company_continuation import enrich_display_chains
+            from lib.dataos.identity import VendorAliasTable
+            alias_rows = _records(config.ROOT / "data/reference/vendor_aliases.parquet")
+            aliases = VendorAliasTable.from_records(alias_rows)
+            txi_asof = chains.get("asof")
+            decision_date = _date.fromisoformat(txi_asof) if isinstance(txi_asof, str) and txi_asof else _date.fromisoformat(as_of)
+            chains = enrich_display_chains(chains, aliases, decision_date)
+        except Exception as e:  # noqa: BLE001 — identity path is additive, never fatal
+            log.error("transmission company continuation failed: %s", e)
+            # Re-project with aliases=None so the page still renders identity_unavailable
+            try:
+                from datetime import date as _date
+                from engine.transmission_company_continuation import enrich_display_chains
+                txi_asof = chains.get("asof")
+                decision_date = _date.fromisoformat(txi_asof) if isinstance(txi_asof, str) and txi_asof else _date.fromisoformat(as_of)
+                chains = enrich_display_chains(chains, None, decision_date)
+            except Exception:  # noqa: BLE001
+                pass
+
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
     html = env.get_template("transmission.html.j2").render(
         C=C, as_of=as_of, built=built, span=span, tx=tx, gate=gate, yc=yc,

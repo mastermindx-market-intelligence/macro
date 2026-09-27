@@ -354,6 +354,31 @@ html[data-theme="dark"] .cm-state-tag.propagating{color:#f0995a}
   font-size:11.5px;font-weight:500;color:var(--text);line-height:1.5;text-transform:none;letter-spacing:0}
 .cmq:hover .cmq-tip,.cmq:focus .cmq-tip{display:block}
 
+/* ---------- affected-company continuation (MO-J1A) ---------- */
+.cm-cos{margin-top:12px;padding:10px 12px;border:1px solid var(--grid);border-radius:var(--r-card,12px);background:var(--panel)}
+.cm-cos>summary{list-style:none;cursor:pointer;font-size:12px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:8px;min-height:24px}
+.cm-cos>summary::-webkit-details-marker{display:none}
+.cm-cos>summary::after{content:'+';margin-left:auto;color:var(--muted);font-weight:700}
+.cm-cos[open]>summary::after{content:'−'}
+.cm-cos-head{margin-top:8px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cm-cos-unavail{font-size:12px;color:var(--muted);padding:4px 0 2px}
+.cm-cos-q{display:block;width:100%;margin:8px 0;padding:6px 10px;font-size:12px;color:var(--text);background:var(--card);border:1px solid var(--grid);border-radius:var(--r-ctl,8px);box-sizing:border-box}
+.cm-cos-q:focus{outline:2px solid var(--ink-link,var(--blue));outline-offset:1px;border-color:var(--ink-link,var(--blue))}
+.cm-cos-list{margin:4px 0 6px;padding:0;list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 10px;max-height:240px;overflow:auto;font-size:12px;line-height:1.5}
+@media(max-width:820px){.cm-cos-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.cm-cos-list{grid-template-columns:1fr}}
+.cm-cos-list li{padding:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cm-cos-list a{color:var(--ink-link,var(--blue));text-decoration:none;font-weight:600}
+.cm-cos-list a:hover{text-decoration:underline}
+.cm-cos-list a:focus-visible{outline:2px solid var(--ink-link,var(--blue));outline-offset:2px;border-radius:var(--r-ctl,8px)}
+.cm-cos-plain{color:var(--muted)}
+.cm-cos-uneval{margin-top:6px;font-size:11px;color:var(--faint,var(--muted))}
+.cm-cos-ranknote{margin-top:2px;font-size:10.5px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;font-weight:700}
+/* light/dark art-direction: dark uses restrained luminance depth; light uses a single hairline.
+   No color literals, no border-radius literals — all tokens. */
+html[data-theme="light"] .cm-cos{background:var(--card);border-color:var(--grid);box-shadow:none}
+html[data-theme="light"] .cm-cos-list{background:transparent}
+
 /* ---------- scenarios (if this holds for three months) ---------- */
 .sx-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media(max-width:820px){.sx-grid{grid-template-columns:1fr}}
@@ -695,6 +720,60 @@ html[data-theme="dark"] .cm-state-tag.propagating{color:#f0995a}
             <span class="l-zh">波及通道：{% for flag, chan in ch.blast.items() %}{{ chan.label.zh if chan.label else flag }} {{ chan.n or 0 }}{% if chan.unevaluable %}（{{ chan.unevaluable }} 无法评估）{% endif %}{% if not loop.last %} · {% endif %}{% endfor %}。字段缺失的名字既不在也不排除于波及范围——绝非交易指令。</span>
           </span></span>
         </div>
+        {# MO-J1A — affected-company continuation under each active transmission blast channel.
+           Each blast channel with a `companies` projection renders one <details class="cm-cos">.
+           The summary stays in plain language ("with company research · not ranked"); the ZH
+           token rides a visible span (NEVER title=). Linked names carry data-sid for the page
+           Tier-2 receipt; unlinked names ride as plain text (membership visible, NO CTA). #}
+        {% if ch.companies %}
+          {% for chan_id, cos in ch.companies.items() %}
+            {% set unavail = cos.identity_unavailable|default(false) %}
+            {% set n_lk = cos.n_linked|default(0) %}
+            {% set label_en = cos.channel_label|default(chan_id) %}
+            <details class="cm-cos" data-channel="{{ chan_id }}">
+              <summary>
+                <span class="l-en">{% if unavail %}{{ t('Affected companies — ' ~ label_en ~ ' — company links unavailable tonight', '受影响公司——' ~ label_en ~ '——今晚无法提供公司链接') }}{% else %}{{ t('Affected companies — ' ~ label_en ~ ' · ' ~ n_lk ~ ' with company research · not ranked', '受影响公司——' ~ label_en ~ '·' ~ n_lk ~ ' 家可打开公司研究·非排名') }}{% endif %}</span>
+                <span class="l-zh">{% if unavail %}{{ t('Affected companies — ' ~ label_en ~ ' — company links unavailable tonight', '受影响公司——' ~ label_en ~ '——今晚无法提供公司链接') }}{% else %}{{ t('Affected companies — ' ~ label_en ~ ' · ' ~ n_lk ~ ' with company research · not ranked', '受影响公司——' ~ label_en ~ '·' ~ n_lk ~ ' 家可打开公司研究·非排名') }}{% endif %}</span>
+              </summary>
+              <div class="cm-cos-head">
+                <span class="l-en">{{ t('Affected companies · not ranked / 非排名', '受影响公司·非排名 / not ranked') }}</span>
+                <span class="l-zh">{{ t('Affected companies · not ranked / 非排名', '受影响公司·非排名 / not ranked') }}</span>
+              </div>
+              {% if unavail %}
+                <div class="cm-cos-unavail">
+                  <span class="l-en">{{ t('company links unavailable tonight', '今晚无法提供公司链接') }}</span>
+                  <span class="l-zh">{{ t('company links unavailable tonight', '今晚无法提供公司链接') }}</span>
+                </div>
+                {% if cos.unlinked %}
+                <ul class="cm-cos-list" data-cos-list>
+                  {% for nm in cos.unlinked %}<li><span class="cm-cos-plain">{{ nm }}</span></li>{% endfor %}
+                </ul>
+                {% endif %}
+              {% else %}
+                <input type="search" class="cm-cos-q" placeholder="{{ t('filter — prefix match', '筛选——前缀匹配') }}" aria-label="{{ t('filter affected companies', '筛选受影响公司') }}" data-cos-q>
+                <ul class="cm-cos-list" data-cos-list>
+                  {% for link in cos.linked %}
+                    <li data-sid="{{ link.security_id }}"><a href="{{ link.href }}" rel="noopener"
+                      data-tip-en="{{ t('Open company research', '打开公司研究') }}"
+                      data-tip-zh="{{ t('Open company research', '打开公司研究') }}"
+                      aria-label="{{ t('Open company research — ' ~ link.symbol, '打开公司研究——' ~ link.symbol) }}">{{ link.symbol }}<span class="l-zh">{{ ' · ' ~ t('Open company research', '打开公司研究') }}</span></a></li>
+                  {% endfor %}
+                  {% for nm in cos.unlinked %}
+                    <li><span class="cm-cos-plain">{{ nm }}</span></li>
+                  {% endfor %}
+                </ul>
+                <div class="cm-cos-ranknote">
+                  <span class="l-en">{{ t('not ranked / 非排名', '非排名 / not ranked') }}</span>
+                  <span class="l-zh">{{ t('not ranked / 非排名', '非排名 / not ranked') }}</span>
+                </div>
+              {% endif %}
+              <div class="cm-cos-uneval">
+                <span class="l-en">{{ cos.unevaluable }} {{ t('names could not be evaluated', '只无法评估') }}</span>
+                <span class="l-zh">{{ cos.unevaluable }} {{ t('names could not be evaluated', '只无法评估') }}</span>
+              </div>
+            </details>
+          {% endfor %}
+        {% endif %}
         <div class="cm-tier">{{ t('Early monitor — base rates accrue nightly.', '早期监测——基准率逐夜累积。') }}</div>
       </div>
       <span class="cm-state-tag {{ st }}">{{ b(STATE_WORD.get(st, ch.label)) }}</span>
@@ -704,6 +783,31 @@ html[data-theme="dark"] .cm-state-tag.propagating{color:#f0995a}
     <div class="cm-quiet">{{ t('Quiet:', '静默：') }} {% for ch in dorm %}<b>{{ b(ch.label) }}</b>{% if not loop.last %} · {% endif %}{% endfor %}</div>
     {% endif %}
   </div>
+  {# MO-J1A — progressive enhancement: per-<details> prefix filter on the company list.
+     No storage, no network, no ranking — only DOM visibility. Mirror pattern of the
+     tx-from script above. #}
+  <script>
+  (function () {
+    try {
+      var boxes = document.querySelectorAll('[data-cos-q]');
+      if (!boxes || !boxes.length) return;
+      for (var i = 0; i < boxes.length; i++) (function (q) {
+        var det = q.closest('details.cm-cos');
+        if (!det) return;
+        var list = det.querySelector('[data-cos-list]');
+        if (!list) return;
+        var items = list.children;
+        q.addEventListener('input', function () {
+          var needle = (q.value || '').trim().toUpperCase();
+          for (var j = 0; j < items.length; j++) {
+            var txt = (items[j].textContent || '').trim().toUpperCase();
+            items[j].style.display = (!needle || txt.indexOf(needle) === 0) ? '' : 'none';
+          }
+        });
+      })(boxes[i]);
+    } catch (e) { /* no JS: the static list still reads correctly */ }
+  })();
+  </script>
   {% endif %}
   {% endif %}
 
