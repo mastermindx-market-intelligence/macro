@@ -556,10 +556,6 @@
    "sector": "Financial",
    "members": [
     {
-     "ticker": "UMBF",
-     "name": "UMB Financial Corp"
-    },
-    {
      "ticker": "ONB",
      "name": "Old National Bancorp"
     },
@@ -718,6 +714,10 @@
     {
      "ticker": "BOH",
      "name": "Bank of Hawaii Corp"
+    },
+    {
+     "ticker": "UMBF",
+     "name": "UMB Financial Corp"
     },
     {
      "ticker": "NBTB",
@@ -3254,11 +3254,11 @@
      "name": "Plexus Corp"
     },
     {
-     "ticker": "BELFB",
+     "ticker": "BELFA",
      "name": "Bel Fuse Inc"
     },
     {
-     "ticker": "BELFA",
+     "ticker": "BELFB",
      "name": "Bel Fuse Inc"
     },
     {
@@ -7530,11 +7530,11 @@
      "name": "IDT Corp"
     },
     {
-     "ticker": "LILAK",
+     "ticker": "LILA",
      "name": "Liberty Latin America Ltd"
     },
     {
-     "ticker": "LILA",
+     "ticker": "LILAK",
      "name": "Liberty Latin America Ltd"
     },
     {
@@ -7942,6 +7942,10 @@
      "name": "Elemental Royalty Corp"
     },
     {
+     "ticker": "FMC",
+     "name": "FMC Corp"
+    },
+    {
      "ticker": "SCL",
      "name": "Stepan Co"
     },
@@ -7952,10 +7956,6 @@
     {
      "ticker": "REX",
      "name": "REX American Resources Corp"
-    },
-    {
-     "ticker": "FMC",
-     "name": "FMC Corp"
     },
     {
      "ticker": "ODC",
@@ -8236,11 +8236,11 @@
      "name": "IDT Corp"
     },
     {
-     "ticker": "LILAK",
+     "ticker": "LILA",
      "name": "Liberty Latin America Ltd"
     },
     {
-     "ticker": "LILA",
+     "ticker": "LILAK",
      "name": "Liberty Latin America Ltd"
     },
     {
@@ -8276,20 +8276,20 @@
      "name": "Nextdoor Holdings Inc"
     },
     {
-     "ticker": "GLIBA",
-     "name": "Liberty Capital Corp"
-    },
-    {
      "ticker": "TDAY",
      "name": "USA TODAY Co Inc"
     },
     {
-     "ticker": "TBLA",
-     "name": "Taboola.com Ltd"
+     "ticker": "GLIBA",
+     "name": "Liberty Capital Corp"
     },
     {
      "ticker": "GLIBK",
      "name": "Liberty Capital Corp"
+    },
+    {
+     "ticker": "TBLA",
+     "name": "Taboola.com Ltd"
     },
     {
      "ticker": "SBGI",
@@ -8514,12 +8514,12 @@
      "name": "Rush Street Interactive Inc"
     },
     {
-     "ticker": "ALH",
-     "name": "Alliance Laundry Holdings Inc"
-    },
-    {
      "ticker": "GEF",
      "name": "Greif Inc"
+    },
+    {
+     "ticker": "ALH",
+     "name": "Alliance Laundry Holdings Inc"
     },
     {
      "ticker": "CVCO",
@@ -9848,10 +9848,6 @@
      "name": "Hut 8 Corp"
     },
     {
-     "ticker": "UMBF",
-     "name": "UMB Financial Corp"
-    },
-    {
      "ticker": "ONB",
      "name": "Old National Bancorp"
     },
@@ -10182,6 +10178,10 @@
     {
      "ticker": "BOH",
      "name": "Bank of Hawaii Corp"
+    },
+    {
+     "ticker": "UMBF",
+     "name": "UMB Financial Corp"
     },
     {
      "ticker": "SLDE",
@@ -10724,12 +10724,12 @@
      "name": "Coastal Financial Corp"
     },
     {
-     "ticker": "CARE",
-     "name": "Carter Bankshares Inc"
-    },
-    {
      "ticker": "DGICA",
      "name": "Donegal Group Inc"
+    },
+    {
+     "ticker": "CARE",
+     "name": "Carter Bankshares Inc"
     },
     {
      "ticker": "RRBI",
@@ -10772,10 +10772,6 @@
      "name": "First Business Financial Services Inc"
     },
     {
-     "ticker": "CRD-A",
-     "name": "Crawford & Co"
-    },
-    {
      "ticker": "CBNK",
      "name": "Capital Bancorp Inc"
     },
@@ -10786,6 +10782,10 @@
     {
      "ticker": "CD",
      "name": "Chaince Digital Holdings Inc"
+    },
+    {
+     "ticker": "CRD-A",
+     "name": "Crawford & Co"
     },
     {
      "ticker": "BWB",
@@ -13596,12 +13596,12 @@
      "name": "Bluelinx Hldgs Inc"
     },
     {
-     "ticker": "KELYA",
-     "name": "Kelly Services Inc"
-    },
-    {
      "ticker": "MATW",
      "name": "Matthews International Corp"
+    },
+    {
+     "ticker": "KELYA",
+     "name": "Kelly Services Inc"
     },
     {
      "ticker": "JBI",
@@ -14572,11 +14572,11 @@
      "name": "Tenable Holdings Inc"
     },
     {
-     "ticker": "BELFB",
+     "ticker": "BELFA",
      "name": "Bel Fuse Inc"
     },
     {
-     "ticker": "BELFA",
+     "ticker": "BELFB",
      "name": "Bel Fuse Inc"
     },
     {

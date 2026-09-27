@@ -82,7 +82,7 @@
       ],
       "total_envelope_usd": 0
     },
-    "opportunity_queue_depth": 272,
+    "opportunity_queue_depth": 283,
     "self_improvement": {
       "loop_state": "observing",
       "open_hypotheses": [],
@@ -1690,14 +1690,14 @@
   },
   "pipeline": {
     "opportunities": {
-      "open": 272,
-      "scored": 458,
+      "open": 283,
+      "scored": 469,
       "newest": [
         {
           "id": "radar-stage-A-2026-09-26",
           "problem_or_desire": "$A: stage 2A_strong_breakout, SATA 9, 6w in stage",
           "expected_value": 0.4,
-          "score": 0.382574,
+          "score": 0.366447,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
@@ -1705,7 +1705,7 @@
           "id": "radar-stage-ACA-2026-09-26",
           "problem_or_desire": "$ACA: stage 2D_extended_run, SATA 10, 51w in stage",
           "expected_value": 0.4,
-          "score": 0.382574,
+          "score": 0.366447,
           "half_life_class": "weekly_signal",
           "status": "open"
         },
@@ -1713,7 +1713,7 @@
           "id": "radar-stage-ACVA-2026-09-26",
           "problem_or_desire": "$ACVA: stage 2A_strong_breakout, SATA 9, 2w in stage",
           "expected_value": 0.4,
-          "score": 0.382574,
+          "score": 0.366447,
           "half_life_class": "weekly_signal",
           "status": "open"
         }
@@ -1738,30 +1738,30 @@
       ]
     },
     "publications": {
-      "total": 1388,
-      "receipts": 1388,
+      "total": 1391,
+      "receipts": 1391,
       "corrections": 0,
       "newest": [
         {
-          "id": "pub-ob-2026-09-25-7b4787e956",
+          "id": "pub-ob-2026-09-26-0880806203",
           "channel": "x",
-          "account": "founder",
+          "account": "flagship",
           "status": "clean",
-          "published_at": "2026-09-26T01:53:46Z"
+          "published_at": "2026-09-26T18:31:07Z"
         },
         {
-          "id": "pub-ob-2026-09-26-f1aeef1fc2",
+          "id": "pub-ob-2026-09-26-c731a4e99e",
           "channel": "x",
           "account": "mastermind_news",
           "status": "clean",
-          "published_at": "2026-09-26T01:52:23Z"
+          "published_at": "2026-09-26T15:13:59Z"
         },
         {
-          "id": "pub-ob-2026-09-25-1d6238985e",
+          "id": "pub-ob-2026-09-26-97e17bff8e",
           "channel": "x",
-          "account": "kelly",
+          "account": "flagship",
           "status": "clean",
-          "published_at": "2026-09-25T23:16:40Z"
+          "published_at": "2026-09-26T14:56:37Z"
         }
       ]
     },
@@ -1985,9 +1985,9 @@
     }
   ],
   "content": {
-    "total_posts": 28,
-    "signal_posts": 7,
-    "charts": 120,
+    "total_posts": 44,
+    "signal_posts": 12,
+    "charts": 149,
     "accounts": 13,
     "state": "present",
     "as_of": "2026-09-26"
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-09-26T10:47:45Z",
-  "inputs_hash": "sha256:64bd4f62378d63aa33e2e80dd08241b2c83167e1c82480b47e94c38088c73b21",
+  "produced_at": "2026-09-26T21:14:05Z",
+  "inputs_hash": "sha256:671bc02c2b4d123fd008e185e7e163be8af066ef5cf99ee85334951ce8a13be6",
   "tier": "display"
 }

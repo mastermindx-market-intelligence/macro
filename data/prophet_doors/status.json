@@ -1,14 +1,14 @@
 {
-  "appended": 1,
+  "appended": 7,
   "asof": "2026-09-25",
   "candidates": {
-    "R": 3,
-    "T": 20,
+    "R": 0,
+    "T": 19,
     "W": 4
   },
   "deduped": {
-    "R": 3,
-    "T": 19,
+    "R": 0,
+    "T": 12,
     "W": 4
   },
   "dry_run": false,
@@ -27,21 +27,36 @@
       "coil_min_sessions": 293,
       "consulted": true,
       "null_reasons": {
-        "ohlcv_absent": 3
+        "ohlcv_absent": 20
       },
       "reason": null,
       "source": "data/baskets/ohlcv/<ticker>.parquet",
       "themes_read": {
+        "Industrial Automation": {
+          "theme_thrust_frac": 0.2143,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
         "Nanotechnology": {
           "theme_thrust_frac": 0.1176,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "Semiconductors": {
+          "theme_thrust_frac": 0.2647,
+          "theme_thrust_reason": null,
+          "theme_thrust_state": "quiet"
+        },
+        "Space Tech": {
+          "theme_thrust_frac": 0.05,
           "theme_thrust_reason": null,
           "theme_thrust_state": "quiet"
         }
       },
       "thrust_min_members": 6,
       "thrust_min_sessions": 27,
-      "tickers_ok": 34,
-      "tickers_read": 37
+      "tickers_ok": 101,
+      "tickers_read": 121
     },
     "keys": [
       "relay_count_3d",
@@ -62,7 +77,7 @@
       "consulted": true,
       "high_lookback": 63,
       "members_indexed": 129,
-      "n_covered": 0,
+      "n_covered": 87,
       "reason": null,
       "window_sessions": 21
     },
@@ -103,7 +118,13 @@
   "flag_tickers": {
     "R": [],
     "T": [
-      "DHR"
+      "ACLS",
+      "AMAT",
+      "LRCX",
+      "IRDM",
+      "AME",
+      "ROK",
+      "VECO"
     ],
     "W": []
   },
@@ -113,8 +134,8 @@
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-09-26 11:06:58",
-  "runtime_s": 123.4,
+  "run_utc": "2026-09-26 22:28:40",
+  "runtime_s": 105.9,
   "schema": "prophet_doors/v1",
   "theme_source": {
     "age_days": 0,
@@ -165,7 +186,7 @@
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 22.1,
+    "runtime_s": 20.3,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 67,

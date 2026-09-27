@@ -3677,6 +3677,9 @@ jobs:
         run: pip install pytest pandas numpy pyyaml requests
       - name: china_news collector tests (incl. adapter-registered-without-akshare)
         run: python -m pytest tests/test_china_news.py -q
+      - name: optional news provider semantics and actual ordering consumer
+        # Source-only fixtures: no live data, vendor credentials or activation.
+        run: python -m pytest tests/test_news_ai_feed_contract.py -q
       - name: strict SEC filing parser, extraction, and sealed attestation contracts
         run: |
           python -m pytest \
@@ -5359,6 +5362,18 @@ jobs:
         run: python3 scripts/check_nightly_liveness.py --selftest
       - name: nightly liveness dead-man switch (checks + wiring pins)
         run: python -m pytest tests/test_nightly_liveness.py -q
+      # Third instrument in the same lane, added 2026-09-25. The two above watch
+      # daily.yml; this one watches the QUEUE, which is what neither of them can
+      # see. daily.yml routes `macstudio` — a live label — so it ran green through
+      # the entire 2026-09-23→25 render outage and the liveness guard correctly said
+      # nothing while `render-linux` had zero carriers and three lanes sat dark for
+      # three days. Registered BY NAME here because this file is the pack manifest:
+      # a suite nobody names is a suite CI never runs, so an unregistered watchdog
+      # test is a watchdog that silently stops being true.
+      - name: runner queue hostage guard selftest (scripts/check_runner_queue_hostage.py)
+        run: python3 scripts/check_runner_queue_hostage.py --selftest
+      - name: runner queue hostage dead-man switch (checks + wiring pins)
+        run: python -m pytest tests/test_runner_queue_hostage.py -q
 
   push-retry-policy:
     if: ${{ false }}

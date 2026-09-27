@@ -1,0 +1,166 @@
+.FFFFFFF                                                                 [100%]
+=================================== FAILURES ===================================
+___ test_unavailable_theme_has_neutral_status_in_row_and_hover[avoid-reduce] ___
+
+final = 'avoid', lane = 'reduce'
+
+    @pytest.mark.parametrize('final,lane', [('accumulate', 'add_on_pullback'), ('avoid', 'reduce'), ('trim', 'reduce')])
+    def test_unavailable_theme_has_neutral_status_in_row_and_hover(final, lane):
+        from bs4 import BeautifulSoup
+        ti = _continuation_fixture(final=final)
+        item = ti['act_now']['add_on_pullback'].pop()
+        item.update(action=final, action_en=final.upper())
+        ti['act_now'][lane] = [item]
+        ti['themes'][0]['observation']['aggregate_eligible'] = False
+        board = _continuation_board(ti)
+        rows = [row for lane_rows in board['display_lanes'].values() for row in lane_rows]
+        row, = rows
+>       assert row['reco'] is None
+E       AssertionError: assert 'avoid' is None
+
+tests/test_china_act_now.py:1349: AssertionError
+___ test_unavailable_theme_has_neutral_status_in_row_and_hover[trim-reduce] ____
+
+final = 'trim', lane = 'reduce'
+
+    @pytest.mark.parametrize('final,lane', [('accumulate', 'add_on_pullback'), ('avoid', 'reduce'), ('trim', 'reduce')])
+    def test_unavailable_theme_has_neutral_status_in_row_and_hover(final, lane):
+        from bs4 import BeautifulSoup
+        ti = _continuation_fixture(final=final)
+        item = ti['act_now']['add_on_pullback'].pop()
+        item.update(action=final, action_en=final.upper())
+        ti['act_now'][lane] = [item]
+        ti['themes'][0]['observation']['aggregate_eligible'] = False
+        board = _continuation_board(ti)
+        rows = [row for lane_rows in board['display_lanes'].values() for row in lane_rows]
+        row, = rows
+>       assert row['reco'] is None
+E       AssertionError: assert 'trim' is None
+
+tests/test_china_act_now.py:1349: AssertionError
+______ test_settling_copy_does_not_infer_an_unchanged_thesis[accumulate] _______
+
+final = 'accumulate'
+
+    @pytest.mark.parametrize('final', ['accumulate', 'hold', 'trim', 'avoid', None])
+    def test_settling_copy_does_not_infer_an_unchanged_thesis(final):
+        ti = _continuation_fixture()
+        ti['themes'][0]['reco'] = final
+        html = render(_continuation_board(ti, '2026-09-21T08:00:00+00:00'))
+        assert 'Session not yet settled' in html
+>       assert 'not a change in the theme thesis' not in html
+E       assert 'not a chang...theme thesis' not in '\n\n\n  <!-...  </div>\n  '
+E
+E         'not a change in the theme thesis' is contained here:
+E           . This is not a change in the theme thesis.</span><span class="l-zh">请等待交易日数据确认；这不表示主题逻辑发生变化。</span></span>
+E         ?           ++++++++++++++++++++++++++++++++
+E               </span>
+E             </div>
+E             <div class="row-pop-decision-ft">...
+E
+E         ...Full output truncated (63 lines hidden), use '-vv' to show
+
+tests/test_china_act_now.py:1380: AssertionError
+_________ test_settling_copy_does_not_infer_an_unchanged_thesis[hold] __________
+
+final = 'hold'
+
+    @pytest.mark.parametrize('final', ['accumulate', 'hold', 'trim', 'avoid', None])
+    def test_settling_copy_does_not_infer_an_unchanged_thesis(final):
+        ti = _continuation_fixture()
+        ti['themes'][0]['reco'] = final
+        html = render(_continuation_board(ti, '2026-09-21T08:00:00+00:00'))
+        assert 'Session not yet settled' in html
+>       assert 'not a change in the theme thesis' not in html
+E       assert 'not a chang...theme thesis' not in '\n\n\n  <!-...  </div>\n  '
+E
+E         'not a change in the theme thesis' is contained here:
+E           . This is not a change in the theme thesis.</span><span class="l-zh">请等待交易日数据确认；这不表示主题逻辑发生变化。</span></span>
+E         ?           ++++++++++++++++++++++++++++++++
+E               </span>
+E             </div>
+E             <div class="row-pop-decision-ft">...
+E
+E         ...Full output truncated (63 lines hidden), use '-vv' to show
+
+tests/test_china_act_now.py:1380: AssertionError
+_________ test_settling_copy_does_not_infer_an_unchanged_thesis[trim] __________
+
+final = 'trim'
+
+    @pytest.mark.parametrize('final', ['accumulate', 'hold', 'trim', 'avoid', None])
+    def test_settling_copy_does_not_infer_an_unchanged_thesis(final):
+        ti = _continuation_fixture()
+        ti['themes'][0]['reco'] = final
+        html = render(_continuation_board(ti, '2026-09-21T08:00:00+00:00'))
+        assert 'Session not yet settled' in html
+>       assert 'not a change in the theme thesis' not in html
+E       assert 'not a chang...theme thesis' not in '\n\n\n  <!-...  </div>\n  '
+E
+E         'not a change in the theme thesis' is contained here:
+E           . This is not a change in the theme thesis.</span><span class="l-zh">请等待交易日数据确认；这不表示主题逻辑发生变化。</span></span>
+E         ?           ++++++++++++++++++++++++++++++++
+E               </span>
+E             </div>
+E             <div class="row-pop-decision-ft">...
+E
+E         ...Full output truncated (63 lines hidden), use '-vv' to show
+
+tests/test_china_act_now.py:1380: AssertionError
+_________ test_settling_copy_does_not_infer_an_unchanged_thesis[avoid] _________
+
+final = 'avoid'
+
+    @pytest.mark.parametrize('final', ['accumulate', 'hold', 'trim', 'avoid', None])
+    def test_settling_copy_does_not_infer_an_unchanged_thesis(final):
+        ti = _continuation_fixture()
+        ti['themes'][0]['reco'] = final
+        html = render(_continuation_board(ti, '2026-09-21T08:00:00+00:00'))
+        assert 'Session not yet settled' in html
+>       assert 'not a change in the theme thesis' not in html
+E       assert 'not a chang...theme thesis' not in '\n\n\n  <!-...  </div>\n  '
+E
+E         'not a change in the theme thesis' is contained here:
+E           . This is not a change in the theme thesis.</span><span class="l-zh">请等待交易日数据确认；这不表示主题逻辑发生变化。</span></span>
+E         ?           ++++++++++++++++++++++++++++++++
+E               </span>
+E             </div>
+E             <div class="row-pop-decision-ft">...
+E
+E         ...Full output truncated (63 lines hidden), use '-vv' to show
+
+tests/test_china_act_now.py:1380: AssertionError
+_________ test_settling_copy_does_not_infer_an_unchanged_thesis[None] __________
+
+final = None
+
+    @pytest.mark.parametrize('final', ['accumulate', 'hold', 'trim', 'avoid', None])
+    def test_settling_copy_does_not_infer_an_unchanged_thesis(final):
+        ti = _continuation_fixture()
+        ti['themes'][0]['reco'] = final
+        html = render(_continuation_board(ti, '2026-09-21T08:00:00+00:00'))
+        assert 'Session not yet settled' in html
+>       assert 'not a change in the theme thesis' not in html
+E       assert 'not a chang...theme thesis' not in '\n\n\n  <!-...  </div>\n  '
+E
+E         'not a change in the theme thesis' is contained here:
+E           . This is not a change in the theme thesis.</span><span class="l-zh">请等待交易日数据确认；这不表示主题逻辑发生变化。</span></span>
+E         ?           ++++++++++++++++++++++++++++++++
+E               </span>
+E             </div>
+E             <div class="row-pop-decision-ft">...
+E
+E         ...Full output truncated (63 lines hidden), use '-vv' to show
+
+tests/test_china_act_now.py:1380: AssertionError
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .github, .grok, .warp, admin, app, browser, calibration, collectors, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, research, site, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_china_act_now.py::test_unavailable_theme_has_neutral_status_in_row_and_hover[avoid-reduce]
+FAILED tests/test_china_act_now.py::test_unavailable_theme_has_neutral_status_in_row_and_hover[trim-reduce]
+FAILED tests/test_china_act_now.py::test_settling_copy_does_not_infer_an_unchanged_thesis[accumulate]
+FAILED tests/test_china_act_now.py::test_settling_copy_does_not_infer_an_unchanged_thesis[hold]
+FAILED tests/test_china_act_now.py::test_settling_copy_does_not_infer_an_unchanged_thesis[trim]
+FAILED tests/test_china_act_now.py::test_settling_copy_does_not_infer_an_unchanged_thesis[avoid]
+FAILED tests/test_china_act_now.py::test_settling_copy_does_not_infer_an_unchanged_thesis[None]
+7 failed, 1 passed, 134 deselected in 2.23s
