@@ -448,14 +448,16 @@ def test_gated_build_ships_one_note_one_cta_and_no_tier_wall():
     html = _render("china", summary=_summary("china"), gated=True)
     assert html.count('id="hm-gate-note"') == 1
     assert html.count('id="hm-cta"') == 1
-    # No .tier-wall, no skeletons, no inert controls: everything this page shows
-    # is free, and every control only re-slices data the visitor already holds.
-    # A wall over free content would be a lie and five walls would be nagging.
+    # The public sector map stays fully usable. The THS Themes tab is a single
+    # access-aware in-map member state backed by the existing protected owner feed;
+    # do not paint a .tier-wall over the free sector map or add inert skeletons.
     for anti in ("tier-wall", "tw-ghost", "gate-pill", 'class="gh"', 'class="gh ',
                  'class="gated', "pointer-events:none"):
         assert anti not in html, f"{anti} has no business on this page"
     assert 'href="plans.html"' in html
     assert "See plans" in html and "查看方案" in html
+    assert "The sector map is open" in html and "板块热力图完全开放" in html
+    assert "Members unlock the THS Themes view" in html and "会员可解锁同花顺主题视图" in html
     assert "7-day Pro trial · cancel anytime" in html and "Pro 7 天试用 · 随时取消" in html
 
 
@@ -722,6 +724,18 @@ def test_opening_the_map_opened_no_graded_store():
         "adding it here would shadow that route")
 
 
+def test_ths_theme_feed_stays_behind_the_existing_member_boundary():
+    """The public China page may advertise Themes, but it must not widen the
+    protected THS owner feed. The renderer asks the canonical wall first."""
+    protected = "/marketdata/subsector_rotation_china.json"
+    public = set(POLICY["public"]["exact"])
+    assert protected not in public
+    assert protected not in _regwall_public_paths()
+    for matcher in ("reg_asset", "reg_asset_err"):
+        assert protected not in _caddy_matcher_paths(matcher), matcher
+    assert not any(p.startswith("/marketdata") for p in POLICY["public"]["prefixes"])
+
+
 def test_the_page_enters_the_sitemap_and_the_siblings_do_not():
     """Gate §0.4 / T-A4: the page enters the sitemap ONLY with the summary layer
     present, and lib/seo.py gates discovery on the public boundary — so this
@@ -762,3 +776,83 @@ def test_new_copy_is_glance_tier_and_bilingual():
         i = html.index(frag)
         window = html[i:i + 1400]
         assert 'class="l-en"' in window and 'class="l-zh"' in window, frag
+
+# ── sector / theme map switch contracts (2026-09-24 heatmap wave) ───────────
+def _hm_maps(page: str) -> list[dict]:
+    text = (SITE / page).read_text(encoding="utf-8")
+    match = re.search(r"data-hm-maps='([^']+)'", text)
+    assert match, f"{page}: data-hm-maps missing"
+    return json.loads(match.group(1))
+
+
+def test_us_heatmap_owner_keeps_sector_theme_switch_without_rebuild():
+    maps = _hm_maps("sector_heatmap.html")
+    assert [m["key"] for m in maps] == ["sp500", "themes"]
+    assert [m["url"] for m in maps] == [
+        "marketdata/sp500_heatmap.json",
+        "marketdata/themes_heatmap.json",
+    ]
+    source = (ROOT / "templates" / "sector_heatmap.html.j2").read_text(encoding="utf-8")
+    assert '"key":"sp500"' in source
+    assert '"key":"themes"' in source
+
+
+def test_china_heatmap_switches_between_stock_sectors_and_ths_themes():
+    maps = _hm_maps("china_heatmap.html")
+    assert [m["key"] for m in maps] == ["china-sectors", "china-themes"]
+    sectors, themes = maps
+    assert sectors["url"] == "marketdata/china_heatmap.json"
+    assert themes == {
+        "key": "china-themes",
+        "label_en": "Themes",
+        "label_zh": "主题",
+        "url": "marketdata/subsector_rotation_china.json",
+        "access": "member",
+        "adapter": "china-ths-themes",
+        "join_url": "marketdata/china_heatmap.json",
+    }
+
+
+def test_china_theme_view_reuses_owner_feeds_without_a_second_publisher():
+    template_js = (ROOT / "templates" / "heatmap.js").read_text(encoding="utf-8")
+    site_js = (ROOT / "site" / "heatmap.js").read_text(encoding="utf-8")
+    market_template = (ROOT / "templates" / "market_heatmap.html.j2").read_text(encoding="utf-8")
+    assert template_js == site_js
+    assert "function adaptChinaThsThemes(rotation, stocks)" in template_js
+    assert "loadMapPayload(m)" in template_js
+    assert "m.adapter !== 'china-ths-themes'" in template_js
+    assert "subsector_rotation_china.json" in market_template
+    assert "china_themes_heatmap.json" not in template_js
+    assert "china_themes_heatmap.json" not in market_template
+
+
+def test_member_theme_map_preflights_the_canonical_wall_and_can_retry():
+    """Access is explicit in the map contract. A denied/failed preflight must
+    never fall through to the protected THS fetch, and denial is retryable."""
+    assert "function mapAccessAllows(m)" in HEATMAP_JS
+    assert "m.access !== 'member'" in HEATMAP_JS
+    assert "fetch('/api/regwall/check'" in HEATMAP_JS
+    assert "'X-Original-Uri': path" in HEATMAP_JS
+    assert "'X-Original-Kind': 'asset'" in HEATMAP_JS
+    assert "r.status === 204" in HEATMAP_JS
+    assert "never cache a denial" in HEATMAP_JS
+    assert "function showMemberMapGate(host, retry)" in HEATMAP_JS
+    assert "THS Themes is a member view." in HEATMAP_JS
+    assert "同花顺主题为会员视图。" in HEATMAP_JS
+    assert "select(m, true)" in HEATMAP_JS
+    assert "window.MDXAuth.open('signin')" in HEATMAP_JS
+    # Auth changes invalidate both the allow receipt and cached protected bytes,
+    # then force a fresh wall check before the member view can reappear.
+    assert "delete _dataPromises[m.url || '']" in HEATMAP_JS
+    assert "window.addEventListener('mdx-auth'" in HEATMAP_JS
+    # A response that began before sign-out must not repaint protected bytes
+    # after the forced re-check. Selection/auth epochs fence every async stage.
+    assert "selectEpoch = 0" in HEATMAP_JS
+    assert "var epoch = ++selectEpoch;" in HEATMAP_JS
+    assert HEATMAP_JS.count("epoch !== selectEpoch || curKey !== m.key") >= 3
+    # A wall allow followed by a protected-feed/network failure remains
+    # recoverable without switching away from the active Themes tab.
+    assert "if (m.access === 'member')" in HEATMAP_JS
+    assert "resetMapAccess(m);" in HEATMAP_JS
+    assert "showMemberMapGate(host, function () { select(m, true); });" in HEATMAP_JS
+
