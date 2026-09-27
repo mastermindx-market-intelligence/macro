@@ -105,3 +105,48 @@ Two production commits now exist on PR #8050:
 Local pytest execution for the new contract tests was explicitly refused before dispatch and was not rerouted or disguised. Earlier static Python/JavaScript/Jinja syntax verification succeeded on the first slice; a later combined front-door static verification call was separately refused before dispatch and was not retried. Canonical PR CI is therefore the test owner for these published candidates.
 
 The first published slice exposed one fence failure unrelated to implementation logic: this decision record lacked the required YAML frontmatter. All other fence components in that run passed. This record has now been repaired in-place rather than creating a second decision owner. Production acceptance remains false until exact-head CI, generated-page/browser proof, and the remaining truth/data gates pass.
+
+
+## Pro continuation — current cumulative frontier
+
+Current Chairman intent is to continue toward immediately understandable, sophisticated, production-ready Crypto/Bitcoin experiences. Pro is user-reported; no served-model or mode telemetry is inferred. Protected Mastermind pin for this continuation: `4c6b206d3fb7fbc6d077faf61ae361bedf259925`, INDEX blob `94d1af402598894372858793a5b1931019c5fa77`, compatible Skillpack 1.0.1. Sol retains ownership under the existing operation and workstream. Direct native design work is principal judgment on the expressly authorized M2 Paper carrier; no worker was started.
+
+### Verified native design delta
+
+Paper file/page remain `01M2WGNCX9475G79JRKJTCM08P` / `p-R-0`. Shared token SHA `bba69475` is unchanged. The unrelated active document page was not edited.
+
+- Corrected Crypto desktop `1FL0-0`: its former “Bitcoin leads” headline contradicted the SOL/BTC and ETH/BTC comparison. It now reads “SOL and ETH gain ground,” explicitly scoped to an eight-week illustrative comparison, not broad altcoin participation or expected upside.
+- New `1NK0-0`, 1440 x 1120: refined dark Bitcoin Overview. One clear model stance, one synchronized price/risk/allocation instrument, explicit incomplete funding evidence, and inspect-decision first. Historical performance statistics are not part of the current-decision hierarchy. Marked design scenario, not live.
+- New `1O0V-0`, 390 x 1260: Crypto mobile comparison. Direct series labels, an explicit 100 baseline, matching eight-week ratio changes, source/calculation entry, and a first-visit saved-baseline action.
+- New `1O5O-0`, 1440 x 1270: comparison evidence sheet, unavailable Bitcoin decision and confirmed save-failure examples, plus the builder interaction/acceptance contract. Distinguishes valid 0% Bitcoin / 100% cash from missing decision; preserves unrelated qualified price/history; ambiguous save responses must reconcile before another write.
+
+All three new boards and the corrected Crypto desktop were screenshot-inspected. The recovery board's dark text inheritance and height were repaired, then its screenshot was checked again. Proposed five-second comprehension/user-task acceptance is written on-board, but no participant study has been run and no award or production acceptance is claimed.
+
+### Source/effect reconciliation and actual CI
+
+The interrupted chart move applied to the existing local workspace, not a second branch: `templates/vector.html.j2` and `tests/test_vector_r2_frontdoor.py` were dirty atop `bfcdbaebd1032be6b96ed39532e1bab204e9d2f6`. One `vec-risk-chart` now appears in Overview; the Strategy instance was removed. Do not replay either mutation. Remaining local corrections are tracked in the same owned workspace. No modifying effect is known EFFECT_UNKNOWN.
+
+Exact-head fences run `36279838458` passed; CI run `36279838608` failed. Contract-delta job `108516311639` reports the two newly added R2 tests are not enrolled in any workflow run step. Feature job `108516640073` reports six Bitcoin decision rendering failures and two Vector canonicalization failures. The decision trace identifies a real boundary regression: its fixture extracts from the first `set decision_ok`, which was moved above the hero; the isolated decision render then receives unrelated undefined hero variables. It is not evidence that six financial decisions were wrong. The two other failures concern the missing `id="timeline"` anchor and an ambiguous `#timeline` default; whether those are inherited versus introduced still requires an exact-base comparison.
+
+The test path from that CI trace returned 404 at the supplied GitHub heads and ENOENT in this sparse workspace. No substitute test file or passing result is invented. Local pytest, the denied readout replacement, denied combined static checks and denied PR-body update remain fenced. Automatic existing PR CI is the evidence owner for published candidates; no dummy push or duplicate runner is authorized.
+
+### Remaining production obligations
+
+Finish the bounded source integration without disguising historical performance as a current model recommendation, preserve a directly renderable decision section, and keep unavailable hero state distinct from mixed evidence. Reconcile the existing CI test-registration owner before enrollment; keep Crypto #7645 and shared-theme #7849 paths untouched until current custody is established. The published replay gate currently suppresses all history on a missing required observation; narrow it to dependent claims in a separately verified repair. Existing JS null-readout repair remains blocked by its explicit denial.
+
+Production release remains held for exact-head tests, generated real-route visual/interaction proof, EN/ZH and both themes, valid-zero and missing-input cases, point-in-time source semantics, qualified asset rankings, and canonical H5 total-budget identity. Design boards and prior prototype test receipts do not satisfy these obligations. No deployment, live alert, trade, autonomous watcher or accepted release exists from this continuation.
+
+
+### Source candidate and continuation boundary
+
+This revision preserves the reconciled Overview chart move and returns CAGR/Sharpe/drawdown/time-invested statistics to Strategy, labeled full-history simulation excluding trading costs. It restores the standalone canonical decision fragment while keeping Overview as a read-only projection of the same decision, corrects the navigation's markup-in-ARIA error, gives missing market analysis its own unavailable headline, and corrects the 0% Bitcoin / 100% cash language. Four regressions were authored in the existing `tests/test_vector_wave1.py`; the R2 data-boundary wording assertion was strengthened. No new passing test receipt is claimed.
+
+The five changed Paper boards were visually reviewed. The builder board now links all eight R2 boards and the real failed-CI frontier. Own working indicators were released successfully after one DOCUMENT_CHANGED pre-dispatch refusal and a fresh same-carrier snapshot. No shared token or unrelated active-page design was changed.
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+Boundary: the requested Pro design/refinement chunk has produced reviewed native screens and a bounded source-repair candidate. The next stage needs exact-candidate CI/test-enrollment adjudication and real-route integration proof; the heavy design/CI context should not be replayed. This is not release acceptance, cancellation, source-custody transfer or a claim all lanes are unavailable.
+
+Exact next action: read this cumulative record and the current PR #8050 head, reconcile the current existing CI registration owner against the two unenrolled R2 tests, then consume exact-head CI and repair remaining failures in the same owned branch. After required capability/permission checks, prove the generated Vector route and chart-to-evidence interaction at 390/768/1440, EN/ZH and both themes. The denied local tests/static/readout/PR-body actions remain fenced; a new turn or mode is not retry permission. The source/feature contract lists remaining native-design mismatches explicitly.
+
+Resume surface: Pro for CI/source adjudication and product review, as currently requested. Reassess a concrete permitted execution surface only when the next build/browser action requires it; do not infer capabilities from the mode name. No worker, watcher or automatic future session was started. Sol remains accountable; accepted P0A and existing snapshot/chart/alert owners must not be rebuilt.

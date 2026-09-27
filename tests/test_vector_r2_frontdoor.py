@@ -28,6 +28,16 @@ def test_r2_frontdoor_surfaces_final_allocation_without_new_authority() -> None:
     assert "模型仓位" in source
 
 
+def test_r2_frontdoor_puts_synchronized_instrument_before_decision_shelf() -> None:
+    source = TEMPLATE.read_text(encoding="utf-8")
+
+    assert source.count('id="vec-risk-chart"') == 1
+    assert source.index('id="vec-risk-chart"') < source.index('data-shelf="S2"')
+    assert 'class="overview-instrument"' in source
+    assert "Price · risk · model allocation" in source
+    assert "价格 · 风险 · 模型仓位" in source
+
+
 def test_r2_frontdoor_removes_decorative_shelf_rail() -> None:
     source = TEMPLATE.read_text(encoding="utf-8")
 

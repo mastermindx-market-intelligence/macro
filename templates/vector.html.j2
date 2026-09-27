@@ -96,7 +96,30 @@ a{color:var(--ink-link, var(--link))}
   color:var(--muted);font-size:10px;pointer-events:none}
 .tape-legend span{display:inline-flex;align-items:center;gap:5px}
 .tape-legend i{width:9px;height:3px;border-radius:2px}
-.what-changed{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding-top:13px;margin-top:5px;border-top:1px solid var(--line)}
+.overview-instrument{display:grid;grid-template-columns:minmax(0,1fr) 286px;gap:18px;margin-top:18px}
+.overview-chart-card,.overview-side{border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.overview-chart-card{padding:20px}
+.overview-side{padding:20px;display:flex;flex-direction:column;gap:18px}
+.instrument-head{display:flex;align-items:baseline;gap:14px;margin-bottom:14px}
+.instrument-title{font-size:15px;font-weight:680;letter-spacing:-.01em}
+.instrument-sub{margin-left:auto;color:var(--muted);font-size:10.5px}
+.instrument-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:14px;border-top:1px solid var(--line)}
+.instrument-metrics .metric{padding:12px 14px;border:0;border-right:1px solid var(--line);border-radius:0;background:transparent}
+.instrument-metrics .metric:last-child{border-right:0}
+.instrument-metrics .metric .v{font-size:16px}
+.overview-side-title{font-size:15px;font-weight:680}
+.overview-evidence{padding-bottom:16px;border-bottom:1px solid var(--line)}
+.overview-evidence:last-child{padding-bottom:0;border-bottom:0}
+.overview-evidence .k{font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.overview-evidence .v{margin-top:6px;font:680 26px/1 var(--num);font-variant-numeric:tabular-nums}
+.overview-evidence .sub{margin-top:8px;color:var(--muted);font-size:10.5px;line-height:1.5}
+.overview-source summary{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;list-style:none;
+  font-size:11.5px;font-weight:650;color:var(--ink-link,var(--link))}
+.overview-source summary::-webkit-details-marker{display:none}
+.overview-source-body{padding-top:12px}
+.overview-source-body .data-table{font-size:10.5px}
+.overview-unavailable{min-height:390px;display:grid;place-items:center;padding:32px;text-align:center;color:var(--muted)}
+.what-changed{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding-top:15px;margin-top:16px;border-top:1px solid var(--line)}
 .what-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:750;color:var(--muted);margin-right:3px}
 .change-chip{display:inline-flex;align-items:center;gap:6px;min-width:0;color:var(--text);font-size:11.5px}
 .change-chip i{width:5px;height:5px;border-radius:50%;background:var(--muted);flex:none}
@@ -246,6 +269,8 @@ a{color:var(--ink-link, var(--link))}
   .vector-tabs{gap:20px}
   .hero{padding:22px 0}.hero-read{grid-template-columns:1fr;gap:20px}
   .hero-position{border-left:none;border-top:1px solid var(--line);padding:18px 0 0}
+  .overview-instrument{grid-template-columns:1fr}.overview-side{display:grid;grid-template-columns:repeat(2,1fr);align-items:start}
+  .overview-side-title,.overview-source{grid-column:1/-1}
   .decision-grid{grid-template-columns:1fr}.decision-main{border-right:none;border-bottom:1px solid var(--line);padding:22px 18px}.decision-detail{padding:20px 18px}
   .axis-row{grid-template-columns:1fr auto 24px;gap:8px 12px;padding:13px 17px}
   .axis-spark{grid-column:1/2;width:100%;height:28px}.axis-micro{grid-column:2/3;grid-row:2;text-align:right}.axis-row>.qm{grid-column:3;grid-row:1/3}
@@ -262,7 +287,8 @@ a{color:var(--ink-link, var(--link))}
   .wordmark{width:100%}.live-quote{margin-left:0}.asof-chip{margin-left:auto}
   .tape-shell{padding-left:2px;padding-right:2px}.tape-legend{position:static;margin:0 8px 5px}
   .what-changed{align-items:flex-start}.all-alerts{margin-left:0;width:100%}
-  .level-grid,.complex-grid,.metric-grid,.fact-grid{grid-template-columns:1fr}
+  .level-grid,.complex-grid,.metric-grid,.fact-grid,.instrument-metrics{grid-template-columns:1fr}
+  .overview-side{display:flex}.instrument-head{align-items:flex-start;flex-direction:column;gap:5px}.instrument-sub{margin-left:0}
   .complex-card,.complex-card:nth-child(3),.complex-card:nth-child(even){border-right:none;border-bottom:1px solid var(--line)}
   .complex-card:last-child{grid-column:auto}.equity-box svg{height:210px!important}
   .axis-row{grid-template-columns:1fr auto 22px}.axis-name{font-size:12px}.axis-state{font-size:12px}
@@ -274,13 +300,11 @@ a{color:var(--ink-link, var(--link))}
 <body class="page-vector">
 {% include "_site_nav.html.j2" %}
 <main class="vector-wrap">
-  {% set decision_ok = decision and decision.status == 'ok' and decision.integrity.ok and decision.final %}
-  {% set action_code = decision.final.action_code if decision_ok else none %}
-  {% set decision_tone = 'bull' if action_code == 'INCREASE_EXPOSURE' else ('bear' if action_code in ['REDUCE_EXPOSURE','STAY_OUT'] else 'neutral') %}
-  {% set target_pct = decision.final.exposure_pct if decision_ok else none %}
-  {% set L = decision.advisory.levels if decision and decision.advisory and decision.advisory.levels else {} %}
+  {# Overview is a read-only projection of the same canonical decision. Keep the
+     detailed decision fragment independently renderable below, without hero data. #}
+  {% set overview_decision = decision if decision and decision.status == 'ok' and decision.integrity.ok and decision.final else none %}
 
-  <nav class="vector-tabs" aria-label="{{ t('Bitcoin research sections','比特币研究分区') }}">
+  <nav class="vector-tabs" aria-label="Bitcoin research sections / 比特币研究分区">
     <a href="#overview">{{ t('Overview','概览') }}</a>
     <a href="#cycle-lab">{{ t('Cycle & risk','周期与风险') }}</a>
     <a href="#strategy-track-record">{{ t('Strategy','策略') }}</a>
@@ -307,7 +331,8 @@ a{color:var(--ink-link, var(--link))}
             {{ t(master.band if master and master.ok else 'Unavailable', master.band_zh if master and master.ok else '暂不可用') }}
           </div>
           <h1 class="stance">
-            {% if hero_tone == 'bull' %}{{ t('Constructive backdrop.','整体环境偏积极。') }}
+            {% if not master or not master.ok %}{{ t('Market read unavailable.','市场判断暂不可用。') }}
+            {% elif hero_tone == 'bull' %}{{ t('Constructive backdrop.','整体环境偏积极。') }}
             {% elif hero_tone == 'bear' %}{{ t('Defensive backdrop.','整体环境偏防守。') }}
             {% else %}{{ t('Mixed backdrop.','整体环境分化。') }}{% endif %}
           </h1>
@@ -322,26 +347,67 @@ a{color:var(--ink-link, var(--link))}
             <span class="hero-position-label">{{ t('Final authority','最终口径') }}</span>
           </div>
           <div class="hero-position-action">
-            {% if decision_ok %}{{ t(decision.final.action_en, decision.final.action_zh) }}
+            {% if overview_decision %}{{ t(overview_decision.final.action_en, overview_decision.final.action_zh) }}
             {% else %}{{ t('Decision unavailable','决策暂不可用') }}{% endif %}
           </div>
           <div class="hero-position-value">
-            {% if decision_ok %}{{ target_pct }}% <span>BTC</span>{% else %}—{% endif %}
+            {% if overview_decision %}{{ overview_decision.final.exposure_pct }}% <span>BTC</span>{% else %}—{% endif %}
           </div>
-          <div class="hero-position-rail">{% if decision_ok %}<i style="width:{{ target_pct }}%"></i>{% endif %}</div>
+          <div class="hero-position-rail">{% if overview_decision %}<i style="width:{{ overview_decision.final.exposure_pct }}%"></i>{% endif %}</div>
           <div class="hero-position-note">
             {{ t('Model allocation — not your account. Short-term direction remains uncertain.',
                  '模型仓位——并非您的账户仓位。短期方向仍不确定。') }}
           </div>
         </div>
       </div>
-      <div class="tape-shell">
-        <div class="tape-legend">
-          <span><i style="background:var(--btc)"></i>{{ t('BTC price','BTC 价格') }}</span>
-          <span><i style="background:var(--up)"></i>{{ t('final exposure','最终仓位') }}</span>
-          <span><i style="background:var(--muted)"></i>{{ t('regime bands','状态区间') }}</span>
+      <div class="overview-instrument" data-vector-replay-state="{{ 'valid' if chart_contract.valid else 'unavailable' }}">
+        <div class="overview-chart-card">
+          <div class="instrument-head">
+            <div class="instrument-title">{{ t('The market, in context','市场全景') }}</div>
+            <div class="instrument-sub">{{ t('Price · risk · model allocation','价格 · 风险 · 模型仓位') }}</div>
+          </div>
+          {% if chart_contract.valid %}
+          <div id="vec-risk-chart" class="vchart-wrap" style="--vchart-h:470px"><div class="receipt-line">{{ t('Loading synchronized chart…','正在加载同步图表…') }}</div></div>
+          <div class="receipt-line">{{ t('Historical strategy results are separate from the current model decision.','历史策略结果与当前模型决策分开呈现。') }} <a href="#strategy-track-record">{{ t('Review strategy results','查看策略结果') }} →</a></div>
+          {% else %}
+          <div class="overview-unavailable" role="status">
+            <div>
+              <b>{{ t('Interactive replay unavailable','交互式回放暂不可用') }}</b>
+              <div class="receipt-line">{{ t('Required decision history is incomplete. Missing observations are never rendered as 0% Bitcoin. A valid 0% Bitcoin target means 100% cash; a missing decision means neither.','所需决策历史不完整。缺失观测绝不会被显示为 0% 比特币。有效的 0% 比特币目标代表 100% 现金；缺失决策不代表其中任何一种。') }}</div>
+              {% for issue in chart_contract.issues %}
+              <div class="receipt-line" data-vector-replay-issue="{{ issue.code }}">{{ t(issue.message_en, issue.message_zh) }}</div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
         </div>
-        {{ presentation.tape|safe }}
+        <aside class="overview-side">
+          <div class="overview-side-title">{{ t('What matters now','当前关键点') }}</div>
+          <div class="overview-evidence">
+            <div class="k">{{ t('Risk level','风险程度') }}</div>
+            <div class="v">{{ risk_index if risk_index is not none else '—' }}<span style="font:500 11px/1 var(--font-ui);color:var(--muted)"> / 100</span></div>
+            <div class="sub">{{ t(risk_label, '低风险' if risk_on else '高风险') if risk_index is not none else t('Unavailable','暂不可用') }} · {{ t('A risk reading is context, not a return forecast.','风险读数仅作背景参考，并非收益预测。') }}</div>
+          </div>
+          <div class="overview-evidence">
+            <div class="k">{{ t('Model allocation','模型仓位') }}</div>
+            <div class="v">{% if overview_decision %}{{ overview_decision.final.exposure_pct }}% <span style="font:500 11px/1 var(--font-ui);color:var(--muted)">BTC</span>{% else %}—{% endif %}</div>
+            <div class="sub">{% if overview_decision %}{{ t(overview_decision.final.action_en, overview_decision.final.action_zh) }}{% else %}{{ t('Decision unavailable until integrity checks pass.','完整性检查通过前，决策暂不可用。') }}{% endif %}</div>
+          </div>
+          <details class="overview-source">
+            <summary><span>{{ t('Data & source','数据与来源') }}</span><span>+</span></summary>
+            <div class="overview-source-body">
+              <table class="data-table">
+                <tbody>
+                  <tr><td>{{ t('Price','价格') }}</td><td><code>{{ chart_contract.meta.fields.price.source_id }}</code></td></tr>
+                  <tr><td>{{ t('Risk','风险') }}</td><td><code>{{ chart_contract.meta.fields.risk.source_id }}</code></td></tr>
+                  <tr><td>{{ t('Allocation','仓位') }}</td><td><code>{{ chart_contract.meta.fields.allocation.source_id }}</code></td></tr>
+                </tbody>
+              </table>
+              <div class="receipt-line">{{ t('Observed: ','观测：') }}{{ chart_contract.meta.observed_at or '—' }} · {{ t('Availability clock: not asserted.','可用性时钟：未声明。') }}</div>
+              <div class="receipt-line">{{ t('The interface does not invent publication timestamps.','界面不会虚构发布时间戳。') }}</div>
+            </div>
+          </details>
+        </aside>
       </div>
       <div class="what-changed">
         <span class="what-label">{{ t('What changed','最新变化') }}</span>
@@ -357,6 +423,13 @@ a{color:var(--ink-link, var(--link))}
     </div>
   </section>
 
+  {# This decision fragment needs only the canonical decision and risk context;
+     it must not depend on the Overview's market, chart or quote variables. #}
+  {% set decision_ok = decision and decision.status == 'ok' and decision.integrity.ok and decision.final %}
+  {% set action_code = decision.final.action_code if decision_ok else none %}
+  {% set decision_tone = 'bull' if action_code == 'INCREASE_EXPOSURE' else ('bear' if action_code in ['REDUCE_EXPOSURE','STAY_OUT'] else 'neutral') %}
+  {% set target_pct = decision.final.exposure_pct if decision_ok else none %}
+  {% set L = decision.advisory.levels if decision and decision.advisory and decision.advisory.levels else {} %}
   <section class="shelf {{ tone_class(decision_tone) }}" data-shelf="S2" data-verdict data-decision-schema="{{ decision.schema }}" data-decision-status="{{ decision.status }}"{% if decision_ok %} data-decision-exposure="{{ target_pct }}"{% endif %}>
     <div class="shelf-inner">
       <div class="shelf-head"><span class="shelf-kicker">S2</span><h2 class="shelf-title">{{ t('Decision & levels','决策与关键价位') }}</h2><span class="shelf-sub">{{ t('one final target · explicit review levels','一个最终目标 · 明确复核价位') }}</span></div>
@@ -581,61 +654,19 @@ a{color:var(--ink-link, var(--link))}
           </section>
           {% endfor %}
 
-          <div class="study-card" style="margin-top:16px" data-vector-replay-state="{{ 'valid' if chart_contract.valid else 'unavailable' }}">
-            <h3>{{ t('Allocation replay','配置回放') }}
-              {% if chart_contract.valid %}
-              <span id="vrc-variant-label" style="color:var(--muted);font-weight:500">{{ t('· Optimal variant','· 最优变体') }}</span>
-              {% else %}
-              <span style="color:var(--warn);font-weight:600">{{ t('· unavailable','· 暂不可用') }}</span>
-              {% endif %}
-            </h3>
-            {% if chart_contract.valid %}
-            <div id="vec-risk-chart" class="vchart-wrap" style="--vchart-h:470px"><div class="receipt-line">{{ t('Loading interactive chart…','正在加载交互图表…') }}</div></div>
+          {% if chart_contract.valid %}
+          <div class="study-card" style="margin-top:16px">
+            <h3>{{ t('Allocation simulation','配置模拟') }} <span id="vrc-variant-label" style="color:var(--muted);font-weight:500"></span></h3>
+            <div class="receipt-line">{{ t('Full-history simulation, not live performance. Excludes trading costs. These statistics do not change with the chart viewing window.','全历史模拟，并非实盘表现；未计交易成本。这些统计不会随图表查看窗口变化。') }}</div>
             <div class="metric-grid" id="vrc-score" data-cards="{{ cards|tojson|forceescape }}" style="margin-top:12px">
               <div class="metric"><div class="k">CAGR</div><div class="v" data-m="cagr">—</div></div>
               <div class="metric"><div class="k">{{ t('Sharpe','夏普') }}</div><div class="v" data-m="sharpe">—</div></div>
               <div class="metric"><div class="k">{{ t('Max drawdown','最大回撤') }}</div><div class="v" data-m="maxdd">—</div></div>
               <div class="metric"><div class="k">{{ t('Time invested','在场时间') }}</div><div class="v" data-m="in_market">—</div></div>
             </div>
-            {% else %}
-            <div class="receipt-line" role="status">
-              {{ t('Interactive allocation replay is suppressed because its required decision history is incomplete. Missing observations are never rendered as 0% cash.',
-                   '由于所需决策历史不完整，交互式配置回放已被抑制。缺失观测绝不会被显示为 0% 现金仓位。') }}
-            </div>
-            {% for issue in chart_contract.issues %}
-            <div class="receipt-line" data-vector-replay-issue="{{ issue.code }}">{{ t(issue.message_en, issue.message_zh) }}</div>
-            {% endfor %}
-            {% endif %}
-
-            <details class="study-fold" style="margin-top:14px">
-              <summary>
-                <span class="fold-title">{{ t('Data & source','数据与来源') }}</span>
-                <span class="fold-hint">{{ t('Exact fields used by this replay','本回放使用的确切字段') }}</span>
-                <span class="fold-stat">{{ chart_contract.meta.observed_at or '—' }}</span>
-              </summary>
-              <div class="study-body">
-                <table class="data-table">
-                  <thead><tr><th>{{ t('Field','字段') }}</th><th>{{ t('Source','来源') }}</th><th>{{ t('Unit','单位') }}</th><th>{{ t('Available at','可用时间') }}</th></tr></thead>
-                  <tbody>
-                    <tr><td>{{ t('Bitcoin price','比特币价格') }}</td><td><code>{{ chart_contract.meta.fields.price.source_id }}</code></td><td>{{ chart_contract.meta.fields.price.unit }}</td><td>{{ t('Not asserted','未声明') }}</td></tr>
-                    <tr><td>{{ t('Risk index','风险指数') }}</td><td><code>{{ chart_contract.meta.fields.risk.source_id }}</code></td><td>{{ chart_contract.meta.fields.risk.unit }}</td><td>{{ t('Not asserted','未声明') }}</td></tr>
-                    <tr><td>{{ t('Model allocation','模型仓位') }}</td><td><code>{{ chart_contract.meta.fields.allocation.source_id }}</code></td><td>{{ chart_contract.meta.fields.allocation.unit }}</td><td>{{ t('Not asserted','未声明') }}</td></tr>
-                  </tbody>
-                </table>
-                <div class="receipt-line">
-                  {{ t('Observation date: ','观测日期：') }}{{ chart_contract.meta.observed_at or '—' }} ·
-                  {{ t('Availability clock: not asserted. No publication timestamp is invented by the UI.',
-                       '可用性时钟：未声明。界面不会虚构发布时间戳。') }}
-                </div>
-                {% if not chart_contract.valid and chart_contract.missing.allocation_dates %}
-                <div class="receipt-line">
-                  {{ t('Missing allocation observations by variant are retained as data-quality exceptions and suppress this replay.',
-                       '各变体缺失的配置观测会作为数据质量异常保留，并抑制本回放。') }}
-                </div>
-                {% endif %}
-              </div>
-            </details>
           </div>
+          {% endif %}
+          <div class="receipt-line">{{ t('The synchronized price, risk and model-allocation replay lives in Overview. Historical simulation does not predict future returns.','同步的价格、风险与模型仓位回放位于概览；历史模拟不能预测未来收益。') }}</div>
           <div class="receipt-line"><a href="strategy_btc_trend.html">{{ t('Trend strategy detail','趋势策略详情') }} →</a></div>
         </div>
       </details>

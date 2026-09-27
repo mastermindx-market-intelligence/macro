@@ -67,7 +67,8 @@ def test_r2_template_gates_replay_and_exposes_source_contract() -> None:
 
     assert 'data-vector-replay-state="{{ \'valid\' if chart_contract.valid else \'unavailable\' }}"' in source
     assert "{% if chart_contract.valid %}" in source
-    assert "Missing observations are never rendered as 0% cash." in source
+    assert "Missing observations are never rendered as 0% Bitcoin." in source
+    assert "A valid 0% Bitcoin target means 100% cash; a missing decision means neither." in source
     assert "{{ t('Data & source','数据与来源') }}" in source
     assert "chart_contract.meta.fields.allocation.source_id" in source
     assert "Availability clock: not asserted." in source

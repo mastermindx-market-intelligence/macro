@@ -263,8 +263,8 @@ def _risk_strategy_payload(sig: pd.DataFrame) -> dict:
     if any(missing_allocation_dates.values()):
         issues.append({
             "code": "ALLOCATION_UNAVAILABLE",
-            "message_en": "Allocation history is incomplete; missing decisions are not treated as 0% cash.",
-            "message_zh": "配置历史不完整；缺失决策不会被视为 0% 现金仓位。",
+            "message_en": "Allocation history is incomplete; missing decisions are not treated as 0% Bitcoin.",
+            "message_zh": "配置历史不完整；缺失决策不会被视为 0% 比特币仓位。",
         })
     valid = bool(variants) and not missing_price_dates and not any(missing_allocation_dates.values())
     return {
