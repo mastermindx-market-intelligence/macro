@@ -1,0 +1,253 @@
+{
+  "artifact": "semiconductor_central_pair_core_R5",
+  "not_a_native_schema": true,
+  "mode": "retrospective_research",
+  "original_casebook_sha256": "48365c8aba051a93a9d40b72b7826c49786d28acd73f3ccd5642966aa5600c80",
+  "production_authority": false,
+  "forecast_qualified": false,
+  "native_security_id": null,
+  "native_financial_packet": null,
+  "native_rights_receipt": null,
+  "native_lineage_receipt": null,
+  "reference_price": null,
+  "expected_return": null,
+  "recommendation": null,
+  "cases": [
+    {
+      "research_case_id": "MU-FY22Q4-NEXT",
+      "source_reported_issuer": {
+        "cik": "0000723125",
+        "symbol": "MU",
+        "namespace": "source_reported",
+        "canonical_security_id": null
+      },
+      "original": {
+        "source_id": "MU22Q4",
+        "source_entity": {
+          "cik": "0000723125",
+          "symbol": "MU",
+          "namespace": "source_reported",
+          "canonical_security_id": null
+        },
+        "period": "FY2023Q1",
+        "scope": "consolidated",
+        "basis": "US_GAAP",
+        "unit": "USD_m",
+        "kind": "numeric_range",
+        "version": "initial",
+        "revenue": {
+          "low": "4000",
+          "mid": "4250",
+          "high": "4500"
+        },
+        "gross_margin_fraction": {
+          "low": "0.23",
+          "mid": "0.25",
+          "high": "0.27"
+        },
+        "probability_coverage": null,
+        "analyst_consensus": false
+      },
+      "reported": {
+        "source_id": "MU23Q1",
+        "source_entity": {
+          "cik": "0000723125",
+          "symbol": "MU",
+          "namespace": "source_reported",
+          "canonical_security_id": null
+        },
+        "period": "FY2023Q1",
+        "scope": "consolidated",
+        "basis": "US_GAAP",
+        "revenue_m": "4085",
+        "gross_profit_m": "893",
+        "reported_gross_margin_fraction": "0.219",
+        "unit": "USD_m",
+        "native_labels": {
+          "gross_profit_m": "Gross margin (in millions)",
+          "reported_gross_margin_fraction": "percent of revenue"
+        }
+      },
+      "next_outlook": null,
+      "interpretation": "Revenue within range, margin below range; borrowing supported cash",
+      "derived": {
+        "revenue_error_m": "-165",
+        "gross_margin_error_bp": "-310.000",
+        "revenue_range_relation": "inside",
+        "gross_margin_range_relation": "below"
+      },
+      "investment_comparison_eligible": false
+    },
+    {
+      "research_case_id": "MU-FY24Q4-NEXT",
+      "source_reported_issuer": {
+        "cik": "0000723125",
+        "symbol": "MU",
+        "namespace": "source_reported",
+        "canonical_security_id": null
+      },
+      "original": {
+        "source_id": "MU24Q4",
+        "source_entity": {
+          "cik": "0000723125",
+          "symbol": "MU",
+          "namespace": "source_reported",
+          "canonical_security_id": null
+        },
+        "period": "FY2025Q1",
+        "scope": "consolidated",
+        "basis": "US_GAAP",
+        "unit": "USD_m",
+        "kind": "numeric_range",
+        "version": "initial",
+        "revenue": {
+          "low": "8500",
+          "mid": "8700",
+          "high": "8900"
+        },
+        "gross_margin_fraction": {
+          "low": "0.375",
+          "mid": "0.385",
+          "high": "0.395"
+        },
+        "probability_coverage": null,
+        "analyst_consensus": false
+      },
+      "reported": {
+        "source_id": "MU25Q1",
+        "source_entity": {
+          "cik": "0000723125",
+          "symbol": "MU",
+          "namespace": "source_reported",
+          "canonical_security_id": null
+        },
+        "period": "FY2025Q1",
+        "scope": "consolidated",
+        "basis": "US_GAAP",
+        "revenue_m": "8709",
+        "gross_profit_m": "3348",
+        "reported_gross_margin_fraction": "0.384",
+        "unit": "USD_m",
+        "native_labels": {
+          "gross_profit_m": "Gross margin (in millions)",
+          "reported_gross_margin_fraction": "percent of revenue"
+        }
+      },
+      "next_outlook": {
+        "source_id": "MU25Q1",
+        "source_entity": {
+          "cik": "0000723125",
+          "symbol": "MU",
+          "namespace": "source_reported",
+          "canonical_security_id": null
+        },
+        "period": "FY2025Q2",
+        "scope": "consolidated",
+        "basis": "US_GAAP",
+        "unit": "USD_m",
+        "kind": "numeric_range",
+        "version": "initial",
+        "revenue": {
+          "low": "7700",
+          "mid": "7900",
+          "high": "8100"
+        },
+        "gross_margin_fraction": {
+          "low": "0.365",
+          "mid": "0.375",
+          "high": "0.385"
+        },
+        "probability_coverage": null,
+        "analyst_consensus": false
+      },
+      "interpretation": "Revenue near guidance midpoint; next-quarter outlook lower",
+      "derived": {
+        "revenue_error_m": "9",
+        "gross_margin_error_bp": "-10.000",
+        "revenue_range_relation": "inside",
+        "gross_margin_range_relation": "inside"
+      },
+      "investment_comparison_eligible": false
+    }
+  ],
+  "sources": [
+    {
+      "id": "MU22Q4",
+      "title": "Micron FY2022 Q4 results",
+      "url": "https://investors.micron.com/news/press-release/2022/Micron-Technology-Inc--Reports-Results-for-the-Fourth-Quarter-and-Full-Year-of-Fiscal-2022-09-29-2022/default.aspx",
+      "published_date": "2022-09-29",
+      "public_interval": null,
+      "publication_precision": "date_timezone_unqualified",
+      "locator": "Quarterly financial results; Business Outlook: FQ1-23",
+      "source_kind": "issuer_primary",
+      "retrieved_date": "2026-09-27",
+      "raw_body_sha256": null,
+      "historical_system_recorded_at": null,
+      "rights": "Public research access observed; production redistribution/enrollment not established",
+      "first_dissemination_proven": false
+    },
+    {
+      "id": "MU23Q1",
+      "title": "Micron FY2023 Q1 results",
+      "url": "https://investors.micron.com/news/press-release/2022/Micron-Technology-Inc--Reports-Results-for-the-First-Quarter-of-Fiscal-2023-12-21-2022/default.aspx",
+      "published_date": "2022-12-21",
+      "public_interval": null,
+      "publication_precision": "date_timezone_unqualified",
+      "locator": "Quarterly results; cash-flow statement; GAAP/non-GAAP cash reconciliation",
+      "source_kind": "issuer_primary",
+      "retrieved_date": "2026-09-27",
+      "raw_body_sha256": null,
+      "historical_system_recorded_at": null,
+      "rights": "Public research access observed; production redistribution/enrollment not established",
+      "first_dissemination_proven": false
+    },
+    {
+      "id": "MU24Q4",
+      "title": "Micron FY2024 Q4 results",
+      "url": "https://micron.gcs-web.com/news-releases/news-release-details/micron-technology-inc-reports-results-fourth-quarter-and-full-7",
+      "published_date": "2024-09-25",
+      "public_interval": {
+        "start": "2024-09-25T20:07:00Z",
+        "end": "2024-09-25T20:08:00Z"
+      },
+      "publication_precision": "minute",
+      "locator": "Publisher header 4:07 PM EDT; Quarterly financial results; Business Outlook: FQ1-25",
+      "source_kind": "issuer_primary",
+      "retrieved_date": "2026-09-27",
+      "raw_body_sha256": null,
+      "historical_system_recorded_at": null,
+      "rights": "Public research access observed; production redistribution/enrollment not established",
+      "first_dissemination_proven": false
+    },
+    {
+      "id": "MU25Q1",
+      "title": "Micron FY2025 Q1 results",
+      "url": "https://micron.gcs-web.com/news-releases/news-release-details/micron-technology-inc-reports-results-first-quarter-fiscal-2025",
+      "published_date": "2024-12-18",
+      "public_interval": {
+        "start": "2024-12-18T21:02:00Z",
+        "end": "2024-12-18T21:03:00Z"
+      },
+      "publication_precision": "minute",
+      "locator": "Publisher header 4:02 PM EST; Quarterly financial results; Business Outlook: FQ2-25",
+      "source_kind": "issuer_primary",
+      "retrieved_date": "2026-09-27",
+      "raw_body_sha256": null,
+      "historical_system_recorded_at": null,
+      "rights": "Public research access observed; production redistribution/enrollment not established",
+      "first_dissemination_proven": false
+    }
+  ],
+  "census_summary": {
+    "expected_origins": 28,
+    "curated_pairs_in_R3": 3,
+    "not_collected": 25,
+    "selected_for_this_return": 2
+  },
+  "limitations": [
+    "Selection is diagnostic, not outcome-blind.",
+    "Sources were read now; historical system possession and retained original source bytes are unproved.",
+    "This is not a FIP packet, OpportunityCase, live reader result or cross-sector investment score.",
+    "Joint mathematical scenarios are separate fictional examples, not probabilities attached to these real cases."
+  ]
+}
