@@ -5,7 +5,7 @@
     "hourly_workflow_backstop": true,
     "repository": "mastermindx-market-intelligence/macro"
   },
-  "base_import_commit": "31981dc66e9a37419b5b7a6aecfde28808785d03",
+  "base_import_commit": "31981dc426f2e7fbb2b333f0fd73789f21deb8cd",
   "branch_creation_base_sha": "14055bf177fa83321447b55b1d823cd8047b3519",
   "capability": "collector-owned event-driven Research Vault ingest dispatch",
   "changes": [
