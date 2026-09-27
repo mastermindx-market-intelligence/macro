@@ -120,27 +120,30 @@
 <div class="mx-error" role="alert">
   <b>!</b>
   <span>
-    <span class="l-en">The board didn’t load. Candidates, Groups and the record below are current.</span>
-    <span class="l-zh">看板未能加载。下方的候选、板块与战绩仍是最新。</span>
+    <span class="l-en">Tracking unavailable. Check the dates on Candidates and the record below.</span>
+    <span class="l-zh">跟踪暂不可用。请核对候选与下方记录各自的日期。</span>
     <button type="button" class="ladder-clear" style="min-height:40px;min-width:40px;margin-top:6px" onclick="location.reload()">{{ t('Retry', '重试') }}</button>
   </span>
 </div>
 {%- elif not book %}
-<div class="ladder-headline"><span class="skel sk-head" aria-hidden="true"></span><span class="ladder-nl">{{ t('live setups today','个跟踪中计划') }}</span></div>
+<div class="ladder-headline"><span class="skel sk-head" aria-hidden="true"></span><span class="ladder-nl">{{ t('unresolved setups','个未结跟踪计划') }}</span></div>
 <div class="mx-ladder mx-ladder--board" role="group" aria-busy="true" aria-label="Lifecycle counts loading">
   {% for k in _CELLS_LIVE %}
   <div class="mx-cell{% if loop.last %} mx-cell--last-live{% endif %}"><span class="mx-cap mx-cap--{{ k }}" aria-hidden="true"></span><span class="skel sk-n" aria-hidden="true"></span><span class="mx-cell-l">{{ t(_LEX_EN[k], _LEX_ZH[k]) }}</span></div>
   {% endfor %}
   <div class="mx-ladder-gap" aria-hidden="true"></div>
   <div class="mx-cell mx-cell--term"><span class="mx-cap mx-cap--resolved" aria-hidden="true"></span><span class="skel sk-n" aria-hidden="true"></span><span class="mx-cell-l">{{ t(_LEX_EN.resolved, _LEX_ZH.resolved) }}</span></div>
-  <div class="ladder-termnote">{{ t('not in today’s count', '不计入上方总数') }}</div>
+  <div class="ladder-termnote">{{ t('outside the unresolved total', '不计入未结总数') }}</div>
 </div>
 {%- else -%}
 {%- set _counts = book.get('lifecycle_counts') or {} -%}
 {%- set _live_total = book.get('lifecycle_live_total') or 0 -%}
+{%- set _book_rows = book.get('active_count') -%}
+{%- set _declared_rows = book.get('plan_count') -%}
+{%- set _archived_rows = (_declared_rows - _book_rows) if (_book_rows is number and _book_rows is not boolean and _declared_rows is number and _declared_rows is not boolean and _declared_rows >= _book_rows) else none -%}
 {%- set _watch_present = 'early_turn_watch' in (book.get('intake') or {}) -%}
 {%- set _published = _CELLS_LIVE|length - (0 if _watch_present else 1) -%}
-<div class="ladder-headline"><span class="ladder-n fig">{{ _live_total }}</span><span class="ladder-nl">{{ t('live setups today','个跟踪中计划') }}</span><span class="ladder-sub">{{ t('the ' ~ _NUMWORD.get(_published, _published) ~ ' published cells below add up to this number', '下方 ' ~ _published ~ ' 个已发布状态合计') }}</span></div>
+<div class="ladder-headline"><span class="ladder-n fig">{{ _live_total }}</span><span class="ladder-nl">{{ t('unresolved setups','个未结跟踪计划') }}</span><span class="ladder-sub">{{ t('the ' ~ _NUMWORD.get(_published, _published) ~ ' published cells below add up to this number', '下方 ' ~ _published ~ ' 个已发布状态合计') }}</span></div>
 <div class="mx-ladder mx-ladder--board" role="group" aria-label="Filter setups by lifecycle" id="us-life-ladder">
   {% for k in _CELLS_LIVE %}
   {%- set _absent = (k == 'watch') and not _watch_present -%}
@@ -157,7 +160,7 @@
     <span class="mx-cell-n fig">{{ _counts.get('resolved') or 0 }}</span>
     <span class="mx-cell-l">{{ t(_LEX_EN.resolved, _LEX_ZH.resolved) }}</span>
   </button>
-  <div class="ladder-termnote">{{ t('not in today’s count', '不计入上方总数') }}</div>
+  <div class="ladder-termnote">{{ t('outside the unresolved total', '不计入未结总数') }}</div>
 </div>
 {%- if not _watch_present %}
 {#- Repair round, finding S5: the ZH string must be MP-1 §10's ratified
@@ -166,14 +169,14 @@
 <p class="ladder-absence"><span class="mx-mark mx-mark--watch" aria-hidden="true"></span>{{ t('Watch tier publishes from the next nightly.', '观察档自下一次夜间构建起发布。') }}</p>
 {%- endif %}
 <div class="ladder-foot">
-  <span>{{ t('Sorted by priority — how ready a setup is today, not how likely it is to win.', '按优先级排序 — 数值越高表示越接近可操作，并不代表胜率更高。') }}
-  <span class="help">?<span class="tip tip-wide"><span class="l-en">Each cell counts plan rows — one row per tracked commitment, so a name traded twice appears twice. Watch counts names with a live signal and no open plan yet. The six live cells add up to the headline; Resolved sits outside it, because a closed plan is record rather than inventory.</span><span class="l-zh">每一格统计的是「计划」条目——每条对应一次独立的跟踪，因此同一只股票若有两次操作，就会出现两次。「观察」统计的是已有信号、但尚未建立计划的股票。6 个状态相加等于标题数字；「已结」不计入其中，因为已平仓的计划属于历史战绩，不是当前持仓。</span></span></span></span>
+  <span>{{ t('Ordered by original priority — not a current entry recommendation.', '按建立时优先级排序 — 并非当前入场建议。') }}
+  <span class="help">?<span class="tip tip-wide"><span class="l-en">Each cell counts plan rows — one row per tracked commitment, so a name traded twice appears twice. Watch counts names with a live signal and no open plan yet. The six live cells add up to the headline; Resolved sits outside it, because a closed plan is record rather than inventory.{% if _archived_rows is number and _archived_rows > 0 %} This plan book contains {{ _book_rows }} effective plan rows; {{ _archived_rows }} archived plan publications remain outside this lifecycle book for record integrity.{% endif %}</span><span class="l-zh">每一格统计的是「计划」条目——每条对应一次独立的跟踪，因此同一只股票若有两次操作，就会出现两次。「观察」统计的是已有信号、但尚未建立计划的股票。6 个状态相加等于标题数字；「已结」不计入其中，因为已平仓的计划属于历史战绩，不是当前持仓。{% if _archived_rows is number and _archived_rows > 0 %} 当前计划簿包含 {{ _book_rows }} 条有效计划记录；另有 {{ _archived_rows }} 条已归档计划发布记录因记录完整性保留在此生命周期视图之外。{% endif %}</span></span></span></span>
   <button type="button" class="ladder-clear" id="us-life-clear" data-life="" hidden>{{ t('Clear filter','清除筛选') }}</button>
 </div>
 {%- endif %}
 {% endmacro %}
 
-{% macro pv_css() %}
+{% macro pv_css(setup_detail=false) %}
 <style>
 .pvcard{position:relative;display:flex;flex-direction:column;background:var(--panel2);border:1px solid var(--line);border-radius:12px;overflow:hidden;text-decoration:none;color:var(--text);min-width:0;transition:transform .12s,box-shadow .12s,border-color .12s}
 .pvcard:hover{transform:translateY(-2px);box-shadow:0 5px 18px rgba(0,0,0,.22);border-color:color-mix(in srgb,var(--pvh) 55%,var(--line))}
@@ -569,7 +572,14 @@ html[data-theme="light"] .pv-live{--plvc:#2f6fd0}
      because a phone is where 9.5px stops being readable. */
   .pv-mk-i{font-size:10px;padding:2px 7px}
 }
-</style>
+{% if setup_detail is sameas true %}/* Opt-in Prophet detail. Existing non-opted card geometry/semantics are unchanged. */
+.pvcard.pv-has-setup{position:relative}.pv-setup-stock-link{position:absolute;inset:0;z-index:4;border-radius:inherit}.pv-setup-inline{position:relative;z-index:5;margin-top:10px}.pv-setup-inline>summary{width:fit-content;cursor:pointer;border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:7px 10px;color:var(--text);font-size:12px;list-style:none;background:var(--panel2,var(--panel))}.pv-setup-inline>summary:focus-visible,.pv-setup-stock-link:focus-visible{outline:2px solid var(--link);outline-offset:2px}.pv-setup-inline[open]{z-index:6}.pv-setup-inline[open]>.pv-setup-body{margin-top:12px}
+.pvs-availability{font-size:12px;line-height:1.5;padding:10px 12px;border-inline-start:2px solid var(--muted);background:var(--panel2,var(--panel));color:var(--muted)}.pvs-audit{margin:14px 0;border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:0 12px}.pvs-audit>summary{padding:12px 0;cursor:pointer;color:var(--text);font-size:12px;font-weight:650}.pvs-audit>summary:focus-visible{outline:2px solid var(--link);outline-offset:3px}.pvs-audit>.pvs-section:last-child{border-bottom:0}
+.pv-setup-body,.pv-setup-body *{box-sizing:border-box}.pvs-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:22px}.pvs-grid>div{min-width:0}.pvs-section{padding:14px 0;border-bottom:1px solid var(--line)}.pvs-section h3{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}.pvs-section p{line-height:1.55;margin:8px 0;overflow-wrap:anywhere}.pvs-note{font-size:12px;color:var(--muted)}.pvs-read{font-size:16px;font-weight:750;color:var(--text)}.pvs-levels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:0}.pvs-levels .pvs-field{padding:10px;background:var(--panel2,var(--panel));border:1px solid var(--line);border-radius:var(--r-ctl,8px)}.pvs-field dt{font-size:11px;color:var(--muted);margin-bottom:4px}.pvs-field dd{margin:0;font-size:14px;color:var(--text);overflow-wrap:anywhere}.pvs-levels dd{font-size:17px;font-weight:750}.pvs-facts{margin:0}.pvs-facts .pvs-field{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--line)}.pvs-facts dt{flex:1}.pvs-facts dd{flex:1;text-align:right;font-size:12px}.pvs-chart-slot{background:var(--panel2,var(--panel));border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:12px;margin:14px 0}.pvs-chart-slot>svg{display:block;width:100%;height:150px}.pvs-chart-slot>p{font-size:10px;color:var(--muted);margin:8px 0 0}
+html.pv-setup-lock{overflow:hidden}.pv-setup-dialog{box-sizing:border-box;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);color:var(--text);width:min(1040px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:0;overflow:auto;overscroll-behavior:contain;box-shadow:0 18px 60px #0004}.pv-setup-dialog::backdrop{background:#0008}.pv-setup-dialog *{box-sizing:border-box}.pvs-dialog-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;position:sticky;top:0;padding:18px 22px;border-bottom:1px solid var(--line);background:var(--panel);z-index:8}.pvs-dialog-head h2{font-size:23px;line-height:1.2;margin:0;overflow-wrap:anywhere}.pvs-dialog-head p{font-size:12px;color:var(--muted);margin:5px 0}.pvs-close{border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:8px 12px;background:var(--panel2,var(--panel));color:var(--text);cursor:pointer}.pvs-close:focus-visible,.pvs-native-link:focus-visible{outline:2px solid var(--link);outline-offset:2px}.pvs-dialog-content{padding:4px 22px 20px}.pvs-dialog-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;font-size:12px}.pvs-native-link{color:var(--link)}.pvs-dialog-content>.pv-setup-body{margin:0}.pv-setup-dialog .pv-record-detail{position:static!important}
+@media(max-width:680px){.pvs-grid{grid-template-columns:1fr;gap:0}.pv-setup-dialog{width:calc(100vw - 16px);max-height:calc(100dvh - 16px)}.pvs-dialog-head{padding:16px}.pvs-dialog-content{padding:0 16px 16px}.pvs-dialog-foot{padding:12px 16px;flex-wrap:wrap}.pvs-levels{gap:7px}.pvs-levels dd{font-size:15px}.pvs-chart-slot>svg{height:120px}}
+
+{% endif %}</style>
 {% endmacro %}
 
 {% macro pv_card(cx, allow_no_read=false) %}
@@ -586,12 +596,18 @@ html[data-theme="light"] .pv-live{--plvc:#2f6fd0}
     explicitly opts in AND passes a verb that fails the `_VEN` membership test
     (i.e. `cx.verb` is None/absent — the no_read basis from us_stance_projection())
     takes the new branch. -#}
+{#- record_only is a historical presentation, not a verdict or missing read.
+    Reuse neutral ink without the data-noread absence marker. Every ordinary
+    caller retains its prior bytes and meaning. -#}
+{%- set _record_only = cx.get('record_only') is sameas true -%}
+{%- set _setup = cx.get('setup_detail') if cx.get('setup_detail') is string else none -%}
+{%- set _article = _record_only or _setup -%}
 {%- set _no_read = allow_no_read and (cx.verb not in _VEN) -%}
 {%- set _verb = 'wait' if _no_read else (cx.verb if cx.verb in _VEN else 'wait') -%}
 {%- set _stage = cx.get('stage') or 0 -%}
-<a class="pvcard{% if _no_read %} pv-noread{% else %} pv-{{ _verb }}{% endif %}{% if cx.get('featured') %} pv-featured{% elif cx.get('triage') %} pv-triage{% endif %}" href="{{ cx.href|e }}"{% if cx.get('id') %} id="pv-{{ cx.id|e }}"{% endif %} data-ticker="{{ cx.tk|e }}"{% if cx.get('life') %} data-life="{{ cx.life|e }}"{% endif %}{% if cx.get('stage_key') %} data-stage="{{ cx.stage_key|e }}"{% endif %}{% if cx.get('stance_basis') %} data-tip-en="{{ cx.get('stance_tip_en') or ('Stance source: ' ~ cx.stance_basis) }}" data-tip-zh="{{ cx.get('stance_tip_zh') or ('依据来源：' ~ cx.stance_basis) }}"{% endif %}>
-  <div class="pv-chart">
-    {% if cx.get('spark') %}{{ cx.spark|safe }}{% else %}<div class="pv-nochart"></div>{% endif %}
+{% if _article %}<article{% else %}<a{% endif %} class="pvcard{% if _setup %} pv-has-setup{% endif %}{% if _record_only %} pv-noread pv-record{% elif _no_read %} pv-noread{% else %} pv-{{ _verb }}{% endif %}{% if not _record_only and cx.get('featured') %} pv-featured{% elif not _record_only and cx.get('triage') %} pv-triage{% endif %}"{% if not _article %} href="{{ cx.href|e }}"{% endif %}{% if _record_only %} data-record-only="1"{% endif %}{% if cx.get('id') %} id="pv-{{ cx.id|e }}"{% endif %} data-ticker="{{ cx.tk|e }}"{% if cx.get('life') %} data-life="{{ cx.life|e }}"{% endif %}{% if not _record_only and cx.get('stage_key') %} data-stage="{{ cx.stage_key|e }}"{% endif %}{% if cx.get('stance_basis') %} data-tip-en="{{ cx.get('stance_tip_en') or ('Stance source: ' ~ cx.stance_basis) }}" data-tip-zh="{{ cx.get('stance_tip_zh') or ('依据来源：' ~ cx.stance_basis) }}"{% endif %}>
+  {% if _record_only %}<a class="pv-record-link" href="{{ cx.href|e }}" aria-label="{{ cx.tk|e }}" style="position:absolute;inset:0;z-index:4;border-radius:var(--r-card,12px)"></a>{% endif %}{% if _setup and not _record_only %}<a class="pv-setup-stock-link" href="{{ cx.href|e }}" aria-label="{{ cx.tk|e }}"></a>{% endif %}<div class="pv-chart">
+    {% if cx.get('spark') %}{{ cx.spark|safe }}{% else %}<div class="pv-nochart"{% if _record_only %} data-chart-state="unavailable" style="box-sizing:border-box;height:44px;display:flex;align-items:flex-end;justify-content:flex-end;padding:0 9px 7px;color:var(--muted);font-size:9.5px;font-weight:700;letter-spacing:.02em"{% endif %}>{% if _record_only %}<span class="l-en">Chart unavailable</span><span class="l-zh">图表暂缺</span>{% endif %}</div>{% endif %}
     <span class="pv-ov pv-ovl">
       {#- NO popover on the verb chip (operator 2026-08-05, extending the 2026-08-03
           removal). BUY/WAIT/NEAR is a one-word ruling and the card already spells out
@@ -601,8 +617,8 @@ html[data-theme="light"] .pv-live{--plvc:#2f6fd0}
           still accepted by callers; they are simply not rendered. Same call for .pv-edge
           and the feat/new marks below. The ⚡ trigger tip and the ⚠N popover STAY: those
           carry facts that appear nowhere else on the card. -#}
-      <span class="pv-chip"{% if _no_read %} data-noread="1"{% endif %}>{% if _no_read %}{{ t('No read yet', '暂无读数') }}{% else %}{{ t(_VEN[_verb], _VZH[_verb]) }}{% endif %}</span>
-      {%- if cx.get('trigger') %}{% set _tg = cx.trigger %}
+      <span class="pv-chip"{% if _no_read and not _record_only %} data-noread="1"{% endif %}>{% if _record_only %}{{ t('Tracking only', '仅作跟踪') }}{% elif _no_read %}{{ t('No read yet', '暂无读数') }}{% else %}{{ t(_VEN[_verb], _VZH[_verb]) }}{% endif %}</span>
+      {%- if not _record_only and cx.get('trigger') %}{% set _tg = cx.trigger %}
       <span class="pv-trg{% if _tg.kind == 'imminent' %} pv-trg-soon{% endif %}"{% if _tg.get('tip_en') %} data-tip-en="{{ _tg.tip_en|e }}" data-tip-zh="{{ (_tg.get('tip_zh') or _tg.tip_en)|e }}"{% endif %}>⚡ {% if _tg.kind == 'imminent' %}{{ t('Imminent','即将触发') }}{% else %}{{ t('Triggered','已触发') }}{% endif %}</span>
       {%- endif %}
       {#- PROPHET LIVE P1 (spec §5.2): reserved, always-present, EMPTY slot for the ◐ live
@@ -611,27 +627,27 @@ html[data-theme="light"] .pv-live{--plvc:#2f6fd0}
           .pvcard[data-ticker]. `hidden` + the .pv-live[hidden] rule in pv_css() means zero
           width and zero layout change when there is no live state, which is every card on
           every non-us_stocks board and most cards here. #}
-      <span class="pv-live" hidden></span>
-      {%- if cx.get('flags') %}
+      {% if not _record_only %}<span class="pv-live" hidden></span>{% endif %}
+      {%- if not _record_only and cx.get('flags') %}
       <span class="pv-cau"><button class="pv-cau-btn" type="button" aria-label="Caution notes ({{ cx.flags|length }})" onclick="event.preventDefault();event.stopPropagation();this.focus()">⚠ {{ cx.flags|length }}</button><span class="pv-cau-pop" role="tooltip"><span class="pv-cau-hd">{{ t('Before you act','动手之前') }}</span>{% for _f in cx.flags %}<span class="pv-cau-row">{{ t(_f[0], _f[1]) }}</span>{% endfor %}</span></span>
       {%- endif %}
     </span>
-    {% if cx.get('price_txt') %}<span class="pv-ov pv-ovr">{% if cx.get('show_change') %}<span class="pv-quote"><span class="nb-px pv-px" data-sym="{{ (cx.get('sym') or cx.tk)|e }}" data-mkt="{{ cx.mkt|e }}">{{ cx.price_txt }}</span><span class="nb-chg pv-chg" data-sym="{{ (cx.get('sym') or cx.tk)|e }}" data-mkt="{{ cx.mkt|e }}">—</span></span>{% else %}<span class="nb-px pv-px" data-sym="{{ (cx.get('sym') or cx.tk)|e }}" data-mkt="{{ cx.mkt|e }}">{{ cx.price_txt }}</span>{% endif %}</span>{% endif %}
+    {% if not _record_only and cx.get('price_txt') %}<span class="pv-ov pv-ovr">{% if cx.get('show_change') %}<span class="pv-quote"><span class="nb-px pv-px" data-sym="{{ (cx.get('sym') or cx.tk)|e }}" data-mkt="{{ cx.mkt|e }}">{{ cx.price_txt }}</span><span class="nb-chg pv-chg" data-sym="{{ (cx.get('sym') or cx.tk)|e }}" data-mkt="{{ cx.mkt|e }}">—</span></span>{% else %}<span class="nb-px pv-px" data-sym="{{ (cx.get('sym') or cx.tk)|e }}" data-mkt="{{ cx.mkt|e }}">{{ cx.price_txt }}</span>{% endif %}</span>{% endif %}
   </div>
   <div class="pv-bd">
     <div class="pv-hd">
       <span class="pv-idw">{% if cx.get('flag') %}<span class="pv-flg">{{ cx.flag }}</span>{% endif %}<span class="pv-tk">{{ cx.tk }}</span>{% if cx.get('name') %}<span class="pv-nm">{{ t(cx.name, cx.get('name_zh') or cx.name) }}</span>{% endif %}</span>
-      <span class="pv-edge"><span class="pv-edl">{{ t(cx.get('edge_label_en') or 'Edge', cx.get('edge_label_zh') or '优势') }}</span>{% if cx.get('edge') is not none %}<span class="pv-edn">{{ cx.edge }}</span>{% elif cx.get('edge_txt') %}<span class="pv-edn">{{ cx.edge_txt }}</span>{% else %}<span class="pv-edn pv-edna">—</span>{% endif %}</span>
+      {% if not _record_only %}<span class="pv-edge"><span class="pv-edl">{{ t(cx.get('edge_label_en') or 'Edge', cx.get('edge_label_zh') or '优势') }}</span>{% if cx.get('edge') is not none %}<span class="pv-edn">{{ cx.edge }}</span>{% elif cx.get('edge_txt') %}<span class="pv-edn">{{ cx.edge_txt }}</span>{% else %}<span class="pv-edn pv-edna">—</span>{% endif %}</span>{% endif %}
     </div>
     {% if cx.get('sec') %}<div class="pv-ind">{{ t(cx.sec, cx.get('sec_zh') or cx.sec) }}</div>{% endif %}
-    {%- if cx.get('lane_mark') %}{% set _lm = cx.lane_mark %}<span class="pv-mark" tabindex="0" data-tip-en="{{ _lm.tip_en|e }}" data-tip-zh="{{ (_lm.get('tip_zh') or _lm.tip_en)|e }}">{{ t(_lm.en, _lm.get('zh') or _lm.en) }}</span>{% endif %}
+    {%- if not _record_only and cx.get('lane_mark') %}{% set _lm = cx.lane_mark %}<span class="pv-mark" tabindex="0" data-tip-en="{{ _lm.tip_en|e }}" data-tip-zh="{{ (_lm.get('tip_zh') or _lm.tip_en)|e }}">{{ t(_lm.en, _lm.get('zh') or _lm.en) }}</span>{% endif %}
     {%- if cx.get('marks') is not none %}
     {#- FEATURED and NEW carry no popover (operator 2026-08-05): both are badges whose
         whole job is to be read at a glance, and their explainers were the longest cards
         on the board. Marks that genuinely name something the reader cannot infer (warm,
         theme, lane) keep theirs. -#}
     {%- set _MK_NOTIP = ('feat', 'new') -%}
-    <div class="pv-mk">{% for _mk in cx.marks %}{% set _mkk = _mk.get('k') or 'lane' %}<span class="pv-mk-i pv-mk-{{ _mkk }}"{% if _mk.get('tip_en') and _mkk not in _MK_NOTIP %} data-tip-en="{{ _mk.tip_en|e }}" data-tip-zh="{{ (_mk.get('tip_zh') or _mk.tip_en)|e }}"{% endif %}>{{ t(_mk.en, _mk.get('zh') or _mk.en) }}</span>{% endfor %}</div>
+    <div class="pv-mk">{% for _mk in cx.marks if not _record_only or _mk.get('k') not in ('feat', 'new') %}{% set _mkk = _mk.get('k') or 'lane' %}<span class="pv-mk-i pv-mk-{{ _mkk }}"{% if _record_only %} style="white-space:normal;overflow:visible;text-overflow:clip"{% endif %}{% if _mk.get('tip_en') and _mkk not in _MK_NOTIP %} data-tip-en="{{ _mk.tip_en|e }}" data-tip-zh="{{ (_mk.get('tip_zh') or _mk.tip_en)|e }}"{% endif %}>{{ t(_mk.en, _mk.get('zh') or _mk.en) }}</span>{% endfor %}</div>
     {%- endif %}
     {#- P-MP1-SHELL §6 (ruling §10.1): on the lifecycle-sourced call path
         (cx.lifecycle present), the 4-dot Bottoming/Turning/Ready/Trend rail is
@@ -640,15 +656,45 @@ html[data-theme="light"] .pv-live{--plvc:#2f6fd0}
         that omits `lifecycle` keeps the 4-dot rail byte-identical
         (§12 acceptance item 3). -#}
     {%- if cx.get('lifecycle') %}{% set _lc = cx.lifecycle %}
-    <div class="pv-life"><span class="mx-mark mx-mark--{{ _lc.state|e }}" aria-hidden="true"></span><span class="pv-life-w">{{ t(_lc.label_en, _lc.label_zh) }}</span>{% if _lc.get('newer') %}<a class="pv-newer" href="#pv-{{ _lc.newer|e }}">{{ t('Newer plan on this name →', '该股最新计划 →') }}</a>{% endif %}</div>
+    <div class="pv-life"{% if _record_only %} style="flex-wrap:wrap"{% endif %}><span class="mx-mark mx-mark--{{ _lc.state|e }}" aria-hidden="true"></span><span class="pv-life-w">{{ t(_lc.label_en, _lc.label_zh) }}</span>{% if _lc.get('newer') %}<a class="pv-newer"{% if _record_only %} style="position:relative;z-index:5;white-space:normal;overflow:visible;text-overflow:clip"{% endif %} href="#pv-{{ _lc.newer|e }}">{{ t('Newer plan on this name →', '该股最新计划 →') }}</a>{% endif %}</div>
+    {%- elif _record_only %}
+    <div class="pv-life"><span class="pv-life-w">{{ t('State unavailable','状态暂缺') }}</span></div>
     {%- else %}
     <div class="pv-stp">{% for _i in [1,2,3,4] %}{% if _i > 1 %}<span class="pv-seg{% if _stage >= _i %} pa{% endif %}"></span>{% endif %}<span class="pv-dot{% if _stage == _i %} on{% elif _stage > _i %} pa{% endif %}"></span>{% endfor %}</div>
     <div class="pv-stl"><span{% if _stage == 1 %} class="on"{% endif %}>{{ t('Bottoming','筑底') }}</span><span{% if _stage == 2 %} class="on"{% endif %}>{{ t('Turning','转向') }}</span><span{% if _stage == 3 %} class="on"{% endif %}>{{ t('Ready','就绪') }}</span><span{% if _stage == 4 %} class="on"{% endif %}>{{ t('Trend','趋势') }}</span></div>
     {%- endif %}
+    {%- if _setup %}<details class="pv-setup-inline"><summary>{{ t('Setup detail','形态详情') }}</summary>{{ _setup }}</details>{% endif %}
+    {%- if _record_only and cx.get('record_detail') %}{% set _rd = cx.record_detail %}
+    <details class="pv-record-detail" data-plan-id="{{ _rd.plan_id|e }}" style="position:relative;z-index:5;margin-top:7px;border-top:1px dashed var(--line);padding-top:6px">
+      <summary style="cursor:pointer;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);min-height:24px;display:flex;align-items:center;gap:5px">{{ t('Plan details','计划详情') }}</summary>
+      <div style="padding:5px 0 1px;display:grid;gap:5px;color:var(--muted);font-size:10px;line-height:1.45">
+        <div>{{ t('System model plan — not your holdings or fills.','系统模型计划——并非您的实际持仓或成交。') }}</div>
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:5px 10px">
+          <span><b style="color:var(--text)">{{ t('Plan ID','计划 ID') }}</b><br>{{ _rd.plan_id|e }}</span>
+          <span><b style="color:var(--text)">{{ t('Plan created','计划建立') }}</b><br>{{ _rd.created_date|e if _rd.created_date else t('Unavailable','暂缺') }}</span>
+          <span><b style="color:var(--text)">{{ t('Current lifecycle','当前生命周期') }}</b><br>{{ t(_rd.lifecycle_en, _rd.lifecycle_zh) }}</span>
+          <span><b style="color:var(--text)">{{ t('Horizon','周期') }}</b><br>{% if _rd.horizon_days is number and _rd.horizon_days is not boolean %}{{ _rd.horizon_days|int }} {{ t('days','天') }}{% else %}{{ t('Unavailable','暂缺') }}{% endif %}</span>
+          <span><b style="color:var(--text)">{{ t('Original entry','原始入场') }}</b><br>{% if _rd.entry is number and _rd.entry is not boolean %}${{ '%.2f'|format(_rd.entry) }}{% else %}{{ t('Unavailable','暂缺') }}{% endif %}</span>
+          <span><b style="color:var(--text)">{{ t('Original invalidation','原始失效位') }}</b><br>{% if _rd.invalidation is number and _rd.invalidation is not boolean %}${{ '%.2f'|format(_rd.invalidation) }}{% else %}{{ t('Unavailable','暂缺') }}{% endif %}</span>
+          <span><b style="color:var(--text)">{{ t('Original T1','原始 T1') }}</b><br>{% if _rd.t1 is number and _rd.t1 is not boolean %}${{ '%.2f'|format(_rd.t1) }}{% else %}{{ t('Unavailable','暂缺') }}{% endif %}</span>
+          <span><b style="color:var(--text)">{{ t('Original T2','原始 T2') }}</b><br>{% if _rd.t2 is number and _rd.t2 is not boolean %}${{ '%.2f'|format(_rd.t2) }}{% else %}{{ t('Unavailable','暂缺') }}{% endif %}</span>
+        </div>
+        {% if _rd.pulse_en %}<div><b style="color:var(--text)">{{ t('Published plan read','已发布计划读数') }}</b><br>{{ t(_rd.pulse_en|e, (_rd.pulse_zh or _rd.pulse_en)|e) }}</div>{% endif %}
+        <div>{{ t('This record preserves model-plan terms; it does not restate management actions or infer a user position.','此记录保留模型计划条款；不会复述管理操作，也不会推断用户持仓。') }}</div>
+        {% if _rd.action_unavailable is sameas true %}<div data-action-state="unavailable">{{ t('Action guidance unavailable.','操作指引暂缺。') }}</div>{% endif %}
+        {% if _rd.history_available is sameas false %}<div data-history-state="unavailable"><b style="color:var(--text)">{{ t('Outcome history','结果历史') }}</b><br>{{ t('Not connected in this view yet.','此视图暂未接入。') }}</div>{% endif %}
+        {% if not _rd.management_available %}<div>{{ t('Management state unavailable for this record.','此记录的管理状态暂缺。') }}</div>{% endif %}
+      </div>
+    </details>
+    {%- endif %}
   </div>
   <div class="pv-zn">
     {%- set _zk = cx.get('zone_kind') or 'none' -%}
-    {%- if _zk == 'active' -%}
+    {%- if _record_only -%}
+    {%- if cx.get('zone_lo') and cx.get('zone_hi') -%}
+    <span class="pv-znl">{{ t('Original zone','原始区间') }}</span><span class="pv-znm">{{ cx.zone_lo|e }}{% if cx.zone_hi != cx.zone_lo %}–{{ cx.zone_hi|e }}{% endif %}</span>
+    {%- else -%}<span class="pv-znm">{{ t('Original zone unavailable','原始区间暂缺') }}</span>{%- endif -%}
+    {%- elif _zk == 'active' -%}
     <span class="pv-znl">{{ t('Zone','买区') }}</span><span class="pv-znr">{{ cx.zone_lo }}{% if cx.get('zone_hi') and cx.zone_hi != cx.zone_lo %}–{{ cx.zone_hi }}{% endif %}</span>
     {%- elif _zk == 'muted' -%}
     <span class="pv-znl">{{ t('Zone','买区') }}</span><span class="pv-znm">{{ cx.zone_lo }}{% if cx.get('zone_hi') and cx.zone_hi != cx.zone_lo %}–{{ cx.zone_hi }}{% endif %}</span>
@@ -662,7 +708,11 @@ html[data-theme="light"] .pv-live{--plvc:#2f6fd0}
     <span class="pv-znm">{{ t('No zone — stand aside','无买区 — 观望') }}</span>
     {%- endif -%}
     {%- set _d = cx.get('date') -%}
-    {%- if _d and _d|length >= 10 %}<span class="pv-dt">{{ t(_MN.get(_d[5:7], _d[5:7]) ~ ' ' ~ (_d[8:10]|int), _d[5:10]) }}</span>{% endif %}
+    {%- if _record_only -%}
+    {%- if _d is string and _d|length == 10 and _d[4] == '-' and _d[7] == '-' and _d[:4].isdigit() and _d[5:7] in _MN and _d[8:10].isdigit() and 1 <= _d[8:10]|int <= 31 -%}
+    <span class="pv-added" data-created="{{ _d|e }}">{{ t('Created ' ~ _MN[_d[5:7]] ~ ' ' ~ (_d[8:10]|int), '建立 ' ~ _d[5:10]) }}</span>
+    {%- else -%}<span class="pv-added">{{ t('Creation date unavailable','建立日期暂缺') }}</span>{%- endif -%}
+    {%- elif _d and _d|length >= 10 %}<span class="pv-dt">{{ t(_MN.get(_d[5:7], _d[5:7]) ~ ' ' ~ (_d[8:10]|int), _d[5:10]) }}</span>{% endif %}
     {#- Added / 入榜 — current continuous published-board membership start
         (engine/prophet_board_since.py). STRICT ISO gate: anything shorter or
         longer than exactly 10 chars, or not matching the YYYY-MM-DD shape at
@@ -672,7 +722,7 @@ html[data-theme="light"] .pv-live{--plvc:#2f6fd0}
         and null is silent here by design (frozen spec: "unknown/unprovable ⇒
         None and NO chip"). -#}
     {%- set _ad = cx.get('added_date') -%}
-    {%- if _ad and _ad|length == 10 and _ad[4] == '-' and _ad[7] == '-' %}<span class="pv-added" data-added="{{ _ad|e }}" data-tip-en="On the Prophet board continuously since this date. If the name leaves and later returns, this date resets." data-tip-zh="自该日起持续在 Prophet 榜上；若离榜后重新上榜，此日期将重新计算。">{{ t('Added ' ~ _MN.get(_ad[5:7], _ad[5:7]) ~ ' ' ~ (_ad[8:10]|int), '入榜 ' ~ _ad[5:10]) }}</span>{% endif %}
+    {%- if not _record_only and _ad and _ad|length == 10 and _ad[4] == '-' and _ad[7] == '-' %}<span class="pv-added" data-added="{{ _ad|e }}" data-tip-en="On the Prophet board continuously since this date. If the name leaves and later returns, this date resets." data-tip-zh="自该日起持续在 Prophet 榜上；若离榜后重新上榜，此日期将重新计算。">{{ t('Added ' ~ _MN.get(_ad[5:7], _ad[5:7]) ~ ' ' ~ (_ad[8:10]|int), '入榜 ' ~ _ad[5:10]) }}</span>{% endif %}
   </div>
-</a>
+{% if _article %}</article>{% else %}</a>{% endif %}
 {% endmacro %}

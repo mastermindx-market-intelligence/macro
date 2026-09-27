@@ -1,4 +1,5 @@
 {% autoescape true %}
+{% import '_prophet_setup_detail.html.j2' as psd %}
 {# The existing eligible pool, not another recommendation list or admission rule. #}
 {% set _why = {
   'sector_cap_overflow': ('Sector display limit reached', '达到板块展示上限'),
@@ -32,6 +33,8 @@
   <div class="ucp-decision">
     <span class="ucp-placement">{% if row.in_buy_lane %}<span class="l-en">On main list</span><span class="l-zh">主榜标的</span>{% else %}<span class="l-en">Outside main list</span><span class="l-zh">主榜之外</span>{% endif %}</span>
     <span class="l-en">{{ _copy[0] }}</span><span class="l-zh">{{ _copy[1] }}</span>
+    <button type="button" class="ucp-context-btn" data-ucp-context="{{ row.ticker|e }}"><span class="l-en">Company context</span><span class="l-zh">公司信息</span></button>
+    {{ psd.action(psd.body(row, 'pool', setup_as_of if setup_as_of is defined else (us_candidate_visibility.get('as_of') if us_candidate_visibility is defined and us_candidate_visibility is mapping else none))) }}
     <details class="ucp-receipt"><summary><span class="l-en">Decision record</span><span class="l-zh">决策记录</span></summary>
       <span class="l-en">Screen position</span><span class="l-zh">筛选位置</span> {{ row.get('pool_rank') if row.get('pool_rank') is not none else '—' }}
       {% if row.get('tier_cascade') %} · <span class="l-en">Signal</span><span class="l-zh">信号</span> {{ row.tier_cascade }}{% endif %}

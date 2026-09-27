@@ -100,6 +100,133 @@ def test_a_data_prophet_src_defaults_candidates_when_su_present():
     assert 'data-src="candidates"' in html and 'data-src="plans"' in html
 
 
+def test_a_r2_screener_label_binds_product_ia_without_renaming_candidate_authority():
+    """R2 changes the reader-facing product noun, not the source contract."""
+    from bs4 import BeautifulSoup
+
+    rows = _stage_rows({"live": 2})
+    html = _render_stocks({
+        "us_standouts": {"buy": rows, "ran": [], "eligible": len(rows)},
+        "us_prophet_book": _prophet_book(),
+    })
+    soup = BeautifulSoup(html, "html.parser")
+    toggle = soup.select_one("#us-src-toggle")
+    assert toggle is not None
+    cand = toggle.select_one('[data-src="candidates"]')
+    assert cand is not None
+    assert cand.select_one(".l-en").get_text(strip=True) == "Screener"
+    assert cand.select_one(".l-zh").get_text(strip=True) == "筛选器"
+    assert "Screener" in toggle.get("data-tip-en", "")
+    assert "筛选器" in toggle.get("data-tip-zh", "")
+    assert soup.select_one("#us-candidates .mx-sec-h2 .l-en").get_text(strip=True) == "Screener"
+    assert soup.select_one("#us-candidates .mx-sec-h2 .l-zh").get_text(strip=True) == "筛选器"
+    # Internal identity and the data owner stay untouched.
+    assert toggle["id"] == "us-src-toggle"
+    assert cand["data-src"] == "candidates"
+    assert soup.select_one("#us-candidates") is not None
+
+
+def test_a_r2_today_cta_opens_screener_without_promoting_entry_state():
+    from bs4 import BeautifulSoup
+
+    row = _board_row(
+        ticker="WAIT1", name="Wait One", lane="bottoming",
+        stage="setting_up", featured=True,
+        entry_signal={"status": "bounce_wait", "buy_zone": {"low": 40.0, "high": 41.0}},
+    )
+    html = _render_stocks({
+        "us_standouts": {
+            "as_of": "2026-09-24", "buy": [row], "ran": [], "eligible": 1,
+            "ranking": {"featured_count": 1},
+        },
+        "us_prophet_book": _prophet_book(),
+    })
+    soup = BeautifulSoup(html, "html.parser")
+    today = soup.select_one("#us-today")
+    assert today is not None
+    cta = today.select_one(".mx-sec-link")
+    assert cta.get_text(" ", strip=True).startswith("Open Screener")
+    assert "USProphetSource.set('candidates')" in cta.get("onclick", "")
+    card = today.select_one(".pvcard")
+    assert card is not None and "pv-buy" not in (card.get("class") or [])
+    assert "Featured is not entry permission" in today.get_text(" ", strip=True)
+
+
+def test_a_today_uses_owner_featured_preview_without_entry_promotion():
+    from bs4 import BeautifulSoup
+
+    rows = []
+    for i in range(5):
+        wait = i == 1
+        rows.append(_board_row(
+            ticker=f"TOD{i}", name=f"Today {i}", lane="bottoming",
+            stage=("setting_up" if wait else "live"),
+            featured=True,
+            entry_signal={
+                "status": ("bounce_wait" if wait else "buy_now"),
+                "buy_zone": {"low": 40.0 + i, "high": 41.0 + i},
+            },
+        ))
+    rows.append(_board_row(
+        ticker="OTHER", name="Other", lane="continuation", stage="live",
+        featured=False,
+        entry_signal={
+            "status": "buy_now",
+            "buy_zone": {"low": 50.0, "high": 51.0},
+        },
+    ))
+    su = {
+        "as_of": "2026-09-24",
+        "buy": rows,
+        "ran": [],
+        "eligible": len(rows),
+        "ranking": {"featured_count": 5},
+    }
+    html = _render_stocks({
+        "us_standouts": su,
+        "us_prophet_book": _prophet_book(),
+    })
+    soup = BeautifulSoup(html, "html.parser")
+
+    panel = soup.select_one("#us-standouts")
+    assert panel["data-prophet-src"] == "today"
+    assert soup.select_one('#us-src-btn-today[aria-selected="true"]')
+    today = soup.select_one("#us-today")
+    assert today and today["data-today-total"] == "5"
+    assert today["data-today-visible"] == "3"
+    cards = today.select("#us-today-grid .pvcard")
+    assert [card["data-ticker"] for card in cards] == ["TOD0", "TOD1", "TOD2"]
+    assert "pv-buy" in cards[0]["class"]
+    assert "pv-wait" in cards[1]["class"], "Featured bounce_wait must remain Wait"
+    today_text = today.get_text(" ", strip=True)
+    assert "2 more Featured names remain in Screener" in today_text
+    assert "not a pick quota" in today_text
+
+    # Today previews the owner's shelf; it does not remove any candidate row.
+    assert len(soup.select("#us-cand-grid .pvcard")) == 6
+    assert soup.select_one('#us-src-btn-cand[data-src="candidates"]')
+    assert soup.select_one('#us-src-btn-plan[data-src="plans"]')
+
+
+def test_a_today_zero_does_not_replace_candidates_default():
+    rows = [_board_row(
+        ticker="AAA", name="A", stage="live", lane="bottoming", featured=False,
+    )]
+    html = _render_stocks({
+        "us_standouts": {
+            "as_of": "2026-09-24",
+            "buy": rows,
+            "ran": [],
+            "eligible": 1,
+            "ranking": {"featured_count": 0},
+        },
+        "us_prophet_book": _prophet_book(),
+    })
+    assert 'data-prophet-src="candidates"' in html
+    assert 'id="us-today"' in html
+    assert "No owner-Featured names on this board." in html
+
+
 def test_a_toggle_stays_reachable_and_typed_unavailable_state_shows_when_su_missing():
     # The toggle is deliberately UNCONDITIONAL (not gated on `_su`): the page
     # opens on Plans when `_su` is falsy, but Candidates must stay reachable
@@ -204,6 +331,7 @@ def test_b_su_absent_renders_typed_unavailable_state_with_mx_empty_why():
     idx = html.find('id="us-candidates"')
     assert idx != -1, "Candidates must never be silently absent"
     block = html[idx:idx + 1200]
+    assert 'Screener' in block and '筛选器' in block
     assert 'class="mx-empty"' in block
     assert 'class="mx-empty-why"' in block, (
         "theme.css requires .mx-empty-why alongside .mx-empty (S4 idiom) — "
@@ -441,7 +569,13 @@ def test_gated_candidate_journey_never_borrows_freshness(as_of):
     assert "今晚" not in visible_and_tooltip
     assert str(gate["locked"]) in wall.select_one(".us-tw-h .l-en").get_text()
     assert str(gate["locked"]) in wall.select_one(".us-tw-h .l-zh").get_text()
-    assert len(section.select("#us-cand-grid a[data-ticker]")) == gate["preview"]
+    cards = section.select("#us-cand-grid > .pvcard[data-ticker]")
+    assert len(cards) == gate["preview"]
+    for card in cards:
+        assert card.name == "article"
+        assert card.select_one("a.pv-setup-stock-link")["href"] == "stock.html#" + card["data-ticker"]
+        assert card.select_one("details.pv-setup-inline > summary")
+        assert not card.select("a details, a button, a a")
     assert not section.select('#us-cand-grid [data-ticker="CAND3"], #us-cand-grid [data-ticker="CAND4"]')
     heading = section.select_one(".mx-sec-total .l-en").get_text(" ", strip=True)
     if as_of and as_of != "__missing__":
@@ -462,11 +596,350 @@ def test_historical_plan_wall_does_not_borrow_candidate_date(as_of, first_resolv
     text = wall.get_text(" ", strip=True)
     assert "tonight" not in text.lower() and "今晚" not in text
     assert "2026-09-11" not in text and "2026-09-16" not in text
-    assert "2 more plan rows" in text if not first_resolved else "3 more plan rows" in text
+    assert "2 more tracked plan rows" in text if not first_resolved else "3 more tracked plan rows" in text
     visible = context["life_gate_visible_preview"]
     locked = context["life_gate_visible_locked"]
     assert visible + locked == gate["total"] == 5
     assert visible == (2 if first_resolved else 3)
-    assert f"first {visible} of 5 plan rows" in text
-    assert len(soup.select("#us-life-grid a[data-ticker]")) == 3
+    assert f"first {visible} of 5 tracked plan rows" in text
+    # Historical plan rows are record-only <article>. Assert the shared card
+    # contract, not the candidate board's old actionable <a> root.
+    assert len(soup.select("#us-life-grid .pvcard[data-ticker]")) == 3
     assert not soup.select('#us-life-grid [data-ticker="PLAN3"], #us-life-grid [data-ticker="PLAN4"]')
+
+
+# --- #7237 tracked-record pager regression family ---
+# ═══════════ F — tracked-record pager uses the default-visible population ════
+def _show_more_script() -> str:
+    src = (ROOT / "templates" / "theme.js").read_text()
+    start = src.index("  function smBL(")
+    end_marker = "  window.initShowMore = initShowMore;"
+    end = src.index(end_marker, start) + len(end_marker)
+    return src[start:end]
+
+
+def test_f_plan_grid_declares_resolved_as_default_pager_exclusion_on_both_build_paths():
+    dash = (ROOT / "templates" / "dashboard.html.j2").read_text()
+    assert 'data-showmore-exclude-life="resolved" id="us-life-grid"' in dash
+    assert "freshLifeGrid.setAttribute('data-showmore-exclude-life', 'resolved')" in dash
+
+
+def test_f_tracked_pager_counts_only_default_visible_unresolved_records():
+    """The default plan grid hides resolved history. Its pager must walk/count
+    the same unresolved population, while lifecycle filters remain free to
+    reveal every matching sm-hidden record later."""
+    import shutil
+    import subprocess
+
+    node = shutil.which("node")
+    assert node, "node is required by the existing code-gated JavaScript contract"
+    harness = r"""
+class Classes {
+  constructor(){ this.values = new Set(); }
+  contains(v){ return this.values.has(v); }
+  add(v){ this.values.add(v); }
+  remove(v){ this.values.delete(v); }
+}
+class Element {
+  constructor(tag, attrs){
+    this.tagName = tag; this.nodeType = 1; this.attrs = attrs || {};
+    this.dataset = {}; this.children = []; this.classList = new Classes();
+    this.style = {}; this.listeners = {}; this.parentNode = null;
+    this.nextSibling = null; this.innerHTML = ''; this.className = '';
+    this.offsetWidth = 100;
+  }
+  hasAttribute(name){ return Object.prototype.hasOwnProperty.call(this.attrs, name); }
+  getAttribute(name){ return this.hasAttribute(name) ? this.attrs[name] : null; }
+  setAttribute(name, value){ this.attrs[name] = String(value); }
+  appendChild(child){ this.children.push(child); child.parentNode = this; return child; }
+  addEventListener(name, fn){ this.listeners[name] = fn; }
+  scrollIntoView(){}
+}
+const parent = new Element('section');
+parent.insertBefore = function(child){ this.inserted = child; child.parentNode = this; };
+const grid = new Element('div', {
+  'data-showmore-rows': '3',
+  'data-showmore-exclude-life': 'resolved',
+});
+grid.parentNode = parent;
+const lives = [
+  'ready','resolved','entered','ready','entered','resolved','ready','entered',
+  'ready','entered','resolved','ready','entered','ready','entered','resolved',
+  'ready','entered','ready','entered','ready','entered'
+];
+const records = lives.map(function(life){
+  const el = new Element('article', {'data-life': life});
+  el.life = life; el.parentNode = grid; return el;
+});
+grid.children = records;
+global.document = {
+  querySelectorAll: () => [grid],
+  createElement: (tag) => new Element(tag),
+};
+global.window = {
+  getComputedStyle: () => ({getPropertyValue: () => '100px 100px 100px 100px 100px'}),
+  addEventListener: () => {},
+};
+""" + _show_more_script() + r"""
+initShowMore();
+const bar = parent.inserted;
+if (!bar) throw new Error('show-more bar was not created');
+const count = bar.children[0];
+const buttons = bar.children[1];
+const more = buttons.children[0];
+const all = buttons.children[1];
+const unresolved = records.filter(x => x.life !== 'resolved');
+const resolved = records.filter(x => x.life === 'resolved');
+const visibleUnresolved = () => unresolved.filter(x => !x.classList.contains('sm-hidden')).length;
+const hiddenResolved = () => resolved.filter(x => x.classList.contains('sm-hidden')).length;
+if (visibleUnresolved() !== 15) throw new Error('default visible unresolved=' + visibleUnresolved());
+if (hiddenResolved() !== resolved.length) throw new Error('resolved history leaked into default pager');
+if (!count.innerHTML.includes('Showing <b>15</b> of <b>18</b>')) throw new Error(count.innerHTML);
+if (!more.innerHTML.includes('Show 3 more')) throw new Error(more.innerHTML);
+if (!all.innerHTML.includes('Show all 18')) throw new Error(all.innerHTML);
+all.listeners.click();
+if (visibleUnresolved() !== 18) throw new Error('show-all unresolved=' + visibleUnresolved());
+if (hiddenResolved() !== resolved.length) throw new Error('show-all exposed resolved history');
+if (!count.innerHTML.includes('Showing <b>18</b> of <b>18</b>')) throw new Error(count.innerHTML);
+"""
+    proc = subprocess.run([node, "-e", harness], capture_output=True, text=True)
+    assert proc.returncode == 0, proc.stderr or proc.stdout
+
+
+# Packet 2 consumes the same source JavaScript; no alternate event/context owner.
+_COMPANY_CONTEXT_HARNESS = r"""
+const assert = require('node:assert/strict');
+const vm = require('node:vm');
+const source = JSON.parse(require('node:fs').readFileSync(0, 'utf8')).source;
+class Element {
+  constructor(tag='div', text='') {
+    this.tagName=tag.toUpperCase(); this._text=text; this.children=[];
+    this.dataset={}; this.listeners={}; this.attributes={}; this.hidden=false;
+    this.disabled=false; this.value=''; this.checked=false;
+  }
+  set textContent(v) { this._text=String(v); this.children=[]; }
+  get textContent() { return this._text+this.children.map(x=>x.textContent).join(' '); }
+  set innerHTML(_v) { throw new Error('Context must remain inert text, not HTML'); }
+  appendChild(x) { this.children.push(x); return x; }
+  replaceChildren() { this.children=[]; this._text=''; }
+  setAttribute(k,v) { this.attributes[k]=String(v); }
+  addEventListener(k,fn) { this.listeners[k]=fn; }
+  scrollIntoView() {}
+}
+function setup() {
+  const root=new Element(), panel=new Element(), search=new Element('input'), outside=new Element('input');
+  root.dataset.view='table';
+  const views=['table','grid'].map(v=>{const e=new Element('button');e.dataset.ucpView=v;return e;});
+  const rows=['AAPL','MSFT'].map((t,i)=>{const e=new Element('div',t+' synthetic candidate');e.dataset={ticker:t,offBoard:String(i===1)};return e;});
+  const buttons=rows.map(r=>{const e=new Element('button');e.dataset.ucpContext=r.dataset.ticker;return e;});
+  const map={'#ucp-search':search,'#ucp-outside':outside,'[data-ucp-context-panel]':panel,
+    '[data-ucp-matched]':new Element(),'[data-ucp-loaded]':new Element(),'.ucp-no-match':new Element()};
+  root.querySelector=s=>map[s];
+  root.querySelectorAll=s=>s==='[data-ucp-view]'?views:s==='.ucp-row'?rows:[];
+  root.contains=b=>buttons.includes(b);
+  const pending=[];
+  vm.runInNewContext(source, {
+    document:{getElementById:id=>id==='us-candidate-pool'?root:null,createElement:t=>new Element(t)},
+    fetch:(url,options)=>new Promise((resolve,reject)=>pending.push({url,options,resolve,reject})),
+  }, {timeout:1000});
+  assert.equal(pending.length,0,'no eager request');
+  return {root,panel,search,outside,views,rows,buttons,pending};
+}
+function body(ticker='AAPL') {
+  return {schema:'event_workspace_public_glance.v1',available:true,ticker,authority:'context_only',
+    event_id:'synthetic-'+ticker,event_date:'2026-09-24',reported:[],guidance:[],coverage_states:[]};
+}
+function click(s,index) {
+  const b=s.buttons[index];s.root.listeners.click({target:{closest:()=>b}});
+  assert.equal(s.pending.length,index+1);
+  assert.equal(s.pending[index].url,'/api/event-workspace/'+b.dataset.ucpContext);
+  assert.equal(s.pending[index].options.credentials,'same-origin');
+  return b;
+}
+async function response(s,index,status,payload,kind='json') {
+  const p=s.pending[index];
+  if(kind==='network') p.reject(new Error('network failure'));
+  else p.resolve({status,ok:status>=200&&status<300,json:()=>kind==='bad-json'?Promise.reject(new Error('invalid JSON')):Promise.resolve(payload)});
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(s.buttons[index].disabled,false,'button restored even after a superseded request');
+}
+function expect(s,ticker,state) {
+  assert.equal(s.panel.dataset.ticker,ticker);
+  assert.equal(s.panel.dataset.state,state);
+  assert.deepEqual(s.rows.map(x=>x.textContent),['AAPL synthetic candidate','MSFT synthetic candidate']);
+  assert.equal(s.pending.length,s.buttons.filter(x=>s.pending.some(p=>p.url.endsWith(x.dataset.ucpContext))).length,'no retry');
+}
+async function main() {
+  let count=0;
+  const cases=[
+    ['valid',200,body(),'ready'],
+    ['wrong ticker',200,body('MSFT'),'unavailable'],
+    ['wrong schema',200,{...body(),schema:'wrong'},'unavailable'],
+    ['missing authority',200,{...body(),authority:undefined},'unavailable'],
+    ['escalated authority',200,{...body(),authority:'entry_authorized'},'unavailable'],
+    ['typed absence',404,{code:'event_workspace_not_covered',ticker:'AAPL'},'not-covered'],
+    ['generic 404',404,{detail:'Not Found'},'unavailable'],
+    ['wrong ticker 404',404,{code:'event_workspace_not_covered',ticker:'MSFT'},'unavailable'],
+    ['503',503,{},'unavailable'],
+    ['null 200',200,null,'unavailable'],
+    ['bad JSON',200,null,'unavailable','bad-json'],
+    ['network',200,null,'unavailable','network'],
+  ];
+  for(const [name,status,payload,state,kind] of cases) {
+    const s=setup();click(s,0);await response(s,0,status,payload,kind);expect(s,'AAPL',state);count++;
+  }
+  for(const kind of ['json','http','network']) {
+    const s=setup();click(s,0);click(s,1);
+    expect(s,'MSFT','loading');
+    await response(s,1,200,body('MSFT'));expect(s,'MSFT','ready');
+    await response(s,0,kind==='http'?503:200,body(),kind==='network'?'network':'json');
+    expect(s,'MSFT','ready');count++;
+  }
+  {
+    const s=setup();click(s,0);await response(s,0,200,body());click(s,1);
+    expect(s,'MSFT','loading');assert(s.panel.textContent.includes('Loading company context'));
+    assert(!s.panel.textContent.includes('synthetic-AAPL'),'old facts must leave while next selection loads');
+    await response(s,1,200,body('MSFT'));count++;
+  }
+  {
+    const s=setup();click(s,0);
+    const hostile='<img src=x onerror=alert(1)>';
+    await response(s,0,200,{...body(),lifecycle_state:'corrected',
+      watch:[{label:'Watch A',value:hostile},{label:'Watch B',value:'b'},{label:'Watch C',value:'c'},{label:'Watch D',value:'must be truncated'}],
+      source_states:[{kind:'issuer_release',status:'present'},{kind:'public_wire',status:'absent'}]});
+    expect(s,'AAPL','ready');const text=s.panel.textContent;
+    for(const expected of ['corrected',hostile,'Watch C','issuer_release: present','public_wire: absent','B4 Availability']) assert(text.includes(expected),expected);
+    assert(!text.includes('must be truncated'));
+    function tags(e){return [e.tagName,...e.children.flatMap(tags)];}
+    assert(!tags(s.panel).includes('IMG'));assert(!tags(s.panel).includes('SCRIPT'));count++;
+    s.views[1].listeners.click.call(s.views[1]);assert.equal(s.root.dataset.view,'grid');
+    s.search.value='MSFT';s.search.listeners.input();assert.deepEqual(s.rows.map(x=>x.hidden),[true,false]);
+    s.search.value='';s.outside.checked=true;s.outside.listeners.change();assert.deepEqual(s.rows.map(x=>x.hidden),[true,false]);
+    s.views[0].listeners.click.call(s.views[0]);assert.equal(s.root.dataset.view,'table');
+    s.root.listeners['candidate-pool-hydrated']();assert.deepEqual(s.rows.map(x=>x.hidden),[true,false]);count++;
+  }
+  {
+    const s=setup();click(s,0);await response(s,0,200,body());expect(s,'AAPL','ready');
+    assert(s.panel.textContent.includes('Lifecycle'));assert(s.panel.textContent.includes('Sources'));
+    assert(s.panel.textContent.includes('Unavailable'));count++;
+  }
+  {
+    const extras=[
+      ['available string',200,{...body(),available:'true'},'unavailable'],
+      ['available false',200,{...body(),available:false},'unavailable'],
+      ['wrong code 404',404,{code:'not_found',ticker:'AAPL'},'unavailable'],
+      ['401',401,{},'unavailable'],['403',403,{},'unavailable'],['429',429,{},'unavailable'],
+    ];
+    for(const [name,status,payload,state] of extras){
+      const s=setup();click(s,0);await response(s,0,status,payload);expect(s,'AAPL',state);count++;
+    }
+  }
+  {
+    const malformed=[
+      ['watch',{}],['watch',[null]],
+      ['coverage_states',{}],['coverage_states',[null]],
+      ['source_states',{}],['source_states',[null]],
+    ];
+    for(const [field,value] of malformed){
+      const s=setup();click(s,0);
+      await response(s,0,200,{...body(),lifecycle_state:'corrected',[field]:value});
+      expect(s,'AAPL','ready');
+      assert(s.panel.textContent.includes('synthetic-AAPL'),'valid context erased by malformed '+field);
+      count++;
+    }
+  }
+  {
+    for(const field of ['reported','guidance']){
+      const s=setup();click(s,0);await response(s,0,200,{...body(),[field]:{label:'Pretend',value:100}});
+      expect(s,'AAPL','ready');assert(s.panel.textContent.includes('Unavailable'));count++;
+    }
+  }
+  {
+    const s=setup();click(s,0);await response(s,0,200,{...body(),reported:[{label:'Measured',value:0}]});
+    expect(s,'AAPL','ready');assert(s.panel.textContent.includes('Measured 0'));count++;
+  }
+  {
+    const s=setup();click(s,0);await response(s,0,200,{...body(),reported:[{label:'Measured',value:{n:1}}]});
+    expect(s,'AAPL','ready');assert(s.panel.textContent.includes('Measured Unavailable'));assert(!s.panel.textContent.includes('[object Object]'));count++;
+  }
+  {
+    const s=setup();click(s,0);await response(s,0,200,{...body(),lifecycle_state:{phase:'corrected'}});
+    expect(s,'AAPL','ready');assert(s.panel.textContent.includes('Lifecycle Unavailable'));assert(!s.panel.textContent.includes('[object Object]'));count++;
+  }
+  {
+    const s=setup();click(s,0);
+    const coverage=Array.from({length:4},(_,i)=>({label:'Coverage '+i,state:'state'+i}));
+    await response(s,0,200,{...body(),coverage_states:coverage});expect(s,'AAPL','ready');
+    assert(s.panel.textContent.includes('Coverage 2: state2'));assert(!s.panel.textContent.includes('Coverage 3: state3'));count++;
+  }
+  {
+    const s=setup();click(s,0);
+    const sources=Array.from({length:9},(_,i)=>({kind:'source_'+i,status:'present'}));
+    await response(s,0,200,{...body(),source_states:sources});expect(s,'AAPL','ready');
+    assert(s.panel.textContent.includes('source_7: present'));assert(!s.panel.textContent.includes('source_8: present'));count++;
+  }
+  {
+    const s=setup();click(s,0);expect(s,'AAPL','loading');
+    s.root.listeners['candidate-pool-hydrated']();
+    assert.equal(s.panel.hidden,true);assert.equal(s.panel.dataset.ticker,undefined);assert.equal(s.panel.dataset.state,undefined);
+    await response(s,0,200,body());assert.equal(s.panel.hidden,true);assert.equal(s.panel.textContent,'');count++;
+  }
+  console.log('COMPANY_CONTEXT_CASES_PASS='+count);
+}
+main().catch(error=>{console.error(error);process.exitCode=1;});
+"""
+
+
+def _company_context_source() -> str:
+    import re
+    template = (ROOT / 'templates' / '_us_candidate_pool.html.j2').read_text(encoding='utf-8')
+    scripts = re.findall(r'<script>(.*?)</script>', template, flags=re.S)
+    assert len(scripts) == 1, 'One existing candidate context controller is required'
+    return scripts[0]
+
+
+def _run_company_context_contract(source: str):
+    import json
+    import shutil
+    import subprocess
+
+    node = shutil.which('node')
+    assert node, 'Node is required by this existing code-gated JavaScript contract'
+    return subprocess.run(
+        [node, '-e', _COMPANY_CONTEXT_HARNESS],
+        input=json.dumps({'source': source}), capture_output=True, text=True, timeout=15,
+    )
+
+
+def test_company_context_latest_selection_typed_response_and_source_projection():
+    result = _run_company_context_contract(_company_context_source())
+    assert result.returncode == 0, result.stderr or result.stdout
+    assert 'COMPANY_CONTEXT_CASES_PASS=39' in result.stdout
+
+
+def test_company_context_contract_rejects_boundary_regressions():
+    source = _company_context_source()
+    mutations = [
+        ('if(requestSerial===contextRequestSerial) ', ''),
+        (" && body.authority==='context_only'", ''),
+        ("body && body.code==='event_workspace_not_covered' && body.ticker===ticker", 'true'),
+        ("    showContext(ticker,'loading',{});", ''),
+        ("      appendLine(grid,'Lifecycle',contextText(body.lifecycle_state));", ''),
+        ("    if(!Array.isArray(value)) return [];", ''),
+        ("    if(typeof value==='number' && Number.isFinite(value)) return String(value);", ''),
+        (".slice(0,3).map(function(x){return contextText(x.label,'Coverage')", ".map(function(x){return contextText(x.label,'Coverage')"),
+        (".slice(0,8).map(function(x){return contextText(x.kind,'Source')", ".map(function(x){return contextText(x.kind,'Source')"),
+        ("    ++contextRequestSerial;", ''),
+    ]
+    for old, new in mutations:
+        assert old in source, old
+        result = _run_company_context_contract(source.replace(old, new))
+        assert result.returncode != 0, 'Contract missed mutation: ' + old
+
+
+def test_today_keeps_lossless_candidate_pool_in_its_own_view():
+    """An expanded Candidates roster must not cover Today or the plan records."""
+    source = (ROOT / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    assert '#us-standouts:not([data-prophet-src="candidates"]) #us-candidate-pool { display:none; }' in source
+    assert '#us-today button.mx-sec-link' in source
+    assert 'min-height:40px' in source

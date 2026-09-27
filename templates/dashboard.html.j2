@@ -1790,12 +1790,15 @@
   #us-stocktable-wrap { display:none; }
   #us-standouts.st-table-mode #us-stocktable-wrap { display:block; }
   #us-standouts.st-table-mode .nb-grid-section { display:none; }
-  /* P0 #6185 — source view: exactly one population is on screen at a time. */
-  #us-standouts[data-prophet-src="plans"] #us-candidates { display:none; }
-  #us-standouts[data-prophet-src="candidates"] #us-plan-block { display:none; }
-  /* the Grid/Table view toggle switches the CANDIDATE table; there is no plan
-     table yet (P-MP1-DENSE), so it must never appear under a Plans label. */
-  #us-standouts[data-prophet-src="plans"] #us-st-view-toggle { display:none; }
+  /* Packet 2 — Today | Candidates | Plans: exactly one population on screen. */
+  #us-standouts:not([data-prophet-src="today"]) #us-today { display:none; }
+  #us-standouts:not([data-prophet-src="candidates"]) #us-candidates,
+  #us-standouts:not([data-prophet-src="candidates"]) #us-candidate-pool { display:none; }
+  #us-standouts:not([data-prophet-src="plans"]) #us-plan-block { display:none; }
+  /* Grid/Table belongs to Candidates only; Today reuses canonical cards and
+     Plans remains the historical record wall. */
+  #us-standouts:not([data-prophet-src="candidates"]) #us-st-view-toggle { display:none; }
+  #us-today button.mx-sec-link { border:0; background:transparent; color:var(--link); font:inherit; cursor:pointer; min-height:40px; padding:0 8px; }
   /* count chips row (id matches stocktable.js hard-coded lookup) */
   #st-count-chips { display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; margin:8px 0; }
   .st-chip { display:inline-block; font-size:10px; font-weight:700; padding:2px 9px;
@@ -16166,7 +16169,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {% if action_board %}
   {% include "_us_act_now_board.html.j2" %}
     {% set _su = us_standouts if (us_standouts and us_standouts.buy) else None %}
-    {{ pv.pv_css() }}
+    {{ pv.pv_css(setup_detail=true) }}
     {# §6.9 R5 — the "passed on tonight" shelf's styles. Emitted ONCE, beside the card
        styles it sits under; the shelf itself renders far below, inside #us-standouts. #}
     {{ pvr.pvr_css() }}
@@ -16432,6 +16435,12 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
     {#- publish-together fence: the per-card `Adjusted` mark and the receipt line it is a
         receipt FOR ship as one thing or not at all (spec §7 invariants). -#}
     {% set _bs_adj = (_bs.get('note') == 'confirmed') if _bs else false %}
+    {#- Packet 2 Today source selection. ranking.featured_count is the board owner's
+        own DISPLAY-shelf count, not the candidate-pool featured lane (a different
+        plan-intake question). Missing/zero metadata falls back to Candidates rather
+        than inferring a Today pick from position. -#}
+    {% set _today_declared = ((_su.get('ranking') or {}).get('featured_count')) if _su else none %}
+    {% set _src_default = ('today' if (_su and _today_declared is number and _today_declared is not boolean and _today_declared > 0) else ('candidates' if _su else 'plans')) %}
     {#- `data-board-asof` is the board's vintage in machine-readable form, on the board
         container itself, so a monitor can grade the RENDERED page rather than inferring
         freshness from the artifact it hoped the page was built from (2026-08-26, PR-2 of
@@ -16441,7 +16450,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         late?" with client-side calendar arithmetic and mistake a weekend for an outage.
         Both are absent when the board has no artifact, which is itself the honest signal. -#}
     <div class="panel span12 notable" id="us-standouts"
-         data-prophet-src="{{ 'candidates' if _su else 'plans' }}"
+         data-prophet-src="{{ _src_default }}"
          {%- if _su and _su.get('as_of') %} data-board-asof="{{ _su.as_of|e }}"{% endif %}
          {%- if _su and _su.get('staleness') %} data-board-delayed="{{ '1' if _su.staleness.get('delayed') else '0' }}"{% endif %}
          {%- if _bs and _bs.get('rel') %} data-boardstate="{{ _bs.rel }}"{% endif %}>
@@ -16475,9 +16484,10 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
            way to REACH the typed Candidates-unavailable state (B5) — gating
            the toggle on `_su` would bake that state and then make it
            permanently unreachable. -#}
-        <span class="st-view-toggle" id="us-src-toggle" role="group" data-tip-en="Switch between the candidate screen and the plan book" data-tip-zh="在候选筛选与计划簿之间切换">
-          <button id="us-src-btn-cand" type="button" aria-selected="{{ 'true' if _su else 'false' }}" data-src="candidates"><span class="l-en">Candidates</span><span class="l-zh">候选</span></button>
-          <button id="us-src-btn-plan" type="button" aria-selected="{{ 'false' if _su else 'true' }}" data-src="plans"><span class="l-en">Plans</span><span class="l-zh">计划</span></button>
+        <span class="st-view-toggle" id="us-src-toggle" role="group" data-tip-en="Switch between Today, Screener, and Plans" data-tip-zh="在今日、筛选器与计划之间切换">
+          {% if _su %}<button id="us-src-btn-today" type="button" aria-selected="{{ 'true' if _src_default == 'today' else 'false' }}" data-src="today"><span class="l-en">Today</span><span class="l-zh">今日</span></button>{% endif %}
+          <button id="us-src-btn-cand" type="button" aria-selected="{{ 'true' if _src_default == 'candidates' else 'false' }}" data-src="candidates"><span class="l-en">Screener</span><span class="l-zh">筛选器</span></button>
+          <button id="us-src-btn-plan" type="button" aria-selected="{{ 'true' if _src_default == 'plans' else 'false' }}" data-src="plans"><span class="l-en">Plans</span><span class="l-zh">计划</span></button>
         </span>
         {# W8-R6: grid/table view toggle (US market) #}
         {% if _su %}
@@ -16597,10 +16607,12 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
          No re-ordering: system order is preserved (CN no-mutation pattern).
          Rendered only when us_standouts.buy is populated (mode=stocks only). #}
       {% if _su %}
+      {% import "_prophet_setup_detail.html.j2" as psd_table %}
       <script type="application/json" id="us-stocktable-data">
       {
         "rows": [{% for _n in _su.buy %}{% if not loop.first %},{% endif %}{
           "ticker":        {{ _n.ticker | tojson }},
+          "setup_detail":  {{ psd_table.table_action(_n, _su.get("as_of")) | string | tojson }},
           "name":          {{ _n.name | tojson }},
           "sector":        {{ (_n.sector or '') | tojson }},
           "lane":          {{ (_n.get('lane') or '') | tojson }},
@@ -16822,6 +16834,45 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           bar a full board a moment later) and marked inert with one plain line
           saying why, rather than shipping dead buttons with no explanation. -#}
       {%- endif -%}
+
+      {#- ═══ PACKET 2 — TODAY ═══════════════════════════════════════════════════════
+          Today is a bounded preview of the board owner's existing buy[].featured
+          shelf, never a new ranker or a positional pick rule. It preserves the
+          candidate card's own entry chip/zone/trigger as the timing authority, so a
+          Featured bounce_wait row remains Wait. Three cards is presentation
+          capacity only; the owner count and remainder are printed explicitly and
+          every Featured name stays in Candidates. -#}
+      {%- set _today = namespace(rows=[]) -%}
+      {#- Filter the producer-ordered board directly. The Candidates render list is
+          stage-grouped and would therefore become an accidental Today reranker. -#}
+      {%- for _n in _board -%}
+        {%- if _n.get('featured') -%}
+          {%- set _today.rows = _today.rows + [_n] -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- set _today_visible = _today.rows[:3] -%}
+      {%- set _today_total = (_today_declared if (_today_declared is number and _today_declared is not boolean and _today_declared >= (_today.rows|length)) else (_today.rows|length)) -%}
+      {%- set _today_more = [_today_total - (_today_visible|length), 0] | max -%}
+      <section class="mx-sec" id="us-today" data-today-total="{{ _today_total }}" data-today-visible="{{ _today_visible|length }}">
+        <div class="mx-sec-hd">
+          <h2 class="mx-sec-h2">{{ t('Today', '今日') }}</h2>
+          <span class="mx-sec-total"><span class="l-en"><b>{{ _today_visible|length }}</b> of <b>{{ _today_total }}</b> Featured</span><span class="l-zh">精选 <b>{{ _today_visible|length }}</b> / <b>{{ _today_total }}</b></span></span>
+          <button type="button" class="mx-sec-link" onclick="if(window.USProphetSource){window.USProphetSource.set('candidates')}">{{ t('Open Screener', '打开筛选器') }}</button>
+        </div>
+        <p class="mx-sec-note">{{ t('A preview of the current board’s owner-Featured shelf in its existing order. Featured is not entry permission — the card’s Buy, Near or Wait state still controls timing.', '当前榜单「精选」层的预览，顺序保持不变。精选不等于获准入场——仍以卡片上的买入、接近或等待状态决定时机。') }}</p>
+        {%- if _today_visible %}
+        <div class="nbgrid" id="us-today-grid">
+          {% with items=_today_visible, sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh %}{% include "_us_board_cards.html.j2" %}{% endwith %}
+        </div>
+        {%- if _today_more > 0 %}
+        <p class="mx-sec-note"><span class="l-en">{{ _today_more }} more Featured name{{ '' if _today_more == 1 else 's' }} remain in Screener; this three-card preview is not a pick quota.</span><span class="l-zh">另有 {{ _today_more }} 只精选股票保留在筛选器；三张卡只是预览容量，并非选股名额。</span></p>
+        {%- endif %}
+        {%- elif _today_total > 0 %}
+        <div class="mx-empty"><div class="mx-empty-line">{{ t('Featured names exist, but none are visible in this access preview.', '存在精选股票，但当前访问预览中未显示。') }}</div><div class="mx-empty-why">{{ t('Open Screener after access is available; no hidden name is inferred here.', '获得访问权限后请打开筛选器；此处不会推断任何隐藏股票。') }}</div></div>
+        {%- else %}
+        <div class="mx-empty"><div class="mx-empty-line">{{ t('No owner-Featured names on this board.', '当前榜单暂无精选股票。') }}</div><div class="mx-empty-why">{{ t('Screener remains available; zero Featured is not a broken board.', '筛选器仍可使用；精选为零并不代表榜单故障。') }}</div></div>
+        {%- endif %}
+      </section>
       {% endif %}
       {#- ═══ P-MP1-SHELL CENTRAL ACT (MP-1-prophet-board.md §6 row 1) ═══════════════
          The Setups grid re-sources FROM THE PLAN BOOK (site/prophet/index.json,
@@ -16870,7 +16921,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <div class="mx-empty-why">{{ t('No qualifying rows today · refreshes after the next close', '今日无符合条件的条目 · 下一收盘后刷新') }}</div>
       </div>
       {%- else %}
-      <div class="nbgrid" data-showmore-rows="3" id="us-life-grid" data-mp1-grid="1">
+      <div class="nbgrid" data-showmore-rows="3" data-showmore-exclude-life="resolved" id="us-life-grid" data-mp1-grid="1">
       {%- with items=_upb.plans, cand_map=_cand_map, trg_map=_plan_trg_map, episode_map=(us_prophet_episodes or {}) %}{% include "_us_prophet_plan_cards.html.j2" %}{% endwith -%}
       </div>{# end #us-life-grid #}
       {#- Repair round 2, finding R1+R3 (COMMISSIONING ADJUDICATION, replaces
@@ -16932,12 +16983,12 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {%- set _life_visible_locked = (life_gate_visible_locked if (life_gate_visible_locked is defined and life_gate_visible_locked is not none) else life_gate.locked) -%}
       <div class="us-tier-wall" id="us-life-wall">
         <div class="us-tw-h">
-          <span class="l-en">{{ _life_visible_locked }} more plan rows in the plan book</span>
-          <span class="l-zh">计划簿中另有 {{ _life_visible_locked }} 条计划</span>
+          <span class="l-en">{{ _life_visible_locked }} more tracked plan rows in this plan book</span>
+          <span class="l-zh">计划簿中还有 {{ _life_visible_locked }} 条跟踪记录</span>
         </div>
         <div class="us-tw-p">
-          <span class="l-en">You're seeing the first {{ _life_visible_preview }} of {{ life_gate.total }} plan rows. Sign in to see the full ranked board, every lifecycle state, and the table view.</span>
-          <span class="l-zh">当前显示 {{ life_gate.total }} 条计划中的前 {{ _life_visible_preview }} 条。登录后可查看完整排名榜单、全部生命周期状态与表格视图。</span>
+          <span class="l-en">You're seeing the first {{ _life_visible_preview }} of {{ life_gate.total }} tracked plan rows. Sign in to see the full tracked plan book and every lifecycle state.</span>
+          <span class="l-zh">当前显示 {{ life_gate.total }} 条跟踪记录中的前 {{ _life_visible_preview }} 条。登录后可查看完整跟踪计划簿与全部生命周期状态。</span>
         </div>
         <div class="us-tw-acts">
           <a class="us-tw-btn" href="plans.html">{{ t('See plans', '查看方案') }}</a>
@@ -16987,7 +17038,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       {%- set _cand_total = (gate.total if gate else _board|length) -%}
       <div class="mx-sec" id="us-candidates">
         <div class="mx-sec-hd">
-          <h2 class="mx-sec-h2">{{ t('Candidates', '候选') }}</h2>
+          <h2 class="mx-sec-h2">{{ t('Screener', '筛选器') }}</h2>
           {#- P0 #6185 (C1): verified mechanism — `t(en, zh)` as called INSIDE
              this file resolves to the `{% macro t(en, zh='') %}` defined at
              the top of dashboard.html.j2 (line ~13), which SHADOWS the
@@ -17138,7 +17189,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
          data left up. -#}
       <div class="mx-sec" id="us-candidates">
         <div class="mx-sec-hd">
-          <h2 class="mx-sec-h2">{{ t('Candidates', '候选') }}</h2>
+          <h2 class="mx-sec-h2">{{ t('Screener', '筛选器') }}</h2>
         </div>
         <div class="mx-empty">
           <div class="mx-empty-line">{{ t("Tonight's candidate screen hasn't published — the Plans view below is unaffected.", '今晚的候选筛选尚未发布——下方的计划视图不受影响。') }}</div>
@@ -17531,6 +17582,27 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
       }
       var clearBtn = document.getElementById('us-life-clear');
       if (clearBtn) clearBtn.addEventListener('click', function () { setLife(null); });
+      /* A historical record can link to a newer episode in another lifecycle
+         cell. Delegate from the stable panel rather than the replaceable grid,
+         so entitled hydration and show-more do not strand the link. Select the
+         already-loaded target's published lifecycle before the browser performs
+         its native fragment jump. Modified clicks, missing/withheld targets and
+         malformed destinations remain untouched. */
+      box.addEventListener('click', function (e) {
+        if (e.defaultPrevented || (typeof e.button === 'number' && e.button !== 0) ||
+            e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        var link = e.target && e.target.closest ? e.target.closest('a.pv-newer') : null;
+        if (!link || !link.closest('#us-life-grid')) return;
+        var href = link.getAttribute('href') || '';
+        if (href.charAt(0) !== '#') return;
+        var targetId;
+        try { targetId = decodeURIComponent(href.slice(1)); } catch (err) { return; }
+        var target = document.getElementById(targetId);
+        if (!target || !target.closest || !target.closest('#us-life-grid')) return;
+        var targetLife = target.getAttribute('data-life');
+        if (!targetLife || VALID_LIFE.indexOf(targetLife) === -1) return;
+        setLife(targetLife);
+      });
       /* Initial state: query string wins outright. Only when it carries no
          `life` param do we fall back, ONCE, to an inbound legacy #life=
          fragment — read here and never again; the fragment is not re-read on
@@ -20140,7 +20212,7 @@ function initStockTableView(){
       },
       tip:{en:'Green dot = entry window open now',zh:'绿点＝现在入场窗口已开'} },
     { key:'name', labelEn:'Name', labelZh:'名称', default:true, sortable:true,
-      fmt:function(v){ return '<b>' + esc(v||'') + '</b>'; }},
+      fmt:function(v,r){ return '<b>' + esc(v||'') + '</b>' + (typeof r.setup_detail === 'string' ? r.setup_detail : ''); }},
     { key:'sector', labelEn:'Sector', labelZh:'板块', default:true, sortable:true,
       fmt:function(v){ if(!v) return '<span class="st-muted">—</span>';
         return b(esc(v), esc(SECZH[v]||v)); }},
@@ -20213,7 +20285,7 @@ function initStockTableView(){
     linkPattern: 'stock.html#{ticker}',
     columns: cols,
     optionLabels: { lane: LANE_LABELS, sector: SECTOR_LABELS },
-    searchPlaceholder: ['Search name…','搜索名称…'],
+    searchPlaceholder: ['Search ticker or name…','搜索代码或名称…'],
     /* P-MP1-SHELL §6/§9/§8 (commissioning follow-up, gap 2) — retires the
        Stage/阶段 filter dropdown AND its count chips (templates/stocktable.js
        _buildFilterRow/_updateCountChips) on the US table ONLY. hk/china/canada
@@ -20223,6 +20295,7 @@ function initStockTableView(){
        on the card grid (.pv-life/.mx-mark) is where that meaning lives now,
        per MP-1 §6's own disposition for this row. */
     stageFilter: false,
+    searchTicker: true,
   };
 
   /* Tier gate (docs/TIER_PREVIEW_PATTERN.md): merges the hydrated payload's
@@ -20277,9 +20350,10 @@ if (document.readyState === 'loading') {
      followed by an equals sign and a quoted string anywhere in this script --
      including in a comment, which ships in the page like any other bytes. */
   function setSrc(mode){
-    if (mode !== 'candidates' && mode !== 'plans') mode = 'candidates';
-    /* the table renders CANDIDATE rows only, so Plans mode must leave table view */
-    if (mode === 'plans' && panel.classList.contains('st-table-mode') &&
+    if (mode !== 'today' && mode !== 'candidates' && mode !== 'plans') mode = 'candidates';
+    if (mode === 'today' && !document.getElementById('us-today')) mode = 'candidates';
+    /* the table renders CANDIDATE rows only, so Today/Plans must leave table view */
+    if (mode !== 'candidates' && panel.classList.contains('st-table-mode') &&
         window.USStockTable && window.USStockTable._setView){
       try { window.USStockTable._setView('grid'); } catch(e){}
     }
@@ -20600,6 +20674,7 @@ if (document.readyState === 'loading') {
       freshLifeGrid.className = lifeGrid.className;
       freshLifeGrid.id = 'us-life-grid';
       freshLifeGrid.setAttribute('data-showmore-rows', '3');
+      freshLifeGrid.setAttribute('data-showmore-exclude-life', 'resolved');
       freshLifeGrid.setAttribute('data-mp1-grid', '1');
       freshLifeGrid.innerHTML = lifeGrid.innerHTML + payload.plan_cards_html;
       lifeGrid.parentNode.insertBefore(freshLifeGrid, lifeGrid);

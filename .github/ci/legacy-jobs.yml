@@ -166,6 +166,8 @@ jobs:
       # pyarrow only; no render deps needed for this module's own kills).
       - name: HK discovery challenger — K-D1-K-D9 (hk_discovery_v1)
         run: python -m pytest tests/test_hk_discovery_challenger.py -q
+      - name: Prophet discovery outcomes - canonical grading and degraded clocks
+        run: python -m pytest tests/test_grading.py -q
 
   board-contradictions:
     if: ${{ false }}
@@ -12840,10 +12842,14 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 html5lib openpyxl scikit-learn
       - name: US candidate and plan source-date truth (PR-time gated journey)
         run: >-
           python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "candidate_heading_discloses_source_date or gated_candidate_journey or historical_plan_wall_does_not"
+      - name: Shared Prophet card - record identity and explicit unavailable action
+        run: python -m pytest tests/test_prophet_card_shared.py -q
+      - name: Prophet Today and Company context - owner selection and typed responses
+        run: python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "today or company_context"
       - name: stock-brief context health (R2 context must yield a nonempty batch)
         run: >-
           python -m pytest tests/test_catalyst_stock.py -q -k "build_stock_briefs_all_no_context_is_failure or build_stock_briefs_empty_result_is_failure"
@@ -13996,6 +14002,14 @@ jobs:
       - "templates/_stock_decision.css.j2"
       - "templates/_track_record_dlg.html.j2"
       - "templates/_us_board_cards.html.j2"
+      # Packet 2 plan records are rendered by dashboard.html.j2 through this
+      # partial, so the curated import closure must own it explicitly.
+      - "templates/_us_prophet_plan_cards.html.j2"
+      # Packet 2: existing shared-card tests consume these source-bound details.
+      - "templates/_prophet_setup_detail.html.j2"
+      - "templates/_us_candidate_pool_rows.html.j2"
+      - "templates/theme.js"
+      - "site/theme.js"
       - "templates/canada.html.j2"
       - "templates/china.html.j2"
       - "templates/dashboard.html.j2"
