@@ -494,3 +494,35 @@ The allocation-gap path has separate behavioral browser evidence. A synthetic mi
 Canonical screenshots surface a shared-chrome collision: the `theme.js` Brain boot launcher can cover Vector evidence/chart content. It is not owned by Vector and is not silently removed here. Existing site patterns support an in-page analyst entry that programmatically activates the same Brain owner while page CSS suppresses the redundant global launcher. That bounded interaction design is proposed next; implementation waits for explicit approval, after which evidence must be recaptured.
 
 No production route, Paper canvas application, H5 authority closure, review save, alert activation or user-task study is claimed complete.
+
+
+## Vector in-page Brain entry — approved bounded implementation
+
+The Chairman approved replacing the overlapping floating Vector Brain launcher with one explicit in-page entry. Commit `e0b8f075618e268f393a98b0e649b36c09e3e0e7` implements that design without changing the shared Brain owner.
+
+### Interaction contract
+
+- Vector's research section bar owns one **Ask Mastermind / 询问操盘大脑** button.
+- On Vector only, shared `#mmb-boot` and `#mmb-launch` are visually suppressed so they cannot cover chart/evidence content.
+- Clicking the in-page control opens an already mounted `window.MMBrain`, or activates the existing `mmb-boot` lazy-loader and waits boundedly for the same owner to mount.
+- No second assistant implementation, thread store, API call layer or runtime identity exists.
+- If the existing owner does not mount within the bounded attempt, the in-page control surfaces a bilingual unavailable state and clears its busy state; page research remains usable.
+- The control is keyboard-focusable, declares a dialog relationship and remains the entry point after the Brain panel closes.
+
+### Proof
+
+Source TDD: RED before implementation; GREEN after.
+
+Browser interaction matrix, 8 combinations (desktop/mobile × dark/light × EN/ZH):
+- Vector Brain entry visible;
+- boot stub present but hidden;
+- no visible floating launcher;
+- click mounts existing Brain and opens `#mmb-panel`;
+- real shared launcher remains hidden after mount;
+- no page-wide overflow or page JavaScript errors.
+
+Canonical evidence receipt `mockups/evidence/crypto-vector-r2-actual-20260927/EVIDENCE.yml` now covers 24 captured states: 8 rest cells + real browser hover + real browser focus states. Design-system ratchet and visual-evidence gate both pass.
+
+Exact Vector pytest pack: **90 passed, 5 skipped**. Static Python/JS/Jinja/diff checks pass. Controlled fixture/network limitations remain as previously documented; this is not a live deployment receipt.
+
+This change does not alter Paper, Crypto template ownership, shared theme/Brain code, decision authority, saved-review authority, alerts, H5 budget ownership or deployment state.

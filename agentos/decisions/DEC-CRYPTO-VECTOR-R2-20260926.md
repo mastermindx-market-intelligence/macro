@@ -302,3 +302,44 @@ Paper write remains independently blocked at `paper-desktop 0.5.12`, observed ca
 FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
 MISSION_COMPLETE: false
 Next implementation action requiring design approval: replace the floating Brain launcher on Vector with one explicit in-page Ask Mastermind entry that reuses the existing boot/open owner, suppressing the floating stub/launcher on Vector only. After approval, implement TDD-first, recapture the 8-state evidence matrix, rerun design/visual gates and exact Vector pack, then consume exact-head PR CI/fences.
+
+
+## Approved Vector Brain-entry implementation — 2026-09-27
+
+Chairman explicitly approved the bounded launcher design in the outer live message and instructed continuation. Current protected Mastermind law pin for this modifying continuation is `c01d890f6536539496f2d6744f3143ff49da296d`, INDEX blob `94d1af402598894372858793a5b1931019c5fa77`, Skillpack 1.0.1 / bootstrap major 1.
+
+Implementation commit: `e0b8f075618e268f393a98b0e649b36c09e3e0e7`.
+
+Capability delta:
+- before: shared `theme.js` mounted the bottom-right Brain boot FAB on Vector and canonical screenshots showed it covering evidence/chart content;
+- after: Vector exposes one explicit in-page **Ask Mastermind / 询问操盘大脑** control in the research section bar, suppresses the redundant `#mmb-boot` and `#mmb-launch` on `body.page-vector` only, and reuses the existing Brain owner for activation.
+
+No `theme.js`, `mm_brain.js`, API, thread store, routing, assistant identity or Brain lifecycle code changed. Vector does not set `MM_BRAIN_CFG`, import `mm_brain.js`, call `/api/brain`, or create a second chat owner. The Vector action first opens an already-mounted `window.MMBrain`; otherwise it programmatically activates the existing hidden `mmb-boot` stub. It carries `aria-haspopup=dialog` / `aria-controls=mmb-panel`, a busy state while the existing owner mounts, and a bilingual unavailable label after a bounded failed mount attempt. Closing Brain leaves the in-page Vector action as the re-entry point; the floating launcher remains hidden on Vector.
+
+TDD receipt:
+- RED: the new source tests failed because no `data-vector-brain` entry existed.
+- GREEN: `test_vector_uses_in_page_brain_entry_and_suppresses_floating_launcher` and `test_vector_brain_entry_is_not_a_second_chat_owner` passed after implementation.
+
+Controlled real-template interaction proof:
+- matrix: 1440x1000 and 390x844 × dark/light × EN/ZH = 8 combinations;
+- before click in every cell: in-page Vector Brain button visible, `#mmb-boot` exists but is not visible, no `#mmb-launch`, no page-wide overflow;
+- after click in every cell: existing `window.MMBrain.mounted=true`, `#mmb-panel.open` visible, real `#mmb-launch` may exist under the shared owner but remains invisible due Vector-local suppression, no button error/busy residue, no page JS errors.
+
+Canonical visual evidence was recaptured after implementation with the repo's existing `capture_page_evidence.py` owner. Receipt remains:
+`mockups/evidence/crypto-vector-r2-actual-20260927/EVIDENCE.yml`.
+Manifest now proves 24/24 states: the required 8 REST cells plus real browser `brain-hover:hover(.vector-brain-entry)` and `brain-focus:focus(.vector-brain-entry)` force states across the full state matrix. The visual-evidence guard initially refused REST-only evidence for the new hover/focus CSS; after those interaction captures were added, the gate passed. Representative desktop/mobile EN/ZH and focus/hover captures were visually reviewed. The previous floating overlap is absent in the recaptured rest states.
+
+Fresh final local verification on the implementation/evidence bytes:
+- forward-only design ratchet: **0 blocking findings**;
+- canonical visual-evidence guard: PASS;
+- exact existing Vector pytest pack: **90 passed, 5 skipped, 0 failed**;
+- Python compile, JS syntax, Jinja parse and `git diff --check`: PASS.
+Existing Pandas deprecation and temporary Chromium cleanup warnings remain; no warning-free claim.
+
+This slice supersedes only the earlier pending Brain-launcher UX decision. The shared Brain owner and all prior authority/effect boundaries remain controlling.
+
+Paper remains blocked independently by the unreviewed upstream Paper schema pin; no native boards 12–16 were created in this slice. Crypto #7645 and shared-theme #7849 custody were not touched.
+
+MISSION_COMPLETE: false
+Current child capability: BUILT_NOT_PROVEN on production route; controlled generated-route proof is strong, but exact-head PR CI/fences and deployment/live-route proof remain before production acceptance.
+Exact next action: publish this commit plus durable record, consume exact-head #8050 CI/fences, then continue the independent H5 canonical Crypto-budget authority/data-qualification lane while Paper remains blocked.
