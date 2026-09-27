@@ -569,6 +569,68 @@ they are correctly, and permanently, KEEP. `refs/salvage/*` (534 refs) still mat
 bucket — it decouples *preserving the commits* from *reclaiming the checkout* for ~40 bytes
 each — but it licenses nothing under an attached session.
 
+### STOCK vs FLOW — measured 2026-09-27, and the reason neither reclaim gate is the answer
+
+Headroom at the time of measurement: `/Volumes/Mastermind` **792 GiB free of 3,725 (79% used)**,
+which is **492 GiB above the 300 GiB `min_free_bytes` admission floor**; internal `/` has 332 GiB
+free. **No active incident** — worth stating, because every figure below is otherwise easy to read
+as urgent.
+
+**Stock side (deletion).** 51 trees / **37.7 GiB** safe, per the gates below. At the burn rate
+recorded in `~/.config/mastermind/worktree-storage.json` (**21.9 GiB/h**, measured 09-24→09-25
+over 27 h) that is **about 1.7 hours of runway.**
+
+**Footprint side (sparsify — reclaims bytes without deleting anything, because omitted paths stay
+tracked).** 711 registered trees hold **861.9 GiB**, mean 1.21 GiB. Only **73 trees are FULL**
+(≥3 GiB, i.e. `data/`/`site/`/`mockups/`/`verify_shots/` present) but they hold **409.5 GiB of
+excess** over a ~0.6 GiB sparse baseline — 11× the whole deletion pool. Tempting, and mostly
+untouchable:
+
+| verdict | class | trees | excess GiB | thinnable? |
+|---|---|---:|---:|---|
+| DIRTY | HUMAN | 12 | 75.9 | **no** — truncates uncommitted work AND wedges the conversation |
+| DIRTY | AGENT | 11 | 62.4 | **no** — a write into an omitted tree TRUNCATES the committed artifact |
+| LOCKED | AGENT | 12 | 55.8 | only if landed — needs the lock-stamp fix |
+| RECENT | HUMAN | 8 | 44.4 | no |
+| RECENT | AGENT | 7 | 39.1 | no — active work |
+| UNPUSHED | HUMAN | 5 | 29.7 | no |
+| LOCKED | HUMAN | 6 | 29.2 | no |
+| OPEN_PR | HUMAN | 4 | 22.2 | no |
+| LIVE_PROC | AGENT | 3 | 22.1 | no — occupied |
+| SAFE_* | HUMAN | 3 | 19.6 | no — human-driven |
+| SAFE_MERGED | AGENT | 1 | 5.6 | delete outright |
+| ORPHAN | AGENT | 1 | 3.5 | separate ratification |
+
+**~61 GiB of the 409.5 is touchable; 283 GiB is structurally untouchable** (dirty, unpushed, or
+human-driven). This CONFIRMS the earlier "a correctly-gated retrofit yields ~0.0 GiB" measurement
+rather than contradicting it: the excess is overwhelmingly held by trees that cannot be thinned
+safely, which is exactly why retrofit was a one-time backlog drain and never a lever.
+
+**So neither stock nor footprint is the answer. The flow is.** Mean size and FULL-rate by mint
+root:
+
+| mint root | trees | total | mean | FULL |
+|---|---:|---:|---:|---:|
+| `/Volumes/Mastermind/worktrees` (**ungoverned — no sparse hook**) | 139 | 283.4 GiB | **2.04 GiB** | **21%** |
+| `…/agent-workspaces/claude` (governed by the SSD helper) | 282 | 214.3 GiB | **0.76 GiB** | **3%** |
+| `macro-main/.claude/worktrees` (governed by `WorktreeCreate`) | 206 | 202.7 GiB | 0.98 GiB | 8% |
+| `…/agent-workspaces/tmp` (CI `contract-delta` scratch) | 9 | 43.1 GiB | **4.79 GiB** | **78%** |
+
+The governed roots work: 3% FULL, mean 0.76 GiB. The ungoverned mint root runs **7× the FULL rate
+and 2.7× the mean size**, and it is the same root that hosts the human-driven web trees — so it is
+simultaneously the biggest per-tree emitter and the one population no sweeper may touch. At 54
+trees/day that difference, not the 37.7 GiB of deletable stock, is what fills the volume.
+
+**Ranked by GiB/day of burn averted rather than GiB reclaimed once:**
+
+1. **Give `/Volumes/Mastermind/worktrees` a sparse mint path.** It is the only lever that compounds,
+   it deletes nothing, it touches nothing anyone is attached to, and it needs no ratification act —
+   closing the 2.04 → 0.76 GiB gap over 139 trees is ~180 GiB of footprint and a permanently lower
+   slope. The reason it has none today is that nothing owns that root (see below).
+2. **Sparse-or-TTL `…/agent-workspaces/tmp`.** 9 trees, 78% FULL, mean 4.79 GiB — machine-generated
+   `contract-delta` base checkouts, the worst per-tree offender on the host and the easiest to fix.
+3. The two reclaim gates below — 37.7 GiB, real but ~1.7 h of runway.
+
 ### Open ratification gates as of 2026-09-27 — both are OPERATOR acts, neither is taken
 
 Measured inventory of what they unlock: `research/WORKTREE_RECLAIM_CANDIDATES_2026_09_27.md`
