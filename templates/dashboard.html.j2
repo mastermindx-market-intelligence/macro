@@ -16161,7 +16161,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
   {% if action_board %}
   {% include "_us_act_now_board.html.j2" %}
     {% set _su = us_standouts if (us_standouts and us_standouts.buy) else None %}
-    {{ pv.pv_css() }}
+    {{ pv.pv_css(setup_detail=true) }}
     {# §6.9 R5 — the "passed on tonight" shelf's styles. Emitted ONCE, beside the card
        styles it sits under; the shelf itself renders far below, inside #us-standouts. #}
     {{ pvr.pvr_css() }}
@@ -16599,10 +16599,12 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
          No re-ordering: system order is preserved (CN no-mutation pattern).
          Rendered only when us_standouts.buy is populated (mode=stocks only). #}
       {% if _su %}
+      {% import "_prophet_setup_detail.html.j2" as psd_table %}
       <script type="application/json" id="us-stocktable-data">
       {
         "rows": [{% for _n in _su.buy %}{% if not loop.first %},{% endif %}{
           "ticker":        {{ _n.ticker | tojson }},
+          "setup_detail":  {{ psd_table.table_action(_n, _su.get("as_of")) | string | tojson }},
           "name":          {{ _n.name | tojson }},
           "sector":        {{ (_n.sector or '') | tojson }},
           "lane":          {{ (_n.get('lane') or '') | tojson }},
@@ -20202,7 +20204,7 @@ function initStockTableView(){
       },
       tip:{en:'Green dot = entry window open now',zh:'绿点＝现在入场窗口已开'} },
     { key:'name', labelEn:'Name', labelZh:'名称', default:true, sortable:true,
-      fmt:function(v){ return '<b>' + esc(v||'') + '</b>'; }},
+      fmt:function(v,r){ return '<b>' + esc(v||'') + '</b>' + (typeof r.setup_detail === 'string' ? r.setup_detail : ''); }},
     { key:'sector', labelEn:'Sector', labelZh:'板块', default:true, sortable:true,
       fmt:function(v){ if(!v) return '<span class="st-muted">—</span>';
         return b(esc(v), esc(SECZH[v]||v)); }},
@@ -20275,7 +20277,7 @@ function initStockTableView(){
     linkPattern: 'stock.html#{ticker}',
     columns: cols,
     optionLabels: { lane: LANE_LABELS, sector: SECTOR_LABELS },
-    searchPlaceholder: ['Search name…','搜索名称…'],
+    searchPlaceholder: ['Search ticker or name…','搜索代码或名称…'],
     /* P-MP1-SHELL §6/§9/§8 (commissioning follow-up, gap 2) — retires the
        Stage/阶段 filter dropdown AND its count chips (templates/stocktable.js
        _buildFilterRow/_updateCountChips) on the US table ONLY. hk/china/canada
@@ -20285,6 +20287,7 @@ function initStockTableView(){
        on the card grid (.pv-life/.mx-mark) is where that meaning lives now,
        per MP-1 §6's own disposition for this row. */
     stageFilter: false,
+    searchTicker: true,
   };
 
   /* Tier gate (docs/TIER_PREVIEW_PATTERN.md): merges the hydrated payload's

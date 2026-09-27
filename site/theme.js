@@ -5458,7 +5458,7 @@
   // A focusable control NESTED INSIDE a tip container owns its own taps. The click
   // handler has always honoured that; `nestedCtrl` is that same test, hoisted so the
   // focusin handler below cannot drift from it.
-  var CTRL_SEL = 'button, a, input, select, textarea, label, [role="button"]';
+  var CTRL_SEL = 'button, a, input, select, textarea, label, summary, [role="button"]';
   function nestedCtrl(target, t) {
     var ctrl = target && target.closest && target.closest(CTRL_SEL);
     return !!(ctrl && ctrl !== t && t.contains(ctrl));
@@ -6635,4 +6635,182 @@
   try {
     window.dispatchEvent(new CustomEvent('mdx-terminal-overlay-ready'));
   } catch (e) {}
+})();
+
+/* Packet2: enhance existing entitled row details; no fetch, store, router or auth owner.
+   Move the live detail nodes into one dialog and return them to their exact origin. */
+(function () {
+  'use strict';
+  if (window.__pvSetupBound || typeof HTMLDialogElement === 'undefined') return;
+  window.__pvSetupBound = true;
+  var dialog = null, active = null;
+  function node(tag, cls, text) {
+    var x = document.createElement(tag); if (cls) x.className = cls;
+    if (text !== undefined) x.textContent = text; return x;
+  }
+  function bilingual(parent, en, zh) {
+    parent.append(node('span', 'l-en', en), node('span', 'l-zh', zh)); return parent;
+  }
+  function build() {
+    if (dialog) return;
+    dialog = node('dialog', 'pv-setup-dialog'); dialog.id = 'pv-setup-dialog';
+    dialog.setAttribute('aria-labelledby', 'pvs-dialog-title');
+    var head = node('header', 'pvs-dialog-head'), titles = node('div');
+    var title = node('h2'); title.id = 'pvs-dialog-title';
+    titles.append(title, bilingual(node('p'), 'Setup detail · read only', '形态详情 · 只读'));
+    var close = bilingual(node('button', 'pvs-close'), 'Close ×', '关闭 ×'); close.type = 'button';
+    close.addEventListener('click', function () { dismiss(true); });
+    head.append(titles, close);
+    var body = node('div', 'pvs-dialog-content'), foot = node('footer', 'pvs-dialog-foot');
+    var link = bilingual(node('a', 'pvs-native-link'), 'Open stock page ↗', '打开个股页面 ↗');
+    foot.append(link, bilingual(node('span'), 'Close to return to the same row', '关闭后返回同一行'));
+    dialog.append(head, body, foot); document.body.append(dialog);
+    dialog.addEventListener('cancel', function (e) { e.preventDefault(); dismiss(true); });
+    dialog.addEventListener('click', function (e) {
+      if (e.target !== dialog) return;
+      var r = dialog.getBoundingClientRect();
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dismiss(true);
+    });
+    dialog.addEventListener('close', function () { if (!dialog.open) release(true); });
+    dialog.addEventListener('keydown', function (e) {
+      if (e.key !== 'Tab') return;
+      var nodes = Array.from(dialog.querySelectorAll('button,a[href],input,select,textarea,summary,[tabindex]')).filter(function (n) {
+        return !n.disabled && n.tabIndex >= 0 && n.getClientRects().length;
+      });
+      if (!nodes.length) { e.preventDefault(); return; }
+      var first = nodes[0], last = nodes[nodes.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+  }
+  function release(restoreFocus) {
+    var old = active; active = null;
+    if (!old) return;
+    // Restore only to the original live node. A replaced source is never resurrected.
+    old.moved.forEach(function (pair) {
+      if (old.row.isConnected && old.row.contains(old.details) && pair.owner.isConnected &&
+          (pair.owner === old.details || old.details.contains(pair.owner)) && pair.home.contains(pair.mark)) pair.mark.replaceWith(pair.node);
+      else { pair.node.remove(); pair.mark.remove(); }
+    });
+    dialog.querySelector('.pvs-dialog-content').replaceChildren();
+    dialog.querySelector('#pvs-dialog-title').textContent = '';
+    dialog.querySelector('.pvs-native-link').removeAttribute('href');
+    if (!old.hadLock) document.documentElement.classList.remove('pv-setup-lock');
+    if (restoreFocus && old.trigger.isConnected && old.trigger.getClientRects().length) old.trigger.focus({preventScroll: true});
+    else if (restoreFocus) {
+      var fallback = document.querySelector('#ucp-search, #us-src-btn-cand');
+      if (fallback) fallback.focus({preventScroll: true});
+    }
+    window.scrollTo({left:old.x, top:old.y, behavior:'instant'});
+  }
+  function dismiss(restoreFocus) {
+    release(restoreFocus);
+    if (dialog && dialog.open) dialog.close();
+  }
+  // Copy only the already-painted publisher geometry, not markup strings or live quote overlays.
+  // This bounded display guard is not a data sanitizer service or a new chart engine.
+  function chartCopy(svg) {
+    if (!svg) return null;
+    var tags = new Set(['svg','g','rect','line','polyline','polygon','path','circle','ellipse']);
+    var numeric = new Set(['x','y','x1','x2','y1','y2','cx','cy','r','rx','ry','width','height','viewBox','points','stroke-width','stroke-dasharray','stroke-opacity','fill-opacity','opacity']);
+    var all = [svg].concat(Array.from(svg.querySelectorAll('*')));
+    if (all.length > 1000) return null;
+    for (var n of all) {
+      if (!tags.has(n.localName) || n.namespaceURI !== 'http://www.w3.org/2000/svg') return null;
+      for (var attr of n.attributes) {
+        var k = attr.name, v = attr.value;
+        if (numeric.has(k) && /^[\d\s.,%+eE-]+$/.test(v)) continue;
+        if (k === 'fill' || k === 'stroke') { if (/^(none|currentColor|#[0-9a-fA-F]{3,8}|var\(--(up|down|warn|muted|text|line)\))$/.test(v)) continue; }
+        if (k === 'class' && /^[A-Za-z0-9_ -]*$/.test(v)) continue;
+        if (k === 'd' && /^[MmLlHhVvCcSsQqTtAaZz\d\s.,+eE-]+$/.test(v)) continue;
+        if (k === 'preserveAspectRatio' && /^(none|x(Min|Mid|Max)Y(Min|Mid|Max)( (meet|slice))?)$/.test(v)) continue;
+        if (k === 'xmlns' && v === 'http://www.w3.org/2000/svg') continue;
+        if (k === 'stroke-linejoin' && /^(miter|round|bevel)$/.test(v)) continue;
+        if (k === 'stroke-linecap' && /^(butt|round|square)$/.test(v)) continue;
+        return null;
+      }
+    }
+    var copy = svg.cloneNode(true); copy.setAttribute('role', 'img');
+    copy.setAttribute('aria-label', 'Published source chart'); return copy;
+  }
+  function sourceStamp(row) {
+    var scope = row.closest('#us-candidate-pool,#us-standouts');
+    return scope ? ['data-source-digest','data-as-of','data-board-asof'].map(function (k) {return scope.getAttribute(k) || '';}).join('|') : '';
+  }
+  function open(trigger, details, row) {
+    if (!row.isConnected || !row.getClientRects().length || !trigger.getClientRects().length ||
+        row.closest('[aria-hidden="true"],[hidden],.mx-tier-hidden,.mx-tier-blurred')) return;
+    build(); if (active) release(false);
+    var link = row.querySelector('.pv-setup-stock-link,.pv-record-link,.ucp-identity>a,.stf-tkr');
+    if (!link) return;
+    var nativeHref = link.getAttribute('href');
+    if (!nativeHref || !/^stock\.html#[^\s]*$/.test(nativeHref)) return;
+    if (details.classList.contains('pv-setup-table')) {
+      var panel = row.closest('#us-standouts');
+      if (!panel || (details.dataset.setupAsof || '') !== (panel.dataset.boardAsof || '')) return;
+      var bound = details.dataset.setupTicker;
+      // Same row's native anchor and presentation must agree; no ticker lookup/join.
+      if (!bound || nativeHref !== 'stock.html#' + bound) return;
+    }
+    // Table-only content stays in its own inert template until opened. The Table
+    // itself requires JS; card/Plan inline disclosures keep their no-JS fallback.
+    var holder = details.querySelector(':scope > template.pvs-body-source');
+    var source = holder ? holder.content.querySelector('.pv-setup-body') : details.querySelector(':scope > .pv-setup-body');
+    if (details.classList.contains('pv-setup-table') && !source) return;
+    var nodes = source ? [source] : Array.from(details.children).filter(function (n) { return n.localName !== 'summary'; });
+    var slot = source && source.querySelector('[data-pvs-chart]');
+    if (slot) {
+      slot.replaceChildren();
+      var geometry = row.querySelector('.pv-chart > svg');
+      if (details.classList.contains('pv-setup-table')) {
+        var encoded = details.querySelector(':scope > .pvs-chart-source');
+        var text = encoded && encoded.content ? encoded.content.textContent : '';
+        geometry = null;
+        if (text && text.length <= 100000 && !/<!doctype|<!entity/i.test(text)) {
+          var parsed = new DOMParser().parseFromString(text, 'image/svg+xml');
+          // Publisher SVG is normally parsed as HTML on its card, where the SVG
+          // namespace is implicit. Restore only that namespace for inert XML parsing.
+          if (!parsed.querySelector('parsererror') && parsed.documentElement.localName === 'svg' && !parsed.documentElement.namespaceURI) {
+            text = text.replace(/^(\s*<svg)(?=[\s>])/, '$1 xmlns="http://www.w3.org/2000/svg"');
+            parsed = new DOMParser().parseFromString(text, 'image/svg+xml');
+          }
+          if (!parsed.querySelector('parsererror')) geometry = parsed.documentElement;
+        }
+      }
+      var svg = chartCopy(geometry);
+      if (svg) slot.append(svg);
+      slot.append(bilingual(node('p'), svg ? 'Published mini-chart · no new price series' : 'Chart unavailable for this source row', svg ? '来源迷你图 · 不新增价格序列' : '此来源记录未提供可用图表'));
+    }
+    active = {trigger: trigger, row: row, details: details, moved: [], x: window.scrollX, y: window.scrollY,
+      hadLock: document.documentElement.classList.contains('pv-setup-lock'), sourceStamp: sourceStamp(row)};
+    var title = details.dataset.setupTicker || row.dataset.ticker || '';
+    if (row.dataset.recordOnly === '1') title += ' · ' + (row.id || '').replace(/^pv-/, '');
+    dialog.querySelector('#pvs-dialog-title').textContent = title;
+    dialog.querySelector('.pvs-native-link').setAttribute('href', nativeHref);
+    var target = dialog.querySelector('.pvs-dialog-content');
+    nodes.forEach(function (n) { var home = n.parentNode, mark = document.createComment('pv-setup-home'); n.before(mark); active.moved.push({node:n,mark:mark,home:home,owner:holder || details}); target.append(n); });
+    document.documentElement.classList.add('pv-setup-lock');
+    if (!dialog.open) dialog.showModal(); dialog.scrollTop = 0; dialog.querySelector('.pvs-close').focus({preventScroll:true});
+  }
+  document.addEventListener('click', function (e) {
+    var trigger = e.target.closest && e.target.closest('.pv-setup-inline > summary, .pv-record-detail > summary');
+    if (!trigger) return;
+    var details = trigger.parentElement, row = details.closest('.pvcard, .ucp-row');
+    if (!row && details.classList.contains('pv-setup-table') && details.closest('#us-stocktable-wrap')) row = details.closest('tr');
+    if (!row) return;
+    e.preventDefault(); open(trigger, details, row);
+  });
+  // Existing owner events. The detail never decides entitlement or fetches a missing row.
+  document.addEventListener('candidate-pool-hydrated', function () { dismiss(true); }, true);
+  document.addEventListener('langchange', function () { dismiss(true); });
+  window.addEventListener('mdx-auth', function () { dismiss(true); });
+  window.addEventListener('mmx-access-tier', function () { dismiss(true); });
+  new MutationObserver(function () {
+    if (!active) return;
+    if (!active.row.isConnected || !active.details.isConnected || !active.row.getClientRects().length ||
+        sourceStamp(active.row) !== active.sourceStamp ||
+        !active.row.contains(active.details) ||
+        active.moved.some(function (p) { return !p.owner.isConnected || !p.home.contains(p.mark) ||
+          !(p.owner === active.details || active.details.contains(p.owner)); })) dismiss(true);
+  }).observe(document.documentElement, {childList:true, subtree:true, attributes:true, attributeFilter:['hidden','data-prophet-src','data-source-digest','data-as-of','data-board-asof']});
 })();

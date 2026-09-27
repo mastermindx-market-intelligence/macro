@@ -413,3 +413,282 @@ def test_plan_action_unavailable_requires_explicit_null_key():
     assert "操作指引暂缺。" in explicit_null
     assert 'data-action-state="unavailable"' not in non_null
     assert "Action guidance unavailable." not in non_null
+
+
+# R18: single-row display projections ride existing entitled template/payload owners.
+def _r18_env():
+    from jinja2 import Environment, FileSystemLoader
+    e = Environment(loader=FileSystemLoader(str(ROOT / 'templates')), autoescape=True)
+    e.globals['tr'] = lambda value: value
+    return e
+
+
+def test_setup_detail_preserves_zero_false_and_missing_as_different_facts():
+    from bs4 import BeautifulSoup
+    e = _r18_env()
+    row = {'ticker': 'TEST_ONLY', 'price': 0, 'stage': 'setting_up', 'lane': 'bottoming',
+           'entry_signal': {'status': 'bounce_wait', 'buy_zone': {'low': 0, 'high': None},
+                            'stop': 10, 'chase_above': 40},
+           'hold': {'invalidation': 7},
+           'signal': {'above200': False, 'weekly_bull': True}}
+    html = str(e.get_template('_prophet_setup_detail.html.j2').module.body(row, 'board', '2026-09-24'))
+    soup = BeautifulSoup(html, 'html.parser')
+    def val(path):
+        return soup.select_one('[data-source-field="' + path + '"] dd').get_text(' ', strip=True)
+    assert val('price') == '$0.00'
+    assert val('entry_signal.buy_zone.low') == '$0.00'
+    assert 'Not supplied' in val('entry_signal.buy_zone.high')
+    assert val('entry_signal.stop') == '$10.00'
+    assert val('hold.invalidation') == '$7.00'
+    assert val('entry_signal.chase_above') == '$40.00'
+    assert val('signal.above200') == 'No 否'
+    assert val('signal.weekly_bull') == 'Yes 是'
+    assert 'Not supplied' in val('signal.provisional')
+    assert 'Not supplied' in val('price_as_of')
+    assert val('envelope.as_of') == '2026-09-24'
+
+
+def test_setup_detail_research_never_borrows_board_levels_or_strategy():
+    from bs4 import BeautifulSoup
+    row = {'ticker': 'SAME_SYMBOL', 'lane': 'featured', 'stage': 'live',
+           'entry_signal': {'status': 'buy_now', 'stop': 11},
+           'strategy_sleeve': 'UNBOUND_POLICY', 'horizon_days': 20,
+           'targets': [99, 100], 'hold': {'invalidation': 4}}
+    html = str(_r18_env().get_template('_prophet_setup_detail.html.j2').module.body(row, 'pool', None))
+    soup = BeautifulSoup(html, 'html.parser')
+    assert not soup.select('[data-entry-status], [data-source-field="entry_signal.stop"]')
+    assert 'UNBOUND_POLICY' not in html
+    assert 'buy_now' not in html
+    assert not soup.select('.pvs-levels')
+    assert 'No model-plan link is available for this candidate.' in soup.get_text()
+
+
+def test_setup_detail_rejects_nonfinite_or_boolean_prices():
+    from bs4 import BeautifulSoup
+    m = _r18_env().get_template('_prophet_setup_detail.html.j2').module
+    for price in [True, False, float('nan'), float('inf'), -float('inf'), '12.5', {}, []]:
+        h = str(m.body({'ticker': 'TEST_ONLY', 'price': price}, 'board', None))
+        s = BeautifulSoup(h, 'html.parser')
+        assert 'Not supplied' in s.select_one('[data-source-field="price"] dd').get_text()
+
+
+def test_setup_detail_escapes_source_text_and_attribute_payloads():
+    from bs4 import BeautifulSoup
+    m = _r18_env().get_template('_prophet_setup_detail.html.j2').module
+    attack = '\"><img src=x onerror=alert(1)>'
+    h = str(m.body({'ticker': attack, 'stage': attack, 'lane': attack,
+                    'signal': {'reason': attack},
+                    'entry_signal': {'status': attack, 'headline': attack}}, 'board', attack))
+    s = BeautifulSoup(h, 'html.parser')
+    assert not s.select('img, script, iframe, [onerror]')
+    assert s.select_one('[data-entry-status]')['data-entry-status'] == attack
+    assert s.select_one('[data-native-id]')['data-native-id'] == attack
+    assert attack in s.get_text()
+
+
+def test_setup_detail_opt_in_keeps_one_card_and_a_real_native_link():
+    from bs4 import BeautifulSoup
+    e = _r18_env(); m = e.get_template('_prophet_card.html.j2').module
+    cx = {'tk': 'TEST_ONLY', 'href': 'stock.html#TEST_ONLY', 'mkt': 'us',
+          'verb': 'wait', 'edge': None, 'stage': 0}
+    ordinary = BeautifulSoup(str(m.pv_card(cx)), 'html5lib')
+    assert ordinary.select_one('.pvcard').name == 'a'
+    assert not ordinary.select('.pv-setup-inline')
+    detail = e.get_template('_prophet_setup_detail.html.j2').module.body({'ticker': 'TEST_ONLY'}, 'board', None)
+    enhanced = BeautifulSoup(str(m.pv_card(dict(cx, setup_detail=detail))), 'html5lib')
+    assert len(enhanced.select('.pvcard')) == 1
+    assert enhanced.select_one('.pvcard').name == 'article'
+    assert enhanced.select_one('.pv-setup-stock-link')['href'] == 'stock.html#TEST_ONLY'
+    assert len(enhanced.select('details.pv-setup-inline > summary')) == 1
+    assert not enhanced.select('a a, a summary, a details, a button')
+    assert 'pv-wait' in enhanced.select_one('.pvcard')['class']
+
+
+def test_setup_detail_uses_native_lens_control_exception_and_source_events():
+    theme = (ROOT / 'templates' / 'theme.js').read_text(encoding='utf-8')
+    assert "var CTRL_SEL = 'button, a, input, select, textarea, label, summary," in theme
+    detail = theme.split('/* Packet2: enhance existing entitled row details;', 1)[1]
+    assert "candidate-pool-hydrated" in detail and "mmx-access-tier" in detail
+    assert "sourceStamp(active.row) !== active.sourceStamp" in detail
+    assert "old.row.isConnected" in detail
+    assert "row.closest('[aria-hidden=\"true\"],[hidden],.mx-tier-hidden,.mx-tier-blurred')" in detail
+    assert 'fetch(' not in detail and 'localStorage' not in detail and 'sessionStorage' not in detail
+
+
+# R19: the existing dense Table consumes the same entitled single-row presenter.
+def test_setup_table_same_row_body_and_clock_match_card_presenter():
+    from bs4 import BeautifulSoup
+    row = {'ticker': 'SAME_SYMBOL', 'stage': 'setting_up', 'lane': 'bottoming',
+           'price': 105., 'entry_signal': {'status': 'bounce_wait',
+           'buy_zone': {'low': 100., 'high': 103.}, 'stop': 90., 'chase_above': 110.},
+           'hold': {'invalidation': 85.}, 'signal': {'above200': False}}
+    m = _r18_env().get_template('_prophet_setup_detail.html.j2').module
+    table = BeautifulSoup(str(m.table_action(row, '2026-09-24')), 'html5lib')
+    card = BeautifulSoup(str(m.body(row, 'board', '2026-09-24')), 'html5lib')
+    assert str(table.select_one('.pv-setup-body')) == str(card.select_one('.pv-setup-body'))
+    action = table.select_one('details.pv-setup-table')
+    assert action['data-setup-ticker'] == 'SAME_SYMBOL'
+    assert action['data-setup-asof'] == '2026-09-24'
+    assert table.select_one('[data-entry-status]')['data-entry-status'] == 'bounce_wait'
+    assert table.select_one('[data-source-field="entry_signal.stop"] dd').text == '$90.00'
+    assert table.select_one('[data-source-field="hold.invalidation"] dd').text == '$85.00'
+
+
+def test_setup_table_chart_is_inert_text_until_display_guard():
+    from bs4 import BeautifulSoup
+    m = _r18_env().get_template('_prophet_setup_detail.html.j2').module
+    svg = '<svg viewBox="0 0 240 42"><polyline points="0,40 240,5"/></svg>'
+    s = BeautifulSoup(str(m.table_action({'ticker': 'TEST', 'spark_svg': svg}, None)), 'html5lib')
+    assert not s.select('svg, script, img, [onerror]')
+    assert s.select_one('template.pvs-chart-source').string == svg
+    assert s.select_one('details')['data-setup-asof'] == ''
+
+
+def test_setup_table_hostile_source_cannot_break_out_of_serialized_row():
+    import json
+    from bs4 import BeautifulSoup
+    e = _r18_env()
+    attack = '</template></script><img src=x onerror=alert(1)>'
+    row = {'ticker': 'TEST', 'spark_svg': attack, 'signal': {'reason': attack},
+           'entry_signal': {'headline': attack, 'status': 'bounce_wait'}}
+    renderer = e.from_string('{% import "_prophet_setup_detail.html.j2" as d %}'
+                             '{{ {"setup_detail": d.table_action(row, clock)|string}|tojson }}')
+    encoded = renderer.render(row=row, clock='2026-09-24')
+    assert '</script>' not in encoded and '<img' not in encoded
+    s = BeautifulSoup(json.loads(encoded)['setup_detail'], 'html5lib')
+    assert not s.select('script, img, iframe, [onerror]')
+    assert attack in s.get_text()
+
+
+def test_setup_table_fallback_missing_values_never_enrich_from_other_population():
+    from bs4 import BeautifulSoup
+    m = _r18_env().get_template('_prophet_setup_detail.html.j2').module
+    row = {'ticker': 'NO_FIELDS', 'strategy_sleeve': 'UNBOUND', 'horizon_days': 12,
+           'targets': [200.], 'plan_id': 'UNRELATED', 'price': None}
+    s = BeautifulSoup(str(m.table_action(row, None)), 'html5lib')
+    assert 'UNBOUND' not in s.text and 'UNRELATED' not in s.text
+    assert 'Not supplied' in s.select_one('[data-source-field="price"] dd').text
+    assert 'Not supplied' in s.select_one('[data-source-field="envelope.as_of"] dd').text
+    assert s.select_one('[data-entry-status]')['data-entry-status'] == ''
+
+
+def test_setup_table_keeps_native_navigation_and_one_detail_controller():
+    source = (ROOT / 'templates' / 'stocktable.js').read_text(encoding='utf-8')
+    assert "e.target.closest('a,button,input,select,textarea,summary,details,[role=\"button\"]')" in source
+    assert "T.open(row.ticker || '', tr)" in source
+    assert "cfg.linkPattern.replace('{ticker}'" in source
+    assert 'StockTable.init' in (ROOT / 'templates' / 'dashboard.html.j2').read_text()
+    theme = (ROOT / 'templates' / 'theme.js').read_text()
+    detail = theme.split('/* Packet2: enhance existing entitled row details;', 1)[1]
+    assert detail.count("dialog.id = 'pv-setup-dialog'") == 1
+    assert "details.dataset.setupTicker" in detail
+    assert "details.dataset.setupAsof" in detail
+    assert "nativeHref !== 'stock.html#' + bound" in detail
+    assert 'fetch(' not in detail and 'localStorage' not in detail
+    assert 'JSON.parse' not in detail
+
+
+def test_setup_table_ticker_search_is_us_opt_in_and_detects_regression():
+    import json
+    import shutil
+    import subprocess
+
+    source = (ROOT / 'templates' / 'stocktable.js').read_text()
+    begin = source.index('    function applyFilters(rows) {')
+    end = source.index('    function sortRows(rows) {', begin)
+    native = source[begin:end]
+    harness = r'''
+const assert = require('node:assert/strict');
+const rows=[{ticker:'MPWR',name:'Monolithic Power Systems',sector:'Technology'},
+            {ticker:'AAPL',name:'Apple',sector:'Technology',narrative:{theme:'Devices'}},
+            {ticker:'TEST',name:'Other'}];
+const original=JSON.stringify(rows);
+let cfg={},filters={stage:'all',zone:'all',tier:'all',sector:'all',capBucket:'all',lane:'all',freshOnly:false,theme:'MPWR'};
+function _isFresh(){return false;}
+__FUNCTION__
+assert.deepEqual(applyFilters(rows), []);                         // unchanged legacy caller
+cfg.searchTicker=false; assert.deepEqual(applyFilters(rows), []);
+cfg.searchTicker='true'; assert.deepEqual(applyFilters(rows), []); // explicit bool only
+cfg.searchTicker=true; assert.deepEqual(applyFilters(rows).map(x=>x.ticker),['MPWR']);
+filters.theme='mpwr'; assert.deepEqual(applyFilters(rows).map(x=>x.ticker),['MPWR']);
+filters.theme='Monolithic'; assert.deepEqual(applyFilters(rows).map(x=>x.ticker),['MPWR']);
+filters.theme='Devices'; assert.deepEqual(applyFilters(rows).map(x=>x.ticker),['AAPL']);
+filters.theme=''; assert.deepEqual(applyFilters(rows),rows);
+assert.equal(JSON.stringify(rows),original);
+'''
+    node = shutil.which('node')
+    assert node, 'existing Node runtime is required to verify the native table predicate'
+    good = subprocess.run([node, '-e', harness.replace('__FUNCTION__', native)], capture_output=True, text=True)
+    assert good.returncode == 0, good.stderr
+    mutation = native.replace('cfg.searchTicker === true', 'false')
+    assert mutation != native
+    bad = subprocess.run([node, '-e', harness.replace('__FUNCTION__', mutation)], capture_output=True, text=True)
+    assert bad.returncode != 0 and 'AssertionError' in bad.stderr
+    assert 'searchTicker: true' in (ROOT / 'templates' / 'dashboard.html.j2').read_text()
+    for market in ['china', 'hk', 'canada', 'intl']:
+        assert 'searchTicker: true' not in (ROOT / 'templates' / (market + '.html.j2')).read_text()
+
+
+def test_dense_detail_uses_inert_same_row_body_and_fallback():
+    from bs4 import BeautifulSoup
+    m = _r18_env().get_template('_prophet_setup_detail.html.j2').module
+    row = {'ticker': 'LOCAL', 'entry_signal': {'status': 'bounce_wait', 'stop': 11}}
+    markup = str(m.table_action(row, '2026-09-24'))
+    soup = BeautifulSoup(markup, 'html5lib')
+    detail = soup.select_one('details.pv-setup-table')
+    assert detail.select_one(':scope > .pv-setup-body') is None
+    inert = detail.select_one(':scope > template.pvs-body-source')
+    assert inert.select_one('.pv-setup-body[data-native-id="LOCAL"]')
+    assert inert.select_one('[data-entry-status="bounce_wait"]')
+    assert detail.select_one(':scope > .pvs-fallback-note')
+    assert not detail.select('script,iframe,img,[onerror]')
+    # Cards still have a direct native disclosure body when enhancement is absent.
+    card = BeautifulSoup(str(m.action(m.body(row, 'board', '2026-09-24'))), 'html5lib')
+    assert card.select_one('details.pv-setup-inline > .pv-setup-body')
+
+
+def test_dense_detail_controller_restores_only_original_live_owner():
+    source = (ROOT / 'templates/theme.js').read_text().split('/* Packet2: enhance existing entitled row details;', 1)[1]
+    assert "holder.content.querySelector('.pv-setup-body')" in source
+    assert 'pair.home.contains(pair.mark)' in source
+    assert 'old.row.contains(old.details)' in source
+    assert 'pair.owner.isConnected' in source
+    assert 'owner:holder || details' in source
+    assert 'target.append(n)' in source
+    assert 'fetch(' not in source and 'localStorage' not in source
+
+
+# R21: decision-changing absences are visible; provenance is progressive, not removed.
+def test_setup_detail_progressive_disclosure_keeps_facts_and_missing_terms():
+    from bs4 import BeautifulSoup
+    env = _r18_env()
+    row = {"ticker": "FOCUS", "price": 11.0, "lane": "bottoming", "stage": "setting_up",
+           "entry_signal": {"status": "bounce_wait", "headline": "Wait for confirmation", "buy_zone": {"low": 10.0, "high": 10.5}, "stop": 9.0, "chase_above": 12.0},
+           "hold": {"invalidation": 8.0}, "signal": {"reason": "Confirmation pending", "above200": False, "weekly_bull": False}}
+    soup = BeautifulSoup(str(env.get_template("_prophet_setup_detail.html.j2").module.body(row, "board", "2026-09-24")), "html5lib")
+    extra = soup.select_one("details.pvs-audit")
+    assert extra and not extra.has_attr("open")
+    assert soup.select_one(".pvs-summary-clock").find_parent("details") is None
+    assert "2026-09-24" in soup.select_one(".pvs-summary-clock").get_text(" ", strip=True)
+    assert "Quote time" in soup.select_one(".pvs-summary-clock").get_text()
+    assert "Not supplied" in soup.select_one(".pvs-summary-clock").get_text()
+    assert soup.select_one("[data-entry-status]")["data-entry-status"] == "bounce_wait"
+    assert soup.select_one(".pvs-availability").find_parent("details") is None
+    assert "Target and holding period unavailable" in soup.select_one(".pvs-availability").get_text()
+    assert "not calculated" in soup.select_one(".pvs-availability").get_text()
+    for path, val in [("entry_signal.stop", "$9.00"), ("hold.invalidation", "$8.00"), ("entry_signal.chase_above", "$12.00")]:
+        field = soup.select_one('[data-source-field="' + path + '"]')
+        assert field.find_parent("details") is None and field.select_one("dd").get_text(strip=True) == val
+    for path in ["canonical strategy binding not supplied", "holding duration not supplied", "envelope.as_of", "price_as_of"]:
+        assert extra.select_one('[data-source-field="' + path + '"]')
+    assert "No model-plan link is available" in extra.get_text()
+
+
+def test_setup_detail_styles_are_explicit_opt_in_after_acceptance_repair():
+    import hashlib
+    env = _r18_env()
+    card = env.get_template("_prophet_card.html.j2").module
+    css = str(card.pv_css())
+    assert hashlib.sha256(css.encode()).hexdigest() == "e7dd2cf07a44230d9a1b9a82b335943070ca0bad76e6fc7c1b99aa0625a12258"
+    assert ".pvs-audit" not in css
+    assert ".pvs-audit" in str(card.pv_css(setup_detail=True))

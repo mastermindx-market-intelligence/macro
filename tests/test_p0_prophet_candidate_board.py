@@ -569,7 +569,13 @@ def test_gated_candidate_journey_never_borrows_freshness(as_of):
     assert "今晚" not in visible_and_tooltip
     assert str(gate["locked"]) in wall.select_one(".us-tw-h .l-en").get_text()
     assert str(gate["locked"]) in wall.select_one(".us-tw-h .l-zh").get_text()
-    assert len(section.select("#us-cand-grid a[data-ticker]")) == gate["preview"]
+    cards = section.select("#us-cand-grid > .pvcard[data-ticker]")
+    assert len(cards) == gate["preview"]
+    for card in cards:
+        assert card.name == "article"
+        assert card.select_one("a.pv-setup-stock-link")["href"] == "stock.html#" + card["data-ticker"]
+        assert card.select_one("details.pv-setup-inline > summary")
+        assert not card.select("a details, a button, a a")
     assert not section.select('#us-cand-grid [data-ticker="CAND3"], #us-cand-grid [data-ticker="CAND4"]')
     heading = section.select_one(".mx-sec-total .l-en").get_text(" ", strip=True)
     if as_of and as_of != "__missing__":

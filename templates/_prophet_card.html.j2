@@ -176,7 +176,7 @@
 {%- endif %}
 {% endmacro %}
 
-{% macro pv_css() %}
+{% macro pv_css(setup_detail=false) %}
 <style>
 .pvcard{position:relative;display:flex;flex-direction:column;background:var(--panel2);border:1px solid var(--line);border-radius:12px;overflow:hidden;text-decoration:none;color:var(--text);min-width:0;transition:transform .12s,box-shadow .12s,border-color .12s}
 .pvcard:hover{transform:translateY(-2px);box-shadow:0 5px 18px rgba(0,0,0,.22);border-color:color-mix(in srgb,var(--pvh) 55%,var(--line))}
@@ -572,7 +572,14 @@ html[data-theme="light"] .pv-live{--plvc:#2f6fd0}
      because a phone is where 9.5px stops being readable. */
   .pv-mk-i{font-size:10px;padding:2px 7px}
 }
-</style>
+{% if setup_detail is sameas true %}/* Opt-in Prophet detail. Existing non-opted card geometry/semantics are unchanged. */
+.pvcard.pv-has-setup{position:relative}.pv-setup-stock-link{position:absolute;inset:0;z-index:4;border-radius:inherit}.pv-setup-inline{position:relative;z-index:5;margin-top:10px}.pv-setup-inline>summary{width:fit-content;cursor:pointer;border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:7px 10px;color:var(--text);font-size:12px;list-style:none;background:var(--panel2,var(--panel))}.pv-setup-inline>summary:focus-visible,.pv-setup-stock-link:focus-visible{outline:2px solid var(--link);outline-offset:2px}.pv-setup-inline[open]{z-index:6}.pv-setup-inline[open]>.pv-setup-body{margin-top:12px}
+.pvs-availability{font-size:12px;line-height:1.5;padding:10px 12px;border-inline-start:2px solid var(--muted);background:var(--panel2,var(--panel));color:var(--muted)}.pvs-audit{margin:14px 0;border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:0 12px}.pvs-audit>summary{padding:12px 0;cursor:pointer;color:var(--text);font-size:12px;font-weight:650}.pvs-audit>summary:focus-visible{outline:2px solid var(--link);outline-offset:3px}.pvs-audit>.pvs-section:last-child{border-bottom:0}
+.pv-setup-body,.pv-setup-body *{box-sizing:border-box}.pvs-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:22px}.pvs-grid>div{min-width:0}.pvs-section{padding:14px 0;border-bottom:1px solid var(--line)}.pvs-section h3{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}.pvs-section p{line-height:1.55;margin:8px 0;overflow-wrap:anywhere}.pvs-note{font-size:12px;color:var(--muted)}.pvs-read{font-size:16px;font-weight:750;color:var(--text)}.pvs-levels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:0}.pvs-levels .pvs-field{padding:10px;background:var(--panel2,var(--panel));border:1px solid var(--line);border-radius:var(--r-ctl,8px)}.pvs-field dt{font-size:11px;color:var(--muted);margin-bottom:4px}.pvs-field dd{margin:0;font-size:14px;color:var(--text);overflow-wrap:anywhere}.pvs-levels dd{font-size:17px;font-weight:750}.pvs-facts{margin:0}.pvs-facts .pvs-field{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--line)}.pvs-facts dt{flex:1}.pvs-facts dd{flex:1;text-align:right;font-size:12px}.pvs-chart-slot{background:var(--panel2,var(--panel));border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:12px;margin:14px 0}.pvs-chart-slot>svg{display:block;width:100%;height:150px}.pvs-chart-slot>p{font-size:10px;color:var(--muted);margin:8px 0 0}
+html.pv-setup-lock{overflow:hidden}.pv-setup-dialog{box-sizing:border-box;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);color:var(--text);width:min(1040px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:0;overflow:auto;overscroll-behavior:contain;box-shadow:0 18px 60px #0004}.pv-setup-dialog::backdrop{background:#0008}.pv-setup-dialog *{box-sizing:border-box}.pvs-dialog-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;position:sticky;top:0;padding:18px 22px;border-bottom:1px solid var(--line);background:var(--panel);z-index:8}.pvs-dialog-head h2{font-size:23px;line-height:1.2;margin:0;overflow-wrap:anywhere}.pvs-dialog-head p{font-size:12px;color:var(--muted);margin:5px 0}.pvs-close{border:1px solid var(--line);border-radius:var(--r-ctl,8px);padding:8px 12px;background:var(--panel2,var(--panel));color:var(--text);cursor:pointer}.pvs-close:focus-visible,.pvs-native-link:focus-visible{outline:2px solid var(--link);outline-offset:2px}.pvs-dialog-content{padding:4px 22px 20px}.pvs-dialog-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;font-size:12px}.pvs-native-link{color:var(--link)}.pvs-dialog-content>.pv-setup-body{margin:0}.pv-setup-dialog .pv-record-detail{position:static!important}
+@media(max-width:680px){.pvs-grid{grid-template-columns:1fr;gap:0}.pv-setup-dialog{width:calc(100vw - 16px);max-height:calc(100dvh - 16px)}.pvs-dialog-head{padding:16px}.pvs-dialog-content{padding:0 16px 16px}.pvs-dialog-foot{padding:12px 16px;flex-wrap:wrap}.pvs-levels{gap:7px}.pvs-levels dd{font-size:15px}.pvs-chart-slot>svg{height:120px}}
+
+{% endif %}</style>
 {% endmacro %}
 
 {% macro pv_card(cx, allow_no_read=false) %}
@@ -593,11 +600,13 @@ html[data-theme="light"] .pv-live{--plvc:#2f6fd0}
     Reuse neutral ink without the data-noread absence marker. Every ordinary
     caller retains its prior bytes and meaning. -#}
 {%- set _record_only = cx.get('record_only') is sameas true -%}
+{%- set _setup = cx.get('setup_detail') if cx.get('setup_detail') is string else none -%}
+{%- set _article = _record_only or _setup -%}
 {%- set _no_read = allow_no_read and (cx.verb not in _VEN) -%}
 {%- set _verb = 'wait' if _no_read else (cx.verb if cx.verb in _VEN else 'wait') -%}
 {%- set _stage = cx.get('stage') or 0 -%}
-{% if _record_only %}<article{% else %}<a{% endif %} class="pvcard{% if _record_only %} pv-noread pv-record{% elif _no_read %} pv-noread{% else %} pv-{{ _verb }}{% endif %}{% if not _record_only and cx.get('featured') %} pv-featured{% elif not _record_only and cx.get('triage') %} pv-triage{% endif %}"{% if not _record_only %} href="{{ cx.href|e }}"{% endif %}{% if _record_only %} data-record-only="1"{% endif %}{% if cx.get('id') %} id="pv-{{ cx.id|e }}"{% endif %} data-ticker="{{ cx.tk|e }}"{% if cx.get('life') %} data-life="{{ cx.life|e }}"{% endif %}{% if not _record_only and cx.get('stage_key') %} data-stage="{{ cx.stage_key|e }}"{% endif %}{% if cx.get('stance_basis') %} data-tip-en="{{ cx.get('stance_tip_en') or ('Stance source: ' ~ cx.stance_basis) }}" data-tip-zh="{{ cx.get('stance_tip_zh') or ('依据来源：' ~ cx.stance_basis) }}"{% endif %}>
-  {% if _record_only %}<a class="pv-record-link" href="{{ cx.href|e }}" aria-label="{{ cx.tk|e }}" style="position:absolute;inset:0;z-index:4;border-radius:var(--r-card,12px)"></a>{% endif %}<div class="pv-chart">
+{% if _article %}<article{% else %}<a{% endif %} class="pvcard{% if _setup %} pv-has-setup{% endif %}{% if _record_only %} pv-noread pv-record{% elif _no_read %} pv-noread{% else %} pv-{{ _verb }}{% endif %}{% if not _record_only and cx.get('featured') %} pv-featured{% elif not _record_only and cx.get('triage') %} pv-triage{% endif %}"{% if not _article %} href="{{ cx.href|e }}"{% endif %}{% if _record_only %} data-record-only="1"{% endif %}{% if cx.get('id') %} id="pv-{{ cx.id|e }}"{% endif %} data-ticker="{{ cx.tk|e }}"{% if cx.get('life') %} data-life="{{ cx.life|e }}"{% endif %}{% if not _record_only and cx.get('stage_key') %} data-stage="{{ cx.stage_key|e }}"{% endif %}{% if cx.get('stance_basis') %} data-tip-en="{{ cx.get('stance_tip_en') or ('Stance source: ' ~ cx.stance_basis) }}" data-tip-zh="{{ cx.get('stance_tip_zh') or ('依据来源：' ~ cx.stance_basis) }}"{% endif %}>
+  {% if _record_only %}<a class="pv-record-link" href="{{ cx.href|e }}" aria-label="{{ cx.tk|e }}" style="position:absolute;inset:0;z-index:4;border-radius:var(--r-card,12px)"></a>{% endif %}{% if _setup and not _record_only %}<a class="pv-setup-stock-link" href="{{ cx.href|e }}" aria-label="{{ cx.tk|e }}"></a>{% endif %}<div class="pv-chart">
     {% if cx.get('spark') %}{{ cx.spark|safe }}{% else %}<div class="pv-nochart"{% if _record_only %} data-chart-state="unavailable" style="box-sizing:border-box;height:44px;display:flex;align-items:flex-end;justify-content:flex-end;padding:0 9px 7px;color:var(--muted);font-size:9.5px;font-weight:700;letter-spacing:.02em"{% endif %}>{% if _record_only %}<span class="l-en">Chart unavailable</span><span class="l-zh">图表暂缺</span>{% endif %}</div>{% endif %}
     <span class="pv-ov pv-ovl">
       {#- NO popover on the verb chip (operator 2026-08-05, extending the 2026-08-03
@@ -654,6 +663,7 @@ html[data-theme="light"] .pv-live{--plvc:#2f6fd0}
     <div class="pv-stp">{% for _i in [1,2,3,4] %}{% if _i > 1 %}<span class="pv-seg{% if _stage >= _i %} pa{% endif %}"></span>{% endif %}<span class="pv-dot{% if _stage == _i %} on{% elif _stage > _i %} pa{% endif %}"></span>{% endfor %}</div>
     <div class="pv-stl"><span{% if _stage == 1 %} class="on"{% endif %}>{{ t('Bottoming','筑底') }}</span><span{% if _stage == 2 %} class="on"{% endif %}>{{ t('Turning','转向') }}</span><span{% if _stage == 3 %} class="on"{% endif %}>{{ t('Ready','就绪') }}</span><span{% if _stage == 4 %} class="on"{% endif %}>{{ t('Trend','趋势') }}</span></div>
     {%- endif %}
+    {%- if _setup %}<details class="pv-setup-inline"><summary>{{ t('Setup detail','形态详情') }}</summary>{{ _setup }}</details>{% endif %}
     {%- if _record_only and cx.get('record_detail') %}{% set _rd = cx.record_detail %}
     <details class="pv-record-detail" data-plan-id="{{ _rd.plan_id|e }}" style="position:relative;z-index:5;margin-top:7px;border-top:1px dashed var(--line);padding-top:6px">
       <summary style="cursor:pointer;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);min-height:24px;display:flex;align-items:center;gap:5px">{{ t('Plan details','计划详情') }}</summary>
@@ -714,5 +724,5 @@ html[data-theme="light"] .pv-live{--plvc:#2f6fd0}
     {%- set _ad = cx.get('added_date') -%}
     {%- if not _record_only and _ad and _ad|length == 10 and _ad[4] == '-' and _ad[7] == '-' %}<span class="pv-added" data-added="{{ _ad|e }}" data-tip-en="On the Prophet board continuously since this date. If the name leaves and later returns, this date resets." data-tip-zh="自该日起持续在 Prophet 榜上；若离榜后重新上榜，此日期将重新计算。">{{ t('Added ' ~ _MN.get(_ad[5:7], _ad[5:7]) ~ ' ' ~ (_ad[8:10]|int), '入榜 ' ~ _ad[5:10]) }}</span>{% endif %}
   </div>
-{% if _record_only %}</article>{% else %}</a>{% endif %}
+{% if _article %}</article>{% else %}</a>{% endif %}
 {% endmacro %}
