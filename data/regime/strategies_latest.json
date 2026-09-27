@@ -1,6 +1,6 @@
 {
   "n": 27,
-  "built": "2026-09-26 21:51 UTC",
+  "built": "2026-09-27 08:06 UTC",
   "cards": [
     {
       "key": "spvector",
@@ -206,13 +206,13 @@
       "cagr": 54.23,
       "sharpe": 0.98,
       "maxdd": -61.9,
-      "income": 2.73,
+      "income": 1.39,
       "experimental": true
     },
     {
       "key": "eth_trend",
       "name": "Ethereum Trend",
-      "cagr": 21.3,
+      "cagr": 21.31,
       "sharpe": 0.52,
       "maxdd": -77.4,
       "income": 1.39,
