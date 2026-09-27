@@ -206,6 +206,18 @@ Consequences, all binding on the build:
 - Every fact in V1-CORE carries `native_admitted = false` and `native_ref = null`. This is not a placeholder
   to be "improved" later by flipping a flag — it is the honest state, and R15 requires it: "Research values
   are expected oracles, never substitute receipts."
+
+  > **CORRECTION 2026-09-27 (wave 7, PR #8106) — this bullet's "`native_ref = null`" is STALE, and the
+  > implementation is MORE honest than it, not in violation of it.** V1-CORE facts carry
+  > `native_admitted = false` exactly as stated, but `native_ref` points at a fully-specified source
+  > record whose own `retention_state` is `not_retained` — which is precisely the
+  > "source-coordinate-bound, not natively admitted" posture the next bullet describes. A bare `null`
+  > would carry strictly less information about a coordinate we DO possess. **Do not "repair" the module
+  > toward this sentence:** forcing `native_ref = null` destroys the coordinate binding and breaks the
+  > §5 golden oracle. What wave 7 DID add is the missing guarantee that the pointer resolves — a
+  > `native_ref` naming no declared `source_records[].record_id` is now refused, and both ends of the
+  > pointer now share the `^src_[a-z0-9_]+$` grammar. See
+  > `DSC:TWO-ENDS-OF-ONE-POINTER-VALIDATED-IN-ISOLATION-BOTH-PASS-WHILE-IT-DANGLES`.
 - V1-CORE is therefore **source-coordinate-bound, not natively admitted**. It carries and validates the real
   CIK, accession, exhibit, locator and the raw unlabeled acceptance string, and it refuses to present any of
   that as a retained native receipt.
