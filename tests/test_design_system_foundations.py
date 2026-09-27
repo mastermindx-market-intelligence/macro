@@ -1062,3 +1062,25 @@ def test_evidence_rate_keeps_the_existing_lens_binding_and_legible_receipt(speci
     assert 'position:static' in css and 'width:auto' in css
     rc = re.sub(r'\s+', '', _rule_body(specimen, r'#specimen-evidence-rate \.rc'))
     assert 'font-size:var(--fs-sm)' in rc
+
+
+# R12: simplicity means the product assembles the first answer for the user.
+def test_design_system_names_user_assembly_debt_as_a_first_read_defect():
+    master = (ROOT / "research" / "MASTER_PRODUCT_DESIGN_SYSTEM_V1.md").read_text(encoding="utf-8")
+    assert "user assembly debt" in master.lower()
+    assert "target is zero" in master.lower()
+    assert "configure" in master.lower() and "compute" in master.lower()
+
+
+def test_migration_packet_requires_user_assembly_debt_accounting():
+    factory = (ROOT / "research" / "DESIGN_MIGRATION_FACTORY_V1.md").read_text(encoding="utf-8")
+    assert "ASSEMBLY DEBT:" in factory
+    assert "target 0" in factory
+    assert "before the useful first read" in factory
+
+
+def test_agent_guidance_projects_the_same_prepared_answer_rule():
+    agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    assert "user assembly debt" in agents.lower()
+    assert "prepared answer" in agents.lower()
+    assert "target zero" in agents.lower()

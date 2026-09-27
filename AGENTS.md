@@ -64,6 +64,12 @@ Migration work follows `research/DESIGN_MIGRATION_FACTORY_V1.md`: builders execu
 a committed migration packet exactly and never invent design language — a builder
 that believes the packet is wrong stops and escalates.
 
+The default customer path must deliver a **prepared answer**, not an ingredient board.
+Track **user assembly debt**: setup, cross-reference, mental arithmetic or configuration
+required before the useful first read. The target is **target zero** on the primary path
+except unavoidable subject input; product-owned comparison and synthesis happen before
+advanced customization.
+
 For any **material visual change**, do not design directly in production markup or from a
 chat-only render. Begin from a governed editable source (Figma/Paper/approved equivalent) that
 projects repository design law, and record the exact file/document + frame/node/artboard identifiers

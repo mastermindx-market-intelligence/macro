@@ -439,6 +439,14 @@ Start with the relevant comparison, meaningful changes or an existing owner-rank
 keep the full population, advanced controls and direct research path accessible. A blank
 configurator or a set of equally weighted metrics is not the default briefing.
 
+**User assembly debt** is the setup, cross-referencing, mental math, or configuration
+the customer must perform before receiving that useful first read. The target is zero
+on the primary entry path: the product should configure sensible defaults, compute the
+necessary comparisons, align units/windows, and synthesize the read before asking the
+user to customize it. Unavoidable identity input (for example, choosing which company
+to inspect) may precede the answer; interpretation work should not. Configuration refines
+a prepared answer instead of creating one from ingredients.
+
 The first read follows the content doctrine: **subject → owned assessment → consequential
 qualification → useful continuation**. This is a semantic order, not four mandatory cards.
 The result list, a plain headline or a visual comparison can carry the answer. Descriptions,

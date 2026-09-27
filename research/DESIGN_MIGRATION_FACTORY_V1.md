@@ -126,6 +126,10 @@ page-local substitute.
                          obligations, not a quota of boxes, subtitles or paragraphs.
                          DEFAULT TASK: the useful prepared view before custom configuration;
                          preserve the full population, comparisons and direct expert access.
+                         ASSEMBLY DEBT: list every setup action, cross-reference, mental
+                         calculation or configuration required before the useful first read;
+                         target 0. If unavoidable subject input remains, name it explicitly;
+                         the product performs the comparison/synthesis after that input.
 5  PRIMITIVES TO REUSE   the §11 components this page composes (explicit list)
 6  MODULE DISPOSITIONS   table: current module → RETAIN / COMPRESS / MERGE-INTO <x> /
                          DEMOTE-TO <tier/tab/page> / REMOVE (landing named) — every current
