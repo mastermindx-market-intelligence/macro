@@ -17,6 +17,7 @@ from __future__ import annotations
 import datetime as _dt
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -763,7 +764,14 @@ def test_quiet_suppresses_warnings_but_not_errors(store: Path) -> None:
     # annotation survives --quiet, while the summary still counts what was found.
     assert not [ln for ln in result.stdout.splitlines() if ln.startswith("::warning")], \
         result.stdout
-    assert "0 warning(s)" not in result.stdout, (
+    # Read the count as a NUMBER.  `"0 warning(s)" not in stdout` is the very substring
+    # trap this file is being cured of: it also matches "110 warning(s)", so it fired on
+    # the store's real total the moment the sibling checkouts were absent.
+    summary = [ln for ln in result.stdout.splitlines() if ln.startswith("agentos: ")]
+    assert summary, "no summary line:\n" + result.stdout
+    counted = re.search(r"(\d+) warning\(s\)", summary[-1])
+    assert counted, "summary names no warning count: " + summary[-1]
+    assert int(counted.group(1)) > 0, (
         "--quiet must suppress the display, not the detection:\n" + result.stdout
     )
 
