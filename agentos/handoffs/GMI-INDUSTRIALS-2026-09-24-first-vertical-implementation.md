@@ -99,7 +99,7 @@ danger_areas:
   - "GLM lanes (glm-codex/glm-5.3) collapsed twice on this program (word salad, rc=0); use minimax/MiniMax-M3 on m1/mb and treat the Opus READ_ONLY red-team as the real gate - MiniMax reviews against a stale base mint phantom blockers."
 prs: [7789, 7912, 7915, 7919, 7924, 8062, 8070, 8072, 8073, 8075, 8077]
 decisions: []
-discoveries: ["DSC:A-LANE-SELF-VERDICT-IS-NOT-A-CLOSURE-GATE", "DSC:A-PATH-ONLY-REVIEW-COMMISSION-BUYS-DISCOVERY-NOT-JUDGMENT"]
+discoveries: ["DSC:A-LANE-SELF-VERDICT-IS-NOT-A-CLOSURE-GATE", "DSC:A-PATH-ONLY-REVIEW-COMMISSION-BUYS-DISCOVERY-NOT-JUDGMENT", "DSC:A-DANGLING-ARTIFACT-ENTRY-REDS-EVERY-STALE-MERGE-REF"]
 ---
 # GMI Industrials — first-vertical implementation checkpoint (Fable Meta-CEO seat)
 

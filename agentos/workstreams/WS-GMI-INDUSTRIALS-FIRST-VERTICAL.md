@@ -80,7 +80,7 @@ do_not_redo:
 landmines:
   - "Shared files (issuer_profiles.py, event_workspace.py, event_workspace_build.py, refresh_event_workspaces.py, private_publication.py, app/earnings.py, the shared theme-research client/mount) stay owned by their incumbent workstreams and are touched at named seams only, serialized behind #7870 and #7905."
   - "Sparse worktrees truncate data/ and site/ on write."
-  - "A red pack on an Industrials PR may be a SIBLING seat's dangling agentos artifacts: entry, not your diff: self-mod-fence is always-on and refuses any [phantom-artifact] string anywhere in the store, so it reds any PR whose merge ref predates the referenced file. #8062 lost one run that way. Triage the path at origin/main AND at refs/pull/<N>/merge before touching code; the cure is a base refresh, and rerunning the job reuses the stale merge commit."
+  - "A red pack on an Industrials PR may be a SIBLING seat's dangling agentos artifacts: entry, not your diff: self-mod-fence is always-on and refuses any [phantom-artifact] string anywhere in the store, so it reds any PR whose merge ref predates the referenced file. #8062 lost one run that way (DSC:A-DANGLING-ARTIFACT-ENTRY-REDS-EVERY-STALE-MERGE-REF). Triage the path at origin/main AND at refs/pull/<N>/merge before touching code; the cure is a base refresh, and rerunning the job reuses the stale merge commit."
   - "A new test wired into a gate:code run line without its paths: entry reds contract-delta fleet-wide."
   - "The sec_edgar rationale is not blanket clearance for issuer-authored text (A14-06)."
   - "No live Exponent/Pentair figure may become a fixture or a native receipt before G2."
