@@ -349,3 +349,157 @@ def test_capture_source_amendment_refuses_resolution_before_first_disclosure():
             headline="Impossible earlier resolution",
         )
 
+def test_capture_freeze_controls_reuses_exact_clock_and_counts_excluded_sessions():
+    admission = _capture_admission("2026-09-29T15:17:00Z")
+    controls = capture.freeze_matched_controls(
+        admission,
+        observed_session_dates=[
+            "2026-09-24",
+            "2026-09-25",
+            "2026-09-28",
+            "2026-09-29",
+            "2026-09-30",
+            "2026-10-01",
+            "2026-10-02",
+            "2026-10-05",
+        ],
+        admitted_event_dates=[
+            "2026-09-29",
+            "2026-09-30",
+            "2026-10-01",
+        ],
+        source_coverage_through="2026-10-02",
+    )
+    assert controls["state"] == "COMPLETE"
+    assert controls["prior"] == {
+        "status": "SELECTED",
+        "control_date": "2026-09-28",
+        "session_distance": 1,
+        "control_anchor_at": "2026-09-28T15:17:00Z",
+    }
+    assert controls["next"] == {
+        "status": "SELECTED",
+        "control_date": "2026-10-02",
+        "session_distance": 3,
+        "control_anchor_at": "2026-10-02T15:17:00Z",
+    }
+    assert controls["outcome_state"] == "NOT_READ"
+    assert controls["selection_law"]["return_based_replacement_allowed"] is False
+
+
+def test_capture_freeze_controls_keeps_next_pending_until_source_coverage_catches_up():
+    admission = _capture_admission("2026-09-29T15:17:00Z")
+    controls = capture.freeze_matched_controls(
+        admission,
+        observed_session_dates=[
+            "2026-09-28",
+            "2026-09-29",
+            "2026-09-30",
+            "2026-10-01",
+        ],
+        admitted_event_dates=["2026-09-29"],
+        source_coverage_through="2026-09-29",
+    )
+    assert controls["prior"]["status"] == "SELECTED"
+    assert controls["next"]["status"] == "PENDING_OBSERVED_SESSION"
+    assert controls["next"]["control_date"] is None
+    assert controls["state"] == "PENDING"
+
+
+def test_capture_freeze_controls_returns_data_gap_after_ten_excluded_next_sessions():
+    admission = _capture_admission("2026-09-29T15:17:00Z")
+    sessions = [
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30",
+        "2026-10-01",
+        "2026-10-02",
+        "2026-10-05",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08",
+        "2026-10-09",
+        "2026-10-12",
+        "2026-10-13",
+    ]
+    excluded_next = sessions[2:12]
+    controls = capture.freeze_matched_controls(
+        admission,
+        observed_session_dates=sessions,
+        admitted_event_dates=["2026-09-29", *excluded_next],
+        source_coverage_through="2026-10-13",
+    )
+    assert controls["next"]["status"] == "DATA_GAP"
+    assert controls["next"]["control_date"] is None
+
+
+def test_capture_measure_control_us_uses_frozen_control_date_and_exact_clock_only():
+    admission = _capture_admission("2026-09-29T15:17:00Z")
+    controls = capture.freeze_matched_controls(
+        admission,
+        observed_session_dates=[
+            "2026-09-28",
+            "2026-09-29",
+            "2026-09-30",
+        ],
+        admitted_event_dates=["2026-09-29"],
+        source_coverage_through="2026-09-30",
+    )
+    calls = []
+    fixtures = {
+        "SPY": [
+            _vendor_row("2026-09-28T15:22:00Z", 100.0),
+            _vendor_row("2026-09-28T15:52:00Z", 101.0),
+        ],
+        "QQQ": [
+            _vendor_row("2026-09-28T15:22:00Z", 200.0),
+            _vendor_row("2026-09-28T15:52:00Z", 204.0),
+        ],
+        "SMH": [
+            _vendor_row("2026-09-28T15:22:00Z", 300.0),
+            _vendor_row("2026-09-28T15:52:00Z", 309.0),
+        ],
+    }
+
+    def transport(path, params):
+        symbol = path.split("/")[4]
+        calls.append((symbol, path))
+        return fixtures[symbol]
+
+    out = capture.measure_control_us_response(
+        admission,
+        controls,
+        side="prior",
+        transport=transport,
+    )
+    assert [symbol for symbol, _ in calls] == ["SPY", "QQQ", "SMH"]
+    assert all("/2026-09-28/2026-09-28" in path for _, path in calls)
+    assert out["control_anchor_at"] == "2026-09-28T15:17:00Z"
+    assert out["primary_v1"]["return_bps"] == pytest.approx(100.0)
+    assert out["challenger_v1_1"]["return_bps"] == pytest.approx(100.0)
+    assert out["hk_outcome_state"] == "NOT_READ_BY_THIS_HARNESS"
+
+
+def test_capture_measure_control_us_refuses_pending_side_before_transport():
+    admission = _capture_admission("2026-09-29T15:17:00Z")
+    controls = capture.freeze_matched_controls(
+        admission,
+        observed_session_dates=["2026-09-28", "2026-09-29"],
+        admitted_event_dates=["2026-09-29"],
+        source_coverage_through="2026-09-29",
+    )
+    calls = []
+
+    def transport(path, params):
+        calls.append(path)
+        return []
+
+    with pytest.raises(capture.CaptureContractError, match="not frozen/selected"):
+        capture.measure_control_us_response(
+            admission,
+            controls,
+            side="next",
+            transport=transport,
+        )
+    assert calls == []
+

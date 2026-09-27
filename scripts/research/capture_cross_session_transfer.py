@@ -7,8 +7,11 @@ Stage 1: admit_source_event freezes first-disclosure source facts and protocol
 eligibility only. Optional source resolution: amend_source_state can attach a
 later corroboration/confirmation receipt to that same event, but may not move
 the first-disclosure clock, change cohort eligibility, or mint a second event.
-Stage 2: measure_us_response reads the incumbent U.S. minute transport only and
-computes the already-frozen +5 to +35 minute constructions.
+Stage 2: freeze_matched_controls deterministically selects the frozen prior/next
+same-clock controls from completed observed SMH sessions plus admitted-event dates.
+It refuses to treat a future/partially covered session as a clean control.
+Stage 3: measure_us_response and measure_control_us_response read the incumbent
+U.S. minute transport only and compute the already-frozen +5 to +35 minute constructions.
 
 No capture step reads Hong Kong outcomes, picks controls from outcomes, persists
 vendor bars, emits alerts, ranks opportunities, or grants trading authority.
@@ -24,10 +27,11 @@ prospective clock begins strictly after the V1.1 amendment commit.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from collections.abc import Callable, Mapping, Sequence
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -39,7 +43,9 @@ from scripts.research import replay_event_microstructure as replay  # noqa: E402
 
 SCHEMA_ADMISSION = "research.cross_session_transfer_admission.v1"
 SCHEMA_SOURCE_AMENDMENT = "research.cross_session_transfer_source_amendment.v1"
+SCHEMA_CONTROLS = "research.cross_session_transfer_matched_controls.v1"
 SCHEMA_US = "research.cross_session_transfer_us_measurement.v1"
+SCHEMA_CONTROL_US = "research.cross_session_transfer_control_us_measurement.v1"
 
 V1_PROTOCOL_COMMIT = "0f9d4d88cf78b06ab9985d32be9df5c2bc929fd2"
 V1_PROTOCOL_FROZEN_AT = datetime(2026, 9, 26, 11, 16, 23, tzinfo=timezone.utc)
@@ -58,6 +64,7 @@ US_SYMBOLS = ("SPY", "QQQ", "SMH")
 START_OFFSET_MINUTES = 5
 END_OFFSET_MINUTES = 35
 BAR_TOLERANCE_MINUTES = 2
+MAX_CONTROL_SESSION_DISTANCE = 10
 
 AUTHORITY = {
     "tier": "research",
@@ -95,6 +102,46 @@ def _utc(value: str, field: str) -> datetime:
     if dt.tzinfo is None or dt.utcoffset() is None:
         raise CaptureContractError(f"{field} must be timezone-aware")
     return dt.astimezone(timezone.utc)
+
+
+def _day(value: str, field: str) -> date:
+    raw = str(value or "").strip()
+    if not raw:
+        raise CaptureContractError(f"{field} is required")
+    try:
+        return date.fromisoformat(raw)
+    except ValueError as exc:
+        raise CaptureContractError(f"{field} must be YYYY-MM-DD") from exc
+
+
+def _date_values(values: Sequence[Any], field: str) -> list[date]:
+    if isinstance(values, (str, bytes)) or not isinstance(values, Sequence):
+        raise CaptureContractError(f"{field} must be an array of YYYY-MM-DD values")
+    out = sorted({_day(str(value), f"{field}[{idx}]") for idx, value in enumerate(values)})
+    if not out:
+        raise CaptureContractError(f"{field} must not be empty")
+    return out
+
+
+def _date_digest(values: Sequence[date]) -> str:
+    payload = json.dumps(
+        [value.isoformat() for value in values],
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _anchor_on_day(day: date, source_clock: datetime) -> datetime:
+    return datetime(
+        day.year,
+        day.month,
+        day.day,
+        source_clock.hour,
+        source_clock.minute,
+        source_clock.second,
+        source_clock.microsecond,
+        tzinfo=timezone.utc,
+    )
 
 
 def admit_source_event(
@@ -246,6 +293,144 @@ def amend_source_state(
     }
 
 
+def _control_side(
+    *,
+    event_date: date,
+    sessions: Sequence[date],
+    excluded_dates: set[date],
+    source_coverage_through: date,
+    side: str,
+) -> dict[str, Any]:
+    if side == "prior":
+        ordered = [day for day in reversed(sessions) if day < event_date]
+    elif side == "next":
+        ordered = [day for day in sessions if day > event_date]
+    else:
+        raise CaptureContractError("control side must be prior or next")
+
+    covered = [day for day in ordered if day <= source_coverage_through]
+    for distance, day in enumerate(covered[:MAX_CONTROL_SESSION_DISTANCE], start=1):
+        if day not in excluded_dates:
+            return {
+                "status": "SELECTED",
+                "control_date": day.isoformat(),
+                "session_distance": distance,
+            }
+
+    if side == "next" and len(covered) < MAX_CONTROL_SESSION_DISTANCE:
+        return {
+            "status": "PENDING_OBSERVED_SESSION",
+            "control_date": None,
+            "session_distance": None,
+        }
+    if side == "prior" and len(covered) < MAX_CONTROL_SESSION_DISTANCE:
+        return {
+            "status": "DATA_GAP_INSUFFICIENT_HISTORY",
+            "control_date": None,
+            "session_distance": None,
+        }
+    return {
+        "status": "DATA_GAP",
+        "control_date": None,
+        "session_distance": None,
+    }
+
+
+def freeze_matched_controls(
+    admission: Mapping[str, Any],
+    *,
+    observed_session_dates: Sequence[Any],
+    admitted_event_dates: Sequence[Any],
+    source_coverage_through: str,
+) -> dict[str, Any]:
+    """Freeze calendar-only matched controls without inspecting any return or HK outcome."""
+    if admission.get("schema") != SCHEMA_ADMISSION:
+        raise CaptureContractError("admission schema mismatch")
+    if admission.get("primary_v1_eligible") is not True:
+        raise CaptureContractError("event predates the V1 prospective boundary")
+    if admission.get("outcome_state") != "NOT_READ":
+        raise CaptureContractError("matched-control freeze is forbidden after outcome read")
+
+    available = _utc(str(admission.get("available_at") or ""), "admission.available_at")
+    event_date = available.date()
+    coverage = _day(source_coverage_through, "source_coverage_through")
+    if coverage < event_date:
+        raise CaptureContractError("source coverage cannot predate the admitted event date")
+
+    sessions = _date_values(observed_session_dates, "observed_session_dates")
+    admitted = _date_values(admitted_event_dates, "admitted_event_dates")
+    excluded = set(admitted)
+    excluded.add(event_date)
+    admitted_with_event = sorted(excluded)
+
+    prior = _control_side(
+        event_date=event_date,
+        sessions=sessions,
+        excluded_dates=excluded,
+        source_coverage_through=coverage,
+        side="prior",
+    )
+    next_ = _control_side(
+        event_date=event_date,
+        sessions=sessions,
+        excluded_dates=excluded,
+        source_coverage_through=coverage,
+        side="next",
+    )
+
+    for side in (prior, next_):
+        if side["status"] == "SELECTED":
+            day = _day(side["control_date"], "control_date")
+            side["control_anchor_at"] = _iso(_anchor_on_day(day, available))
+        else:
+            side["control_anchor_at"] = None
+
+    statuses = {prior["status"], next_["status"]}
+    state = (
+        "COMPLETE"
+        if statuses == {"SELECTED"}
+        else "PENDING"
+        if "PENDING_OBSERVED_SESSION" in statuses
+        else "PARTIAL"
+        if "SELECTED" in statuses
+        else "DATA_GAP"
+    )
+
+    covered_sessions = [day for day in sessions if day <= coverage]
+    return {
+        "schema": SCHEMA_CONTROLS,
+        "authority": dict(AUTHORITY),
+        "state": state,
+        "event_id": str(admission.get("event_id") or ""),
+        "event_available_at": _iso(available),
+        "event_date": event_date.isoformat(),
+        "clock_utc": available.strftime("%H:%M:%SZ"),
+        "source_coverage_through": coverage.isoformat(),
+        "source_coverage_asserted_complete_through": coverage.isoformat(),
+        "selection_law": {
+            "session_source": "observed_smh_sessions_only",
+            "exclude_every_admitted_source_event_date": True,
+            "max_observed_session_distance": MAX_CONTROL_SESSION_DISTANCE,
+            "return_based_replacement_allowed": False,
+        },
+        "calendar_receipt": {
+            "provided_session_count": len(sessions),
+            "covered_session_count": len(covered_sessions),
+            "first": sessions[0].isoformat(),
+            "last": sessions[-1].isoformat(),
+            "sha256": _date_digest(sessions),
+        },
+        "admitted_event_date_receipt": {
+            "count_including_current_event": len(admitted_with_event),
+            "sha256": _date_digest(admitted_with_event),
+        },
+        "prior": prior,
+        "next": next_,
+        "outcome_state": "NOT_READ",
+        "persistence": "none_stdout_only",
+    }
+
+
 def _window_return(points: Sequence[Mapping[str, Any]], *, anchor: datetime) -> float | None:
     rows = study._points(points)  # noqa: SLF001 - reuse one research clock kernel
     start = study._first_at_or_after(  # noqa: SLF001
@@ -263,6 +448,33 @@ def _window_return(points: Sequence[Mapping[str, Any]], *, anchor: datetime) -> 
     return round(study._return_bps(start[1], end[1]), 6)  # noqa: SLF001
 
 
+def _measure_us_constructions(
+    *,
+    session: date,
+    anchor: datetime,
+    challenger_eligible: bool,
+    transport: Callable[[str, Mapping[str, Any]], list[dict[str, Any]]] | None = None,
+) -> tuple[dict[str, float | None], dict[str, Any], float | None, float | None]:
+    get = transport or replay.default_transport()
+    fetched = {
+        symbol: replay.fetch_session(symbol, session, transport=get)
+        for symbol in US_SYMBOLS
+    }
+    returns = {
+        symbol: _window_return(receipt["points"], anchor=anchor)
+        for symbol, receipt in fetched.items()
+    }
+
+    primary = None
+    if returns["SMH"] is not None and returns["QQQ"] is not None:
+        primary = round(returns["SMH"] - returns["QQQ"], 6)
+
+    challenger = None
+    if challenger_eligible and returns["QQQ"] is not None and returns["SPY"] is not None:
+        challenger = round(returns["QQQ"] - returns["SPY"], 6)
+    return returns, fetched, primary, challenger
+
+
 def measure_us_response(
     admission: Mapping[str, Any],
     *,
@@ -276,25 +488,12 @@ def measure_us_response(
 
     available = _utc(str(admission.get("available_at") or ""), "admission.available_at")
     session = available.date()
-    get = transport or replay.default_transport()
-
-    fetched = {
-        symbol: replay.fetch_session(symbol, session, transport=get)
-        for symbol in US_SYMBOLS
-    }
-    returns = {
-        symbol: _window_return(receipt["points"], anchor=available)
-        for symbol, receipt in fetched.items()
-    }
-
-    primary = None
-    if returns["SMH"] is not None and returns["QQQ"] is not None:
-        primary = round(returns["SMH"] - returns["QQQ"], 6)
-
-    challenger = None
-    if admission.get("challenger_v1_1_eligible") is True:
-        if returns["QQQ"] is not None and returns["SPY"] is not None:
-            challenger = round(returns["QQQ"] - returns["SPY"], 6)
+    returns, fetched, primary, challenger = _measure_us_constructions(
+        session=session,
+        anchor=available,
+        challenger_eligible=admission.get("challenger_v1_1_eligible") is True,
+        transport=transport,
+    )
 
     return {
         "schema": SCHEMA_US,
@@ -337,6 +536,84 @@ def measure_us_response(
     }
 
 
+def measure_control_us_response(
+    admission: Mapping[str, Any],
+    control_selection: Mapping[str, Any],
+    *,
+    side: str,
+    transport: Callable[[str, Mapping[str, Any]], list[dict[str, Any]]] | None = None,
+) -> dict[str, Any]:
+    """Measure one frozen same-clock U.S. control and never read HK outcomes."""
+    if admission.get("schema") != SCHEMA_ADMISSION:
+        raise CaptureContractError("admission schema mismatch")
+    if control_selection.get("schema") != SCHEMA_CONTROLS:
+        raise CaptureContractError("control selection schema mismatch")
+    if str(control_selection.get("event_id") or "") != str(admission.get("event_id") or ""):
+        raise CaptureContractError("control selection event_id mismatch")
+    if admission.get("outcome_state") != "NOT_READ":
+        raise CaptureContractError("control measurement is forbidden after outcome read")
+    if side not in {"prior", "next"}:
+        raise CaptureContractError("control side must be prior or next")
+
+    selected = control_selection.get(side)
+    if not isinstance(selected, Mapping) or selected.get("status") != "SELECTED":
+        raise CaptureContractError(f"{side} control is not frozen/selected")
+
+    control_date = _day(str(selected.get("control_date") or ""), f"{side}.control_date")
+    event_available = _utc(
+        str(admission.get("available_at") or ""),
+        "admission.available_at",
+    )
+    anchor = _anchor_on_day(control_date, event_available)
+    returns, fetched, primary, challenger = _measure_us_constructions(
+        session=control_date,
+        anchor=anchor,
+        challenger_eligible=admission.get("challenger_v1_1_eligible") is True,
+        transport=transport,
+    )
+
+    return {
+        "schema": SCHEMA_CONTROL_US,
+        "authority": dict(AUTHORITY),
+        "event_id": str(admission.get("event_id") or ""),
+        "control_side": side,
+        "control_date": control_date.isoformat(),
+        "session_distance": selected.get("session_distance"),
+        "control_anchor_at": _iso(anchor),
+        "geometry": {
+            "start_offset_minutes": START_OFFSET_MINUTES,
+            "end_offset_minutes": END_OFFSET_MINUTES,
+            "bar_tolerance_minutes": BAR_TOLERANCE_MINUTES,
+            "reanchor_allowed": False,
+        },
+        "primary_v1": {
+            "construction": "SMH_minus_QQQ",
+            "return_bps": primary,
+            "eligible": True,
+        },
+        "challenger_v1_1": {
+            "construction": "QQQ_minus_SPY",
+            "return_bps": challenger,
+            "eligible": admission.get("challenger_v1_1_eligible") is True,
+        },
+        "nuisance_baselines_bps": {
+            "SPY": returns["SPY"],
+            "QQQ": returns["QQQ"],
+            "SMH": returns["SMH"],
+        },
+        "sources": {
+            symbol: {
+                key: value
+                for key, value in receipt.items()
+                if key != "points"
+            }
+            for symbol, receipt in fetched.items()
+        },
+        "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
+        "persistence": "none_stdout_only",
+    }
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -364,8 +641,25 @@ def _parser() -> argparse.ArgumentParser:
     amend.add_argument("--source-ref", required=True)
     amend.add_argument("--headline", required=True)
 
+    controls = sub.add_parser(
+        "freeze-controls",
+        help="freeze calendar-only matched controls before any HK outcome read",
+    )
+    controls.add_argument("--admission-file", required=True)
+    controls.add_argument("--session-calendar-file", required=True)
+    controls.add_argument("--admitted-event-dates-file", required=True)
+    controls.add_argument("--source-coverage-through", required=True)
+
     measure = sub.add_parser("measure-us", help="measure fixed U.S. geometry only")
     measure.add_argument("--admission-file", required=True)
+
+    measure_control = sub.add_parser(
+        "measure-control-us",
+        help="measure one already-frozen same-clock U.S. control only",
+    )
+    measure_control.add_argument("--admission-file", required=True)
+    measure_control.add_argument("--control-selection-file", required=True)
+    measure_control.add_argument("--side", required=True, choices=["prior", "next"])
     return parser
 
 
@@ -395,6 +689,39 @@ def main(argv: Sequence[str] | None = None) -> int:
                 source_name=args.source_name,
                 source_ref=args.source_ref,
                 headline=args.headline,
+            )
+        elif args.command == "freeze-controls":
+            with Path(args.admission_file).open("r", encoding="utf-8") as fh:
+                admission = json.load(fh)
+            with Path(args.session_calendar_file).open("r", encoding="utf-8") as fh:
+                session_payload = json.load(fh)
+            with Path(args.admitted_event_dates_file).open("r", encoding="utf-8") as fh:
+                event_payload = json.load(fh)
+            session_dates = (
+                session_payload.get("session_dates")
+                if isinstance(session_payload, Mapping)
+                else session_payload
+            )
+            admitted_dates = (
+                event_payload.get("event_dates")
+                if isinstance(event_payload, Mapping)
+                else event_payload
+            )
+            result = freeze_matched_controls(
+                admission,
+                observed_session_dates=session_dates,
+                admitted_event_dates=admitted_dates,
+                source_coverage_through=args.source_coverage_through,
+            )
+        elif args.command == "measure-control-us":
+            with Path(args.admission_file).open("r", encoding="utf-8") as fh:
+                admission = json.load(fh)
+            with Path(args.control_selection_file).open("r", encoding="utf-8") as fh:
+                controls = json.load(fh)
+            result = measure_control_us_response(
+                admission,
+                controls,
+                side=args.side,
             )
         else:
             with Path(args.admission_file).open("r", encoding="utf-8") as fh:
