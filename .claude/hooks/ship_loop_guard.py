@@ -4423,8 +4423,8 @@ def _session_start(root: Path, path: Path, payload: dict[str, Any]) -> None:
 def _pre_tool_use(root: Path, path: Path, payload: dict[str, Any]) -> None:
     """Make a silently rebound/primary-root session read-only before side effects.
 
-    This hook intentionally re-evaluates the live cwd on every tool call instead
-    of trusting SessionStart state. If Desktop loses or rebinds a worktree between
+    This hook intentionally re-evaluates the live cwd on every wired effectful
+    tool call instead of trusting SessionStart state. If Desktop loses or rebinds a worktree between
     turns, the next modifying tool is stopped at admission rather than discovered
     much later by the Stop hook.
     """
@@ -4573,9 +4573,10 @@ def _stop(root: Path, path: Path, payload: dict[str, Any]) -> None:
     if state is None:
         return
 
-    # A post-admission quarantined session could not lawfully run a modifying tool:
-    # the wildcard PreToolUse hook denies everything outside the closed read-only
-    # set. Do not then run the delivery chain against an independently moving shared
+    # A post-admission quarantined session could not lawfully run a modifying tool
+    # through the repository's wired effectful surfaces: PreToolUse covers Bash,
+    # file writes, agent/workflow launches, skills, EnterWorktree and MCP tools.
+    # Do not then run the delivery chain against an independently moving shared
     # checkout and manufacture ten cycles of unsafe_branch. Legacy state without
     # this versioned marker keeps the old fail-closed behavior during rollout.
     if (
