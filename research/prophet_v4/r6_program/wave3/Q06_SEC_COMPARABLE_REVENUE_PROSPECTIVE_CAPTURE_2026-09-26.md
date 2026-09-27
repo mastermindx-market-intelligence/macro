@@ -203,9 +203,13 @@ result state: UNCOMPUTED
 - A source published after the regular session uses the next lawful actionable
   price under the existing market-data/fill owner.
 - Missing NBBO/spread/basis/corporate-action evidence is unavailable, never zero.
-- The price/benchmark source must have explicit model-use rights. For US, the
-  existing Massive enterprise family is the preferred candidate, subject to the
-  exact feed designation; Yahoo/Nasdaq cannot silently fill this role.
+- The price/benchmark source must have explicit model-use rights. The existing
+  Massive enterprise record admits bars, backtesting, derived use and retention,
+  and no adverse `massive_stock_day` designation is recorded in this source cut.
+  Its current flat-file store is nevertheless raw, full-session consolidated OHLCV
+  with no session/venue stamp and no corporate-action factor table. It is therefore
+  `SOURCE_READY / OUTCOME_CONTRACT_BLOCKED`, not a lawful H42 return series.
+  Yahoo/Nasdaq cannot silently fill this role.
 - Entry timing, management and portfolio feasibility remain separate experiments.
 
 ### Falsifiers
@@ -244,7 +248,7 @@ fixture must discriminate at least:
 
 | Market | Existing owners/source reality | Clock/history state | Current class for this mechanism | Exact next source decision |
 |---|---|---|---|---|
-| US | SEC EDGAR + Earnings/Company Intelligence + Stock Identity; Massive candidate for prices | Exact SEC body and revision chain exist; complete historical event population does not | Exact exemplar; prospective confirmatory capture after registration | Materialize same-table comparable revenue through incumbent owner; freeze prospective event population and exact Massive feed designation |
+| US | SEC EDGAR + Earnings/Company Intelligence + Stock Identity; R2-canonical `massive_stock_day` raw OHLCV | Exact SEC body/revision chain; price rights and five-year raw-bar coverage exist, but adjusted/session-specific outcome basis does not | Exact evidence exemplar; price source `SOURCE_READY / OUTCOME_CONTRACT_BLOCKED`; prospective confirmatory only | Materialize same-table revenue; freeze event population; bind raw bars to session/venue plus versioned corporate-action factors through Data OS before any H42 result |
 | China A-share | CNInfo announcement metadata; Eastmoney/akshare disclosure calendar and preannouncement/quick-report snapshots; canonical CN identity owner | CNInfo is forward append-only metadata with `publish_ts`; current earnings/preannouncement stores are snapshots and do not provide an immutable body/revision chain | Prospective discovery/diagnostic only; no comparable SEC-style feature | Admit official body capture plus five-rights determination, exact publication/observation clocks and correction lineage; do not use current snapshots as history |
 | Hong Kong | HKEXnews results metadata + HK filing bus + HK identity/price owners | trailing 90-day, keep-first headline tape; no numeric filing-body revision plane for this construction | Prospective discovery/display only | Add lawful official body/field capture and source-specific rights; preserve HK calendar/listing identity and do not infer values from headlines |
 | Canada | current yfinance fundamentals/consensus context; SEDAR+ is native filing owner in product vision | yfinance is current snapshot with unknown model rights; public SEDAR+ automation/database construction is rights-blocked | NOT SOURCE-READY | Obtain licensed SEDAR+ DDS or equivalent first-party feed with clocks, revisions, identity and retention rights; qualify a non-Yahoo price feed |
@@ -275,16 +279,75 @@ These checks strengthen source feasibility and the Canada refusal; they do not
 promote any market to confirmatory-ready, change the five-rights determinations,
 or authorize a new collector.
 
+### U.S. outcome-price source ruling — rights/coverage ready, basis blocked
+
+The incumbent price source is no longer an unspecified acquisition question.
+At source cut `origin/main@b884cb5053f4196ae7e574c724c275212296ce5f`,
+`data/massive_stock_day/_manifest.json` has SHA-256
+`4d631c89e75a4862fb8a625a38c685635f3e6aecca82b2563825dfd147500782` and reports:
+
+- 21,639 tickers;
+- 1,364 processed days from 2021-07-06 through 2026-09-25;
+- zero full-window and trailing-90-business-day missing weekday runs;
+- SPY anchor 1,313 rows, first 2021-07-06, last 2026-09-25,
+  maximum calendar gap four days.
+
+The enterprise entitlement record explicitly admits daily bars, historical archives,
+corporate actions, backtesting, derived materials, AI/ML and retention. No current
+recorded feed-specific designation narrows `massive_stock_day`; a later exact written
+vendor designation would still override the family record.
+
+However, source access is not an outcome contract:
+
+1. Official Massive flat-file documentation says stock flat files are unadjusted for
+   splits, dividends and other corporate actions. The local collector likewise stores
+   bare `open/high/low/close/volume/transactions` and Data OS measures its `close` as
+   `close_raw`.
+2. The official day-aggregate contract covers pre-market, regular and after-hours
+   activity. The local per-ticker store drops the source timestamp and carries no
+   `session` or `venue_scope`; it cannot be assumed to be an RTH open/close or official
+   closing auction.
+3. Data OS V1 labels the basis, but its V2 raw-plus-corporate-action-factor derivation
+   is not built. The accepted architecture explicitly says no corporate-action event
+   store exists and raw prices are unlawful for multi-period return math.
+
+Therefore `massive_stock_day` is classified:
+
+```text
+rights: ALLOWED_UNDER_ENTERPRISE_RECORD
+coverage: READY / exact manifest above
+stored_basis: RAW / consolidated full-session aggregate
+H42 absolute or relative return: BLOCKED
+fill simulation: BLOCKED (daily aggregate is not NBBO or an actionable quote)
+missing owner effect: versioned corporate-action factors + adjustment_asof +
+                      session/venue-qualified derived price basis
+```
+
+This is an implementation/source-contract gate under the existing Data OS price owner,
+not a request to buy another U.S. price feed. Packet3 must refuse a real trial until an
+exact input snapshot carries canonical security identity, `close_raw`, factor lineage,
+`adjustment_asof`, derived split/total-return basis as required by the endpoint, and the
+session/venue clock. A no-corporate-action exclusion is not available until the same
+owner can prove the absence of actions over each row's horizon.
+
+Official references:
+
+- `https://massive.com/docs/flat-files/stocks/overview`
+- `https://massive.com/docs/flat-files/stocks/day-aggregates`
+
 ## 8. Prioritized missing-data decision
 
 The highest-value acquisition is **not consensus**. It is lawful immutable
 issuer-source capture:
 
-1. US: prospective SEC event-population manifest plus same-table comparable fields;
-2. China/HK: official filing bodies with publication/observation/correction clocks
+1. US issuer evidence: prospective SEC event-population manifest plus same-table
+   comparable fields;
+2. US outcome basis: consume the existing Data OS owner to bind `close_raw` to
+   session/venue and versioned corporate-action factors; no new price purchase;
+3. China/HK: official filing bodies with publication/observation/correction clocks
    and explicit model/redistribution rights;
-3. Canada: licensed SEDAR+ DDS or equivalent first-party continuous-disclosure feed;
-4. only afterward, a separately licensed comparable-expectations history with
+4. Canada: licensed SEDAR+ DDS or equivalent first-party continuous-disclosure feed;
+5. only afterward, a separately licensed comparable-expectations history with
    contributor, fiscal-horizon, revision and publication clocks.
 
 Missing consensus remains typed absence. No beat/miss may be inferred from AAPL's

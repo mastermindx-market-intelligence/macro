@@ -120,7 +120,7 @@
     "evaluation_owner": "Packet3 / #7288 / existing Evaluation and QLedger"
   },
   "market_readiness": {
-    "US": "exact exemplar; prospective confirmatory after event-population, field materialization and price-feed gates",
+    "US": "exact SEC exemplar; raw price rights/coverage ready; H42 outcome contract blocked on Data OS session/venue and corporate-action-adjusted basis",
     "CN": "prospective metadata/discovery only; official body/revision/rights plane missing",
     "HK": "prospective metadata/display only; numeric body/revision/rights plane missing",
     "CA": "not source-ready; licensed SEDAR+ DDS or equivalent first-party feed required"
@@ -161,5 +161,90 @@
     },
     "authority_change": false,
     "collector_authorized": false
+  },
+  "outcome_price_source": {
+    "classification": "SOURCE_READY_OUTCOME_CONTRACT_BLOCKED",
+    "source_family": "massive_stock_day",
+    "owner": "Data OS price canonicalization / existing market-data owner",
+    "rights": {
+      "state": "ALLOWED_UNDER_ENTERPRISE_RECORD",
+      "record": "research/licenses/MASSIVE_ENTITLEMENT_RECORD.md",
+      "scope": [
+        "daily_bars",
+        "historical_archives",
+        "corporate_actions",
+        "backtesting",
+        "derived_materials",
+        "ai_ml",
+        "retention"
+      ],
+      "feed_specific_adverse_designation_found": false,
+      "later_exact_written_designation_overrides": true
+    },
+    "manifest_observation": {
+      "source_commit": "b884cb5053f4196ae7e574c724c275212296ce5f",
+      "path": "data/massive_stock_day/_manifest.json",
+      "sha256": "4d631c89e75a4862fb8a625a38c685635f3e6aecca82b2563825dfd147500782",
+      "updated_at": "2026-09-26T13:15:33.466542+00:00",
+      "first_day": "2021-07-06",
+      "last_day": "2026-09-25",
+      "n_processed_days": 1364,
+      "n_tickers": 21639,
+      "max_missing_run_weekdays": 0,
+      "max_missing_run_weekdays_recent": 0,
+      "anchor": {
+        "ticker": "SPY",
+        "first": "2021-07-06",
+        "last": "2026-09-25",
+        "n_rows": 1313,
+        "max_gap_calendar_days": 4
+      }
+    },
+    "stored_contract": {
+      "columns": [
+        "open",
+        "high",
+        "low",
+        "close",
+        "volume",
+        "transactions"
+      ],
+      "basis": "RAW_UNADJUSTED",
+      "dataos_canonical_name": "close_raw",
+      "session": null,
+      "venue_scope": null,
+      "source_timestamp_retained": false,
+      "corporate_action_factor_table": "NOT_BUILT",
+      "adjustment_asof": null
+    },
+    "official_source_refs": [
+      "https://massive.com/docs/flat-files/stocks/overview",
+      "https://massive.com/docs/flat-files/stocks/day-aggregates"
+    ],
+    "official_source_limits": "stock flat files are unadjusted; day aggregate covers pre-market, regular and after-hours activity and is available after the session",
+    "allowed_now": [
+      "source_coverage_census",
+      "raw_print_diagnostics_with_explicit_basis"
+    ],
+    "blocked_now": [
+      "H42_absolute_return",
+      "H42_market_or_sector_excess",
+      "regular_session_fill",
+      "official_close_claim",
+      "total_return_claim"
+    ],
+    "required_contract": [
+      "canonical_security_id_and_identity_epoch",
+      "source_generation_and_manifest_receipt",
+      "close_raw",
+      "session_and_venue_scope",
+      "versioned_corporate_action_factors",
+      "adjustment_asof",
+      "derived_split_or_total_return_basis_required_by_endpoint",
+      "no_same_bar_fill_and_cost_evidence"
+    ],
+    "new_price_purchase_required": false,
+    "trial_may_start": false,
+    "checked_at_utc": "2026-09-27T03:51:36.034413+00:00"
   }
 }
