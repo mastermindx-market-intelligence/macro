@@ -1047,6 +1047,13 @@ def build_records(
         event = _mapping(event_rows.get(ticker))
         flow = _mapping(turnover.get(ticker))
         identity = _mapping(identity_rows.get(ticker))
+        # Choose one owner record for the cycle pair. A visible board row is
+        # authoritative even when one member is blank; only an absent board row
+        # permits the same-night setup profile to supply the pair. Independent
+        # per-field fallback would synthesize a state/label pair no owner emitted.
+        cycle_owner = board if ticker in board_rows else (
+            profile if ticker in profile_rows else {}
+        )
 
         memberships = [b for b in (theme_ids.get(ticker) or ())
                        if not str(b).startswith(THEME_ID_EXCLUDE_PREFIX)]
@@ -1146,12 +1153,11 @@ def build_records(
             "near_miss_reason": _text(verdict.get("near_miss_reason")),
             "signal_asof": _date(verdict.get("asof")),
             "stage": _text(board.get("stage") or profile.get("stage")),
-            # Owner-issued cycle vocabulary from the same-night candidate profile.
-            # A visible board row wins when present; otherwise the setup-profile row
-            # carries the same engine.cycles state/label for candidates that did not
-            # surface in a visible lane. Nothing is inferred from future returns.
-            "cycle_state": _text(board.get("state")) or _text(profile.get("state")),
-            "cycle_label": _text(board.get("label")) or _text(profile.get("label")),
+            # Owner-issued cycle vocabulary from exactly one same-night source row.
+            # The selected row may contain one null member; never fill it from another
+            # row and thereby synthesize a pair no owner emitted.
+            "cycle_state": _text(cycle_owner.get("state")),
+            "cycle_label": _text(cycle_owner.get("label")),
             "cycle_label_vocab_sha256": cycle_vocab_receipt,
             "alpha": _finite(profile.get("alpha")),
             "alpha_percentile": _finite(prophet.get("alpha_percentile")),

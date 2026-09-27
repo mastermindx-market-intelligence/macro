@@ -228,6 +228,28 @@ class TestPitDiscipline:
         assert frame.set_index("ticker").loc["AAA"]["ticks"] == 1
         assert frame.set_index("ticker").loc["AAA"]["tier_cascade"] == "T2"
 
+    def test_cycle_pair_rerun_keeps_the_original_partial_board_record(
+        self, verdicts, append_kwargs, tmp_path
+    ):
+        first = {
+            **append_kwargs,
+            "board_rows": {"AAA": {"state": "RALLY ON", "label": None}},
+            "profile_rows": {"AAA": {"state": "TURN SIGNALED", "label": "BOTTOMING"}},
+        }
+        ucv.append_candidates(verdicts, "2026-07-31", **first)
+
+        # A rerun cannot fill the original board null from a later profile or
+        # replace the board-sourced state: keep-first freezes the emitted pair.
+        second = {
+            **append_kwargs,
+            "board_rows": {},
+            "profile_rows": {"AAA": {"state": "TURN SIGNALED", "label": "BOTTOMING"}},
+        }
+        ucv.append_candidates(verdicts, "2026-07-31", **second)
+        row = ucv.load_candidates(tmp_path).set_index("ticker").loc["AAA"]
+        assert row["cycle_state"] == "RALLY ON"
+        assert pd.isna(row["cycle_label"])
+
     def test_second_night_appends_without_touching_the_first(
         self, verdicts, append_kwargs, tmp_path
     ):
@@ -546,7 +568,7 @@ class TestBuildRecords:
         assert by_ticker["BBB"]["prophet_signal_points"] is None
         assert by_ticker["BBB"]["prophet_score"] is None
 
-    def test_cycle_state_and_label_are_captured_from_the_owner_board_row(self, verdicts):
+    def test_cycle_pair_board_row_wins_whole_pair_on_conflict(self, verdicts):
         records = ucv.build_records(
             verdicts, stamp_date="2026-07-31",
             board_definition="us_prophet_v1", is_buyable=_is_buyable,
@@ -560,7 +582,7 @@ class TestBuildRecords:
         assert by_ticker["BBB"]["cycle_state"] is None
         assert by_ticker["BBB"]["cycle_label"] is None
 
-    def test_cycle_label_falls_back_to_same_night_candidate_profile(self, verdicts):
+    def test_cycle_pair_falls_back_to_same_night_candidate_profile(self, verdicts):
         records = ucv.build_records(
             verdicts, stamp_date="2026-07-31",
             board_definition="us_prophet_v1", is_buyable=_is_buyable,
@@ -571,6 +593,29 @@ class TestBuildRecords:
         assert by_ticker["BBB"]["cycle_label"] == "BOTTOMING"
         assert by_ticker["AAA"]["cycle_state"] is None
         assert by_ticker["AAA"]["cycle_label"] is None
+
+    @pytest.mark.parametrize(
+        ("board_row", "expected_state", "expected_label"),
+        [
+            ({"state": "RALLY ON", "label": None}, "RALLY ON", None),
+            ({"state": None, "label": "UPTREND"}, None, "UPTREND"),
+            ({"state": "  ", "label": ""}, None, None),
+            ({"state": "OWNER_UNKNOWN", "label": "OWNER_LABEL_UNKNOWN"},
+             "OWNER_UNKNOWN", "OWNER_LABEL_UNKNOWN"),
+        ],
+    )
+    def test_cycle_pair_never_mixes_partial_or_unknown_board_with_profile(
+        self, verdicts, board_row, expected_state, expected_label
+    ):
+        records = ucv.build_records(
+            verdicts, stamp_date="2026-07-31",
+            board_definition="us_prophet_v1", is_buyable=_is_buyable,
+            board_rows={"AAA": board_row},
+            profile_rows={"AAA": {"state": "TURN SIGNALED", "label": "BOTTOMING"}},
+        )
+        row = {r["ticker"]: r for r in records}["AAA"]
+        assert row["cycle_state"] == expected_state
+        assert row["cycle_label"] == expected_label
 
     def test_identity_fields_are_read_from_the_shared_data_os_projection(self, verdicts):
         identity = {

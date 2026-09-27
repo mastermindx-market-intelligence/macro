@@ -87,11 +87,12 @@ needs **forward only**. Nothing is backfilled into prior parts:
   through the existing B1/Data OS identity reader, with the exact alias/master source
   receipts and typed resolution state. This is a prospective capture of the nightly
   owner's current answer, not a historical issuer reconstruction or a second allocator.
-- `cycle_state` and `cycle_label` are copied from the existing same-night owner row: the
-  visible board row when present, otherwise the candidate setup profile already supplied
-  to Context Vector. Both are produced from `engine.cycles`; nothing is inferred from
-  outcomes. A content receipt binds `engine.cycles.STATE_DISPLAY`, and the evaluation
-  owner maps that existing vocabulary into BASING/MOMENTUM/OTHER.
+- `cycle_state` and `cycle_label` are copied as one atomic pair from the existing
+  same-night owner row: the visible board row when present, otherwise the candidate setup
+  profile already supplied to Context Vector. A partial board row retains its null member;
+  it is never completed from the profile. Both rows are produced from `engine.cycles`, so
+  nothing is inferred from outcomes. A content receipt binds `engine.cycles.STATE_DISPLAY`,
+  and the evaluation owner maps that existing vocabulary into BASING/MOMENTUM/OTHER.
 - the exact `membership.json` bytes, version, curation date and declared weighting are
   stamped beside the existing PIT `added <= asof < removed` memberships.
 - research-group admission is deliberately stricter than the existing display

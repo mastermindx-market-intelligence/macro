@@ -202,9 +202,10 @@ CHARTERED_HORIZON = {
 #: The label column carrying the cycle state.  Resolved + VALIDATED exactly like the cohort
 #: discriminator: a name match alone is never trusted, the values must intersect
 #: :data:`SIGNAL_CLASS_BY_LABEL`.  The prospective Context Vector capture now carries
-#: ``cycle_state``/``cycle_label`` from the same-night owner board row, or from the same
-#: owner-produced setup profile when the candidate was not placed in a visible lane. Older
-#: PIT parts remain null forever under the no-backfill law, so the resolver discloses absence
+#: ``cycle_state``/``cycle_label`` as one atomic pair from the same-night owner board row,
+#: or from the same owner-produced setup profile when the candidate was not placed in a
+#: visible lane. A partial board row stays partial rather than borrowing its missing member
+#: from the profile. Older PIT parts remain null forever, so the resolver discloses absence
 #: rather than presenting a historical null as a measured ``other``.
 SIGNAL_LABEL_CANDIDATES = ("cycle_state", "cycle_label", "label", "state")
 
