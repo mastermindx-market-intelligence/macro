@@ -464,7 +464,7 @@
         <span class="fx-chip size-hold" title="late — revisions already broad; hold, no add, trim on strength">⚖ Hold</span>
         
         
-        <span class="fx-chip feed-warn" title="The FDA reports current shortages and formulation discontinuations.">⚕ <span class="l-en">FDA: mixed — current 9 / discontinued 5 · capture time unknown</span><span class="l-zh">FDA：混合——当前9／停产5 · 采集时间未知</span></span>
+        <span class="fx-chip feed-mute" title="The FDA source is unavailable.">⚕ <span class="l-en">FDA source unavailable — no qualified generation on file, refresh failed</span><span class="l-zh">FDA来源不可用——无合格来源生成日期，刷新失败</span></span>
       </div>
       
     </article>
@@ -1462,51 +1462,21 @@
         
         <div class="fx-mon broken">
           <b><span class="l-en">Thesis monitor</span><span class="l-zh">论点监视器</span></b>
-          <span><b class="mb">4</b> <span class="l-en">broken</span><span class="l-zh">已失效</span></span>
+          <span><b class="mb">9</b> <span class="l-en">broken</span><span class="l-zh">已失效</span></span>
           
           
         </div>
         
         
-        <p>Last saved analyst read — 2026-09-26. No new read was taken for this rebuild; the break-conditions below are the ones it last set.</p>
+        <p>The board is still a WATCH screen: most themes light only one or two surfaces, and the handful of multi-surface alignments are either text-only or already broad in revisions. The only place independent hard legs currently line up while revisions remain early is data-center power, where physical tightening, accelerating demand, and positive guidance touch three separate channels at once.</p>
         
         <div class="fx-ai-th">
-          <div class="fx-ai-mech"><b>Data Center Power</b> <span class="fx-ai-conf c-medium">medium</span></div>
-          
-          <div class="fx-ai-kill"><span class="l-en">breaks if</span><span class="l-zh">失效条件</span>: <span class="fx-kc">The bottleneck band falls from TIGHTENING to NEUTRAL or looser [physical].</span><span class="fx-kc">The demand band falls from ACCELERATING to NEUTRAL or weakening [demand].</span><span class="fx-kc">The guidance band stops RAISING and turns NEUTRAL or to cuts [guidance].</span><span class="fx-kc">Revision breadth rolls over while either demand or guidance also weakens [revisions] [demand] [guidance].</span></div>
+          <div class="fx-ai-mech"><b>Data Center Power</b> <span class="fx-ai-conf c-low">low</span> — The physical bottleneck is TIGHTENING at the same time demand is ACCELERATING. That combination alone can be self-reinforcing — when a bottleneck tightens into accelerating demand, lead times stretch and pricing power shifts upstream — but the third leg matters most: guidance is RAISING at the very stage when street revisions are only moderately broad, meaning company commentary is starting to diverge from the consensus model. When management raises into a tightening bottleneck before analysts have fully marked it, the physical constraint is likely translating into confirmed orders rather than just pipeline chatter.</div>
+          <div class="fx-ai-no"><span class="l-en">non-obvious</span><span class="l-zh">非显性</span>: The cross-surface pattern is that the only theme on the entire board with three hard surfaces simultaneously lit has an EARLINESS score that is not extreme, precisely because revision breadth is mid-range rather than absent. A human would see this as &#39;already partially priced&#39; and move on. The non-obvious read is that the guidance raises are coming at a breadth level where the marginal raise still has more surprise value than a late-cycle raise — the bottleneck is informing management behavior before analysts have rotated fully, which is the signature of a supply constraint entering the models from the top down rather than the bottom up.</div>
+          <div class="fx-ai-kill"><span class="l-en">breaks if</span><span class="l-zh">失效条件</span>: <span class="fx-kc">physical bottleneck band loosens to NEUTRAL or lower</span><span class="fx-kc">guidance band flips to NEUTRAL or CUTTING for two consecutive observation cycles</span><span class="fx-kc">demand band rolls over from ACCELERATING to NEUTRAL or decelerating</span><span class="fx-kc">revision breadth broadens materially past the desk threshold and then rolls over, confirming full saturation</span></div>
         </div>
         
-        <div class="fx-ai-th">
-          <div class="fx-ai-mech"><b>Nuclear Power</b> <span class="fx-ai-conf c-low">low</span></div>
-          
-          <div class="fx-ai-kill"><span class="l-en">breaks if</span><span class="l-zh">失效条件</span>: <span class="fx-kc">bottleneck_band remains text-only and never gains numeric physical_confirmed true</span><span class="fx-kc">demand_band decelerates from ACCELERATING</span><span class="fx-kc">revision_breadth stays negative or rolls over further</span><span class="fx-kc">guidance_band lights as NEUTRAL or cuts rather than RAISING</span></div>
-        </div>
-        
-        <div class="fx-ai-th">
-          <div class="fx-ai-mech"><b>Rare Earth Critical Min</b> <span class="fx-ai-conf c-low">low</span></div>
-          
-          <div class="fx-ai-kill"><span class="l-en">breaks if</span><span class="l-zh">失效条件</span>: <span class="fx-kc">guidance_raisers fails to accumulate (no additional raisings in the next two quarters)</span><span class="fx-kc">bottleneck_band stays NEUTRAL while the policy pipeline closes comments without effect</span><span class="fx-kc">revision_breadth remains below 0.3 while guidance raisers stay at one</span></div>
-        </div>
-        
-        <div class="fx-ai-th">
-          <div class="fx-ai-mech"><b>Defense Aerospace</b> <span class="fx-ai-conf c-low">low</span></div>
-          
-          <div class="fx-ai-kill"><span class="l-en">breaks if</span><span class="l-zh">失效条件</span>: <span class="fx-kc">Government-award acceleration disappears or reverses [altdata].</span><span class="fx-kc">The patent cluster dissipates without follow-through [altdata].</span><span class="fx-kc">Subsector scarcity falls out of the lit surfaces [edgar_scarcity].</span><span class="fx-kc">The physical bottleneck remains NEUTRAL while award acceleration and scarcity weaken [physical] [altdata] [edgar_scarcity].</span></div>
-        </div>
-        
-        <div class="fx-ai-th">
-          <div class="fx-ai-mech"><b>Space Satellite</b> <span class="fx-ai-conf c-low">low</span></div>
-          
-          <div class="fx-ai-kill"><span class="l-en">breaks if</span><span class="l-zh">失效条件</span>: <span class="fx-kc">altdata gov-award accel goes silent or reverses for 2+ quarters</span><span class="fx-kc">edgar_scarcity signal fades in annual/quarterly filing fingerprints</span><span class="fx-kc">revision_breadth rolls over and confirms a post re-rating stagnation</span><span class="fx-kc">policy pipeline (comment close in 12d) yields no final rule or funding follow-through</span></div>
-        </div>
-        
-        <div class="fx-ai-th">
-          <div class="fx-ai-mech"><b>Medical Devices</b> <span class="fx-ai-conf c-low">low</span></div>
-          
-          <div class="fx-ai-kill"><span class="l-en">breaks if</span><span class="l-zh">失效条件</span>: <span class="fx-kc">edgar_scarcity reverts to NEUTRAL or LIGHT within a quarter</span><span class="fx-kc">revision_breadth remains below a meaningful widening threshold after two more reporting cycles</span><span class="fx-kc">activist 13D cluster fails to expand beyond a single filer</span><span class="fx-kc">bottleneck_band shifts from TIGHTENING (fingerprint) to NEUTRAL without a corresponding demand-side acceleration</span></div>
-        </div>
-        
-        <p class="fx-note" style="margin-top:8px">An AI reading of the desk&#39;s OWN deterministic convergence — checkable and forward-graded, never a price forecast. Replayed from the last saved read; not regenerated for this page. <span class="l-en">The deterministic monitor re-checks each thesis every build and flags a break before the tape confirms. The model is forbidden to forecast a price.</span><span class="l-zh">确定性监视器每次构建都重新核验每个论点，并在行情确认前标记失效。模型被禁止预测价格。</span></p>
+        <p class="fx-note" style="margin-top:8px">An AI reading of the desk&#39;s OWN deterministic convergence — checkable and forward-graded, never a price forecast. <span class="l-en">The deterministic monitor re-checks each thesis every build and flags a break before the tape confirms. The model is forbidden to forecast a price.</span><span class="l-zh">确定性监视器每次构建都重新核验每个论点，并在行情确认前标记失效。模型被禁止预测价格。</span></p>
         
       </div>
     </details>
@@ -2025,8 +1995,8 @@
           <span class="fx-hchip hl-PARTIAL" title="7/18 themes have a glut read"><span class="hdot"></span>Fade watch <span style="opacity:.7">7/18</span></span>
           <span class="fx-hchip hl-LIVE" title="power scarcity live: band=TIGHTENING"><span class="hdot"></span>Power <span style="opacity:.7">TIGHTENING</span></span>
           <span class="fx-hchip hl-PARTIAL" title="6/18 themes have an alt-data confirmer read"><span class="hdot"></span>Alt-data <span style="opacity:.7">6/18</span></span>
-          <span class="fx-hchip hl-PARTIAL" title="analyst theses replayed from the last committed ledger rows — this lane makes no model call, so the read is as of the last nightly"><span class="hdot"></span>Analyst</span>
-          <span class="fx-hchip hl-LIVE" title="monitor watching 7 active thesis/theses"><span class="hdot"></span>Monitor <span style="opacity:.7">7 theses</span></span>
+          <span class="fx-hchip hl-LIVE" title="LLM analyst read present"><span class="hdot"></span>Analyst</span>
+          <span class="fx-hchip hl-LIVE" title="monitor watching 11 active thesis/theses"><span class="hdot"></span>Monitor <span style="opacity:.7">11 theses</span></span>
           <span class="fx-hchip hl-LIVE" title="258 cascade flag rows logged (forward-grading accruing)"><span class="hdot"></span>Grading <span style="opacity:.7">258 rows</span></span>
           
         </div>
