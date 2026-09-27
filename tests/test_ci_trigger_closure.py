@@ -68,7 +68,7 @@ def _ci_paths() -> list[str]:
     "rel,patterns,expected",
     [
         # `**` crosses directories — this is what makes engine/** cover the tree.
-        ("engine/signal_quality.py", ["engine/**"], True),
+        ("engine/signal_quality.py", ["engine/**"], True),  # ci-trigger-closure: data — fixture name for matched(), never opened
         ("engine/deep/nested/thing.py", ["engine/**"], True),
         # A bare `*` does NOT cross `/`. fnmatch says True here; GitHub says False.
         ("scripts/ci/strip.py", ["scripts/*.py"], False),
@@ -138,10 +138,10 @@ def fixture_reads(tmp_path_factory) -> dict[str, str]:
 @pytest.mark.parametrize(
     "rel",
     [
-        "engine/market_state.py",                              # from-import
-        "research/prophet_us_audit/reclaim_veto_packet.py",    # __file__-rooted join
+        "engine/market_state.py",                              # from-import  # ci-trigger-closure: data — existence-only selftest subject, declared in ci-control-plane-contracts paths; imports not followed
+        "research/prophet_us_audit/reclaim_veto_packet.py",    # __file__-rooted join  # ci-trigger-closure: data — existence-only selftest subject, declared in ci-control-plane-contracts paths; imports not followed
         "scripts/audit_unrun_tests.py",                        # whole-string literal
-        "collectors/fred.py",                                  # import_module()
+        "collectors/fred.py",                                  # import_module()  # ci-trigger-closure: data — existence-only selftest subject, declared in ci-control-plane-contracts paths; imports not followed
     ],
 )
 def test_a_real_read_is_found(fixture_reads, rel) -> None:
@@ -176,7 +176,7 @@ def test_a_path_that_is_not_in_the_tree_is_never_a_subject(fixture_reads) -> Non
 
 def test_reads_carry_provenance(fixture_reads) -> None:
     """A finding must say WHERE, or verifying one costs a grep per finding."""
-    assert "line" in fixture_reads["engine/market_state.py"]
+    assert "line" in fixture_reads["engine/market_state.py"]  # ci-trigger-closure: data — existence-only selftest subject, declared in ci-control-plane-contracts paths; imports not followed
 
 
 def test_selector_analysis_reuses_one_module_ast_walk(
@@ -224,8 +224,8 @@ def test_the_reclaim_veto_suite_reads_the_engine_module_it_pins() -> None:
     whole class rather than going red.
     """
     reads = GUARD.direct_reads(ROOT / "tests" / "test_us_reclaim_veto_packet.py")
-    assert "engine/signal_quality.py" in reads
-    assert "research/prophet_us_audit/reclaim_veto_packet.py" in reads
+    assert "engine/signal_quality.py" in reads  # ci-trigger-closure: data — existence-only selftest subject, declared in ci-control-plane-contracts paths; imports not followed
+    assert "research/prophet_us_audit/reclaim_veto_packet.py" in reads  # ci-trigger-closure: data — existence-only selftest subject, declared in ci-control-plane-contracts paths; imports not followed
 
 
 def test_dropping_a_subject_from_the_filter_is_a_gap_the_test_half_hides() -> None:
@@ -236,8 +236,8 @@ def test_dropping_a_subject_from_the_filter_is_a_gap_the_test_half_hides() -> No
     census stays green — while a PR touching only the engine module never runs it.
     """
     suite = "tests/test_us_reclaim_veto_packet.py"
-    subject = "engine/signal_quality.py"
-    without = ["tests/**", "research/prophet_us_audit/reclaim_veto_packet.py"]
+    subject = "engine/signal_quality.py"  # ci-trigger-closure: data — fixture name for matched(), never opened
+    without = ["tests/**", "research/prophet_us_audit/reclaim_veto_packet.py"]  # ci-trigger-closure: data — pattern name for matched(), never opened
 
     assert GUARD.matched(suite, without) is True        # the suite looks covered …
     assert GUARD.matched(subject, without) is False     # … and its subject is not
@@ -257,8 +257,8 @@ def test_a_run_step_naming_a_suite_outside_tests_resolves() -> None:
         "research/signal_engine/test_buy_filters.py -q"
     )
     assert GUARD._named_suites(step, index) == {
-        "research/prophet_us_audit/test_label_grading_battery.py",
-        "research/signal_engine/test_buy_filters.py",
+        "research/prophet_us_audit/test_label_grading_battery.py",  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
+        "research/signal_engine/test_buy_filters.py",  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
     }
 
 
@@ -359,7 +359,7 @@ REPO = Path(__file__).resolve().parents[1]
 # ci-trigger-closure: data — own-line marker covers the statement below it
 TOUCHED_BY_A_PAST_COMMIT = [
     "config/causal_priors.yml",
-    "scripts/build_site.py",
+    "scripts/check_workflow_yaml.py",
 ]
 
 # The same SHAPE, unmarked. A list of path strings is data only when an author says
@@ -393,7 +393,7 @@ def marked_reads(tmp_path_factory) -> tuple[dict[str, str], dict[str, str]]:
     "segments,why",
     [
         (("config", "causal_priors.yml"), "own-line marker covers the next statement"),
-        (("scripts", "build_site.py"), "the marker covers the WHOLE marked statement"),
+        (("scripts", "check_workflow_yaml.py"), "the marker covers the WHOLE marked statement"),
         (("config", "press_sources.yml"), "a same-line marker covers that entry"),
         (("research", "DO_NOT_REBUILD.md"), "a marker covers a __file__-rooted join"),
     ],
@@ -435,7 +435,7 @@ def test_stripping_the_marker_brings_the_finding_back(tmp_path) -> None:
     reads = GUARD.direct_reads(suite)
     for segments in (
         ("config", "causal_priors.yml"),
-        ("scripts", "build_site.py"),
+        ("scripts", "check_workflow_yaml.py"),
         ("config", "press_sources.yml"),
         ("research", "DO_NOT_REBUILD.md"),
     ):

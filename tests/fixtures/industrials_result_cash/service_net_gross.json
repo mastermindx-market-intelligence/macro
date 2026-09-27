@@ -1,0 +1,56 @@
+{
+  "synthetic": true,
+  "issuer": {
+    "company_id": "synthetic:northgate",
+    "display_name": "Northgate Testing Services",
+    "external_ids": {
+      "cik": "0000987654"
+    }
+  },
+  "sources": [
+    {
+      "source_id": "northgate-release",
+      "url": "https://example.invalid/service-release.json",
+      "mode": "release",
+      "rights_state": "public_primary",
+      "recorded_at": "2026-07-10T12:00:00Z"
+    }
+  ],
+  "cells": [
+    {
+      "owner_ref": "synthetic:cell:service-net",
+      "revision": "r1",
+      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "semantic_selector": {
+        "statement": "cash-flow",
+        "row": "operating-cash",
+        "column": "quarter"
+      },
+      "value": "21",
+      "metric": "operating_cash_flow",
+      "unit": "USD_millions",
+      "scale": 1,
+      "currency": "USD",
+      "stock_or_flow": "flow",
+      "period": {
+        "start": "2026-04-02",
+        "end": "2026-07-03",
+        "fiscal_label": "FY2026 Q2",
+        "duration": "quarter"
+      },
+      "business_dimensions": {
+        "segment": "testing"
+      },
+      "basis": {
+        "accounting": "GAAP",
+        "recast": "as_reported"
+      },
+      "source_mode": "release",
+      "quality": {
+        "rights_profile": "rp_public_primary_v1",
+        "rights_state": "public_primary",
+        "definition": "cash_generated_by_operations"
+      }
+    }
+  ]
+}

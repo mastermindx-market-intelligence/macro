@@ -1,0 +1,85 @@
+
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font:14px/1.5 -apple-system,
+         "Segoe UI",Roboto,Helvetica,sans-serif; margin:0; padding:18px; }
+  @media (min-width:1100px){ body{ padding:26px max(40px,calc((100vw - 1100px)/2)); } }
+  a { text-decoration:none; }
+  h1 { font-size:20px; margin:0; }
+  h2 { font-size:15px; margin:0 0 6px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:var(--r-card,10px);
+           padding:14px 16px; margin-bottom:14px; }
+  .muted { color:var(--muted); }
+  .sm { font-size:13px; }
+  .help { display:inline-flex; align-items:center; justify-content:center; width:15px;
+          height:15px; border-radius:var(--r-pill,999px); border:1px solid var(--muted); color:var(--muted);
+          font-size:10px; font-weight:600; cursor:help; position:relative;
+          vertical-align:middle; margin-left:5px; }
+  .help .tip { display:none; position:absolute; top:140%; left:50%;
+               transform:translateX(-50%); width:330px; max-width:78vw; background:var(--panel);
+               border:1px solid var(--line); padding:9px 11px; border-radius:var(--r-ctl,8px); z-index:60;
+               font-size:12px; line-height:1.45; color:var(--text); font-weight:400;
+               box-shadow:var(--popover-shadow); pointer-events:auto; cursor:auto;
+               max-height:min(60vh,420px); overflow-y:auto; overscroll-behavior:contain; }
+  .help:hover::before { content:''; position:absolute; top:100%; left:-30px; right:-30px; height:10px; }
+  .help:hover .tip { display:block; }
+  .ctx-strip { display:flex; flex-wrap:wrap; gap:10px 20px; align-items:flex-start; }
+  .ctx-chip { display:inline-flex; align-items:center; gap:5px; background:var(--panel);
+              border:1px solid var(--line); border-radius:var(--r-ctl,6px); padding:5px 10px;
+              font-size:13px; font-weight:600; }
+  .ctx-chip.regime { border-color:var(--link); color:var(--ink-link, var(--link)); }
+  .ctx-row { display:flex; align-items:center; gap:6px; font-size:13px; line-height:1.4; }
+  .ctx-label { color:var(--muted); font-size:11px; font-weight:600; text-transform:uppercase;
+               letter-spacing:.05em; white-space:nowrap; }
+  .brief-link-panel { display:flex; align-items:center; gap:10px; padding:10px 16px; }
+  .brief-link { display:inline-flex; align-items:center; gap:6px; background:var(--panel);
+                border:1px solid var(--link); border-radius:var(--r-ctl,6px); padding:7px 14px;
+                font-size:13px; font-weight:600; color:var(--ink-link, var(--link));
+                text-decoration:none; }
+  .brief-link:hover { opacity:0.8; }
+  .state-badge { display:inline-block; background:var(--panel); border:1px solid var(--line);
+                 border-radius:var(--r-pill,999px); padding:3px 10px; font-size:12px; font-weight:600; }
+  .state-open   { border-color:var(--up); color:var(--up); }
+  .state-closed { border-color:var(--muted); color:var(--muted); }
+  .state-pre    { border-color:var(--link); color:var(--ink-link, var(--link)); }
+  .feasibility-note { font-size:12px; color:var(--muted); margin-top:4px; }
+/* MOR-2b Lane C — Morning Orientation surface: block header, state-chip slot,
+   the three block row idioms and the aibrief band. Included inside the <style>
+   of BOTH templates/am_edition.html.j2 and templates/aibrief.html.j2, so no page
+   depends on rules another page defines. Chips are the seat-pinned .dtp-chip
+   primitives from templates/theme.css; this file only scopes their art
+   direction inside the MOR-2b headers:
+     DARK  — tinted text on a transparent fill, hairline --line border; the
+             .dtp-dot pulse exists only on --live (the template emits the dot
+             only for CURRENT / OPEN);
+     LIGHT — a soft tint of the chip's own state colour (a currentColor
+             pseudo-element at 10 % opacity — the design checker forbids colour
+             functions, so the pinned "currentColor 10 %" is built from geometry
+             and opacity, not color-mix), no pulse, .eyebrow in --muted; depth is
+             the white --panel on the cool canvas plus 1 px --line hairlines,
+             never a shadow.
+   Token form only — no colour or radius literals, no var() fallback literals. */
+.mx-block-header { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+.mx-block-header h2 { margin:0; font-size:var(--fs-md); font-weight:600; }
+.mx-block-header .eyebrow { color:var(--muted); }
+.mx-block-header .dtp-asof { margin-left:auto; }
+.mx-chip-slot { display:inline-flex; align-items:center; gap:6px; }
+.mx-block-header .dtp-chip { background:transparent; position:relative; isolation:isolate; }
+html[data-theme="light"] .mx-block-header .dtp-chip::before { content:""; position:absolute; inset:0; border-radius:inherit; background:currentColor; opacity:.1; pointer-events:none; z-index:-1; }
+html[data-theme="light"] .mx-block-header .dtp-dot { animation:none; }
+.mx-stale-why { font-size:var(--fs-sm); color:var(--muted); margin:0 0 6px; }
+
+.mx-cp-row, .mx-rw-row, .mx-ol-row { padding:12px 0; border-top:1px solid var(--line); }
+.mx-block-header + .mx-cp-row, .mx-block-header + .mx-rw-row, .mx-block-header + .mx-ol-row,
+.mx-stale-why + .mx-cp-row, .mx-stale-why + .mx-rw-row, .mx-stale-why + .mx-ol-row { border-top:none; padding-top:0; }
+.mx-cp-row { display:flex; flex-direction:column; gap:2px; }
+.mx-cp-row .mx-cp-read { font-size:var(--fs-body); line-height:1.5; }
+.mx-cp-row .mx-cp-meta, .mx-rw-row .mx-rw-meta { font-size:var(--fs-sm); color:var(--muted); }
+.mx-rw-row { display:flex; flex-direction:column; gap:4px; }
+.mx-rw-row .mx-rw-text { font-size:var(--fs-body); line-height:1.5; }
+.mx-ol-row { display:flex; align-items:center; flex-wrap:wrap; gap:8px 16px; }
+.mx-ol-row .mx-ol-label { font-size:var(--fs-label); color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.06em; }
+
+/* aibrief band — one .panel directly under the brief's h1. */
+.mx-band { display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px; }
+.mx-band .mx-band-lead { flex:1 1 auto; min-width:0; font-size:var(--fs-body); line-height:1.5; }
+.mx-band .brief-link { color:var(--ink-link, var(--link)); font-weight:600; }

@@ -1,18 +1,124 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-09-24T22:43:54.844454+00:00",
-  "as_of": "2026-09-23",
+  "produced_at": "2026-09-26T20:44:29.345540+00:00",
+  "as_of": "2026-09-25",
   "status": "degraded",
   "phase": "final",
   "did_the_brain_run": {
-    "cortex_status": "degraded",
-    "tool_call_batches": 0,
-    "individual_tool_calls": 0,
-    "context_stale": true,
-    "summary": "cortex degraded — model_unavailable"
+    "cortex_status": "fresh",
+    "tool_call_batches": 6,
+    "individual_tool_calls": 11,
+    "context_stale": false,
+    "summary": "cortex ran (11 tool calls); memo as_of 2026-09-26T20:42:43+00:00"
   },
-  "what_changed": [],
+  "what_changed": [
+    {
+      "kind": "lobe_row_count_changed",
+      "id": "risk-radar-review-log",
+      "summary": "lobe risk-radar-review-log row count changed: 5 → 6 (20%)",
+      "severity": "info",
+      "evidence_path": "data/neuralweb/health.json"
+    },
+    {
+      "kind": "lobe_status_changed",
+      "id": "site-us-standouts",
+      "summary": "lobe site-us-standouts status: stale → fresh",
+      "severity": "info",
+      "evidence_path": "data/neuralweb/health.json"
+    },
+    {
+      "kind": "lobe_row_count_changed",
+      "id": "spine-index",
+      "summary": "lobe spine-index row count changed: 489305 → 490540 (0%)",
+      "severity": "info",
+      "evidence_path": "data/neuralweb/health.json"
+    },
+    {
+      "kind": "lobe_row_count_changed",
+      "id": "confluence-strength",
+      "summary": "lobe confluence-strength row count changed: 1919 → 1934 (1%)",
+      "severity": "info",
+      "evidence_path": "data/neuralweb/health.json"
+    },
+    {
+      "kind": "lobe_row_count_changed",
+      "id": "confluence-tape",
+      "summary": "lobe confluence-tape row count changed: 2073 → 2093 (1%)",
+      "severity": "info",
+      "evidence_path": "data/neuralweb/health.json"
+    },
+    {
+      "kind": "lobe_row_count_changed",
+      "id": "ops-push-basket-freeze",
+      "summary": "lobe ops-push-basket-freeze row count changed: 42 → 43 (2%)",
+      "severity": "info",
+      "evidence_path": "data/neuralweb/health.json"
+    },
+    {
+      "kind": "lobe_row_count_changed",
+      "id": "nw-health-run-history",
+      "summary": "lobe nw-health-run-history row count changed: 67 → 68 (1%)",
+      "severity": "info",
+      "evidence_path": "data/neuralweb/health.json"
+    },
+    {
+      "kind": "lobe_row_count_changed",
+      "id": "governance-ledger",
+      "summary": "lobe governance-ledger row count changed: 177 → 182 (3%)",
+      "severity": "info",
+      "evidence_path": "data/neuralweb/health.json"
+    },
+    {
+      "kind": "lobe_row_count_changed",
+      "id": "cortex-attention-firings",
+      "summary": "lobe cortex-attention-firings row count changed: 106 → 111 (5%)",
+      "severity": "info",
+      "evidence_path": "data/neuralweb/health.json"
+    },
+    {
+      "kind": "lobe_row_count_changed",
+      "id": "cortex-attention-grades",
+      "summary": "lobe cortex-attention-grades row count changed: 99 → 100 (1%)",
+      "severity": "info",
+      "evidence_path": "data/neuralweb/health.json"
+    },
+    {
+      "kind": "lobe_status_changed",
+      "id": "bottom-sensors-json",
+      "summary": "lobe bottom-sensors-json status: stale → fresh",
+      "severity": "info",
+      "evidence_path": "data/neuralweb/health.json"
+    },
+    {
+      "kind": "lobe_row_count_changed",
+      "id": "neuralweb-orchestrator-runlog",
+      "summary": "lobe neuralweb-orchestrator-runlog row count changed: 67 → 68 (1%)",
+      "severity": "info",
+      "evidence_path": "data/neuralweb/health.json"
+    },
+    {
+      "kind": "lobe_row_count_changed",
+      "id": "theme-phase-history",
+      "summary": "lobe theme-phase-history row count changed: 383 → 387 (1%)",
+      "severity": "info",
+      "evidence_path": "data/neuralweb/health.json"
+    },
+    {
+      "kind": "lobe_row_count_changed",
+      "id": "theme-thesis-ledger",
+      "summary": "lobe theme-thesis-ledger row count changed: 373 → 377 (1%)",
+      "severity": "info",
+      "evidence_path": "data/neuralweb/health.json"
+    }
+  ],
   "what_contradicted": [
+    {
+      "id": "",
+      "summary": "contradiction ",
+      "severity": "watch",
+      "delta_vs_prior": "persisting",
+      "evidence_path": "site/neuralwebdata/confluence_graph.json"
+    },
     {
       "id": "",
       "summary": "contradiction ",
@@ -25,79 +131,63 @@
     {
       "id": "government-revenue-latest",
       "as_of": "2026-09-01",
-      "age_hours": 549.43,
+      "age_hours": 620.45,
       "freshness_sla_hours": 36,
       "severity": "warn",
       "kind": "stale"
     },
     {
-      "id": "confluence-graph",
-      "as_of": "2026-09-21",
-      "age_hours": 69.43,
+      "id": "site-china-standouts",
+      "as_of": "2026-09-24",
+      "age_hours": 68.45,
       "freshness_sla_hours": 30,
       "severity": "warn",
       "kind": "stale"
     },
     {
-      "id": "opex-risk-snapshot",
-      "as_of": "2026-09-21",
-      "age_hours": 69.43,
+      "id": "site-china-cycle-phase",
+      "as_of": "2026-09-24",
+      "age_hours": 68.45,
+      "freshness_sla_hours": 30,
+      "severity": "warn",
+      "kind": "stale"
+    },
+    {
+      "id": "confluence-graph",
+      "as_of": "2026-09-24",
+      "age_hours": 68.45,
       "freshness_sla_hours": 30,
       "severity": "warn",
       "kind": "stale"
     },
     {
       "id": "treasury-watch",
-      "as_of": "2026-09-21",
-      "age_hours": 69.43,
+      "as_of": "2026-09-24",
+      "age_hours": 68.45,
       "freshness_sla_hours": 48,
-      "severity": "warn",
-      "kind": "stale"
-    },
-    {
-      "id": "site-us-standouts",
-      "as_of": "2026-09-22",
-      "age_hours": 45.43,
-      "freshness_sla_hours": 30,
-      "severity": "warn",
-      "kind": "stale"
-    },
-    {
-      "id": "bottom-sensors-json",
-      "as_of": "2026-09-22",
-      "age_hours": 45.43,
-      "freshness_sla_hours": 30,
-      "severity": "warn",
-      "kind": "stale"
-    },
-    {
-      "id": "darkpool-context-latest",
-      "as_of": "2026-09-22",
-      "age_hours": 45.43,
-      "freshness_sla_hours": 36,
       "severity": "warn",
       "kind": "stale"
     },
     {
       "id": "causal-llm-lane",
       "as_of": "2026-09-22T21:33:45+00:00",
-      "age_hours": 23.86,
+      "age_hours": 94.89,
       "freshness_sla_hours": 200,
       "severity": "watch",
       "kind": "degraded"
     },
     {
       "id": "neuralweb-daily-brief",
-      "as_of": "2026-09-18T19:51:14+00:00",
-      "age_hours": 11.12,
+      "as_of": "2026-09-25",
+      "age_hours": 10.16,
       "freshness_sla_hours": 30,
       "severity": "watch",
       "kind": "degraded"
     },
     {
       "id": "site-neuralweb-daily-brief",
-      "as_of": "2026-09-18T19:51:14+00:00",
-      "age_hours": 11.12,
+      "as_of": "2026-09-25",
+      "age_hours": 10.16,
       "freshness_sla_hours": 30,
       "severity": "watch",
       "kind": "degraded"
@@ -201,84 +291,71 @@
   ],
   "why_the_tape_moved": {
     "available": true,
-    "no_pathway": {
-      "reason": "no_attributable_driver",
-      "printed": true
+    "as_of": "2026-09-26",
+    "primary": {
+      "family": "equity-leadership",
+      "direction": "AI/semis leadership — narrow tech-led tape",
+      "coverage": 1.0,
+      "coherence": "supported",
+      "evidence_legs": [
+        "semis RS",
+        "tech vs utilities",
+        "growth vs value"
+      ],
+      "stale_legs_count": 0
     },
-    "alternates": [],
-    "note": "no pathway emitted: no_attributable_driver"
+    "alternates": [
+      "inflation",
+      "crypto"
+    ]
   },
   "operator_attention": [
     {
-      "priority": 1,
-      "area": "cortex",
-      "summary": "cortex degraded — inspect data/neuralweb/cortex/memo.json and run_status",
-      "action_type": "ops_fix"
-    },
-    {
-      "priority": 1,
-      "area": "cortex",
-      "summary": "cortex context was stale at run time — check world_state freshness",
+      "priority": 2,
+      "area": "government-revenue-latest",
+      "summary": "lobe government-revenue-latest is warn — age 620.45h vs SLA 36h",
       "action_type": "inspect"
     },
     {
       "priority": 2,
-      "area": "government-revenue-latest",
-      "summary": "lobe government-revenue-latest is warn — age 549.43h vs SLA 36h",
+      "area": "site-china-standouts",
+      "summary": "lobe site-china-standouts is warn — age 68.45h vs SLA 30h",
+      "action_type": "inspect"
+    },
+    {
+      "priority": 2,
+      "area": "site-china-cycle-phase",
+      "summary": "lobe site-china-cycle-phase is warn — age 68.45h vs SLA 30h",
       "action_type": "inspect"
     },
     {
       "priority": 2,
       "area": "confluence-graph",
-      "summary": "lobe confluence-graph is warn — age 69.43h vs SLA 30h",
-      "action_type": "inspect"
-    },
-    {
-      "priority": 2,
-      "area": "opex-risk-snapshot",
-      "summary": "lobe opex-risk-snapshot is warn — age 69.43h vs SLA 30h",
+      "summary": "lobe confluence-graph is warn — age 68.45h vs SLA 30h",
       "action_type": "inspect"
     },
     {
       "priority": 2,
       "area": "treasury-watch",
-      "summary": "lobe treasury-watch is warn — age 69.43h vs SLA 48h",
-      "action_type": "inspect"
-    },
-    {
-      "priority": 2,
-      "area": "site-us-standouts",
-      "summary": "lobe site-us-standouts is warn — age 45.43h vs SLA 30h",
-      "action_type": "inspect"
-    },
-    {
-      "priority": 2,
-      "area": "bottom-sensors-json",
-      "summary": "lobe bottom-sensors-json is warn — age 45.43h vs SLA 30h",
-      "action_type": "inspect"
-    },
-    {
-      "priority": 2,
-      "area": "darkpool-context-latest",
-      "summary": "lobe darkpool-context-latest is warn — age 45.43h vs SLA 36h",
+      "summary": "lobe treasury-watch is warn — age 68.45h vs SLA 48h",
       "action_type": "inspect"
     },
     {
       "priority": 2,
       "area": "causal-llm-lane",
-      "summary": "lobe causal-llm-lane is watch — age 23.86h vs SLA 200h",
+      "summary": "lobe causal-llm-lane is watch — age 94.89h vs SLA 200h",
       "action_type": "inspect"
     },
     {
       "priority": 2,
       "area": "neuralweb-daily-brief",
-      "summary": "lobe neuralweb-daily-brief is watch — age 11.12h vs SLA 30h",
+      "summary": "lobe neuralweb-daily-brief is watch — age 10.16h vs SLA 30h",
       "action_type": "inspect"
     },
     {
       "priority": 2,
       "area": "site-neuralweb-daily-brief",
-      "summary": "lobe site-neuralweb-daily-brief is watch — age 11.12h vs SLA 30h",
+      "summary": "lobe site-neuralweb-daily-brief is watch — age 10.16h vs SLA 30h",
       "action_type": "inspect"
     },
     {
@@ -452,13 +529,13 @@
     {
       "priority": 3,
       "area": "factor-intelligence-state",
-      "summary": "lobe factor-intelligence-state has gaps: latest_board_coordinates: 7 tickers missing from panel at 2026-09-21: ['GDS', 'RKLB', 'JD', 'AFRM', 'NVMI']..., fire_coordinates: 28 [redacted]-lane entries skipped (tier_cascade=null — held/topped, not fires), fire_coordinates: 3 tickers had no panel row at 2026-09-21: ['GDS', 'RKLB', 'NVMI']",
+      "summary": "lobe factor-intelligence-state has gaps: latest_board_coordinates: 7 tickers missing from panel at 2026-09-24: ['VKTX', 'EU', 'TME', 'PL', 'ONON']..., fire_coordinates: 23 [redacted]-lane entries skipped (tier_cascade=null — held/topped, not fires), fire_coordinates: 6 tickers had no panel row at 2026-09-24: ['VKTX', 'EU', 'TME', 'PL', 'ONON']...",
       "action_type": "follow_up"
     },
     {
       "priority": 3,
       "area": "site-factor-intelligence-state",
-      "summary": "lobe site-factor-intelligence-state has gaps: latest_board_coordinates: 7 tickers missing from panel at 2026-09-21: ['GDS', 'RKLB', 'JD', 'AFRM', 'NVMI']..., fire_coordinates: 28 [redacted]-lane entries skipped (tier_cascade=null — held/topped, not fires), fire_coordinates: 3 tickers had no panel row at 2026-09-21: ['GDS', 'RKLB', 'NVMI']",
+      "summary": "lobe site-factor-intelligence-state has gaps: latest_board_coordinates: 7 tickers missing from panel at 2026-09-24: ['VKTX', 'EU', 'TME', 'PL', 'ONON']..., fire_coordinates: 23 [redacted]-lane entries skipped (tier_cascade=null — held/topped, not fires), fire_coordinates: 6 tickers had no panel row at 2026-09-24: ['VKTX', 'EU', 'TME', 'PL', 'ONON']...",
       "action_type": "follow_up"
     },
     {
@@ -482,7 +559,7 @@
     {
       "priority": 3,
       "area": "evidence_clock",
-      "summary": "55 evidence-clock items overdue — see admin Observatory",
+      "summary": "70 evidence-clock items overdue — see admin Observatory",
       "action_type": "follow_up"
     }
   ],
@@ -491,28 +568,28 @@
   },
   "evidence_clock": {
     "available": true,
-    "as_of": "2026-09-23",
+    "as_of": "2026-09-26",
     "counts": {
-      "overdue": 55,
-      "due": 24,
+      "overdue": 70,
+      "due": 13,
       "human_review": 0,
       "missing": 1,
       "stale": 1,
       "blocked": 2,
       "not_ready": 0,
       "promotion_eligible": 0,
-      "accruing": 234,
+      "accruing": 230,
       "n_acknowledged": 0
     },
     "top_due": {
       "clock_id": "qledger:placebo",
       "due_at": "2026-06-22"
     },
-    "morning_line": "55 overdue, 24 due, 1 missing, 1 stale, 2 blocked, 234 accruing. Top due: qledger:placebo."
+    "morning_line": "70 overdue, 13 due, 1 missing, 1 stale, 2 blocked, 230 accruing. Top due: qledger:placebo."
   },
   "china_market_state": {
     "available": true,
-    "as_of": "2026-09-24",
+    "as_of": "2026-09-26",
     "phase": "REPAIR",
     "phase_confidence": 0.8,
     "who_controls": "mixed",
@@ -523,7 +600,7 @@
   },
   "thematic_line": {
     "available": true,
-    "as_of": "2026-09-23",
+    "as_of": "2026-09-26",
     "n_themes": 18,
     "stage_counts": {
       "WATCH": 13,
@@ -531,14 +608,14 @@
       "BROADENING": 1,
       "RE-RATING": 2
     },
-    "n_falsifiers_fired": 4,
-    "n_stale_legs": 10,
+    "n_falsifiers_fired": 5,
+    "n_stale_legs": 4,
     "display_only": true,
     "is_context_only": true
   },
   "causal_lab": {
     "available": true,
-    "asof": "2026-09-24T11:19:01Z",
+    "asof": "2026-09-26T10:21:57Z",
     "new_edges_this_week_by_verdict": {
       "insufficient_power": 22,
       "null": 11,

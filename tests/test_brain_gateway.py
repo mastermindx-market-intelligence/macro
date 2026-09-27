@@ -4341,10 +4341,28 @@ def test_v2_command_accepts_valid_trendline():
     assert res.get("op") == "draw.trendline"
     assert res.get("id") == "ai_tl_1"
     assert res.get("caption")
-    # Flat emission strips only internal keys; the envelope survives.
-    flat = gw._flat_command(res)
+    # Raw tool output is model-facing validation only; host wire identity is bound later.
+    assert "on" not in res and "batch_id" not in res and "seq" not in res
+    flat = gw._flat_command(res, batch_id="brain_test_0", seq=0)
     assert "client_executed" not in flat and "note" not in flat
     assert flat["op"] == "draw.trendline" and flat["v"] == 2
+    assert flat["on"] is True and flat["batch_id"] == "brain_test_0" and flat["seq"] == 0
+
+
+def test_v2_command_ignores_model_supplied_wire_identity():
+    """on/batch_id/seq are host-owned wire fields, never model-controlled inputs."""
+    res = gw._tool_chart_command({
+        "op": "ai.clear",
+        "on": False,
+        "batch_id": "model-chosen-batch",
+        "seq": 99,
+    })
+    assert res.get("client_executed") is True
+    assert "on" not in res and "batch_id" not in res and "seq" not in res
+    wire = gw._flat_command(res, batch_id="brain_host_batch", seq=3)
+    assert wire["on"] is True
+    assert wire["batch_id"] == "brain_host_batch"
+    assert wire["seq"] == 3
 
 
 def test_v2_command_rejects_unknown_op():
@@ -4456,7 +4474,82 @@ def test_v2_command_emitted_as_sse_event_in_stream(tmp_path):
     assert cmds, f"no v2 command event: {parsed}"
     assert cmds[0]["op"] == "draw.hline"
     assert cmds[0]["args"]["p"] == 112.5
+    assert cmds[0]["on"] is True
+    assert isinstance(cmds[0]["batch_id"], str) and cmds[0]["batch_id"].startswith("brain_")
+    assert cmds[0]["seq"] == 0
     assert "payload" not in cmds[0]
+
+
+def test_v2_same_round_commands_share_host_batch_and_sequence(tmp_path):
+    """Two v2 tool calls in one model round get one host batch and monotone host sequence."""
+    root = _make_temp_root()
+    a = _MockBlock("tool_use", name="emit_chart_command",
+                   input_={"op": "draw.hline", "id": "ai_a", "args": {"p": 100.0}}, id_="c-a")
+    b = _MockBlock("tool_use", name="emit_chart_command",
+                   input_={"op": "draw.hline", "id": "ai_b", "args": {"p": 101.0}}, id_="c-b")
+    turn1 = _MockResponse([a, b], "tool_use")
+    turn2 = _MockResponse([_MockBlock("text", "Marked both. is_context_only: true — display-tier pending FDR.")], "end_turn")
+    providers = [{"client": _MockClient([turn1, turn2]), "model": "deepseek-chat"}]
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        events = list(gw.chat_stream("mark both", "userX", lane="fast",
+                                                     context={"page": "terminal"}, root=root))
+    parsed = [json.loads(e[6:]) for e in events if e.startswith("data: ")]
+    cmds = [p for p in parsed if p.get("type") == "command" and p.get("v") == 2]
+    assert len(cmds) == 2
+    assert [c["seq"] for c in cmds] == [0, 1]
+    assert cmds[0]["batch_id"] == cmds[1]["batch_id"]
+    assert all(c["on"] is True for c in cmds)
+
+
+def test_v2_commands_across_rounds_share_turn_batch_and_monotone_sequence(tmp_path):
+    """One user turn is one undo/provenance batch even when commands span model rounds."""
+    root = _make_temp_root()
+    first = _MockBlock("tool_use", name="emit_chart_command",
+                       input_={"op": "draw.hline", "id": "ai_r1", "args": {"p": 100.0}}, id_="r1")
+    second = _MockBlock("tool_use", name="emit_chart_command",
+                        input_={"op": "draw.hline", "id": "ai_r2", "args": {"p": 101.0}}, id_="r2")
+    turn1 = _MockResponse([first], "tool_use")
+    turn2 = _MockResponse([second], "tool_use")
+    turn3 = _MockResponse([_MockBlock("text", "Marked both. is_context_only: true — display-tier pending FDR.")], "end_turn")
+    providers = [{"client": _MockClient([turn1, turn2, turn3]), "model": "deepseek-chat"}]
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        events = list(gw.chat_stream("mark in two steps", "userX", lane="fast",
+                                                     context={"page": "terminal"}, root=root))
+    parsed = [json.loads(e[6:]) for e in events if e.startswith("data: ")]
+    cmds = [p for p in parsed if p.get("type") == "command" and p.get("v") == 2]
+    assert len(cmds) == 2
+    assert cmds[0]["batch_id"] == cmds[1]["batch_id"]
+    assert [c["seq"] for c in cmds] == [0, 1]
+
+
+def test_v2_command_returned_in_nonstream_has_strict_wire_identity(tmp_path):
+    """chat() returns the same strict v2 wire envelope as streaming."""
+    root = _make_temp_root()
+    cmd = _MockBlock("tool_use", name="emit_chart_command",
+                     input_={"op": "draw.hline", "id": "ai_h2", "args": {"p": 113.0}}, id_="c2")
+    turn1 = _MockResponse([cmd], "tool_use")
+    turn2 = _MockResponse([_MockBlock("text", "Marked it. is_context_only: true — display-tier pending FDR.")], "end_turn")
+    providers = [{"client": _MockClient([turn1, turn2]), "model": "deepseek-chat"}]
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={"tier": "pro", "status": "active", "current_period_end": None}):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        out = gw.chat("mark 113", "userX", lane="fast",
+                                      context={"page": "terminal"}, root=root)
+    cmds = [c for c in out.get("commands", []) if c.get("v") == 2]
+    assert len(cmds) == 1
+    assert cmds[0]["on"] is True
+    assert isinstance(cmds[0]["batch_id"], str) and cmds[0]["batch_id"].startswith("brain_")
+    assert cmds[0]["seq"] == 0
 
 
 def test_v2_invalid_command_not_emitted(tmp_path):

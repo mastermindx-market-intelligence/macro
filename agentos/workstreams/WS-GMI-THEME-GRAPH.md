@@ -103,12 +103,13 @@ waves:
     pr: 7881
     next_action: >
       RE-SCOPED 2026-09-24 by Chairman ruling R-ENE-09 (relayed from Astra CEO): Semiconductors (#7870)
-      builds the base — shared assertion, contracts/market_ontology/*, private binding, route, mount —
-      and Energy integrates into it later. Carrier #7881 withdrew the T3 shared-dossier registration,
-      holds T4, keeps the T9 nuclear non-regression freeze (wired into unrun-subsector-themes). Next:
-      T9 slice ACCEPTED (four Opus READ_ONLY rounds) and shipping on #7881 (ready + merge-on-green); wait for B's base on main; then the Energy integration wave
-      (adapter on B's contract, nuclear witness profiles, dossier composition, consumed private
-      role/route/mount, browser proof). Working checkpoint:
+      builds the base and Energy integrates into it. The T9 nuclear non-regression guard is MERGED
+      (#7881 -> 1a90944e) with production proof. 2026-09-25 wave 2, following the Robotics precedent
+      (#7908): Energy builds its own nuclear theme-research vertical module on an Energy-owned snapshot
+      of #7870's head (claude/energy-stack-base-b-6cd958e9 = 6cd958e9), importing B's shared types
+      directly. It merges only after #7870 lands; one VerticalRegistration + mount for nuclear_power,
+      served/browser/privacy proof and real admission then follow on an Energy carrier. Working
+      checkpoint (section 9):
       agentos/handoffs/GMI-ENERGY-2026-09-24-nuclear-first-vertical-implementation.md.
 landmines:
   - >-

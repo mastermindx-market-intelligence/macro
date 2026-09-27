@@ -578,7 +578,7 @@
         {% if r.size_band %}<span class="fx-chip size-{{ r.size_band|lower }}" title="{{ r.size_note }}">⚖ {{ r.size_band|capitalize }}</span>{% endif %}
         {% if r.glut_band in ('GLUT_FORMING', 'GLUT') %}<span class="fx-chip exit">⚠ {{ t('exit-risk', '退出风险') }}{% if r.glut_score is not none %} ({{ '%+.2f'|format(r.glut_score) }}){% endif %}</span>{% endif %}
         {% if r.altdata_summary %}<span class="fx-chip conf{{ ' lit' if r.n_altdata_leading else '' }}" title="{{ (r.altdata_members or [])|join(', ') }}">🛰 {{ r.altdata_summary }}</span>{% endif %}
-        {% if r.theme_feed_summary %}{% set tfs = r.theme_feed_summary %}<span class="fx-chip feed-{{ tfs.tone or 'mute' }}" title="{{ tfs.rationale or '' }}">💊 {{ tfs.label }}</span>{% endif %}
+        {% if r.theme_feed_summary %}{% set tfs = r.theme_feed_summary %}<span class="fx-chip feed-{{ tfs.tone or 'mute' }}" title="{{ tfs.rationale or '' }}">⚕ {{ t(tfs.label, tfs.label_zh) }}</span>{% endif %}
       </div>
       {% if r.score_detail and r.score_detail.caps %}<div class="fx-cap">⚑ {{ t('score held back', '评分受限') }}: {{ r.score_detail.caps|join(' · ') }}</div>{% endif %}
     </article>
