@@ -4201,6 +4201,247 @@ def test_an_armed_pull_request_with_no_check_runs_blocks_and_says_why(
     assert "no sweep will ever merge it" in emitted["reason"]
 
 
+# --------------------------------------------------------------------------
+# A rollup ci.yml has not reached yet is NOT "concluded clean" (#7969, 2026-09-25).
+#
+# The check-run listing holds only runs that already EXIST. A head whose ci.yml run
+# is still `pending` (queued behind the same PR's previous-head run in its
+# concurrency group) has published nothing from ci.yml, so the fast workflows are
+# the whole rollup and every one of them has concluded. The hook called that
+# "every check has concluded clean; the next sweep should merge it", which invites a
+# hand merge before one pack has run: CLAUDE.md's "Merge on CONCLUDED checks, never
+# mid-flight" (#3867). The sweeper was never fooled, because `proof_anchor_verdict`
+# requires `ci-gate`. The hook now asks the sweeper's own question of the rollup it
+# already holds.
+# --------------------------------------------------------------------------
+
+
+def _actions_check(name: str, conclusion, run_id: int, status: str = "completed") -> dict:
+    """A check run as GitHub Actions publishes it. The sweeper counts a proof anchor
+    only when `app.slug` is `github-actions`, so the fixture has to carry it."""
+    return {
+        "id": run_id,
+        "name": name,
+        "status": status,
+        "conclusion": conclusion,
+        "app": {"slug": "github-actions"},
+    }
+
+
+def _fork_fence_expression(anchor: str) -> str:
+    """The unevaluated job-name expression fences.yml's skipped fork jobs publish."""
+    return (
+        "github.event_name == 'pull_request' && github.event.pull_request.head.repo."
+        f"full_name != github.repository && '{anchor}' || 'fork-{anchor}-unused'"
+    )
+
+
+#: PR #7969's head bd260bbe as the Stop hook read it at ~00:50Z on 2026-09-25: the
+#: eleven check runs registered while its ci.yml run 36078725703 sat `pending`.
+#: ci-plan did not start until 01:08:29Z; ci-gate concluded at 01:40:08Z.
+_PR_7969_BEFORE_CI_YML = (
+    _actions_check(_fork_fence_expression("capability-broker"), "skipped", 1),
+    _actions_check(_fork_fence_expression("grader-manifest"), "skipped", 2),
+    _actions_check(_fork_fence_expression("self-mod-fence"), "skipped", 3),
+    _actions_check("ci-authority", "success", 4),
+    _actions_check("fence-pack", "success", 5),
+    _actions_check("ci-authority", "success", 6),
+    _actions_check("ci-authority/codex/merge-queue-pilot", "failure", 7),
+    _actions_check("ci-authority/main", "success", 8),
+    _actions_check("capability-broker", "success", 9),
+    _actions_check("self-mod-fence", "success", 10),
+    _actions_check("grader-manifest", "success", 11),
+)
+#: The same head once ci.yml had run: all 27 check runs it finally carried.
+_PR_7969_AFTER_CI_YML = (
+    *_PR_7969_BEFORE_CI_YML,
+    _actions_check("ci-plan", "success", 12),
+    _actions_check("contract-delta", "success", 13),
+    _actions_check("trusted-ci", "skipped", 14),
+    *(_actions_check(f"ci-pack-{pack}", "success", 15 + pack) for pack in range(12)),
+    _actions_check("ci-gate", "success", 27),
+)
+
+
+def _refuse_rest(monkeypatch) -> None:
+    """The anchor question is answered from the rollup already fetched. A Stop that
+    spent a REST call on it would multiply across every armed session in the fleet."""
+
+    def refuse(url):
+        raise AssertionError(f"the anchor check must reuse the fetched rollup: {url}")
+
+    monkeypatch.setattr(GUARD, "_get_json", refuse)
+
+
+def test_a_rollup_ci_yml_has_not_reached_is_not_called_concluded_clean(monkeypatch):
+    """#7969, replayed from its real rollup. The hook before this fix FAILS this:
+    it answered "every check has concluded clean; the next sweep should merge it".
+
+    Eleven concluded checks, no red, and nothing from ci.yml. The sweeper refuses
+    this head (`ci-gate` is missing), so the advice has to say so, and it must not
+    give the session a reason to merge by hand mid-flight.
+    """
+    _refuse_rest(monkeypatch)
+    code, detail = _armed_verdict(monkeypatch, _PR_7969_BEFORE_CI_YML)
+    assert code == "unmerged", f"an armed, unmerged head still blocks, got {code}"
+    assert "concluded clean" not in detail, detail
+    assert "should merge it" not in detail, detail
+    assert (
+        "ci.yml has not started or published ci-gate for this head yet — the sweeper "
+        "will not merge until ci-gate concludes"
+    ) in detail
+    assert "NOT concluded-green" in detail, "and it must name the hand-merge hazard"
+    assert "never merge it by hand" in detail
+    assert "gh run list --workflow ci.yml --branch claude/feature" in detail, (
+        "the session needs a way to see the queued run the rollup cannot show"
+    )
+
+
+def test_the_same_head_after_ci_yml_concludes_is_still_called_clean(monkeypatch):
+    """Control: the test above cannot pass by the clean verdict having been deleted.
+    Once ci.yml has published ci-gate and every scheduled pack, the sweeper's anchor
+    gate is satisfied and the old advice is true again."""
+    _refuse_rest(monkeypatch)
+    code, detail = _armed_verdict(monkeypatch, _PR_7969_AFTER_CI_YML)
+    assert code == "unmerged"
+    assert "every check has concluded clean; the next sweep should merge it" in detail
+
+
+@pytest.mark.parametrize(
+    "runs,expected",
+    [
+        # ci-gate published but not a pass: `neutral` is not red, and it is not proof.
+        (
+            (*_PR_7969_BEFORE_CI_YML, _actions_check("ci-gate", "neutral", 40)),
+            "ci-gate has not concluded `success` on this head (neutral)",
+        ),
+        # ci-gate green but fences.yml never ran: the sweeper still wants fence-pack.
+        (
+            (_actions_check("ci-plan", "success", 41), _actions_check("ci-gate", "success", 42)),
+            "the sweeper's proof anchors are incomplete on this head (fence-pack)",
+        ),
+        # A ci-gate from some other app is not the anchor the sweeper counts.
+        (
+            (
+                *_PR_7969_BEFORE_CI_YML,
+                {**_actions_check("ci-gate", "success", 43), "app": {"slug": "impostor"}},
+            ),
+            "ci.yml has not started or published ci-gate for this head yet",
+        ),
+    ],
+    ids=["ci-gate-neutral", "fence-pack-missing", "non-actions-ci-gate"],
+)
+def test_every_anchor_gap_names_what_the_sweeper_still_lacks(monkeypatch, runs, expected):
+    _refuse_rest(monkeypatch)
+    code, detail = _armed_verdict(monkeypatch, runs)
+    assert code == "unmerged"
+    assert expected in detail, detail
+    assert "concluded clean" not in detail, detail
+
+
+def test_a_head_nothing_has_concluded_on_gets_no_unproven_hand_merge_advice(monkeypatch):
+    """The empty rollup is the same hazard one step earlier: a ci.yml run queued in
+    its concurrency group publishes no check runs at all. The old advice ended "push
+    a change CI can see, or merge by hand", which offers a hand merge with zero proof
+    to a session whose proof is merely queued. #4779's warning stays: when no run
+    was ever scheduled, no sweep is coming."""
+    _refuse_rest(monkeypatch)
+    code, detail = _armed_verdict(
+        monkeypatch, [_actions_check("Workers Builds: macro", "failure", 1)]
+    )
+    assert code == "unmerged"
+    assert "ci.yml has not started or published ci-gate for this head yet" in detail
+    assert "no sweep will ever merge it" in detail, "#4779's warning must survive"
+    assert "push a change CI can see" in detail
+    assert "or merge by hand" not in detail, detail
+
+
+def _load_sweeper_module():
+    """`scripts/merge_on_green.py`, loaded by path the way the spurious-check parity
+    test above loads it (the hook itself may not import it)."""
+    spec = importlib.util.spec_from_file_location(
+        "_test_merge_on_green_anchors", ROOT / "scripts" / "merge_on_green.py"
+    )
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    sys.modules["_test_merge_on_green_anchors"] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+#: Rollups whose anchor verdict the hook and the sweeper must agree on. Each is a
+#: shape the sweeper's `proof_anchor_verdict` distinguishes; one case would pin
+#: nothing, since drift shows up at an edge.
+_ANCHOR_PARITY_CASES = {
+    "pr-7969-before-ci-yml": _PR_7969_BEFORE_CI_YML,
+    "pr-7969-after-ci-yml": _PR_7969_AFTER_CI_YML,
+    "empty": (),
+    "no-app-slug": (
+        _run_stub("ci-gate", conclusion="success"),
+        _run_stub("fence-pack", conclusion="success"),
+    ),
+    "ci-gate-only": (_actions_check("ci-gate", "success", 1),),
+    "fork-fences-stand-in-for-skipped-fence-pack": (
+        _actions_check("fence-pack", "skipped", 1),
+        _actions_check("self-mod-fence", "success", 2),
+        _actions_check("capability-broker", "success", 3),
+        _actions_check("grader-manifest", "success", 4),
+        _actions_check("ci-gate", "success", 5),
+    ),
+    "skipped-fence-pack-without-fork-fences": (
+        _actions_check("fence-pack", "skipped", 1),
+        _actions_check("ci-gate", "success", 2),
+    ),
+    "ci-gate-running": (
+        _actions_check("fence-pack", "success", 1),
+        _actions_check("ci-gate", None, 2, status="in_progress"),
+    ),
+    "ci-gate-neutral": (
+        _actions_check("fence-pack", "success", 1),
+        _actions_check("ci-gate", "neutral", 2),
+    ),
+    "ci-gate-failed": (
+        _actions_check("fence-pack", "success", 1),
+        _actions_check("ci-gate", "failure", 2),
+    ),
+    "ci-gate-cancelled": (
+        _actions_check("fence-pack", "success", 1),
+        _actions_check("ci-gate", "cancelled", 2),
+    ),
+    "newest-attempt-wins": (
+        _actions_check("fence-pack", "success", 1),
+        _actions_check("ci-gate", "failure", 2),
+        _actions_check("ci-gate", "success", 3),
+    ),
+    "scheduled-pack-skipped": (
+        _actions_check("fence-pack", "success", 1),
+        _actions_check("ci-pack-3", "skipped", 2),
+        _actions_check("ci-gate", "success", 3),
+    ),
+    "pack-outside-the-anchor-set": (
+        _actions_check("fence-pack", "success", 1),
+        _actions_check("ci-pack-12", "success", 2),
+        _actions_check("ci-gate", "success", 3),
+    ),
+}
+
+
+def test_the_hook_asks_the_sweepers_anchor_question_and_gets_its_answer():
+    """The hook holds a COPY of `proof_anchor_verdict` (it is loaded by file path and
+    may not acquire the sweeper's import graph), so the copy is pinned to the
+    original here. A divergence would put the old #7969 lie back: the hook says the
+    next sweep merges, and the sweeper refuses."""
+    sweeper = _load_sweeper_module()
+    assert GUARD.PROOF_CI_GATE_ANCHOR == sweeper.REQUIRED_CI_GATE
+    assert GUARD.PROOF_FENCE_ANCHOR == sweeper.REQUIRED_FENCE_ANCHOR
+    assert GUARD.PROOF_FORK_FENCE_ANCHORS == sweeper.REQUIRED_FORK_FENCE_ANCHORS
+    assert GUARD.PROOF_CI_PACK_ANCHORS == sweeper.REQUIRED_CI_ANCHORS
+    for label, runs in _ANCHOR_PARITY_CASES.items():
+        assert GUARD._proof_anchor_verdict(list(runs)) == sweeper.proof_anchor_verdict(
+            list(runs)
+        ), label
+
+
 def test_an_open_pull_request_without_the_label_is_not_probed(monkeypatch, tmp_path, capsys):
     """An unlabeled PR costs no check-run listing: the ordinary `unmerged` block
     already says everything true about it, and the REST pool is shared."""

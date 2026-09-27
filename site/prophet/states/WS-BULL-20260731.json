@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "WS-BULL-20260731",
-  "asof": "2026-09-23",
+  "asof": "2026-09-26",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 38.7,
@@ -10,27 +10,27 @@
   "recommended_action": "trim",
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
-    "validity": 59.1,
+    "validity": 76.5,
     "progress": 0.0,
-    "pace": 27.3,
-    "retention": 46.4,
-    "overlay": 61.0
+    "pace": 23.3,
+    "retention": 48.0,
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.677,
+    "dist_to_stop_r": 0.82,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 104.4,
-    "p1": -0.2153,
-    "p2": -0.1077,
+    "horizon_pct_used": 111.1,
+    "p1": -0.1201,
+    "p2": -0.0601,
     "p3": null,
-    "move_r": -0.323,
+    "move_r": -0.18,
     "mfe_r": 0.0,
     "mae_r": -0.532
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Falling Behind Schedule",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -45,6 +45,6 @@
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 47,
-  "tau": 1.0444
+  "days_elapsed": 50,
+  "tau": 1.1111
 }

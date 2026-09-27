@@ -2,6 +2,72 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-09-26",
+      "tickers": [
+        "AAPL",
+        "AEP",
+        "ANIP",
+        "BKR",
+        "CDNS",
+        "CHRW",
+        "CMS",
+        "COHU",
+        "DAL",
+        "EBAY",
+        "EGBN",
+        "ELF",
+        "ETRA",
+        "GAP",
+        "ITW",
+        "KLAC",
+        "KMT",
+        "LMAT",
+        "MAR",
+        "NCT",
+        "PBH",
+        "POST",
+        "RBLX",
+        "REX",
+        "TBBK",
+        "TLN",
+        "TTD",
+        "VTRS",
+        "WBD",
+        "WING",
+        "WMT",
+        "WS"
+      ]
+    },
+    {
+      "as_of": "2026-09-25",
+      "tickers": [
+        "CLH",
+        "GATX",
+        "GLW",
+        "IPGP",
+        "ITW",
+        "PPG",
+        "QCOM",
+        "WBD",
+        "WFC"
+      ]
+    },
+    {
+      "as_of": "2026-09-24",
+      "tickers": [
+        "ALHC",
+        "AMKR",
+        "APOG",
+        "CLH",
+        "EBAY",
+        "HAFC",
+        "KRMN",
+        "MATW",
+        "REX",
+        "ROL"
+      ]
+    },
+    {
       "as_of": "2026-09-23",
       "tickers": [
         "AAPL",
@@ -97,62 +163,6 @@
         "TTD",
         "VTRS",
         "XBP"
-      ]
-    },
-    {
-      "as_of": "2026-09-19",
-      "tickers": [
-        "CRWD",
-        "LUV",
-        "PLMR",
-        "SIG",
-        "SRE",
-        "WULF"
-      ]
-    },
-    {
-      "as_of": "2026-09-18",
-      "tickers": [
-        "AAP",
-        "ALGT",
-        "ARDC",
-        "CLH",
-        "COF",
-        "DAL",
-        "ELV",
-        "F",
-        "GLW",
-        "IPGP",
-        "KBDC",
-        "MMS",
-        "MUSA",
-        "NX",
-        "OI",
-        "PLAB",
-        "RBLX",
-        "SGI",
-        "SIG",
-        "TFC",
-        "UTHR",
-        "VICR",
-        "WFC",
-        "WHR",
-        "WULF",
-        "XBI",
-        "XBP"
-      ]
-    },
-    {
-      "as_of": "2026-09-17",
-      "tickers": [
-        "ASO",
-        "COO",
-        "ELV",
-        "EZPW",
-        "LRCX",
-        "PCG",
-        "URBN",
-        "UTL"
       ]
     }
   ]

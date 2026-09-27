@@ -1,427 +1,139 @@
 {
   "schema": "reflexivity_overlay.v1",
   "is_context_only": true,
-  "as_of": "2026-09-22",
-  "generated_utc": "2026-09-23T18:33:14Z",
+  "as_of": "2026-09-25",
+  "generated_utc": "2026-09-27T00:38:00Z",
   "note": "Risk-clustering read: 'is this the same hidden trade?'. NOT an alpha claim. Board-level, held-agnostic (US only, v1). Display-only per R-F / Signal Commons R7.",
   "factor_caveat": "Per-name secondary betas (oil/usd/btc/gold/china) are OOS-unstable and excluded. Similarity uses high-tier factors only (mkt/growth/size/rates, scope=single). Trust the MEMBERSHIP leg more than the factor leg for individual names.",
   "board_concentration": {
-    "n": 6,
-    "n_eff": 2.91,
+    "n": 3,
+    "n_eff": 3.0,
     "basis": "membership-jaccard+high-tier-factor-cosine",
-    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 6 candidates \u2248 2.91 independent bets."
+    "note": "Supersedes sector-only HHI effective_bets in build_stock_board_v2 per R-B. N_eff = participation-ratio of similarity-matrix eigenvalues. 3 candidates \u2248 3.0 independent bets."
   },
-  "same_thesis_groups": [
-    {
-      "members": [
-        "COHU",
-        "DOCN",
-        "MU"
-      ],
-      "size": 3,
-      "basis": "factor-cosine",
-      "label": "Information Technology"
-    }
-  ],
-  "earnings_coverage_frac": 1.0,
+  "same_thesis_groups": [],
+  "earnings_coverage_frac": 0.667,
   "by_ticker": {
-    "MU": {
-      "verdict": "duplicate",
-      "max_similarity": 0.9893,
-      "basis": "membership+high-tier-factor",
-      "nearest": [
-        {
-          "ticker": "DOCN",
-          "combined": 0.9893,
-          "membership_jaccard": 0.25,
-          "factor_cosine": 0.9893,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "sector:Information Technology"
-          ],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "COHU",
-          "combined": 0.985,
-          "membership_jaccard": 0.2,
-          "factor_cosine": 0.985,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "sector:Information Technology"
-          ],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "SONO",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.16<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-09-30",
-        "same_week_peers": [],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as DOCN \u2014 Information Technology (similarity 99%).",
-      "why_zh": "\u4e0e DOCN \u62bc\u6ce8\u76f8\u540c \u2014 Information Technology\uff08\u76f8\u4f3c\u5ea6 99%\uff09\u3002"
-    },
-    "COHU": {
-      "verdict": "duplicate",
-      "max_similarity": 0.9897,
-      "basis": "membership+high-tier-factor",
-      "nearest": [
-        {
-          "ticker": "DOCN",
-          "combined": 0.9897,
-          "membership_jaccard": 0.5,
-          "factor_cosine": 0.9897,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "sector:Information Technology"
-          ],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "MU",
-          "combined": 0.985,
-          "membership_jaccard": 0.2,
-          "factor_cosine": 0.985,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "sector:Information Technology"
-          ],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "GRMN",
-          "combined": 0.0551,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.0551,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": true
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-11-04",
-        "same_week_peers": [
-          "DOCN",
-          "GRMN",
-          "SONO"
-        ],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as DOCN \u2014 Information Technology (similarity 99%).",
-      "why_zh": "\u4e0e DOCN \u62bc\u6ce8\u76f8\u540c \u2014 Information Technology\uff08\u76f8\u4f3c\u5ea6 99%\uff09\u3002"
-    },
-    "SONO": {
-      "verdict": "partial",
-      "max_similarity": 0.5,
-      "basis": "membership-only:r2=0.16<0.2",
-      "nearest": [
-        {
-          "ticker": "GRMN",
-          "combined": 0.5,
-          "membership_jaccard": 0.5,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.16<0.2",
-          "shared_groups": [
-            "sector:Consumer Discretionary"
-          ],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "MU",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.16<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "COHU",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.16<0.2",
-          "shared_groups": [],
-          "same_earnings_week": true
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-11-04",
-        "same_week_peers": [
-          "COHU",
-          "DOCN",
-          "GRMN"
-        ],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Partial overlap with GRMN \u2014 Consumer Discretionary (similarity 50%).",
-      "why_zh": "\u4e0e GRMN \u90e8\u5206\u91cd\u53e0 \u2014 Consumer Discretionary\uff08\u76f8\u4f3c\u5ea6 50%\uff09\u3002"
-    },
-    "DOCN": {
-      "verdict": "duplicate",
-      "max_similarity": 0.9897,
-      "basis": "membership+high-tier-factor",
-      "nearest": [
-        {
-          "ticker": "COHU",
-          "combined": 0.9897,
-          "membership_jaccard": 0.5,
-          "factor_cosine": 0.9897,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "sector:Information Technology"
-          ],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "MU",
-          "combined": 0.9893,
-          "membership_jaccard": 0.25,
-          "factor_cosine": 0.9893,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [
-            "sector:Information Technology"
-          ],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "GRMN",
-          "combined": 0.0565,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.0565,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": true
-        }
-      ],
-      "earnings_leg": {
-        "next_date": "2026-11-04",
-        "same_week_peers": [
-          "COHU",
-          "GRMN",
-          "SONO"
-        ],
-        "has_data": true
-      },
-      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Same bet as COHU \u2014 Information Technology (similarity 99%).",
-      "why_zh": "\u4e0e COHU \u62bc\u6ce8\u76f8\u540c \u2014 Information Technology\uff08\u76f8\u4f3c\u5ea6 99%\uff09\u3002"
-    },
-    "MEDP": {
+    "STX": {
       "verdict": "new",
       "max_similarity": 0.0,
-      "basis": "membership-only:r2=0.08<0.2",
+      "basis": "membership+high-tier-factor",
       "nearest": [
         {
-          "ticker": "MU",
+          "ticker": "SBH",
           "combined": 0.0,
           "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.08<0.2",
+          "factor_cosine": 0.0,
+          "factor_basis": "high-tier-factors:4of4",
           "shared_groups": [],
           "same_earnings_week": false
         },
         {
-          "ticker": "COHU",
+          "ticker": "BJ",
           "combined": 0.0,
           "membership_jaccard": 0.0,
           "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.08<0.2",
-          "shared_groups": [],
-          "same_earnings_week": false
-        },
-        {
-          "ticker": "SONO",
-          "combined": 0.0,
-          "membership_jaccard": 0.0,
-          "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.16<0.2",
+          "factor_basis": "beta-read-thin:r2=0.15<0.2",
           "shared_groups": [],
           "same_earnings_week": false
         }
       ],
       "earnings_leg": {
-        "next_date": "2026-10-28",
+        "next_date": "2026-10-27",
         "same_week_peers": [],
         "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Distinct bet \u2014 nearest peer MU at 0% similarity.",
-      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 MU\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
+      "why_en": "Distinct bet \u2014 nearest peer SBH at 0% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 SBH\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
     },
-    "GRMN": {
-      "verdict": "partial",
-      "max_similarity": 0.5,
+    "SBH": {
+      "verdict": "new",
+      "max_similarity": 0.0,
       "basis": "membership+high-tier-factor",
       "nearest": [
         {
-          "ticker": "SONO",
-          "combined": 0.5,
-          "membership_jaccard": 0.5,
+          "ticker": "STX",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": 0.0,
+          "factor_basis": "high-tier-factors:4of4",
+          "shared_groups": [],
+          "same_earnings_week": false
+        },
+        {
+          "ticker": "BJ",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
           "factor_cosine": null,
-          "factor_basis": "beta-read-thin:r2=0.16<0.2",
-          "shared_groups": [
-            "sector:Consumer Discretionary"
-          ],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "DOCN",
-          "combined": 0.0565,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.0565,
-          "factor_basis": "high-tier-factors:4of4",
+          "factor_basis": "beta-read-thin:r2=0.15<0.2",
           "shared_groups": [],
-          "same_earnings_week": true
-        },
-        {
-          "ticker": "COHU",
-          "combined": 0.0551,
-          "membership_jaccard": 0.0,
-          "factor_cosine": 0.0551,
-          "factor_basis": "high-tier-factors:4of4",
-          "shared_groups": [],
-          "same_earnings_week": true
+          "same_earnings_week": false
         }
       ],
       "earnings_leg": {
-        "next_date": "2026-11-04",
-        "same_week_peers": [
-          "COHU",
-          "DOCN",
-          "SONO"
-        ],
+        "next_date": "2026-11-12",
+        "same_week_peers": [],
         "has_data": true
       },
       "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
-      "why_en": "Partial overlap with SONO \u2014 Consumer Discretionary (similarity 50%).",
-      "why_zh": "\u4e0e SONO \u90e8\u5206\u91cd\u53e0 \u2014 Consumer Discretionary\uff08\u76f8\u4f3c\u5ea6 50%\uff09\u3002"
+      "why_en": "Distinct bet \u2014 nearest peer STX at 0% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 STX\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
+    },
+    "BJ": {
+      "verdict": "new",
+      "max_similarity": 0.0,
+      "basis": "membership-only:r2=0.15<0.2",
+      "nearest": [
+        {
+          "ticker": "STX",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.15<0.2",
+          "shared_groups": [],
+          "same_earnings_week": null
+        },
+        {
+          "ticker": "SBH",
+          "combined": 0.0,
+          "membership_jaccard": 0.0,
+          "factor_cosine": null,
+          "factor_basis": "beta-read-thin:r2=0.15<0.2",
+          "shared_groups": [],
+          "same_earnings_week": null
+        }
+      ],
+      "earnings_leg": {
+        "next_date": null,
+        "same_week_peers": [],
+        "has_data": false
+      },
+      "earnings_leg_note": "earnings-cluster annotation (W-D): Jaccard-adjacent, display-only. Does not affect similarity matrix, N_eff, or verdicts.",
+      "why_en": "Distinct bet \u2014 nearest peer STX at 0% similarity.",
+      "why_zh": "\u72ec\u7acb\u62bc\u6ce8 \u2014 \u6700\u8fd1\u7684\u5019\u9009\u540d\u79f0 STX\uff0c\u76f8\u4f3c\u5ea6 0%\u3002"
     }
   },
   "pair_basis": {
-    "MU__COHU": {
-      "membership_jaccard": 0.2,
-      "factor_cosine": 0.985,
-      "combined": 0.985,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": [
-        "sector:Information Technology"
-      ]
-    },
-    "MU__SONO": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.16<0.2",
-      "shared_groups": []
-    },
-    "MU__DOCN": {
-      "membership_jaccard": 0.25,
-      "factor_cosine": 0.9893,
-      "combined": 0.9893,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": [
-        "sector:Information Technology"
-      ]
-    },
-    "MU__MEDP": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": []
-    },
-    "MU__GRMN": {
+    "STX__SBH": {
       "membership_jaccard": 0.0,
       "factor_cosine": 0.0,
       "combined": 0.0,
       "factor_basis": "high-tier-factors:4of4",
       "shared_groups": []
     },
-    "COHU__SONO": {
+    "STX__BJ": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.16<0.2",
+      "factor_basis": "beta-read-thin:r2=0.15<0.2",
       "shared_groups": []
     },
-    "COHU__DOCN": {
-      "membership_jaccard": 0.5,
-      "factor_cosine": 0.9897,
-      "combined": 0.9897,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": [
-        "sector:Information Technology"
-      ]
-    },
-    "COHU__MEDP": {
+    "SBH__BJ": {
       "membership_jaccard": 0.0,
       "factor_cosine": null,
       "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": []
-    },
-    "COHU__GRMN": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": 0.0551,
-      "combined": 0.0551,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": []
-    },
-    "SONO__DOCN": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.16<0.2",
-      "shared_groups": []
-    },
-    "SONO__MEDP": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.16<0.2",
-      "shared_groups": []
-    },
-    "SONO__GRMN": {
-      "membership_jaccard": 0.5,
-      "factor_cosine": null,
-      "combined": 0.5,
-      "factor_basis": "beta-read-thin:r2=0.16<0.2",
-      "shared_groups": [
-        "sector:Consumer Discretionary"
-      ]
-    },
-    "DOCN__MEDP": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
-      "shared_groups": []
-    },
-    "DOCN__GRMN": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": 0.0565,
-      "combined": 0.0565,
-      "factor_basis": "high-tier-factors:4of4",
-      "shared_groups": []
-    },
-    "MEDP__GRMN": {
-      "membership_jaccard": 0.0,
-      "factor_cosine": null,
-      "combined": 0.0,
-      "factor_basis": "beta-read-thin:r2=0.08<0.2",
+      "factor_basis": "beta-read-thin:r2=0.15<0.2",
       "shared_groups": []
     }
   },
@@ -433,19 +145,19 @@
     "new_note": "similarity < 0.35 \u2192 distinct bet"
   },
   "n_eff_by_lane": {
-    "entry_open": 2.3,
+    "entry_open": 2.0,
     "setting_up": 1.0
   },
   "source_passport": {
     "factor_betas": {
       "path": "site/factor_betas.json",
       "found": true,
-      "as_of": "2026-09-18"
+      "as_of": "2026-09-25"
     },
     "us_standouts_v2": {
       "path": "site/factordata/us_standouts_v2.json",
       "found": true,
-      "as_of": "2026-09-22"
+      "as_of": "2026-09-25"
     },
     "membership": {
       "path": "data/baskets/membership.json",

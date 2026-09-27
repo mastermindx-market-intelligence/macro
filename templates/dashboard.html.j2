@@ -224,7 +224,7 @@
    "higher/lower than N%" integers on the glance tier (one-integer law;
    the hero already owns N/100). Color is class-driven (data-tier), not
    inline style, so theme.css owns material decisions. -#}
-{% macro sx_vw_strip(scope_class) -%}
+{% macro sx_vw_strip(scope_class, show_eyebrow=true) -%}
 {% set _vw_chips_all = vol_weather.get('chips') or [] %}
 {% set _vw_order = ['vix_level','vix_velocity','term_slope','vvix_vix','vix1d','cor1m','cor3m','dspx'] %}
 {% set _vw_plain_name = {
@@ -249,9 +249,11 @@
 {% set _vw_map = {} %}
 {% for c in _vw_chips_all %}{% if _vw_map.update({c.get('key', ''): c}) %}{% endif %}{% endfor %}
 <div class="sx-vw-strip {{ scope_class }}" data-sx-vw-strip>
+  {% if show_eyebrow %}
   <div class="sx-vw-eyebrow">
-    <span class="l-en">Volatility weather</span><span class="l-zh">波动率天气</span>
+    <span class="l-en">Volatility &amp; correlation</span><span class="l-zh">波动率与相关性</span>
   </div>
+  {% endif %}
   {% for key in _vw_order %}
   {% set _chip = _vw_map.get(key) %}
   {% if _chip %}
@@ -3912,6 +3914,7 @@ body.page-macro .sc-band-watch{color:var(--ink-warn, var(--warn));background:rgb
 body.page-macro .sc-band-calm{color:var(--ink-up, var(--up));background:rgba(62,200,122,.1);border:1px solid rgba(62,200,122,.2)}
 body.page-macro .sc-band-elev{color:var(--ink-info, var(--info));background:rgba(77,142,245,.1);border:1px solid rgba(77,142,245,.2)}
 body.page-macro .sc-band-high{color:var(--ink-down, var(--down));background:rgba(224,92,92,.1);border:1px solid rgba(224,92,92,.2)}
+body.page-macro .sc-band-unavailable{color:var(--ink-3,var(--muted));background:var(--panel2);border:1px solid var(--line)}
 body.page-macro .dd-ladder{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
 body.page-macro .dd-box{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:11px 13px;text-align:center}
 body.page-macro .dd-horizon{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:5px}
@@ -6791,6 +6794,7 @@ body.page-macro.mx4-grid .mx5-fed-policy-note strong{color:var(--ink-1,rgba(255,
 #dlg-risk .riskdlg-scare[data-band="sc-band-watch"]{--rkc-c:var(--warn);}
 #dlg-risk .riskdlg-scare[data-band="sc-band-elev"]{--rkc-c:var(--info);}
 #dlg-risk .riskdlg-scare[data-band="sc-band-calm"]{--rkc-c:var(--muted);}
+#dlg-risk .riskdlg-scare[data-band="sc-band-unavailable"]{--rkc-c:var(--muted);}
 #dlg-risk .rkc-sc-ico{display:none;}
 #dlg-risk .sc-name{font-size:var(--fs-sm);font-weight:650;}
 #dlg-risk .sc-score{font-size:var(--fs-body);font-weight:750;}
@@ -7402,6 +7406,121 @@ html[data-theme="light"] :is(
   body.page-macro.mx4-grid.ms-yellow-page .mx5-big-score, body.page-macro.mx4-grid .mx5-score-yellow .mx5-big-score,
   body.page-macro.mx4-grid.ms-red-page .mx5-big-score, body.page-macro.mx4-grid .mx5-score-red .mx5-big-score
 ) { text-shadow:none; }
+
+/* ══════════════════════════════════════════════════════════
+   Macro Risk Detail — volatility & correlation diagnostics
+   The eight display-only vol-weather reads live behind Risk Detail rather
+   than lengthening the primary scorecard. Same engine bands and chip keys;
+   presentation only. Desktop groups the evidence into a compact 2-column
+   grid; mobile stacks to one column. */
+
+body.page-macro .riskdlg-vw{
+  margin-top:16px;
+  padding-top:16px;
+  border-top:1px solid var(--line);
+}
+body.page-macro .riskdlg-vw-note{
+  margin:-3px 0 10px;
+  color:var(--ink-2,var(--muted));
+  font-size:11px;
+  line-height:1.5;
+}
+body.page-macro .riskdlg-vw .sx-vw-strip{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin:0;
+  padding:0;
+  background:transparent;
+}
+body.page-macro .riskdlg-vw .sx-vw-row{
+  display:grid;
+  grid-template-columns:24px minmax(0,1fr) 64px;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+  padding:8px 10px;
+  border:1px solid var(--line);
+  border-radius:var(--r-ctl);
+  background:var(--panel2);
+}
+html[data-theme="light"] body.page-macro .riskdlg-vw .sx-vw-row{
+  background:var(--panel);
+  box-shadow:var(--card-shadow);
+}
+body.page-macro .riskdlg-vw .sg-wx{
+  width:24px;
+  height:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted);
+}
+body.page-macro .riskdlg-vw .sg-wx svg{
+  width:18px;
+  height:18px;
+  display:block;
+}
+body.page-macro .riskdlg-vw .sx-vw-row--calm .sg-wx{color:var(--up);}
+body.page-macro .riskdlg-vw .sx-vw-row--quiet .sg-wx,
+body.page-macro .riskdlg-vw .sx-vw-row--low .sg-wx,
+body.page-macro .riskdlg-vw .sx-vw-row--normal .sg-wx{color:var(--info);}
+body.page-macro .riskdlg-vw .sx-vw-row--elevated .sg-wx{color:var(--warn);}
+body.page-macro .riskdlg-vw .sx-vw-row--extreme .sg-wx{color:var(--down);}
+body.page-macro .riskdlg-vw .sx-vw-row--young .sg-wx{color:var(--muted);opacity:.6;}
+
+body.page-macro .riskdlg-vw .sx-vw-mid{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  min-width:0;
+}
+body.page-macro .riskdlg-vw .sx-vw-name{
+  color:var(--ink-1,var(--text));
+  font-size:11.5px;
+  font-weight:700;
+  line-height:1.3;
+  white-space:normal;
+}
+body.page-macro .riskdlg-vw .sx-vw-read{
+  color:var(--ink-2,var(--muted));
+  font-size:10.5px;
+  line-height:1.4;
+  overflow-wrap:anywhere;
+}
+body.page-macro .riskdlg-vw .sx-vw-tier{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:1px;
+  color:var(--ink-2,var(--muted));
+  font-size:10.5px;
+  font-weight:700;
+  line-height:1.1;
+  letter-spacing:.02em;
+  text-align:right;
+  white-space:nowrap;
+}
+body.page-macro .riskdlg-vw .sx-vw-row--calm .sx-vw-tier{color:var(--up);}
+body.page-macro .riskdlg-vw .sx-vw-row--quiet .sx-vw-tier,
+body.page-macro .riskdlg-vw .sx-vw-row--low .sx-vw-tier,
+body.page-macro .riskdlg-vw .sx-vw-row--normal .sx-vw-tier{color:var(--info);}
+body.page-macro .riskdlg-vw .sx-vw-row--elevated .sx-vw-tier{color:var(--warn);}
+body.page-macro .riskdlg-vw .sx-vw-row--extreme .sx-vw-tier{color:var(--down);}
+body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(--muted));}
+
+@media(max-width:640px){
+  body.page-macro .riskdlg-vw .sx-vw-strip{
+    grid-template-columns:minmax(0,1fr);
+  }
+  body.page-macro .riskdlg-vw .sx-vw-row{
+    grid-template-columns:22px minmax(0,1fr) 58px;
+    gap:8px;
+    padding:7px 9px;
+  }
+  body.page-macro .riskdlg-vw .sg-wx{width:22px;height:22px;}
+  body.page-macro .riskdlg-vw .sg-wx svg{width:16px;height:16px;}
+}
 </style>
 {% endif %}
     {% set _ol = {
@@ -8301,15 +8420,9 @@ html[data-theme="light"] :is(
 
       </div>{# /mx5-btn-row #}
 
-      {# ── UD-B2-W1 (R-W1-A-AMENDED 2026-09-20): vol-weather sub-row sits
-         DIRECTLY BELOW the dial + scar chips, as a sub-row INSIDE the mx5
-         scorecard's left column (.mx5-sc-left). #sx-risk-v2 is an invisible
-         legacy container — do not host the strip there. #}
-      {% if vol_weather is defined and vol_weather %}
-      <div class="mx5-sc-vw" data-sx-vw-host="mx5-sc-left">
-        {{ sx_vw_strip('sx-vw-strip--risk-isle') }}
-      </div>
-      {% endif %}
+      {# Volatility diagnostics intentionally live in Risk Detail.
+         Keep the primary scorecard glance-first; the six-factor popover already
+         carries the top-level volatility-regime contribution. #}
 
     </div>{# /mx5-sc-left #}
 
@@ -13331,13 +13444,19 @@ html[data-theme="light"] :is(
         <div class="riskdlg-sec-h"><span class="l-en">Scare ladder</span><span class="l-zh">压力梯度</span><small>{{ t('highest first','由高到低') }}</small></div>
         <div class="scare-ladder riskdlg-scare-list" style="margin-bottom:0">
           {% for sc in latest.risk_radar.scares %}
-          {% set _sc_s2 = sc.score if (sc.score is defined and sc.score is not none) else none %}
-          {% set _scc = ('sc-band-high' if (_sc_s2 is not none and _sc_s2 >= 70) else ('sc-band-watch' if (_sc_s2 is not none and _sc_s2 >= 50) else ('sc-band-elev' if (_sc_s2 is not none and _sc_s2 >= 35) else 'sc-band-calm'))) %}
-          {% set _scband = (sc.band if sc.band is defined and sc.band else ('WATCH' if (_sc_s2 is not none and _sc_s2 >= 50) else ('ELEVATED' if (_sc_s2 is not none and _sc_s2 >= 35) else 'CALM'))) %}
+          {# Current-reading integrity: preserve the engine's legacy arithmetic score/band,
+             but never PRESENT a value as an eligible calm/risk read when no structurally
+             eligible leg resolves today. Old payloads with n_legs_resolved=0 fail closed too. #}
+          {% set _sc_unavailable = ((sc.reading_state is defined and sc.reading_state == 'UNAVAILABLE') or (sc.n_legs_resolved is defined and sc.n_legs_resolved == 0)) %}
+          {% set _sc_reading_state = ('UNAVAILABLE' if _sc_unavailable else (sc.reading_state if (sc.reading_state is defined and sc.reading_state) else 'AVAILABLE')) %}
+          {% set _sc_s2 = (none if _sc_unavailable else (sc.display_score if (sc.display_score is defined and sc.display_score is not none) else (sc.score if (sc.score is defined and sc.score is not none) else none))) %}
+          {% set _scc = ('sc-band-unavailable' if _sc_unavailable else ('sc-band-high' if (_sc_s2 is not none and _sc_s2 >= 70) else ('sc-band-watch' if (_sc_s2 is not none and _sc_s2 >= 50) else ('sc-band-elev' if (_sc_s2 is not none and _sc_s2 >= 35) else 'sc-band-calm')))) %}
+          {% set _scband = ('UNAVAILABLE' if _sc_unavailable else (sc.display_band if (sc.display_band is defined and sc.display_band) else (sc.band if sc.band is defined and sc.band else ('WATCH' if (_sc_s2 is not none and _sc_s2 >= 50) else ('ELEVATED' if (_sc_s2 is not none and _sc_s2 >= 35) else 'CALM'))))) %}
+          {% set _scband_en = ('Unavailable' if _sc_unavailable else _scband) %}
           {# lookup by |upper — engine bands are lowercase ('calm','caution','risk-off'), the old
              uppercase-keyed map silently fell through to raw EN in the ZH view #}
-          {% set _scband_zh = {'WATCH':'警惕','ELEVATED':'走高','CALM':'平静','HIGH':'高危','CAUTION':'谨慎','RISK-OFF':'避险'}.get(_scband|upper, _scband) %}
-          <div class="riskdlg-scare" data-band="{{ _scc }}">
+          {% set _scband_zh = {'UNAVAILABLE':'不可用','WATCH':'警惕','ELEVATED':'走高','CALM':'平静','HIGH':'高危','CAUTION':'谨慎','RISK-OFF':'避险'}.get(_scband|upper, _scband) %}
+          <div class="riskdlg-scare" data-band="{{ _scc }}" data-reading-state="{{ _sc_reading_state }}">
             <span class="rkc-sc-ico">{{ rkc_scare_glyph(rkc_scare_fam(sc)|trim) }}</span>
             <span class="sc-name">
               <span class="l-en">{{ sc.label_en if sc.label_en is defined else (sc.name_en if sc.name_en is defined else sc.name) }}</span>
@@ -13353,9 +13472,9 @@ html[data-theme="light"] :is(
               {% endif %}
             </span>
             {% if _sc_s2 is not none %}<div class="sc-bar-track"><div class="sc-bar-fill" style="width:{{ [_sc_s2,100]|min }}%;background:{{ 'var(--down)' if _sc_s2 >= 70 else ('var(--warn)' if _sc_s2 >= 35 else 'var(--muted)') }}"></div></div>
-            <span class="sc-score" style="color:{{ 'var(--down)' if _sc_s2 >= 70 else ('var(--warn)' if _sc_s2 >= 35 else 'var(--muted)') }}">{{ sc.score }}</span>{% else %}<span class="sc-score">—</span>{% endif %}
+            <span class="sc-score" style="color:{{ 'var(--down)' if _sc_s2 >= 70 else ('var(--warn)' if _sc_s2 >= 35 else 'var(--muted)') }}">{{ _sc_s2 }}</span>{% else %}<span class="sc-score">—</span>{% endif %}
             <span class="sc-band {{ _scc }}">
-              <span class="l-en">{{ _scband }}</span>
+              <span class="l-en">{{ _scband_en }}</span>
               <span class="l-zh">{{ _scband_zh }}</span>
             </span>
           </div>
@@ -13363,6 +13482,23 @@ html[data-theme="light"] :is(
         </div>
         {% endif %}
         </div>{# /riskdlg-ladder #}
+
+        {# Macro UX follow-up 2026-09-23: detailed volatility evidence belongs
+           in Risk Detail, not the primary scorecard. Same vm['vol_weather'],
+           same engine bands, no recompute or score authority. #}
+        {% if vol_weather is defined and vol_weather %}
+        <section class="riskdlg-vw" data-sx-vw-host="risk-detail">
+          <div class="riskdlg-sec-h">
+            <span class="l-en">Volatility &amp; correlation</span><span class="l-zh">波动率与相关性</span>
+            {% if vol_weather.as_of is defined and vol_weather.as_of %}<small>{{ t('as of','截至') }} {{ vol_weather.as_of }}</small>{% endif %}
+          </div>
+          <div class="riskdlg-vw-note">
+            <span class="l-en">Detailed volatility, curve, correlation and dispersion context. Display-only — the regime read above remains primary.</span>
+            <span class="l-zh">波动率、期限结构、相关性与分散度的详细背景。仅供展示——上方状态判断仍为主读数。</span>
+          </div>
+          {{ sx_vw_strip('sx-vw-strip--risk-detail', false) }}
+        </section>
+        {% endif %}
 
 {# MX2-SENTIMENT-START #}{# slice markers are a TEST CONTRACT — test_froth_fragility /
            test_fear_euphoria / test_fear_greed render exactly this region; keep them wrapping

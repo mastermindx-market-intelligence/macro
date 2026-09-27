@@ -7,11 +7,22 @@ import pytest
 
 from engine.prophet_entry_policy import (
     EntryPolicyContractError,
+    GAP_MAX_MOVE_FROM_OPEN_ATR,
+    GAP_MAX_OPEN_ATR,
+    GAP_MAX_SESSION_MOVE_ATR,
+    GAP_POLICY_ERA,
+    GAP_POLICY_VERSION,
+    LIQUIDITY_MAX_FULL_SPREAD_BPS,
+    LIQUIDITY_MAX_NBBO_AGE_SECONDS,
+    LIQUIDITY_POLICY_ERA,
+    LIQUIDITY_POLICY_VERSION,
     RISK_ATR_CEILING,
     RISK_POLICY_ERA,
     RISK_POLICY_VERSION,
     SESSION_POLICY_ERA,
     SESSION_POLICY_VERSION,
+    evaluate_gap_velocity,
+    evaluate_liquidity_fillability,
     evaluate_risk_ceiling,
     evaluate_session_eligibility,
 )
@@ -1190,5 +1201,180 @@ def test_b4_risk_policy_requires_the_accepted_strategy_identity():
             strategy_definition=mutated,
             current_price=100.0,
             invalidation_price=97.0,
+            atr=2.0,
+        )
+
+
+
+def _liquidity_policy(
+    bid_price=99.95,
+    ask_price=100.05,
+    decision_at="2026-09-22T14:31:00Z",
+    nbbo_asof="2026-09-22T14:30:00Z",
+    nbbo_source="polygon_lastQuote",
+    source_license="vendor_terms_personal_use",
+):
+    return evaluate_liquidity_fillability(
+        strategy_definition=build_early_leadership_sector_rotation_definition(),
+        decision_at=decision_at,
+        bid_price=bid_price,
+        ask_price=ask_price,
+        nbbo_asof=nbbo_asof,
+        nbbo_source=nbbo_source,
+        source_license=source_license,
+    )
+
+
+def test_b4_liquidity_policy_is_shadow_only_source_bound_and_deterministic():
+    out = _liquidity_policy()
+    assert out["gate"] == "liquidity_fillability"
+    assert out["verdict"] == "PASS"
+    assert out["reason"] == "NBBO_FRESH_AND_WITHIN_SPREAD_CONTROL"
+    assert out["full_spread_bps"] == pytest.approx(10.0)
+    assert out["half_spread_bps"] == pytest.approx(5.0)
+    assert out["nbbo_age_seconds"] == 60.0
+    assert out["max_full_spread_bps"] == LIQUIDITY_MAX_FULL_SPREAD_BPS == 50.0
+    assert out["max_nbbo_age_seconds"] == LIQUIDITY_MAX_NBBO_AGE_SECONDS == 300.0
+    assert out["scientific_status"] == "CONTROL_ONLY"
+    assert out["authority_tier"] == "SHADOW_ONLY"
+    assert out["liquidity_policy_version"] == LIQUIDITY_POLICY_VERSION
+    assert out["liquidity_policy_era"] == LIQUIDITY_POLICY_ERA
+    assert out["threshold_status"] == "INITIAL_OPERATION_CONSTANT_NOT_CALIBRATED"
+    assert out["capacity_status"] == "NOT_MODELED_IN_V1"
+    assert all(value is False for value in out["authority"].values())
+    assert out == _liquidity_policy()
+
+
+def test_b4_liquidity_policy_spread_and_freshness_boundaries_fail_closed():
+    spread_boundary = _liquidity_policy(bid_price=99.75, ask_price=100.25)
+    assert spread_boundary["full_spread_bps"] == 50.0
+    assert spread_boundary["verdict"] == "PASS"
+
+    too_wide = _liquidity_policy(bid_price=99.74, ask_price=100.26)
+    assert too_wide["verdict"] == "FAIL"
+    assert too_wide["reason"] == "NBBO_SPREAD_ABOVE_FILLABILITY_CONTROL"
+
+    stale = _liquidity_policy(
+        decision_at="2026-09-22T14:35:00Z",
+        nbbo_asof="2026-09-22T14:29:59Z",
+    )
+    assert stale["verdict"] == "FAIL"
+    assert stale["reason"] == "NBBO_TOO_STALE_FOR_FILLABILITY_CONTROL"
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    (("bid_price", 0.0), ("ask_price", -1.0), ("ask_price", float("nan"))),
+)
+def test_b4_liquidity_policy_refuses_unprovable_prices(field, value):
+    kwargs = {"bid_price": 99.95, "ask_price": 100.05}
+    kwargs[field] = value
+    with pytest.raises(EntryPolicyContractError, match=field):
+        _liquidity_policy(**kwargs)
+
+
+def test_b4_liquidity_policy_requires_real_book_time_source_and_rights():
+    with pytest.raises(EntryPolicyContractError, match="ask_price must be >"):
+        _liquidity_policy(bid_price=100.0, ask_price=100.0)
+    with pytest.raises(EntryPolicyContractError, match="nbbo_asof cannot be after"):
+        _liquidity_policy(
+            decision_at="2026-09-22T14:30:00Z",
+            nbbo_asof="2026-09-22T14:30:01Z",
+        )
+    with pytest.raises(EntryPolicyContractError, match="nbbo_source"):
+        _liquidity_policy(nbbo_source="other")
+    with pytest.raises(EntryPolicyContractError, match="source_license"):
+        _liquidity_policy(source_license="UNKNOWN")
+
+
+def _gap_policy(current_price=100.5, day_open=100.0, prev_close=99.0, atr=2.0):
+    return evaluate_gap_velocity(
+        strategy_definition=build_early_leadership_sector_rotation_definition(),
+        current_price=current_price,
+        day_open=day_open,
+        prev_close=prev_close,
+        atr=atr,
+    )
+
+
+def test_b4_gap_velocity_policy_is_shadow_only_atr_normalized_and_deterministic():
+    out = _gap_policy()
+    assert out["gate"] == "gap_velocity"
+    assert out["verdict"] == "PASS"
+    assert out["reason"] == "GAP_AND_VELOCITY_WITHIN_ATR_CONTROL"
+    assert out["open_gap_atr"] == 0.5
+    assert out["move_from_open_atr"] == 0.25
+    assert out["session_move_atr"] == 0.75
+    assert out["max_open_gap_atr"] == GAP_MAX_OPEN_ATR == 1.5
+    assert out["max_move_from_open_atr"] == GAP_MAX_MOVE_FROM_OPEN_ATR == 1.0
+    assert out["max_session_move_atr"] == GAP_MAX_SESSION_MOVE_ATR == 1.5
+    assert out["scientific_status"] == "CONTROL_ONLY"
+    assert out["authority_tier"] == "SHADOW_ONLY"
+    assert out["gap_policy_version"] == GAP_POLICY_VERSION
+    assert out["gap_policy_era"] == GAP_POLICY_ERA
+    assert out["threshold_status"] == "INITIAL_OPERATION_CONSTANT_NOT_CALIBRATED"
+    assert all(value is False for value in out["authority"].values())
+    assert out == _gap_policy()
+
+
+def test_b4_gap_velocity_policy_blocks_each_control_boundary_only_when_exceeded():
+    open_boundary = _gap_policy(current_price=102.0, day_open=102.0, prev_close=99.0, atr=2.0)
+    assert open_boundary["open_gap_atr"] == 1.5
+    assert open_boundary["verdict"] == "PASS"
+
+    open_fail = _gap_policy(current_price=102.1, day_open=102.1, prev_close=99.0, atr=2.0)
+    assert open_fail["verdict"] == "FAIL"
+    assert open_fail["reason"] == "OPEN_GAP_ABOVE_ATR_CONTROL"
+
+    velocity_fail = _gap_policy(current_price=102.01, day_open=100.0, prev_close=100.0, atr=2.0)
+    assert velocity_fail["verdict"] == "FAIL"
+    assert velocity_fail["reason"] == "MOVE_FROM_OPEN_ABOVE_ATR_CONTROL"
+
+    total_fail = _gap_policy(current_price=102.51, day_open=100.5, prev_close=99.5, atr=2.0)
+    assert total_fail["open_gap_atr"] == 0.5
+    assert total_fail["move_from_open_atr"] == pytest.approx(1.005)
+    assert total_fail["session_move_atr"] == pytest.approx(1.505)
+    assert total_fail["reason"] == "MOVE_FROM_OPEN_ABOVE_ATR_CONTROL"
+
+
+def test_b4_gap_velocity_policy_can_reach_session_move_guard_independently():
+    out = _gap_policy(current_price=102.1, day_open=100.2, prev_close=99.0, atr=2.0)
+    assert out["open_gap_atr"] == 0.6
+    assert out["move_from_open_atr"] == 0.95
+    assert out["session_move_atr"] == 1.55
+    assert out["verdict"] == "FAIL"
+    assert out["reason"] == "SESSION_MOVE_ABOVE_ATR_CONTROL"
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    (("current_price", 0.0), ("day_open", -1.0), ("prev_close", 0.0), ("atr", float("nan"))),
+)
+def test_b4_gap_velocity_policy_refuses_unprovable_numeric_inputs(field, value):
+    kwargs = {"current_price": 100.5, "day_open": 100.0, "prev_close": 99.0, "atr": 2.0}
+    kwargs[field] = value
+    with pytest.raises(EntryPolicyContractError, match=field):
+        _gap_policy(**kwargs)
+
+
+def test_b4_new_policy_owners_require_the_accepted_strategy_identity():
+    mutated = build_early_leadership_sector_rotation_definition()
+    mutated["strategy_definition_id"] = "psd:" + "0" * 64
+    with pytest.raises(StrategyDefinitionContractError):
+        evaluate_liquidity_fillability(
+            strategy_definition=mutated,
+            decision_at="2026-09-22T14:31:00Z",
+            bid_price=99.95,
+            ask_price=100.05,
+            nbbo_asof="2026-09-22T14:30:00Z",
+            nbbo_source="polygon_lastQuote",
+            source_license="vendor_terms_personal_use",
+        )
+    with pytest.raises(StrategyDefinitionContractError):
+        evaluate_gap_velocity(
+            strategy_definition=mutated,
+            current_price=100.5,
+            day_open=100.0,
+            prev_close=99.0,
             atr=2.0,
         )

@@ -1,17 +1,17 @@
 {
   "schema": "options.prophet_shadow/v1",
-  "as_of": "2026-09-22",
-  "built_at": "2026-09-23T18:33:13.911443Z",
+  "as_of": "2026-09-25",
+  "built_at": "2026-09-26T17:41:45.842029Z",
   "decision_at": null,
-  "available_at": "2026-09-23T18:33:13.911443Z",
+  "available_at": "2026-09-26T17:41:45.842029Z",
   "pit_provenance": {
     "clock": "UTC",
     "decision_at_required_for_issued_portfolio": true,
     "decision_at_status": "not_available_in_current_pick_lab_contract",
     "available_at_status": "exact_projection_publication_time",
     "source_available_at": {
-      "flow_leaders": "2026-09-23T18:32:17.488748Z",
-      "pick_lab": "2026-09-23T18:33:13.583446Z"
+      "flow_leaders": "2026-09-26T17:40:44.228382Z",
+      "pick_lab": "2026-09-26T17:41:45.415899Z"
     },
     "promotion_ready": false,
     "reason": "An issued position requires exact decision_at and available_at on every fire. Current Pick Lab fires expose exact artifact availability when present but not an exact decision clock."
@@ -74,45 +74,45 @@
           },
           "coverage": {
             "schema": "options_entry_coverage.v1",
-            "as_of": "2026-09-23",
-            "n_rows": 422,
+            "as_of": "2026-09-26",
+            "n_rows": 427,
             "n_features": 31,
             "absent_stores": [],
             "feature_highlights": [
               {
                 "feature": "iv_rank_252",
                 "n_nonnull": 0,
-                "n_total": 422,
+                "n_total": 427,
                 "share_nonnull": 0.0
               },
               {
                 "feature": "iv_rank_5d_chg",
                 "n_nonnull": 0,
-                "n_total": 422,
+                "n_total": 427,
                 "share_nonnull": 0.0
               },
               {
                 "feature": "signed_vanna_pressure",
                 "n_nonnull": 372,
-                "n_total": 422,
-                "share_nonnull": 0.8815
+                "n_total": 427,
+                "share_nonnull": 0.8712
               },
               {
                 "feature": "vanna_hedge_5d",
                 "n_nonnull": 370,
-                "n_total": 422,
-                "share_nonnull": 0.8768
+                "n_total": 427,
+                "share_nonnull": 0.8665
               },
               {
                 "feature": "front7_charm_share",
                 "n_nonnull": 372,
-                "n_total": 422,
-                "share_nonnull": 0.8815
+                "n_total": 427,
+                "share_nonnull": 0.8712
               },
               {
                 "feature": "pin_risk",
                 "n_nonnull": 0,
-                "n_total": 422,
+                "n_total": 427,
                 "share_nonnull": 0.0
               }
             ],
@@ -498,7 +498,7 @@
     "pick_lab": {
       "path": "site/labdata/pick_lab.json",
       "schema": "implicit",
-      "as_of": "2026-09-22",
+      "as_of": "2026-09-25",
       "available": true,
       "error": null
     },
@@ -512,14 +512,14 @@
     "options_entry_gate": {
       "path": "data/options_entry/gate.json",
       "schema": "options_entry.gate.v3",
-      "as_of": "2026-09-23 09:40 UTC",
+      "as_of": "2026-09-26 09:45 UTC",
       "available": true,
       "error": null
     },
     "options_entry_coverage": {
       "path": "data/options_entry/coverage.json",
       "schema": "options_entry_coverage.v1",
-      "as_of": "2026-09-23",
+      "as_of": "2026-09-26",
       "available": true,
       "error": null
     },

@@ -327,6 +327,26 @@ html[data-lang="zh"] .oew-lab-legend{letter-spacing:.02em;text-transform:none}
 .oew-lab-row .v{color:var(--ink-2);line-height:1.35}
 .oew-lab-row .v.oew-lab-null{color:var(--muted);font-style:normal}
 .oew-lab-foot{font-size:10.5px;color:var(--muted);margin:2px 0 0}
+/* ── A-F03-W3-2 · Payoff-fold catalyst chip ───────────────────────────────
+   Same geometry family as `.oew-aib-lede-chip` (the data-outage chip the
+   page already ships): no leading dot, info tint via `var(--ink-info,
+   var(--info))` text color, hairline border in `var(--hair)`, no glow,
+   no shadow, no color-mix blends on the added lines (every added value
+   is a token reference — see design-system gate).  Two real outcomes —
+   `is-before-expiry` (info tint, fed decision lands inside the expiry)
+   and `is-clear` (muted, none scheduled); the light override keeps the
+   fill transparent on both states so the chip never competes with the
+   cards' white material.
+   LIGHT TREATMENT (research workspace): white material, ink-weight
+   hairline, no fill, no shadow — the SAME chip on both themes, only
+   the fill flips from `var(--tile)` to transparent; tokens stay on the
+   page's own `--ink-info` / `--info` / `--muted` / `--hair` family. */
+.oew-lab-cat{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin:0;font-size:11px;font-weight:650;letter-spacing:.01em;white-space:nowrap;padding:3px 9px;border-radius:var(--r-pill);border:1px solid var(--hair);color:var(--ink-2);background:var(--tile)}
+.oew-lab-cat.is-before-expiry{color:var(--ink-info, var(--info));border-color:var(--ink-info, var(--info))}
+.oew-lab-cat.is-clear{color:var(--muted);background:transparent}
+html[data-theme="light"] .oew-lab-cat.is-before-expiry{background:transparent;border-color:var(--ink-info, var(--info))}
+html[data-theme="light"] .oew-lab-cat.is-clear{border-color:var(--hair)}
+@media (max-width:480px){.oew-lab-cat{white-space:normal}}
 /* Light override: ink-weight ticks (2px walls) instead of luminance dots;
    accent stays the page's light-mode token (set on html[data-theme="light"]
    .oew above) — no redefinition, no ring, no shadow. */
@@ -1467,6 +1487,7 @@ table.oew-tbl thead th[aria-sort="descending"]::after{content:'▼';opacity:1;co
               </div>
               <p class="oew-lab-verdict">{{ t(lab.bracket.verdict_en, lab.bracket.verdict_zh) }}</p>
               {%- endif -%}
+              {%- if lab.catalyst -%}<p class="oew-lab-cat is-{{ lab.catalyst.state }}" data-payoff-catalyst-chip data-tip-en="{{ lab.catalyst.tip_en }}" data-tip-zh="{{ lab.catalyst.tip_zh }}">{{ t(lab.catalyst.chip_en, lab.catalyst.chip_zh) }}</p>{%- endif -%}
               {%- for r in lab.rows -%}
               <div class="oew-lab-row{% if not r.built %} is-null{% endif %}"
                 data-tip-en="{{ r.what_en }}" data-tip-zh="{{ r.what_zh }}">

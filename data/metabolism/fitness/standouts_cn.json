@@ -1,28 +1,28 @@
 {
   "schema": "metabolism.standouts_cn.v1",
-  "as_of": "2026-09-23",
+  "as_of": "2026-09-26",
   "lobe": "site-china-standouts",
   "maturity": "accruing",
   "sensors": {
     "hit_quality": {
       "value": null,
-      "n": 110,
+      "n": 133,
       "effective_n": 1,
       "maturity": "accruing",
       "source": "data/china_standout_track/board.parquet",
-      "note": "accruing: 110/25 graded rows needed"
+      "note": "accruing: 133/25 graded rows needed"
     },
     "upside_capture": {
       "value": null,
-      "n": 110,
+      "n": 133,
       "effective_n": 1,
       "maturity": "accruing",
       "source": "data/china_standout_track/board.parquet",
-      "note": "accruing: 110/25 graded rows needed"
+      "note": "accruing: 133/25 graded rows needed"
     },
     "coverage_health": {
       "value": null,
-      "n": 110,
+      "n": 133,
       "effective_n": 1,
       "maturity": "accruing",
       "source": "data/china_standout_track/board.parquet",
@@ -30,26 +30,26 @@
     },
     "missed_mover_rate": {
       "value": null,
-      "n": 18,
+      "n": 20,
       "maturity": "accruing",
       "source": "data/china_standout_track/board.parquet",
       "note": "data_gap: missed_mover_rate requires the full eligible A-share universe count (not only board names). Universe census not available at grade time. Degrade to data_gap per SA-R15 \u2014 never fabricate a zero."
     },
     "timing_quality": {
       "value": null,
-      "n": 110,
+      "n": 133,
       "effective_n": 1,
       "maturity": "accruing",
       "source": "data/china_standout_track/board.parquet",
-      "note": "accruing: 110/25 graded rows needed"
+      "note": "accruing: 133/25 graded rows needed"
     },
     "process_integrity": {
       "value": null,
-      "n": 110,
+      "n": 133,
       "effective_n": 1,
       "maturity": "accruing",
       "source": "data/china_standout_track/board.parquet",
-      "note": "accruing: 110/25 graded rows needed"
+      "note": "accruing: 133/25 graded rows needed"
     }
   },
   "authority": {
@@ -75,5 +75,5 @@
     "premature_stop_noise": "unimplemented: premature_stop_noise requires a stop-date column + post-stop window not derivable from the current ledger (fwd_mfe_21 and terminal_state_clean8_21 share the same 21-session entry window; no post-stop observation is possible). PREMATURE_STOP_IMPLEMENTED=False. CN rows never emit this code.",
     "sector_leg": "no_sector_leg: sector_rotated_out/beta_tailwind require a genuine industry grouping column (e.g. CITIC level-1 industry). narr_theme is 89% null and is a basket theme, not an industry classification. tier is a rank-quality band, not a sector. Degrades to mixed until a real sector store is joinable at append time."
   },
-  "notes": "CN standout fitness card. All sensors accruing until SA-R10 floors met (currently 110/25 matured rows, 5/10 distinct dates, 1/3 non-overlapping windows). Expected first reads: ~2026-10-15. No 'validated' claim \u2014 pre-maturity values are display context only. premature_stop_noise: UNIMPLEMENTED (no stop-date column in ledger). sector_rotated_out/beta_tailwind: DEGRADED to mixed (no genuine sector grouping)."
+  "notes": "CN standout fitness card. All sensors accruing until SA-R10 floors met (currently 133/25 matured rows, 6/10 distinct dates, 1/3 non-overlapping windows). Expected first reads: ~2026-10-15. No 'validated' claim \u2014 pre-maturity values are display context only. premature_stop_noise: UNIMPLEMENTED (no stop-date column in ledger). sector_rotated_out/beta_tailwind: DEGRADED to mixed (no genuine sector grouping)."
 }

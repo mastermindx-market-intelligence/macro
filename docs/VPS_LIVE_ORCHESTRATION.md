@@ -20,6 +20,7 @@ Use a hybrid ownership model:
 | Historical/bulk backfills and LLM-heavy jobs | Mac/PC | Explicit operator run |
 | BTC/commodity state-transition sentinels (current canonical JSONL writers) | Mac/PC for now | Refactor to VPS sidecar before moving |
 | White House/LLM sentinel and qledger registration | Mac/PC for now | Keep its single canonical writer |
+| Morning Orientation premarket edition (`/am_edition.html`, `/am_edition.json`) | VPS, every 30 min in the ET premarket | Nightly `daily.yml`/`render.yml` bake (writer of `site/am_edition.*`, unchanged) |
 
 One artifact has one scheduled writer. The old Actions workflows retain
 `workflow_dispatch`, but their schedules are skipped only when the repository
@@ -94,6 +95,40 @@ Caddy selects an external file; the live plane does not widen the static-access
 boundary.
 `/marketdata/sp500_heatmap.json` is the one exact legacy path overlaid from the
 same live store. Everything else continues to come from `/opt/macro/site.served`.
+
+### AM Edition premarket overlay (A-MOR-2b lane B)
+
+The Morning Orientation page (`/am_edition.html`, `/am_edition.json`) ships with
+two writers and a freshest-wins rule:
+
+- **Nightly** (`daily.yml` / `render.yml`) is the canonical writer of
+  `site/am_edition.{json,html}` — the committed path every visitor reads by
+  default.
+- **VPS lane** (`macro-am-edition.timer`, every 30 min in the ET premarket, UTC
+  span `08..14:07,37`) is a SECOND writer of the same producer against the live
+  store: `scripts/am_edition_live.py` renders both files into
+  `/var/lib/macro-live/public/` for the duration of the premarket only.
+
+Two writers, one overlay. The freshest-wins rule is per-file and per-tick:
+when the VPS pass observes a `site/am_edition.json` whose `generated_at` is
+NEWER than the overlay's, the overlay is deleted (decision `expire`) and the
+visitor falls back to the canonical site copy. Outside the premarket window,
+on NYSE holidays, and on weekends the VPS pass is a `skip` — the canonical
+copy is the only thing on the wire. Caddy serves the overlay from inside
+`handle @open_html`'s route block (anonymous, `Cache-Control: no-store`,
+`X-Robots-Tag: noindex, noarchive`); the JSON sits in `@vps_external` and
+therefore stays behind the registration wall — anonymous `GET
+/am_edition.json` returns 401 before and after, exactly like every other
+registered asset.
+
+The overlay widens neither the public surface (`/am_edition.json` is NOT in
+`@vps_public_live`) nor the static-access boundary; the only file_server the
+lane adds is scoped to `/am_edition.html` and lives inside
+`handle @open_html`'s route body — `@open_html` is the deliberate non-walled
+html family (every remaining `*.html` after `@gate_html`'s public-funnel list
+was retired; readable by anyone, deliberately still `noindex`), so the gate the
+handle runs first is the same fail-open IP/country gate the open_html family
+already served, not an authentication wall.
 
 ## Lanes and resource controls
 

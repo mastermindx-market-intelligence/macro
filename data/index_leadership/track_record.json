@@ -1,80 +1,80 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-09-22",
-  "generated_at": "2026-09-23T18:32:15.842242+00:00",
+  "as_of": "2026-09-25",
+  "generated_at": "2026-09-26T17:40:42.614155+00:00",
   "is_context_only": true,
-  "n_snapshots": 891,
-  "n_days": 30,
+  "n_snapshots": 976,
+  "n_days": 33,
   "horizons": {
     "5": {
-      "n_matured": 818,
+      "n_matured": 848,
       "by_stage": {
         "running": {
-          "n": 744,
-          "mean_fwd_rel": -0.0063,
-          "hit_rate": 0.423
+          "n": 774,
+          "mean_fwd_rel": -0.0061,
+          "hit_rate": 0.425
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.0009,
-          "hit_rate": 0.5
+          "mean_fwd_rel": -0.0011,
+          "hit_rate": 0.472
         },
         "coiling_primed": {
           "n": 38,
-          "mean_fwd_rel": 0.0114,
+          "mean_fwd_rel": 0.0112,
           "hit_rate": 0.579
         }
       },
-      "running_ic": -0.0463,
-      "running_ic_t_hac": -0.623,
+      "running_ic": -0.0407,
+      "running_ic_t_hac": -0.548,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "10": {
-      "n_matured": 714,
+      "n_matured": 752,
       "by_stage": {
         "running": {
-          "n": 640,
-          "mean_fwd_rel": -0.0094,
-          "hit_rate": 0.392
+          "n": 678,
+          "mean_fwd_rel": -0.011,
+          "hit_rate": 0.379
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.0063,
+          "mean_fwd_rel": -0.0059,
           "hit_rate": 0.417
         },
         "coiling_primed": {
           "n": 38,
-          "mean_fwd_rel": 0.0143,
+          "mean_fwd_rel": 0.0141,
           "hit_rate": 0.474
         }
       },
-      "running_ic": -0.0673,
-      "running_ic_t_hac": -1.052,
+      "running_ic": -0.0812,
+      "running_ic_t_hac": -1.255,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 551,
+      "n_matured": 618,
       "by_stage": {
         "running": {
-          "n": 486,
-          "mean_fwd_rel": -0.0187,
-          "hit_rate": 0.364
+          "n": 546,
+          "mean_fwd_rel": -0.0215,
+          "hit_rate": 0.339
         },
         "coiling": {
-          "n": 33,
-          "mean_fwd_rel": -0.0136,
-          "hit_rate": 0.333
+          "n": 35,
+          "mean_fwd_rel": -0.0162,
+          "hit_rate": 0.314
         },
         "coiling_primed": {
-          "n": 32,
-          "mean_fwd_rel": 0.0257,
-          "hit_rate": 0.656
+          "n": 37,
+          "mean_fwd_rel": 0.0205,
+          "hit_rate": 0.622
         }
       },
-      "running_ic": -0.0306,
-      "running_ic_t_hac": -0.663,
+      "running_ic": -0.0115,
+      "running_ic_t_hac": -0.261,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -83,12 +83,12 @@
       "by_stage": {
         "running": {
           "n": 26,
-          "mean_fwd_rel": -0.0459,
+          "mean_fwd_rel": -0.0454,
           "hit_rate": 0.346
         },
         "coiling": {
           "n": 7,
-          "mean_fwd_rel": -0.0806,
+          "mean_fwd_rel": -0.0814,
           "hit_rate": 0.286
         }
       },
@@ -111,67 +111,67 @@
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-08-31",
+      "date": "2026-09-04",
       "id": "russell:waste-management",
       "name": "Waste Management",
       "stage": "running",
-      "fwd_rel": -0.1298,
+      "fwd_rel": -0.1793,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-31",
-      "id": "subsectors:oil-gas-equipment-services",
-      "name": "Oil & Gas Equipment & Services",
-      "stage": "running",
-      "fwd_rel": -0.1156,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-31",
-      "id": "baskets:non-ai-software",
-      "name": "Non-AI Software",
-      "stage": "running",
-      "fwd_rel": -0.0823,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-08-31",
+      "date": "2026-09-04",
       "id": "russell:farm-heavy-construction-machinery",
       "name": "Farm & Heavy Construction Machinery",
       "stage": "running",
-      "fwd_rel": -0.0615,
+      "fwd_rel": -0.0926,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-31",
-      "id": "russell:oil-gas-e-p",
-      "name": "Oil & Gas E&P",
-      "stage": "running",
-      "fwd_rel": -0.0484,
+      "date": "2026-09-04",
+      "id": "russell:building-products-equipment",
+      "name": "Building Products & Equipment",
+      "stage": "coiling_primed",
+      "fwd_rel": -0.0924,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-31",
-      "id": "subsectors:agricultural-inputs",
-      "name": "Agricultural Inputs",
-      "stage": "running",
-      "fwd_rel": -0.0472,
+      "date": "2026-09-04",
+      "id": "russell:specialty-retail",
+      "name": "Specialty Retail",
+      "stage": "coiling",
+      "fwd_rel": -0.0898,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-31",
-      "id": "baskets:ai-agents",
-      "name": "AI Agents & Applications",
+      "date": "2026-09-04",
+      "id": "nasdaq:specialty-business-services",
+      "name": "Specialty Business Services",
       "stage": "running",
-      "fwd_rel": -0.0453,
+      "fwd_rel": -0.0866,
       "horizon_d": 21
     },
     {
-      "date": "2026-08-31",
-      "id": "subsectors:oil-gas-midstream",
-      "name": "Oil & Gas Midstream",
+      "date": "2026-09-04",
+      "id": "russell:other-industrial-metals-mining",
+      "name": "Other Industrial Metals & Mining",
+      "stage": "coiling_primed",
+      "fwd_rel": -0.0828,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-04",
+      "id": "russell:other-precious-metals-mining",
+      "name": "Other Precious Metals & Mining",
       "stage": "running",
-      "fwd_rel": -0.0392,
+      "fwd_rel": -0.0779,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-04",
+      "id": "russell:marine-shipping",
+      "name": "Marine Shipping",
+      "stage": "running",
+      "fwd_rel": -0.0741,
       "horizon_d": 21
     }
   ],

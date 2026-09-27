@@ -18,6 +18,7 @@ from engine.options_catalyst_link import (
     BINDING_STATES,
     REPO_ROOT,
     SPEC_VERSION,
+    CatalystCandidate,
     ContractKeyError,
 )
 from engine.stock_identity.authority import AUTHORITY_KEYS
@@ -346,6 +347,93 @@ def test_h_fomc_decision_dates_is_pure_and_sorted():
     assert fomc_decision_dates(date(2026, 9, 16), date(2026, 9, 16)) == [date(2026, 9, 16)]
     assert fomc_decision_dates(date(2026, 1, 1), date(2026, 12, 31)) == whole
     assert list(_FOMC) == before
+
+
+def test_i_envelope_carries_macro_calendar_from_the_same_candidates(monkeypatch, tmp_path):
+    """A-F03-W3-2: `macro_calendar` is built from the SAME
+    `_macro_candidates(asof, horizon_days)` list the binder reads — never a
+    second calendar reader.  The page's chip helper compares two dates from
+    this dict to the payoff-lab card's expiry, so the dict must carry every
+    FOMC date in the window, sorted by date, with the horizon_end and the
+    producer's asof both correctly stamped."""
+    rc, env, _records, _calls = _bind(
+        monkeypatch,
+        tmp_path,
+        [_event("e1", "AAPL", "2026-09-11")],
+        {"AAPL"},
+        {"AAPL": _fresh("2026-09-08", age=2)},
+    )
+    assert rc == 0
+    cal = env["macro_calendar"]
+    assert cal["asof"] == "2026-09-04"
+    assert cal["horizon_end"] == "2026-11-06"  # asof + 63 days
+    assert cal["source"] == "engine.event_calendar"
+    # Same FOMC dates the binder would see, sorted.
+    expected_dates = fomc_decision_dates(date(2026, 9, 4), date(2026, 11, 6))
+    assert [entry["date"] for entry in cal["fomc"]] == [d.isoformat() for d in expected_dates]
+    assert list(cal["fomc"]) == sorted(cal["fomc"], key=lambda e: e["date"])
+    # Every entry carries the same plain-language label "Fed rate decision".
+    assert all(entry["label"] == "Fed rate decision" for entry in cal["fomc"])
+    # Authority block still five-false (the new key does not promote authority).
+    _assert_false_authority(env["authority"])
+
+
+def test_j_no_stage_envelope_still_carries_macro_calendar(monkeypatch, tmp_path):
+    """A-F03-W3-2: on an events-stage outage, the chip must NOT vanish.  The
+    calendar is built from engine.event_calendar (which is independent of the
+    events stage), so a missing events stage → `macro_calendar` is still
+    populated, and `states` carries `no_event_stage` exactly as before."""
+    monkeypatch.setattr(prod, "utc_today", lambda: ASOF)
+    monkeypatch.setattr(prod, "fetch_event_stage", lambda _session: None)
+    rc = prod.main(["--session", SESSION, "--out", str(tmp_path)])
+    assert rc == 0
+    env = json.loads((tmp_path / "latest.json").read_text())
+    assert env["states"] == ["no_event_stage"]
+    assert env["links"] == []
+    cal = env["macro_calendar"]
+    assert cal["asof"] == "2026-09-04"
+    assert cal["source"] == "engine.event_calendar"
+    # Calendar must still carry every FOMC date in the window, sorted.
+    expected_dates = fomc_decision_dates(date(2026, 9, 4), date(2026, 11, 6))
+    assert [entry["date"] for entry in cal["fomc"]] == [d.isoformat() for d in expected_dates]
+    assert list(cal["fomc"]) == sorted(cal["fomc"], key=lambda e: e["date"])
+    assert all(entry["label"] == "Fed rate decision" for entry in cal["fomc"])
+    # Authority still five-false on the no-stage path.
+    _assert_false_authority(env["authority"])
+
+
+def test_k_macro_calendar_filters_non_fomc_kinds():
+    """A-F03-W3-2 (MAJOR 1): `_macro_calendar` only emits entries whose
+    candidate.kind == "fomc" — the envelope key is named `fomc` and labels
+    every entry "Fed rate decision"; a non-fomc candidate must NOT leak
+    through with a Fed label.  RED-first: this test fails on the
+    round-3 head (no filter) — a `cpi` candidate appears in the FOMC list
+    with the wrong date AND the wrong label."""
+    real_fomc_dates = fomc_decision_dates(date(2026, 9, 4), date(2026, 11, 6))
+    base = [CatalystCandidate(
+        kind="fomc", date=d, source="event_calendar", artifact="engine.event_calendar._FOMC",
+        stale=False, known_as_of=date(d.year - 1, 6, 1), as_of_age_td=0,
+        label="FOMC rate decision", locator=f"event_calendar:fomc:{d.isoformat()}",
+    ) for d in real_fomc_dates]
+    cpi = CatalystCandidate(
+        kind="cpi", date=date(2026, 9, 15), source="event_calendar",
+        artifact="engine.event_calendar._CPI", stale=False,
+        known_as_of=date(2026, 6, 1), as_of_age_td=0,
+        label="CPI release", locator="event_calendar:cpi:2026-09-15",
+    )
+    nfp = CatalystCandidate(
+        kind="nfp", date=date(2026, 10, 2), source="event_calendar",
+        artifact="engine.event_calendar._NFP", stale=False,
+        known_as_of=date(2026, 6, 1), as_of_age_td=0,
+        label="Nonfarm payrolls", locator="event_calendar:nfp:2026-10-02",
+    )
+    cal = prod._macro_calendar(date(2026, 9, 4), 63, candidates=base + [cpi, nfp])
+    fomc_entries = cal["fomc"]
+    # Only fomc-kind candidates land in the dict; the cpi/nfp entries are dropped.
+    assert [e["date"] for e in fomc_entries] == [d.isoformat() for d in real_fomc_dates]
+    assert "2026-09-15" not in [e["date"] for e in fomc_entries], "CPI date leaked into fomc"
+    assert "2026-10-02" not in [e["date"] for e in fomc_entries], "NFP date leaked into fomc"
+    assert all(e["label"] == "Fed rate decision" for e in fomc_entries)
 
 
 def test_decision_receipts_unwrap_and_availability_is_not_an_event(monkeypatch, tmp_path):

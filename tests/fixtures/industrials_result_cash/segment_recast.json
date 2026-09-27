@@ -1,0 +1,91 @@
+{
+  "synthetic": true,
+  "issuer": {
+    "company_id": "synthetic:halcyon",
+    "display_name": "Halcyon Flow Systems",
+    "external_ids": {
+      "cik": "0000987655"
+    }
+  },
+  "sources": [
+    {
+      "source_id": "halcyon-recast",
+      "url": "https://example.invalid/flow-recast.json",
+      "mode": "filing",
+      "rights_state": "unknown",
+      "recorded_at": "2026-08-01T12:00:00Z"
+    }
+  ],
+  "cells": [
+    {
+      "owner_ref": "synthetic:cell:flow-recast",
+      "revision": "r2",
+      "digest": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "semantic_selector": {
+        "statement": "segment-note",
+        "row": "flow-revenue",
+        "column": "recast-quarter"
+      },
+      "value": "12",
+      "metric": "segment_revenue",
+      "unit": "USD_millions",
+      "scale": 1,
+      "currency": "USD",
+      "stock_or_flow": "flow",
+      "period": {
+        "start": "2026-04-03",
+        "end": "2026-07-03",
+        "fiscal_label": "FY2026 Q2 recast",
+        "duration": "quarter"
+      },
+      "business_dimensions": {
+        "segment": "flow"
+      },
+      "basis": {
+        "accounting": "GAAP",
+        "recast": "2026-business-realignment"
+      },
+      "source_mode": "filing",
+      "quality": {
+        "rights_profile": "rp_unknown_v1",
+        "rights_state": "unknown",
+        "definition": "segment_revenue_after_owner_recast"
+      }
+    },
+    {
+      "owner_ref": "synthetic:cell:water-current",
+      "revision": "r1",
+      "digest": "1111111111111111111111111111111111111111111111111111111111111111",
+      "semantic_selector": {
+        "statement": "segment-note",
+        "row": "water-revenue",
+        "column": "current-quarter"
+      },
+      "value": "10",
+      "metric": "segment_revenue",
+      "unit": "USD_millions",
+      "scale": 1,
+      "currency": "USD",
+      "stock_or_flow": "flow",
+      "period": {
+        "start": "2026-04-03",
+        "end": "2026-07-03",
+        "fiscal_label": "FY2026 Q2",
+        "duration": "quarter"
+      },
+      "business_dimensions": {
+        "segment": "water"
+      },
+      "basis": {
+        "accounting": "GAAP",
+        "recast": "as_reported"
+      },
+      "source_mode": "filing",
+      "quality": {
+        "rights_profile": "rp_unknown_v1",
+        "rights_state": "unknown",
+        "definition": "segment_revenue_as_reported"
+      }
+    }
+  ]
+}

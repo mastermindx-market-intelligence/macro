@@ -1,36 +1,36 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SWX-BULL-20260813",
-  "asof": "2026-09-23",
+  "asof": "2026-09-26",
   "phase": "pre_trigger",
   "detection_phase": "pre_trigger",
-  "management_confidence": 32.3,
+  "management_confidence": 27.2,
   "raw_confidence": 30.0,
-  "delta_vs_base": -27.7,
+  "delta_vs_base": -32.8,
   "recommended_action": "wait",
   "human_state": "Approaching Trigger",
   "components": {
     "validity": 0.4,
     "progress": 0.0,
-    "pace": 0.8,
+    "pace": 0.1,
     "retention": 50.0,
-    "overlay": 55.0
+    "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.047,
+    "dist_to_stop_r": 0.049,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 80.0,
-    "p1": -0.635,
-    "p2": -0.3175,
+    "horizon_pct_used": 86.7,
+    "p1": -0.6338,
+    "p2": -0.3169,
     "p3": null,
-    "move_r": -0.953,
+    "move_r": -0.951,
     "mfe_r": 0.004,
-    "mae_r": -0.953
+    "mae_r": -1.086
   },
   "rr_ratio": 1.5,
   "rr_grade": "ACCEPTABLE",
-  "change_reason": "Nearing Invalidation",
+  "change_reason": "",
   "confidence_ceiling": 92,
   "authority": "trade-management-only-NOT-pick-rank",
   "authority_tier": "display",
@@ -40,11 +40,11 @@
     "ceiling": "hard cap at 92 \u2014 uncertainty is honest"
   },
   "_mfe": 0.04000000000000625,
-  "_mae": -9.287499389648431,
+  "_mae": -10.584999999999994,
   "_max_p1": 0.0027350427350431626,
   "_first_trigger_ts": null,
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 36,
-  "tau": 0.8
+  "days_elapsed": 39,
+  "tau": 0.8667
 }

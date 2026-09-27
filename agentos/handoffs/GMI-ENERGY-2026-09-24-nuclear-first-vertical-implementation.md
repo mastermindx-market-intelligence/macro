@@ -1,0 +1,483 @@
+---
+workstream: "WS:GMI-THEME-GRAPH"
+session: claude/energy-nuclear-value-capture-impl
+model: fable
+ended_because: ci_handoff
+mission: >
+  Implementation carrier and cumulative working checkpoint for
+  gmi-energy-fable-ceo-e2e-20260923-chairman-001: ship the first production-proven
+  Nuclear Value Capture Energy vertical inside the existing GMI Themes workflow through
+  the existing GMI / Company-Earnings / rights / F04 / private-publication / Macro-API
+  owners, orchestrated by one Fable principal with bounded fabric children; then expand
+  Energy (Power-Demand, hydrocarbons, renewables/storage, transition families, expectations
+  overlays, sector projection) through the same accepted architecture.
+state_before: >
+  Research/design/plan/packet truth existed only on draft/HOLD PR #7791 at
+  68e815d88fc8123a67167ae27b213078fe5339f7 (packet blob f628167227613175cc3ede088f40423add7252fb,
+  checkpoint blob a710755c126fe23a0bad8d57f36f272dfd6f5d9b, design blob d6dac80bead5a028da8d757b419c896b1b8437ed,
+  plan blob f7dc93621532b06e2478f90ef3876d6c31236242). No implementation carrier, no PICKUP_ACK,
+  no START, no product code. Macro main at pickup d7711a0a08db8008ffe5975bfb3e6b242e4c70bd;
+  carrier base (then-current main at branch creation) 33c73dd9f5e65936f0052cb28f4ece4880b51a43.
+changed:
+  - path: agentos/handoffs/GMI-ENERGY-2026-09-24-nuclear-first-vertical-implementation.md
+    what: "Created the implementation-operation working checkpoint: pickup receipts, procedure pin, current-main/custody reconciliation, G1-G9 dispositions, Fable custody rulings R-ENE-01..06, frozen shared economic_change_dossier.v1 wire shape (v2 after the Opus audit), frozen Energy adapter input types, witness identity/source-rights freeze, wave plan and exact next action."
+  - path: research/energy/nuclear_program/rulings/R-ENE-2026-09-24-wave1.md
+    what: "Citable seat rulings record for wave 1 (R-ENE-01..06) with the evidence each ruling rests on."
+  - path: research/energy/nuclear_program/reviews/OPUS-AUDIT-2026-09-24-freeze-v1.md
+    what: "Opus READ_ONLY audit of freeze v1: 9 BLOCKING + 3 ADVISORY findings, all accepted by the seat; freeze v2 in checkpoint sections 4-5."
+  - path: research/energy/nuclear_program/reviews/OPUS-REVIEW-2026-09-25-w2-module-r1.md
+    what: "Opus READ_ONLY review of the nuclear vertical module (#8002 at 1071dd9de3e9), verbatim: FIX_REQUIRED with 1 blocker, 5 major, 7 minor and 3 nits; shell fit and registration shape hold."
+  - path: research/energy/nuclear_program/rulings/R-ENE-2026-09-25-w2-module-r1.md
+    what: "Citable seat rulings R-ENE-10..16 adjudicating that review, plus the binding text exactly as issued to the fix round."
+  - path: agentos/handoffs/GMI-ENERGY-2026-09-24-nuclear-first-vertical-implementation.md
+    what: "Section 10: round-1 review adjudicated, fix round running, shell route-pattern defect reported, Power-Demand census prepared behind the plan gate, live rung held by the VPS pull hold."
+verified:
+  - claim: "Current protected procedure is compatible and loaded from one pin."
+    command: "cd Mastermind && git fetch origin master && git rev-parse origin/master; git show <sha>:docs/sol_skills/INDEX.md plus COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE, CLOSEOUT, COMMISSION_WAVE, WORKER_AVENUE_ROUTING, WATCHER_ACTION_LOOP, REVIEW_RETURN, docs/AGENT_DIALOGUE_SESSION_CLOSE_LAW.md, docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md at that sha"
+    result: "Mastermind a7d2b3049e5cdc523e91e61a6e9d70a1cb911157; Skillpack mastermind.sol_skillpack.v1 1.0.1 / bootstrap 1; identical to the #7791 packet pin."
+  - claim: "Delivered research pins match the live carrier."
+    command: "gh pr view 7791 --json headRefOid; git rev-parse 68e815d8:agentos/handoffs/GMI-ENERGY-MASTER-FABLE-CEO-HANDOFF-2026-09-23.md 68e815d8:agentos/handoffs/GMI-ENERGY-RESEARCH-2026-09-23.md 68e815d8:docs/superpowers/specs/2026-09-23-energy-economic-change-dossier-design.md 68e815d8:docs/superpowers/plans/2026-09-23-energy-economic-change-first-vertical-implementation.md"
+    result: "head 68e815d88fc8123a67167ae27b213078fe5339f7; blobs f6281672 / a710755c / d6dac80b / f7dc9362 as delivered; #7791 DRAFT, 0 comments before the ACK."
+  - claim: "PICKUP_ACK is durably recorded on both carriers."
+    command: "slack_send_message C0BSBM78V1N thread 1790224206.039539; gh pr comment 7791 --body-file ack_7791.md"
+    result: "Slack reply ts 1790225775.934259; GitHub https://github.com/mastermindx-market-intelligence/macro/pull/7791#issuecomment-5807954708"
+  - claim: "A real continuation watcher is armed on the exact Slack root and can read it."
+    command: "mcp scheduled-tasks create_scheduled_task watch-gmi-energy-fable-ceo-e2e-20260923 (cron 23 * * * * local); list_scheduled_tasks; run_scheduled_task; list_task_runs; ccd list_events local_e3c5e245-9a11-43a2-998c-8d9a1f9ef71d"
+    result: "cronExpression 23 * * * *, jitterSeconds 410, enabled true, nextRunAt 2026-09-24T05:29:50Z; first run succeeded (3 turns) and emitted NO_MATERIAL_CHANGE latest_ts=1790225775.934259."
+  - claim: "No shared curation assertion or economic-change dossier contract exists on current main; nobody but Semiconductor B (#7870) holds an implementation carrier for the shared assertion."
+    command: "ls contracts/theme_graph contracts/market_ontology; grep -rl curation_assertion|economic_change engine scripts app contracts templates tests .github; gh pr list --search 'economic_change_dossier OR curation_assertion OR market_ontology OR theme_graph'; git diff --stat origin/main...pr/7870"
+    result: "contracts/market_ontology holds only exposure_map.v1; no code hit for either name; #7870 (Semiconductor B, Fable CEO f6dd4b82) carries engine/theme_graph/admission.py (new), rights.py (+86), guidance_history.py, tests; its checkpoint ruling R1 = B authors theme_graph.curation_assertion.v1 per Robotics names; T07/T08 = contracts/market_ontology/semiconductor_theme_research.v1.schema.json (domain-specific response), T09 = app/theme_research.py routes /api/themes/v1/research/{query,evidence}, T10 = site/assets/{js,css}/theme-research.* + state_of_themes/basket_detail mounts. #7793/#7773/#7788/#7796 carry research/design files only."
+  - claim: "Sibling gates were refreshed at pickup."
+    command: "gh api graphql (7 pullRequest nodes); gh api issues/7462/comments; issues/7669/comments"
+    result: "#7462 draft@31706d73 (B's store.py custody question 5807268400 unanswered); #7664 ready@e43c7693; #7669 draft@2c28d950 (owner ruling 5807781684: ONE generic hidden research mount + shared theme-research asset includes approved on #7870, template byte-unchanged otherwise); #7777 ready@4122e3b7; #7773 draft@f1021165; #7793 draft@c120455b; #7788 draft@37436f8b; all OPEN/UNMERGED."
+  - claim: "Witness identities resolve through accepted basket membership."
+    command: "git show origin/main:data/baskets/membership.json | python3 (nuclear_power, uranium_miners); grep theme:nuclear_power config/theme_crosswalk.yml"
+    result: "nuclear_power = CEG VST TLN NRG BWXT GEV OKLO SMR NNE; uranium_miners = CCJ UEC UUUU NXE DNN URG EU UROY LEU ASPI; crosswalk theme:nuclear_power primary nuclear_power, supplemental uranium_miners (ths 300238). BWXT/SMR/OKLO primary; CCJ/LEU supplemental."
+  - claim: "Lane hosts and pools are available for wave 1."
+    command: "ssh m1|mb|mini2 'ls ~/lanes/ext/active; uptime'; python3 $K/ext/pool_status.py"
+    result: "05:01Z: m1 2/2 markers (load 7.5), mb 1/2 (load 3.3), mini2 0/2 (load 1.2); glm PASS, minimax DEMOTE (executor 0.10), cursor 0/3, grok 1/6."
+  - claim: "The round-1 module review ran at the exact PR head and returned FIX_REQUIRED."
+    command: "gh pr view 8002 --json headRefOid; Opus reviewer (MODE READ_ONLY) at that head, including a FastAPI TestClient probe with only registration_for patched"
+    result: "head 1071dd9de3e9857278424e06b6270bb82161b9e2; 1 blocker, 5 major, 7 minor, 3 nits; POST /api/themes/v1/research/query 200 and /research/evidence 400 string_pattern_mismatch, with Cache-Control private, no-store and X-Robots-Tag noindex, noarchive on both."
+  - claim: "The fix round delivered one commit on the same branch and touched nothing else."
+    command: "lane LANE_DONE line; git ls-remote origin refs/heads/claude/energy-stack-base-b-6cd958e9 refs/heads/claude/energy-nuclear-vertical-module; gh pr view 8002 --json state,isDraft,headRefOid,baseRefName,labels; git log --since 2026-09-25T09:00:00Z origin/main -- <nuclear module files>"
+    result: "LANE_DONE verdict REVIEW_DEFERRED checked_head 9e3237efdef67ce7a8659bbe50f98b3e75d2a957 (09:37Z); snapshot ref 6cd958e92b25; #8002 OPEN draft=true base=claude/energy-stack-base-b-6cd958e9 labels=none head=9e3237efdef6; no main commit touches the nuclear files."
+  - claim: "The plan gates Power-Demand behind nuclear acceptance."
+    command: "git cat-file -p f7dc93621532b06e2478f90ef3876d6c31236242 | sed -n '491,504p'"
+    result: "Section 19 ends with: 'Task 11 starts only after first vertical accepted.'"
+  - claim: "Production does not advance on merges while the VPS pull cron is held."
+    command: "ssh <vps> 'crontab -l'; production health endpoint checkout/commit"
+    result: "The pull line is commented with '# MMX-DISK-TRIAGE-HOLD' (disk 93%, macro#6902); production reports checkout ad38f308945 / commit 3a29e6145ce, while #8001 merged at 6c9465c7ed7d."
+  - claim: "The round-2 re-review ran at the fix head and returned FIX_REQUIRED; the seat verified both MAJOR findings at the artifact."
+    command: "Opus reviewer (MODE READ_ONLY) at 9e3237efdef6; git show 1071dd9de3e9:tests/test_nuclear_research_temporal.py vs 9e3237efdef6 (grep '^def test_'); git show 9e3237efdef6:engine/market_ontology/nuclear_theme_research.py | grep -n 'self.assertions.append|_apply_|self.reference_day'"
+    result: "Route test 1 passed (httpx 0.28.1), 40 nuclear tests pass; NEW-1: 5 round-1 temporal tests -> 3 different ones, X03 orphaned; NEW-2: append at :201, gates at :222-224, reference day over self.assertions at :225."
+unverified:
+  - claim: "Semiconductor B's theme-research response envelope can carry a shared economic-change dossier section without a second route."
+    what_would_verify: "B's T08/T09 landed shape on #7870 (schema semiconductor_theme_research.v1 top-level fields, /api/themes/v1/research/query request schema) read at its exact head; decision reserved to Task 7 (ruling R-ENE-04)."
+  - claim: "The existing private publication family (engine/earnings_narrative/private_publication.py over engine/research_vault/r2_store) accepts a generic economic_changes role without an owner change."
+    what_would_verify: "prepare_private_publication role vocabulary + B's R4 binding qualification outcome on #7870; Task 6 design read of validate_private_manifest/_artifact roles."
+  - claim: "Real nuclear source bodies (S02 Cameco Q2 MD&A, S03-S07 Centrus, S08 BWXT, S09-S12 NuScale/Oklo) can be retained privately under the incumbent owner with production credentials."
+    what_would_verify: "Task 10 admission run through the incumbent single-writer path with R2 credentials; EXACT_HUMAN_GATE if credentials are unavailable to the seat."
+unresolved:
+  - "#7462 has not answered B's one-line EVIDENCE_COLUMNS custody question; Energy never touches engine/theme_graph/store.py in wave 1, so this gates only Task 2 (consume-the-assertion) and Task 5's evidence refs."
+  - "No accepted shared economic_change_dossier.v1 existed anywhere at pickup; ruling R-ENE-02 registers it from this carrier as the shared contract (custody notices on #7793 and #7870)."
+  - "Route/private-role custody for Tasks 6-7 depends on B's T09 and R4 outcomes (see unverified)."
+  - "The shell's evidence route refuses every theme:-scoped assertion_ref (app/theme_research.py:207 at #7870 @6cd958e92b25). RULING 8 (Robotics seat, #7870 comment 5829833052) chose to widen the pattern to ^gmi-curation://(?:theme:)?[a-z0-9_]+/gmirca_[0-9a-f]{32}$; the edit is the shell owner's and is not yet on #7870's head (scheduled watch check F)."
+next_actions:
+  - "Adjudicate fix lane ene_w2_nuclear_module_r2fix (m1, dispatched 10:00Z; log in the seat scratchpad dispatch_r2fix.log). Post-lane checks, all by artifact: snapshot ref still 6cd958e92b25; no lane commit on main; #8002 still DRAFT with no labels; name-only diff lists owned files only; test names at the new head are a superset of 9e3237efdef6's plus the 5 round-1 temporal names (R-ENE-19); fixtures N01-N14/X01-X08 unchanged. Then an Opus READ_ONLY round-3 re-review at the new head, including every round-2 mutant."
+  - "After #7870 merges: rebase the module onto main, add the ONE VerticalRegistration + MountFacts entry for nuclear_power on an Energy carrier, then served/browser/privacy proof; Task 10 real assertion admission through the incumbent curation owner. Read 2026-09-25 at 6cd958e9: the anchor nuclear_power resolves through config/theme_crosswalk.yml primary_basket_id nuclear_power (uranium_miners never mounts); the shared client renders slice chips from the mount's own data-slice-labels (SPEC.labels, theme-research.js:1405), so no client edit is needed; mirror the semiconductor entry, including its lazy owner-bundle loader."
+  - "Fresh-read the Slack root and #7870 before every substantive write; the two-hourly scheduled watch watch-gmi-energy-fable-ceo-e2e-20260923 reports #7870 merge/close, the shared registry file landing on main, and counterpart edges."
+do_not_redo:
+  - "Do not repeat R1-R6 research, the 78-requirement design, the 11-task plan or the first-vertical choice (Nuclear first, Power-Demand next)."
+  - "Do not implement on #7791, #7870, #7793, #7773, #7788, #7796, #7462 or #7669; do not transplant their hunks."
+  - "Do not create an Energy-specific graph, evidence ledger, assertion contract, energy_economic_change_dossier.v1, estimate warehouse, private bucket/pointer/publisher/scheduler, route family /api/energy/*, ranker, entry, sizing or trade authority."
+  - "Do not re-adjudicate the resolved Cameco Q1/Q2 source-link mismatch (S01 excluded, S02 is the Q2 Fuel Services source), the EOG July-24 chronology or the EQT/CPV commencement semantics."
+  - "Do not fork Semiconductor B's shared curation assertion or its generic theme-research client/mount into Energy variants; consume the accepted versions (rulings R-ENE-01, R-ENE-04)."
+  - "Do not re-review #8002 at 1071dd9de3e9 or 9e3237efdef6, and do not re-adjudicate R-ENE-10..22; the next review is at the round-2 fix head."
+  - "Do not change the evidence-ref form (RULING 8 confirms theme: refs) and do not add an evidence-route test before the widened pattern is on #7870's head (R-ENE-15)."
+  - "Do not redo the Power-Demand scope census (PR #8016), and do not design or build Power-Demand before nuclear ACCEPTANCE (R-ENE-16)."
+  - "Do not change nuclear VIEWS: they already equal the shared client's TR_VIEW_KEYS, which Robotics' #7870 comment 5828876066 showed to be hard-pinned."
+danger_areas:
+  - "Macro is public: no full-fidelity paid research bodies, source PDFs, credentials or private production captures on this carrier; fixtures are SYNTHETIC and never copies of live Cameco/Centrus/BWXT/NuScale/Oklo values."
+  - "A synthetic-fixture green is not native admission; a schema, a fixture pass, a page shell, green CI or a merge is not first-vertical completion (15-point law, packet section 16)."
+  - "Supplemental uranium_miners membership must never be rendered or persisted as nuclear_power primary membership; basket co-membership is never a relationship edge."
+  - "Unknown stays unknown, unavailable never becomes zero/false: expectations.status=UNAVAILABLE carries estimate=null; milestones (NuScale SDA E04, Oklo Groves criticality E05) never become operating/commercial generation; Centrus nested backlog (O05) is never summed; Westinghouse equity-method sales (O04) are never added to consolidated revenue."
+  - "Fabric executor first-pass acceptance is low (glm-5.3 ~0.29 on the last 20): every child carries an executable deterministic gate (RED/GREEN/mutants) and gets independent review before integration; executor self-reports are navigation, not acceptance."
+  - "This is a SPARSE worktree (data/, site/ omitted): never git add -A; a write under data/ or site/ truncates committed artifacts."
+  - "The lane executor's gh shim refuses ready/merge/create/close, force-push and foreign-branch pushes, but NOT gh pr edit: #8002 must stay DRAFT with no labels until #7870 merges (the scheduled watch checks it)."
+  - "Fix lanes have deleted packet-named tests and re-defined packet fixtures (NEW-1, NEW-9) while reporting success: a file-level post-lane check does not catch it; diff test names and fixture definitions (R-ENE-19)."
+prs: [7791, 7881, 8001, 8002, 8016]
+---
+
+# GMI Energy — Nuclear Value Capture first vertical: implementation operation working checkpoint
+
+OPERATION: `gmi-energy-fable-ceo-e2e-20260923-chairman-001`
+PARENT RESEARCH OPERATION: `gmi-energy-sector-research-20260923-sol-001` (carrier #7791, research/design/plan only — HOLD, never product code)
+RECEIVER: Claude Fable 5.1, Claude Desktop Code session `8955bbc3-eb16-43cb-b087-bf5cacf2ffcf`, account claude8, host Mac Studio (m2)
+ASSIGNMENT EDGE: deliberate live Chairman delivery (DIRECT_TARGETED) 2026-09-24; PICKUP_ACK Slack `C0BSBM78V1N/1790224206.039539` reply `1790225775.934259` and #7791 comment 5807954708
+PROCEDURE PIN: Mastermind `a7d2b3049e5cdc523e91e61a6e9d70a1cb911157`, Skillpack 1.0.1 / bootstrap 1
+CARRIER BASE: Macro `main` `33c73dd9f5e65936f0052cb28f4ece4880b51a43` (branch `claude/energy-nuclear-value-capture-impl`)
+STATE AT THIS COMMIT: `PICKED_UP`; `WATCH_ARMED` (native scheduled condition watch, first run proven); START emitted separately on the Slack root only after this carrier was pushed; `NUCLEAR_VALUE_CAPTURE: NOT_BUILT`; `MISSION_COMPLETE: false`; `EFFECT_UNKNOWN: none`.
+
+## 1. Gate refresh at pickup (G1–G9)
+
+| Gate | Disposition at this commit | Consequence for wave 1 |
+|---|---|---|
+| G1 store custody | #7462 OPEN/DRAFT @31706d73 holds `engine/theme_graph/store.py`; B's one-line EVIDENCE_COLUMNS question (5807268400) unanswered | Energy writes nothing under `engine/theme_graph/`; Task 2 frozen until B's T02 lands |
+| G2 shared assertion | Not on main; Semiconductor B authors `theme_graph.curation_assertion.v1` on #7870 (its ruling R1, lane T02 in flight) | R-ENE-01: consume, never clone; Energy roles use synthetic typed inputs until landed |
+| G3 shared dossier | Not on main; Technology #7793 proposes `economic_change_dossier.v1` (research only); B's T07/T08 schema is `semiconductor_theme_research.v1` (domain-specific) | R-ENE-02: this carrier registers the ONE shared `contracts/market_ontology/economic_change_dossier.v1.schema.json` (Technology's name, generic sections); notices on #7793 and #7870 |
+| G4 sector dossier | #7777 ready@4122e3b7, unmerged | Optional; not consumed in the first vertical |
+| G5 public builder | #7664 ready@e43c7693 touches `scripts/build_state_of_themes.py` | Never a private data plane; Energy does not touch it |
+| G6 basket detail | #7669 draft@2c28d950; owner ruling 5807781684 approved ONE generic hidden research mount + shared asset includes on #7870 | R-ENE-04: Energy mounts inside B's generic mount when landed; no second mount, no template write in wave 1 |
+| G7 company/private route | `app/earnings.py` (site_full + private headers) is the precedent; B's `app/theme_research.py` (T09) pending | R-ENE-04 reserved decision at Task 7; no route write in wave 1 |
+| G8 rights | R1/R4 sources are locators + paraphrases only (register rights_policy); no retention rights established | R-ENE-05: synthetic fixtures; real admission = Task 10 through the incumbent owner (credential act) |
+| G9 release | — | Slice-1 merge only after independent exact-head review + concluded green CI (R-ENE-03); first-vertical completion only by the 15-point law |
+
+## 2. Seat rulings (citable as R-ENE-NN; record `research/energy/nuclear_program/rulings/R-ENE-2026-09-24-wave1.md`)
+
+- **R-ENE-01 — shared curation assertion is consumed from Semiconductor B.** B's carrier #7870 ruling R1 makes B the author of the one shared `theme_graph.curation_assertion.v1` (Robotics names). Energy's Task 2 consumes the exact landed version; until then Energy roles are represented through synthetic typed inputs to the pure adapter and no real admission occurs. Energy provides its assertion requirements (ENE-04, 07–11, 22, 39–43, 56–62) to B by custody notice rather than authoring a variant.
+- **R-ENE-02 — this carrier registers the shared `economic_change_dossier.v1`.** No accepted shared dossier contract exists and no implementation carrier holds one. The Energy seat, as a Fable CEO seat inside `WS:GMI-THEME-GRAPH`, registers `contracts/market_ontology/economic_change_dossier.v1.schema.json` under Technology's proposed name with the generic section set of #7793 §7 (scope, input receipts, clocks, definition, observation, comparison, mechanism, coverage, native context, authority, publication) expressed through the frozen wire shape in §4 below; domain vocabularies (role kinds, unavailable codes) are pluggable by `*_vocabulary` identifiers so Technology, Healthcare, Basic Materials, Robotics and Semiconductors consume it without an Energy flavour. The contract is *accepted* only when independently reviewed and merged; until then it is a candidate. Custody notices are posted on #7793 and #7870 before the first write.
+- **R-ENE-03 — slice merges are permitted; completion is not implied.** Slice 1 (shared contract, pure Energy adapter, synthetic witness profiles, non-regression freeze) is decision-neutral, path-disjoint from every held sibling path and carries no live data; after independent review and concluded-green CI it may be merged so siblings consume an accepted contract and main stays proven. Later slices (private publication, route, UI, real proof) ride fresh carriers from then-current main. No merge is a first-vertical completion claim; completion is ruled only by the 15-point law.
+- **R-ENE-04 — presentation and transport reuse B's generic surfaces.** Energy renders inside B's generic `theme-research.js/css` client and the #7669-approved generic hidden mount on `basket_detail.html.j2` plus the `state_of_themes.html.j2` entry once landed; Energy adds no second mount, client or stylesheet family. Transport is a reserved decision at Task 7: consume `/api/themes/v1/research/*` if B's landed envelope admits a dossier section keyed by the shared contract; otherwise register one shared generic `app/economic_change.py` route (never `/api/energy/*`).
+- **R-ENE-05 — rights and fixtures.** Every fixture value is synthetic. Real source retention (S02 Cameco Q2 MD&A, S03–S07 Centrus, S08 BWXT, S09–S12 NuScale/Oklo) happens only through the incumbent private owner in Task 10 and is an `EXACT_HUMAN_GATE` if production credentials are unavailable to the seat. S01 (misdirected Q1 web highlight) is excluded per the resolved Q1/Q2 issue.
+- **R-ENE-06 — routing.** Labor runs on the external fabric (`remote_lane_v8.sh`, glm-codex glm-5.3, hosts mini2/mb/m1 via the admission-wait dispatcher); Opus native children only as READ_ONLY auditors; the seat freezes interfaces, integrates by `cherry-pick -x`, wires CI, rules on returns and owns every carrier post, label, ready and merge act. WHY NOT FABLE for lanes: every wave-1 slice is fully specified below and passes the draft-and-review test.
+
+## 3. Frozen witness identity and source table
+
+| Witness | Security | Basket relation | Roles (R4 C0x) | Sources (R4 S/E) | Admitted facts in fixtures (synthetic values, real DEFINITIONS) |
+|---|---|---|---|---|---|
+| Cameco | `co:us:CCJ` | supplemental_member (uranium_miners) — never primary | uranium production/procurement; fuel services; equity-accounted Westinghouse (C01) | S02 (Q2 2026 MD&A, 2026-07-30); S01 EXCLUDED | O01 Fuel Services realized price vs unit cost (CAD/kgU, blended mix, cost includes depreciation); O02 Fuel Services revenue/EBT/adjusted EBITDA (CAD m); O03 sales classification fixed vs market (CAD k); O04 Westinghouse displayed revenue + full elimination (basis `equity_method_investee_full`, never mixed with `consolidated`) |
+| Centrus | `co:us:LEU` | supplemental_member | fuel supply/trading; current technical services; future enrichment expansion (C02) | S03 Q2 (2026-08-05); S04/S05 offering (2026-09-09/11); S06 close (2026-09-15); S07 Antares (2026-09-17); S26 Radiant | O05 nested backlog total/LEU/technical/contingent/definitive-within-contingent — never summed, no funded remainder by subtraction; children carry `contained_in` + `additive_with_siblings=false`; O06/O07 instruments (common, prefunded, warrant series strikes) — not present cash; E01 financing_close with core `establishes_present_cash=false` (net cash not established); E02 contract_signed with core `establishes_delivered_volume=false` |
+| BWXT | `co:us:BWXT` | primary_member (nuclear_power) | government manufacturing; commercial components/services; medical perimeter (C03) | S08 Q2 (2026-08-03) | O08 segment revenue current/prior (USD m; consolidation needed; PCG acquisition E03 closed 2026-07-01: `perimeter_change=acquisition`, `organic=false`, core `establishes_period_revenue=false`); O09 government operating income current/prior |
+| NuScale | `co:us:SMR` | primary_member | reactor technology; engineering/licensing; commercialization partner dependency (C04) | S09 Q2 (2026-08-05); S10 SDA; S11 product page | E04 standard_design_approval 2025-05-29 with assertions core `establishes_current_operation=false` + energy `site_operating_license=false`; E06 commercial_negotiation with core `establishes_definitive_agreement=false`; LWR fuel capability ≠ measured fuel consumption |
+| Oklo | `co:us:OKLO` | primary_member | advanced nuclear development; isotope test-reactor milestone (C05) | S12 (2026-08-06) | E05 first_criticality 2026-08-06 (Groves test reactor) with core `establishes_current_operation=false` + energy `commercial_grid_generation=false`; expectations UNAVAILABLE |
+
+Identity binding: the five securities are current members of the accepted baskets (membership.json on the carrier base); node ids follow `engine.theme_graph.identity.COMPANY_ID_RE` (`co:us:<TICKER>`). Any source company that does not bind stays `identity_state=unresolved` with `security_link_allowed=false`.
+
+## 4. Frozen wire shape v2 — `market_ontology.economic_change_dossier/v1` (after Opus audit `research/energy/nuclear_program/reviews/OPUS-AUDIT-2026-09-24-freeze-v1.md`)
+
+File `contracts/market_ontology/economic_change_dossier.v1.schema.json`; `$id` `https://mastermind-x.com/contracts/market_ontology/economic_change_dossier.v1.schema.json`; JSON Schema 2020-12; `additionalProperties:false` everywhere; conventions mirror `exposure_map.v1` (bilingual `{en,zh}`, typed-null records, `authority_ceiling` const). Validation in tests and in the composer uses `jsonschema.Draft202012Validator(schema, format_checker=jsonschema.FormatChecker())`. Every `date|datetime` field is `anyOf: [{type:string, format:date}, {type:string, format:date-time}, {type:null}]`. Decimal values are JSON strings matching `^-?(0|[1-9][0-9]*)(\.[0-9]+)?$` (never numbers; `NaN`/`Infinity`/`1e400`/`1,234` invalid). This is a SHARED cross-domain contract: nothing in it may be Energy-specific; Energy specifics live only in registered vocabularies and the adapter.
+
+**Registered vocabularies (schema `$defs.vocabularies`, ids match `^[a-z][a-z0-9_]*\.v[0-9]+$`; an unregistered id fails validation via `if/then`):** `energy_mechanism_families.v1` (role kinds: `upstream_oil_resource_production`, `natural_gas_production_basis`, `gathering_processing_ngl`, `pipelines_reserved_capacity`, `lng_liquefaction_marketing`, `refining_conversion`, `oilfield_services`, `energy_equipment_long_cycle_manufacturing`, `merchant_generation_retail`, `regulated_utility_investment_recovery`, `contracted_generation_asset_ownership`, `nuclear_resource_procurement`, `nuclear_conversion_enrichment_fuel_services`, `nuclear_components_services`, `nuclear_reactor_technology_development`, `solar_manufacturing`, `solar_wind_development_capital_recycling`, `renewable_contracted_asset_ownership`, `storage_integration`, `storage_asset_operation`, `grid_electrical_equipment`, `epc_construction`, `geothermal`, `renewable_fuels`, `hydrogen_fuel_cells`, `carbon_capture_transport_storage`, `waste_to_energy_other_transition`, `other`); `core_milestone_flags.v1` (`establishes_current_operation`, `establishes_period_revenue`, `establishes_definitive_agreement`, `establishes_delivered_volume`, `establishes_present_cash`, `establishes_measured_consumption`); `energy_milestone_flags.v1` (`site_operating_license`, `commercial_grid_generation`, `operating_generation`, `universal_haleu_dependence`). Other domains register their vocabularies by adding to `$defs.vocabularies` in a reviewed minor version; `role_kind=other` requires non-empty `limitations` and a `business_label`.
+
+**Top level (all required):** `schema` const `market_ontology.economic_change_dossier/v1`; `definition_version` (semver string); `domain_profile` enum `energy|technology|healthcare|basic_materials|consumer_defensive|semiconductors|robotics|other`; `asof` date; `knowledge_cutoff` date (≤ asof); `authority_ceiling` const `research_display_only`; `display_only` const `true`; `authority` {`can_rank`,`can_gate`,`can_size`,`can_originate`,`can_open_entry`,`can_veto` each const `false`}; `scope`; `subjects` (0..50); `roles` (0..200); `changes` (0..400); `comparisons` (0..100); `bridge`; `capital_ownership`; `expectations`; `market_context`; `counterevidence`; `relationships` (0..100); `native_context`; `coverage`; `unavailable`; `continuation` (const `null` in v1 — reserved for pagination); `provenance`. Schema `if/then`: `subjects` may be empty only when `unavailable` contains code `OVERSIZE_SELECTION` or `AUTHORITY_BIT_REJECTED` or `PRIVATE_BINDING_UNAVAILABLE`.
+
+- `scope`: `canonical_theme_id` string|null (`theme:` grammar); `primary_basket_id` string|null; `supplemental_basket_ids` [string]; `research_facet` {`label` bilingual, `authority` const `research_facet_only`, `source_refs` [string]}|null; `geography` string|null; `currency` string|null.
+- `subject`: `subject_id` (`co:` grammar or `unresolved:<slug>`); `issuer_label` bilingual; `identity_state` enum `resolved|unresolved|ambiguous`; `basket_memberships` [{`basket_id`, `relation` enum `primary_member|supplemental_member|none|unknown`, `receipt` string|null}] (a subject may be primary in one basket and supplemental in another; the relation to `scope.primary_basket_id` is what "primary" means for the dossier); `security_link_allowed` bool (schema `if/then`: must be `false` unless `identity_state=resolved`); `structural_classification` {provider, version, code, label}|null.
+- `role`: `role_id`; `subject_id`; `role_vocabulary`; `role_kind` (validated against the vocabulary via `if/then`); `role_facets` [{`vocabulary`, `kind`}]; `business_label` bilingual; `relationship_basis` enum `source_backed|hypothesis`; `exposure` {`kind` enum `revenue|gross_profit|operational_dependence|narrative|unknown`, `value` decimal|null, `unit` string|null, `source_ref` string|null}|null (law: `value` non-null only with a `source_ref`; `unknown` ⇒ value null); `rights_state` enum `admitted|restricted|unavailable`; `source_refs` [string]; `limitations` [string]; `status` enum `ready|degraded|unavailable|refused`; `authored_by` enum `deterministic|model_attributed`; `attribution` string|null.
+- `change`: `change_id`; `subject_id`; `kind` enum `reported_measure|contract|financing|milestone|ownership_event|guidance`; `status` enum `observed|forward|contingent|historical`; `revision_kind` enum `source_correction|restatement|contract_amendment|interpretation_revision`|null (non-null only with `supersedes`); `supersedes` change_id|null; `contained_in` change_id|null (typed containment for nested sets); `additive_with_siblings` bool|null; `clocks` {`publication`, `observation`, `business_valid_from`, `business_valid_to`, `retention`, `review`, `recorded` — date|datetime|null}; `definition` {`metric_id`, `label` bilingual, `unit`, `currency`|null, `scale`|null, `basis` enum `reported|reported_terms|adjusted|proportionate|consolidated|common_shareholder|equity_method_investee_full`, `measure_class` enum `benchmark_reference|realized|current_cash|sustaining_investment|credit_recognized|receivable|cash_received|gross_margin_breakeven|fcf_breakeven|other`|null, `perimeter` string|null, `perimeter_change` enum `none|acquisition|divestiture|accounting_policy|restatement|unknown`|null, `organic` bool|null, `period` string|null, `prior_period` string|null}|null; `contract_terms` {`index` string|null, `formula` string|null, `option_holder` string|null, `start` date|null, `expiry` date|null, `volume_scope` string|null, `fee_basis` enum `fee_based|dedication|fee_floor|take_or_pay|other`|null}|null; `value` {`kind` enum `point|range|text|null`, `point` decimal|null, `low` decimal|null, `high` decimal|null, `text` string|null, `precision` int|null, `preliminary` bool|null}; `milestone_assertions` [{`vocabulary`, `flag`, `value` bool|null}] (flags validated against the vocabulary); `evidenced_by` change_id|null; `rights_state` enum `admitted|restricted|unavailable` (schema `if/then`: `rights_state != admitted` ⇒ `value.kind = "null"` and `point`/`low`/`high`/`text` null); `source_class` enum `issuer_primary|regulator_filing|counsel_or_third_party_confirmation|issuer_web_summary|secondary_press|unknown`; `source_refs` [string]; `limitations` [string].
+- `comparison`: `comparison_id`; `subject_id`|null; `kind` string; `kind_vocabulary` string|null; `inputs` [{`role` string, `change_id`}]; `compatibility` [{`check` enum `metric|unit|currency|horizon|ownership_basis|period|containment|evidence_time`, `outcome` enum `passed|failed|unknown`}]; `formula_id` string; `formula_version` string; `result` {`value` decimal, `unit` string, `currency` string|null}|null; `rounding` string|null; `unavailable_code` string|null; `authored_by` const `deterministic`; `limitations` [string]. Law: any failed/unknown compatibility check ⇒ `result=null` + `unavailable_code`.
+- `bridge_step`: `subject_id`; `step_order` int (0..6, one per `step_kind`); `step_kind` enum `demand|commercial_exposure|unit_economics|operating_contribution|capital_financing|ownership_claims|shareholder_cash`; `state` enum `observed|forward|unavailable|restricted`; `value_ref` change_id|null; `narrative` bilingual|null; `authored_by`; `attribution` string|null; `rights_state`; `source_refs`; `assumptions` [string]. Missing steps are emitted as `unavailable`, never guessed.
+- `capital_ownership` item: `subject_id`; `item_kind` enum `consolidated_vs_proportionate|project_vs_corporate_debt|common_vs_convertible_warrant|repurchase_authorized_vs_retired|customer_advance|sale_proceeds_vs_future_cash|contributed_asset|investee_equity_method`; `state`; `value_refs` [change_id]; `narrative` bilingual|null; `authored_by`; `rights_state`; `source_refs`.
+- `expectation`: `expectation_id`; `subject_id`; `horizon` string|null (several per subject allowed); `status` enum `AVAILABLE|UNAVAILABLE|RESTRICTED|INCOMPATIBLE`; `evidence_grade` enum `PRE_EVENT_TIMESTAMPED_VALUE|ISSUER_PROCESS_PLUS_ARCHIVE|ARCHIVAL_CONTEXT_ONLY|POST_EVENT_ONLY|UNAVAILABLE`; `metric_definition` string|null; `fiscal_horizon` string|null; `ownership_basis` string|null; `aggregate_method` string|null; `contributor_count` int|null; `panel_turnover` string|null; `estimate` {`value` decimal, `unit`, `currency`|null}|null; `first_known_at` datetime|null; `revision_kind` enum `panel_change|within_analyst|forecast_year_rollover|none`|null; `surprise_vector` [{`metric` string, `direction` enum `beat|miss|inline|mixed|unavailable`}]; `forced_beat_miss_bit` const `false`; `source_ref` string|null; `limitations` [string]. Rules: `status != AVAILABLE ⇒ estimate == null`; `status == AVAILABLE ⇒ evidence_grade ∈ {PRE_EVENT_TIMESTAMPED_VALUE, ISSUER_PROCESS_PLUS_ARCHIVE}` and `first_known_at` non-null and ≤ `knowledge_cutoff`.
+- `market_context` item: `subject_id`; `event_ref` change_id|null; `return_window` enum `before_open_prior_close_to_event_close|after_close_event_close_to_next_close|unavailable`; `raw_return` decimal|null; `total_return` decimal|null; `benchmark_residual` decimal|null (descriptive, never alpha — `residual_is_alpha` const `false`); `external_reported` bool; `commodity_context` string|null; `confounds` [string]; `source_refs`.
+- `counterevidence` item: `counter_id`; `subject_id`|null; `against_ref` (role_id | change_id | comparison_id | relationship_id | `bridge:<subject_id>:<step_kind>`); `kind` enum `demand_revised_lower|cost_outpaces_price|contingent_or_unfunded|existing_output_not_new_supply|temporary_item|acquisition_or_dilution|competed_away|test_asset_not_commercial|duration_costs_capital|already_public|missing_requirement|other`; `narrative` bilingual; `authored_by`; `attribution` string|null; `rights_state`; `source_refs`; `state` enum `observed|hypothesis`.
+- `relationship`: `relationship_id`; `src`, `dst` subject/role ids; `kind` enum `physical_containment|commercial_relationship|ownership|conditional_transmission_hypothesis|supply_exposure`; `basis` enum `source_backed|hypothesis`; `magnitude` null | {`value` decimal, `unit`, `source_ref`} (schema `if/then`: `basis=hypothesis ⇒ magnitude=null`); `source_refs`. Basket co-membership is never a basis.
+- `native_context` item: `owner` string; `object` string; `clock` datetime|null; `label` bilingual; `authority_note` string.
+- `coverage`: `subjects_selected`, `subjects_ready`, `subjects_unavailable`, `changes_admitted`, `changes_restricted`, `rights_blocked`, `unresolved_identities` — each int|null; `bounds` {`subjects`,`roles`,`changes`,`relationships`,`comparisons` ints — the composer's limits}; `generation` string = sha256 hex of the canonical JSON (`sort_keys=True`, separators `(',', ':')`) of `{input_receipts (sorted by owner,object,role), definition_version, as_of, knowledge_cutoff, selection}`.
+- `unavailable` item: `code` enum `IDENTITY_UNRESOLVED|RIGHTS_RESTRICTED|SOURCE_UNAVAILABLE|PERIOD_MISMATCH|DEFINITION_INCOMPATIBLE|MILESTONE_NOT_OPERATING|CONTINGENT_NOT_FUNDED|EXPECTATIONS_UNAVAILABLE|EVIDENCE_GRADE_INSUFFICIENT|CONFOUNDED_EVENT|OVERSIZE_SELECTION|SUPERSEDED|CONFLICTING_SOURCES|PRIVATE_BINDING_UNAVAILABLE|AUTHORITY_BIT_REJECTED|ROLE_KIND_UNKNOWN|UNIT_INCOMPATIBLE|AFTER_KNOWLEDGE_CUTOFF|KNOWLEDGE_TIME_UNKNOWN|COUNTEREVIDENCE_MISSING|BRIDGE_INCOMPATIBLE|STEP_UNAVAILABLE`; `conflict_class` enum `TIMEFRAME_SPLIT|SCOPE_SPLIT|FRESHNESS_SPLIT|COVERAGE_SPLIT|AUTHORITY_SPLIT|GENUINE_CONTRADICTION`|null (required non-null when code is `CONFLICTING_SOURCES`); `domain_code` {`vocabulary`, `code`}|null; `reason` bilingual; `subject_id` string|null; `detail` string|null.
+- `provenance`: `composer` string (module.function); `engine_version` string; `mode` enum `current|reconstructed|as_executed`; `input_receipts` [{`owner`, `object`, `schema`, `version`, `digest`, `selector` string|null, `role`}]; `model_attribution_policy` const `attributed_narrative_only_never_facts`.
+
+**Ordering (deterministic, never by magnitude):** subjects/roles/changes/comparisons/relationships/expectations/counterevidence by their id; `bridge` by `(subject_id, step_order)`; `capital_ownership` by `(subject_id, item_kind)`; `market_context` by `(subject_id, event_ref)`; `native_context` by `(owner, object)`; `unavailable` by `(code, subject_id, detail)`; `input_receipts` by `(owner, object, role)`.
+
+**ENE coverage additions in v2:** ENE-05 `role.exposure`; ENE-08/11 `contract_terms`; ENE-12/13/17/24 `definition.measure_class`; ENE-19/25 `perimeter_change` + `organic` (law: `accounting_policy` never makes a bridge step observed by itself; `acquisition` ⇒ `organic=false` unless a source-backed organic figure exists); ENE-23 core flag `establishes_measured_consumption`; ENE-30/31/33 `revision_kind`, `surprise_vector`, `forced_beat_miss_bit=false`; ENE-32 B8 laws; ENE-34–37 `market_context`; ENE-38 `confounds` + `CONFOUNDED_EVENT`; ENE-41 `revision_kind` + `supersedes`; ENE-47 `conflict_class`; ENE-49 hypothesis ⇒ magnitude null; ENE-65 inert-text law + test; ENE-66 per-item `authored_by`/`attribution`.
+
+## 5. Frozen Energy adapter v2 (Task 3)
+
+Module `engine/market_ontology/energy_economic_change.py`; pure; no clock, network, LLM, store read or `data/` write; the only filesystem access is loading the shared schema once; imports nothing from the scoring core; every list ordered per §4. `ROLE_VOCABULARY = "energy_mechanism_families.v1"`, `ROLE_KINDS` = the 28 identifiers enumerated in §4 (27 families + `other`), `MILESTONE_VOCABULARIES = ("core_milestone_flags.v1", "energy_milestone_flags.v1")`, composer bounds `BOUNDS = {subjects: 5, roles: 12, changes: 40, relationships: 80, comparisons: 20}` emitted as `coverage.bounds`.
+
+Public interface: `compose_energy_profile(selection, *, owner_inputs, as_of, knowledge_cutoff) -> dict` — returns a dossier dict that validates against the shared schema with `Draft202012Validator(format_checker=FormatChecker())`.
+
+Frozen input types (frozen dataclasses with slots; `Decimal` numerics): `EnergySelection(canonical_theme_id, primary_basket_id, supplemental_basket_ids, subject_ids, domain_profile='energy', mode='current')`; `EnergySubject(subject_id, issuer_label_en, issuer_label_zh, identity_state, basket_memberships: tuple[BasketMembership(basket_id, relation, receipt)], security_link_allowed, structural_classification)`; `EnergyRole(role_id, subject_id, role_kind, role_facets, business_label_en, business_label_zh, relationship_basis, exposure, rights_state, source_refs, limitations, authored_by='deterministic', attribution=None)`; `EconomicChange(change_id, subject_id, kind, status, revision_kind, supersedes, contained_in, additive_with_siblings, clocks: ChangeClocks, definition: MetricDefinition|None, contract_terms, value: ChangeValue, milestone_assertions: tuple[MilestoneAssertion(vocabulary, flag, value)], evidenced_by, rights_state, source_class, source_refs, limitations)`; `EconomicBridgeStep(subject_id, step_kind, state, value_ref, narrative_en, narrative_zh, authored_by, attribution, rights_state, source_refs, assumptions)`; `CapitalOwnershipItem(...)`; `ExpectationContext(expectation_id, subject_id, horizon, status, evidence_grade, metric_definition, fiscal_horizon, ownership_basis, aggregate_method, contributor_count, panel_turnover, estimate, first_known_at, revision_kind, surprise_vector, source_ref, limitations)`; `MarketContext(...)`; `Counterevidence(counter_id, subject_id, against_ref, kind, narrative_en, narrative_zh, authored_by, attribution, rights_state, source_refs, state)`; `Relationship(...)`; `NativeContext(...)`; `OwnerInputs(subjects, roles, changes, comparisons, bridge, capital_ownership, expectations, market_context, counterevidence, relationships, native_context, input_receipts, authority_bits: Mapping[str, bool] | None = None)`.
+
+**Law → action table (binding; each row is a named test):**
+
+| Law | Action | Code |
+|---|---|---|
+| `knowledge_cutoff > as_of`; wrong Python types; composed output fails schema validation | raise `EnergyProfileError` (caller/programming error) | — |
+| any `authority_bits` value true | whole dossier refused: all sections empty, subjects empty | `AUTHORITY_BIT_REJECTED` |
+| selection exceeds `BOUNDS` | typed dossier with empty sections, never raises, never truncates | `OVERSIZE_SELECTION` |
+| unknown `role_kind` for the vocabulary | role dropped; detail names role_id | `ROLE_KIND_UNKNOWN` |
+| `role_kind=other` without limitations/label | role dropped | `ROLE_KIND_UNKNOWN` |
+| `identity_state != resolved` with `security_link_allowed=True` | subject emitted with `security_link_allowed=false` | `IDENTITY_UNRESOLVED` |
+| membership receipt says supplemental but input relation says primary (or vice-versa) | relation replaced by the receipt's relation; never reverse-inferred | `IDENTITY_UNRESOLVED` (detail `basket_relation_conflict`) |
+| non-finite / float / malformed decimal | change dropped | `UNIT_INCOMPATIBLE` (detail `numeric_form`) |
+| comparison inputs with different unit/currency/period/basis or parent+child containment or `equity_method_investee_full` mixed with `consolidated` | comparison `result=null` | `DEFINITION_INCOMPATIBLE` / `UNIT_INCOMPATIBLE` |
+| numeric value without `source_refs` | change dropped | `SOURCE_UNAVAILABLE` |
+| `rights_state != admitted` | value/narrative nulled (schema-enforced) | `RIGHTS_RESTRICTED` |
+| `max(clocks.publication, clocks.recorded) > knowledge_cutoff` | change dropped | `AFTER_KNOWLEDGE_CUTOFF` |
+| both `publication` and `recorded` null | change dropped | `KNOWLEDGE_TIME_UNKNOWN` |
+| `kind=milestone` with `establishes_current_operation` true and no `evidenced_by` observed `reported_measure` | assertion forced to null, step referencing it → `unavailable` | `MILESTONE_NOT_OPERATING` |
+| bridge `state=observed` referencing a change with `status ∉ {observed, historical}` | step → `unavailable` | `CONTINGENT_NOT_FUNDED` (contingent) / `BRIDGE_INCOMPATIBLE` (forward) |
+| `shareholder_cash` step whose value basis ≠ `common_shareholder`; `ownership_claims` step whose basis ∉ {proportionate, common_shareholder}; `operating_contribution`/`unit_economics` step whose change kind ≠ `reported_measure`; `commercial_exposure` step whose kind ∉ {contract, reported_measure}; `demand` step whose kind ∉ {guidance, contract, reported_measure}; `capital_financing` step whose kind ∉ {financing, contract, reported_measure} | step → `unavailable` | `BRIDGE_INCOMPATIBLE` |
+| a bridge step made observed only by a change with `perimeter_change=accounting_policy` | step → `forward` at most | `BRIDGE_INCOMPATIBLE` |
+| observed/forward bridge step or hypothesis relationship with no counterevidence whose `against_ref` names it | step/relationship downgraded to `unavailable`/dropped | `COUNTEREVIDENCE_MISSING` |
+| expectation `AVAILABLE` with grade ∉ {PRE_EVENT_TIMESTAMPED_VALUE, ISSUER_PROCESS_PLUS_ARCHIVE} or `first_known_at` null/after cutoff | status → `INCOMPATIBLE`, estimate null | `EVIDENCE_GRADE_INSUFFICIENT` |
+| expectation `UNAVAILABLE` | estimate null (never "0") | `EXPECTATIONS_UNAVAILABLE` |
+| relationship `basis=hypothesis` with magnitude | magnitude nulled | (no code; schema-enforced) |
+| relationship whose only basis is co-membership (`source_refs` empty and `basis=source_backed`) | dropped | `SOURCE_UNAVAILABLE` |
+| nested set: `contained_in` chain broken or parent listed as `additive_with_siblings=True` | change kept, comparison refused | `DEFINITION_INCOMPATIBLE` |
+| narrative/text containing instruction-like text | passed through verbatim as inert data; never executed/expanded | (test only) |
+
+Every subject's `expectations` list gets one `UNAVAILABLE` record when the owner supplied none. Nothing in the adapter sums, nets or derives a number that is not a `comparison` with passed compatibility checks.
+
+## 6. Wave plan and placement
+
+| Wave | Task | Lane / host / engine | Owned files | Gate |
+|---|---|---|---|---|
+| W1 | T3 contract + adapter | `ene_w1_t3_adapter` mini2, glm-codex glm-5.3 | `contracts/market_ontology/economic_change_dossier.v1.schema.json`, `engine/market_ontology/energy_economic_change.py`, `tests/test_market_ontology_energy_economic_change.py`, `.github/ci/legacy-jobs.yml` (one new job `energy-economic-change-dossier`), `tests/test_ci_pack.py` (CURATED_EXCLUSIVE entry) | RED→GREEN, 3 mutants, jsonschema validate, contract-delta 0 introduced |
+| W1 | T4 witness profiles | `ene_w1_t4_witnesses` mini2, glm-5.3 | `engine/company_intelligence/nuclear_value_profiles.py`, `tests/energy_nuclear_fixtures.py`, `tests/test_company_nuclear_value_profiles.py` | RED→GREEN, 3 mutants, wrong-period/duplicate/incompatible/rights/correction cases |
+| W1 | T9 (membership/ThemeState half) | `ene_w1_t9_nonreg` mb, glm-5.3 | `tests/test_energy_economic_change_non_regression.py`, `tests/fixtures/energy_non_regression/*.json` | frozen snapshot of nuclear_power + uranium_miners membership/weights and ThemeState fields; passes on carrier base |
+| W1 | audit | Opus `reviewer`, READ_ONLY | this checkpoint §4–§5 | findings folded into packets |
+| W2 | T2 consume assertion; T5 compose; T6 private role; T7 route; T8 UI; T9 privacy; T10 real proof | after B's T02/T09/T10 land and R-ENE-04 is decided | — | — |
+
+## 7. Wave-2 owner qualification (seat reads 2026-09-24 05:20–05:35Z; navigation for Tasks 2, 6, 7 — not yet effects)
+
+- **Task 6 — private projection role.** The incumbent private publication family is `engine/earnings_narrative/private_publication.py` (owner `WS:EARNINGS-INTELLIGENCE-OS`, status done, owner coo-fable, owns `engine/earnings_narrative/**`; no open PR touches it). It publishes under `PRIVATE_PREFIX = earnings_wire_private/v1` exactly two roles: `records/<slug>.json` (`RECORD_STAGE_DIR`, `MAX_RECORD_BYTES` 2 MiB) and `context/<ticker>.json` + `context/latest.json` (`CONTEXT_STAGE_DIR`, 512 KiB packets); `validate_private_manifest` freezes the manifest keys (`manifest`, `objects`, `source{wire_manifest_id, source_generation_id, source_manifest_sha256}`, `records`) and `_generation_id` fingerprints them. A generic `economic_changes` role therefore IS an owner change (new stage dir `economic_changes/<subject_id>.json`, manifest key, loader `load_private_economic_change`, byte cap, readback-before-pointer, rights check at request time) — one bounded extension in the incumbent module, never a second store/pointer/publisher; `scripts/publish_earnings_private_store.py` stays source-dir based and unchanged. Semiconductor B's R4 qualifies the same owner for its binding; the two seats coordinate through one custody notice on #7870 before either edits `private_publication.py`, and only one of them authors the role.
+- **Task 7 — authenticated read route.** Precedent `app/earnings.py`: `require_site_full_user` (existing `require_user` + `enforce_site_full(always=True)`), `_PRIVATE_HEADERS` (private/no-store, Vary Authorization, nosniff, noindex/noarchive) on success and every error, manifest TTL 30 s with forced replay on not-found, storage errors → generic 503; router registered in `app/main.py` after `research_router`. B's T09 adds `app/theme_research.py` (`POST /api/themes/v1/research/{query,evidence}`, response `semiconductor_theme_research.v1`). Decision R-ENE-04 stays reserved: if B's landed envelope admits a dossier section keyed by `market_ontology.economic_change_dossier/v1`, Energy consumes that route; otherwise Energy registers ONE generic `app/economic_change.py` (`/api/economic-change/v1/dossiers/{subject_id}` + optional theme context) reusing `require_site_full_user` verbatim — never `/api/energy/*`.
+- **Task 2 — shared assertion (LANDED on #7870 head `012db0e6`, seat read 05:40Z).** `contracts/theme_graph/curation_assertion.v1.schema.json` + `engine/theme_graph/curation_assertion.py` (`validate_assertion`, `encode_assertion`, `decode_assertion`, `curation_revision` = `gmirca_`+sha256(canonical payload)[:32], `source_ref_for` → `gmi-curation://<scope.canonical_theme_id>/<revision>`), guard `scripts/check_theme_graph_contracts.py::curation_assertion_breaches`, CI in the gate:data job (`tests/test_theme_graph_curation_assertion.py`). Closed vocabularies Energy consumes verbatim: `predicate` ∈ {PRODUCT_CAPABILITY, DOCUMENTED_PRODUCT_INCLUSION, ANNOUNCED_DEVELOPMENT_AGREEMENT, DEPLOYMENT_TARGET, REPORTED_DEPLOYMENT, OWNERSHIP_EVENT, REPORTED_FINANCIAL_MEASURE, REPORTED_OPERATING_MEASURE}; `statement_mode` ∈ {REPORTED_FACT, CATALOG_DESCRIPTION, ANNOUNCED_ARRANGEMENT, FORWARD_TARGET, ATTRIBUTED_INTERPRETATION} (forbidden pairings code-enforced); `observation.quantity_basis` (`absolute`/`per_period`/`per_unit` cover MWe, lbs U3O8 and $ backlog with the free-text `unit`); `authority.*` literal false; `industrial_context` is a semiconductor-only OPTIONAL block Energy never writes; `additionalProperties: false` at the top level. Nuclear witness mapping: Cameco long-term contract volumes → REPORTED_OPERATING_MEASURE/REPORTED_FACT; NuScale/Oklo customer agreements → ANNOUNCED_DEVELOPMENT_AGREEMENT/ANNOUNCED_ARRANGEMENT; Oklo COD target → DEPLOYMENT_TARGET/FORWARD_TARGET (stays a target after its window); Westinghouse stake → OWNERSHIP_EVENT/REPORTED_FACT; Centrus HALEU deliveries → REPORTED_DEPLOYMENT/REPORTED_FACT. **Gap → reserved decision R-ENE-07:** a regulatory/licensing milestone (NRC design certification, construction permit) has NO predicate in that vocabulary; the dossier's `milestone_assertions` (freeze v2 §4, `energy_milestone_flags.v1`) still need an `evidenced_by` assertion. Options: (a) one additive enum value (`REGULATORY_MILESTONE`, statement_mode REPORTED_FACT/FORWARD_TARGET) requested from B on the shared contract via custody notice before #7870 merges; (b) retain the milestone under `limitations.establishes` of the underlying DEPLOYMENT_TARGET assertion. The seat rules (a) as the truthful shape and (b) as the fallback if B declines; neither creates an Energy-specific contract. Energy consumes the blob only after #7870 merges; until then roles are typed synthetic inputs and no evidence row is written.
+- **Tasks 6/7/8 dependency state at B's head `012db0e6` (seat read 05:55Z).** B's private binding is an OPEN decision request (R4 on #7780, candidate (ii): full-fidelity bodies through the existing private Research Vault owner under one registered prefix, reference-only rows in the public evidence parquet) — B has NOT edited `private_publication.py`, so Energy's Task 6 proposal stands as posted on #7870 (issuecomment-5808374777: first carrier to reach it authors ONE generic `economic_changes` role, the other consumes). B's T09 route (`app/theme_research.py`) is NOT yet dispatched (queued after T07/T08) — R-ENE-04 stays reserved. B's T10 part 1 (generic paid theme-research client + styles + hidden Theme Tracker mount, lane commit `f53c7c3845b3`) is under READ_ONLY review; `templates/basket_detail.html.j2` is frozen by B's R3 pending #7669. Energy Task 8 therefore consumes the mount only after it lands on main, and never edits `basket_detail.html.j2` while #7669 holds it.
+- **Task 10 — real source retention.** Through the incumbent private owner and `engine/research_vault/r2_store`; production credentials are an operator act → `EXACT_HUMAN_GATE` if unavailable to the seat when Task 10 is reached.
+
+- **Wave-1 lane returns (08:40Z):** `ene_w1_t9_nonreg` → #7895 `8e4c14ae` REQUEST_REPAIR (R-ENE-08) → repair `576dd26d` ACCEPTED (7 passed on a full checkout), cherry-picked on the carrier with one seat nit (sparse skips) + a data-gate CI job `energy-nuclear-non-regression`. `ene_w1_t3_adapter` → #7898 (glm-5.3, 3368 s, lane review NO_REVIEW) cherry-picked as `9e0552ca` then **REJECTED by the Opus READ_ONLY audit** (12 blocking + N1 promoted; record `research/energy/nuclear_program/reviews/OPUS-AUDIT-2026-09-24-t3-slice.md`) → repair lane `ene_w1_t3_repair` dispatched against #7898; the rejected slice stays on the carrier unmerged until the repair lands and is re-audited at exact head. `ene_w1_t4_witnesses` refused by mini2 infrastructure ×2 (fixed in the kit), by host load ×1, and once by a degenerate GLM completion (7 s, "pushed nothing") — re-queue loop running. → Opus re-verification #2/#3 REJECT → seat fixes `51da7235` (per-field nullable law, 25-name pin, ancestry-guarded regeneration, canaries) and `7111b4ae` (`divergence_board` nullable) → #4 ACCEPT_WITH_NITS; nits applied; full-checkout proof 14/14 on mb.
+
+## 8. Exact next action (re-scoped by R-ENE-09, 2026-09-24 ~08:00Z)
+
+Chairman ruling relayed from Astra CEO: Semiconductors builds the base; Energy does not rebuild it and integrates later. Carrier state: T3 (shared dossier contract + adapter + job) WITHDRAWN by revert; T4 HELD (packet `ene_w1_t4_witnesses` kept in the B-kit, no dispatch); T9 freeze KEPT and wired into the existing data-gate job `unrun-subsector-themes`. All Energy fabric lanes stopped; no Energy marker active on m1/mb/mini2. NEXT: (a) land the T9-only slice — ACCEPTED after four Opus READ_ONLY rounds (ledger in `research/energy/nuclear_program/reviews/OPUS-REVIEW-2026-09-24-t9-slice.md`: rejects at `a753abdf`/`e4c37cff`/`51da7235`, accept-with-nits at `7111b4ae`, nits applied in the final commit); proof = local 8/6-skip, mb full checkout 14/14, CI-pack `-k` 16/16 + contract-delta 0 introduced; carrier #7881 flips DRAFT→ready with `merge-on-green` at the final head, squash-merge on CONCLUDED checks (`ci-authority/codex/merge-queue-pilot` red is the known non-binding `inactive_base_context`), live proof = the post-merge `unrun-subsector-themes` job on main (tests-only change, no render) (R-ENE-03); (b) WAIT for Semiconductor B's base on main — shared assertion (#7870 T02), `contracts/market_ontology/*` (T07/T08), private binding (R4 via the Research Vault owner), route (T09), generic mount (T10) — watched through B's #7870 checkpoints, never rebuilt here; (c) then dispatch the Energy INTEGRATION wave against B's landed contracts: adapter re-cut to B's dossier/contract shape, nuclear witness profiles, Energy dossier composition, consumption of B's private role/route/mount, browser proof. Freeze v2 (§4/§5) is retained as Energy's semantic requirement list for that integration, not as a contract to register.
+
+## 9. State 2026-09-25 — wave 2: the nuclear vertical module is built on B's shell (stacked; merges after #7870)
+
+**What changed and why.** Robotics' vertical (#7908) merged to main at 07:27Z on 2026-09-25, built on Semiconductor B's shared theme-research shell before #7870 landed. B's registry (`engine/market_ontology/theme_research_registry.py` at #7870 head `6cd958e9`) expects each vertical's module to exist first, with its one `VerticalRegistration` added afterwards on the vertical's own carrier. Waiting for #7870 before writing any Energy module (section 8 (b)/(c)) is therefore no longer the fastest lawful path. R-ENE-09 still binds: Energy rebuilds nothing of the base.
+
+**Decision (seat, 2026-09-25, after the operator's "Continue the project").**
+- Energy builds its own nuclear vertical module now, against an Energy-owned snapshot of B's head: ref `claude/energy-stack-base-b-6cd958e9` = `6cd958e92b259f7221690547e7076f4a0de4ed33`.
+- It imports B's shared types and helpers directly (no copies, no `ImportError` fallback; the identity owner `engine/theme_graph/identity.py` exists on the snapshot and on main) and edits no shared file.
+- It merges to main only after #7870 lands. Registration, mount, served/browser/privacy proof and real admission then follow on an Energy carrier.
+- Rejected: a Robotics-style early merge. It would need local copies of B's types or ship code that cannot be imported on main.
+
+**Frozen design (lane packet `ene_w2_nuclear_module`).**
+- Files: `contracts/market_ontology/nuclear_theme_research.v1.schema.json`, `engine/market_ontology/nuclear_theme_research.py` (`compose_nuclear_research`, `select_authorized_evidence`), `engine/market_ontology/nuclear_owner_bundle.py` (`load_nuclear_owner_bundle`, declared-absent in v1), and tests that mirror the Robotics suite one for one.
+- Anchor `nuclear_power`; schema ids `nuclear_theme_research.v1` / `nuclear_theme_research.evidence.v1`; definition version `2026-09-25.1`.
+- Slices are declared limited witness cohorts, never membership or rank:
+  - `reactor_technology` = SMR, OKLO
+  - `nuclear_components` = BWXT
+  - `fuel_cycle` = CCJ, LEU. These are supplemental `uranium_miners` members and are never promoted; the slice always carries the limitation `supplemental_basket_witnesses`.
+- The five views and the predicate-to-view map are identical to Robotics' (the manufacturing view stays structurally empty).
+- A milestone exists only inside the limitations of the assertion it qualifies (R-ENE-07 fallback (b)). Every response carries `milestone_predicate_unavailable`; the request for a truthful additive milestone predicate on #7870 stays open and is not re-asked.
+- Contingent backlog is never summed and never labelled funded. An equity-method investee is never consolidated. A target whose window has passed stays a retrospective target. Rights fail closed through B's shared resolver. Every authority flag is false.
+
+**Fabric note.** The shared lane kit's new-packet mode sets the executor push guard to the BASE branch instead of the lane's new branch; for ordinary lanes that base is main. This lane's base is the snapshot ref, so main is not exposed. The kit fix is filed separately and is not part of this program.
+
+**Carriers.** Slack root PROGRESS reply ts `1790322235.512429`; courtesy correction on #7870, comment `5828806957`.
+
+## 10. State 2026-09-25 ~10:00Z — round-1 review adjudicated; fix delivered; round-2 re-review running
+
+**Module PR.** #8002 is DRAFT against the snapshot ref `claude/energy-stack-base-b-6cd958e9` and carries no labels. At `1071dd9de3e9` it holds the contract, the pure composer, the declared-absent owner-bundle loader and the synthetic-fixture tests (lane commits `3bf11062fc`, `37ece12659`, `1071dd9de3`).
+
+**Review round 1.** The Opus READ_ONLY review at that head returned FIX_REQUIRED. Record: `research/energy/nuclear_program/reviews/OPUS-REVIEW-2026-09-25-w2-module-r1.md`.
+- B1: republished copies were not collapsed, although the contract says they are.
+- M1–M5: a passed target was judged only when the caller sent a cutoff; the temporal test keyed rows by value; the order test could not see a sort by size; L7 was proven only on the composer's backup path; drop counts were hard-coded.
+- m1–m7 and three nits.
+- What held: shell fit (direct imports, no mirror) and the registration shape.
+
+**Seat rulings R-ENE-10..16.** Record: `research/energy/nuclear_program/rulings/R-ENE-2026-09-25-w2-module-r1.md`.
+- R-ENE-10: accept the review; one fix round on the same branch; an Opus re-review at the new head decides.
+- R-ENE-11: the milestone leak is promoted to MAJOR. The summary reads `limitations.coverage` only and drops passed targets from `next_evidence`.
+- R-ENE-12: a passed target is judged with no clock and without depending on the caller: the caller's cutoff, else the evidence frontier, disclosed as `target_windows_judged_at:<day>`.
+- R-ENE-13: the contract's limitations field stays pattern-only; the codes are pinned by `LIMITATION_CODES` and two tests.
+- R-ENE-14: the loader imports stay as Robotics has them.
+- R-ENE-15: evidence refs keep the `theme:` form until the shell owner rules.
+- R-ENE-16: Power-Demand stays preparation-only until nuclear acceptance.
+
+**Fix round.** Lane `ene_w2_nuclear_module_r1fix` ran from 09:06Z to 09:37Z (m1, glm-codex glm-5.3, existing-PR mode on #8002, one round, seat review). Its ruling text carried the reviewer's findings verbatim, because the lane parser drops findings written in bold.
+- Delivered: one commit, `9e3237efdef6` ("fix(energy): complete nuclear research composition", 9 files, +730/−117); lane verdict `REVIEW_DEFERRED`, meaning the seat reviews.
+- Post-lane checks (09:40Z): the snapshot ref still resolves to `6cd958e92b25`; #8002 is DRAFT on the snapshot base with no labels and head `9e3237efdef6`; main has no commit touching the nuclear files.
+- The fixer reports every finding addressed, but that is navigation, not acceptance. Its new route test SKIPPED in its environment (no `httpx`), so the M4 production-path proof has not yet run.
+- An Opus READ_ONLY round-2 re-review at `9e3237efdef6` is RUNNING. It must execute the route test (this host has `httpx` and `fastapi`) and re-run every ruling mutant itself.
+
+**Shell defect reported, not fixed.** #7870 comment 5829675838 reports that the evidence route's `assertion_ref` pattern refuses every `theme:`-scoped ref — the form Robotics mints on main. The comment includes the reproduction and two consistent resolutions. Energy edits no shell file. The same comment consumes Robotics' 5828876066: nuclear `VIEWS` already equal the shared client's hard-pinned `TR_VIEW_KEYS`.
+
+**Power-Demand preparation.** PR #8016 records a read-only scope census, `research/energy/power_demand_program/CENSUS-2026-09-25-power-demand-scope.md`, pinned at main `daa6a2e1`, #7870 `6cd958e9` and #7791 `68e815d8`.
+- Candidate identities: `theme:data_center_power` (primary basket `data_center_power`, supplemental demand-driver basket `ai_neoclouds`) and `theme:grid_electrification` (primary basket `power_grid`). `power_grid` is a basket, not a theme.
+- Collisions to respect: #7462, #7284, and Industrials #7789/#7924. No DNR rows apply.
+- Design and build wait for nuclear acceptance (R-ENE-16).
+
+**Live rung.** #8001 merged at `6c9465c7ed7d`, but production stays at `3a29e6145ce` because the VPS pull cron is held (`# MMX-DISK-TRIAGE-HOLD`, macro#6902). Lifting that hold is an operator act. Energy never touches it and reports the live rung as blocked, not live.
+
+**Carriers.** The Slack root had no counterpart edge after ts `1790253062.808389` (read 2026-09-25, before 09:35Z). The scheduled watch now also checks that #8002 keeps its DRAFT / no-label / snapshot-base shape. It counts #7870 comments addressed to Energy and excludes only Energy's own posts, identified by their opening line.
+
+## 11. State 2026-09-25 ~10:05Z — round-2 re-review adjudicated (R-ENE-17..22); fix round 2 dispatched
+
+**Re-review.** The Opus READ_ONLY re-review of #8002 at `9e3237efdef6` returned FIX_REQUIRED. The record is `research/energy/nuclear_program/reviews/OPUS-REVIEW-2026-09-25-w2-module-r2.md`: the reviewer's return verbatim, plus its probe script.
+- **Round 1 is closed.** Every ruling mutant is killed by a named test. The route test runs for real: 1 passed, with httpx 0.28.1.
+- **NEW-1 (MAJOR).** The round-1 fix lane deleted four packet-named temporal tests. Two mutants now survive: supersession-disabled and empty-lineage.
+- **NEW-2 (MAJOR).** The reference day is computed over the pre-gate list. A rejected record, or a collapsed syndicated copy, can flip an open target to passed and disclose its own date.
+- **Also open:** six MINOR and two NIT findings.
+
+**Rulings R-ENE-17..22.** Recorded in `research/energy/nuclear_program/rulings/R-ENE-2026-09-25-w2-module-r2.md`.
+- **R-ENE-18 corrects the seat's own R-ENE-12.** The parenthetical "(the final `self.assertions`)" was wrong. The frontier and the disclosure presence check now read `self.current`.
+- **R-ENE-19 makes tests append-only across fix rounds** and freezes packet-defined fixtures. The seat's round-1 post-lane check compared files, not test names; that is how the deletion reached the reviewer.
+- **R-ENE-20 is a seat finding (S1).** The nuclear evidence selector now serves only `selection.review_ok`.
+  - Robotics on main has the same pattern at `robotics_theme_research.py:1271`. Relay it to Robotics at the next #7870 post; Energy does not edit Robotics.
+- **R-ENE-21:** port Robotics' selector shape, role order and the superseded-interpretation exclusion.
+- **R-ENE-22:** every MINOR and NIT is fixed this round. That includes NEW-6, the private headers on an error response, which the Chairman's privacy constraint requires.
+
+**Fix round 2.** Lane `ene_w2_nuclear_module_r2fix` was dispatched to m1 at 10:00Z (GLM, `review_engine: seat`, one round, same branch).
+- The packet adds HARD LAW 6: never delete or rename a test, and never re-define a packet fixture.
+- It also carries the reviewer's probe script as exact reproduction recipes.
+- Pre-dispatch remote state: branch `9e3237efdef6`, base `6cd958e92b25`, m1 idle.
+
+**Registration step, read ahead against the snapshot.** No effect was taken.
+- **Registry.** `theme_research_registry.py` documents per-vertical registration on the vertical's own carrier: one `VerticalRegistration` plus one `MountFacts` row. That is integration, not rebuilding the base (R-ENE-09).
+- **Anchor.** `nuclear_power` is the crosswalk row whose `primary_basket_id` is `nuclear_power`, so the mount lands only on that basket page.
+- **Client.** It takes slices and bilingual labels from the mount's own attributes (`mountSpecFrom`; slice chips read `SPEC.labels` at `theme-research.js:1405`). Its hard-coded semiconductor map feeds only a node self-test.
+- **Conclusion.** A nuclear registration needs no client edit and does not wait on the shell's "hook 4".
+
+**Carriers.**
+- #8018 (round-1 records) and #8016 (Power-Demand census) are armed `merge-on-green`, with watchers.
+- The round-2 records ride the next records PR.
+
+
+## 12. State 2026-09-25 ~10:50Z — round-3 re-review adjudicated (R-ENE-23..26); the seat froze the test text; transcription round dispatched
+
+**Fix round 2 delivered `c857ec36311a`.**
+- It is one lane commit, "fix(energy): close nuclear review gates", touching 8 owned files. No test name was lost (R-ENE-19 check).
+- **Seat-found DEVIATION.** The lane restored X04 to `reactor_technology` as NEW-9 ordered. It also reworded two of X04's strings without disclosing it.
+- The reviewer measured the rewording: 0 test outcomes changed across 19 mutants. It is recorded as NIT R3-4, and the text is restored this round.
+
+**Round-3 re-review: FIX_REQUIRED.** The record is `research/energy/nuclear_program/reviews/OPUS-REVIEW-2026-09-25-w2-module-r3.md`, verbatim. The reviewer is `a14e0071943034a00`; it was resumed once, on the same carrier, after hitting its turn limit.
+- **The code is correct.** NEW-1..7, NEW-10, the NEW-8 selector and S1 are closed, and every required mutant is killed.
+- **R3-1 (MAJOR).** Truth law L1 has no test guard. Putting CCJ into the `reactor_technology` cohort, or LEU into `nuclear_components`, passes all 55 tests. The seat reproduced this.
+- **R3-2 (MINOR).** The S1(b) round trip never reaches a collapsed copy. The lane's bundle holds two same-publisher originals, and `_apply_syndication` collapses only onto exactly one. The seat reproduced this too.
+
+**Rulings R-ENE-23..26.** Recorded in `research/energy/nuclear_program/rulings/R-ENE-2026-09-25-w2-module-r3.md`.
+- **R-ENE-23** fixes the registration copy. The carrier writes it only after #7870 merges, following `research/energy/nuclear_program/REG-PACKET-2026-09-25-nuclear_power.md`.
+- **R-ENE-24** accepts R3-1, R3-2, R3-4 and R3-5, and sets the acceptance gate.
+- **R-ENE-25** keeps the `next_evidence` behavior. The target window is judged at the reference day, and archival capture never closes an open window.
+- **R-ENE-26** closes R3-3 as an equivalent mutant, R3-7 as a family pattern to relay, and R3-8 as a deliberate difference.
+
+**Tactic change: the lane no longer writes tests.** Two lane rounds under-delivered tests: round 1 deleted four, and round 2 left L1 and the collapsed round trip unwritten. So the seat wrote the exact round-4 test text itself and applied it to an extracted copy of the head's `tests/` (seat scripts `r4gate/apply.py` and `r4gate/matrix.sh`). Results:
+- 62 passed.
+- pyflakes is clean.
+- Every one of 26 mutants that is not equivalent is killed, including the new `ccj_rt_cohort`, `leu_nc_cohort`, `nostale` and `next_query` mutants.
+- `role_pred` is the equivalent one.
+
+Lane `ene_w2_nuclear_module_r3fix` was dispatched to m1 at 10:45Z (GLM, one round, same branch). It is a transcription of 4 files, append-only. Its transcription was byte-correct (4/4 identical to the seat's application), but it stopped on the seat's own wrong host assumption: m1 has no `httpx` and no `pyflakes`. It was re-issued at 10:53Z as `ene_w2_nuclear_module_r3fix_b`, with only the host-tool rules changed. See the rulings addendum. **Acceptance needs all three:**
+1. the four files are byte-identical to the seat's application;
+2. the matrix kills everything that is not equivalent;
+3. the same reviewer carrier returns a closure check.
+
+**The re-issued lane delivered `fa4ebadbb9fe7dcdacf4513fa67f454a41f895fc` at 10:58Z** (lane `ene_w2_nuclear_module_r3fix_b`, REVIEW_DEFERRED). The seat's post-lane gate (`r4gate/postlane.sh`) passed every check:
+- It is a fast-forward of `c857ec3` and is not on main.
+- There is one commit, with the exact message.
+- The name-only diff is exactly the 4 test files, and all 4 are byte-identical to the seat's application.
+- #8002 is DRAFT, with no labels and a null auto-merge.
+- `62 passed`, and the route tests execute on the seat's host (`2 passed`).
+- `pyflakes` exits 0.
+- Test names only grew: codes 2→3, composition 20→24, temporal 13→14.
+- Every non-equivalent mutant is killed; `role_pred` is the equivalent one.
+- W is clean.
+
+The round-4 closure brief went to reviewer `a14e0071943034a00` at about 11:00Z, on the same carrier. The #8002 body was refreshed to this head.
+
+**Relays owed to #7870.**
+- **R3-7** goes in Energy's next relay. The correction lineage names a rejected predecessor's revision. Robotics does the same at origin/main `:1295-1320`.
+- The S1 selector gap is already relayed (comment `5830625739`, 10:08Z).
+
+**Exact next actions.**
+1. When the lane finishes, run the post-lane gate:
+   - refs: base `6cd958e92b25`, the new head, not an ancestor of main;
+   - #8002 is still DRAFT, with no labels and a null autoMerge;
+   - the name-only diff is exactly 4 files;
+   - the byte diff against the seat's application is empty;
+   - the matrix passes;
+   - the lane report shows no push or label breach.
+2. Send the round-4 closure brief to reviewer `a14e0071943034a00` via SendMessage. Do not re-dispatch.
+3. After #8018 merges, the round-3 review, the rulings, the registration packet and this section ride one records PR.
+4. After #7870 merges:
+   - rebase #8002;
+   - open the registration carrier;
+   - add the evidence-route test only once check F shows the widened pattern on main;
+   - get served, browser and privacy proof;
+   - then Task 10 admission.
+5. The #8001 live rung stays behind the VPS pull hold (`# MMX-DISK-TRIAGE-HOLD`, #6902). That is an EXACT_HUMAN_GATE.
+6. Power-Demand stays preparation-only until nuclear is accepted (R-ENE-16).
+
+**do_not_redo.**
+- Do not re-run the round-3 review.
+- Do not re-litigate R3-3; it is equivalent.
+- Do not re-derive the round-4 test text; it is frozen in the ruling's "Binding text".
+- Do not hand-edit the lane's tests. If the byte gate fails, re-issue the same packet to the same branch.
+
+**danger_areas.**
+- `product="Synthetic fuel service",` appears twice in the helpers (X04 and X04B). The replacement is scoped to the X04 block.
+- A lane restoring X04's 1071dd9 text is a test-text change. It is not a fixture change under R-ENE-19.
+
+## 13. State 2026-09-25 ~12:10Z — round 4 ACCEPTED; round 5 delivered and closed FIX_REQUIRED on lineage; RULING 11 checked against nuclear's pins; round 6 in transcription
+
+**Round 4: ACCEPTED.**
+- The re-issued lane delivered `fa4ebadbb9fe`. The closure check by the same reviewer carrier (`a14e0071943034a00`) returned ACCEPT, with no new findings.
+- Record: `research/energy/nuclear_program/reviews/OPUS-REVIEW-2026-09-25-w2-module-r4-closure.md`.
+
+**Round 5: RULING 9 sites.**
+- #7870 RULING 9 (comment 5830798482, 10:20Z) named a family review-gate leak. The seat classified the nuclear sites as R-ENE-27..28 (`rulings/R-ENE-2026-09-25-w2-module-r5.md`).
+- Lane `ene_w2_nuclear_module_r5fix` delivered `b3ea8a19ea05f72ea610ca627c68ef1a5452dc3e`: one commit, two files, byte-identical to the seat's sim.
+- The closure check returned **FIX_REQUIRED** (`reviews/OPUS-REVIEW-2026-09-25-w2-module-r5-closure.md`):
+  - E1–E4 are correct;
+  - MAJOR: the correction lineage walks the raw bundle;
+  - MINOR: a malformed predecessor row turns evidence selection into a 503;
+  - NIT: identity vintage (relay).
+
+**RULING 11 (#7870 comment 5831714261, 11:34Z) reversed RULING 9 for Robotics only.** The owner asked Energy to check its composer against its own pins.
+- **R-ENE-30** (`rulings/R-ENE-2026-09-25-w2-module-r6.md`): nuclear pins the opposite contract. `test_review_gate_refuses_held_rejected_and_expired_evidence` makes a held, rejected or expired ref raise `not_available` (R-ENE-20). So R-ENE-27 stands on nuclear's own grounds.
+- The field `authorized_coverage` now means different things in nuclear and Robotics. That is relayed, not acted on.
+
+**Round 6: R-ENE-29.**
+- The lineage walks only what the selector serves (`selection.review_ok`). When a predecessor is not servable, the walk emits the pointer the last served record carries, then stops.
+- Packet `ene_w2_nuclear_module_r6fix`: three engine lines plus the new `tests/test_nuclear_research_lineage.py`.
+- Seat sim results:
+  - `80 passed`;
+  - red check `7 failed, 2 passed`;
+  - 39 mutants: 36 killed, 3 equivalent.
+- The lane was dispatched to m1 at 12:01Z.
+
+**Relays and merges.**
+- #7870 comment 5832062081 (12:04Z) covers:
+  - the RULING 11 check;
+  - the lineage finding as a scope-seam item, with the Robotics part reported as mechanism only;
+  - label binding (R-ENE-28);
+  - (6b) and the identity-vintage NIT.
+- #8016 (Power-Demand census) merged at 11:41:38Z (`b573b91f5c9c`).
+- #8018 (records for rounds 1–2) merged at 12:02:12Z (`0b413fe4d018`).
+- Main context: Robotics #7908 was reverted by #8013 at 11:01:34Z (`e5512ef66a74`).
+
+**Exact next actions.**
+1. Post-lane gate for `ene_w2_nuclear_module_r6fix`:
+   - the remote head's parent is `b3ea8a19ea05`, and there is one commit with the packet's message;
+   - the name-only diff is the 2 paths;
+   - both files are byte-identical to the seat sim (engine sha256 `cd2b4d2d594970e3…`, test `5f3a9ec9a24046b8…`);
+   - `80 passed` with the route executed;
+   - `matrix6.sh` gives 36 killed and 3 equivalent;
+   - pyflakes is clean;
+   - #8002 is still DRAFT, with no labels and a null auto-merge;
+   - main has no stray lane push.
+2. Send the round-6 closure brief to reviewer `a14e0071943034a00` via SendMessage, on the same carrier. Do not re-dispatch. Ask it to attack R-ENE-30 as well.
+3. Refresh the #8002 body to the round-6 head, keeping the HOLD first line and the attribution. The round-6 closure record rides the next records PR.
+4. After #7870 merges:
+   - rebase #8002;
+   - open the registration carrier per `REG-PACKET-2026-09-25-nuclear_power.md`;
+   - add the evidence-route test;
+   - get served, browser and privacy proof;
+   - then Task 10 admission.
+5. The #8001 live rung stays behind the VPS pull hold (`# MMX-DISK-TRIAGE-HOLD`, #6902). That is an EXACT_HUMAN_GATE.
+6. Power-Demand stays preparation-only (R-ENE-16).
+
+**do_not_redo.**
+- Do not reopen R-ENE-27 because of RULING 11. R-ENE-30 checked it against nuclear's pins.
+- Do not propose RBV-18-style retention for nuclear. The nuclear pin asserts the opposite, by design.
+- Do not re-run the round-4 or round-5 closure checks.
+- Do not re-derive the round-6 packet; the seat's sim (`r6gate/sim`) is the byte reference.
+
+**danger_areas.**
+- Any shell-level unification of `authorized_coverage` must choose one definition deliberately. Today nuclear means "records the selector serves" and Robotics means "retained evidence".
+- External lane fixers have broken push and merge prohibitions in other programs. After every lane, check both the remote branch and main.

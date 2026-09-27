@@ -1,6 +1,6 @@
 {
 "schema":"edgar.geo_revenue.v1",
-"updated":"2026-09-23T15:04:59.608785+00:00",
+"updated":"2026-09-27T03:08:01.057706+00:00",
 "by_ticker":{
 "AAPL":{
 "foreign_pct":63.5,
@@ -1421,11 +1421,11 @@
 ]
 },
 "CSCO":{
-"foreign_pct":46.3,
-"asof":"2025-07-26",
-"source":"10-K 2025-07-26",
-"fy":2025,
-"accession":"0000858877-25-000111",
+"foreign_pct":45.7,
+"asof":"2026-07-25",
+"source":"10-K 2026-07-25",
+"fy":2026,
+"accession":"0000858877-26-000132",
 "method":"us_member",
 "concept":"RevenueFromContractWithCustomerExcludingAssessedTax",
 "by_region":[
@@ -1433,7 +1433,7 @@
 "key":"US",
 "label":"US",
 "cls":"us",
-"pct":53.7
+"pct":54.3
 }
 ]
 },
