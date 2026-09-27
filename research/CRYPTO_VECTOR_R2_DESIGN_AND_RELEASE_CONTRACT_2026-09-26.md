@@ -211,3 +211,145 @@ Source commit `228f74d30b345dc60408e7be91a5c4a0027af5fa` adds `tests/test_vector
 Next source action is to consume the exact candidate's existing CI return, resolve actual failures on the same owned branch, and then prove the generated Vector chart-to-evidence path before wiring the saved-review/alert projections. Retain all earlier explicit denials and production gaps. The new native history/comparison/confirmation workflows are design-ready references for bounded integration, not evidence that those capabilities have shipped.
 
 Native housekeeping remains outstanding: builder board 05 still has the earlier eight-board references because its refresh was refused before dispatch with DOCUMENT_CHANGED during concurrent edits on the unrelated active page. The attempt to release our working indicators on boards 09–11 was also refused before dispatch; release is not confirmed. All three completed new boards were nevertheless read back in the eleven-root page tree and visually reviewed. The current source contract and Agent OS decision contain the updated handoff. Do not bypass the document guard, change the active page or repeat the completed writes; revisit the deferred reference refresh and indicator release only after evidenced stabilization or a relevant adapter/environment change.
+
+
+## Extra High continuation — Crypto deepening study (NOT_APPLIED_TO_PAPER)
+
+Protected Mastermind law pin for this continuation: `fda6ed3911cdda24eb63b2ccbe1b174121cf404f`; INDEX blob remains `94d1af402598894372858793a5b1931019c5fa77`, Skillpack 1.0.1 / bootstrap major 1. Paper Desktop remains the intended editable design owner, but this turn's first write was refused before dispatch by the guarded adapter with `UPSTREAM_SCHEMA_UNREVIEWED`. The observed Paper server is `paper-desktop 0.5.12` with catalog SHA-256 `8cd27488a3adfc19c6c36d4349b75feebc71c159253c47f8a0f8d50c27043deb`; the currently accepted write pin still expects `ca90a537ee97f3e371ac945a8a3b9a928ba7fac9ffaeb67e31491075a0790570`. `accepted_for_write=false`. No Paper mutation from this continuation executed. Do not bypass the guard through another carrier or treat this preview as applied canvas state.
+
+Current PR #8050 remains open/draft at `1d02bee8714087d7020b0c981d22caaa68a6a6da` before the records-only return below. Crypto production paths remain collision-held by open #7645 (`74298e32bbbbc7f00884ece259455b9bbe46fd6f`) and shared theme by open #7849 (`8edbb0b918be014ee206a24212884d035059e2f1`). This continuation therefore advanced the independent product/design lane only and did not touch those implementation paths.
+
+### Supporting visual study
+
+Because the Paper lane has an exact schema-pin blocker with `EFFECT_NONE`, a standalone visual study was created on the authorized M2 Studio carrier as supporting evidence only:
+
+- `/Volumes/Mastermind/research/crypto-vector-r2-20260926-sol-001/crypto_deepening_preview.html`
+- `crypto_deepening_market-pulse_r3.png`
+- `crypto_deepening_asset-explorer_r2.png`
+- `crypto_deepening_capital-leverage_r3.png`
+
+These files are `NOT_APPLIED_TO_PAPER` and are not production UI. They were rendered with local authored HTML bytes and visually inspected. No remote asset, provider API, production endpoint, live alert or financial write is involved.
+
+### Crypto product hierarchy — simple first read, expert depth on demand
+
+The page should answer one market-level question before naming individual winners:
+
+**Is participation actually broadening beyond Bitcoin?**
+
+The proposed first-read headline is **“Broadening—still selective.”** It is intentionally stronger than a generic “mixed market” label but narrower than “altseason” or “broad rally.” It is supported by separate observable dimensions rather than a blended score:
+
+1. **Breadth** — share/count of an eligible universe above a stated trend definition, e.g. 50-day average.
+2. **Relative leadership** — share/count of the same qualified universe gaining value against Bitcoin over the same window.
+3. **Bitcoin market share** — reported market-value share, with its own source and clock.
+4. **Capital** — spot ETF / stablecoin / other qualified flow observations, each on its actual reporting clock.
+5. **Leverage** — venue-qualified open interest, funding/basis and liquidations, explicitly partial when coverage is incomplete.
+
+These are different questions. Do not fuse them into a proprietary “crypto score” merely to create a simpler dashboard. Simplicity comes from the headline and hierarchy; analytical truth stays inspectable.
+
+The initial prototype incorrectly overlaid breadth, leadership and Bitcoin share on a shared-looking vertical scale. Visual review identified that as misleading. The corrected preview uses three vertically aligned but independently scaled panes with a shared time window. Apply the same law to capital: ETF cumulative flows and stablecoin supply changes use separate panes/scales even when both are dollar quantities. Do not imply additive or causal equivalence.
+
+### Market Pulse — intended Paper board 12 after write gate recovery
+
+Job: in five seconds, a user should know whether participation is broadening, whether relative leadership confirms it, and whether Bitcoin still dominates the market structure.
+
+Visual grammar:
+- quiet shared shell and one declarative headline;
+- one large three-pane instrument, not a grid of KPI cards;
+- direct right-edge labels and sparse grid lines;
+- a small **What changed since your review** rail that compares only qualified like-for-like fields;
+- one next action: **Investigate relative leaders**;
+- supporting definitions below the instrument, not inside the headline.
+
+The illustrative example uses 31/50 eligible assets above their 50-day average, 12/50 outperforming Bitcoin over the same 8-week window, and Bitcoin market share 58.6%. Those numbers are design fixtures, not market evidence.
+
+Market Pulse state rules:
+- breadth may remain available when a relative-return provider is missing;
+- leadership is unavailable if the BTC basis, asset history or same-window denominator is invalid;
+- Bitcoin share is independent and may remain available when breadth fails;
+- a changed universe membership requires a comparable-universe disclosure; do not treat count changes from membership edits as market participation;
+- “since your review” requires a real saved baseline; first visit says there is no baseline;
+- source revision is not a market change.
+
+### Asset Explorer — intended Paper board 13 after write gate recovery
+
+Job: move from “the market is broadening” to “which assets are worth researching next?” without presenting a recommendation or opaque ranking.
+
+The visual study uses a **Strength × confirmation** research map:
+- x-axis = qualified relative price-ratio change versus the selected basis (default BTC in the example);
+- y-axis = spot-volume participation relative to an explicitly stated historical median;
+- bubble size = qualified liquidity only when the liquidity measure is supported and comparable;
+- directly labeled assets; no color-coded buy/sell categories.
+
+Top-right means stronger relative price ratio with stronger spot participation **in the same window**. It does not mean expected upside, “best coin,” or portfolio suitability.
+
+A side **Research queue** explains why an asset appears: relative trend, volume confirmation, liquidity qualification and event check. The queue is explainable and removable field-by-field; no hidden composite score.
+
+Eligibility contract:
+- same dates / basis / return definition / native asset identity;
+- stablecoins, wrapped assets and short-history observations excluded or separately classified;
+- corporate actions, token migrations, rebases, redenominations and suspicious decimal histories require review before ranking;
+- implausible values remain inspectable as evidence but cannot lead the map or queue;
+- liquidity and volume sources must be rights-qualified and use compatible asset/venue definitions;
+- user can switch BTC/USD basis and window without silently changing the eligible universe; if the universe changes, say so.
+
+The existing live-audit DARK/POLYDOGE anomalies remain concrete reasons this qualification layer is a release requirement.
+
+### Capital & Leverage — intended Paper board 14 after write gate recovery
+
+Job: answer **Is capital entering, and is leverage becoming dangerous?** without collapsing spot demand and derivatives positioning into one sentiment label.
+
+Proposed first-read headline: **“Spot demand improves. Leverage view is partial.”**
+
+Two separate capital panes:
+- US spot Bitcoin ETF net flow on its reported-session clock;
+- stablecoin circulating-supply change on its stated 30-day clock.
+
+These panes can appear together because they address capital conditions, but they must not share a value scale, be numerically added, or be called one capital score.
+
+Leverage rail:
+- open interest with venue count and observation window;
+- funding/basis with its actual venue coverage;
+- liquidations with venue coverage and period;
+- explicit `Unavailable` / `Delayed` states.
+
+If open interest rises while funding is missing, the UI may say **“open interest increased on measured venues; trader direction remains unresolved.”** It must not infer crowded longs, bullish leverage or bearish leverage from OI alone.
+
+Venue coverage is a first-class object:
+- enumerate included/excluded venues;
+- show delayed/partial/unavailable per field;
+- do not mix venue sets silently across OI/funding/liquidations;
+- do not backfill a missing venue with zero;
+- if a venue's contract specification changes, invalidate only dependent comparability.
+
+### Connected workflow and feature expansion
+
+The deeper Crypto experience should become:
+
+**Market Pulse → Asset Explorer → Asset Detail → Capital & Leverage → Events → Save review → Compare later**
+
+Recommended next qualified design after boards 12–14:
+- **Asset Detail / SOL**: synchronized SOL/USD and SOL/BTC, spot participation, qualified liquidity, upcoming Event Intelligence events, supporting/counter evidence and source sheet.
+- **Events**: sourced unlocks/upgrades/governance/macro events using existing Event Intelligence ownership; asset impact is a research link, not an LLM-generated prediction.
+- **Ask Mastermind**: citations bound to the currently selected asset/snapshot/evidence; it explains observations and counterevidence but cannot originate allocation authority.
+
+### Hardening gates for boards 12–14
+
+Required adversarial release cases, not tests executed in this visual study:
+
+- 0 eligible assets because of data failure versus a real 0/50 breadth result;
+- changed universe membership between saved baseline and current review;
+- BTC benchmark missing while USD returns are valid;
+- token migration/redenomination causing a false extreme return;
+- volume source stale while price remains fresh;
+- liquidity source partial or rights-denied;
+- ETF flow publication delayed while stablecoin supply is current;
+- OI available with funding missing;
+- venue sets differ across leverage metrics;
+- switch BTC → USD basis while one asset lacks sufficient history;
+- search/filter produces an empty qualified universe;
+- rapid window/basis changes return responses out of order;
+- source correction after a saved review;
+- 320/390/768/1440 with long EN/ZH asset/source labels;
+- keyboard/touch selection of an asset reproduces the same inspector values as pointer selection.
+
+Production readiness still requires these cases in existing canonical test/browser owners, real data, real route proof and user-task completion. The supporting preview does not satisfy those gates.
