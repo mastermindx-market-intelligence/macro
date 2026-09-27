@@ -1166,10 +1166,11 @@ _YIELD_MOMENTUM_TENOR_FIELDS = (
 def _build_yield_momentum_block(root: Path) -> dict:
     """Display-only consumer of the rates program's yield_momentum organ.
 
-    Reads `data/transmission/latest.json` -> top-level `yield_momentum` and emits
-    an additive block beside (never replacing) `interim_tlt`. Display-only / not
-    validated: never touches forward ledger, credit legs, K-of-N tags, theme
-    tags, or any score.
+    Reads `transmission/latest.json` (data-root relative; `snapshot()`'s `_root`
+    is the data root — `<repo>/data` — not the repo root) -> top-level
+    `yield_momentum` and emits an additive block beside (never replacing)
+    `interim_tlt`. Display-only / not validated: never touches forward ledger,
+    credit legs, K-of-N tags, theme tags, or any score.
 
     Invariants (RIC F3 W3):
       - block is byte-identical for the same artifact (deterministic, no clock).
@@ -1191,7 +1192,7 @@ def _build_yield_momentum_block(root: Path) -> dict:
         "null_reasons": [],
     }
 
-    artifact_path = root / "data" / "transmission" / "latest.json"
+    artifact_path = root / "transmission" / "latest.json"
     try:
         with open(artifact_path) as fh:
             artifact = json.load(fh)

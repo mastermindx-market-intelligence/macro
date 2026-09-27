@@ -169,10 +169,17 @@ tests/test_credit_momentum_yield_consumer.py: >-
   RIC F3 W3 display-only consumer packet (MAS-245, parent macro#6819): asserts
   credit_momentum._build_yield_momentum_block mirror of data/transmission/latest.json
   ::yield_momentum, authority=False isolation from tags/credit_market_turn, no
-  ledger mint, no clock reads, determinism. The test exercises an engine consumer
-  via tmp_path fixtures; no engine/scripts subject owns the file, and listing it in
-  .github/ci/legacy-jobs.yml is a global CI invalidator for a single-additive
-  consumer packet. Run directly via `python -m pytest
+  ledger mint, no clock reads, determinism, and the data-root-relative
+  artifact read (snapshot()'s `_root` IS the data root, per `_data_root` and
+  the `--root` CLI doc "data root override"). The subject IS owned by CI job
+  ccw-w3-credit-momentum at .github/ci/legacy-jobs.yml:8199, whose run step
+  at .github/ci/legacy-jobs.yml:8232 already names
+  tests/test_credit_momentum.py (the parent file); that job is disabled by
+  `if: ${{ false }}` at .github/ci/legacy-jobs.yml:8200, so the new suite
+  would not run even if appended to the run step. Lane law for this packet
+  forbids editing .github/ (the seat ratifies and merges), so wiring the
+  suite into the disabled job OR enabling the job OR commissioning a new
+  step is escalated to the seat. Run directly via `python -m pytest
   tests/test_credit_momentum_yield_consumer.py -q` in CI triage / local
   verification. Owner: WS:RIC-F3 (CEO A, claude/ric-f3-w3-yield-consumer-20260927).
-  Delete this row if a credit_momentum-consumer CI step is ever commissioned.
+  Delete this row when the seat wires the suite into an enabled CI step.

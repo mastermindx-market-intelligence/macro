@@ -36,8 +36,12 @@ _FIXTURE_PATH = Path(__file__).parent / "fixtures" / "transmission" / "yield_mom
 
 
 def _install_artifact(root: Path, fixture: Path | None = _FIXTURE_PATH) -> None:
-    """Drop a `data/transmission/latest.json` into the synthetic root."""
-    dest = root / "data" / "transmission" / "latest.json"
+    """Drop a `transmission/latest.json` into the synthetic root.
+
+    The credit_momentum snapshot's ``_root`` is the data root, so the consumer
+    reads ``_root / "transmission" / "latest.json"`` (no ``data/`` prefix).
+    """
+    dest = root / "transmission" / "latest.json"
     dest.parent.mkdir(parents=True, exist_ok=True)
     if fixture is None:
         return
@@ -46,7 +50,7 @@ def _install_artifact(root: Path, fixture: Path | None = _FIXTURE_PATH) -> None:
 
 def _build_all_null_artifact(root: Path) -> None:
     """Write an all-null yield_momentum artifact (every tenor null)."""
-    dest = root / "data" / "transmission" / "latest.json"
+    dest = root / "transmission" / "latest.json"
     dest.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "yield_momentum": {
@@ -298,3 +302,55 @@ def test_no_clock_read_in_new_function_source() -> None:
     assert "date.today" not in src
     assert "time.time()" not in src
     assert "datetime." not in src  # no datetime import either
+
+
+# ---------------------------------------------------------------------------
+# Test 8 — RED-first production root convention (data-root relative path)
+# ---------------------------------------------------------------------------
+
+def test_snapshot_consumes_artifact_at_data_root_relative_path(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """``snapshot()``'s ``_root`` IS the data root (per ``_data_root`` and the
+    ``--root`` CLI doc "data root override"), so the consumer MUST read
+    ``_root / "transmission" / "latest.json"`` — not ``_root / "data" /
+    "transmission" / "latest.json"`` (which would resolve to the nonexistent
+    ``data/data/transmission/latest.json`` on a real data-root invocation).
+
+    RED on the previous head (state was always "accruing" because the buggy
+    path resolved to a missing file). GREEN once the BLOCKER path is fixed.
+    """
+    # Install the fixture at the data-root-relative location the production
+    # function reads from AFTER the fix.
+    _install_artifact(tmp_path)
+    fixture = _read_fixture_payload()["yield_momentum"]
+
+    # Run snapshot() with the synthetic root standing in for the data root.
+    # ``_upsert_forward_log`` is monkey-patched to a no-op so the test never
+    # touches the real forward log; everything else degrades gracefully on
+    # missing inputs (per snapshot()'s contract).
+    import engine.credit_momentum as cm
+
+    monkeypatch.setattr(cm, "_upsert_forward_log", lambda *_a, **_kw: 0)
+
+    snapshot_payload = cm.snapshot(root=tmp_path)
+
+    ym_block = snapshot_payload.get("yield_momentum")
+    assert ym_block is not None, (
+        "snapshot() did not emit a yield_momentum block — block is "
+        "additive and must always be present in the output assembly"
+    )
+    assert ym_block["state"] == "live", (
+        f"yield_momentum block must be 'live' when the artifact resolves at "
+        f"the data-root-relative path; got {ym_block.get('state')!r} "
+        f"(note={ym_block.get('note')!r}). This means the consumer is "
+        f"reading the wrong path and the live organ is invisible."
+    )
+    # Five tenor blocks present, mirroring the fixture's five series
+    tenors = ym_block["tenors"]
+    assert list(tenors.keys()) == ["2y", "5y", "10y", "20y", "30y"]
+    # Live tenor: 2y as_of is the per-series last-captured-source-row date
+    # from the fixture (NOT the frame date).
+    live_2y = fixture["series"]["2y"]
+    assert tenors["2y"]["as_of"] == live_2y["as_of"]
+    assert tenors["2y"]["velocity_bp"] == live_2y["velocity_bp"]
