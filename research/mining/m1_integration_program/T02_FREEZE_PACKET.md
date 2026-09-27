@@ -80,6 +80,38 @@ Seat additions, each aimed at a defect this program has actually shipped:
   by the two-event distinctness test. If it survives, the distinctness test is decorative.
 - **(e)** drop the sign in `parse_mining_literal` (return `+20296.0`). Must be killed — a
   sign-only mutant is the cheapest possible real defect.
+**STRUCTURAL PRECONDITION (added 2026-09-27, measured on `origin/main`) — this packet's
+oracle describes the POST-#7905 shape, which does not exist yet.** §3's
+`profile_for_ticker("FCX")` row and mutant (d) both speak of a *private branch* that requires
+`fiscal_scope` and raises `ValueError`, and of a *public branch* to mutate. On main there is
+neither:
+
+- `def profile_for_ticker(ticker: str) -> IssuerProfile | None:` at
+  `engine/company_intelligence/issuer_profiles.py:1293` — the **only** definition of the name.
+- `fiscal_scope` occurs **zero** times in that file; the body contains **zero** `raise`
+  statements. An unknown ticker returns `None`, it does not raise.
+- There is no private/public split: an `AAPL` special case, then
+  `_HOMEBUILDER_PROFILE_FACTORIES.get(normalized)` (dict literal at `:1272`; the identity twin
+  `_HOMEBUILDER_ISSUER_FACTORIES` at `:128`).
+- **There is no registration seam** — no `register_profile()`, no plugin hook. Both dicts are
+  module-level literals, and `__all__` at `:1307` enumerates every exported symbol by hand.
+
+So this is a precondition, not a defect in the packet: **#7905 introduces the branch split and
+T02 appends into it.** Two consequences bind a lane.
+
+1. **If `fiscal_scope` is still absent from `issuer_profiles.py`, #7905 has not landed and T02 is
+   NOT dispatchable.** That is the cheapest lawful check of the gate, and it reads `main` — never
+   #7905, which must not be polled. Do not build the private/public split yourself: that is
+   #7905's hunk in a shared file its incumbent owns, and doing it here violates this program's
+   own landmine about shared files being touched only at named seams.
+2. **Do not put `"FCX"`/`"MP"` into a dict named `_HOMEBUILDER_*`.** That is the wrong-but-easy
+   move the current shape invites. Mining's tickers belong in Mining's own factory mapping, with
+   `profile_for_ticker` consulting it — the same pattern #7905 establishes for consumer
+   defensive. Expect a conflict at all four sites (`:128`, `:1272`, the two `*_for_ticker`
+   bodies, `__all__`) whenever a sibling sector program lands first: this shared dispatcher is
+   the `legacy-jobs.yml` append-LAST problem expressed in Python, so re-fetch `origin/main` and
+   re-diff before pushing, and a conflict there usually means a sibling already landed.
+
 **Symbol note (added 2026-09-27, measured against `origin/main`):** neither
 `MINING_PRIVATE_RIGHTS_PROFILE` nor `DISCOVERY_TICKERS` resolves anywhere in `engine/`, `tests/`
 or `contracts/`, and both misses are CORRECT — T02 mints the first, and the second is held for

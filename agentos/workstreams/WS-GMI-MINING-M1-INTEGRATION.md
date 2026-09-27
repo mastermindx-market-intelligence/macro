@@ -61,6 +61,12 @@ next_action: >
   never polled, never watched. What #7950's merge actually unblocked was this program's records
   lane, deferred only because tabling a ruling required a push to #7950 while its proof was in
   flight.
+  CHECK THE T02 GATE AGAINST MAIN, NEVER AGAINST #7905: if `fiscal_scope` does not appear in
+  engine/company_intelligence/issuer_profiles.py, #7905 has not landed and T02 is not
+  dispatchable. Measured 2026-09-27 - it occurs ZERO times, and profile_for_ticker at :1293 has
+  no private/public branch and cannot raise, so T02's own truth table describes the POST-#7905
+  shape. A T02 lane must NOT build that split itself; it is #7905's hunk in a shared file its
+  incumbent owns.
   The next four tasks have SEAT-AUTHORED freeze packets committed beside the rulings
   (T02/T03/T04b/T07 _FREEZE_PACKET.md), so no lane needs to re-derive a spec. T04b's packet is
   seat-authored of necessity: neither audit ever froze a T04b spec, because Audit B wrote ONE
