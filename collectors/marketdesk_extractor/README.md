@@ -15,7 +15,7 @@ workflow remains the correction backstop.
 
 - Recovery operation: `research-vault-source-lineage-r1-20260914-sol-001`
 - Source issue: `mastermindx-market-intelligence/Mastermind#631`
-- Accepted import commit: `31981dc66e9a37419b5b7a6aecfde28808785d03`
+- Accepted import commit: `31981dc426f2e7fbb2b333f0fd73789f21deb8cd`
 - Recovery packet: `research-vault-recovery-source-20260914-v3.tar.gz`
 - Packet SHA-256: `2019c38650493e4cfa40f7ed87c175a91ea939ca57d1f404ec73c5572c340e7a`
 - Frozen recovery manifest: `RECOVERY_SHA256SUMS`
