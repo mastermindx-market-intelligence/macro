@@ -2372,9 +2372,9 @@ html[data-lang="zh"] .sb-tx b{letter-spacing:0}
    face; mono is reserved for ticker codes (.sb-tickers-code). */
 .ha-what ~ .ha-foot,.ha-edge ~ .ha-foot{margin-top:9px;padding-top:8px;border-top:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
 .ha-what ~ .ha-foot .ha-read,.ha-edge ~ .ha-foot .ha-read{font-size:11.5px;color:var(--muted)}
-.al-more{display:block;text-align:center;padding:11px 0 6px;font-size:12.5px;font-weight:700;color:var(--link);text-decoration:none}
+.al-more{display:block;min-height:40px;text-align:center;padding:11px 0 6px;font-size:12.5px;font-weight:700;color:var(--link);text-decoration:none}
 .al-more:hover{text-decoration:underline}
-.ha-toggle{display:block;width:100%;background:none;border:none;border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent);padding:9px 0;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--link);cursor:pointer;text-align:center}
+.ha-toggle{display:block;width:100%;min-height:40px;background:none;border:none;border-top:1px solid color-mix(in srgb,var(--line) 70%,transparent);padding:9px 0;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--link);cursor:pointer;text-align:center}
 .ha-toggle:hover{text-decoration:underline}
 .ha-toggle .ha-t-less{display:none}
 .ha-toggle.open .ha-t-more{display:none}
@@ -2537,6 +2537,7 @@ html.soft-contrast[data-theme="dark"]{--bg:#0d1018;--panel:#151820;--panel2:#1b1
  background:color-mix(in srgb,var(--panel) 70%,transparent);border:1px solid var(--line);border-radius:999px;padding:3px 9px;
  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 .gd-leg:hover{border-color:color-mix(in srgb,var(--accent,var(--info)) 55%,var(--line))}
+@media(max-width:560px){.gd-leg{min-height:40px;box-sizing:border-box}}
 .gd-leg .dot{width:7px;height:7px;border-radius:50%}
 .gd-leg.q1 .dot{background:var(--q1)} .gd-leg.q2 .dot{background:var(--q2)} .gd-leg.q3 .dot{background:var(--q3)} .gd-leg.q4 .dot{background:var(--q4)}
 .gd-leg .l-zh{display:none} html[data-lang="zh"] .gd-leg .l-en{display:none} html[data-lang="zh"] .gd-leg .l-zh{display:inline}
@@ -2701,9 +2702,9 @@ html[data-theme="light"] .gd-scroll{background:color-mix(in srgb,var(--panel) 62
 /* ===== mobile segmented toggle ===== */
 .hub-seg{display:none}
 @media(max-width:560px){
-.hub-seg{position:relative;display:flex;height:40px;margin:2px auto 14px;max-width:340px;background:color-mix(in srgb,var(--panel) 85%,transparent);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);border-radius:12px;padding:3px;box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 5%,transparent)}
+.hub-seg{position:relative;display:flex;height:48px;margin:2px auto 14px;max-width:340px;background:color-mix(in srgb,var(--panel) 85%,transparent);border:1px solid color-mix(in srgb,var(--line) 70%,transparent);border-radius:12px;padding:3px;box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 5%,transparent)}
 .hub-seg-ind{position:absolute;top:3px;left:3px;width:calc(50% - 3px);height:calc(100% - 6px);border-radius:9px;background:color-mix(in srgb,var(--info) 15%,var(--panel2));border:1px solid color-mix(in srgb,var(--info) 30%,transparent);box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 8%,transparent),0 0 8px color-mix(in srgb,var(--info) 12%,transparent);transition:transform .22s cubic-bezier(.4,0,.2,1);pointer-events:none}
-.hub-seg-btn{flex:1;background:none;border:none;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--muted);border-radius:9px;cursor:pointer;position:relative;z-index:1;transition:color .18s}
+.hub-seg-btn{flex:1;min-height:40px;background:none;border:none;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--muted);border-radius:9px;cursor:pointer;position:relative;z-index:1;transition:color .18s}
 .hub-seg-btn:focus-visible{outline:2px solid var(--link);outline-offset:2px}
 .hub-seg-btn.on{color:var(--info);font-weight:700}
 .hub-views[data-view="vc"] .hub-seg-ind{transform:translateX(100%)}
