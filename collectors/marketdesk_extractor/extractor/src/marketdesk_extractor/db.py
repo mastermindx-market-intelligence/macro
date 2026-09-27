@@ -9,6 +9,7 @@ NULL) coexist fine.
 """
 from __future__ import annotations
 
+import json
 import sqlite3
 from datetime import datetime as _datetime, timedelta as _timedelta, timezone as _timezone
 from pathlib import Path
@@ -30,6 +31,7 @@ CREATE TABLE IF NOT EXISTS papers (
     published_at          TEXT,
     marketdesk_age_text   TEXT,
     marketdesk_summary    TEXT,
+    breadcrumb            TEXT,
     local_priority_score  INTEGER,
     sha256                TEXT UNIQUE,
     page_count            INTEGER,
@@ -63,7 +65,7 @@ CREATE TABLE IF NOT EXISTS meta (
 # columns callers may update via update_fields()
 _UPDATABLE = {
     "title", "institution", "published_at", "marketdesk_age_text",
-    "marketdesk_summary", "local_priority_score", "sha256", "page_count", "parser",
+    "marketdesk_summary", "breadcrumb", "local_priority_score", "sha256", "page_count", "parser",
     "pdf_filename", "markdown_filename", "metadata_filename", "r2_pdf_key",
     "r2_markdown_key", "r2_metadata_key", "dropbox_pdf_path", "vault_key",
     "vaulted_at", "status", "account",
@@ -77,6 +79,7 @@ _MIGRATION_COLUMNS: dict[str, str] = {
     "vault_key": "TEXT",   # Research Vault sidecar id (marketdesk-<blob_id>) once published
     "vaulted_at": "TEXT",  # ISO timestamp of the successful vault publish
     "account": "TEXT",     # which trickle account downloaded this paper (rolling-ledger key)
+    "breadcrumb": "TEXT",  # JSON list of source-native MarketDesk path names
 }
 
 
@@ -160,16 +163,18 @@ def upsert_discovered(conn: sqlite3.Connection, meta: ArticleMeta) -> tuple[int,
     Idempotent: re-discovering an existing paper refreshes light metadata
     (title/summary/age/score) but never regresses its ``status``.
     """
+    breadcrumb = json.dumps(meta.breadcrumb, ensure_ascii=False) if meta.breadcrumb else None
     existing = get_by_blob_id(conn, meta.blob_id)
     if existing is not None:
         conn.execute(
             "UPDATE papers SET title=?, institution=?, marketdesk_age_text=?, "
             "marketdesk_summary=COALESCE(?, marketdesk_summary), "
+            "breadcrumb=COALESCE(?, breadcrumb), "
             "local_priority_score=COALESCE(?, local_priority_score), "
             "updated_at=CURRENT_TIMESTAMP WHERE blob_id=?",
             (
                 meta.title, meta.institution, meta.marketdesk_age_text,
-                meta.marketdesk_summary, meta.local_priority_score, meta.blob_id,
+                meta.marketdesk_summary, breadcrumb, meta.local_priority_score, meta.blob_id,
             ),
         )
         conn.commit()
@@ -178,12 +183,12 @@ def upsert_discovered(conn: sqlite3.Connection, meta: ArticleMeta) -> tuple[int,
     published = meta.published_at.isoformat() if meta.published_at else None
     cur = conn.execute(
         "INSERT INTO papers (article_url, blob_url, blob_id, title, institution, "
-        "published_at, marketdesk_age_text, marketdesk_summary, local_priority_score, "
+        "published_at, marketdesk_age_text, marketdesk_summary, breadcrumb, local_priority_score, "
         "status, discovered_at, updated_at) "
-        "VALUES (?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)",
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)",
         (
             meta.article_url, meta.blob_url, meta.blob_id, meta.title, meta.institution,
-            published, meta.marketdesk_age_text, meta.marketdesk_summary,
+            published, meta.marketdesk_age_text, meta.marketdesk_summary, breadcrumb,
             meta.local_priority_score, Status.DISCOVERED.value,
         ),
     )
