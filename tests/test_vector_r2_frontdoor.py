@@ -43,3 +43,25 @@ def test_r2_frontdoor_removes_decorative_shelf_rail() -> None:
 
     assert ".shelf::before{display:none}" in source
     assert ".shelf-kicker{display:none}" in source
+
+
+def test_r2_suites_are_invoked_by_the_existing_vector_ci_owner() -> None:
+    """Files on disk are not a gate: require the packed Vector pytest command."""
+    import shlex
+    import yaml
+
+    manifest = yaml.safe_load((ROOT / ".github/ci/legacy-jobs.yml").read_text(encoding="utf-8"))
+    job = manifest["jobs"]["unrun-vector-dsr"]
+    required = {
+        "tests/test_vector_wave1.py",
+        "tests/test_vector_r2_data_boundary.py",
+        "tests/test_vector_r2_frontdoor.py",
+    }
+    for step in job["steps"]:
+        command = shlex.split(step.get("run", ""))
+        if command[:3] == ["python", "-m", "pytest"] and required.issubset(command):
+            assert "if" not in step, "Vector regression invocation must not be conditional"
+            assert not step.get("continue-on-error", False), "Regressions must fail the step"
+            break
+    else:
+        raise AssertionError("R2 regressions are not invoked by the existing Vector CI owner")

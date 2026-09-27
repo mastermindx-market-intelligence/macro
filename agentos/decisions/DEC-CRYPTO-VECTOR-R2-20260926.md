@@ -150,3 +150,18 @@ Boundary: the requested Pro design/refinement chunk has produced reviewed native
 Exact next action: read this cumulative record and the current PR #8050 head, reconcile the current existing CI registration owner against the two unenrolled R2 tests, then consume exact-head CI and repair remaining failures in the same owned branch. After required capability/permission checks, prove the generated Vector route and chart-to-evidence interaction at 390/768/1440, EN/ZH and both themes. The denied local tests/static/readout/PR-body actions remain fenced; a new turn or mode is not retry permission. The source/feature contract lists remaining native-design mismatches explicitly.
 
 Resume surface: Pro for CI/source adjudication and product review, as currently requested. Reassess a concrete permitted execution surface only when the next build/browser action requires it; do not infer capabilities from the mode name. No worker, watcher or automatic future session was started. Sol remains accountable; accepted P0A and existing snapshot/chart/alert owners must not be rebuilt.
+
+## Expansion and hardening — current continuation
+
+The Chairman praised the reviewed R2 pass and explicitly continued expansion/hardening. This endorses continuing the visual direction; it does not waive source, usability or production gates. Protected Mastermind remains `4c6b206d3fb7fbc6d077faf61ae361bedf259925`, INDEX `94d1af402598894372858793a5b1931019c5fa77`, Skillpack 1.0.1/bootstrap 1. Same Sol operation, M2 Studio Direct carrier, owned sparse branch and Paper p-R-0; no worker or watcher started. Direct source repair is CRITICAL_PATH_SHORTCUT; native interaction design remains PRINCIPAL_JUDGMENT.
+
+Reconciled PR #8050 at `5a381634787610eaf99ea2f8ff12729f65df021d` against the clean same-carrier workspace. Fences run `36289883594` completed successfully. CI `36289883729` was still running, with contract-delta job `108537811923` failed. GitHub CLI refused log display while the parent run was in progress; no new error details or passing result were inferred.
+
+CI registration custody is now resolved at the changed-region level: #8041 head `39618e255cbd9d434651091c493ccf80d4b3864f` changes only the design-governance invocation around line 6660. Our repair changes only the existing unrun-vector-dsr pytest invocation around line 11230, whose bytes match observed main `de82839b9bea319b2ca4112808b1d6bacdc0ff4a`. No #8041 job region, dependency, job identity, timeout, gate or runner was changed.
+
+The same existing Vector invocation now names both R2 suites and previously unenrolled `tests/test_vector_wave1.py`. A regression in the R2 frontdoor suite checks that the actual existing pytest step invokes all three without a conditional or ignored failure. Local tests remain denied and were not attempted; this is source-enrollment candidate evidence, not test success. Existing automatic PR CI remains the execution owner.
+
+Next material local phase: extend native R2 through historical decision inspection and saved-review change comparison, with as-available versus revised history, dependent-only degradation and explicit save/alert effect states. Keep unrelated active Paper pages, shared tokens and #7645/#7849 production paths untouched. Production implementation still owes the earlier route, null-readout, real-series, H5 and acceptance gates. No pending modifying effect is known EFFECT_UNKNOWN.
+
+MISSION_COMPLETE: false
+This is the working checkpoint before further native design effects; the later readback of this same section must cover those effects before a final continuation boundary.
