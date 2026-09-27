@@ -2899,6 +2899,7 @@ def _tool_run_chart_detection(params: dict) -> dict:
 
 def _flat_command(
     result: dict, *, batch_id: str | None = None, seq: int | None = None,
+    target: dict | None = None,
 ) -> dict:
     """Build the client wire command from a validated tool result.
 
@@ -2914,6 +2915,14 @@ def _flat_command(
         flat["on"] = True
         flat["batch_id"] = batch_id
         flat["seq"] = seq
+        if _chart_command_requires_target(result):
+            if target is None:
+                raise ValueError("targeted v2 chart command requires host target")
+            flat["target"] = target
+        elif target is not None:
+            # The host may attach an equality precondition to a future non-destructive
+            # operation, but the model never supplies this field through _tool_chart_command.
+            flat["target"] = target
     return flat
 
 
@@ -3241,6 +3250,73 @@ def get_chart_state(user_id: str, client: str, origin_id: str = "") -> dict | No
     """Backward-compatible session-only read; origin defaults to the legacy empty mount."""
     rec = get_chart_state_record(user_id, client, origin_id=origin_id)
     return rec.get("session") if rec else None
+
+
+_CHART_COMMAND_TARGET_SCHEMA = "chart.command_target.v1"
+
+
+def _chart_command_requires_target(result: object) -> bool:
+    """Only the two non-destructive edit extensions require exact target identity."""
+    if not isinstance(result, dict) or result.get("v") != 2:
+        return False
+    args = result.get("args")
+    args = args if isinstance(args, dict) else {}
+    return (
+        result.get("op") == "chart.set_indicators" and args.get("mode") == "patch"
+    ) or (
+        result.get("op") == "ai.clear" and "ids" in args
+    )
+
+
+def _chart_command_target_for_result(
+    user_id: str,
+    origin_id: str,
+    context_revision: int | None,
+    result: object,
+) -> dict | None:
+    """Author an equality precondition from the existing exact chart-state owner.
+
+    This never trusts model/tool input for identity. A stale/missing revision or malformed
+    pane/symbol/timeframe fails closed; Terminal re-checks the same target immediately
+    before queued execution, covering the race after this server snapshot.
+    """
+    if not _chart_command_requires_target(result):
+        return None
+    origin = _chart_origin_id(origin_id)
+    if (
+        not origin
+        or not isinstance(context_revision, int)
+        or isinstance(context_revision, bool)
+        or context_revision < 0
+    ):
+        return None
+    record = get_chart_state_record(user_id, "terminal", origin_id=origin)
+    if not record or record.get("context_revision") != context_revision:
+        return None
+    session = record.get("session")
+    if not isinstance(session, dict):
+        return None
+    pane_id = session.get("pane_id")
+    symbol = session.get("symbol")
+    tf = session.get("tf")
+    if (
+        not isinstance(pane_id, int) or isinstance(pane_id, bool) or pane_id < 0
+        or not isinstance(symbol, str) or not symbol or len(symbol) > 64
+        or not isinstance(tf, str) or not tf or len(tf) > 32
+    ):
+        return None
+    if symbol.strip() != symbol or tf.strip() != tf:
+        return None
+    if any(ord(ch) < 32 or ord(ch) == 127 for ch in symbol + tf):
+        return None
+    return {
+        "schema": _CHART_COMMAND_TARGET_SCHEMA,
+        "origin_id": origin,
+        "context_revision": context_revision,
+        "pane_id": pane_id,
+        "symbol": symbol,
+        "tf": tf,
+    }
 
 
 def _compact_chart_state_for_receipt(record: dict | None) -> dict | None:
@@ -7101,11 +7177,23 @@ def _run_brain_loop(
             # this command exists, so the model must see an explicit unverified receipt.
             if tool_name in _CHART_COMMAND_TOOLS and result.get("client_executed"):
                 if result.get("v") == 2:
-                    wire = _flat_command(result, batch_id=command_batch_id, seq=command_seq)
-                    command_seq += 1
-                    commands.append(wire)
-                    model_result = _unverified_chart_command_receipt(
-                        wire, "nonstream_client_not_yet_received")
+                    target = _chart_command_target_for_result(
+                        user_id, chart_origin_id, chart_context_revision, result)
+                    if _chart_command_requires_target(result) and target is None:
+                        model_result = {
+                            "error": "command_target_unavailable",
+                            "note": (
+                                "The exact chart target changed or was unavailable before emission. "
+                                "Do not retry as a destructive replacement or broad clear."
+                            ),
+                        }
+                    else:
+                        wire = _flat_command(
+                            result, batch_id=command_batch_id, seq=command_seq, target=target)
+                        command_seq += 1
+                        commands.append(wire)
+                        model_result = _unverified_chart_command_receipt(
+                            wire, "nonstream_client_not_yet_received")
                 else:
                     commands.append(_flat_command(result))
 
@@ -8171,14 +8259,28 @@ def _run_brain_loop_stream(
             # the Terminal can execute the whole round. The collective wait below has
             # one bounded deadline regardless of how many v2 commands the round carries.
             if tool_name in _CHART_COMMAND_TOOLS and result.get("client_executed"):
+                wire: dict | None = None
                 if result.get("v") == 2:
-                    wire = _flat_command(result, batch_id=command_batch_id, seq=command_seq)
-                    command_seq += 1
-                    pending_v2_receipts.append((len(tool_results), wire))
-                    model_result = _unverified_chart_command_receipt(wire, "ack_pending")
+                    target = _chart_command_target_for_result(
+                        user_id, chart_origin_id, chart_context_revision, result)
+                    if _chart_command_requires_target(result) and target is None:
+                        model_result = {
+                            "error": "command_target_unavailable",
+                            "note": (
+                                "The exact chart target changed or was unavailable before emission. "
+                                "Do not retry as a destructive replacement or broad clear."
+                            ),
+                        }
+                    else:
+                        wire = _flat_command(
+                            result, batch_id=command_batch_id, seq=command_seq, target=target)
+                        command_seq += 1
+                        pending_v2_receipts.append((len(tool_results), wire))
+                        model_result = _unverified_chart_command_receipt(wire, "ack_pending")
                 else:
                     wire = _flat_command(result)
-                yield f"data: {json.dumps(wire)}\n\n"
+                if wire is not None:
+                    yield f"data: {json.dumps(wire)}\n\n"
 
             # Inline chart (W6c): emit 'chart' SSE event when svg is non-empty
             if tool_name == "render_inline_chart" and result.get("client_executed"):

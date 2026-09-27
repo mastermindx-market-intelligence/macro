@@ -4331,6 +4331,76 @@ def test_get_user_quotas_unlimited_operator():
 
 # ── v2 command envelope validation (accept/reject matrix) ─────────────────────
 
+
+def test_v2_model_cannot_supply_command_target():
+    """Target identity is host-owned; model input is stripped before the wire boundary."""
+    forged = {
+        "schema": "chart.command_target.v1",
+        "origin_id": "forged-origin",
+        "context_revision": 999,
+        "pane_id": 9,
+        "symbol": "AAPL",
+        "tf": "W",
+    }
+    res = gw._tool_chart_command({
+        "op": "chart.set_indicators",
+        "args": {"mode": "patch", "indicators": [{"name": "structure"}]},
+        "target": forged,
+    })
+    assert res.get("client_executed") is True
+    assert "target" not in res
+
+
+def test_v2_host_target_binds_exact_chart_state():
+    origin = "target-origin"
+    gw.put_chart_state(
+        "u-target", "terminal",
+        {"symbol": "NVDA", "tf": "D", "pane_id": 2},
+        origin_id=origin, context_revision=7,
+    )
+    result = gw._tool_chart_command({
+        "op": "chart.set_indicators",
+        "args": {"mode": "patch", "indicators": [{"name": "structure"}]},
+    })
+    target = gw._chart_command_target_for_result(
+        "u-target", origin, 7, result)
+    assert target == {
+        "schema": "chart.command_target.v1",
+        "origin_id": origin,
+        "context_revision": 7,
+        "pane_id": 2,
+        "symbol": "NVDA",
+        "tf": "D",
+    }
+    wire = gw._flat_command(
+        result, batch_id="brain_target_1", seq=0, target=target)
+    assert wire["target"] == target
+
+
+def test_v2_host_target_refuses_revision_drift():
+    origin = "target-drift"
+    gw.put_chart_state(
+        "u-target-drift", "terminal",
+        {"symbol": "NVDA", "tf": "W", "pane_id": 0},
+        origin_id=origin, context_revision=8,
+    )
+    result = gw._tool_chart_command({
+        "op": "ai.clear",
+        "args": {"ids": ["ai_old"]},
+    })
+    assert gw._chart_command_target_for_result(
+        "u-target-drift", origin, 7, result) is None
+
+
+def test_v2_host_target_not_required_for_plain_draw():
+    result = gw._tool_chart_command({
+        "op": "draw.hline", "id": "ai_plain", "args": {"p": 100.0},
+    })
+    assert gw._chart_command_requires_target(result) is False
+    wire = gw._flat_command(result, batch_id="brain_plain", seq=0)
+    assert "target" not in wire
+
+
 def test_v2_command_accepts_valid_trendline():
     """A well-formed draw.trendline envelope is accepted and emits client_executed=True."""
     res = gw._tool_chart_command({
@@ -4500,6 +4570,112 @@ def _tool_result_payload(
         if rows:
             return json.loads(rows[result_index]["content"])
     raise AssertionError(f"provider call contains no tool_result for {tool_use_id!r}")
+
+
+
+def test_v2_stream_patch_emits_host_target_and_waits_for_ack(tmp_path):
+    root = _make_temp_root()
+    origin = "cmx-target-stream"
+    gw.put_chart_state(
+        "userX", "terminal",
+        {
+            "symbol": "NVDA",
+            "tf": "D",
+            "pane_id": 1,
+            "indicators": [{"name": "structure", "params": {"sr.on": True}}],
+            "capabilities": {
+                "indicator_edit": {
+                    "op": "chart.set_indicators",
+                    "modes": ["replace", "patch"],
+                },
+            },
+        },
+        origin_id=origin,
+        context_revision=7,
+    )
+    cmd = _MockBlock(
+        "tool_use", name="emit_chart_command",
+        input_={
+            "op": "chart.set_indicators",
+            "args": {
+                "mode": "patch",
+                "indicators": [{"name": "structure", "params": {"sr.labels": False}}],
+            },
+            "target": {
+                "schema": "chart.command_target.v1",
+                "origin_id": "forged",
+                "context_revision": 999,
+                "pane_id": 9,
+                "symbol": "AAPL",
+                "tf": "W",
+            },
+        },
+        id_="patch1",
+    )
+    turn1 = _MockResponse([cmd], "tool_use")
+    turn2 = _MockResponse([
+        _MockBlock("text", "Patched. is_context_only: true — display-tier pending FDR.")
+    ], "end_turn")
+    client = _MockClient([turn1, turn2])
+    providers = [{"client": client, "model": "deepseek-chat"}]
+
+    command_event = None
+    with patch.object(gw, "_brain_quota_dir", return_value=tmp_path):
+        with patch.object(gw, "_build_lane_providers", return_value=providers):
+            with patch.object(gw, "_resolve_tier", return_value={
+                "tier": "pro", "status": "active", "current_period_end": None,
+            }):
+                with patch.object(gw, "_ensure_thread", return_value=None):
+                    with patch("lib.ai_costs.record_usage", return_value=True):
+                        for event in gw.chat_stream(
+                            "hide structure labels only", "userX", lane="fast",
+                            context=_cmx_terminal_context(origin, 7), root=root,
+                        ):
+                            if not event.startswith("data: "):
+                                continue
+                            parsed = json.loads(event[6:])
+                            if parsed.get("type") == "command" and parsed.get("v") == 2:
+                                command_event = parsed
+                                assert parsed["target"] == {
+                                    "schema": "chart.command_target.v1",
+                                    "origin_id": origin,
+                                    "context_revision": 7,
+                                    "pane_id": 1,
+                                    "symbol": "NVDA",
+                                    "tf": "D",
+                                }
+                                gw.put_chart_state(
+                                    "userX", "terminal",
+                                    {
+                                        "symbol": "NVDA",
+                                        "tf": "D",
+                                        "pane_id": 1,
+                                        "indicators": [{
+                                            "name": "structure",
+                                            "params": {"sr.on": True, "sr.labels": False},
+                                        }],
+                                        "capabilities": {
+                                            "indicator_edit": {
+                                                "op": "chart.set_indicators",
+                                                "modes": ["replace", "patch"],
+                                            },
+                                        },
+                                    },
+                                    origin_id=origin,
+                                    context_revision=7,
+                                    acks=[{
+                                        "batch_id": parsed["batch_id"],
+                                        "seq": parsed["seq"],
+                                        "id": None,
+                                        "ok": True,
+                                    }],
+                                )
+
+    assert command_event is not None
+    receipt = _tool_result_payload(client, 1, tool_use_id="patch1")
+    assert receipt["command_status"] == "accepted"
+    assert receipt["verified_by"] == "terminal_ack"
+    assert receipt["observed_state"]["indicator_names"] == ["structure"]
 
 
 def test_v2_stream_tool_result_waits_for_exact_terminal_ack(tmp_path):
