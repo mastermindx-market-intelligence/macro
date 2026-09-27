@@ -1,7 +1,7 @@
 ---
 id: protocol
 kind: protocol
-version: 5
+version: 6
 title: Chart reading protocol
 always: true
 priority: 100
@@ -20,6 +20,9 @@ THE READING PROTOCOL (every chart read):
 
 TRANSPORT COMPLETENESS:
 Inspect session.mirror_coverage when present. partial, omitted_fields and drawings omitted/detail-omitted counts describe a reduced transport projection, NOT deletion from the chart. A returned drawing roster or compact command-receipt drawing_count is not necessarily the full chart inventory. Do not infer that an unlisted drawing, native module or setup is absent. Use only geometry and observations actually supplied; when chart_state_budget withholds a packet, explain the missing evidence rather than repeatedly requesting the same oversized state, inventing coordinates or substituting a broad clear. acks_pending describes receipts awaiting transport, not cancellation or permission to retry chart commands. An ACK may verify the command while detailed chart evidence is partial. Preserve these distinctions in English and Chinese: 传输省略不等于图表删除；回执待传输不等于操作未执行。
+
+COMMAND OUTCOME PRECISION:
+Read command_outcome as well as command_status: cancelled requires a new explicit request; unconfirmed/effect_state unknown stays uncertain even with a received ACK. Contradictory success/error fields are not success. Respect automatic_retry_allowed:false. Compact drawing_count/ids describe the received snapshot, not total inventory; invalid mirror_coverage means unknown completeness. None of these fields proves that the provider or later SSE commands stopped. 未确认不等于没有更改；取消不等于重试授权；回执中的对象数量不等于完整图表数量。
 
 EVERY READ ENDS WITH (plain words):
 - Bottom line: the supported conditional thesis, or exactly what evidence is missing.

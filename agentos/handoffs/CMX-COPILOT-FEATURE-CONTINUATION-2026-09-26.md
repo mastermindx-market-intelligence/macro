@@ -1,80 +1,51 @@
-# Copilot Terminal — cumulative feature continuation
+# Copilot feature continuation — native validation, exact input and truthful receipts
 
-FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION after this record's publication/readback.
-MISSION_COMPLETE: false. Capability: PARTIAL / BUILT_NOT_PROVEN / NOT_RELEASED.
-Operation: `MMX-AI-TERMINAL-ENV-BUILD-20260924-SOL-001`.
-Parent: Macro #7151; cumulative checkpoint comment 5846488699.
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION (requires publication/readback)
+MISSION_COMPLETE: false
+Capability: PARTIAL / BUILT_NOT_PROVEN / NOT_RELEASED
+Operation: MMX-AI-TERMINAL-ENV-BUILD-20260924-SOL-001
+Parent: Macro #7151; cumulative frontier comment 5846488699.
 
-## Mission, present intent and procedure
+## Mission / authority / procedure
 
-Give Mastermind AI useful, controlled access to the user's Terminal: exact chart targeting; selective study/AI-annotation edits that preserve human work; native numerical observations instead of invented indicator readings; truthful action outcomes and usable recovery. Do not reduce the product to schemas or status reports.
+Give Mastermind AI controlled, useful Terminal chart access: preserve the user's studies/drawings, act on the intended chart, consume qualified native evidence, and distinguish real outcomes from requests or missing receipts. Current Chairman continuation requests sustained work in Pro. Tests, typechecking/compilers, browser and real-model qualification remain deferred until the combined final pass; no release proof is waived. Review waiver remains #7151 comment 5826034970, not independent review or acceptance.
 
-The Chairman's current directive is to continue in Pro with sustained, high-quality feature progress. The earlier explicit deferral of local tests, compilers/typechecking, browser/model qualification until the combined final pass remains. No test or release-proof waiver is inferred. No new local tests/compilers/browser/model calls, CI polling, merge or deployment were performed by this continuation. Eighteen new executable test cases were authored, not run. Source/whitespace/Git readback are persistence evidence only. Review waiver remains #7151 comment 5826034970; no independent approval claimed.
+Protected Mastermind pin 4c6b206d3fb7fbc6d077faf61ae361bedf259925; INDEX blob 94d1af402598894372858793a5b1931019c5fa77. Compatible mastermind.sol_skillpack.v1 / 1.0.1 / bootstrap1. Same-pin cold/active/delegation/reconciliation/review/closeout companions were loaded and verified byte-identical to consumed source. Current assignment overrides a redundant in-scope design ceremony; explicit test deferral overrides execution order, never verification truth. Direct execution reason: principal source-collision reconciliation and coupled receipt/consumer design; another writer would duplicate the integration. No Fable, provider, worker or watcher was started.
 
-Protected Mastermind pin: `4c6b206d3fb7fbc6d077faf61ae361bedf259925`, compatible mastermind.sol_skillpack.v1 / 1.0.1 / bootstrap1. INDEX blob `94d1af402598894372858793a5b1931019c5fa77`; COLD_START `b11e58f083040144933cf2ddab76bf6c60a7e542`; ACTIVE_EXECUTION `9fed10f7cc7a2f4323d039b406f7c0715445e22e`; WEB_CEO_DELEGATION `2073a33f05506268b15f0b5ce292ce57d5b60ed3`; CLOSEOUT `4a9ec3782da001322604e977dbe91b9cf371f0b9`. Relevant current-source content was consumed from that same pin. Current bootstrap/assignment controls routine design choices and test ordering rather than another generic design-approval ceremony. This never grants a platform-denied action.
+## Exact source / custody
 
-## Exact source and retained custody
+Terminal #757: f39454be5e4a3e617cf2c42f1a3db48cef2daf42, branch claude/cmx-a4-native-ta-skillpack-20260925. Same worktree /Users/chriswong/Documents/Cluade/charting-app/.claude/worktrees/cmx-a4-native-ta-skillpack-20260925. Original remote branch read back this exact commit. Only command intake, its new regression file, and the existing feature contract were committed.
 
-Terminal PR #757 is on the SAME `claude/cmx-a4-native-ta-skillpack-20260925` branch/workspace:
-`/Users/chriswong/Documents/Cluade/charting-app/.claude/worktrees/cmx-a4-native-ta-skillpack-20260925`.
-Current own published source: **22a048f06e8a41f9b1834a8640ae2689eba1ad6d**, parent **dd8cb762bcae66b7613837d9a16e4762669ad5f3**. Original origin branch read back exactly 22a048f06e8a41f9b1834a8640ae2689eba1ad6d after a normal non-force push. Six own paths only were staged/committed. It remains Draft/HOLD.
+Macro #8014: this record's containing receipt-precision commit, parent 55999405ece25b512db879f2916f9004061a2eea, branch claude/cmx-a2c-stream-command-ack-20260925. Same worktree under /Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/. The final PR/#7151 receipt supplies the immutable containing commit and this file's verified blob/digest. #8014 remains Draft/HOLD stacked on #8005; no retarget/merge/release this turn.
 
-The independent untracked `terminal/e2e/brain-targeted-readout.spec.ts` remains SHA256 **6eeb12bc08017a818541a33443ab634625a5d927a02566260fc1d61025338a3c**, unchanged, unstaged and unexecuted. The tracked source is clean after publication; the whole workspace is NOT called clean. Existing path-disjoint custody ruling: #757 comment 5851450815.
+The formerly foreign native-boundary patch is now integrated UNCHANGED at Macro 55999405ece25b512db879f2916f9004061a2eea. Counterpart return 5851985582 explicitly froze source and returned consolidation to pickup 5851966615. Sol consumption ruling 5852234150 was read back. Gateway SHA256 49d68413b2e43acb7a1444d27a3047134ad5be2e61e03791f97075d691977394 and test SHA256 286362f25175f11411fac3f27739df48f443b3bc7913a967e7463d20cd5a10b6 matched before commit. Its native equality/numeric/qualifier bodies remain byte-identical after receipt work. Do not rebuild or re-insert a second equality helper.
 
-Macro PR #8014 remains on SAME `claude/cmx-a2c-stream-command-ack-20260925` branch/workspace:
-`/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/cmx-a2c-stream-command-ack-20260925`.
-Pickup head **28437b9b02bf13ee4a2f58ec92d49f0b256dbcc8**. This continuation's Macro publication changes ONLY protocol.md, this handoff, and research/CMX_NATIVE_SELECTION_DEFERRED_TESTS_2026-09-26.py.txt. The final PR/parent receipt supplies the exact resulting commit. #8014 remains stacked on #8005 and held; no retarget/merge this turn.
+The first post-push PR metadata read did not yet match 55999405. Original-branch ls-remote and subsequent PR read both established that exact publication; no second push was attempted. EFFECT_UNKNOWN: none after reconciliation.
 
-**Concurrent Macro source is preserved, not acquired:** uncommitted `engine/neuralweb/brain_gateway.py` and untracked `tests/test_brain_native_evidence_boundary.py` appeared from another writer. Last observed SHA256s: gateway `49d68413b2e43acb7a1444d27a3047134ad5be2e61e03791f97075d691977394`; foreign test `286362f25175f11411fac3f27739df48f443b3bc7913a967e7463d20cd5a10b6`. They are excluded from this continuation's commit and no testing/acceptance/publication is attributed here. Their native-settings equality/census/enum/number safeguards are source-return evidence, not a released result. A separately inserted redundant helper was removed by exact reverse edit; the incumbent `_native_live_settings_equal` remains the only proposed equality owner. Do not re-add a duplicate helper or stage foreign source.
+Terminal's unrelated browser spec terminal/e2e/brain-targeted-readout.spec.ts remains untracked, untouched and excluded, SHA256 6eeb12bc08017a818541a33443ab634625a5d927a02566260fc1d61025338a3c. No global clean-Terminal-workspace or general writer-release claim. Current Macro owned files were staged by exact paths; no replacement branch, force push or lease displacement.
 
-Direct execution rationale: coupled source/consumer judgment and incumbent path custody with lower overhead than another conflicting worker. No worker/Fable, watcher, source-custody transfer, replacement branch/worktree or new control plane. Same Studio carrier. Initial scope/ruling receipt: #8014 comment 5851966615.
+## Capability delta in source
 
-## New capability in this continuation
+1. Native-boundary consolidation: bounded JSON-value settings equality instead of JS/Python printer spelling; full configured suite/module census including ids omitted from compact metadata; malformed enums, overflowing numeric facts and boolean chart identities refused. Returned tests are now published, not run.
+2. Precise command receipts: retain accepted/rejected/unverified compatibility status; add accepted/rejected/cancelled/unconfirmed/unverified command_outcome. Setter/application or receipt-recording failures keep effect_state unknown despite an ACK. Contradictory success/error fields are unconfirmed, not accepted. Missing ACK is not proof no change occurred. Cancelled actions require a new explicit request. automatic_retry_allowed:false is an assistant instruction, NOT proof the provider or later SSE execution stopped.
+3. Completeness-aware receipts/readback: one structural qualifier checks the existing mirror_coverage schema, fields, integer counts and drawing-roster arithmetic. Invalid completeness stays unavailable/partial. Client basis prose is replaced by fixed transport semantics. Compact drawing_count explicitly counts the received snapshot, not all chart objects; omitted ids are counted; overlong ids/symbols are omitted rather than truncated into different actionable identities. Nonfinite/overflowing ranges do not crash receipt generation. Stored snapshots are not mutated.
+4. Lossless command intake: supplied invalid ids/mode/args cannot default to clear-all/replace-all. Genuine legacy omitted-selector clear-all remains. Plain JSON snapshots are detached without getters/toJSON; reject non-plain/non-enumerable/symbol/prototype properties, cycles, sparse arrays, functions and nonfinite values. Bounds: depth 12, 4096 values, 64 KiB UTF-8; only optional root id/caption/target undefined values may be omitted. Batch id is at most 40 characters and sequence is a nonnegative safe integer, matching the existing receipt contract. Valid native/classic patch semantics and exact-target comparisons remain under their original owners.
+5. Technician protocol v6 consumes these richer outcomes and completeness distinctions. Observed source length 8042 characters; this is not a routed-budget/model-compliance proof.
 
-Before: optional chart geometry/native evidence could exceed the server's chart-state limit and block the entire snapshot, including command ACKs. Parallel state uploads could arrive out of order. Identity lookup consumed ACKs before it could fail.
+## Proof boundary / specifications
 
-After, in untested source: one receipt-first bounded projection and its consumer use the EXISTING chart-state route/accumulator/scheduler. `terminal/lib/chartStatePayload.ts`:
-- uses a conservative 60 KiB bound beneath the existing 64 KiB server validator, accounting for ASCII-escaped Unicode, separator spacing and numeric printer differences;
-- retains the previous shape for small packets;
-- reduces only the TRANSPORT drawing representation, first to ids/ownership then to a bounded roster with explicit returned/omitted/detail-omitted counts;
-- preserves exact actual indicator settings, context identity and command ACK identifiers;
-- withholds verbose native parameter descriptions/optional numerical packets only with explicit unavailable/omission markers when required;
-- batches at most 32 FIFO ACKs, retaining every unsent receipt and refusing to truncate an unfittable first ACK or essential identity.
+No local tests, compiler/typecheck, browser, model/provider run, CI poll, merge or deployment was invoked. Source preimage/postimage, expected HEAD, path-scoped staging, whitespace checks, commit/push and original-branch readback only. These prove source persistence, not functional correctness. Normal hosted automation was not polled or claimed as acceptance.
 
-`useChartBus` prepares the packet before consuming ACKs, catches identity-lookup failure, coalesces newer updates behind one in-flight POST and drains successful remaining ACK batches without another market tick. Failed/non-2xx/aborted receipts restore once before newer ACKs. A four-second stalled-request deadline releases transport; another attempt after failure requires actual new/coalesced input, not a periodic retry loop. Unmount prevents deferred new requests. Request abortion is NOT proof of server non-execution; receipt transport is idempotent existing ACK reporting, not chart-mutation replay.
+New executable specifications: Terminal terminal/lib/__tests__/chartCommandInputBoundary.test.ts; Macro tests/test_brain_chart_receipt_outcomes.py. Cover selector loss, explicit malformed values, inert snapshot/accessor/toJSON behavior, payload/receipt identity bounds, valid compatibility, cancellation and uncertain/contradictory outcomes, missing ACK, coverage arithmetic/type claims, exact ids/symbols, invalid ranges, immutable state and real read_chart_state coverage consumption. Parametrized cases are authored, not executed. Returned tests/test_brain_native_evidence_boundary.py likewise remains unexecuted by this turn. Stricter local-JavaScript admission and all legacy clients require final compatibility testing.
 
-Protocol v5 explicitly consumes `session.mirror_coverage`: omitted telemetry is not deletion, a partial roster is not full inventory, and pending receipts are not evidence of an unexecuted/cancelled command. No guess of missing geometry, automatic broad-clear substitution or same-oversized-request loop. Protocol source was 7,509 characters, not a proved total routed-budget/model-compliance result.
+## Retained work / DO_NOT_REDO
 
-The delivery delta does not close the collective two-second Brain ACK wait, late target adoption, or rendered-pixel/model acceptance obligations. A 4s stalled upload can still outlast that wait; do not claim a live-latency guarantee.
+Retain merged Terminal #740/#751 and Macro #7999/#8037; #8005 stale-revision repair at d33286edc81478a62ebe847c58dee95c8d1f54fd. Retain source implementations for additive study edits, selective AI clear, original exact-target receiver, configured guidance, Data Window readouts, feedback/cancellation, shared renderer/headless native projection, exact range control, live native structural qualification, and receipt-first state delivery (Terminal 22a048f06e8a / Macro ed25be5e678f). Native/range ancestors dd8cb762bcae66b7613837d9a16e4762669ad5f3 / 28437b9b02bf13ee4a2f58ec92d49f0b256dbcc8 stay accepted as source only. Data Window mc.rsi14 is not native RSI Ultimate. Cancel queued remains pending-at-click only, not undo, provider/SSE cancellation or a future-turn stop. No duplicate kernel, queue, identity, receipt store or retry plane.
 
-## Retained substantive native feature from the incoming source
+## Held core gaps / exact next action
 
-Do not redo Terminal **dd8cb762bcae66b7613837d9a16e4762669ad5f3** or Macro **28437b9b02bf13ee4a2f58ec92d49f0b256dbcc8**:
-- the renderer supplies actual consumed computeSuite bundles through one shared live/headless compact projector;
-- live schema chart.native_live_observations.v1, 7168-byte limit, exact context/settings/replay/selection binding;
-- latest native samples and exact selected_sample; causal event confirmation timing; right-edge geometry; dashboard rows/footnotes; explicit module/coverage/omission meanings;
-- backend structural/context qualification and server-owned basis language;
-- exact range application via existing paneSync, not start-only jump;
-- Data Window `mc.rsi14` remains distinct from native `rsix/eng`.
-These incoming commits were recovered and inspected, not rebuilt by this continuation or treated as proven live. A renderer snapshot is not point-in-time feed history, entitlement attestation, probability or measured trading edge.
+Original-pane freezing before model processing and over-broad revision adoption remain unrepaired. The exact prior deeper target inspection was refused before dispatch; this turn did not retry it. Selected-candle confirmation-filtered event projection, linear selection/gap parity and continued budget candidate scanning also remain held on the previously refused implementation action; no replay/split/alternate carrier or worker. Specifications remain outside discovery in the paired CMX_NATIVE_SELECTION_DEFERRED_TESTS_2026-09-26 files. Intake snapshots do not solve server original-pane binding, and precise outcome labels do not repair revision adoption.
 
-## New held findings and refused actions
+Next: consume a genuinely permitted recovery or admitted owner return for those two held core actions, then finish their existing producer/receiver/qualifier paths. Preserve this native/intake/receipt source instead of restarting. Once feature construction ends, run the deferred combined native/target/historical/cancellation/range/old-client/receipt/browser/model/dark-light/EN-ZH/responsive qualification, then normal #8005 to #8014 release gates. Green CI alone is not acceptance. No task was handed back as routine Chairman work and no denied action gains permission from a mode change.
 
-1. Source inspection found target production still occurs at model-result handling rather than a frozen original pane; the stream adopts revisions from all observed receipts rather than only a matched accepted requested context transition. This can move dependent edits toward a user-changed chart. A deeper compound target/source-fence inspection was refused BEFORE dispatch. EFFECT_NONE, not a repair. No retry/split/reroute or mode-derived permission.
-2. A selected-candle native projection implementation write was refused BEFORE dispatch. Its intended historical-event view, linear latest-sample scan, raw native-gap parity and budget-scan refinement are NOT applied. The original nativeObservationProjection.ts is preserved. Tests authored before that request were moved OUT of test discovery to `docs/research/CMX_NATIVE_SELECTION_DEFERRED_TESTS_2026-09-26.ts.txt` (Terminal) and `research/CMX_NATIVE_SELECTION_DEFERRED_TESTS_2026-09-26.py.txt` (Macro). They are proposed future specifications only, not implementation or passing tests. The settings cases now name the independently authored canonical equality helper, without claiming its tests ran.
-
-Those exact actions remain TOOL_DEGRADED / EFFECT_NONE. The independent delivery/protocol writes succeeded and are not retries of either denied operation. Older denied effects remain held under their existing receipts. Unknown refusal cause is not assumed technical recovery. No bypass through another mode, carrier, account or worker.
-
-## Evidence and deferred qualification
-
-New executable cases, authored but not run: **11** in chartStatePayload.test.ts; **7** in useChartBusDelivery.test.tsx. They cover server-size accounting/Unicode, small-packet compatibility, 70-ACK FIFO delivery, drawing immutability/coverage, optional-data omission, huge ACK refusal, cycles, in-flight latest-context coalescing, failure restoration, throwing identity, stalled requests, no periodic retry and unmount. Source whitespace checks passed; no compilation or runtime inference.
-
-Next combined qualification must include these plus retained native exact-bar/settings/replay/null/entitlement/omission cases, headless/live parity, actual range behavior, command targeting and same-turn reads, cancellation/no-retry, old clients, dark/light/EN-ZH/responsive/accessibility and real-model/browser/pixel proof. Ancestor tests/CI green do not qualify the expanded candidate.
-
-## DO_NOT_REDO / exact next action
-
-Retain prior merges #740 61d55a7e1d12a9104f90d17bfa2cd8b16982ac6f; #751 3cb7dbd8e89cd5d932fd07b2961ca79a0847d552; #7999 dd9640ef69c5f4a12a8970fa4691821c3218dcfd; #8037 a3f20fbe75a33c146c2477d0f1491a184da1e29f; #8005 race-repair candidate d33286edc81478a62ebe847c58dee95c8d1f54fd. Retain additive edits, selective AI clear, feedback 37afbd7d74d4cf90e91bf2d858f1972b96c55fc2 and queued cancellation be9d86b2494f8cf5926f5826ec79e9eee2222118; never recreate the queue/kernel/catalog/identity/ACK owners.
-
-Next: reconcile the actual current foreign native-validation return on the existing Macro branch without overwriting/staging it. Consume a genuinely permitted recovery/owner return for frozen original-target semantics and selected-candle causal/native projection; do NOT repeat the exact refused inspection/write merely on continuation. Preserve this published delivery slice. When feature construction is complete and the testing deferral ends, run the combined production-path qualification and normal #8005→#8014 release sequence, not incidental CI-driven acceptance.
-
-This boundary completes a coherent source delivery/consumer slice after the native/target implementation paths were held, not the parent product. Remaining work is explicit. Intended continuation surface: Pro for source-return adjudication and cross-system semantics; request Extra High only for a materially useful capability transition, not refusal evasion. No autonomous wake/background continuation. EFFECT_UNKNOWN: none for this turn's own reconciled effects after publication. Foreign source custody is NOT released by this checkpoint.
+This closes one published native-source consolidation plus a paired command-intake/receipt-consumption slice. The next core semantic unit is blocked by the named denied actions and release qualification remains intentionally deferred; this is not mission completion or custody transfer. Intended continuation mode: Pro for cross-system adjudication while current actions remain usable; switch only for a material permitted capability need. No autonomous wake or background Web execution. EFFECT_UNKNOWN: none for reconciled own effects.

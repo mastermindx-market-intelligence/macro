@@ -3323,6 +3323,60 @@ def _chart_command_target_for_result(
     }
 
 
+def _qualified_chart_mirror_coverage(session: dict) -> dict | None:
+    """Check the existing client's transport census without promoting it to chart truth.
+
+    This is a bounded projection, not another source of chart inventory or ACK state.
+    Invalid coverage stays explicitly unavailable; it must never mean complete.
+    """
+    if "mirror_coverage" not in session:
+        return None
+    raw = session.get("mirror_coverage")
+    invalid = {
+        "schema": "chart.state_coverage.v1", "status": "unavailable", "partial": True,
+        "reason": "invalid_mirror_coverage", "basis": "transport_projection_not_chart_deletion",
+    }
+    if (not isinstance(raw, dict) or raw.get("schema") != "chart.state_coverage.v1"
+            or not isinstance(raw.get("partial"), bool)):
+        return invalid
+    omitted = raw.get("omitted_fields")
+    allowed = {"native_observations", "data_readout", "capabilities.native_parameters"}
+    if (not isinstance(omitted, list) or len(omitted) > len(allowed)
+            or any(not isinstance(key, str) or key not in allowed for key in omitted)
+            or len(set(omitted)) != len(omitted)):
+        return invalid
+
+    def count(value: object) -> bool:
+        return (isinstance(value, int) and not isinstance(value, bool)
+                and 0 <= value <= 9007199254740991)
+
+    sent, pending = raw.get("acks_in_batch"), raw.get("acks_pending")
+    if not count(sent) or sent > 32 or not count(pending):
+        return invalid
+    drawings = raw.get("drawings")
+    clean_drawings = None
+    if drawings is not None:
+        if not isinstance(drawings, dict) or not isinstance(session.get("drawings"), list):
+            return invalid
+        keys = ("available", "returned", "omitted", "details_omitted")
+        if any(not count(drawings.get(key)) for key in keys):
+            return invalid
+        clean_drawings = {key: drawings[key] for key in keys}
+        if (clean_drawings["available"] != clean_drawings["returned"] + clean_drawings["omitted"]
+                or clean_drawings["returned"] != len(session["drawings"])
+                or clean_drawings["details_omitted"] > clean_drawings["returned"]):
+            return invalid
+    partial = raw["partial"] or bool(omitted) or pending > 0 or bool(
+        clean_drawings and (clean_drawings["omitted"] or clean_drawings["details_omitted"]))
+    return {
+        "schema": "chart.state_coverage.v1", "status": "reported", "partial": partial,
+        "source": "client_report_structurally_checked",
+        "omitted_fields": list(omitted), "drawings": clean_drawings,
+        "acks_in_batch": sent, "acks_pending": pending,
+        "basis": "transport_projection_not_chart_deletion",
+    }
+
+
 def _compact_chart_state_for_receipt(record: dict | None) -> dict | None:
     """Bound the chart-state facts a command receipt can hand back to the model."""
     if not isinstance(record, dict):
@@ -3335,10 +3389,12 @@ def _compact_chart_state_for_receipt(record: dict | None) -> dict | None:
     symbol = session.get("symbol")
     tf = session.get("tf")
     pane_id = session.get("pane_id")
-    if isinstance(symbol, str) and symbol:
-        out["symbol"] = symbol[:32]
-    if isinstance(tf, str) and tf:
-        out["tf"] = tf[:16]
+    if (isinstance(symbol, str) and 0 < len(symbol) <= 64
+            and not any(ord(ch) < 32 or ord(ch) == 127 for ch in symbol)):
+        out["symbol"] = symbol
+    if (isinstance(tf, str) and 0 < len(tf) <= 32
+            and not any(ord(ch) < 32 or ord(ch) == 127 for ch in tf)):
+        out["tf"] = tf
     if isinstance(pane_id, int) and not isinstance(pane_id, bool) and pane_id >= 0:
         out["pane_id"] = pane_id
 
@@ -3347,12 +3403,14 @@ def _compact_chart_state_for_receipt(record: dict | None) -> dict | None:
         if isinstance(value, dict):
             start = value.get("from")
             end = value.get("to")
-            if (
-                isinstance(start, (int, float)) and not isinstance(start, bool)
-                and isinstance(end, (int, float)) and not isinstance(end, bool)
-                and math.isfinite(float(start)) and math.isfinite(float(end))
-            ):
-                out[key] = {"from": float(start), "to": float(end)}
+            if (isinstance(start, (int, float)) and not isinstance(start, bool)
+                    and isinstance(end, (int, float)) and not isinstance(end, bool)):
+                try:
+                    first, last = float(start), float(end)
+                except (ValueError, TypeError, OverflowError):
+                    continue
+                if math.isfinite(first) and math.isfinite(last) and first < last:
+                    out[key] = {"from": first, "to": last}
 
     indicators = session.get("indicators")
     if isinstance(indicators, list):
@@ -3368,11 +3426,18 @@ def _compact_chart_state_for_receipt(record: dict | None) -> dict | None:
         drawing_ids: list[str] = []
         for item in drawings[:128]:
             drawing_id = item.get("id") if isinstance(item, dict) else None
-            if isinstance(drawing_id, str) and drawing_id and drawing_id not in drawing_ids:
-                drawing_ids.append(drawing_id[:64])
+            if (isinstance(drawing_id, str) and 0 < len(drawing_id) <= 64
+                    and not any(ord(ch) < 32 or ord(ch) == 127 for ch in drawing_id)
+                    and drawing_id not in drawing_ids):
+                drawing_ids.append(drawing_id)  # exact actionable identity, never a truncated alias
         out["drawing_ids"] = drawing_ids
         out["drawing_count"] = len(drawings)
+        out["drawing_count_basis"] = "received_snapshot_not_total_chart_inventory"
+        out["drawing_ids_omitted"] = len(drawings) - len(drawing_ids)
 
+    coverage = _qualified_chart_mirror_coverage(session)
+    if coverage is not None:
+        out["mirror_coverage"] = coverage
     return out
 
 
@@ -3380,10 +3445,14 @@ def _unverified_chart_command_receipt(wire: dict, reason: str) -> dict:
     """Model-visible truth when client execution has not been verified."""
     out: dict[str, Any] = {
         "command_status": "unverified",
+        "command_outcome": "unverified",
+        "effect_state": "unknown",
+        "automatic_retry_allowed": False,
         "reason": reason,
         "note": (
-            "Do not claim this chart action executed. The command was prepared for the "
-            "Terminal client, but no matching Terminal execution ACK is available."
+            "No matching Terminal execution ACK is available. Do not claim this chart "
+            "action executed; a missing receipt also does not prove that no change occurred. "
+            "Do not replay the command automatically. Reconcile the chart before any fresh action."
         ),
         "op": wire.get("op"),
         "batch_id": wire.get("batch_id"),
@@ -3401,36 +3470,69 @@ def _verified_chart_command_receipt(
     *,
     expected_context_revision: int | None,
 ) -> dict:
-    """Model-visible result of an exact Terminal batch/seq acknowledgement."""
+    """Preserve client acceptance, cancellation and effect uncertainty in a matched ACK.
+
+    Receipt delivery is not evidence of successful application or rendered pixels.
+    Keep the existing command_status vocabulary; command_outcome refines its meaning.
+    """
     ok = ack.get("ok") is True
     compact_ack: dict[str, Any] = {"ok": ok}
-    if not ok and isinstance(ack.get("error"), str) and ack["error"]:
-        compact_ack["error"] = ack["error"]
+    error = ack.get("error") if isinstance(ack.get("error"), str) else ""
+    if error:
+        compact_ack["error"] = error
+
+    outcome = "accepted" if ok else "rejected"
+    status = "accepted" if ok else "rejected"
+    effect = "applied_not_render_verified" if ok else "not_applied"
+    scope = "client_application_only" if ok else "client_refusal"
+    note = (
+        "Terminal acknowledged the chart command. This verifies client command "
+        "acceptance/application, not pixel-level render correctness."
+        if ok else
+        "Terminal refused the chart command before application. Do not claim the requested "
+        "effect occurred and do not automatically replay or broaden the command."
+    )
+    if ok and error:
+        status, outcome, effect, scope = "unverified", "unconfirmed", "unknown", "receipt_only"
+        note = (
+            "Terminal returned contradictory success and failure fields. Do not claim either "
+            "success or no change. Inspect the chart; do not replay this action automatically."
+        )
+    elif not ok and error == "command_cancelled_by_user":
+        outcome, scope = "cancelled", "client_cancellation"
+        note = (
+            "The user cancelled this pending chart action before execution; already-applied "
+            "changes remain. Do not retry it or substitute an equivalent action without a "
+            "new explicit user request. This is not undo or cancellation of the whole AI reply."
+        )
+    elif not ok and (error.endswith("_application_failed") or error.endswith("_receipt_failed")):
+        status, outcome, effect, scope = "unverified", "unconfirmed", "unknown", "receipt_only"
+        note = (
+            "Terminal returned a failure receipt, but the effect of this action is unconfirmed. "
+            "Do not claim either success or no change. Inspect the actual chart before any "
+            "fresh action; do not retry or substitute the mutation automatically."
+        )
 
     observed_revision = record.get("context_revision")
     context_changed = (
-        isinstance(expected_context_revision, int)
-        and isinstance(observed_revision, int)
+        isinstance(expected_context_revision, int) and not isinstance(expected_context_revision, bool)
+        and isinstance(observed_revision, int) and not isinstance(observed_revision, bool)
         and observed_revision != expected_context_revision
     )
     out: dict[str, Any] = {
-        "command_status": "accepted" if ok else "rejected",
-        "verified_by": "terminal_ack",
-        "op": wire.get("op"),
-        "batch_id": wire.get("batch_id"),
-        "seq": wire.get("seq"),
+        "command_status": status, "command_outcome": outcome, "effect_state": effect,
+        "automatic_retry_allowed": False,
+        "verified_by": "terminal_ack", "verification_scope": scope,
+        "op": wire.get("op"), "batch_id": wire.get("batch_id"), "seq": wire.get("seq"),
         "ack": compact_ack,
         "expected_context_revision": expected_context_revision,
         "observed_context_revision": observed_revision,
         "context_changed": context_changed,
         "observed_state": _compact_chart_state_for_receipt(record),
-        "note": (
-            "Terminal acknowledged the chart command. This verifies client command "
-            "acceptance/application, not pixel-level render correctness."
-            if ok else
-            "Terminal rejected the chart command. Do not claim the requested chart effect occurred."
-        ),
+        "note": note,
     }
+    if error:
+        out["reason"] = "contradictory_ack" if ok else error
     if isinstance(wire.get("id"), str):
         out["id"] = wire["id"]
     return out
@@ -4132,6 +4234,9 @@ def _tool_read_chart_state(
         out["origin_id"] = origin_id
         out["context_revision"] = observed_rev
     if isinstance(safe_session, dict):
+        coverage = _qualified_chart_mirror_coverage(safe_session)
+        if coverage is not None:
+            safe_session["mirror_coverage"] = coverage
         safe_session["native_observations"] = _qualified_native_live_observations(out)
     out["study_context"] = _chart_study_context(out)
     return out
