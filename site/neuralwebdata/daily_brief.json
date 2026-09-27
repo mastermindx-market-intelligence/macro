@@ -1,98 +1,21 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-09-27T09:11:00.131225+00:00",
+  "produced_at": "2026-09-27T22:32:31.918707+00:00",
   "as_of": "2026-09-25",
   "status": "degraded",
   "phase": "final",
   "did_the_brain_run": {
-    "cortex_status": "degraded",
-    "tool_call_batches": 0,
-    "individual_tool_calls": 0,
+    "cortex_status": "fresh",
+    "tool_call_batches": 4,
+    "individual_tool_calls": 11,
     "context_stale": false,
-    "summary": "cortex degraded — model_unavailable"
+    "summary": "cortex ran (11 tool calls); memo as_of 2026-09-27T22:26:40+00:00"
   },
   "what_changed": [
     {
       "kind": "cortex_status_changed",
       "id": "cortex",
-      "summary": "cortex status changed: fresh → degraded",
-      "severity": "warn",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "risk-radar-review-log",
-      "summary": "lobe risk-radar-review-log row count changed: 6 → 7 (17%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "spine-index",
-      "summary": "lobe spine-index row count changed: 490540 → 490996 (0%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_status_changed",
-      "id": "confluence-graph",
-      "summary": "lobe confluence-graph status: stale → fresh_partial",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "ops-push-basket-freeze",
-      "summary": "lobe ops-push-basket-freeze row count changed: 43 → 44 (2%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "nw-health-run-history",
-      "summary": "lobe nw-health-run-history row count changed: 68 → 69 (1%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "governance-ledger",
-      "summary": "lobe governance-ledger row count changed: 182 → 188 (3%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "cortex-attention-firings",
-      "summary": "lobe cortex-attention-firings row count changed: 111 → 114 (3%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "hypothesis-inbox",
-      "summary": "lobe hypothesis-inbox row count changed: 15 → 17 (13%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "machine-registry",
-      "summary": "lobe machine-registry row count changed: 36 → 38 (6%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "mechanism-pathways-history",
-      "summary": "lobe mechanism-pathways-history row count changed: 63 → 64 (2%)",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    },
-    {
-      "kind": "lobe_row_count_changed",
-      "id": "covariance-spine-history",
-      "summary": "lobe covariance-spine-history row count changed: 57 → 58 (2%)",
+      "summary": "cortex status changed: degraded → fresh",
       "severity": "info",
       "evidence_path": "data/neuralweb/health.json"
     }
@@ -302,12 +225,6 @@
     ]
   },
   "operator_attention": [
-    {
-      "priority": 1,
-      "area": "cortex",
-      "summary": "cortex degraded — inspect data/neuralweb/cortex/memo.json and run_status",
-      "action_type": "ops_fix"
-    },
     {
       "priority": 2,
       "area": "government-revenue-latest",
@@ -587,7 +504,7 @@
   },
   "china_market_state": {
     "available": true,
-    "as_of": "2026-09-26",
+    "as_of": "2026-09-27",
     "phase": "REPAIR",
     "phase_confidence": 0.8,
     "who_controls": "mixed",
@@ -613,7 +530,7 @@
   },
   "causal_lab": {
     "available": true,
-    "asof": "2026-09-26T22:21:04Z",
+    "asof": "2026-09-27T09:35:33Z",
     "new_edges_this_week_by_verdict": {
       "insufficient_power": 22,
       "null": 11,
