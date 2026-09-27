@@ -9,6 +9,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 HTML_PATHS = (ROOT / "templates" / "index.html", ROOT / "site" / "index.html")
+ONBOARD_PATHS = (ROOT / "templates" / "onboard.js", ROOT / "site" / "onboard.js")
 CSS_PATHS = (
     ROOT / "templates" / "landing.css",
     ROOT / "site" / "landing.css",
@@ -134,3 +135,32 @@ def test_mobile_navigation_css_is_an_in_flow_accordion():
     assert ".nav-links.open{display:flex}" in css
     assert ".nav-panel,.nav-panel-research,.nav-panel-resources{position:static" in css
     assert "max-height:calc(100dvh - 76px)" in css
+
+
+# ───────────────── homepage boot request budget ─────────────────
+
+@pytest.mark.parametrize("path", HTML_PATHS)
+def test_founding_offer_boot_request_is_published_for_onboard_reuse(path: Path):
+    """The landing owns the first founding-offer read; onboarding must be able to
+    consume that same in-flight/result promise instead of issuing a duplicate request."""
+    text = path.read_text(encoding="utf-8")
+    start = text.index("/* Founding inventory is real and enforced")
+    end = text.index("/* ───── mobile matrix", start)
+    block = text[start:end]
+    assert "window.__mmFoundingOfferRequest" in block
+    assert block.count("fetch('/api/billing/offers/'") == 1
+    assert "window.__mmFoundingOfferRequest=offerRequest;" in block
+    assert "offerRequest.then(o=>" in block
+
+
+@pytest.mark.parametrize("path", ONBOARD_PATHS)
+def test_onboard_reuses_only_the_same_origin_founding_offer_request(path: Path):
+    """Canonical landing loads share the inline request; an off-site host keeps its
+    existing apiBase() fetch so preview / alternate-host behavior does not regress."""
+    src = path.read_text(encoding="utf-8")
+    start = src.index("function syncFoundingOffer()")
+    end = src.index("// Cheap signed-in sniff", start)
+    fn = src[start:end]
+    assert 'apiBase() === "" ? window.__mmFoundingOfferRequest : null' in fn
+    assert "var request = shared || fetch(" in fn
+    assert "return request.then(function (o)" in fn
