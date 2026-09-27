@@ -109,3 +109,26 @@ Original native screenshot filenames under `screenshots/`: R2 dark/light briefin
 This boundary is justified by the observed native write-schema gate and the blocked bounded diagnosis, not by elapsed time or the production of a status document. Another unchanged catalog loop or another standalone visual package would not advance native acceptance. Preserve the R5 artifact and the prepared effect instead of redoing them. Continue in the current working surface when the dependency has a qualified return; no model/account change is requested and none grants authority.
 
 DO_NOT_REDO: successful native content/repairs/exports, R3 indicator release, R4 interaction improvements, verified R5 customer roles and test evidence. Required remaining proof: native R5 application; R4 nav/light summary; R3 final renders; held destination/state/theme/bilingual work; human comprehension; full accessibility; real-origin persistence; current producer/entitlement integration; deployed journey and failures. No native write, prototype edit, production code, source ingestion, scoring, auth, scheduler, provider, worker, watcher, merge or deployment changed in this continuation. GitHub dependency reporting and this checkpoint are the only modifying effects.
+
+
+## 7. Production source implementation readiness
+
+A code-ready migration packet was added at `research/POLICY_WATCH_R6_PRODUCTION_IMPLEMENTATION_PACKET_2026-09-26.md` in commit `1c1a00cddac5f18ba469d8e14904fee2774ef199`.
+
+Fresh Macro main observation for that packet:
+- main: `fa85c3b4efe8140aab6c6bff4b813070cf6aa16d`;
+- current `templates/policy_watch.html.j2` blob: `a7e46126baa488760386b1aa8fb34355bbf1e41c`;
+- the production template still exposes the existing Quick take / Background research / UK desk / Market views / The Fed / Policy stages / Market impact / Calls & results / Sources hierarchy.
+
+The packet converts the accepted product direction into an implementation sequence: Briefing → Policy map → Calendar → Calls & evidence, while preserving all existing source clocks, typed null/degraded states, lifecycle authority, original calls/results and bilingual/theme behavior.
+
+A source-collision fence was added rather than silently starting a competing implementation. Open Macro PR #7136, **Policy Watch: add official policy-event discovery feed**, is still open at head `cb9072f45fcef698a52d0e41bed65d406c69a9d5` and overlaps `engine/policy_watch_current.py`, `scripts/build_policy_watch.py`, `templates/policy_watch.html.j2` and `tests/test_policy_watch_ui.py`. The R6 packet requires that source owner to merge, be superseded, or otherwise release custody before a competing rewrite begins. Its accepted producer should be reused if it lands; do not rebuild its collector, rights/time semantics or event identity.
+
+The first implementation slice after source clearance is intentionally narrow: production Briefing composition only, with RED-first preservation assertions, eight-cell EN/ZH × light/dark × desktop/mobile browser evidence, and no new producer, scoring, personal persistence, alert scheduler or client router. Deep legacy anchors remain during migration until parity is proven.
+
+This is a concrete source-integration advance but **not production code**. No implementation branch was opened because overlapping source custody is unresolved, and native Paper remains blocked on the separate catalog-qualification gate. Those two gates are independent: resolving one does not lift the other.
+
+Current next actions remain:
+1. consume a qualified Paper catalog/runtime return and reconcile/apply the prepared native R5 color-role operation once if still lawful;
+2. resolve Policy Watch source overlap with PR #7136;
+3. then implement R6-A Briefing from then-current main using the packet, without redoing accepted producers or prototype work.
