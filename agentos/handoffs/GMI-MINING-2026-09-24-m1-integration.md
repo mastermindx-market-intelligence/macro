@@ -44,6 +44,21 @@ verified:
   - claim: "The Opus R1 red-team of #7932 was consumed by freeze-then-repair, not by self-written tests."
     command: "git log --oneline origin/main -- tests/test_mining_shared_contract_probes.py"
     result: "probe freeze commit (9/10 RED at a27a7262) precedes the repair commit; report at research/mining/m1_integration_program/reviews/OPUS_T01_PR_REVIEW_R1_2026-09-24.md."
+  - claim: "The T04a round-3 fabric delivery is real work, not a self-verdict: the frozen oracles were untouched by the repair lane and the whole Mining gate is green at the pushed head."
+    command: "git log --oneline a848ad54..HEAD -- tests/test_mining_composition_probes.py tests/test_mining_composition_probes_r2.py tests/test_mining_composition_truth_table.py tests/fixtures/mining_economic_dossier/ (empty); git diff --name-only a848ad54..HEAD; venv(pytest jsonschema pyyaml) -m pytest -q on the six Mining suites; python -m pyflakes on the module + both changed tests"
+    result: "frozen-file log EMPTY (lane owned only engine/market_ontology/mining_theme_research.py and tests/test_mining_composition.py); 160 passed, 0 failed at 94e74dd8; pyflakes clean. The lane's own LANE_DONE said verdict PASS 0/0/0 - that is a self-verdict and was NOT taken as proof."
+  - claim: "The R1 BLOCKER-1 probe premise was false about the casebook, so the seat amended the probe instead of letting the module fabricate legs (R-MIN-32)."
+    command: "python3 -c on tests/fixtures/mining_economic_dossier/copper_complete.json economics block; grep -n financial_packets tests/mining_casebook.py"
+    result: "casebook line 76 builds financial_packets from fixture['economics']; copper's economics is {measure, value, basis, stream_threshold, positive_witness} with no earlier_point_estimate/later_actual. Two comparison rows were not composable without fabricating both legs. Amended at 4a6a70f68bd with every original assertion kept and leg-value/polarity pins added."
+  - claim: "The module genuinely composes real pairs: two in-test R-MIN-31 packets yield two distinct rows with numeric legs and polarity derived from the numbers."
+    command: "compose_mining_research on copper_complete with financial_packets=(mev('sales',1700,1680,'Mlbs'), mev('unit_net_cash_cost',1.55,1.62,'USD/lb'))"
+    result: "2 rows; metrics management_issued_copper_sales_estimate/consolidated_copper_sales and the unit_net_cash_cost pair; values 1700/1680 -> below_estimate and 1.55/1.62 -> above_estimate; is_range and is_consensus both false. Round 2's string \"quarter\" leg is gone."
+  - claim: "The one contract-delta 'introduced' on this branch is a stale-base artifact, not a defect of this PR."
+    command: "python3 scripts/check_contract_delta.py --base origin/main; git cat-file -e origin/main:tests/test_render_dead_ref_targets.py; git grep -c test_render_dead_ref_targets origin/main -- .github/ci/legacy-jobs.yml; git rev-list --count HEAD..origin/main"
+    result: "the named file is NOT in this branch's own diff, exists on origin/main AND is wired there; the branch was 469 commits behind. Merged origin/main (clean, no conflicts) so CI and the checker read true."
+  - claim: "PR #7870's shared module has still not landed, so the Mining typed-degrade path is the live path."
+    command: "ls engine/theme_graph/curation_assertion.py at 94e74dd8 (post-merge of origin/main)"
+    result: "absent; the importlib try/except ImportError degrade is exercised, and the shared-contract suites pass on it."
 unverified:
   - "Runtime liveness of any shared candidate component; deployed privacy; native source capture clocks."
 unresolved:
@@ -51,11 +66,15 @@ unresolved:
   - "G2/G3/G4: native FCX/MP bytes, spans, identities and governed economic objects unqualified."
   - "G5/G6: private route/client/mount not on main; source custody with incumbents."
 next_actions:
-  - "Lane min_t04a_definitions running on mb (MiniMax-M3, dispatched 2026-09-24 12:56Z; ground truth ~/lanes/ext/lanes_min_t04a_definitions.stdout on mb): on its PR run the Opus READ_ONLY red-team, freeze probes RED on REJECT, merge on concluded green, verify on main."
-  - "Lane args pre-minted in the B-kit ext/ dir (gated): min_t02_witness_profiles (after #7905 + T01' on main), min_t03_economic_inputs (after T02), min_t07_updates (after T02+T03+T04)."
+  - "T04a PR #7950 at head 94e74dd8 is DRAFT pending the Opus R3 READ_ONLY red-team (commissioned against that exact head). On ACCEPT: copy the report into research/mining/m1_integration_program/reviews/, gh pr ready 7950, add merge-on-green, watch at 600s, merge on concluded green (excluded reds: ci-authority/codex/merge-queue-pilot, Workers Builds: macro), verify on origin/main. On REJECT the SEAT repairs #7950 directly - the fabric has had three rounds."
+  - "T03 (min_t03_economic_inputs, args pre-minted) is gated on T04a MERGING, not merely delivering: its preflight requires engine/market_ontology/mining_theme_research.py on origin/main, and it appends to the same mining-economic-dossier CI block. Retarget its engine off glm-codex (collapsed 3/3 on 09-24) to MiniMax-M3 before dispatch."
+  - "T02 (min_t02_witness_profiles, args pre-minted) is gated on #7905, which seat 251f88c8 holds DRAFT under its own Opus R7 audit. Do NOT poll or re-arm watchers on it - it is another seat's PR; dispatch T02 when its content is on main."
   - "Shared-owner answer to the T06 mount/entry questions (#7870 comment 5811889498) gates T06; never re-ask."
-  - "T02 after #7905 merges; T04a in parallel; then T03 -> T04b -> T07; hold T05/T06/T08 for the shared route/mount and G2 admission."
+  - "Then T04b integrated -> T07, each with an Opus red-team under the freeze-then-repair law; hold T05/T06/T08 for the shared route/mount on main and G2 admission."
+  - "Operator items (surfaced, not actionable by the seat): mini2 WAN routing fix (needs mini2 sudo - a default route via bridge0 shadows the real gateway, so every lane there is REFUSED before start); mini2 MiniMax provisioning; mini2 keychain unlock for cursor-agent."
 do_not_redo:
+  - "R-MIN-31 + R-MIN-32 are tabled: an exact per-case truth table is required for every Mining composition task, and a frozen probe whose premise a fixture refutes is AMENDED in the open with intent preserved and assertions strengthened - never satisfied by fabricating module output."
+  - "Do not re-measure financial_packets by looking for a top-level key in the fixture JSON: tests/mining_casebook.py SYNTHESISES that field from fixture['economics']. That measurement error cost one wrong ruling."
   - "Never re-ACK #7795 (pickup = comment 5811520293); never repeat 5809893850 on #7870."
   - "Never put implementation on #7795; never edit #7870's branch or any file it owns."
   - "T01' (#7932) is accepted work: do not rebuild the casebook, the binding validator or the CI job; extend them by appending (later Mining PRs append suites/paths to the ONE mining-economic-dossier block)."
@@ -63,7 +82,7 @@ do_not_redo:
 danger_areas:
   - "legacy-jobs.yml / test_ci_pack.py are contested by many open PRs - append at END, rebase before push."
   - "A lane returning STATUS: PASS with tests it wrote itself is not proof; the Opus red-team + frozen probes are."
-prs: [7795, 7921, 7922, 7932]
+prs: [7795, 7921, 7922, 7932, 7944, 7950]
 decisions: []
 discoveries: []
 ---

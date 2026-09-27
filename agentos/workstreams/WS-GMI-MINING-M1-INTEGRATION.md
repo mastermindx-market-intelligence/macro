@@ -36,7 +36,7 @@ waves:
   - id: MIN-W2
     title: "T02 FCX/MP native profile factories + byte receipts (after CDV-1 #7905 merges) || T04a closed Mining definitions, own schema, synthetic composition"
     status: in_progress
-    next_action: "Lane min_t04a_definitions dispatched on mb (MiniMax-M3) 2026-09-24 12:56Z; on its PR: Opus red-team, freeze probes RED on REJECT, merge on concluded green. T02 lane (args pre-minted) dispatches once #7905 is on main."
+    next_action: "T04a is PR #7950 (DRAFT). Three fabric rounds: Opus R1 REJECT (3B/6M) and R2 REJECT (1B/5M, letter-gaming - leg values synthesised from period_kind) were both consumed by freeze-then-repair; the seat froze the R2 probes plus a per-case truth table (R-MIN-31) RED at a848ad54 before round 3 ran. Round 3 delivered d401eebb with real numeric legs and derived polarity. Seat then amended the R1 BLOCKER-1 probe under R-MIN-32 (its premise about the copper fixture was false) and merged origin/main in: head 94e74dd8, six Mining suites 160 passed / 0 failed in a clean venv, pyflakes clean. Opus R3 READ_ONLY red-team RUNNING against 94e74dd8; readiness requires its ACCEPT plus concluded green. T02 (args pre-minted) still gated on #7905, which another seat holds DRAFT under its own R7 audit."
     depends_on: [MIN-W1]
   - id: MIN-W3
     title: "T03 definition-safe economic inputs (signed blocks, missing_derivation, IR-01/IR-02 consumer rules) -> T04b integrated positive witnesses"
@@ -52,9 +52,13 @@ waves:
     depends_on: [MIN-W4]
     next_action: "Wait for Semiconductor B's shared route/client/mount on main and the incumbent-intake G2 source admission; never build against #7870's branch."
 next_action: >
-  MIN-W2: consume the min_t04a_definitions lane PR (Opus red-team before readiness), dispatch
-  min_t02_witness_profiles once #7905 merges, then T03 -> T04b -> T07 with the same review law;
-  T05/T06/T08 stay held for the shared route/client/mount on main and G2 source admission.
+  MIN-W2: land T04a PR #7950 (head 94e74dd8) on the Opus R3 verdict plus concluded green - if R3
+  rejects a fourth time the SEAT repairs it directly, the fabric has had three rounds. T03
+  (min_t03_economic_inputs) is gated on T04a specifically: its own preflight requires
+  engine/market_ontology/mining_theme_research.py to resolve on origin/main, and it appends to the
+  same mining-economic-dossier CI block, so it must serialize behind the merge. T02 stays gated on
+  #7905; then T04b -> T07 under the same freeze-then-repair law. T05/T06/T08 remain held for the
+  shared route/client/mount on main and G2 source admission.
 artifacts:
   - agentos/handoffs/GMI-MINING-2026-09-24-m1-integration.md
   - research/mining/m1_integration_program/rulings/R-MIN-2026-09-24-wave1.md
