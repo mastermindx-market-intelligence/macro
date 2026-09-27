@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_state.v1",
-  "as_of": "2026-09-26",
-  "generated_at": "2026-09-26T20:26:01Z",
+  "as_of": "2026-09-27",
+  "generated_at": "2026-09-27T08:52:31Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -65,16 +65,16 @@
           "basket_id": "ai_semiconductors",
           "state": "CONFIRMED_UP",
           "lifecycle": "confirming",
-          "divergence": -0.455,
-          "salience": 0.455,
+          "divergence": -0.458,
+          "salience": 0.458,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
           "basket_id": "ai_infra",
           "state": "QUIET",
           "lifecycle": "quiet",
-          "divergence": 0.636,
-          "salience": 0.636,
+          "divergence": 0.582,
+          "salience": 0.582,
           "source": "site/basketdata/radar_enriched.json"
         }
       ],
@@ -162,8 +162,8 @@
           "basket_id": "memory_storage",
           "state": "POSITIVE_DIVERGENCE",
           "lifecycle": "forming",
-          "divergence": 1.37,
-          "salience": 1.37,
+          "divergence": 1.397,
+          "salience": 1.397,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
@@ -171,7 +171,7 @@
           "lean": "positive_divergence",
           "horizon_d": 63,
           "check_by": "2026-12-25",
-          "thesis_snippet": "Real activity (congress net-buy, lobbying ramp, 8-k material events) on MU, SNDK, STX, WDC is accelerating (~4.0× YoY) w",
+          "thesis_snippet": "Real activity (congress net-buy, lobbying ramp, 8-k material events) on MU, SNDK, STX, WDC is accelerating (~4.1× YoY) w",
           "source": "site/basketdata/radar.json"
         }
       ],
@@ -243,8 +243,8 @@
           "basket_id": "semicap_equipment",
           "state": "POSITIVE_DIVERGENCE",
           "lifecycle": "emerging",
-          "divergence": 2.334,
-          "salience": 2.334,
+          "divergence": 2.33,
+          "salience": 2.33,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
@@ -336,8 +336,8 @@
           "basket_id": "data_center_power",
           "state": "POSITIVE_DIVERGENCE",
           "lifecycle": "forming",
-          "divergence": 0.941,
-          "salience": 0.941,
+          "divergence": 0.911,
+          "salience": 0.911,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
@@ -438,8 +438,8 @@
           "basket_id": "nuclear_power",
           "state": "QUIET",
           "lifecycle": "quiet",
-          "divergence": 1.142,
-          "salience": 1.142,
+          "divergence": 1.119,
+          "salience": 1.119,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
@@ -513,8 +513,8 @@
           "basket_id": "power_grid",
           "state": "CONFIRMED_DOWN",
           "lifecycle": "fading",
-          "divergence": 0.65,
-          "salience": 0.65,
+          "divergence": 0.66,
+          "salience": 0.66,
           "source": "site/basketdata/radar_enriched.json"
         }
       ],
@@ -579,8 +579,8 @@
           "basket_id": "cybersecurity",
           "state": "CONFIRMED_UP",
           "lifecycle": "mature",
-          "divergence": -0.972,
-          "salience": 0.972,
+          "divergence": -1.183,
+          "salience": 1.183,
           "source": "site/basketdata/radar_enriched.json"
         }
       ],
@@ -652,8 +652,8 @@
           "basket_id": "defense",
           "state": "POSITIVE_DIVERGENCE",
           "lifecycle": "emerging",
-          "divergence": 0.947,
-          "salience": 0.947,
+          "divergence": 0.972,
+          "salience": 0.972,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
@@ -733,8 +733,8 @@
           "basket_id": "robotics_automation",
           "state": "POSITIVE_DIVERGENCE",
           "lifecycle": "forming",
-          "divergence": 0.041,
-          "salience": 0.041,
+          "divergence": 0.002,
+          "salience": 0.002,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
@@ -844,8 +844,8 @@
           "basket_id": "obesity_glp1",
           "state": "QUIET",
           "lifecycle": "quiet",
-          "divergence": 0.407,
-          "salience": 0.407,
+          "divergence": 0.341,
+          "salience": 0.341,
           "source": "site/basketdata/radar_enriched.json"
         }
       ],
@@ -1145,8 +1145,8 @@
           "basket_id": "reshoring",
           "state": "POSITIVE_DIVERGENCE",
           "lifecycle": "emerging",
-          "divergence": 0.937,
-          "salience": 0.937,
+          "divergence": 0.946,
+          "salience": 0.946,
           "source": "site/basketdata/radar_enriched.json"
         },
         {
@@ -1154,7 +1154,7 @@
           "lean": "positive_divergence",
           "horizon_d": 63,
           "check_by": "2026-12-25",
-          "thesis_snippet": "Real activity (gov contracts (quiver), congress net-buy, lobbying ramp) on AME, CAT, DE, EMR… is accelerating (~1.3× YoY",
+          "thesis_snippet": "Real activity (gov contracts (quiver), congress net-buy, lobbying ramp) on AME, CAT, DE, EMR… is accelerating (~1.4× YoY",
           "source": "site/basketdata/radar.json"
         }
       ],
@@ -1283,8 +1283,8 @@
           "basket_id": "managed_care",
           "state": "QUIET",
           "lifecycle": "quiet",
-          "divergence": 0.819,
-          "salience": 0.819,
+          "divergence": 0.795,
+          "salience": 0.795,
           "source": "site/basketdata/radar_enriched.json"
         }
       ],
@@ -1412,8 +1412,10 @@
   ],
   "stale_legs": [
     "divergence_log[cybersecurity]: stale (as_of=2026-08-27)",
+    "divergence_log[ai_semiconductors]: stale (as_of=2026-09-22)",
     "divergence_log[defense_aerospace]: stale (as_of=2026-08-29)",
     "divergence_log[fintech_payments]: stale (as_of=2026-08-28)",
+    "divergence_log[copper_steel_electrify]: stale (as_of=2026-09-22)",
     "divergence_log[space_satellite]: stale (as_of=2026-08-08)"
   ],
   "sources": {
@@ -1428,7 +1430,7 @@
   },
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-09-26T20:26:02Z",
-  "inputs_hash": "sha256:5647171c8ed5f2e3975269d0376ed3857d83e1249a55834fad07f189d1bd94b8",
+  "produced_at": "2026-09-27T08:52:32Z",
+  "inputs_hash": "sha256:3d2af960c9de60d9895a167e8c9ef71f9ef2a1cad8fe93b2443707d9af3feaa7",
   "tier": "display"
 }
