@@ -70,13 +70,13 @@ a{color:var(--ink-link, var(--link))}
 .hero-line{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .wordmark{display:flex;align-items:center;gap:10px;font-size:24px;font-weight:680;letter-spacing:-.035em}
 .wordmark .mark{display:inline-grid;place-items:center;width:36px;height:36px;border:1px solid var(--line);
-  border-radius:10px;color:var(--btc);font:700 21px/1 var(--font-ui);background:var(--panel)}
+  border-radius:var(--r-btn,10px);color:var(--btc);font:700 21px/1 var(--font-ui);background:var(--panel)}
 .live-quote{display:flex;align-items:baseline;gap:8px;margin-left:auto}
 .live-price{font:680 24px/1 var(--num);font-variant-numeric:tabular-nums;letter-spacing:-.035em}
 .live-change{font:650 11.5px/1 var(--num);font-variant-numeric:tabular-nums}
 .asof-chip{display:inline-flex;align-items:center;gap:6px;padding-left:12px;border-left:1px solid var(--line);
   color:var(--muted);font-size:10.5px;font-variant-numeric:tabular-nums}
-.asof-chip i{width:5px;height:5px;border-radius:50%;background:var(--info)}
+.asof-chip i{width:5px;height:5px;border-radius:var(--r-pill,999px);background:var(--info)}
 .hero-read{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:42px;align-items:end;margin:34px 0 24px}
 .hero-kicker{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-link,var(--link));font-weight:650}
 .stance{max-width:820px;margin:9px 0 0;font-size:clamp(38px,4.4vw,58px);font-weight:660;
@@ -88,16 +88,16 @@ a{color:var(--ink-link, var(--link))}
 .hero-position-action{margin-top:8px;color:var(--text);font-size:13px;font-weight:650}
 .hero-position-value{margin-top:12px;font:680 32px/1 var(--num);font-variant-numeric:tabular-nums;letter-spacing:-.04em}
 .hero-position-value span{font:500 13px/1 var(--font-ui);letter-spacing:0}
-.hero-position-rail{height:5px;margin:13px 0 8px;border-radius:5px;background:var(--panel2);overflow:hidden}
+.hero-position-rail{height:5px;margin:13px 0 8px;border-radius:var(--r-pill,999px);background:var(--panel2);overflow:hidden}
 .hero-position-rail i{display:block;height:100%;background:var(--info);border-radius:inherit}
 .hero-position-note{font-size:10.5px;line-height:1.45;color:var(--muted)}
-.tape-shell{position:relative;padding:18px 18px 8px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.tape-shell{position:relative;padding:18px 18px 8px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel)}
 .tape-legend{position:absolute;top:18px;left:14px;z-index:2;display:flex;gap:13px;align-items:center;
   color:var(--muted);font-size:10px;pointer-events:none}
 .tape-legend span{display:inline-flex;align-items:center;gap:5px}
 .tape-legend i{width:9px;height:3px;border-radius:2px}
 .overview-instrument{display:grid;grid-template-columns:minmax(0,1fr) 286px;gap:18px;margin-top:18px}
-.overview-chart-card,.overview-side{border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.overview-chart-card,.overview-side{border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel)}
 .overview-chart-card{padding:20px}
 .overview-side{padding:20px;display:flex;flex-direction:column;gap:18px}
 .instrument-head{display:flex;align-items:baseline;gap:14px;margin-bottom:14px}
@@ -367,7 +367,7 @@ a{color:var(--ink-link, var(--link))}
             <div class="instrument-sub">{{ t('Price · risk · model allocation','价格 · 风险 · 模型仓位') }}</div>
           </div>
           {% if chart_contract.valid %}
-          <div id="vec-risk-chart" class="vchart-wrap" style="--vchart-h:470px"><div class="receipt-line">{{ t('Loading synchronized chart…','正在加载同步图表…') }}</div></div>
+          <div id="vec-risk-chart" class="vchart-wrap"><div class="receipt-line">{{ t('Loading synchronized chart…','正在加载同步图表…') }}</div></div>
           <div class="receipt-line">{{ t('Historical strategy results are separate from the current model decision.','历史策略结果与当前模型决策分开呈现。') }} <a href="#strategy-track-record">{{ t('Review strategy results','查看策略结果') }} →</a></div>
           {% if chart_contract.issues %}
           <div class="receipt-line">{{ t('Allocation history contains gaps; the chart preserves them as unknown. Performance remains visible only through periods whose governing allocation is known.','配置历史存在缺口；图表会将缺口保留为未知。仅在对应期间的配置决策已知时，才展示历史表现。') }}</div>
