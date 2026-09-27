@@ -5,115 +5,99 @@ model: sol
 ended_because: ci_handoff
 mission: >
   Deliver governed persistent-authenticated browser use and service-owned Source
-  Continuity writer-gate evidence through the existing owners, including intended
-  Chat invocation and a useful authenticated UI workflow.
+  Continuity evidence through existing owners, including intended Chat invocation,
+  release-consumer acceptance and a useful authenticated UI workflow.
 state_before: >
-  Browser R1 receipt recovery and R2 same-store issuance/owner-cleanup fencing were
-  published at cd7df55e but not adopted into Mastermind PR940. Automatic relay
-  retirement on parent loss or expiry still bypassed durable effect evidence.
-  The writer-gate read companion was published at c8f25281 but remained disarmed
-  and unproven through real service identity and deployment.
+  Browser R1-R3 was published at 57a55ba5 with 463 passing tests and one inherited
+  skip. The writer-gate read companion at c8f25281 had protocol proof but lacked
+  an authenticated HTTP composition. Credential-readiness PR663 lacked submitted
+  exact-head approval. No production browser or service activation was proven.
 changed:
-  - path: mastermind:integrations/workbench_action_mcp/action_artifacts.py
-    what: Require the original browser-resource evidence when qualifying automatic retirement under the existing writer mutex.
-  - path: mastermind:integrations/workbench_browser_mcp/relay.py
-    what: Retain uncertain targets on parent loss or expiry, close tool admission, and avoid destructive cleanup on lost possible-effect replies.
-  - path: mastermind:integrations/workbench_browser_mcp/resource_port.py
-    what: Pass the existing owner-store descriptor and exact filesystem identity to the relay without exposing them to the native MCP child.
-  - path: mastermind:tests/test_workbench_browser_retirement_integration.py
-    what: Prove real parent and relay/native-process retention and retirement with synthetic owner records and MCP responses.
+  - path: mastermind:integrations/mastermind_github_app/writer_gate_http.py
+    what: Compose existing Business authentication with request-bound writer-gate reads and caller-limited deadlines.
+  - path: mastermind:integrations/mastermind_github_app/writer_gate_server.py
+    what: Share the existing closed read invocation between low-level and HTTP factories without changing the tool contract.
+  - path: mastermind:tests/test_github_writer_gate_http.py
+    what: Exercise signed synthetic JWTs through actual ASGI and MCP dispatch, including negative and overlapping-request cases.
+  - path: mastermind:pull/663
+    what: Submit and read back independent exact-source APPROVED review 5329708160 without modifying the candidate.
 verified:
-  - claim: R2 replacement-action and owner-cleanup defects remain covered by the preserved regressions.
-    command: pytest tests/test_workbench_browser_port.py tests/test_workbench_browser_resource_port.py -k 'prior_unknown or terminal_prior or new_resource_reference or orphan_evidence or replacement_browser'
-    result: Historical pre-repair result was 14 failures and 2 passes plus a separate failing cleanup discriminator; the R2 full matrix passed 446 with one inherited skip.
-  - claim: R3 automatic retirement and response-loss defects were observed before source repair.
-    command: pytest tests/test_workbench_browser_relay.py -k 'automatic_retirement_retains or expiry_at_handle or response_write_loss'
-    result: Four behavioral failures on unchanged source after correcting a missing test import; all pass after repair.
-  - claim: Already-expired or orphaned startup and lost read-only status replies are handled separately from uncertain modifying effects.
-    command: pytest tests/test_workbench_browser_relay.py -k 'never_starts_native_child or lost_status_reply'
-    result: Two startup failures and one status-loss failure were observed before their respective repairs and pass in the final matrix.
-  - claim: Actual relay and native MCP processes preserve the original pending target through parent loss and lease expiry.
-    command: pytest tests/test_workbench_browser_retirement_integration.py
-    result: Two cases pass using real local processes and synthetic protocol/owner evidence; the native child sees no inherited owner-store descriptor and retires after the same pending action is finalized by its owner.
-  - claim: The final Browser and complete Workbench Action matrix passes on the published R3 candidate.
-    command: pytest -q -o addopts='' -p no:cacheprovider tests/test_browser_resource_contract.py tests/test_workbench_browser_app.py tests/test_workbench_browser_contracts.py tests/test_workbench_browser_deployment.py tests/test_workbench_browser_port.py tests/test_workbench_browser_relay.py tests/test_workbench_browser_resource_port.py tests/test_workbench_browser_retirement_integration.py tests/workbench_action_mcp --basetemp=/tmp/mmxr3-final --tb=short
-    result: 463 passed, one inherited skip, zero failures or errors; exit 0. Published Mastermind commit 57a55ba5d192e1a3923861557de168da03f55b54; diff check passed.
-  - claim: R3 publication is definite and current-base tree composition is conflict-free.
-    command: studio_git_commit_current_changes and studio_git_push_current_branch on the registered operation, then git merge-tree --write-tree b2e0b905bfac975766afda3cf65527897bc0e25a 57a55ba5d192e1a3923861557de168da03f55b54
-    result: APPLIED with identical local and remote heads and clean=true; merge-tree exit 0 and tree 4fe935f3e9076f0f351bfbdcfb997d6feb4bd630. This is tree-composition evidence only, not integrated tests or release approval.
-  - claim: The previously published writer-gate read companion has source and MCP protocol proof.
-    command: pytest tests/test_github_writer_gate_port.py tests/test_github_writer_gate_server.py tests/test_source_continuity_writer_gate.py tests/test_mastermind_github_app.py
-    result: Preserved prior result of 229 passed with no failures, errors or skips at c8f25281d6c2bb9cb5dd76bf4683831f11e5ff05; synthetic identity and HTTP with actual in-memory MCP transport, not live service proof.
+  - claim: The authenticated writer-gate HTTP composition passes its owning and adjacent test campaign.
+    command: pytest -q -o addopts='' -p no:cacheprovider tests/test_github_writer_gate_http.py tests/test_github_writer_gate_port.py tests/test_github_writer_gate_server.py tests/test_source_continuity_writer_gate.py tests/test_mastermind_github_app.py tests/test_business_mcp_auth_mcp_adapter.py tests/test_business_mcp_auth_jwt_verifier.py tests/test_business_mcp_auth_policy_subclass.py --basetemp=/tmp/mmx-writer-http-final-signed --tb=short
+    result: 329 passed, zero failures, errors or skips; twenty HTTP cases; published Mastermind head 7d4146fbf0acbb4ce23f8b271ce5c2d5b977b6d0; syntax and diff checks passed.
+  - claim: New HTTP tests discriminate the missing component and preserve the existing authentication behavior.
+    command: Run the initial twelve tests before writer_gate_http.py exists, then the complete signed-JWT ASGI campaign.
+    result: Twelve missing-module failures before implementation; a later metadata fixture mismatch was corrected without changing production policy; invalid auth never reaches the service token provider or GitHub, and expiry during first read stops further reads.
+  - claim: Credential readiness has independent exact-source semantic approval.
+    command: pytest tests/test_credential_capability_readiness.py tests/test_sol_capability_status.py /Volumes/Mastermind/evidence/browser-credential-review-20260927-astra-001/test_independent_readiness_review.py followed by exact-commit GitHub review submission and readback.
+    result: 232 passed, including 540 observations inside one matrix test; APPROVED review 5329708160 binds 44f061e63597a18178de9c1fdb4fecb70175dea2. The canonical SCF dependency blob matches current protected source. No PR663 source was changed.
+  - claim: Source publication and review-workspace cleanup have definite receipts.
+    command: studio_git_commit_current_changes and studio_git_push_current_branch for browser-writer-gate-service-20260927-astra-001; mmx-workspace release --operation-id browser-credential-review-20260927-astra-001 --lane web.
+    result: APPLIED with matching local and remote 7d4146fb and clean=true; the unchanged review checkout was removed as recoverable while branch history and external evidence were retained.
+  - claim: The prior Browser R1-R3 native-process and action proof remains preserved.
+    command: Prior pytest campaign over tests/test_workbench_browser_retirement_integration.py, all Browser suites and tests/workbench_action_mcp at exact 57a55ba5.
+    result: Preserved 463 passed and one inherited skip; two actual local relay/native-process tests use synthetic MCP and owner evidence. No unchanged Browser investigation was repeated in this increment.
 unverified:
-  - claim: The proposals are accepted into their incumbent release carriers.
-    what_would_verify: Independent exact-source review and source-custody-approved adoption through Mastermind PR940 and PR409, followed by required current-base hosted checks.
-  - claim: Browser retention and admission are safe across distinct stores, profiles and hosts.
-    what_would_verify: Existing resource/profile owners must fence replacement across those transitions; the implemented R2/R3 proof is bounded to the original Workbench store and relay.
-  - claim: The current-base integrated candidate has complete source and runtime qualification.
-    what_would_verify: Complete permitted candidate-blob and dependency comparison plus required integrated tests and hosted checks; the follow-on detailed integrated-delta inspection was safety-blocked and not retried.
-  - claim: Intended Chat can obtain and consume a real service-owned writer-gate receipt.
-    what_would_verify: Bind an explicitly authorized least-privilege installation identity and current principal/target resolver in the existing deployment, invoke its read capability and consume its canonical receipt in release procedure.
-  - claim: Persistent authenticated browser use is production-proven.
-    what_would_verify: A dedicated profile retains login across an owned restart, rejects stale/concurrent controllers and completes a useful UI-required workflow with secret-free output and accepted network/target policy.
+  - claim: Browser and writer-gate proposals have independent acceptance and incumbent-carrier adoption.
+    what_would_verify: Current source-custody-approved integration and independent exact-head review through Mastermind PR940 and PR409, with required current-base and hosted security checks.
+  - claim: The writer-gate is deployed and callable from the intended Chat surface.
+    what_would_verify: The existing deployment binds its real auth policy, current target resolver and authorized service installation identity to create_authenticated_writer_gate_server, followed by a real intended-Chat invocation and release-consumer read.
+  - claim: The authenticated browser vertical is production-proven.
+    what_would_verify: Dedicated profile login survives an owned restart, stale and concurrent controllers refuse, accepted target/network/profile policy holds, and one useful UI-required workflow succeeds without secret output.
+  - claim: Credential readiness is released and backed by trustworthy live owner observations.
+    what_would_verify: Separate source-continuity, current-base CI/security and release gates plus a real owner-specific credential vertical; review 5329708160 does not provide these.
 unresolved:
-  - Independent review, incumbent source adoption, hosted release proof and production activation remain open.
-  - Cross-store/profile/host continuity and network/target confinement remain separate production gates.
-  - The live C3 Workbench manifest still exposes attended F0 canary file/command tools only, not Browser or writer-gate tools.
-  - The writer-gate service still needs a real authorized installation-token provider and deployment binding; no credential or service activation was performed.
-  - Full-repository pytest previously stopped on missing vendored engine.signal_archive and lib imports; no full-suite pass is claimed and the unchanged failure was not rerun.
-  - The writer-gate companion refuses pagination indications rather than supporting multi-page rules; broader support belongs to canonical Source Continuity.
+  - Browser and writer-gate source proposals remain unadopted on their incumbent release carriers; no protected merge or installation occurred.
+  - Real service installation identity, deployment target binding, intended-Chat invocation and release consumption remain missing proof.
+  - Browser cross-store/profile/host fencing and accepted network/target confinement remain separate gates.
+  - Prior denied human-gh, source-map, evidence-packaging and detailed Browser integrated-delta inspections remain denied; no retry or carrier switch occurred.
+  - Full-repository pytest previously stopped on missing vendored engine.signal_archive and lib imports; the unchanged failure was not repeated and no full-suite pass is claimed.
+  - Current plugin discovery exposed no Executive submission connector; acodex, executive-os, mmx-executive and mmx-fabric were absent from the current Studio PATH. This is local surface evidence only, not a fabric-wide outage or proof that a reviewer started.
 next_actions:
-  - Fresh-read protected INDEX and exact current proposal/carrier identities, then consume only material PR940/PR409 review or custody changes.
-  - Have the existing independent review route assess R1-R3 at 57a55ba5 and the read companion at c8f25281, then adopt qualified source on the incumbent carriers with current source continuity; do not create replacement implementation PRs.
-  - Complete current-base integration and security proof without reissuing the denied detailed inspection through another carrier.
-  - Compose the real service-owned principal and target binding into the existing GitHub app deployment after source acceptance and prove one intended-Chat writer-gate call and release-consumer read.
-  - Compose accepted target, credential-readiness, network and profile owners for one dedicated-profile restart and useful authenticated UI workflow.
+  - Fresh-read protected INDEX and exact proposal/carrier identities, consuming only material review, custody or deployment changes.
+  - Use the existing independent routes to review Browser 57a55ba5 and writer-gate 7d4146fb, then perform lawful incumbent-carrier adoption and current-base qualification rather than request unchanged reviews repeatedly.
+  - Preserve PR663 approval 5329708160 and advance its distinct source-continuity and release gates without redoing semantic review unless relevant inputs change.
+  - Bind the accepted writer-gate HTTP factory through the existing app deployment and real authorized installation identity; prove intended-Chat invocation and release-consumer use before claiming the gate live.
+  - Compose accepted target, credential, profile and network owners for the dedicated-profile restart and useful authenticated UI proof.
 do_not_redo:
-  - Preserve R1 receipt-recovery 4aecefb7, R2 same-store fence cd7df55e and R3 automatic-retirement repair 57a55ba5; do not restart BrowserResource design.
-  - Preserve the 463-test R3 matrix and two actual native-process cases; they do not prove production Chrome or authenticated UI behavior.
-  - Preserve writer-gate source c8f25281 and its 229-test proof; the original GitHub app and canonical Source Continuity semantics remain the owners.
-  - "Preserve PR473 Rust diagnosis in comment5852807240: exit32 because the old head has no Rust source; do not waive scanning or manufacture placeholder Rust."
-  - Reuse the pinned Python environment and do not repeat unchanged whole-repository collection errors as progress.
-  - Do not retry denied human-gh, source-map, evidence-packaging or detailed integrated-delta inspection through another tool, account or mode.
+  - Preserve Browser R1 4aecefb7, R2 cd7df55e and R3 57a55ba5 plus their discriminating proof; do not redesign BrowserResource.
+  - Preserve writer-gate c8f25281 and authenticated HTTP 7d4146fb, including the 329-test final campaign and unchanged three-tool patch authority.
+  - Preserve PR663 independent approval 5329708160, 232-test proof and 540-observation matrix; the closed review checkout is recoverable from exact 44f061e6.
+  - "Preserve PR473 Rust diagnosis5852807240: the old head has no Rust source and exits32; do not waive scanning or manufacture placeholders."
+  - Reuse the existing pinned Python environment and avoid unchanged full-repository collection-error cycles.
+  - Do not retry denied actions through another tool, account, mode, provider or fresh operation identity.
 danger_areas:
-  - Retention closes agent tool admission but does not suspend webpage timers or network activity; network confinement is not proven by these process tests.
-  - Same-store evidence is not a global cross-host/profile fence; an empty replacement store cannot establish authority over an uncertain original operation.
-  - Arbitrary OS process death or forced termination is outside the cooperative parent-loss/expiry guarantee; preserve durable uncertainty if a target is lost.
-  - The relay gets only its existing owner-store descriptor and seals it before native spawn; do not widen this to arbitrary filesystem or credential access.
-  - A safety-blocked inspection is not an EFFECT_UNKNOWN production action and is not permission to retry through another route.
-  - Source proposals and tree composition are not independent approval, protected release, installation or production acceptance.
+  - Signed synthetic JWTs and real ASGI dispatch do not establish real company service identity, installed Chat adoption or a live GitHub observation.
+  - Source review is not release, installation, credential enrollment or proof that upstream live_proof_current facts are trustworthy.
+  - Retained browser targets can still run webpage timers and network; cooperative process retention is not cross-host confinement or protection against arbitrary forced termination.
+  - Permission denial must return no writer-gate receipt, not a fabricated valid UNAVAILABLE state.
+  - These managed proposal branches do not replace PR940 or PR409 and do not transfer incumbent source custody.
 ---
 
 ## §0 State — what is true right now
 
 MISSION_COMPLETE: false. FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION.
 
-Browser R3 is committed and published at 57a55ba5d192e1a3923861557de168da03f55b54, following R2 cd7df55e and R1 4aecefb7 on the same registered operation. It closes the previously open automatic parent-loss/expiry path within the original owner store, with actual relay/native-process evidence. The service-owned writer-gate companion remains unchanged at c8f25281d6c2bb9cb5dd76bf4683831f11e5ff05. Neither proposal is independently accepted, protected, installed or production-proven.
+This increment published the authenticated HTTP deployment seam and closed one independent source-review gate. Writer-gate proposal 7d4146fbf0acbb4ce23f8b271ce5c2d5b977b6d0 has 329 passing tests. Credential PR663 has an actual APPROVED review at its exact current semantic head. The prior Browser repair remains at 57a55ba5d192e1a3923861557de168da03f55b54. None of these facts establishes production browser use or a live writer-gate receipt.
 
-This checkpoint follows a concrete process-lifetime integration and publication boundary. It is not a custody transfer, reviewer START, CI completion, or unattended execution claim. No production browser/profile/credential, external worker or watcher was started. No actual modifying effect is unresolved. One follow-on detailed integrated-delta inspection was safety-blocked before tool execution; it was not retried or reformulated through another carrier.
-
-Current protected source is b2e0b905bfac975766afda3cf65527897bc0e25a. Fresh INDEX remains Skillpack1.0.1/bootstrap1; required procedure blobs are identical to the consumed d7c949d31f3893d95822a4ee8e5e4be9edaf5593 pin. Protected movement in this turn was Paper/Studio integration, not the owned Browser/Action paths. Keep the current working write-capable surface for implementation/integration; no mode switch or new grant was used.
+Protected procedure consumed: Mastermind b2e0b905bfac975766afda3cf65527897bc0e25a, compatible Skillpack1.0.1/bootstrap1. Source and reviewer effects have definite receipts; no modifying effect is unresolved. No external reviewer worker, watcher, production listener, service credential or browser action was started. This is a component/review boundary before the separate release and real-service deployment phase, not a claim of autonomous continuation.
 
 ## §1 What is LEFT — in order
 
-The integrating principal next owns independent review consumption and lawful incumbent-carrier source adoption, current-base/security qualification, then real service deployment and dedicated-profile acceptance. Do not stall in repeated review polling or replace the incumbent carriers. The existing #940 reviewer route is mastermindx-2; delivery is not proof of pickup or execution.
+Exact source routes: Browser PR940, cumulative engineering comment5852810158, proposal57a55ba5; GitHub owner PR409, updated review/integration packet5854158934, proposal7d4146fb; credential PR663, review5329708160 on44f061e6. Browser law PR473 and repaired attended binding PR988 remain separate current-source/release dependencies and require fresh action-time evidence.
 
-Mastermind PR940 remains the browser release carrier, last observed head b2fdb1d1d1584a53c5ac1f94e2da1c1fa7be9200, Draft/unmerged. Our cumulative proposal is 57a55ba5 on sol/web-browser-continuity-convergence-20260927-astra-001. Engineering checkpoint is PR940 comment5852810158. Current-base local merge-tree result is 4fe935f3e9076f0f351bfbdcfb997d6feb4bd630 against b2e0b905; no integrated test or complete blob-preservation proof is claimed.
-
-Mastermind PR409 remains the existing GitHub owner-app carrier, last observed head55155d33a51921a3b6d2cae2db49d31703a80b8a. Read companion c8f25281 is on sol/web-browser-writer-gate-service-20260927-astra-001; review packet is PR409 comment5854158934. Its source-only composition parent788a0b895948193755d0387bc56cad7df725f17d is not a protected release. PR473, PR663 and PR988 remain separate law, credential-readiness and target dependencies requiring fresh action-time acceptance evidence.
+The next service entry is integrations/mastermind_github_app/writer_gate_http.py:create_authenticated_writer_gate_server. It accepts existing service-owned authentication, audit, target and installation-token providers. Default production disarm remains. No model-selected repository, endpoint, actor or credential is added. Real deployment and target/provider binding, not another protocol rewrite, is the next capability gap after source gates.
 
 ## §2 What will bite you
 
-Reuse the registered workspaces /Volumes/Mastermind/agent-workspaces/web/browser-continuity-convergence-20260927-astra-001 and /Volumes/Mastermind/agent-workspaces/web/browser-writer-gate-service-20260927-astra-001. Evidence roots are /Volumes/Mastermind/evidence/ plus each operation ID. Current Browser final receipts are r3-release-candidate.log/.xml; native proof is r3-native-qualified.log. Writer-gate receipts remain final-suite.log/.xml.
+The source workspaces remain /Volumes/Mastermind/agent-workspaces/web/browser-continuity-convergence-20260927-astra-001 and /Volumes/Mastermind/agent-workspaces/web/browser-writer-gate-service-20260927-astra-001. The latter is clean and remotely published at7d4146fb. Evidence roots are /Volumes/Mastermind/evidence/ plus their operation IDs; current writer proof is http-release.log/.xml and prior Browser proof is r3-release-candidate.log/.xml. Independent credential evidence remains under browser-credential-review-20260927-astra-001 outside its removed review checkout; exact hashes are in review5329708160.
 
-R3's failed test-harness setup attempts were corrected before proof: the first unit run omitted a schema import, and the native fixture initially selected the wrong helper argv element and violated the pinned MCP entrypoint suffix. These are not additional production defect claims. Final native tests preserve the real startup checks and use synthetic catalog/owner records only. Seven behavioral regressions across the staged repair distinguished automatic retention, late dispatch, reply loss, pre-start authority and status-loss behavior. Missing API tests are recorded separately in the source plan.
+The previous Browser merge-tree result4fe935f3e9076f0f351bfbdcfb997d6feb4bd630 was only conflict-free tree composition. Its denied follow-on detailed inspection cannot be retried through another carrier. Nothing in the authenticated HTTP increment changes that boundary.
 
 ## §3 What was decided and found
 
-The attended Browser effect owner remains ActionArtifactStore. Automatic retirement now consumes that same owner's records and writer mutex, requires the original resource, and never caches positive cleanup permission. Repeated negative observations may be cached only against store directory generation, without a new persisted record. Owner-requested cleanup remains the existing separately guarded route. The future worker projection remains Executive/OHF-owned.
-
-The writer-gate adapter remains disarmed and secret-free at the model boundary; the service must provide its own authorized identity. No default browser profile, cookie/state export, password manager or human gh authentication was borrowed.
+Reuse existing Business authentication instead of adding another auth owner. Keep principal state request-local and reverify the original token. Narrow the owner grant's deadline to the caller deadline. Share one invocation implementation across transports. Preserve default disarm and secret-free errors. Exact source approval for the readiness composer does not prove credential custody or universal secret detection.
 
 ## §4 Not in scope — do not adopt
 
-Do not broaden Worker Browser B1, introduce an Opera or desktop control plane, create another GitHub credential/app/retry owner, or use this Agent OS record as admission. No merge to a protected branch, installation, account ceremony, permission grant or real authenticated UI action occurred. Real acceptance still requires the original mission's persistent-login restart and useful UI workflow plus intended-Chat writer-gate receipt consumed by release procedure.
+Do not borrow human gh, browser cookies, Keychain or another application's authentication. Do not create another GitHub app/credential plane, browser-session database, queue or retry owner. Do not widen Worker Browser B1 or introduce Opera to avoid the incumbent path. No merge, production activation or real authenticated workflow occurred. The parent mission remains explicitly incomplete.
