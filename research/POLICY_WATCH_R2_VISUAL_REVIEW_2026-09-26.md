@@ -1,117 +1,132 @@
-# Policy Watch — cumulative design checkpoint (R3)
+# Policy Watch — cumulative design checkpoint (R4)
 
-Date: 2026-09-26. Operation: `policy-watch-redesign-20260926-sol-001`. The existing checkpoint path is retained; this is not a second continuity owner.
+Operation: `policy-watch-redesign-20260926-sol-001`. Fixed public-source snapshot: **26 September 2026**. The existing checkpoint path and Macro draft PR #8048 remain the continuity owner.
 
-**Disposition: CHECKPOINTED_CONTINUATION. MISSION_COMPLETE: false. Capability: PARTIAL.** There are ten populated primary mockup candidates: the six R2 layouts with final screenshot review, plus four new R3 layouts. Two R3 desktop layouts received initial screenshot review; their subsequent fixes and both R3 mobile layouts still need final visual proof. Four additional artboards are explicitly HELD, not completed screens. No production readiness, interactive implementation, accessibility certification, design acceptance or award-quality verdict is claimed.
+**CHECKPOINTED_CONTINUATION · MISSION_COMPLETE: false · PARTIAL.** R4 produced a working, self-contained interactive review prototype with 126 passing offline assertions, while the native Paper update remains partial after an explicit pre-dispatch block. The prototype is **NOT_APPLIED_TO_PAPER / NOT_DEPLOYED**. It does not replace the canonical canvas, certify production readiness, establish human comprehension or claim award quality.
 
-## Mission, authority and custody
+## Mission, authority and current decision
 
-Chairman commission: redesign Policy Watch into a premium, user-first, advanced-but-clear policy intelligence product, using Paper on M1 Studio first. The Chairman rejected the initial empty scaffold and requested substantially stronger mockups. The current live instruction continues that mission, not production release.
+The Chairman commissioned premium, advanced-but-simple Policy Watch mockups and repeatedly emphasized immediate comprehension. R4 therefore prioritizes actual change, meaning, evidence limits and next action rather than decorative slogans or increasing artboard count. This is permitted reversible design work; no production release, scoring change or new runtime control plane was commissioned.
 
-Protected Mastermind/master was re-observed at unchanged `a31f49f4056943124cc0e7e42349e46feee444c7`; INDEX was read at that commit. The compatible same-pin procedure already loaded in this conversation remains controlling: Skillpack 1.0.1/bootstrap 1, Paper workflow/connection, active execution and closeout. No material source-law change was found. Initial Macro audit pin remains `a240da85dde8eacf2efb27f3416e19176b91b787`.
+Protected Mastermind/master was observed at `4c6b206d3fb7fbc6d077faf61ae361bedf259925`, successor of `a31f49f4056943124cc0e7e42349e46feee444c7`. Current INDEX and required Paper workflow/connection, active-execution/delegation/cold-start/closeout companions were loaded or checked against identical previously loaded blobs at the same pin. INDEX is compatible Skillpack 1.0.1/bootstrap 1. The intervening source change is fleet placement, not the Paper workflow. Initial Macro source audit pin remains `a240da85dde8eacf2efb27f3416e19176b91b787`.
 
-Existing owner: Macro draft PR #8048, branch `sol/policy-watch-redesign-study-20260926`. Previous cumulative checkpoint: `d58f3a7967120b54e9d05e054fe720cbe9105965`. This revision preserves R2 evidence and adds R3 effects; the R1 preservation map and narrative-versus-structured-falsifier review question remain open. No new WS/program registry, lifecycle, source writer, memory service, scheduler or authority plane was introduced.
+Source branch: `sol/policy-watch-redesign-study-20260926`. Prior cumulative checkpoint: `452dbd5c3b2dfdad620616749f665f0617d1327a`. Interim R4 effect checkpoint is PR comment **5851974650**. R4 prototype digest/verification metadata was committed in `research/POLICY_WATCH_R4_PROTOTYPE_EVIDENCE_2026-09-26.json` at `bbf99ea9db8c577e7c22479b8433745ad566e038`.
 
-Sol retained this bounded attended design interaction for principal judgment and continuity of the exact M1 carrier. No worker/Fable session, watcher or autonomous execution was commissioned. R3 did not retry the prior refused policy-map, recovery-state, Chinese-clone or R2 indicator-release requests. It advanced the independent Calendar and Calls & evidence destinations already within the original scope.
+Sol retained the attended design for principal judgment and continuity of the bound M1 carrier. No Fable/provider worker, watcher, background execution or custody transfer was started. Actual served model/mode is not independently attested; keep the current working surface, not a mode/account/host switch to obtain a denied effect.
 
-## Exact Paper home
+## Native Paper — exact current state
 
-File: **MASTERMIND PAGES**, `01M2WGNCX9475G79JRKJTCM08P`. Page: `p-J-1`, still titled **Policy Watch · Decision Desk · R1 Study · 2026-09-26**.
+File: **MASTERMIND PAGES**, `01M2WGNCX9475G79JRKJTCM08P`. Page `p-J-1`, **Policy Watch · Decision Desk · R1 Study · 2026-09-26**.
 https://app.paper.design/file/01M2WGNCX9475G79JRKJTCM08P/p-J-1
 
-Final R3 native page readback reported **14 artboards**. This is not 14 completed mockups: ten are primary candidates and four are held.
+Last complete census: 14 artboards, ten populated primary candidates and four held. R4 created no new artboard. Do not describe 14 completed screens. Desktop widths are 1440 and mobile 390; fit-content heights can be reported null on the inactive page, not zero.
 
-| Primary candidate | Artboard | Evidence state |
+| Primary candidate | Artboard | Current proof boundary |
 |---|---|---|
-| 01 · Briefing · Dark · R2 | `1AF7-1` | Final native screenshot inspected in R2 |
-| 02 · Briefing · Light · R2 | `1EW6-1` | Final native screenshot inspected in R2 |
-| 03 · Evidence workspace · Dark · Desktop | `1EZH-1` | Final native screenshot inspected in R2 |
-| 04 · Evidence workspace · Light · R2 | `1FU3-1` | Final native screenshot inspected in R2 |
-| 05 · Briefing · Dark · Mobile 390 | `1EZI-1` | Final native screenshot inspected in R2 |
-| 06 · Briefing · Light · Mobile 390 | `1FWV-1` | Final native screenshot inspected in R2 |
-| 09 · Calendar · Light · R3 | `1GUQ-1` | Initial screenshot inspected; final fit-content fix applied, visual recheck blocked |
-| 10 · Calls & evidence · Dark · R3 | `1GUR-1` | Initial screenshot inspected; fit-content/chip fixes applied, visual recheck blocked |
-| 11 · Calendar · Light · Mobile R3 | `1H27-1` | Populated native nodes and JSX verified; no screenshot review yet |
-| 12 · Research review · Dark · Mobile R3 | `1H28-1` | Populated native nodes and JSX verified; no screenshot review yet |
+| Briefing dark desktop | `1AF7-1` | R2 render was reviewed; R4 copy/style/summary/nav edits now invalidate that final appearance proof. Nav is appended at bottom, not positioned correctly. |
+| Briefing light desktop | `1EW6-1` | R2 render was reviewed; R4 paired copy/style edits need new proof. New nav and summary are NOT applied. |
+| Evidence workspace dark | `1EZH-1` | Unchanged R2 final screenshot reviewed |
+| Evidence workspace light | `1FU3-1` | Unchanged R2 final screenshot reviewed |
+| Mobile briefing dark | `1EZI-1` | Unchanged R2 final screenshot reviewed |
+| Mobile briefing light | `1FWV-1` | Unchanged R2 final screenshot reviewed |
+| Calendar light desktop | `1GUQ-1` | R3 initial screenshot reviewed; fit-content fix applied, final native screenshot still blocked |
+| Calls & evidence dark desktop | `1GUR-1` | R3 initial screenshot reviewed; fit-content and chip fixes applied, final screenshot still blocked |
+| Calendar light mobile | `1H27-1` | Native content/JSX verified; no final native screenshot review |
+| Research dark mobile | `1H28-1` | Native content/JSX verified; no final native screenshot review |
 
-Desktop width: 1440. Mobile width: 390. Primary artboard heights now use fit-content; an inactive-page height of null is not a measured zero height. Displayed controls are static design elements, not proof of functional navigation, notes, reminders or account saves.
+Held roots: `1G0G-1` policy-map reservation and `1G0H-1` recovery-state reservation, both empty 400×120 at y1350; `1H4C-1` Calendar theme counterpart and `1H83-1` research theme counterpart, unconverted/unreviewed duplicates explicitly named HELD. No Chinese Paper clones or R3 mobile-theme clones were created. Their refused effects remain held.
 
-Held artboards: `1G0G-1` (empty policy-map reservation), `1G0H-1` (empty recovery-state reservation), `1H4C-1` (Calendar theme-counterpart duplicate), `1H83-1` (research theme-counterpart duplicate). The two old reservations remain 400×120 at y1350. The two new duplicates were explicitly renamed **HELD · … theme counterpart · Not reviewed** after their theme-conversion command was refused. Do not count either duplicate as a finished alternate theme. No R3 mobile-theme clones were created.
+### R4 native changes with successful receipts
 
-## R3 capability delta
+`policy-watch-r4-brief-copy` and `policy-watch-r4-brief-style` updated the existing paired desktop briefings: compact Policy Watch title; direct Clearing deadlines extended headline; explicit historical SEC announcement date; shorter primary-source section; relevant upcoming meeting/deadline/research questions in place of generic navigation cards. No shared tokens changed.
 
-**Calendar:** a next-meeting focal panel, a chronological later-milestone agenda, source attribution, preparation tasks and a separate personal-review entry point. The next meeting is not repeated in the later agenda. Official dates and personal reminder creation are visually distinct. No decision outcome, countdown, rate prediction or live feed-health claim is invented. Its mobile version uses a vertical date hierarchy and a full-width primary action.
+`policy-watch-r4-nav-dark` inserted **`1NK7-1`**, a local navigation frame, into the dark body **at its end**. `policy-watch-r4-summary-dark` inserted **`1NKJ-1`**, a three-answer summary, into the dark story header. All four returned APPLIED_RESPONSE_OBSERVED and their original responses were saved.
 
-**Calls & evidence:** a research notebook plus selected-record workspace, preserving the original question and separating a documented implementation milestone from an unmeasured market outcome. The example has no claimed return series, observation window, scored forecast or causal conclusion. Resolution requirements identify the source record, measurement basis and attribution question. Its mobile version opens a focused research review rather than compressing a desktop matrix.
+The following subsequent batch was explicitly blocked before dispatch: move `1NK7-1` before `1EJB-1`, insert light nav, insert light summary, capture dark R4 screenshot. None of that batch ran. Thus **dark nav is not at its intended position; light nav/summary are absent; R4 appearance is not visually proven**. The batch was not retried, shortened into a replay or moved to another carrier. No ambiguous dispatched effect is known.
 
-These are original design fixtures. The notebook's three records and version label are explicitly illustrative, not retrieved user/account records. Questions about implementation costs are research prompts, not claims that costs will rise or fall. An official milestone is not a proxy for investment performance.
+## Independent R4 interactive prototype
 
-## Visual review and repairs
+After the Paper block, an independent sandbox-local prototype advanced interaction and readability testing. This does NOT authorize or accomplish any refused native Paper edit. It is a downloadable review artifact, not production source and not an alternative lifecycle, data ingestion, auth, calendar or alert system.
 
-The established R2 Inter typography and `--mx-dark-*` / `--mx-light-*` tokens remain intact. Shared token content hash: `bba69475`. No shared tokens or other designers' pages were edited. R3 adds large date typography, aligned event lanes, a selected-record hierarchy, focused actions and explicit evidence gaps rather than unrelated score tiles.
+The four functioning views are Briefing, a two-topic searchable Policy map, Calendar, and Calls & evidence. The evidence dialog provides comparison, official sources and a confirmed local-only review note. The prototype includes English/Chinese and dark/light, same-document history, filter/reset, keyboard tabs, Escape/focus restoration, truthful source-delay/quiet/analysis-unavailable examples, and save-failure handling. Three notebook entries are clearly illustrative, not user records. Source data are a fixed September 26 snapshot, not a fresh/live feed.
 
-R2 repairs remain accepted as visually observed evidence, not user acceptance: 15 black-on-dark Text nodes corrected; fixed-height clipping changed to fit-content; misleading interactive-reference copy corrected; light mobile status and desktop moon icons repaired and screenshot-inspected.
+The action moved ahead of supporting analysis in actual DOM order. It is above the first 844-pixel screen at both 320 and 390 widths in EN/ZH checks. A real failing mobile-fold assertion preceded the repair. A failing repeat-confirmation assertion exposed duplicate note submission; after repair a saved note cannot be submitted again without editing. Text or date edits mark the draft unsaved. A failing date-wrap assertion preceded the narrow meeting-date repair. Chinese date labels were also visually repaired to avoid an orphaned final day character.
 
-R3 initial screenshots exposed clipped lower sections and notebook status chips stretched like input fields. Native `update_styles` successfully applied fit-content to both desktop roots and intrinsic-width/left-aligned styles to chip nodes `1H0V-1`, `1H14-1`, `1H1D-1`. Both mobile roots were also successfully changed to fit-content. **Those final visual fixes are not screenshot-proven:** the later four-screenshot request was refused before dispatch. Native structure/source checks are not substituted for visual proof.
+### Delivered artifact identities
 
-## Public-source verification for this study
+The prototype source is **delivered in the conversation ZIP, not committed to production paths**. The repository evidence JSON preserves exact digests. Do not infer that GitHub contains the HTML source merely because it contains its manifest.
 
-Public sources were freshly opened during R3:
-- Federal Reserve FOMC calendar: https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm — October 27–28 and December 8–9, 2026 meetings; December is marked as associated with the Summary of Economic Projections.
-- SEC Treasury Clearing Implementation: https://www.sec.gov/featured-topics/treasury-clearing-implementation — eligible cash-market compliance date December 31, 2026; eligible repo-market compliance date June 30, 2027; page review/update date September 23, 2026.
+| Artifact | Conversation path | SHA-256 |
+|---|---|---|
+| Self-contained HTML, 74,691 bytes | `/mnt/data/policy_watch_r4_review/policy-watch-review.html` | `ca5c89f6d910d1e08dd48a557992a3be4337f2041ecee4dca00e44109231615b` |
+| Full review ZIP, 2,326,278 bytes, 37 members | `/mnt/data/policy_watch_r4_review.zip` | `cda7c46ac9e6b4e5e1313e4cfada33d93f49da8b8525d7ca6d457aa50628ce9a` |
+| Offline verification JSON, 6,152 bytes | `/mnt/data/policy_watch_r4_review/evidence/verification-offline.json` | `cc9e866ab48b0f39196107bf633b86be212163308af96644f1bcf4a1957dd8e4` |
+| Production-readiness contract, 9,205 bytes | `/mnt/data/policy_watch_r4_review/PRODUCTION_READINESS.md` | `a8cd770b85c3d6be5c8edadd66bd27fef386d3279439350fbfcdb667524eb8f9` |
+| File digest manifest, 6,144 bytes | `/mnt/data/policy_watch_r4_review/evidence/manifest.json` | `7c6f1d4d1bef6154a21c48f629083fbfed5762b0df064e2532d2e0e6839f4633` |
 
-The calendar is a **September 26 study snapshot**, not a production live-feed receipt. Meeting date ranges are not invented release times. The prior R2 Commissioner statement source remains https://www.sec.gov/newsroom/speeches-statements/uyeda-statement-update-continuing-work-toward-treasury-clearing-implementation-122325 . Its caption remains Commissioner, not Commission. No political preference, policy ranking, trading instruction or personal holdings exposure is implied.
+The ZIP includes editable HTML/CSS/JavaScript, the standalone HTML, tests, screenshots, original red/green evidence, README and production-readiness obligations. It does not contain font files, credentials or live account data. Source links are only followed upon deliberate selection; there are zero automatic network requests in the tested path.
 
-## Carrier, artifacts and source extraction
+### Verification — distinguish real evidence from fixtures
 
-All R3 Paper effects used **M1 Studio** (`m1studio`) through **Remote Desktop Commander**, device `37db60bd-f84d-4521-ae9e-47c575d9ba86`, and the existing guarded Paper v4 bridge. No M2, mode, account or alternate-carrier replay was used.
+**126 offline assertions passed; 80 are the four views × two themes × two languages × five widths (320/390/768/1024/1440).** Other checks cover first-screen action position, unsplit dates, same-document navigation/Back, source links, dialog tabs/Escape/focus, search/reset, state distinctions and confirmation/failure semantics. This count is not 126 independent user studies.
 
-Runtime: `/Users/chriswong/.local/share/mastermind-paper/runtime/v4`. Same protected owner pin: bridge SHA-256 `0d889a071cc7add29a98d8418ab48300b8fe65f9460174a7e552ff9b0f4dac27`. Original guarded edits each used a freshly observed file-bound snapshot. Shared file identity remained exact. Read/write successes apply to their actual action and target; they do not lift earlier refusals.
+Chromium administrator policy blocked the original local-HTTP route test with `net::ERR_BLOCKED_BY_ADMINISTRATOR`. The policy was not changed; no proxy, alternate origin, account or host was used to reach that URL. A separate supported offline Playwright `set_content` operation rendered already-authored inline bytes in the initial in-memory document with zero navigation/network requests. The failed route log remains in `evidence/test-run-01.txt`.
 
-Existing artifact home on M1: `/Users/chriswong/.local/share/mastermind/ops/policy-watch-redesign-20260926-sol-001/`.
+Success-path storage and application-initialization restoration use an **explicit in-memory Storage test double in the harness only**. The downloadable application contains no test double. Actual opaque-origin storage-unavailable behavior was tested separately without the double; failed saves retained drafts. Real-origin localStorage, actual reload persistence, production account persistence and deployed routing remain unverified. Do not imply they passed.
 
-R3 authoring helpers `r3_markup.py`, `r3_calendar.py`, `r3_ledger.py`, `r3_mobile.py` only prepare local HTML/argument files; they are not runtime adapters or production source. Original effects are in `r3-*.receipt.json`; paired `r3-*.args.json` and `.html` retain exact inputs. Native current page readback is `r3-current-info.receipt.json`.
+Actual local prototype screenshots were inspected for desktop and EN/ZH mobile hierarchy, the four-view contact sheet and mobile evidence rendering. These are **not Paper screenshots**. Full human comprehension, screen-reader/zoom/contrast auditing and live-data/deployed-path proof remain outstanding. The README and readiness contract spell out integration owners, source clock semantics, state matrix, UX/accessibility requirements, auth/rights, note idempotency, and release gates.
 
-All four R3 native JSX reads returned OBSERVED. A source check verified expected text in each actual return. Receipt SHA-256 values, computed on M1:
+## Public-source anchors and semantics
 
-| Receipt | SHA-256 |
-|---|---|
-| `r3-calendar-jsx.receipt.json` | `d9852119d2b0f1c72389b70b125e8e3bdaa2b8a1400dd5b949e9cc7a36468906` |
-| `r3-ledger-jsx.receipt.json` | `142ecc2b6ad6cc5a056e22c55304679148845567235c8d7a1c7c51454d137f7f` |
-| `r3-mobile-calendar-jsx.receipt.json` | `1e4411c204aee3a1285ee9133eb81abb903fd40501e53b8eaef2dacfb348b1fe` |
-| `r3-mobile-ledger-jsx.receipt.json` | `d50b855ef332b0f1c61543c27e6e2b291f8002df177dea066728eac681ef4877` |
+Fresh R4 primary-source checks distinguish announcement from later document update:
+- SEC announcement issued **25 February 2025**, one-year deadline extension and additional preparation/validation time: https://www.sec.gov/newsroom/press-releases/2025-43-sec-extends-compliance-dates-provides-temporary-exemption-rule-related-clearing-us-treasury
+- SEC implementation overview, eligible cash deadline **31 December 2026**, eligible repo deadline **30 June 2027**, shown reviewed/updated **23 September 2026**: https://www.sec.gov/featured-topics/treasury-clearing-implementation
+- Federal Reserve meeting calendar, **27–28 October 2026** and **8–9 December 2026**, the latter marked with projections: https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm
+- Offline renderer documentation: https://playwright.dev/python/docs/api/class-page#page-set-content
 
-R2 native source reads remain `r2-jsx-{brief-dark,brief-light,detail-dark,detail-light,mobile-dark,mobile-light}.receipt.json`. These are design extraction references, not accepted application components. Use exact design values and current canonical frontend/data owners for eventual implementation, not reconstructed CSS from screenshots.
+A later page update is not the announcement date. An official milestone is not a measured return, a causal conclusion or a trade signal. No politician ranking, policy endorsement, election forecast, invented rate, portfolio exposure or live acquisition receipt is included.
 
-## Screenshot evidence inventory
+## Original M1 carrier, receipts and preserved evidence
 
-All filenames are under the artifact home's `screenshots/`. They are native Paper renders. No independent digest check of these image files is claimed.
+All native Paper effects remain on **M1 Studio/RDC**, device `37db60bd-f84d-4521-ae9e-47c575d9ba86`. Runtime root `/Users/chriswong/.local/share/mastermind-paper/runtime/v4`; bridge SHA-256 `0d889a071cc7add29a98d8418ab48300b8fe65f9460174a7e552ff9b0f4dac27`. Paper reported 0.5.12 and exact file binding. Shared token hash remains `bba69475`. The current RDC allowlist includes the ops/runtime directories. Resource access does not lift platform refusals.
 
-| Render and proof scope | Artifact filename |
-|---|---|
-| R2 dark briefing, final | `043c607da24f0847f2129cee3b70ae3497a941e4b659a3a86fd66c9c5d914c61.jpg` |
-| R2 light briefing, final | `c610319d6f59708dd11eaf384fb75a05c494774cb982265fb2058a7fea933c6c.jpg` |
-| R2 dark evidence workspace, final | `04a698974b51117f688c7a3550766a9a981ead6cb183bd3e133201b537bb1cd9.jpg` |
-| R2 light evidence workspace, final | `1d5030c275253340519585579c0a1c62eda9970a426a49c402358972dbe26dba.jpg` |
-| R2 dark mobile, final | `73f1b5740bbd45fd5d6160c899bcf17300ce9514b482365c26f72847a7cc0b0e.jpg` |
-| R2 light mobile, final | `bac4c285c7b551527dcc4ac3fd0933e65494cf005d341231fdeebbf881c58eca.jpg` |
-| R3 Calendar, INITIAL before fit-content repair | `a93f1d0cf6504633ebf7df299020a30aee6d74c66cfdd57792e66adab80589c4.jpg` |
-| R3 research notebook, INITIAL before fit-content/chip repair | `0d42cf37d5addad578a12108ca63aa4ca6b5984798ae9cf4274d4ce9a147e4a3.jpg` |
+Existing M1 artifact home:
+`/Users/chriswong/.local/share/mastermind/ops/policy-watch-redesign-20260926-sol-001/`
 
-## Effects, refusal fences and indicator custody
+R2/R3 native HTML/JSX/receipts stay there. R4 authoring helper `r4_prepare.py` prepared arguments only. The four successful R4 modifications are in `r4-{brief-copy,brief-style,nav-dark,summary-dark}.receipt.json`. Current-node prechecks are `r4-pre-<node>.json`. Do not execute prepared-but-unapplied argument files merely because they exist.
 
-No ambiguous dispatched Paper mutation is known. One R3 output-summary parser had a missing bracket after the mobile fit-content mutation. The original `r3-mobile-fit.receipt.json` was read and showed APPLIED_RESPONSE_OBSERVED for both exact mobile roots; that mutation was **not rerun**. Subsequent work continued only from the missing suffix.
+R3 JSX receipt digests remain:
+- `r3-calendar-jsx.receipt.json`: `d9852119d2b0f1c72389b70b125e8e3bdaa2b8a1400dd5b949e9cc7a36468906`
+- `r3-ledger-jsx.receipt.json`: `142ecc2b6ad6cc5a056e22c55304679148845567235c8d7a1c7c51454d137f7f`
+- `r3-mobile-calendar-jsx.receipt.json`: `1e4411c204aee3a1285ee9133eb81abb903fd40501e53b8eaef2dacfb348b1fe`
+- `r3-mobile-ledger-jsx.receipt.json`: `d50b855ef332b0f1c61543c27e6e2b291f8002df177dea066728eac681ef4877`
 
-Two later R3 requests were explicitly blocked before dispatch: (1) a batch containing desktop theme conversion, completed-theme renaming, two theme-icon changes and mobile counterpart cloning; (2) final screenshot capture for the four primary R3 roots. Neither was retried, shortened into a disguised replay or sent to another carrier. Thus theme conversions and mobile clones did not start; final R3 visual proof remains unavailable. The earlier R2 policy-map, recovery-state, Chinese-clone and old indicator-release refusals remain held as well. A successful unrelated read or write is not a permission recovery signal.
+R2 source receipts: `r2-jsx-{brief-dark,brief-light,detail-dark,detail-light,mobile-dark,mobile-light}.receipt.json`. The two desktop-brief versions are historical after the R4 edits, not current exact source.
 
-The separate truth-labeling operation `policy-watch-r3-hold-duplicate-labels` succeeded and current native page readback confirmed both HELD names. **R3-only working indicators were successfully released** via `policy-watch-r3-finish-new-nodes`, with APPLIED_RESPONSE_OBSERVED and an OK result. Exact released R3 set: `[1GUQ-1,1GUR-1,1H27-1,1H28-1,1H4C-1,1H83-1]`.
+Native screenshot filenames under M1 `screenshots/`:
+- R2 dark briefing (historical after R4): `043c607da24f0847f2129cee3b70ae3497a941e4b659a3a86fd66c9c5d914c61.jpg`
+- R2 light briefing (historical after R4): `c610319d6f59708dd11eaf384fb75a05c494774cb982265fb2058a7fea933c6c.jpg`
+- R2 dark evidence: `04a698974b51117f688c7a3550766a9a981ead6cb183bd3e133201b537bb1cd9.jpg`
+- R2 light evidence: `1d5030c275253340519585579c0a1c62eda9970a426a49c402358972dbe26dba.jpg`
+- R2 dark mobile: `73f1b5740bbd45fd5d6160c899bcf17300ce9514b482365c26f72847a7cc0b0e.jpg`
+- R2 light mobile: `bac4c285c7b551527dcc4ac3fd0933e65494cf005d341231fdeebbf881c58eca.jpg`
+- R3 Calendar initial before fit repair: `a93f1d0cf6504633ebf7df299020a30aee6d74c66cfdd57792e66adab80589c4.jpg`
+- R3 research initial before fit/chip repair: `0d42cf37d5addad578a12108ca63aa4ca6b5984798ae9cf4274d4ce9a147e4a3.jpg`
 
-R2 indicator release remains unconfirmed for `[1AF7-1,1EW6-1,1EZH-1,1FU3-1,1EZI-1,1FWV-1,1G0G-1,1G0H-1]`. The R3 release deliberately excluded those prior refused targets. The older `finish01` predates R2 and does not close its obligation.
+Native image filenames identify artifacts; no separate image digest computation was claimed for these M1 files. Sandbox prototype image digests are in its own manifest and must not be substituted for native proof.
 
-## Exact continuation boundary
+## Refusal fences and indicator custody
 
-This turn advanced two independent destinations and their mobile structures, obtained initial desktop renders, applied observed fixes, extracted native source and verified current page structure. It stops at the actual final visual-review gate after a refused final-screenshot request; adding further unreviewed layouts would enlarge the review backlog. This is not mission completion or user acceptance.
+All older refused logical effects remain held: R2 policy-map/recovery-state writes, Chinese cloning and old eight-node indicator release; R3 theme conversion/renaming/icon/mobile-clone batch and final four-primary-root screenshot capture; R4 positioning/light-nav/light-summary/screenshot batch. Neither unrelated read/write success nor a new turn grants permission to retry. No cross-carrier replay occurred.
 
-**Next action, after an evidenced permitted recovery:** capture and inspect the four exact R3 primary roots; verify clipping, intrinsic chips, mobile lane widths and first-action visibility before accepting them. Do not replay old or R3-refused effects without that recovery. Then complete the held theme, policy-map, recovery-state and bilingual obligations under their existing scopes. Keep the same M1 carrier and current working mode; no mode/account/host switch is requested as a way around a refusal. No automatic wake or custody transfer is claimed.
+R3 output-summary parser failure was reconciled by reading `r3-mobile-fit.receipt.json`: the exact fit-content mutation succeeded and was not rerun. All R3 content, both desktop fit repairs, intrinsic chip fixes and mobile fit changes remain applied.
 
-DO_NOT_REDO: the six reviewed R2 layouts, successfully applied R3 content, both fit-content repairs, intrinsic chip repair, native source extraction and R3 indicator release. Remaining proof: final R3 renders, missing destinations/states, Chinese parity, alternate R3 themes, 320/tablet/reflow, keyboard/focus, functioning controls, source-health behaviors, live-site baseline and eventual deployed implementation. No production code, source producer, existing scoring, auth/entitlement, alert scheduler, merge or deployment changed in this turn.
+R3-only indicators were released successfully via `policy-watch-r3-finish-new-nodes`, exact set `[1GUQ-1,1GUR-1,1H27-1,1H28-1,1H4C-1,1H83-1]`. Old R2 release remains unconfirmed for `[1AF7-1,1EW6-1,1EZH-1,1FU3-1,1EZI-1,1FWV-1,1G0G-1,1G0H-1]`; current R4 edits do not resolve it. No blanket release or hidden custody transfer is claimed.
+
+## Exact next action and completion boundary
+
+This boundary delivers a concrete tested interactive review artifact and records all partial native effects. Further unreviewed canvas expansion is not useful while native verification/placement effects remain refused. The primary next action is **obtain evidenced permitted recovery for the original M1 Paper actions, then reconcile and complete the exact R4 dark-nav placement/light additions and capture native renders**. Do not blindly replay the blocked batch. Thereafter consume the R3 final-review, held destination/state/theme and bilingual obligations rather than rebuilding prior successful work.
+
+Independent review can open the supplied standalone prototype and judge the fact-first hierarchy and primary journey. The prototype's five-second/30-second comprehension targets need actual user testing; its local-storage success requires permitted real-origin qualification. No automatic wake is armed. No mode, account or host switch is proposed to bypass a denial.
+
+DO_NOT_REDO: acknowledged Paper effects; unchanged R2 evidence/mobile layouts; R3 applied source/fixes and indicator release; the packaged prototype's passing checks unless relevant bytes change. The R1 preservation map and narrative-versus-structured-falsifier scoring question remain open. Production implementation requires current source/authority/custody review, real data/auth/rights integration, exact-head tests, independent review and deployed browser proof. No production file, ingress, score, auth, alert scheduler, merge, deployment, worker or watcher was changed by this turn.
