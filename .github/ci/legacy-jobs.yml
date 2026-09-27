@@ -4467,6 +4467,9 @@ jobs:
       - "collectors/edgar_deadname_prices.py"
       - "collectors/edgar_deadnames.py"
       - "collectors/edgar_delisting.py"
+      # #7976 Finviz theme event-confirmation adapter reaches the canonical
+      # Item-2.02 owner through engine.group_earnings.
+      - "collectors/edgar_earnings_8k.py"
       - "collectors/edgar_eps.py"
       - "collectors/edgar_facts.py"
       - "collectors/edgar_flow_quality.py"
@@ -9031,8 +9034,13 @@ jobs:
       - "engine/gov_exposure.py"
       - "engine/grading.py"
       - "engine/greeks.py"
+      # #7976 source-local Finviz durability context is reached through the
+      # existing serving/build import closure. Curated scope must widen with it.
+      - "engine/group_earnings.py"
       - "engine/group_flow.py"
       - "engine/guidance_gap.py"
+      - "engine/theme_repricing_context.py"
+      - "engine/theme_rerating_durability.py"
       - "engine/hold.py"
       - "engine/holdings_signals.py"
       - "engine/htf_durability.py"
@@ -13560,8 +13568,13 @@ jobs:
       - "engine/grading_stats.py"
       - "engine/greeks.py"
       - "engine/group_context.py"
+      # #7976 Finviz heatmap durability wiring extends this existing board/build
+      # closure; widening preserves the curated-scope ownership contract.
+      - "engine/group_earnings.py"
       - "engine/group_flow.py"
       - "engine/guidance_gap.py"
+      - "engine/theme_repricing_context.py"
+      - "engine/theme_rerating_durability.py"
       - "engine/hazard_score.py"
       - "engine/hk_adr_bridge.py"
       - "engine/hk_ah.py"
@@ -15378,6 +15391,8 @@ jobs:
       - "engine/theme_fingerprint.py"
       - "engine/theme_graph/__init__.py"
       - "engine/theme_graph/store.py"
+      # #7976 themes heatmap now attaches the descriptive participation context.
+      - "engine/theme_repricing_context.py"
       - "engine/theme_revisions.py"
       - "engine/themes_heatmap.py"
       - "engine/vol_forecast.py"
@@ -16127,7 +16142,7 @@ jobs:
     # the per-basket earnings layer (season clock, beat rollup, guidance band, revision
     # breadth, post-report drift, earnings sympathy) plus its append-only sympathy ledger.
     #
-    # Both suites run against a SYNTHETIC data tree in tmp_path, so they are deterministic,
+    # These suites run against SYNTHETIC data in tmp_path, so they are deterministic,
     # offline, and independent of how full the Nasdaq surprise drip happens to be on the
     # day. What they pin, in order of what would hurt most if it broke:
     #
@@ -16172,11 +16187,15 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pandas numpy pyarrow pyyaml requests
-      - name: group earnings pulse contract, floors and sympathy (W-GR2)
+      - name: group earnings + Finviz theme repricing/durability contracts
         run: >-
           python -m pytest
           tests/test_group_earnings_contract.py
-          tests/test_group_earnings_sympathy.py -q -rs
+          tests/test_group_earnings_sympathy.py
+          tests/test_theme_repricing_context.py
+          tests/test_theme_repricing_pit.py
+          tests/test_theme_rerating_durability.py
+          tests/test_replay_theme_repricing_pit.py -q -rs
 
   group-linked-outsiders:
     # GR3 of the Group Reads program: filing-linked outsiders per US basket.

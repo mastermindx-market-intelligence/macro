@@ -29,6 +29,7 @@ from __future__ import annotations
 import json
 import logging
 import math
+from collections.abc import Iterable
 from pathlib import Path
 
 import numpy as np
@@ -1654,6 +1655,54 @@ def _valuation(t, f, fac, M, deep) -> dict | None:
         "forward_pe": _r(fwd, 1) if fwd else None,
         "forward_tier": "deep" if fwd else "lite",
     }
+
+
+def valuation_context_for_tickers(tickers: Iterable[str]) -> dict[str, dict]:
+    """Canonical valuation blocks for an arbitrary already-owned ticker roster.
+
+    This is a read adapter over the existing Stock Fundamentals owner.  It does not
+    create a second valuation formula, universe, store or ranking plane: the same
+    _context_frame() and _valuation() helpers that feed stock pages are reused here.
+
+    Missing source stores or uncovered tickers simply disappear from the output.
+    Consumers must surface coverage rather than treating absence as cheap/fair/rich.
+    """
+    wanted = sorted({
+        str(ticker).strip().upper()
+        for ticker in tickers
+        if str(ticker).strip()
+    })
+    if not wanted:
+        return {}
+
+    fund = _load_fundamentals()
+    if fund is None or fund.empty:
+        return {}
+    facts = _load_factors()
+    table = facts.get("table") or {}
+    statements = _load_statements()
+    deep = _load_deep()
+
+    try:
+        M = _context_frame(fund, table, statements)
+    except Exception as exc:  # noqa: BLE001 — context adapter must fail soft
+        log.warning("stock_fundamentals: roster valuation context unavailable (%s)", exc)
+        return {}
+
+    out: dict[str, dict] = {}
+    for ticker in wanted:
+        if ticker not in fund.index or ticker not in M.index:
+            continue
+        block = _valuation(
+            ticker,
+            fund.loc[ticker],
+            table.get(ticker),
+            M,
+            deep.get(ticker),
+        )
+        if block:
+            out[ticker] = block
+    return out
 
 
 def _financials(t, f, deep, multiyear=None, stmt: dict | None = None,
