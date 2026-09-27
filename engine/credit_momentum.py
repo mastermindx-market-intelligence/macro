@@ -1148,6 +1148,106 @@ def _build_interim_tlt(root: Path, all_events: list) -> dict:
     return result
 
 
+# Ordered tenor labels per artifact (2y/5y/10y/20y/30y)
+_YIELD_MOMENTUM_TENOR_ORDER = ("2y", "5y", "10y", "20y", "30y")
+# Per-tenor fields copied verbatim from artifact (as-of last-captured-source-row
+# the spec names; not the frame date). null_reason is verbatim per tenor.
+_YIELD_MOMENTUM_TENOR_FIELDS = (
+    "velocity_bp",
+    "turn_watch",
+    "as_of",
+    "measurement_origin",
+    "trailing_publication_lag_rows",
+    "null_reason",
+    "path_qualified",
+)
+
+
+def _build_yield_momentum_block(root: Path) -> dict:
+    """Display-only consumer of the rates program's yield_momentum organ.
+
+    Reads `transmission/latest.json` (data-root relative; `snapshot()`'s `_root`
+    is the data root — `<repo>/data` — not the repo root) -> top-level
+    `yield_momentum` and emits an additive block beside (never replacing)
+    `interim_tlt`. Display-only / not validated: never touches forward ledger,
+    credit legs, K-of-N tags, theme tags, or any score.
+
+    Invariants (RIC F3 W3):
+      - block is byte-identical for the same artifact (deterministic, no clock).
+      - interim_tlt remains untouched (removal is a later wave after two
+        consecutive live nightlies).
+      - all_events is not threaded here: yield_momentum does not emit cross or
+        threshold events, so `_upsert_forward_log` is never called from this path.
+      - per-tenor `as_of` is the artifact's per-series last-captured-source-row
+        date field (NEVER the frame date; see W2 caveat).
+    """
+    _label = (
+        "rates program yield organ (engine/yield_momentum) — display-only "
+        "consumer; interim_tlt stays until two consecutive live nightlies"
+    )
+    base = {
+        "_label": _label,
+        "authority": False,
+        "tenors": {},
+        "null_reasons": [],
+    }
+
+    artifact_path = root / "transmission" / "latest.json"
+    try:
+        with open(artifact_path) as fh:
+            artifact = json.load(fh)
+    except Exception as exc:  # noqa: BLE001
+        log.debug("credit_momentum: yield_momentum artifact unavailable: %s", exc)
+        return {
+            "state": "accruing",
+            "authority": False,
+            "_label": _label,
+            "note": "yield_momentum artifact not available",
+        }
+
+    ym = artifact.get("yield_momentum") if isinstance(artifact, dict) else None
+    if not isinstance(ym, dict):
+        return {
+            "state": "accruing",
+            "authority": False,
+            "_label": _label,
+            "note": "yield_momentum artifact not available",
+        }
+
+    series = ym.get("series") or {}
+    if not isinstance(series, dict):
+        series = {}
+
+    # Header (verbatim where the spec names them; authority is always False).
+    base["calculation_version"] = ym.get("calculation_version")
+    base["asof"] = ym.get("asof")
+
+    any_velocity_22d = False
+    null_reasons: list[str] = []
+
+    for tenor in _YIELD_MOMENTUM_TENOR_ORDER:
+        s = series.get(tenor)
+        if not isinstance(s, dict):
+            continue
+        tenor_block: dict = {}
+        for field in _YIELD_MOMENTUM_TENOR_FIELDS:
+            if field in s:
+                tenor_block[field] = s.get(field)
+        velocity_bp = s.get("velocity_bp") if isinstance(s.get("velocity_bp"), dict) else None
+        if velocity_bp is not None:
+            v22 = velocity_bp.get("22d")
+            if v22 is not None:
+                any_velocity_22d = True
+        if tenor_block.get("null_reason"):
+            null_reasons.append(str(tenor_block["null_reason"]))
+        base["tenors"][tenor] = tenor_block
+
+    base["state"] = "live" if any_velocity_22d else "accruing"
+    if null_reasons:
+        base["null_reasons"] = null_reasons
+    return base
+
+
 # ---------------------------------------------------------------------------
 # K-of-N confluence tags
 # ---------------------------------------------------------------------------
@@ -1807,6 +1907,12 @@ def snapshot(root: str | Path | None = None) -> dict:
     interim_tlt = _build_interim_tlt(_root, all_events)
 
     # -----------------------------------------------------------------------
+    # F2. Display-only yield_momentum block (RIC F3 W3) — additive, beside
+    #     interim_tlt; no ledger events; no credit-leg blending.
+    # -----------------------------------------------------------------------
+    yield_momentum_block = _build_yield_momentum_block(_root)
+
+    # -----------------------------------------------------------------------
     # G. FINRA breadth (CCW-R14: distinctly labeled, never blended)
     # -----------------------------------------------------------------------
     finra_breadth = _load_finra_breadth(_root)
@@ -1969,6 +2075,9 @@ def snapshot(root: str | Path | None = None) -> dict:
         },
         # Interim T-bond block (R6)
         "interim_tlt":   interim_tlt,
+        # Display-only yield_momentum block (RIC F3 W3) — additive consumer of
+        # engine/yield_momentum; does not replace interim_tlt; not scored.
+        "yield_momentum": yield_momentum_block,
         # Breadth (own-store + FINRA — never blended)
         "breadth": {
             "own_store": own_breadth,

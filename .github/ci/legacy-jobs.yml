@@ -14571,8 +14571,14 @@ jobs:
       # is the first failure a reader sees; a panel or calibration regression
       # above remains the masking unit. No new job; paths widened below to
       # cover the new suite's imports and its engine/template subjects.
+      # RIC F3 W3 backfill 2026-09-27 (CEO A seat, PR #8051): tests/test_credit_momentum_yield_consumer.py
+      # rides this step because its subject — the yield_momentum organ that engine/credit_momentum.py
+      # now consumes display-only — is already governed here via tests/test_yield_momentum.py; the
+      # job that owns engine/credit_momentum.py (ccw-w3-credit-momentum) is disabled (`if: false`).
+      # Placed right after test_yield_momentum.py so a source regression is the masking unit and a
+      # consumer regression is the next failure a reader sees. Paths widened for the suite + engine.
       - name: commodities / forex / rates / news / policy panels and their calibration guards
-        run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_forex_context_bus.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py tests/test_commodities_w6_truth.py tests/test_build_forex_stance.py -q
+        run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_forex_context_bus.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_credit_momentum_yield_consumer.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py tests/test_commodities_w6_truth.py tests/test_build_forex_stance.py -q
       - name: A-F01-W4-1 bonds hub byte-preservation guard (T10)
         run: python -m pytest tests/test_macro_rates_curves_bonds_guard.py -q
     # T10 lives here (gate: data), not on ccw-w4-credit-desk (gate: code).
@@ -14596,6 +14602,8 @@ jobs:
       - "tests/test_policy_lever.py"
       - "tests/test_rates_command.py"
       - "tests/test_yield_momentum.py"
+      - "tests/test_credit_momentum_yield_consumer.py"
+      - "engine/credit_momentum.py"
       - "tests/test_inputs_yield_curve.py"
       - "tests/test_reflexivity_overlay.py"
       - "tests/test_scorecard_incremental.py"
