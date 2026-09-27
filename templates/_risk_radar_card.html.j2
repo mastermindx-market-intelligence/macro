@@ -74,6 +74,25 @@
 <span class="l-en">{{ n }}{{ sfx }}</span><span class="l-zh">第{{ n }}百分位</span>
 {%- endif -%}
 {%- endmacro %}
+{% macro rr_score_percentile(score) -%}
+{%- if score is defined and score is not none -%}
+{%- set n = score | round | int -%}
+{%- set _t = n % 100 -%}{%- set _u = n % 10 -%}
+{%- set sfx = 'th' if (_t > 10 and _t < 14) else ('st' if _u == 1 else ('nd' if _u == 2 else ('rd' if _u == 3 else 'th'))) -%}
+<span class="l-en">{{ n }}{{ sfx }} percentile</span><span class="l-zh">第{{ n }}百分位</span>
+{%- endif -%}
+{%- endmacro %}
+{% macro rr_hazard_band(state) -%}
+{#- Presentation alias of the producer's existing band. No score threshold is
+    introduced or changed here: risk-off -> EXTREME, elevated -> HIGH, etc. -#}
+{%- set s = state|lower if state is defined and state else 'calm' -%}
+{%- if s == 'risk-off' -%}{{ t('EXTREME','极端') }}
+{%- elif s == 'elevated' -%}{{ t('HIGH','高') }}
+{%- elif s == 'caution' -%}{{ t('ELEVATED','偏高') }}
+{%- elif s == 'watch' -%}{{ t('WATCH','观察') }}
+{%- else -%}{{ t('CALM','平静') }}
+{%- endif -%}
+{%- endmacro %}
 {# The card itself. Built only from a radar (rd = market_state.radar) + its scares.
    Replaces the old cramped "Pullback odds · 5d.. 10d.. 21d.." text run with an
    escalating odds ramp drawn against the normal base rate, a state-coloured header,
@@ -100,8 +119,8 @@
     <span class="rrx-ic">{{ ic }}</span>
     <div class="rrx-id">
       <div class="rrx-ttl">{{ t('Risk Radar','风险雷达') }}
-        <span class="rrx-badge">{{ t(rd.state|upper, rd.state_zh) }}{% if rd.top_score is defined and rd.top_score is not none %} · {{ rd.top_score }}/100{% endif %}</span>
-        {{ help('Pullback-risk gauge. Use high readings to trim risk, not to pick stocks.', '回撤风险仪表。高读数用于降风险，不用于选股。') }}
+        <span class="rrx-badge">{{ rr_hazard_band(rd.state) }}{% if rd.top_score is defined and rd.top_score is not none %} · {{ rr_score_percentile(rd.top_score) }}{% endif %}</span>
+        {{ help('External-driver transition-hazard configuration. The percentile is not a crash probability. Use it for risk context, never stock selection.', '外部驱动的状态转变风险配置。该百分位不是崩盘概率；仅用于风险背景，不用于选股。') }}
       </div>
       {% if rd.label_en %}<div class="rrx-dom">{{ t(rd.label_en, rd.label_zh) }}</div>{% endif %}
       {% if rd.authority and rd.state in ['watch','caution','elevated','risk-off'] %}
@@ -112,30 +131,21 @@
       {% if rd.amp and rd.amp > 0 %}<div class="rrx-amp">▲ {{ t('Amplified','放大') }} — <span class="l-en">{{ rd.amp_flags_en|join(' · ') }}</span><span class="l-zh">{{ rd.amp_flags_zh|join(' · ') }}</span></div>{% endif %}
     </div>
     {% if rd.gross is defined and rd.gross is not none and rd.gross < 1 %}
-    {% if plain_gross %}
-    {%- set _g = rd.gross -%}
-    {%- set _gv = namespace(en='', zh='') -%}
-    {%- if _g >= 0.70 and _g <= 0.85 -%}
-      {%- set _gv.en = '¾ of normal' -%}{%- set _gv.zh = '约常规四分之三' -%}
-    {%- elif _g >= 0.45 and _g < 0.70 -%}
-      {%- set _gv.en = 'half of normal' -%}{%- set _gv.zh = '约常规一半' -%}
-    {%- else -%}
-      {%- set _gv.en = '×' ~ ('%.2f'|format(_g)) ~ ' of normal' -%}
-      {%- set _gv.zh = '常规的 ' ~ ('%.2f'|format(_g)) ~ ' 倍' -%}
-    {%- endif -%}
-    <div class="rrx-gross" data-tip-en="Suggested gross exposure multiplier, ×{{ '%.2f'|format(rd.gross) }} of your normal size." data-tip-zh="建议总仓位系数，为常规规模的 {{ '%.2f'|format(rd.gross) }} 倍。"><span class="gv"><span class="l-en">{{ _gv.en }}</span><span class="l-zh">{{ _gv.zh }}</span></span><span class="gn"><span class="l-en">suggested size</span><span class="l-zh">建议仓位</span></span></div>
-    {% else %}
-    <div class="rrx-gross"><span class="gv">×{{ '%.2f'|format(rd.gross) }}</span><span class="gn">{{ t('gross','建议仓位') }}</span></div>
-    {% endif %}
+    <div class="rrx-gross"
+         data-tip-en="{{ 'Evidence-gated risk-budget ceiling' if rd.binding else 'Advisory risk-budget context only' }}, ×{{ '%.2f'|format(rd.gross) }} of normal gross. This is sizing context and never selects stocks."
+         data-tip-zh="{{ '经证据门槛确认的风险预算上限' if rd.binding else '仅作提示的风险预算背景' }}：常规总敞口的 ×{{ '%.2f'|format(rd.gross) }}。这只是仓位背景，不用于选股。">
+      <span class="gv">×{{ '%.2f'|format(rd.gross) }}</span>
+      <span class="gn">{% if rd.binding %}{{ t('binding risk-budget ceiling','约束性风险预算上限') }}{% else %}{{ t('advisory risk-budget reference','提示性风险预算参考') }}{% endif %}</span>
+    </div>
     {% endif %}
   </div>
 
   {% if rd.dd21 is defined and rd.dd21 is not none %}
   <div class="rrx-odds">
     <div class="rrx-odds-l">
-      <div class="rrx-cap">{{ t('Pullback odds','回撤概率') }} <span class="rrx-cap-sub">{{ t('≥5% drop · measured vs normal','≥5% · 实测对比常态') }}</span></div>
-      <div class="rrx-big">{{ (rd.dd21*100)|round|int }}<span class="pct">%</span><span class="rrx-hz">{{ t('within 21 days','21 日内') }}</span></div>
-      <div class="rrx-vsn">{% if rd.dd_lift is not none %}<b>{{ rd.dd_lift }}×</b> {% endif %}{{ t('vs normal','对比常态') }} {{ (base.h21*100)|round|int }}%</div>
+      <div class="rrx-cap">{{ t('FORWARD ODDS','前瞻概率') }} <span class="rrx-cap-sub">{{ t('Historical model estimate · ≥5% pullback','历史模型估计 · ≥5%回撤') }}</span></div>
+      <div class="rrx-big">{{ '%g'|format(rd.dd21*100) }}<span class="pct">%</span><span class="rrx-hz">{{ t('within 21 sessions','21个交易日内') }}</span></div>
+      <div class="rrx-vsn"><span class="l-en">{% if rd.dd_lift is defined and rd.dd_lift is not none %}{{ '%.2f'|format(rd.dd_lift) }}× reference odds · {% endif %}normal historical rate {{ '%g'|format(base.h21*100) }}%</span><span class="l-zh">{% if rd.dd_lift is defined and rd.dd_lift is not none %}{{ '%.2f'|format(rd.dd_lift) }}× 参考概率 · {% endif %}常态历史率 {{ '%g'|format(base.h21*100) }}%</span></div>
     </div>
     <div class="rrx-ramp">
       {%- set _d5 = rd.dd5 if rd.dd5 is defined else none -%}
@@ -509,11 +519,18 @@
      Glance tier: ONE plain-word line. Tier-2: per-scare (top 3 by n) + watch/caution +
      recovery detail inside the help() tooltip, rendered from the live by_sc_y1, wc_y1
      and y1-window recovery data. #}
-  {%- set _fl = rd.forward_log if rd.forward_log else none -%}
-  {% if (rd.track is defined and rd.track) or _fl %}
-  {%- set trk = rd.track if (rd.track is defined and rd.track) else {} -%}
-  {%- set mon = trk.get('monitoring') if trk.get is defined else trk.monitoring if trk.monitoring is defined else {} -%}
-  {%- set win_y1 = trk.get('windows', {}).get('y1', {}) if trk.get is defined else {} -%}
+  {%- set _fl = rd.forward_log if (rd.forward_log is defined and rd.forward_log) else none -%}
+  {%- set _track = rd.track if (rd.track is defined and rd.track) else none -%}
+  {% if _track or _fl %}
+  {#- The producer intentionally splits evidence: forward_log owns matured rows;
+      track owns monitoring, loud-alert outcomes and rows awaiting maturity. Join
+      them for presentation instead of choosing one source and rendering zeros. -#}
+  {%- set trk = _track if _track else (_fl if _fl else {}) -%}
+  {%- set mon = trk.get('monitoring', {}) if trk.get is defined else (trk.monitoring if trk.monitoring is defined else {}) -%}
+  {%- set _wins = trk.get('windows', {}) if trk.get is defined else {} -%}
+  {%- set win_y1 = _wins.get('y1', {}) if _wins.get is defined else {} -%}
+  {%- set win_full = _wins.get('full', win_y1) if _wins.get is defined else win_y1 -%}
+  {%- set al_full = win_full.get('alerts', {}) if win_full.get is defined else {} -%}
   {%- set al_y1 = win_y1.get('alerts', {}) if win_y1.get is defined else {} -%}
   {%- set wc_y1 = win_y1.get('watch_caution', {}) if win_y1.get is defined else {} -%}
   {%- set rv_y1 = win_y1.get('recovery') if win_y1.get is defined else none -%}
@@ -551,15 +568,15 @@
       {%- set _ns.seen = _ns.seen + 1 -%}
     {%- endif -%}
   {%- endfor -%}
-  {%- set _fl_n = _fl.n_graded if (_fl and _fl.n_graded) else 0 -%}
+  {%- set _fl_n = (_fl.get('n_graded') if (_fl and _fl.get is defined and _fl.get('n_graded') is not none) else (mon.get('graded_n', 0) if mon.get is defined else 0)) -%}
+  {%- set _await_n = mon.get('awaiting_maturity') if mon.get is defined else none -%}
+  {%- set _loud_n = al_full.get('n', 0) if al_full.get is defined else 0 -%}
+  {%- set _hit_n = al_full.get('tp', 0) if al_full.get is defined else 0 -%}
   {%- set _lag = mon.get('last_logged_days_ago') if mon.get is defined else none -%}
   <div class="rrx-trk">
-    <span class="rrx-audit-k">🧾 {{ t('Track record','往绩') }}</span>
+    <span class="rrx-audit-k">🧾 {{ t('EVIDENCE / AUTHORITY','证据／权限') }}</span>
     {%- if _fl_n > 0 %}
-    {#- this market's OWN graded log (intl radars). "not yet moving the verdict" replaces
-        the old "display-only" chip — that phrase is banned glance-tier vocabulary
-        (DESIGN_DOCTRINE Law 2, "display-tier / display context only"). -#}
-    <span>{{ _fl_n }} {{ t('graded','已评分') }}{% if _fl.force_lift is defined and _fl.force_lift is not none %} · <b>{{ _fl.force_lift }}×</b> {{ t('vs base rate','对比基准') }}{% endif %} · {% if _fl.can_force %}{{ t('moving the verdict','参与定调') }} ✓{% else %}{{ t('not yet moving the verdict','尚未参与定调') }}{% endif %}</span>
+    <span class="l-en">Live forward evidence still accruing · {{ _fl_n }} matured · {{ _loud_n }} loud · {{ _hit_n }} hits{% if _await_n is not none %} · {{ _await_n }} awaiting maturity{% endif %} · {% if rd.binding %}BINDING — evidence-gated guard may cap measured tape{% else %}ADVISORY — does not override measured tape{% endif %}</span><span class="l-zh">实时前瞻证据仍在积累 · {{ _fl_n }} 条已成熟 · {{ _loud_n }} 条强警报 · {{ _hit_n }} 次命中{% if _await_n is not none %} · {{ _await_n }} 条待成熟{% endif %} · {% if rd.binding %}约束性 — 经证据门槛确认的护栏可限制实测盘面{% else %}提示性 — 不覆盖实测盘面{% endif %}</span>
     {%- elif hit_rate is not none %}
     {# Glance tier: "on N of M elevated days a ≥5% drop followed within a month (past year)" #}
     <span class="l-en">on {{ al_tp }} of {{ al_n }} elevated days in the past year, a ≥5% drop followed within a month</span><span class="l-zh">过去一年 {{ al_n }} 个警报日中有 {{ al_tp }} 天在一个月内出现 ≥5% 下跌</span>
