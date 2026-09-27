@@ -138,7 +138,7 @@
    "QLYS",
    "INSW"
   ],
-  "plan_universe_n": 436
+  "plan_universe_n": 437
  },
  "themes": {
   "basis": "subsector_rotation.emerging_score",
@@ -181,18 +181,16 @@
     "present_counts": {
      "buy": 1,
      "ran": 0,
-     "leaders": 1
+     "leaders": 0
     },
     "present": {
      "buy": [
       "NVDA"
      ],
      "ran": [],
-     "leaders": [
-      "NET"
-     ]
+     "leaders": []
     },
-    "represented_n": 2,
+    "represented_n": 1,
     "days_since_top5_entry": null
    },
    {
@@ -297,15 +295,14 @@
     "n_members": 12,
     "n_members_live": 10,
     "n_members_read": 12,
-    "n_members_on_board": 2,
+    "n_members_on_board": 1,
     "members_on_board": [
-     "NET",
      "OKTA"
     ],
     "present_counts": {
      "buy": 0,
      "watch": 0,
-     "leaders": 2,
+     "leaders": 1,
      "ran": 0
     },
     "pctile": 0.9147,
@@ -471,16 +468,14 @@
     "n_members": 17,
     "n_members_live": 17,
     "n_members_read": 17,
-    "n_members_on_board": 3,
+    "n_members_on_board": 1,
     "members_on_board": [
-     "CRM",
-     "NET",
      "PLTR"
     ],
     "present_counts": {
      "buy": 0,
      "watch": 0,
-     "leaders": 3,
+     "leaders": 1,
      "ran": 0
     },
     "pctile": 0.6845,
@@ -497,15 +492,14 @@
     "n_members": 8,
     "n_members_live": 8,
     "n_members_read": 8,
-    "n_members_on_board": 2,
+    "n_members_on_board": 1,
     "members_on_board": [
-     "CRM",
      "PLTR"
     ],
     "present_counts": {
      "buy": 0,
      "watch": 0,
-     "leaders": 2,
+     "leaders": 1,
      "ran": 0
     },
     "pctile": 0.6806,
@@ -618,13 +612,12 @@
     "n_members": 74,
     "n_members_live": 74,
     "n_members_read": 74,
-    "n_members_on_board": 12,
+    "n_members_on_board": 11,
     "members_on_board": [
      "AMAT",
      "APH",
      "CDNS",
      "CIEN",
-     "CRM",
      "JBL",
      "KLAC",
      "LRCX",
@@ -636,7 +629,7 @@
     "present_counts": {
      "buy": 5,
      "watch": 5,
-     "leaders": 2,
+     "leaders": 1,
      "ran": 0
     },
     "pctile": 0.6091,
@@ -811,16 +804,15 @@
     "n_members": 14,
     "n_members_live": 14,
     "n_members_read": 14,
-    "n_members_on_board": 3,
+    "n_members_on_board": 2,
     "members_on_board": [
-     "CRM",
      "GTLB",
      "TEAM"
     ],
     "present_counts": {
      "buy": 0,
      "watch": 0,
-     "leaders": 3,
+     "leaders": 2,
      "ran": 0
     },
     "pctile": 0.5337,
@@ -961,8 +953,8 @@
      "NVT"
     ],
     "present_counts": {
-     "buy": 1,
-     "watch": 1,
+     "buy": 2,
+     "watch": 0,
      "leaders": 0,
      "ran": 0
     },
@@ -1392,15 +1384,16 @@
     "n_members": 22,
     "n_members_live": 22,
     "n_members_read": 22,
-    "n_members_on_board": 2,
+    "n_members_on_board": 3,
     "members_on_board": [
      "BKR",
-     "DINO"
+     "DINO",
+     "MPC"
     ],
     "present_counts": {
      "buy": 1,
      "watch": 0,
-     "leaders": 1,
+     "leaders": 2,
      "ran": 0
     },
     "pctile": 0.0774,
@@ -1417,14 +1410,15 @@
     "n_members": 21,
     "n_members_live": 21,
     "n_members_read": 21,
-    "n_members_on_board": 1,
+    "n_members_on_board": 2,
     "members_on_board": [
-     "BKR"
+     "BKR",
+     "MPC"
     ],
     "present_counts": {
      "buy": 1,
      "watch": 0,
-     "leaders": 0,
+     "leaders": 1,
      "ran": 0
     },
     "pctile": 0.0774,
