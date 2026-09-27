@@ -8,7 +8,8 @@ answer: >
   calibrated catalyst-outcome probabilities, conditional equity payoffs, priced-in
   expectations, complete source-grounded theses and prospective learning. Briefings,
   calendars, research browsers and facts-only slices support that outcome; they are
-  not the finished product.
+  not the finished product. Recommendations and developing signals share one
+  cross-sector workspace, with distinct specialist engines and sector/theme depth.
 rationale: >
   The Chairman explicitly rejected the briefing-only ceiling in the BioCatalyst
   redesign and applied the investment-intelligence mandate to Defense Procurement
@@ -29,13 +30,19 @@ alternatives:
     why_not: >
       Duplicates existing canonical owners. Domain-specific models and evidence must
       compose with the shared intelligence, recommendation and evaluation systems.
+  - option: Merge clinical, procurement and other catalyst models into one generic score
+    why_not: >
+      Shared presentation and investment comparisons do not make different targets,
+      priors, evidence or causal models interchangeable.
 evidence:
   - "Current Chairman direction recorded in substance on macro#6712 comment5851663121."
   - "https://github.com/mastermindx-market-intelligence/macro/pull/6712#issuecomment-5851663121"
   - "agentos/workstreams/WS-BIOCATALYST-CORE-PRODUCT.md at1990a8b8bb2c02ce8595648dcf2cad1f44e29e88: current facts-only slice and existing ownership limits."
   - "agentos/workstreams/WS-DEFENSE-PROCUREMENT-V3.md at1990a8b8bb2c02ce8595648dcf2cad1f44e29e88: existing financial-alpha program and Government Revenue substrate."
   - "research/SECTOR_CATALYST_INVESTMENT_INTELLIGENCE_NORTH_STAR.md: shared implementation and acceptance contract."
+  - "Current R8 Chairman direction: unify catalyst signals and picks across sectors while keeping specialist engines separate; recorded in research/CATALYST_INTELLIGENCE_UNIFIED_WORKSPACE_AND_ENGINE_CONTRACT.md."
 affects:
+  - "WS:MARKET-OS"
   - "WS:BIOCATALYST-CORE-PRODUCT"
   - "WS:DEFENSE-PROCUREMENT-V3"
   - "WS:GMI-THEME-GRAPH"
@@ -43,6 +50,7 @@ affects:
   - "research/biocatalyst_decision_intelligence_v3/"
   - "research/defense_intelligence/"
   - "research/SECTOR_CATALYST_INVESTMENT_INTELLIGENCE_NORTH_STAR.md"
+  - "research/CATALYST_INTELLIGENCE_UNIFIED_WORKSPACE_AND_ENGINE_CONTRACT.md"
 confidence: high
 reversibility: costly
 decided_by: chairman
@@ -113,3 +121,31 @@ specialist evidence, features and evaluated assessments through those owners.
 
 Confidence "high" above means confidence that this accurately records the Chairman's
 choice. It is not confidence in any stock, model, forecast or achievable win rate.
+
+## R8 refinement — one workspace, not one specialist model
+
+The subsequent Chairman direction keeps ranked recommendations as the intended outcome
+but rejects R7's sector-switching front door and a separate picks-versus-signals experience.
+Use one **Catalyst Intelligence** candidate universe across relevant sectors. Buy, Wait,
+Watch, Researching and Avoid are stances within it. A developing signal becomes stronger
+evidence for the same investment case rather than a disconnected second product.
+
+BioCatalyst and Defense Procurement remain distinct specialist engines with their own
+targets, priors, evidence, timing, calibration and financial mechanisms. Sector panels
+expose their complete candidate sets, methodology and evidence coverage. Themes cut across
+those sectors through the existing GMI graph; they do not invent a blended theme model or
+turn repeated membership into independent exposures. Clinical pass probability is never
+ranked directly against procurement win probability. Compare only qualified investment
+outputs on a common horizon/currency/price/cost/benchmark basis through the accepted owner.
+
+The detailed companion is
+[`CATALYST_INTELLIGENCE_UNIFIED_WORKSPACE_AND_ENGINE_CONTRACT.md`](../../research/CATALYST_INTELLIGENCE_UNIFIED_WORKSPACE_AND_ENGINE_CONTRACT.md).
+It refines the shared north-star contract's presentation and backend composition, not its
+requirements for calibration, source rights, economic depth or prospective learning.
+WS:MARKET-OS remains the product owner and WS:ALPHA-INTELLIGENCE-INTEGRATION the semantic
+owner; OpportunityCase remains its future gated K5 identity, not a new R8 store.
+
+This refinement does not retrospectively certify the R7 prototype, merge the underlying
+engines, or widen any live production authority. Source adoption and implementation
+acceptance remain distinct. Preserve historical R7 evidence; its front-door composition
+is superseded, not silently rewritten as a failed test or an accepted production design.
