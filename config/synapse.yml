@@ -12414,6 +12414,7 @@ artifacts:
       - engine/neuralweb/ask_brain.py
       - scripts/build_stock_library.py
       - scripts/build_macro_snapshot.py
+      - engine/credit_momentum.py
     notes: >
       Macro transmission/decomposition snapshot. Breakeven decomp (real rate vs
       inflation compensation), transmission chains (policy rate → credit → activity),

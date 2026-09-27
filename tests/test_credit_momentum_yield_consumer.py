@@ -244,6 +244,8 @@ def test_no_ledger_event_minted_for_yield_momentum(monkeypatch, tmp_path: Path) 
 
     # The snapshot's reported ledger new count is also unchanged.
     assert snapshot_payload.get("_n_ledger_new") == 0
+    # The no-mint claim is measured on a LIVE read, not on the "not available" path.
+    assert snapshot_payload["yield_momentum"]["state"] == "live"
 
     monkeypatch.setattr(cm, "_upsert_forward_log", real_upsert)
 
