@@ -37,6 +37,8 @@ anywhere in the module. The percentage uses ``Decimal.quantize`` with
 from __future__ import annotations
 
 import re
+from datetime import date
+from pathlib import Path
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from typing import Any, Mapping, Sequence
 
@@ -68,13 +70,57 @@ RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT = (
 # ---------------------------------------------------------------------------
 
 
+# The CONTRACT publishes exactly one comparison basis. This set used to
+# carry three, so two of them were admitted by ``_validate_case_shape``,
+# projected, and emitted as a document whose root ``comparison_basis`` the
+# contract's enum rejects -- an invalid publication produced by a gate that
+# was WIDER than the thing it gates for. Admission may be narrower than the
+# contract; it may never be wider. Pinned by
+# ``test_module_constants_mirror_the_published_contract``.
 _ALLOWED_COMPARISON_BASIS: frozenset[str] = frozenset(
     {
         "explicit_same_quarter_prior_year",
-        "explicit_same_half_prior_year",
-        "explicit_same_year_prior_year",
     }
 )
+
+# The period_kind each declared comparison basis is ABOUT. ``_select_pair``
+# receives the declared basis and used to ignore it, so the document could
+# stamp ``same_quarter_prior_year_change`` on a pair of half-years.
+_BASIS_PERIOD_KIND: Mapping[str, str] = {
+    "explicit_same_quarter_prior_year": "quarter",
+    "explicit_same_half_prior_year": "half_year",
+    "explicit_same_year_prior_year": "year",
+}
+
+# Generous BANDS, never equalities. Consumer Cyclical is retail: a 4-5-4
+# quarter is 13 or 14 weeks and a fiscal year is 52 or 53 of them, so the
+# calendar answer is wrong here -- the same reason ``_envelope_period_start``
+# refuses to snap a period_start out of a period_end. The bands exist to
+# refuse a 30-day "quarter", not to impose a calendar.
+_PERIOD_KIND_SPAN_DAYS: Mapping[str, tuple[int, int]] = {
+    "quarter": (84, 100),
+    "half_year": (175, 190),
+    "year": (350, 385),
+}
+
+# 52 weeks = 364, 53 weeks = 371, calendar = 365/366. Excludes a half-year
+# (182) and a two-year gap (728) with room to spare.
+_PRIOR_YEAR_GAP_DAYS: tuple[int, int] = (350, 385)
+
+# Three of the four result definitions end "in USD thousands" and carry the
+# quantum ``1_thousand``. Those are CLAIMS about the envelope, not decoration,
+# and they are constants selected by result key -- so a pair reported in EUR
+# at 10**6 used to publish ``unit: EUR, scale_power10: 6`` beside the sentence
+# "in USD thousands", schema-valid and self-contradicting. V1's frozen scope
+# is a PLNT USD-thousands projector; deriving new quantum words or new prose
+# would be inventing display vocabulary this module does not own, so the
+# honest move is to withhold and say why.
+_STATED_DEFINITION_UNIT: str = "USD"
+_STATED_DEFINITION_SCALE: int = 3
+# ``1_thousand`` is a precision claim about the SOURCE, not a formatting
+# preference: a source rounded to the nearest 5 thousand does not support it.
+_STATED_DEFINITION_QUANTUM: str = "1_thousand"
+_DEFINITION_CONTRADICTED = "result_envelope_contradicts_stated_definition"
 
 # Reserved text patterns that MUST never appear in the explanation
 # envelope — implementing frozen-spec section 5's "forbidden conclusions"
@@ -136,15 +182,12 @@ _ALLOWED_PERIOD_KIND: frozenset[str] = frozenset(
         "year",
     }
 )
-_ALLOWED_DEGRADED_STATE: frozenset[str] = frozenset(
-    {
-        "available",
-        "partial",
-        "unavailable",
-    }
-)
-
-
+# NOTE: ``_ALLOWED_DEGRADED_STATE`` was retired with the hand-rolled
+# document check below -- the schema itself is now the authority on what the
+# module may EMIT, and a mirrored constant with no non-schema reader is one
+# more thing to drift. Input-admission constants (``_ALLOWED_PERIOD_KIND``,
+# ``_ALLOWED_COMPARISON_BASIS``) stay: they run before a document exists and
+# must fail fast with a domain message.
 # ---------------------------------------------------------------------------
 # Errors
 # ---------------------------------------------------------------------------
@@ -613,6 +656,62 @@ def _index_facts_by_metric(
     return out
 
 
+def _as_date(text: str) -> date | None:
+    """Parse an admitted period bound, or ``None`` if it will not parse.
+
+    Admission has already matched ``_DATE_RE`` by the time a fact reaches
+    pairing, so a failure here is not expected -- but an unparseable bound
+    must make the pair INELIGIBLE rather than exempt, so this fails closed.
+    """
+    try:
+        return date.fromisoformat(text)
+    except (TypeError, ValueError):
+        return None
+
+
+def _span_fits_kind(fact: Mapping[str, Any], kind: str) -> bool:
+    """A period must be coherent and roughly the length its kind claims."""
+    start = _as_date(_envelope_period_start(fact))
+    end = _as_date(_envelope_period_end(fact))
+    if start is None or end is None:
+        return False
+    if not start < end:
+        return False
+    low, high = _PERIOD_KIND_SPAN_DAYS[kind]
+    return low <= (end - start).days <= high
+
+
+def _pair_can_be_basis(
+    newest: Mapping[str, Any],
+    older: Mapping[str, Any],
+    comparison_basis: str,
+) -> bool:
+    """Can this pair actually BE the comparison the case declared?
+
+    ``_select_pair`` has always taken ``comparison_basis`` as a parameter and
+    never read it, so the basis was a label applied after the fact: the
+    document could claim ``same_quarter_prior_year_change`` over a prior side
+    seven years off, a prior period whose end preceded its own start, or a
+    30-day "quarter", all at ``availability: ready`` with zero schema errors.
+    The refusal reason for a pair that does not fit the declared basis already
+    exists and is already named ``no_compatible_pair_for_comparison_basis``;
+    this makes it mean what it says.
+    """
+    kind = _BASIS_PERIOD_KIND.get(comparison_basis)
+    if kind is None:
+        return False
+    if _envelope_period_kind(newest) != kind or _envelope_period_kind(older) != kind:
+        return False
+    if not _span_fits_kind(newest, kind) or not _span_fits_kind(older, kind):
+        return False
+    newest_end = _as_date(_envelope_period_end(newest))
+    older_end = _as_date(_envelope_period_end(older))
+    if newest_end is None or older_end is None:
+        return False
+    low, high = _PRIOR_YEAR_GAP_DAYS
+    return low <= (newest_end - older_end).days <= high
+
+
 def _select_pair(
     candidates: Sequence[tuple[int, Mapping[str, Any]]],
     comparison_basis: str,
@@ -654,6 +753,7 @@ def _select_pair(
             and older[3] == newest[3]
             and older[4] == newest[4]
             and older[0] < newest[0]
+            and _pair_can_be_basis(newest[6], older[6], comparison_basis)
         ):
             return (newest[6], older[6])
     return (None, None)
@@ -786,6 +886,27 @@ def _emit_result(result: Mapping[str, Any]) -> dict[str, Any]:
     filled = _result_provenance(
         result, basis=basis, definition=definition, display_quantum=quantum
     )
+    if not key.endswith("_pct") and not filled.get("withheld_reason"):
+        # The USD-thousands family only. The ratio describes itself as a
+        # percentage and says nothing about a currency, so it is unaffected.
+        source = filled.get("current_period_fact")
+        source_quantum = (
+            source.get("display_quantum") if isinstance(source, Mapping) else None
+        )
+        if (
+            filled.get("unit") != _STATED_DEFINITION_UNIT
+            or filled.get("scale_power10") != _STATED_DEFINITION_SCALE
+            or source_quantum != _STATED_DEFINITION_QUANTUM
+        ):
+            filled["value_text"] = None
+            filled["withheld_reason"] = _DEFINITION_CONTRADICTED
+    # ``input_refs`` is a SET of source keys under the contract
+    # (``uniqueItems: true``), and a result whose two sides share one fact
+    # key named it twice. Order-preserving so the current side still reads
+    # first; ``dict.fromkeys`` rather than ``set`` for exactly that reason.
+    refs = filled.get("input_refs")
+    if isinstance(refs, list):
+        filled["input_refs"] = list(dict.fromkeys(refs))
     return {k: v for k, v in filled.items() if k in _CONTRACT_RESULT_KEYS}
 
 
@@ -1097,6 +1218,36 @@ def _check_explanation_for_forbidden(explanation: Mapping[str, Any]) -> None:
 # ---------------------------------------------------------------------------
 
 
+_CONTRACT_VALIDATOR: list[Any] = []
+
+
+def _contract_validator() -> Any:
+    """The published schema, read once and reused.
+
+    Lazy import and ``parents[2]`` path resolution mirror
+    ``engine/capital_structure/projection.py``, the nearest sibling that
+    validates its own output against its own contract.
+    """
+    if not _CONTRACT_VALIDATOR:
+        import json as _json
+
+        from jsonschema import Draft202012Validator, FormatChecker
+
+        path = (
+            Path(__file__).resolve().parents[2]
+            / "contracts"
+            / "sector_intelligence"
+            / f"{CONTRACT_ID}.schema.json"
+        )
+        _CONTRACT_VALIDATOR.append(
+            Draft202012Validator(
+                _json.loads(path.read_text(encoding="utf-8")),
+                format_checker=FormatChecker(),
+            )
+        )
+    return _CONTRACT_VALIDATOR[0]
+
+
 def _assert_document_matches_contract_shape(document: Mapping[str, Any]) -> None:
     """Refuse to return a document that violates the contract we publish.
 
@@ -1114,45 +1265,13 @@ def _assert_document_matches_contract_shape(document: Mapping[str, Any]) -> None
     fail loudly rather than publishing a plausible-looking lie.
     """
 
-    def _bad(path: str, value: object, rule: str) -> str:
-        return f"document {path} is {value!r}, which is not {rule}"
-
-    problems: list[str] = []
-
-    for index, fact in enumerate(document.get("facts") or []):
-        at = f"facts[{index}]"
-        if not _DATE_RE.match(str(fact.get("period_end") or "")):
-            problems.append(_bad(f"{at}.period_end", fact.get("period_end"), "a date"))
-        if not _DATE_RE.match(str(fact.get("period_start") or "")):
-            problems.append(_bad(f"{at}.period_start", fact.get("period_start"), "a date"))
-        if fact.get("period_kind") not in _ALLOWED_PERIOD_KIND:
-            problems.append(_bad(f"{at}.period_kind", fact.get("period_kind"), "a period kind"))
-        if not _VALUE_TEXT_RE.match(str(fact.get("value_text") or "")):
-            problems.append(_bad(f"{at}.value_text", fact.get("value_text"), "a number"))
-        if not _SLUG_RE.match(str(fact.get("event") or "")):
-            problems.append(_bad(f"{at}.event", fact.get("event"), "a slug"))
-
-    for index, result in enumerate(document.get("results") or []):
-        at = f"results[{index}]"
-        if not _DATE_RE.match(str(result.get("period_end") or "")):
-            problems.append(_bad(f"{at}.period_end", result.get("period_end"), "a date"))
-        if not _DATE_RE.match(str(result.get("period_start") or "")):
-            problems.append(_bad(f"{at}.period_start", result.get("period_start"), "a date"))
-        if result.get("period_kind") not in _ALLOWED_PERIOD_KIND:
-            problems.append(_bad(f"{at}.period_kind", result.get("period_kind"), "a period kind"))
-        if not _SLUG_RE.match(str(result.get("event") or "")):
-            problems.append(_bad(f"{at}.event", result.get("event"), "a slug"))
-        value_text = result.get("value_text")
-        if value_text is not None and not _VALUE_TEXT_RE.match(str(value_text)):
-            problems.append(_bad(f"{at}.value_text", value_text, "a number or null"))
-
-    for index, entry in enumerate(document.get("degraded_dependencies") or []):
-        at = f"degraded_dependencies[{index}]"
-        if not _SLUG_RE.match(str(entry.get("dependency") or "")):
-            problems.append(_bad(f"{at}.dependency", entry.get("dependency"), "a slug"))
-        if entry.get("state") not in _ALLOWED_DEGRADED_STATE:
-            problems.append(_bad(f"{at}.state", entry.get("state"), "a degraded state"))
-
+    errors = _contract_validator().iter_errors(dict(document))
+    problems = [
+        (".".join(str(part) for part in error.absolute_path) or "<root>")
+        + ": "
+        + error.message
+        for error in sorted(errors, key=lambda error: list(error.absolute_path))
+    ]
     if problems:
         raise CaseShapeError(
             "projection would emit a document that violates "
