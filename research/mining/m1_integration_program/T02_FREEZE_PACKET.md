@@ -80,6 +80,17 @@ Seat additions, each aimed at a defect this program has actually shipped:
   by the two-event distinctness test. If it survives, the distinctness test is decorative.
 - **(e)** drop the sign in `parse_mining_literal` (return `+20296.0`). Must be killed — a
   sign-only mutant is the cheapest possible real defect.
+**Symbol note (added 2026-09-27, measured against `origin/main`):** neither
+`MINING_PRIVATE_RIGHTS_PROFILE` nor `DISCOVERY_TICKERS` resolves anywhere in `engine/`, `tests/`
+or `contracts/`, and both misses are CORRECT — T02 mints the first, and the second is held for
+#7870 (§1). Stated explicitly because a lane that greps a name and finds nothing cannot tell
+*not yet minted* from *wrong name*, and one such phantom in the T03 packet had produced a
+requirement that passed for free. Every other identifier this packet names resolves, including
+the casebook seam R-MIN-34 depends on: `tests/mining_casebook.py:43` `_merge` (merge-only, no
+delete), `:67` `_bundle`, `:76` `financial_packets=(dict(fixture["economics"]),) if "economics"
+in fixture else ()` — which is exactly why a `bundle={...}` override is silently ignored — and
+`:83` `synthetic_case`.
+
 - **(f)** change `MINING_PRIVATE_RIGHTS_PROFILE` to any other token, or declare it outside
   `qa_exchange.py`. Must be killed by the single-declarer probe (F12).
 - **(g)** substitute a non-vocabulary absence word. Must raise in
