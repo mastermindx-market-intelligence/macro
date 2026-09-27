@@ -151,9 +151,22 @@ only — a human/Opus reviewer owns visual taste.
 - **Only a POSITIVE completion signal authorizes reclaim** (`DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM`;
   incident 2026-09-26). Absence of a signal — an idle window, no process holding the cwd, a
   stale reflog — may NEVER authorize deleting, sparsifying, or otherwise destructively
-  altering a shared worktree. Only **`HEAD` an ancestor of `origin/main`** may: the commits
-  landed, so the checkout is reproducible cache and removing it cannot lose work even if a
-  session is still attached. **Idleness means two incompatible things** — a Claude
+  altering a shared worktree. Only a positive completion signal may: the commits landed, so
+  the checkout is reproducible cache and removing it cannot lose the WORK — **but it does
+  destroy the working directory of any session still attached, so landed is never on its own
+  a licence to delete** (see the WORK-not-SESSION rule below).
+  **CORRECTED 2026-09-27 — the signal is the MERGED PR, not `HEAD ⊆ origin/main`.** This repo
+  squash-merges and a squash REWRITES the commit, so a cleanly merged branch's tip is NOT an
+  ancestor of main (measured, PR #8086: squash `f9425697` is an ancestor, tip `0a47bc1f` is
+  not); an ancestry-only gate fires for almost nothing but trees that never committed. The
+  proof is any ONE of — the order `scripts/worktree_gc.py` already applies, and it was right
+  before this prose existed — (1) `HEAD` ancestor of `origin/main`, (2) **a MERGED PR whose
+  `headRefOid` equals this tree's HEAD** (the load-bearing case, originally omitted), (3)
+  `HEAD` contained in `refs/remotes/origin/<branch>` with no open PR. Unknown PR state fails
+  CLOSED. **A DETACHED HEAD satisfies none of them and this law structurally cannot reach
+  it** — 318 such trees, 150 being `mo-ext-*` orchestrator labour lanes whose output ships
+  from the SEAT's carrier branch; they need a lane-exit receipt, not a merge.
+  **Idleness means two incompatible things** — a Claude
   Code/Codex session's shell exits between tool calls, so 24 h of silence means dead; a
   **ChatGPT web conversation has no shell and resumes the instant its human replies, so
   silence of any length means nothing.** Measured cost of ignoring this: an "idle ≥ 24 h"
@@ -166,8 +179,12 @@ only — a human/Opus reviewer owns visual taste.
   squash-merge, no TTL/polling/`du`/process scan, and **no `refs/salvage/*` ref needed**
   because `origin/main` already references the commits. Manage storage at three points, none
   of which asks whether anyone is there: **cheap at birth** (93% of the 380 trees born in 7
-  days are already sparse, ~0.45 GiB vs ~7.5 GiB), **reclaim at merge** (`HEAD ⊆
-  origin/main` and `git status --porcelain` empty), and **a hard per-root population cap**
+  days are already sparse, ~0.45 GiB vs ~7.5 GiB), **reclaim at merge** (any one of the three
+  proofs above, `git status --porcelain` empty, nothing attached, **and the tree under a
+  configured root** — 580 of 807 trees are not, which is why an armed correct sweeper freed
+  1.5 of 308 GiB; `/Volumes/Mastermind/agent-workspaces` alone holds 354 trees / 462 GiB and
+  is *mandated* by the SSD placement policy, and widening `roots` is its own operator
+  ratification act), and **a hard per-root population cap**
   evicting landed-and-clean trees oldest-first — the org-enforced-retention pattern, because
   per-user cleanup discipline does not hold at fleet scale (54 trees minted/day, ~0
   removed). Retrofit-to-sparse is a one-time backlog drain, NOT an ongoing lever: correctly

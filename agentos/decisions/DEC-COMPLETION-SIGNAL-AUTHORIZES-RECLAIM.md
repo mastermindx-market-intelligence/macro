@@ -6,10 +6,27 @@ question: >
   on that basis delete, sparsify, or otherwise destructively alter it?
 answer: >
   No. Absence of a signal may never authorize a destructive act on a shared
-  worktree. Only a POSITIVE completion signal may, and the canonical one is
-  `HEAD` being an ancestor of `origin/main`: the commits have landed, so the
-  checkout is pure reproducible cache and removing it cannot lose work. That
-  signal authorizes reclaiming the BYTES and nothing more: it protects the WORK,
+  worktree. Only a POSITIVE completion signal may.
+
+  AMENDED 2026-09-27 -- this record originally named `HEAD` being an ancestor of
+  `origin/main` as THE canonical signal. That test is WRONG for this repository:
+  every PR is squash-merged and a squash rewrites the commit, so a cleanly merged
+  branch's tip is not an ancestor of main. Measured on PR #8086 -- squash commit
+  `f9425697` is an ancestor of origin/main, branch tip `0a47bc1f` is not. An
+  ancestry-only gate fires for almost nothing but trees that never committed, and
+  misfiles finished work as abandoned. The corrected signal is any ONE of, in the
+  order `scripts/worktree_gc.py` already applied them before this record existed:
+  (1) `HEAD` an ancestor of `origin/main`; (2) a MERGED PR whose `headRefOid`
+  equals this tree's HEAD -- the load-bearing case, originally omitted; (3) `HEAD`
+  contained in `refs/remotes/origin/<branch>` with no open PR. Unknown PR state
+  fails CLOSED. A DETACHED HEAD satisfies none of the three and this law
+  structurally cannot reach it -- a real gap, not a conservative default. The
+  PRINCIPLE (positive signal only, never an absence) is unchanged; only its
+  implementation was wrong.
+
+  Whichever proof holds, the commits have landed, so the checkout is pure
+  reproducible cache and removing it cannot lose work. The signal authorizes
+  reclaiming the BYTES and nothing more: it protects the WORK,
   not the SESSION, so reclaim additionally requires that nothing is attached to
   the directory, and roots that host human-driven web conversations are never
   auto-reclaimed at all because attachment there is undetectable. Idle windows,
