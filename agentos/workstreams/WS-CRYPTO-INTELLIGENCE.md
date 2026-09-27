@@ -32,34 +32,37 @@ waves:
     status: in_progress
     depends_on: [P0A]
     next_action: >
-      Consume exact-head PR #8050 CI/fences for the canonical-budget source
-      candidate, then reconcile open #7645 before changing templates/crypto.html.j2.
-      Add one explicit H5 unavailable state to the accepted template and prove
-      valid-zero, canonical-unavailable/integrity-failure, and happy-path allocation
-      on the real generated route in EN/ZH and both themes. Do not alter total-budget
-      authority or the existing class split during that template integration.
+      Consume exact-head PR #8050 CI/fences for the H5 presentation/evidence head,
+      then reconcile release ordering with open #7645 and regenerate site/crypto.html
+      from the combined template source before any production acceptance. Prove the
+      merged generated artifact on the real deployment path; do not alter canonical
+      total-budget authority or the class split.
     note: >
-      Source implementation is BUILT_NOT_PROVEN at
-      26fd88c7dad5448f69e6096037cf099d96d0c01e: build_vector projects the
-      canonical btc.decision/v1 budget into crypto.cockpit/v1, and build_crypto
-      consumes that exact receipt only. It rejects stale as-of dates and never
-      recomputes total-budget authority from raw signals; the existing class overlay
-      only splits an available target.
+      P0B is BUILT_NOT_PROVEN at local presentation/evidence head
+      138483448904dfdd6d77674bb28085c8be627e82 on top of canonical source head
+      26fd88c7dad5448f69e6096037cf099d96d0c01e. build_vector projects the
+      canonical btc.decision/v1 budget into crypto.cockpit/v1; build_crypto consumes
+      that exact dated receipt only; H5 renders valid 0% separately from unavailable
+      and keeps the rest of Crypto Intelligence usable when budget authority fails.
+      Generated-route proof covers happy/zero/unavailable across EN/ZH, light/dark
+      and desktop/mobile.
 next_action: >
-  Keep PR #8050 as the source carrier for the implemented canonical H5 budget
-  seam. After its exact-head CI/fences return, reconcile #7645's Crypto template
-  custody and add the fail-closed H5 unavailable presentation there; then capture
-  real-route browser proof. Paper board application remains a separate design lane.
+  Keep PR #8050 as the H5 source/presentation carrier. Consume exact-head CI/fences,
+  then coordinate merge ordering with #7645: its template patch auto-merges with H5,
+  but site/crypto.html is a generated artifact with a pre-existing current-main
+  conflict and must be regenerated after source reconciliation. After merge-order
+  reconciliation, prove the combined production/deployed Crypto route and close P0B
+  only if canonical happy/zero/unavailable behavior survives.
 blocked_by:
   - >
-    Open Macro PR #7645 owns templates/crypto.html.j2 and site/crypto.html. The
-    canonical-budget source seam is disjoint and implemented, but P0B cannot add or
-    prove the required H5 unavailable presentation until that template carrier is
-    reconciled.
+    Exact-head PR #8050 CI/fences have not yet accepted the H5 presentation/evidence
+    head. Local source, governance, generated-route and visual-evidence gates pass.
   - >
-    Production acceptance still requires exact-head PR #8050 CI/fences and real
-    generated-route H5 proof for valid 0%, integrity-invalid/unavailable, and
-    happy-path canonical allocations after template reconciliation.
+    Open #7645 remains an independent Crypto source carrier. Exact merge simulation
+    shows templates/crypto.html.j2 auto-merges with H5 with zero conflict markers;
+    site/crypto.html conflicts already between current main and #7645 and is a
+    regenerated publication artifact. Release still needs source-order reconciliation,
+    regeneration and real deployed-route proof.
 owns_paths:
   - "engine/btc_decision.py"
   - "contracts/btc_decision.schema.json"

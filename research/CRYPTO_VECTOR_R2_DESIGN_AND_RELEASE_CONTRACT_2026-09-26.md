@@ -526,3 +526,18 @@ Canonical evidence receipt `mockups/evidence/crypto-vector-r2-actual-20260927/EV
 Exact Vector pytest pack: **90 passed, 5 skipped**. Static Python/JS/Jinja/diff checks pass. Controlled fixture/network limitations remain as previously documented; this is not a live deployment receipt.
 
 This change does not alter Paper, Crypto template ownership, shared theme/Brain code, decision authority, saved-review authority, alerts, H5 budget ownership or deployment state.
+
+
+## Crypto H5 canonical allocation states — production-readiness hardening
+
+The Crypto/Vector R2 production lane now proves the allocation shelf's most important semantic distinction: **valid zero is not unavailable**.
+
+H5 consumes only the dated `btc.decision/v1` budget projection emitted into `crypto.cockpit/v1`. The class overlay may split an available target but cannot originate, raise, lower or rescue total exposure. The current UI has two branches:
+- canonical available: show total exposure and BTC/ETH/alts/cash split;
+- canonical unavailable: show no numeric allocation, explain why, preserve unrelated qualified research and link back to Bitcoin Vector.
+
+Controlled actual-template builds and browser checks cover canonical 60%, valid canonical 0%, and unavailable/integrity-invalid across desktop/mobile, light/dark and EN/ZH (24 states). Visual evidence is committed under `mockups/evidence/crypto-h5-authority-20260927/`.
+
+The unavailable design deliberately avoids a red alarm treatment: this is an evidence/authority availability state, not a bearish market call. It keeps the layout stable, replaces the allocation graphic with a clear textual explanation, exposes `btc.decision/v1` as authority and retains the rest of Crypto Intelligence.
+
+Open #7645's source template changes are line/region-disjoint from H5 and three-way auto-merge without conflict. Its generated `site/crypto.html` conflict is pre-existing versus current main and must be resolved by source reconciliation plus regeneration. No claim of production deployment is made.
