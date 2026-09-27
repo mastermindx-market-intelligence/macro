@@ -4694,8 +4694,12 @@ jobs:
     # sweeper requires an affirmative pass, since absence of red is not a pass
     # (#4779), so a PR whose only packs were skipped would otherwise read unproven
     # and never merge.
+    # Cancellation must make this job false. GitHub re-evaluates job-level if:
+    # during cancellation; always() stays true and therefore lets obsolete packs
+    # keep consuming runners. !cancelled() is still a status function, so the
+    # skipped trusted-ci dependency is evaluable without making cancellation immune.
     if: >-
-      always() && needs.ci-plan.result == 'success' &&
+      !cancelled() && needs.ci-plan.result == 'success' &&
       needs.ci-plan.outputs.has_work == 'true' &&
       (github.event.pull_request.head.repo.full_name != github.repository ||
       vars.CI_EXECUTION_ROUTE != 'pc' ||
