@@ -1,5 +1,10 @@
-"""Adversarial probes for the T04a Mining composition (frozen at c76aea66 — all FAIL)."""
+"""Adversarial probes for the T04a Mining composition (frozen at c76aea66 — all FAIL).
+
+One seat amendment after the freeze: R-MIN-32 re-bases BLOCKER-1 onto in-test packets
+because its frozen premise about the casebook fixture was false. See that test's docstring.
+"""
 from __future__ import annotations
+import dataclasses
 import json
 from pathlib import Path
 
@@ -16,10 +21,49 @@ SCHEMA = json.loads(
 _V = jsonschema.Draft202012Validator(SCHEMA)
 
 
+def _mev_packet(pair, epe_value, la_value, unit):
+    """R-MIN-31 §3 packet shape for one management-estimate-vs-actual comparison pair."""
+    leg = lambda v: {
+        "value": v,
+        "unit": unit,
+        "perimeter": "consolidated",
+        "basis": "reported",
+        "period": "Q2 2026",
+    }
+    return {
+        "kind": "management_estimate_vs_actual",
+        "pair": pair,
+        "earlier_point_estimate": leg(epe_value),
+        "later_actual": leg(la_value),
+    }
+
+
 def test_probe_blocker1_management_pair_is_actually_composed():
-    """BLOCKER-1: the copper sales pair and its ONE `pairs:` cost pair must be surfaced."""
+    """BLOCKER-1: the copper sales pair and its ONE ``pairs:`` cost pair must be surfaced.
+
+    SEAT AMENDMENT (R-MIN-32, 2026-09-26). The probe as frozen drove this off
+    ``synthetic_case("copper_complete")`` alone and asserted two comparison rows. That
+    premise is false about the casebook: the copper fixture's ``economics`` block — the
+    only thing ``mining_casebook.synthetic_case`` turns into a financial packet — is a
+    REPORTED measure (``measure``/``value``/``basis``/``stream_threshold``), never an
+    estimate-vs-actual pair. No comparison row can be composed from it without
+    fabricating both legs, which is precisely the round-2 defect (leg ``value`` synthesised
+    from ``period_kind``) this probe family exists to catch. The amendment supplies the two
+    pairs the fixture never carried, keeps every original assertion (two distinct rows,
+    comparison text present, ``is_range``/``is_consensus`` false) and ADDS the leg-value
+    pins the frozen letter could be satisfied without: each leg must carry the literal
+    numeric value from its packet, the two legs must differ, and no leg value may be a
+    string. Intent preserved and strengthened; nothing relaxed.
+    """
     case = synthetic_case("copper_complete")
-    result = composition.compose_mining_research(case.query, case.bundle)
+    bundle = dataclasses.replace(
+        case.bundle,
+        financial_packets=(
+            _mev_packet("sales", 1700, 1680, "Mlbs"),
+            _mev_packet("unit_net_cash_cost", 1.55, 1.62, "USD/lb"),
+        ),
+    )
+    result = composition.compose_mining_research(case.query, bundle)
     assert len(result["expectations"]) == 2, (
         "copper must surface the sales pair AND the one `pairs:` cost pair as a second "
         f"comparison; got {len(result['expectations'])}"
@@ -28,6 +72,32 @@ def test_probe_blocker1_management_pair_is_actually_composed():
     for row in result["expectations"]:
         assert row["is_range"] is False and row["is_consensus"] is False
         assert row["comparison"], "comparison text must be present on every pair"
+
+    # Leg values are the packet's own numbers — never a re-used string from elsewhere in
+    # the packet, and never equal across the two legs of one pair (round-2 regression pin).
+    expected_legs = {
+        1700: 1680,   # sales:              actual below the estimate
+        1.55: 1.62,   # unit_net_cash_cost: actual above the estimate
+    }
+    seen = {}
+    for row in result["expectations"]:
+        epe = row["earlier_point_estimate"]["value"]
+        la = row["later_actual"]["value"]
+        for leg in (epe, la):
+            assert isinstance(leg, (int, float)) and not isinstance(leg, bool), (
+                f"leg value must be numeric, got {leg!r} ({type(leg).__name__})"
+            )
+        assert epe != la, f"a composed pair must carry two different leg values; got {epe!r} twice"
+        assert epe in expected_legs, f"unexpected estimate leg {epe!r}"
+        assert la == expected_legs[epe], (
+            f"actual leg for estimate {epe!r} must be {expected_legs[epe]!r}; got {la!r}"
+        )
+        seen[epe] = la
+    assert seen == expected_legs, f"both pairs must be composed exactly once; got {seen}"
+    # Polarity follows the numbers, not the packet order.
+    by_epe = {r["earlier_point_estimate"]["value"]: r["comparison"] for r in result["expectations"]}
+    assert by_epe[1700] == "below_estimate", by_epe
+    assert by_epe[1.55] == "above_estimate", by_epe
 
 
 def test_probe_blocker2_same_horizon_revision_emits_no_signed_block():
