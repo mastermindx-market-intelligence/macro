@@ -148,6 +148,42 @@ only — a human/Opus reviewer owns visual taste.
   sweeper honors `git worktree lock`, live process cwds, uncommitted/unpushed
   work, open PRs, and <7-day activity. To park a checkout long-term, lock it:
   `git worktree lock --reason "<why>" <path>`.
+- **Only a POSITIVE completion signal authorizes reclaim** (`DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM`;
+  incident 2026-09-26). Absence of a signal — an idle window, no process holding the cwd, a
+  stale reflog — may NEVER authorize deleting, sparsifying, or otherwise destructively
+  altering a shared worktree. Only **`HEAD` an ancestor of `origin/main`** may: the commits
+  landed, so the checkout is reproducible cache and removing it cannot lose work even if a
+  session is still attached. **Idleness means two incompatible things** — a Claude
+  Code/Codex session's shell exits between tool calls, so 24 h of silence means dead; a
+  **ChatGPT web conversation has no shell and resumes the instant its human replies, so
+  silence of any length means nothing.** Measured cost of ignoring this: an "idle ≥ 24 h"
+  sparse sweep stripped `data/`, `site/`, `mockups/`, `verify_shots/` from 59 worktrees at
+  05:31 — 34 of them `sol-*`/`review-*` web-review trees — and essentially every ChatGPT
+  session died unrecoverably, because a web session hits a suddenly-absent path, wedges, and
+  the errors cascade. No commits were lost (omitted paths stay tracked in the index), but
+  sessions are the costlier asset. "Use 72 h instead" is the wrong fix: the defect is the
+  CLASS of signal, not its threshold. The positive signal is also cheaper — free on
+  squash-merge, no TTL/polling/`du`/process scan, and **no `refs/salvage/*` ref needed**
+  because `origin/main` already references the commits. Manage storage at three points, none
+  of which asks whether anyone is there: **cheap at birth** (93% of the 380 trees born in 7
+  days are already sparse, ~0.45 GiB vs ~7.5 GiB), **reclaim at merge** (`HEAD ⊆
+  origin/main` and `git status --porcelain` empty), and **a hard per-root population cap**
+  evicting landed-and-clean trees oldest-first — the org-enforced-retention pattern, because
+  per-user cleanup discipline does not hold at fleet scale (54 trees minted/day, ~0
+  removed). Retrofit-to-sparse is a one-time backlog drain, NOT an ongoing lever: correctly
+  gated it yields 0.0 GiB across the 27 remaining FULL trees. Idle ages and live cwds may be
+  REPORTED for a human, or narrow an action the positive signal already authorized — never
+  authorize one. **And the signal protects the WORK, not the SESSION:** deleting a checkout
+  destroys the working directory of anything attached exactly as thinning it did, so reclaim
+  requires landed AND nothing attached, and because a resumable web conversation is
+  undetectable by construction (no process, no shell, no reflog — it lives in a browser tab),
+  **roots hosting web sessions are never auto-reclaimed at all.** Measured 2026-09-26 across
+  811 trees: only **48 / 73.2 GiB** are landed-and-clean (~1.7 days of accrual), while
+  **638 are UNLANDED** — the bloat is unmerged WORK, not uncollected garbage, so no
+  completion-signal sweeper can reach most of it. For that bucket `refs/salvage/*` (534 refs
+  minted) decouples preserving the commits from freeing the checkout for ~40 bytes each, and
+  the durable fix is upstream of storage: how many lanes get opened that never merge.
+  See `research/WORKTREE_GC_POLICY.md` §9.
 - **A session worktree is planted under the checkout the SESSION was launched in**
   (2026-08-20). `.claude/hooks/worktree_create_sparse.py` used to derive its
   destination from `git rev-parse --git-common-dir`, which answers with the MAIN
