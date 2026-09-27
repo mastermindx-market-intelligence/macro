@@ -474,6 +474,57 @@ def test_qualify_operands_refuses_segment_bridge_without_segment_legs() -> None:
     assert q["receipt_ref"] == receipt["receipt_id"]
 
 
+def test_segment_change_bridge_refuses_typed_absence_unallocated_leg() -> None:
+    """A typed-absent unallocated leg must surface — refuse with the absent
+    leg's metric so the caller distinguishes 'the issuer disclosed no
+    unallocated amount' (no leg) from 'the issuer disclosed one we could
+    not read' (typed absence).
+    """
+    absent = cell("1", metric="unallocated_change", owner_ref="synthetic:cell:ua")
+    absent.pop("value", None)
+    absent["absence"] = "missing_source"
+    cells = [
+        cell("3", metric="segment_alpha_change"),
+        cell("-1", metric="segment_beta_change"),
+        cell("0", metric="corporate_change"),
+        cell("-2", metric="eliminations"),
+        absent,
+    ]
+    receipt = build_comparison_receipt("segment_bridge", cells, checked={})
+    r = derive_result_cash(
+        "segment_change_bridge",
+        cells,
+        comparison_receipt=receipt,
+    )
+    assert r["status"] == "refused"
+    assert "operand_missing:unallocated_change" in r["limitations"]
+    assert r["receipt_ref"] == receipt["receipt_id"]
+
+
+def test_segment_change_bridge_legitimate_unallocated_value_still_ready() -> None:
+    """Control: a valued unallocated leg keeps the bridge ready and
+    discloses the residual — the typed-absence gate above does not change
+    this well-formed case.
+    """
+    cells = [
+        cell("3", metric="segment_alpha_change"),
+        cell("-1", metric="segment_beta_change"),
+        cell("0", metric="corporate_change"),
+        cell("-2", metric="eliminations"),
+        cell("1", metric="unallocated_change"),
+    ]
+    receipt = build_comparison_receipt("segment_bridge", cells, checked={})
+    r = derive_result_cash(
+        "segment_change_bridge",
+        cells,
+        comparison_receipt=receipt,
+    )
+    assert r["status"] == "ready"
+    assert r["residual"] == "1"
+    assert "bridge_residual_disclosed" in r["limitations"]
+    assert r["receipt_ref"] == receipt["receipt_id"]
+
+
 # ---------------------------------------------------------------------------
 # final_vs_preview — distinct information editions required
 # ---------------------------------------------------------------------------

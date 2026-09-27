@@ -1004,8 +1004,20 @@ def _derive_segment_change_bridge(
     total += _decimal_from_operand(eliminations)
     residual = Decimal("0")
     for op in unallocated:
+        # A typed-absent unallocated leg must surface — the caller must be
+        # able to distinguish "the issuer disclosed no unallocated amount"
+        # from "the issuer disclosed one we could not read".  Silently
+        # treating typed absence as zero would contradict the typed-absence
+        # invariant this suite asserts for sibling formulas
+        # (test_cash_after_capital_payments_refuses_typed_absence_operand).
         if not _operand_has_value(op):
-            continue
+            return _refusal_result(
+                formula="segment_change_bridge",
+                cells=cells,
+                receipt=receipt,
+                limitations=[f"operand_missing:{op.metric}"],
+                operand_refs=[_operand_ref_payload(o) for o in cells],
+            )
         residual += _decimal_from_operand(op)
     extras: dict[str, Any] = {"residual": _decimal_text(residual)}
     # The unallocated total is the residual — disclosed, NOT silently
