@@ -1178,7 +1178,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2
       - name: desk → spine wiring — stock_desk's per-thesis outcome ledger
         # The append-only scored.jsonl engine.spine._DESK_SCORED reads for this desk. Pins the
         # properties a track record cannot: a published verdict is never re-graded from a
@@ -1216,9 +1216,11 @@ jobs:
         # regression is the first failure a reader sees rather than the id contract
         # failing for a borrowed reason; it rides this existing step because a step is
         # the masking unit (run_ci_pack.py returns on the first non-zero step) while
-        # pytest reports every file inside one step.  No dependency widened: probed at
-        # RUN time it loads only pandas/numpy/pyarrow/pyyaml — exactly this job's thin
-        # install line — and blocking plotly leaves it 12-passed.
+        # pytest reports every file inside one step. Dependency scope remains narrow: at
+        # RUN time the thesis-ID portion still loads only pandas/numpy/pyarrow/pyyaml;
+        # tests/test_uk_policy_brain.py additionally renders the real Policy Watch view and
+        # requires jinja2, matching its gate-code and sibling data-gate homes. Blocking plotly
+        # still leaves the thesis-ID suite 12-passed.
         run: >
           python -m pytest
           tests/test_ai_desk.py tests/test_ai_desk_scorer.py
