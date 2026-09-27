@@ -396,6 +396,13 @@ def _build_minimal_staging_tree(stage_dir: Path) -> None:
 class _PublicationHarness:
     def __init__(self) -> None:
         self.store = _MemoryPublicationStore()
+        # Per-case enrollment state, keyed by the caller's case key. Written
+        # ONLY by ``run_refresh``; read by ``members`` and ``get``. A case
+        # exists here only because an acquisition for it actually succeeded --
+        # a refused case with no predecessor is never invented (T02's
+        # "source failure may mark a carried object stale, never restamp it as
+        # newly observed").
+        self._cases: dict[str, dict[str, Any]] = {}
 
     @property
     def read_count(self) -> int:
@@ -403,7 +410,7 @@ class _PublicationHarness:
 
     def run_refresh(
         self,
-        _changes: Mapping[str, str],
+        changes: Mapping[str, str],
         fail_sources: Iterable[str] = (),
     ) -> dict[str, Any]:
         """Inject ``acquire_results_filing`` with a fake ``http_get`` that
@@ -430,6 +437,12 @@ class _PublicationHarness:
         )
 
         failed = sorted(set(fail_sources))
+        failed_set = frozenset(failed)
+        # One-element cell so the closure below can be re-aimed per case
+        # without rebuilding the fake. With an empty ``changes`` mapping this
+        # keeps the landed behaviour exactly: any fail source refuses the one
+        # acquisition this call makes.
+        refusing = [bool(failed)]
         synthetic_cik = "0000987654"
         submissions_url = "https://data.sec.gov/submissions/CIK0000987654.json"
         exhibit_filename = "synthetic-exhibit.htm"
@@ -469,7 +482,7 @@ class _PublicationHarness:
 
         def fake_http_get(url: str) -> tuple[int, bytes]:
             if url == submissions_url:
-                if failed:
+                if refusing[0]:
                     return (503, b"")
                 return (200, submissions_body)
             if url.endswith("-index-headers.html"):
@@ -484,23 +497,74 @@ class _PublicationHarness:
                 return (200, exhibit_body)
             return (404, b"")
 
-        try:
-            prepared = acquire_results_filing(cik=synthetic_cik, http_get=fake_http_get)
-        except RefreshError as exc:
-            source = failed[0] if failed else ""
-            unavailable: dict[str, Any] = {
-                "status": "unavailable",
-                "reason": "refresh_source_failed",
-                "detail": str(exc),
-            }
-            if source:
-                unavailable["source"] = source
-            return unavailable
+        def acquire(refuse: bool, source: str) -> dict[str, Any]:
+            refusing[0] = refuse
+            try:
+                prepared = acquire_results_filing(
+                    cik=synthetic_cik, http_get=fake_http_get
+                )
+            except RefreshError as exc:
+                unavailable: dict[str, Any] = {
+                    "status": "unavailable",
+                    "reason": "refresh_source_failed",
+                    "detail": str(exc),
+                }
+                if source:
+                    unavailable["source"] = source
+                return unavailable
+            return {"status": "ok", **prepared}
 
-        return {"status": "ok", **prepared}
+        requested = dict(changes)
+        if not requested:
+            # Landed path, unchanged: one acquisition, refused iff any source
+            # was named. The three merged run_refresh tests take this branch.
+            return acquire(bool(failed), failed[0] if failed else "")
+
+        first_refusal: dict[str, Any] | None = None
+        last_ok: dict[str, Any] | None = None
+        for case_key, edition in requested.items():
+            outcome = acquire(case_key in failed_set, case_key)
+            if outcome["status"] == "ok":
+                self._cases[case_key] = {
+                    "edition": edition,
+                    "stale": False,
+                    # The observation stamp comes from the owner's own result,
+                    # never from the harness clock -- so a carry-forward can be
+                    # told apart from a fresh observation by inspection.
+                    "observed_acceptance": outcome.get("acceptance_datetime"),
+                }
+                last_ok = outcome
+                continue
+            carried = self._cases.get(case_key)
+            if carried is not None:
+                # Mark stale in place: edition and observation stamp are the
+                # predecessor's and MUST NOT move on a source failure.
+                carried["stale"] = True
+            if first_refusal is None:
+                first_refusal = outcome
+        if first_refusal is not None:
+            return first_refusal
+        assert last_ok is not None  # non-empty requested, no refusal
+        return last_ok
 
     def members(self) -> set[str]:
-        return set()
+        """Case keys this harness currently holds.
+
+        Was `return set()`, which made T02's mandated
+        ``assert before <= h.members()`` pass for free in both directions.
+        """
+        return set(self._cases)
+
+    def get(self, case_key: str) -> dict[str, Any]:
+        """The enrollment record for ``case_key``: ``edition``, ``stale`` and
+        ``observed_acceptance``.
+
+        Returns a DEEP COPY: a caller that mutates the answer must not be able
+        to rewrite harness state, or an assertion could pass by editing the
+        evidence. Raises ``KeyError`` for a case that was never enrolled --
+        typed absence, not an empty dict that reads as "present but blank".
+        """
+        return deepcopy(self._cases[case_key])
 
     def publish(self, changes: Mapping[str, Any], *, stage_dir: Path) -> dict[str, Any]:
         """Bind every owner entry point in the owner's real order.
