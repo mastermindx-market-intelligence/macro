@@ -515,6 +515,49 @@ those roots widens an armed deleter from 227 to 807 trees and is therefore an OP
 ratification act in its own right, exactly like flipping `armed` was — it must not be taken
 as a consequence of this correction.
 
+**A SECOND, larger scope defect: a blanket lock stamp that carries no operator intent.**
+A report-only run over the widened roots verdicted **364 trees / 305.2 GiB `LOCKED`** — which
+looks like legitimate operator parking and is not. `scripts/worktree_gc.py:501` short-circuits
+unconditionally:
+
+```python
+if wt.locked:
+    wt.verdict = "LOCKED"
+    wt.reasons.append(wt.lock_reason or "git worktree lock present")
+    return
+```
+
+so for a locked tree the tool never computes landedness, dirtiness, or live processes at all.
+Grouping those 364 by reason:
+
+| lock reason | trees | GiB |
+|---|---:|---:|
+| `mastermind-external-storage: removable volume protection` | **282** | **215.8** |
+| `initializing` | 3 | 5.8 |
+| genuine seat/operator text (e.g. "Active Sol China participation context; release PR7592 untouched") | 79 | 83.6 |
+
+The first string is stamped by the SSD worktree helper on **every** tree it mints, so it
+encodes zero information about the work — yet it exempts the entire external-SSD population
+from retention permanently. Joining that 285-tree pool back to the PR-state census and then
+running by hand the three checks the short-circuit skipped found **41 trees / 26.6 GiB that are
+clean, unoccupied and provably landed** (MERGED-PR or squash-matched), on top of the 60.8 GiB
+the same run already classified SAFE.
+
+Two implementation facts constrain any fix, and neither is a config flip:
+
+- `worktree_gc.py` has **no lock-reason config key**. Its whole surface is `roots`, `armed`,
+  `min_age_days`, `include_open_pr`, `include_orphans`, `max_delete_per_run`,
+  `delete_local_branches`, `pr_limit`. Honouring the 79 real locks while ignoring the two
+  content-free strings requires a code change plus a new opt-in key (default = today's
+  behaviour, honour every lock).
+- Deletion at line ~706 uses a single `git worktree remove --force`, which **refuses a locked
+  tree** (`fatal: cannot remove a locked working tree`). An explicit `git worktree unlock`
+  must precede removal — preferred over `-f -f`, because an unlock is a visible, auditable act
+  while a double force would also steamroll a lock added after the gate ran.
+
+Like the roots list, changing this is an OPERATOR ratification act, and it only pays off if the
+roots are widened too, since the belt at line ~682 still refuses those paths.
+
 **What this law cannot reach.** The 318 detached trees satisfy no proof in the CORRECTION box
 and never will: 150 are `mo-ext-rev-*` / `mo-ext-fix-*` external CLI labour lanes minted
 per-task by an orchestrator seat, whose output is collected and shipped from the SEAT's

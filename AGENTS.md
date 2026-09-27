@@ -194,13 +194,23 @@ only — a human/Opus reviewer owns visual taste.
   destroys the working directory of anything attached exactly as thinning it did, so reclaim
   requires landed AND nothing attached, and because a resumable web conversation is
   undetectable by construction (no process, no shell, no reflog — it lives in a browser tab),
-  **roots hosting web sessions are never auto-reclaimed at all.** Measured 2026-09-26 across
-  811 trees: only **48 / 73.2 GiB** are landed-and-clean (~1.7 days of accrual), while
-  **638 are UNLANDED** — the bloat is unmerged WORK, not uncollected garbage, so no
-  completion-signal sweeper can reach most of it. For that bucket `refs/salvage/*` (534 refs
-  minted) decouples preserving the commits from freeing the checkout for ~40 bytes each, and
-  the durable fix is upstream of storage: how many lanes get opened that never merge.
-  See `research/WORKTREE_GC_POLICY.md` §9.
+  **roots hosting web sessions are never auto-reclaimed at all.** **Pool RE-DERIVED 2026-09-27
+  over 807 trees — the 09-26 figure quoted here was wrong.** It read "only 48 / 73.2 GiB are
+  landed-and-clean while 638 are UNLANDED, so the bloat is unmerged WORK, not uncollected
+  garbage, and no completion-signal sweeper can reach most of it"; that came from the
+  ancestry-only gate, which a squash-merge breaks. Under PR state: **real abandonment is 8–14%,
+  not 79%**, the fleet ships ~61 PRs/day against ~54 trees/day minted, and this IS uncollected
+  garbage — so a completion-signal sweeper is the right instrument. **What limited it was SCOPE,
+  not judgment:** 580 of 807 trees (72%) sit outside `config/worktree_gc.json` `roots`
+  (`/Volumes/Mastermind/agent-workspaces`, 354 trees, `…/claude` alone 462 GiB and **mandated**
+  by the SSD placement policy; `/Volumes/Mastermind/worktrees`, 142), and a further 285 trees /
+  221.6 GiB are verdicted `LOCKED` on nothing but the SSD helper's content-free
+  `removable volume protection` stamp, which short-circuits landedness entirely. Widening
+  either is its own **operator ratification act**, exactly as flipping `armed` was.
+  The genuinely unreachable remainder is DIRTY + UNPUSHED (~308 GiB of real work, whose commits
+  `refs/salvage/*` preserves for ~40 bytes each) and the 318 detached lanes, which need a
+  lane-exit receipt rather than a merge. The durable fix is still upstream of storage: how many
+  lanes get opened that never merge. See `research/WORKTREE_GC_POLICY.md` §9.
 - **A session worktree is planted under the checkout the SESSION was launched in**
   (2026-08-20). `.claude/hooks/worktree_create_sparse.py` used to derive its
   destination from `git rev-parse --git-common-dir`, which answers with the MAIN
