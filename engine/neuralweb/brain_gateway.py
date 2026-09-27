@@ -833,7 +833,9 @@ def _chart_command_tool_schemas() -> list[dict]:
                 "it supports), and existing drawings. Choose indicators and timeframes ONLY from the "
                 "reported capabilities. study_context describes configured native module identities, NOT computed values, "
                 "output health or trading edge. native_parameters describes settings; indicator_edit describes safe patch support. "
-                "Returns {connected: false} when no live chart is attached. "
+                "session.data_readout is a bounded projection of the existing chart Data Window: its basis is source data, "
+                "not live-attested market truth, and it may cover not all native studies. Missing/partial/empty data_readout "
+                "is not a 'no setup' conclusion. Returns {connected: false} when no live chart is attached. "
                 "Only offered when page=terminal."
             ),
             "input_schema": {"type": "object", "properties": {}},

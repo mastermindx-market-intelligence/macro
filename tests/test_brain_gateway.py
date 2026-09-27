@@ -5224,6 +5224,87 @@ def test_chart_state_ack_history_sanitizes_and_bounds():
     assert all(len(a.get("error", "")) <= gw._CHART_ACK_ERROR_MAX for a in rec["acks"])
 
 
+
+def test_read_chart_state_preserves_data_readout_and_routes_native_lessons():
+    origin = "origin-native-readout"
+    marker = "SECRET_NUMERIC_FIELD_DO_NOT_PROMPT"
+    session = {
+        "symbol": "NVDA",
+        "tf": "D",
+        "pane_id": 0,
+        "indicators": [
+            {"name": "structure", "params": {"sr.on": True}},
+            {"name": "rsix", "params": {"eng.on": True}},
+            {"name": "macdx", "params": {"hist.on": True}},
+        ],
+        "capabilities": {
+            "indicators": ["structure", "rsix", "macdx"],
+            "native_study_context": {
+                "schema": "chart.native_study_context.v1",
+                "status": "complete",
+                "omitted_modules": [],
+                "modules": [
+                    {"id": "structure/sr", "suite": "structure", "module": "sr", "enabled": True},
+                    {"id": "rsix/eng", "suite": "rsix", "module": "eng", "enabled": True},
+                    {"id": "macdx/hist", "suite": "macdx", "module": "hist", "enabled": True},
+                ],
+            },
+        },
+        "data_readout": {
+            "schema": "chart.data_readout.v1",
+            "status": "available",
+            "basis": {
+                "source": "existing_chart_data_window",
+                "data_status": "loaded_chart_cache_not_live_attestation",
+                "native_coverage": "not_all_native_studies",
+                "empty_result": "not_a_no_setup_judgment",
+            },
+            "latest_loaded": {
+                "time": "2026-09-24",
+                "readouts": [{"id": marker, "value": 61.25}],
+            },
+        },
+    }
+    gw.put_chart_state(
+        "u-native-readout", "terminal", session,
+        origin_id=origin, context_revision=9,
+    )
+
+    state = gw._tool_read_chart_state(
+        "u-native-readout", "terminal",
+        origin_id=origin, context_revision=9,
+    )
+    assert state["connected"] is True
+    assert state["session"]["data_readout"] == session["data_readout"]
+    assert state["study_context"]["native_module_ids"] == [
+        "macdx/hist", "rsix/eng", "structure/sr",
+    ]
+
+    terms = gw._chart_doctrine_terms(state)
+    assert "native[rsix/eng]" in terms
+    assert "native[macdx/hist]" in terms
+    assert "native[structure/sr]" in terms
+
+    block = gw._doctrine_block_for(
+        "terminal", "analyze this",
+        user_id="u-native-readout", chart_state=state,
+    )
+    assert "NATIVE MOMENTUM" in block
+    assert "NATIVE STRUCTURE" in block
+    assert marker not in block
+    assert "61.25" not in block
+
+
+def test_read_chart_state_schema_describes_data_readout_as_bounded_nonlive_evidence():
+    root = _make_temp_root()
+    schemas = {s["name"]: s for s in gw._all_brain_tool_schemas(root, page="terminal")}
+    desc = schemas["read_chart_state"]["description"].lower()
+    assert "data_readout" in desc
+    assert "not live" in desc or "not live-attested" in desc
+    assert "not all native" in desc
+    assert "no setup" in desc
+
+
 def test_read_chart_state_requires_exact_origin_and_revision():
     gw.put_chart_state("u-exact", "terminal", {"symbol": "NVDA", "tf": "1D"},
                        origin_id="origin-exact", context_revision=4,

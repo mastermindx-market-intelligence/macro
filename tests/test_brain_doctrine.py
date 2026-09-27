@@ -109,6 +109,14 @@ def test_routing_zh(msg, expected):
 # 4. Generic read → the three default lenses + protocol, nothing else
 # ---------------------------------------------------------------------------
 
+def test_protocol_qualifies_data_readout_without_upgrading_it_to_live_truth():
+    protocol = next(m for m in d._load() if m["id"] == "protocol")["body"].lower()
+    assert "session.data_readout" in protocol
+    assert "not live" in protocol or "not live-attested" in protocol
+    assert "not all native" in protocol
+    assert "no setup" in protocol
+
+
 def test_generic_read_uses_defaults():
     routed = _ids(d.route("read this chart for me and tell me what you see"))
     assert set(routed) == {"protocol", "lens_structure", "lens_trend", "lens_sr"}
