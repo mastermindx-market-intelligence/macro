@@ -1,0 +1,308 @@
+{
+  "state": "NOT_APPLIED_TO_PAPER",
+  "file_id": "01M2WGNCX9475G79JRKJTCM08P",
+  "target_page": "p-1-0",
+  "requires": "Fresh file-wide custody, current source/token/node checks, live schema/snapshot, separately reconciled effects. Reuse existing aliases; do not replay matching tokens or nodes. This document grants no permission and executes nothing.",
+  "steps": [
+    {
+      "name": "r5-fill-role-projection",
+      "tool": "create_tokens",
+      "arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "tokens": [
+          {
+            "type": "color",
+            "name": "--mx-dark-fill-info",
+            "value": "rgb(58.24, 99.2, 153.6)",
+            "description": "Projection of templates/theme.css --fill-info: 64% info + 36% black in sRGB. Solid control with white label; not text ink. Source owns this value."
+          },
+          {
+            "type": "color",
+            "name": "--mx-light-fill-info",
+            "value": "rgb(25.6, 60.8, 163.2)",
+            "description": "Projection of templates/theme.css --fill-info: 64% info + 36% black in sRGB. Solid control with white label; not text ink. Source owns this value."
+          }
+        ]
+      }
+    },
+    {
+      "name": "r5-state-copy",
+      "tool": "set_text_content",
+      "arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "updates": [
+          {
+            "nodeId": "1BF-0",
+            "textContent": "SHARED DATA + ACTION PATTERNS · ILLUSTRATIVE ONLY"
+          },
+          {
+            "nodeId": "1E7-0",
+            "textContent": "SHARED DATA + ACTION PATTERNS · ILLUSTRATIVE ONLY"
+          },
+          {
+            "nodeId": "1BG-0",
+            "textContent": "Make the state clear. Keep the next step useful."
+          },
+          {
+            "nodeId": "1E8-0",
+            "textContent": "Make the state clear. Keep the next step useful."
+          },
+          {
+            "nodeId": "1BH-0",
+            "textContent": "Independent component examples, not one live market view. Preserve data scope, clocks and access."
+          },
+          {
+            "nodeId": "1E9-0",
+            "textContent": "Independent component examples, not one live market view. Preserve data scope, clocks and access."
+          },
+          {
+            "nodeId": "1D3-0",
+            "textContent": "WHEN INFORMATION IS INCOMPLETE"
+          },
+          {
+            "nodeId": "1FV-0",
+            "textContent": "WHEN INFORMATION IS INCOMPLETE"
+          },
+          {
+            "nodeId": "1D6-0",
+            "textContent": "Checking the latest data…"
+          },
+          {
+            "nodeId": "1FY-0",
+            "textContent": "Checking the latest data…"
+          },
+          {
+            "nodeId": "1DF-0",
+            "textContent": "Latest update delayed"
+          },
+          {
+            "nodeId": "1G7-0",
+            "textContent": "Latest update delayed"
+          },
+          {
+            "nodeId": "1DG-0",
+            "textContent": "Last confirmed: 28 Aug, market close."
+          },
+          {
+            "nodeId": "1G8-0",
+            "textContent": "Last confirmed: 28 Aug, market close."
+          },
+          {
+            "nodeId": "1DL-0",
+            "textContent": "Latest update unavailable"
+          },
+          {
+            "nodeId": "1GD-0",
+            "textContent": "Latest update unavailable"
+          },
+          {
+            "nodeId": "1DM-0",
+            "textContent": "Earlier evidence is still available."
+          },
+          {
+            "nodeId": "1GE-0",
+            "textContent": "Earlier evidence is still available."
+          },
+          {
+            "nodeId": "1DW-0",
+            "textContent": "This research detail requires access"
+          },
+          {
+            "nodeId": "1GO-0",
+            "textContent": "This research detail requires access"
+          },
+          {
+            "nodeId": "1DX-0",
+            "textContent": "Only this detail is locked. The public answer and public evidence remain available."
+          },
+          {
+            "nodeId": "1GP-0",
+            "textContent": "Only this detail is locked. The public answer and public evidence remain available."
+          }
+        ]
+      }
+    },
+    {
+      "name": "r5-state-geometry",
+      "tool": "update_styles",
+      "arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "updates": [
+          {
+            "nodeIds": [
+              "1BB-0"
+            ],
+            "styles": {
+              "height": "fit-content",
+              "minHeight": "1540px"
+            }
+          },
+          {
+            "nodeIds": [
+              "1BD-0"
+            ],
+            "styles": {
+              "height": "auto"
+            }
+          },
+          {
+            "nodeIds": [
+              "1D5-0",
+              "1DB-0",
+              "1DH-0"
+            ],
+            "styles": {
+              "width": "0px",
+              "flex": "1 1 0px",
+              "minHeight": "188px"
+            }
+          },
+          {
+            "nodeIds": [
+              "1D6-0"
+            ],
+            "styles": {
+              "fontSize": "var(--fs-body)",
+              "lineHeight": "20px",
+              "color": "var(--mx-dark-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "1BC-0"
+            ],
+            "styles": {
+              "height": "fit-content",
+              "minHeight": "1540px"
+            }
+          },
+          {
+            "nodeIds": [
+              "1E5-0"
+            ],
+            "styles": {
+              "height": "auto"
+            }
+          },
+          {
+            "nodeIds": [
+              "1FX-0",
+              "1G3-0",
+              "1G9-0"
+            ],
+            "styles": {
+              "width": "0px",
+              "flex": "1 1 0px",
+              "minHeight": "188px"
+            }
+          },
+          {
+            "nodeIds": [
+              "1FY-0"
+            ],
+            "styles": {
+              "fontSize": "var(--fs-body)",
+              "lineHeight": "20px",
+              "color": "var(--mx-light-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "1G6-0",
+              "1GC-0"
+            ],
+            "styles": {
+              "color": "var(--mx-light-text)"
+            }
+          },
+          {
+            "nodeIds": [
+              "1DD-0",
+              "1DJ-0",
+              "1G5-0",
+              "1GB-0"
+            ],
+            "styles": {
+              "gap": "8px",
+              "flex": "1"
+            }
+          },
+          {
+            "nodeIds": [
+              "1DZ-0",
+              "1GR-0"
+            ],
+            "styles": {
+              "minHeight": "var(--sp-8)",
+              "minWidth": "var(--sp-8)",
+              "boxSizing": "border-box",
+              "display": "flex",
+              "alignItems": "center",
+              "justifyContent": "center"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "r5-dark-states",
+      "tool": "write_html",
+      "arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "1D2-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Empty filtered and partial states\" style=\"display:flex;gap:16px;width:100%;align-items:stretch;\"><div layer-name=\"True zero — complete current population\" style=\"display:flex;flex:1;min-width:0;gap:12px;padding:16px;background:var(--mx-dark-panel);border:1px solid var(--mx-dark-line);border-radius:var(--r-card);color:var(--mx-dark-text);\"><div style=\"display:flex;flex:1;flex-direction:column;gap:8px;\"><div style=\"font-size:var(--fs-h2);font-weight:var(--fw-semibold);line-height:1.45;\">No setups qualify</div><div style=\"font-size:var(--fs-sm);font-weight:var(--fw-regular);line-height:1.45;color:var(--mx-dark-muted);\">All 24 checked. None meet the criteria.</div><div style=\"flex:1;\"></div><div layer-name=\"View all 24 action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-dark-link);background:var(--mx-dark-panel);color:var(--mx-dark-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">View all 24</div></div></div><div layer-name=\"Filtered empty — data is present\" style=\"display:flex;flex:1;min-width:0;gap:12px;padding:16px;background:var(--mx-dark-panel);border:1px solid var(--mx-dark-line);border-radius:var(--r-card);color:var(--mx-dark-text);\"><div style=\"display:flex;flex:1;flex-direction:column;gap:8px;\"><div style=\"font-size:var(--fs-h2);font-weight:var(--fw-semibold);line-height:1.45;\">No matches for 3 filters</div><div style=\"font-size:var(--fs-sm);font-weight:var(--fw-regular);line-height:1.45;color:var(--mx-dark-muted);\">12 items are available without these filters.</div><div style=\"flex:1;\"></div><div layer-name=\"Clear 3 filters action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-dark-link);background:var(--mx-dark-panel);color:var(--mx-dark-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">Clear 3 filters</div></div></div><div layer-name=\"Partial — declared denominator\" style=\"display:flex;flex:1;min-width:0;gap:12px;padding:16px;background:var(--mx-dark-panel);border:1px solid var(--mx-dark-line);border-radius:var(--r-card);color:var(--mx-dark-text);\"><div style=\"width:3px;align-self:stretch;background:var(--mx-dark-warn);\"></div><div style=\"display:flex;flex:1;flex-direction:column;gap:8px;\"><div style=\"font-size:var(--fs-h2);font-weight:var(--fw-semibold);line-height:1.45;\">6 of 9 above average</div><div style=\"font-size:var(--fs-sm);font-weight:var(--fw-regular);line-height:1.45;color:var(--mx-dark-muted);\">3 of 12 members unavailable. Rate excludes them.</div><div style=\"flex:1;\"></div><div layer-name=\"See coverage action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-dark-link);background:var(--mx-dark-panel);color:var(--mx-dark-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">See coverage</div></div></div></div><div layer-name=\"Conflicting reads — no merged score\" style=\"display:flex;gap:24px;align-items:center;justify-content:space-between;padding:20px;border:1px solid var(--mx-dark-line);border-left:3px solid var(--mx-dark-warn);border-radius:var(--r-card);background:var(--mx-dark-panel);color:var(--mx-dark-text);\"><div style=\"display:flex;flex-direction:column;gap:6px;flex:1;\"><div style=\"font-size:var(--fs-h2);font-weight:var(--fw-semibold);line-height:1.45;\">Entry checks disagree</div><div style=\"font-size:var(--fs-body);font-weight:var(--fw-regular);line-height:1.45;\">Entry check: Ready  ·  Extension check: Wait</div><div style=\"font-size:var(--fs-sm);font-weight:var(--fw-regular);line-height:1.45;color:var(--mx-dark-muted);\">Different checks. No combined entry call.</div></div><div layer-name=\"Compare the checks action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-dark-link);background:var(--mx-dark-panel);color:var(--mx-dark-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">Compare the checks</div></div><div layer-name=\"Action results — illustrative not functional\" style=\"display:flex;flex-direction:column;gap:12px;padding-top:8px;\"><div style=\"font-size:var(--fs-h2);font-weight:var(--fw-semibold);line-height:1.45;color:var(--mx-dark-text);\">A request is not a completed action</div><div style=\"display:flex;width:100%;gap:12px;\"><div layer-name=\"Save Ready\" style=\"display:flex;flex:1;min-width:0;flex-direction:column;gap:8px;padding:14px;border:1px solid var(--mx-dark-line);border-radius:var(--r-card);background:var(--mx-dark-panel);color:var(--mx-dark-text);\"><div style=\"font-size:var(--fs-body);font-weight:var(--fw-semibold);line-height:1.45;\">Ready</div><div style=\"font-size:var(--fs-sm);font-weight:var(--fw-regular);line-height:1.45;color:var(--mx-dark-muted);\">Keep this exact view.</div><div style=\"flex:1;\"></div><div layer-name=\"Save view action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-dark-fill-info);background:var(--mx-dark-fill-info);color:#FFFFFF;font-size:var(--fs-body);font-weight:var(--fw-semibold);\">Save view</div></div><div layer-name=\"Save In progress\" style=\"display:flex;flex:1;min-width:0;flex-direction:column;gap:8px;padding:14px;border:1px solid var(--mx-dark-line);border-radius:var(--r-card);background:var(--mx-dark-panel);color:var(--mx-dark-text);\"><div style=\"font-size:var(--fs-body);font-weight:var(--fw-semibold);line-height:1.45;\">In progress</div><div style=\"font-size:var(--fs-sm);font-weight:var(--fw-regular);line-height:1.45;color:var(--mx-dark-muted);\">Your view stays available.</div><div style=\"flex:1;\"></div><div layer-name=\"Saving… action\" aria-disabled=\"true\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-dark-link);background:var(--mx-dark-panel);color:var(--mx-dark-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">Saving…</div></div><div layer-name=\"Save Confirmed\" style=\"display:flex;flex:1;min-width:0;flex-direction:column;gap:8px;padding:14px;border:1px solid var(--mx-dark-line);border-radius:var(--r-card);background:var(--mx-dark-panel);color:var(--mx-dark-text);\"><div style=\"font-size:var(--fs-body);font-weight:var(--fw-semibold);line-height:1.45;\">Confirmed</div><div style=\"font-size:var(--fs-sm);font-weight:var(--fw-regular);line-height:1.45;color:var(--mx-dark-muted);\">The view is in Saved views.</div><div style=\"flex:1;\"></div><div layer-name=\"Open saved view action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-dark-link);background:var(--mx-dark-panel);color:var(--mx-dark-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">Open saved view</div></div><div layer-name=\"Save Failed\" style=\"display:flex;flex:1;min-width:0;flex-direction:column;gap:8px;padding:14px;border:1px solid var(--mx-dark-line);border-radius:var(--r-card);background:var(--mx-dark-panel);color:var(--mx-dark-text);\"><div style=\"font-size:var(--fs-body);font-weight:var(--fw-semibold);line-height:1.45;\">Failed</div><div style=\"font-size:var(--fs-sm);font-weight:var(--fw-regular);line-height:1.45;color:var(--mx-dark-muted);\">Not saved. Your view is intact.</div><div style=\"flex:1;\"></div><div layer-name=\"Try saving again action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-dark-link);background:var(--mx-dark-panel);color:var(--mx-dark-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">Try saving again</div></div><div layer-name=\"Save Not confirmed — read-only status check\" style=\"display:flex;flex:1;min-width:0;flex-direction:column;gap:8px;padding:14px;border:1px solid var(--mx-dark-line);border-radius:var(--r-card);background:var(--mx-dark-panel);color:var(--mx-dark-text);\"><div style=\"font-size:var(--fs-body);font-weight:var(--fw-semibold);line-height:1.45;\">Not confirmed</div><div style=\"font-size:var(--fs-sm);font-weight:var(--fw-regular);line-height:1.45;color:var(--mx-dark-muted);\">We are checking the original save.</div><div style=\"flex:1;\"></div><div layer-name=\"Check save status action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-dark-link);background:var(--mx-dark-panel);color:var(--mx-dark-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">Check save status</div></div></div></div>"
+      }
+    },
+    {
+      "name": "r5-light-states",
+      "tool": "write_html",
+      "arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "1FU-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Empty filtered and partial states\" style=\"display:flex;gap:16px;width:100%;align-items:stretch;\"><div layer-name=\"True zero — complete current population\" style=\"display:flex;flex:1;min-width:0;gap:12px;padding:16px;background:var(--mx-light-panel);border:1px solid var(--mx-light-line);border-radius:var(--r-card);color:var(--mx-light-text);\"><div style=\"display:flex;flex:1;flex-direction:column;gap:8px;\"><div style=\"font-size:var(--fs-h2);font-weight:var(--fw-semibold);line-height:1.45;\">No setups qualify</div><div style=\"font-size:var(--fs-sm);font-weight:var(--fw-regular);line-height:1.45;color:var(--mx-light-muted);\">All 24 checked. None meet the criteria.</div><div style=\"flex:1;\"></div><div layer-name=\"View all 24 action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-light-link);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">View all 24</div></div></div><div layer-name=\"Filtered empty — data is present\" style=\"display:flex;flex:1;min-width:0;gap:12px;padding:16px;background:var(--mx-light-panel);border:1px solid var(--mx-light-line);border-radius:var(--r-card);color:var(--mx-light-text);\"><div style=\"display:flex;flex:1;flex-direction:column;gap:8px;\"><div style=\"font-size:var(--fs-h2);font-weight:var(--fw-semibold);line-height:1.45;\">No matches for 3 filters</div><div style=\"font-size:var(--fs-sm);font-weight:var(--fw-regular);line-height:1.45;color:var(--mx-light-muted);\">12 items are available without these filters.</div><div style=\"flex:1;\"></div><div layer-name=\"Clear 3 filters action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-light-link);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">Clear 3 filters</div></div></div><div layer-name=\"Partial — declared denominator\" style=\"display:flex;flex:1;min-width:0;gap:12px;padding:16px;background:var(--mx-light-panel);border:1px solid var(--mx-light-line);border-radius:var(--r-card);color:var(--mx-light-text);\"><div style=\"width:3px;align-self:stretch;background:var(--mx-light-warn);\"></div><div style=\"display:flex;flex:1;flex-direction:column;gap:8px;\"><div style=\"font-size:var(--fs-h2);font-weight:var(--fw-semibold);line-height:1.45;\">6 of 9 above average</div><div style=\"font-size:var(--fs-sm);font-weight:var(--fw-regular);line-height:1.45;color:var(--mx-light-muted);\">3 of 12 members unavailable. Rate excludes them.</div><div style=\"flex:1;\"></div><div layer-name=\"See coverage action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-light-link);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">See coverage</div></div></div></div><div layer-name=\"Conflicting reads — no merged score\" style=\"display:flex;gap:24px;align-items:center;justify-content:space-between;padding:20px;border:1px solid var(--mx-light-line);border-left:3px solid var(--mx-light-warn);border-radius:var(--r-card);background:var(--mx-light-panel);color:var(--mx-light-text);\"><div style=\"display:flex;flex-direction:column;gap:6px;flex:1;\"><div style=\"font-size:var(--fs-h2);font-weight:var(--fw-semibold);line-height:1.45;\">Entry checks disagree</div><div style=\"font-size:var(--fs-body);font-weight:var(--fw-regular);line-height:1.45;\">Entry check: Ready  ·  Extension check: Wait</div><div style=\"font-size:var(--fs-sm);font-weight:var(--fw-regular);line-height:1.45;color:var(--mx-light-muted);\">Different checks. No combined entry call.</div></div><div layer-name=\"Compare the checks action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-light-link);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">Compare the checks</div></div><div layer-name=\"Action results — illustrative not functional\" style=\"display:flex;flex-direction:column;gap:12px;padding-top:8px;\"><div style=\"font-size:var(--fs-h2);font-weight:var(--fw-semibold);line-height:1.45;color:var(--mx-light-text);\">A request is not a completed action</div><div style=\"display:flex;width:100%;gap:12px;\"><div layer-name=\"Save Ready\" style=\"display:flex;flex:1;min-width:0;flex-direction:column;gap:8px;padding:14px;border:1px solid var(--mx-light-line);border-radius:var(--r-card);background:var(--mx-light-panel);color:var(--mx-light-text);\"><div style=\"font-size:var(--fs-body);font-weight:var(--fw-semibold);line-height:1.45;\">Ready</div><div style=\"font-size:var(--fs-sm);font-weight:var(--fw-regular);line-height:1.45;color:var(--mx-light-muted);\">Keep this exact view.</div><div style=\"flex:1;\"></div><div layer-name=\"Save view action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-light-fill-info);background:var(--mx-light-fill-info);color:#FFFFFF;font-size:var(--fs-body);font-weight:var(--fw-semibold);\">Save view</div></div><div layer-name=\"Save In progress\" style=\"display:flex;flex:1;min-width:0;flex-direction:column;gap:8px;padding:14px;border:1px solid var(--mx-light-line);border-radius:var(--r-card);background:var(--mx-light-panel);color:var(--mx-light-text);\"><div style=\"font-size:var(--fs-body);font-weight:var(--fw-semibold);line-height:1.45;\">In progress</div><div style=\"font-size:var(--fs-sm);font-weight:var(--fw-regular);line-height:1.45;color:var(--mx-light-muted);\">Your view stays available.</div><div style=\"flex:1;\"></div><div layer-name=\"Saving… action\" aria-disabled=\"true\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-light-link);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">Saving…</div></div><div layer-name=\"Save Confirmed\" style=\"display:flex;flex:1;min-width:0;flex-direction:column;gap:8px;padding:14px;border:1px solid var(--mx-light-line);border-radius:var(--r-card);background:var(--mx-light-panel);color:var(--mx-light-text);\"><div style=\"font-size:var(--fs-body);font-weight:var(--fw-semibold);line-height:1.45;\">Confirmed</div><div style=\"font-size:var(--fs-sm);font-weight:var(--fw-regular);line-height:1.45;color:var(--mx-light-muted);\">The view is in Saved views.</div><div style=\"flex:1;\"></div><div layer-name=\"Open saved view action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-light-link);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">Open saved view</div></div><div layer-name=\"Save Failed\" style=\"display:flex;flex:1;min-width:0;flex-direction:column;gap:8px;padding:14px;border:1px solid var(--mx-light-line);border-radius:var(--r-card);background:var(--mx-light-panel);color:var(--mx-light-text);\"><div style=\"font-size:var(--fs-body);font-weight:var(--fw-semibold);line-height:1.45;\">Failed</div><div style=\"font-size:var(--fs-sm);font-weight:var(--fw-regular);line-height:1.45;color:var(--mx-light-muted);\">Not saved. Your view is intact.</div><div style=\"flex:1;\"></div><div layer-name=\"Try saving again action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-light-link);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">Try saving again</div></div><div layer-name=\"Save Not confirmed — read-only status check\" style=\"display:flex;flex:1;min-width:0;flex-direction:column;gap:8px;padding:14px;border:1px solid var(--mx-light-line);border-radius:var(--r-card);background:var(--mx-light-panel);color:var(--mx-light-text);\"><div style=\"font-size:var(--fs-body);font-weight:var(--fw-semibold);line-height:1.45;\">Not confirmed</div><div style=\"font-size:var(--fs-sm);font-weight:var(--fw-regular);line-height:1.45;color:var(--mx-light-muted);\">We are checking the original save.</div><div style=\"flex:1;\"></div><div layer-name=\"Check save status action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-light-link);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">Check save status</div></div></div></div>"
+      }
+    },
+    {
+      "name": "r5-1DD-0-recovery",
+      "tool": "write_html",
+      "arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "1DD-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"View last confirmed action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-dark-link);background:var(--mx-dark-panel);color:var(--mx-dark-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">View last confirmed</div>"
+      }
+    },
+    {
+      "name": "r5-1DJ-0-recovery",
+      "tool": "write_html",
+      "arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "1DJ-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Try again action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-dark-link);background:var(--mx-dark-panel);color:var(--mx-dark-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">Try again</div>"
+      }
+    },
+    {
+      "name": "r5-1G5-0-recovery",
+      "tool": "write_html",
+      "arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "1G5-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"View last confirmed action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-light-link);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">View last confirmed</div>"
+      }
+    },
+    {
+      "name": "r5-1GB-0-recovery",
+      "tool": "write_html",
+      "arguments": {
+        "fileId": "01M2WGNCX9475G79JRKJTCM08P",
+        "targetNodeId": "1GB-0",
+        "mode": "insert-children",
+        "html": "<div layer-name=\"Try again action\" style=\"display:flex;align-items:center;justify-content:center;align-self:flex-start;min-height:var(--sp-8);padding:8px 14px;box-sizing:border-box;border-radius:var(--r-btn);border:1px solid var(--mx-light-link);background:var(--mx-light-panel);color:var(--mx-light-text);font-size:var(--fs-body);font-weight:var(--fw-semibold);\">Try again</div>"
+      }
+    }
+  ]
+}

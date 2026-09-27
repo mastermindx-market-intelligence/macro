@@ -1,0 +1,13 @@
+[
+  {
+    "receipt": "browser-cleanup.json",
+    "value": {
+      "pid": 13069,
+      "profile": "/Users/chriswong/.local/share/mastermind-paper/artifacts/design-system-r11-20260927/chrome-profile-6WaCyv",
+      "exitCode": null,
+      "signalCode": null,
+      "closed": false
+    },
+    "observation": "13069     1 ?NE    0.0      0 (Google Chrome)"
+  }
+]

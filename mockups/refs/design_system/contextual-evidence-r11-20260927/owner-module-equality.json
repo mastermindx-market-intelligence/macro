@@ -1,0 +1,22 @@
+{
+  "current/templates": {
+    "length": 29112,
+    "sha256": "20a505fe988e7ba45b5ae9401dfb7c99371c12bbf37940f501eff133854270b0",
+    "trailing_chars_excluded": 1
+  },
+  "current/site": {
+    "length": 29112,
+    "sha256": "20a505fe988e7ba45b5ae9401dfb7c99371c12bbf37940f501eff133854270b0",
+    "trailing_chars_excluded": 32687
+  },
+  "composed/templates": {
+    "length": 30660,
+    "sha256": "0f2793bc6af1667ba52f715b8b27d58f0f88e2cc1205f2b7deb4becc9768f09f",
+    "trailing_chars_excluded": 1
+  },
+  "composed/site": {
+    "length": 30660,
+    "sha256": "0f2793bc6af1667ba52f715b8b27d58f0f88e2cc1205f2b7deb4becc9768f09f",
+    "trailing_chars_excluded": 32687
+  }
+}

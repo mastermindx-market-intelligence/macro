@@ -64,6 +64,31 @@ Migration work follows `research/DESIGN_MIGRATION_FACTORY_V1.md`: builders execu
 a committed migration packet exactly and never invent design language — a builder
 that believes the packet is wrong stops and escalates.
 
+The default customer path must deliver a **prepared answer**, not an ingredient board.
+Track **user assembly debt**: setup, cross-reference, mental arithmetic or configuration
+required before the useful first read. The target is **target zero** on the primary path
+except unavoidable subject input; product-owned comparison and synthesis happen before
+advanced customization.
+
+For any **material visual change**, do not design directly in production markup or from a
+chat-only render. Begin from a governed editable source (Figma/Paper/approved equivalent) that
+projects repository design law, and record the exact file/document + frame/node/artboard identifiers
+in the migration packet. Editable-source traceability is required but **does not approve a
+reference**: canonical/final reference status still requires the existing Reference Integrity Gate
+(RIG) approval receipt, and editable-tool approval never narrows any route-family or atomic-migration
+scope already required by product law.
+
+The packet must name the canonical components/tokens consumed and the Dark/Light × EN/ZH ×
+desktop/mobile matrix, plus materially distinct data/availability states and interaction/overlay
+states as applicable (including loading, empty, stale, partial, denied, error, corrected, success,
+hover, keyboard focus/focus-visible, pressed/active/selected, expanded/open popover/dialog/menu or
+disclosure, and disabled where supported). Editable frames/component variants define the intended
+treatment; implementation proof remains separate browser/fixture evidence under the existing
+evidence contract. The editable canvas never becomes a second token root or component registry, and
+generated/exported code is implementation input rather than automatic design authority. If a needed
+primitive is missing, return a DESIGN-SYSTEM GAP to the design lane instead of inventing a page-local
+substitute.
+
 ### Theme art direction — required (TP-0, 2026-08-27)
 
 Dark and light are **two deliberate art directions of one semantic system**, not

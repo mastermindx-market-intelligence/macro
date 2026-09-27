@@ -1,0 +1,9 @@
+...F                                                                     [100%]
+=================================== FAILURES ===================================
+____ test_evidence_rate_keeps_the_existing_lens_binding_and_legible_receipt ____
+tests/test_design_system_foundations.py:1062: in test_evidence_rate_keeps_the_existing_lens_binding_and_legible_receipt
+    assert 'position:static' in css and 'width:auto' in css
+E   AssertionError: assert ('position:static' in '{position:absolute;width:auto;box-sizing:border-box;margin-top:var(--sp-3);}')
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_evidence_rate_keeps_the_existing_lens_binding_and_legible_receipt
+1 failed, 3 passed, 95 deselected in 0.04s

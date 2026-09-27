@@ -1,0 +1,2418 @@
+{
+  "scope": "R8 reference tabs on composed current-main source; isolated local file browser; external HTTP(S) blocked; no production, persistence or assistive-technology claim",
+  "cells": [
+    {
+      "width": 320,
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "direct_filing_link",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fi"
+            ],
+            "visible": [
+              "pane-filings"
+            ],
+            "entry": [
+              "tab-fi"
+            ],
+            "focus": "tab-fi",
+            "hash": "#tab-fi",
+            "search": "?market=US&period=1w&case=0",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              96.9375,
+              110.46875,
+              63.953125
+            ],
+            "documentWidth": 309,
+            "clientWidth": 309
+          }
+        },
+        {
+          "name": "pointer_price_panel",
+          "pass": true
+        },
+        {
+          "name": "arrow_focus_only",
+          "pass": true
+        },
+        {
+          "name": "arrow_has_no_history_effect",
+          "pass": true
+        },
+        {
+          "name": "enter_fundamentals",
+          "pass": true
+        },
+        {
+          "name": "fundamentals_content_visible",
+          "pass": true
+        },
+        {
+          "name": "simple_fundamentals_no_sideways_reading",
+          "pass": true
+        },
+        {
+          "name": "tab_enters_active_panel",
+          "pass": true
+        },
+        {
+          "name": "shift_tab_returns_to_selected",
+          "pass": true
+        },
+        {
+          "name": "end_focus_only",
+          "pass": true
+        },
+        {
+          "name": "space_filing_panel",
+          "pass": true
+        },
+        {
+          "name": "back_returns_fundamentals",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=0",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              96.9375,
+              110.46875,
+              63.953125
+            ],
+            "documentWidth": 309,
+            "clientWidth": 309
+          }
+        },
+        {
+          "name": "forward_returns_filings",
+          "pass": true
+        },
+        {
+          "name": "back_returns_price",
+          "pass": true
+        },
+        {
+          "name": "table_position_preserved",
+          "pass": true
+        },
+        {
+          "name": "repeat_selection_no_history_entry",
+          "pass": true
+        },
+        {
+          "name": "left_wraps_focus",
+          "pass": true
+        },
+        {
+          "name": "home_focus",
+          "pass": true
+        },
+        {
+          "name": "unrelated_fragment_preserved",
+          "pass": true
+        },
+        {
+          "name": "external_known_fragment",
+          "pass": true
+        },
+        {
+          "name": "reload_restores_panel",
+          "pass": true
+        },
+        {
+          "name": "history_never_leaves_focus_in_hidden_panel",
+          "pass": true
+        },
+        {
+          "name": "query_scope_preserved",
+          "pass": true
+        },
+        {
+          "name": "reciprocal_labels",
+          "pass": true
+        },
+        {
+          "name": "document_containment",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=0",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              96.9375,
+              110.46875,
+              63.953125
+            ],
+            "documentWidth": 309,
+            "clientWidth": 309
+          }
+        },
+        {
+          "name": "tab_target_geometry",
+          "pass": true
+        },
+        {
+          "name": "no_storage_effect",
+          "pass": true
+        },
+        {
+          "name": "locale_matches_document",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "direct_filing_link",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fi"
+            ],
+            "visible": [
+              "pane-filings"
+            ],
+            "entry": [
+              "tab-fi"
+            ],
+            "focus": "tab-fi",
+            "hash": "#tab-fi",
+            "search": "?market=US&period=1w&case=1",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              86.5,
+              61.5,
+              49
+            ],
+            "documentWidth": 309,
+            "clientWidth": 309
+          }
+        },
+        {
+          "name": "pointer_price_panel",
+          "pass": true
+        },
+        {
+          "name": "arrow_focus_only",
+          "pass": true
+        },
+        {
+          "name": "arrow_has_no_history_effect",
+          "pass": true
+        },
+        {
+          "name": "enter_fundamentals",
+          "pass": true
+        },
+        {
+          "name": "fundamentals_content_visible",
+          "pass": true
+        },
+        {
+          "name": "simple_fundamentals_no_sideways_reading",
+          "pass": true
+        },
+        {
+          "name": "tab_enters_active_panel",
+          "pass": true
+        },
+        {
+          "name": "shift_tab_returns_to_selected",
+          "pass": true
+        },
+        {
+          "name": "end_focus_only",
+          "pass": true
+        },
+        {
+          "name": "space_filing_panel",
+          "pass": true
+        },
+        {
+          "name": "back_returns_fundamentals",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=1",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              86.5,
+              61.5,
+              49
+            ],
+            "documentWidth": 309,
+            "clientWidth": 309
+          }
+        },
+        {
+          "name": "forward_returns_filings",
+          "pass": true
+        },
+        {
+          "name": "back_returns_price",
+          "pass": true
+        },
+        {
+          "name": "table_position_preserved",
+          "pass": true
+        },
+        {
+          "name": "repeat_selection_no_history_entry",
+          "pass": true
+        },
+        {
+          "name": "left_wraps_focus",
+          "pass": true
+        },
+        {
+          "name": "home_focus",
+          "pass": true
+        },
+        {
+          "name": "unrelated_fragment_preserved",
+          "pass": true
+        },
+        {
+          "name": "external_known_fragment",
+          "pass": true
+        },
+        {
+          "name": "reload_restores_panel",
+          "pass": true
+        },
+        {
+          "name": "history_never_leaves_focus_in_hidden_panel",
+          "pass": true
+        },
+        {
+          "name": "query_scope_preserved",
+          "pass": true
+        },
+        {
+          "name": "reciprocal_labels",
+          "pass": true
+        },
+        {
+          "name": "document_containment",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=1",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              86.5,
+              61.5,
+              49
+            ],
+            "documentWidth": 309,
+            "clientWidth": 309
+          }
+        },
+        {
+          "name": "tab_target_geometry",
+          "pass": true
+        },
+        {
+          "name": "no_storage_effect",
+          "pass": true
+        },
+        {
+          "name": "locale_matches_document",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "direct_filing_link",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fi"
+            ],
+            "visible": [
+              "pane-filings"
+            ],
+            "entry": [
+              "tab-fi"
+            ],
+            "focus": "tab-fi",
+            "hash": "#tab-fi",
+            "search": "?market=US&period=1w&case=2",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              96.9375,
+              110.46875,
+              63.953125
+            ],
+            "documentWidth": 309,
+            "clientWidth": 309
+          }
+        },
+        {
+          "name": "pointer_price_panel",
+          "pass": true
+        },
+        {
+          "name": "arrow_focus_only",
+          "pass": true
+        },
+        {
+          "name": "arrow_has_no_history_effect",
+          "pass": true
+        },
+        {
+          "name": "enter_fundamentals",
+          "pass": true
+        },
+        {
+          "name": "fundamentals_content_visible",
+          "pass": true
+        },
+        {
+          "name": "simple_fundamentals_no_sideways_reading",
+          "pass": true
+        },
+        {
+          "name": "tab_enters_active_panel",
+          "pass": true
+        },
+        {
+          "name": "shift_tab_returns_to_selected",
+          "pass": true
+        },
+        {
+          "name": "end_focus_only",
+          "pass": true
+        },
+        {
+          "name": "space_filing_panel",
+          "pass": true
+        },
+        {
+          "name": "back_returns_fundamentals",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=2",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              96.9375,
+              110.46875,
+              63.953125
+            ],
+            "documentWidth": 309,
+            "clientWidth": 309
+          }
+        },
+        {
+          "name": "forward_returns_filings",
+          "pass": true
+        },
+        {
+          "name": "back_returns_price",
+          "pass": true
+        },
+        {
+          "name": "table_position_preserved",
+          "pass": true
+        },
+        {
+          "name": "repeat_selection_no_history_entry",
+          "pass": true
+        },
+        {
+          "name": "left_wraps_focus",
+          "pass": true
+        },
+        {
+          "name": "home_focus",
+          "pass": true
+        },
+        {
+          "name": "unrelated_fragment_preserved",
+          "pass": true
+        },
+        {
+          "name": "external_known_fragment",
+          "pass": true
+        },
+        {
+          "name": "reload_restores_panel",
+          "pass": true
+        },
+        {
+          "name": "history_never_leaves_focus_in_hidden_panel",
+          "pass": true
+        },
+        {
+          "name": "query_scope_preserved",
+          "pass": true
+        },
+        {
+          "name": "reciprocal_labels",
+          "pass": true
+        },
+        {
+          "name": "document_containment",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=2",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              96.9375,
+              110.46875,
+              63.953125
+            ],
+            "documentWidth": 309,
+            "clientWidth": 309
+          }
+        },
+        {
+          "name": "tab_target_geometry",
+          "pass": true
+        },
+        {
+          "name": "no_storage_effect",
+          "pass": true
+        },
+        {
+          "name": "locale_matches_document",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "direct_filing_link",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fi"
+            ],
+            "visible": [
+              "pane-filings"
+            ],
+            "entry": [
+              "tab-fi"
+            ],
+            "focus": "tab-fi",
+            "hash": "#tab-fi",
+            "search": "?market=US&period=1w&case=3",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              86.5,
+              61.5,
+              49
+            ],
+            "documentWidth": 309,
+            "clientWidth": 309
+          }
+        },
+        {
+          "name": "pointer_price_panel",
+          "pass": true
+        },
+        {
+          "name": "arrow_focus_only",
+          "pass": true
+        },
+        {
+          "name": "arrow_has_no_history_effect",
+          "pass": true
+        },
+        {
+          "name": "enter_fundamentals",
+          "pass": true
+        },
+        {
+          "name": "fundamentals_content_visible",
+          "pass": true
+        },
+        {
+          "name": "simple_fundamentals_no_sideways_reading",
+          "pass": true
+        },
+        {
+          "name": "tab_enters_active_panel",
+          "pass": true
+        },
+        {
+          "name": "shift_tab_returns_to_selected",
+          "pass": true
+        },
+        {
+          "name": "end_focus_only",
+          "pass": true
+        },
+        {
+          "name": "space_filing_panel",
+          "pass": true
+        },
+        {
+          "name": "back_returns_fundamentals",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=3",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              86.5,
+              61.5,
+              49
+            ],
+            "documentWidth": 309,
+            "clientWidth": 309
+          }
+        },
+        {
+          "name": "forward_returns_filings",
+          "pass": true
+        },
+        {
+          "name": "back_returns_price",
+          "pass": true
+        },
+        {
+          "name": "table_position_preserved",
+          "pass": true
+        },
+        {
+          "name": "repeat_selection_no_history_entry",
+          "pass": true
+        },
+        {
+          "name": "left_wraps_focus",
+          "pass": true
+        },
+        {
+          "name": "home_focus",
+          "pass": true
+        },
+        {
+          "name": "unrelated_fragment_preserved",
+          "pass": true
+        },
+        {
+          "name": "external_known_fragment",
+          "pass": true
+        },
+        {
+          "name": "reload_restores_panel",
+          "pass": true
+        },
+        {
+          "name": "history_never_leaves_focus_in_hidden_panel",
+          "pass": true
+        },
+        {
+          "name": "query_scope_preserved",
+          "pass": true
+        },
+        {
+          "name": "reciprocal_labels",
+          "pass": true
+        },
+        {
+          "name": "document_containment",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=3",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              86.5,
+              61.5,
+              49
+            ],
+            "documentWidth": 309,
+            "clientWidth": 309
+          }
+        },
+        {
+          "name": "tab_target_geometry",
+          "pass": true
+        },
+        {
+          "name": "no_storage_effect",
+          "pass": true
+        },
+        {
+          "name": "locale_matches_document",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "direct_filing_link",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fi"
+            ],
+            "visible": [
+              "pane-filings"
+            ],
+            "entry": [
+              "tab-fi"
+            ],
+            "focus": "tab-fi",
+            "hash": "#tab-fi",
+            "search": "?market=US&period=1w&case=4",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              96.9375,
+              110.46875,
+              63.953125
+            ],
+            "documentWidth": 379,
+            "clientWidth": 379
+          }
+        },
+        {
+          "name": "pointer_price_panel",
+          "pass": true
+        },
+        {
+          "name": "arrow_focus_only",
+          "pass": true
+        },
+        {
+          "name": "arrow_has_no_history_effect",
+          "pass": true
+        },
+        {
+          "name": "enter_fundamentals",
+          "pass": true
+        },
+        {
+          "name": "fundamentals_content_visible",
+          "pass": true
+        },
+        {
+          "name": "simple_fundamentals_no_sideways_reading",
+          "pass": true
+        },
+        {
+          "name": "tab_enters_active_panel",
+          "pass": true
+        },
+        {
+          "name": "shift_tab_returns_to_selected",
+          "pass": true
+        },
+        {
+          "name": "end_focus_only",
+          "pass": true
+        },
+        {
+          "name": "space_filing_panel",
+          "pass": true
+        },
+        {
+          "name": "back_returns_fundamentals",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=4",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              96.9375,
+              110.46875,
+              63.953125
+            ],
+            "documentWidth": 379,
+            "clientWidth": 379
+          }
+        },
+        {
+          "name": "forward_returns_filings",
+          "pass": true
+        },
+        {
+          "name": "back_returns_price",
+          "pass": true
+        },
+        {
+          "name": "table_position_preserved",
+          "pass": true
+        },
+        {
+          "name": "repeat_selection_no_history_entry",
+          "pass": true
+        },
+        {
+          "name": "left_wraps_focus",
+          "pass": true
+        },
+        {
+          "name": "home_focus",
+          "pass": true
+        },
+        {
+          "name": "unrelated_fragment_preserved",
+          "pass": true
+        },
+        {
+          "name": "external_known_fragment",
+          "pass": true
+        },
+        {
+          "name": "reload_restores_panel",
+          "pass": true
+        },
+        {
+          "name": "history_never_leaves_focus_in_hidden_panel",
+          "pass": true
+        },
+        {
+          "name": "query_scope_preserved",
+          "pass": true
+        },
+        {
+          "name": "reciprocal_labels",
+          "pass": true
+        },
+        {
+          "name": "document_containment",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=4",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              96.9375,
+              110.46875,
+              63.953125
+            ],
+            "documentWidth": 379,
+            "clientWidth": 379
+          }
+        },
+        {
+          "name": "tab_target_geometry",
+          "pass": true
+        },
+        {
+          "name": "no_storage_effect",
+          "pass": true
+        },
+        {
+          "name": "locale_matches_document",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "direct_filing_link",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fi"
+            ],
+            "visible": [
+              "pane-filings"
+            ],
+            "entry": [
+              "tab-fi"
+            ],
+            "focus": "tab-fi",
+            "hash": "#tab-fi",
+            "search": "?market=US&period=1w&case=5",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              86.5,
+              61.5,
+              49
+            ],
+            "documentWidth": 379,
+            "clientWidth": 379
+          }
+        },
+        {
+          "name": "pointer_price_panel",
+          "pass": true
+        },
+        {
+          "name": "arrow_focus_only",
+          "pass": true
+        },
+        {
+          "name": "arrow_has_no_history_effect",
+          "pass": true
+        },
+        {
+          "name": "enter_fundamentals",
+          "pass": true
+        },
+        {
+          "name": "fundamentals_content_visible",
+          "pass": true
+        },
+        {
+          "name": "simple_fundamentals_no_sideways_reading",
+          "pass": true
+        },
+        {
+          "name": "tab_enters_active_panel",
+          "pass": true
+        },
+        {
+          "name": "shift_tab_returns_to_selected",
+          "pass": true
+        },
+        {
+          "name": "end_focus_only",
+          "pass": true
+        },
+        {
+          "name": "space_filing_panel",
+          "pass": true
+        },
+        {
+          "name": "back_returns_fundamentals",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=5",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              86.5,
+              61.5,
+              49
+            ],
+            "documentWidth": 379,
+            "clientWidth": 379
+          }
+        },
+        {
+          "name": "forward_returns_filings",
+          "pass": true
+        },
+        {
+          "name": "back_returns_price",
+          "pass": true
+        },
+        {
+          "name": "table_position_preserved",
+          "pass": true
+        },
+        {
+          "name": "repeat_selection_no_history_entry",
+          "pass": true
+        },
+        {
+          "name": "left_wraps_focus",
+          "pass": true
+        },
+        {
+          "name": "home_focus",
+          "pass": true
+        },
+        {
+          "name": "unrelated_fragment_preserved",
+          "pass": true
+        },
+        {
+          "name": "external_known_fragment",
+          "pass": true
+        },
+        {
+          "name": "reload_restores_panel",
+          "pass": true
+        },
+        {
+          "name": "history_never_leaves_focus_in_hidden_panel",
+          "pass": true
+        },
+        {
+          "name": "query_scope_preserved",
+          "pass": true
+        },
+        {
+          "name": "reciprocal_labels",
+          "pass": true
+        },
+        {
+          "name": "document_containment",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=5",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              86.5,
+              61.5,
+              49
+            ],
+            "documentWidth": 379,
+            "clientWidth": 379
+          }
+        },
+        {
+          "name": "tab_target_geometry",
+          "pass": true
+        },
+        {
+          "name": "no_storage_effect",
+          "pass": true
+        },
+        {
+          "name": "locale_matches_document",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "direct_filing_link",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fi"
+            ],
+            "visible": [
+              "pane-filings"
+            ],
+            "entry": [
+              "tab-fi"
+            ],
+            "focus": "tab-fi",
+            "hash": "#tab-fi",
+            "search": "?market=US&period=1w&case=6",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              96.9375,
+              110.46875,
+              63.953125
+            ],
+            "documentWidth": 379,
+            "clientWidth": 379
+          }
+        },
+        {
+          "name": "pointer_price_panel",
+          "pass": true
+        },
+        {
+          "name": "arrow_focus_only",
+          "pass": true
+        },
+        {
+          "name": "arrow_has_no_history_effect",
+          "pass": true
+        },
+        {
+          "name": "enter_fundamentals",
+          "pass": true
+        },
+        {
+          "name": "fundamentals_content_visible",
+          "pass": true
+        },
+        {
+          "name": "simple_fundamentals_no_sideways_reading",
+          "pass": true
+        },
+        {
+          "name": "tab_enters_active_panel",
+          "pass": true
+        },
+        {
+          "name": "shift_tab_returns_to_selected",
+          "pass": true
+        },
+        {
+          "name": "end_focus_only",
+          "pass": true
+        },
+        {
+          "name": "space_filing_panel",
+          "pass": true
+        },
+        {
+          "name": "back_returns_fundamentals",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=6",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              96.9375,
+              110.46875,
+              63.953125
+            ],
+            "documentWidth": 379,
+            "clientWidth": 379
+          }
+        },
+        {
+          "name": "forward_returns_filings",
+          "pass": true
+        },
+        {
+          "name": "back_returns_price",
+          "pass": true
+        },
+        {
+          "name": "table_position_preserved",
+          "pass": true
+        },
+        {
+          "name": "repeat_selection_no_history_entry",
+          "pass": true
+        },
+        {
+          "name": "left_wraps_focus",
+          "pass": true
+        },
+        {
+          "name": "home_focus",
+          "pass": true
+        },
+        {
+          "name": "unrelated_fragment_preserved",
+          "pass": true
+        },
+        {
+          "name": "external_known_fragment",
+          "pass": true
+        },
+        {
+          "name": "reload_restores_panel",
+          "pass": true
+        },
+        {
+          "name": "history_never_leaves_focus_in_hidden_panel",
+          "pass": true
+        },
+        {
+          "name": "query_scope_preserved",
+          "pass": true
+        },
+        {
+          "name": "reciprocal_labels",
+          "pass": true
+        },
+        {
+          "name": "document_containment",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=6",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              96.9375,
+              110.46875,
+              63.953125
+            ],
+            "documentWidth": 379,
+            "clientWidth": 379
+          }
+        },
+        {
+          "name": "tab_target_geometry",
+          "pass": true
+        },
+        {
+          "name": "no_storage_effect",
+          "pass": true
+        },
+        {
+          "name": "locale_matches_document",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "direct_filing_link",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fi"
+            ],
+            "visible": [
+              "pane-filings"
+            ],
+            "entry": [
+              "tab-fi"
+            ],
+            "focus": "tab-fi",
+            "hash": "#tab-fi",
+            "search": "?market=US&period=1w&case=7",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              86.5,
+              61.5,
+              49
+            ],
+            "documentWidth": 379,
+            "clientWidth": 379
+          }
+        },
+        {
+          "name": "pointer_price_panel",
+          "pass": true
+        },
+        {
+          "name": "arrow_focus_only",
+          "pass": true
+        },
+        {
+          "name": "arrow_has_no_history_effect",
+          "pass": true
+        },
+        {
+          "name": "enter_fundamentals",
+          "pass": true
+        },
+        {
+          "name": "fundamentals_content_visible",
+          "pass": true
+        },
+        {
+          "name": "simple_fundamentals_no_sideways_reading",
+          "pass": true
+        },
+        {
+          "name": "tab_enters_active_panel",
+          "pass": true
+        },
+        {
+          "name": "shift_tab_returns_to_selected",
+          "pass": true
+        },
+        {
+          "name": "end_focus_only",
+          "pass": true
+        },
+        {
+          "name": "space_filing_panel",
+          "pass": true
+        },
+        {
+          "name": "back_returns_fundamentals",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=7",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              86.5,
+              61.5,
+              49
+            ],
+            "documentWidth": 379,
+            "clientWidth": 379
+          }
+        },
+        {
+          "name": "forward_returns_filings",
+          "pass": true
+        },
+        {
+          "name": "back_returns_price",
+          "pass": true
+        },
+        {
+          "name": "table_position_preserved",
+          "pass": true
+        },
+        {
+          "name": "repeat_selection_no_history_entry",
+          "pass": true
+        },
+        {
+          "name": "left_wraps_focus",
+          "pass": true
+        },
+        {
+          "name": "home_focus",
+          "pass": true
+        },
+        {
+          "name": "unrelated_fragment_preserved",
+          "pass": true
+        },
+        {
+          "name": "external_known_fragment",
+          "pass": true
+        },
+        {
+          "name": "reload_restores_panel",
+          "pass": true
+        },
+        {
+          "name": "history_never_leaves_focus_in_hidden_panel",
+          "pass": true
+        },
+        {
+          "name": "query_scope_preserved",
+          "pass": true
+        },
+        {
+          "name": "reciprocal_labels",
+          "pass": true
+        },
+        {
+          "name": "document_containment",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=7",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              86.5,
+              61.5,
+              49
+            ],
+            "documentWidth": 379,
+            "clientWidth": 379
+          }
+        },
+        {
+          "name": "tab_target_geometry",
+          "pass": true
+        },
+        {
+          "name": "no_storage_effect",
+          "pass": true
+        },
+        {
+          "name": "locale_matches_document",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "direct_filing_link",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fi"
+            ],
+            "visible": [
+              "pane-filings"
+            ],
+            "entry": [
+              "tab-fi"
+            ],
+            "focus": "tab-fi",
+            "hash": "#tab-fi",
+            "search": "?market=US&period=1w&case=8",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              96.9375,
+              110.46875,
+              63.953125
+            ],
+            "documentWidth": 1429,
+            "clientWidth": 1429
+          }
+        },
+        {
+          "name": "pointer_price_panel",
+          "pass": true
+        },
+        {
+          "name": "arrow_focus_only",
+          "pass": true
+        },
+        {
+          "name": "arrow_has_no_history_effect",
+          "pass": true
+        },
+        {
+          "name": "enter_fundamentals",
+          "pass": true
+        },
+        {
+          "name": "fundamentals_content_visible",
+          "pass": true
+        },
+        {
+          "name": "simple_fundamentals_no_sideways_reading",
+          "pass": true
+        },
+        {
+          "name": "tab_enters_active_panel",
+          "pass": true
+        },
+        {
+          "name": "shift_tab_returns_to_selected",
+          "pass": true
+        },
+        {
+          "name": "end_focus_only",
+          "pass": true
+        },
+        {
+          "name": "space_filing_panel",
+          "pass": true
+        },
+        {
+          "name": "back_returns_fundamentals",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=8",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              96.9375,
+              110.46875,
+              63.953125
+            ],
+            "documentWidth": 1429,
+            "clientWidth": 1429
+          }
+        },
+        {
+          "name": "forward_returns_filings",
+          "pass": true
+        },
+        {
+          "name": "back_returns_price",
+          "pass": true
+        },
+        {
+          "name": "table_position_preserved",
+          "pass": true
+        },
+        {
+          "name": "repeat_selection_no_history_entry",
+          "pass": true
+        },
+        {
+          "name": "left_wraps_focus",
+          "pass": true
+        },
+        {
+          "name": "home_focus",
+          "pass": true
+        },
+        {
+          "name": "unrelated_fragment_preserved",
+          "pass": true
+        },
+        {
+          "name": "external_known_fragment",
+          "pass": true
+        },
+        {
+          "name": "reload_restores_panel",
+          "pass": true
+        },
+        {
+          "name": "history_never_leaves_focus_in_hidden_panel",
+          "pass": true
+        },
+        {
+          "name": "query_scope_preserved",
+          "pass": true
+        },
+        {
+          "name": "reciprocal_labels",
+          "pass": true
+        },
+        {
+          "name": "document_containment",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=8",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              96.9375,
+              110.46875,
+              63.953125
+            ],
+            "documentWidth": 1429,
+            "clientWidth": 1429
+          }
+        },
+        {
+          "name": "tab_target_geometry",
+          "pass": true
+        },
+        {
+          "name": "no_storage_effect",
+          "pass": true
+        },
+        {
+          "name": "locale_matches_document",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "direct_filing_link",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fi"
+            ],
+            "visible": [
+              "pane-filings"
+            ],
+            "entry": [
+              "tab-fi"
+            ],
+            "focus": "tab-fi",
+            "hash": "#tab-fi",
+            "search": "?market=US&period=1w&case=9",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              86.5,
+              61.5,
+              49
+            ],
+            "documentWidth": 1429,
+            "clientWidth": 1429
+          }
+        },
+        {
+          "name": "pointer_price_panel",
+          "pass": true
+        },
+        {
+          "name": "arrow_focus_only",
+          "pass": true
+        },
+        {
+          "name": "arrow_has_no_history_effect",
+          "pass": true
+        },
+        {
+          "name": "enter_fundamentals",
+          "pass": true
+        },
+        {
+          "name": "fundamentals_content_visible",
+          "pass": true
+        },
+        {
+          "name": "simple_fundamentals_no_sideways_reading",
+          "pass": true
+        },
+        {
+          "name": "tab_enters_active_panel",
+          "pass": true
+        },
+        {
+          "name": "shift_tab_returns_to_selected",
+          "pass": true
+        },
+        {
+          "name": "end_focus_only",
+          "pass": true
+        },
+        {
+          "name": "space_filing_panel",
+          "pass": true
+        },
+        {
+          "name": "back_returns_fundamentals",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=9",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              86.5,
+              61.5,
+              49
+            ],
+            "documentWidth": 1429,
+            "clientWidth": 1429
+          }
+        },
+        {
+          "name": "forward_returns_filings",
+          "pass": true
+        },
+        {
+          "name": "back_returns_price",
+          "pass": true
+        },
+        {
+          "name": "table_position_preserved",
+          "pass": true
+        },
+        {
+          "name": "repeat_selection_no_history_entry",
+          "pass": true
+        },
+        {
+          "name": "left_wraps_focus",
+          "pass": true
+        },
+        {
+          "name": "home_focus",
+          "pass": true
+        },
+        {
+          "name": "unrelated_fragment_preserved",
+          "pass": true
+        },
+        {
+          "name": "external_known_fragment",
+          "pass": true
+        },
+        {
+          "name": "reload_restores_panel",
+          "pass": true
+        },
+        {
+          "name": "history_never_leaves_focus_in_hidden_panel",
+          "pass": true
+        },
+        {
+          "name": "query_scope_preserved",
+          "pass": true
+        },
+        {
+          "name": "reciprocal_labels",
+          "pass": true
+        },
+        {
+          "name": "document_containment",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=9",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              86.5,
+              61.5,
+              49
+            ],
+            "documentWidth": 1429,
+            "clientWidth": 1429
+          }
+        },
+        {
+          "name": "tab_target_geometry",
+          "pass": true
+        },
+        {
+          "name": "no_storage_effect",
+          "pass": true
+        },
+        {
+          "name": "locale_matches_document",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "direct_filing_link",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fi"
+            ],
+            "visible": [
+              "pane-filings"
+            ],
+            "entry": [
+              "tab-fi"
+            ],
+            "focus": "tab-fi",
+            "hash": "#tab-fi",
+            "search": "?market=US&period=1w&case=10",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              96.9375,
+              110.46875,
+              63.953125
+            ],
+            "documentWidth": 1429,
+            "clientWidth": 1429
+          }
+        },
+        {
+          "name": "pointer_price_panel",
+          "pass": true
+        },
+        {
+          "name": "arrow_focus_only",
+          "pass": true
+        },
+        {
+          "name": "arrow_has_no_history_effect",
+          "pass": true
+        },
+        {
+          "name": "enter_fundamentals",
+          "pass": true
+        },
+        {
+          "name": "fundamentals_content_visible",
+          "pass": true
+        },
+        {
+          "name": "simple_fundamentals_no_sideways_reading",
+          "pass": true
+        },
+        {
+          "name": "tab_enters_active_panel",
+          "pass": true
+        },
+        {
+          "name": "shift_tab_returns_to_selected",
+          "pass": true
+        },
+        {
+          "name": "end_focus_only",
+          "pass": true
+        },
+        {
+          "name": "space_filing_panel",
+          "pass": true
+        },
+        {
+          "name": "back_returns_fundamentals",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=10",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              96.9375,
+              110.46875,
+              63.953125
+            ],
+            "documentWidth": 1429,
+            "clientWidth": 1429
+          }
+        },
+        {
+          "name": "forward_returns_filings",
+          "pass": true
+        },
+        {
+          "name": "back_returns_price",
+          "pass": true
+        },
+        {
+          "name": "table_position_preserved",
+          "pass": true
+        },
+        {
+          "name": "repeat_selection_no_history_entry",
+          "pass": true
+        },
+        {
+          "name": "left_wraps_focus",
+          "pass": true
+        },
+        {
+          "name": "home_focus",
+          "pass": true
+        },
+        {
+          "name": "unrelated_fragment_preserved",
+          "pass": true
+        },
+        {
+          "name": "external_known_fragment",
+          "pass": true
+        },
+        {
+          "name": "reload_restores_panel",
+          "pass": true
+        },
+        {
+          "name": "history_never_leaves_focus_in_hidden_panel",
+          "pass": true
+        },
+        {
+          "name": "query_scope_preserved",
+          "pass": true
+        },
+        {
+          "name": "reciprocal_labels",
+          "pass": true
+        },
+        {
+          "name": "document_containment",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=10",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              96.9375,
+              110.46875,
+              63.953125
+            ],
+            "documentWidth": 1429,
+            "clientWidth": 1429
+          }
+        },
+        {
+          "name": "tab_target_geometry",
+          "pass": true
+        },
+        {
+          "name": "no_storage_effect",
+          "pass": true
+        },
+        {
+          "name": "locale_matches_document",
+          "pass": true
+        }
+      ],
+      "pass": true
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "lang": "zh",
+      "checks": [
+        {
+          "name": "direct_filing_link",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fi"
+            ],
+            "visible": [
+              "pane-filings"
+            ],
+            "entry": [
+              "tab-fi"
+            ],
+            "focus": "tab-fi",
+            "hash": "#tab-fi",
+            "search": "?market=US&period=1w&case=11",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              86.5,
+              61.5,
+              49
+            ],
+            "documentWidth": 1429,
+            "clientWidth": 1429
+          }
+        },
+        {
+          "name": "pointer_price_panel",
+          "pass": true
+        },
+        {
+          "name": "arrow_focus_only",
+          "pass": true
+        },
+        {
+          "name": "arrow_has_no_history_effect",
+          "pass": true
+        },
+        {
+          "name": "enter_fundamentals",
+          "pass": true
+        },
+        {
+          "name": "fundamentals_content_visible",
+          "pass": true
+        },
+        {
+          "name": "simple_fundamentals_no_sideways_reading",
+          "pass": true
+        },
+        {
+          "name": "tab_enters_active_panel",
+          "pass": true
+        },
+        {
+          "name": "shift_tab_returns_to_selected",
+          "pass": true
+        },
+        {
+          "name": "end_focus_only",
+          "pass": true
+        },
+        {
+          "name": "space_filing_panel",
+          "pass": true
+        },
+        {
+          "name": "back_returns_fundamentals",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=11",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              86.5,
+              61.5,
+              49
+            ],
+            "documentWidth": 1429,
+            "clientWidth": 1429
+          }
+        },
+        {
+          "name": "forward_returns_filings",
+          "pass": true
+        },
+        {
+          "name": "back_returns_price",
+          "pass": true
+        },
+        {
+          "name": "table_position_preserved",
+          "pass": true
+        },
+        {
+          "name": "repeat_selection_no_history_entry",
+          "pass": true
+        },
+        {
+          "name": "left_wraps_focus",
+          "pass": true
+        },
+        {
+          "name": "home_focus",
+          "pass": true
+        },
+        {
+          "name": "unrelated_fragment_preserved",
+          "pass": true
+        },
+        {
+          "name": "external_known_fragment",
+          "pass": true
+        },
+        {
+          "name": "reload_restores_panel",
+          "pass": true
+        },
+        {
+          "name": "history_never_leaves_focus_in_hidden_panel",
+          "pass": true
+        },
+        {
+          "name": "query_scope_preserved",
+          "pass": true
+        },
+        {
+          "name": "reciprocal_labels",
+          "pass": true
+        },
+        {
+          "name": "document_containment",
+          "pass": true,
+          "detail": {
+            "selected": [
+              "tab-fu"
+            ],
+            "visible": [
+              "pane-fundamentals"
+            ],
+            "entry": [
+              "tab-fu"
+            ],
+            "focus": "tab-fu",
+            "hash": "#tab-fu",
+            "search": "?market=US&period=1w&case=11",
+            "reciprocal": true,
+            "tabHeights": [
+              44,
+              44,
+              44
+            ],
+            "tabWidths": [
+              86.5,
+              61.5,
+              49
+            ],
+            "documentWidth": 1429,
+            "clientWidth": 1429
+          }
+        },
+        {
+          "name": "tab_target_geometry",
+          "pass": true
+        },
+        {
+          "name": "no_storage_effect",
+          "pass": true
+        },
+        {
+          "name": "locale_matches_document",
+          "pass": true
+        }
+      ],
+      "pass": true
+    }
+  ],
+  "exceptions": []
+}

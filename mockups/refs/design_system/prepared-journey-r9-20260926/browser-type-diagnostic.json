@@ -1,0 +1,227 @@
+{
+  "scope": "R9 same-file reference entry and inspect-return; current-source composition; 2x cases double the type ramp, not a claimed native zoom or assistive-technology test; isolated Chrome, external HTTP(S) blocked",
+  "cells": [
+    {
+      "width": 390,
+      "scale": 2,
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "one_title_and_main",
+          "pass": true
+        },
+        {
+          "name": "skip_focuses_main",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-identity",
+          "pass": true,
+          "detail": {
+            "target": "spec-identity",
+            "hash": "#spec-identity",
+            "focused": true,
+            "top": 253,
+            "headerBottom": 236.421875,
+            "height": 1710.609375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_0",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-task-tabs",
+          "pass": true,
+          "detail": {
+            "target": "specimen-task-tabs",
+            "hash": "#specimen-task-tabs",
+            "focused": true,
+            "top": 252.78125,
+            "headerBottom": 236.421875,
+            "height": 825.625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_1",
+          "pass": true
+        },
+        {
+          "name": "reachable_specimen-state-actions",
+          "pass": true,
+          "detail": {
+            "target": "specimen-state-actions",
+            "hash": "#specimen-state-actions",
+            "focused": true,
+            "top": 253.40625,
+            "headerBottom": 236.421875,
+            "height": 5034.65625,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_2",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-color",
+          "pass": true,
+          "detail": {
+            "target": "spec-color",
+            "hash": "#spec-color",
+            "focused": true,
+            "top": 252.609375,
+            "headerBottom": 236.421875,
+            "height": 3303.4375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_3",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-type",
+          "pass": true,
+          "detail": {
+            "target": "spec-type",
+            "hash": "#spec-type",
+            "focused": true,
+            "top": 253.046875,
+            "headerBottom": 236.421875,
+            "height": 2527.109375,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_4",
+          "pass": true
+        },
+        {
+          "name": "reachable_spec-components",
+          "pass": true,
+          "detail": {
+            "target": "spec-components",
+            "hash": "#spec-components",
+            "focused": true,
+            "top": 253.03125,
+            "headerBottom": 236.421875,
+            "height": 15437.296875,
+            "visible": true
+          }
+        },
+        {
+          "name": "tab_selection_survives_5",
+          "pass": true
+        },
+        {
+          "name": "answer_is_honest_and_reconciled",
+          "pass": true,
+          "detail": {
+            "count": 11,
+            "up": 3,
+            "downOrFlat": 8,
+            "caveatAtRest": true,
+            "live": false,
+            "locale": "en",
+            "hiddenLanguage": false
+          }
+        },
+        {
+          "name": "opens_complete_breakdown",
+          "pass": true
+        },
+        {
+          "name": "return_keeps_context_and_focus",
+          "pass": true
+        },
+        {
+          "name": "query_and_storage_preserved",
+          "pass": true
+        },
+        {
+          "name": "document_fits",
+          "pass": false,
+          "detail": {
+            "scroll": 418,
+            "client": 379
+          }
+        },
+        {
+          "name": "controls_at_least_44",
+          "pass": true,
+          "detail": {
+            "links": [
+              61.390625,
+              61.390625,
+              104.78125,
+              61.390625,
+              61.390625,
+              61.390625
+            ],
+            "summary": 58.75
+          }
+        },
+        {
+          "name": "close_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "prior_gallery_preserved",
+          "pass": true
+        }
+      ],
+      "offenders": [
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "id": "",
+          "text": "—",
+          "right": 417.609375,
+          "width": 26.25,
+          "minWidth": "auto",
+          "whiteSpace": "normal",
+          "font": "30px"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "muted",
+          "id": "",
+          "text": "—",
+          "right": 417.609375,
+          "width": 26.25,
+          "minWidth": "auto",
+          "whiteSpace": "normal",
+          "font": "30px"
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "id": "",
+          "text": "—",
+          "right": 407.78125,
+          "width": 26.25,
+          "minWidth": "auto",
+          "whiteSpace": "normal",
+          "font": "30px"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "muted",
+          "id": "",
+          "text": "—",
+          "right": 407.78125,
+          "width": 26.25,
+          "minWidth": "auto",
+          "whiteSpace": "normal",
+          "font": "30px"
+        }
+      ],
+      "pass": false
+    }
+  ],
+  "exceptions": []
+}

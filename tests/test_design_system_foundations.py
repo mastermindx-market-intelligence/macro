@@ -596,3 +596,501 @@ def test_ladder_total_prints_exactly_one_language_label(theme, lang, visible, hi
         f"in the ladder total. theme.css is out-specifying its own language toggle; keep the "
         f"restoring rule below .mx-ladder .mx-lad-total small."
     )
+
+
+def test_specimen_language_toggle_updates_document_language(specimen):
+    """Visible locale and the assistive-technology language must change together.
+
+    This is a browser-free source-contract guard for the specimen's small toggle,
+    not a JavaScript interpreter. The real-browser R5 observation found data-lang
+    switched to zh while html lang stayed en. Executing the actual handler and
+    checking both directions is separate behavior evidence in the repair record.
+    """
+    scripts = "\n".join(re.findall(r"<script\b[^>]*>(.*?)</script>", specimen, re.S))
+    handler = re.search(
+        r"document\.getElementById\(['\"]t-lang['\"]\)\.onclick\s*=\s*function\s*\(\)\s*\{(.*?)\};",
+        scripts, re.S,
+    )
+    assert handler, "The specimen language control must have an inspectable handler"
+    body = re.sub(r"\s+", "", handler.group(1)).replace('"', "'")
+    assert "root.setAttribute('data-lang'," in body, "Keep the visual locale binding"
+    assert "root.setAttribute('lang',root.getAttribute('data-lang')==='zh'?'zh-CN':'en');" in body, (
+        "The specimen changes the visible locale but not the document language; "
+        "bind html lang to the resulting data-lang using the existing zh-CN/en mapping."
+    )
+
+
+# Specimen-only layout: retain every example without widening the document.
+@pytest.mark.parametrize("selector", [r"\.spec-grid", r"\.do-dont"])
+def test_specimen_grid_minimum_fits_its_container(specimen, selector):
+    body = re.sub(r"\s+", "", _rule_body(specimen, selector))
+    assert "minmax(min(300px,100%),1fr)" in body
+
+
+def test_specimen_type_samples_reflow_without_reducing_the_ramp(specimen):
+    assert "flex-wrap:wrap" in re.sub(r"\s+", "", _rule_body(specimen, r"\.trow"))
+    sample = re.sub(r"\s+", "", _rule_body(specimen, r"\.trow > span"))
+    assert "max-width:100%" in sample and "overflow-wrap:anywhere" in sample
+    assert "font-size" not in sample
+
+
+def test_specimen_static_lens_and_long_buttons_fit_the_panel(specimen):
+    lens = re.sub(r"\s+", "", _rule_body(specimen, r"\.lens-pop-demo"))
+    assert "max-width:100%" in lens and "box-sizing:border-box" in lens
+    button = re.sub(r"\s+", "", _rule_body(specimen, r"\.wrap \.gbtn"))
+    assert "max-width:100%" in button and "white-space:normal" in button
+
+
+def test_specimen_wide_tables_keep_an_explicit_scroll_container(specimen):
+    tables = re.findall(r'<table class="mx-tbl"', specimen)
+    wrapped = re.findall(r'<div class="mx-tblbox"[^>]*>\s*<table class="mx-tbl"', specimen)
+    assert tables and len(wrapped) == len(tables), "Every wide table needs its existing scroll wrapper"
+    ladder = re.sub(r"\s+", "", _rule_body(specimen, r"\.mx-ladder"))
+    assert "overflow-x:auto" in ladder, "Late ladder cells must be reachable, not clipped"
+
+
+def test_specimen_long_reference_copy_can_wrap(specimen):
+    body = re.sub(r"\s+", "", _rule_body(specimen, r"\.mockup-note"))
+    assert "overflow-wrap:anywhere" in body
+
+
+def test_specimen_binds_the_existing_mobile_spine_preview(specimen):
+    # The owner CSS intentionally scopes narrow spine rows to page-macro or this
+    # preview adapter. The specimen must use the adapter, not copy production CSS.
+    assert re.search(r'<div class="wrap mockup-spine-390">', specimen)
+    assert not re.search(r'<body[^>]*class="[^"]*page-macro', specimen)
+
+
+# R7: prepared recoveries are examples in the incumbent specimen, not a save engine.
+def _prepared_case(specimen, kind, name):
+    block = re.search(r'<article\b[^>]*data-spec-' + kind + r'="' + name + r'"[^>]*>(.*?)</article>', specimen, re.S)
+    assert block, f"Missing existing-component example: {kind}/{name}"
+    return block.group(1)
+
+
+@pytest.mark.parametrize("state", ["loading", "stale", "error", "empty", "filtered-empty", "partial", "conflicting", "locked"])
+def test_prepared_recovery_state_is_bilingual_and_explicit(specimen, state):
+    body = _prepared_case(specimen, "state", state)
+    assert 'class="l-en"' in body and 'class="l-zh"' in body
+    assert not re.search(r'\brole="(?:alert|status)"', body), "Static gallery examples must not announce fictional events"
+
+
+@pytest.mark.parametrize("outcome", ["ready", "pending", "confirmed", "failed", "unknown"])
+def test_prepared_save_examples_cannot_submit_fictional_actions(specimen, outcome):
+    body = _prepared_case(specimen, "save", outcome)
+    buttons = re.findall(r'<button\b([^>]*)>', body)
+    assert buttons and all('type="button"' in x and re.search(r'\bdisabled(?:\s|=|$)', x) for x in buttons)
+    assert 'class="l-en"' in body and 'class="l-zh"' in body
+    assert 'onclick=' not in body and '<form' not in body
+    if outcome == "unknown":
+        assert "Check save status" in body and "查询保存状态" in body
+        assert "Try saving again" not in body
+
+
+def test_prepared_recovery_denominators_and_caveats_are_not_hidden(specimen):
+    partial = _prepared_case(specimen, "state", "partial")
+    at_rest = partial.split('<details', 1)[0]
+    assert "6 of 9 above average" in at_rest and "3 of 12" in at_rest
+    assert "6 / 9" in partial and "6 / 12" not in partial
+    assert "All 24 checked" in _prepared_case(specimen, "state", "empty")
+    assert "12 items" in _prepared_case(specimen, "state", "filtered-empty")
+    conflicting = _prepared_case(specimen, "state", "conflicting").split('<details', 1)[0]
+    assert "Entry: Ready" in conflicting and "Extension: Wait" in conflicting
+    assert "No combined entry call" in conflicting
+
+
+def test_prepared_recovery_uses_native_inspection_not_nested_modals(specimen):
+    for state in ["stale", "empty", "filtered-empty", "partial", "conflicting", "locked"]:
+        body = _prepared_case(specimen, "state", state)
+        assert '<details class="mx-disc"' in body
+        assert '<summary' in body and 'data-spec-inspect=' in body
+        assert not re.search(r'<details[^>]*>.*<details', body, re.S)
+        assert '<dialog' not in body
+    assert 'id="specimen-state-actions-note"' in specimen
+    assert "Fictional examples" in specimen and "not connected" in specimen
+
+
+def test_prepared_recovery_does_not_add_a_persistence_or_state_engine(specimen):
+    script = "\n".join(re.findall(r'<script\b[^>]*>(.*?)</script>', specimen, re.S))
+    assert not re.search(r'localStorage|sessionStorage|fetch\(|XMLHttpRequest|setInterval', script)
+    assert "data-spec-save" not in script and "data-spec-state" not in script
+
+
+def test_prepared_samples_keep_internal_delivery_language_out_of_customer_copy(specimen):
+    samples = re.findall(r'<article\b[^>]*data-spec-(?:state|save)="[^"]+"[^>]*>(.*?)</article>', specimen, re.S)
+    assert samples
+    forbidden = ("owner confirms", "original request", "effect is unknown", "保存服务", "原请求")
+    for body in samples:
+        assert not any(term in body for term in forbidden), "Customer examples must not expose delivery plumbing"
+
+
+# Executable-reference tab semantics; browser behavior is qualified separately.
+def _specimen_tab_nodes(specimen):
+    from html.parser import HTMLParser
+
+    class Nodes(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.items = []
+        def handle_starttag(self, tag, attrs):
+            self.items.append((tag, dict(attrs)))
+
+    parser = Nodes()
+    parser.feed(specimen)
+    return parser.items
+
+
+def test_specimen_tabs_use_distinct_reciprocal_panels(specimen):
+    nodes = _specimen_tab_nodes(specimen)
+    tabs = [a for _, a in nodes if a.get('role') == 'tab']
+    targets = [a.get('aria-controls') for a in tabs]
+    assert len(tabs) == 3 and len(set(targets)) == 3, 'Three tasks need three actual panels'
+    for tab in tabs:
+        matching = [a for _, a in nodes if a.get('id') == tab['aria-controls']]
+        assert len(matching) == 1
+        assert matching[0].get('role') == 'tabpanel'
+        assert matching[0].get('aria-labelledby') == tab['id']
+
+
+def test_specimen_tabs_have_one_initial_keyboard_entry(specimen):
+    nodes = _specimen_tab_nodes(specimen)
+    tabs = [(tag, a) for tag, a in nodes if a.get('role') == 'tab']
+    selected = [a for _, a in tabs if a.get('aria-selected') == 'true']
+    assert len(selected) == 1
+    assert all(tag == 'button' and a.get('type') == 'button' for tag, a in tabs)
+    for _, tab in tabs:
+        assert tab.get('tabindex') == ('0' if tab in selected else '-1')
+        panel = next(a for _, a in nodes if a.get('id') == tab['aria-controls'])
+        assert panel.get('tabindex') == '0'
+        assert ('hidden' in panel) == (tab not in selected)
+    tablist = next(a for _, a in nodes if a.get('role') == 'tablist')
+    assert any(a.get('id') == tablist.get('aria-labelledby') for _, a in nodes)
+
+
+@pytest.mark.parametrize('key', ['ArrowLeft', 'ArrowRight', 'Home', 'End'])
+def test_specimen_tabs_name_keyboard_navigation_keys(specimen, key):
+    scripts = '\n'.join(re.findall(r'<script\b[^>]*>(.*?)</script>', specimen, re.S))
+    assert key in scripts
+
+
+def test_specimen_tabs_restore_history_without_rebuilding_content(specimen):
+    scripts = '\n'.join(re.findall(r'<script\b[^>]*>(.*?)</script>', specimen, re.S))
+    assert 'hashchange' in scripts and 'popstate' in scripts
+    assert '.hidden =' in scripts and 'pushState' in scripts
+    assert not re.search(r'innerHTML\s*=|localStorage|sessionStorage|fetch\(', scripts)
+
+
+def test_specimen_tabs_state_the_example_boundary(specimen):
+    assert 'id="specimen-tabs-note"' in specimen
+    assert 'Fictional examples' in specimen and '虚构示例' in specimen
+    assert 'No filing examples loaded' in specimen
+
+
+def test_specimen_tabs_simple_fundamentals_do_not_require_sideways_reading(specimen):
+    panel = specimen.split('id="pane-fundamentals"', 1)[1].split('id="pane-filings"', 1)[0]
+    assert re.search(r'<table class="mx-tbl" style="min-width:0">', panel)
+    assert '>Revenue trend<' not in panel and '>Margin trend<' not in panel
+
+
+# First-use reference journey: preparation, honest comparison and direct access.
+def _specimen_prepared_answer(specimen):
+    start = specimen.index('<section class="spec-sec" id="spec-identity"')
+    return specimen[start:specimen.index('</section>', start)]
+
+
+def test_specimen_has_one_title_main_and_skip_link(specimen):
+    nodes = _specimen_tab_nodes(specimen)
+    assert sum(tag == 'h1' for tag, _ in nodes) == 1
+    assert sum(tag == 'main' for tag, _ in nodes) == 1
+    skip = next(a for tag, a in nodes if tag == 'a' and a.get('class') == 'spec-skip')
+    assert skip['href'] == '#specimen-main'
+    main = next(a for tag, a in nodes if tag == 'main')
+    assert main['id'] == 'specimen-main' and main.get('tabindex') == '-1'
+
+
+def test_specimen_task_directory_has_real_reachable_destinations(specimen):
+    nodes = _specimen_tab_nodes(specimen)
+    nav = next(a for tag, a in nodes if tag == 'nav' and a.get('id') == 'specimen-directory')
+    assert nav.get('aria-labelledby') == 'specimen-directory-title'
+    jumps = [a for tag, a in nodes if tag == 'a' and a.get('class') == 'spec-jump']
+    assert len(jumps) == 6
+    assert len({a['href'] for a in jumps}) == 6
+    for link in jumps:
+        matching = [a for _, a in nodes if a.get('id') == link['href'][1:]]
+        assert link['href'].startswith('#') and len(matching) == 1
+        assert matching[0].get('tabindex') == '-1'
+
+
+def test_specimen_answer_is_explicitly_fictional_not_live_or_trade_authority(specimen):
+    body = _specimen_prepared_answer(specimen)
+    assert 'Fictional example' in body and '虚构示例' in body
+    assert 'Index up. Breadth weak.' in body
+    assert 'dtp-chip--live' not in body and '>LIVE<' not in body and '>Act<' not in body
+    assert 'Positive index returns do not establish broad participation.' in body
+    assert body.index('Positive index returns') < body.index('<details')
+
+
+@pytest.mark.parametrize('read,value', [('index','+1.2%'),('equal-weight','−0.6%'),('participation','3 of 11')])
+def test_specimen_answer_exposes_comparable_evidence_at_rest(specimen, read, value):
+    body = _specimen_prepared_answer(specimen).split('<details', 1)[0]
+    assert 'data-spec-read="'+read+'"' in body and value in body
+    assert '5 sessions ending 28 Aug 2026' in body
+
+
+def test_specimen_complete_breakdown_reconciles_the_participation_count(specimen):
+    from decimal import Decimal
+    body = _specimen_prepared_answer(specimen)
+    nodes = _specimen_tab_nodes(body)
+    rows = [a for tag, a in nodes if tag == 'tr' and 'data-spec-change' in a]
+    assert len(rows) == 11
+    assert sum(Decimal(a['data-spec-change']) > 0 for a in rows) == 3
+    assert sum(Decimal(a['data-spec-change']) <= 0 for a in rows) == 8
+    assert 'data-spec-total="11"' in body and 'data-spec-unavailable="0"' in body
+
+
+def test_specimen_inspection_returns_to_the_same_assessment(specimen):
+    body = _specimen_prepared_answer(specimen)
+    assert '<details class="mx-disc" id="spec-sector-breakdown"' in body
+    assert 'href="#spec-answer-title"' in body
+    assert 'id="spec-answer-title" tabindex="-1"' in body
+    assert 'Inspect all 11 sectors' in body and 'Back to assessment' in body
+    assert 'role="dialog"' not in body
+
+
+def test_specimen_navigation_accounts_for_resized_header_without_hiding_content(specimen):
+    assert 'ResizeObserver' in specimen and '--spec-header-height' in specimen
+    assert 'scroll-margin-block-start' in specimen
+    assert 'scrollIntoView({behavior:' not in specimen
+    assert re.search(r'\.spec-jump[^{}]*\{[^}]*min-height:var\(--sp-8\)', specimen)
+
+
+
+def test_specimen_answer_deep_link_includes_example_and_window(specimen):
+    body = _specimen_prepared_answer(specimen)
+    assert body.index('id="spec-answer-title"') < body.index('Fictional example')
+    assert '<header id="spec-answer-title" tabindex="-1">' in body
+
+
+def test_specimen_sector_rows_use_readable_body_text(specimen):
+    row = re.sub(r"\s+", "", _rule_body(specimen, r"\.spec-answer \.mx-tbl tbody th"))
+    assert 'font-size:var(--fs-body)' in row and 'text-transform:none' in row
+
+
+def test_specimen_unavailable_spine_has_no_orphan_travel_cell(specimen):
+    # The existing narrow null-row grid has name/stance/rail, no travel area.
+    # An extra travel cell creates an implicit column on text enlargement.
+    assert 'data-null="1"' in specimen
+    assert '<div class="mx-spine-travel"><span class="muted">—</span></div>' not in specimen
+    assert 'Unavailable' in specimen and '暂无数据' in specimen  # A missing read does not imply an active refresh.
+
+
+def test_specimen_prepared_answer_reuses_the_existing_verdict_primitive(specimen):
+    body = _specimen_prepared_answer(specimen)
+    assert 'class="spec-answer mx-vh"' in body
+    assert 'class="mx-vh-word"' in body and 'class="mx-vh-clause"' in body
+
+
+# Quantitative comparison examples must encode the numbers they actually state.
+def _spine_examples(specimen):
+    return specimen.split('<!-- ══ 6.5', 1)[1].split('<!-- ══ 7 ·', 1)[0]
+
+
+def _spine_group(specimen, group):
+    part = _spine_examples(specimen).split(f'data-spec="{group}"', 1)[1]
+    return part.split('</div>\n\n    <p', 1)[0] if group == 'ud-b1' else part
+
+
+def _spine_rows(specimen, group):
+    part = _spine_group(specimen, group)
+    limit = 5 if group == 'ud-b1' else 3
+    return re.split(r'(?=<div class="mx-spine-row")', part)[1:limit+1]
+
+
+def _spine_geometry(row):
+    def percent(cls, prop):
+        tag = next(a for _, a in _specimen_tab_nodes(row) if cls in a.get('class', '').split())
+        return float(re.search(rf'(?:^|;)\s*{prop}:([\d.]+)%', tag['style']).group(1))
+    travel = re.search(r'class="mx-spine-travel".*?<span class="tnum">([^<]+)</span>', row, re.S)
+    return (percent('mx-spine-prev', 'left'), percent('mx-spine-mark', 'left'),
+            percent('mx-spine-conn', 'left'), percent('mx-spine-conn', 'width'),
+            float(travel.group(1).replace('−', '-')))
+
+
+@pytest.mark.parametrize('row_number', range(4))
+def test_spine_comparison_markers_connector_and_change_agree(specimen, row_number):
+    row = _spine_rows(specimen, 'ud-b1')[row_number]
+    previous, current, start, distance, change = _spine_geometry(row)
+    assert current - previous == change, 'Earlier marker disagrees with stated change'
+    assert start == min(previous, current), 'Connector must begin at the lower endpoint'
+    assert distance == abs(change), 'Connector length must equal the stated movement'
+    assert 0 <= min(previous, current) <= max(previous, current) <= 100
+    assert ('←' if change < 0 else '→') in row
+
+
+@pytest.mark.parametrize('row_number', [0, 1])
+def test_spine_comparison_narrow_examples_preserve_both_endpoints(specimen, row_number):
+    assert _spine_geometry(_spine_rows(specimen, 'ud-b1-390')[row_number]) == _spine_geometry(_spine_rows(specimen, 'ud-b1')[row_number])
+
+
+def test_spine_comparison_exposes_complete_same_window_values(specimen):
+    section = _spine_examples(specimen)
+    assert 'id="spec-spine-values"' in section and 'id="spec-spine-context"' in section
+    assert '2026-07-12' in section and '2026-08-12' in section
+    assert 'Fictional' in section and '虚构' in section
+    assert 'Score points' in section and '分值' in section
+    table = section.split('id="spec-spine-values"', 1)[1].split('</table>', 1)[0]
+    caption = re.search(r'<caption>(.*?)</caption>', table, re.S).group(1)
+    assert 'Fictional values' in caption and '虚构分值' in caption and '2026' in caption
+    rows = re.findall(r'<tr data-spec-spine-market="([^"]+)">(.*?)</tr>', table, re.S)
+    assert len(rows) == 5
+    for i, (_, row) in enumerate(rows[:4]):
+        nums = re.findall(r'<td class="tnum">([+−\d.]+)</td>', row)
+        assert len(nums) == 3
+        earlier, current, change = [float(x.replace('−', '-')) for x in nums]
+        expected = _spine_geometry(_spine_rows(specimen, 'ud-b1')[i])
+        assert (earlier, current, change) == (expected[0], expected[1], expected[4])
+    assert 'Unavailable' in rows[-1][1] and '暂无数据' in rows[-1][1]
+    assert not re.search(r'<td[^>]*>\s*0\s*</td>', rows[-1][1])
+
+
+def test_spine_comparison_summary_is_not_a_trade_or_return_estimate(specimen):
+    section = _spine_examples(specimen)
+    assert 'id="spec-spine-summary"' in section
+    summary = section.split('id="spec-spine-summary"', 1)[1].split('</p>', 1)[0]
+    assert '2 toward risk-on' in summary and '2 toward risk-off' in summary and '1 unavailable' in summary
+    assert 'not price returns' in section and 'not probabilities' in section
+    assert 'Example stance' in section and '示例立场' in section
+
+
+def test_spine_comparison_values_are_native_readable_disclosure(specimen):
+    section = _spine_examples(specimen)
+    assert re.search(r'<details[^>]+id="spec-spine-details"', section)
+    assert 'id="spec-spine-inspect"' in section
+    assert re.search(r'<table class="mx-tbl" id="spec-spine-values"', section)
+    assert '<caption>' in section and 'scope="col"' in section and 'scope="row"' in section
+    assert 'aria-describedby="spec-spine-context spec-spine-summary"' in section
+    assert 'role="dialog"' not in section and 'aria-hidden="true" id="spec-spine-values"' not in section
+
+
+def test_spine_comparison_null_rows_never_grow_measured_marks(specimen):
+    for group in ['ud-b1', 'ud-b1-390']:
+        row = _spine_rows(specimen, group)[-1]
+        assert 'data-null="1"' in row
+        for cls in ['mx-spine-mark', 'mx-spine-prev', 'mx-spine-conn', 'mx-spine-travel']:
+            assert not any(cls in a.get('class', '').split() for _, a in _specimen_tab_nodes(row))
+
+
+def test_spine_comparison_material_preview_uses_the_same_example(specimen):
+    section = _spine_examples(specimen)
+    preview = section.split('class="mx-tier-blurred--spec"', 1)[1].split('<p class="mockup-note', 1)[0]
+    assert 'aria-hidden="true"' in preview
+    assert _spine_geometry(preview) == _spine_geometry(_spine_rows(specimen, 'ud-b1')[0])
+    assert 'Protect gains' in preview and '保护收益' in preview
+
+
+def test_spine_comparison_preview_mode_follows_available_width(specimen):
+    # The class is a safe stacked no-JS fallback, not a permanent desktop mode.
+    scripts = "\n".join(re.findall(r"<script\b[^>]*>(.*?)</script>", specimen, re.S))
+    assert "stage.classList.toggle('mockup-spine-390', stage.getBoundingClientRect().width <= 640)" in scripts
+    assert 'referenceObserver.observe(stage)' in scripts
+    assert 'referenceObserver.observe(bar)' in scripts
+
+
+def test_spine_comparison_missing_stance_keeps_its_desktop_column(specimen):
+    compact = re.sub(r'\s+', '', specimen)
+    assert '.wrap:not(.mockup-spine-390)#spec-spine-comparison[data-spec="ud-b1"].mx-spine-row[data-null="1"]>.mx-spine-stance{grid-column:4;}' in compact
+    for group in ['ud-b1', 'ud-b1-390']:
+        row = _spine_rows(specimen, group)[-1]
+        assert 'No score' in row and '暂无分值' in row
+
+
+def test_spine_comparison_phone_preview_has_a_real_phone_bound(specimen):
+    nodes = _specimen_tab_nodes(_spine_examples(specimen))
+    frame = next(a for _,a in nodes if {'mobile-sim','mockup-spine-390'} <= set(a.get('class','').split()))
+    style = re.sub(r'\s+', '', frame.get('style',''))
+    assert 'max-width:390px' in style and 'box-sizing:border-box' in style
+
+
+def test_spine_comparison_value_headers_carry_machine_readable_dates(specimen):
+    table = _spine_examples(specimen).split('id="spec-spine-values"', 1)[1].split('</table>', 1)[0]
+    assert '<time datetime="2026-07-12">' in table and '<time datetime="2026-08-12">' in table
+
+
+# R11: historical evidence is not a next-event probability.
+def _specimen_rate_evidence(specimen):
+    m = re.search(r'<div class="panel" id="specimen-evidence-rate"[^>]*>(.*?)<!-- END RATE EVIDENCE -->', specimen, re.S)
+    assert m, "Keep one source-owned LENS open-state example"
+    return m.group(1)
+
+
+def test_evidence_rate_has_visible_fictional_and_historical_boundaries(specimen):
+    body = _specimen_rate_evidence(specimen)
+    assert 'Fictional study' in body and '虚构研究' in body
+    front = body.split('class="lens-pop-demo"')[0]
+    assert 'Small historical sample—not a forecast.' in front
+    assert '少量历史样本，不是预测。' in front
+    assert '约六成会消退' not in body
+
+
+def test_evidence_rate_counts_reconcile_and_support_the_rounded_phrase(specimen):
+    body = _specimen_rate_evidence(specimen)
+    values = {k:int(v) for k,v in re.findall(r'data-spec-(total|faded|other)="(\d+)"', body)}
+    assert values == {'total':26, 'faded':16, 'other':10}
+    assert values['faded'] + values['other'] == values['total']
+    assert round(values['faded'] / values['total'] * 10) == 6
+    assert '16 of 26' in body and 'other 10' in body
+    assert 'within a day' in body and '2021–2026' in body
+
+
+def test_evidence_rate_static_trigger_does_not_pretend_runtime_works(specimen):
+    body = _specimen_rate_evidence(specimen)
+    nodes = _specimen_tab_nodes(body)
+    trigger = next(a for tag,a in nodes if a.get('id') == 'spec-lens-trigger')
+    assert trigger.get('type') == 'button' and 'disabled' in trigger
+    assert trigger.get('aria-describedby') == 'spec-lens-limit'
+    assert 'open-state example' in body and 'static' in body
+    assert not re.search(r'<script\b|onclick=|onfocus=', body)
+
+
+def test_evidence_rate_keeps_the_existing_lens_binding_and_legible_receipt(specimen):
+    body = _specimen_rate_evidence(specimen)
+    assert 'data-tip-en=' in body and 'data-tip-zh=' in body
+    assert 'data-tip-rc-en=' in body and 'data-tip-rc-zh=' in body
+    assert body.count('class="lens-pop-demo"') == 1
+    assert 'not the next signal' in body and '不是下一次' in body
+    css = re.sub(r'\s+', '', _rule_body(specimen, r'#specimen-evidence-rate \.lens-pop-demo'))
+    assert 'position:static' in css and 'width:auto' in css
+    rc = re.sub(r'\s+', '', _rule_body(specimen, r'#specimen-evidence-rate \.rc'))
+    assert 'font-size:var(--fs-sm)' in rc
+
+
+# R12: simplicity means the product assembles the first answer for the user.
+def test_design_system_names_user_assembly_debt_as_a_first_read_defect():
+    master = (ROOT / "research" / "MASTER_PRODUCT_DESIGN_SYSTEM_V1.md").read_text(encoding="utf-8")
+    assert "user assembly debt" in master.lower()
+    assert "target is zero" in master.lower()
+    assert "configure" in master.lower() and "compute" in master.lower()
+
+
+def test_migration_packet_requires_user_assembly_debt_accounting():
+    factory = (ROOT / "research" / "DESIGN_MIGRATION_FACTORY_V1.md").read_text(encoding="utf-8")
+    assert "ASSEMBLY DEBT:" in factory
+    assert "target 0" in factory
+    assert "before the useful first read" in factory
+
+
+def test_agent_guidance_projects_the_same_prepared_answer_rule():
+    agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    assert "user assembly debt" in agents.lower()
+    assert "prepared answer" in agents.lower()
+    assert "target zero" in agents.lower()
+
+
+# R13: the constitution must describe the font stack that theme.css actually ships.
+def test_documented_font_identity_matches_the_shipped_ui_stack():
+    master = (ROOT / "research" / "MASTER_PRODUCT_DESIGN_SYSTEM_V1.md").read_text(encoding="utf-8")
+    theme = THEME.read_text(encoding="utf-8")
+    assert "--font-ui: -apple-system, BlinkMacSystemFont, Inter" in theme
+    assert "San Francisco leads on Apple" in master
+    assert "Inter remains the self-hosted cross-platform carrier" in master
+    assert "One family — Inter, self-hosted" not in master

@@ -1,0 +1,19 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+________ test_spine_comparison_missing_stance_keeps_its_desktop_column _________
+tests/test_design_system_foundations.py:999: in test_spine_comparison_missing_stance_keeps_its_desktop_column
+    assert '.wrap:not(.mockup-spine-390)#spec-spine-comparison[data-spec="ud-b1"].mx-spine-row[data-null="1"]>.mx-spine-stance{grid-column:4;}' in compact
+E   assert '.wrap:not(.mockup-spine-390)#spec-spine-comparison[data-spec="ud-b1"].mx-spine-row[data-null="1"]>.mx-spine-stance{grid-column:4;}' in '<!doctypehtml><htmllang="en"data-lang="en"><head><metacharset="utf-8"><metaname="viewport"content="width=device-width...renceObserver.observe(stage);}elsewindow.addEventListener(\'resize\',fitReferenceAnchors);})();</script></body></html>'
+__________ test_spine_comparison_phone_preview_has_a_real_phone_bound __________
+tests/test_design_system_foundations.py:1009: in test_spine_comparison_phone_preview_has_a_real_phone_bound
+    assert 'max-width:390px' in style and 'box-sizing:border-box' in style
+E   AssertionError: assert ('max-width:390px' in 'border:1pxsolidvar(--line);border-radius:var(--r-card);padding:8px;')
+_______ test_spine_comparison_value_headers_carry_machine_readable_dates _______
+tests/test_design_system_foundations.py:1014: in test_spine_comparison_value_headers_carry_machine_readable_dates
+    assert '<time datetime="2026-07-12">' in table and '<time datetime="2026-08-12">' in table
+E   assert ('<time datetime="2026-07-12">' in '>\n        <caption><span class="l-en">Same scale and dates. The missing comparison is not zero.</span><span class="l...pan></th><td colspan="3"><span class="l-en">Unavailable</span><span class="l-zh">暂无数据</span></td></tr></tbody>\n      ')
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_spine_comparison_missing_stance_keeps_its_desktop_column
+FAILED tests/test_design_system_foundations.py::test_spine_comparison_phone_preview_has_a_real_phone_bound
+FAILED tests/test_design_system_foundations.py::test_spine_comparison_value_headers_carry_machine_readable_dates
+3 failed, 92 deselected in 0.14s

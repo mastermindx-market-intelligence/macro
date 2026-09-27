@@ -80,13 +80,15 @@ five meanings is decoration, and decoration is a defect on an institutional surf
 sanctioned ambient exception is the site aurora (§16) — brand atmosphere at `z-index:-1`,
 alpha-tuned per theme, never touching legibility.
 
-**Typography as identity.** One family — Inter, self-hosted, CN-deliverable — used across an
-extreme weight range: 900 for the wordmark and verdict words, 400–600 for everything else,
-tabular figures for every numeral column. The institutional signature is *weight contrast and
-numeric discipline*, not a second typeface. This is a deliberate choice, not a default: a serif
-display would cost mainland font delivery, fight CJK parity, and read as editorial dressing on
-what is an instrument panel. The verdict word at `--fs-display` (46px, 800, −.03em) IS the
-display face of this product.
+**Typography as identity.** One governed UI stack, not one forced webfont. **San Francisco leads on Apple**
+through the system keywords in `--font-ui`; **Inter remains the self-hosted cross-platform carrier**
+elsewhere, ahead of Segoe UI / Roboto, with the shipped CJK fallbacks preserving mainland delivery.
+Use the same extreme weight range: 900 for the wordmark and verdict words, 400–600 for everything
+else, with tabular figures for every numeral column. The institutional signature is *weight contrast
+and numeric discipline*, not a second display typeface. This is deliberate, not a browser default:
+the shared token fixes the ordered stack and a serif display would fight CJK parity and read as
+editorial dressing on what is an instrument panel. The verdict word at `--fs-display` (46px, 800,
+−.03em) IS the display face of this product.
 
 ---
 
@@ -97,6 +99,21 @@ scales below. **No new `:root` token family may be created outside it** on produ
 (`--bci-*`, `--wri-*`, `landing.css`'s root set are migration debt, §11.3). Page-local tokens
 are permitted only as *derivations* of theme tokens (`--pv-*` and `--ms-*` are the compliant
 pattern: local names bound to theme values at the top of a scope).
+
+### Role binding is consumer-specific
+
+Graphic/tint hues, text-grade `--ink-*`, and solid-label `--fill-*` are separate uses.
+An editable alias must name its repository source role and retain its meaning. Do not use
+raw state hues for small text or white-label buttons merely because the hue is familiar.
+An ink role still needs measurement against the actual background and interaction state;
+its name is not a universal guarantee for nested or hue-tinted surfaces. If a combination
+fails, preserve the state word and semantic icon/rail while using a suitable existing text
+role, or return the shared consumer gap to its source owner. Do not mint a page-local color.
+
+`research/DESIGN_SYSTEM_READABILITY_REPAIR_2026-09-26.md` records one source-derived warning
+label repair and specific unsupported dark/tinted pairs. Its proposed Paper payload is not
+an applied effect or a RIG approval. Project accepted source roles only after reconciling
+file-wide custody; application and after-change evidence remain separate obligations.
 
 ### 2.1 Canonical today (KEEP — already law)
 
@@ -417,6 +434,56 @@ architecture leaking into the customer's cognitive model are the census-measured
 
 ---
 
+### 9.1 Prepared tasks and complete returns
+
+The components above must compose a useful task before the user configures the product.
+Start with the relevant comparison, meaningful changes or an existing owner-ranked result;
+keep the full population, advanced controls and direct research path accessible. A blank
+configurator or a set of equally weighted metrics is not the default briefing.
+
+**User assembly debt** is the setup, cross-referencing, mental math, or configuration
+the customer must perform before receiving that useful first read. The target is zero
+on the primary entry path: the product should configure sensible defaults, compute the
+necessary comparisons, align units/windows, and synthesize the read before asking the
+user to customize it. Unavoidable identity input (for example, choosing which company
+to inspect) may precede the answer; interpretation work should not. Configuration refines
+a prepared answer instead of creating one from ingredients.
+
+The first read follows the content doctrine: **subject → owned assessment → consequential
+qualification → useful continuation**. This is a semantic order, not four mandatory cards.
+The result list, a plain headline or a visual comparison can carry the answer. Descriptions,
+badges and footers are optional; add them only when they change interpretation, prevent an
+important mistake or enable the task. Never shrink critical copy or remove its context to
+fit a word budget. Preserve adverse evidence; an honest unknown is a valid assessment.
+
+Use the existing archetype for the job rather than forcing every route into the same layout:
+
+| Job | Default useful surface | Depth that stays reachable |
+|---|---|---|
+| Orient | Main read and decisive comparison | Drivers, conflicts, coverage and history |
+| Prioritize | Meaningful changes or source-owned ranked results | Complete population and advanced filters |
+| Inspect | Stable subject, relevant evidence and qualifications | Full dossier, methodology and contrary evidence |
+| Monitor | Changes since the user's relevant checkpoint | Managed list, history and source status |
+
+Quick inspection and Study are depths, not a compulsory click funnel. Frequently used
+comparisons stay together. Every demotion names its destination and preserves the ordinary
+workflow. A panel that becomes shorter by forcing users to reconstruct its answer elsewhere
+has not become simpler.
+
+Every inspect/compare/save/track control specifies its real result and return behavior.
+Preserve the exact subject/listing and applicable market, filters, period, benchmark,
+selection and return position; reset incompatible state explicitly. A request is not a
+confirmed save or active alert. A refresh must not silently replace the inspected object.
+Normal long analytical pages use document scrolling with clear orientation, not poster-height
+clipping or a nested scroll box per panel; the chart workspace keeps its distinct pane model.
+
+Record these details in the existing migration packet fields 3B/3C/4/6/11/12. Separate
+technical, design, intended-user comprehension and real-journey evidence. Neither author
+confidence nor a successful screenshot is a human-comprehension receipt. This section adds
+no approval store, trade authority or extra human gate for routine reversible edits.
+
+---
+
 ## 10. Canonical page archetypes
 
 Nine archetypes cover the estate. **Canonical identifiers are the registry ids below**
@@ -499,12 +566,19 @@ D-budget of 6. **macro.html is selected** as the reference: (a) it is the higher
 candidate (20/30 vs 18/30 on the census's 15-dimension scorecard — census §6 table, auditable there) with the estate's best regime hero — the reference builds on
 strength instead of entangling with china's open data-truth defects (regime named two ways,
 policy in both directions — engine-lane work, not design); (b) it is P0 #3 and the estate's
-main anonymous SEO entry — highest reach per pixel; (c) the two pages share the `mx4/mx5`
-idiom family, so the reference transfers to china/hk mechanically as follower migrations —
-china becomes the first Archetype-D consumer and the test that the reference generalizes.
-The reference (`mockups/design_system/macro_reference.html`) compresses 13 L1 sections → 5
-(hero+caveat · what changed · four drivers · watching band · named deep links), every demoted
-module keeping a named landing.
+main anonymous SEO entry — highest reach per pixel. The historical Wave-0 plan expected the
+shared `mx4/mx5` idiom to make China/HK mechanical followers, but that rollout premise is
+**superseded for production** by the Chairman's #7456/#7471 ruling: the restored deep
+`china.html` dashboard is the canonical published product, while the compressed Archetype-D
+China experiment is incubation material unless separately matured and accepted. The macro
+reference therefore does not authorize a China/HK/Canada primary-route migration by analogy.
+Any future regional-primary adoption must satisfy current product/family scope and a fresh RIG
+decision; editable-reference approval alone cannot narrow that scope.
+
+The reference (`mockups/design_system/macro_reference.html`) remains a worked Archetype-D
+design study and compresses 13 L1 sections → 5 (hero+caveat · what changed · four drivers ·
+watching band · named deep links), every demoted module keeping a named landing. Its historical
+design value survives; its rejected China production rollout does not.
 
 **Path for the remaining ~290 registry rows:** the `archetype` field already exists in
 `config/product_experience/page_registry_overrides.yml` (9 rows populated, earlier
@@ -700,6 +774,47 @@ it always reflects current law, and carries the proposed DS-PR-0 tokens in a cle
 local block that is deleted when DS-PR-0 lands. Builders inspect it before touching any
 customer surface; review compares rendered work against it. It is a mockup — nothing imports
 it in production.
+
+### 17.1 Editable design projection
+
+**Universal material-UI rule.** Material customer-facing visual work begins from a governed
+editable source that projects repository design law. Static screenshots, chat-rendered images,
+generated HTML, or prose may support exploration and evidence, but they are not design authority.
+Every material migration records the exact editable file/document plus frame/node/artboard
+identifiers in its packet, together with the canonical components/tokens it composes and the
+intended state/interaction variants.
+
+Editable-tool governance is **not** canonical-reference approval. The Reference Integrity Gate
+remains the only reference-canonicality gate: a governed Figma/Paper source without the packet's
+valid `RIG-RECEIPT:` is still provisional and cannot by itself support final reference
+conformance. Likewise, an editable reference never narrows route-family, sibling, or atomic
+migration scope established by current product law.
+
+The canonical editable projection is the Figma file **Mastermind Product Design System —
+Canonical**, file key `IKqTiq7jeVBJusBfoHnPsH`. It mirrors repository tokens/components for
+composition and review; it does **not** outrank this document, `docs/DESIGN_DOCTRINE.md`,
+`templates/theme.css`, the executable specimen, or current product rulings. Repository
+law/theme contracts establish primitive authority. A Figma-only primitive is provisional; once
+the repository primitive is accepted, synchronize the governed projection before depending on it
+as migration design input.
+
+Paper may be used as the high-velocity agentic composition/code round-trip surface when its MCP is
+available, but Paper output is governed by the same repository vocabulary and packet law. The
+current governed Paper projection is **Mastermind Product Design System — Agentic Lab**
+(file `01M2WGNCX9475G79JRKJTCM08P`), seeded from the repository vocabulary with dark/light
+theme-prefixed palette tokens plus the shared spacing, radius, typography and breakpoint scales.
+Theme prefixes are deliberate while Paper lacks a repository-equivalent multi-mode token contract;
+they must not be mistaken for a second theme authority. No Paper document, Figma file, generated
+screenshot, exported code, or design-tool approval may establish a parallel token root, component
+registry, reference-approval plane, or release authority. Generated JSX/code is implementation
+input only.
+
+For stateful material UI, the editable projection defines intended treatment while browser/fixture
+evidence proves the implementation. The migration packet names the Dark/Light × EN/ZH ×
+desktop/mobile cells plus materially distinct data/availability and interaction/overlay states as
+applicable; native hover/focus states require real browser interaction evidence or an existing
+truthful implementation state hook rather than claiming that an editable frame proved runtime
+behavior.
 
 ---
 

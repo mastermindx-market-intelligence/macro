@@ -1,0 +1,11 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__ test_prepared_samples_keep_internal_delivery_language_out_of_customer_copy __
+tests/test_design_system_foundations.py:724: in test_prepared_samples_keep_internal_delivery_language_out_of_customer_copy
+    assert not any(term in body for term in forbidden), "Customer examples must not expose delivery plumbing"
+E   AssertionError: Customer examples must not expose delivery plumbing
+E   assert not True
+E    +  where True = any(<generator object test_prepared_samples_keep_internal_delivery_language_out_of_customer_copy.<locals>.<genexpr> at 0x1067277b0>)
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_prepared_samples_keep_internal_delivery_language_out_of_customer_copy
+1 failed, 57 deselected in 0.05s

@@ -1,0 +1,50 @@
+[
+  {
+    "theme": "dark",
+    "pair": "primary label",
+    "ratio": 6.10885552650324,
+    "floor": 4.5
+  },
+  {
+    "theme": "dark",
+    "pair": "body text",
+    "ratio": 12.513347014441809,
+    "floor": 4.5
+  },
+  {
+    "theme": "dark",
+    "pair": "supporting text",
+    "ratio": 5.573322167346348,
+    "floor": 4.5
+  },
+  {
+    "theme": "dark",
+    "pair": "quiet action border",
+    "ratio": 6.924734847042776,
+    "floor": 3.0
+  },
+  {
+    "theme": "light",
+    "pair": "primary label",
+    "ratio": 9.390028281022026,
+    "floor": 4.5
+  },
+  {
+    "theme": "light",
+    "pair": "body text",
+    "ratio": 15.620283087860223,
+    "floor": 4.5
+  },
+  {
+    "theme": "light",
+    "pair": "supporting text",
+    "ratio": 5.426663883173387,
+    "floor": 4.5
+  },
+  {
+    "theme": "light",
+    "pair": "quiet action border",
+    "ratio": 5.034634908564597,
+    "floor": 3.0
+  }
+]

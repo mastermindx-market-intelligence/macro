@@ -1,0 +1,9 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________ test_spine_comparison_missing_stance_keeps_its_desktop_column _________
+tests/test_design_system_foundations.py:1002: in test_spine_comparison_missing_stance_keeps_its_desktop_column
+    assert 'No score' in row and '暂无分值' in row
+E   assert ('No score' in '<div class="mx-spine-row" data-null="1">\n        <div class="mx-spine-name"><span class="l-en">Commodities</span><sp...）。同一数字，同一形状——不同材质。</p>\n    <div class="mx-tier-blurred--spec" aria-hidden="true" style="pointer-events:none">\n      ')
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_spine_comparison_missing_stance_keeps_its_desktop_column
+1 failed, 94 deselected in 0.12s

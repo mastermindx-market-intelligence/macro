@@ -1,0 +1,11 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____________ test_specimen_binds_the_existing_mobile_spine_preview _____________
+tests/test_design_system_foundations.py:660: in test_specimen_binds_the_existing_mobile_spine_preview
+    assert re.search(r'<div class="wrap mockup-spine-390">', specimen)
+E   assert None
+E    +  where None = <function search at 0x10527b9d0>('<div class="wrap mockup-spine-390">', '<!doctype html>\n<html lang="en" data-lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="widt...b.id) location.hash = b.id;   /* tab state lives in the URL hash */\n    };\n  });\n});\n</script>\n</body>\n</html>\n')
+E    +    where <function search at 0x10527b9d0> = re.search
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_specimen_binds_the_existing_mobile_spine_preview
+1 failed, 40 deselected in 0.02s

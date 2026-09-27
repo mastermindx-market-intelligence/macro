@@ -1,0 +1,62 @@
+FFFFFFFFF                                                                [100%]
+=================================== FAILURES ===================================
+________________ test_specimen_has_one_title_main_and_skip_link ________________
+tests/test_design_system_foundations.py:803: in test_specimen_has_one_title_main_and_skip_link
+    assert sum(tag == 'h1' for tag, _ in nodes) == 1
+E   assert 0 == 1
+E    +  where 0 = sum(<generator object test_specimen_has_one_title_main_and_skip_link.<locals>.<genexpr> at 0x105f014a0>)
+_________ test_specimen_task_directory_has_real_reachable_destinations _________
+tests/test_design_system_foundations.py:813: in test_specimen_task_directory_has_real_reachable_destinations
+    nav = next(a for tag, a in nodes if tag == 'nav' and a.get('id') == 'specimen-directory')
+E   StopIteration
+___ test_specimen_answer_is_explicitly_fictional_not_live_or_trade_authority ___
+tests/test_design_system_foundations.py:825: in test_specimen_answer_is_explicitly_fictional_not_live_or_trade_authority
+    body = _specimen_prepared_answer(specimen)
+tests/test_design_system_foundations.py:797: in _specimen_prepared_answer
+    start = specimen.index('<section class="spec-sec" id="spec-identity"')
+E   ValueError: substring not found
+____ test_specimen_answer_exposes_comparable_evidence_at_rest[index-+1.2%] _____
+tests/test_design_system_foundations.py:835: in test_specimen_answer_exposes_comparable_evidence_at_rest
+    body = _specimen_prepared_answer(specimen).split('<details', 1)[0]
+tests/test_design_system_foundations.py:797: in _specimen_prepared_answer
+    start = specimen.index('<section class="spec-sec" id="spec-identity"')
+E   ValueError: substring not found
+_ test_specimen_answer_exposes_comparable_evidence_at_rest[equal-weight-\u22120.6%] _
+tests/test_design_system_foundations.py:835: in test_specimen_answer_exposes_comparable_evidence_at_rest
+    body = _specimen_prepared_answer(specimen).split('<details', 1)[0]
+tests/test_design_system_foundations.py:797: in _specimen_prepared_answer
+    start = specimen.index('<section class="spec-sec" id="spec-identity"')
+E   ValueError: substring not found
+_ test_specimen_answer_exposes_comparable_evidence_at_rest[participation-3 of 11] _
+tests/test_design_system_foundations.py:835: in test_specimen_answer_exposes_comparable_evidence_at_rest
+    body = _specimen_prepared_answer(specimen).split('<details', 1)[0]
+tests/test_design_system_foundations.py:797: in _specimen_prepared_answer
+    start = specimen.index('<section class="spec-sec" id="spec-identity"')
+E   ValueError: substring not found
+_____ test_specimen_complete_breakdown_reconciles_the_participation_count ______
+tests/test_design_system_foundations.py:842: in test_specimen_complete_breakdown_reconciles_the_participation_count
+    body = _specimen_prepared_answer(specimen)
+tests/test_design_system_foundations.py:797: in _specimen_prepared_answer
+    start = specimen.index('<section class="spec-sec" id="spec-identity"')
+E   ValueError: substring not found
+___________ test_specimen_inspection_returns_to_the_same_assessment ____________
+tests/test_design_system_foundations.py:852: in test_specimen_inspection_returns_to_the_same_assessment
+    body = _specimen_prepared_answer(specimen)
+tests/test_design_system_foundations.py:797: in _specimen_prepared_answer
+    start = specimen.index('<section class="spec-sec" id="spec-identity"')
+E   ValueError: substring not found
+_ test_specimen_navigation_accounts_for_resized_header_without_hiding_content __
+tests/test_design_system_foundations.py:861: in test_specimen_navigation_accounts_for_resized_header_without_hiding_content
+    assert 'ResizeObserver' in specimen and '--spec-header-height' in specimen
+E   assert ('ResizeObserver' in '<!doctype html>\n<html lang="en" data-lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="widt...w.addEventListener(\'popstate\', restoreFromLocation);\n  restoreFromLocation();\n})();\n</script>\n</body>\n</html>\n')
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_specimen_has_one_title_main_and_skip_link
+FAILED tests/test_design_system_foundations.py::test_specimen_task_directory_has_real_reachable_destinations
+FAILED tests/test_design_system_foundations.py::test_specimen_answer_is_explicitly_fictional_not_live_or_trade_authority
+FAILED tests/test_design_system_foundations.py::test_specimen_answer_exposes_comparable_evidence_at_rest[index-+1.2%]
+FAILED tests/test_design_system_foundations.py::test_specimen_answer_exposes_comparable_evidence_at_rest[equal-weight-\u22120.6%]
+FAILED tests/test_design_system_foundations.py::test_specimen_answer_exposes_comparable_evidence_at_rest[participation-3 of 11]
+FAILED tests/test_design_system_foundations.py::test_specimen_complete_breakdown_reconciles_the_participation_count
+FAILED tests/test_design_system_foundations.py::test_specimen_inspection_returns_to_the_same_assessment
+FAILED tests/test_design_system_foundations.py::test_specimen_navigation_accounts_for_resized_header_without_hiding_content
+9 failed, 67 deselected in 0.19s

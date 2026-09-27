@@ -1,0 +1,413 @@
+{
+  "scope": "R10 reference comparison on exact source; local-file Chrome; external HTTP(S) blocked; doubled type is not native zoom; accessibility-tree semantics are not assistive-technology certification; no live market/data/persistence effects",
+  "cells": [
+    {
+      "width": 1440,
+      "typeScale": 1,
+      "theme": "dark",
+      "lang": "en",
+      "checks": [
+        {
+          "name": "context_visible_before_detail",
+          "pass": true,
+          "detail": {
+            "context": "Fictional example · 12 Jul → 12 Aug 2026",
+            "summary": "2 toward risk-on · 2 toward risk-off · 1 unavailable",
+            "limit": "Score points, not price returns and not probabilities. The example stance is a separate assessment.",
+            "closed": true,
+            "lang": "en",
+            "leaks": 0
+          }
+        },
+        {
+          "name": "summary_exposes_missing_comparison",
+          "pass": true
+        },
+        {
+          "name": "units_and_not_probability_at_rest",
+          "pass": true
+        },
+        {
+          "name": "one_visible_locale_and_document_language",
+          "pass": true
+        },
+        {
+          "name": "ud-b1/0/stated_delta_agrees",
+          "pass": true
+        },
+        {
+          "name": "ud-b1/0/painted_endpoints_match",
+          "pass": true,
+          "detail": {
+            "missing": false,
+            "current": 72,
+            "previous": 78,
+            "delta": -6,
+            "currentPaint": 71.99972587719299,
+            "previousPaint": 77.99890350877193,
+            "connectorStart": 71.99972587719299,
+            "connectorLength": 5.999177631578947,
+            "unit": 11.4,
+            "markCount": 3
+          }
+        },
+        {
+          "name": "ud-b1/0/line_connects_actual_endpoints",
+          "pass": true
+        },
+        {
+          "name": "ud-b1/1/stated_delta_agrees",
+          "pass": true
+        },
+        {
+          "name": "ud-b1/1/painted_endpoints_match",
+          "pass": true,
+          "detail": {
+            "missing": false,
+            "current": 61,
+            "previous": 56,
+            "delta": 5,
+            "currentPaint": 60.999177631578945,
+            "previousPaint": 55.999177631578945,
+            "connectorStart": 55.999177631578945,
+            "connectorLength": 5,
+            "unit": 11.4,
+            "markCount": 3
+          }
+        },
+        {
+          "name": "ud-b1/1/line_connects_actual_endpoints",
+          "pass": true
+        },
+        {
+          "name": "ud-b1/2/stated_delta_agrees",
+          "pass": true
+        },
+        {
+          "name": "ud-b1/2/painted_endpoints_match",
+          "pass": true,
+          "detail": {
+            "missing": false,
+            "current": 58,
+            "previous": 49,
+            "delta": 9,
+            "currentPaint": 57.99890350877193,
+            "previousPaint": 48.999451754385966,
+            "connectorStart": 48.999451754385966,
+            "connectorLength": 8.999451754385964,
+            "unit": 11.4,
+            "markCount": 3
+          }
+        },
+        {
+          "name": "ud-b1/2/line_connects_actual_endpoints",
+          "pass": true
+        },
+        {
+          "name": "ud-b1/3/stated_delta_agrees",
+          "pass": true
+        },
+        {
+          "name": "ud-b1/3/painted_endpoints_match",
+          "pass": true,
+          "detail": {
+            "missing": false,
+            "current": 38,
+            "previous": 42,
+            "delta": -4,
+            "currentPaint": 37.99890350877193,
+            "previousPaint": 41.99972587719298,
+            "connectorStart": 37.99890350877193,
+            "connectorLength": 3.999451754385965,
+            "unit": 11.4,
+            "markCount": 3
+          }
+        },
+        {
+          "name": "ud-b1/3/line_connects_actual_endpoints",
+          "pass": true
+        },
+        {
+          "name": "ud-b1/4/missing_is_not_zero",
+          "pass": true
+        },
+        {
+          "name": "ud-b1-390/0/stated_delta_agrees",
+          "pass": true
+        },
+        {
+          "name": "ud-b1-390/0/painted_endpoints_match",
+          "pass": true,
+          "detail": {
+            "missing": false,
+            "current": 72,
+            "previous": 78,
+            "delta": -6,
+            "currentPaint": 71.99894162210339,
+            "previousPaint": 77.99966577540107,
+            "connectorStart": 71.99894162210339,
+            "connectorLength": 5.999331550802139,
+            "unit": 11.22,
+            "markCount": 3
+          }
+        },
+        {
+          "name": "ud-b1-390/0/line_connects_actual_endpoints",
+          "pass": true
+        },
+        {
+          "name": "ud-b1-390/1/stated_delta_agrees",
+          "pass": true
+        },
+        {
+          "name": "ud-b1-390/1/painted_endpoints_match",
+          "pass": true,
+          "detail": {
+            "missing": false,
+            "current": 61,
+            "previous": 56,
+            "delta": 5,
+            "currentPaint": 60.998774509803916,
+            "previousPaint": 55.99933155080213,
+            "connectorStart": 55.99933155080213,
+            "connectorLength": 4.999442959001782,
+            "unit": 11.22,
+            "markCount": 3
+          }
+        },
+        {
+          "name": "ud-b1-390/1/line_connects_actual_endpoints",
+          "pass": true
+        },
+        {
+          "name": "ud-b1-390/2/missing_is_not_zero",
+          "pass": true
+        },
+        {
+          "name": "primary_has_five_and_mobile_has_three",
+          "pass": true
+        },
+        {
+          "name": "primary_adapts_instead_of_forcing_phone_layout",
+          "pass": false,
+          "detail": {
+            "width": 1212,
+            "header": "none",
+            "primaryAreas": "\"name stance\" \"rail rail\" \"travel travel\"",
+            "phoneAreas": "\"name stance\" \"rail rail\" \"travel travel\""
+          }
+        },
+        {
+          "name": "explicit_phone_example_stays_stacked",
+          "pass": true
+        },
+        {
+          "name": "keyboard_opens_and_retains_focus",
+          "pass": true
+        },
+        {
+          "name": "complete_five_row_text_equivalent",
+          "pass": true
+        },
+        {
+          "name": "table_matches_primary_geometry",
+          "pass": true
+        },
+        {
+          "name": "text_equivalent_keeps_unavailable",
+          "pass": true
+        },
+        {
+          "name": "ordinary_phone_values_fit",
+          "pass": true,
+          "detail": {
+            "width": 1112,
+            "content": 1112
+          }
+        },
+        {
+          "name": "table_semantics_in_accessibility_tree",
+          "pass": true
+        },
+        {
+          "name": "keyboard_closes_and_keeps_initiator",
+          "pass": true
+        },
+        {
+          "name": "document_contained",
+          "pass": true,
+          "detail": {
+            "doc": 1429,
+            "client": 1429
+          }
+        },
+        {
+          "name": "inspection_has_no_url_or_storage_effect",
+          "pass": true
+        }
+      ],
+      "geometry": [
+        {
+          "group": "ud-b1",
+          "rows": [
+            {
+              "missing": false,
+              "current": 72,
+              "previous": 78,
+              "delta": -6,
+              "currentPaint": 71.99972587719299,
+              "previousPaint": 77.99890350877193,
+              "connectorStart": 71.99972587719299,
+              "connectorLength": 5.999177631578947,
+              "unit": 11.4,
+              "markCount": 3
+            },
+            {
+              "missing": false,
+              "current": 61,
+              "previous": 56,
+              "delta": 5,
+              "currentPaint": 60.999177631578945,
+              "previousPaint": 55.999177631578945,
+              "connectorStart": 55.999177631578945,
+              "connectorLength": 5,
+              "unit": 11.4,
+              "markCount": 3
+            },
+            {
+              "missing": false,
+              "current": 58,
+              "previous": 49,
+              "delta": 9,
+              "currentPaint": 57.99890350877193,
+              "previousPaint": 48.999451754385966,
+              "connectorStart": 48.999451754385966,
+              "connectorLength": 8.999451754385964,
+              "unit": 11.4,
+              "markCount": 3
+            },
+            {
+              "missing": false,
+              "current": 38,
+              "previous": 42,
+              "delta": -4,
+              "currentPaint": 37.99890350877193,
+              "previousPaint": 41.99972587719298,
+              "connectorStart": 37.99890350877193,
+              "connectorLength": 3.999451754385965,
+              "unit": 11.4,
+              "markCount": 3
+            },
+            {
+              "missing": true,
+              "current": null,
+              "previous": null,
+              "delta": null,
+              "currentPaint": null,
+              "previousPaint": null,
+              "connectorStart": null,
+              "connectorLength": null,
+              "unit": 11.4,
+              "markCount": 0
+            }
+          ]
+        },
+        {
+          "group": "ud-b1-390",
+          "rows": [
+            {
+              "missing": false,
+              "current": 72,
+              "previous": 78,
+              "delta": -6,
+              "currentPaint": 71.99894162210339,
+              "previousPaint": 77.99966577540107,
+              "connectorStart": 71.99894162210339,
+              "connectorLength": 5.999331550802139,
+              "unit": 11.22,
+              "markCount": 3
+            },
+            {
+              "missing": false,
+              "current": 61,
+              "previous": 56,
+              "delta": 5,
+              "currentPaint": 60.998774509803916,
+              "previousPaint": 55.99933155080213,
+              "connectorStart": 55.99933155080213,
+              "connectorLength": 4.999442959001782,
+              "unit": 11.22,
+              "markCount": 3
+            },
+            {
+              "missing": true,
+              "current": null,
+              "previous": null,
+              "delta": null,
+              "currentPaint": null,
+              "previousPaint": null,
+              "connectorStart": null,
+              "connectorLength": null,
+              "unit": 11.22,
+              "markCount": 0
+            }
+          ]
+        }
+      ],
+      "table": {
+        "rows": [
+          {
+            "key": "us",
+            "cells": [
+              "US stocks",
+              "78",
+              "72",
+              "−6"
+            ]
+          },
+          {
+            "key": "hk",
+            "cells": [
+              "Hong Kong",
+              "56",
+              "61",
+              "+5"
+            ]
+          },
+          {
+            "key": "cn",
+            "cells": [
+              "China A-shares",
+              "49",
+              "58",
+              "+9"
+            ]
+          },
+          {
+            "key": "bonds",
+            "cells": [
+              "Government bonds",
+              "42",
+              "38",
+              "−4"
+            ]
+          },
+          {
+            "key": "commodities",
+            "cells": [
+              "Commodities",
+              "Unavailable"
+            ]
+          }
+        ],
+        "caption": "Same scale and dates. The missing comparison is not zero.",
+        "headerScopes": true,
+        "rowScopes": true,
+        "width": 1112,
+        "content": 1112
+      },
+      "pass": false
+    }
+  ],
+  "exceptions": []
+}

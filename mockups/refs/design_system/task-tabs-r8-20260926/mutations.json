@@ -1,0 +1,17 @@
+[
+  {
+    "mutation": "shared-panel",
+    "exit": 1,
+    "summary": "2 failed, 7 passed, 58 deselected in 0.05s"
+  },
+  {
+    "mutation": "lost-history",
+    "exit": 1,
+    "summary": "1 failed, 8 passed, 58 deselected in 0.04s"
+  },
+  {
+    "mutation": "unreadable-comparison",
+    "exit": 1,
+    "summary": "1 failed, 8 passed, 58 deselected in 0.04s"
+  }
+]

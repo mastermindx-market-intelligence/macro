@@ -46,18 +46,19 @@ body{ margin:0; background:var(--bg); color:var(--text); font-size:var(--fs-body
 .spec-sec{ margin-top:var(--sp-8); }
 .spec-sec > h2{ font-size:var(--fs-h2); font-weight:700; letter-spacing:-.01em; margin:0 0 4px; }
 .spec-sec > .law{ color:var(--muted); font-size:var(--fs-sm); max-width:74ch; margin:0 0 var(--sp-4); }
-.spec-grid{ display:grid; gap:var(--gap-grid); grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); }
+.spec-grid{ display:grid; gap:var(--gap-grid); grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr)); }
 .panel{ background:var(--panel); border:1px solid var(--line); border-radius:var(--r-panel); padding:16px 18px; box-shadow:var(--card-shadow); }
-.mockup-note{ font-size:var(--fs-micro); letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+.mockup-note{ overflow-wrap:anywhere; font-size:var(--fs-micro); letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
 .swrow{ display:flex; flex-wrap:wrap; gap:10px; }
 .sw{ width:118px; }
 .sw i{ display:block; height:44px; border-radius:var(--r-ctl); border:1px solid var(--line); }
 .sw b{ display:block; font-size:var(--fs-sm); margin-top:5px; }
 .sw small{ color:var(--muted); font-size:var(--fs-micro); font-family:var(--font-mono); }
 .swgrp{ font-size:var(--fs-micro); font-weight:700; letter-spacing:.06em; color:var(--muted); margin:10px 0 6px; text-transform:uppercase; }
-.trow{ display:flex; align-items:baseline; gap:var(--sp-4); border-bottom:1px dashed var(--line); padding:7px 0; }
+.trow{ display:flex; flex-wrap:wrap; align-items:baseline; gap:var(--sp-4); border-bottom:1px dashed var(--line); padding:7px 0; }
+.trow > span{ min-width:0; max-width:100%; overflow-wrap:anywhere; }
 .trow small{ color:var(--muted); font-family:var(--font-mono); font-size:var(--fs-micro); width:150px; flex:none; }
-.do-dont{ display:grid; gap:var(--gap-grid); grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); }
+.do-dont{ display:grid; gap:var(--gap-grid); grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr)); }
 .do-dont .panel{ position:relative; padding-top:34px; }
 .dd-chip{ position:absolute; top:10px; left:14px; font-size:var(--fs-micro); font-weight:700;
   letter-spacing:.08em; text-transform:uppercase; padding:3px 9px; border-radius:var(--r-pill);
@@ -98,8 +99,8 @@ html[data-lang="zh"] .mx-vh .mx-vh-word{ letter-spacing:0; }
 .mx-tbl td{ padding:7px 10px; border-bottom:1px solid color-mix(in srgb, var(--line) 55%, transparent); font-variant-numeric:tabular-nums; }
 .mx-tbl tr:hover td{ background:color-mix(in srgb, var(--panel2) 60%, transparent); }
 .mx-tblbox{ overflow-x:auto; }
-.mx-tabset{ display:flex; gap:2px; border-bottom:1px solid var(--line); margin-bottom:10px; }
-.mx-tabset button{ appearance:none; background:none; border:none; border-bottom:2px solid transparent;
+.mx-tabset{ display:flex; flex-wrap:wrap; gap:2px; border-bottom:1px solid var(--line); margin-bottom:10px; }
+.mx-tabset button{ min-height:var(--sp-8); appearance:none; background:none; border:none; border-bottom:2px solid transparent;
   color:var(--muted); font:600 var(--fs-sm)/1 var(--font-ui); padding:8px 12px; cursor:pointer;
   transition:color var(--t-fast) var(--ease-std), border-color var(--t-fast) var(--ease-std); }
 .mx-tabset button[aria-selected="true"]{ color:var(--text); border-bottom-color:var(--link); }
@@ -132,7 +133,7 @@ html[data-lang="zh"] .mx-vh .mx-vh-word{ letter-spacing:0; }
 .mx-rail li.now::before{ height:3px; background:var(--text); }
 .mx-rail li.now::after{ top:-1px; left:calc(50% - 6px); width:12px; height:12px; background:var(--text); border-color:var(--text); }
 /* count ladder — control form; active cell = weight (solid underline + 800), never hue */
-.mx-ladder{ display:flex; align-items:stretch; gap:0; border:1px solid var(--line); border-radius:var(--r-btn); overflow:hidden; }
+.mx-ladder{ display:flex; align-items:stretch; gap:0; border:1px solid var(--line); border-radius:var(--r-btn); overflow-x:auto; }
 .mx-ladder .mx-lad-total{ padding:8px 14px; font-weight:800; font-size:var(--fs-md); border-right:1px solid var(--line); background:var(--panel2); }
 .mx-ladder .mx-lad-total small{ display:block; font-size:var(--fs-micro); font-weight:600; color:var(--muted); }
 /* the display:block above out-specifies theme.css’s html[data-lang] toggle (0-2-1 vs
@@ -145,8 +146,8 @@ html[data-lang="zh"] .mx-ladder .mx-lad-total small.l-en{ display:none; }
 .mx-ladder button b{ display:block; font-size:var(--fs-md); color:var(--text); font-variant-numeric:tabular-nums; }
 .mx-ladder button[aria-pressed="true"]{ color:var(--text); font-weight:800; box-shadow:inset 0 -3px 0 var(--text); }
 /* LENS static demo — production popovers are wired by theme.js from data-tip-en/zh */
-.lens-demo{ position:relative; display:inline-block; }
-.lens-pop-demo{ position:absolute; left:0; top:calc(100% + 8px); z-index:5; width:280px;
+.lens-demo{ position:relative; display:block; width:100%; }
+.lens-pop-demo{ position:absolute; left:0; top:calc(100% + 8px); z-index:5; width:306px; max-width:100%; box-sizing:border-box;
   background:var(--glass-bg); border:1px solid var(--glass-brd); border-radius:var(--r-card);
   -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur);
   box-shadow:var(--popover-shadow); padding:10px 12px; font-size:var(--fs-sm); }
@@ -161,7 +162,9 @@ html[data-lang="zh"] .mx-ladder .mx-lad-total small.l-en{ display:none; }
 .spark{ margin-top:10px; }
 .spark svg{ width:100%; height:44px; display:block; }
 .spark figcaption{ display:flex; justify-content:space-between; font-size:var(--fs-micro); color:var(--muted); font-variant-numeric:tabular-nums; }
-body.mobile-sim .wrap{ max-width:390px; }
+body.mobile-sim .wrap{ max-width:390px; box-sizing:border-box; }
+/* Specimen scaffolding only: long example labels wrap; product buttons are unchanged. */
+.wrap .gbtn{ max-width:100%; white-space:normal; }
 :where(.mx-chg-row, .mx-tabset button, .mx-disc summary, .mx-ladder button, .lens-trigger):focus-visible{
   outline:2px solid color-mix(in srgb, var(--link) 70%, transparent); outline-offset:2px; }
 @media (prefers-reduced-motion: reduce){
@@ -169,9 +172,78 @@ body.mobile-sim .wrap{ max-width:390px; }
   .hovercard, .hovercard:hover{ transform:none; }
   .gbtn::after{ display:none; }
 }
+
+/* R7 specimen composition only: existing State/Disclosure/Button families. */
+#specimen-state-actions .spec-state-case{ display:flex; flex-direction:column; gap:var(--sp-3); min-width:0; padding:var(--sp-4) 0; border-top:1px solid var(--line); }
+#specimen-state-actions h4{ margin:0; font-size:var(--fs-h2); line-height:1.4; }
+#specimen-state-actions p{ margin:0; color:var(--muted); font-size:var(--fs-body); text-transform:none; letter-spacing:normal; }
+#specimen-state-actions > .law{ margin:var(--sp-2) 0 var(--sp-4); }
+#specimen-state-actions .spec-state-case .mx-disc{ margin-top:auto; }
+#specimen-state-actions summary{ min-height:var(--sp-8); box-sizing:border-box; }
+#specimen-state-actions .gbtn{ align-self:flex-start; min-height:var(--sp-8); box-sizing:border-box; }
+#specimen-state-actions .spec-outcome-title{ margin-top:var(--sp-6); }
+#specimen-state-actions .spec-loading-shapes{ display:flex; gap:var(--sp-2); }
+#specimen-state-actions .spec-loading-shapes .skel{ height:14px; flex:1; }
+/* Specimen navigation only: no product navigation or token owner is replaced. */
+.spec-skip{ position:fixed; inset:var(--sp-2) auto auto var(--sp-2); z-index:100; transform:translateY(-200%); padding:var(--sp-3); background:var(--panel); color:var(--text); border:2px solid var(--link); }
+.spec-skip:focus{ transform:none; }
+#specimen-main [id], #specimen-main{ scroll-margin-block-start:calc(var(--spec-header-height,140px) + var(--sp-4)); }
+.spec-start{ padding:var(--sp-5) 0 0; }
+.spec-start h1{ font-size:var(--fs-h1); line-height:1.15; margin:0 0 var(--sp-2); }
+.spec-start > p{ color:var(--muted); max-width:70ch; margin:0 0 var(--sp-4); }
+#specimen-directory-title{ font-size:var(--fs-body); margin:0 0 var(--sp-2); }
+.spec-directory-links{ display:flex; flex-wrap:wrap; gap:var(--sp-2); }
+.spec-jump{ display:inline-flex; align-items:center; min-height:var(--sp-8); box-sizing:border-box; padding:var(--sp-2) var(--sp-3); border:1px solid var(--gbtn-brd); border-radius:var(--r-ctl); color:var(--text); background:var(--panel); text-decoration:none; font-size:var(--fs-body); }
+.spec-jump:hover{ border-color:var(--link); background:var(--panel2); }
+:where(.spec-jump,.spec-return,.spec-skip):focus-visible{ outline:2px solid var(--link); outline-offset:2px; }
+.spec-answer{ padding:var(--sp-5) 0; }
+.spec-answer .mx-vh-word{ max-width:22ch; line-height:1.07; margin:var(--sp-3) 0; overflow-wrap:anywhere; }
+.spec-answer .spec-comparison{ display:flex; flex-wrap:wrap; gap:var(--sp-5) var(--sp-8); margin:var(--sp-5) 0; padding:var(--sp-4) 0; border-block:1px solid var(--line); }
+.spec-comparison > div{ min-width:120px; flex:1; }
+.spec-comparison dt{ font-size:var(--fs-sm); color:var(--muted); }
+.spec-comparison dd{ margin:var(--sp-1) 0 0; font-size:var(--fs-num-lg); font-weight:700; font-variant-numeric:tabular-nums; }
+.spec-answer .spec-caveat{ max-width:70ch; margin:0 0 var(--sp-4); font-size:var(--fs-body); }
+.spec-answer .mx-disc{ max-width:760px; }
+.spec-answer .mx-disc summary{ min-height:var(--sp-8); box-sizing:border-box; }
+.spec-answer .spec-return{ display:inline-flex; align-items:center; min-height:var(--sp-8); color:var(--link); }
+.spec-answer .spec-example{ color:var(--muted); font-size:var(--fs-sm); }
+
+
+
+.spec-answer .mx-tbl tbody th{ font-size:var(--fs-body); font-weight:500; text-transform:none; letter-spacing:normal; color:var(--text); }
+.spec-answer .mx-tbl tbody td{ font-size:var(--fs-body); }
+#specimen-main:focus-visible{ outline:none; }
+#specimen-main:focus-visible .spec-start h1{ outline:2px solid var(--link); outline-offset:var(--sp-2); }
+
+/* Reference-only comparison presentation; production still owns mx-spine. */
+#spec-spine-comparison .mx-sec{ flex-wrap:wrap; }
+#spec-spine-context,#spec-spine-limit,#spec-spine-legend{ color:var(--muted); font-size:var(--fs-sm); margin:var(--sp-3) 0; }
+#spec-spine-summary{ font-size:var(--fs-body); color:var(--text); margin:var(--sp-2) 0; }
+#spec-spine-details,#spec-spine-anatomy{ margin-top:var(--sp-4); }
+#spec-spine-comparison summary{ min-height:var(--sp-8); box-sizing:border-box; }
+#spec-spine-values{ min-width:0; table-layout:fixed; font-size:var(--fs-body); }
+#spec-spine-values caption{ text-align:left; padding:var(--sp-3) 0; font-size:var(--fs-sm); }
+#spec-spine-values th,#spec-spine-values td{ padding:var(--sp-2) 6px; }
+#spec-spine-values th:first-child{ width:40%; }
+#spec-spine-values th[scope="row"]{ font-size:var(--fs-body); font-weight:var(--fw-medium,500); text-transform:none; letter-spacing:normal; color:var(--text); overflow-wrap:anywhere; }
+#spec-spine-values .tnum{ text-align:right; white-space:nowrap; }
+
+.wrap:not(.mockup-spine-390) #spec-spine-comparison [data-spec="ud-b1"] .mx-spine-row[data-null="1"] > .mx-spine-stance{ grid-column:4; }
+
+/* Open-state projection only; the actual LENS runtime stays in theme.js. */
+#specimen-evidence-rate .law{font-size:var(--fs-sm);color:var(--muted);margin:var(--sp-2) 0 var(--sp-4);}
+#specimen-evidence-rate .lens-demo{display:block;}
+#specimen-evidence-rate .lens-pop-demo{position:static;width:auto;box-sizing:border-box;margin-top:var(--sp-3);}
+#specimen-evidence-rate #spec-lens-limit{font-size:var(--fs-body);margin:var(--sp-2) 0;color:var(--text);}
+#specimen-evidence-rate .lens-pop-demo p{margin:var(--sp-2) 0;font-size:var(--fs-body);}
+#specimen-evidence-rate .rc{font-size:var(--fs-sm);font-family:var(--font-ui);line-height:1.5;}
+#specimen-evidence-rate .lens-trigger{min-height:var(--sp-8);}
 </style>
 </head>
 <body>
+<a class="spec-skip" href="#specimen-main"><span class="l-en">Skip to design patterns</span><span class="l-zh">跳至设计模式</span></a>
+
+
 
 <div class="bar">
   <span class="brand">MASTERMIND</span>
@@ -182,41 +254,76 @@ body.mobile-sim .wrap{ max-width:390px; }
   <button class="gbtn gbtn-sm" id="t-width">Desktop / 390w</button>
 </div>
 
-<div class="wrap">
+<div class="wrap mockup-spine-390">
+<main id="specimen-main" tabindex="-1">
+<header class="spec-start" id="specimen-start" tabindex="-1">
+  <h1><span class="l-en">Make the answer obvious. Keep the depth.</span><span class="l-zh">让结论清晰，让深度可达。</span></h1>
+  <p><span class="l-en">Start with the user's question. Use the existing pattern; keep the full evidence within reach.</span><span class="l-zh">先回答用户的问题。复用既有模式，让完整依据随时可查。</span></p>
+  <nav id="specimen-directory" aria-labelledby="specimen-directory-title">
+    <h2 id="specimen-directory-title"><span class="l-en">Choose the task</span><span class="l-zh">选择要完成的任务</span></h2>
+    <div class="spec-directory-links">
+      <a class="spec-jump" href="#spec-identity"><span class="l-en">Prepare the answer</span><span class="l-zh">组织结论</span></a>
+      <a class="spec-jump" href="#specimen-task-tabs"><span class="l-en">Compare and navigate</span><span class="l-zh">比较与导航</span></a>
+      <a class="spec-jump" href="#specimen-state-actions"><span class="l-en">Handle missing information</span><span class="l-zh">处理信息缺口</span></a>
+      <a class="spec-jump" href="#spec-color"><span class="l-en">Choose readable colors</span><span class="l-zh">选择易读配色</span></a>
+      <a class="spec-jump" href="#spec-type"><span class="l-en">Set readable type</span><span class="l-zh">设置易读文字</span></a>
+      <a class="spec-jump" href="#spec-components"><span class="l-en">Find a component</span><span class="l-zh">查找组件</span></a>
+    </div>
+  </nav>
+</header>
+
+
+
 
 <!-- ══ 1 · IDENTITY ══ -->
-<section class="spec-sec">
+<section class="spec-sec" id="spec-identity" tabindex="-1">
   <h2 class="l-en">1 · Identity — calm institutional intelligence</h2>
   <h2 class="l-zh">1 · 品牌气质 — 沉稳的机构级智能</h2>
+  <div class="spec-answer mx-vh" data-spec-window="2026-08-28/5-sessions">
+    <header id="spec-answer-title" tabindex="-1">
+    <p class="spec-example"><span class="l-en">Fictional example · U.S. market · 5 sessions ending 28 Aug 2026</span><span class="l-zh">虚构示例 · 美国市场 · 截至2026年8月28日的5个交易日</span></p>
+    <h3 class="mx-vh-word" style="font-size:var(--fs-display);font-weight:800"><span class="l-en">Index up. Breadth weak.</span><span class="l-zh">指数上涨，参与不足。</span></h3>
+    </header>
+    <p class="mx-vh-clause"><span class="l-en">Gains are concentrated. Most sectors did not rise.</span><span class="l-zh">涨势集中，多数板块并未上涨。</span></p>
+    <dl class="spec-comparison">
+      <div data-spec-read="index"><dt><span class="l-en">Index return</span><span class="l-zh">指数涨跌</span></dt><dd class="pos">+1.2%</dd></div>
+      <div data-spec-read="equal-weight"><dt><span class="l-en">Equal-weight return</span><span class="l-zh">等权指数涨跌</span></dt><dd class="neg">−0.6%</dd></div>
+      <div data-spec-read="participation"><dt><span class="l-en">Sectors rising</span><span class="l-zh">上涨板块</span></dt><dd><span class="l-en">3 of 11</span><span class="l-zh">11个中有3个</span></dd></div>
+    </dl>
+    <p class="spec-caveat"><span class="l-en">Positive index returns do not establish broad participation.</span><span class="l-zh">指数上涨不代表多数板块都在上涨。</span></p>
+    <details class="mx-disc" id="spec-sector-breakdown" data-spec-total="11" data-spec-unavailable="0">
+      <summary><span class="l-en">Inspect all 11 sectors</span><span class="l-zh">查看全部11个板块</span></summary>
+      <div class="mx-disc-body">
+        <p><span class="l-en">Same five sessions. 3 rising, 8 flat or falling; no sector missing. Sample changes illustrate the comparison, not a current market assessment.</span><span class="l-zh">同一5日窗口：3个上涨，8个持平或下跌，数据无缺项。样本仅演示比较方式，不是当前市场判断。</span></p>
+        <div class="mx-tblbox"><table class="mx-tbl" style="min-width:0">
+          <thead><tr><th scope="col"><span class="l-en">Sector</span><span class="l-zh">板块</span></th><th scope="col"><span class="l-en">5-session return</span><span class="l-zh">5日涨跌</span></th></tr></thead>
+          <tbody>
+            <tr data-spec-change="1.8"><th scope="row"><span class="l-en">Technology</span><span class="l-zh">科技</span></th><td class="pos">+1.8%</td></tr>
+            <tr data-spec-change="0.7"><th scope="row"><span class="l-en">Industrials</span><span class="l-zh">工业</span></th><td class="pos">+0.7%</td></tr>
+            <tr data-spec-change="0.3"><th scope="row"><span class="l-en">Energy</span><span class="l-zh">能源</span></th><td class="pos">+0.3%</td></tr>
+            <tr data-spec-change="0.0"><th scope="row"><span class="l-en">Utilities</span><span class="l-zh">公用事业</span></th><td class="">0.0%</td></tr>
+            <tr data-spec-change="-0.2"><th scope="row"><span class="l-en">Health care</span><span class="l-zh">医疗保健</span></th><td class="neg">−0.2%</td></tr>
+            <tr data-spec-change="-0.4"><th scope="row"><span class="l-en">Financials</span><span class="l-zh">金融</span></th><td class="neg">−0.4%</td></tr>
+            <tr data-spec-change="-0.6"><th scope="row"><span class="l-en">Consumer staples</span><span class="l-zh">必需消费</span></th><td class="neg">−0.6%</td></tr>
+            <tr data-spec-change="-0.8"><th scope="row"><span class="l-en">Materials</span><span class="l-zh">原材料</span></th><td class="neg">−0.8%</td></tr>
+            <tr data-spec-change="-1.0"><th scope="row"><span class="l-en">Communication services</span><span class="l-zh">通信服务</span></th><td class="neg">−1.0%</td></tr>
+            <tr data-spec-change="-1.2"><th scope="row"><span class="l-en">Real estate</span><span class="l-zh">房地产</span></th><td class="neg">−1.2%</td></tr>
+            <tr data-spec-change="-1.5"><th scope="row"><span class="l-en">Consumer discretionary</span><span class="l-zh">可选消费</span></th><td class="neg">−1.5%</td></tr>
+          </tbody>
+        </table></div>
+        <a class="spec-return" href="#spec-answer-title"><span class="l-en">Back to assessment</span><span class="l-zh">返回结论</span></a>
+      </div>
+    </details>
+  </div>
   <p class="law l-en">Dark is the command center; light is the research workspace. One typeface at extreme
   weight range; figures always tabular; hue appears only when it means something (direction · health ·
   wayfinding · provisional · lock) — and direction is never carried by hue alone. The page compresses;
   it never performs.</p>
   <p class="law l-zh">深色是指挥中心，浅色是研究工作台。一款字体、极大字重跨度；数字永远等宽对齐；色彩只在有含义时出现（方向 · 健康 · 导航 · 暂定 · 锁定）——且方向从不只靠颜色表达。页面做压缩，不做炫技。</p>
-
-  <div class="vh-frame">
-  <header class="mx-vh">
-    <span class="eyebrow l-en">US Macro · Regime read</span>
-    <span class="eyebrow l-zh">美国宏观 · 状态判读</span>
-    <div class="mx-vh-word" style="color:var(--ink-up)"><span class="l-en">EXPANSION</span><span class="l-zh">扩张</span></div>
-    <div class="mx-vh-clause l-en">Growth holding while inflation cools — the tape agrees with the data this week.</div>
-    <div class="mx-vh-clause l-zh">增长企稳、通胀降温——本周行情与数据方向一致。</div>
-    <div class="mx-vh-meta">
-      <span class="mx-stance mx-stance--ok"><span class="l-en">Act</span><span class="l-zh">可行动</span></span>
-      <span class="dtp-chip dtp-chip--live"><i></i><span class="l-en">LIVE</span><span class="l-zh">实时</span></span>
-      <span class="dtp-asof tnum" style="margin-left:0">08-12 09:31 ET</span>
-      <span class="lens-demo">
-        <button class="gbtn gbtn-quiet gbtn-sm lens-trigger" data-tip-en="How this read is built" data-tip-zh="判读构成说明">?</button>
-      </span>
-    </div>
-  </header>
-  </div>
-  <p class="mockup-note l-en">VerdictHero (.mx-vh) sits on the CANVAS (page-header tier): eyebrow → verdict word (--fs-display, state ink) → one plain clause ≤14 words → stance + freshness + LENS receipt.</p>
-  <p class="mockup-note l-zh">判定头（.mx-vh）位于画布层（页头级）：眉标 → 判定词（--fs-display，状态墨色）→ 一句白话（≤14词）→ 立场 + 新鲜度 + LENS 凭据。</p>
 </section>
 
 <!-- ══ 2 · COLOR ══ -->
-<section class="spec-sec">
+<section class="spec-sec" id="spec-color" tabindex="-1">
   <h2 class="l-en">2 · Color — surfaces, semantics, inks, series</h2>
   <h2 class="l-zh">2 · 色彩 — 表面、语义、文字级墨色、图表序列</h2>
   <p class="law l-en">Fill-grade tokens tint chips, bars and borders; any state printed as text uses its
@@ -277,7 +384,7 @@ body.mobile-sim .wrap{ max-width:390px; }
 </section>
 
 <!-- ══ 3 · TYPE RAMP ══ -->
-<section class="spec-sec">
+<section class="spec-sec" id="spec-type" tabindex="-1">
   <h2 class="l-en">3 · Type ramp — one family, extreme weights</h2>
   <h2 class="l-zh">3 · 字号阶梯 — 一款字体，极大字重跨度</h2>
   <p class="law l-en">The 11-step --fs-* ramp, promoted from the macro dashboard to the whole site. Mono is
@@ -345,7 +452,7 @@ body.mobile-sim .wrap{ max-width:390px; }
 </section>
 
 <!-- ══ 5 · COMPONENTS ══ -->
-<section class="spec-sec">
+<section class="spec-sec" id="spec-components" tabindex="-1">
   <h2 class="l-en">5 · Canonical components — if it isn’t here (rendered or linked), it isn’t canonical</h2>
   <h2 class="l-zh">5 · 规范组件 — 未在本页呈现或挂链者即非规范</h2>
   <p class="law l-en">Compose these; never invent. Repo-bound components render here as linked rows with
@@ -405,65 +512,86 @@ body.mobile-sim .wrap{ max-width:390px; }
       <p class="mockup-note l-zh">哪一种形态是规范：R4 网格阶梯——独立单元格、每格生命周期粗细顶条、终局格置于实时总和之外——是 B 型看板页的规范形态（C8 构图裁定，<code>n1_ladder_canonicity</code> 条），在 theme.css 中以 <code>.mx-ladder--board</code> 发布。上方的弹性条仍为通用示意；运营裁定的七格分割与双总数法则无法容纳于单总数条形控件。</p>
     </div>
 
-    <div class="panel" style="min-height:210px">
-      <div class="mx-sec"><h3 class="l-en">LENS receipt (Tier 2) — shown open</h3><h3 class="l-zh">LENS 凭据（第二层）— 展开示意</h3></div>
-      <div class="lens-demo">
-        <button class="gbtn gbtn-sm lens-trigger"
-          data-tip-en="6 in 10 of these faded within a day"
-          data-tip-zh="此类信号约六成一天内消退"
-          data-tip-rc-en="26 past cases · window 2021–2026 · display tier"
-          data-tip-rc-zh="历史26例 · 窗口2021–2026 · 展示层">
-          <span class="l-en">about 6 in 10 faded ?</span><span class="l-zh">约六成会消退 ?</span></button>
-        <div class="lens-pop-demo">
-          <div class="l-en">In 26 past cases, about 6 in 10 of these early signs faded within a day.</div>
-          <div class="l-zh">历史 26 次中，此类早期信号约六成在一天内消退。</div>
-          <div class="rc l-en">receipt: n=26 · window 2021–2026 · display tier</div>
-          <div class="rc l-zh">凭据：n=26 · 窗口 2021–2026 · 展示层</div>
+    <div class="panel" id="specimen-evidence-rate" tabindex="-1">
+      <div class="mx-sec"><h3 class="l-en">Evidence behind a rate · LENS</h3><h3 class="l-zh">比例背后的证据 · LENS</h3></div>
+      <p class="law"><span class="l-en">Fictional study · static open-state example. The button is not connected here.</span><span class="l-zh">虚构研究 · 静态展开示例。此处按钮未连接交互。</span></p>
+      <div class="lens-demo" data-spec-total="26" data-spec-faded="16" data-spec-other="10">
+        <button id="spec-lens-trigger" type="button" disabled class="gbtn gbtn-sm lens-trigger" aria-describedby="spec-lens-limit"
+          data-tip-en="In this fictional sample, 16 of 26 signals faded within a day. The other 10 did not. This historical frequency is not a forecast."
+          data-tip-zh="此虚构样本中，26次信号有16次在一天内消退，其余10次未消退。历史比例不是预测。"
+          data-tip-rc-en="26 scored examples · 2021–2026 · fictional"
+          data-tip-rc-zh="26个已评估示例 · 2021–2026年 · 虚构">
+          <span class="l-en">About 6 in 10 faded</span><span class="l-zh">约六成曾消退</span></button>
+        <p id="spec-lens-limit"><span class="l-en">Small historical sample—not a forecast.</span><span class="l-zh">少量历史样本，不是预测。</span></p>
+        <div class="lens-pop-demo" role="note" aria-labelledby="spec-lens-basis">
+          <b id="spec-lens-basis"><span class="l-en">16 of 26 faded within a day.</span><span class="l-zh">26次中，16次在一天内消退。</span></b>
+          <p><span class="l-en">The other 10 did not meet that definition.</span><span class="l-zh">其余10次不符合这一判定。</span></p>
+          <p><span class="l-en">This describes the sample, not the next signal’s chance of failure.</span><span class="l-zh">这是样本描述，不是下一次信号失败的概率。</span></p>
+          <div class="rc"><span class="l-en">26 scored examples · 2021–2026 · fictional</span><span class="l-zh">26个已评估示例 · 2021–2026年 · 虚构</span></div>
         </div>
       </div>
-      <p class="mockup-note l-en" style="margin-top:96px">The only popover. Production wires data-tip-en/zh (+ data-tip-rc-*) via theme.js; this instance is rendered open for the constitution. Receipts (n=, windows, study IDs) live HERE, never at rest.</p>
-      <p class="mockup-note l-zh" style="margin-top:8px">全站唯一浮层。生产环境由 theme.js 挂接 data-tip-en/zh（及 data-tip-rc-*）；本例为展示而常开。凭据（n=、窗口、研究编号）住在这里，绝不常驻页面。</p>
-    </div>
+      <p class="mockup-note"><span class="l-en">Reuse the existing theme.js LENS. Keep a material limitation beside the claim; place the precise basis in its explanation. This static design is not proof of hover, focus or touch behavior.</span><span class="l-zh">复用 theme.js 的既有 LENS。重要限制紧邻结论，准确依据放在解释中。静态设计不能证明悬停、焦点或触摸行为。</span></p>
+    </div><!-- END RATE EVIDENCE -->
 
-    <div class="panel">
-      <div class="mx-sec"><h3 class="l-en">Table (.mx-tbl) + Tabs (.mx-tabset)</h3><h3 class="l-zh">表格（.mx-tbl）+ 页签（.mx-tabset）</h3></div>
-      <div class="mx-tabset" role="tablist">
-        <button role="tab" id="tab-pf" aria-controls="pane-demo" aria-selected="true"><span class="l-en">Price &amp; flow</span><span class="l-zh">价格与资金</span></button>
-        <button role="tab" id="tab-fu" aria-controls="pane-demo" aria-selected="false"><span class="l-en">Fundamentals</span><span class="l-zh">基本面</span></button>
-        <button role="tab" id="tab-fi" aria-controls="pane-demo" aria-selected="false"><span class="l-en">Filings</span><span class="l-zh">公告</span></button>
+    <div class="panel" id="specimen-task-tabs" tabindex="-1">
+      <div class="mx-sec" id="specimen-tabs-title"><h3 class="l-en">Table (.mx-tbl) + Tabs (.mx-tabset)</h3><h3 class="l-zh">表格（.mx-tbl）+ 页签（.mx-tabset）</h3></div>
+      <p id="specimen-tabs-note" class="muted"><span class="l-en">Fictional examples. Each tab shows a different part of the same research.</span><span class="l-zh">虚构示例。各页签展示同一研究的不同内容。</span></p>
+      <div class="mx-tabset" id="specimen-research-tabs" role="tablist" aria-labelledby="specimen-tabs-title" aria-describedby="specimen-tabs-note">
+        <button type="button" role="tab" id="tab-pf" aria-controls="pane-demo" aria-selected="true" tabindex="0"><span class="l-en">Price &amp; flow</span><span class="l-zh">价格与资金</span></button>
+        <button type="button" role="tab" id="tab-fu" aria-controls="pane-fundamentals" aria-selected="false" tabindex="-1"><span class="l-en">Fundamentals</span><span class="l-zh">基本面</span></button>
+        <button type="button" role="tab" id="tab-fi" aria-controls="pane-filings" aria-selected="false" tabindex="-1"><span class="l-en">Filings</span><span class="l-zh">公告</span></button>
       </div>
-      <div class="mx-tblbox" id="pane-demo" role="tabpanel"><table class="mx-tbl">
+      <div id="pane-demo" role="tabpanel" aria-labelledby="tab-pf" tabindex="0"><p class="muted"><span class="l-en">Price examples only. Flow data is not loaded.</span><span class="l-zh">仅展示价格示例，尚未加载资金流数据。</span></p><div class="mx-tblbox"><table class="mx-tbl">
         <thead><tr><th><span class="l-en">Name</span><span class="l-zh">名称</span></th><th><span class="l-en">Stage</span><span class="l-zh">阶段</span></th><th>Δ5d</th></tr></thead>
         <tbody>
           <tr><td>NVDA</td><td><span class="l-en">Confirmed</span><span class="l-zh">已确认</span></td><td class="pos">+4.2%</td></tr>
           <tr><td>ASML</td><td><span class="l-en">Confirming</span><span class="l-zh">确认中</span></td><td class="pos">+1.1%</td></tr>
           <tr><td>COST</td><td><span class="l-en">Early</span><span class="l-zh">早期</span></td><td class="neg">−0.6%</td></tr>
         </tbody>
-      </table></div>
+      </table></div></div>
+      <div id="pane-fundamentals" role="tabpanel" aria-labelledby="tab-fu" tabindex="0" hidden>
+        <p><b class="l-en">Business improvement is not an entry signal.</b><b class="l-zh">经营改善不等于入场信号。</b></p>
+        <div class="mx-tblbox"><table class="mx-tbl" style="min-width:0">
+          <thead><tr><th><span class="l-en">Name</span><span class="l-zh">名称</span></th><th><span class="l-en">Revenue</span><span class="l-zh">收入</span></th><th><span class="l-en">Margin</span><span class="l-zh">利润率</span></th></tr></thead>
+          <tbody>
+            <tr><td>NVDA</td><td><span class="l-en">Growing</span><span class="l-zh">增长</span></td><td><span class="l-en">Improving</span><span class="l-zh">改善</span></td></tr>
+            <tr><td>ASML</td><td><span class="l-en">Uneven</span><span class="l-zh">波动</span></td><td><span class="l-en">Stable</span><span class="l-zh">稳定</span></td></tr>
+            <tr><td>COST</td><td><span class="l-en">Growing</span><span class="l-zh">增长</span></td><td><span class="l-en">Stable</span><span class="l-zh">稳定</span></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div id="pane-filings" role="tabpanel" aria-labelledby="tab-fi" tabindex="0" hidden>
+        <div class="mx-empty">
+          <div class="mx-empty-line"><span class="l-en">No filing examples loaded</span><span class="l-zh">尚未加载公告示例</span></div>
+          <div class="mx-empty-why"><span class="l-en">This is not a search result. The other research examples remain available.</span><span class="l-zh">这不是查询结果。其他研究示例仍可查看。</span></div>
+        </div>
+      </div>
       <p class="mockup-note l-en">Tabs are tasks; selected tab writes the URL hash; ≤8 rows at L1 with a counted “See all N”. Table scrolls in its own box, never the page.</p>
       <p class="mockup-note l-zh">页签按任务命名；选中页签写入 URL hash；一级表格最多 8 行，配注明数量的「查看全部 N」。表格在自身容器内滚动，绝不带动页面。</p>
     </div>
 
-    <div class="panel">
-      <div class="mx-sec"><h3 class="l-en">Empty · Loading · Error · Stale</h3><h3 class="l-zh">空 · 加载 · 错误 · 滞后</h3></div>
-      <div class="mx-empty" style="border:1px dashed var(--line);border-radius:var(--r-card)">
-        <div class="mx-empty-line l-en">Quiet tape — nothing crossed a line since Friday’s close.</div>
-        <div class="mx-empty-line l-zh">盘面安静——自上周五收盘后没有信号越线。</div>
-        <div class="mx-empty-why l-en">No qualifying rows today · refreshes after the next close</div>
-        <div class="mx-empty-why l-zh">今日无符合条件的条目 · 下一收盘后刷新</div>
+    <div class="panel" id="specimen-state-actions" tabindex="-1" style="grid-column:1 / -1" aria-labelledby="specimen-state-actions-title">
+      <div class="mx-sec"><h3 id="specimen-state-actions-title"><span class="l-en">A clear state. A useful next step.</span><span class="l-zh">说清状态，给出有用的下一步。</span></h3></div>
+      <p class="law" id="specimen-state-actions-note"><span class="l-en">Fictional examples · each uses its own data. Details open here; save, retry and access buttons are not connected.</span><span class="l-zh">虚构示例 · 各示例的数据范围不同。详情可在此展开；保存、重试和权限按钮尚未连接服务。</span></p>
+      <div class="spec-grid">
+        <article class="spec-state-case" data-spec-state="partial"><h4><span class="l-en">6 of 9 above average</span><span class="l-zh">已有数据的9项中，6项高于均线</span></h4><p><span class="l-en">3 of 12 members unavailable. The rate uses only the 9 observed.</span><span class="l-zh">12项中有3项暂无数据。比例仅基于已有数据的9项。</span></p><details class="mx-disc"><summary data-spec-inspect="coverage"><span class="l-en">See coverage</span><span class="l-zh">查看数据覆盖</span></summary><div class="mx-disc-body"><p><span class="l-en">6 above average · 3 at or below · 3 unavailable.</span><span class="l-zh">6项高于均线 · 3项不高于均线 · 3项暂无数据。</span></p><p><span class="l-en">Rate basis: 6 / 9. This is not complete market breadth.</span><span class="l-zh">比例口径：6 / 9。这不代表完整的市场广度。</span></p></div></details></article>
+        <article class="spec-state-case" data-spec-state="conflicting"><h4><span class="l-en">Entry checks disagree</span><span class="l-zh">入场判断不一致</span></h4><p><span class="l-en">Entry: Ready · Extension: Wait</span><span class="l-zh">入场检查：就绪 · 偏离检查：等待</span></p><p><span class="l-en">No combined entry call. The checks answer different questions.</span><span class="l-zh">不合成为单一入场结论。两项检查回答不同问题。</span></p><details class="mx-disc"><summary data-spec-inspect="checks"><span class="l-en">Compare the checks</span><span class="l-zh">对比两项判断</span></summary><div class="mx-disc-body"><p><span class="l-en">Entry check: the example meets its timing condition. Extension check: price is too far from its reference.</span><span class="l-zh">入场检查：示例已满足择时条件。偏离检查：价格距参考位置过远。</span></p><p><span class="l-en">Same example snapshot; different methods. Keep both readings visible.</span><span class="l-zh">同一示例时点，不同方法。两项判断都应保留。</span></p></div></details></article>
+        <article class="spec-state-case" data-spec-state="empty"><h4><span class="l-en">No setups qualify</span><span class="l-zh">暂无符合条件的机会</span></h4><p><span class="l-en">All 24 checked. None meet the criteria.</span><span class="l-zh">已检查全部24项，目前均未满足条件。</span></p><details class="mx-disc"><summary data-spec-inspect="empty-scope"><span class="l-en">What was checked?</span><span class="l-zh">检查了哪些范围？</span></summary><div class="mx-disc-body"><p><span class="l-en">Complete current sample: 24 evaluated, 0 qualifying, 24 outside the criteria. No missing records were counted as failures.</span><span class="l-zh">当前示例数据完整：已评估24项，符合0项，不符合24项。没有把缺失记录计为不符合。</span></p></div></details></article>
+        <article class="spec-state-case" data-spec-state="filtered-empty"><h4><span class="l-en">No matches for 3 filters</span><span class="l-zh">没有符合这3项筛选条件的结果</span></h4><p><span class="l-en">12 items are available without these filters.</span><span class="l-zh">不应用这些筛选时，有12项结果。</span></p><details class="mx-disc"><summary data-spec-inspect="filters"><span class="l-en">See the 3 filters</span><span class="l-zh">查看这3项筛选</span></summary><div class="mx-disc-body"><p><span class="l-en">US listings · New this week · Not extended.</span><span class="l-zh">美国上市 · 本周新增 · 未过度偏离。</span></p><p><span class="l-en">Clear only these filters; keep the chosen market, view and other preferences.</span><span class="l-zh">仅清除这3项筛选，保留所选市场、视图及其他偏好。</span></p></div></details><button type="button" class="gbtn" disabled aria-describedby="specimen-state-actions-note"><span class="l-en">Clear 3 filters</span><span class="l-zh">清除这3项筛选</span></button></article>
+        <article class="spec-state-case" data-spec-state="loading"><h4><span class="l-en">Checking the latest data…</span><span class="l-zh">正在获取最新数据…</span></h4><p><span class="l-en">Other research remains available. No result is shown yet.</span><span class="l-zh">其他研究仍可查看，此项暂未得出结果。</span></p><div aria-hidden="true" class="spec-loading-shapes"><span class="skel"></span><span class="skel"></span><span class="skel"></span></div></article>
+        <article class="spec-state-case" data-spec-state="stale"><h4><span class="l-en">Latest update delayed</span><span class="l-zh">最新数据更新延迟</span></h4><p><span class="l-en">Last confirmed: 28 Aug, market close. This is not a current observation.</span><span class="l-zh">上次确认：8月28日收盘。这不是最新观测。</span></p><details class="mx-disc"><summary data-spec-inspect="dated-read"><span class="l-en">View last confirmed</span><span class="l-zh">查看上次确认的数据</span></summary><div class="mx-disc-body"><p><span class="l-en">Historical sample · 28 Aug close. The observation keeps its original date while the latest update is unavailable.</span><span class="l-zh">历史示例 · 8月28日收盘。最新数据暂不可用，旧观测保留原日期。</span></p></div></details></article>
+        <article class="spec-state-case" data-spec-state="error"><h4><span class="l-en">Latest update unavailable</span><span class="l-zh">暂时无法获取最新数据</span></h4><p><span class="l-en">Earlier evidence is still available.</span><span class="l-zh">较早的证据仍可查看。</span></p><button type="button" class="gbtn" disabled aria-describedby="specimen-state-actions-note"><span class="l-en">Try again</span><span class="l-zh">重试</span></button></article>
+        <article class="spec-state-case" data-spec-state="locked"><h4><span class="l-en">This detail requires access</span><span class="l-zh">此项详情需要相应权限</span></h4><p><span class="l-en">Only this detail is locked. The public answer and its public evidence remain available.</span><span class="l-zh">仅此项详情受限。公开结论及其公开证据仍可查看。</span></p><details class="mx-disc"><summary data-spec-inspect="public-evidence"><span class="l-en">What stays available?</span><span class="l-zh">哪些内容仍可查看？</span></summary><div class="mx-disc-body"><p><span class="l-en">The public assessment, its date, material limitations and public evidence stay outside this gate.</span><span class="l-zh">公开判读、日期、重要局限及公开证据不受此权限限制。</span></p></div></details><button type="button" class="gbtn" disabled aria-describedby="specimen-state-actions-note"><span class="l-en">View access</span><span class="l-zh">查看所需权限</span></button></article>
       </div>
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <span class="skel" style="width:38%;height:14px"></span>
-        <span class="skel" style="width:24%;height:14px"></span>
-        <span class="skel" style="width:18%;height:14px"></span>
+      <h4 class="spec-outcome-title"><span class="l-en">A request is not a completed action</span><span class="l-zh">提交请求不等于操作完成</span></h4>
+      <p class="law"><span class="l-en">Five independent saved-view examples—not a working save service or a sequence to click through.</span><span class="l-zh">以下为五种独立的保存结果示例，并非已连接的保存服务，也不是需要依次点击的流程。</span></p>
+      <div class="spec-grid">
+        <article class="spec-state-case" data-spec-save="ready"><h4><span class="l-en">Ready to save</span><span class="l-zh">可以保存</span></h4><p><span class="l-en">Keep this exact research view.</span><span class="l-zh">保存当前这份研究视图。</span></p><button type="button" class="gbtn gbtn-cta" disabled aria-describedby="specimen-state-actions-note"><span class="l-en">Save view</span><span class="l-zh">保存当前视图</span></button></article>
+        <article class="spec-state-case" data-spec-save="pending"><h4><span class="l-en">Saving…</span><span class="l-zh">正在保存…</span></h4><p><span class="l-en">You can keep researching while this view saves.</span><span class="l-zh">保存期间，您可以继续研究。</span></p><button type="button" class="gbtn" disabled aria-describedby="specimen-state-actions-note"><span class="l-en">Saving…</span><span class="l-zh">正在保存…</span></button></article>
+        <article class="spec-state-case" data-spec-save="confirmed"><h4><span class="l-en">View saved</span><span class="l-zh">视图已保存</span></h4><p><span class="l-en">Your view is in Saved views.</span><span class="l-zh">可在“已保存视图”中找到此视图。</span></p><button type="button" class="gbtn" disabled aria-describedby="specimen-state-actions-note"><span class="l-en">Open saved view</span><span class="l-zh">打开已保存的视图</span></button></article>
+        <article class="spec-state-case" data-spec-save="failed"><h4><span class="l-en">Not saved</span><span class="l-zh">未能保存</span></h4><p><span class="l-en">This view was not saved. Your current view is intact.</span><span class="l-zh">此视图未能保存，当前内容仍保留。</span></p><button type="button" class="gbtn" disabled aria-describedby="specimen-state-actions-note"><span class="l-en">Try saving again</span><span class="l-zh">重试保存</span></button></article>
+        <article class="spec-state-case" data-spec-save="unknown"><h4><span class="l-en">Save not confirmed</span><span class="l-zh">尚未确认是否保存</span></h4><p><span class="l-en">We could not confirm the save. Your current view is intact.</span><span class="l-zh">尚无法确认是否保存，当前内容仍保留。</span></p><button type="button" class="gbtn" disabled aria-describedby="specimen-state-actions-note"><span class="l-en">Check save status</span><span class="l-zh">查询保存状态</span></button><details class="mx-disc"><summary data-spec-inspect="save-result"><span class="l-en">What happens next?</span><span class="l-zh">下一步怎么处理？</span></summary><div class="mx-disc-body"><p><span class="l-en">Check whether this view was saved, without sending another save.</span><span class="l-zh">查询此视图是否已保存，不重复提交保存。</span></p></div></details></article>
       </div>
-      <div class="mx-error" style="margin-top:10px">
-        <span><b class="l-en">This read didn’t load.</b><b class="l-zh">这项读数未能加载。</b>
-        <span class="l-en"> The rest of the page is current.</span><span class="l-zh"> 页面其余部分为最新。</span></span>
-        <button class="gbtn gbtn-sm" style="margin-left:auto"><span class="l-en">Retry</span><span class="l-zh">重试</span></button>
-      </div>
-      <p class="mockup-note l-en">Loading = skeleton at true geometry, no words. Empty = full sentence + why. Error names what failed AND what still works, with retry. Never a bare “—”, never pipeline telemetry.</p>
-      <p class="mockup-note l-zh">加载 = 真实几何骨架屏，无文字。空态 = 完整句子 + 原因。错误要说明什么坏了、什么仍可用，并给重试。禁止裸「—」，禁止流水线术语。</p>
     </div>
 
     <div class="panel">
@@ -538,7 +666,7 @@ body.mobile-sim .wrap{ max-width:390px; }
 
     <div class="panel">
       <div class="mx-sec"><h3 class="l-en">Linked-by-reference (repo-bound)</h3><h3 class="l-zh">挂链组件（依赖仓库运行时）</h3></div>
-      <table class="mx-tbl" style="min-width:0">
+      <div class="mx-tblbox"><table class="mx-tbl" style="min-width:0">
         <tbody>
           <tr><td>SignalCard</td><td class="l-en">templates/_prophet_card.html.j2 (.pvcard + pv_css())</td><td class="l-zh">templates/_prophet_card.html.j2（.pvcard + pv_css()）</td></tr>
           <tr><td>Quality block</td><td class="l-en">.qual2 — two columns, no total row (packet §C; DNR:KILL-FUSED-COMPOSITE)</td><td class="l-zh">.qual2 — 双列、无合计行（规范 §C；DNR:KILL-FUSED-COMPOSITE）</td></tr>
@@ -546,7 +674,7 @@ body.mobile-sim .wrap{ max-width:390px; }
           <tr><td>PageShell</td><td class="l-en">_site_nav family (product) · _public_nav family (anonymous) — the only two</td><td class="l-zh">_site_nav 族（产品页）· _public_nav 族（匿名页）——仅此两族</td></tr>
           <tr><td>Live charts</td><td class="l-en">lib/illus.py + illus.css/js</td><td class="l-zh">lib/illus.py + illus.css/js</td></tr>
         </tbody>
-      </table>
+      </table></div>
     </div>
   </div>
 </section>
@@ -590,55 +718,51 @@ body.mobile-sim .wrap{ max-width:390px; }
 </section>
 
 <!-- ══ 6.5 · REGIME SPINE — UD-B1 .mx-spine ══ -->
-<section class="spec-sec">
-  <h2 class="l-en">6.5 · Regime spine (.mx-spine) — the Unified Macro Dashboard signature</h2>
-  <h2 class="l-zh">6.5 · 状态脊柱（.mx-spine）— 统一宏观仪表盘的签名元素</h2>
-  <p class="law l-en">One horizontal scale (Risk-off ←→ Risk-on) reused identically by five market rows. The
-  marker takes its <b>stance ink</b>, never a category hue; travel uses muted measurement ink plus an
-  explicit arrow — never --up/--down, which dodges the 红涨绿跌 flip (a travel figure means the same
-  thing in both languages). Zone ticks at 25/50/75 are notches, not labels; the axis is anchored in
-  <b>words</b> (Risk-off · Neutral · Risk-on), never in a bare 0–100. Subject market is the only marked
-  subject — one per spine. Null row uses a dashed rail and a "Read being updated" chip.</p>
-  <p class="law l-zh">同一水平标尺（避险←→趋险）由五个市场行共用。标记取其<b>立场墨色</b>，绝不取分类色相；
-  移动值使用中性测量墨色并显式带箭头——绝不取 --up/--down，从而回避红涨绿跌翻转（移动值在两种语言下含义一致）。
-  25/50/75 处的分区为刻度而非标签；轴线锚定于<b>文字</b>（避险·中性·趋险），而非裸 0–100。
-  主体市场是唯一被标出的主体——每个脊柱仅一个。空值行使用虚线轨道与「判读更新中」徽章。</p>
+<section class="spec-sec" id="spec-spine-comparison" tabindex="-1">
+  <h2 class="l-en">6.5 · Compare movement on one scale</h2>
+  <h2 class="l-zh">6.5 · 在同一标尺上比较变化</h2>
+
+
 
   <div class="panel">
-    <div class="mx-sec"><h3 class="l-en">Spine — 5 markets on one shared scale</h3><h3 class="l-zh">脊柱 — 五市场共用同一标尺</h3><span class="mx-asof tnum">08-12</span></div>
+    <p id="spec-spine-context"><span class="l-en">Fictional example · <time datetime="2026-07-12">12 Jul</time> → <time datetime="2026-08-12">12 Aug 2026</time></span><span class="l-zh">虚构示例 · <time datetime="2026-07-12">2026年7月12日</time> → <time datetime="2026-08-12">8月12日</time></span></p>
+    <div class="mx-sec"><h3 class="l-en">Mixed movement. No broad shift.</h3><h3 class="l-zh">变化分化，没有一致转向。</h3></div>
+    <p id="spec-spine-summary"><span class="l-en">2 toward risk-on · 2 toward risk-off · 1 unavailable</span><span class="l-zh">2项趋向风险偏好上升 · 2项趋向下降 · 1项暂无数据</span></p>
+    <p id="spec-spine-limit"><span class="l-en">Score points, not price returns and not probabilities. The example stance is a separate assessment.</span><span class="l-zh">分值变化，不是价格回报，也不是概率。示例立场是另一项独立判断。</span></p>
+    <p id="spec-spine-legend"><span class="l-en">Hollow = earlier · Solid = later · Line = the change</span><span class="l-zh">空心为前值 · 实心为后值 · 连线为变化</span></p>
 
-    <div class="mx-spine" data-spec="ud-b1">
+    <div class="mx-spine" data-spec="ud-b1" aria-describedby="spec-spine-context spec-spine-summary">
       <div class="mx-spine-head" aria-hidden="true">
         <span><span class="l-en">Market</span><span class="l-zh">市场</span></span>
-        <span><span class="l-en">Where it sits today</span><span class="l-zh">今日位置</span></span>
+        <span><span class="l-en">Later position</span><span class="l-zh">后值位置</span></span>
         <span><span class="l-en">Moved</span><span class="l-zh">本月移动</span></span>
-        <span><span class="l-en">What to do</span><span class="l-zh">该怎么做</span></span>
+        <span><span class="l-en">Example stance</span><span class="l-zh">示例立场</span></span>
       </div>
 
       <div class="mx-spine-row" data-subject="1" data-stance="protect">
         <div class="mx-spine-name"><span class="l-en">US stocks</span><span class="l-zh">美股</span><small class="tnum">72</small></div>
-        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:84%"></div><div class="mx-spine-conn" style="left:78%;width:6%"></div><div class="mx-spine-mark" style="left:72%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:78%"></div><div class="mx-spine-conn" style="left:72%;width:6%"></div><div class="mx-spine-mark" style="left:72%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
         <div class="mx-spine-travel"><span class="mx-spine-arrow">←</span><span class="tnum">−6</span></div>
         <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Protect gains</span><span class="l-zh">保护收益</span></span></div>
       </div>
 
       <div class="mx-spine-row" data-stance="watch">
         <div class="mx-spine-name"><span class="l-en">Hong Kong</span><span class="l-zh">香港</span><small class="tnum">61</small></div>
-        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:50%"></div><div class="mx-spine-conn" style="left:56%;width:5%"></div><div class="mx-spine-mark" style="left:61%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:56%"></div><div class="mx-spine-conn" style="left:56%;width:5%"></div><div class="mx-spine-mark" style="left:61%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
         <div class="mx-spine-travel"><span class="mx-spine-arrow">→</span><span class="tnum">+5</span></div>
         <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Watch — don’t chase</span><span class="l-zh">观察，勿追</span></span></div>
       </div>
 
       <div class="mx-spine-row" data-stance="get-ready">
         <div class="mx-spine-name"><span class="l-en">China A-shares</span><span class="l-zh">A股</span><small class="tnum">58</small></div>
-        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:42%"></div><div class="mx-spine-conn" style="left:49%;width:9%"></div><div class="mx-spine-mark" style="left:58%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:49%"></div><div class="mx-spine-conn" style="left:49%;width:9%"></div><div class="mx-spine-mark" style="left:58%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
         <div class="mx-spine-travel"><span class="mx-spine-arrow">→</span><span class="tnum">+9</span></div>
         <div class="mx-spine-stance"><span class="mx-stance mx-stance--ok"><span class="l-en">Get ready</span><span class="l-zh">准备行动</span></span></div>
       </div>
 
       <div class="mx-spine-row" data-stance="stand-aside">
         <div class="mx-spine-name"><span class="l-en">Government bonds</span><span class="l-zh">国债</span><small class="tnum">38</small></div>
-        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:46%"></div><div class="mx-spine-conn" style="left:42%;width:4%"></div><div class="mx-spine-mark" style="left:38%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:42%"></div><div class="mx-spine-conn" style="left:38%;width:4%"></div><div class="mx-spine-mark" style="left:38%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
         <div class="mx-spine-travel"><span class="mx-spine-arrow">←</span><span class="tnum">−4</span></div>
         <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">Stand aside</span><span class="l-zh">暂时观望</span></span></div>
       </div>
@@ -646,13 +770,32 @@ body.mobile-sim .wrap{ max-width:390px; }
       <div class="mx-spine-row" data-null="1">
         <div class="mx-spine-name"><span class="l-en">Commodities</span><span class="l-zh">大宗商品</span><small>—</small></div>
         <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
-        <div class="mx-spine-travel"><span class="muted">—</span></div>
-        <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">Read being updated</span><span class="l-zh">判读更新中</span></span></div>
+        
+        <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">No score</span><span class="l-zh">暂无分值</span></span></div>
       </div>
     </div>
 
-    <p class="mockup-note l-en" style="margin-top:14px">Footnote (once): <em>Positions are this week’s read on a shared scale — not price performance.</em></p>
-    <p class="mockup-note l-zh" style="margin-top:14px">脚注（仅一次）：<em>位置是本周在同一标尺上的判读，并非价格涨跌幅。</em></p>
+    <details class="mx-disc" id="spec-spine-details">
+      <summary id="spec-spine-inspect"><span class="l-en">Read the exact values</span><span class="l-zh">查看准确数值</span></summary>
+      <div class="mx-disc-body"><div class="mx-tblbox"><table class="mx-tbl" id="spec-spine-values">
+        <caption><span class="l-en">Fictional values · score points · 12 Jul → 12 Aug 2026. Missing is not zero.</span><span class="l-zh">虚构分值 · 2026年7月12日 → 8月12日。缺失不按零处理。</span></caption>
+        <thead><tr><th scope="col"><span class="l-en">Market</span><span class="l-zh">市场</span></th><th scope="col"><time datetime="2026-07-12"><span class="l-en">Jul<br>12</span><span class="l-zh">7月<br>12日</span></time></th><th scope="col"><time datetime="2026-08-12"><span class="l-en">Aug<br>12</span><span class="l-zh">8月<br>12日</span></time></th><th scope="col"><span class="l-en">Δ pts</span><span class="l-zh">变化</span></th></tr></thead>
+        <tbody><tr data-spec-spine-market="us"><th scope="row"><span class="l-en">US stocks</span><span class="l-zh">美股</span></th><td class="tnum">78</td><td class="tnum">72</td><td class="tnum">−6</td></tr>
+<tr data-spec-spine-market="hk"><th scope="row"><span class="l-en">Hong Kong</span><span class="l-zh">香港</span></th><td class="tnum">56</td><td class="tnum">61</td><td class="tnum">+5</td></tr>
+<tr data-spec-spine-market="cn"><th scope="row"><span class="l-en">China A-shares</span><span class="l-zh">A股</span></th><td class="tnum">49</td><td class="tnum">58</td><td class="tnum">+9</td></tr>
+<tr data-spec-spine-market="bonds"><th scope="row"><span class="l-en">Government bonds</span><span class="l-zh">国债</span></th><td class="tnum">42</td><td class="tnum">38</td><td class="tnum">−4</td></tr>
+<tr data-spec-spine-market="commodities"><th scope="row"><span class="l-en">Commodities</span><span class="l-zh">大宗商品</span></th><td colspan="3"><span class="l-en">Unavailable</span><span class="l-zh">暂无数据</span></td></tr></tbody>
+      </table></div></div>
+    </details>
+    <details class="mx-disc" id="spec-spine-anatomy"><summary><span class="l-en">How to use this comparison pattern</span><span class="l-zh">如何使用此比较模式</span></summary><div class="mx-disc-body">  <p class="law l-en">One horizontal scale (Risk-off ←→ Risk-on) reused identically by five market rows. The
+  marker takes its <b>stance ink</b>, never a category hue; travel uses muted measurement ink plus an
+  explicit arrow — never --up/--down, which dodges the 红涨绿跌 flip (a travel figure means the same
+  thing in both languages). Zone ticks at 25/50/75 are notches, not labels; the axis is anchored in
+  <b>words</b> (Risk-off · Neutral · Risk-on), never in a bare 0–100. Subject market is the only marked
+  subject — one per spine. Null row uses a dashed rail and a "No score" chip.</p>  <p class="law l-zh">同一水平标尺（避险←→趋险）由五个市场行共用。标记取其<b>立场墨色</b>，绝不取分类色相；
+  移动值使用中性测量墨色并显式带箭头——绝不取 --up/--down，从而回避红涨绿跌翻转（移动值在两种语言下含义一致）。
+  25/50/75 处的分区为刻度而非标签；轴线锚定于<b>文字</b>（避险·中性·趋险），而非裸 0–100。
+  主体市场是唯一被标出的主体——每个脊柱仅一个。空值行使用虚线轨道与「暂无分值」徽章。</p></div></details>
   </div>
 
   <div class="panel">
@@ -661,7 +804,12 @@ body.mobile-sim .wrap{ max-width:390px; }
     rung (raw fill fails 4.5:1 as text on white), and the subject marker becomes a 2px ring (a bloom becomes a pastel stain on white). Same numbers; same shape — different material.</p>
     <p class="mockup-note l-zh">浅色下轨道加 1px 描边（白色上中性段易消失）、移动墨色改用 <code>--ink-*</code> 档位（裸填充在白色上达不到 4.5:1）、主体标记改为 2px 环（光晕在白底会变成淡色污点）。同一数字，同一形状——不同材质。</p>
     <div class="mx-tier-blurred--spec" aria-hidden="true" style="pointer-events:none">
-      <div class="mx-spine-row" data-stance="get-ready"><div class="mx-spine-name"><span>US stocks</span><small class="tnum">72</small></div><div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-mark" style="left:72%"></div></div></div><div class="mx-spine-travel"><span>→</span><span class="tnum">+5</span></div><div class="mx-spine-stance"><span class="mx-stance"><span>Get ready</span></span></div></div>
+      <div class="mx-spine-row" data-subject="1" data-stance="protect">
+        <div class="mx-spine-name"><span class="l-en">US stocks</span><span class="l-zh">美股</span><small class="tnum">72</small></div>
+        <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:78%"></div><div class="mx-spine-conn" style="left:72%;width:6%"></div><div class="mx-spine-mark" style="left:72%"></div></div><div class="mx-spine-anchors"><span class="l-en">Risk-off</span><span class="l-zh">避险</span><span class="mx-spine-a-mid"><span class="l-en">Neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">Risk-on</span><span class="l-zh">趋险</span></span></div></div>
+        <div class="mx-spine-travel"><span class="mx-spine-arrow">←</span><span class="tnum">−6</span></div>
+        <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Protect gains</span><span class="l-zh">保护收益</span></span></div>
+      </div>
     </div>
     <p class="mockup-note l-en" style="margin-top:8px">Locked tier preview — exact spec §11 item 4 recipe: <code>blur(5px) saturate(.35) opacity .42</code>.</p>
     <p class="mockup-note l-zh" style="margin-top:8px">锁定层预览——严格按照规范 §11 第 4 条配方：<code>blur(5px) saturate(.35) opacity .42</code>。</p>
@@ -673,25 +821,25 @@ body.mobile-sim .wrap{ max-width:390px; }
       row 1 = name + stance chip; row 2 = the shared rail + travel figure. The head row hides; the stance column moves into the name row.
       Numbers survive; table geometry does not.</p>
     <p class="mockup-note l-zh">依规范 §7，390 视口下表格几何无法保留——每行在卡片上变为两行：第一行 = 名称 + 立场徽章；第二行 = 共享标尺 + 移动数字。表头隐藏；立场列并入名称行。数字保留；表格几何不再。</p>
-    <div class="mobile-sim mockup-spine-390" style="border:1px solid var(--line); border-radius:var(--r-card); padding:8px;">
+    <div class="mobile-sim mockup-spine-390" style="max-width:390px;box-sizing:border-box;border:1px solid var(--line); border-radius:var(--r-card); padding:8px;">
       <div class="mx-spine" data-spec="ud-b1-390">
         <div class="mx-spine-row" data-subject="1" data-stance="protect">
           <div class="mx-spine-name"><span class="l-en">US stocks</span><span class="l-zh">美股</span></div>
           <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Protect gains</span><span class="l-zh">保护收益</span></span></div>
-          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-mark" style="left:72%"></div></div></div>
+          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:78%"></div><div class="mx-spine-conn" style="left:72%;width:6%"></div><div class="mx-spine-mark" style="left:72%"></div></div></div>
           <div class="mx-spine-travel"><span class="mx-spine-arrow">←</span><span class="tnum">−6</span></div>
         </div>
         <div class="mx-spine-row" data-stance="watch">
           <div class="mx-spine-name"><span class="l-en">Hong Kong</span><span class="l-zh">香港</span></div>
           <div class="mx-spine-stance"><span class="mx-stance mx-stance--warn"><span class="l-en">Watch — don’t chase</span><span class="l-zh">观察，勿追</span></span></div>
-          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-mark" style="left:61%"></div></div></div>
+          <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div><div class="mx-spine-prev" style="left:56%"></div><div class="mx-spine-conn" style="left:56%;width:5%"></div><div class="mx-spine-mark" style="left:61%"></div></div></div>
           <div class="mx-spine-travel"><span class="mx-spine-arrow">→</span><span class="tnum">+5</span></div>
         </div>
         <div class="mx-spine-row" data-null="1">
           <div class="mx-spine-name"><span class="l-en">Commodities</span><span class="l-zh">大宗商品</span></div>
-          <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">Read being updated</span><span class="l-zh">判读更新中</span></span></div>
+          <div class="mx-spine-stance"><span class="mx-stance mx-stance--muted"><span class="l-en">No score</span><span class="l-zh">暂无分值</span></span></div>
           <div class="mx-spine-rail-wrap"><div class="mx-spine-rail"><div class="mx-spine-n25"></div><div class="mx-spine-n50"></div><div class="mx-spine-n75"></div></div></div>
-          <div class="mx-spine-travel"><span class="muted">—</span></div>
+          
         </div>
       </div>
     </div>
@@ -725,6 +873,7 @@ body.mobile-sim .wrap{ max-width:390px; }
   <span class="l-zh">设计稿层 · Wave 0 · 受 research/MASTER_PRODUCT_DESIGN_SYSTEM_V1.md 约束 · 直连 templates/theme.css 与 tier_preview.css · 上方“拟议”令牌属 DS-PR-0。</span>
 </p>
 
+</main>
 </div>
 
 <script>
@@ -735,19 +884,73 @@ document.getElementById('t-theme').onclick = function(){
 };
 document.getElementById('t-lang').onclick = function(){
   root.setAttribute('data-lang', root.getAttribute('data-lang')==='zh' ? 'en' : 'zh');
+  root.setAttribute('lang', root.getAttribute('data-lang')==='zh' ? 'zh-CN' : 'en');
 };
 document.getElementById('t-width').onclick = function(){
   document.body.classList.toggle('mobile-sim');
 };
-document.querySelectorAll('.mx-tabset').forEach(function(ts){
-  ts.querySelectorAll('button').forEach(function(b){
-    b.onclick = function(){
-      ts.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-selected','false'); });
-      b.setAttribute('aria-selected','true');
-      if (b.id) location.hash = b.id;   /* tab state lives in the URL hash */
-    };
+/* This reference-only example changes actual panels; production keeps its existing navigation owner.
+   Manual activation avoids history entries merely from exploring tab labels with arrow keys. */
+(function(){
+  var tablist = document.getElementById('specimen-research-tabs');
+  if (!tablist) return;
+  var tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+  var panels = tabs.map(function(tab){ return document.getElementById(tab.getAttribute('aria-controls')); });
+  if (panels.some(function(panel){ return !panel; })) return;
+  var initial = tabs.find(function(tab){ return tab.getAttribute('aria-selected') === 'true'; }) || tabs[0];
+  function activate(tab, writeHistory){
+    if (tabs.indexOf(tab) < 0) return;
+    var focused = document.activeElement;
+    var restoreFocus = tablist.contains(focused) || panels.some(function(panel, i){ return tabs[i] !== tab && panel.contains(focused); });
+    tabs.forEach(function(item, i){
+      var selected = item === tab;
+      item.setAttribute('aria-selected', String(selected));
+      item.tabIndex = selected ? 0 : -1;
+      panels[i].hidden = !selected;
+    });
+    if (restoreFocus) tab.focus({preventScroll:true});
+    if (writeHistory && location.hash !== '#' + tab.id) {
+      history.pushState(null, '', '#' + tab.id);
+    }
+  }
+  function restoreFromLocation(){
+    var tab = tabs.find(function(item){ return '#' + item.id === location.hash; });
+    if (tab) activate(tab, false);
+    else if (!location.hash) activate(initial, false);
+    // An unrelated fragment belongs to the rest of the specimen; do not overwrite it.
+  }
+  tabs.forEach(function(tab, index){
+    tab.addEventListener('click', function(){ activate(tab, true); });
+    tab.addEventListener('keydown', function(event){
+      var next;
+      if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+      else if (event.key === 'ArrowLeft') next = (index + tabs.length - 1) % tabs.length;
+      else if (event.key === 'Home') next = 0;
+      else if (event.key === 'End') next = tabs.length - 1;
+      else return; // Native button Enter/Space activation; Up/Down still scroll normally.
+      event.preventDefault();
+      tabs[next].focus();
+    });
   });
-});
+  window.addEventListener('hashchange', restoreFromLocation);
+  window.addEventListener('popstate', restoreFromLocation);
+  restoreFromLocation();
+})();
+/* Only measure this reference header: anchors remain native browser navigation. */
+(function(){
+  var bar = document.querySelector('.bar');
+  var stage = document.querySelector('.wrap');
+  function fitReferenceAnchors(){
+    root.style.setProperty('--spec-header-height', Math.ceil(bar.getBoundingClientRect().height) + 'px');
+    stage.classList.toggle('mockup-spine-390', stage.getBoundingClientRect().width <= 640);
+  }
+  fitReferenceAnchors();
+  if (window.ResizeObserver) {
+    var referenceObserver = new ResizeObserver(fitReferenceAnchors);
+    referenceObserver.observe(bar);
+    referenceObserver.observe(stage);
+  } else window.addEventListener('resize', fitReferenceAnchors);
+})();
 </script>
 </body>
 </html>
