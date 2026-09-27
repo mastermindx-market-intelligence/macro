@@ -3600,6 +3600,9 @@ CURATED_EXCLUSIVE = {
     # plus the two templates build_ticker_pages loads by name. Probe returns
     # to 127; weight and pack ceilings unmoved.
     "conviction-profile",
+    # News guidance owns the audited earnings/ticker dependency closure; its
+    # homepage exclusion probe is data, not a read of the homepage.
+    "earnings-release-identity",
     "unrun-government-revenue-grader",
     "biocatalyst-worker",
     "biocatalyst-serving",

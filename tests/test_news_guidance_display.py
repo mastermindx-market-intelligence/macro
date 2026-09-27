@@ -322,7 +322,7 @@ def test_guidance_gate_is_curated_without_unrelated_page_fanout():
                     "tests/test_earnings_release_binding.py", "tests/test_edgar_earnings_8k.py",
                     "tests/test_marketing_edgar_earnings_wire.py"):
         assert any(fnmatch.fnmatchcase(subject, pattern) for pattern in owner["paths"]), subject
-    assert not any(fnmatch.fnmatchcase("templates/index.html", pattern)
+    assert not any(fnmatch.fnmatchcase("templates/index.html", pattern)  # ci-trigger-closure: data — path NAME tested for exclusion, never opened
                    for pattern in owner["paths"]), "ticker tests must not claim the unrelated landing page"
     deps = "\n".join(step.get("run", "") for step in jobs["conviction-profile"]["steps"]
                      if "pip install" in step.get("run", ""))

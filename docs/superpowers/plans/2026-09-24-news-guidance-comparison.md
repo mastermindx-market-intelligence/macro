@@ -340,3 +340,53 @@ The initially considered move into conviction-profile was rejected BEFORE source
 Verification: the new scope/coverage guard fails under the old manifest and passes under the repair. Seven relevant suites410 PASS; restore old manifest -> intended scope assertion FAIL; restore candidate ->410 PASS. Actual changed-job inference/selection confirms all56 named dependencies, all30 incumbent paths, unchanged weight and no unrelated homepage selection. These are selected-source/targeted proofs, NOT a rerun of the entire global135-job census or replacement for new-head hosted CI. Pytest temporary files are operation-local.
 
 Three changed files only: .github/ci/legacy-jobs.yml, tests/test_news_guidance_display.py, and this plan. Existing guidance comparator, source clocks, source selection, News build/null repair, ticker HTML, ranking and both merged repairs are unchanged. Automatic accepted guidance acquisition remains unconnected. Original816-ticker archive replay and browser evidence remain historical, not fresh production proof. Firecrawl public-page attempt returned insufficient credits and no page data; no purchase or retry. Existing source/R2/local holds remain.
+
+
+## R15 — complete CI dependency closure and its audit registration
+
+R14 hosted CI36280109308 exposed three attributable errors: the newly curated
+earnings-release-identity was absent from CURATED_EXCLUSIVE; the partial local
+snapshot omitted80 actual named dependencies; and this test's homepage-exclusion
+probe accidentally counted as a real homepage read. Job108510201529 reported80
+introduced contract findings; job108510648934 failed the declaration, import-closure
+and owned-loss audits. Prior410 local passes did not establish those global contracts.
+
+Changed the proof method rather than repeating the partial census. The unchanged
+scope engine now reads file existence from complete, non-truncated immediate Git
+trees at tested mergeef90fd27e6c1fa66c3524eff242f16552c564b29 and authenticates every
+needed source blob. It independently reproduced all80 omissions exactly. Only
+source-byte/existence transport is adapted; scope inference and matching are unchanged.
+
+Final repair retains the same job, commands, runner, installed dependencies, timeout,
+weight and all original72 paths. Add79 real missing paths, making151 declarations.
+Mark the homepage path literal as data using the existing ci-trigger-closure annotation:
+the test compares its spelling but never opens that page. Register this curated job in
+the existing test_ci_pack expected set. No assertion, packing threshold or algorithm
+is disabled or weakened. No suite is rehomed and the valuation job stays collector-free.
+
+Proof: full-source inference now identifies150 named paths, all covered. The four
+existing sentinel probes lose only fallback matches, never owned dependencies. The
+actual existing declaration-audit function passes. Removing the annotation restores
+the owned-loss failure; removing collectors/__init__.py restores the coverage failure.
+
+Current-main90f9fcbe31fff9fe96bd293190372d1c773fab9c composition:410 selected tests PASS
+and the actual declaration audit PASS. The shared manifest and expected-set file
+compose cleanly with protected additions retained. An initial top-of-set insertion
+collided with a protected addition; moving only our registration beside its existing
+stable neighbor resolved that conflict. Seventy-one prior qualification boundaries
+remain unchanged. This is selected-source and changed-job/full-closure proof, not a
+full-repository CI pass. The initial branch-only combined test saw the absent already-
+merged provider test step; that was a composition issue, not product failure, and the
+correct current-main composition passes. No product/runtime behavior changed.
+
+A collector-job relocation diagnostic was stopped as unnecessary; no relocation or
+new CI job was published. The incomplete recursive global Git tree was rejected, not
+used to infer absent files. All byte transport stays within the existing evidence root.
+
+A normal unauthenticated GET of public News financial.json returned401 and no artifact
+bytes. No alternate headers, credential path or retry followed; no website-down claim.
+Existing Company Intelligence source/R2/local holds remain untouched. Independent
+review remains waived; no Codex or Executive action occurred. New-head hosted CI and
+actual production refresh remain required, and automatic guidance acquisition is
+still unconnected. Evidence: incumbent root/r15-ci-return, including full-source-
+verification.json, mutation-verification.json, integration-result.json and published.json.
