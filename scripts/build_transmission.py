@@ -126,17 +126,22 @@ def main() -> int:
         from engine.transmission_company_continuation import enrich_display_chains
         from lib.dataos.identity import VendorAliasTable
         txi_asof = chains.get("asof")
-        decision_date = (
-            _date.fromisoformat(txi_asof)
-            if isinstance(txi_asof, str) and txi_asof
-            else _date.fromisoformat(as_of)
-        )
-        aliases: VendorAliasTable | None = None
+        # Decision date = chain_state.asof (never today()). A malformed as-of takes the
+        # aliases=None path (membership renders unlinked, page never breaks) — the parse
+        # itself must not be able to kill write_page.
+        decision_date: _date | None = None
         try:
-            alias_rows = _records(config.ROOT / VENDOR_ALIASES)
-            aliases = VendorAliasTable.from_records(alias_rows)
+            raw_asof = txi_asof if isinstance(txi_asof, str) and txi_asof else as_of
+            decision_date = _date.fromisoformat(str(raw_asof)[:10])
         except Exception as e:  # noqa: BLE001 — additive, never fatal
-            log.error("transmission company continuation (alias load) failed: %s", e)
+            log.error("transmission company continuation (asof parse) failed: %s", e)
+        aliases: VendorAliasTable | None = None
+        if decision_date is not None:
+            try:
+                alias_rows = _records(config.ROOT / VENDOR_ALIASES)
+                aliases = VendorAliasTable.from_records(alias_rows)
+            except Exception as e:  # noqa: BLE001 — additive, never fatal
+                log.error("transmission company continuation (alias load) failed: %s", e)
         try:
             chains = enrich_display_chains(chains, aliases, decision_date)
         except Exception as e:  # noqa: BLE001 — additive, never fatal

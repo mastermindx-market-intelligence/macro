@@ -206,6 +206,7 @@ def _project_channel(
     names = _names_in_channel(chan)
     unevaluable = _unevaluable_count(chan)
     channel_label = (chan.get("label") or {}).get("en") or channel_id
+    channel_label_zh = (chan.get("label") or {}).get("zh") or channel_label
 
     if aliases is None:
         # Identity substrate unavailable — surface the membership as unlinked
@@ -220,6 +221,7 @@ def _project_channel(
             "ranked": False,
             "identity_unavailable": True,
             "channel_label": channel_label,
+            "channel_label_zh": channel_label_zh,
         }
 
     linked: list[ContinuationLink] = []
@@ -253,6 +255,7 @@ def _project_channel(
         "ranked": False,
         "identity_unavailable": False,
         "channel_label": channel_label,
+        "channel_label_zh": channel_label_zh,
     }
 
 

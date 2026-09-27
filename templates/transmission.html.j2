@@ -742,9 +742,10 @@ html[data-theme="light"] .cm-cos-list{background:transparent}
             {% set unavail = cos.identity_unavailable|default(false) %}
             {% set n_lk = cos.n_linked|default(0) %}
             {% set label_en = cos.channel_label|default(chan_id) %}
+            {% set label_zh = cos.channel_label_zh|default(label_en) %}
             <details class="cm-cos" data-channel="{{ chan_id }}">
               <summary>
-                {% if unavail %}{{ t('Affected companies — ' ~ label_en ~ ' — company links unavailable tonight', '受影响公司——' ~ label_en ~ '——今晚无法提供公司链接') }}{% else %}{{ t('Affected companies — ' ~ label_en ~ ' · ' ~ n_lk ~ ' with company research · not ranked', '受影响公司——' ~ label_en ~ '·' ~ n_lk ~ ' 家可打开公司研究·非排名') }}{% endif %}
+                {% if unavail %}{{ t('Affected companies — ' ~ label_en ~ ' — company links unavailable tonight', '受影响公司——' ~ label_zh ~ '——今晚无法提供公司链接') }}{% else %}{{ t('Affected companies — ' ~ label_en ~ ' · ' ~ n_lk ~ ' with company research · not ranked', '受影响公司——' ~ label_zh ~ '·' ~ n_lk ~ ' 家可打开公司研究·非排名') }}{% endif %}
               </summary>
               <div class="cm-cos-head">{{ t('Affected companies · not ranked', '受影响公司·非排名') }}</div>
               {% if unavail %}
@@ -755,14 +756,14 @@ html[data-theme="light"] .cm-cos-list{background:transparent}
                 </ul>
                 {% endif %}
               {% else %}
-                <label class="cm-cos-qlabel">{{ t('Filter — prefix match', '筛选——前缀匹配') }}</label>
-                <input type="search" class="cm-cos-q" placeholder="filter" aria-label="filter affected companies" data-cos-q>
+                <label class="cm-cos-qlabel" for="cos-q-{{ ch.id }}-{{ chan_id }}">{{ t('Filter — prefix match', '筛选——前缀匹配') }}</label>
+                <input type="search" class="cm-cos-q" id="cos-q-{{ ch.id }}-{{ chan_id }}" data-cos-q>
                 <ul class="cm-cos-list" data-cos-list>
                   {% for link in cos.linked %}
-                    <li data-sid="{{ link.security_id }}"><a href="{{ link.href }}" rel="noopener"
-                      data-tip-en="Open company research — {{ link.symbol }}"
-                      data-tip-zh="打开公司研究——{{ link.symbol }}"
-                      aria-label="Open company research — {{ link.symbol }}">{{ link.symbol }}<span class="l-zh"> · 打开公司研究</span></a></li>
+                    {# Plain link on purpose: no data-tip-* (a whole-link LENS trigger hijacks the
+                       first touch tap — theme.js touchMode preventDefault) and no EN-only aria-label;
+                       the visible symbol is the accessible name, the list head carries the context. #}
+                    <li data-sid="{{ link.security_id }}"><a href="{{ link.href }}" rel="noopener">{{ link.symbol }}</a></li>
                   {% endfor %}
                   {% for nm in cos.unlinked %}
                     <li><span class="cm-cos-plain">{{ nm }}</span></li>
