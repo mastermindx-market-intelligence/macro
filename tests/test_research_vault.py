@@ -3973,3 +3973,226 @@ def test_market_cognition_belief_context_carries_no_market_authority():
     assert "Clients remain cautious after the rally." not in encoded
     assert "Consensus forecasts still assume slower growth." not in encoded
 
+
+
+# ===========================================================================
+# Research Intelligence W5: exact longitudinal stream / predecessor selection
+# ===========================================================================
+
+def _w5_aliases():
+    from datetime import date
+
+    from lib.dataos.identity import AliasRow, VendorAliasTable
+
+    return VendorAliasTable([
+        # Symbol rename: one security, non-overlapping membership names.
+        AliasRow("membership", "MMC", "SEC:US-XNYS-MMC", None, date(2026, 1, 14)),
+        AliasRow("membership", "MRSH", "SEC:US-XNYS-MMC", date(2026, 1, 14), None),
+        # Surface ticker reuse: two different securities over time.
+        AliasRow("membership", "ABC", "SEC:US-XNYS-ABC", None, date(2026, 6, 1)),
+        AliasRow("membership", "ABC", "SEC:US-XNAS-ABC.2", date(2026, 6, 1), None),
+        AliasRow("membership", "META", "SEC:US-XNAS-META", None, None),
+        AliasRow("membership", "MSFT", "SEC:US-XNAS-MSFT", None, None),
+    ])
+
+
+def _w5_report(
+    report_id,
+    ticker,
+    published_at,
+    *,
+    institution="BlackRock",
+    desk="US Equity Research",
+    tickers=None,
+):
+    return {
+        "id": report_id,
+        "institution": institution,
+        "desk": desk,
+        "tickers": [ticker] if tickers is None else tickers,
+        "published_at": published_at,
+    }
+
+
+def test_w5_rename_continuity_uses_security_id_not_surface_ticker():
+    from engine.research_intelligence.longitudinal import SELECTED, select_predecessor
+
+    prior = _w5_report(
+        "old-symbol",
+        "MMC",
+        "2026-01-13T18:00:00-05:00",
+        institution="Blackrock",
+        desk="  US   Equity Research  ",
+    )
+    current = _w5_report(
+        "new-symbol",
+        "MRSH",
+        "2026-01-14T09:00:00-05:00",
+        institution="BlackRock",
+        desk="us equity research",
+    )
+
+    result = select_predecessor(current, [prior], _w5_aliases())
+    assert result.state == SELECTED
+    assert result.current is not None
+    assert result.predecessor is not None
+    assert result.current.security_id == "SEC:US-XNYS-MMC"
+    assert result.predecessor.security_id == "SEC:US-XNYS-MMC"
+    assert result.predecessor.ticker_at_observation == "MMC"
+
+
+def test_w5_ticker_reuse_never_splices_two_securities():
+    from engine.research_intelligence.longitudinal import NO_PREDECESSOR, select_predecessor
+
+    prior = _w5_report("old-abc", "ABC", "2026-05-31T16:00:00Z")
+    current = _w5_report("new-abc", "ABC", "2026-06-02T16:00:00Z")
+
+    result = select_predecessor(current, [prior], _w5_aliases())
+    assert result.state == NO_PREDECESSOR
+    assert result.current is not None
+    assert result.current.security_id == "SEC:US-XNAS-ABC.2"
+
+
+def test_w5_multi_ticker_and_unresolved_symbol_abstain_without_guessing():
+    from engine.research_intelligence.longitudinal import (
+        ABSTAIN_TICKER_CARDINALITY,
+        ABSTAIN_UNRESOLVED_SECURITY,
+        select_predecessor,
+    )
+
+    multi = _w5_report(
+        "multi",
+        "META",
+        "2026-07-01T12:00:00Z",
+        tickers=["META", "MSFT"],
+    )
+    unresolved = _w5_report("unknown-symbol", "ZZZZ", "2026-07-01T12:00:00Z")
+
+    assert select_predecessor(multi, [], _w5_aliases()).state == ABSTAIN_TICKER_CARDINALITY
+    assert (
+        select_predecessor(unresolved, [], _w5_aliases()).state
+        == ABSTAIN_UNRESOLVED_SECURITY
+    )
+
+
+def test_w5_missing_desk_invalid_institution_and_imprecise_clock_abstain():
+    from engine.research_intelligence.longitudinal import (
+        ABSTAIN_INVALID_PUBLISHED_AT,
+        ABSTAIN_MISSING_DESK,
+        ABSTAIN_MISSING_OR_INVALID_INSTITUTION,
+        select_predecessor,
+    )
+
+    missing_desk = _w5_report(
+        "missing-desk", "META", "2026-07-01T12:00:00Z", desk=""
+    )
+    folder_label = _w5_report(
+        "folder-label",
+        "META",
+        "2026-07-01T12:00:00Z",
+        institution="New folder",
+    )
+    date_only = _w5_report("date-only", "META", "2026-07-01")
+    naive_time = _w5_report("naive-time", "META", "2026-07-01T12:00:00")
+
+    assert select_predecessor(missing_desk, [], _w5_aliases()).state == ABSTAIN_MISSING_DESK
+    assert (
+        select_predecessor(folder_label, [], _w5_aliases()).state
+        == ABSTAIN_MISSING_OR_INVALID_INSTITUTION
+    )
+    assert select_predecessor(date_only, [], _w5_aliases()).state == ABSTAIN_INVALID_PUBLISHED_AT
+    assert select_predecessor(naive_time, [], _w5_aliases()).state == ABSTAIN_INVALID_PUBLISHED_AT
+
+
+def test_w5_different_desk_is_a_different_longitudinal_stream():
+    from engine.research_intelligence.longitudinal import NO_PREDECESSOR, select_predecessor
+
+    current = _w5_report("current", "META", "2026-07-10T12:00:00Z")
+    other_desk = _w5_report(
+        "other-desk",
+        "META",
+        "2026-07-09T12:00:00Z",
+        desk="European Equity Research",
+    )
+
+    assert select_predecessor(current, [other_desk], _w5_aliases()).state == NO_PREDECESSOR
+
+
+def test_w5_future_report_is_never_selected_as_predecessor():
+    from engine.research_intelligence.longitudinal import SELECTED, select_predecessor
+
+    current = _w5_report("current", "META", "2026-07-10T12:00:00Z")
+    earlier = _w5_report("earlier", "META", "2026-07-08T12:00:00Z")
+    future = _w5_report("future", "META", "2026-07-12T12:00:00Z")
+
+    result = select_predecessor(current, [future, earlier], _w5_aliases())
+    assert result.state == SELECTED
+    assert result.predecessor is not None
+    assert result.predecessor.report_id == "earlier"
+
+
+def test_w5_equal_latest_timestamp_across_distinct_reports_abstains():
+    from engine.research_intelligence.longitudinal import (
+        ABSTAIN_AMBIGUOUS_PREDECESSOR,
+        select_predecessor,
+    )
+
+    current = _w5_report("current", "META", "2026-07-10T12:00:00Z")
+    a = _w5_report("a", "META", "2026-07-09T12:00:00Z")
+    b = _w5_report("b", "META", "2026-07-09T08:00:00-04:00")
+
+    result = select_predecessor(current, [a, b], _w5_aliases())
+    assert result.state == ABSTAIN_AMBIGUOUS_PREDECESSOR
+    assert result.predecessor is None
+
+
+def test_w5_no_earlier_report_is_a_typed_null_not_an_error():
+    from engine.research_intelligence.longitudinal import NO_PREDECESSOR, select_predecessor
+
+    current = _w5_report("current", "META", "2026-07-10T12:00:00Z")
+    future = _w5_report("future", "META", "2026-07-11T12:00:00Z")
+
+    result = select_predecessor(current, [future], _w5_aliases())
+    assert result.state == NO_PREDECESSOR
+    assert result.current is not None
+    assert result.predecessor is None
+
+
+def test_w5_candidate_order_cannot_change_selected_predecessor():
+    from itertools import permutations
+
+    from engine.research_intelligence.longitudinal import SELECTED, select_predecessor
+
+    current = _w5_report("current", "META", "2026-07-10T12:00:00Z")
+    rows = [
+        _w5_report("oldest", "META", "2026-07-01T12:00:00Z"),
+        _w5_report("latest", "META", "2026-07-09T12:00:00Z"),
+        _w5_report(
+            "other-desk",
+            "META",
+            "2026-07-09T18:00:00Z",
+            desk="European Equity Research",
+        ),
+        _w5_report("future", "META", "2026-07-11T12:00:00Z"),
+    ]
+
+    for ordering in permutations(rows):
+        result = select_predecessor(current, ordering, _w5_aliases())
+        assert result.state == SELECTED
+        assert result.predecessor is not None
+        assert result.predecessor.report_id == "latest"
+
+
+def test_w5_duplicate_conflicting_report_id_fails_closed():
+    from engine.research_intelligence.longitudinal import (
+        ABSTAIN_CONFLICTING_REPORT_RECORD,
+        select_predecessor,
+    )
+
+    current = _w5_report("current", "META", "2026-07-10T12:00:00Z")
+    first = _w5_report("dup", "META", "2026-07-08T12:00:00Z")
+    conflicting = _w5_report("dup", "META", "2026-07-09T12:00:00Z")
+
+    result = select_predecessor(current, [first, conflicting], _w5_aliases())
+    assert result.state == ABSTAIN_CONFLICTING_REPORT_RECORD
+    assert result.predecessor is None
