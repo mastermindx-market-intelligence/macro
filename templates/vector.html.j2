@@ -42,13 +42,23 @@ body.page-vector::before{opacity:.46}
 .site-nav .nav-links>.nav-dd:nth-last-child(3) .nav-sub>.nav-dd-menu{left:auto;right:100%}
 .site-nav .nav-links>.nav-dd:nth-last-child(3) .nav-sub::after{left:auto;right:100%}
 .vector-wrap{width:min(1320px,calc(100% - 48px));margin:0 auto;padding:4px 0 76px}
-.vector-tabs{display:flex;align-items:center;gap:26px;min-height:48px;border-bottom:1px solid var(--line);
-  overflow-x:auto;scrollbar-width:none}
+.vector-sectionbar{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:stretch;border-bottom:1px solid var(--line)}
+.vector-tabs{display:flex;align-items:center;gap:26px;min-width:0;min-height:48px;overflow-x:auto;scrollbar-width:none}
 .vector-tabs::-webkit-scrollbar{display:none}
 .vector-tabs a{position:relative;display:flex;align-items:center;min-height:48px;color:var(--muted);
   font-size:12.5px;font-weight:560;text-decoration:none;white-space:nowrap}
 .vector-tabs a:first-child{color:var(--text);font-weight:700}
 .vector-tabs a:first-child::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--info)}
+.vector-brain-entry{align-self:center;display:inline-flex;align-items:center;gap:7px;min-height:38px;margin-left:14px;
+  padding:0 13px;border:1px solid var(--line);border-radius:var(--r-ctl,8px);background:var(--panel);
+  color:var(--text);font:650 12.5px/1 var(--font-ui);white-space:nowrap;cursor:pointer}
+.vector-brain-entry:hover,.vector-brain-entry:focus-visible{border-color:var(--info);color:var(--ink-link,var(--link))}
+.vector-brain-entry:focus-visible{outline:2px solid var(--info);outline-offset:2px}
+.vector-brain-entry[aria-busy="true"]{cursor:wait}
+.vector-brain-entry .vector-brain-error{display:none;color:var(--warn)}
+.vector-brain-entry[data-state="error"] .vector-brain-ready{display:none}
+.vector-brain-entry[data-state="error"] .vector-brain-error{display:inline}
+body.page-vector #mmb-boot,body.page-vector #mmb-launch{display:none!important}
 .shelf{position:relative;margin-top:0;background:transparent;border:0;border-bottom:1px solid var(--line);
   border-radius:0;overflow:visible;box-shadow:none}
 .shelf::before{display:none}
@@ -304,14 +314,21 @@ a{color:var(--ink-link, var(--link))}
      detailed decision fragment independently renderable below, without hero data. #}
   {% set overview_decision = decision if decision and decision.status == 'ok' and decision.integrity.ok and decision.final else none %}
 
-  <nav class="vector-tabs" aria-label="Bitcoin research sections / 比特币研究分区">
-    <a href="#overview">{{ t('Overview','概览') }}</a>
-    <a href="#cycle-lab">{{ t('Cycle & risk','周期与风险') }}</a>
-    <a href="#strategy-track-record">{{ t('Strategy','策略') }}</a>
-    <a href="#onchain-lab">{{ t('On-chain','链上') }}</a>
-    <a href="#derivatives-desk">{{ t('Derivatives','衍生品') }}</a>
-    <a href="crypto.html">{{ t('Crypto Intelligence','加密资产研究') }} ↗</a>
-  </nav>
+  <div class="vector-sectionbar">
+    <nav class="vector-tabs" aria-label="Bitcoin research sections / 比特币研究分区">
+      <a href="#overview">{{ t('Overview','概览') }}</a>
+      <a href="#cycle-lab">{{ t('Cycle & risk','周期与风险') }}</a>
+      <a href="#strategy-track-record">{{ t('Strategy','策略') }}</a>
+      <a href="#onchain-lab">{{ t('On-chain','链上') }}</a>
+      <a href="#derivatives-desk">{{ t('Derivatives','衍生品') }}</a>
+      <a href="crypto.html">{{ t('Crypto Intelligence','加密资产研究') }} ↗</a>
+    </nav>
+    <button class="vector-brain-entry" type="button" data-vector-brain aria-haspopup="dialog" aria-controls="mmb-panel">
+      <span aria-hidden="true">✦</span>
+      <span class="vector-brain-ready">{{ t('Ask Mastermind','询问操盘大脑') }}</span>
+      <span class="vector-brain-error">{{ t('Mastermind unavailable','操盘大脑暂不可用') }}</span>
+    </button>
+  </div>
 
   <section class="shelf" id="overview" data-shelf="S1">
     <div class="hero">
@@ -713,6 +730,25 @@ a{color:var(--ink-link, var(--link))}
     tabs.forEach(function(x){x.classList.toggle('on',x===btn)});
     panels.forEach(function(x){x.hidden=x.getAttribute('data-strategy-panel')!==id});
   })});
+  var brain=document.querySelector('[data-vector-brain]');
+  if(brain){brain.addEventListener('click',function(){
+    brain.removeAttribute('data-state');
+    brain.setAttribute('aria-busy','true');
+    var bootClicked=false,tries=0,timer=null;
+    function ready(){brain.removeAttribute('aria-busy')}
+    function openBrain(){
+      if(window.MMBrain&&typeof window.MMBrain.open==='function'){window.MMBrain.open();ready();return true}
+      var boot=document.getElementById('mmb-boot');
+      if(boot&&!bootClicked){bootClicked=true;boot.click()}
+      return false;
+    }
+    if(openBrain())return;
+    timer=setInterval(function(){
+      tries+=1;
+      if(openBrain()){clearInterval(timer);return}
+      if(tries>=60){clearInterval(timer);ready();brain.setAttribute('data-state','error')}
+    },50);
+  })}
   var el=document.getElementById('vec-risk-chart'),sc=document.getElementById('vrc-score'),lab=document.getElementById('vrc-variant-label');
   if(!el||!window.VectorChart)return;
   var cards={};if(sc){try{cards=JSON.parse(sc.getAttribute('data-cards'))}catch(e){}}

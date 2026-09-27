@@ -65,3 +65,22 @@ def test_r2_suites_are_invoked_by_the_existing_vector_ci_owner() -> None:
             break
     else:
         raise AssertionError("R2 regressions are not invoked by the existing Vector CI owner")
+
+
+def test_vector_uses_in_page_brain_entry_and_suppresses_floating_launcher() -> None:
+    source = TEMPLATE.read_text(encoding="utf-8")
+
+    assert 'data-vector-brain' in source
+    assert "{{ t('Ask Mastermind','询问操盘大脑') }}" in source
+    assert "body.page-vector #mmb-boot" in source
+    assert "body.page-vector #mmb-launch" in source
+    assert "document.getElementById('mmb-boot')" in source
+    assert "window.MMBrain.open()" in source
+
+
+def test_vector_brain_entry_is_not_a_second_chat_owner() -> None:
+    source = TEMPLATE.read_text(encoding="utf-8")
+
+    assert "MM_BRAIN_CFG" not in source
+    assert "mm_brain.js" not in source
+    assert "fetch('/api/brain" not in source
