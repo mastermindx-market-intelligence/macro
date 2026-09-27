@@ -15,8 +15,11 @@ U.S. minute transport only and compute the already-frozen +5 to +35 minute const
 Stage 4: gate_hk_outcome_read validates that source admission, control selection,
 and every required U.S. measurement are frozen and mutually consistent before
 a downstream research scorer is allowed to open the HSI outcome.
+Stage 5: score_hsi_outcome invokes that gate before transport, then reads only
+ephemeral Yahoo ^HSI adjusted OHLC needed for the frozen event/control next-open
+geometry. It persists nothing and emits no pooled, ranking, or trading state.
 
-No capture step reads Hong Kong outcomes, picks controls from outcomes, persists
+No pre-gate capture step reads Hong Kong outcomes, picks controls from outcomes, persists
 vendor bars, emits alerts, ranks opportunities, or grants trading authority.
 
 V1 primary:
@@ -32,6 +35,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import sys
 from collections.abc import Callable, Mapping, Sequence
 from datetime import date, datetime, timedelta, timezone
@@ -50,6 +54,7 @@ SCHEMA_CONTROLS = "research.cross_session_transfer_matched_controls.v1"
 SCHEMA_US = "research.cross_session_transfer_us_measurement.v1"
 SCHEMA_CONTROL_US = "research.cross_session_transfer_control_us_measurement.v1"
 SCHEMA_HK_GATE = "research.cross_session_transfer_hk_outcome_gate.v1"
+SCHEMA_HK_SCORE = "research.cross_session_transfer_hsi_outcome.v1"
 
 V1_PROTOCOL_COMMIT = "0f9d4d88cf78b06ab9985d32be9df5c2bc929fd2"
 V1_PROTOCOL_FROZEN_AT = datetime(2026, 9, 26, 11, 16, 23, tzinfo=timezone.utc)
@@ -69,6 +74,7 @@ START_OFFSET_MINUTES = 5
 END_OFFSET_MINUTES = 35
 BAR_TOLERANCE_MINUTES = 2
 MAX_CONTROL_SESSION_DISTANCE = 10
+HK_LOOKAHEAD_CALENDAR_DAYS = 21
 
 AUTHORITY = {
     "tier": "research",
@@ -734,6 +740,237 @@ def gate_hk_outcome_read(
     }
 
 
+def _finite_positive(value: Any, field: str) -> float:
+    if isinstance(value, bool):
+        raise CaptureContractError(f"{field} must be a positive finite number")
+    try:
+        out = float(value)
+    except (TypeError, ValueError) as exc:
+        raise CaptureContractError(f"{field} must be a positive finite number") from exc
+    if not math.isfinite(out) or out <= 0:
+        raise CaptureContractError(f"{field} must be a positive finite number")
+    return out
+
+
+def _hsi_rows(rows: Sequence[Mapping[str, Any]]) -> dict[date, dict[str, float]]:
+    by_day: dict[date, dict[str, float]] = {}
+    for idx, row in enumerate(rows):
+        if not isinstance(row, Mapping):
+            raise CaptureContractError(f"hsi_rows[{idx}] must be an object")
+        day = _day(str(row.get("date") or ""), f"hsi_rows[{idx}].date")
+        open_px = _finite_positive(row.get("open"), f"hsi_rows[{idx}].open")
+        close_px = _finite_positive(row.get("close"), f"hsi_rows[{idx}].close")
+        prior = by_day.get(day)
+        current = {"open": open_px, "close": close_px}
+        if prior is not None and prior != current:
+            raise CaptureContractError(f"conflicting HSI OHLC for {day.isoformat()}")
+        by_day[day] = current
+    return by_day
+
+
+def _hsi_gap(by_day: Mapping[date, Mapping[str, float]], anchor_day: date) -> dict[str, Any]:
+    anchor = by_day.get(anchor_day)
+    if anchor is None:
+        return {
+            "status": "DATA_GAP",
+            "reason": "missing_anchor_close",
+            "anchor_date": anchor_day.isoformat(),
+            "target_open_date": None,
+            "gap_bps": None,
+        }
+    later = sorted(day for day in by_day if day > anchor_day)
+    if not later:
+        return {
+            "status": "DATA_GAP",
+            "reason": "missing_later_open",
+            "anchor_date": anchor_day.isoformat(),
+            "anchor_close": anchor["close"],
+            "target_open_date": None,
+            "gap_bps": None,
+        }
+    target_day = later[0]
+    target = by_day[target_day]
+    return {
+        "status": "MEASURED",
+        "reason": None,
+        "anchor_date": anchor_day.isoformat(),
+        "anchor_close": anchor["close"],
+        "target_open_date": target_day.isoformat(),
+        "target_open": target["open"],
+        "gap_bps": round((target["open"] / anchor["close"] - 1.0) * 10_000.0, 6),
+    }
+
+
+def _default_hsi_transport(start: date, end: date) -> list[dict[str, Any]]:
+    """Ephemeral Yahoo ^HSI adjusted OHLC; no store writes."""
+    import pandas as pd  # lazy: research-only path
+    import yfinance as yf  # lazy: existing Yahoo provider family
+
+    raw = yf.download(
+        "^HSI",
+        start=start.isoformat(),
+        end=(end + timedelta(days=1)).isoformat(),
+        auto_adjust=True,
+        progress=False,
+        threads=False,
+    )
+    if raw is None or raw.empty:
+        return []
+    if isinstance(raw.columns, pd.MultiIndex):
+        if "^HSI" in set(map(str, raw.columns.get_level_values(-1))):
+            raw = raw.xs("^HSI", axis=1, level=-1)
+        elif "^HSI" in set(map(str, raw.columns.get_level_values(0))):
+            raw = raw.xs("^HSI", axis=1, level=0)
+    cols = {str(col).lower(): col for col in raw.columns}
+    if "open" not in cols or "close" not in cols:
+        raise CaptureContractError("Yahoo HSI response lacks Open/Close")
+    out: list[dict[str, Any]] = []
+    for idx, row in raw.iterrows():
+        try:
+            open_px = float(row[cols["open"]])
+            close_px = float(row[cols["close"]])
+        except (TypeError, ValueError):
+            continue
+        if not math.isfinite(open_px) or not math.isfinite(close_px):
+            continue
+        out.append(
+            {
+                "date": pd.Timestamp(idx).tz_localize(None).date().isoformat(),
+                "open": open_px,
+                "close": close_px,
+            }
+        )
+    return out
+
+
+def _sign_agreement(us_bps: Any, hsi_bps: Any) -> bool | None:
+    if us_bps is None or hsi_bps is None:
+        return None
+    try:
+        us = float(us_bps)
+        hk = float(hsi_bps)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(us) or not math.isfinite(hk):
+        return None
+    if us == 0 or hk == 0:
+        return us == 0 and hk == 0
+    return (us > 0) == (hk > 0)
+
+
+def _score_pair(measurement: Mapping[str, Any], hsi: Mapping[str, Any]) -> dict[str, Any]:
+    gap = hsi.get("gap_bps")
+    primary = (measurement.get("primary_v1") or {}).get("return_bps")
+    challenger = (measurement.get("challenger_v1_1") or {}).get("return_bps")
+    return {
+        "hsi": dict(hsi),
+        "primary_v1": {
+            "us_return_bps": primary,
+            "sign_agreement": _sign_agreement(primary, gap),
+        },
+        "challenger_v1_1": {
+            "us_return_bps": challenger,
+            "eligible": (measurement.get("challenger_v1_1") or {}).get("eligible") is True,
+            "sign_agreement": _sign_agreement(challenger, gap),
+        },
+    }
+
+
+def score_hsi_outcome(
+    admission: Mapping[str, Any],
+    controls: Mapping[str, Any],
+    us_measurement: Mapping[str, Any],
+    *,
+    prior_control_measurement: Mapping[str, Any] | None = None,
+    next_control_measurement: Mapping[str, Any] | None = None,
+    transport: Callable[[date, date], Sequence[Mapping[str, Any]]] | None = None,
+) -> dict[str, Any]:
+    """Read the frozen HSI endpoint only after every pre-HK receipt passes."""
+    gate = gate_hk_outcome_read(
+        admission,
+        controls,
+        us_measurement,
+        prior_control_measurement=prior_control_measurement,
+        next_control_measurement=next_control_measurement,
+    )
+    if gate.get("research_hk_outcome_read_ready") is not True:
+        raise CaptureContractError("HK outcome gate did not reach ready state")
+
+    event_day = _day(str(controls.get("event_date") or ""), "controls.event_date")
+    selected_days = [event_day]
+    for side in ("prior", "next"):
+        selected = controls.get(side)
+        if isinstance(selected, Mapping) and selected.get("status") == "SELECTED":
+            selected_days.append(_day(str(selected.get("control_date") or ""), f"{side}.control_date"))
+
+    start = min(selected_days)
+    end = max(selected_days) + timedelta(days=HK_LOOKAHEAD_CALENDAR_DAYS)
+    get = transport or _default_hsi_transport
+    rows = list(get(start, end))
+    by_day = _hsi_rows(rows)
+
+    event_score = _score_pair(us_measurement, _hsi_gap(by_day, event_day))
+    control_scores: dict[str, Any] = {}
+    receipts = {
+        "prior": prior_control_measurement,
+        "next": next_control_measurement,
+    }
+    for side in ("prior", "next"):
+        selected = controls.get(side) or {}
+        if selected.get("status") == "SELECTED":
+            day = _day(str(selected.get("control_date") or ""), f"{side}.control_date")
+            receipt = receipts[side]
+            assert isinstance(receipt, Mapping)  # gate proved this
+            control_scores[side] = {
+                "selection_status": "SELECTED",
+                **_score_pair(receipt, _hsi_gap(by_day, day)),
+            }
+        else:
+            control_scores[side] = {
+                "selection_status": selected.get("status"),
+                "hsi": {
+                    "status": "DATA_GAP",
+                    "reason": "control_not_selected",
+                    "gap_bps": None,
+                },
+                "primary_v1": {
+                    "us_return_bps": None,
+                    "sign_agreement": None,
+                },
+                "challenger_v1_1": {
+                    "us_return_bps": None,
+                    "eligible": admission.get("challenger_v1_1_eligible") is True,
+                    "sign_agreement": None,
+                },
+            }
+
+    return {
+        "schema": SCHEMA_HK_SCORE,
+        "authority": dict(AUTHORITY),
+        "state": "PROSPECTIVE_OUTCOME_RECORDED",
+        "event_id": str(admission.get("event_id") or ""),
+        "source_state": str(admission.get("source_state") or ""),
+        "clean_primary_eligible": admission.get("clean_primary_eligible") is True,
+        "pre_hk_gate": {
+            "schema": gate.get("schema"),
+            "state": gate.get("state"),
+            "research_hk_outcome_read_ready": True,
+        },
+        "event": event_score,
+        "controls": control_scores,
+        "hsi_source": {
+            "provider_family": "Yahoo/yfinance",
+            "ticker": "^HSI",
+            "auto_adjust": True,
+            "persistence": "none",
+            "canonical_hk_store_open_unavailable": True,
+        },
+        "pooled_claim_allowed": False,
+        "product_or_trading_authority": False,
+        "persistence": "none_stdout_only",
+    }
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -790,6 +1027,16 @@ def _parser() -> argparse.ArgumentParser:
     gate.add_argument("--us-measurement-file", required=True)
     gate.add_argument("--prior-control-measurement-file")
     gate.add_argument("--next-control-measurement-file")
+
+    score = sub.add_parser(
+        "score-hsi",
+        help="read frozen HSI outcomes only after all pre-HK receipts pass",
+    )
+    score.add_argument("--admission-file", required=True)
+    score.add_argument("--control-selection-file", required=True)
+    score.add_argument("--us-measurement-file", required=True)
+    score.add_argument("--prior-control-measurement-file")
+    score.add_argument("--next-control-measurement-file")
     return parser
 
 
@@ -853,7 +1100,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 controls,
                 side=args.side,
             )
-        elif args.command == "gate-hk-outcome":
+        elif args.command in {"gate-hk-outcome", "score-hsi"}:
             with Path(args.admission_file).open("r", encoding="utf-8") as fh:
                 admission = json.load(fh)
             with Path(args.control_selection_file).open("r", encoding="utf-8") as fh:
@@ -868,13 +1115,22 @@ def main(argv: Sequence[str] | None = None) -> int:
             if args.next_control_measurement_file:
                 with Path(args.next_control_measurement_file).open("r", encoding="utf-8") as fh:
                     next_measurement = json.load(fh)
-            result = gate_hk_outcome_read(
-                admission,
-                controls,
-                us_measurement,
-                prior_control_measurement=prior_measurement,
-                next_control_measurement=next_measurement,
-            )
+            if args.command == "gate-hk-outcome":
+                result = gate_hk_outcome_read(
+                    admission,
+                    controls,
+                    us_measurement,
+                    prior_control_measurement=prior_measurement,
+                    next_control_measurement=next_measurement,
+                )
+            else:
+                result = score_hsi_outcome(
+                    admission,
+                    controls,
+                    us_measurement,
+                    prior_control_measurement=prior_measurement,
+                    next_control_measurement=next_measurement,
+                )
         else:
             with Path(args.admission_file).open("r", encoding="utf-8") as fh:
                 admission = json.load(fh)

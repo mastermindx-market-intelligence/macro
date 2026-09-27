@@ -647,3 +647,201 @@ def test_capture_hk_gate_rejects_wrong_control_clock():
             ),
         )
 
+def _full_measurement(event_id, available_at, primary, challenger, *, challenger_eligible=True):
+    return {
+        "schema": capture.SCHEMA_US,
+        "event_id": event_id,
+        "available_at": available_at,
+        "primary_v1": {"return_bps": primary, "eligible": True},
+        "challenger_v1_1": {
+            "return_bps": challenger,
+            "eligible": challenger_eligible,
+        },
+        "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
+    }
+
+
+def _full_control_measurement(admission, controls, side, primary, challenger):
+    selected = controls[side]
+    return {
+        "schema": capture.SCHEMA_CONTROL_US,
+        "event_id": admission["event_id"],
+        "control_side": side,
+        "control_date": selected["control_date"],
+        "control_anchor_at": selected["control_anchor_at"],
+        "primary_v1": {"return_bps": primary, "eligible": True},
+        "challenger_v1_1": {
+            "return_bps": challenger,
+            "eligible": admission["challenger_v1_1_eligible"],
+        },
+        "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
+    }
+
+
+def test_capture_score_hsi_refuses_pending_before_transport_call():
+    admission = _capture_admission("2026-09-29T15:17:00Z")
+    controls = capture.freeze_matched_controls(
+        admission,
+        observed_session_dates=["2026-09-28", "2026-09-29"],
+        admitted_event_dates=["2026-09-29"],
+        source_coverage_through="2026-09-29",
+    )
+    calls = []
+
+    def transport(start, end):
+        calls.append((start, end))
+        return []
+
+    with pytest.raises(capture.CaptureContractError, match="still pending"):
+        capture.score_hsi_outcome(
+            admission,
+            controls,
+            _full_measurement(
+                admission["event_id"],
+                admission["available_at"],
+                100.0,
+                50.0,
+            ),
+            prior_control_measurement=_full_control_measurement(
+                admission, controls, "prior", -100.0, -50.0
+            ),
+            transport=transport,
+        )
+    assert calls == []
+
+
+def test_capture_score_hsi_measures_event_and_selected_controls_after_gate():
+    admission = _capture_admission("2026-09-29T15:17:00Z")
+    controls = capture.freeze_matched_controls(
+        admission,
+        observed_session_dates=["2026-09-28", "2026-09-29", "2026-09-30"],
+        admitted_event_dates=["2026-09-29"],
+        source_coverage_through="2026-09-30",
+    )
+    event_us = _full_measurement(
+        admission["event_id"],
+        admission["available_at"],
+        -120.0,
+        -60.0,
+    )
+    prior_us = _full_control_measurement(
+        admission, controls, "prior", 80.0, -20.0
+    )
+    next_us = _full_control_measurement(
+        admission, controls, "next", 40.0, 25.0
+    )
+    calls = []
+
+    def transport(start, end):
+        calls.append((start, end))
+        return [
+            {"date": "2026-09-28", "open": 995.0, "close": 1000.0},
+            {"date": "2026-09-29", "open": 1010.0, "close": 1020.0},
+            {"date": "2026-09-30", "open": 1000.0, "close": 980.0},
+            {"date": "2026-10-01", "open": 990.0, "close": 992.0},
+        ]
+
+    out = capture.score_hsi_outcome(
+        admission,
+        controls,
+        event_us,
+        prior_control_measurement=prior_us,
+        next_control_measurement=next_us,
+        transport=transport,
+    )
+    assert len(calls) == 1
+    assert out["schema"] == capture.SCHEMA_HK_SCORE
+    assert out["event"]["hsi"]["gap_bps"] == pytest.approx(
+        (1000.0 / 1020.0 - 1.0) * 10_000.0
+    )
+    assert out["event"]["primary_v1"]["sign_agreement"] is True
+    assert out["event"]["challenger_v1_1"]["sign_agreement"] is True
+    assert out["controls"]["prior"]["hsi"]["gap_bps"] == pytest.approx(100.0)
+    assert out["controls"]["prior"]["primary_v1"]["sign_agreement"] is True
+    assert out["controls"]["prior"]["challenger_v1_1"]["sign_agreement"] is False
+    assert out["controls"]["next"]["hsi"]["gap_bps"] == pytest.approx(
+        (990.0 / 980.0 - 1.0) * 10_000.0
+    )
+    assert out["pooled_claim_allowed"] is False
+    assert out["product_or_trading_authority"] is False
+    assert out["persistence"] == "none_stdout_only"
+
+
+def test_capture_score_hsi_keeps_missing_anchor_as_data_gap():
+    admission = _capture_admission("2026-09-29T15:17:00Z")
+    controls = capture.freeze_matched_controls(
+        admission,
+        observed_session_dates=["2026-09-28", "2026-09-29", "2026-09-30"],
+        admitted_event_dates=["2026-09-29"],
+        source_coverage_through="2026-09-30",
+    )
+    event_us = _full_measurement(
+        admission["event_id"],
+        admission["available_at"],
+        100.0,
+        50.0,
+    )
+    prior_us = _full_control_measurement(
+        admission, controls, "prior", 80.0, 20.0
+    )
+    next_us = _full_control_measurement(
+        admission, controls, "next", 40.0, 25.0
+    )
+
+    def transport(start, end):
+        return [
+            {"date": "2026-09-28", "open": 995.0, "close": 1000.0},
+            {"date": "2026-09-30", "open": 1000.0, "close": 980.0},
+            {"date": "2026-10-01", "open": 990.0, "close": 992.0},
+        ]
+
+    out = capture.score_hsi_outcome(
+        admission,
+        controls,
+        event_us,
+        prior_control_measurement=prior_us,
+        next_control_measurement=next_us,
+        transport=transport,
+    )
+    assert out["event"]["hsi"]["status"] == "DATA_GAP"
+    assert out["event"]["hsi"]["reason"] == "missing_anchor_close"
+    assert out["event"]["primary_v1"]["sign_agreement"] is None
+
+
+def test_capture_score_hsi_rejects_conflicting_duplicate_ohlc():
+    admission = _capture_admission("2026-09-29T15:17:00Z")
+    controls = capture.freeze_matched_controls(
+        admission,
+        observed_session_dates=["2026-09-28", "2026-09-29", "2026-09-30"],
+        admitted_event_dates=["2026-09-29"],
+        source_coverage_through="2026-09-30",
+    )
+    event_us = _full_measurement(
+        admission["event_id"],
+        admission["available_at"],
+        100.0,
+        50.0,
+    )
+    prior_us = _full_control_measurement(
+        admission, controls, "prior", 80.0, 20.0
+    )
+    next_us = _full_control_measurement(
+        admission, controls, "next", 40.0, 25.0
+    )
+
+    def transport(start, end):
+        return [
+            {"date": "2026-09-28", "open": 995.0, "close": 1000.0},
+            {"date": "2026-09-28", "open": 996.0, "close": 1000.0},
+        ]
+
+    with pytest.raises(capture.CaptureContractError, match="conflicting HSI OHLC"):
+        capture.score_hsi_outcome(
+            admission,
+            controls,
+            event_us,
+            prior_control_measurement=prior_us,
+            next_control_measurement=next_us,
+            transport=transport,
+        )
+
