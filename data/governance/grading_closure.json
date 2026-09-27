@@ -1,6 +1,6 @@
 {
   "schema": "grading_closure.v1",
-  "generated_at": "2026-09-26T19:24:14.447676+00:00",
+  "generated_at": "2026-09-27T03:24:22.787221+00:00",
   "n_ledgers": 34,
   "n_closed": 26,
   "n_grader_starved": 8,
@@ -14,7 +14,7 @@
       "graders": [
         "scripts/grade_qledger.py"
       ],
-      "n_logged": 112670,
+      "n_logged": 113092,
       "n_graded": 168198,
       "last_graded_at": "2026-09-26T15:03:29.568862+00:00",
       "tune_step": "N",
@@ -84,8 +84,8 @@
       "graders": [
         "engine/track_record.py"
       ],
-      "n_logged": 60455,
-      "n_graded": 60179,
+      "n_logged": 60464,
+      "n_graded": 60204,
       "last_graded_at": null,
       "tune_step": "N",
       "verdict": "CLOSED"
@@ -155,7 +155,7 @@
       "graders": [
         "scripts/grade_breadth_divergence.py"
       ],
-      "n_logged": 582,
+      "n_logged": 589,
       "n_graded": 230,
       "last_graded_at": null,
       "tune_step": "N",
@@ -449,7 +449,7 @@
       "graders": [
         "engine/species_registry.py"
       ],
-      "n_logged": 4441,
+      "n_logged": 4558,
       "n_graded": 0,
       "last_graded_at": null,
       "tune_step": "N",
@@ -463,7 +463,7 @@
       "graders": [
         "engine/species_registry.py"
       ],
-      "n_logged": 4441,
+      "n_logged": 4558,
       "n_graded": 0,
       "last_graded_at": null,
       "tune_step": "N",
