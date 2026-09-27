@@ -503,3 +503,147 @@ def test_capture_measure_control_us_refuses_pending_side_before_transport():
         )
     assert calls == []
 
+def _minimal_event_us_measurement(admission):
+    return {
+        "schema": capture.SCHEMA_US,
+        "event_id": admission["event_id"],
+        "available_at": admission["available_at"],
+        "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
+    }
+
+
+def _minimal_control_us_measurement(admission, controls, side):
+    selected = controls[side]
+    return {
+        "schema": capture.SCHEMA_CONTROL_US,
+        "event_id": admission["event_id"],
+        "control_side": side,
+        "control_date": selected["control_date"],
+        "control_anchor_at": selected["control_anchor_at"],
+        "hk_outcome_state": "NOT_READ_BY_THIS_HARNESS",
+    }
+
+
+def test_capture_hk_gate_refuses_pending_next_control():
+    admission = _capture_admission("2026-09-29T15:17:00Z")
+    controls = capture.freeze_matched_controls(
+        admission,
+        observed_session_dates=["2026-09-28", "2026-09-29"],
+        admitted_event_dates=["2026-09-29"],
+        source_coverage_through="2026-09-29",
+    )
+    with pytest.raises(capture.CaptureContractError, match="still pending"):
+        capture.gate_hk_outcome_read(
+            admission,
+            controls,
+            _minimal_event_us_measurement(admission),
+            prior_control_measurement=_minimal_control_us_measurement(
+                admission, controls, "prior"
+            ),
+        )
+
+
+def test_capture_hk_gate_requires_every_selected_control_measurement():
+    admission = _capture_admission("2026-09-29T15:17:00Z")
+    controls = capture.freeze_matched_controls(
+        admission,
+        observed_session_dates=["2026-09-28", "2026-09-29", "2026-09-30"],
+        admitted_event_dates=["2026-09-29"],
+        source_coverage_through="2026-09-30",
+    )
+    with pytest.raises(capture.CaptureContractError, match="next selected control measurement"):
+        capture.gate_hk_outcome_read(
+            admission,
+            controls,
+            _minimal_event_us_measurement(admission),
+            prior_control_measurement=_minimal_control_us_measurement(
+                admission, controls, "prior"
+            ),
+        )
+
+
+def test_capture_hk_gate_accepts_complete_pre_outcome_receipts():
+    admission = _capture_admission("2026-09-29T15:17:00Z")
+    controls = capture.freeze_matched_controls(
+        admission,
+        observed_session_dates=["2026-09-28", "2026-09-29", "2026-09-30"],
+        admitted_event_dates=["2026-09-29"],
+        source_coverage_through="2026-09-30",
+    )
+    out = capture.gate_hk_outcome_read(
+        admission,
+        controls,
+        _minimal_event_us_measurement(admission),
+        prior_control_measurement=_minimal_control_us_measurement(
+            admission, controls, "prior"
+        ),
+        next_control_measurement=_minimal_control_us_measurement(
+            admission, controls, "next"
+        ),
+    )
+    assert out["schema"] == capture.SCHEMA_HK_GATE
+    assert out["state"] == "READY_FOR_RESEARCH_HK_OUTCOME_READ"
+    assert out["research_hk_outcome_read_ready"] is True
+    assert out["hk_outcome_state"] == "NOT_READ"
+    assert out["controls"]["prior"]["measurement_present"] is True
+    assert out["controls"]["next"]["measurement_present"] is True
+
+
+def test_capture_hk_gate_accepts_terminal_control_data_gap_without_fake_receipt():
+    admission = _capture_admission("2026-09-29T15:17:00Z")
+    sessions = [
+        "2026-09-28",
+        "2026-09-29",
+        "2026-09-30",
+        "2026-10-01",
+        "2026-10-02",
+        "2026-10-05",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08",
+        "2026-10-09",
+        "2026-10-12",
+        "2026-10-13",
+    ]
+    controls = capture.freeze_matched_controls(
+        admission,
+        observed_session_dates=sessions,
+        admitted_event_dates=["2026-09-29", *sessions[2:12]],
+        source_coverage_through="2026-10-13",
+    )
+    out = capture.gate_hk_outcome_read(
+        admission,
+        controls,
+        _minimal_event_us_measurement(admission),
+        prior_control_measurement=_minimal_control_us_measurement(
+            admission, controls, "prior"
+        ),
+    )
+    assert out["controls"]["next"] == {
+        "status": "DATA_GAP",
+        "control_date": None,
+        "measurement_present": False,
+    }
+
+
+def test_capture_hk_gate_rejects_wrong_control_clock():
+    admission = _capture_admission("2026-09-29T15:17:00Z")
+    controls = capture.freeze_matched_controls(
+        admission,
+        observed_session_dates=["2026-09-28", "2026-09-29", "2026-09-30"],
+        admitted_event_dates=["2026-09-29"],
+        source_coverage_through="2026-09-30",
+    )
+    prior = _minimal_control_us_measurement(admission, controls, "prior")
+    prior["control_anchor_at"] = "2026-09-28T15:18:00Z"
+    with pytest.raises(capture.CaptureContractError, match="clock mismatch"):
+        capture.gate_hk_outcome_read(
+            admission,
+            controls,
+            _minimal_event_us_measurement(admission),
+            prior_control_measurement=prior,
+            next_control_measurement=_minimal_control_us_measurement(
+                admission, controls, "next"
+            ),
+        )
+

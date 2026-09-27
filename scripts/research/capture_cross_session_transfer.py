@@ -12,6 +12,9 @@ same-clock controls from completed observed SMH sessions plus admitted-event dat
 It refuses to treat a future/partially covered session as a clean control.
 Stage 3: measure_us_response and measure_control_us_response read the incumbent
 U.S. minute transport only and compute the already-frozen +5 to +35 minute constructions.
+Stage 4: gate_hk_outcome_read validates that source admission, control selection,
+and every required U.S. measurement are frozen and mutually consistent before
+a downstream research scorer is allowed to open the HSI outcome.
 
 No capture step reads Hong Kong outcomes, picks controls from outcomes, persists
 vendor bars, emits alerts, ranks opportunities, or grants trading authority.
@@ -46,6 +49,7 @@ SCHEMA_SOURCE_AMENDMENT = "research.cross_session_transfer_source_amendment.v1"
 SCHEMA_CONTROLS = "research.cross_session_transfer_matched_controls.v1"
 SCHEMA_US = "research.cross_session_transfer_us_measurement.v1"
 SCHEMA_CONTROL_US = "research.cross_session_transfer_control_us_measurement.v1"
+SCHEMA_HK_GATE = "research.cross_session_transfer_hk_outcome_gate.v1"
 
 V1_PROTOCOL_COMMIT = "0f9d4d88cf78b06ab9985d32be9df5c2bc929fd2"
 V1_PROTOCOL_FROZEN_AT = datetime(2026, 9, 26, 11, 16, 23, tzinfo=timezone.utc)
@@ -614,6 +618,122 @@ def measure_control_us_response(
     }
 
 
+def _validate_event_us_measurement(
+    admission: Mapping[str, Any],
+    us_measurement: Mapping[str, Any],
+) -> None:
+    if us_measurement.get("schema") != SCHEMA_US:
+        raise CaptureContractError("event U.S. measurement schema mismatch")
+    if str(us_measurement.get("event_id") or "") != str(admission.get("event_id") or ""):
+        raise CaptureContractError("event U.S. measurement event_id mismatch")
+    if str(us_measurement.get("available_at") or "") != str(admission.get("available_at") or ""):
+        raise CaptureContractError("event U.S. measurement clock mismatch")
+    if us_measurement.get("hk_outcome_state") != "NOT_READ_BY_THIS_HARNESS":
+        raise CaptureContractError("event U.S. measurement does not preserve HK outcome firewall")
+
+
+def _validate_control_receipt(
+    *,
+    admission: Mapping[str, Any],
+    controls: Mapping[str, Any],
+    side: str,
+    receipt: Mapping[str, Any] | None,
+) -> dict[str, Any]:
+    selected = controls.get(side)
+    if not isinstance(selected, Mapping):
+        raise CaptureContractError(f"{side} control selection is malformed")
+    status = str(selected.get("status") or "")
+    if status == "PENDING_OBSERVED_SESSION":
+        raise CaptureContractError(f"{side} matched control is still pending")
+    if status == "SELECTED":
+        if not isinstance(receipt, Mapping):
+            raise CaptureContractError(f"{side} selected control measurement is required")
+        if receipt.get("schema") != SCHEMA_CONTROL_US:
+            raise CaptureContractError(f"{side} control measurement schema mismatch")
+        if str(receipt.get("event_id") or "") != str(admission.get("event_id") or ""):
+            raise CaptureContractError(f"{side} control measurement event_id mismatch")
+        if receipt.get("control_side") != side:
+            raise CaptureContractError(f"{side} control measurement side mismatch")
+        if str(receipt.get("control_date") or "") != str(selected.get("control_date") or ""):
+            raise CaptureContractError(f"{side} control measurement date mismatch")
+        if str(receipt.get("control_anchor_at") or "") != str(selected.get("control_anchor_at") or ""):
+            raise CaptureContractError(f"{side} control measurement clock mismatch")
+        if receipt.get("hk_outcome_state") != "NOT_READ_BY_THIS_HARNESS":
+            raise CaptureContractError(f"{side} control measurement violates HK outcome firewall")
+        return {
+            "status": status,
+            "control_date": selected.get("control_date"),
+            "measurement_present": True,
+        }
+
+    if status not in {"DATA_GAP", "DATA_GAP_INSUFFICIENT_HISTORY"}:
+        raise CaptureContractError(f"unsupported {side} control status: {status}")
+    if receipt is not None:
+        raise CaptureContractError(
+            f"{side} control is {status} and must not carry a measurement receipt"
+        )
+    return {
+        "status": status,
+        "control_date": None,
+        "measurement_present": False,
+    }
+
+
+def gate_hk_outcome_read(
+    admission: Mapping[str, Any],
+    controls: Mapping[str, Any],
+    us_measurement: Mapping[str, Any],
+    *,
+    prior_control_measurement: Mapping[str, Any] | None = None,
+    next_control_measurement: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Return a readiness receipt only after every pre-HK prerequisite is frozen."""
+    if admission.get("schema") != SCHEMA_ADMISSION:
+        raise CaptureContractError("admission schema mismatch")
+    if admission.get("outcome_state") != "NOT_READ":
+        raise CaptureContractError("HK outcome gate cannot run after outcome read")
+    if controls.get("schema") != SCHEMA_CONTROLS:
+        raise CaptureContractError("control selection schema mismatch")
+    if str(controls.get("event_id") or "") != str(admission.get("event_id") or ""):
+        raise CaptureContractError("control selection event_id mismatch")
+    if controls.get("outcome_state") != "NOT_READ":
+        raise CaptureContractError("control selection does not preserve outcome firewall")
+    if controls.get("state") == "PENDING":
+        raise CaptureContractError("matched controls are still pending")
+
+    _validate_event_us_measurement(admission, us_measurement)
+    prior = _validate_control_receipt(
+        admission=admission,
+        controls=controls,
+        side="prior",
+        receipt=prior_control_measurement,
+    )
+    next_ = _validate_control_receipt(
+        admission=admission,
+        controls=controls,
+        side="next",
+        receipt=next_control_measurement,
+    )
+
+    return {
+        "schema": SCHEMA_HK_GATE,
+        "authority": dict(AUTHORITY),
+        "state": "READY_FOR_RESEARCH_HK_OUTCOME_READ",
+        "event_id": str(admission.get("event_id") or ""),
+        "event_available_at": str(admission.get("available_at") or ""),
+        "primary_v1_eligible": admission.get("primary_v1_eligible") is True,
+        "challenger_v1_1_eligible": admission.get("challenger_v1_1_eligible") is True,
+        "controls": {
+            "prior": prior,
+            "next": next_,
+        },
+        "event_us_measurement_present": True,
+        "research_hk_outcome_read_ready": True,
+        "hk_outcome_state": "NOT_READ",
+        "persistence": "none_stdout_only",
+    }
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -660,6 +780,16 @@ def _parser() -> argparse.ArgumentParser:
     measure_control.add_argument("--admission-file", required=True)
     measure_control.add_argument("--control-selection-file", required=True)
     measure_control.add_argument("--side", required=True, choices=["prior", "next"])
+
+    gate = sub.add_parser(
+        "gate-hk-outcome",
+        help="verify all frozen pre-HK receipts without reading the HK outcome",
+    )
+    gate.add_argument("--admission-file", required=True)
+    gate.add_argument("--control-selection-file", required=True)
+    gate.add_argument("--us-measurement-file", required=True)
+    gate.add_argument("--prior-control-measurement-file")
+    gate.add_argument("--next-control-measurement-file")
     return parser
 
 
@@ -722,6 +852,28 @@ def main(argv: Sequence[str] | None = None) -> int:
                 admission,
                 controls,
                 side=args.side,
+            )
+        elif args.command == "gate-hk-outcome":
+            with Path(args.admission_file).open("r", encoding="utf-8") as fh:
+                admission = json.load(fh)
+            with Path(args.control_selection_file).open("r", encoding="utf-8") as fh:
+                controls = json.load(fh)
+            with Path(args.us_measurement_file).open("r", encoding="utf-8") as fh:
+                us_measurement = json.load(fh)
+            prior_measurement = None
+            if args.prior_control_measurement_file:
+                with Path(args.prior_control_measurement_file).open("r", encoding="utf-8") as fh:
+                    prior_measurement = json.load(fh)
+            next_measurement = None
+            if args.next_control_measurement_file:
+                with Path(args.next_control_measurement_file).open("r", encoding="utf-8") as fh:
+                    next_measurement = json.load(fh)
+            result = gate_hk_outcome_read(
+                admission,
+                controls,
+                us_measurement,
+                prior_control_measurement=prior_measurement,
+                next_control_measurement=next_measurement,
             )
         else:
             with Path(args.admission_file).open("r", encoding="utf-8") as fh:
