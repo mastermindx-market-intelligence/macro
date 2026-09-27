@@ -107,17 +107,16 @@
    mode), the cards are ruled rows, and colour has stopped being atmosphere —
    it now only ever means something.
 
-   Identity is carried by TYPE: headlines are set in a display serif and
-   everything else stays in the house sans. The serif is a SYSTEM stack, so it
-   costs no webfont, no render budget and nothing in the Caddyfile immutable
-   list — Iowan/Palatino ship on macOS, Georgia everywhere else. zh gets a CJK
-   serif, which is the same editorial register in Chinese news.
+   Identity is carried by hierarchy, weight and numeric discipline — the shared
+   product UI family owns headlines and controls in both languages. This keeps the
+   News surface inside the Mastermind design system instead of maintaining a
+   page-local editorial font language.
 
    The tokens below are also consumed by the Intelligence Desk, the Live Wire,
    the rail and the diagnostics drawer, so redefining them here carries those
    sections into the same language.                                          */
-.nxx{ --num:var(--font-mono,ui-monospace,"SF Mono",SFMono-Regular,"Cascadia Mono","JetBrains Mono",Menlo,Consolas,monospace);
-  --nx-serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,"Times New Roman",serif;
+.nxx{ --num:var(--font-mono);
+  --nx-serif:var(--font-ui);
   /* paper / ink — a hair off the app chrome so the reading column reads as a sheet */
   --nx-paper:color-mix(in srgb, var(--panel) 92%, var(--bg));
   /* Still real surfaces — the release cards, the rail, the Desk and the Wire all
@@ -136,7 +135,7 @@
   padding-bottom:8px; }
 .nxx .num{ font-family:var(--num); font-variant-numeric:tabular-nums; letter-spacing:-.01em; }
 .nxx a{ color:inherit; text-decoration:none; }
-html[data-lang="zh"] .nxx{ --nx-serif:"Songti SC","SimSun","Noto Serif CJK SC","Source Han Serif SC",serif; }
+html[data-lang="zh"] .nxx{ --nx-serif:var(--font-ui); }
 
 /* The reading column is a SHEET on the app's ground, rather than a full-viewport
    fixed layer: same look, one less always-composited element, and the sheet edge
@@ -685,6 +684,117 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
    and the lead card's 4s sentiment "breathe" were the only animations here, and
    both are gone — the strongest form of reduced-motion compliance is having
    nothing to disable. Any animation added back needs its own kill block. */
+/* ---- News Intelligence · Paper-converged production layer -----------------
+   Resting surfaces optimize for scan speed. Detail is disclosed by the story
+   brief dialog; no live payload prose is repeated on every row. */
+.nx-head{ padding:12px 0 16px; margin-bottom:18px; border-bottom:1px solid var(--nx-hair); }
+.nx-eyebrow{ letter-spacing:.12em; }
+.nx-title{ font-family:var(--font-ui); font-size:clamp(30px,4vw,40px); font-weight:800; letter-spacing:-.03em; margin:7px 0 4px; }
+.nx-updated{ margin-top:6px; }
+.nx-hero{ grid-template-columns:minmax(0,2.2fr) minmax(300px,1fr); gap:18px; margin-bottom:18px; padding-bottom:0; border-bottom:0; align-items:stretch; }
+.nx-lead,.nx-movers{ background:var(--nx-card); border:1px solid var(--nx-hair); border-radius:var(--r-panel,14px); box-shadow:var(--card-shadow); }
+.nx-lead{ padding:22px 24px; display:flex; flex-direction:column; justify-content:center; min-height:226px; }
+.nx-lead-eyebrow{ margin-bottom:14px; letter-spacing:.12em; }
+.nx-lead-eyebrow::after{ display:none; }
+.nx-lead-title{ font-family:var(--font-ui); font-size:clamp(25px,3vw,34px); font-weight:750; line-height:1.12; letter-spacing:-.025em; margin-bottom:16px; }
+.nx-movers{ padding:18px 18px 10px; }
+.nx-movers-hd{ padding-bottom:11px; margin-bottom:0; border-bottom:1px solid var(--nx-hair); letter-spacing:.12em; }
+.nx-mover{ display:grid; grid-template-columns:30px minmax(0,1fr); gap:10px; padding:14px 0; align-items:start; }
+.nx-rank-num{ color:var(--ink-link,var(--link)); font-size:11px; font-weight:800; padding-top:2px; }
+.nx-mover-copy{ min-width:0; }
+.nx-mover-title{ font-family:var(--font-ui); font-size:14px; font-weight:700; line-height:1.3; }
+.nx-mover-meta{ font-size:10px; margin-top:7px; }
+.nx-attention{ display:grid; grid-template-columns:118px minmax(0,1fr) auto; gap:18px; align-items:center; margin-bottom:18px; padding:13px 0 15px; border-bottom:1px solid var(--nx-hair); }
+.nx-attention-items{ display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:14px; min-width:0; }
+.nx-attention .nx-heat{ display:flex; flex-direction:column; gap:7px; min-width:0; color:var(--text); font-weight:650; }
+.nx-attention .nx-heat + .nx-heat::before{ display:none; }
+.nx-heat-top{ display:flex; align-items:center; justify-content:space-between; gap:8px; min-width:0; font-size:11px; }
+.nx-heat-top>span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.nx-heat-top b{ flex:0 0 auto; font-family:var(--num); color:var(--muted); font-size:10px; }
+.nx-heat-bar{ display:block; width:100%; height:4px; border-radius:var(--r-pill,999px); background:var(--line); overflow:hidden; }
+.nx-heat-bar i{ display:block; width:var(--share); height:100%; border-radius:inherit; background:var(--link); opacity:.72; }
+.nx-attention .nx-pulse-sent{ margin-left:0; white-space:nowrap; }
+.nx-controls{ margin-bottom:14px; }
+
+.nxi{ border-radius:var(--r-panel,14px); }
+.nxi-head{ padding:18px 20px 14px; }
+.nxi-title{ font-size:20px; }
+.nxi-metrics{ grid-template-columns:repeat(4,minmax(0,1fr)); }
+.nxi-toolbar{ padding:12px 20px; border-bottom:1px solid var(--nx-hair); }
+.nxi-list{ display:flex; flex-direction:column; gap:0; padding:0 20px 8px; }
+.nxi-story{ min-width:0; border:0; border-bottom:1px solid var(--nx-hair); border-radius:0; background:transparent; overflow:visible; }
+.nxi-story:last-child{ border-bottom:0; }
+.nxi-story[data-stage="high_impact"]{ border-color:var(--nx-hair); }
+.nxi-open{ appearance:none; width:100%; display:grid; grid-template-columns:52px minmax(0,1fr) minmax(150px,220px) 105px; gap:16px; align-items:center; padding:16px 0; border:0; background:transparent; color:inherit; text-align:left; cursor:pointer; font:inherit; }
+.nxi-open:hover .nxi-headline{ text-decoration:underline; text-decoration-thickness:1px; text-underline-offset:3px; }
+.nxi-open:focus-visible{ outline:2px solid var(--info); outline-offset:5px; border-radius:var(--r-ctl,8px); }
+.nxi-rank{ display:flex; flex-direction:column; gap:6px; color:var(--ink-link,var(--link)); font:800 11px/1 var(--num); }
+.nxi-rank::after{ content:""; width:30px; height:3px; border-radius:var(--r-pill,999px); background:var(--link); opacity:.72; }
+.nxi-row-copy{ min-width:0; }
+.nxi-headline{ margin:0; font-size:15px; line-height:1.3; font-weight:700; letter-spacing:-.012em; }
+.nxi-row-meta{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-top:7px; color:var(--muted); font-size:9.5px; }
+.nxi-row-context{ display:flex; flex-wrap:wrap; align-items:center; gap:5px; min-width:0; }
+.nxi-row-context .nxi-chip{ max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.nxi-row-status{ justify-self:end; color:var(--muted); font-size:9px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+.nxi-row-status.high_impact{ color:var(--ink-act,var(--act)); }
+.nxi-row-status.confirmed{ color:var(--ink-ok,var(--ok)); }
+.nxi-footer{ padding:11px 20px; }
+.nxi-footer>span{ color:var(--muted); font-size:10px; }
+
+.nxi-backdrop[hidden],.nxi-drawer[hidden]{ display:none!important; }
+.nxi-backdrop{ position:fixed; inset:0; z-index:13000; background:var(--bg); opacity:.66; }
+.nxi-drawer{ position:fixed; z-index:13010; right:0; top:0; bottom:0; width:min(560px,92vw); display:flex; flex-direction:column; background:var(--panel); border-left:1px solid var(--line); box-shadow:var(--popover-shadow); }
+.nxi-drawer-head{ display:flex; align-items:center; justify-content:space-between; min-height:62px; padding:14px 20px; border-bottom:1px solid var(--line); }
+.nxi-drawer-kicker{ color:var(--muted); font-size:10px; font-weight:750; letter-spacing:.12em; text-transform:uppercase; }
+.nxi-drawer-close{ appearance:none; width:36px; height:36px; display:grid; place-items:center; border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--panel2); color:var(--text); font:500 20px/1 var(--font-ui); cursor:pointer; }
+.nxi-drawer-close:focus-visible{ outline:2px solid var(--info); outline-offset:2px; }
+.nxi-drawer-scroll{ overflow:auto; overscroll-behavior:contain; padding:22px 24px 32px; }
+.nxi-drawer-title{ margin:0; font-size:26px; line-height:1.16; letter-spacing:-.025em; }
+.nxi-drawer-meta{ display:flex; flex-wrap:wrap; gap:7px; align-items:center; margin:10px 0 18px; color:var(--muted); font-size:10px; }
+.nxi-drawer-section{ padding:16px 0; border-top:1px solid var(--line); }
+.nxi-drawer-section>h3{ margin:0 0 10px; color:var(--muted); font-size:9.5px; font-weight:750; letter-spacing:.11em; text-transform:uppercase; }
+.nxi-drawer-section p{ margin:0; color:var(--text); font-size:12px; line-height:1.5; }
+.nxi-drawer-section p+p{ margin-top:8px; color:var(--muted); }
+.nxi-drawer-market{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 12px; border-radius:var(--r-ctl,8px); background:var(--panel2); }
+.nxi-drawer-market span:first-child{ color:var(--muted); font-size:9px; font-weight:750; letter-spacing:.08em; text-transform:uppercase; }
+.nxi-drawer-market b{ font-family:var(--num); font-size:12px; }
+.nxi-drawer-assets{ display:flex; flex-wrap:wrap; gap:7px; }
+.nxi-drawer-assets a{ padding:6px 9px; border-radius:var(--r-ctl,8px); background:var(--panel2); border:1px solid var(--line); color:var(--ink-link,var(--link)); font:750 10px/1.2 var(--num); }
+.nxi-review-note{ margin-top:8px!important; color:var(--muted)!important; font-size:10px!important; }
+body.nxi-drawer-open{ overflow:hidden; }
+
+@media(max-width:900px){
+  .nx-hero{ grid-template-columns:1fr; }
+  .nx-lead{ min-height:0; }
+  .nxi-open{ grid-template-columns:40px minmax(0,1fr) 90px; gap:10px; }
+  .nxi-row-context{ grid-column:2 / 4; }
+}
+@media(max-width:560px){
+  .nx-title{ font-size:30px; }
+  .nx-hero{ gap:12px; }
+  .nx-lead{ padding:16px; }
+  .nx-lead-title{ font-size:22px; }
+  .nx-movers{ display:none; }
+  .nx-attention{ display:block; padding:12px 0 14px; }
+  .nx-attention .nx-pulse-lbl{ display:block; margin-bottom:9px; }
+  .nx-attention-items{ display:flex; gap:10px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
+  .nx-attention-items::-webkit-scrollbar{ display:none; }
+  .nx-attention .nx-heat{ flex:0 0 112px; }
+  .nx-attention .nx-pulse-sent{ display:flex; margin-top:10px; }
+  .nxi-head{ padding:16px; }
+  .nxi-metrics{ grid-template-columns:repeat(2,1fr); }
+  .nxi-toolbar{ padding:10px 16px; overflow-x:auto; flex-wrap:nowrap; }
+  .nxi-filter{ flex:0 0 auto; }
+  .nxi-result-count{ margin-left:auto; }
+  .nxi-list{ padding:0 16px 8px; }
+  .nxi-open{ grid-template-columns:32px minmax(0,1fr); gap:10px; padding:14px 0; }
+  .nxi-row-status{ grid-column:1; grid-row:1; justify-self:start; margin-top:22px; font-size:9px; }
+  .nxi-row-context{ grid-column:2; }
+  .nxi-drawer{ inset:0; width:100vw; max-width:100vw; min-width:0; box-sizing:border-box; border-left:0; }
+  .nxi-drawer-head{ width:100%; min-width:0; box-sizing:border-box; min-height:58px; padding:11px 18px; }
+  .nxi-drawer-scroll{ width:100%; min-width:0; box-sizing:border-box; padding:18px 18px 28px; overflow-x:hidden; }
+  .nxi-drawer-title{ font-size:23px; overflow-wrap:anywhere; }
+}
 {% endblock %}
 
 {% block content %}
@@ -694,71 +804,67 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
    light mode a lavender haze. The ground is now the .nxx sheet itself. #}
 
 <header class="nx-head">
-  <div class="nx-eyebrow"><span class="live"></span>{{ t('Markets News','市场新闻') }}</div>
+  <div class="nx-eyebrow">{{ t('News Intelligence','新闻情报') }}</div>
   <h1 class="nx-title">{{ t('What matters now','当下要闻') }}</h1>
-  <p class="nx-sub">{{ t('The market-moving business and macro news that matters now — importance-ranked, fresh, and de-noised.','此刻真正影响市场的商业与宏观新闻——按重要性排序、保持新鲜、去除噪音。') }}</p>
   <div class="nx-updated">{{ t('Updated','更新于') }} <span class="rel-time num" data-ts="{{ macro_news.fetched_at if macro_news else '' }}"></span>
-    {% if FEED %}· <span class="num">{{ FEED|length }}</span> {{ t('stories ranked','条已排序') }}{% endif %}</div>
+    {% if FEED %}<span class="sep">·</span><span class="num">{{ FEED|length }}</span> {{ t('ranked stories','条排序事件') }}{% endif %}</div>
   {% if FEED %}<a class="nx-triage-jump" id="nxTriageJump" href="#nxControls">{{ t('Find & filter stories','查找并筛选新闻') }} <span aria-hidden="true">↓</span></a>{% endif %}
 </header>
 
 {# ============================ HERO ============================ #}
 {% if LEAD %}
-{% set lead_acc = 'var(--up)' if (LEAD.event and LEAD.event.direction in ['bullish']) or LEAD.ai_sentiment=='pos' or LEAD.sentiment=='pos' else ('var(--down)' if (LEAD.event and LEAD.event.direction in ['bearish']) or LEAD.ai_sentiment=='neg' or LEAD.sentiment=='neg' else 'var(--link)') %}
 <section class="nx-hero">
-  <div class="nx-lead" style="--acc:{{ lead_acc }};">
-    {#- One kicker, not two. `why()` yields a THEME-level phrase ("Market context",
-        "Earnings mover"), which read as a broken subtitle when it sat under the
-        headline where a standfirst belongs. It is a classification, so it belongs
-        in the kicker beside "Top story". -#}
-    <div class="nx-lead-eyebrow">{{ t('Top story','头条') }} <span class="nx-lead-kick">· {{ why(LEAD) }}</span></div>
-    {#- The impact ring is gone. It set an 8px uppercase label inside a circular
-        overflow:hidden clip, which fits at 8px and clips the moment a browser
-        enforces a minimum font size (measured: from 12px at the 60px ring, from
-        10px at the 50px mobile ring) — sub-9px type is not under our control.
-        The list's own order carries the ranking, the standfirst says why it
-        matters, and the diagnostics drawer keeps the technical receipt. -#}
+  <article class="nx-lead">
+    <div class="nx-lead-eyebrow">
+      <span>{{ t('Top story','头条') }}</span>
+      {{ themechip(LEAD) }}
+    </div>
     <a class="nx-lead-title" href="{{ LEAD.url }}" target="_blank" rel="noopener">{{ t(LEAD.title|e, (LEAD.title_zh or LEAD.title)|e) }}</a>
     <div class="nx-lead-meta">
-      {{ themechip(LEAD) }}
-      <span class="sep">·</span>
       <span class="src">{{ LEAD.source_name or LEAD.source or LEAD.domain }}</span>
       <span class="sep">·</span><span class="rel-time" data-ts="{{ LEAD.seendate }}"></span>
       {% for tk in (LEAD.tickers or [])[:4] %}<a class="nx-tk" href="stock.html#{{ tk|e }}">{{ tk }}</a>{% endfor %}
     </div>
-  </div>
+  </article>
 
-  <div class="nx-movers">
-    <div class="nx-movers-hd">{{ t('Also big','同样重要') }}</div>
+  <aside class="nx-movers" aria-label="{{ 'Priority queue' }}">
+    <div class="nx-movers-hd">{{ t('Priority queue','优先队列') }}</div>
     {% for m in MOVERS %}
-    {% set macc = 'var(--up)' if (m.event and m.event.direction=='bullish') or m.ai_sentiment=='pos' or m.sentiment=='pos' else ('var(--down)' if (m.event and m.event.direction=='bearish') or m.ai_sentiment=='neg' or m.sentiment=='neg' else 'var(--link)') %}
-    <a class="nx-mover" href="{{ m.url }}" target="_blank" rel="noopener" style="--acc:{{ macc }};">
-      <span class="nx-mover-title">{{ t(m.title|e, (m.title_zh or m.title)|e) }}</span>
-      <div class="nx-mover-meta">{{ themechip(m) }}<span class="sep">·</span><span>{{ m.source_name or m.source or m.domain }}</span><span class="sep">·</span><span class="rel-time" data-ts="{{ m.seendate }}"></span></div>
+    <a class="nx-mover" href="{{ m.url }}" target="_blank" rel="noopener">
+      <span class="nx-rank-num num">0{{ loop.index }}</span>
+      <span class="nx-mover-copy">
+        <span class="nx-mover-title">{{ t(m.title|e, (m.title_zh or m.title)|e) }}</span>
+        <span class="nx-mover-meta">{{ themechip(m) }}<span class="sep">·</span><span>{{ m.source_name or m.source or m.domain }}</span><span class="sep">·</span><span class="rel-time" data-ts="{{ m.seendate }}"></span></span>
+      </span>
     </a>
     {% endfor %}
-  </div>
+  </aside>
 </section>
 {% endif %}
 
-{# ============================ PULSE ============================ #}
+{# ============================ ATTENTION MAP ============================ #}
 {% set theme_counts = {} %}
 {% for h in heads %}
   {% if h.theme %}{% set _ = theme_counts.update({h.theme: theme_counts.get(h.theme,0)+1}) %}{% endif %}
 {% endfor %}
 {% if theme_counts %}
-<div class="nx-pulse">
-  <span class="nx-pulse-lbl">{{ t('Theme pulse','主题热度') }}</span>
-  {% for th, cnt in (theme_counts.items()|sort(attribute='1', reverse=true))[:7] %}
-    {#- TL first, then the lane dictionary, and only then a prettified slug. The old
-        fallback printed the raw key, which is how "companies" and "markets" reached a
-        glance surface in lower case beside properly labelled themes. -#}
-    {% set tl = TL.get(th) or LANEL.get(th) %}
-    <span class="nx-heat th-{{ th }}">{{ t(tl[0] if tl else th|replace('_',' ')|title, tl[1] if tl else th|replace('_',' ')|title) }} <b>{{ cnt }}</b></span>
-  {% endfor %}
+{% set attention = theme_counts.items()|sort(attribute='1', reverse=true) %}
+{% set ans = namespace(max_count=1) %}
+{% for th, cnt in attention[:5] %}{% if cnt > ans.max_count %}{% set ans.max_count = cnt %}{% endif %}{% endfor %}
+<div class="nx-attention">
+  <span class="nx-pulse-lbl">{{ t('Attention map','关注分布') }}</span>
+  <div class="nx-attention-items">
+    {% for th, cnt in attention[:5] %}
+      {% set tl = TL.get(th) or LANEL.get(th) %}
+      <span class="nx-heat" style="--share:{{ ((cnt / ans.max_count) * 100)|round(0,'floor') }}%;">
+        <span class="nx-heat-top"><span>{{ t(tl[0] if tl else th|replace('_',' ')|title, tl[1] if tl else th|replace('_',' ')|title) }}</span><b>{{ cnt }}</b></span>
+        <span class="nx-heat-bar" aria-hidden="true"><i></i></span>
+      </span>
+    {% endfor %}
+  </div>
   {% if NS_STATE %}
   <span class="nx-pulse-sent"><span class="dot" style="background:{{ 'var(--up)' if NS_STATE in ['optimistic','positive'] else 'var(--down)' }};"></span>
-    {{ t('News tone','新闻情绪') }}: {{ t('upbeat','偏乐观') if NS_STATE in ['optimistic','positive'] else t('cautious','偏谨慎') }}</span>
+    {{ t('Desk tone','编辑台基调') }} · {{ t('upbeat','偏乐观') if NS_STATE in ['optimistic','positive'] else t('cautious','偏谨慎') }}</span>
   {% endif %}
 </div>
 {% endif %}
@@ -785,14 +891,14 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
 {% endif %}
 
 {# ==================== INTELLIGENCE DESK ====================
-   Client-hydrated from the host-local story store. Hidden on a true 404 so a
-   deployment with no daemon artifact does not advertise a dead feature. #}
+   Client-hydrated from the host-local story store. Resting state is scan-first:
+   headline + evidence maturity + market context. Explanatory depth lives in the
+   Story Brief dialog and is disclosed only after a deliberate open action. #}
 <section class="nxi" id="nxIntel" data-state="loading" hidden>
   <div class="nxi-head">
     <div>
-      <div class="nxi-kicker"><span class="nxi-pulse"></span>{{ t('Story updates','事件更新') }}</div>
-      <h2 class="nxi-title">{{ t('Intelligence Desk','情报工作台') }}</h2>
-      <p class="nxi-sub">{{ t('Developing stories with their sources and market context.','跟踪事件发展、相关来源和市场背景。') }}</p>
+      <div class="nxi-kicker"><span class="nxi-pulse"></span>{{ t('Developing + confirmed','发展中 + 已确认') }}</div>
+      <h2 class="nxi-title">{{ t('Ranked story stream','排序事件流') }}</h2>
     </div>
     <div class="nxi-health">
       <strong id="nxIntelHealth">{{ t('Connecting to the desk','正在连接工作台') }}</strong>
@@ -800,26 +906,25 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
     </div>
   </div>
   <div class="nxi-metrics" id="nxIntelMetrics" hidden>
-    <div class="nxi-metric"><b id="nxiActive">—</b><span>{{ t('Active stories','活跃事件') }}</span></div>
+    <div class="nxi-metric"><b id="nxiActive">—</b><span>{{ t('Active','活跃') }}</span></div>
     <div class="nxi-metric"><b id="nxiConfirmed">—</b><span>{{ t('Confirmed','已确认') }}</span></div>
-    <div class="nxi-metric"><b id="nxiDrafts">—</b><span>{{ t('Draft-ready','草稿就绪') }}</span></div>
-    <div class="nxi-metric"><b id="nxiSources">—</b><span>{{ t('Sources in view','当前来源') }}</span></div>
+    <div class="nxi-metric"><b id="nxiDeveloping">—</b><span>{{ t('Developing','发展中') }}</span></div>
+    <div class="nxi-metric"><b id="nxiSources">—</b><span>{{ t('Sources','来源') }}</span></div>
   </div>
   <div class="nxi-toolbar" id="nxIntelToolbar" role="group" aria-label="Filter stories" data-label-en="Filter stories" data-label-zh="筛选事件" hidden>
-    <button type="button" class="nxi-filter on" data-intel-filter="all" aria-pressed="true">{{ t('All stories','全部事件') }}</button>
+    <button type="button" class="nxi-filter on" data-intel-filter="all" aria-pressed="true">{{ t('All','全部') }}</button>
     <button type="button" class="nxi-filter" data-intel-filter="high_impact" aria-pressed="false">{{ t('High impact','高影响') }}</button>
     <button type="button" class="nxi-filter" data-intel-filter="confirmed" aria-pressed="false">{{ t('Confirmed','已确认') }}</button>
-    <button type="button" class="nxi-filter" data-intel-filter="draft" aria-pressed="false">{{ t('Draft ready','草稿就绪') }}</button>
     <span class="nxi-result-count" id="nxIntelCount" aria-live="polite"></span>
     <button type="button" class="nxi-clear" id="nxIntelClear" hidden>{{ t('Clear filter','清除筛选') }}</button>
-    <span class="nxi-toolbar-note">{{ t('Outbound posting is separate and remains review-gated.','对外发布为独立流程，仍需人工审核。') }}</span>
   </div>
   <div class="nxi-list" id="nxIntelList" hidden></div>
   <div class="nxi-state" id="nxIntelState" hidden></div>
   <div class="nxi-footer" id="nxIntelFooter" hidden>
-    <span>{{ t('Context, not a trade signal. Open a card for evidence and draft provenance.','这里是背景信息，不是交易信号。展开卡片可查看证据与草稿来源。') }}</span>
-    <button class="nxi-showmore" id="nxIntelMore" hidden>{{ t('Show more stories','显示更多事件') }}</button>
+    <span>{{ t('Ranked continuously · evidence attached','持续排序 · 附带证据') }}</span>
+    <button class="nxi-showmore" id="nxIntelMore" hidden>{{ t('View full stream','查看完整事件流') }}</button>
   </div>
+
 </section>
 
 {# ==================== LIVE WIRE (B4b) ====================
@@ -1058,6 +1163,17 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
 
 {% if macro_news_disclaimer %}<p class="nx-disc">{{ t(macro_news_disclaimer, macro_news_disclaimer_zh or macro_news_disclaimer) }}</p>{% endif %}
 </div>
+<div class="nxi-backdrop" id="nxIntelBackdrop" hidden></div>
+<aside class="nxi-drawer" id="nxIntelDrawer" role="dialog" aria-modal="true" aria-labelledby="nxIntelDrawerTitle" hidden>
+  <div class="nxi-drawer-head">
+    <div class="nxi-drawer-kicker">{{ t('Story brief','事件简报') }}</div>
+    <button type="button" class="nxi-drawer-close" id="nxIntelClose"
+            aria-label="Close story brief" data-label-en="Close story brief" data-label-zh="关闭事件简报">×</button>
+  </div>
+  <div class="nxi-drawer-scroll" id="nxIntelDrawerBody">
+    <h2 class="nxi-drawer-title" id="nxIntelDrawerTitle"></h2>
+  </div>
+</aside>
 {% endblock %}
 
 {% block body_scripts %}
@@ -1083,7 +1199,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       s.placeholder = s.getAttribute(zh?'data-ph-zh':'data-ph-en') || s.placeholder;
       s.setAttribute('aria-label',s.getAttribute(zh?'data-label-zh':'data-label-en') || s.getAttribute('aria-label'));
     }
-    ['nxSeg','nxIntelToolbar'].forEach(function(id){
+    ['nxSeg','nxIntelToolbar','nxIntelClose'].forEach(function(id){
       var el=document.getElementById(id); if(!el) return;
       el.setAttribute('aria-label',el.getAttribute(zh?'data-label-zh':'data-label-en') || el.getAttribute('aria-label'));
     });
@@ -1156,11 +1272,16 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
     var resultCountEl=document.getElementById('nxIntelCount'), intelClear=document.getElementById('nxIntelClear');
     var healthEl=document.getElementById('nxIntelHealth');
     var updatedEl=document.getElementById('nxIntelUpdated');
-    if(!listEl || !stateEl) return;
+    var drawer=document.getElementById('nxIntelDrawer');
+    var drawerBody=document.getElementById('nxIntelDrawerBody');
+    var drawerClose=document.getElementById('nxIntelClose');
+    var backdrop=document.getElementById('nxIntelBackdrop');
+    if(!listEl || !stateEl || !drawer || !drawerBody || !drawerClose || !backdrop) return;
 
     var URL_='live/intelligence.json', POLL=(window.LIVE_POLL_SEC||60)*1000;
-    var TIMEOUT=10000, CAP=8, stories=[], health={}, updatedAt='', filter='all';
+    var TIMEOUT=10000, CAP=6, stories=[], health={}, updatedAt='', filter='all';
     var expanded=false, mode='loading', inflight=false, timerId=null;
+    var selectedStory=null, lastTrigger=null;
     // The payload carries up to 12 timeline rows; the fold shows the newest few
     // and counts the rest. The receipts above it must stay the bigger group.
     var TL_SHOWN=6, FACTS_SHOWN=3, SHAPE_ORDER=['wire','analysis','long_post'];
@@ -1356,62 +1477,59 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       });
       return b;
     }
-    function storyCard(story){
-      var card=el('article','nxi-story'); card.setAttribute('data-stage',String(story.stage||'developing'));
-      var main=el('div','nxi-main'), top=el('div','nxi-topline');
-      top.appendChild(el('span','nxi-stage '+String(story.stage||'developing'),stageLabel(story.stage)));
-      var lane=zh()?(story.lane_label_zh||story.lane_label_en):(story.lane_label_en||story.lane);
-      top.appendChild(el('span','nxi-lane',lane||tx('Markets','市场')));
-      var n=Math.max(1,Number(story.source_count||1));
-      top.appendChild(el('span','nxi-sourcecount',n+' '+tx(n===1?'source':'sources','个来源')));
+    function section(title){
+      var wrap=el('section','nxi-drawer-section');
+      wrap.appendChild(el('h3','',title));
+      return wrap;
+    }
+    function closeDrawer(restoreFocus){
+      if(drawer.hidden) return;
+      drawer.hidden=true; backdrop.hidden=true;
+      document.body.classList.remove('nxi-drawer-open');
+      selectedStory=null;
+      if(restoreFocus!==false && lastTrigger && document.documentElement.contains(lastTrigger)){
+        lastTrigger.focus();
+      }
+      lastTrigger=null;
+    }
+    function openDrawer(story,trigger,keepFocus){
+      selectedStory=story;
+      if(trigger) lastTrigger=trigger;
+      drawerBody.textContent='';
       var body=readable(story);
-      if(body.original){
-        top.appendChild(el('span','nxi-orig',tx('English original','英文原文')));
-      }
-      top.appendChild(el('span','nxi-time',age(story.updated_at)));
-      main.appendChild(top);
-      main.appendChild(el('h3','nxi-headline',body.headline));
-      if(body.brief) main.appendChild(el('p','nxi-brief',body.brief));
-      var why=zh()?(story.why_it_matters_zh||story.why_it_matters_en):story.why_it_matters_en;
-      if(why) main.appendChild(el('p','nxi-why',why));
-      var chips=el('div','nxi-chips'), ctx=story.context||{};
-      ['evidence','pace','source_quality'].forEach(function(k){
-        if(!ctx[k]) return;
-        var cls='nxi-chip'+
-          ((k==='pace'&&String(ctx[k])==='Cooling') ? ' pace-cooling' : '');
-        chips.appendChild(el('span',cls,knownContext(ctx[k])));
-      });
-      // `market` is served null once its stamp goes stale, so the chip simply
-      // does not appear. It stays neutral on purpose: a red/green move flips
-      // meaning under the zh convention, and this is context, not a call.
+      var title=el('h2','nxi-drawer-title',body.headline);
+      title.id='nxIntelDrawerTitle';
+      drawerBody.appendChild(title);
+
+      var meta=el('div','nxi-drawer-meta');
+      meta.appendChild(el('span','nxi-stage '+String(story.stage||'developing'),stageLabel(story.stage)));
+      var lane=zh()?(story.lane_label_zh||story.lane_label_en):(story.lane_label_en||story.lane);
+      meta.appendChild(el('span','nxi-lane',lane||tx('Markets','市场')));
+      var sourceCount=Math.max(1,Number(story.source_count||1));
+      meta.appendChild(el('span','nxi-sourcecount',sourceCount+' '+tx(sourceCount===1?'source':'sources','个来源')));
+      meta.appendChild(el('span','nxi-time',age(story.updated_at)));
+      drawerBody.appendChild(meta);
+
       if(story.market && story.market.label){
-        chips.appendChild(el('span','nxi-chip market',
-          story.market.label+' · '+tx('session move','本交易日变动')));
+        var market=section(tx('Market context','市场反应'));
+        var band=el('div','nxi-drawer-market');
+        band.appendChild(el('span','',tx('Session move','本交易日变动')));
+        band.appendChild(el('b','',String(story.market.label)));
+        market.appendChild(band); drawerBody.appendChild(market);
       }
-      (story.tickers||[]).slice(0,5).forEach(function(t){
-        chips.appendChild(el('span','nxi-chip ticker','$'+String(t).replace(/^\$/,'')));
-      });
-      if(chips.childNodes.length) main.appendChild(chips);
-      card.appendChild(main);
+
+      var why=zh()?(story.why_it_matters_zh||story.why_it_matters_en):story.why_it_matters_en;
+      if(body.brief || why){
+        var changed=section(tx('What changed','发生了什么'));
+        if(body.brief) changed.appendChild(el('p','',body.brief));
+        if(why) changed.appendChild(el('p','',why));
+        drawerBody.appendChild(changed);
+      }
 
       var evidence=(story.evidence||[]).filter(function(x){ return x&&typeof x==='object'; });
-      var drafts=(story.drafts||[]).filter(function(x){ return x&&x.text; });
-      var details=document.createElement('details'); details.className='nxi-more';
-      details.appendChild(el('summary','',
-        tx('Evidence & content','证据与内容')+' · '+evidence.length+' / '+drafts.length));
-      var detail=el('div','nxi-detail');
-      var routes=(story.content_routes||[]).filter(function(x){return x;});
-      if(routes.length){
-        var routeWrap=el('div',''), routeChips=el('div','nxi-chips');
-        routeWrap.appendChild(el('h4','',tx('Content routes','内容路径')));
-        routes.forEach(function(route){
-          routeChips.appendChild(el('span','nxi-chip',shapeLabel(route)));
-        });
-        routeWrap.appendChild(routeChips); detail.appendChild(routeWrap);
-      }
       if(evidence.length){
-        var evWrap=el('div',''), evList=el('div','nxi-evidence');
-        evWrap.appendChild(el('h4','',tx('Source receipts','来源依据')));
+        var ev=section(tx('Source receipts','来源依据'));
+        var list=el('div','nxi-evidence');
         evidence.slice(0,8).forEach(function(source){
           var row=el('div','nxi-source'), lead=el('div','');
           var href=safeUrl(source.url);
@@ -1421,43 +1539,115 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
           }else lead.appendChild(el('strong','',source.name||tx('Source','来源')));
           lead.appendChild(el('span','',
             ' · '+age(source.published_at)+(zh()?tx(' · English source',' · 英文原文'):'')));
-          row.appendChild(lead); evList.appendChild(row);
+          row.appendChild(lead); list.appendChild(row);
         });
-        evWrap.appendChild(evList); detail.appendChild(evWrap);
+        ev.appendChild(list); drawerBody.appendChild(ev);
       }
-      var track=timelineGroup(story); if(track) detail.appendChild(track);
-      var facts=factsGroup(story); if(facts) detail.appendChild(facts);
-      if(drafts.length){
-        var drWrap=el('div',''); drWrap.appendChild(el('h4','',tx('Review queue','审核队列')));
-        draftSlots(drafts).forEach(function(draft){
-          var dr=el('div','nxi-draft');
-          // `origin` (wire vs llm) is machine provenance for the review tools.
-          // It is deliberately NOT a badge here: who typed the first pass is
-          // not the reader's business, and the review gate is the same either way.
-          if(draft.shape) dr.appendChild(el('div','nxi-shape',shapeLabel(draft.shape)));
-          dr.appendChild(el('p','',draft.text));
-          var bar=el('div','nxi-draftbar');
-          var status=draft.status==='review'?tx('Ready for review','可供审核'):tx('Needs editing','需要编辑');
-          var chars=Number(draft.characters||String(draft.text).length);
-          // 280 is the WIRE ceiling; printing it against an analysis or a long
-          // post would invent a limit that shape does not have.
-          var size=(!draft.shape||draft.shape==='wire')
-            ? (chars+'/280') : (chars+tx(' chars','字'));
-          bar.appendChild(el('span','',status+' · '+size));
-          bar.appendChild(copyButton(draft)); dr.appendChild(bar); drWrap.appendChild(dr);
+
+      var track=timelineGroup(story);
+      if(track){
+        var timeline=section(tx('Development','事件进展'));
+        timeline.appendChild(track); drawerBody.appendChild(timeline);
+      }
+      var facts=factsGroup(story);
+      if(facts){
+        var owned=section(tx('From our own data','我们的数据'));
+        owned.appendChild(facts); drawerBody.appendChild(owned);
+      }
+
+      var tickers=(story.tickers||[]).map(function(t){return String(t||'').replace(/^$/,'');}).filter(Boolean);
+      if(tickers.length){
+        var linked=section(tx('Linked assets','相关标的')), assets=el('div','nxi-drawer-assets');
+        tickers.slice(0,8).forEach(function(t){
+          var a=el('a','',t); a.href='stock.html#'+encodeURIComponent(t); assets.appendChild(a);
         });
-        detail.appendChild(drWrap);
-      }else{
-        detail.appendChild(el('p','nxi-brief',
-          tx('No draft yet. The evidence is retained for the next Content Studio pass.','尚无草稿。证据已保留，等待下一次内容工作台处理。')));
+        linked.appendChild(assets); drawerBody.appendChild(linked);
       }
-      details.appendChild(detail); card.appendChild(details);
+
+      var drafts=(story.drafts||[]).filter(function(x){ return x&&x.text; });
+      var routes=(story.content_routes||[]).filter(Boolean);
+      if(drafts.length || routes.length){
+        var review=document.createElement('details');
+        review.className='nxi-drawer-section nxi-review';
+        var summary=document.createElement('summary');
+        summary.textContent=tx('Content review','内容审核');
+        review.appendChild(summary);
+        var reviewBody=el('div','nxi-detail');
+        if(routes.length){
+          var routeWrap=el('div',''), routeChips=el('div','nxi-chips');
+          routeWrap.appendChild(el('h4','',tx('Content routes','内容路径')));
+          routes.forEach(function(route){ routeChips.appendChild(el('span','nxi-chip',shapeLabel(route))); });
+          routeWrap.appendChild(routeChips); reviewBody.appendChild(routeWrap);
+        }
+        if(drafts.length){
+          var drWrap=el('div',''); drWrap.appendChild(el('h4','',tx('Review queue','审核队列')));
+          draftSlots(drafts).forEach(function(draft){
+            var dr=el('div','nxi-draft');
+            if(draft.shape) dr.appendChild(el('div','nxi-shape',shapeLabel(draft.shape)));
+            dr.appendChild(el('p','',draft.text));
+            var bar=el('div','nxi-draftbar');
+            var status=draft.status==='review'?tx('Ready for review','可供审核'):tx('Needs editing','需要编辑');
+            var chars=Number(draft.characters||String(draft.text).length);
+            var size=(!draft.shape||draft.shape==='wire') ? (chars+'/280') : (chars+tx(' chars','字'));
+            bar.appendChild(el('span','',status+' · '+size));
+            bar.appendChild(copyButton(draft)); dr.appendChild(bar); drWrap.appendChild(dr);
+          });
+          reviewBody.appendChild(drWrap);
+        }
+        reviewBody.appendChild(el('p','nxi-review-note',
+          tx('Outbound posting is separate and remains review-gated.','对外发布为独立流程，仍需人工审核。')));
+        review.appendChild(reviewBody); drawerBody.appendChild(review);
+      }
+
+      drawer.hidden=false; backdrop.hidden=false;
+      document.body.classList.add('nxi-drawer-open');
+      if(!keepFocus) drawerClose.focus();
+    }
+    function storyCard(story,rank){
+      var card=el('article','nxi-story');
+      card.setAttribute('data-stage',String(story.stage||'developing'));
+
+      var open=el('button','nxi-open'); open.type='button';
+      open.setAttribute('aria-haspopup','dialog');
+      open.setAttribute('data-story-id',String(story.id||''));
+      open.setAttribute('aria-label',tx('Open story brief: ','打开事件简报：')+readable(story).headline);
+
+      var rankEl=el('span','nxi-rank',('0'+String(rank+1)).slice(-2));
+      open.appendChild(rankEl);
+
+      var copy=el('span','nxi-row-copy');
+      var body=readable(story);
+      copy.appendChild(el('span','nxi-headline',body.headline));
+      var meta=el('span','nxi-row-meta');
+      var lane=zh()?(story.lane_label_zh||story.lane_label_en):(story.lane_label_en||story.lane);
+      meta.appendChild(el('span','',lane||tx('Markets','市场')));
+      var n=Math.max(1,Number(story.source_count||1));
+      meta.appendChild(el('span','', '· '+n+' '+tx(n===1?'source':'sources','个来源')));
+      meta.appendChild(el('span','', '· '+age(story.updated_at)));
+      if(body.original) meta.appendChild(el('span','nxi-orig',tx('English original','英文原文')));
+      copy.appendChild(meta); open.appendChild(copy);
+
+      var context=el('span','nxi-row-context'), ctx=story.context||{};
+      if(story.market && story.market.label){
+        context.appendChild(el('span','nxi-chip market',story.market.label+' · '+tx('session','本交易日')));
+      }
+      ['pace','evidence'].forEach(function(k){
+        if(ctx[k]) context.appendChild(el('span','nxi-chip',knownContext(ctx[k])));
+      });
+      (story.tickers||[]).slice(0,3).forEach(function(t){
+        context.appendChild(el('span','nxi-chip ticker','$'+String(t).replace(/^$/,'')));
+      });
+      open.appendChild(context);
+
+      open.appendChild(el('span','nxi-row-status '+String(story.stage||'developing'),stageLabel(story.stage)));
+      open.addEventListener('click',function(){ openDrawer(story,open,false); });
+      card.appendChild(open);
       return card;
     }
     function render(){
       listEl.textContent='';
       var filtered=stories.filter(matches), shown=expanded?filtered:filtered.slice(0,CAP);
-      shown.forEach(function(story){ listEl.appendChild(storyCard(story)); });
+      shown.forEach(function(story){ listEl.appendChild(storyCard(story,stories.indexOf(story))); });
       listEl.hidden=!shown.length; stateEl.hidden=!!shown.length;
       if(!shown.length){
         stateEl.textContent='';
@@ -1480,6 +1670,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
     }
     function setMetric(id,value){ var node=document.getElementById(id); if(node) text(node,Number(value||0)); }
     function showDesk(payload){
+      var selectedId=selectedStory && selectedStory.id ? String(selectedStory.id) : '';
       health=payload.health||{}; stories=Array.isArray(payload.stories)?payload.stories.filter(function(s){
         return s && s.id && s.headline;
       }):[];
@@ -1488,11 +1679,21 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       if(metricsEl) metricsEl.hidden=false; if(toolbarEl) toolbarEl.hidden=false;
       setMetric('nxiActive',health.active_stories);
       setMetric('nxiConfirmed',health.confirmed);
-      setMetric('nxiDrafts',health.draft_ready);
+      setMetric('nxiDeveloping',Math.max(0,Number(health.active_stories||0)-Number(health.confirmed||0)));
       setMetric('nxiSources',health.sources_online);
       if(healthEl) text(healthEl,health.state==='live'?tx('Desk is ingesting','工作台正在接收数据'):tx('Desk is quiet','工作台当前平静'));
       if(updatedEl) text(updatedEl,tx('Updated ','更新于 ')+age(updatedAt));
       expanded=false; render();
+      if(selectedId && !drawer.hidden){
+        var fresh=stories.find(function(story){return String(story.id||'')===selectedId;});
+        if(fresh){
+          var freshTrigger=[].slice.call(listEl.querySelectorAll('.nxi-open')).find(function(node){
+            return node.getAttribute('data-story-id')===selectedId;
+          });
+          lastTrigger=freshTrigger||null;
+          openDrawer(fresh,null,true);
+        }else closeDrawer(false);
+      }
     }
     function stateCopy(kind){
       return ({
@@ -1505,6 +1706,7 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       })[kind] || null;
     }
     function showState(kind){
+      if(!drawer.hidden) closeDrawer(false);
       var copy=stateCopy(kind)||stateCopy('down'); mode=kind; box.hidden=false;
       box.setAttribute('data-state','quiet'); listEl.hidden=true;
       if(metricsEl) metricsEl.hidden=true; if(toolbarEl) toolbarEl.hidden=true;
@@ -1553,11 +1755,25 @@ html[data-lang="zh"] .nxi-track-rest{ margin-left:68px; }
       if(toolbarEl){var allBtn=toolbarEl.querySelector('[data-intel-filter="all"]'); if(allBtn) allBtn.focus();}
     });
     if(moreEl) moreEl.addEventListener('click',function(){expanded=true;render();});
+    drawerClose.addEventListener('click',function(){closeDrawer(true);});
+    backdrop.addEventListener('click',function(){closeDrawer(true);});
+    document.addEventListener('keydown',function(e){
+      if(drawer.hidden) return;
+      if(e.key==='Escape'){ e.preventDefault(); closeDrawer(true); return; }
+      if(e.key!=='Tab') return;
+      var nodes=[].slice.call(drawer.querySelectorAll('button,[href],summary,[tabindex]:not([tabindex="-1"])'))
+        .filter(function(n){return !n.hidden;});
+      if(!nodes.length) return;
+      var first=nodes[0], last=nodes[nodes.length-1];
+      if(e.shiftKey && document.activeElement===first){e.preventDefault();last.focus();}
+      else if(!e.shiftKey && document.activeElement===last){e.preventDefault();first.focus();}
+    });
     document.addEventListener('langchange',function(){
       if(mode==='ok'){
         if(healthEl) text(healthEl,health.state==='live'?tx('Desk is ingesting','工作台正在接收数据'):tx('Desk is quiet','工作台当前平静'));
         if(updatedEl) text(updatedEl,tx('Updated ','更新于 ')+age(updatedAt));
         render();
+        if(selectedStory && !drawer.hidden) openDrawer(selectedStory,null,true);
       }else if(stateCopy(mode)) showState(mode);
     });
     document.addEventListener('visibilitychange',function(){if(!document.hidden)poll();});

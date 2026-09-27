@@ -178,6 +178,16 @@ def _css_rule(html: str, selector: str) -> str:
     return "\n".join(matches)
 
 
+def test_attention_map_is_visual_and_mobile_queue_is_demoted():
+    html = _render_full()
+    assert 'class="nx-attention"' in html
+    assert 'class="nx-heat-bar"' in html
+    assert "--share:" in html
+    assert "Attention map" in html
+    assert ".nx-movers{ display:none; }" in html
+    assert ".nx-attention-items{ display:flex;" in html
+
+
 def test_mobile_triage_has_early_access_and_explicit_recovery():
     html = _render_full()
     assert 'id="nxTriageJump"' in html
@@ -771,8 +781,60 @@ def test_news_gated_panels_honor_hidden_state_and_guest_copy_is_truthful():
     assert 'Sign in to read live headlines.' in html
     assert 'Sign in to read developing stories and their sources.' in html
     assert 'Live story graph' not in html
-    assert 'Story updates' in html
+    assert 'Ranked story stream' in html
+    assert 'Developing + confirmed' in html
 
+
+
+
+def test_news_intelligence_resting_rows_are_scan_first_and_depth_moves_to_brief():
+    src = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
+    row = src.split("function storyCard(story,rank){", 1)[1].split("function render(){", 1)[0]
+    drawer = src.split("function openDrawer(story,trigger,keepFocus){", 1)[1].split(
+        "function storyCard(story,rank){", 1
+    )[0]
+    assert "body.brief" not in row
+    assert "why_it_matters" not in row
+    assert "body.brief" in drawer
+    assert "why_it_matters" in drawer
+    assert "Source receipts" in drawer and "来源依据" in drawer
+    assert "timelineGroup(story)" in drawer
+    assert "factsGroup(story)" in drawer
+
+
+def test_news_story_brief_survives_live_payload_refresh_when_story_still_exists():
+    src = (ROOT / "templates" / "news.html.j2").read_text(encoding="utf-8")
+    block = src.split("function showDesk(payload){", 1)[1].split(
+        "function stateCopy(kind){", 1
+    )[0]
+    assert "selectedId" in block
+    assert "data-story-id" in src
+    assert "stories.find(function(story)" in block
+    assert "openDrawer(fresh,null,true)" in block
+    assert "closeDrawer(false)" in block
+
+
+def test_news_story_brief_has_accessible_modal_and_focus_recovery_contract():
+    html = _render_full()
+    assert 'id="nxIntelDrawer"' in html
+    assert 'role="dialog"' in html and 'aria-modal="true"' in html
+    assert 'aria-labelledby="nxIntelDrawerTitle"' in html
+    assert 'id="nxIntelClose"' in html
+    assert 'data-label-zh="关闭事件简报"' in html
+    assert "if(e.key==='Escape')" in html
+    assert "lastTrigger.focus()" in html
+    assert "body.nxi-drawer-open" in html
+    assert "@media(max-width:560px)" in html
+    assert ".nxi-drawer{ inset:0; width:100vw; max-width:100vw; min-width:0; box-sizing:border-box; border-left:0; }" in html
+
+
+def test_news_header_is_compact_and_no_long_description_rests_above_fold():
+    html = _render_full()
+    head = html.split('<header class="nx-head">', 1)[1].split("</header>", 1)[0]
+    assert "News Intelligence" in head
+    assert "What matters now" in head
+    assert 'class="nx-sub"' not in head
+    assert "importance-ranked, fresh, and de-noised" not in head
 
 def test_news_document_language_switch_preserves_filter_and_refreshes_dynamic_ui():
     import json
