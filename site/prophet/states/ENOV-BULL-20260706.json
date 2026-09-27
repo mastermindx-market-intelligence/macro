@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "ENOV-BULL-20260706",
-  "asof": "2026-09-23",
+  "asof": "2026-09-26",
   "phase": "invalidated",
   "detection_phase": "invalidated",
   "management_confidence": 9.6,
@@ -14,17 +14,17 @@
     "progress": 0.0,
     "pace": 0.0,
     "retention": 0.0,
-    "overlay": 67.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": -0.177,
+    "dist_to_stop_r": -0.155,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 164.4,
-    "p1": -0.785,
-    "p2": -0.3925,
+    "horizon_pct_used": 171.1,
+    "p1": -0.7702,
+    "p2": -0.3851,
     "p3": null,
-    "move_r": -1.177,
+    "move_r": -1.155,
     "mfe_r": 0.715,
     "mae_r": -1.268
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-17",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 74,
-  "tau": 1.6444
+  "days_elapsed": 77,
+  "tau": 1.7111
 }

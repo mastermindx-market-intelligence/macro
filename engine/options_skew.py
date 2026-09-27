@@ -589,6 +589,162 @@ def _is_weekend_iso(value: str) -> bool:
         return False
 
 
+def _per_source_coverage(df) -> list[dict]:
+    """Per-SOURCE coverage spans over session (weekday) dates.
+
+    Returns one dict per source present on the ledger, sorted by
+    (first_date, source):
+      {"source": str, "first_date": "YYYY-MM-DD",
+       "last_date": "YYYY-MM-DD", "n_dates": int}
+    where `n_dates` is the count of distinct weekday dates on which that
+    source has at least one row.
+
+    Session-only dates: weekend as-of rows are excluded before the per-date
+    group, mirroring `emit_from_ledger`'s session-only pick — a Saturday-only
+    ledger therefore returns [] (no session to count, not a Saturday window).
+    A missing `source` column reads as polygon_gex (the legacy default).
+
+    PURE (no I/O, no clock); empty/invalid input returns [].
+    """
+    if df is None or getattr(df, "empty", True):
+        return []
+    try:
+        import pandas as pd
+    except Exception:  # noqa: BLE001
+        return []
+    if "date" not in df.columns:
+        return []
+    work = df.copy()
+    if "source" not in work.columns:
+        work["source"] = _SOURCE_POLYGON
+    else:
+        work["source"] = work["source"].map(_source_of)
+    work["date"] = work["date"].map(_iso_date)
+    work = work[work["date"].astype(str).str.len() > 0]
+    if work.empty:
+        return []
+    weekend = work["date"].map(_is_weekend_iso)
+    if bool((~weekend).any()):
+        work = work.loc[~weekend]
+    else:
+        return []
+    out: list[dict] = []
+    for source_name, group in work.groupby("source"):
+        dates = sorted({str(d) for d in group["date"].tolist() if d})
+        if not dates:
+            continue
+        out.append({
+            "source": str(source_name),
+            "first_date": dates[0],
+            "last_date": dates[-1],
+            "n_dates": len(dates),
+        })
+    out.sort(key=lambda row: (row["first_date"], row["source"]))
+    return out
+
+
+def source_windows(df) -> list[dict]:
+    """Coverage spans per source across the session dates of a ledger.
+
+    A-F03-W2-4c (round-5 measured-truth shape, after the 2026-08-14..2026-09-18
+    backfill; per-source coverage on session dates — the 2026-06-21 Sunday
+    as-of row is excluded): thetadata 2026-06-22..2026-09-21 on 64 session
+    dates, polygon_gex 2026-06-22..2026-08-13 on 33 session dates, first
+    ThetaData-only session = 2026-08-14.  The earlier per-date majority-run
+    rule returned fifteen alternating windows — 8 ThetaData ranges + 7 Polygon
+    ranges — that the Directional-read sentence could not print, and did not
+    answer the reader's question ("can I compare today's skew with a month
+    ago?").  The producer now publishes one coverage span per source present
+    on the ledger, sorted by (first_date, source), and the consumer renders
+    the sentence from those spans plus `source_break_date`.
+
+    Session-only dates: weekend as-of rows are excluded before grouping
+    (`_is_weekend_iso`), the same way `emit_from_ledger` already excludes
+    them when it picks the latest session — a Saturday-only ledger returns
+    [] (no session to count, not a fabricated Saturday window).
+
+    PURE (no I/O, no clock); empty/invalid input returns [].
+    """
+    return _per_source_coverage(df)
+
+
+def source_break_date(df) -> str | None:
+    """The first session date strictly after the OLDER source's last_date.
+
+    Using the same normalised weekday frame as `source_windows`, when at
+    least two sources are present: `older_last` = the smallest `last_date`
+    across sources; return the earliest weekday date strictly greater than
+    `older_last` on which any OTHER source has rows.  Returns None when:
+      · fewer than two sources are present (no boundary to name);
+      · no such date is present (the older source is still the only one with
+        rows, or both sources end on the same day);
+      · input is empty/invalid.
+
+    The "newer source has rows" check walks the ledger's ACTUAL rows for
+    each newer source — not the span bounds — so a backfill gap (a newer
+    source whose rows skip some dates inside its own coverage span) cannot
+    fabricate a break date that the ledger itself never has a row for.
+    On the live ledger (2026-09-23, after the 2026-08-14..2026-09-18
+    backfill): polygon_gex.last_date = 2026-08-13, thetadata.last_date =
+    2026-09-21, older_last = 2026-08-13, the earliest thetadata-only
+    weekday strictly greater than 2026-08-13 that actually has a row is
+    2026-08-14 → returns "2026-08-14".
+
+    PURE (no I/O, no clock).
+    """
+    spans = _per_source_coverage(df)
+    if len(spans) < 2:
+        return None
+    try:
+        from datetime import date as _date, timedelta as _td
+        older_last_text = min(str(span["last_date"]) for span in spans)
+        older_last = _date.fromisoformat(older_last_text)
+    except (ValueError, TypeError):
+        return None
+    # The "newer" sources are those whose last_date is strictly greater than
+    # older_last — i.e. the sources still accruing past the older one's end.
+    newer_source_names = {
+        str(span["source"]) for span in spans
+        if str(span["last_date"]) > older_last_text
+    }
+    if not newer_source_names:
+        return None
+    # Walk the ledger's ACTUAL rows for newer sources, not the span bounds.
+    # A newer source's coverage span may interpolate over a backfill gap;
+    # only dates that appear in the ledger as a row count as "the newer
+    # source has rows".
+    if df is None or getattr(df, "empty", True):
+        return None
+    work = df.copy()
+    if "source" not in work.columns:
+        work["source"] = _SOURCE_POLYGON
+    else:
+        work["source"] = work["source"].map(_source_of)
+    work["date"] = work["date"].map(_iso_date)
+    work = work[work["date"].astype(str).str.len() > 0]
+    if "date" not in work.columns:
+        return None
+    weekend = work["date"].map(_is_weekend_iso)
+    work = work.loc[~weekend]
+    actual_newer_dates = {
+        str(d) for d in work.loc[work["source"].isin(newer_source_names),
+                                  "date"].astype(str).tolist()
+    }
+    if not actual_newer_dates:
+        return None
+    cursor = older_last + _td(days=1)
+    # Walk at most 5 years past older_last as a safety bound (no real
+    # backfill spans longer than this, and a non-terminating walk on a
+    # bad ledger would otherwise hang the call site).
+    max_walk = older_last + _td(days=5 * 366)
+    while cursor <= max_walk:
+        cursor_text = cursor.isoformat()
+        if cursor_text in actual_newer_dates:
+            return cursor_text
+        cursor += _td(days=1)
+    return None
+
+
 def _chain_asof_dates(chain) -> set[str]:
     """Distinct YYYY-MM-DD stamps on a chain frame. Empty when the column is absent."""
     if chain is None or "asof" not in getattr(chain, "columns", []):
@@ -809,6 +965,11 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
     stale_days = None
     n_weekend_rows_excluded = 0
     history_sources: list[str] = []
+    # A-F03-W2-4c defaults — overwritten below when the ledger has any session rows.
+    windows: list[dict] = []
+    history_dates = 0
+    source_break = False
+    break_date: str | None = None
     partial_sessions_skipped: list[str] = []
     partial_rows_skipped = 0
     if hist is not None and not getattr(hist, "empty", True) and "underlying" in hist.columns:
@@ -872,6 +1033,35 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
                 stale_days = (today - date.fromisoformat(ledger_asof)).days
             except ValueError:
                 stale_days = None
+        # A-F03-W2-4c: report which source each session came from and whether the
+        # history crosses a source boundary — the consumer renders this verbatim on
+        # options.html as a one-sentence footnote.  Reuses the session-only `norm`
+        # frame above (weekends already excluded) so the windows match the names
+        # the panel prints.  `history_dates` is the count of DISTINCT session
+        # dates across the normalised ledger frame (the union of dates any source
+        # has rows on), so a mixed-source ledger where polygon's dates are a
+        # subset of thetadata's dates reports the longer span's count, not the
+        # overlap-aware sum.  An all-weekend ledger has zero of both
+        # (windows == [] and history_dates == 0).  Session-only dates:
+        # `history_dates` is computed against the session frame so an
+        # all-weekend ledger reports 0, not 2.
+        windows = source_windows(norm)
+        # Seat round 6: the break date is a property of the same session frame,
+        # so it is computed HERE — a ledger-less host (no snapshots.parquet, the
+        # state of every sparse worktree) never binds `norm` and must emit None.
+        break_date = source_break_date(norm)
+        # Session-only dates: history_dates counts weekday dates so it
+        # agrees with windows (an all-weekend ledger has zero of both,
+        # not two of the first).  The names pick above keeps weekend rows
+        # when there is no weekday row, but the additive source-break
+        # keys must report 0 — not the all-weekend row count — when the
+        # ledger has no session to count.
+        history_dates = 0
+        if "date" in norm.columns:
+            weekend_mask = norm["date"].map(_is_weekend_iso)
+            if bool((~weekend_mask).any()):
+                history_dates = int(len({str(d) for d in norm.loc[~weekend_mask, "date"].tolist()}))
+        source_break = bool(len(windows) > 1)
     if not names:
         source_state = "empty_ledger"
     elif stale_days is not None and stale_days > _STALE_DAYS:
@@ -906,6 +1096,14 @@ def emit_from_ledger(today: date | None = None, accrual_state: str = "ledger_onl
         "accrual_state": accrual_state,
         "n_weekend_rows_excluded": n_weekend_rows_excluded,
         "history_sources": history_sources,
+        # A-F03-W2-4c — additive keys the consumer reads to render one sentence
+        # about the source break on the Directional read panel.  Schema string
+        # unchanged; downstream consumers that pre-date the packet see None for
+        # source_break (None is not the truthy check) and stay silent.
+        "source_windows": windows,
+        "source_break": source_break,
+        "source_break_date": break_date,
+        "history_dates": history_dates,
     }
 
 

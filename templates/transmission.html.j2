@@ -20,6 +20,13 @@
   <path class="txflow-pulse ch-{{ ch }}" d="{{ paths[dirkey] }}" pathLength="100"/>
 </svg>
 {%- endmacro %}
+{% macro scenario_row(m, scale, positive=false) -%}
+{% set en = (m.label.en if m.label is mapping else m.label)|default(m.asset, true) %}
+{% set known = (tx.transmission or {}).get(m.asset, {}) %}
+{% set labels = m.label if m.label is mapping else known.get('label', {}) %}
+{% set zh = (labels.get('zh') if labels is mapping else '') or en %}
+<div class="sx-item" data-asset="{{ m.asset }}"><span class="nm">{{ t(en.split(' (')[0], zh.replace('(', '（').split('（')[0]) }}</span><span class="v {{ 'u' if positive else 'd' }}">{{ '+' if positive else '' }}{{ '%.1f'|format(m.implied_move_pct) }}%</span><span class="sx-bar"><i class="{{ 'u' if positive else 'd' }}" style="width:{{ ((m.implied_move_pct|abs)/scale*100)|round(1) }}%"></i></span></div>
+{%- endmacro %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -385,6 +392,17 @@ html[data-theme="dark"] .cm-state-tag.propagating{color:#f0995a}
   .cx-step:not(:last-child)::before{background:color-mix(in srgb,var(--accent) 20%,var(--grid));animation:none}
   *{transition:none!important}
 }
+
+/* Scenario detail uses native disclosure; retain the four-row glance view. */
+.sx-card .sx-item .nm{white-space:normal;overflow:visible;overflow-wrap:anywhere;min-width:0}
+.sx-card details.sx-extra{margin:6px 0 0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+.sx-extra>summary{display:flex;align-items:center;gap:6px;min-height:40px;padding:6px 0;box-sizing:border-box;list-style:none;color:var(--ink-link,var(--ink));font-size:12px;font-weight:600;cursor:pointer;touch-action:manipulation}
+.sx-extra>summary::-webkit-details-marker{display:none}
+.sx-extra>summary::after{content:'+';margin-left:auto}
+.sx-extra[open]>summary::after{content:'−'}
+.sx-extra>summary:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+.sx-extra>summary .sx-hide,.sx-extra[open]>summary .sx-show{display:none}
+.sx-extra[open]>summary .sx-hide{display:inline}
 </style>
 {% include "_state_inks.html.j2" %}
 {% include "_vector_polish.html.j2" %}
@@ -393,6 +411,28 @@ html[data-theme="dark"] .cm-state-tag.propagating{color:#f0995a}
 {% include "_site_nav.html.j2" %}
 
 <div class="wrap">
+  {#- F04-X1 continuation (M1 item 5). A reader who arrives from the live path
+      page keeps the step they were reading: the client fills the return link
+      from the query string the explorer wrote (from / focus / rev). The step
+      identifier travels only in the href — it is never printed. -#}
+  <p class="note tx-from" id="tx-from" hidden>{{ t('You came here from the live path page. The step you were reading is kept: ', '您从实时路径页面来到这里。您正在阅读的步骤已保留：') }}<a id="tx-from-back" href="ontology.html">{{ t('go back to that step', '返回该步骤') }}</a>{{ t('. If the path has been revised since, that page says so.', '。若该路径此后有修订，该页面会予以说明。') }}</p>
+  <script>
+  (function () {
+    try {
+      var q = new URLSearchParams(window.location.search);
+      var focus = q.get("focus"), from = q.get("from"), rev = q.get("rev");
+      if (!focus && !from) return;
+      var box = document.getElementById("tx-from");
+      var back = document.getElementById("tx-from-back");
+      if (!box || !back) return;
+      var href = "ontology.html";
+      if (rev) href += "?rev=" + encodeURIComponent(rev);
+      if (focus) href += "#ox-leg-" + encodeURIComponent(focus);
+      back.href = href;
+      box.hidden = false;
+    } catch (e) { /* no continuation context: the page reads as usual */ }
+  })();
+  </script>
   {% set S = tx.state %}
 
   {# ---- plain-language maps (Tier-1 rewrites; machine receipts stay on hover) ---- #}
@@ -682,15 +722,19 @@ html[data-theme="dark"] .cm-state-tag.propagating{color:#f0995a}
       <div class="sx-cols">
         <div class="sx-col h"><div class="cl">{{ t('Pressured','承压') }}</div>
           {% for m in sc.headwinds[:4] %}
-          <div class="sx-item"><span class="nm">{{ (m.label.en if m.label is mapping else m.label).split(' (')[0] }}</span><span class="v d">{{ '%.1f'|format(m.implied_move_pct) }}%</span><span class="sx-bar"><i class="d" style="width:{{ ((m.implied_move_pct|abs)/smax*100)|round(1) }}%"></i></span></div>
+          {{ scenario_row(m, smax, false) }}
           {% else %}<div class="sx-none">{{ t('none','无') }}</div>{% endfor %}
-          {% if sc.headwinds|length > 4 %}<div class="sx-more">+{{ sc.headwinds|length - 4 }} {{ t('more','项') }}</div>{% endif %}
+          {% if sc.headwinds|length > 4 %}<details class="sx-extra"><summary><span class="sx-show">{{ t('Show ' ~ (sc.headwinds|length - 4) ~ ' more', '再看 ' ~ (sc.headwinds|length - 4) ~ ' 项') }}</span><span class="sx-hide">{{ t('Show fewer', '收起') }}</span></summary>
+            {% for m in sc.headwinds[4:] %}{{ scenario_row(m, smax, false) }}{% endfor %}
+          </details>{% endif %}
         </div>
         <div class="sx-col t"><div class="cl">{{ t('Favoured','受益') }}</div>
           {% for m in sc.tailwinds[:4] %}
-          <div class="sx-item"><span class="nm">{{ (m.label.en if m.label is mapping else m.label).split(' (')[0] }}</span><span class="v u">+{{ '%.1f'|format(m.implied_move_pct) }}%</span><span class="sx-bar"><i class="u" style="width:{{ ((m.implied_move_pct|abs)/smax*100)|round(1) }}%"></i></span></div>
+          {{ scenario_row(m, smax, true) }}
           {% else %}<div class="sx-none">{{ t('none','无') }}</div>{% endfor %}
-          {% if sc.tailwinds|length > 4 %}<div class="sx-more">+{{ sc.tailwinds|length - 4 }} {{ t('more','项') }}</div>{% endif %}
+          {% if sc.tailwinds|length > 4 %}<details class="sx-extra"><summary><span class="sx-show">{{ t('Show ' ~ (sc.tailwinds|length - 4) ~ ' more', '再看 ' ~ (sc.tailwinds|length - 4) ~ ' 项') }}</span><span class="sx-hide">{{ t('Show fewer', '收起') }}</span></summary>
+            {% for m in sc.tailwinds[4:] %}{{ scenario_row(m, smax, true) }}{% endfor %}
+          </details>{% endif %}
         </div>
       </div>
     </div>

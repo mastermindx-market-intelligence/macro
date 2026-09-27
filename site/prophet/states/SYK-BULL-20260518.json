@@ -1,30 +1,30 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "SYK-BULL-20260518",
-  "asof": "2026-09-23",
-  "phase": "overtime",
-  "detection_phase": "overtime",
-  "management_confidence": 20.4,
-  "raw_confidence": 20.0,
-  "delta_vs_base": -39.6,
-  "recommended_action": "trim",
-  "human_state": "Window Elapsed \u2014 Awaiting Close",
+  "asof": "2026-09-26",
+  "phase": "invalidated",
+  "detection_phase": "invalidated",
+  "management_confidence": 9.9,
+  "raw_confidence": 8.0,
+  "delta_vs_base": -50.1,
+  "recommended_action": "invalidated",
+  "human_state": "Invalidated",
   "components": {
     "validity": 0.0,
     "progress": 0.0,
-    "pace": 10.0,
+    "pace": 0.0,
     "retention": 0.0,
-    "overlay": 61.0
+    "overlay": 59.0
   },
   "geometry": {
-    "dist_to_stop_r": 0.0,
+    "dist_to_stop_r": -0.031,
     "dist_to_t1_r": 1.5,
     "dist_to_t2_r": 3.0,
-    "horizon_pct_used": 133.3,
-    "p1": -0.6665,
-    "p2": -0.3332,
+    "horizon_pct_used": 140.0,
+    "p1": -0.6873,
+    "p2": -0.3437,
     "p3": null,
-    "move_r": -1.0,
+    "move_r": -1.031,
     "mfe_r": 0.393,
     "mae_r": -1.073
   },
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-27",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 60,
-  "tau": 1.3333
+  "days_elapsed": 63,
+  "tau": 1.4
 }
