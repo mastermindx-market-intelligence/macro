@@ -2076,23 +2076,12 @@
   },
   "flip_attribution": {
     "asof": "2026-09-25",
-    "prev_quad": "Q3",
+    "prev_quad": "Q2",
     "cur_quad": "Q2",
-    "flipped": true,
+    "flipped": false,
     "label_quad": "Q2",
     "degraded": false,
-    "components": {
-      "driving_axis": "growth",
-      "total_axis_move": 0.1334,
-      "data_delta": 0.1334,
-      "renorm_delta": 0.0,
-      "revision_delta": 0.0,
-      "renorm_share": 0.0,
-      "data_share": 1.0,
-      "vanished_legs": [],
-      "prev_axis_score": -0.0667,
-      "cur_axis_score": 0.0667
-    }
+    "components": null
   },
   "freshness_bitmask": 23,
   "_legacy_quad": "Q2",

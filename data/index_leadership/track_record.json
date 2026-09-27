@@ -1,9 +1,9 @@
 {
   "schema": "index_leadership.track_record.v1",
   "as_of": "2026-09-25",
-  "generated_at": "2026-09-26T07:03:48.110840+00:00",
+  "generated_at": "2026-09-26T17:40:42.614155+00:00",
   "is_context_only": true,
-  "n_snapshots": 971,
+  "n_snapshots": 976,
   "n_days": 33,
   "horizons": {
     "5": {
@@ -12,7 +12,7 @@
         "running": {
           "n": 774,
           "mean_fwd_rel": -0.0061,
-          "hit_rate": 0.426
+          "hit_rate": 0.425
         },
         "coiling": {
           "n": 36,
@@ -25,8 +25,8 @@
           "hit_rate": 0.579
         }
       },
-      "running_ic": -0.0418,
-      "running_ic_t_hac": -0.572,
+      "running_ic": -0.0407,
+      "running_ic_t_hac": -0.548,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -35,12 +35,12 @@
       "by_stage": {
         "running": {
           "n": 678,
-          "mean_fwd_rel": -0.0111,
-          "hit_rate": 0.378
+          "mean_fwd_rel": -0.011,
+          "hit_rate": 0.379
         },
         "coiling": {
           "n": 36,
-          "mean_fwd_rel": -0.0062,
+          "mean_fwd_rel": -0.0059,
           "hit_rate": 0.417
         },
         "coiling_primed": {
@@ -49,8 +49,8 @@
           "hit_rate": 0.474
         }
       },
-      "running_ic": -0.0815,
-      "running_ic_t_hac": -1.258,
+      "running_ic": -0.0812,
+      "running_ic_t_hac": -1.255,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -59,12 +59,12 @@
       "by_stage": {
         "running": {
           "n": 546,
-          "mean_fwd_rel": -0.0216,
-          "hit_rate": 0.341
+          "mean_fwd_rel": -0.0215,
+          "hit_rate": 0.339
         },
         "coiling": {
           "n": 35,
-          "mean_fwd_rel": -0.0163,
+          "mean_fwd_rel": -0.0162,
           "hit_rate": 0.314
         },
         "coiling_primed": {
@@ -73,8 +73,8 @@
           "hit_rate": 0.622
         }
       },
-      "running_ic": -0.0078,
-      "running_ic_t_hac": -0.176,
+      "running_ic": -0.0115,
+      "running_ic_t_hac": -0.261,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -120,6 +120,14 @@
     },
     {
       "date": "2026-09-04",
+      "id": "russell:farm-heavy-construction-machinery",
+      "name": "Farm & Heavy Construction Machinery",
+      "stage": "running",
+      "fwd_rel": -0.0926,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-04",
       "id": "russell:building-products-equipment",
       "name": "Building Products & Equipment",
       "stage": "coiling_primed",
@@ -140,14 +148,6 @@
       "name": "Specialty Business Services",
       "stage": "running",
       "fwd_rel": -0.0866,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-09-04",
-      "id": "russell:farm-heavy-construction-machinery",
-      "name": "Farm & Heavy Construction Machinery",
-      "stage": "running",
-      "fwd_rel": -0.0857,
       "horizon_d": 21
     },
     {

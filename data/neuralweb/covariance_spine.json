@@ -19,8 +19,8 @@
       "source": "data/regime/latest.json#yield_curve"
     },
     "factors": {
-      "dominant_factor_pc_share": 0.5945,
-      "effective_factor_bets_pr": 2.5131,
+      "dominant_factor_pc_share": 0.5943,
+      "effective_factor_bets_pr": 2.5138,
       "n_factors_used": 7,
       "n_obs_used": 252,
       "caveat": "~3y history, annual fundamentals; descriptive only",
@@ -32,7 +32,7 @@
       "avg_corr": 0.06,
       "dominant_equity_pc_share": 0.1707,
       "effective_universe_bets_pr": 23.54,
-      "idio_dispersion_share": 0.7186
+      "idio_dispersion_share": 0.7115
     },
     "lobes": {
       "effective_independent_lobes": 1.0,
@@ -55,7 +55,7 @@
         ],
         "unmeasurable": {
           "altdata": 15,
-          "altdata_conv": 2,
+          "altdata_conv": 1,
           "basket_turn.v1": 7,
           "ca_board": 13,
           "china_news": 3,
@@ -63,7 +63,7 @@
           "cn_board": 6,
           "cn_importance_v0": 15,
           "cn_importance_v0_pit": 15,
-          "demand_chain": 4,
+          "demand_chain": 5,
           "desk:ai_desk": 11,
           "desk:narrative_brain": 4,
           "desk:policy_intent": 5,
@@ -78,7 +78,7 @@
           "policy": 10,
           "radar": 13,
           "reflex.commodity_shock": 6,
-          "reflex.cortex_attention": 9,
+          "reflex.cortex_attention": 10,
           "reflex.options_flow_attention": 7,
           "reflex.regime_stale_selfheal": 9,
           "stock_desk": 5,
@@ -102,7 +102,7 @@
     ],
     "unmeasurable": {
       "altdata": 15,
-      "altdata_conv": 2,
+      "altdata_conv": 1,
       "basket_turn.v1": 7,
       "ca_board": 13,
       "china_news": 3,
@@ -110,7 +110,7 @@
       "cn_board": 6,
       "cn_importance_v0": 15,
       "cn_importance_v0_pit": 15,
-      "demand_chain": 4,
+      "demand_chain": 5,
       "desk:ai_desk": 11,
       "desk:narrative_brain": 4,
       "desk:policy_intent": 5,
@@ -125,7 +125,7 @@
       "policy": 10,
       "radar": 13,
       "reflex.commodity_shock": 6,
-      "reflex.cortex_attention": 9,
+      "reflex.cortex_attention": 10,
       "reflex.options_flow_attention": 7,
       "reflex.regime_stale_selfheal": 9,
       "stock_desk": 5,

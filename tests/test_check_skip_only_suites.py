@@ -202,8 +202,8 @@ def test_a_research_resident_suite_is_in_scope() -> None:
     """The suites this guard could not see: written beside their instrument
     because the packet that shipped them was fenced to files-only."""
     discovered = set(GUARD.discover_suites())
-    assert "research/prophet_us_audit/test_label_grading_battery.py" in discovered
-    assert "research/signal_engine/test_buy_filters.py" in discovered
+    assert "research/prophet_us_audit/test_label_grading_battery.py" in discovered  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
+    assert "research/signal_engine/test_buy_filters.py" in discovered  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
 
 
 def test_a_seeded_suite_outside_tests_reads_skip_only_when_its_lane_is_thin(
@@ -244,9 +244,9 @@ def test_a_test_shaped_cli_instrument_is_never_censused() -> None:
     """Widening by FILENAME would have added three permanent false work items."""
     discovered = set(GUARD.discover_suites())
     for rel in (
-        "research/cn_prophet_audit/sector_intel_exante_test.py",
-        "research/signal_engine/test_breadth_consume.py",
-        "research/signal_engine/test_buyfilter.py",
+        "research/cn_prophet_audit/sector_intel_exante_test.py",  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
+        "research/signal_engine/test_breadth_consume.py",  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
+        "research/signal_engine/test_buyfilter.py",  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
     ):
         assert (ROOT / rel).is_file(), f"{rel} moved; re-derive the classification"
         assert rel not in discovered
@@ -259,9 +259,9 @@ def test_a_test_shaped_cli_instrument_is_never_censused() -> None:
         ("python -m pytest tests/test_ci_pack.py -q", {"tests/test_ci_pack.py"}),
         # Outside tests/ — unnameable before the widening.
         ("python -m pytest research/signal_engine/test_buy_filters.py -q",
-         {"research/signal_engine/test_buy_filters.py"}),
+         {"research/signal_engine/test_buy_filters.py"}),  # ci-trigger-closure: data — run-step text fixture name, never opened
         ("python -m pytest scripts/research/test_run_w4_controls_fingerprints.py -q",
-         {"scripts/research/test_run_w4_controls_fingerprints.py"}),
+         {"scripts/research/test_run_w4_controls_fingerprints.py"}),  # ci-trigger-closure: data — run-step text fixture name, never opened
         # The *_test.py shape pytest also collects.
         ("python -m pytest research/pkt/thing_test.py -q",
          {"research/pkt/thing_test.py"}),
@@ -282,7 +282,7 @@ def test_a_job_naming_one_directorys_suite_does_not_claim_another() -> None:
          "pip install pytest")
     )
     rows = [r for r in GUARD.census(jobs)
-            if r["test"] == "research/signal_engine/test_buy_filters.py"]
+            if r["test"] == "research/signal_engine/test_buy_filters.py"]  # ci-trigger-closure: data — parse-only suite subject, declared in ci-control-plane-contracts paths; imports not followed
     assert all(not r["naming_jobs"] for r in rows)
 
 

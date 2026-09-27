@@ -8,7 +8,7 @@
   "scope_en": "Japan national economy; Nikkei 225 is market context, not the macro universe.",
   "scope_zh": "日本全国经济；日经225仅作市场背景，并非宏观统计范围。",
   "asof": "2026-09-25",
-  "built": "2026-09-26 09:21 UTC",
+  "built": "2026-09-26 21:51 UTC",
   "regime": {
     "quad": "Q2",
     "name": "Reflation",
@@ -21,7 +21,7 @@
     "data_limited": false
   },
   "decision": {
-    "score": 48,
+    "score": 52,
     "state": "balanced",
     "state_en": "Balanced",
     "state_zh": "均衡",
@@ -43,7 +43,7 @@
       "inflation": -5.0,
       "recession": -1.98,
       "liquidity": 0.0,
-      "risk_state": -4.0
+      "risk_state": 0.0
     },
     "method_en": "50 + growth impulse − inflation pressure − recession stress + liquidity + current calibrated-risk state. Descriptive, not a forecast.",
     "method_zh": "50 + 增长脉冲 − 通胀压力 − 衰退压力 + 流动性 + 当前校准风险状态。仅作描述，不是预测。"
@@ -203,21 +203,21 @@
     "curve": 1.48
   },
   "risk": {
-    "state": "caution",
-    "top_score": 81,
+    "state": "elevated",
+    "top_score": 88,
     "dominant_en": "US rate shock",
     "dominant_zh": "美债利率冲击",
     "h21": 0.307,
     "measure": ">=5% index pullback within h business days (measured on this market's own history)",
     "trajectory": {
-      "intensity": 81.0,
-      "peak": 81.0,
+      "intensity": 88.1,
+      "peak": 88.1,
       "peak_days_ago": 0,
       "off_peak": 0.0,
-      "velocity": 27.2,
+      "velocity": 34.3,
       "phase": "rising",
       "reached_risk": true,
-      "state_now": "caution",
+      "state_now": "elevated",
       "odds_now": 0.307,
       "odds_peak": 0.307,
       "odds_delta": 0.0,
@@ -245,9 +245,9 @@
         63.5,
         71.4,
         78.0,
-        81.0
+        88.1
       ],
-      "spark_pts": "3.0,19.4 6.9,18.1 10.8,21.9 14.7,23.0 18.7,22.0 22.6,20.1 26.5,15.1 30.4,14.6 34.3,14.6 38.2,6.8 42.1,7.9 46.0,12.6 50.0,13.4 53.9,14.5 57.8,15.5 61.7,12.9 65.6,9.6 69.5,12.8 73.4,13.0 77.3,10.4 81.3,9.4 85.2,6.5 89.1,4.1 93.0,3.0",
+      "spark_pts": "3.0,19.8 6.9,18.7 10.8,22.0 14.7,23.0 18.7,22.1 22.6,20.4 26.5,16.0 30.4,15.6 34.3,15.6 38.2,8.7 42.1,9.7 46.0,13.8 50.0,14.5 53.9,15.5 57.8,16.4 61.7,14.1 65.6,11.2 69.5,14.0 73.4,14.1 77.3,11.9 81.3,11.0 85.2,8.4 89.1,6.3 93.0,3.0",
       "spark_peak": {
         "x": 93.0,
         "y": 3.0
@@ -311,7 +311,7 @@
         "tier": "A",
         "label_en": "Yen depreciation / outflows",
         "label_zh": "日元贬值／资金外流",
-        "score": 27.8,
+        "score": 41.3,
         "band": "calm",
         "firing_legs": []
       }
@@ -377,8 +377,8 @@
       "key": "fx",
       "label_en": "FX reference",
       "label_zh": "汇率参考",
-      "raw": 157.185,
-      "value": "157.19",
+      "raw": 158.811,
+      "value": "158.81",
       "unit": "",
       "asof": null
     },
@@ -469,7 +469,7 @@
       "title_zh": "日元压力",
       "why_en": "Imported inflation, funding and foreign-flow pressure.",
       "why_zh": "输入性通胀、融资与外资流动压力。",
-      "value": "157.19",
+      "value": "158.81",
       "available": true,
       "metric": "fx",
       "source_key": "boj",

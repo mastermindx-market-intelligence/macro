@@ -62,6 +62,12 @@ sys.path.insert(0, str(ROOT))
 
 from lib import config, nyse_calendar  # noqa: E402
 
+# `data_gate` (registered in tests/conftest.py) marks every test here that reads a real
+# store under data/ or site/, directly or through the code under test. Those verdicts can
+# change without any code change, so the code gate deselects them (-m "not data_gate" in
+# the workflow-yaml legacy job) and the data gate runs them (-m data_gate in
+# engine-render-guards). Everything unmarked is a function of the tree alone.
+
 # 2026-07-24 Fri (session), 07-25 Sat, 07-26 Sun, 07-27 Mon (session)
 FRI, SAT, SUN, MON = "2026-07-24", "2026-07-25", "2026-07-26", "2026-07-27"
 
@@ -286,6 +292,7 @@ WEEKEND_BEARING = {
 }
 
 
+@pytest.mark.data_gate
 @pytest.mark.parametrize("rel", sorted(WEEKEND_BEARING))
 def test_the_premise_holds_on_the_real_stores(rel):
     """If these stores ever stop carrying weekend rows the fixes become no-ops — which is
@@ -314,6 +321,7 @@ def test_the_premise_holds_on_the_real_stores(rel):
           f"({n_dates - n_sessions} fabricated)")
 
 
+@pytest.mark.data_gate
 def test_the_filtered_latest_row_is_always_a_session():
     """The single assertion every one of these fixes exists to make true."""
     p = config.data_dir() / "options_skew" / "snapshots.parquet"
@@ -348,6 +356,7 @@ def _summary_frame(dates: list[str], iv30_by_date: dict[str, float] | None = Non
         index=pd.to_datetime(dates))
 
 
+@pytest.mark.data_gate
 class TestStampFunnelDropsWeekendRows:
     """engine/options_stamp.stamp_options_state — feeds opt_* LEDGER columns."""
 
@@ -591,6 +600,7 @@ class TestChainGapsAreNotSessionSpacing:
         assert _session_ordinals([_GAP_WINDOW[0], _GAP_WINDOW[0]]) is None, "duplicate date"
         assert _session_ordinals([]) is None
 
+    @pytest.mark.data_gate
     def test_the_doi_slope_is_fitted_against_sessions_not_positions(self):
         """THE DEFECT. Six snapshots spanning nine sessions: the positional fit charges the
         07-31 -> 08-06 move to a single step and reports accumulation; the session fit gives
@@ -605,6 +615,7 @@ class TestChainGapsAreNotSessionSpacing:
             "test would pass on the positional code it exists to fail"
         )
 
+    @pytest.mark.data_gate
     def test_a_dense_window_is_unchanged_by_the_ordinal_fit(self):
         """The other half of the contract: wherever the collector ran every session the
         ordinals ARE np.arange, so no already-stamped dense value may move."""
@@ -613,6 +624,7 @@ class TestChainGapsAreNotSessionSpacing:
             f"a dense window stamped {got}, not the unchanged {_POSITIONAL_SLOPE}"
         )
 
+    @pytest.mark.data_gate
     def test_the_slope_refuses_a_window_that_is_more_gap_than_observation(self):
         """`_DOI_MAX_SPAN`: at most as many sessions missing as the fit has steps. Re-
         weighting keeps the UNITS honest, not the word '5d' — past the cap there is no
@@ -635,6 +647,7 @@ class TestChainGapsAreNotSessionSpacing:
             "a window spanning 12 sessions for 6 rows was published as a 5-day slope"
         )
 
+    @pytest.mark.data_gate
     def test_the_voi_flag_refuses_an_oi_book_that_is_not_yesterdays(self):
         """`vol > YESTERDAY's OI` is the whole construction. Across the outage the baseline
         is four sessions of accrual old — a systematically lower bar — and a boolean has no
@@ -648,6 +661,7 @@ class TestChainGapsAreNotSessionSpacing:
             f"(got {dense}), or the test above proves nothing about the GAP"
         )
 
+    @pytest.mark.data_gate
     def test_front7_charm_share_refuses_a_stale_book_but_keeps_root_class(self):
         """`_ovc_from_chain`'s PIT certification rests on the study's shift(1) prior-session
         OI; across the gap it is a shift(4). root_class is taxonomy from the ticker alone and
@@ -667,6 +681,7 @@ class TestChainGapsAreNotSessionSpacing:
         )
 
 
+@pytest.mark.data_gate
 class TestLedgerPathReadersDropWeekendRows:
     """The two ledger-writing call paths in scripts/stamp_options_state.py bypass the
     funnel and call engine.options_stamp._default_read_summary DIRECTLY (:199 vanna,
@@ -746,6 +761,7 @@ class TestLedgerPathReadersDropWeekendRows:
             assert not bad, f"{name} loader returned non-session dates {bad}"
 
 
+@pytest.mark.data_gate
 class TestScreenerGexSummaryDropsWeekendRows:
     """scripts/build_options_screener._load_gex_summary — the canonical #F3-17 fix; its
     output sets each row's `asof` and drives iv_rank's n_obs."""

@@ -312,7 +312,7 @@
             "zh": ""
           },
           "direction": "",
-          "value": 0.72,
+          "value": 0.68,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",

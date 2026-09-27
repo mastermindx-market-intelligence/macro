@@ -11,20 +11,20 @@
   "human_state": "Window Elapsed \u2014 Awaiting Close",
   "components": {
     "validity": 100.0,
-    "progress": 15.9,
+    "progress": 11.2,
     "pace": 12.7,
-    "retention": 77.0,
+    "retention": 48.7,
     "overlay": 53.0
   },
   "geometry": {
-    "dist_to_stop_r": 1.215,
-    "dist_to_t1_r": 1.285,
-    "dist_to_t2_r": 2.785,
+    "dist_to_stop_r": 1.136,
+    "dist_to_t1_r": 1.364,
+    "dist_to_t2_r": 2.864,
     "horizon_pct_used": 128.9,
-    "p1": 0.1436,
-    "p2": 0.0718,
+    "p1": 0.0908,
+    "p2": 0.0454,
     "p3": null,
-    "move_r": 0.215,
+    "move_r": 0.136,
     "mfe_r": 0.28,
     "mae_r": -0.22
   },

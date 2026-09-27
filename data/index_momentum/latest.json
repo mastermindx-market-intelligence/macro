@@ -1,6 +1,6 @@
 {
   "organ": "index_momentum.v1",
-  "as_of": "2026-09-25",
+  "as_of": "2026-09-26",
   "data_as_of": "2026-09-25",
   "authority": {
     "rank": false,
@@ -1250,7 +1250,7 @@
           "hist": 0.247,
           "hist_vel3": -0.445,
           "k": 67.988,
-          "d": 86.922,
+          "d": 86.923,
           "depth_pctile": 39.802,
           "pctile_window_bars": 2520,
           "pctile_window_days": 3528,
@@ -1683,5 +1683,5 @@
     ]
   },
   "n_roster": 13,
-  "_timing_s": 2.09
+  "_timing_s": 2.12
 }

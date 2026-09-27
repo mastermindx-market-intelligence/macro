@@ -1,7 +1,7 @@
 {
   "schema": "subsector_rotation.track_record.v1",
   "as_of": "2026-09-25",
-  "generated_at": "2026-09-26T05:49:34.447145+00:00",
+  "generated_at": "2026-09-26T20:06:09.067121+00:00",
   "is_context_only": true,
   "n_snapshots": 12096,
   "n_days": 45,
@@ -117,8 +117,8 @@
       },
       "v2": {
         "n_matured": 5092,
-        "score_ic": -0.0744,
-        "score_ic_t_hac": -2.5,
+        "score_ic": -0.0743,
+        "score_ic_t_hac": -2.499,
         "by_stage": {
           "emerging": {
             "n": 527,
@@ -154,7 +154,7 @@
         "ic_ir": 0.012,
         "ic_ir_ann": 0.077,
         "t_hac": 0.04,
-        "p_hac": 0.9677,
+        "p_hac": 0.9678,
         "hit": 0.441,
         "n": 34,
         "hac_lags": 21,
@@ -184,7 +184,7 @@
       "v2": {
         "n_matured": 3752,
         "score_ic": -0.0679,
-        "score_ic_t_hac": -2.26,
+        "score_ic_t_hac": -2.261,
         "by_stage": {
           "emerging": {
             "n": 409,
@@ -206,21 +206,21 @@
     },
     "63": {
       "n_matured": 4279,
-      "score_ic": 0.0897,
-      "score_ic_t_hac": 0.953,
-      "score_ic_t_gate": 0.953,
-      "score_ic_t_iid": 1.31,
+      "score_ic": 0.0896,
+      "score_ic_t_hac": 0.952,
+      "score_ic_t_gate": 0.952,
+      "score_ic_t_iid": 1.309,
       "hac_anticonservative": false,
       "ic_span_days": 28,
       "indep_windows": 0.32,
       "indep_windows_required": 6.0,
       "score_ic_detail": {
-        "mean_ic": 0.0897,
+        "mean_ic": 0.0896,
         "ic_vol": 0.2738,
-        "ic_ir": 0.328,
+        "ic_ir": 0.327,
         "ic_ir_ann": 3.676,
-        "t_hac": 0.953,
-        "p_hac": 0.3408,
+        "t_hac": 0.952,
+        "p_hac": 0.3409,
         "hit": 0.625,
         "n": 16,
         "hac_lags": 15,
@@ -356,10 +356,10 @@
         "n": 10443,
         "n_v2": 5092,
         "ic": -0.0265,
-        "ic_v2": -0.0744,
-        "gap": -0.0479,
+        "ic_v2": -0.0743,
+        "gap": -0.0478,
         "t_hac": -0.331,
-        "t_hac_v2": -2.5
+        "t_hac_v2": -2.499
       },
       "21": {
         "n": 9103,
@@ -368,15 +368,15 @@
         "ic_v2": -0.0679,
         "gap": -0.0716,
         "t_hac": 0.04,
-        "t_hac_v2": -2.26
+        "t_hac_v2": -2.261
       },
       "63": {
         "n": 4279,
         "n_v2": 0,
-        "ic": 0.0897,
+        "ic": 0.0896,
         "ic_v2": null,
         "gap": null,
-        "t_hac": 0.953,
+        "t_hac": 0.952,
         "t_hac_v2": null
       }
     },

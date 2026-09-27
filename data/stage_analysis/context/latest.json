@@ -2,7 +2,7 @@
   "schema": "stage_context.v1",
   "asof": "2026-09-26",
   "data_session": "2026-09-25",
-  "built": "2026-09-26T07:24:43Z",
+  "built": "2026-09-26T18:00:15Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
@@ -15,17 +15,17 @@
     "target_week_source": "spy_benchmark",
     "spy_stage_week": "2026-09-25",
     "population_modal_week": "2026-09-25",
-    "current": 2711,
-    "stale": 40,
+    "current": 2714,
+    "stale": 37,
     "unknown": 0,
     "total": 2751,
-    "current_coverage_pct": 98.5,
+    "current_coverage_pct": 98.7,
     "data_session": "2026-09-25",
     "data_session_all": "2026-09-25",
     "week_histogram": [
       {
         "week": "2026-09-25",
-        "n": 2711
+        "n": 2714
       },
       {
         "week": "2026-07-10",
@@ -59,72 +59,73 @@
     "issues": []
   },
   "counts": {
-    "total": 2711,
-    "stage1": 115,
+    "total": 2714,
+    "stage1": 116,
     "stage2": 1343,
     "stage2_fresh": 296,
     "stage3": 295,
-    "stage4": 958,
+    "stage4": 960,
     "too_young": 369,
     "new_today": 16
   },
   "market": {
     "pct_stage2": 49.5,
-    "pct_stage4": 35.3,
+    "pct_stage4": 35.4,
     "weather": "mixed",
     "spy_stage": 2,
     "spy_weeks": 22
   },
   "top_stage2": [
     {
-      "ticker": "INOD",
-      "company": "Innodata Inc",
-      "sector": "Technology",
+      "ticker": "CV",
+      "company": "CapsoVision Inc",
+      "sector": "Healthcare",
       "stage_source_asof": "2026-09-25",
       "stage_week_end": "2026-09-25",
       "stage_current": true,
       "stage": 2,
-      "weeks_in_stage": 1,
+      "weeks_in_stage": 3,
       "fresh": true,
       "sga_score": 70,
-      "ma30_slope_pct5w": 2.959,
-      "pct_vs_ma30": 7.7,
-      "mansfield_rs": 1.56,
-      "vol_ratio": 0.93,
-      "event": "trendline_recapture",
+      "ma30_slope_pct5w": 3.6,
+      "pct_vs_ma30": 0.61,
+      "mansfield_rs": -7.91,
+      "vol_ratio": 1.27,
+      "event": null,
       "gate_tier": "T1",
       "blackout": false,
-      "arc_pos": 0.2625,
+      "arc_pos": 0.2875,
       "earnings": {
         "present": true,
-        "sentiment": 0.85,
-        "performance": 9.2,
-        "tone_word": "confident",
+        "sentiment": 0.1,
+        "performance": 5.0,
+        "tone_word": "mixed",
         "tags": [
-          "beat_and_raise",
-          "margin_expansion",
-          "demand_acceleration"
+          "margin_contraction",
+          "competitor_threat",
+          "regulatory_headwind",
+          "new_product"
         ],
         "quarter": "Q2",
-        "summary": "Innodata reported Q2 FY2026 revenue of $92.1 million (up 58% YoY) and adjusted gross margin expansion to 49%, significantly beating analyst consensus on all key metrics including EPS ($0.41 vs $0.21). Management reiterated guidance for over 40% year-over-year revenue growth, c…"
+        "summary": "CapsoVision reported Q2 FY2026 revenue of $3.6 million, up approximately 10% year over year from $3.3 million, driven by a 13% increase in CapsoCam Plus capsules sold (8,845 vs 7,856) partly offset by an approximately 3% decline in average watching price. Gross margin contract…"
       },
       "why": [
-        "Early in its climb — 1 weeks up so far",
+        "Early in its climb — 3 weeks up so far",
         "Trading above its 30-week line — the trend is with it",
         "Also shows a strong confirmation from our other checks"
       ],
       "why_zh": [
-        "上升初期 — 已上行 1 周",
+        "上升初期 — 已上行 3 周",
         "位于 30 周均线之上 — 趋势向好",
         "其他多项验证同样给出强确认"
       ],
-      "atr_14w": 10.4379,
-      "atr_ext": 0.474,
-      "atr_pct_price": 0.15081,
-      "sata_score": 5,
-      "sata_change_1w": 1,
+      "atr_14w": 0.8692,
+      "atr_ext": 0.046,
+      "atr_pct_price": 0.13071,
+      "sata_score": 4,
+      "sata_change_1w": 0,
       "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 73.0
+      "industry_percentile": null
     },
     {
       "ticker": "VKTX",
@@ -187,56 +188,6 @@
       "industry_percentile": 56.5
     },
     {
-      "ticker": "GRAL",
-      "company": "GRAIL Inc",
-      "sector": "Healthcare",
-      "stage_source_asof": "2026-09-25",
-      "stage_week_end": "2026-09-25",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 1,
-      "fresh": true,
-      "sga_score": 62,
-      "ma30_slope_pct5w": 2.358,
-      "pct_vs_ma30": 93.2,
-      "mansfield_rs": 54.63,
-      "vol_ratio": 1.57,
-      "event": "pullback_resume",
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.2625,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.5,
-        "performance": 7.5,
-        "tone_word": "confident",
-        "tags": [
-          "beat_and_raise",
-          "demand_acceleration",
-          "buyback_or_dividend"
-        ],
-        "quarter": "Q2",
-        "summary": "GRAIL reported Q2 FY2026 revenue of $44.7 million, a 26% year-over-year increase driven by screening volumes exceeding 61,000 tests (up 35%). The company completed an $110 million financing with Samsung and expanded its field sales force to prepare for anticipated FDA approval…"
-      },
-      "why": [
-        "Early in its climb — 1 weeks up so far",
-        "Already stretched well above its 30-week line — may need a rest",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 1 周",
-        "已明显高于 30 周均线 — 可能需要回踩",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 11.8596,
-      "atr_ext": 5.161,
-      "atr_pct_price": 0.09346,
-      "sata_score": 9,
-      "sata_change_1w": 5,
-      "stage_detailed": "2A_strong_breakout",
-      "industry_percentile": 95.4
-    },
-    {
       "ticker": "RUM",
       "company": "RUM Group Inc",
       "sector": "Communication Services",
@@ -283,7 +234,7 @@
       "sata_score": 7,
       "sata_change_1w": -1,
       "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 94.4
+      "industry_percentile": 94.7
     },
     {
       "ticker": "AII",
@@ -430,7 +381,7 @@
       "sata_score": 7,
       "sata_change_1w": -1,
       "stage_detailed": "2X_fallback_bullish",
-      "industry_percentile": 64.7
+      "industry_percentile": 65.0
     },
     {
       "ticker": "BWIN",
@@ -874,66 +825,6 @@
       "industry_percentile": 98.5
     },
     {
-      "ticker": "COIN",
-      "company": "Coinbase",
-      "sector": "Financials",
-      "stage_source_asof": "2026-09-25",
-      "stage_week_end": "2026-09-25",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 1,
-      "fresh": true,
-      "sga_score": 52,
-      "ma30_slope_pct5w": 1.081,
-      "pct_vs_ma30": 10.74,
-      "mansfield_rs": -16.67,
-      "vol_ratio": 1.02,
-      "event": "pullback_resume",
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.2625,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.5,
-        "performance": 3.75,
-        "tone_word": "confident",
-        "tags": [
-          "crypto",
-          "stablecoins",
-          "regulation",
-          "layer-2",
-          "subscriptions",
-          "ai_finance",
-          "competition",
-          "crypto_exchanges",
-          "digital_assets",
-          "blockchain_technology",
-          "fintech_infrastructure",
-          "online_brokerages",
-          "payment_processing"
-        ],
-        "quarter": "Q2",
-        "summary": "We saw crypto trading volumes down, but growth in Coinbase 1 memberships."
-      },
-      "why": [
-        "Early in its climb — 1 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 1 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 23.9429,
-      "atr_ext": 0.79,
-      "atr_pct_price": 0.12271,
-      "sata_score": 5,
-      "sata_change_1w": 1,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 19.0
-    },
-    {
       "ticker": "DSP",
       "company": "Viant Technology Inc",
       "sector": "Technology",
@@ -980,7 +871,7 @@
       "sata_score": 5,
       "sata_change_1w": 0,
       "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 59.8
+      "industry_percentile": 60.2
     },
     {
       "ticker": "SLP",
@@ -2129,7 +2020,7 @@
       "sata_score": 4,
       "sata_change_1w": -1,
       "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 61.1
+      "industry_percentile": 63.2
     },
     {
       "ticker": "ZYME",
@@ -2669,53 +2560,52 @@
       "industry_percentile": null
     },
     {
-      "ticker": "CV",
-      "company": "CapsoVision Inc",
-      "sector": "Healthcare",
+      "ticker": "INOD",
+      "company": "Innodata Inc",
+      "sector": "Technology",
       "stage_source_asof": "2026-09-25",
       "stage_week_end": "2026-09-25",
       "stage_current": true,
       "stage": 2,
-      "weeks_in_stage": 3,
+      "weeks_in_stage": 1,
       "fresh": true,
       "sga_score": 45,
-      "ma30_slope_pct5w": 3.6,
-      "pct_vs_ma30": 0.61,
-      "mansfield_rs": -7.91,
-      "vol_ratio": 1.27,
-      "event": null,
+      "ma30_slope_pct5w": 2.959,
+      "pct_vs_ma30": 7.7,
+      "mansfield_rs": 1.56,
+      "vol_ratio": 0.93,
+      "event": "trendline_recapture",
       "gate_tier": null,
       "blackout": false,
-      "arc_pos": 0.2875,
+      "arc_pos": 0.2625,
       "earnings": {
         "present": true,
-        "sentiment": 0.1,
-        "performance": 5.0,
-        "tone_word": "mixed",
+        "sentiment": 0.85,
+        "performance": 9.2,
+        "tone_word": "confident",
         "tags": [
-          "margin_contraction",
-          "competitor_threat",
-          "regulatory_headwind",
-          "new_product"
+          "beat_and_raise",
+          "margin_expansion",
+          "demand_acceleration"
         ],
         "quarter": "Q2",
-        "summary": "CapsoVision reported Q2 FY2026 revenue of $3.6 million, up approximately 10% year over year from $3.3 million, driven by a 13% increase in CapsoCam Plus capsules sold (8,845 vs 7,856) partly offset by an approximately 3% decline in average watching price. Gross margin contract…"
+        "summary": "Innodata reported Q2 FY2026 revenue of $92.1 million (up 58% YoY) and adjusted gross margin expansion to 49%, significantly beating analyst consensus on all key metrics including EPS ($0.41 vs $0.21). Management reiterated guidance for over 40% year-over-year revenue growth, c…"
       },
       "why": [
-        "Early in its climb — 3 weeks up so far",
+        "Early in its climb — 1 weeks up so far",
         "Trading above its 30-week line — the trend is with it"
       ],
       "why_zh": [
-        "上升初期 — 已上行 3 周",
+        "上升初期 — 已上行 1 周",
         "位于 30 周均线之上 — 趋势向好"
       ],
-      "atr_14w": 0.8692,
-      "atr_ext": 0.046,
-      "atr_pct_price": 0.13071,
-      "sata_score": 4,
-      "sata_change_1w": 0,
+      "atr_14w": 10.4379,
+      "atr_ext": 0.474,
+      "atr_pct_price": 0.15081,
+      "sata_score": 5,
+      "sata_change_1w": 1,
       "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": null
+      "industry_percentile": 73.0
     },
     {
       "ticker": "PRU",
@@ -3015,7 +2905,7 @@
       "sata_score": 4,
       "sata_change_1w": 0,
       "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 42.2
+      "industry_percentile": 42.7
     },
     {
       "ticker": "CBLL",
@@ -3065,6 +2955,98 @@
       "sata_change_1w": 0,
       "stage_detailed": "2X_fallback_bullish",
       "industry_percentile": 82.1
+    },
+    {
+      "ticker": "DJCO",
+      "company": "Daily Journal Corp",
+      "sector": "Technology",
+      "stage_source_asof": "2026-09-25",
+      "stage_week_end": "2026-09-25",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 2,
+      "fresh": true,
+      "sga_score": 44,
+      "ma30_slope_pct5w": 3.192,
+      "pct_vs_ma30": 18.39,
+      "mansfield_rs": 13.57,
+      "vol_ratio": 1.09,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.275,
+      "earnings": {
+        "present": false,
+        "sentiment": null,
+        "performance": null,
+        "tone_word": null,
+        "tags": [],
+        "quarter": null,
+        "summary": null
+      },
+      "why": [
+        "Early in its climb — 2 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 2 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 53.5093,
+      "atr_ext": 1.907,
+      "atr_pct_price": 0.08146,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2A_strong_breakout",
+      "industry_percentile": null
+    },
+    {
+      "ticker": "FIGS",
+      "company": "Figs Inc",
+      "sector": "Consumer Cyclical",
+      "stage_source_asof": "2026-09-25",
+      "stage_week_end": "2026-09-25",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 6,
+      "fresh": true,
+      "sga_score": 44,
+      "ma30_slope_pct5w": 2.902,
+      "pct_vs_ma30": 1.56,
+      "mansfield_rs": 2.37,
+      "vol_ratio": 0.82,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.325,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.8,
+        "performance": 9.5,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "margin_expansion",
+          "demand_acceleration"
+        ],
+        "quarter": "Q2",
+        "summary": "FIGS reported Q2 FY26 net revenues of $197 million (up 29% YoY), beating the prior guidance range and marking a third consecutive quarter with growth above 25%. Adjusted EBITDA margin surged to 18.6%, driven by pricing power, lower returns, and tariff refunds, while active cus…"
+      },
+      "why": [
+        "Early in its climb — 6 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 6 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 1.6794,
+      "atr_ext": 0.122,
+      "atr_pct_price": 0.12514,
+      "sata_score": 5,
+      "sata_change_1w": 1,
+      "stage_detailed": "2X_catch_price_above_ma",
+      "industry_percentile": 87.5
     }
   ],
   "warnings_stage3": [
@@ -3075,16 +3057,34 @@
       "sga_score": 50
     },
     {
-      "ticker": "ASYS",
-      "company": "Amtech Systems Inc",
-      "weeks_in_stage": 5,
-      "sga_score": 41
+      "ticker": "AME",
+      "company": "Ametek",
+      "weeks_in_stage": 1,
+      "sga_score": 39
+    },
+    {
+      "ticker": "NGVT",
+      "company": "Ingevity, Corp.",
+      "weeks_in_stage": 3,
+      "sga_score": 35
+    },
+    {
+      "ticker": "COCO",
+      "company": "The Vita Coco Company",
+      "weeks_in_stage": 2,
+      "sga_score": 32
     },
     {
       "ticker": "SBH",
       "company": "Sally Beauty Holdings, Inc.",
       "weeks_in_stage": 2,
       "sga_score": 32
+    },
+    {
+      "ticker": "ENS",
+      "company": "EnerSys",
+      "weeks_in_stage": 2,
+      "sga_score": 31
     },
     {
       "ticker": "CDNS",
@@ -3099,15 +3099,27 @@
       "sga_score": 26
     },
     {
-      "ticker": "MCHP",
-      "company": "Microchip Technology",
-      "weeks_in_stage": 4,
+      "ticker": "BCML",
+      "company": "BayCom Corp",
+      "weeks_in_stage": 2,
       "sga_score": 25
     },
     {
-      "ticker": "NXPI",
-      "company": "NXP Semiconductors",
-      "weeks_in_stage": 6,
+      "ticker": "EME",
+      "company": "Emcor",
+      "weeks_in_stage": 2,
+      "sga_score": 25
+    },
+    {
+      "ticker": "IMKTA",
+      "company": "Ingles Markets Inc",
+      "weeks_in_stage": 2,
+      "sga_score": 25
+    },
+    {
+      "ticker": "MCHP",
+      "company": "Microchip Technology",
+      "weeks_in_stage": 4,
       "sga_score": 25
     },
     {
@@ -3127,12 +3139,6 @@
       "company": "Gold.com Inc",
       "weeks_in_stage": 4,
       "sga_score": 23
-    },
-    {
-      "ticker": "POWL",
-      "company": "Powell Industries, Inc.",
-      "weeks_in_stage": 1,
-      "sga_score": 22
     },
     {
       "ticker": "ELE",
@@ -3159,34 +3165,10 @@
       "sga_score": 17
     },
     {
-      "ticker": "ACGL",
-      "company": "Arch Capital Group",
-      "weeks_in_stage": 4,
-      "sga_score": 15
-    },
-    {
-      "ticker": "BFS",
-      "company": "Saul Centers, Inc.",
-      "weeks_in_stage": 3,
-      "sga_score": 15
-    },
-    {
-      "ticker": "DBRG",
-      "company": "DigitalBridge Group Inc",
+      "ticker": "ASYS",
+      "company": "Amtech Systems Inc",
       "weeks_in_stage": 5,
-      "sga_score": 15
-    },
-    {
-      "ticker": "GHC",
-      "company": "Graham Holdings",
-      "weeks_in_stage": 5,
-      "sga_score": 15
-    },
-    {
-      "ticker": "GRNT",
-      "company": "Granite Ridge Resources Inc",
-      "weeks_in_stage": 1,
-      "sga_score": 15
+      "sga_score": 16
     }
   ],
   "sectors": [
@@ -3222,20 +3204,20 @@
     },
     {
       "sector": "Healthcare",
-      "n": 342,
-      "pct_stage2": 54.4,
+      "n": 343,
+      "pct_stage2": 54.2,
       "trend": "flat"
     },
     {
       "sector": "Technology",
-      "n": 176,
-      "pct_stage2": 50.0,
+      "n": 177,
+      "pct_stage2": 49.7,
       "trend": "flat"
     },
     {
       "sector": "Communication Services",
-      "n": 104,
-      "pct_stage2": 48.1,
+      "n": 105,
+      "pct_stage2": 47.6,
       "trend": "down"
     },
     {
@@ -6333,6 +6315,10 @@
     "DOLE": [
       4,
       7
+    ],
+    "DOMO": [
+      4,
+      39
     ],
     "DORM": [
       3,
@@ -11482,6 +11468,10 @@
       2,
       52
     ],
+    "RDDT": [
+      1,
+      1
+    ],
     "RDN": [
       2,
       12
@@ -12705,6 +12695,10 @@
     "TBLA": [
       3,
       6
+    ],
+    "TBPH": [
+      4,
+      13
     ],
     "TCBI": [
       3,
@@ -42042,7 +42036,7 @@
       "event": null
     },
     "RDDT": {
-      "stage": 4,
+      "stage": 1,
       "fresh": false,
       "event": null
     },
