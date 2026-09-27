@@ -16579,7 +16579,7 @@ jobs:
     scope: exclusive
     # Mastermind Data OS foundation library (lib/dataos/**) — the canonical identity,
     # temporal, price-basis, null, registry and quality spine every later Data OS wave
-    # builds on. WITHOUT THIS JOB the six suites are dead code: there is no broad
+    # builds on. WITHOUT THIS JOB the seven suites are dead code: there is no broad
     # `pytest tests/` anywhere in CI, so a test file no `run:` step names never runs,
     # and the vocabulary would drift from the incidents it encodes with nothing going
     # red. That is not hypothetical here — lib/dataos/nulls.py shipped in the first
@@ -16635,6 +16635,27 @@ jobs:
       - tests/test_dataos_quality.py
       - tests/test_dataos_registry.py
       - tests/test_dataos_temporal.py
+      # Market Experience PIT-universe qualification stays in the canonical Data OS
+      # lane: network/parquet access is lazy, while the unit suite pins identity refusal
+      # semantics without materializing data/ or adding a second identity plane.
+      - scripts/audit_massive_pit_universe.py
+      - tests/test_massive_pit_universe_audit.py
+      # Static import closure of the PIT audit's existing Market Memory fetcher.
+      # These are TRIGGER/OWNERSHIP paths only: the unit suite never calls main(),
+      # so the thin pytest+pyyaml runtime dependency contract remains unchanged.
+      # contract-delta on exact head 0e81ddf5... against current main 10158af...
+      # reported precisely these ten newly uncovered paths; widening this existing
+      # exclusive scope is the safe repair, not a waiver or a second CI job.
+      - scripts/__init__.py
+      - scripts/ingest_market_memory_sources_spy.py
+      - lib/nyse_calendar.py
+      - engine/close_pass/massive_close.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/brain_analogues.py
+      - engine/neuralweb/market_memory.py
+      - engine/neuralweb/market_memory_source_kernel.py
+      - engine/neuralweb/market_memory_sources_spy.py
+      - engine/prophet_live/interval.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
@@ -16644,7 +16665,7 @@ jobs:
           python-version: "3.12"
       - name: install minimal deps
         run: pip install pytest pyyaml
-      - name: Data OS identity / temporal / price-basis / nulls / registry / quality contracts
+      - name: Data OS identity / temporal / price-basis / nulls / registry / quality / PIT-universe contracts
         run: >-
           PYTHONDONTWRITEBYTECODE=1 python -m pytest
           tests/test_dataos_identity.py
@@ -16652,7 +16673,8 @@ jobs:
           tests/test_dataos_price.py
           tests/test_dataos_nulls.py
           tests/test_dataos_registry.py
-          tests/test_dataos_quality.py -q -rs
+          tests/test_dataos_quality.py
+          tests/test_massive_pit_universe_audit.py -q -rs
 
   dataos-identity-seams:
     # DOS-1.2 — the identity seam gate. `config/identity_seams.yml` declares every surface
