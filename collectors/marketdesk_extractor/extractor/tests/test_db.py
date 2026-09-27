@@ -115,6 +115,32 @@ def test_upsert_updates_title_on_re_insert(conn: sqlite3.Connection) -> None:
     assert row["title"] == "Updated Title"
 
 
+def test_upsert_persists_source_breadcrumb(conn: sqlite3.Connection) -> None:
+    meta = _meta()
+    meta.breadcrumb = ["2026", "July", "Jul 7", "JPM", "Equity Research"]
+    db.upsert_discovered(conn, meta)
+
+    row = db.get_by_blob_id(conn, "blob-001")
+    assert row["breadcrumb"] == '["2026", "July", "Jul 7", "JPM", "Equity Research"]'
+
+    # An empty later observation must not erase source metadata already captured.
+    db.upsert_discovered(conn, _meta())
+    assert db.get_by_blob_id(conn, "blob-001")["breadcrumb"] == row["breadcrumb"]
+
+
+def test_init_db_adds_breadcrumb_to_legacy_table(tmp_path: Path) -> None:
+    path = tmp_path / "legacy.sqlite"
+    conn = sqlite3.connect(path)
+    conn.row_factory = sqlite3.Row
+    conn.execute("CREATE TABLE papers (id INTEGER PRIMARY KEY, blob_id TEXT UNIQUE)")
+    conn.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT)")
+    conn.commit()
+
+    db.init_db(conn)
+    columns = {row["name"] for row in conn.execute("PRAGMA table_info(papers)").fetchall()}
+    assert "breadcrumb" in columns
+
+
 # ---------------------------------------------------------------------------
 # update_fields / set_status
 # ---------------------------------------------------------------------------
