@@ -1,0 +1,391 @@
+{
+  "operation": "gmi-mining-principal-research-20260923-sol-001",
+  "classification": "LOCAL_RESEARCH_ARITHMETIC_DOCUMENT_AND_PEDAGOGICAL_EXAMPLES_ONLY",
+  "run_utc": "2026-09-24T03:04:55.889806+00:00",
+  "research_cutoff": "2026-09-23",
+  "command": "python check_aluminium_research.py",
+  "documents": {
+    "MINING_ALUMINIUM_ENERGY_ECONOMICS_2026-09-23.md": {
+      "bytes": 46051,
+      "words": 6074,
+      "sha256": "fdec99c187b82e3bd8572314136ddc947adb5e4795d0b83b870304313246452a",
+      "git_blob_sha1": "f83714c8f7f8848b935eb48130a7e51f931a3abc"
+    },
+    "MINING_COVERAGE_AND_DESIGN_FRONTIER_2026-09-23.md": {
+      "bytes": 18609,
+      "words": 2440,
+      "sha256": "2849120d022f74602470f218bec992990168c86fb2a567067776ca76986a4a4f",
+      "git_blob_sha1": "cc68cb00cb2c5ea34d626aa5efa4d8fd33005496"
+    }
+  },
+  "script_git_blob_sha1": "ee8e2885cbfca67141a0883cb56cc2c0789523c4",
+  "total": 54,
+  "passed": 54,
+  "failed": 0,
+  "checks": [
+    {
+      "check": "twelve_dossiers",
+      "passed": true,
+      "evidence": [
+        "AL-C01",
+        "AL-C02",
+        "AL-C03",
+        "AL-C04",
+        "AL-C05",
+        "AL-C06",
+        "AL-C07",
+        "AL-C08",
+        "AL-C09",
+        "AL-C10",
+        "AL-C11",
+        "AL-C12"
+      ]
+    },
+    {
+      "check": "six_hypotheticals",
+      "passed": true,
+      "evidence": [
+        "AL-H01",
+        "AL-H02",
+        "AL-H03",
+        "AL-H04",
+        "AL-H05",
+        "AL-H06"
+      ]
+    },
+    {
+      "check": "four_personas",
+      "passed": true,
+      "evidence": [
+        "AL-P01",
+        "AL-P02",
+        "AL-P03",
+        "AL-P04"
+      ]
+    },
+    {
+      "check": "nineteen_source_records",
+      "passed": true,
+      "evidence": [
+        "AL-S01",
+        "AL-S02",
+        "AL-S03",
+        "AL-S04",
+        "AL-S05",
+        "AL-S06",
+        "AL-S07",
+        "AL-S08",
+        "AL-S09",
+        "AL-S10",
+        "AL-S11",
+        "AL-S12",
+        "AL-S13",
+        "AL-S14",
+        "AL-S15",
+        "AL-S16",
+        "AL-S17",
+        "AL-S18",
+        "AL-S19"
+      ]
+    },
+    {
+      "check": "twenty_eight_requirements",
+      "passed": true,
+      "evidence": [
+        "ME-01",
+        "ME-02",
+        "ME-03",
+        "ME-04",
+        "ME-05",
+        "ME-06",
+        "ME-07",
+        "ME-08",
+        "ME-09",
+        "ME-10",
+        "ME-11",
+        "ME-12",
+        "ME-13",
+        "ME-14",
+        "ME-15",
+        "ME-16",
+        "ME-17",
+        "ME-18",
+        "ME-19",
+        "ME-20",
+        "ME-21",
+        "ME-22",
+        "ME-23",
+        "ME-24",
+        "ME-25",
+        "ME-26",
+        "ME-27",
+        "ME-28"
+      ]
+    },
+    {
+      "check": "references_resolve",
+      "passed": true,
+      "evidence": "No unknown source identifier"
+    },
+    {
+      "check": "research_and_handoff_held",
+      "passed": true,
+      "evidence": "Explicit incomplete scope"
+    },
+    {
+      "check": "mirror_limits_preserved",
+      "passed": true,
+      "evidence": "Chalco visual verification not invented"
+    },
+    {
+      "check": "seven_canonical_passes",
+      "passed": true,
+      "evidence": "Existing coverage updated"
+    },
+    {
+      "check": "corpus_table_contiguous",
+      "passed": true,
+      "evidence": "Single Markdown table"
+    },
+    {
+      "check": "canonical_P05_preserved",
+      "passed": true,
+      "evidence": "Parallel P05 excluded"
+    },
+    {
+      "check": "remaining_battery_gap",
+      "passed": true,
+      "evidence": "Next regime not declared complete"
+    },
+    {
+      "check": "current_procedure_pin",
+      "passed": true,
+      "evidence": "Same protected SHA"
+    },
+    {
+      "check": "Hydro_stage_directions",
+      "passed": true,
+      "evidence": "AL-S01; unlike stages, not a causal model"
+    },
+    {
+      "check": "Hydro_energy_flow_table",
+      "passed": true,
+      "evidence": "GWh, Q2 2026, AL-S02; table arithmetic not physical audit"
+    },
+    {
+      "check": "Hydro_FCF_bridge",
+      "passed": true,
+      "evidence": "NOK millions, Q2 2026, AL-S02"
+    },
+    {
+      "check": "Hydro_simple_cash_not_adjusted_FCF",
+      "passed": true,
+      "evidence": {
+        "operating_plus_investing": 9427,
+        "adjusted_FCF": 3963
+      }
+    },
+    {
+      "check": "Eviny_total_energy",
+      "passed": true,
+      "evidence": "TWh, 2031-2040; AL-S03"
+    },
+    {
+      "check": "Eviny_annual_MWh",
+      "passed": true,
+      "evidence": "Annual energy, not MW capacity"
+    },
+    {
+      "check": "Slovalco_tranches",
+      "passed": true,
+      "evidence": "Capacity tranches, not annual actual output; AL-S05"
+    },
+    {
+      "check": "EGA_restored_cell_fraction",
+      "passed": true,
+      "evidence": "AL-S16; not saleable-output fraction"
+    },
+    {
+      "check": "Novelis_adjusted_FCF",
+      "passed": true,
+      "evidence": "USD millions, quarter ended June30; AL-S08"
+    },
+    {
+      "check": "Novelis_earnings_cash_opposite",
+      "passed": true,
+      "evidence": "AL-S08; causes require source, not this arithmetic"
+    },
+    {
+      "check": "Constellium_Q2_matched",
+      "passed": true,
+      "evidence": "USD millions; AL-S09"
+    },
+    {
+      "check": "Constellium_H1_matched",
+      "passed": true,
+      "evidence": "USD millions; AL-S09"
+    },
+    {
+      "check": "Constellium_H2_guidance_remainder",
+      "passed": true,
+      "evidence": "Guidance arithmetic, not a forecast"
+    },
+    {
+      "check": "Constellium_wrong_remainder_detected",
+      "passed": true,
+      "evidence": "Inclusion mismatch must not silently pass"
+    },
+    {
+      "check": "Constellium_growth_definitions",
+      "passed": true,
+      "evidence": "Matched vs headline, AL-S09"
+    },
+    {
+      "check": "Alcoa_actual_nominal_coupon",
+      "passed": true,
+      "evidence": "USD million/year, actual terms, AL-S12"
+    },
+    {
+      "check": "Alcoa_assumed_nominal_coupon",
+      "passed": true,
+      "evidence": "Earlier pro forma assumptions, AL-S11"
+    },
+    {
+      "check": "Alcoa_coupon_delta",
+      "passed": true,
+      "evidence": "Not complete accounting-interest change"
+    },
+    {
+      "check": "Nexans_arithmetic_average",
+      "passed": true,
+      "evidence": "AL-S13; not an annual delivery schedule"
+    },
+    {
+      "check": "H01_fixed_energy",
+      "passed": true,
+      "evidence": "Invented product/energy costs"
+    },
+    {
+      "check": "H01_partial_index",
+      "passed": true,
+      "evidence": "No actual Century coefficient"
+    },
+    {
+      "check": "H01_full_index",
+      "passed": true,
+      "evidence": "Hypothetical comparison"
+    },
+    {
+      "check": "H02_area_basis",
+      "passed": true,
+      "evidence": "Invented physical/hedge prices"
+    },
+    {
+      "check": "H02_remaining_cost_increase",
+      "passed": true,
+      "evidence": "Location mismatch not eliminated"
+    },
+    {
+      "check": "H03_net_external_seller",
+      "passed": true,
+      "evidence": "Invented matched boundaries"
+    },
+    {
+      "check": "H03_net_external_buyer",
+      "passed": true,
+      "evidence": "Integrated label does not fix sign"
+    },
+    {
+      "check": "H04_inventory_funding",
+      "passed": true,
+      "evidence": "Inventory only; hypothetical"
+    },
+    {
+      "check": "H04_carrying_cost",
+      "passed": true,
+      "evidence": "Annual financing, not current inventory purchase"
+    },
+    {
+      "check": "H04_contribution_unchanged",
+      "passed": true,
+      "evidence": "Assumed constant retained contribution"
+    },
+    {
+      "check": "H05_base_recycling",
+      "passed": true,
+      "evidence": "Input vs output tonnes"
+    },
+    {
+      "check": "H05_yield_improvement",
+      "passed": true,
+      "evidence": "Hypothetical grade/yield held otherwise constant"
+    },
+    {
+      "check": "H05_feed_cost_pressure",
+      "passed": true,
+      "evidence": "Hypothetical inputs"
+    },
+    {
+      "check": "H06_two_sided_premium",
+      "passed": true,
+      "evidence": "Buyer and producer feasibility, not a carbon quote"
+    },
+    {
+      "check": "compatible_observation_example",
+      "passed": true,
+      "evidence": "Pedagogical same-basis example only"
+    },
+    {
+      "check": "refuse_unmatched_lag",
+      "passed": true,
+      "evidence": "Incompatible unit, period or basis"
+    },
+    {
+      "check": "refuse_unmatched_currency",
+      "passed": true,
+      "evidence": "Incompatible unit, period or basis"
+    },
+    {
+      "check": "refuse_unmatched_period",
+      "passed": true,
+      "evidence": "Incompatible unit, period or basis"
+    },
+    {
+      "check": "refuse_NPV_as_annual",
+      "passed": true,
+      "evidence": "Incompatible unit, period or basis"
+    },
+    {
+      "check": "future_contract_eligible_year",
+      "passed": true,
+      "evidence": "Only hypothetical parser compatibility"
+    },
+    {
+      "check": "refuse_future_contract_for_2026",
+      "passed": true,
+      "evidence": "Energy unit or effective year unsupported"
+    },
+    {
+      "check": "refuse_MW_as_annual_energy",
+      "passed": true,
+      "evidence": "Energy unit or effective year unsupported"
+    }
+  ],
+  "not_claimed": [
+    "application tests",
+    "independent research review",
+    "accounting audit",
+    "actual contract settlement",
+    "native source retention",
+    "source-rights acceptance",
+    "canonical Agent OS validator",
+    "CI",
+    "browser proof",
+    "investment validation"
+  ],
+  "notes": [
+    "Historical research suites not rerun.",
+    "Chalco narrative admitted with mirror provenance; table-derived arithmetic excluded after screenshot failure.",
+    "Only original report/coverage/check files are packaged."
+  ]
+}

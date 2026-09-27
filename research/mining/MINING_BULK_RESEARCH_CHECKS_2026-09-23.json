@@ -1,0 +1,503 @@
+{
+  "operation": "gmi-mining-principal-research-20260923-sol-001",
+  "classification": "LOCAL_RESEARCH_ARITHMETIC_DOCUMENT_AND_PEDAGOGICAL_COMPATIBILITY_ONLY",
+  "run_utc": "2026-09-24T01:32:33.326673+00:00",
+  "research_cutoff": "2026-09-23",
+  "command": "python check_bulk_research.py",
+  "document": "MINING_BULK_FERTILIZER_ECONOMICS_2026-09-23.md",
+  "document_words": 6471,
+  "document_bytes": 48503,
+  "document_sha256": "5783d34df08a70ad66c7c2ea3b768d474a37bee7caa62537cb54c4e2cd04f882",
+  "document_git_blob_sha1": "42c90b4634b4b408c014b7ccb335744adb79bf48",
+  "script_git_blob_sha1": "65ac71a37b7ccd402a7aba75f77277c193fa950e",
+  "total": 63,
+  "passed": 63,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "eleven_dossiers",
+      "passed": true,
+      "evidence": [
+        "D01",
+        "D02",
+        "D03",
+        "D04",
+        "D05",
+        "D06",
+        "D07",
+        "D08",
+        "D09",
+        "D10",
+        "D11"
+      ]
+    },
+    {
+      "name": "sixteen_primary_source_records",
+      "passed": true,
+      "evidence": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S05",
+        "S06",
+        "S07",
+        "S08",
+        "S09",
+        "S10",
+        "S11",
+        "S12",
+        "S13",
+        "S14",
+        "S15",
+        "S16"
+      ]
+    },
+    {
+      "name": "twenty_eight_prospective_requirements",
+      "passed": true,
+      "evidence": [
+        "MG-01",
+        "MG-02",
+        "MG-03",
+        "MG-04",
+        "MG-05",
+        "MG-06",
+        "MG-07",
+        "MG-08",
+        "MG-09",
+        "MG-10",
+        "MG-11",
+        "MG-12",
+        "MG-13",
+        "MG-14",
+        "MG-15",
+        "MG-16",
+        "MG-17",
+        "MG-18",
+        "MG-19",
+        "MG-20",
+        "MG-21",
+        "MG-22",
+        "MG-23",
+        "MG-24",
+        "MG-25",
+        "MG-26",
+        "MG-27",
+        "MG-28"
+      ]
+    },
+    {
+      "name": "five_persona_workflows",
+      "passed": true,
+      "evidence": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05"
+      ]
+    },
+    {
+      "name": "five_hypothetical_examples",
+      "passed": true,
+      "evidence": [
+        "H01",
+        "H02",
+        "H03",
+        "H04",
+        "H05"
+      ]
+    },
+    {
+      "name": "source_identifiers_resolve",
+      "passed": true,
+      "evidence": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S05",
+        "S06",
+        "S07",
+        "S08",
+        "S09",
+        "S10",
+        "S11",
+        "S12",
+        "S13",
+        "S14",
+        "S15",
+        "S16"
+      ]
+    },
+    {
+      "name": "unique_source_urls",
+      "passed": true,
+      "evidence": 16
+    },
+    {
+      "name": "held_scope_explicit",
+      "passed": true,
+      "evidence": "research/HOLD; not implementation"
+    },
+    {
+      "name": "procedure_and_carrier",
+      "passed": true,
+      "evidence": "same protected pin and research carrier"
+    },
+    {
+      "name": "research_not_product_tests",
+      "passed": true,
+      "evidence": "prospective requirements, not executed product behavior"
+    },
+    {
+      "name": "pellet_ambiguity_kept",
+      "passed": true,
+      "evidence": "S02/S03; no forced migration date"
+    },
+    {
+      "name": "source_year_discrepancy_kept",
+      "passed": true,
+      "evidence": "S14 conflict retained, not silently rewritten"
+    },
+    {
+      "name": "Vale_reported_bridge",
+      "passed": true,
+      "evidence": "S04: issuer transformation bridge, not homogeneous-unit subtraction"
+    },
+    {
+      "name": "Vale_sustaining_inclusive_break_even",
+      "passed": true,
+      "evidence": "S04: USD/dry tonne"
+    },
+    {
+      "name": "Jansen_capital_estimate_change",
+      "passed": true,
+      "evidence": {
+        "value": "40.81632653061224489795918367346938775510",
+        "expected_rounded": "40.82",
+        "scope": "S07/S08; not isolated cause of IRR change"
+      }
+    },
+    {
+      "name": "Rio_group_FCF",
+      "passed": true,
+      "evidence": "S09; USD millions; issuer-defined economic share"
+    },
+    {
+      "name": "Rio_capital_adjustment",
+      "passed": true,
+      "evidence": "S09; partner contributions due are not all cash received"
+    },
+    {
+      "name": "Warrior_prior_unit_cash_contribution",
+      "passed": true,
+      "evidence": "S10; USD/short ton, not GAAP margin"
+    },
+    {
+      "name": "Warrior_current_unit_cash_contribution",
+      "passed": true,
+      "evidence": "S10; USD/short ton"
+    },
+    {
+      "name": "Warrior_contribution_change",
+      "passed": true,
+      "evidence": {
+        "value": "57.03883495145631067961165048543689320390",
+        "expected_rounded": "57.04",
+        "scope": "S10; not causal attribution to engineering"
+      }
+    },
+    {
+      "name": "Warrior_operating_cash_less_gross_capex",
+      "passed": true,
+      "evidence": "S10; USD millions"
+    },
+    {
+      "name": "Warrior_net_investing_bridge",
+      "passed": true,
+      "evidence": "S10; gross capex less disposal inflows"
+    },
+    {
+      "name": "net_investing_is_not_capex",
+      "passed": true,
+      "evidence": "Using net investment overstates this simple FCF by USD10.624m"
+    },
+    {
+      "name": "Nutrien_phosphate_price_change",
+      "passed": true,
+      "evidence": {
+        "value": "9.383753501400560224089635854341736694700",
+        "expected_rounded": "9.38",
+        "scope": "S11; same stated product price scope"
+      }
+    },
+    {
+      "name": "Nutrien_phosphate_EBITDA_change",
+      "passed": true,
+      "evidence": {
+        "value": "-75.00",
+        "expected_rounded": "-75.00",
+        "scope": "S11; reported adjusted EBITDA"
+      }
+    },
+    {
+      "name": "Nutrien_potash_margin_direction",
+      "passed": true,
+      "evidence": "S11; not phosphate economics"
+    },
+    {
+      "name": "KplusS_midpoints",
+      "passed": true,
+      "evidence": "S13/S14; EUR millions, FY2026 EBITDA"
+    },
+    {
+      "name": "KplusS_guidance_midpoint_increase",
+      "passed": true,
+      "evidence": {
+        "value": "5.882352941176470588235294117647058823500",
+        "expected_rounded": "5.88",
+        "scope": "S13/S14; management-range comparison"
+      }
+    },
+    {
+      "name": "KplusS_midpoint_vs_stated_consensus",
+      "passed": true,
+      "evidence": {
+        "value": "0.278551532033426183844011142061281337000",
+        "expected_rounded": "0.28",
+        "scope": "S14; July16-labeled consensus, reconstructed now"
+      }
+    },
+    {
+      "name": "H01_no_jointly_feasible_premium",
+      "passed": true,
+      "evidence": "hypothetical; buyer value below incremental production cost"
+    },
+    {
+      "name": "H01_buyer_seller_at_ten",
+      "passed": true,
+      "evidence": "hypothetical; matched comparable units"
+    },
+    {
+      "name": "H01_improved_cost_opens_interval",
+      "passed": true,
+      "evidence": "hypothetical; producer +4 and buyer +2"
+    },
+    {
+      "name": "H02_moisture_example",
+      "passed": true,
+      "evidence": {
+        "value": "20.36956521739130434782608695652173913043",
+        "expected_rounded": "20.3696",
+        "scope": "reported cost with explicitly hypothetical 8% moisture"
+      }
+    },
+    {
+      "name": "H03_cash_margin",
+      "passed": true,
+      "evidence": {
+        "value": "70.0",
+        "expected_rounded": "70.0000",
+        "scope": "hypothetical; stipulated cash basis"
+      }
+    },
+    {
+      "name": "H03_simple_payback",
+      "passed": true,
+      "evidence": {
+        "value": "7.142857142857142857142857142857142857143",
+        "expected_rounded": "7.1429",
+        "scope": "hypothetical; years, not discounted payback"
+      }
+    },
+    {
+      "name": "H03_present_value",
+      "passed": true,
+      "evidence": {
+        "value": "430.1196973993277768449174488647991115946",
+        "expected_rounded": "430.1197",
+        "scope": "hypothetical; ten annual cash flows discounted at 10%"
+      }
+    },
+    {
+      "name": "H03_negative_NPV",
+      "passed": true,
+      "evidence": {
+        "value": "-69.8803026006722231550825511352008884054",
+        "expected_rounded": "-69.8803",
+        "scope": "hypothetical; excludes tax, reinvestment, working capital and terminal proceeds"
+      }
+    },
+    {
+      "name": "H04_receipts_and_bill",
+      "passed": true,
+      "evidence": "hypothetical; same area basis"
+    },
+    {
+      "name": "H04_original_affordability_ratio",
+      "passed": true,
+      "evidence": {
+        "value": "23.33333333333333333333333333333333333333",
+        "expected_rounded": "23.3333",
+        "scope": "hypothetical; fraction of gross receipts, not profit"
+      }
+    },
+    {
+      "name": "H04_changed_affordability_ratio",
+      "passed": true,
+      "evidence": {
+        "value": "29.81481481481481481481481481481481481481",
+        "expected_rounded": "29.8148",
+        "scope": "hypothetical; no elasticity estimate"
+      }
+    },
+    {
+      "name": "H04_credit_is_separate_constraint",
+      "passed": true,
+      "evidence": "hypothetical; financing constraint regardless of annual-profit assertion"
+    },
+    {
+      "name": "H05_A_phosphate_only",
+      "passed": true,
+      "evidence": {
+        "value": "1304.347826086956521739130434782608695652",
+        "expected_rounded": "1304.3478",
+        "scope": "hypothetical USD/tonne available phosphate equivalent"
+      }
+    },
+    {
+      "name": "H05_B_phosphate_only",
+      "passed": true,
+      "evidence": {
+        "value": "1.25E+3",
+        "expected_rounded": "1250.0000",
+        "scope": "hypothetical; stipulated composition"
+      }
+    },
+    {
+      "name": "H05_A_after_usable_nitrogen",
+      "passed": true,
+      "evidence": {
+        "value": "1108.695652173913043478260869565217391304",
+        "expected_rounded": "1108.6957",
+        "scope": "hypothetical; USD90 stipulated usable credit"
+      }
+    },
+    {
+      "name": "H05_B_after_usable_nitrogen",
+      "passed": true,
+      "evidence": {
+        "value": "1144.230769230769230769230769230769230769",
+        "expected_rounded": "1144.2308",
+        "scope": "hypothetical; USD55 stipulated usable credit"
+      }
+    },
+    {
+      "name": "H05_comparison_reverses",
+      "passed": true,
+      "evidence": "not an actual agronomic or purchasing recommendation"
+    },
+    {
+      "name": "missing_moisture_refused",
+      "passed": true,
+      "evidence": "a bounded moisture assumption or measurement is required"
+    },
+    {
+      "name": "invalid_moisture_refused",
+      "passed": true,
+      "evidence": "a bounded moisture assumption or measurement is required"
+    },
+    {
+      "name": "second_dry_conversion_refused",
+      "passed": true,
+      "evidence": "input is not a wet metric tonne quote"
+    },
+    {
+      "name": "compatible_fixture_comparison",
+      "passed": true,
+      "evidence": "hypothetical positive control, not actual benchmark history"
+    },
+    {
+      "name": "benchmark_specification_mismatch",
+      "passed": true,
+      "evidence": "incompatible observation bases"
+    },
+    {
+      "name": "unresolved_conditional_migration",
+      "passed": true,
+      "evidence": "unresolved basis"
+    },
+    {
+      "name": "wet_dry_mismatch",
+      "passed": true,
+      "evidence": "incompatible observation bases"
+    },
+    {
+      "name": "long_short_ton_mismatch",
+      "passed": true,
+      "evidence": "incompatible observation bases"
+    },
+    {
+      "name": "delivery_basis_mismatch",
+      "passed": true,
+      "evidence": "incompatible observation bases"
+    },
+    {
+      "name": "period_mismatch",
+      "passed": true,
+      "evidence": "incompatible observation bases"
+    },
+    {
+      "name": "zero_comparison_denominator",
+      "passed": true,
+      "evidence": "comparison denominator must be positive"
+    },
+    {
+      "name": "missing_producer_cost",
+      "passed": true,
+      "evidence": "both sides of the premium comparison are required"
+    },
+    {
+      "name": "overlapping_productivity_sum",
+      "passed": true,
+      "evidence": "banked, annualized and target observations may overlap"
+    },
+    {
+      "name": "disjoint_fixture_sum_allowed",
+      "passed": true,
+      "evidence": "hypothetical positive control"
+    },
+    {
+      "name": "unknown_nutrient_usefulness",
+      "passed": true,
+      "evidence": "co-nutrient usefulness must be stipulated or established"
+    },
+    {
+      "name": "unusable_nutrient_credit",
+      "passed": true,
+      "evidence": "co-nutrient usefulness must be stipulated or established"
+    },
+    {
+      "name": "zero_nutrient_denominator",
+      "passed": true,
+      "evidence": "invalid phosphate fraction"
+    }
+  ],
+  "not_claimed": [
+    "application tests",
+    "CI",
+    "independent research review",
+    "issuer-accounting reconciliation",
+    "native benchmark normalization",
+    "actual contract settlement",
+    "customer or agronomic validation",
+    "historical native retention",
+    "source reuse rights",
+    "Agent OS validator",
+    "browser proof",
+    "investment validation",
+    "Fable dispatch"
+  ]
+}

@@ -1,0 +1,437 @@
+{
+  "operation": "gmi-mining-principal-research-20260923-sol-001",
+  "classification": "PLANNING_TRACE_NOT_NATIVE_ADMISSION",
+  "spec_commit": "cbdb18ba237cf18d370e19fc7814b744b7739ef1",
+  "spec_blob": "33d9448142d1ce922201b9938ae755b6239ea1e2",
+  "spec_sha256": "0925e376bc7504aa5e191cfc1795415ecbfe2b7128d6d2bc06ecd5d6d361530e",
+  "task_ids": [
+    "T01",
+    "T02",
+    "T03",
+    "T04",
+    "T05",
+    "T06",
+    "T07",
+    "T08"
+  ],
+  "requirements": [
+    {
+      "id": "MGD-01",
+      "family": "Reuse",
+      "requirement": "One accepted shared assertion schema/validator is imported; no Mining copy or alternative identity generator exists.",
+      "task": "T01",
+      "test": "tests/test_mining_shared_contract.py::test_single_shared_kernel",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-02",
+      "family": "Reuse",
+      "requirement": "Exact dependency revisions and integrated release proof are recorded; candidate-only #7870 is not presented as deployed.",
+      "task": "T08",
+      "test": "tests/test_mining_acceptance.py::test_exact_dependency_receipts",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-03",
+      "family": "Reuse",
+      "requirement": "Shared shell/mount and all affected source-writer boundaries are honored; no copied basket/theme page.",
+      "task": "T06",
+      "test": "tests/test_mining_ui.py::test_single_shared_mount",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-04",
+      "family": "Reuse",
+      "requirement": "Legacy Robotics and Semiconductor payloads retain behavior after any accepted shared extension.",
+      "task": "T01",
+      "test": "tests/test_mining_shared_contract.py::test_legacy_sector_parity",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-05",
+      "family": "Workflow",
+      "requirement": "Copper is reachable through its actual theme; the reshoring proxy is not labeled a dedicated copper basket.",
+      "task": "T06",
+      "test": "tests/test_mining_ui.py::test_copper_without_primary_basket",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-06",
+      "family": "Workflow",
+      "requirement": "W-C completes real source -> operation -> valid issuer -> useful economic result -> existing company navigation.",
+      "task": "T08",
+      "test": "tests/test_mining_acceptance.py::test_w_c_real_source_journey",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-07",
+      "family": "Workflow",
+      "requirement": "W-R completes the same path with conversion, commercial-stage and external/intra-group distinctions.",
+      "task": "T08",
+      "test": "tests/test_mining_acceptance.py::test_w_r_real_source_journey",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-08",
+      "family": "Workflow",
+      "requirement": "Both positive witnesses have populated native economics; optional consensus can be missing but a wholly empty economic path fails.",
+      "task": "T04",
+      "test": "tests/test_mining_composition.py::test_two_positive_economic_paths",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-09",
+      "family": "Identity",
+      "requirement": "Security resolution with missing issuer evidence does not authorize a financial issuer join.",
+      "task": "T04",
+      "test": "tests/test_mining_composition.py::test_security_without_issuer_refuses_financial_join",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-10",
+      "family": "Identity",
+      "requirement": "Current issuer mapping is not used as historical asset ownership without an accepted time-valid bridge.",
+      "task": "T04",
+      "test": "tests/test_mining_composition.py::test_current_identity_not_historical_ownership",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-11",
+      "family": "Identity",
+      "requirement": "Source-only business or mine description remains useful without invented company, asset, security or CIK IDs.",
+      "task": "T04",
+      "test": "tests/test_mining_composition.py::test_source_only_business_stays_useful",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-12",
+      "family": "Identity",
+      "requirement": "Same mine/source appearing in multiple slices is not additional physical supply or independent corroboration.",
+      "task": "T04",
+      "test": "tests/test_mining_composition.py::test_shared_asset_not_duplicate_supply",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-13",
+      "family": "Measures",
+      "requirement": "Gross, consolidated, attributable, payable and saleable bases stay distinguishable; ownership is never applied twice.",
+      "task": "T02",
+      "test": "tests/test_mining_witness_profiles.py::test_attribution_not_applied_twice",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-14",
+      "family": "Measures",
+      "requirement": "Production, purchases, inventory, internal transfer and external delivery are not silently interchangeable.",
+      "task": "T02",
+      "test": "tests/test_mining_witness_profiles.py::test_production_is_not_delivery",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-15",
+      "family": "Measures",
+      "requirement": "Negative financial values retain their sign through the native financial route; shared nonnegative fields are not bypassed.",
+      "task": "T03",
+      "test": "tests/test_mining_economic_inputs.py::test_signed_loss_is_not_positive_profit",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-16",
+      "family": "Measures",
+      "requirement": "Unknown denominator, currency, attribution or perimeter cannot become comparable because both optional fields are null.",
+      "task": "T03",
+      "test": "tests/test_mining_economic_inputs.py::test_two_null_bases_are_not_comparable",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-17",
+      "family": "Measures",
+      "requirement": "Wet/dry, product/contained-metal, stock/flow and reporting-horizon mismatches refuse dependent arithmetic without deleting supported facts.",
+      "task": "T03",
+      "test": "tests/test_mining_economic_inputs.py::test_incompatible_measurement_refuses_arithmetic",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-18",
+      "family": "Rights",
+      "requirement": "A royalty or stream is not encoded as physical mine ownership; missing threshold balances block actual entitlement calculation.",
+      "task": "T04",
+      "test": "tests/test_mining_composition.py::test_missing_threshold_keeps_contract_explanation",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-19",
+      "family": "Economics",
+      "requirement": "Product sales and contractual support income remain separately defined; intra-group eliminations are not ignored.",
+      "task": "T03",
+      "test": "tests/test_mining_economic_inputs.py::test_ppa_and_internal_sales_not_external_revenue",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-20",
+      "family": "Economics",
+      "requirement": "Any displayed numerical derivation has accepted native formula/input receipts; the browser does not invent arithmetic.",
+      "task": "T03",
+      "test": "tests/test_mining_economic_inputs.py::test_unowned_derivation_not_emitted",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-21",
+      "family": "Economics",
+      "requirement": "Same-year outlook revisions are not relabeled as later-period guidance to satisfy assess_management_sequence.",
+      "task": "T03",
+      "test": "tests/test_mining_economic_inputs.py::test_same_horizon_is_not_next_outlook",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-22",
+      "family": "Economics",
+      "requirement": "Management guidance, external consensus and house forecasts remain distinct, including in labels and summaries.",
+      "task": "T03",
+      "test": "tests/test_mining_economic_inputs.py::test_management_not_consensus",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-23",
+      "family": "Economics",
+      "requirement": "Financing, cash availability, owned inventory and operating earnings are not substituted for one another.",
+      "task": "T03",
+      "test": "tests/test_mining_economic_inputs.py::test_cash_claims_not_operating_profit",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-24",
+      "family": "Change",
+      "requirement": "Source history reconstructed now is labeled differently from genuinely recorded historical system replay.",
+      "task": "T07",
+      "test": "tests/test_mining_updates.py::test_retrospective_not_system_replay",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-25",
+      "family": "Change",
+      "requirement": "Date-only publication cannot prove an unsupported intraday ordering or borrow review time as publication.",
+      "task": "T02",
+      "test": "tests/test_mining_witness_profiles.py::test_date_only_not_invented_instant",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-26",
+      "family": "Change",
+      "requirement": "New evidence can advance a supported milestone, while a target does not become achieved just because time passes.",
+      "task": "T07",
+      "test": "tests/test_mining_updates.py::test_target_not_aged_into_fact",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-27",
+      "family": "Change",
+      "requirement": "Corrections preserve predecessor objects and mark dependent interpretation stale or recomputed through native owners.",
+      "task": "T07",
+      "test": "tests/test_mining_updates.py::test_new_fact_does_not_reuse_old_interpretation",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-28",
+      "family": "Change",
+      "requirement": "Map, table, prose and paginated views refer to a coherent selected revision tuple, not silently mixed generations.",
+      "task": "T07",
+      "test": "tests/test_mining_updates.py::test_pagination_revision_tuple_coherent",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-29",
+      "family": "Safety",
+      "requirement": "Authentication/entitlement occur before private reads and remain effective for malformed and error paths.",
+      "task": "T05",
+      "test": "tests/test_mining_private_route.py::test_anonymous_research_never_reads_private",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-30",
+      "family": "Safety",
+      "requirement": "Full-fidelity real admission waits for the accepted private binding; no public-root or emergency-bucket fallback.",
+      "task": "T05",
+      "test": "tests/test_mining_private_route.py::test_public_root_refuses_real_admission",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-31",
+      "family": "Safety",
+      "requirement": "Warm-process rights revocation prevents prohibited new emissions, including historical views.",
+      "task": "T05",
+      "test": "tests/test_mining_private_route.py::test_warm_rights_revocation_vetoes_emission",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-32",
+      "family": "Safety",
+      "requirement": "Logout/account change and delayed-response tests prevent cross-user or stale private-state restoration.",
+      "task": "T06",
+      "test": "tests/test_mining_ui.py::test_logout_discards_delayed_response",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-33",
+      "family": "Safety",
+      "requirement": "Page source, source maps, logs, storage, counts, errors and analytics do not disclose protected bodies or relationships.",
+      "task": "T05",
+      "test": "tests/test_mining_private_route.py::test_no_private_payload_or_existence_leak",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-34",
+      "family": "Safety",
+      "requirement": "Every research machine-facing rank/gate/size/originate/open-entry flag remains literal false.",
+      "task": "T04",
+      "test": "tests/test_mining_composition.py::test_authority_literal_false",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-35",
+      "family": "Regression",
+      "requirement": "Same-input incumbent recommendations, entry permission, member order and uncovered results remain unchanged.",
+      "task": "T07",
+      "test": "tests/test_mining_updates.py::test_incumbent_market_outputs_unchanged",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-36",
+      "family": "Regression",
+      "requirement": "Mobile/desktop, keyboard/focus, long labels, EN/ZH and both themes work through the same shared components.",
+      "task": "T06",
+      "test": "tests/test_mining_ui.py::test_all_viewports_languages_themes",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-37",
+      "family": "Proof",
+      "requirement": "A real accepted source revision reaches the entitled browser through the real path; fixtures or CI alone do not pass.",
+      "task": "T08",
+      "test": "tests/test_mining_acceptance.py::test_real_source_update_reaches_entitled_browser",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-38",
+      "family": "Proof",
+      "requirement": "One real update and one honest degraded/refused dependent result are demonstrated without a public fallback.",
+      "task": "T08",
+      "test": "tests/test_mining_acceptance.py::test_honest_degradation_no_public_fallback",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-39",
+      "family": "Coverage",
+      "requirement": "Partial neighborhoods and later-domain gaps are visible; two witnesses do not imply complete Mining coverage.",
+      "task": "T04",
+      "test": "tests/test_mining_composition.py::test_coverage_not_global_census",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    },
+    {
+      "id": "MGD-40",
+      "family": "Delivery",
+      "requirement": "Final evidence separates implementation, integration, CI, review, deployment and product acceptance; packet delivery is not START.",
+      "task": "T08",
+      "test": "tests/test_mining_acceptance.py::test_delivery_states_remain_distinct",
+      "phase": "future_product_test",
+      "execution": "NOT_RUN"
+    }
+  ],
+  "witness_vectors": {
+    "W-C": {
+      "cik": "0000831259",
+      "reporting_period": "2026Q2",
+      "estimate_source": "C1",
+      "actual_source": "C2",
+      "sales_estimate_mlb": "690",
+      "sales_actual_mlb": "710",
+      "production_mlb": "786",
+      "cost_estimate_usd_lb": "2.24",
+      "cost_actual_usd_lb": "1.97",
+      "excluded_idle_restoration_q2_usd_m": "284",
+      "measurement_basis": "sales excluding purchases / net cash cost excluding stated charges",
+      "native_span_receipt": null,
+      "native_identity_bridge": null,
+      "native_derivation_receipt": null
+    },
+    "W-R": {
+      "cik": "0001801368",
+      "reporting_period": "2026Q2",
+      "actual_sources": [
+        "R1",
+        "R2"
+      ],
+      "unit": "USD thousands",
+      "materials_revenue": "95629",
+      "magnetics_revenue": "16524",
+      "intercompany_elimination": "-3663",
+      "consolidated_revenue": "108490",
+      "ppa_income": "17580",
+      "gaap_net_loss": "-20296",
+      "adjusted_ebitda": "28493",
+      "ndpr_production_mt": "840",
+      "ndpr_sales_mt": "1006",
+      "native_span_receipt": null,
+      "native_identity_bridge": null,
+      "native_derivation_receipt": null
+    }
+  },
+  "admission_gates": {
+    "G1": "NOT_CLOSED_BY_THIS_PLAN",
+    "G2": "NOT_CLOSED_BY_THIS_PLAN",
+    "G3": "NOT_CLOSED_BY_THIS_PLAN",
+    "G4": "NOT_CLOSED_BY_THIS_PLAN",
+    "G5": "NOT_CLOSED_BY_THIS_PLAN",
+    "G6": "NOT_CLOSED_BY_THIS_PLAN",
+    "G7": "NOT_CLOSED_BY_THIS_PLAN"
+  },
+  "not_claimed": [
+    "native source retention",
+    "product tests",
+    "real receipt IDs",
+    "source rights",
+    "shared source custody",
+    "design or plan acceptance",
+    "worker START",
+    "production proof"
+  ]
+}
