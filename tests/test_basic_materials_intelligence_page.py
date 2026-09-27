@@ -76,3 +76,8 @@ def test_css_uses_only_shared_theme_tokens_it_claims():
         assert forbidden not in css
     for required in ('var(--line)', 'var(--panel)', 'var(--info)'):
         assert required in css
+
+def test_journey_rerender_restores_focus_to_the_new_button():
+    js=read('basic_materials_intelligence.js')
+    assert "render();b.focus()" not in js
+    assert "document.getElementById('bm-journey-'+selected)" in js
