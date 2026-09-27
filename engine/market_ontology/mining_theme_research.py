@@ -32,6 +32,7 @@ here (SEAT NOTE in the spec). No import of ``semiconductor_theme_research`` or
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
@@ -182,6 +183,68 @@ def _signed_value(block: Mapping[str, Any]) -> Any:
     if "value" not in block:
         return None
     return block["value"]
+
+
+#: Packet-leg fields that must AGREE between the two legs of one comparison before a
+#: polarity may be computed (R-MIN-33). The frozen domain spec requires "fully qualified
+#: COMPATIBLE inputs are compared normally" — compatibility is a clause distinct from the
+#: qualification (presence) check, and it was unimplemented through round 3. ``basis`` is
+#: deliberately ABSENT: the domain yaml gives the two legs different bases on purpose (a
+#: point estimate against a reported measure), so cross-leg basis equality would forbid
+#: the only comparison this slice exists to make.
+COMPARABILITY_FIELDS: tuple[str, ...] = ("unit", "perimeter", "period")
+
+#: A declaration on the packet (or on either leg) that the figure is a range or a
+#: consensus. The response schema pins ``is_range``/``is_consensus`` to ``const: false``,
+#: so neither is representable on this wire; a declared range is REFUSED rather than
+#: flattened into a point-estimate claim the source never made (R-MIN-33).
+NON_POINT_ESTIMATE_FLAGS: tuple[str, ...] = ("is_range", "is_consensus")
+
+
+def _value_is_numeric(v: Any) -> bool:
+    """True only for a FINITE real number — never a bool, never NaN, never infinity.
+
+    ``isinstance(float("nan"), float)`` is True, so a bare isinstance gate admits NaN;
+    and because ``nan == nan`` is False, a NaN leg also slips the equality withhold and
+    reaches the polarity ternary, where every NaN comparison is False and the row is
+    published as a confident ``below_estimate`` carrying ``nan`` as an economic value.
+    ``math.isfinite`` closes both holes (R-MIN-33).
+    """
+    if v is None or isinstance(v, bool) or not isinstance(v, (int, float)):
+        return False
+    return math.isfinite(v)
+
+
+def _declares_non_point_estimate(packet: Mapping[str, Any]) -> str | None:
+    """Return the first range/consensus flag declared truthy on the packet or a leg."""
+    scopes: list[Mapping[str, Any]] = [packet]
+    for leg_key in ("earlier_point_estimate", "later_actual"):
+        leg = packet.get(leg_key)
+        if isinstance(leg, Mapping):
+            scopes.append(leg)
+    for scope in scopes:
+        for flag in NON_POINT_ESTIMATE_FLAGS:
+            if scope.get(flag):
+                return flag
+    return None
+
+
+def _incomparable_field(
+    epe_packet: Mapping[str, Any], la_packet: Mapping[str, Any]
+) -> str | None:
+    """Return the first comparability field that is present on both legs and disagrees.
+
+    A field absent from a leg is NOT an incomparability — absence is the qualification
+    check's business, and it mints ``definition_unqualified:<field>`` downstream.
+    """
+    for field in COMPARABILITY_FIELDS:
+        left = epe_packet.get(field)
+        right = la_packet.get(field)
+        if left is None or right is None:
+            continue
+        if left != right:
+            return field
+    return None
 
 
 def _summarize_expectations(
@@ -648,13 +711,6 @@ def compose_mining_research(
             "source_label": source_label,
         }
 
-    def _value_is_numeric(v: Any) -> bool:
-        return (
-            v is not None
-            and not isinstance(v, bool)
-            and isinstance(v, (int, float))
-        )
-
     def _missing_required_fields(
         leg: Mapping[str, Any], packet_leg: Mapping[str, Any]
     ) -> list[str]:
@@ -692,8 +748,24 @@ def compose_mining_research(
         epe_value = epe_packet.get("value")
         la_value = la_packet.get("value")
 
+        # R-MIN-33: a source-declared range or consensus is not a point estimate, and
+        # the schema pins both flags to ``const: false`` — so the truth is not
+        # representable here and the row is withheld rather than mislabelled. Checked
+        # before the values, because the declaration disqualifies the row whatever the
+        # numbers are.
+        if _declares_non_point_estimate(packet) is not None:
+            return None, [], True
+
         if not _value_is_numeric(epe_value) or not _value_is_numeric(la_value):
             return None, [], True
+
+        # R-MIN-33: both legs must be commensurate before a polarity means anything.
+        # Runs BEFORE the qualification check so a mismatch is never reported as a
+        # missing field, and skips any field absent from a leg so ``P13``-style
+        # ``definition_unqualified:<field>`` diagnostics survive unchanged.
+        if _incomparable_field(epe_packet, la_packet) is not None:
+            return None, [], True
+
         if epe_value == la_value:
             # "equal_to_estimate" is the comparison word for equality, but
             # the ruling binds: equal values WITHHOLD the row with
@@ -745,8 +817,25 @@ def compose_mining_research(
             order = {"sales": 0, "unit_net_cash_cost": 1}
             return order.get(str(p.get("pair") or ""), 99)
 
+        # R-MIN-33: a pair name claimed by more than one packet is a contradiction, not
+        # a choice. Every leg's identity (metric/basis/source_label) comes from the
+        # domain yaml keyed by that name and no other packet field reaches the wire, so
+        # two same-pair packets differ ONLY in value and nothing on the wire could
+        # disambiguate them. Picking one would be fabrication by arbitration and a
+        # limitation code annotates without retracting, so every row for the duplicated
+        # pair is withheld — scoped to that pair alone, so a duplicated ``sales`` never
+        # suppresses a sound ``unit_net_cash_cost``.
+        pair_occurrences: dict[str, int] = {}
+        for p in mev_packets:
+            name = str(p.get("pair") or "")
+            pair_occurrences[name] = pair_occurrences.get(name, 0) + 1
+
         for packet in sorted(mev_packets, key=_pair_sort_key):
             pair_name = str(packet.get("pair") or "")
+            if pair_occurrences.get(pair_name, 0) > 1:
+                if "omitted:expectations" not in limitations:
+                    limitations.append("omitted:expectations")
+                continue
             source = _pair_source(pair_name)
             if source is None:
                 # Unknown pair -> withhold + mint omitted:expectations.
