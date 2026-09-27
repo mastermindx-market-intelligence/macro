@@ -16640,6 +16640,22 @@ jobs:
       # semantics without materializing data/ or adding a second identity plane.
       - scripts/audit_massive_pit_universe.py
       - tests/test_massive_pit_universe_audit.py
+      # Static import closure of the PIT audit's existing Market Memory fetcher.
+      # These are TRIGGER/OWNERSHIP paths only: the unit suite never calls main(),
+      # so the thin pytest+pyyaml runtime dependency contract remains unchanged.
+      # contract-delta on exact head 0e81ddf5... against current main 10158af...
+      # reported precisely these ten newly uncovered paths; widening this existing
+      # exclusive scope is the safe repair, not a waiver or a second CI job.
+      - scripts/__init__.py
+      - scripts/ingest_market_memory_sources_spy.py
+      - lib/nyse_calendar.py
+      - engine/close_pass/massive_close.py
+      - engine/neuralweb/__init__.py
+      - engine/neuralweb/brain_analogues.py
+      - engine/neuralweb/market_memory.py
+      - engine/neuralweb/market_memory_source_kernel.py
+      - engine/neuralweb/market_memory_sources_spy.py
+      - engine/prophet_live/interval.py
     timeout-minutes: 8
     runs-on: ubuntu-latest
     steps:
