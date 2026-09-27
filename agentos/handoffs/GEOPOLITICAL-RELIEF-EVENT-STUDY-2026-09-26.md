@@ -27,6 +27,24 @@ changed:
     what: >-
       Append the pre-protocol WSJ rejection report as development-only SOURCE_CONFOUNDED evidence
       without mutating the frozen source census or reading outcomes.
+  - path: research/HK_INTRADAY_HANDOFF_SOURCE_AMENDMENT_V2_2026-09-26.json
+    what: >-
+      Freeze the existing Terminal Tencent HK one-minute owner as a versioned replacement for the
+      degraded AkShare/Eastmoney source before any target intraday price was read; preserve the
+      already-frozen target basket, benchmarks, and geometry.
+  - path: research/HK_INTRADAY_HANDOFF_COVERAGE_MANIFEST_V2_2026-09-26.json
+    what: >-
+      Freeze timestamp-only coverage for SMIC, Hua Hong, 2800.HK and 3033.HK before target prices;
+      all four passed the required prior-close and next-session 09:30/09:35/10:00 clocks.
+  - path: research/HK_INTRADAY_TENCENT_CLOSE_BASIS_RECEIPT_2026-09-26.json
+    what: >-
+      Freeze non-target HSBC evidence that Tencent historical day/query's 16:00 terminal row equals
+      the live 16:08 closing-auction terminal price and is a provider-normalized session-close label.
+  - path: research/HK_INTRADAY_HANDOFF_TENCENT_RESULTS_2026-09-26.md
+    what: >-
+      Measure the previously blocked HK semiconductor secondary endpoint on three development events;
+      the broad-HK residual is mixed (one positive, two negative), strengthening the rejection of a
+      semiconductor-specific handoff rather than rescuing it.
   - path: agentos/handoffs/GEOPOLITICAL-RELIEF-EVENT-STUDY-2026-09-26.md
     what: >-
       Repair the durable continuation record to the current AgentOS handoff schema, bind it to the
@@ -57,29 +75,58 @@ verified:
     result: >-
       WS:MARKET-OS is active in macro/terminal and its F0-F5 wave reserves Forecast Packet,
       prospective ledgers, shadow evaluation, and earned promotion.
+  - claim: >-
+      Exact head f03399a024d55d821c80884eaeb87294c82ab2f3 cleared both hosted fences and full CI.
+    command: >-
+      gh run view 36274581439 -R mastermindx-market-intelligence/macro && gh run view 36274581604 -R mastermindx-market-intelligence/macro
+    result: >-
+      fences run 21884 concluded SUCCESS and ci run 21415 concluded SUCCESS on the same immutable head.
+  - claim: >-
+      The existing Terminal Tencent HK owner is currently usable for bounded recent-session HK minute research.
+    command: >-
+      python3 non_target_tencent_hk_canary.py --symbol 00005
+    result: >-
+      Non-target HSBC returned five sessions 2026-09-21 through 2026-09-25, 332 rows per latest session,
+      with 09:30 through closing-auction coverage; target symbols were not read before source freeze.
+  - claim: >-
+      All frozen HK targets and benchmarks passed timestamp-only coverage before target prices were read.
+    command: >-
+      python3 hk_tencent_coverage_gate.py --symbols 00981,01347,02800,03033
+    result: >-
+      All four symbols carried 332 rows per session and every required 16:00, 09:30, 09:35 and 10:00
+      clock for the recoverable 2026-09-22 through 2026-09-25 measurement sessions.
+  - claim: >-
+      The frozen HK semiconductor secondary endpoint is mixed on the three recoverable development events.
+    command: >-
+      cat research/HK_INTRADAY_HANDOFF_TENCENT_RESULTS_2026-09-26.md
+    result: >-
+      Equal-weight SMIC/Hua Hong close-to-09:35 residual versus 2800 was +101.70 bp, -104.52 bp,
+      and -29.11 bp respectively; one positive and two negative. These rows are development-only.
 unverified:
-  - "Repaired exact-head ci and fences have not yet completed."
+  - "The current post-Tencent closeout head still requires exact-head hosted ci and fences before the carrier can be called green."
   - "Prospective cross-session transfer generalization on future events remains unproven."
   - "The QQQ-minus-SPY challenger has zero prospective observations at this amendment boundary."
-  - "Stable Hong Kong first-five-minute target-region data capability remains unproven."
+  - "Prospective operational HK-intraday capture through Tencent's roughly five-session retention window remains unproven on a qualifying future event."
 unresolved:
   - "Current PR head must regain exact-head ci + fences before the research carrier is considered green."
   - "The source census remains retrieval_incomplete, so timing-frequency population claims remain blocked."
   - "The prospective hypothesis remains concentrated in the 2026 Iran/Hormuz family and needs future-event evidence."
 next_actions:
-  - "Reconcile the repaired PR head and consume its exact-head ci/fences results; repair only new branch-owned failures."
-  - "If exact-head checks clear, preserve PR #8012 as the frozen development/prospective carrier."
-  - "Admit the next qualifying future event only under research/CROSS_SESSION_TRANSFER_PROSPECTIVE_PROTOCOL_2026-09-26.md before reading its Hong Kong outcome."
-  - "Independently verify/restore the existing HK intraday source through its existing data owner; do not create a replacement data plane."
+  - "Reconcile the final post-Tencent PR head and consume its exact-head ci/fences results; repair only new branch-owned failures."
+  - "If exact-head checks clear, preserve PR #8012 as the DRAFT frozen development/prospective carrier and do no further development predictor search."
+  - "Admit the next qualifying future event only under the frozen V1 protocol and V1.1 amendment before reading its Hong Kong outcome; record both US candidate families and matched controls without tuning."
+  - "If the secondary HK intraday endpoint is used prospectively, use only the frozen Terminal Tencent owner while the required session remains in its recent-window coverage; HSI next-open remains primary and source failure remains DATA_GAP."
 do_not_redo:
   - "Do not reopen or repurpose the existing Narrative Repricing V2 prospective holdout."
   - "Do not retune clocks, oil thresholds, semiconductor thresholds, or HSI-gap thresholds from observed outcomes."
   - "Do not create a second event rail, narrative radar, analogue store, scorecard, alert engine, regional minute store, or execution plane."
   - "Do not enrich get_market_events with inferred/predicted effects; it remains FACTS ONLY."
   - "Do not relabel the already-inspected mainland daily slice as blind evidence."
+  - "Do not add another development predictor family, benchmark, time bucket, or threshold from the now-open HK intraday target outcomes."
+  - "Do not retry the degraded AkShare/Eastmoney HK source in this research lane while the source state is unchanged; the frozen Tencent amendment is the current secondary-source path."
 danger_areas:
   - "A later positive Hong Kong move must not overwrite CAUSAL_REJECTED, CONFLICTED, or DATA_GAP evidence states."
-  - "The HK AkShare/Eastmoney minute endpoint was observed once and then began RemoteDisconnected failures; no target intraday outcomes were read."
+  - "AkShare/Eastmoney remains degraded and is DO_NOT_RETRY in this research lane. Tencent recent-session capability is now proven through the existing Terminal owner; the three target development rows have been read and are permanently development-only, never prospective evidence."
   - "Mainland minute implementation exists but historical materialization/backfill belongs to the existing Data OS owner, not this PR."
 prs: [8012]
 decisions: []
@@ -230,21 +277,36 @@ PR remains DRAFT and mergeable. No merge or production deployment is authorized 
 ## Data/source gates
 
 ### Hong Kong intraday
-Existing `/Users/chriswong/cnhk-venv` exposes AkShare
-`stock_hk_hist_min_em`.
-A non-target HSBC canary initially returned 1,386 five-minute bars from
-2026-08-27 09:35 HKT through 2026-09-24 16:00 HKT.
+The original AkShare/Eastmoney source remains degraded and is no longer the active research source.
+Its repeated non-target HSBC canary failure was preserved; no further same-state retries are authorized.
 
-After target/benchmark candidates were source-frozen, all target coverage calls failed with
-`RemoteDisconnected`; one same-source HSBC canary recheck then failed identically.
+A versioned amendment frozen **before target reads** reuses the existing
+`mastermindx-market-intelligence/mastermind-terminal` Tencent HK owner at Terminal master
+`3cb7dbd8e89cd5d932fd07b2961ca79a0847d552`, source blob
+`239f61a9eaba438ce5ea6f277590938302dc7474`.
 
-State:
-- capability observed once;
-- current upstream transport degraded/rate-protected is suspected, cause unproven;
-- target HK intraday outcomes NOT READ;
-- no persistence;
-- no retry loop;
-- this research lane must not create a replacement HK minute data plane.
+Non-target HSBC proof:
+- five recent sessions were available (2026-09-21 through 2026-09-25);
+- latest session had 332 one-minute rows;
+- live coverage ran 09:30 through the 16:08 closing auction;
+- the historical day/query 16:00 terminal price equaled the live 16:08 terminal price, so the
+  historical 16:00 label is treated as Tencent's provider-normalized session-close value.
+
+Timestamp-only coverage was then frozen for SMIC, Hua Hong, 2800.HK and 3033.HK before any target
+prices were read. All four passed every required clock.
+
+The first target read then measured three development events. Equal-weight SMIC/Hua Hong
+close-to-next-session-09:35 residual versus 2800.HK was:
+- +101.70 bp (Sep 22 -> Sep 23);
+- -104.52 bp (Sep 23 -> Sep 24);
+- -29.11 bp (Sep 24 -> Sep 25).
+
+The +5-to-+30 continuation was also mixed. This is a **development falsifier**, not a rescue:
+the HK semiconductor-specific handoff is unsupported. The Tencent source nevertheless removes the
+recent-session capability blocker for a future secondary prospective diagnostic, subject to its
+roughly five-session retention window. HSI next-cash-open remains the primary target-region endpoint.
+
+No new HK minute store, event plane, QLedger family, alert plane, or production authority was created.
 
 ### Mainland intraday
 Reviewed TuShare minute-plane implementation exists, but the current M2 canonical data root does not
@@ -285,10 +347,11 @@ No production companion projection is authorized yet.
 
 ## What remains unverified
 
-1. Current exact-head `ci` and `fences` at the post-ruling head.
+1. Current exact-head `ci` and `fences` after the Tencent source/result closeout.
 2. Prospective generalization on future events.
 3. Cross-family generalization beyond the 2026 Iran/Hormuz concentration.
-4. Stable HK first-five-minute target-region capability.
+4. Prospective operational capture of the Tencent HK secondary endpoint while the required session
+   remains inside its roughly five-session source window.
 5. Source-corpus completeness sufficient for population timing claims.
 6. Product/browser acceptance — intentionally not owed before prospective promotion.
 
@@ -307,8 +370,9 @@ Gate:
   boundary and receives an explicit acceptance decision.
 
 Independent parallel actions:
-- existing Data OS owner may restore/verify HK intraday source health;
-- source-corpus completeness work may continue without opening the V2 holdout.
+- source-corpus completeness work may continue without opening the V2 holdout;
+- Terminal/Data OS may independently improve HK source durability, but this research carrier must
+  not build or backfill a competing HK minute plane.
 
 Return point:
 - Macro PR #8012
@@ -462,3 +526,79 @@ Exact-head code verification at `3974ac45...`:
 - the earlier 34-pass/3-fail run was verifier packaging only (fixture omitted), not a branch failure.
 
 No prospective protocol geometry changed from these robustness checks.
+
+
+## 2026-09-27 continuation addendum — Tencent HK capability and falsifier
+
+### Protected procedure / carrier reconciliation
+
+- Protected Mastermind procedure was re-pinned at
+  `4c6b206d3fb7fbc6d077faf61ae361bedf259925`; INDEX blob remains
+  `94d1af402598894372858793a5b1931019c5fa77`.
+- Concurrent branch movement to `f03399a024d55d821c80884eaeb87294c82ab2f3` was reviewed under
+  RECONCILE_STATE / REVIEW_RETURN rather than overwritten.
+- Exact head `f03399a...` cleared hosted fences run 21884 and full CI run 21415.
+- The concurrent return lawfully froze QQQ-minus-SPY as the V1.1 development-selected challenger,
+  preserved SMH-minus-QQQ as the V1 primary, added the source-first prospective capture harness,
+  and prohibited additional post-hoc candidate families.
+
+### Existing-owner HK source recovery
+
+The estate already had an HK minute owner in Mastermind Terminal:
+
+- repository: `mastermindx-market-intelligence/mastermind-terminal`;
+- master: `3cb7dbd8e89cd5d932fd07b2961ca79a0847d552`;
+- source: `terminal/lib/intradaySources.ts`;
+- blob: `239f61a9eaba438ce5ea6f277590938302dc7474`;
+- implementation: `fetchTencentHK`;
+- provider: Tencent `day/query` + `hkMinute/query`;
+- no auth and no persistence in this research path.
+
+A non-target HSBC canary returned five recent sessions with 332 one-minute rows per session.
+This existing owner therefore replaces the degraded Eastmoney source **only through the versioned
+research amendment** `research/HK_INTRADAY_HANDOFF_SOURCE_AMENDMENT_V2_2026-09-26.json`,
+commit `d3168c0e4802df0950d3ff1e09eb16eb1a18543c`.
+
+Before any target price was read:
+
+1. `0c253591637d2378d140b1e9c3b269123abf020d` froze timestamp-only coverage for the
+   two target names plus 2800/3033 benchmarks; every required clock passed.
+2. `c35d85e8cab8ac34a594fed8fee7061a0e318ccf` froze non-target close-basis semantics:
+   Tencent historical 16:00 equaled the live 16:08 closing-auction terminal price for HSBC.
+
+Only then were target outcomes opened.
+
+### HK secondary endpoint result
+
+`research/HK_INTRADAY_HANDOFF_TENCENT_RESULTS_2026-09-26.md`, commit
+`43bb82d6e9ad11760466fd983a50ca6f232eef95`, records the frozen equal-weight SMIC/Hua Hong
+basket versus 2800.HK:
+
+- Sep 22 -> Sep 23: **+101.70 bp** close-to-09:35 residual;
+- Sep 23 -> Sep 24: **-104.52 bp**;
+- Sep 24 -> Sep 25: **-29.11 bp**.
+
+Primary residual sign is therefore 1 positive / 2 negative. The 09:35->10:00 continuation is
+also mixed. 3033 sensitivity changes the sign of the Sep-24 relative result and does not provide
+a stable rescue.
+
+Ruling:
+- the source capability is **unblocked for bounded recent-session research**;
+- the three rows are **development-only and permanently outcome-exposed**;
+- the Hong-Kong-semiconductor-specific handoff is **unsupported**;
+- HSI next-cash-open remains the primary target-region endpoint;
+- Tencent HK minute data is a secondary prospective diagnostic only while the session remains
+  inside the existing recent-window source coverage;
+- no further development predictor search is authorized from these opened outcomes.
+
+### Exact continuation
+
+1. Require exact-head hosted `fences` + full `ci` after this cumulative handoff update.
+2. Keep PR #8012 DRAFT; do not merge or project into Brain/product/trading state.
+3. Preserve the frozen V1 primary and V1.1 challenger byte-for-byte unless a future versioned
+   preregistration is created **before** eligible outcomes exist.
+4. On the first qualifying event after the V1.1 clock, run source admission first, record both
+   U.S. candidate measurements and frozen matched controls, then later score against HSI next-open.
+5. If the secondary HK minute diagnostic is used, capture it from the existing Tencent owner while
+   the relevant HK session is still in the roughly five-session window; absence becomes DATA_GAP.
+6. Publish failures/conflicts/missingness as faithfully as positive outcomes.
