@@ -220,7 +220,21 @@ def _risk_strategy_payload(sig: pd.DataFrame) -> dict:
     for v in variants:
         raw = pd.to_numeric(sig[f"alloc_{v}"], errors="coerce")
         alloc[v] = [finite_or_none(x, 3) for x in raw]
-        equity[v] = [finite_or_none(x, 4) for x in alloc_equity(close, raw)]
+
+        # Strategy equity is only comparable while allocation history is
+        # continuous. Once a decision is missing, cumulative P&L from that point
+        # is unknowable; never forward-fill through the gap.
+        eq = alloc_equity(close, raw)
+        gap_seen = False
+        eq_values: list[float | None] = []
+        for i in range(len(raw)):
+            # Allocation selected on date t governs the next return interval.
+            # The missing date itself is therefore still valued using t-1; the
+            # cumulative path becomes unknowable starting on t+1.
+            if i > 0 and pd.isna(raw.iloc[i - 1]):
+                gap_seen = True
+            eq_values.append(None if gap_seen else finite_or_none(eq.iloc[i], 4))
+        equity[v] = eq_values
 
         # A marker requires two observed decisions. Crossing an unavailable
         # observation is not a buy/sell event and must not be presented as one.
@@ -247,6 +261,7 @@ def _risk_strategy_payload(sig: pd.DataFrame) -> dict:
         v: [dates[i] for i, value in enumerate(values) if value is None]
         for v, values in alloc.items()
     }
+    has_allocation_gaps = any(missing_allocation_dates.values())
     issues = []
     if not variants:
         issues.append({
@@ -260,16 +275,23 @@ def _risk_strategy_payload(sig: pd.DataFrame) -> dict:
             "message_en": "Price history is incomplete; interactive replay is unavailable.",
             "message_zh": "价格历史不完整；交互式回放暂不可用。",
         })
-    if any(missing_allocation_dates.values()):
+    if has_allocation_gaps:
         issues.append({
-            "code": "ALLOCATION_UNAVAILABLE",
-            "message_en": "Allocation history is incomplete; missing decisions are not treated as 0% Bitcoin.",
-            "message_zh": "配置历史不完整；缺失决策不会被视为 0% 比特币仓位。",
+            "code": "ALLOCATION_GAPS",
+            "message_en": "Allocation history contains gaps; missing decisions are shown as unknown, not 0% Bitcoin.",
+            "message_zh": "配置历史存在缺口；缺失决策显示为未知，而不是 0% 比特币仓位。",
         })
-    valid = bool(variants) and not missing_price_dates and not any(missing_allocation_dates.values())
+    valid = bool(variants) and not missing_price_dates
+    # A gap only invalidates performance once it would govern a realized
+    # return interval. If the latest decision alone is missing, performance
+    # through the latest close remains measurable.
+    performance_valid = valid and all(
+        values and values[-1] is not None for values in equity.values()
+    )
     return {
         "schema": "mastermind.vector_risk_strategy.v2",
         "valid": valid,
+        "performance_valid": performance_valid,
         "issues": issues,
         "missing": {
             "price_dates": missing_price_dates,

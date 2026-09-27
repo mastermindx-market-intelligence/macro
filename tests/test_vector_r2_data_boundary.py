@@ -21,11 +21,17 @@ def test_r2_payload_preserves_zero_and_unavailable_allocation() -> None:
     payload = build_vector._risk_strategy_payload(_sig())
 
     assert payload["schema"] == "mastermind.vector_risk_strategy.v2"
-    assert payload["valid"] is False
+    assert payload["valid"] is True
+    assert payload["performance_valid"] is False
     assert payload["alloc"]["optimal"] == [1.0, 0.0, None, 0.5]
     assert payload["risk"] == [20, None, 25, 15]
     assert payload["missing"]["allocation_dates"]["optimal"] == ["2026-09-25"]
-    assert payload["issues"][0]["code"] == "ALLOCATION_UNAVAILABLE"
+    assert payload["issues"][0]["code"] == "ALLOCATION_GAPS"
+    # Allocation observed on date t governs the next return interval. Equity
+    # is still known on the missing-decision date from the prior allocation, but
+    # becomes unknowable on the following observation and stays unknowable.
+    assert payload["equity"]["optimal"][2] is not None
+    assert payload["equity"]["optimal"][3] is None
 
 
 def test_r2_payload_does_not_create_trade_markers_across_missing_allocation() -> None:
@@ -56,6 +62,7 @@ def test_r2_valid_zero_allocation_remains_actionable() -> None:
     payload = build_vector._risk_strategy_payload(sig)
 
     assert payload["valid"] is True
+    assert payload["performance_valid"] is True
     assert payload["alloc"]["optimal"][1:3] == [0.0, 0.0]
     assert payload["missing"]["allocation_dates"]["optimal"] == []
 
@@ -67,8 +74,34 @@ def test_r2_template_gates_replay_and_exposes_source_contract() -> None:
 
     assert 'data-vector-replay-state="{{ \'valid\' if chart_contract.valid else \'unavailable\' }}"' in source
     assert "{% if chart_contract.valid %}" in source
+    assert "{% if chart_contract.performance_valid %}" in source
+    assert "Allocation history contains gaps; the chart preserves them as unknown. Performance remains visible only through periods whose governing allocation is known." in source
     assert "Missing observations are never rendered as 0% Bitcoin." in source
     assert "A valid 0% Bitcoin target means 100% cash; a missing decision means neither." in source
     assert "{{ t('Data & source','数据与来源') }}" in source
     assert "chart_contract.meta.fields.allocation.source_id" in source
     assert "Availability clock: not asserted." in source
+
+
+def test_r2_chart_readout_preserves_unknown_allocation_and_equity() -> None:
+    from pathlib import Path
+
+    source = (Path(__file__).resolve().parent.parent / "site" / "vector_chart.js").read_text()
+
+    assert "var rawAlloc = d.alloc[v] && d.alloc[v][idx];" in source
+    assert 'var allocText = al == null ? "—" : al + "%";' in source
+    assert "return finite(ev) ? { time: t, value: +(ev * scale).toFixed(2) } : { time: t };" in source
+    assert "(d.alloc[v][idx] || 0)" not in source
+
+
+def test_r2_missing_latest_decision_keeps_past_performance_measurable() -> None:
+    sig = _sig().copy()
+    sig["alloc_optimal"] = [1.0, 0.0, 0.5, None]
+
+    payload = build_vector._risk_strategy_payload(sig)
+
+    assert payload["valid"] is True
+    assert payload["performance_valid"] is True
+    assert payload["missing"]["allocation_dates"]["optimal"] == ["2026-09-26"]
+    assert payload["equity"]["optimal"][-1] is not None
+    assert payload["issues"][0]["code"] == "ALLOCATION_GAPS"

@@ -135,7 +135,10 @@
     var eqL = chart.addSeries(LWC.LineSeries, { color: c.blue, lineWidth: 2, priceLineVisible: false,
       lastValueVisible: false, priceScaleId: "right", crosshairMarkerVisible: true,
       priceFormat: { type: "price", precision: 0, minMove: 1 } }, 0);
-    eqL.setData(dates.map(function (t, k) { return { time: t, value: +(eq[i0 + k] * scale).toFixed(2) }; }));
+    eqL.setData(dates.map(function (t, k) {
+      var ev = eq[i0 + k];
+      return finite(ev) ? { time: t, value: +(ev * scale).toFixed(2) } : { time: t };
+    }));
     this.S.eq = eqL; this.eqScale = scale;
 
     // buy/sell markers within the window
@@ -220,14 +223,24 @@
     var d = this.data, v = this.variant, idx = -1, dt = param.time;
     for (var j = 0; j < this.view.dates.length; j++) { if (this.view.dates[j] === dt) { idx = this.view.i0 + j; break; } }
     if (idx < 0) return;
-    var price = d.price[idx], risk = d.risk[idx], al = Math.round((d.alloc[v][idx] || 0) * 100);
-    var eqx = (d.equity[v][idx] || 1), hodl = (d.hodl[idx] || 1), mult = hodl ? (eqx / hodl) : 1;
+    var price = d.price[idx], risk = d.risk[idx];
+    var rawAlloc = d.alloc[v] && d.alloc[v][idx];
+    var al = finite(rawAlloc) ? Math.round(rawAlloc * 100) : null;
+    var eqx = d.equity[v] && d.equity[v][idx], hodl = d.hodl[idx];
+    var mult = finite(eqx) && finite(hodl) && hodl !== 0 ? (eqx / hodl) : null;
+    var priceText = finite(price) ? "$" + price.toLocaleString() : "—";
+    var riskText = finite(risk) ? String(risk) : "—";
+    var allocText = al == null ? "—" : al + "%";
+    var multText = finite(mult) ? mult.toFixed(2) + "×" : "—";
+    var riskColor = finite(risk) ? (risk >= 25 ? "var(--bear)" : "var(--blue)") : "var(--muted)";
+    var allocColor = al == null ? "var(--muted)" : (al >= 50 ? "var(--bull)" : "var(--bear)");
+    var multColor = finite(mult) ? (mult >= 1 ? "var(--bull)" : "var(--bear)") : "var(--muted)";
     this.read.innerHTML =
       "<span>" + (typeof dt === "string" ? dt : "") + "</span>" +
-      "<span>" + tt("Price", "价格") + " <b>$" + (price || 0).toLocaleString() + "</b></span>" +
-      "<span>" + tt("Risk", "风险") + " <b style='color:" + (risk >= 25 ? "var(--bear)" : "var(--blue)") + "'>" + (risk == null ? "—" : risk) + "</b></span>" +
-      "<span>" + tt("Allocation", "仓位") + " <b style='color:" + (al >= 50 ? "var(--bull)" : "var(--bear)") + "'>" + al + "%</b></span>" +
-      "<span>" + tt("vs HODL", "对比 HODL") + " <b style='color:" + (mult >= 1 ? "var(--bull)" : "var(--bear)") + "'>" + mult.toFixed(2) + "×</b></span>";
+      "<span>" + tt("Price", "价格") + " <b>" + priceText + "</b></span>" +
+      "<span>" + tt("Risk", "风险") + " <b style='color:" + riskColor + "'>" + riskText + "</b></span>" +
+      "<span>" + tt("Allocation", "仓位") + " <b style='color:" + allocColor + "'>" + allocText + "</b></span>" +
+      "<span>" + tt("vs HODL", "对比 HODL") + " <b style='color:" + multColor + "'>" + multText + "</b></span>";
   };
 
   Instance.prototype.rebuild = function (keepView) {

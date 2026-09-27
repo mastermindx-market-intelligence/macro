@@ -369,6 +369,9 @@ a{color:var(--ink-link, var(--link))}
           {% if chart_contract.valid %}
           <div id="vec-risk-chart" class="vchart-wrap" style="--vchart-h:470px"><div class="receipt-line">{{ t('Loading synchronized chart…','正在加载同步图表…') }}</div></div>
           <div class="receipt-line">{{ t('Historical strategy results are separate from the current model decision.','历史策略结果与当前模型决策分开呈现。') }} <a href="#strategy-track-record">{{ t('Review strategy results','查看策略结果') }} →</a></div>
+          {% if chart_contract.issues %}
+          <div class="receipt-line">{{ t('Allocation history contains gaps; the chart preserves them as unknown. Performance remains visible only through periods whose governing allocation is known.','配置历史存在缺口；图表会将缺口保留为未知。仅在对应期间的配置决策已知时，才展示历史表现。') }}</div>
+          {% endif %}
           {% else %}
           <div class="overview-unavailable" role="status">
             <div>
@@ -654,7 +657,7 @@ a{color:var(--ink-link, var(--link))}
           </section>
           {% endfor %}
 
-          {% if chart_contract.valid %}
+          {% if chart_contract.performance_valid %}
           <div class="study-card" style="margin-top:16px">
             <h3>{{ t('Allocation simulation','配置模拟') }} <span id="vrc-variant-label" style="color:var(--muted);font-weight:500"></span></h3>
             <div class="receipt-line">{{ t('Full-history simulation, not live performance. Excludes trading costs. These statistics do not change with the chart viewing window.','全历史模拟，并非实盘表现；未计交易成本。这些统计不会随图表查看窗口变化。') }}</div>
@@ -664,6 +667,11 @@ a{color:var(--ink-link, var(--link))}
               <div class="metric"><div class="k">{{ t('Max drawdown','最大回撤') }}</div><div class="v" data-m="maxdd">—</div></div>
               <div class="metric"><div class="k">{{ t('Time invested','在场时间') }}</div><div class="v" data-m="in_market">—</div></div>
             </div>
+          </div>
+          {% elif chart_contract.valid %}
+          <div class="study-card" style="margin-top:16px">
+            <h3>{{ t('Allocation simulation unavailable','配置模拟暂不可用') }}</h3>
+            <div class="receipt-line">{{ t('Allocation history contains gaps. The research chart preserves those dates as unknown rather than forward-filling a strategy result.','配置历史存在缺口。研究图表会将这些日期保留为未知，而不会通过向前填充生成策略结果。') }}</div>
           </div>
           {% endif %}
           <div class="receipt-line">{{ t('The synchronized price, risk and model-allocation replay lives in Overview. Historical simulation does not predict future returns.','同步的价格、风险与模型仓位回放位于概览；历史模拟不能预测未来收益。') }}</div>
