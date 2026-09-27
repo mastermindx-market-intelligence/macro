@@ -164,3 +164,17 @@ tests/test_market_ontology_half_b_rights_docket.py: >-
   `python -m pytest tests/test_market_ontology_half_b_rights_docket.py -q` in CI
   triage / local verification. Owner: Meta-CEO B wave, lane F09. Delete this row
   if a market-ontology-records CI step is ever commissioned.
+
+tests/test_transmission_company_continuation.py: >-
+  MO-J1A identity-law + page-projection suite (PR #8052). The lane law
+  binding this packet forbids editing .github/ or hooks (so the suite cannot
+  be wired beside .github/workflows/ci.yml:1455 or .github/ci/legacy-jobs.yml:5449
+  in this PR); the only lawful waiver path is config/unrun_test_waivers.yml.
+  Run directly via `python -m pytest tests/test_transmission_company_continuation.py -q`
+  in CI triage / pre-merge local verification — the suite is exercised by the
+  reviewer and the local lane before ratification. Owner: Meta-CEO A wave,
+  lane J1A. Delete this row and add the file beside
+  tests/test_transmission_cascade_monitor.py in the
+  .github/workflows/ci.yml:1455 transmission-pack entry (or its
+  .github/ci/legacy-jobs.yml:5449 sibling) when a follow-up non-ci-authority
+  CI step is commissioned.

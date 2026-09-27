@@ -158,7 +158,11 @@ def continuation_for(
 
 
 # ── page projection ─────────────────────────────────────────────────────────
-_NON_DORMANT_STATES = frozenset({"arming", "propagating", "expressed"})
+# Per the ruling: every chain with state != "dormant" carries the `companies`
+# projection. Dormant chains are empty by definition (no blast radius). The
+# `failed`/`expired` states (engine/transmission_chains.py:636,:77-:78) are
+# intentionally NON-dormant — they still carry a blast radius; the cascade
+# monitor decides whether to render them via its own ordered loop.
 
 
 def _names_in_channel(chan: dict) -> list[str]:
@@ -219,7 +223,6 @@ def _project_channel(
         }
 
     linked: list[ContinuationLink] = []
-    unlinked: list[str] = []
     for sym in names:
         result = continuation_for(
             sym,
@@ -235,7 +238,6 @@ def _project_channel(
         # membership is never erased, only its CTA suppressed.
 
     linked.sort(key=lambda lk: lk.symbol)
-    unlinked_sorted = sorted(set(unlinked))
     # ``names`` is already de-duplicated by _names_in_channel; sort the same
     # set so unlinked + linked cover the full union deterministically.
     full_sorted = sorted(set(names))
@@ -300,7 +302,7 @@ def enrich_display_chains(
         new_chain = dict(chain)
         state = chain.get("state")
         blast = chain.get("blast") if isinstance(chain.get("blast"), dict) else {}
-        if state not in _NON_DORMANT_STATES:
+        if state == "dormant":
             # Dormant chain: deliberately omit the companies key. The template
             # asserts this with tests.
             projected.append(new_chain)

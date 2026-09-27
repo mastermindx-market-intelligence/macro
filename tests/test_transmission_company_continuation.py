@@ -62,17 +62,6 @@ def _good_aliases() -> VendorAliasTable:
     ])
 
 
-def _rename_aliases() -> VendorAliasTable:
-    """store/MMC <-> SEC:0:MRSH until 2026-01-14, then store/MRSH -> SEC:0:MRSH.
-
-    Mirrors the canonical Yahoo MMC->MRSH rename so the stale_alias /
-    round_trip_mismatch falsifiers are realistic."""
-    return _aliases([
-        ("store", "MMC", MRSH_ID, None, date(2026, 1, 14)),
-        ("store", "MRSH", MRSH_ID, date(2026, 1, 14), None),
-    ])
-
-
 def _time_invalid_aliases() -> VendorAliasTable:
     """store/OLD1 -> SEC:0:OLD only valid 2026-09-10..2026-09-20 — outside DECISION."""
     return _aliases([
@@ -91,30 +80,35 @@ def test_continuation_for_unresolved_when_alias_missing():
 
 
 def test_continuation_for_no_current_symbol_when_alias_resolves_but_vendor_has_none():
-    """A blast symbol whose store row resolves to a security_id, but where the
-    ``vendor_symbol_for`` direction returns None at the same decision_date —
-    exercises the typed NoLink surface for a path the lawful
-    VendorAliasTable refuses to construct (overlap on security_id bucket).
+    """Reach the ``no_current_symbol`` code path at
+    engine/transmission_company_continuation.py:137-139 with a duck-typed
+    aliases object: the forward resolve succeeds, but vendor_symbol_for
+    returns None at the decision_date (the security has no current catalog
+    entry — a defensively-typed state that a lawful VendorAliasTable refuses
+    to construct because every security_id must have an open-bounded
+    current row).
 
-    We reach the no_current_symbol code path by constructing an INVALID table
-    directly (object.__new__ bypasses the ambiguity check), then asserting the
-    typed NoLink surfaces. This is a defensive code path: a future regression
-    in the table loader would surface as a NoLink rather than as a silent link.
+    The duck stub quacks like VendorAliasTable for the two methods
+    ``continuation_for`` calls. A future regression in the table loader that
+    lets through such a state would surface as a NoLink rather than a
+    silent link — exactly the contract this defensive code path exists for.
     """
-    import lib.dataos.identity as _ident
-    rows = (
-        _ident.AliasRow("store", "WEIRD", "SEC:0:WEIRD", date(2026, 9, 26), None),
-    )
-    # Sole row at decision_date=2026-09-25 doesn't exist either, so this hits
-    # 'unresolved' — confirm the chain of checks: when no row covers, the
-    # identity proof fails at the FIRST gate. Use a second fixture for the
-    # truly-reachable case where vendor_symbol_for returns None.
-    aliases = _ident.VendorAliasTable.__new__(_ident.VendorAliasTable)
-    aliases._rows = rows
-    result = continuation_for("WEIRD", aliases, DECISION,
+    class _Duck:
+        def resolve(self, vendor, vendor_symbol, on):
+            if vendor_symbol == "WEIRD":
+                return "SEC:0:WEIRD"
+            return None
+
+        def vendor_symbol_for(self, vendor, security_id_, on):
+            # The forward resolve above returned this security_id — but the
+            # current-catalog direction returns None for it.
+            return None
+
+    result = continuation_for("WEIRD", _Duck(), DECISION,
                               chain_id="c1", channel_id="ch1", chain_asof="2026-09-25")
     assert isinstance(result, NoLink)
-    assert result.reason == "unresolved"
+    assert result.reason == "no_current_symbol"
+    assert result.symbol == "WEIRD"
 
 
 def test_continuation_for_time_invalid_alias_outside_window():
@@ -150,28 +144,47 @@ def test_continuation_for_stale_alias_when_blast_symbol_is_historical():
     assert result.symbol == "MMC"
 
 
-def test_continuation_for_round_trip_mismatch_when_alias_table_ambiguous():
-    """Defensive coverage of the ``round_trip_mismatch`` NoLink code path.
+def test_continuation_for_round_trip_mismatch_when_reverse_resolve_differs():
+    """Reach the ``round_trip_mismatch`` code path at
+    engine/transmission_company_continuation.py:144-145 with a duck-typed
+    aliases object whose forward resolve returns security_id S, the current
+    symbol for S equals the blast, but the reverse resolve of that current
+    symbol returns a DIFFERENT security_id S'.
 
-    The lawful ``VendorAliasTable.from_records`` refuses by construction: any
-    two rows that overlap in either (vendor, vendor_symbol) or (vendor,
-    security_id) buckets raise IdentityError. The round-trip mismatch
-    (resolve("X") -> S; vendor_symbol_for(S) -> "X"; resolve("X") -> S' != S)
-    can therefore only be reached against an INVALID alias table — and we
-    show here that even bypassing the ambiguity check via ``object.__new__``
-    cannot reach the code path because ``resolve`` and ``vendor_symbol_for``
-    iterate ``self._rows`` in the same order.
-
-    The typed ``NoLink(reason='round_trip_mismatch')`` SURFACE exists so a
-    future change to ``_assert_unambiguous`` that lets through an ambiguous
-    security_id bucket surfaces as NoLink rather than as a silent link.
+    The lawful ``VendorAliasTable.from_records`` refuses by construction:
+    any two rows that overlap in either (vendor, vendor_symbol) or (vendor,
+    security_id) buckets raise IdentityError. The round-trip mismatch can
+    therefore only be reached against an INVALID alias table — and the
+    duck stub here is exactly such an invalid table. The stub quacks like
+    VendorAliasTable for the two methods ``continuation_for`` calls; a
+    future regression in the table loader that lets through an ambiguous
+    security_id bucket surfaces here as a NoLink rather than as a silent
+    link, exactly the contract this defensive code path exists for.
     """
-    pytest.skip(
-        "round_trip_mismatch is unreachable against any table (lawful OR "
-        "bypassed-by-__new__) because resolve() and vendor_symbol_for() "
-        "iterate self._rows in the same order. The typed NoLink surface "
-        "exists for future defensive coverage; it is NOT exercised here."
-    )
+    class _Duck:
+        def resolve(self, vendor, vendor_symbol, on):
+            # Forward: blast "X" -> S; reverse (called with current_symbol
+            # which also equals "X") -> S_DIFFERENT.
+            if vendor_symbol == "X":
+                # First call is the forward resolve; the second call is the
+                # round-trip reverse resolve (current_symbol == blast == "X").
+                self._calls = getattr(self, "_calls", 0) + 1
+                if self._calls == 1:
+                    return "SEC:0:S"
+                return "SEC:0:S_DIFFERENT"
+            return None
+
+        def vendor_symbol_for(self, vendor, security_id_, on):
+            # The current-catalog direction returns "X" — the same as the
+            # blast — so the prior ``current_symbol == blast_symbol`` check
+            # passes and we fall through to the round-trip.
+            return "X"
+
+    result = continuation_for("X", _Duck(), DECISION,
+                              chain_id="c1", channel_id="ch1", chain_asof="2026-09-25")
+    assert isinstance(result, NoLink)
+    assert result.reason == "round_trip_mismatch"
+    assert result.symbol == "X"
 
 
 def test_nolink_dataclass_round_trip_mismatch_surface_exists():
@@ -189,47 +202,6 @@ def test_nolink_dataclass_round_trip_mismatch_surface_exists():
 def test_nolink_dataclass_no_current_symbol_surface_exists():
     nl = NoLink(symbol="X", reason="no_current_symbol")
     assert nl.reason == "no_current_symbol"
-
-
-def test_continuation_for_round_trip_mismatch_via_dated_windows():
-    """blast=OLD resolves (in window 1) to SEC:0:OLD1, but on the
-    decision_date the security_id resolves to a DIFFERENT alias (NEW),
-    breaking the round-trip.
-
-    Concretely: open-bounded store/OLD -> SEC:0:OLD1, then store/NEW
-    -> SEC:0:OLD1 dated from 2026-09-15. At DECISION=2026-09-25 the current
-    symbol for SEC:0:OLD1 is NEW, so the round-trip
-    resolve("NEW") == SEC:0:OLD1 passes, but current_symbol != "OLD" -> stale_alias
-    first (because the identity law checks current_symbol == blast_symbol
-    BEFORE the round-trip — the spec orders the checks for exactly this reason).
-
-    To hit round_trip_mismatch specifically, we need current_symbol == blast_symbol
-    BUT the reverse resolve to differ. Build with two dated rows where the
-    forward direction is the SAME symbol but the reverse direction sees a
-    different security — synthetic but achievable via row 1's alias being equal
-    to row 2's at the decision_date window:
-        row 1: store/SHARED -> SEC:0:X (valid 2026-09-10..2026-09-20)
-        row 2: store/SHARED -> SEC:0:Y (valid 2026-09-20..None)
-    At DECISION=2026-09-25 resolve("SHARED") -> SEC:0:Y.
-    vendor_symbol_for("SEC:0:Y") -> "SHARED" (only row 2 covers).
-    current_symbol == blast_symbol == "SHARED". Round-trip
-    resolve("SHARED", 2026-09-25) -> SEC:0:Y. Same. So no mismatch.
-
-    The mismatch requires TWO valid rows at decision_date where resolve and
-    vendor_symbol_for see DIFFERENT security_ids for the SAME blast symbol —
-    VendorAliasTable.from_records disallows this by construction. The
-    round_trip_mismatch code path is therefore unreachable in a lawful alias
-    table. The module still emits the typed NoLink so a future regression in
-    the table loader surfaces as a NoLink rather than a silent link.
-
-    We assert the typed NoLink surface here by exercising the SAME-table path
-    where the second check trips. (Skip with explicit reason.)
-    """
-    pytest.skip(
-        "VendorAliasTable refuses overlapping rows; round_trip_mismatch is "
-        "unreachable against a lawful table — the typed NoLink still exists "
-        "for future defensive coverage."
-    )
 
 
 def test_continuation_for_happy_path_returns_continuation_link():
@@ -361,7 +333,9 @@ def test_enrich_preserves_unevaluable_verbatim_across_linked_and_unlinked():
 
 def test_enrich_ordering_alphabetical_and_unranked_under_shuffled_feed():
     """Feed names in shuffled order; assert the projection is sorted and
-    ranked=False."""
+    ranked=False. Pins the EXPECTED list — the falsifier fails if the
+    projection drifts away from alphabet (e.g. accidentally re-sorts by
+    something else, or drops a row)."""
     feed = ["TSLA", "AAPL", "NVDA", "MSFT", "GOOG", "AMZN"]
     chains = {
         "schema": "transmission_chains_display.v1",
@@ -371,13 +345,16 @@ def test_enrich_ordering_alphabetical_and_unranked_under_shuffled_feed():
     }
     out = enrich_display_chains(chains, _good_aliases(), DECISION)
     companies = out["chains"][0]["companies"]["ch"]
-    # Only the alias-resolvable names are linked. Order must be alphabetical.
     assert companies["ranked"] is False
-    # The names that DO resolve from the alias table are AAPL/NVDA/TSLA — sorted:
+    # The names that DO resolve from the alias table are AAPL/NVDA/TSLA — pinned
+    # alphabetical list (the falsifier — any reorder or drop surfaces here):
     linked_symbols = [lk["symbol"] for lk in companies["linked"]]
-    assert linked_symbols == sorted(linked_symbols)
-    # Unlinked sorted too.
-    assert companies["unlinked"] == sorted(companies["unlinked"])
+    assert linked_symbols == ["AAPL", "NVDA", "TSLA"]
+    # Unlinked pinned too: MSFT/GOOG/AMZN are absent from the alias table:
+    assert companies["unlinked"] == ["AMZN", "GOOG", "MSFT"]
+    # Counts:
+    assert companies["n_linked"] == 3
+    assert companies["n_unlinked"] == 3
 
 
 def test_enrich_aliases_none_renders_identity_unavailable_no_links():
@@ -467,3 +444,74 @@ def test_enrich_linked_href_carries_only_six_keys_and_no_chain_label():
     # the chain_id travels only as mo_chain, never leaks into the path.
     assert "c" not in parsed.path
     assert "c" in qs["mo_chain"][0] or qs["mo_chain"][0] == "c"
+
+
+# ── real artifact round-trip (MINOR 9) ──────────────────────────────────────
+def test_real_artifact_round_trip(tmp_path):
+    """Exercise the full artifact path ``_records -> from_records`` that the
+    nightly build_transmission runs. We mint a real parquet file (pandas
+    ``to_parquet``) with the canonical schema and verify the chain produces
+    the expected projection — without depending on the omitted ``data/``
+    tree or on pandas being available in the wider test environment.
+
+    A nightly degrade to ``identity_unavailable`` (reviewer's MINOR 9
+    concern) shows only in log.error otherwise; this test fails loudly if
+    the schema drifts and the table refuses to construct.
+    """
+    pd = pytest.importorskip("pandas")
+
+    from engine.intelligence_workspace.entity import _records
+    from engine.intelligence_workspace.entity import VENDOR_ALIASES as _VA_PATH
+
+    rows = [
+        {"vendor": "store", "vendor_symbol": "AAPL", "security_id": AAPL_ID,
+         "valid_from": None, "valid_to": None},
+        {"vendor": "store", "vendor_symbol": "NVDA", "security_id": NVDA_ID,
+         "valid_from": None, "valid_to": None},
+        {"vendor": "store", "vendor_symbol": "TSLA", "security_id": TSLA_ID,
+         "valid_from": None, "valid_to": None},
+    ]
+    df = pd.DataFrame(rows)
+    parquet_path = tmp_path / _VA_PATH.name  # "vendor_aliases.parquet"
+    df.to_parquet(parquet_path)
+
+    alias_rows = _records(parquet_path)
+    aliases = VendorAliasTable.from_records(alias_rows)
+    chains = {
+        "schema": "transmission_chains_display.v1",
+        "asof": "2026-09-25",
+        "chains": [_chain(id="c", state="propagating",
+                          blast={"ch": _channel("Channel", ["AAPL", "NVDA", "TSLA"])})],
+    }
+    out = enrich_display_chains(chains, aliases, DECISION)
+    companies = out["chains"][0]["companies"]["ch"]
+    assert [lk["symbol"] for lk in companies["linked"]] == ["AAPL", "NVDA", "TSLA"]
+    assert companies["unlinked"] == []
+    assert companies["identity_unavailable"] is False
+
+
+def test_real_artifact_round_trip_surfaces_identity_unavailable_on_schema_drift(tmp_path):
+    """If the parquet carries a non-ISO date string in valid_from/valid_to
+    (the reviewer's concern: pandas serializes ``NaT`` as ``"NaT"``, which
+    ``_as_date`` rejects), ``VendorAliasTable.from_records`` raises and the
+    nightly lands on the ``aliases=None`` path. The ``_records`` +
+    ``from_records`` chain must propagate the IdentityError so the build
+    script's try/except correctly falls back to ``identity_unavailable``
+    rendering.
+    """
+    pd = pytest.importorskip("pandas")
+
+    from engine.intelligence_workspace.entity import _records
+
+    rows = [
+        {"vendor": "store", "vendor_symbol": "AAPL", "security_id": AAPL_ID,
+         "valid_from": "NaT", "valid_to": None},  # schema drift — pandas NaT serializes
+    ]
+    df = pd.DataFrame(rows)
+    parquet_path = tmp_path / "vendor_aliases.parquet"
+    df.to_parquet(parquet_path)
+
+    alias_rows = _records(parquet_path)
+    from lib.dataos.identity import IdentityError
+    with pytest.raises(IdentityError):
+        VendorAliasTable.from_records(alias_rows)
