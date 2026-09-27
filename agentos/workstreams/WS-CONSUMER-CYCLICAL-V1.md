@@ -30,6 +30,8 @@ discoveries:
   - "DSC:A-UNIVERSAL-FALLBACK-BRANCH-IS-INVISIBLE-TO-A-VALUE-ONLY-SUITE"
   - "DSC:THE-CASE-A-SUITE-USES-MOST-IS-THE-ONE-IT-NEVER-VALIDATES"
   - "DSC:A-MINTING-DEFAULT-IS-INVISIBLE-TO-AN-EMPTINESS-GATE"
+  - "DSC:A-DECLARED-BASIS-IS-A-LABEL-UNTIL-SOMETHING-READS-IT"
+  - "DSC:AN-ENUMERATED-GUARD-IS-BLIND-OUTSIDE-ITS-ENUMERATION"
 waves:
   - id: CC-V1-CORE
     title: "V1-CORE deterministic composition"
@@ -99,6 +101,36 @@ waves:
       killed. See DSC:A-MINTING-DEFAULT-IS-INVISIBLE-TO-AN-EMPTINESS-GATE.
       Suite 76 -> 102; reverting the engine alone fails 26 and passes 76, and
       all 26 are the four new tests; 8 mutants all killed.
+  - id: CC-V1-DECLARED-BASIS-BINDING
+    title: "The declared basis binds the pair; the guard derives from the contract"
+    status: done
+    next_action: >
+      Four defects, one thesis: the module states things it does not check.
+      (A) _select_pair received comparison_basis and never read it, so a prior
+      side seven years off, a period ending before it starts, and a 30-day
+      "quarter" all published same_quarter_prior_year_change at availability
+      ready with zero schema errors - the refusal reason
+      no_compatible_pair_for_comparison_basis already existed and was
+      unreachable. Repaired with generous period BANDS, never equalities (a
+      retail 4-5-4 quarter is 13 or 14 weeks).
+      (B) Three of the four definitions say "in USD thousands" while the
+      envelope was whatever the source carried; a contradicting pair now
+      withholds with result_envelope_contradicts_stated_definition rather than
+      converting a value or rewriting prose this module does not own.
+      (C) The document self-check walked three collections and read ZERO root
+      fields - 0 of the 5 root scalars the contract constrains. Replaced with
+      validation against the published schema (the house idiom; 39 engine
+      modules already do it), and the constant-mirror test made reflective so a
+      new unpinned vocabulary fails it. That found _ALLOWED_COMPARISON_BASIS had
+      drifted to three words against the contract's enum of ONE, so two bases
+      were admitted and emitted as contract-invalid documents.
+      (D) Found BY (C), not suspected: results[*].input_refs published duplicate
+      provenance against uniqueItems in five of the module's own tests, green on
+      main for the module's whole life. Reproduced against main's unpatched
+      bytes before repair, so it is pre-existing. Deduped order-preserving at
+      _emit_result, the single point every result passes.
+      Mutation round 12/13 killed, the survivor equivalent and now pinned. Both
+      live cases unchanged (0 errors, ready, oracle exact). Suite 102 -> 111.
   - id: CC-V1-ENTITLED
     title: "V1 entitled + browser legs"
     status: todo
@@ -112,6 +144,16 @@ blocked_by:
   - "#7669 template/page custody for the company-page consumer"
   - "incumbent source owner must natively admit the PLNT Q2 2026 exhibit"
 landmines:
+  - >
+    A parameter a function RECEIVES is not a property it CHECKS. comparison_basis
+    reached _select_pair's signature and nothing in the body read it, which is
+    precisely why review passes over it - the signature reads like the check is
+    there. Name the line that reads a label before calling it enforced.
+  - >
+    A guard that hand-enumerates its checks is scoped by the enumeration, never
+    by the authority it mirrors. Do not extend the list; derive from the source
+    and add one reflective test that fails when a new item is unpinned.
+    Extending reproduces the defect at the next field.
   - >
     app/earnings.py LOOKS like an opening (merged, entitled, private/no-store)
     and is not: R15 H1 superseded direct Earnings delivery for this dossier and
@@ -202,6 +244,20 @@ next_action: >
   Do not widen into V2 LTH / V3 LULU / V4 theme journey - R15 forbids
   self-authorizing them on a V1 pass, and the next modifying wave takes its own
   continuation edge.
+  .
+  CC-V1-MINTED-ENVELOPE-REFUSAL merged as PR #8099 (squash edf7f0add1b1,
+  2026-09-27T22:00:06Z) and was proven from main's re-extracted bytes: 102
+  passed, both cases 0 errors / ready / oracle exact, and the envelope sweep 17
+  refused / 4 minted-but-honest. CC-V1-DECLARED-BASIS-BINDING follows it.
+  .
+  The correctness lane is not exhausted and should not be claimed to be. What
+  IS true after this wave: the module no longer publishes a comparison its own
+  periods refute, no longer states a unit its envelope contradicts, and no
+  longer validates its output against a hand-written list. What is NOT
+  established: that nothing else is stated-but-unchecked. The method that found
+  all four defects is cheap and repeatable - replace an enumerated guard with a
+  derivation and watch what turns red - and it has not been run on the case
+  admission path, only on the document emission path.
 ---
 
 ## Scope

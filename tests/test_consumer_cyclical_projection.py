@@ -1202,8 +1202,36 @@ def test_module_constants_mirror_the_published_contract() -> None:
     assert mod._VALUE_TEXT_RE.pattern == defs["value_text"]["pattern"]
     assert mod._SLUG_RE.pattern == fact["event"]["pattern"]
     assert mod._ALLOWED_PERIOD_KIND == frozenset(fact["period_kind"]["enum"])
-    assert mod._ALLOWED_DEGRADED_STATE == frozenset(
-        defs["degraded_dependency"]["properties"]["state"]["enum"]
+
+    # Admission may be NARROWER than the contract; it may never be wider.
+    # This set carried three bases to the contract's one, so two of them were
+    # admitted, projected, and emitted as a document whose root enum the
+    # contract rejects.
+    assert mod._ALLOWED_COMPARISON_BASIS == frozenset(
+        schema["properties"]["comparison_basis"]["enum"]
+    )
+
+    # Every admitted basis must declare the period kind it is ABOUT, or the
+    # pair check silently skips the binding for that word.
+    assert mod._ALLOWED_COMPARISON_BASIS <= frozenset(mod._BASIS_PERIOD_KIND)
+
+    # STRUCTURAL, not a list: this test named five constants and omitted the
+    # one that had drifted, which is how the drift survived. A new mirrored
+    # vocabulary now fails here until it is pinned to the schema above.
+    # Found BY the structural check below on its first run: matching the
+    # contract today, but unpinned, so free to drift exactly as the basis set
+    # did.
+    assert mod._ALLOWED_KIND == frozenset(fact["kind"]["enum"])
+
+    pinned = {"_ALLOWED_PERIOD_KIND", "_ALLOWED_COMPARISON_BASIS", "_ALLOWED_KIND"}
+    mirrored = {
+        name
+        for name in dir(mod)
+        if name.startswith("_ALLOWED_") and isinstance(getattr(mod, name), frozenset)
+    }
+    assert mirrored == pinned, (
+        "a mirrored vocabulary is not pinned to the published contract: "
+        + ", ".join(sorted(mirrored ^ pinned))
     )
 
 
@@ -1496,3 +1524,194 @@ def test_a_kind_outside_the_contract_enum_is_refused_by_value() -> None:
     )
     reasons = {d["reason"] for d in document["degraded_dependencies"]}
     assert "fact_kind_outside_vocabulary" in reasons, reasons
+
+
+# --- CC-V1 wave 6: a label the module STATES is not a property it CHECKS ------
+#
+# ``_select_pair`` takes ``comparison_basis`` as a parameter and never reads it
+# (AST-verified).  The case declares ``explicit_same_quarter_prior_year``; the
+# selector pairs on five equalities plus ``older.period_end < newest.period_end``
+# and the basis is then stamped on by result key.  So the document asserts a
+# same-quarter-prior-year comparison that the periods it carries contradict, at
+# ``availability: ready``, ``degraded_dependencies: []`` and zero schema errors.
+#
+# Each test below asserts the PROPERTY, never the mechanism: a result may be
+# withheld, or may carry an envelope that agrees with itself -- what it may not
+# do is publish a claim its own data refutes.
+
+
+_PRIOR_SUFFIX = "_prior"
+
+
+def _mutate_prior_side(case: dict[str, Any], **fields: Any) -> int:
+    """Apply ``fields`` to every prior-period fact.  Returns how many were hit.
+
+    Mutating BOTH sides collapses the pair and nothing is ever declared, which
+    is the vacuity trap ``test_a_refusal_names_its_cause_not_only_its_effect``
+    already fell into once (see the 2026-09-27 handoff).  One side only.
+    """
+    touched = 0
+    for fact in case["facts"]:
+        if str(fact.get("key", "")).endswith(_PRIOR_SUFFIX):
+            fact.update(fields)
+            touched += 1
+    assert touched, "no prior-side fact found -- the key convention moved"
+    return touched
+
+
+def _ready_results(document: dict[str, Any]) -> list[dict[str, Any]]:
+    return [r for r in document["results"] if not r.get("withheld_reason")]
+
+
+@_pytest.mark.parametrize(
+    "label,fields",
+    (
+        # Coherent quarter, seven years off.  The gap is the property the basis
+        # names, and nothing checked it.
+        ("prior side is Q1 2019", {"period_start": "2019-01-01", "period_end": "2019-03-31"}),
+        # End before its own start.  Both dates are individually valid, so the
+        # contract's $defs/date cannot see it -- same shape as the native_ref
+        # landmine: two fields validated in isolation.
+        ("prior period is inverted", {"period_start": "2025-06-30", "period_end": "2025-04-01"}),
+        # Thirty days, still labelled a quarter.
+        ("prior 'quarter' spans 30 days", {"period_start": "2025-06-01", "period_end": "2025-06-30"}),
+    ),
+)
+def test_a_pair_that_cannot_be_the_declared_basis_is_not_a_compatible_pair(
+    label: str, fields: dict[str, Any]
+) -> None:
+    case = _plnt_case()
+    assert case["comparison_basis"] == "explicit_same_quarter_prior_year"
+    _mutate_prior_side(case, **fields)
+    document = project_economic_change(case)
+
+    claimed = [r for r in _ready_results(document)
+               if r["basis"] == "same_quarter_prior_year_change"]
+    assert claimed == [], (
+        f"{label}: {len(claimed)} result(s) still claim "
+        f"same_quarter_prior_year_change -- keys "
+        f"{[r['key'] for r in claimed]}"
+    )
+    reasons = {d["reason"] for d in document["degraded_dependencies"]}
+    assert "no_compatible_pair_for_comparison_basis" in reasons, (
+        f"{label}: the pair was refused nowhere; reasons={sorted(reasons)}"
+    )
+
+
+def test_the_declared_basis_survives_the_case_it_was_written_for() -> None:
+    """The bands must admit both real cases, or they are the wrong bands.
+
+    90-day quarters, a 365-day gap.  A retail 4-5-4 quarter is 13 or 14 weeks
+    and is never calendar-snapped (see the period_start landmine), so the check
+    is a generous band, not an equality.
+    """
+    for name, case in (("synthetic", _plnt_case()), ("fixture", _fixture_case())):
+        document = project_economic_change(case)
+        assert document["availability"] == "ready", name
+        assert document["degraded_dependencies"] == [], name
+        assert len(_ready_results(document)) == 6, name
+
+
+def test_a_result_never_states_a_quantum_its_own_facts_contradict() -> None:
+    """``display_quantum`` is a constant selected by result key, not derived."""
+    case = _plnt_case()
+    for fact in case["facts"]:
+        fact["display_quantum"] = "5_thousand"
+    document = project_economic_change(case)
+    published = {f["display_quantum"] for f in document["facts"]}
+    offenders = [
+        r for r in _ready_results(document)
+        if r["unit"] != "percent" and r["display_quantum"] not in published
+    ]
+    assert offenders == [], (
+        f"facts published {sorted(published)} but results state "
+        f"{sorted({r['display_quantum'] for r in offenders})}"
+    )
+
+
+def test_a_result_never_states_a_unit_its_own_envelope_contradicts() -> None:
+    """The definition sentence hardcodes 'in USD thousands'.
+
+    Planting EUR at 10**6 leaves the envelope correct (unit and scale ARE
+    derived) and the prose wrong, and the contract cannot see it because both
+    halves are legal in isolation.
+    """
+    case = _plnt_case()
+    for fact in case["facts"]:
+        fact["unit"] = "EUR"
+        fact["scale_power10"] = 6
+    document = project_economic_change(case)
+    offenders = [
+        r for r in _ready_results(document)
+        if r["unit"] == "EUR" and "USD" in r["definition"]
+    ]
+    assert offenders == [], (
+        f"{len(offenders)} EUR result(s) describe themselves in USD: "
+        f"{[r['key'] for r in offenders]}"
+    )
+
+
+def test_a_period_labelled_another_kind_cannot_serve_the_declared_basis() -> None:
+    """The envelope's own word has to agree with the basis, not just its length.
+
+    A fact that calls itself a ``year`` while spanning ninety days satisfies
+    every arithmetic band a quarter basis imposes, so the span checks pass it
+    and only the kind binding refuses it. Without that binding the document
+    publishes a same-quarter-prior-year change over a period its own envelope
+    calls something else -- the wave-6 defect in miniature, and the one arm a
+    mutation round found unpinned.
+    """
+    case = _plnt_case()
+    assert case["comparison_basis"] == "explicit_same_quarter_prior_year"
+    # BOTH sides: ``_select_pair`` already requires the pair to agree on
+    # ``period_kind``, so relabelling one side alone collapses the pair for a
+    # reason that has nothing to do with the declared basis -- a vacuous test
+    # that a mutation round caught surviving.
+    for fact in case["facts"]:
+        fact["period_kind"] = "year"
+
+    document = project_economic_change(case)
+
+    claimed = [r for r in _ready_results(document)
+               if r["basis"] == "same_quarter_prior_year_change"]
+    assert claimed == [], (
+        "published a same-quarter comparison against periods their own "
+        f"envelopes label years -- keys {[r['key'] for r in claimed]}"
+    )
+    reasons = {d["reason"] for d in document["degraded_dependencies"]}
+    assert "no_compatible_pair_for_comparison_basis" in reasons, (
+        f"the pair was refused nowhere; reasons={sorted(reasons)}"
+    )
+
+
+def test_provenance_names_the_current_side_first() -> None:
+    """Deduping ``input_refs`` must not reorder them.
+
+    ``_emit_result`` collapses a repeated source key, and the cheapest way to
+    do that -- ``set`` -- silently randomises provenance order. The current
+    side reads first, and that is a property, not a comment.
+    """
+    document = project_economic_change(_plnt_case())
+    by_key = {result["key"]: result for result in document["results"]}
+    assert by_key["total_revenue_change"]["input_refs"] == [
+        "total_revenue_current",
+        "total_revenue_prior",
+    ]
+
+
+def test_no_period_band_can_admit_an_incoherent_period() -> None:
+    """Why the ``start < end`` check cannot be reached today -- pinned.
+
+    Every span band has a positive lower bound, so a period ending before it
+    starts yields a negative span and fails the band regardless. A mutation
+    round found the explicit coherence check unkillable for exactly that
+    reason; it stays as fail-closed defence, and this test keeps the property
+    that makes it redundant from being quietly edited away.
+    """
+    from engine.sector_intelligence import consumer_cyclical_projection as mod
+
+    for kind, (low, high) in mod._PERIOD_KIND_SPAN_DAYS.items():
+        assert low > 0, f"{kind} band admits a zero-or-negative span"
+        assert low < high, f"{kind} band is empty"
+    assert mod._PRIOR_YEAR_GAP_DAYS[0] > 0
+    assert mod._PRIOR_YEAR_GAP_DAYS[0] < mod._PRIOR_YEAR_GAP_DAYS[1]
