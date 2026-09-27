@@ -1440,6 +1440,42 @@ def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate() -> N
     assert "unowned path" not in reason, reason
 
 
+def test_prophet_us_context_owner_is_executed_by_pr_code_gate() -> None:
+    """Prospective Context Vector contracts must run on the exact PR source.
+
+    R22's hosted semantic plan omitted this existing job because it was classified
+    ``gate: data`` even though its commands guard source-code identity, cycle,
+    membership and benchmark-clock contracts.  The PR merge gate loads only
+    ``gate: code`` jobs.  Pin both the executing commands and the planner's derived
+    closure so a future gate regression cannot leave the owner suite local-only.
+    """
+    manifest = _yaml(MANIFEST)
+    owner = manifest["jobs"]["prophet-us-context-and-grades"]
+    runs = "\n".join(str(step.get("run") or "") for step in owner["steps"])
+
+    assert owner["gate"] == "code"
+    assert "tests/test_us_context_vector.py" in runs  # ci-trigger-closure: data
+    assert "tests/test_us_prophet_grades.py" in runs  # ci-trigger-closure: data
+    assert "tests/test_us_candidate_episode_intake.py" in runs  # ci-trigger-closure: data
+    assert {"pytest", "pandas", "numpy", "pyarrow", "yfinance"} <= _job_pip_packages(owner)
+
+    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    code_jobs = [job for job in jobs if job.gate == "code"]
+    for changed in (
+        ["engine/us_context_vector.py"],  # ci-trigger-closure: data
+        ["engine/us_prophet_grades.py"],  # ci-trigger-closure: data
+        ["engine/us_candidate_episode_intake.py"],  # ci-trigger-closure: data
+        ["tests/test_us_context_vector.py"],  # ci-trigger-closure: data
+        ["tests/test_us_prophet_grades.py"],  # ci-trigger-closure: data
+        ["tests/test_us_candidate_episode_intake.py"],  # ci-trigger-closure: data
+    ):
+        selected, reason = PACK.select_jobs(code_jobs, changed)
+        assert "prophet-us-context-and-grades" in {job.job_id for job in selected}, (
+            changed, reason
+        )
+        assert "unowned path" not in reason, (changed, reason)
+
+
 def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> None:
     """P0B's hermetic first-frame contract must run in the merge gate.
 

@@ -14324,8 +14324,14 @@ jobs:
     # tier-P1 unwired (scripts/audit_unrun_tests.py census), so the stores' PIT discipline,
     # nightly-lane gates and scorecard null-disclosure had no CI eye on them at all.
     # A gate hung on a suite nothing runs is a gate that is already open.
+    #
+    # R23 (2026-09-27): this is source-contract code, not a post-merge data-only observer.
+    # R22's exact hosted semantic plan omitted this owner job even though the PR changed
+    # engine/us_context_vector.py, engine/us_prophet_grades.py and the B1 intake seam.
+    # Keep the existing job/runner/commands and let CI's normal static import-closure
+    # inference decide when it runs; only its gate classification changes.
     if: ${{ false }}
-    gate: data
+    gate: code
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
