@@ -6,7 +6,7 @@ objective: >
   declared authority for every decision-bearing output and advisory evidence
   unable to silently override it. Each wave is complete only at its separately
   authorized acceptance boundary.
-status: in_progress
+status: active
 program: crypto-intelligence
 repos: [macro]
 owner: ceo-sol
