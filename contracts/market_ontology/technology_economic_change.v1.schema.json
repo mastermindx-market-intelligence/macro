@@ -1,0 +1,421 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/market_ontology/technology_economic_change.v1.schema.json",
+  "title": "GMI technology economic-change dossier v1 (technology_economic_change.v1)",
+  "description": "Closed first-unit projection of the Technology economic-change dossier (GMI Technology ex-Semis vertical, F04 Task 5). Pure composition over sealed inputs: an already-validated management_outlook_comparison.v1 dict and already-accepted shared curation assertions. Authority ceiling research_display_only: no rank/gate/size/veto/originate/open_entry flag may ever be true (ECD-48), no magnitude ordering, no market-data enrichment. ECD-44: pagination_supported is false and oversized requests are refused, never truncated.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "definition_version",
+    "dossier_id",
+    "kind",
+    "engine_version",
+    "authority",
+    "authority_ceiling",
+    "display_only",
+    "owner",
+    "mode",
+    "freshness",
+    "scope",
+    "navigation",
+    "classification",
+    "selected",
+    "source_version_vector",
+    "business",
+    "comparison",
+    "counter_observations",
+    "identity",
+    "coverage",
+    "bounds"
+  ],
+  "properties": {
+    "schema": {"const": "technology_economic_change.v1"},
+    "definition_version": {"const": "2026-09-24.1", "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}\\.[0-9]+$"},
+    "dossier_id": {"type": "string", "pattern": "^tecd_[0-9a-f]{32}$"},
+    "kind": {"const": "TECHNOLOGY_ECONOMIC_CHANGE"},
+    "engine_version": {"const": "market_ontology.technology_economic_change.v1"},
+    "authority": {"$ref": "#/$defs/authority"},
+    "authority_ceiling": {"const": "research_display_only"},
+    "display_only": {"const": true},
+    "owner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["program", "operation", "lane"],
+      "properties": {
+        "program": {"type": "string", "minLength": 1, "maxLength": 128},
+        "operation": {"type": ["string", "null"], "maxLength": 128},
+        "lane": {"type": ["string", "null"], "maxLength": 128}
+      }
+    },
+    "mode": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,63}$"},
+    "freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["as_of", "cutoff"],
+      "properties": {
+        "as_of": {"$ref": "#/$defs/date_str"},
+        "cutoff": {"$ref": "#/$defs/date_str"}
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope_mode", "theme_ref", "company_ref"],
+      "properties": {
+        "scope_mode": {"enum": ["theme_first", "company_first"]},
+        "theme_ref": {"type": "string", "pattern": "^(?:theme|ltheme):[A-Za-z0-9_.\\-]+$"},
+        "company_ref": {"type": "string", "pattern": "^co:(?:us|cn|hk|ca|intl):[A-Za-z0-9.\\-]+$"}
+      }
+    },
+    "navigation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["theme_first", "company_first"],
+      "properties": {
+        "theme_first": {"$ref": "#/$defs/relative_path"},
+        "company_first": {"$ref": "#/$defs/relative_path"}
+      }
+    },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issuer_pure_play_claimed", "basis"],
+      "properties": {
+        "issuer_pure_play_claimed": {"const": false},
+        "basis": {"const": "issuer_level_classification_out_of_first_unit_scope"}
+      }
+    },
+    "selected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["business_entity_ids", "product_ids", "input_vector"],
+      "properties": {
+        "business_entity_ids": {"type": "array", "items": {"type": "string", "pattern": "^co:(?:us|cn|hk|ca|intl):[A-Za-z0-9.\\-]+$", "minLength": 1}, "uniqueItems": true},
+        "product_ids": {"type": "array", "items": {"type": "string", "pattern": "^prod:[A-Za-z0-9][A-Za-z0-9._\\-]*$", "minLength": 1}, "uniqueItems": true},
+        "input_vector": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["engine_version", "native_context_generation", "identity_receipts_digest", "comparison_id"],
+          "properties": {
+            "engine_version": {"const": "market_ontology.technology_economic_change.v1"},
+            "native_context_generation": {"$ref": "#/$defs/generation"},
+            "identity_receipts_digest": {"$ref": "#/$defs/sha256"},
+            "comparison_id": {"type": "string", "minLength": 1, "maxLength": 128}
+          }
+        }
+      }
+    },
+    "source_version_vector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["comparison_input_vector", "curation_revisions"],
+      "properties": {
+        "comparison_input_vector": {
+          "type": "object",
+          "description": "Sealed foreign object: the EXACT management_outlook_comparison.v1 input_vector, passed through verbatim. Its internal shape is owned by the comparison contract (built concurrently) and is deliberately the ONLY open object in this contract; everything else is additionalProperties:false."
+        },
+        "curation_revisions": {"type": "array", "items": {"type": "string", "pattern": "^gmirca_[0-9a-f]{32}$"}}
+      }
+    },
+    "business": {"anyOf": [{"$ref": "#/$defs/business_refusal"}, {"$ref": "#/$defs/business_projection"}]},
+    "comparison": {"anyOf": [{"$ref": "#/$defs/comparison_refusal"}, {"$ref": "#/$defs/comparison_projection"}]},
+    "counter_observations": {"type": "array", "items": {"$ref": "#/$defs/counter_observation"}},
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entities", "views"],
+      "properties": {
+        "entities": {"type": "array", "items": {"$ref": "#/$defs/entity"}},
+        "views": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["security_enrichment_view"],
+          "properties": {
+            "security_enrichment_view": {"$ref": "#/$defs/view_refusal"}
+          }
+        }
+      }
+    },
+    "coverage": {"$ref": "#/$defs/coverage"},
+    "bounds": {"$ref": "#/$defs/bounds"}
+  },
+  "$defs": {
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rank", "gate", "size", "veto", "originate", "open_entry"],
+      "properties": {
+        "rank": {"const": false},
+        "gate": {"const": false},
+        "size": {"const": false},
+        "veto": {"const": false},
+        "originate": {"const": false},
+        "open_entry": {"const": false}
+      }
+    },
+    "date_str": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "generation": {"type": "string", "pattern": "^[A-Za-z0-9._-]{1,64}$"},
+    "relative_path": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]*(?:/[a-z0-9][a-z0-9._-]*)*\\.html$",
+      "description": "Validated relative return target: no scheme, no leading slash, no double slash, no query string, no fragment, no parent traversal."
+    },
+    "source_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner", "object_id", "schema", "generation", "sha256", "selector"],
+      "properties": {
+        "owner": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._\\-]*$", "minLength": 1, "maxLength": 128},
+        "object_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "schema": {"type": "string", "minLength": 1, "maxLength": 128},
+        "generation": {"$ref": "#/$defs/generation"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "selector": {"type": "string", "minLength": 1, "maxLength": 256}
+      }
+    },
+    "entity_name": {"type": ["string", "null"], "maxLength": 200},
+    "business_refusal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["refused", "reason_code", "explanation"],
+      "properties": {
+        "refused": {"const": true},
+        "reason_code": {"enum": ["shared_contract_unavailable"]},
+        "explanation": {"type": "string", "minLength": 1, "maxLength": 2000}
+      }
+    },
+    "view_refusal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["refused", "reason_code", "explanation"],
+      "properties": {
+        "refused": {"const": true},
+        "reason_code": {"enum": ["security_binding_missing", "enrichment_out_of_first_unit_scope"]},
+        "explanation": {"type": "string", "minLength": 1, "maxLength": 2000}
+      }
+    },
+    "comparison_refusal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["refused", "reason_code", "explanation"],
+      "properties": {
+        "refused": {"const": true},
+        "reason_code": {"enum": ["comparison_limitations_absent"]},
+        "explanation": {"type": "string", "minLength": 1, "maxLength": 2000}
+      }
+    },
+    "business_row": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["row_id", "curation_revision", "predicate", "statement_mode", "subject", "object", "statement", "source_ref", "observed_on", "authority"],
+      "properties": {
+        "row_id": {"type": "string", "pattern": "^tecrow_[0-9a-f]{12}$"},
+        "curation_revision": {"type": "string", "pattern": "^gmirca_[0-9a-f]{32}$"},
+        "predicate": {"enum": ["product_workload_role", "buyer_paid_unit"]},
+        "statement_mode": {"const": "attributed"},
+        "subject": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["entity_id", "display_name"],
+          "properties": {
+            "entity_id": {"type": "string", "minLength": 1, "maxLength": 128},
+            "display_name": {"$ref": "#/$defs/entity_name"}
+          }
+        },
+        "object": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["entity_id", "display_name", "paid_unit"],
+          "properties": {
+            "entity_id": {"type": ["string", "null"], "maxLength": 128},
+            "display_name": {"$ref": "#/$defs/entity_name"},
+            "paid_unit": {"type": ["string", "null"], "maxLength": 128}
+          }
+        },
+        "statement": {"type": "string", "maxLength": 2000},
+        "source_ref": {"$ref": "#/$defs/source_ref"},
+        "observed_on": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/date_str"}]},
+        "authority": {"$ref": "#/$defs/authority"}
+      }
+    },
+    "card": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["card_id", "card_kind", "title", "body", "source_refs", "authority"],
+      "properties": {
+        "card_id": {"type": "string", "pattern": "^tecard_[0-9a-f]{12}$"},
+        "card_kind": {"enum": ["product_workload_role", "buyer_paid_unit", "comparison", "counter_observation", "coverage"]},
+        "title": {"type": "string", "minLength": 1, "maxLength": 200},
+        "body": {"type": "string", "maxLength": 2000},
+        "source_refs": {"type": "array", "items": {"$ref": "#/$defs/source_ref"}},
+        "authority": {"$ref": "#/$defs/authority"}
+      }
+    },
+    "relationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relationship_id", "rel_type", "from_id", "to_id", "via_curation_revision", "authority"],
+      "properties": {
+        "relationship_id": {"type": "string", "pattern": "^tecrel_[0-9a-f]{12}$"},
+        "rel_type": {"enum": ["product_has_workload_role", "product_has_buyer", "row_backed_by_source", "row_aggregated_into_card", "counter_observation_attributed_to"]},
+        "from_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "to_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "via_curation_revision": {"type": "string", "pattern": "^gmirca_[0-9a-f]{32}$"},
+        "authority": {"$ref": "#/$defs/authority"}
+      }
+    },
+    "counter_observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observation_id", "statement", "attributed_to", "source_ref", "observed_on", "effect_on_comparison", "authority"],
+      "properties": {
+        "observation_id": {"type": "string", "pattern": "^tecobs_[0-9a-f]{12}$"},
+        "statement": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "attributed_to": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["entity_id", "display_name"],
+          "properties": {
+            "entity_id": {"type": "string", "minLength": 1, "maxLength": 128},
+            "display_name": {"$ref": "#/$defs/entity_name"}
+          }
+        },
+        "source_ref": {"$ref": "#/$defs/source_ref"},
+        "observed_on": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/date_str"}]},
+        "effect_on_comparison": {"const": "none_display_only"},
+        "authority": {"$ref": "#/$defs/authority"}
+      }
+    },
+    "business_projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rows", "cards", "relationships", "ordering"],
+      "properties": {
+        "rows": {"type": "array", "items": {"$ref": "#/$defs/business_row"}, "maxItems": 50},
+        "cards": {"type": "array", "items": {"$ref": "#/$defs/card"}, "maxItems": 25},
+        "relationships": {"type": "array", "items": {"$ref": "#/$defs/relationship"}, "maxItems": 100},
+        "ordering": {"const": "identifier_lexicographic"}
+      }
+    },
+    "comparison_projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["comparison_id", "admission", "eligibility_explanation", "result", "primary_limitation", "correction_digest"],
+      "properties": {
+        "comparison_id": {"type": "string", "minLength": 1, "maxLength": 128},
+        "admission": {"enum": ["admitted", "refused"]},
+        "eligibility_explanation": {"type": "string", "maxLength": 2000},
+        "result": {
+          "anyOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["annual_midpoint_change", "new_period_deviation", "prior_actual_revision", "earlier_remaining", "later_remaining", "remaining_change", "currency", "scale", "formula_revision"],
+              "properties": {
+                "annual_midpoint_change": {"$ref": "#/$defs/decimal_string"},
+                "new_period_deviation": {"$ref": "#/$defs/decimal_string"},
+                "prior_actual_revision": {"$ref": "#/$defs/decimal_string"},
+                "earlier_remaining": {"$ref": "#/$defs/decimal_string"},
+                "later_remaining": {"$ref": "#/$defs/decimal_string"},
+                "remaining_change": {"$ref": "#/$defs/decimal_string"},
+                "currency": {"type": "string", "minLength": 1, "maxLength": 16},
+                "scale": {"type": "string", "minLength": 1, "maxLength": 32},
+                "formula_revision": {"type": "string", "minLength": 1, "maxLength": 128}
+              }
+            }
+          ]
+        },
+        "primary_limitation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["text"],
+          "properties": {"text": {"type": "string", "minLength": 1, "maxLength": 2000}}
+        },
+        "correction_digest": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/sha256"}]}
+      }
+    },
+    "decimal_string": {
+      "type": "string",
+      "pattern": "^[+-]?[0-9]+(?:\\.[0-9]+)?$",
+      "description": "Verbatim decimal STRING copied from the sealed comparison; never re-parsed, never re-computed, never converted to a binary float."
+    },
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity_id", "display_name", "family_label", "binding_state", "security_binding", "display_ticker"],
+      "properties": {
+        "entity_id": {"type": "string", "pattern": "^co:(?:us|cn|hk|ca|intl):[A-Za-z0-9.\\-]+$"},
+        "display_name": {"$ref": "#/$defs/entity_name"},
+        "family_label": {"$ref": "#/$defs/entity_name"},
+        "binding_state": {"enum": ["bound", "unbound"]},
+        "security_binding": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/source_ref"}]},
+        "display_ticker": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[A-Z0-9][A-Z0-9.\\-]{0,11}$"}]}
+      },
+      "if": {"properties": {"security_binding": {"type": "null"}}},
+      "then": {"properties": {"binding_state": {"const": "unbound"}, "display_ticker": {"type": "null"}}},
+      "else": {"properties": {"binding_state": {"const": "bound"}}}
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["population_mode", "known_population_total", "counts", "assertion_counts_available", "family_labels", "completeness"],
+      "properties": {
+        "population_mode": {"enum": ["known_population", "unknown_scope"]},
+        "known_population_total": {"type": ["integer", "null"], "minimum": 0},
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["included", "missing", "stale", "rights_blocked", "unresolved", "unsupported_assertions", "invalid_assertions", "after_cutoff", "source_unavailable"],
+          "properties": {
+            "included": {"type": ["integer", "null"], "minimum": 0},
+            "missing": {"type": ["integer", "null"], "minimum": 0},
+            "stale": {"type": ["integer", "null"], "minimum": 0},
+            "rights_blocked": {"type": ["integer", "null"], "minimum": 0},
+            "unresolved": {"type": ["integer", "null"], "minimum": 0},
+            "unsupported_assertions": {"type": ["integer", "null"], "minimum": 0},
+            "invalid_assertions": {"type": ["integer", "null"], "minimum": 0},
+            "after_cutoff": {"type": ["integer", "null"], "minimum": 0},
+            "source_unavailable": {"type": ["integer", "null"], "minimum": 0}
+          }
+        },
+        "assertion_counts_available": {"type": "boolean"},
+        "family_labels": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["are_baskets", "denominator"],
+          "properties": {
+            "are_baskets": {"const": false},
+            "denominator": {"enum": ["known", "unknown"]}
+          }
+        },
+        "completeness": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["complete_within_accepted_scope", "sector_completeness_claimed", "basis"],
+          "properties": {
+            "complete_within_accepted_scope": {"type": "boolean"},
+            "sector_completeness_claimed": {"const": false},
+            "basis": {"const": "accepted_scope_only"}
+          }
+        }
+      }
+    },
+    "bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pagination_supported", "max_cards", "max_business_rows", "max_relationships", "max_free_text_chars", "max_native_input_bytes", "truncation"],
+      "properties": {
+        "pagination_supported": {"const": false},
+        "max_cards": {"const": 25},
+        "max_business_rows": {"const": 50},
+        "max_relationships": {"const": 100},
+        "max_free_text_chars": {"const": 2000},
+        "max_native_input_bytes": {"const": 262144},
+        "truncation": {"const": "none_refuse_instead"}
+      }
+    }
+  }
+}

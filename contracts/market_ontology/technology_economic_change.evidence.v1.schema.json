@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/market_ontology/technology_economic_change.evidence.v1.schema.json",
+  "title": "GMI technology economic-change evidence envelope v1 (technology_economic_change.evidence.v1)",
+  "description": "Closed evidence envelope for the Technology ex-Semis company-first research profile (T8A, macro#7891; proposed §8 shape @ 382c0b399d5c on #7870, under Sol adjudication). Exactly ONE authorized, already-accepted shared curation assertion, deep-copied VERBATIM from the owner bundle. The assertion's internal shape — its authority block included — is validated by that assertion's owner, theme_graph.curation_assertion.v1 (macro#7870), not by this schema: the owner's authority_not_all_false code rule runs on every render, before anything can be cited, and refuses any assertion whose authority flags are not all literally false. That owner-side rule is why no mirror of the assertion's internals lives here, and why a mirror would be strictly worse than none — v1.1 of the owner contract is in flight, so a mirror written here would be a fork with a stale-by-design clock. This schema deliberately asserts NOTHING about the assertion's internal shape; the assertion is deliberately the only open object here. The generation is the dossier_id of the composed dossier that actually rendered the citing row/card/counter, so the envelope can never cite a projection it was not selected from. Unknown and not-selected references share one refusal code, so the envelope discloses no existence. Authority ceiling research_display_only: the envelope's own six flags literally false (ECD-48); this envelope ranks, gates, sizes, vetoes, originates and opens nothing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "definition_version", "generation", "assertion", "limitations", "authority"],
+  "properties": {
+    "schema": {"const": "technology_economic_change.evidence.v1"},
+    "definition_version": {"const": "2026-09-24.1", "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}\\.[0-9]+$"},
+    "generation": {
+      "type": "string",
+      "pattern": "^tecd_[0-9a-f]{32}$",
+      "description": "The dossier_id grammar of technology_economic_change.v1: the composed dossier that rendered the citing row/card/counter."
+    },
+    "assertion": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Deep copy of the one authorized assertion, VERBATIM. Its internal shape — the authority block included — is owned and validated by theme_graph.curation_assertion.v1 (macro#7870), not here: the owner's authority_not_all_false code rule runs on every render, before anything can be cited, and refuses any assertion whose authority flags are not all literally false. That rule is why this schema needs no mirror of the assertion's internals, and why a mirror would be strictly worse than none (v1.1 is in flight; a mirror is a fork with a stale-by-design clock). This schema deliberately asserts NOTHING about the assertion's internal shape."
+    },
+    "limitations": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1, "maxLength": 2000},
+      "uniqueItems": true,
+      "maxItems": 8,
+      "description": "Sorted dossier-level limitation texts relevant to the cited content; may be empty when the composed dossier carries none. Explicitly bounded (today the dossier contract carries exactly one comparison primary limitation): an unbounded list never validates, and nothing is truncated to fit."
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rank", "gate", "size", "veto", "originate", "open_entry"],
+      "properties": {
+        "rank": {"const": false},
+        "gate": {"const": false},
+        "size": {"const": false},
+        "veto": {"const": false},
+        "originate": {"const": false},
+        "open_entry": {"const": false}
+      }
+    }
+  }
+}

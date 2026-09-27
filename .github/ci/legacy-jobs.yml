@@ -4671,9 +4671,51 @@ jobs:
         #    which pulls admin.analytics_first_party, which does
         #    `try: import requests / except: requests = None`. Drop the dep and the lane silently
         #    exercises that degraded branch instead of the shipped one.
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests jsonschema
       - name: neural-web core suite (mastermind context + confluence + spine query + ask brain + world state + R5 macro context + ADB-W1 brief context + ADB-W2 forward calendar + Analyst OS P0 + W2)
         run: python -m pytest tests/test_mastermind_context.py tests/test_confluence.py tests/test_spine_query.py tests/test_ask_brain.py tests/test_company_intelligence_neural_reader.py tests/test_company_intelligence_workspace_chain.py tests/test_company_intelligence_event_workspace.py tests/test_company_intelligence_event_compiler_e3a.py tests/test_company_intelligence_qa_reconstruction.py tests/test_company_intelligence_qa_exchange.py tests/test_company_intelligence_qa_generalization_e3c.py tests/test_refresh_event_workspaces.py tests/test_issuer_profiles_a5a.py tests/test_world_state.py tests/test_macro_snapshot.py tests/test_macro_context_authority.py tests/test_macro_context_glance_copy.py tests/test_law_dates.py tests/test_confluence_strength.py tests/test_neuralweb_health.py tests/test_neuralweb_daily_brief.py tests/test_brief_context.py tests/test_forward_calendar.py tests/test_orchestrator_log.py tests/test_mastermind_feedback.py tests/test_admin_orchestrator.py tests/test_admin_prophet.py tests/test_admin_trade_memory.py tests/test_macro_thesis.py tests/test_brain_doctrine.py tests/test_mastermind_response_log.py tests/test_admin_mastermind_logs.py tests/test_brain_analyst_doctrine.py tests/test_brain_analyst_wiring.py tests/test_market_packet.py tests/test_brain_market_intel.py tests/test_brain_seed_router.py tests/test_brain_analogues.py tests/test_brain_curve.py tests/test_response_eval.py tests/test_brain_user_memory.py tests/test_user_prefs.py -q
+      # Technology ex-Semis (carrier #7891, WS:GMI-THEME-GRAPH): Company/Earnings-owned
+      # management-outlook comparison contract (T2) and pure remaining-year calculator (T3).
+      # Split so a red names the contract; jsonschema is needed because the contract validates
+      # its own closed JSON Schema.
+      - name: company intelligence — management-outlook comparison contract + pure calculator (Technology ex-Semis T2/T3)
+        run: TZ=UTC python -m pytest tests/test_company_management_outlook_contract.py tests/test_company_management_outlook.py -q
+
+  technology-ex-semis-boundary:
+    if: ${{ false }}
+    gate: code
+    # TECHNOLOGY EX-SEMIS FIRST VERTICAL, ON THE MERGE GATE (2026-09-24, #7891).
+    #
+    # The three Technology ex-Semis suites were named only in `gate: data` jobs
+    # (the comparison contract + calculator in `neural-web-core`, the F04
+    # composer in `unrun-intl-libraries`). ci.yml packs `--gate code`, so a PR
+    # that flipped an authority flag, widened the closed decimal grammar or
+    # invented a provenance edge would merge green and red only in the next
+    # day's data-health lane — the same correction class as `regwall-boundary`
+    # and `semiconductor-b-boundary` (#7870). By the manifest's own definition
+    # these verdicts are `gate: code`: pure in-memory contract/calculator/
+    # composer logic over synthetic fixtures, no `data/**`, no `site/**`, no
+    # nightly ledger. The nightly steps stay where they are; this job adds the
+    # merge-gate verdict.
+    #
+    # Scope is inferred: the suites import their subjects directly
+    # (engine/company_intelligence/management_outlook{,_contract}.py,
+    # engine/market_ontology/technology_economic_change.py, the two frozen
+    # contracts) and pull no app or builder closure, so inference owns the
+    # re-run set without a curated declaration.
+    #
+    # Deps: jsonschema for the frozen contracts; pandas/numpy/pyarrow/requests
+    # because engine/company_intelligence imports them at package load.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests jsonschema
+      - name: Technology ex-Semis boundary (comparison contract + calculator + economic-change composer)
+        run: TZ=UTC python -m pytest tests/test_company_management_outlook_contract.py tests/test_company_management_outlook.py tests/test_market_ontology_technology_economic_change.py tests/test_market_ontology_technology_research_registration.py -q
 
   cn-standout-audit:
     if: ${{ false }}
@@ -11433,6 +11475,10 @@ jobs:
         run: TZ=UTC python -m pytest tests/test_theme_sources_registry.py -q
       - name: market ontology — GMI exposure composer (shock->theme->company, rights + as-of + typed nulls)
         run: TZ=UTC python -m pytest tests/test_market_ontology_exposure_map.py -q
+      # Technology ex-Semis (carrier #7891): F04 economic-change dossier composer over sealed
+      # fixture providers; one strict xfail pins the shared curation_assertion round-trip to #7870.
+      - name: market ontology — Technology economic-change dossier composer (Technology ex-Semis T5)
+        run: TZ=UTC python -m pytest tests/test_market_ontology_technology_economic_change.py -q
       - name: CN limit-rule registry — schema, continuity, parity vs china_microstructure
         run: TZ=UTC python -m pytest tests/test_cn_limit_rules.py -q
       # GMI W2 — the exposure-decomposition probe's pure math. The probe script itself is a
