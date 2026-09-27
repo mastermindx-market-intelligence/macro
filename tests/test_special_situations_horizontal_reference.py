@@ -5,6 +5,7 @@ from research.special_situations_horizontal_reference import (
     transaction_lifecycle,
     merge_discovery_enrichment,
     invalidate_dependent_cases,
+    route_registrant_event,
 )
 
 
@@ -68,3 +69,34 @@ class HorizontalReferenceTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class RegistrantRoleRoutingTests(unittest.TestCase):
+    def test_direct_family_with_incompatible_role_is_withheld(self):
+        out = route_registrant_event(
+            category="Going-Private",
+            registrant_role="none",
+            direct_roles={"target"},
+        )
+        self.assertEqual(out["projection"], "withheld")
+        self.assertEqual(out["reason"], "relationship_unresolved")
+        self.assertFalse(out["direct_target"])
+
+    def test_bound_indirect_relation_preserves_context_without_target_semantics(self):
+        out = route_registrant_event(
+            category="Going-Private",
+            registrant_role="none",
+            direct_roles={"target"},
+            affected_relation="affected_through_general_partner_control",
+        )
+        self.assertEqual(out["projection"], "affected")
+        self.assertEqual(out["security_role"], "affected_through_general_partner_control")
+        self.assertFalse(out["direct_target"])
+
+    def test_compatible_direct_role_remains_direct(self):
+        out = route_registrant_event(
+            category="Going-Private",
+            registrant_role="target",
+            direct_roles={"target"},
+        )
+        self.assertEqual(out["projection"], "direct")
+        self.assertTrue(out["direct_target"])
