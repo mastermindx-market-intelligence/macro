@@ -155,7 +155,8 @@ def _state(s: Mapping[str, Any], p: Mapping[str, Any], horizon: date, price: Dec
     equity = max(Decimal(0), residual)  # Explicit limited-liability common-equity reference rule.
     terminal_price = equity / shares
     gross_return = (terminal_price + dividend) / price - 1
-    return {'id': s['id'], 'method': s['method'], 'probability': s['probability'],
+    return {'id': s['id'], 'method': s['method'],
+            'probability': _s(_d(s['probability'], 'probability')) if s['probability'] is not None else None,
             'gross_profit': _s(gp), 'operating_income': _s(operating),
             'net_common_income': _s(common), 'equity_issue_gross_proceeds': _s(issue_proceeds),
             'horizon_cash': _s(cash), 'horizon_debt': _s(debt),
