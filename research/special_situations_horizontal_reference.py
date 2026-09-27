@@ -95,4 +95,52 @@ def invalidate_dependent_cases(cases: Iterable[dict], *, changed_dependencies: s
             invalidated.append(case_id)
         else:
             preserved.append(case_id)
-    return {"invalidated": invalidated, "preserved": preserved}\n\ndef route_registrant_event(\n    *,\n    category: str,\n    registrant_role: str | None,\n    direct_roles: set[str],\n    affected_relation: str | None = None,\n) -> dict:\n    \"\"\"Keep document-event family separate from the registrant's security role.\n\n    direct_roles is supplied by the family-specific semantic adapter; this\n    reference deliberately does not invent one universal role matrix. An\n    incompatible or missing registrant role never becomes a direct security event.\n    If an incumbent owner has separately bound an affected relationship, retain\n    the event as indirect context. Otherwise withhold the security projection\n    until that relationship is resolved.\n    \"\"\"\n    role = str(registrant_role or \"none\").strip().lower() or \"none\"\n    allowed = {str(r).strip().lower() for r in direct_roles if str(r).strip()}\n    if role in allowed:\n        return {\n            \"category\": category,\n            \"projection\": \"direct\",\n            \"security_role\": role,\n            \"direct_event_security\": True,\n            \"direct_target\": role == \"target\",\n            \"reason\": None,\n        }\n    if affected_relation is not None:\n        relation = str(affected_relation).strip()\n        if relation not in AFFECTED_ROLES:\n            raise ValueError(\"affected_relation is not an admitted reference relation\")\n        return {\n            \"category\": category,\n            \"projection\": \"affected\",\n            \"security_role\": relation,\n            \"direct_event_security\": False,\n            \"direct_target\": False,\n            \"reason\": None,\n        }\n    return {\n        \"category\": category,\n        \"projection\": \"withheld\",\n        \"security_role\": role,\n        \"direct_event_security\": False,\n        \"direct_target\": False,\n        \"reason\": \"relationship_unresolved\",\n    }\n
+    return {"invalidated": invalidated, "preserved": preserved}
+
+def route_registrant_event(
+    *,
+    category: str,
+    registrant_role: str | None,
+    direct_roles: set[str],
+    affected_relation: str | None = None,
+) -> dict:
+    """Keep document-event family separate from the registrant's security role.
+
+    direct_roles is supplied by the family-specific semantic adapter; this
+    reference deliberately does not invent one universal role matrix. An
+    incompatible or missing registrant role never becomes a direct security event.
+    If an incumbent owner has separately bound an affected relationship, retain
+    the event as indirect context. Otherwise withhold the security projection
+    until that relationship is resolved.
+    """
+    role = str(registrant_role or "none").strip().lower() or "none"
+    allowed = {str(r).strip().lower() for r in direct_roles if str(r).strip()}
+    if role in allowed:
+        return {
+            "category": category,
+            "projection": "direct",
+            "security_role": role,
+            "direct_event_security": True,
+            "direct_target": role == "target",
+            "reason": None,
+        }
+    if affected_relation is not None:
+        relation = str(affected_relation).strip()
+        if relation not in AFFECTED_ROLES:
+            raise ValueError("affected_relation is not an admitted reference relation")
+        return {
+            "category": category,
+            "projection": "affected",
+            "security_role": relation,
+            "direct_event_security": False,
+            "direct_target": False,
+            "reason": None,
+        }
+    return {
+        "category": category,
+        "projection": "withheld",
+        "security_role": role,
+        "direct_event_security": False,
+        "direct_target": False,
+        "reason": "relationship_unresolved",
+    }
