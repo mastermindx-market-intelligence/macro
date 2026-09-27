@@ -118,10 +118,14 @@ def test_mobile_command_rows_have_a_full_width_explanation() -> None:
     assert '{{ d.falsifier|e }}' not in src
 
 
-def test_generated_watch_conditions_have_no_serialized_check() -> None:
+def test_generated_page_never_serializes_watch_machine_checks() -> None:
     html = SITE.read_text(encoding="utf-8")
     watches = re.findall(r'<div class="watch">(.*?)</div>', html, re.S)
-    assert watches
+    # A natural render may legitimately contain zero current falsifiers. The
+    # fixture tests above own the positive render path; this committed-page
+    # contract owns only the privacy/presentation boundary when rows exist.
     for watch in watches:
         assert 'subject_ticker' not in watch and 'horizon_d' not in watch
         assert '&#39;text&#39;' not in watch and '&#39;check&#39;' not in watch
+    assert 'subject_ticker' not in html and 'horizon_d' not in html
+    assert '&#39;text&#39;' not in html and '&#39;check&#39;' not in html

@@ -5822,3 +5822,12 @@ def test_markets_fresh_render_byte_match_is_code_gated_and_runs_exactly_once() -
         if selector in cmds or node in cmds:
             duplicates.append(name)
     assert not duplicates, sorted(duplicates)
+
+# 2026-09-27 hosted timing calibration: self-mod-fence contains the deliberately
+# last Agent OS record contract, whose natural runtime dominates its job. Keep a
+# measured override so the LPT packer does not regress to the command-text
+# heuristic and stack another heavyweight behind it.
+def test_self_mod_fence_uses_measured_hosted_weight() -> None:
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
+    assert PACK.OBSERVED_COMMAND_SECONDS["self-mod-fence"] == 1100
+    assert jobs["self-mod-fence"].weight == 1100

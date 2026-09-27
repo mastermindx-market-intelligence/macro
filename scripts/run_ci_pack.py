@@ -418,6 +418,12 @@ OBSERVED_COMMAND_SECONDS = {
     # render-lane contracts and the options/sparse suites: about 90 s including
     # its data-stack install.
     "ci-control-plane-contracts": 1400,
+    # 2026-09-27: natural green full-suite runs 36243489405 and 36292040240
+    # measured self-mod-fence at ~1089 s and ~636 s respectively; its Agent OS
+    # record-contract tail alone was ~936 s / ~513 s. Use the slower observed
+    # whole-job envelope (rounded up) so LPT packing no longer treats this as a
+    # ~258 s heuristic job and stacks another heavyweight behind it.
+    "self-mod-fence": 1100,
     "workflow-yaml": 90,
     "market-memory-contract": 416,
     "unrun-government-revenue-grader": 322,
