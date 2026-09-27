@@ -398,6 +398,18 @@ def qualify_operands(
         ):
             limitations.append("duplicate_operand_ref")
 
+    # Formula-aware gate: a segment_change_bridge with zero segment legs is
+    # not a bridge — corporate + eliminations alone certify no segments.  The
+    # formula dispatch in ``_derive_segment_change_bridge`` enforces the
+    # same refusal; gating here too so the qualification surface refuses a
+    # bad bridge BEFORE the formula code is reached.
+    if formula == "segment_change_bridge" and not any(
+        (op.metric or "").startswith("segment_")
+        and (op.metric or "").endswith("_change")
+        for op in parsed
+    ):
+        limitations.append("operand_missing:segments")
+
     # Basis / definition qualification.
     checked = comparison_receipt.get("checked") or {}
     basis_checked = bool(checked.get("basis"))
@@ -946,6 +958,18 @@ def _derive_segment_change_bridge(
     cells: Sequence[_Operand], receipt: Mapping[str, Any]
 ) -> dict[str, Any]:
     segments = [op for op in cells if (op.metric or "").startswith("segment_") and (op.metric or "").endswith("_change")]
+    # A bridge with no segment legs is not a bridge — corporate + eliminations
+    # alone would certify no segments and silently fabricate the segment
+    # subtotal as zero.  Refuse explicitly so the caller distinguishes
+    # "no segment_change legs supplied" from a clean bridge.
+    if not segments:
+        return _refusal_result(
+            formula="segment_change_bridge",
+            cells=cells,
+            receipt=receipt,
+            limitations=["operand_missing:segments"],
+            operand_refs=[_operand_ref_payload(op) for op in cells],
+        )
     corporate = _pick_by_metric(cells, "corporate_change")
     eliminations = _pick_by_metric(cells, "eliminations")
     unallocated = [op for op in cells if op.metric in {"unallocated_change", "unallocated_refund"}]

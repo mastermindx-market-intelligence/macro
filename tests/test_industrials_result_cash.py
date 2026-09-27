@@ -436,6 +436,44 @@ def test_segment_change_bridge_discloses_unknown_refund_residual() -> None:
     assert "bridge_residual_disclosed" in r["limitations"]
 
 
+def test_segment_change_bridge_refuses_zero_segment_legs() -> None:
+    """A bridge with no segment_*_change operands is not a bridge.
+
+    Defends against the measured failure: corporate + eliminations alone
+    used to fabricate a segment subtotal of zero, certifying a clean bridge
+    over no segments.  The derivation surface refuses explicitly.
+    """
+    corp = cell("40", metric="corporate_change", owner_ref="synthetic:cell:corp")
+    elim = cell("-10", metric="eliminations", owner_ref="synthetic:cell:elim")
+    cells = [corp, elim]
+    receipt = build_comparison_receipt("segment_bridge", cells, checked={})
+    r = derive_result_cash(
+        "segment_change_bridge",
+        cells,
+        comparison_receipt=receipt,
+    )
+    assert r["status"] == "refused"
+    assert "operand_missing:segments" in r["limitations"]
+    assert r["receipt_ref"] == receipt["receipt_id"]
+
+
+def test_qualify_operands_refuses_segment_bridge_without_segment_legs() -> None:
+    """Same gate, qualification surface entry point."""
+    corp = cell("40", metric="corporate_change", owner_ref="synthetic:cell:corp")
+    elim = cell("-10", metric="eliminations", owner_ref="synthetic:cell:elim")
+    cells = [corp, elim]
+    receipt = build_comparison_receipt("segment_bridge", cells, checked={})
+    q = qualify_operands(
+        "segment_bridge",
+        cells,
+        comparison_receipt=receipt,
+        formula="segment_change_bridge",
+    )
+    assert q["status"] == "refused"
+    assert "operand_missing:segments" in q["limitations"]
+    assert q["receipt_ref"] == receipt["receipt_id"]
+
+
 # ---------------------------------------------------------------------------
 # final_vs_preview — distinct information editions required
 # ---------------------------------------------------------------------------
