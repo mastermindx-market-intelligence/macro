@@ -4818,8 +4818,11 @@ jobs:
     # every job and suite through the planner, and no exclusive list can name
     # every suite. So a PR that moves one of those verdicts without touching a
     # path below merges without running this job. Each such shape has another
-    # owner. contract-delta (ci.yml, every PR) re-runs the unrun census and the
-    # curated-closure check differentially. integration-baseline.yml runs
+    # owner. contract-delta (ci.yml, every PR) re-runs the unrun census, the
+    # curated-closure check, the packing probes and the skip-only and
+    # trigger-closure censuses differentially (probes and both censuses since
+    # 2026-09-27), so a PR that breaches a probe ceiling, adds a skip-only gate or
+    # opens a trigger gap reds on its own head. integration-baseline.yml runs
     # test_ci_pack.py and the skip-only census on every source push to main and
     # every 4 hours, and merge-on-green pauses ordinary merges while it is red.
     # Every ci.yml run on main runs this whole job; the merge sweeper dispatches
