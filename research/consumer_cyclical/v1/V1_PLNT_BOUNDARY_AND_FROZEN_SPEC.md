@@ -59,6 +59,14 @@ This program's own research carrier, listed separately because it is not an exte
 
 | #7804 consumer evidence | `3d286719686d` | `3d286719686d` | OPEN draft |
 
+**Re-measurement 2026-09-27T22:26Z** (one `gh api graphql` call; the R15 pins above are a
+dated record and are deliberately NOT overwritten). Two owner heads have MOVED since the
+freeze — #7870 `3e3a7956d014` -> `a0d7b054ff23`, #7669 `6942b2b62bad` -> `2e6bea89cb32`.
+#7780, #7462, #7426 and #7804 are unmoved. **Zero merged; all five external owners remain
+OPEN DRAFT, so the step-2 and step-7 BLOCKED rows are unchanged.** Recorded because the
+step-2 note reads "all six owner heads unmoved", which is no longer true: a moved head is
+not an opened gate, and the two facts must not be conflated.
+
 Affected blob re-pins against current `origin/main`:
 - `app/paywall.py` = `7e1c6861ebb7d27924865b2b8d157e6a9356405d` — **unchanged** from R15.
 - `tests/test_paywall.py` = `1d958154eed91ee08f9f7ab65b719e1910e2ccd1` — **unchanged** from R15.

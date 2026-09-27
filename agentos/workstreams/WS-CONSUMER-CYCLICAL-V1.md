@@ -32,6 +32,7 @@ discoveries:
   - "DSC:A-MINTING-DEFAULT-IS-INVISIBLE-TO-AN-EMPTINESS-GATE"
   - "DSC:A-DECLARED-BASIS-IS-A-LABEL-UNTIL-SOMETHING-READS-IT"
   - "DSC:AN-ENUMERATED-GUARD-IS-BLIND-OUTSIDE-ITS-ENUMERATION"
+  - "DSC:A-MUTATION-THAT-DIES-UPSTREAM-NEVER-TESTS-THE-GATE-YOU-AIMED-AT"
 waves:
   - id: CC-V1-CORE
     title: "V1-CORE deterministic composition"
@@ -250,14 +251,33 @@ next_action: >
   passed, both cases 0 errors / ready / oracle exact, and the envelope sweep 17
   refused / 4 minted-but-honest. CC-V1-DECLARED-BASIS-BINDING follows it.
   .
-  The correctness lane is not exhausted and should not be claimed to be. What
-  IS true after this wave: the module no longer publishes a comparison its own
-  periods refute, no longer states a unit its envelope contradicts, and no
-  longer validates its output against a hand-written list. What is NOT
-  established: that nothing else is stated-but-unchecked. The method that found
-  all four defects is cheap and repeatable - replace an enumerated guard with a
-  derivation and watch what turns red - and it has not been run on the case
-  admission path, only on the document emission path.
+  CC-V1-DECLARED-BASIS-BINDING merged as PR #8103 (squash 2b98cf7cfc99,
+  2026-09-27T22:36:16Z) and was proven from main's re-extracted bytes (blob
+  e9026639bf86 == origin/main's): 111 passed, both cases 0 errors / ready /
+  oracle exact, envelope sweep 17 refused / 4 minted-but-honest. Mutation 12/13
+  with W2 reported as a genuine EQUIVALENT mutant, not gamed away. Reported on
+  #7804 (comment 5860482755). ACCEPTANCE remains Sol's.
+  .
+  The correctness lane is now MUCH closer to exhausted than the previous note
+  claimed, and the specific gap that note named is CLOSED. The derive-don't-
+  enumerate method HAS since been run on the case admission path, and on pair
+  agreement. Both returned NULL, and both nulls are load-bearing. (1) Admission
+  does leave four contract-required fact fields unread
+  (native_admitted / native_ref / published_at / target), but that is ALREADY
+  ADJUDICATED by DSC:A-MINTING-DEFAULT-IS-INVISIBLE-TO-AN-EMPTINESS-GATE
+  so_what (4) - they publish the contract's own "unknown", native_admitted
+  false under-claims, and it is presently ACCURATE because R8 native staging is
+  blocked. DO_NOT_REDO: re-deriving it cost this seat ~20 minutes because the
+  probe ran before the prior DSC was read. (2) Pair agreement on unit,
+  scale_power10, sign_convention and period_kind is CHECKED - every legal-value
+  disagreement collapses the pair and declares.
+  .
+  Swept to date: 21 fact fields; 5 root scalars; basis binding; input_refs;
+  pair agreement. The honest unswept remainder is the explanation object,
+  source_records, and availability/state derivation. Anyone running that sweep
+  must first read DSC:A-MUTATION-THAT-DIES-UPSTREAM-NEVER-TESTS-THE-GATE-YOU-
+  AIMED-AT: two probes in this wave returned a vacuous green because the
+  mutation died at an earlier gate or was a no-op.
 ---
 
 ## Scope
