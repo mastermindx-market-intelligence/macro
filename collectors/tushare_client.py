@@ -31,6 +31,7 @@ roadmap (every new premium feed lands display-only until china_validation proves
 from __future__ import annotations
 
 import logging
+import math
 import os
 import time
 from datetime import datetime, timedelta, timezone
@@ -159,7 +160,7 @@ def _throttle(api_name: str) -> None:
 
 
 def query(api_name: str, fields: str = "", *, _retries: int = 2,
-          _return_empty: bool = False, **params) -> "pd.DataFrame | None":
+          _return_empty: bool = False, _timeout: float | None = None, **params) -> "pd.DataFrame | None":
     """Call one Tushare endpoint → DataFrame (ts_code normalised to .SS), or None.
 
     Returns None — never raises — when: no token (gate closed), the endpoint errors, access is
@@ -178,6 +179,12 @@ def query(api_name: str, fields: str = "", *, _retries: int = 2,
     if not tok:
         return None
     payload = {"api_name": api_name, "token": tok, "params": params or {}, "fields": fields}
+    try:
+        request_timeout = _TIMEOUT if _timeout is None else float(_timeout)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(request_timeout) or request_timeout <= 0:
+        return None
     for attempt in range(_retries + 1):
         _throttle(api_name)
         try:
@@ -187,7 +194,7 @@ def query(api_name: str, fields: str = "", *, _retries: int = 2,
             r = requests.post(
                 _API_URL,
                 json=payload,
-                timeout=_TIMEOUT,
+                timeout=request_timeout,
                 allow_redirects=False,
             )
         except Exception as e:  # noqa: BLE001 — one bad call never breaks a build
