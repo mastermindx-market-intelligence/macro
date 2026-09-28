@@ -8179,3 +8179,4 @@
 {"id":"ob-2026-09-28-66d15ae751","from":"queued","to":"approved","at":"2026-09-28T08:37:50Z","actor":"publisher-autoapprove","note":"auto-approved (all gates passed)","receipt":null}
 {"id":"ob-2026-09-28-66d15ae751","from":"approved","to":"posting","at":"2026-09-28T08:37:54Z","actor":"publisher","note":"in-flight (pre-publish)","receipt":null}
 {"id":"ob-2026-09-28-66d15ae751","from":"posting","to":"posted","at":"2026-09-28T08:37:54Z","actor":"publisher","note":"published","receipt":{"backend":"buffer","external_id":"6aba276201369cd33e9a6007","external_url":null,"at":"2026-09-28T08:37:49Z","booked_at":"2026-09-28T08:37:49Z"}}
+{"id":"ob-2026-09-26-9e345df2f5","from":"queued","to":"quarantined","at":"2026-09-28T10:45:48Z","actor":"nightly_expiry","note":"expired: superseded by tonight's plan","receipt":null}
