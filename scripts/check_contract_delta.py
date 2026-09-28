@@ -816,6 +816,18 @@ def reap_stale_base_trees(
         reason to fail the contract gate.
     Set `CONTRACT_DELTA_NO_REAP=1` to disable, `CONTRACT_DELTA_REAP_HOURS` to
     retune the window.
+
+    Exercised against the real mint root on this host 2026-09-28: three leaks aged
+    105-145 h collected (2.64 GiB) and stale registrations drained 13 -> 5 -> 0 over
+    two invocations, the cap behaving as documented rather than stalling one run. Two
+    of those three were registered in OTHER clones
+    (`/Volumes/Mastermind/tmp/sol-7677-reconcile-...`,
+    `/private/tmp/theme7664-current-base....`), so `_registered_base_trees` did not
+    list them and only the `rmtree` fallback reached them -- which is the case that
+    matters, because removing them by hand needs `git -C <owning clone> worktree
+    remove`, a command a worktree-isolated session is correctly forbidden to run. The
+    owning clone keeps a prunable registration; that is the accepted cost of not
+    leaving the bytes.
     """
     if os.environ.get(NO_REAP_ENV):
         return 0
