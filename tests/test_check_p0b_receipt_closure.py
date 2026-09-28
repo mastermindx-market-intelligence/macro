@@ -162,6 +162,77 @@ def test_cli_refuses_null_planner_handle(tmp_path: Path) -> None:
     assert guard.main(["--repo-root", str(tmp_path), "--diff-file", str(handle)]) == 2
 
 
+def _null_handle(root: Path) -> Path:
+    handle = root / "changed.json"
+    handle.write_text("null\n", encoding="utf-8")
+    return handle
+
+
+@pytest.mark.parametrize("event", sorted(guard.NO_DIFF_SUBJECT_EVENTS))
+def test_cli_accepts_null_handle_on_a_main_role_event(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], event: str
+) -> None:
+    # A main proof and the base replay publish `null` for a full-suite plan.
+    # Refusing it redded every main ci.yml proof after #7237.
+    _plant_receipts(tmp_path)
+    argv = [
+        "--repo-root", str(tmp_path),
+        "--diff-file", str(_null_handle(tmp_path)),
+        "--event", event,
+    ]
+    assert guard.main(argv) == 0
+    lines = [ln for ln in capsys.readouterr().out.splitlines() if "p0b-receipt-closure" in ln]
+    assert lines and all(ln.startswith("::notice ") for ln in lines), lines
+
+
+@pytest.mark.parametrize("event", ["pull_request", "", "push", "local"])
+def test_cli_still_refuses_null_handle_off_the_main_role_events(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], event: str
+) -> None:
+    # A PR plan must carry an exact inventory; `null` there means the planner
+    # failed, so the gate must not pass vacuously.
+    _plant_receipts(tmp_path)
+    argv = [
+        "--repo-root", str(tmp_path),
+        "--diff-file", str(_null_handle(tmp_path)),
+        "--event", event,
+    ]
+    assert guard.main(argv) == 2
+    out = capsys.readouterr().out
+    assert any(
+        ln.startswith("::error title=p0b-receipt-closure::REFUSED") for ln in out.splitlines()
+    ), out
+
+
+def test_cli_never_reads_the_event_from_the_environment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # This suite runs inside the main proof's own pack, where
+    # GITHUB_EVENT_NAME=workflow_dispatch. An env default would let every
+    # refusal test here pass the null handle on exactly that run.
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "workflow_dispatch")
+    _plant_receipts(tmp_path)
+    argv = ["--repo-root", str(tmp_path), "--diff-file", str(_null_handle(tmp_path))]
+    assert guard.main(argv) == 2
+
+
+def test_a_main_role_event_relaxes_only_the_null_token(tmp_path: Path) -> None:
+    # A real list on a main-role event still gates: a pinned path moving
+    # without its receipts reds whatever the event.
+    _plant_receipts(tmp_path)
+    red_list = tmp_path / "red.json"
+    red_list.write_text(json.dumps([HK_TEMPLATE]), encoding="utf-8")
+    argv = [
+        "--repo-root", str(tmp_path),
+        "--diff-file", str(red_list),
+        "--event", "workflow_dispatch",
+    ]
+    assert guard.main(argv) == 1
+    assert guard.parse_changed_paths("null\n", null_is_no_diff=True) == set()
+    with pytest.raises(ValueError, match="malformed"):
+        guard.parse_changed_paths("[oops", null_is_no_diff=True)
+
+
 def test_cli_red_then_green(tmp_path: Path) -> None:
     _plant_receipts(tmp_path)
     red_list = tmp_path / "red.txt"
