@@ -28,6 +28,7 @@ from engine.sector_intelligence.finance_projection import (
     _METRIC_FIELDS,
     _build_primary_metric,
     _has_forbidden_key,
+    _owner_key,
     _owner_refs,
     _owner_text,
     compose_finance_projection,
@@ -1515,16 +1516,22 @@ def _owner_fence_outcome(inputs: FinanceOwnerInputs) -> str:
     return "LEAKED"
 
 
+@functools.lru_cache(maxsize=None)
+def _value_fence_outcomes() -> tuple[tuple[str, tuple, str], ...]:
+    # One pass of the value plant (about 15 s) serves both assertions below.
+    exercised: set = set()
+    return tuple(
+        (fixture, case, _owner_fence_outcome(inputs))
+        for fixture in _FENCE_FIXTURES
+        for case, inputs in _owner_value_mutations(_extended_owner_inputs(fixture), exercised)
+    )
+
+
 def test_an_owner_value_crosses_into_free_text_only_as_a_scalar() -> None:
     outcomes: dict[str, int] = {}
-    leaks = []
-    exercised: set = set()
-    for fixture in _FENCE_FIXTURES:
-        for case, inputs in _owner_value_mutations(_extended_owner_inputs(fixture), exercised):
-            outcome = _owner_fence_outcome(inputs)
-            outcomes[outcome] = outcomes.get(outcome, 0) + 1
-            if outcome == "LEAKED":
-                leaks.append((fixture, *case))
+    for _fixture, _case, outcome in _value_fence_outcomes():
+        outcomes[outcome] = outcomes.get(outcome, 0) + 1
+    leaks = [(fixture, *case) for fixture, case, outcome in _value_fence_outcomes() if outcome == "LEAKED"]
     assert outcomes.get("clean", 0) > 0 and outcomes.get("sealed", 0) > 0, outcomes
     assert not leaks, (outcomes, leaks[:20])
 
@@ -1562,6 +1569,33 @@ def test_the_owner_value_fence_fires_on_a_stringified_owner_metric(monkeypatch: 
     assert "LEAKED" in {_owner_fence_outcome(inputs) for inputs in cases}
 
 
+def test_a_malformed_owner_value_is_refused_by_the_contract_never_by_a_crash() -> None:
+    """The same plant, read for totality. A structure where the composer
+    looks a value up (a rights family, a slice id, a price basis, a metric
+    name) raised TypeError or AttributeError inside the composer, so the
+    publish step saw an arbitrary exception instead of the contract's refusal.
+    Every such value now reaches the contract or is treated as absent."""
+    crashes = [(fixture, *case) for fixture, case, outcome in _value_fence_outcomes() if outcome == "refused"]
+    assert not crashes, crashes[:20]
+
+
+def test_the_owner_value_fence_fires_on_an_ungated_owner_lookup(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Positive control for the totality test above. With the lookup gate
+    removed, a structure given as a source family is hashed by the rights
+    lookup and the composer raises."""
+    import engine.sector_intelligence.finance_projection as _fp_mod
+
+    cases = [
+        inputs
+        for (field, _path, key, variant), inputs in _owner_value_mutations(_extended_owner_inputs("default"))
+        if (field, key, variant) == ("source_records", "source_family", "structure")
+    ]
+    assert cases
+    assert "refused" not in {_owner_fence_outcome(inputs) for inputs in cases}
+    monkeypatch.setattr(_fp_mod, "_owner_key", lambda value: value)
+    assert "refused" in {_owner_fence_outcome(inputs) for inputs in cases}
+
+
 def test_owner_text_is_a_scalar_or_nothing() -> None:
     assert _owner_text("nim") == "nim"
     assert _owner_text(3) == "3"
@@ -1572,6 +1606,12 @@ def test_owner_text_is_a_scalar_or_nothing() -> None:
     # A mapping is not a list of references: iterating it would publish its keys.
     assert _owner_refs(dict(_PLANTED_STRUCTURE)) == []
     assert _owner_refs(["ref-1", "", None, dict(_PLANTED_STRUCTURE), 7]) == ["ref-1", "7"]
+    # A looked-up value is text or absent: a structure is unhashable.
+    assert _owner_key("card_networks") == "card_networks"
+    assert _owner_key("") == ""
+    assert _owner_key(None) is None
+    assert _owner_key(dict(_PLANTED_STRUCTURE)) is None
+    assert _owner_key([_PLANTED_NOTE]) is None
 
 
 def test_the_emit_guard_walks_tuples() -> None:
