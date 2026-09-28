@@ -263,6 +263,70 @@ class TestRecordFiring:
         assert (tmp_path / "data" / "reflexes" / "fresh_reflex" / "firings.jsonl").exists()
 
 
+    @pytest.mark.parametrize("key,value", [
+        ("claim_id", "caller_invented"), ("reflex", "different_reflex"),
+        ("claim_family", "claimed.alpha"), ("desk", "execution"),
+        ("is_context_only", False), ("is_context_only", None),
+        ("is_context_only", 0), ("is_context_only", "false"),
+    ])
+    def test_producer_owned_fields_cannot_be_overridden(self, tmp_path, key, value):
+        from engine.neuralweb.reflexes import record_firing, load_firings
+        import hashlib
+        payload = {"ts": "2026-09-28T17:30:00Z", "trigger_key": "synthetic-only",
+                   "trigger_type": "test", "action_taken": "NONE", key: value}
+        before = json.dumps(payload, sort_keys=True)
+        rec = record_firing("test_reflex", payload, root=tmp_path)
+        expected_id = hashlib.sha256(b"test_reflex:2026-09-28T17:30:00Z:synthetic-only").hexdigest()[:16]
+        owned = {"claim_id": expected_id, "reflex": "test_reflex",
+                 "claim_family": "reflex.test_reflex", "desk": "reflex", "is_context_only": True}
+        for field, expected in owned.items():
+            assert rec[field] == expected
+            assert type(rec[field]) is type(expected)
+        assert load_firings("test_reflex", root=tmp_path) == [rec]
+        assert json.dumps(payload, sort_keys=True) == before
+
+    def test_all_reserved_overrides_preserve_identity_and_context(self, tmp_path):
+        from engine.neuralweb.reflexes import record_firing
+        payload = {"ts": "2026-09-28T17:30:00Z", "trigger_key": "k", "extra": {"observation": 0}}
+        ordinary = record_firing("test_reflex", payload, root=tmp_path)
+        conflicting = dict(payload, claim_id="wrong", reflex="wrong", claim_family="wrong",
+                           desk="wrong", is_context_only=False)
+        repaired = record_firing("test_reflex", conflicting, root=tmp_path)
+        assert repaired == ordinary
+        assert repaired["is_context_only"] is True
+
+    def test_ordinary_payload_serialization_is_byte_preserved(self, tmp_path):
+        from engine.neuralweb.reflexes import record_firing
+        import hashlib
+        payload = {"ts": "2026-09-28T17:30:00Z", "trigger_key": "k",
+                   "scope_type": "entity", "scope_key": "SYNTHETIC", "direction": -1,
+                   "horizon_d": 5, "extra": {"zero": 0, "missing": None}}
+        expected = {"claim_id": hashlib.sha256(b"test_reflex:2026-09-28T17:30:00Z:k").hexdigest()[:16],
+                    "reflex": "test_reflex", "claim_family": "reflex.test_reflex",
+                    "desk": "reflex", "is_context_only": True, **payload}
+        expected.setdefault("asof", "2026-09-28")
+        rec = record_firing("test_reflex", payload, root=tmp_path)
+        assert rec == expected
+        path = tmp_path / "data/reflexes/test_reflex/firings.jsonl"
+        assert path.read_bytes() == (json.dumps(expected, default=str) + "\n").encode()
+
+    def test_matching_owner_metadata_is_compatible(self, tmp_path):
+        from engine.neuralweb.reflexes import record_firing
+        payload = {"ts": "2026-09-28T17:30:00Z", "trigger_key": "k", "is_context_only": True}
+        first = record_firing("test_reflex", payload, root=tmp_path)
+        second = record_firing("test_reflex", dict(first), root=tmp_path)
+        assert first == second
+
+    def test_write_failure_still_returns_canonical_metadata(self, tmp_path):
+        from engine.neuralweb.reflexes import record_firing
+        with mock.patch("builtins.open", side_effect=OSError("synthetic write failure")):
+            rec = record_firing("test_reflex", {"ts": "2026-09-28T17:30:00Z",
+                "trigger_key": "k", "is_context_only": False, "reflex": "wrong"}, root=tmp_path)
+        assert rec["reflex"] == "test_reflex"
+        assert rec["is_context_only"] is True
+        assert "_write_error" in rec
+
+
 # ---------------------------------------------------------------------------
 # 3. load_firings: round-trip
 # ---------------------------------------------------------------------------

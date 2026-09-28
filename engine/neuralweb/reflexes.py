@@ -209,14 +209,19 @@ def record_firing(
         f"{name}:{ts}:{trigger_key}".encode()
     ).hexdigest()[:16]
 
-    record: dict[str, Any] = {
+    # These five fields belong to this writer, never the calling observation.
+    # Preserve the historical key order and ordinary serialized bytes while
+    # preventing payload metadata from changing identity or context-only status.
+    owned_fields: dict[str, Any] = {
         "claim_id": claim_id,
         "reflex": name,
         "claim_family": f"{_CLAIM_FAMILY_PREFIX}{name}",
         "desk": "reflex",
         "is_context_only": True,
-        **payload,
     }
+    record: dict[str, Any] = dict(owned_fields)
+    record.update(payload)
+    record.update(owned_fields)
     # Ensure mandatory keys are present (fill defaults)
     record.setdefault("scope_type", "macro")
     record.setdefault("scope_key", "macro")
