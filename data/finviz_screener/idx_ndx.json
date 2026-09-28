@@ -1,6 +1,6 @@
 {
 "filter":"idx_ndx",
-"as_of":"2026-09-27 03:08 UTC",
+"as_of":"2026-09-28 03:28 UTC",
 "n":101,
 "total_reported":101,
 "unmapped_industries":[],
@@ -738,7 +738,7 @@
 "company":"Ferrovial N. V",
 "industry":"Engineering & Construction",
 "sector":"Industrials",
-"country":"Spain",
+"country":"Netherlands",
 "market_cap_b":40.5
 },
 {
