@@ -23,10 +23,11 @@ on that commit; if a referenced template or builder line moves, this
 script's GAPS section should name the gap and rebase the citation.
 
 Selectors / expressions and their owners:
-  J1 — ``#us-standouts [data-sym=T][data-mkt="US"]`` — board card node:
-       ``data-sym`` / ``data-mkt`` attributes emitted by the prophet card
-       macro at templates/_prophet_card.html.j2:608 (the
-       ``<article ... data-ticker="..." data-life="..." ...>`` line);
+  J1 — ``#us-standouts .pvcard[data-ticker=T]`` — board card node:
+       the card's ``data-ticker`` attribute is emitted by the prophet
+       card macro at templates/_prophet_card.html.j2:608. Nested price
+       market attributes are optional at :635; the US board supplies
+       lowercase ``mkt: 'us'`` at templates/_us_board_cards.html.j2:283-285.
        ``data-lane`` / ``data-stage`` heading sentinels emitted by the
        board at templates/_us_board_cards.html.j2:78 / :66
        (``<div class="nb-lane-hd" data-lane="...">`` and
@@ -192,8 +193,7 @@ def _parse_argv(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--index", required=True,
                    help="Path to prophet/index.json")
     p.add_argument("--ticker", default=None,
-                   help="Ticker to audit; default = first board card "
-                        "with data-mkt=US under #us-standouts")
+                   help="Ticker to audit; default = first US board card")
     p.add_argument("--locale", choices=("en", "zh"), default="en",
                    help="Locale span treated as visible text "
                         "(default en). Mirrors the data-lang attribute.")
@@ -230,9 +230,9 @@ def _select_all(soup: BeautifulSoup, selector: str) -> list[Tag]:
 def _resolve_ticker(soup: BeautifulSoup, requested: str | None) -> str | None:
     """Pick the audit ticker.
 
-    Default = the FIRST card node under ``#us-standouts`` that carries
-    ``data-mkt="US"`` and ``data-sym`` (the ``data-ticker`` attribute on
-    the prophet card macro, ``templates/_prophet_card.html.j2:608``).
+    Default = the FIRST production card under ``#us-standouts`` with
+    ``data-ticker`` (the card attribute at
+    ``templates/_prophet_card.html.j2:608``).
     The script NEVER invents a ticker; absent a match it returns ``None``
     and the report records every check that depended on it as N/A.
     """
@@ -241,21 +241,10 @@ def _resolve_ticker(soup: BeautifulSoup, requested: str | None) -> str | None:
     container = _select_first(soup, "#us-standouts")
     if container is None:
         return None
-    for card in container.select("[data-ticker]"):
-        mkt = card.get("data-mkt", "")
-        if mkt == "US":
-            sym = card.get("data-ticker", "").strip().upper()
-            if sym:
-                return sym
-    # Fallback: heading sentinel children are NOT card nodes — they are
-    # ``nb-stage-hd`` / ``nb-lane-hd`` sentinels that DO carry the data
-    # attributes the brief names. Walk every data-sym too in case a
-    # legacy artifact used the alt attribute name.
-    for card in container.select("[data-sym]"):
-        if card.get("data-mkt", "") == "US":
-            sym = card.get("data-sym", "").strip().upper()
-            if sym:
-                return sym
+    for card in container.select(".pvcard[data-ticker]"):
+        sym = card.get("data-ticker", "").strip().upper()
+        if sym:
+            return sym
     return None
 
 
@@ -352,18 +341,26 @@ def _check_status(status: str, expected: Any, observed: Any,
 
 def _check_j1(soup: BeautifulSoup, ticker: str | None) -> dict[str, Any]:
     """J1 — the TODAY candidate is present on the US board."""
-    where = ("#us-standouts [data-ticker=T][data-mkt=\"US\"] "
-             "(templates/_prophet_card.html.j2:608; "
-             "templates/_us_board_cards.html.j2:78, :66)")
+    where = ("#us-standouts .pvcard[data-ticker=T] "
+             "(templates/_prophet_card.html.j2:608; nested market at :635; "
+             "templates/_us_board_cards.html.j2:283-285; headings :78, :66)")
     if not ticker:
         return _check_status("N/A", "card present", "no ticker resolved",
                              where)
     card = _select_first(
-        soup, f'#us-standouts [data-ticker="{ticker}"][data-mkt="US"]')
-    if card is None:
-        # Alt attribute name (the spec also names ``data-sym``).
-        card = _select_first(
-            soup, f'#us-standouts [data-sym="{ticker}"][data-mkt="US"]')
+        soup, f'#us-standouts .pvcard[data-ticker="{ticker}"]')
+    nested_market: str | None = None
+    if card is not None:
+        market_node = card.select_one(".nb-px[data-mkt]")
+        if market_node is not None:
+            nested_market = str(market_node.get("data-mkt", "")).lower()
+    if card is not None and nested_market not in (None, "us"):
+        return _check_status(
+            "FAIL",
+            f"card present for {ticker} with nested market us when present",
+            {"nested_data_mkt": nested_market},
+            where,
+        )
     if card is None:
         # Distinguish a missing container (N/A — the journey node was not
         # rendered into this snapshot, e.g. a dialog-only DOM dump) from a
@@ -372,19 +369,20 @@ def _check_j1(soup: BeautifulSoup, ticker: str | None) -> dict[str, Any]:
         if _select_first(soup, "#us-standouts") is None:
             return _check_status(
                 "N/A",
-                f"card with data-mkt=US for {ticker}",
+                f"card with data-ticker {ticker} in the US board",
                 "#us-standouts container absent from snapshot",
                 where)
         return _check_status("FAIL",
-                             f"card with data-mkt=US for {ticker}",
-                             "no matching card under #us-standouts",
+                             f"card with data-ticker {ticker} under #us-standouts",
+                             "no matching production card",
                              where)
     lane = card.get("data-lane")
     stage = card.get("data-stage")
     return _check_status(
         "PASS",
-        f"card present for {ticker} (data-mkt=US)",
-        {"data_lane": lane, "data_stage": stage},
+        f"card present for {ticker} in the US board",
+        {"data_lane": lane, "data_stage": stage,
+         "nested_data_mkt": nested_market},
         where,
     )
 
@@ -595,6 +593,11 @@ def _check_j5(soup: BeautifulSoup, standouts: dict[str, Any],
     standouts_asof = standouts.get("as_of")
     payload_row = _standouts_payload_row(standouts, ticker or "")
     payload_signal_asof = (payload_row or {}).get("signal_asof")
+    payload_entry_status = None
+    if payload_row is not None:
+        entry_signal = payload_row.get("entry_signal")
+        if isinstance(entry_signal, dict):
+            payload_entry_status = entry_signal.get("status")
     asof_match = None
     if setup_asof and standouts_asof and setup_asof == standouts_asof:
         asof_match = "standouts.as_of"
@@ -627,8 +630,20 @@ def _check_j5(soup: BeautifulSoup, standouts: dict[str, Any],
             {"data_native_id": native_id, "data_setup_kind": kind,
              "data_setup_asof": setup_asof,
              "data_entry_status": entry_status,
+             "payload_entry_status": payload_entry_status,
              "standouts_as_of": standouts_asof,
              "payload_signal_asof": payload_signal_asof},
+            where,
+        )
+    if entry_status != payload_entry_status:
+        return _check_status(
+            "FAIL",
+            "data-entry-status matches payload entry_signal.status",
+            {"data_native_id": native_id, "data_setup_kind": kind,
+             "data_setup_asof": setup_asof,
+             "data_entry_status": entry_status,
+             "payload_entry_status": payload_entry_status,
+             "asof_match": asof_match},
             where,
         )
     return _check_status(
@@ -637,6 +652,7 @@ def _check_j5(soup: BeautifulSoup, standouts: dict[str, Any],
         {"data_native_id": native_id, "data_setup_kind": kind,
          "data_setup_asof": setup_asof,
          "data_entry_status": entry_status,
+         "payload_entry_status": payload_entry_status,
          "asof_match": asof_match},
         where,
     )
@@ -752,7 +768,7 @@ def _check_j6(soup: BeautifulSoup, standouts: dict[str, Any],
                                    "dd_text": dd_text, "payload": raw})
             continue
         # Other types (lists / dicts) — emit N/A but record the pair.
-    if misses:
+    if misses or str_misses:
         return _check_status(
             "FAIL",
             "every dd text reflects its payload value",
