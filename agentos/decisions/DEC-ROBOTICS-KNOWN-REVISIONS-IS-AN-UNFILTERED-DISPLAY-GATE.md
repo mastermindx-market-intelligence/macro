@@ -190,3 +190,41 @@ Symptom (iii) carries one extra precondition worth stating: it is a defect only 
 slice-scoped. If a bundle deliberately carries every slice's assertions, then citing another
 slice's record is not a scope escape and (iii) collapses into (i). Measure the bundle's scope
 before acting on (iii).
+
+## Refinement 2026-09-28: the remedy is smaller and the ruling is stronger
+
+This record named R-ENE-31 (`3c775ea592a6`, another vertical, another carrier) as "the reference
+fix". That understated the finding and pointed the implementer out of the class. Measured in
+`engine/market_ontology/robotics_theme_research.py` at `36efe9c92b96` -- locate by string, line
+numbers are revision-stamped hints:
+
+* `self.known_revisions = {` (`:400`) comprehends **`bundle.assertions`**, the raw bundle, with no
+  scope, rights, cohort or time predicate -- and it sits **two lines after**
+  `self.assertions.sort(...)` (`:397`). The admitted set already exists when the comprehension
+  runs; the comprehension steps around it.
+* `def _now_of_query` (`:436`) already resolves the query's effective time, under an explicit
+  contract comment: *the replay cutoff when present, else the newest review stamp inside the
+  selection -- never the wall clock, so a composition is reproducible.*
+* `def _review_excluded` (`:443`) consumes it and raises `review_expired_present`.
+* `def _inputs_known` (`:547`) tests `ref in self.known_revisions`, so the set gates served prose.
+
+Disjointness control: `_now_of_query`, `_review_excluded` and `review_due_at` occur **0 times** in
+the shared `app/theme_research.py` and **0 times** in
+`engine/market_ontology/semiconductor_theme_research.py` at `a0d7b054ff23`, and **twice each** in
+the Robotics composer. The gate is the vertical's own, not inherited -- so this is not a base
+defect and it is not semiconductor's.
+
+**What changes.** Apply ruling 11's test to the two paths side by side: the time-aware path carries
+a contract statement in a comment, the unfiltered path carries neither a comment nor a pin naming
+its input set. So 14b is not a missing capability that needs a filter imported from a sibling
+vertical -- it is **one of two consumers in the same class bypassing a documented mechanism 36
+lines below it**. The remedy: build the set from the admitted selection and resolve any time
+predicate through `_now_of_query()`, never a second notion of "now". Ordering permits it.
+
+**What does not change.** 14b remains a **CONFIRMED DEFECT**. Only its strength and the size of its
+remedy move, both toward less work. R-ENE-31 remains a valid cross-check on the shape and is no
+longer the reference.
+
+Falsifier: a ref where `_now_of_query` is absent from the Robotics composer, or where the
+`known_revisions` comprehension already references it. So-what: without this, an implementer
+rebuilds a mechanism the class already documents, which the Executive contract forbids.
