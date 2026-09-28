@@ -1733,6 +1733,64 @@ def curated_exclusive_closure_findings(manifest_path: Path) -> dict[str, tuple[s
     return misses
 
 
+def packing_probe_measurements(
+    manifest_path: Path,
+    probes: Iterable[tuple[str, int, int]],
+    *,
+    max_packs: int,
+) -> list[dict[str, Any]]:
+    """One row per packing probe: what an ordinary code PR touching it selects.
+
+    This IS ``tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs``'s
+    measurement, factored out so that test and ``scripts/check_contract_delta.py``
+    import one copy, for the reason ``curated_exclusive_closure_findings`` gives
+    above. ``probes`` is that test's ``PACKING_PROBES``: ``(changed path, max
+    selected jobs, max selected weight-seconds)``. The ceilings stay in the test,
+    beside the history that set them; this function only measures, and each row
+    carries its ceilings so ``packing_probe_breaches`` can judge it.
+
+    The verdict depends on the whole tree, not on the probe files: inference
+    walks every job's suites, so a suite that starts reading a probe file puts
+    its job on that probe without touching the manifest.
+    """
+    jobs, _note = infer_job_scopes(load_legacy_jobs(manifest_path))
+    rows: list[dict[str, Any]] = []
+    for probe, max_jobs, max_weight in probes:
+        selected, reason = select_jobs(jobs, [probe])
+        weight = sum(job.weight for job in selected)
+        rows.append({
+            "probe": probe,
+            "jobs": len(selected),
+            "weight": weight,
+            # Runners are what the incident actually spends: the pack count
+            # follows the SELECTED weight, so the weight cut is a runner cut.
+            "packs": max(1, min(12, -(-weight // PACK_TARGET_SECONDS))),
+            "max_jobs": max_jobs,
+            "max_weight": max_weight,
+            "max_packs": max_packs,
+            "job_ids": sorted(job.job_id for job in selected),
+            "reason": reason,
+        })
+    return rows
+
+
+PACKING_PROBE_AXES = (("jobs", "max_jobs"), ("weight", "max_weight"), ("packs", "max_packs"))
+
+
+def packing_probe_breaches(rows: Iterable[dict[str, Any]]) -> list[tuple[str, str, int, int]]:
+    """``(probe, axis, measured, ceiling)`` for every probe axis over its ceiling.
+
+    The packing contract's verdict over ``packing_probe_measurements`` rows. An
+    empty list is a pass. Shared by the test and ``check_contract_delta.py``.
+    """
+    return [
+        (row["probe"], axis, row[axis], row[ceiling])
+        for row in rows
+        for axis, ceiling in PACKING_PROBE_AXES
+        if row[axis] > row[ceiling]
+    ]
+
+
 def partition_jobs(jobs: Iterable[LegacyJob], pack_count: int) -> list[list[LegacyJob]]:
     """Greedily balance stable jobs across ``pack_count`` packs."""
     if pack_count < 1:

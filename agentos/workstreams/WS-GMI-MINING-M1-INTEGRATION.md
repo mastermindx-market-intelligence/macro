@@ -83,9 +83,49 @@ next_action: >
   evidence.
   MGD_EXECUTION_STATUS.json is the program's execution record against the forty obligations and
   is the thing a wave UPDATES, not a thing a wave re-derives. Status is never inferred from a
-  test name. When T04b lands it MUST carry the two-armed MGD-08 clause 2 pin (R-MIN-34) and the
-  two-armed MGD-10 pin, because T04b carries `period` onto native blocks and that is exactly
-  what makes MGD-10 falsifiable.
+  test name. CORRECTED 2026-09-27: when T04b lands it owes the two-armed MGD-10 pin ONLY,
+  because T04b carries `period` onto native blocks and that is exactly what makes MGD-10
+  falsifiable. **MGD-08 clause 2 is CLOSED and is not T04b's to write** - it is
+  COVERED_SUITE_GREEN, so the ledger's UNPINNED count is 0 of 40. Closing it required a
+  BEHAVIOUR change and not merely a test, which R-MIN-34 had ruled unnecessary on a
+  copper-only measurement: on the rare-earth slice a wholly empty economic path reported
+  `ready` over an empty panel, because that slice's vocabulary mints
+  `stream_threshold_unknown` on every payload and the readiness clause fired on it before
+  the native-block channel was consulted. R-MIN-35 records the amendment, R-MIN-34 carries
+  an AMENDED BY marker, and T08 acceptance item 3 is amended so a lane cannot revert
+  MGD-08 to UNPINNED to satisfy it. Do NOT re-open it.
+  WAVE 6 (2026-09-27, same day): the coverage record itself was re-audited BY SUBJECT and six
+  rows were mis-statused. 30 rows read `NOT_RUN` because their note said 'owning task <T> has
+  not landed on main' - a TASK-level verdict on an obligation-level question. MGD-15/16/17/21/22
+  are now PARTIAL_BY_CONSTRUCTION and MGD-20 SATISFIED_BY_ABSENCE_OF_CAPABILITY, because their
+  subjects are the MERGED T04a composer (the comparison channel at `:802`, the always-empty
+  `derived` list, the `const: false` consensus flags), not unlanded T03 code. `NOT_RUN` 30 -> 24;
+  `UNPINNED` stays 0 of 40. T08 SS5's closing sentence, which told a lane that reconciling any
+  T03 row 'would be fiction', is WITHDRAWN at source - it sat in the acceptance task's own
+  packet. R-MIN-36 records it. One new pin shipped
+  (`test_mgd17_refused_comparison_does_not_delete_the_supported_facts`, 175 passed), which was
+  the only MGD coverage work available while both #7870 and #7905 are closed. Reconcile by
+  SUBJECT, clause by clause, never by owning task.
+  WAVE 7 (same day) CLOSED that audit: the 14 rows wave 6 had left, plus the 8 it read without
+  writing their evidence onto the rows, were all measured. Six more moved on delivered, green,
+  CONTROLLED pins - MGD-05/24/27/28/29/30 - so twelve of forty moved in total, and `NOT_RUN` is
+  now 18. **All 40 rows carry a subject-level measurement and NO row explains its status by
+  whether a task has landed.** The 18 remaining each state one of three measured reasons:
+  subject-absent (own vocabulary at zero occurrences across module, binding, schema and all
+  seven suites), G2-gated (the unit is a real-source demonstration no test may satisfy), or
+  operative-clause-blocked (a later clause is unviolatable while the FIRST needs T02's unlanded
+  vocabulary). Counts 6/1/18/12/3 = 40, UNPINNED 0. Two NON-moves are deliberate and recorded
+  on their rows - MGD-35 (absent wiring is not a guarantee about future wiring; the row's value
+  is that it is owed) and MGD-38 (half a demonstration is none). R-MIN-37 records the closure.
+  Waves 5+6 MERGED as #8100 -> `ce0065d89732` and verified on origin/main; wave 7 is #8110.
+  THIRD PART of the same wave delivered the one row the closed audit had identified as
+  PAYLOAD-PINNABLE TODAY: MGD-19 clause 2 now has a payload pin - the elimination must reach
+  `native_blocks` with `-120` and `sign == '-'`, against a one-block-fewer control and an
+  unperturbed-neighbour control - so the row moved to `PARTIAL_BY_CONSTRUCTION` and `NOT_RUN` is
+  17. Counts 6/1/17/13/3 = 40, UNPINNED 0, 176 passed. **An audit that ends in a note where a pin
+  was available has not finished.** Clause 1 still needs T03's definition vocabulary and is not
+  claimed. Do NOT credit `test_internal_transfer_keeps_elimination_sign` to MGD-19: it asserts
+  through a helper, and a helper pin is not a pin on the composed payload.
   T05/T06 stay held for #7870's route/client/mount on main plus the answer to comment
   5811889498; T08 is last; G2 real-source admission remains an incumbent/operator act.
   Standing operator items: mini2 has no WAN (a bridge0 default route shadows the real gateway;
