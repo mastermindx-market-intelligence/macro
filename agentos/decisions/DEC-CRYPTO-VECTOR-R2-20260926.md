@@ -343,3 +343,30 @@ Paper remains blocked independently by the unreviewed upstream Paper schema pin;
 MISSION_COMPLETE: false
 Current child capability: BUILT_NOT_PROVEN on production route; controlled generated-route proof is strong, but exact-head PR CI/fences and deployment/live-route proof remain before production acceptance.
 Exact next action: publish this commit plus durable record, consume exact-head #8050 CI/fences, then continue the independent H5 canonical Crypto-budget authority/data-qualification lane while Paper remains blocked.
+
+## Current continuation frontier — 2026-09-28 Pro / H5 partial-data readiness
+
+MISSION_COMPLETE: false
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+Capability state: BUILT_NOT_PROVEN on the production route.
+
+Mission remains the Chairman's Crypto/Bitcoin redesign and production-readiness commission: sophisticated chart-led research with an immediately understandable first read, clear evidence and dependable failure states. This turn continued the already-authorized H5 source/presentation lane; it did not recreate approved design work or add a second model, publication or lifecycle owner.
+
+Current protected law: Mastermind `dcc4829a811d3f6e4fe8c16a103f813c3501f48e`; INDEX `94d1af402598894372858793a5b1931019c5fa77`; Skillpack 1.0.1/bootstrap 1. Same source/carrier: Macro PR #8050, `sol/crypto-vector-r2-20260926`, M2 Studio Direct, owned sparse workspace. Requested working profile is Pro; no mode switch or hidden health telemetry is asserted. Direct duty: PRINCIPAL_JUDGMENT / LOWER_TOTAL_OVERHEAD for the tightly coupled failure-semantics/source/browser repair.
+
+Recovery reconciled clean local/remote `e6cb197c087e9783ddbefbabf51ff2bb88125acf`, which already included H5 current-page unavailable handling. That accepted work was preserved. Its fences `36358298342` passed, but CI `36358298580` failed validated-claims-source on a single unsupported Chinese validation claim in H5 recovery text. This claim is corrected with an actual scanner regression, not an allowlist or weaker check.
+
+Material source effects:
+- `2bfa46242f782c11376733d8795fd90b16bc84ca`: a valid total budget remains known when only the asset breakdown is missing; invalid/stale targets remain suppressed; valid zero remains all-cash without requiring class inputs. Malformed numeric representations and invalid split weights do not turn into displayed authority. The UI distinguishes available, breakdown-unavailable and unavailable, explains the specific reason, and preserves other research.
+- `f9e5506a8aef5fdf3fe14bcb404d20cd77a09ebb`: fixes genuine 320px inner-card overflow and improves H5 explanatory typography/stacked mobile hierarchy.
+- `d079adb6d532b7af20a487bd0ebdeddc3a414ee0`: final source identity, also moves the H5 CSS insertion away from #7645's Market Board insertion point. Exact three-way simulation has zero conflict markers and retains both H5 and accessible H2. No shared theme or H1/H2 change.
+
+Proof: 167 combined existing Vector/Crypto tests pass; the source validation-claim gate passes; design ratchet has zero new blockers; visual-evidence gate passes; Python/Jinja/diff checks pass. The first browser run found two real compact-card failures despite zero page-wide scrolling. After repair and final-source regeneration, all 112 semantic/geometry cells pass (seven scenarios × four widths × two themes × two languages), with H5/H6 preserved, correct state semantics, no page JS error, no H5/document overflow and measured explanatory text >=14px. The existing capture owner produced forty state screenshots; their hashes are verified. Warnings and fixture-only network/resource gaps remain explicitly recorded.
+
+Evidence and detailed semantics are under the existing `mockups/evidence/crypto-h5-authority-20260927/` owner and `agentos/decisions/DEC-CRYPTO-H5-BTC-BUDGET-AUTHORITY.md`; use `proof_summary.json` for exact source hashes and reproduction limits. These are controlled generated-route tests, not deployed-route/font-parity or participant-usability acceptance. No live alert, saved review, trade, deployment, worker or watcher was started. The two pre-existing loopback fixture servers are not a claimed autonomous continuation.
+
+DO_NOT_REDO: rejected R1; accepted P0A model authority; R2 native boards 01–11; approved Vector in-page Brain entry; current CI enrollment; H5 canonical-budget seam and now-reviewed failure-state layout. Supporting Crypto boards 12–16 remain NOT_APPLIED_TO_PAPER from earlier work. Paper's last known schema hold was not re-probed or bypassed during this source turn; no new Paper effect is claimed. Earlier action-specific denials remain scoped and are not cleared by the user naming Pro.
+
+Unresolved scope: exact-new-head CI/fences; independent release acceptance/order and combined-source regeneration with #7645; deployed-route/font-resource proof; broader Market Board/data-qualification and Crypto shell polish; actual saved-review/alert integration; participant comprehension testing; lawful Paper write qualification. No pending modifying effect is known EFFECT_UNKNOWN. The previous whole-file #7645 hold is superseded only by exact H5 source coexistence; no claim of peer merge or deployment.
+
+Natural continuation boundary: the current H5 partial-data/compact-layout batch is implemented, regression-tested, generated-route tested and visually evidenced. The next substantive unit crosses into candidate acceptance and combined release/integration proof rather than another redraw of the same H5 states. Exact next action: read this frontier and current PR #8050 head, consume its exact CI/fence return, repair only evidence-backed failures on the incumbent branch, and then follow the existing release owner to reconcile #7645/source generation and verify the deployed Crypto route. Pro remains suitable for that adjudication; choose an execution profile only when a concrete build task materially benefits. No autonomous wake or custody transfer is implied.

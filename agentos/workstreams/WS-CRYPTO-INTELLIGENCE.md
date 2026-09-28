@@ -38,14 +38,14 @@ waves:
       merged generated artifact on the real deployment path; do not alter canonical
       total-budget authority or the class split.
     note: >
-      P0B is BUILT_NOT_PROVEN at local presentation/evidence head
-      138483448904dfdd6d77674bb28085c8be627e82 on top of canonical source head
-      26fd88c7dad5448f69e6096037cf099d96d0c01e. build_vector projects the
-      canonical btc.decision/v1 budget into crypto.cockpit/v1; build_crypto consumes
-      that exact dated receipt only; H5 renders valid 0% separately from unavailable
-      and keeps the rest of Crypto Intelligence usable when budget authority fails.
-      Generated-route proof covers happy/zero/unavailable across EN/ZH, light/dark
-      and desktop/mobile.
+      P0B remains BUILT_NOT_PROVEN at source head
+      d079adb6d532b7af20a487bd0ebdeddc3a414ee0. It preserves the exact canonical
+      cockpit receipt, now distinguishes a missing asset breakdown from an invalid
+      total budget, and renders a valid zero without depending on class-model inputs.
+      H5 uses source-specific bilingual failure explanations and a readable compact
+      layout; shared styles and H1/H2 are unchanged. The existing source-claim gate
+      caught an overstated Chinese validation sentence, which is corrected without
+      changing the gate. Final proof and receipts are in the owning H5 decision.
 next_action: >
   Keep PR #8050 as the H5 source/presentation carrier. Consume exact-head CI/fences,
   then coordinate merge ordering with #7645: its template patch auto-merges with H5,

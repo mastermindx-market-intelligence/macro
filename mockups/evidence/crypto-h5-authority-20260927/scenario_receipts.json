@@ -1,0 +1,109 @@
+[
+  {
+    "scenario": "happy",
+    "decision": {
+      "schema": "btc.decision/v1",
+      "status": "ok",
+      "as_of": "2026-09-26",
+      "integrity_ok": true,
+      "final_exposure_pct": 60,
+      "errors": [],
+      "authority_source": "btc.decision/v1.final.exposure_pct"
+    },
+    "signal_as_of": "2026-09-26",
+    "close_missing": false,
+    "html_sha256": "878f9fd3b88253f975af1ffb2b1a8bd53d9c3fb12a03bcca27b15f4e04f6de5c"
+  },
+  {
+    "scenario": "zero",
+    "decision": {
+      "schema": "btc.decision/v1",
+      "status": "ok",
+      "as_of": "2026-09-26",
+      "integrity_ok": true,
+      "final_exposure_pct": 0,
+      "errors": [],
+      "authority_source": "btc.decision/v1.final.exposure_pct"
+    },
+    "signal_as_of": "2026-09-26",
+    "close_missing": false,
+    "html_sha256": "60a7aaa5ce37b535c83bbbff8cb7d5920a729bf1d3c7fe9f9d87a4cbf6e24d07"
+  },
+  {
+    "scenario": "unavailable",
+    "decision": {
+      "schema": "btc.decision/v1",
+      "status": "unavailable",
+      "as_of": "2026-09-26",
+      "integrity_ok": false,
+      "final_exposure_pct": null,
+      "errors": [
+        "RAW_FINAL_MISMATCH_WITHOUT_NAMED_OVERRIDE"
+      ],
+      "authority_source": "btc.decision/v1.final.exposure_pct"
+    },
+    "signal_as_of": "2026-09-26",
+    "close_missing": false,
+    "html_sha256": "c2bb52faca5a4628150abe521f0ee35f4ff5c7821cfcf9cf7a3e1be606e9005b"
+  },
+  {
+    "scenario": "stale",
+    "decision": {
+      "schema": "btc.decision/v1",
+      "status": "ok",
+      "as_of": "2026-09-25",
+      "integrity_ok": true,
+      "final_exposure_pct": 60,
+      "errors": [],
+      "authority_source": "btc.decision/v1.final.exposure_pct"
+    },
+    "signal_as_of": "2026-09-26",
+    "close_missing": false,
+    "html_sha256": "8aece5399efbd3fc68277fa970dbc86806ecf39a319f1fa933f21fbd64671405"
+  },
+  {
+    "scenario": "breakdown",
+    "decision": {
+      "schema": "btc.decision/v1",
+      "status": "ok",
+      "as_of": "2026-09-26",
+      "integrity_ok": true,
+      "final_exposure_pct": 60,
+      "errors": [],
+      "authority_source": "btc.decision/v1.final.exposure_pct"
+    },
+    "signal_as_of": "2026-09-26",
+    "close_missing": true,
+    "html_sha256": "81e65d318b933782dfdcfa39ba8a995df1dea44911e5c712ecf3a818b8e4bb2a"
+  },
+  {
+    "scenario": "zero-gap",
+    "decision": {
+      "schema": "btc.decision/v1",
+      "status": "ok",
+      "as_of": "2026-09-26",
+      "integrity_ok": true,
+      "final_exposure_pct": 0,
+      "errors": [],
+      "authority_source": "btc.decision/v1.final.exposure_pct"
+    },
+    "signal_as_of": "2026-09-26",
+    "close_missing": true,
+    "html_sha256": "6b1c03e00247225abf5b1486b0a7752c674b077c955fd2f9af69010053d19911"
+  },
+  {
+    "scenario": "malformed",
+    "decision": {
+      "schema": "btc.decision/v1",
+      "status": "ok",
+      "as_of": "2026-09-26",
+      "integrity_ok": true,
+      "final_exposure_pct": "60",
+      "errors": [],
+      "authority_source": "btc.decision/v1.final.exposure_pct"
+    },
+    "signal_as_of": "2026-09-26",
+    "close_missing": false,
+    "html_sha256": "b27d8d444ee43c3225cf0e3c1e25b112b5c5615148ba9e2c0c68f5d79edd7254"
+  }
+]

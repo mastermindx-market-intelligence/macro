@@ -541,3 +541,15 @@ Controlled actual-template builds and browser checks cover canonical 60%, valid 
 The unavailable design deliberately avoids a red alarm treatment: this is an evidence/authority availability state, not a bearish market call. It keeps the layout stable, replaces the allocation graphic with a clear textual explanation, exposes `btc.decision/v1` as authority and retains the rest of Crypto Intelligence.
 
 Open #7645's source template changes are line/region-disjoint from H5 and three-way auto-merge without conflict. Its generated `site/crypto.html` conflict is pre-existing versus current main and must be resolved by source reconciliation plus regeneration. No claim of production deployment is made.
+
+## 2026-09-28 H5 refinement — partial knowledge is not a failed decision
+
+Current source: `d079adb6d532b7af20a487bd0ebdeddc3a414ee0`, following the prior H5 generated-route implementation. This supersedes only the old assumption that an unavailable class breakdown requires hiding an otherwise valid total model budget. It does not change BitcoinDecisionState or the class model's authority.
+
+The actual H5 page now has three explicit presentation states. **Available** shows the existing allocation bar and asset percentages. **Breakdown unavailable** preserves the valid dated total and residual cash, but omits all unknown asset percentages and the bar. **Allocation unavailable** suppresses the target itself and gives the reason, including a stale snapshot, without inferring zero. A valid 0% target with a matching snapshot renders 100% cash and needs no class-model inputs. Source validation rejects malformed numeric types rather than coercing them into a target.
+
+A same-source 112-cell generated-route matrix covers seven scenarios at 320/390/768/1440, both themes and EN/ZH. It checks actual card geometry and minimum 14px explanatory text, not only document overflow. An initial 320px inner-card failure was reproduced and repaired with H5-only stacked layout rules. The shared style sheet and Market Board are untouched. Exact #7645 source merge simulation retains both changes without conflict after moving the H5 CSS away from the peer's insertion point.
+
+The existing canonical evidence owner `mockups/evidence/crypto-h5-authority-20260927/` carries forty content-hashed REST captures, the semantic matrix, source digest summary, fixture scripts and the original negative geometry result. Combined existing tests: 167 passed. Source-claim, design-ratchet and visual-evidence checks pass locally. The CI failure on the previous head was a Chinese recovery sentence claiming validation without a receipt; it was fixed in the copy and regression-tested through the same scanner, with no allowlist change.
+
+Release remains incomplete: these are controlled generated pages with explicitly recorded missing fixture resources, not full production-shell/font or live deployment acceptance. The shared Crypto Brain placement and broader asset/data-quality design remain separate work; no new native Paper boards or user saves/alerts were made. The current Agent OS continuation identifies the exact source-acceptance and combined-release next action.

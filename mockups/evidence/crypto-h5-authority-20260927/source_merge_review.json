@@ -1,0 +1,11 @@
+{
+  "base": "2b62f49603e731daf68877516d3f6f748497b160",
+  "peer": "74298e32bbbbc7f00884ece259455b9bbe46fd6f",
+  "path": "templates/crypto.html.j2",
+  "exit": 0,
+  "conflict_markers": 0,
+  "ours_sha256": "859db8a24fb6e43adfe533dd22a10c1856b03be534564341100889c24b52377b",
+  "merged_sha256": "a697af18e3a3986532fb3c2b83f65788a2c50bb281f1f7dd4308d9fb21fec743",
+  "h5_state": 1,
+  "h2_accessible": true
+}
