@@ -1078,16 +1078,23 @@ def _valuation_plane(
     evidence_refs: list[str],
     regime_breaks: Sequence[Mapping[str, Any]],
 ) -> dict[str, Any]:
-    anchor_obs: Mapping[str, Any] | None = None
-    for label, packet in financial_packets.items():
+    # The anchor is the slice's freshest valuation observation: one the owner
+    # tags with this slice or leaves untagged (company data), the scope the
+    # operating plane and the conflict detector already apply. An observation
+    # tagged with another slice never anchors this one. (The anchor used to be
+    # the first observation of whichever packet iterated last, so every slice
+    # with a qualified price basis published that one slice's multiple.)
+    candidates: list[tuple[date | None, Mapping[str, Any]]] = []
+    for packet in financial_packets.values():
         if not isinstance(packet, Mapping):
             continue
         valuation = packet.get("valuation")
         if isinstance(valuation, Mapping):
             for obs in valuation.get("observations") or ():
-                if isinstance(obs, Mapping):
-                    anchor_obs = obs
-                    break
+                if isinstance(obs, Mapping) and (not obs.get("slice_id") or obs.get("slice_id") == slice_id):
+                    candidates.append((_coerce_date(obs.get("as_of")), obs))
+    candidates.sort(key=lambda c: (c[0] or date.max))
+    anchor_obs: Mapping[str, Any] | None = candidates[-1][1] if candidates else None
     price_basis: str | None = None
     for obs in market_obs:
         if not isinstance(obs, Mapping):
@@ -2059,7 +2066,13 @@ def _constraints_for(inputs: FinanceOwnerInputs, slices: Sequence[Mapping[str, A
     for rec in inputs.source_records:
         if not isinstance(rec, Mapping):
             continue
-        slice_id = _owner_key(rec.get("slice_id"))
+        # A record is filed under its business_scope, the schema's scope field,
+        # and its record_id is evidence of that slice only, so its constraints
+        # are published under that slice. (They used to be published under a
+        # slice_id extra outside the record schema: a foreign extra filed a
+        # constraint under a slice its evidence is not filed under, and a record
+        # carrying no extra had its constraints dropped.)
+        slice_id = _owner_key(rec.get("business_scope"))
         constraints = rec.get("constraints")
         if not isinstance(constraints, list) or slice_id not in by_slice:
             continue

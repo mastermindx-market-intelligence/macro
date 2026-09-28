@@ -553,6 +553,99 @@ def test_adjusted_close_is_not_valuation_quote() -> None:
     validate_contract(CONTRACT_ID, document)
 
 
+def _valuation_of(document: dict[str, Any], slice_id: str) -> dict[str, Any]:
+    return next(sl for sl in document["slices"] if sl["slice_id"] == slice_id)["rerating"]["valuation"]
+
+
+def test_a_valuation_observation_anchors_only_the_slice_it_is_filed_under() -> None:
+    """The conflict fixture files one P/E observation under card_networks.
+    Give a second slice a qualified price basis of its own and it has a price
+    but no valuation anchor: it must say so, not publish card_networks'
+    multiple as its own reading. The anchor used to be the first valuation
+    observation of any packet, whatever slice it was filed under."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    other = "ach_instant_b2b"
+    assert not base.market_observations.get(other)
+    market = dict(base.market_observations)
+    market[other] = [dict(obs, source="synthetic-market-" + other) for obs in base.market_observations["card_networks"]]
+    document = compose_finance_projection(
+        dataclasses.replace(base, market_observations=market),
+        generated_at=_today(),
+        knowledge_cutoff=_knowledge_cutoff(),
+    )
+    validate_contract(CONTRACT_ID, document)
+    card = _valuation_of(document, "card_networks")
+    assert card["state"] == "OBSERVED" and card["primary_metric"]["value"] == 18.0
+    stray = _valuation_of(document, other)
+    assert stray["state"] == "VALUATION_ANCHOR_UNAVAILABLE", stray
+    assert stray["primary_metric"] is None and stray["clock"] is None
+
+
+def test_the_valuation_plane_reads_its_slices_freshest_anchor() -> None:
+    """card_networks' packet carries two valuation observations. The plane
+    publishes the freshest, as the operating plane and the conflict
+    detector's direction do, in either order. An untagged observation is
+    company data and counts for the slice; one filed under another slice
+    never does, however fresh. The plane used to publish whichever came
+    first."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    (ticker, packet), = base.financial_packets.items()
+    (anchor,) = packet["valuation"]["observations"]
+
+    def observation(as_of: str, value: float, **tag: Any) -> dict[str, Any]:
+        obs = {key: val for key, val in copy.deepcopy(anchor).items() if key != "slice_id"}
+        obs.update(tag, as_of=as_of)
+        obs["metric"] = dict(obs["metric"], value=value, period_end=as_of)
+        return obs
+
+    def anchor_values(*observations: dict[str, Any]) -> set[float]:
+        values = set()
+        for ordered in (observations, observations[::-1]):
+            packets = {ticker: dict(packet, valuation=dict(packet["valuation"], observations=list(ordered)))}
+            document = compose_finance_projection(
+                dataclasses.replace(base, financial_packets=packets),
+                generated_at=_today(),
+                knowledge_cutoff=_knowledge_cutoff(),
+            )
+            validate_contract(CONTRACT_ID, document)
+            values.add(_valuation_of(document, "card_networks")["primary_metric"]["value"])
+        return values
+
+    stale = observation("2026-06-30", 21.0, slice_id="card_networks")
+    assert anchor_values(stale, observation("2026-09-20", 18.0, slice_id="card_networks")) == {18.0}
+    assert anchor_values(stale, observation("2026-09-20", 17.0)) == {17.0}
+    assert anchor_values(stale, observation("2026-09-23", 30.0, slice_id="ach_instant_b2b")) == {21.0}
+
+
+def test_a_constraint_is_published_under_the_slice_its_record_is_filed_under() -> None:
+    """A source record is filed under its business_scope, and its record_id is
+    evidence of that slice only. Its constraints are published under that
+    slice, whatever slice_id extra the record carries. They used to follow the
+    extra: a foreign one published a constraint under a slice its evidence is
+    not filed under, and a record carrying none had its constraints dropped."""
+    base = _default_8slice_inputs()
+    (target,) = [rec["record_id"] for rec in base.source_records if rec.get("business_scope") == "card_networks"]
+    constraint = {"constraint": "capital", "economic_effect": "SYNTHETIC economic effect."}
+
+    def published_constraints(**extra: Any) -> list[tuple[str, list[str]]]:
+        records = copy.deepcopy(list(base.source_records))
+        for rec in records:
+            if rec["record_id"] == target:
+                rec.update(extra, constraints=[constraint])
+        document = compose_finance_projection(
+            dataclasses.replace(base, source_records=records),
+            generated_at=_today(),
+            knowledge_cutoff=_knowledge_cutoff(),
+        )
+        validate_contract(CONTRACT_ID, document)
+        return [(c["slice_id"], c["evidence_refs"]) for c in document["constraints"]]
+
+    filed = [("card_networks", [target])]
+    assert published_constraints() == filed
+    assert published_constraints(slice_id="issuer_processing") == filed
+    assert published_constraints(slice_id="card_networks") == filed
+
+
 def test_volume_never_populates_revenue_exposure() -> None:
     record = _default_operating_record(
         slice_id="card_networks",
