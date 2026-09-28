@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import dataclasses
+
 import pytest
 
 pytest.importorskip("httpx", reason="FastAPI TestClient needs httpx")
@@ -38,7 +40,7 @@ def nuclear_registration():
     )
 
 
-def client(monkeypatch):
+def client(monkeypatch, registration=None):
     app = FastAPI()
     app.include_router(theme_research.router)
     app.dependency_overrides[earnings_api.require_site_full_user] = lambda: {
@@ -46,7 +48,7 @@ def client(monkeypatch):
 
     def registration_for(anchor):
         if anchor == nuclear.ANCHOR_THEME_ID:
-            return nuclear_registration()
+            return registration or nuclear_registration()
         return real_registration_for(anchor)
 
     monkeypatch.setattr(theme_research, "registration_for", registration_for)
@@ -86,3 +88,31 @@ def test_error_responses_keep_paid_private_headers(monkeypatch):
     assert "no-store" in response.headers["Cache-Control"]
     assert "noindex" in response.headers["X-Robots-Tag"]
     assert "noarchive" in response.headers["X-Robots-Tag"]
+
+
+@pytest.mark.parametrize(("reviewed_at", "served"), [("2026-09-20", True), ("", False)])
+def test_a_replay_withholds_an_unreadable_review_time_instead_of_failing(
+        monkeypatch, reviewed_at, served):
+    block = {
+        "interpretation_id": "synthetic-interpretation",
+        "input_revisions": [N04["curation_revision"]], "freshness": "current",
+        "reviewed_at": reviewed_at, "mechanism": "Synthetic demand mechanism.",
+        "offset": None, "falsifier": "Synthetic falsifier.",
+        "missing_measurement": None,
+    }
+    bundle = dataclasses.replace(
+        nuclear_bundle(N04, X02), interpretation_blocks=(block,))
+    registration = dataclasses.replace(
+        nuclear_registration(),
+        load_bundle=lambda query, *, rights_snapshot=None: bundle)
+    with client(monkeypatch, registration) as test_client:
+        response = test_client.post("/api/themes/v1/research/query", json={
+            "anchor_theme_id": "nuclear_power", "slice_key": "nuclear_components",
+            "view": "economics", "time_mode": "system_replay",
+            "source_cutoff": "2026-12-31T00:00:00Z", "recorded_cutoff": "2026-12-31",
+            "offset": 0, "limit": 50, "expected_generation": None,
+        })
+    assert response.status_code == 200, response.text
+    assert "no-store" in response.headers["Cache-Control"]
+    assert "noarchive" in response.headers["X-Robots-Tag"]
+    assert ("Synthetic demand mechanism." in response.text) is served

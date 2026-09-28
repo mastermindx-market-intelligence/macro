@@ -5,7 +5,8 @@ rights, cohort and time gates, before review. An input the query may not know
 about makes the block absent here, never stale, so nothing outside the query
 decides what it shows. A review-withheld input is still known: a block citing
 one is shown, marked stale. A replay never reads a block reviewed after its
-cutoff, not even to count it.
+cutoff, not even to count it, and treats a block without a readable review
+time the same way (R-ENE-34). R-ENE-33 pins the rest of that review clock.
 """
 
 from __future__ import annotations
@@ -105,3 +106,47 @@ def test_a_block_citing_a_review_withheld_input_is_still_shown_stale():
         "[stale interpretation] Synthetic demand mechanism."]
     assert "interpretation_stale" in payload["limitations"]
     assert counted_absent(payload) == []
+
+
+EARLY = variant("N05", "SV1", source={
+    "published_at": "2026-01-15", "observed_at": "2026-01-15T00:00:00Z",
+    "retained_at": "2026-01-15T00:00:00Z"})
+SUPPORTED = ["Synthetic demand mechanism."]
+
+
+def test_a_replay_counts_an_unknown_input_block_reviewed_by_its_cutoff():
+    block = interpretation(["gmirca_" + "c" * 32])
+    assert counted_absent(compose(REPLAY, N04, blocks=[block])) == [ABSENT]
+
+
+def test_a_replay_shows_a_block_reviewed_on_its_cutoff_day():
+    revision = EARLY["curation_revision"]
+    block = interpretation([revision], reviewed_at="2026-12-31")
+    assert shown(compose(REPLAY, EARLY, blocks=[block]), revision) == SUPPORTED
+
+
+def test_a_replay_reads_review_time_against_the_recorded_cutoff():
+    split = nuclear_query(
+        "nuclear_components", "economics", time_mode="system_replay",
+        source_cutoff="2026-06-30T00:00:00Z", recorded_cutoff="2026-12-31")
+    revision = EARLY["curation_revision"]
+    block = interpretation([revision])
+    assert shown(compose(split, EARLY, blocks=[block]), revision) == SUPPORTED
+
+
+def test_only_a_system_replay_reads_review_time():
+    history = nuclear_query(
+        "nuclear_components", "economics", time_mode="source_history",
+        source_cutoff="2026-12-31T00:00:00Z", recorded_cutoff="2026-12-31")
+    revision = EARLY["curation_revision"]
+    block = interpretation([revision], reviewed_at="2027-01-15")
+    assert shown(compose(history, EARLY, blocks=[block]), revision) == SUPPORTED
+
+
+@pytest.mark.parametrize("reviewed_at", [None, "", "not-a-date", "2026-13-45"])
+def test_a_replay_withholds_a_block_without_a_readable_review_time(reviewed_at):
+    revision = EARLY["curation_revision"]
+    block = interpretation([revision], reviewed_at=reviewed_at)
+    assert shown(compose(REPLAY, EARLY, blocks=[block]), revision) == []
+    block = interpretation(["gmirca_" + "c" * 32], reviewed_at=reviewed_at)
+    assert counted_absent(compose(REPLAY, EARLY, blocks=[block])) == []

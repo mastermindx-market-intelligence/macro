@@ -329,8 +329,15 @@ class _Selection:
         if self.query.time_mode != "system_replay":
             return True
         reviewed = block.get("reviewed_at")
-        return isinstance(reviewed, str) and _le(
-            reviewed, self.query.recorded_cutoff)
+        if not isinstance(reviewed, str):
+            return False
+        try:
+            _parse_day(reviewed)
+        except ValueError:
+            # An unreadable review time is withheld like a missing one. Only the
+            # block's clock is read here, so a bad query cutoff still surfaces.
+            return False
+        return _le(reviewed, self.query.recorded_cutoff)
 
     def _inputs_known(self, block: Mapping[str, Any]) -> bool:
         refs = block.get("input_revisions") or []
