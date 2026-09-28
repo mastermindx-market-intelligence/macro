@@ -20,7 +20,7 @@ claim: >-
   from an observation its plane never published.
 falsifier: >-
   `python3 -m pytest tests/test_finance_intelligence_projection.py -q -k "conflict_reads_the_direction or absent_or_null_slice_tag or slice_tagged_valuation or after_the_knowledge_cutoff or anchors_only_the_slice or freshest_anchor or undated_valuation or constraint_is_published"`
-  passes (9). Swap in engine/sector_intelligence/finance_projection.py from f6dae649ee6d and
+  passes (9). Swap in engine/sector_intelligence/finance_projection.py from 88ca79a3f407 and
   all 9 must fail. Put back only the constraints scope (business_scope reverted to the
   slice_id extra) and only the constraint test must fail. If the swap passes, the reads
   were already scoped and this record is wrong.
@@ -53,7 +53,7 @@ so_what: >-
   adopts it in the later integration wave (DEC:FINANCE-COMPOSER-NEVER-MINTS-AN-EVIDENCE-REF).
 kind: landmine
 verified_at: 2026-09-28
-verified_by: "tests/test_finance_intelligence_projection.py::test_a_valuation_observation_anchors_only_the_slice_it_is_filed_under, ::test_the_valuation_plane_reads_its_slices_freshest_anchor, ::test_an_undated_valuation_observation_never_anchors, ::test_only_an_absent_or_null_slice_tag_means_company_data, ::test_on_one_date_the_slice_tagged_valuation_observation_anchors, ::test_a_valuation_observation_dated_after_the_knowledge_cutoff_never_anchors, ::test_a_conflict_reads_the_direction_of_the_valuation_reading_the_plane_publishes, ::test_a_conflict_reads_the_direction_of_the_price_reading_the_plane_publishes and ::test_a_constraint_is_published_under_the_slice_its_record_is_filed_under (all 9 fail with the composer from f6dae649ee6d; reverting only the constraints scope fails only the last); probe on #8134's head d275a9e72654: the borrowed-P/E document validates and _refs_outside_their_slice returns []; probe on f6dae649ee6d: a constraint on the card_networks record is dropped with no extra, and is published under issuer_processing, citing the card_networks record, with a slice_id extra of issuer_processing"
+verified_by: "tests/test_finance_intelligence_projection.py::test_a_valuation_observation_anchors_only_the_slice_it_is_filed_under, ::test_the_valuation_plane_reads_its_slices_freshest_anchor, ::test_an_undated_valuation_observation_never_anchors, ::test_only_an_absent_or_null_slice_tag_means_company_data, ::test_on_one_date_the_slice_tagged_valuation_observation_anchors, ::test_a_valuation_observation_dated_after_the_knowledge_cutoff_never_anchors, ::test_a_conflict_reads_the_direction_of_the_valuation_reading_the_plane_publishes, ::test_a_conflict_reads_the_direction_of_the_price_reading_the_plane_publishes and ::test_a_constraint_is_published_under_the_slice_its_record_is_filed_under (all 9 fail with the composer from 88ca79a3f407; reverting only the constraints scope fails only the last); probe on #8134's head d275a9e72654: the borrowed-P/E document validates and _refs_outside_their_slice returns []; probe on f6dae649ee6d: a constraint on the card_networks record is dropped with no extra, and is published under issuer_processing, citing the card_networks record, with a slice_id extra of issuer_processing"
 scope:
   - macro
   - engine/sector_intelligence/finance_projection.py
