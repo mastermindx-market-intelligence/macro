@@ -7,6 +7,7 @@ Prepared 2026-09-25 by the Energy seat (session 8955bbc3), operation `gmi-energy
 - Until then this packet is context. It is not a build order.
 - The copy decisions below are recorded as seat ruling R-ENE-23. They land with the round-3 records.
 - **Re-verified 2026-09-28** at #7870 head `a0d7b054ff23` and #8002 head `3c775ea592a6` (§1b). Two carrier obligations were added (§3b). The status is unchanged: PREPARED, not dispatched.
+- **Dry-run 2026-09-28** (§1c). The packet was applied in a scratch tree at #7870 `a0d7b054ff23` plus #8002 `3c775ea592a6`, and every gate it names passed. The dry-run corrected two facts in this packet: the definition-version import in §3, and the curated block count in §3b.2 (seven, not six). The registration needs nothing from #7870 except RULING 8's widening (§4.6).
 
 ## 1. Facts this packet rests on
 
@@ -44,6 +45,20 @@ The seat read every section-1 fact again with `git show` at both heads. It used 
 | House Chinese terms | HOLDS | `templates/committee.html.j2:1477` |
 | The evidence-route pattern | **STILL NARROW.** RULING 8's widening is not on #7870's head, so §4.6 stays gated. | `app/theme_research.py:207`: `^gmi-curation://[a-z0-9_]+/gmirca_[0-9a-f]{32}$` |
 
+## 1c. Dry-run, 2026-09-28 (#7870 `a0d7b054ff23` + #8002 `3c775ea592a6`)
+
+The seat applied §3, §3b.1, §3b.2 and §4.1 with exact-anchor edits in a throwaway worktree. Nothing was committed or pushed from it. Receipts:
+
+| Gate | Before the edits | After the edits |
+|---|---|---|
+| The 11 nuclear test files plus `test_theme_research_mount_context`, `_registry`, `_api`, `test_semiconductor_theme_research_ui`, `test_theme_research_private_binding`, `_rights_refresh` and `test_deploy_update_self_heal` | `710 passed, 2 skipped` | `711 passed, 2 skipped`. The one new case is the appended `MUST_RESTART` row, which that file parametrizes (`:458`). |
+| §4.2 to §4.5, written as tests (the bytes are in §4b) | not applicable | `5 passed`. The lazy-import test carries its own positive control: calling the entry's loader does put `nuclear_owner_bundle` into `sys.modules`. |
+| `tests/test_ci_pack.py -k "closure or curated or scope"` | not run | `21 passed, 2 skipped, 112 deselected` |
+| Curated-exclusive closure audit (`scripts/run_ci_pack.py:curated_exclusive_closure_findings`) | 7 jobs MISS, each exactly `nuclear_theme_research.py` and `nuclear_owner_bundle.py` (the positive control: the lines stripped) | 0 MISS |
+
+- The two skips are the witness-fixture skips in `tests/test_theme_research_api.py`. On a correct tree they are the ONLY skips (§3b.3).
+- **The client is ready.** `site/assets/js/theme-research.js` already serves a second vertical through its spec path: `applyResearchResponseFor` and `validateEvidenceFor` take a SPEC, the chips come from `SPEC.labels`, and the stored selection is per anchor. No #7870 file changes for nuclear to register. Energy told the owner so in #7870 comment 5866433049, item 2.
+
 ## 2. Seat copy decisions (R-ENE-23)
 
 | Field | EN | ZH | Why |
@@ -77,8 +92,17 @@ _NUCLEAR = MountFacts(
     note_zh="会员研究内容。此处内容不构成排序、准入、仓位或时机判断。",
 )
 
-# theme_research_registry.py: a lazy loader mirroring the semiconductor one, then the entry
-def _load_nuclear_owner_bundle(query, *, rights_snapshot=None):
+# theme_research_registry.py: one import, placed before the semiconductor import (alphabetical)
+from engine.market_ontology.nuclear_theme_research import (
+    DEFINITION_VERSION as _NUCLEAR_DEFINITION_VERSION,
+    compose_nuclear_research,
+    select_authorized_evidence as select_nuclear_evidence,
+)
+
+# then a lazy loader mirroring the semiconductor one, then the entry
+def _load_nuclear_owner_bundle(query: Any, *, rights_snapshot: Any = None) -> Any:
+    """The nuclear entry's loader, bound LAZILY for the same module law as
+    the semiconductor one. Resolved on the first served request, never at import."""
     from engine.market_ontology.nuclear_owner_bundle import (  # noqa: PLC0415 — lazy by design
         load_nuclear_owner_bundle,
     )
@@ -90,14 +114,16 @@ _NUCLEAR = VerticalRegistration(
     slice_keys=_NUCLEAR_MOUNT.slice_keys,
     schema_id=_NUCLEAR_MOUNT.schema_id,
     evidence_schema_id=_NUCLEAR_MOUNT.evidence_schema_id,
-    definition_version=NUCLEAR_DEFINITION_VERSION,   # imported from nuclear_theme_research
+    definition_version=_NUCLEAR_DEFINITION_VERSION,
     compose=compose_nuclear_research,
-    select_evidence=select_nuclear_evidence,         # nuclear select_authorized_evidence, aliased on import
+    select_evidence=select_nuclear_evidence,
     load_bundle=_load_nuclear_owner_bundle,
     title_en=_NUCLEAR_MOUNT.title_en, title_zh=_NUCLEAR_MOUNT.title_zh,
     note_en=_NUCLEAR_MOUNT.note_en, note_zh=_NUCLEAR_MOUNT.note_zh,
 )
 ```
+
+**[Corrected 2026-09-28 (registration dry-run): nuclear exports `DEFINITION_VERSION`, and no `NUCLEAR_DEFINITION_VERSION` exists. The block above now shows the import, and the loader in the exact shape the dry-run applied and proved.]**
 
 The registry already imports `semiconductor_theme_research`, and `nuclear_theme_research` imports only that module plus `engine.theme_graph.*`. So the eager `compose` import adds no forbidden module. The carrier must still prove this with `test_registry_import_closure_stays_light` green.
 
@@ -111,13 +137,16 @@ The registry already imports `semiconductor_theme_research`, and `nuclear_theme_
    - It cannot see `nuclear_owner_bundle`, which the registry's lazy loader imports inside a function, at request time. After the first request that module is pinned in `sys.modules` just the same. Append it to that file's `MUST_RESTART` list so a guard pins it.
 2. **The curated CI closure lists** are in `.github/ci/legacy-jobs.yml`.
    - Every curated exclusive job that names `engine/market_ontology/theme_research_registry.py` must also name `nuclear_theme_research.py` and `nuclear_owner_bundle.py`. It must also name any `engine/theme_graph/*` file its paths do not already cover.
-   - At `a0d7b054ff23` there are six such blocks, near lines 2250, 2525, 9120, 9764, 11870 and 12252.
+   - **[Corrected 2026-09-28 (registration dry-run): there are SEVEN such blocks, not six.]** At `a0d7b054ff23` there are six such blocks, near lines 2250, 2525, 9120, 9764, 11870 and 12252.
+   - The seven lines at `a0d7b054ff23` are 2253, 2526, 9121, 9765, 11871, 12253 and 15848. The audit names the seven jobs: `semiconductor-b-boundary`, `biocatalyst-history`, `biocatalyst-serving`, `defense-rail-laws`, `flow-surface`, `unrun-government-revenue-candidate-projection` and `unrun-government-revenue-grader`.
+   - No `engine/theme_graph/*` file was uncovered in any of them, so the union adds exactly the two nuclear files to each block.
    - Resolve each list as a UNION with whatever main has added since. Dropping either side breaks that side's audit.
    - Prove it with `tests/test_ci_pack.py -k "closure or curated or scope"` and the curated-exclusive closure audit. Re-run both after ANY merge or rebase, not only after your own edits.
 3. **Gate discipline.**
    - Run `python3 scripts/worktree_sparse.py add site` before trusting any gate. The mount-context suite reads `site/assets/js/theme-research.js`, and a sparse `site/` gives failures that look exactly like code regressions.
    - For checks that need data, run `git sparse-checkout add data/regime data/theme_graph`, never the whole `data/`.
    - Attribute a red pack by reading its traceback, never by the job's name.
+   - **A sparse tree hides suites behind skips.** Run with `-rs` and read every skip reason. On the dry-run tree the same suites gave `704 passed, 8 skipped` while fully sparse, then `10 failed, 607 passed, 95 skipped` with `data/` added but `site/` still omitted, and `710 passed, 2 skipped` only once the theme-research assets under `site/` were present. The only expected skips are the two witness-fixture skips in `tests/test_theme_research_api.py`. Any other skip reason means that gate did not run.
 
 ## 4. Tests the carrier adds or updates
 
@@ -130,6 +159,92 @@ The registry already imports `semiconductor_theme_research`, and `nuclear_theme_
 5. Importing the registry does not import `nuclear_owner_bundle`. That is the lazy positive control: assert the module is absent from `sys.modules` after a fresh import.
 6. The evidence route with a `gmi-curation://theme:nuclear_power/gmirca_…` ref is added ONLY once the widened pattern `^gmi-curation://(?:theme:)?[a-z0-9_]+/gmirca_[0-9a-f]{32}$` is on main. Watch check F reports it. Before that, the route refuses every nuclear ref by design (RULING 8), so a test written earlier would pin the defect.
 
+## 4b. §4.2 to §4.5 as proven test bytes (dry-run, 2026-09-28)
+
+These five tests passed on the dry-run tree (§1c). The carrier may land them as `tests/test_theme_research_nuclear_registration.py`, a NEW file, so nothing is renamed or deleted. Re-run them after the rebase, because they read `scripts/build_theme_detail.py` and the mount template as they are on main then.
+
+```python
+"""Dry-run of REG-PACKET §4.2–4.5 against #7870 a0d7b054ff23 (proven on the dry-run tree)."""
+from __future__ import annotations
+
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+NUC = "nuclear_power"
+SLICES = ("reactor_technology", "nuclear_components", "fuel_cycle")
+
+
+def test_4_2_mount_context_renders_three_labelled_slices():
+    from engine.market_ontology.theme_research_mounts import (  # noqa: PLC0415
+        mount_context, registered_anchor_for_basket,
+    )
+    ctx = mount_context(NUC)
+    assert ctx is not None
+    assert ctx["slices"].split(",") == list(SLICES)
+    labels = json.loads(ctx["slice_labels_json"])
+    assert set(labels) == set(SLICES)
+    assert labels["fuel_cycle"] == ["Fuel cycle", "核燃料循环"]
+    assert registered_anchor_for_basket(NUC) == NUC
+    import jinja2  # noqa: PLC0415
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(REPO_ROOT / "templates")),
+                             autoescape=True, undefined=jinja2.StrictUndefined)
+    html = env.get_template("_theme_research_mount.html.j2").render(theme_research_mount=ctx)
+    for key in SLICES:
+        assert key in html
+    assert "Nuclear power industry research" in html and "核电产业研究" in html
+
+
+def test_4_2b_the_basket_page_builder_mounts_nuclear_on_us_only():
+    from scripts.build_theme_detail import _theme_research_mount  # noqa: PLC0415
+    mount = _theme_research_mount(NUC, "us")
+    assert mount is not None and mount["anchor_theme_id"] == NUC
+    assert _theme_research_mount("uranium_miners", "us") is None
+
+
+def test_4_3_uranium_miners_never_mounts():
+    from engine.market_ontology.theme_research_mounts import (  # noqa: PLC0415
+        mount_context_for_basket, registered_anchor_for_basket,
+    )
+    assert registered_anchor_for_basket("uranium_miners") is None
+    assert mount_context_for_basket("uranium_miners") is None
+
+
+def test_4_4_registry_entry_equals_mount_field_for_field():
+    from engine.market_ontology.theme_research_mounts import MOUNTS  # noqa: PLC0415
+    from engine.market_ontology.theme_research_registry import REGISTRY  # noqa: PLC0415
+    from engine.market_ontology import nuclear_theme_research as n  # noqa: PLC0415
+    m, r = MOUNTS[NUC], REGISTRY[NUC]
+    for f in ("anchor_theme_id", "slice_keys", "schema_id", "evidence_schema_id",
+              "title_en", "title_zh", "note_en", "note_zh"):
+        assert getattr(r, f) == getattr(m, f), f
+    assert r.definition_version == n.DEFINITION_VERSION
+    assert r.schema_id == n.SCHEMA_ID and r.evidence_schema_id == n.EVIDENCE_SCHEMA_ID
+    assert tuple(r.slice_keys) == tuple(n.SLICES)
+    assert r.compose is n.compose_nuclear_research
+    assert r.select_evidence is n.select_authorized_evidence
+
+
+def _fresh(code: str) -> str:
+    run = subprocess.run([sys.executable, "-c", code], cwd=REPO_ROOT, capture_output=True,
+                         text=True, env={"PYTHONPATH": str(REPO_ROOT), "PATH": "/usr/bin:/bin"})
+    assert run.returncode == 0, run.stderr[-800:]
+    return run.stdout.strip()
+
+
+def test_4_5_registry_import_does_not_import_the_owner_bundle_with_positive_control():
+    mod = "engine.market_ontology.nuclear_owner_bundle"
+    absent = _fresh("import sys, engine.market_ontology.theme_research_registry as r\n"
+                    f"print({mod!r} in sys.modules)")
+    assert absent == "False"
+    present = _fresh("import sys, engine.market_ontology.theme_research_registry as r\n"
+                     "try:\n    r.REGISTRY['nuclear_power'].load_bundle(None)\nexcept Exception:\n    pass\n"
+                     f"print({mod!r} in sys.modules)")
+    assert present == "True", "positive control: the lazy loader must actually import it"
+```
+
 ## 5. NOT DONE UNLESS (the carrier's acceptance gates)
 
 - Every test in section 4 is green, and the full theme-research suite is green on a FULL checkout, not a sparse one.
@@ -138,4 +253,5 @@ The registry already imports `semiconductor_theme_research`, and `nuclear_theme_
 - **Browser proof.** Crops for dark and light × EN and ZH × 1440 and 390 are posted in the PR body. The mount renders the three plain-word chips. The `uranium_miners` basket page renders no mount.
 - `tests/test_deploy_update_self_heal.py` is green, including the appended `MUST_RESTART` row (§3b.1). The curated-exclusive closure audit reports zero MISS (§3b.2).
 - The carrier's own Opus READ_ONLY review returns PASS before the PR leaves DRAFT.
+- **Plain language.** The shell's Limitations line prints wire tokens verbatim in EN and ZH. For nuclear it reads, for example, `milestone_predicate_unavailable · slice_scope_unowned · target_windows_judged_at:2026-09-20 · witness_cohort_excluded:2`. That is the shell's reviewed design (T10 BLOCKING-2), and semiconductor tokens render the same way. Energy asked the owner whether a token-to-plain-words map is planned (#7870 comment 5866433049, item 6) and offered a bilingual table for its own 20 tokens. Until the owner answers, the carrier does not edit `theme-research.js`, and the PR body names the raw tokens as a known gap next to the browser crops.
 - The live rung stays behind the VPS pull-cron hold (`# MMX-DISK-TRIAGE-HOLD`, #6902). That hold is an EXACT_HUMAN_GATE and the seat never lifts it.
