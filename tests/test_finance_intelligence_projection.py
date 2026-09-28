@@ -7,20 +7,25 @@ is copied from the live research carrier or from the schema fixture.
 from __future__ import annotations
 
 import builtins
+import copy
+import dataclasses
 import datetime as _dt
 import hashlib
 import json
 import re
 import socket as _socket
 import time as _time
+from pathlib import Path
 from typing import Any
 
 import pytest
 
-from engine.sector_intelligence.contracts import validate_contract
+from engine.sector_intelligence.contracts import ContractValidationError, validate_contract
 from engine.sector_intelligence.finance_projection import (
     FinanceOwnerInputs,
     _FINANCE_SLICE_IDS,
+    _METRIC_FIELDS,
+    _build_primary_metric,
     compose_finance_projection,
 )
 
@@ -393,20 +398,27 @@ def test_no_forbidden_keys() -> None:
     forbidden = re.compile(r"(^|_)(score|rank|attractiveness|composite)(_|$)", re.IGNORECASE)
     authority_block = document["authority_caps"]
 
-    def walk(node: object) -> None:
+    def walk(node: object) -> list[str]:
+        # The pattern carries its own underscore boundaries, so it must be
+        # searched: under fullmatch it matches only a bare word, and
+        # peer_rank passes.
+        found: list[str] = []
         if isinstance(node, dict):
             for key, child in node.items():
-                if key == "rank" and node is authority_block:
-                    pass
-                else:
-                    assert forbidden.fullmatch(key) is None, key
-                walk(child)
-            return
-        if isinstance(node, list):
+                if not (key == "rank" and node is authority_block) and forbidden.search(key):
+                    found.append(key)
+                found += walk(child)
+        elif isinstance(node, list):
             for child in node:
-                walk(child)
+                found += walk(child)
+        return found
 
-    walk(document)
+    # Positive control: a clean document cannot tell a live walk from a dead one.
+    assert walk({"slices": [{"peer_rank": 1, "composite_score": 2, "ranking": 3}]}) == [
+        "peer_rank",
+        "composite_score",
+    ]
+    assert walk(document) == []
     assert document["authority_caps"]["rank"] is False
 
 
@@ -1142,3 +1154,128 @@ def test_a_material_change_without_a_known_freshness_is_published_as_no_evidence
     validate_contract(CONTRACT_ID, document)
     changes = [c for c in document["material_changes"] if c["change_id"] == "mc-freshness-001"]
     assert [c["freshness_state"] for c in changes] == [published]
+
+
+# ---------------------------------------------------------------------------
+# An owner key the contract does not know never crosses into the document.
+# ---------------------------------------------------------------------------
+
+_SCHEMA_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "contracts"
+    / "sector_intelligence"
+    / "finance_intelligence_read_model.v1.schema.json"
+)
+_PLANTED_NOTE = "zz_planted_private_note"
+_PLANTED_RANK = "zz_planted_peer_rank"
+
+
+def _plant_owner_keys(node: object) -> int:
+    """Plant a private note and a peer rank into every owner record under ``node``.
+
+    A dict whose values are all containers is a map keyed by data (issuer
+    labels, plane names), not a record, and is left alone, as is an empty
+    dict. Returns the number of records planted.
+    """
+    planted = 0
+    if isinstance(node, dict):
+        for child in list(node.values()):
+            planted += _plant_owner_keys(child)
+        if node and not all(isinstance(v, (dict, list, tuple)) for v in node.values()):
+            node[_PLANTED_NOTE] = "SYNTHETIC-private"
+            node[_PLANTED_RANK] = 1
+            planted += 1
+    elif isinstance(node, (list, tuple)):
+        for child in node:
+            planted += _plant_owner_keys(child)
+    return planted
+
+
+def test_the_metric_vocabulary_is_the_schemas() -> None:
+    metric = json.loads(_SCHEMA_PATH.read_text(encoding="utf-8"))["$defs"]["metric"]
+    assert metric["additionalProperties"] is False
+    assert _METRIC_FIELDS == tuple(metric["properties"])
+    assert set(_METRIC_FIELDS) == set(metric["required"])
+
+
+def test_an_owner_metric_crosses_only_through_the_metric_vocabulary() -> None:
+    owner = _metric_payload(native_name="nim", family="NIM", value=3.5, unit="%")
+    owner.update({_PLANTED_NOTE: "SYNTHETIC-private", _PLANTED_RANK: 1, "composite_score": 0.9})
+    metric = _build_primary_metric({"as_of": "2026-09-20", "metric": owner})
+    assert tuple(metric) == _METRIC_FIELDS
+    # Every stated value is the owner's own object, never a re-derived copy.
+    assert all(metric[key] is owner[key] for key in _METRIC_FIELDS)
+
+
+@pytest.mark.parametrize(
+    "fixture",
+    [
+        "default",
+        "EARNINGS_UP_P_E_DOWN",
+        "BOOK_UP_P_B_DOWN",
+        "POLICY_SUPPORT_NIM_PRESSURE",
+        "REGULATORY_RATIO_DOWN_REGIME_BREAK",
+        "PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN",
+    ],
+)
+def test_an_owner_key_outside_the_contract_never_reaches_the_document(fixture: str) -> None:
+    """Every owner record under one input field at a time carries a private
+    note and a peer rank that the contract does not know. The document must
+    still validate and must hold neither: the composer projects owner records
+    onto the read model's vocabulary and never copies one wholesale."""
+    base = _default_8slice_inputs() if fixture == "default" else _conflict_inputs_for(fixture)
+    planted_fields = []
+    for field in dataclasses.fields(base):
+        if field.name == "rights_snapshot":
+            # A map from source family to rights class, keyed by data: its
+            # family names are published by design in generation.rights_profile.
+            continue
+        value = copy.deepcopy(getattr(base, field.name))
+        if not _plant_owner_keys(value):
+            continue
+        planted_fields.append(field.name)
+        document = compose_finance_projection(
+            dataclasses.replace(base, **{field.name: value}),
+            generated_at=_today(),
+            knowledge_cutoff=_knowledge_cutoff(),
+        )
+        validate_contract(CONTRACT_ID, document)
+        # Assert a bare bool: pytest explains a failed `not in` over this
+        # document's 148 KB dump with a superlinear diff, about 130 s per
+        # failure (DSC:PYTEST-EXPLAINS-A-FAILED-NOT-IN-OVER-A-LONG-STRING-WITH-A-SUPERLINEAR-DIFF).
+        leaked = "zz_planted" in json.dumps(document, default=str)
+        assert not leaked, field.name
+    assert "financial_packets" in planted_fields
+
+
+@pytest.mark.parametrize(
+    "admitted, refusal",
+    [
+        (_PLANTED_NOTE, None),
+        (_PLANTED_RANK, "forbidden score/rank/attractiveness/composite field under .*slices"),
+    ],
+)
+def test_the_owner_key_fences_fire_on_a_key_the_composer_admits(
+    monkeypatch: pytest.MonkeyPatch, admitted: str, refusal: str | None
+) -> None:
+    """Positive control for the fences above. A composer that admits one more
+    metric key lets the planted private note through, and the contract rejects
+    the document. If the admitted key is a peer rank, the composer's own emit
+    guard refuses it first, naming the section and never the key."""
+    import engine.sector_intelligence.finance_projection as _fp_mod
+
+    monkeypatch.setattr(_fp_mod, "_METRIC_FIELDS", _METRIC_FIELDS + (admitted,))
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    packets = copy.deepcopy(base.financial_packets)
+    assert _plant_owner_keys(packets)
+    inputs = dataclasses.replace(base, financial_packets=packets)
+    if refusal is not None:
+        with pytest.raises(AssertionError, match=refusal) as excinfo:
+            compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+        assert "zz_planted" not in str(excinfo.value)
+        return
+    document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+    carried = admitted in json.dumps(document, default=str)
+    assert carried
+    with pytest.raises(ContractValidationError):
+        validate_contract(CONTRACT_ID, document)

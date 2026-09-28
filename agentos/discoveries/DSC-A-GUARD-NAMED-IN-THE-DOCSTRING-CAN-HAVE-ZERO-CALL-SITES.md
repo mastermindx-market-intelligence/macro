@@ -49,6 +49,7 @@ scope: >
   demonstrated leak. `finance_projection.py` is seat 938d17d6's custody: this record is
   knowledge routed to that seat, and this seat did not edit the module.
 confidence: verified
+superseded_by: "DSC:A-LEAK-TEST-OVER-A-CLEAN-FIXTURE-CANNOT-FAIL-PLANT-THE-OWNER-KEYS"
 ---
 
 ## How it was found

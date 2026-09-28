@@ -752,10 +752,18 @@ def _empty_metric() -> dict[str, Any]:
     }
 
 
+# The read model's metric is a closed object (schema $defs/metric,
+# additionalProperties: false). An owner metric crosses into it only through
+# these names, as a source record crosses only through allowed_top_level: a
+# peer rank, a composite score or a private note riding on the owner's metric
+# stays behind, and every stated value keeps the owner's bytes.
+_METRIC_FIELDS: tuple[str, ...] = tuple(_empty_metric())
+
+
 def _build_primary_metric(obs: Mapping[str, Any]) -> dict[str, Any]:
     metric_in = obs.get("metric") if isinstance(obs, Mapping) else None
     if isinstance(metric_in, Mapping):
-        metric = dict(metric_in)
+        metric = {key: metric_in[key] for key in _METRIC_FIELDS if key in metric_in}
     else:
         metric = _empty_metric()
         metric["native_metric_name"] = str(obs.get("metric", ""))
@@ -865,6 +873,20 @@ def _has_change_pct_or_delta(value: Any) -> bool:
     elif isinstance(value, list):
         for child in value:
             if _has_change_pct_or_delta(child):
+                return True
+    return False
+
+
+def _has_forbidden_key(value: Any) -> bool:
+    if isinstance(value, dict):
+        for key in value:
+            if _FORBIDDEN_KEY_RE.search(str(key)):
+                return True
+            if _has_forbidden_key(value[key]):
+                return True
+    elif isinstance(value, list):
+        for child in value:
+            if _has_forbidden_key(child):
                 return True
     return False
 
@@ -2459,10 +2481,21 @@ def compose_finance_projection(
         "authority_caps": dict(_AUTHORITY_CAPS),
     }
 
-    # Forbidden-key guard (defensive). authority_caps.rank is permitted by
-    # the schema (additionalProperties=false, but the rank key is allowed).
+    # Forbidden-key guards (defensive). authority_caps is exempt from the
+    # score/rank walk: its rank key is how the read model states that it may
+    # NOT rank. The error names document sections only, never an owner key.
     if _has_change_pct_or_delta(document):
         raise AssertionError("composer emitted a forbidden change_pct/delta field under regime break")
+    offending = sorted(
+        section
+        for section, value in document.items()
+        if section != "authority_caps" and _has_forbidden_key({section: value})
+    )
+    if offending:
+        raise AssertionError(
+            "composer emitted a forbidden score/rank/attractiveness/composite field under "
+            + ", ".join(offending)
+        )
     return document
 
 
