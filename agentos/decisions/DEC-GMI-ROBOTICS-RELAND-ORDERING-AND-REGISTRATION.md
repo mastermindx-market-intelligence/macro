@@ -16,9 +16,16 @@ answer: >
   them to main does. TWO AMENDMENTS, verified 2026-09-28 from the reverted
   carrier's own CI rather than from this record's prior reasoning. First, #7870
   is a HARD COMPILE DEPENDENCY, not a sequencing preference: four first-party
-  symbols the Robotics modules import at import time do not exist on main and
-  all four exist at #7870's head, so ruling 10 is mechanically forced rather
-  than merely prudent. Second, the re-land manifest is NOT the 35 reverted
+  symbols the Robotics modules import do not exist on main and all four exist at
+  #7870's head, so ruling 10 is mechanically forced rather than merely prudent.
+  Precisely, and corrected on review because an earlier draft said all four
+  execute at import time: THREE do (composer :45 and :123, owner bundle :162),
+  and the FOURTH is a DEFERRED, function-level site - owner bundle :197,
+  engine.theme_graph.rights.load_registry_snapshot. The static AST sweep flags it
+  anyway, which is the load-bearing point: deferring an import does not exempt it
+  from tests/test_first_party_import_names.py, so the compile dependency is not
+  escapable by moving a site inside a function. That is also why the slicing
+  alternative below fails. Second, the re-land manifest is NOT the 35 reverted
   paths - it is those 35 paths PLUS CI wiring naming all six Robotics test
   suites by full relative path, because on the merged carrier all six were
   wired into no job and therefore never executed. Restoring only what the
@@ -61,10 +68,17 @@ rationale: >
 alternatives:
   - option: "Re-land the carrier in slices, landing the parts that do not depend on #7870 first."
     why_not: >
-      Measured and rejected. The dependent subset reduces to three sites on
-      three modules, but one of them is a top-level import of the shared
-      assertion vocabulary in the composer. Removing it leaves no semantics, and
-      a function-level import would still be flagged by the static AST sweep.
+      Measured and rejected. Counting carefully, because "three" and the four
+      flagged symbols above are two different counts of two different things: CI
+      flagged FOUR symbols across TWO modules (composer :45, :123; owner bundle
+      :162, :197), of which THREE are import-time and one deferred, and they name
+      THREE distinct #7870 modules (curation_assertion,
+      semiconductor_theme_research / theme_research_binding, rights). The
+      dependent subset is therefore not separable: one of the three modules is the
+      shared assertion vocabulary imported at the composer's top level. Removing
+      it leaves no semantics, and a function-level import would still be flagged
+      by the static AST sweep - :197 is the proof, being exactly such a site and
+      flagged regardless.
       Slicing buys nothing and multiplies review surface.
   - option: "Land the registry entry now so the route is ready when the carrier re-lands."
     why_not: >
@@ -153,7 +167,11 @@ becomes a normal additive commit - still subject to the lazy-wrapper requirement
 independent of #7870 and outlives it. The CI-wiring requirement also outlives #7870 and is
 falsified differently: it is discharged the moment contract-delta reports 0 introduced unrun
 suites on the re-land head, and it would be refuted as a requirement only by evidence that the
-six suites are named by a run: step somewhere I did not scan - which means a workflow file outside
-.github/workflows/*.yml and outside .github/ci/legacy-jobs.yml, since those are the two surfaces
-the gate itself reads. Ruling 7 has no expiry: it is discharged only by the real-path acceptance
+six suites are named by a run: step somewhere I did not scan - which means outside THREE surfaces,
+not the two an earlier draft named: .github/workflows/*.yml, .github/ci/legacy-jobs.yml, and - added
+after the theme-graph guard's own wiring turned out to hide there - the scripts/ci/*.sh shell sources
+that those workflows' step bodies invoke. A suite named only inside a shell script a `run:` step
+calls IS wired and would refute this requirement, while being invisible to a scan of the workflow
+YAML alone. Any such find must be re-checked at the re-land head rather than at main, since the
+census subtracts an evolving baseline. Ruling 7 has no expiry: it is discharged only by the real-path acceptance
 evidence, not by any merge.

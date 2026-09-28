@@ -8,21 +8,34 @@ answer: >
   `data/`, and require (1) exit 0, (2) stdout carries no
   `::warning title=theme graph contract breach::` line, and (3) every
   `::notice title=theme graph - <class>::` is enumerated and triaged against the
-  script's own taxonomy. Two classes are designed and non-blocking:
-  `[identity resolution census]` and `[licensing snapshots — designed]`. Four
-  classes block as INDETERMINATE or worse: `theme graph indeterminate` (store
-  incomplete), `[capability side-car MISSING — half-finished build]`,
-  `[identity resolution side-car MISSING — half-finished build]`, and
-  `[capability promoted itself]`. Those six are the whole taxonomy - the script
-  has exactly 6 notices.append sites against 33 breaches.append, identical on
-  both refs read. If `data/` is not materialised the honest verdict is
+  script's own taxonomy, which has SEVEN classes. THREE are designed and
+  non-blocking: `[identity resolution census]`, `[licensing snapshots —
+  designed]`, and `[additive columns pending rebuild]`. FOUR block as
+  INDETERMINATE or worse: `theme graph indeterminate` (store incomplete),
+  `[capability side-car MISSING — half-finished build]`, `[identity resolution
+  side-car MISSING — half-finished build]`, and `[capability promoted itself]`.
+  An independent review found the earlier count of six to be WRONG, and the
+  error is instructive enough to keep visible: I counted `notices.append` sites
+  (6) and called that the taxonomy. `notices` is also fed by FOUR
+  `notices += ...` merges at main:366, 620, 777 and 824, every one of them from
+  `_check_columns` (main:250) on a different frame, and that helper emits its own
+  class at main:262 — `[additive columns pending rebuild]`, designed and
+  non-blocking by its own docstring ("A pre-migration store is a notice, drift
+  is a breach"). So the feeds are 10 sites carrying 7 classes; 6 was a count of
+  appends, never of classes. This mattered in the worst direction: an untriaged
+  additive-columns notice would have been read as BLOCKING when it is designed,
+  inverting the verdict on exactly the pre-migration checkout the class exists
+  to tolerate. If `data/` is not materialised the honest verdict is
   INDETERMINATE, not pass. Condition (2) is redundant under `--strict` and is
   kept anyway, because the failure being guarded against is a gate step that
   silently loses the flag. TWO CORRECTIONS, 2026-09-28. (a) REF: every line
   number this record first cited came from a0d7b054ff23, which is #7870 lineage
-  at 87600B, not from main at 85824B; all citations are now dual-stated and the
+  at 87600B, not from main at 85824B; every a0d7 line number in this record is
+  resolved to its main counterpart - not inline, but through the complete offset
+  table in the evidence block below, which is where a successor must look before
+  acting on any bare four-digit number in the prose; the
   main ones were resolved BY CONTENT, because the offset between the two refs is
-  NOT uniform (-28 to -37) and arithmetic would have been wrong in several
+  NOT uniform (-28 to -36) and arithmetic would have been wrong in several
   places. The substance survived re-measurement unchanged. (b) SCOPE: this Gate
   C governs POST-MERGE ENROLMENT of the Robotics mount, not the re-land merge.
   The guard reads contracts/theme_graph/ and data/theme_graph/; the re-land's 35
@@ -77,10 +90,16 @@ alternatives:
   - option: "Gate C := exit code 0, the earlier definition."
     why_not: >
       Hollow without `--strict`: line 1109 returns `1 if strict else 0`, so a
-      breach exits 0 on the default path. Confirmed empirically by the shared
-      script's owner on materialised data - 1168 identity_resolution rows
-      violating the state-to-ids biconditional, which is a breach (line 960), exit
-      0 anyway.
+      breach exits 0 on the default path. The one EMPIRICAL corroboration is
+      TESTIMONY and is labelled as such after review: #7780 comment
+      `5853134369` (2026-09-27T05:50:57Z) reports a run on materialised data
+      finding 1168 identity_resolution rows violating the `state<->ids`
+      biconditional - the source's own spelling, not the `state-to-ids` an
+      earlier draft used - which is a breach (a0d7 960 / main 924), exiting 0
+      anyway. I did not witness it. The carrier is #7780, the shared contracts
+      lane, not #7870; the comment login is shared across agents, so the seat is
+      not identifiable from it. Everything else in this record is read from the
+      source.
   - option: "Patch the script so the notices path also returns non-zero."
     why_not: >
       It is a shared script owned by another lane and consumed by several
@@ -96,12 +115,12 @@ alternatives:
       recorded twice.
 evidence:
   - "scripts/check_theme_graph_contracts.py at #7870 head a0d7b054ff23, 87600B: line 1099 prints \"theme graph contracts OK ...\" guarded by `if not breaches` (1097) AND `if not notices` (1098); line 1101 `return 0`; line 1102 prints `::warning title=theme graph contract breach::`; line 1109 `return 1 if strict else 0`; line 1582 help text \"return 1 on a breach (CI); default is advisory rc 0\""
-  - "AST walk of the same blob, parent-chain per call site: the `[identity resolution census]` notice at line 1044 is guarded ONLY by `if idres is not None` (856) nested in `if idres_path.exists()` (850). No content-dependent condition. The other five notice sites are content-guarded; 33 breach sites exist, including the state-to-ids biconditional at 960."
-  - "The script's own selftest, lines 1229-1232: \"The identity-resolution CENSUS is a designed, always-on notice (7e - printed every run, never an incident), so it is the one notice a 'fully clean' store may still carry\", and line 1334 asserts `any(\"identity resolution census\" in x for x in n)` with the message \"the identity-resolution census must be printed every run\". Contract statement plus a pin that states it: design, not defect."
+  - "AST walk of the same blob, parent-chain per call site: the `[identity resolution census]` notice at line 1044 is guarded ONLY by `if idres is not None` (856) nested in `if idres_path.exists()` (850). No content-dependent condition. The other five `notices.append` sites are content-guarded, but see the corrected taxonomy entry below: appends are not the only feed. 33 breach sites exist, including the `state<->ids` biconditional (a0d7 960 / main 924)."
+  - "The script's own selftest, lines 1229-1232: \"The identity-resolution CENSUS is a designed, always-on notice (§7e — printed every run, never an incident), so it is the one notice a 'fully clean' store may still carry\", and line 1334 asserts `any(\"identity resolution census\" in x for x in n)` with the message \"the identity-resolution census must be printed every run\". Contract statement plus a pin that states it: design, not defect."
   - "data/theme_graph/identity_resolution.parquet is committed: 203378B at a0d7b054ff23 and 204044B at main, with a nonexistent sibling path as negative control. So the census notice fires on any materialised checkout and the marker line at 1099 is unreachable there."
   - "The advisory exit code is DESIGNED and documented: docs/HOUSE_LAW_CI_GUARD_SUITE.md at main, row theme_graph.edge_contract, says the nightly invocation is ADVISORY because the graph is display-tier with all six authority booleans false, so a breach must not take the collect lane down, and that \"--strict is what CI runs\". The same comment appears at the call site, scripts/ci/daily_engine_regional_desk_builders.sh:118-120, whose brun line passes NO --strict."
   - "LANE MAP VERIFIED AGAINST THE WORKFLOWS, not the doc, because the doc row is stale on this point. The --strict invocation is real: .github/ci/legacy-jobs.yml:11456 runs `python -m scripts.check_theme_graph_contracts --strict` after --selftest at 11455. But that file is not under .github/workflows/ and its job unrun-intl-libraries carries `if: false` (11341) and `gate: data` (11342); its steps execute only through scripts/run_ci_pack.py, which filters `job.gate == gate` (run_ci_pack.py:1690). Sweeping all 99 workflow files with the read pipeline positively controlled: `--gate code` appears in ci.yml, selfhosted-ci-canary.yml and trusted-ci-executor.yml; `--gate data` appears in data-health.yml ONLY, whose triggers are schedule, workflow_run on daily, and workflow_dispatch - never pull_request. So NO pull-request lane runs this guard, the house-law row lane: pr_ci is stale, and a carrier PR receives no theme-graph contract verdict from CI at all."
-  - "Notice class taxonomy read from the same blob: designed = `[licensing snapshots - designed]` (505), `[identity resolution census]` (1044); incident or indeterminate = store incomplete (375, untagged so it prints as `::notice title=theme graph indeterminate::`), `[capability side-car MISSING - half-finished build]` (843), `[identity resolution side-car MISSING - half-finished build]` (1053), `[capability promoted itself]` (835). Lines 1090-1091 state the intent: distinct titles per class so the designed notice cannot visually mask a half-finished build."
+  - "Notice class taxonomy, re-read and CORRECTED after independent review; all titles quoted with the source's EM-DASH (U+2014), since an earlier draft of this very entry wrote them with ASCII hyphens and would have made a successor's grep return a false absence. Seven classes. DESIGNED: `[licensing snapshots — designed]` (a0d7 505 / main 470), `[identity resolution census]` (1044 / 1009), `[additive columns pending rebuild]` (main 262, emitted by _check_columns at main:250 and merged in via `notices +=` at main 366, 620, 777, 824). BLOCKING: store incomplete (375 / 347, untagged so it prints as `::notice title=theme graph indeterminate::` via main:1060), `[capability side-car MISSING — half-finished build]` (843 / 808), `[identity resolution side-car MISSING — half-finished build]` (1053 / 1018), `[capability promoted itself]` (835 / 800). Feed count: 6 `notices.append` plus 4 `notices +=` = 10 sites, 7 classes. Lines 1090-1091 / main 1055 state the intent: distinct titles per class so the designed notice cannot visually mask a half-finished build."
   - "Controls on the read: 21 occurrences of 'def ' (positive), 0 occurrences of a nonsense token (negative). The two blobs at 1e38d5c955dc and a0d7b054ff23 are byte-identical at 87600B, so reading both is one observation and not an independent confirmation."
   - >
     MAIN CITATIONS, resolved by content on 2026-09-28 rather than by offset
@@ -122,14 +141,24 @@ evidence:
     notice" comment 1229-1232 -> 1193; selftest census assertion 1334 -> 1298.
     Also on main only and not previously cited: the census is excluded from the
     incident list at 1196, `::notice title=theme graph indeterminate::` prints
-    at 1060, and the state<->ids biconditional breach block runs 884-923.
-    Counts identical at both refs: 6 notices.append, 33 breaches.append.
+    at 1060, and the state<->ids biconditional breach block runs 884-931 -
+    its `if bad_biconditional:` conditional is at 923 and the `breaches.append(`
+    that actually emits it opens at 924, so an earlier draft of this entry
+    stopped the span one line short and pointed a reader at a window containing
+    no `breaches.append` at all.
+    Site counts identical at both refs: 6 `notices.append` and 33
+    `breaches.append` - but see the taxonomy entry below: `notices` is ALSO fed
+    by four `notices +=` merges, so 6 is not the number of notice classes.
   - >
     THE OFFSET IS NOT UNIFORM, which is why none of the above may be derived by
-    subtraction: measured deltas range from -28 (store-incomplete notice) through
-    -35 (licensing, capability side-car, taxonomy comment) to -37 (the
-    biconditional block). A successor who applies a single offset to this
-    record's a0d7b054ff23 citations will land on the wrong lines.
+    subtraction: measured deltas are -28 (store-incomplete notice), -35
+    (licensing, capability titles, taxonomy comment) and -36 (the return block,
+    the census guards, the selftest lines). An earlier draft of this entry also
+    claimed a -37, and independent review refuted it: that figure came from
+    pairing the a0d7 *breach* line 960 against main's *conditional* at 923 -
+    two different constructs. Against the corresponding construct (main 924) the
+    delta is -36. A successor who applies any single offset to this record's
+    a0d7b054ff23 citations will land on the wrong lines.
   - >
     THE PRINTED CLASS TITLES USE EM-DASHES, not hyphens. The source strings are
     `[licensing snapshots — designed]` and
@@ -199,8 +228,9 @@ targeting `main` would face — and I never compared the two file sizes, which d
 The substance survived re-measurement intact, and that is the trap: a wrong-ref reading that
 happens to be substantively right leaves no symptom, so nothing prompts the check. The durable
 rule is to state the ref beside every citation, and to resolve a second ref's line numbers by
-content rather than by offset — here the offsets ranged from -28 to -37 across regions of the same
-file.
+content rather than by offset — here the offsets ranged from -28 to -36 across regions of the same
+file, and my first attempt at stating that range was itself wrong because I compared two
+constructs that were not each other.
 
 # The falsifier
 
