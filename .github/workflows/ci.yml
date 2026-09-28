@@ -1454,6 +1454,9 @@ on:
       - "tests/test_transmission_publish.py"
       - "tests/test_transmission_cascade_monitor.py"
       - "tests/test_transmission_chains_nw.py"
+      # MO-J1A (PR #8052): affected-company continuation engine + its suite (both halves).
+      - "engine/transmission_company_continuation.py"
+      - "tests/test_transmission_company_continuation.py"
       - "tests/fixtures/transmission/**"
       # TXI W3 transmission calibration: the historical episode miner, its runner, and its test
       # file must all trigger the calibration suite (same #3357 both-halves rule). The miner

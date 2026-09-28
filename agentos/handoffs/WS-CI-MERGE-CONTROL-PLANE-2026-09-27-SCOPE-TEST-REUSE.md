@@ -80,6 +80,33 @@ verified:
       Candidate-only diff whitespace check passed. During the run main advanced
       from 7878cc4 to 453c767 only through a White House alert update; the compared
       CI material paths did not move.
+  - claim: "The first integrated remote head passed complete hosted PR proof and independent review."
+    command: "GitHub Actions runs 36400058378 / 36400057794 and exact-head Codex review on 4324efd0dc7a7007fe7db671e01c4a65385ae85a"
+    result: >
+      Fences, ci-plan, contract-delta, ci-pack-0, ci-pack-1 and ci-gate all
+      concluded success. Hosted full-checkout packing contracts ran 570 tests with
+      zero failures in 447.24s; the local sparse P0B skips therefore ran remotely.
+      Pack-0 checkout/materialization consumed about 217s before tests. Pack-1
+      checkout consumed 249s for 15s of tests, proving checkout waste separately
+      from runner queueing. Codex completed the exact-head review at
+      2026-09-28T09:05:57Z with no major findings. The run bound merge tree
+      3de1c0e346193dcd76c2384fbf1329cd6bed6c2c to subject 4324efd0 and base
+      453c767d; later material main movement made it historical performance proof,
+      not current release proof.
+  - claim: "The second current-material-base integration preserves the bounded delta and passes locally."
+    command: "git merge --no-commit --no-ff origin/main@9191d251a4aba1116f963ffef76f9547dcf0baa7; current-main AST comparison; full six-file packing command; cancellation tests; runner policy; Agent OS validation"
+    result: >
+      Merge was conflict-free. Candidate delta against the material base remains
+      exactly tests/test_ci_pack.py plus this handoff, 276 insertions and 26
+      deletions. Current manifest remains 237 jobs, 186 derived scopes, 50 declared
+      exclusive and 236 scoped. AST comparison preserved all 157 current-main
+      functions after normalizing only the 13 declared fixture substitutions:
+      zero removed, zero mismatched, eight intentional additions. Packing surface:
+      568 passed, 2 known sparse-checkout skips in 439.67s. Both cancellation
+      regressions passed; runner-policy check exited 0; Agent OS validation reported
+      1,340 records, 0 errors and 119 pre-existing warnings. Main subsequently
+      advanced through 05b242506be79a54f229bce73bfc353fd9296153 only on regime,
+      render/publication and energy-record paths; no compared CI material path moved.
 unverified:
   - claim: "Hosted exact-head CI acceptance, including the two full-checkout P0B receipt tests."
     what_would_verify: >
@@ -95,13 +122,14 @@ unverified:
       and a bounded repair/recovery path. The restored Executive read endpoint
       alone is not this proof. No modifying CI watcher was armed by this source patch.
 unresolved:
-  - "PR #8094 remains a separate frozen production optimization; PR #8061's registration mismatch remains with its incumbent carrier."
+  - "PR #8094 remains a separate production optimization. Current-main preflight proves semantic conflicts in both scripts/run_ci_pack.py and tests/test_contract_delta.py after #8102; it requires surgical integration after #8126, not a blind merge or replacement carrier."
+  - "PR #8061's registration mismatch remains with its incumbent carrier."
   - "Two supplemental Studio compound reads were safety-refused before dispatch. Their intended reads were not retried; neither was a source mutation."
-  - "The integrated source still owes a new immutable head, hosted full-checkout CI, and independent rereview before release."
+  - "The second integrated source still owes a new immutable head, current-base hosted full-checkout CI, and fresh independent review before release."
 next_actions:
-  - "Commit and push the conflict-free integration on the existing PR #8126 branch; do not create a replacement carrier."
-  - "Bind hosted CI and independent review to the new exact head and current PR base; repair only concrete returned findings."
-  - "On concluded-green exact-head evidence, complete normal expected-head release and post-merge readback; retain BUILT_NOT_PROVEN until a subsequent real hosted observation supports PROVEN_LIVE."
+  - "Commit and push the conflict-free second integration on the existing PR #8126 branch; do not create a replacement carrier."
+  - "Bind hosted CI and independent review to that new exact head and current PR base; repair only concrete returned findings."
+  - "On concluded-green exact-head evidence with no material base movement, complete normal expected-head release and post-merge readback; retain BUILT_NOT_PROVEN until a subsequent real hosted observation supports PROVEN_LIVE."
 do_not_redo:
   - "Do not rebuild #8116's cancellation fix, #8122's tokenizer repair, or expand #8094."
   - "Do not infer runner shortage from a red PR or restore the rejected old self-mod-fence weight 1100."
@@ -122,11 +150,12 @@ OPERATION: ci-scope-test-reuse-20260927-c3
 PARENT_OPERATION: ci-fleet-efficiency-audit-20260927
 
 Protected procedure: Mastermind
-`5c6b010a6157895d4f697548c75263cdff641ea6`, Skillpack 1.0.1,
+`e981ec1b0b6e3bd47e267b6abc92adee4a94d6a8`, Skillpack 1.0.1,
 INDEX blob `94d1af402598894372858793a5b1931019c5fa77`.
 Original source base: Macro `7bd3ddbb466e4db0e06306728e4710883f477c4b`.
-Current integration parents: candidate `ecb8753f71f14bf7cb06fe571010eae64111452d`
-and material main `7878cc44564e677057c220fea7f01811ddc32c6c`.
+Current second-integration parents: prior integrated candidate
+`4324efd0dc7a7007fe7db671e01c4a65385ae85a` and material main
+`9191d251a4aba1116f963ffef76f9547dcf0baa7`.
 
 The workspace is the locked linked worktree under the canonical Macro root:
 `/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/ci-scope-test-reuse-20260927-c3`.
