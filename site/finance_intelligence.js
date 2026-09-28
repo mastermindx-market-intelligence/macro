@@ -577,20 +577,40 @@
   // ──────────────────────────────────────────────────────────────────────────
   // fmtMetric, fmtClock (D.0)
   // ──────────────────────────────────────────────────────────────────────────
+  // The stated number's shortest round-trip digits, never in exponent form:
+  // String(1e21) is "1e+21" and String(1.5e-7) is "1.5e-7", but the receipt
+  // prints 1000000000000000000000 and 0.00000015. The digits move; none is
+  // rounded (round-3c review F2).
+  function plainDigits(value) {
+    var text = String(value);
+    var m = /^(-?)(\d+)(?:\.(\d+))?e([+-]\d+)$/.exec(text);
+    if (!m) return text;
+    var frac = m[3] || '';
+    var digits = m[2] + frac;
+    var exp = Number(m[4]) - frac.length;
+    if (exp >= 0) return m[1] + digits + new Array(exp + 1).join('0');
+    var point = digits.length + exp;
+    if (point > 0) return m[1] + digits.slice(0, point) + '.' + digits.slice(point);
+    return m[1] + '0.' + new Array(1 - point).join('0') + digits;
+  }
   // exact: the drawer is the receipt — the stated number, never a rounding of it.
   function fmtMetric(metric, exact) {
     if (!metric) return '';
     var value = metric.value;
     var unit = metric.unit;
     var mc = metric.measurement_class;
-    if (value === null || value === undefined || unit === null || unit === undefined || mc === 'QUALITATIVE') {
+    // The receipt prints a stated number whatever its class. The T2 composer
+    // gives a classless observation QUALITATIVE, and "No metric on file" would
+    // deny a number the record states (round-3c review F1). The glance tier
+    // keeps the §D.0 rule.
+    if (value === null || value === undefined || unit === null || unit === undefined || (!exact && mc === 'QUALITATIVE')) {
       return copyPair(SURFACE.no_metric);
     }
     var digits;
     if (mc === 'RATIO' || mc === 'RATE') digits = 1;
     else if (mc === 'PER_SHARE') digits = 2;
     else digits = 0;
-    var formatted = exact ? String(value) : Number(value).toFixed(digits);
+    var formatted = exact ? plainDigits(value) : Number(value).toFixed(digits);
     var pieces = [formatted, unit];
     // A unit that already is the currency is not repeated ("6.40 USD USD").
     if (metric.currency && metric.currency !== unit) pieces.push(metric.currency);
@@ -1230,11 +1250,13 @@
         }).join('') +
         '</tr>';
     };
-    // At 390 px the card is the only exposure surface, so it carries what the
-    // table row carries: the identity chip, and one line per first-vertical
-    // cell in column order with its exposure-state chip. It used to take the
-    // first six cells of any vertical and no chip at all, so an unresolved
-    // identity or an undisclosed exposure read as a plain row on a phone.
+    // At 390 px the card is the only exposure surface. Like the spec's macro
+    // cards, it lists only the row's populated first-vertical cells, in the
+    // table's column order: the identity chip, then role, materiality and the
+    // exposure-state chip for each cell. Basis, retained risk and evidence date
+    // stay table detail. The card used to take the first six cells of any
+    // vertical and no chip at all, so an unresolved identity or an undisclosed
+    // exposure read as a plain row on a phone.
     var buildCard = function (row) {
       var identity = (row.identity && row.identity.state) || 'IDENTITY_UNRESOLVED';
       var lines = sliceIds.map(function (sid) {

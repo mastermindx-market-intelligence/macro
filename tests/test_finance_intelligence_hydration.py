@@ -841,6 +841,26 @@ def test_a_stated_zero_is_a_value_and_only_null_is_not_stated(value, shown) -> N
 
 
 @needs_node
+@pytest.mark.parametrize("metric,shown", [
+    ({"value": 3.5, "unit": "x", "measurement_class": "QUALITATIVE"}, "3.5 x"),
+    ({"value": 0, "unit": "x", "measurement_class": "QUALITATIVE"}, "0 x"),
+    ({"value": 1e21, "unit": "USD"}, "1000000000000000000000 USD"),
+    ({"value": -2.5e22, "unit": "USD"}, "-25000000000000000000000 USD"),
+    ({"value": 1e-7, "unit": "USD"}, "0.0000001 USD"),
+    ({"value": 1.5e-7, "unit": "USD"}, "0.00000015 USD"),
+    ({"value": 123456789012.5, "unit": "USD"}, "123456789012.5 USD"),
+])
+def test_the_receipt_prints_every_stated_number_in_plain_digits(metric, shown) -> None:
+    """Round-3c review F1/F2: the receipt printed "No metric on file" for a
+    QUALITATIVE-class record that states a number (the T2 composer gives a
+    classless observation QUALITATIVE), and String() put very large and very
+    small numbers in exponent form. The receipt prints the stated number,
+    whatever its class, in plain digits and with none of them rounded."""
+    drawer = _drawer("en", {"excerpt": None, "metric": metric})
+    assert _drawer_field(drawer, "Value").text() == shown
+
+
+@needs_node
 def test_a_unit_that_is_the_currency_is_not_repeated() -> None:
     """Round 3: unit "USD" with currency "USD" printed "6.40 USD USD"; a unit
     that is not the currency still carries it."""
@@ -1019,6 +1039,14 @@ _ENUM_WORDS = {
     "$defs/company_exposure/company_route/state": "company_route_state",
     "$defs/system_view/edges/evidence_state": "evidence_state",
     "$defs/system_view/edges/relationship": "edge_relationship",
+    # Const-only fields (round-3c review F4): fixed values the page checks or
+    # selects by, and never prints.
+    "contract_id": None,  # checked on load; never printed
+    "outer_dossier_ref/contract_id": None,  # the outer dossier's id; never printed
+    "sector_ref": None,  # an id; never printed
+    "coverage/first_vertical/name": None,  # not painted; the slice names are the words
+    "conflicts/resolution": None,  # UNRESOLVED_BY_DESIGN on every conflict; both sides are shown, no resolution is
+    "$defs/system_view/view_id": None,  # ids; the words are system_views[].name_en/name_zh
 }
 
 
@@ -1032,6 +1060,10 @@ def _schema_enums() -> dict:
             if path and any(isinstance(v, str) for v in node.get("enum", [])):
                 found.setdefault("/".join(path), set()).update(
                     v for v in node["enum"] if isinstance(v, str))
+            # A const admits one value exactly as an enum does (round-3c
+            # review F4): a const-only field needs a word too.
+            if path and isinstance(node.get("const"), str):
+                found.setdefault("/".join(path), set()).add(node["const"])
             for key, value in node.items():
                 if key == "properties":
                     for name, sub in value.items():
@@ -1208,7 +1240,8 @@ def test_a_phone_card_names_its_identity_state(lang) -> None:
 def test_a_phone_card_lists_its_table_rows_cells_in_column_order() -> None:
     """The card took the first six cells of any vertical: a company with a cell
     in all eight first-vertical slices lost two on a phone, silently. It now
-    lists exactly the cells its table row shows, in column order."""
+    lists the row's populated cells in the table's column order; this row
+    populates all eight."""
     section = _dom(_run({"routes": _route(_exposure_states_doc())})["first"]).one(
         "section", id="company-exposure")
     heads = [th.text() for th in section.find("th", "fi-col-slice")]

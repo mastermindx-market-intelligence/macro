@@ -11,8 +11,10 @@
 # 10 macro rows, and 5 more contractual-flow nodes (12 nodes, 9 edges) -- then re-validated with
 # validate_contract("finance_intelligence_read_model.v1") before capture; the build script refuses to
 # write a document the contract rejects. Coverage counts are kept true to the widened rows. Every value is
-# synthetic; nothing is copied from live research. finance_intelligence.css/.js are byte-identical to this
-# commit's site copies. Interaction cells: step_evidence_hover = a real pointer hover on .fi-step-evidence;
+# synthetic; nothing is copied from live research. finance_intelligence.css is byte-identical to this
+# commit's site copy (sha256 10d611672a38). finance_intelligence.js was captured at e82a4bd8b0df (sha256
+# e6b0f4568db4); round 3d changes only the evidence drawer's Value-row formatter (a stated number prints
+# whatever its class, in plain digits), and no capture cell paints the drawer. Interaction cells: step_evidence_hover = a real pointer hover on .fi-step-evidence;
 # disc_summary_focus = real focus on a visible .fi-disc > summary. Both applied in all 8 cells (24/24 captured). The evidence drawer
 # (correction, methodology, value, limitations, locator, keyboard round trip) has no capture-tool state
 # (hover/focus/class/attribute only); the hydration suite proves it on the contract-valid document.
