@@ -46,9 +46,21 @@ changed:
   - path: research/energy/nuclear_program/rulings/R-ENE-2026-09-28-w2-module-r7.md
     what: "Corrected at source by the round-7 closure: the :1298-1299 erratum withdrawn (NIT-1), the Robotics count-only premise and the carve-out acceptance withdrawn (MINOR-1), and two wording points (NIT-3)."
   - path: research/energy/nuclear_program/reviews/OPUS-REVIEW-2026-09-25-w2-module-r6-closure.md
-    what: "Seat annotations at the three places the retracted line-number NIT appears; the reviewer's verbatim text is otherwise unchanged."
+    what: "Seat annotations at the three places the retracted line-number NIT appears; the reviewer's verbatim text is otherwise unchanged. (Corrected 2026-09-28, round-8 closure NIT-C: there were four places, not three; :209 was missed. Round 9 annotates it, together with the header line :16.)"
   - path: agentos/handoffs/GMI-ENERGY-2026-09-24-nuclear-first-vertical-implementation.md
     what: "Section 15: round 7 closed ACCEPT_WITH_NITS, round 8 delivered and gated, the registration dry-run, the #7870 relay 5866433049, and the at-source corrections."
+  - path: research/energy/nuclear_program/reviews/OPUS-REVIEW-2026-09-28-w2-module-r8-closure.md
+    what: "Round-8 closure by the same Opus READ_ONLY reviewer, verbatim. ACCEPT_WITH_NITS: R-ENE-33/34 closed, and no guard escape in 68 named strings x 10 cutoffs or a 300,000-string fuzz. Four NITs: m34_broad's unpinned reason is false, the instant review clock is unpinned, four copies of the withdrawn line-number point are unmarked, and the relay headline holds only with bundle content. Three observations."
+  - path: research/energy/nuclear_program/rulings/R-ENE-2026-09-28-w2-module-r9.md
+    what: "Seat rulings R-ENE-35 (a malformed query cutoff still fails the query; m34_broad pinned) and R-ENE-36 (the instant review clock pinned; the docstring states the contract), the disposition of every round-8 closure finding, the corrected base relay (#7870 comment 5868018569), and the lane and post-lane results."
+  - path: research/energy/nuclear_program/rulings/R-ENE-2026-09-28-w2-module-r8.md
+    what: "Corrected at source by the round-8 closure: m34_broad's unpinned reason marked superseded (NIT-A), the incomplete withdrawal claim (NIT-C), the queued relay's headline (NIT-D), the semis line span (O2) and the R-ENE-19 bullet (O3)."
+  - path: research/energy/nuclear_program/reviews/OPUS-REVIEW-2026-09-25-w2-module-r6-closure.md
+    what: "Two more seat annotations for the retracted line-number NIT, at :16 and :209 (round-8 closure NIT-C)."
+  - path: research/energy/nuclear_program/rulings/R-ENE-2026-09-28-w2-module-r7.md
+    what: "Seat annotation at :9 for the retracted line-number NIT (round-8 closure NIT-C)."
+  - path: agentos/handoffs/GMI-ENERGY-2026-09-24-nuclear-first-vertical-implementation.md
+    what: "Section 16: round 8 closed ACCEPT_WITH_NITS, round 9 delivered and gated, and the corrected relay 5868018569. Corrected at source: the m34_broad items in do_not_redo and danger_areas, the malformed-cutoff unresolved item, the section-15 relay note, and the count of annotated places."
 verified:
   - claim: "Current protected procedure is compatible and loaded from one pin."
     command: "cd Mastermind && git fetch origin master && git rev-parse origin/master; git show <sha>:docs/sol_skills/INDEX.md plus COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE, CLOSEOUT, COMMISSION_WAVE, WORKER_AVENUE_ROUTING, WATCHER_ACTION_LOOP, REVIEW_RETURN, docs/AGENT_DIALOGUE_SESSION_CLOSE_LAW.md, docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md at that sha"
@@ -101,6 +113,12 @@ verified:
   - claim: "The registration packet applies at #7870 a0d7b054ff23 plus #8002 and every gate it names passes."
     command: "python3 $SP/regdry/apply_reg.py <scratch tree>; $SP/regdry/run.sh applied1; pytest tests/test_theme_research_nuclear_registration_dryrun.py; pytest tests/test_ci_pack.py -k \"closure or curated or scope\"; python3 $SP/regdry/closure_audit.py with and without the nuclear lines"
     result: "710 passed/2 skipped before and 711 passed/2 skipped after (the one new case is the MUST_RESTART row); section-4 tests 5 passed with the lazy-import positive control; test_ci_pack 21 passed, 2 skipped, 112 deselected; closure audit 0 MISS, and 7 jobs MISS with the lines stripped."
+  - claim: "The round-9 lane delivered exactly the seat's bytes, and the module is green on both bases and under a simulated base fix."
+    command: "bash <seat scratch>/r9gate/postlane9.sh (git ls-remote/log/diff against 8bae70522f38, cmp against r9gate/sim, a test-name diff, pytest over tests/test_*nuclear*.py on the frozen base, on the a0d7b054ff23 compat tree and with -p basefix9, pyflakes, matrix9.sh, gh pr view 8002)"
+    result: "992cfa4bf091, parent 8bae70522f38; one commit with the exact subject; exactly 1 path, IDENTICAL (scope test f0c4042b3f65d4bd; engine 3a795c54c70e3a08 and route test dff63c3926ef02a6 unchanged); 0 test names removed; 110 passed on both bases and under the base fix; route 4 passed; pyflakes rc 0; 68 mutants with survivors = the 6 classified equivalents; #8002 DRAFT, no labels, auto null; no nuclear commit on main."
+  - claim: "On nuclear's route a malformed user cutoff never gets a 400: 503 when a time gate reads it, a silent 200 when none does."
+    command: "python3 <seat scratch>/r9gate/probe_r9_relay.py, with and without the basefix argument, in the 992cfa4bf091-over-a0d7b054ff23 compat tree"
+    result: "In-slice bundle / empty bundle: replay recorded 2026-12-31 200/200; replay recorded not-a-date and 2026-13-45 503/200; replay source not-a-date 503/200; source_history source not-a-date 503/200. Under a replay-only simulated fix every replay row is 400 and source_history stays 503/200. Every response is private, no-store."
 unverified:
   - claim: "Semiconductor B's theme-research response envelope can carry a shared economic-change dossier section without a second route."
     what_would_verify: "B's T08/T09 landed shape on #7870 (schema semiconductor_theme_research.v1 top-level fields, /api/themes/v1/research/query request schema) read at its exact head; decision reserved to Task 7 (ruling R-ENE-04)."
@@ -114,11 +132,13 @@ unresolved:
   - "Route/private-role custody for Tasks 6-7 depends on B's T09 and R4 outcomes (see unverified)."
   - "The shell's evidence route refuses every theme:-scoped assertion_ref (app/theme_research.py:207 at #7870 @6cd958e92b25). RULING 8 (Robotics seat, #7870 comment 5829833052) chose to widen the pattern to ^gmi-curation://(?:theme:)?[a-z0-9_]+/gmirca_[0-9a-f]{32}$; the edit is the shell owner's and is not yet on #7870's head (scheduled watch check F)."
   - "#7870's lazily bound loader chain (semiconductor_owner_bundle.py, semiconductor_witness_scope.py, workspace_projection.py) is imported at request time in macro-api. It matches neither the restart regex nor MUST_RESTART, and the AST load-time probe cannot see function-level imports. This is the owner's to fix; Energy relays the mechanism only."
-  - "A malformed replay cutoff in a user query answers 503 service_unavailable/retry_later instead of a 400 (app/theme_research.py:197-198 bound only length; _validate_query never parses). Base-owned; queued for the next #7870 post (R-ENE-2026-09-28-w2-module-r8.md)."
+  - "A malformed cutoff in a user query never gets a 400. It answers 503 service_unavailable/retry_later when a time gate reads it, and a silent 200 when none does, as on the empty bundle nuclear's own owner loader returns. This covers the replay recorded and source cutoffs and the source_history source cutoff (app/theme_research.py:197-198 bound only length; _validate_query refuses only a missing replay cutoff). Base-owned; relayed as #7870 comment 5868018569 item 7 (R-ENE-35). (Corrected 2026-09-28, round-8 closure NIT-D: this item said 'answers 503 service_unavailable/retry_later instead of a 400', which holds only when a time gate reads the cutoff.)"
+  - "_le reads an instant against a date-only cutoff on the instant's own local day, so UTC order can invert across such a cutoff (_le('2026-12-31T23:00:00-05:00','2026-12-31') is True, _le('2027-01-01T01:00:00+08:00','2026-12-31') is False). Base-owned contract question, relayed with no ask in #7870 comment 5868018569; nuclear inherits the owner's answer."
   - "The shell's Limitations line prints wire tokens verbatim in EN and ZH. Asked on #7870 comment 5866433049 item 6 whether a token-to-plain-words map is planned; Energy offered a bilingual table for its 20 tokens. Unanswered."
 next_actions:
-  - "Round-8 closure: brief the same reviewer carrier (a14e0071943034a00) on #8002 at 8bae70522f38, with the records PR's at-source corrections in scope. Record the verdict under research/energy/nuclear_program/reviews/. On ACCEPT or ACCEPT_WITH_NITS, refresh the #8002 body (head 8bae70522f38) and keep the HOLD line. On FIX_REQUIRED, rule R-ENE-35 onward and transcribe by script on mb."
-  - "Next #7870 post, after the carrier fence and only with substance: the malformed-cutoff 503 relay (R-ENE-2026-09-28-w2-module-r8.md) plus round-8 status. Answer the owner's replies to 5866433049 (RULING 8 widening, registration writer, limitation tokens) when they come."
+  - "If the #8002 body still names 8bae70522f38 or an older head, refresh it to 992cfa4bf091 (review rows 8 and 9, the records list, the seat verification) and keep the HOLD line, DRAFT, no labels and auto-merge null."
+  - "Round-9 closure by the same reviewer carrier (a14e0071943034a00) on #8002 at 992cfa4bf091, with this records PR's at-source corrections and relay 5868018569 in scope. Record the verdict under research/energy/nuclear_program/reviews/. On FIX_REQUIRED, rule R-ENE-37 onward and transcribe by script on mb."
+  - "Next #7870 post, after the carrier fence and only with substance. Answer the owner's replies to 5866433049 (RULING 8 widening, limitation tokens) and to 5868018569 (the malformed-cutoff relay, O1) when they come. The registration writer is settled: the Robotics seat agreed in 5866989985 that Energy lands nuclear itself."
   - "After #7870 merges: rebase #8002 onto main. Then open the registration carrier per REG-PACKET-2026-09-25-nuclear_power.md sections 3, 3b, 4, 4b and 5, re-running the section-1c gates at the post-merge heads. Then served, browser and privacy proof, then Task 10."
   - "Fresh-read the Slack root and #7870 before every substantive write; the two-hourly scheduled watch watch-gmi-energy-fable-ceo-e2e-20260923 reports #7870 merge/close, the shared registry file landing on main, and counterpart edges."
 do_not_redo:
@@ -133,10 +153,12 @@ do_not_redo:
   - "Do not change nuclear VIEWS: they already equal the shared client's TR_VIEW_KEYS, which Robotics' #7870 comment 5828876066 showed to be hard-pinned."
   - "Do not re-run the round-6 closure, and do not re-derive the round-7 packet. The seat sim r7gate/sim plus apply_r7.py are the byte reference."
   - "Do not re-raise Robotics' known_revisions. It is NOT count-only (a1c8968f8e2f: read at :549 inside _inputs_known, called at :404 for the count and at :530 where the block's text is withheld); that was relayed as #7870 comment 5866433049 item 4, and the owner decides. (Corrected 2026-09-28: this item used to say count-only.)"
-  - "Do not re-derive the round-8 packet. The seat sim r8gate/sim plus apply_r8.py are the byte reference; m34_broad is the one documented residual and stays unpinned (R-ENE-34)."
+  - "Do not re-derive the round-8 packet. The seat sim r8gate/sim plus apply_r8.py are the byte reference. (Corrected 2026-09-28, round-8 closure NIT-A: this item also said 'm34_broad is the one documented residual and stays unpinned (R-ENE-34)'. Its reason was false, and R-ENE-35 pins m34_broad in round 9.)"
   - "Do not re-run the registration dry-run at a0d7b054ff23; REG-PACKET section 1c is the record. Re-run its gates at the post-merge heads."
   - "Do not re-introduce the :1298-1299 erratum. :1300 was correct; the reviewer retracted its own NIT (round-7 closure NIT-1)."
   - "Do not re-verify the REG-PACKET facts again at a0d7b054ff23; section 1b is the record. Re-verify only at the post-merge heads."
+  - "Do not re-derive the round-9 packet. The seat sim r9gate/sim plus apply_r9.py are the byte reference, and the 68-mutant matrix leaves exactly round 7's six equivalents."
+  - "Do not re-probe the malformed-cutoff relay at a0d7b054ff23. R-ENE-35's table and #7870 comment 5868018569 are the record; re-probe only if the owner changes _validate_query or the refusal map."
 danger_areas:
   - "Macro is public: no full-fidelity paid research bodies, source PDFs, credentials or private production captures on this carrier; fixtures are SYNTHETIC and never copies of live Cameco/Centrus/BWXT/NuScale/Oklo values."
   - "A synthetic-fixture green is not native admission; a schema, a fixture pass, a page shell, green CI or a merge is not first-vertical completion (15-point law, packet section 16)."
@@ -148,8 +170,9 @@ danger_areas:
   - "Fix lanes have deleted packet-named tests and re-defined packet fixtures (NEW-1, NEW-9) while reporting success: a file-level post-lane check does not catch it; diff test names and fixture definitions (R-ENE-19)."
   - "A registration carrier that skips REG-PACKET section 3b.1 deploys nuclear code that never goes live, because sys.modules pins the old module. No test fails for the lazily loaded nuclear_owner_bundle unless the MUST_RESTART row is added."
   - "m1's lane volume (/Volumes/STORAGE) was still wedged on 2026-09-28. Route fabric lanes to mb."
-  - "_le and _parse_day are the base's (semiconductor_theme_research.py); Energy guards its own call sites and never edits the base helper. A test that pins today's 503 for a malformed user cutoff would fight the base's fix (a 400); do not write one."
-prs: [7791, 7881, 8001, 8002, 8016, 8139]
+  - "_le and _parse_day are the base's (semiconductor_theme_research.py); Energy guards its own call sites and never edits the base helper. Never pin an HTTP status for a malformed user cutoff: today's 503 and the base's future 400 are the owner's. Pin the engine with pytest.raises(ValueError), which ResearchRefusal subclasses, as R-ENE-35 does. (Corrected 2026-09-28, round-8 closure NIT-A: this item ended 'A test that pins today's 503 for a malformed user cutoff would fight the base's fix (a 400); do not write one', which was read as meaning no pin was possible.)"
+  - "A malformed query cutoff is silent on an empty bundle: 200, with the control's limitations. A probe of the cutoff on an empty bundle reads clean because it is blind. Probe with a bundle whose record reaches the time gate, and keep the well-formed control beside it."
+prs: [7791, 7881, 8001, 8002, 8016, 8018, 8023, 8139, 8143]
 ---
 
 # GMI Energy — Nuclear Value Capture first vertical: implementation operation working checkpoint
@@ -601,7 +624,7 @@ No reply had come when this was written.
   - one commit, 3 paths, each byte-identical to the seat tree;
   - `99 passed` on the frozen base and on the `a0d7b054ff23` compat tree, and route `4 passed` on each;
   - pyflakes clean;
-  - survivors are exactly the 6 equivalents plus `m34_broad`, which is the documented residual;
+  - survivors are exactly the 6 equivalents plus `m34_broad`, which is the documented residual **[R-ENE-35 pins it in round 9; the reason for leaving it unpinned was false (round-8 closure NIT-A)]**;
   - #8002 is DRAFT, with no labels and auto-merge null.
 - The seat red check was `4 failed, 95 passed`.
 
@@ -613,7 +636,7 @@ No reply had come when this was written.
 
 It corrected two facts in the packet: the definition-version import, and the curated block count, which is seven, not six. The five §4 tests are now in the packet as proven bytes (§4b). The registration needs nothing from #7870 except RULING 8's widening.
 
-**Queued for the next #7870 post.** A malformed user replay cutoff answers 503 `retry_later` instead of 400. Nuclear shows it at `a0d7b054ff23`; semis was not probed, because the instrument's positive control did not fire there.
+**Queued for the next #7870 post.** **[Corrected 2026-09-28 (round-8 closure NIT-D): the headline below holds only when a time gate reads the cutoff. An empty bundle answers a silent 200, and `source_history` is affected too. The corrected relay went out as #7870 comment 5868018569, item 7 (section 16).]** A malformed user replay cutoff answers 503 `retry_later` instead of 400. Nuclear shows it at `a0d7b054ff23`; semis was not probed, because the instrument's positive control did not fire there.
 
 **Gates, unchanged.**
 - #8002 stays DRAFT/HOLD until #7870 lands, because it imports four #7870 modules that are not on main.
@@ -624,3 +647,43 @@ It corrected two facts in the packet: the definition-version import, and the cur
 1. the round-8 closure, then the #8002 body refresh;
 2. the next #7870 post, only with substance;
 3. after #7870 merges: rebase, then the registration carrier (re-running §1c at the post-merge heads), then served, browser and privacy proof, then Task 10.
+
+## 16. State 2026-09-28 ~10:30Z — round 8 closed ACCEPT_WITH_NITS; round 9 (R-ENE-35/36) delivered by script and gated; the corrected relay posted
+
+**Round 8 closed ACCEPT_WITH_NITS.** The record is `research/energy/nuclear_program/reviews/OPUS-REVIEW-2026-09-28-w2-module-r8-closure.md`, from the same reviewer carrier `a14e0071943034a00`. The dispositions are in `rulings/R-ENE-2026-09-28-w2-module-r9.md`.
+- R-ENE-33 and R-ENE-34 are closed, with no BLOCKER or MAJOR. No string passes the guard and then makes `_le` raise: 68 named strings × 10 cutoffs and a 300,000-string fuzz gave 0 escapes.
+- NIT-A becomes R-ENE-35. `m34_broad` is pinned with an engine `pytest.raises(ValueError)`. The r8 reason for leaving it unpinned was false; the r8 ruling, `do_not_redo` and `danger_areas` are corrected at source.
+- NIT-B becomes R-ENE-36. The instant review clock is pinned, and the scope test's docstring now states the contract instead of claiming coverage.
+- NIT-C: four unmarked copies of the withdrawn line-number point are annotated at source.
+- NIT-D: the relay headline was corrected before posting (below).
+- O1 is base-owned and relayed. O2 and O3 are corrected at source.
+
+**Round 9** is `8bae70522f38..992cfa4bf09146cc454ec5cddd2aedcb7636f6a3`. It is test pins only, in one file, transcribed BY SCRIPT on mb (`apply_r9.py`, sha256 `6ad420c0…`).
+- The post-lane gate (`r9gate/postlane9.sh`) confirmed:
+  - one commit and 1 path, byte-identical to the seat tree; the engine and the route test are unchanged;
+  - `110 passed` on the frozen base, on the `a0d7b054ff23` compat tree and under a simulated base fix, and route `4 passed`;
+  - pyflakes clean, and no test name removed;
+  - 68 mutants, whose survivors are exactly round 7's six equivalents (14 survived the r8 tests);
+  - #8002 is DRAFT, with no labels and auto-merge null.
+- There is no red check, because the head was already correct. The before/after matrix is the evidence.
+
+**#7870 post** as comment 5868018569, after the carrier fence. It carries:
+- a status line: #8002 at `992cfa4bf091`, re-proved on `a0d7b054ff23`;
+- item 7, a base-owned report. A malformed cutoff never gets a 400: it answers 503 when a time gate reads it and a silent 200 on an empty bundle, `source_history` included. The fix shape is the owner's call;
+- O1, as an observation with no ask;
+- the reply to the Robotics seat's 5866989985:
+  - item 2 agreed, so Energy is the one nuclear registration writer;
+  - RULING 13 is already in REG-PACKET §3b.1, on both surfaces;
+  - RULING 14 is noted.
+
+No reply had come when this was written.
+
+**Gates, unchanged.**
+- #8002 stays DRAFT/HOLD until #7870 lands, because it imports four #7870 modules that are not on main.
+- Power-Demand stays preparation-only (R-ENE-16).
+- The #8001 live rung stays an EXACT_HUMAN_GATE behind `# MMX-DISK-TRIAGE-HOLD` (#6902).
+
+**Exact next actions.** They are the frontmatter `next_actions`, in order:
+1. the #8002 body refresh, then the round-9 closure;
+2. the next #7870 post, only with substance;
+3. after #7870 merges: rebase, then the registration carrier (both RULING 13 surfaces are already in REG-PACKET §3b.1), then served, browser and privacy proof, then Task 10.

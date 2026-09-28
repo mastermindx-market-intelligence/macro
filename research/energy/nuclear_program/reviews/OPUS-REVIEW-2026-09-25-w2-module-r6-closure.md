@@ -13,7 +13,7 @@
 - **Seat adjudication:** `../rulings/R-ENE-2026-09-28-w2-module-r7.md`.
   - R-ENE-31 fixes the MINOR inside Energy's own module, the reviewer's first option.
   - R-ENE-32 adds the pin.
-  - The line number is corrected at source.
+  - **[Seat annotation 2026-09-28 (round-8 closure NIT-C): that correction was itself withdrawn. The same reviewer retracted the line-number NIT in round-7 closure NIT-1, because :1300 was correct.]** The line number is corrected at source.
 
 ## Review text (verbatim)
 
@@ -206,7 +206,7 @@ All paths are absolute. W=/Volumes/Mastermind/agent-workspaces/claude/14851c4656
   - robotics_theme_research.py:534 `test_rbv18_held_review_is_excluded_but_retained` is correct, with the "remains authorized evidence" assert at :545;
   - the RBV-17 lineage pins are at :358, :502 and temporal.py:156;
   - the :974-978 quote from RULING 11 matches.
-  - The only mismatch is the :1300 line number (NIT).
+  - **[Seat annotation 2026-09-28 (round-8 closure NIT-C): retracted by the same reviewer in round-7 closure NIT-1; :1300 was correct.]** The only mismatch is the :1300 line number (NIT).
 
 **(6) Scope and privacy**
 - `git diff --name-only b3ea8a19ea05 HEAD` lists exactly the two files.
