@@ -4,7 +4,7 @@
   "purpose": "Execution status per MGD obligation for the Mining M1 integration. The canonical obligation TRACE is owned by carrier #7795 and is not reachable from main; this file is the program-owned execution record that cites it.",
   "authority": {
     "status_is_never_inferred_from_a_test_name": true,
-    "rationale": "Planned test names resolve 0/40 on main and 2/40 at #7950, so a name audit reports 38 false gaps. Rows are keyed by obligation id.",
+    "rationale": "Planned test names resolve 0/40 on main and 2/40 at #7950, so a name audit reports 38 false gaps. Rows are keyed by obligation id. SUPERSEDED-IN-PART 2026-09-27 (wave 9): the '0/40 on main' clause was measured BEFORE #7950 merged and main has moved on. Re-measured at HEAD d985e668c4ab: 40/40 rows carry a planned name, 2/40 resolve, so a name audit would report 38 false gaps TODAY. The conclusion and the rule `status_is_never_inferred_from_a_test_name` are unchanged and now rest on a current measurement; only the head the old figure described is gone.",
     "coverage_is_obligation_level_never_task_level": true,
     "task_level_hazard": "The carrier trace carries task 'T04' for all eight T04 rows and NO a/b split -- the split is R-MIN-05's. An earlier version of this file credited coverage with a task-level test, which credited all eight T04 rows to T04a's merge. The verdicts happened to be right; the rule was not, and it would credit a T04b row the same way. Each COVERED row now names the DELIVERED test id that pins it, and the generator asserts each named test exists in the suite.",
     "renamed_in_delivery": "4 of the 5 covered obligations are pinned by tests RENAMED from their planned names. That is the whole reason a name audit cannot measure this program.",
@@ -23,16 +23,25 @@
     "seat_may_modify": false
   },
   "measured_against": {
-    "origin_main": "f2a2abf706026b18594012f9477552482b14dd05",
+    "origin_main": "d985e668c4ab5ec1d8d5aa9febadab151f827b95",
     "delivered_pull_requests": {
       "T01'": 7932,
       "T04a": 7950
     },
     "green_gate": "python3 -m pytest tests/test_mining_composition.py -q",
-    "green_gate_result": "53 passed",
-    "suite_test_functions": 43,
-    "suite_collected_cases": 53,
-    "count_note": "43 test functions collect as 53 cases because one test is parametrized into 11. NEITHER number measures obligation coverage -- the obligation rows below are the measure."
+    "green_gate_result": "59 passed",
+    "suite_test_functions": 47,
+    "suite_collected_cases": 59,
+    "count_note": "43 test functions collect as 53 cases because one test is parametrized into 11. NEITHER number measures obligation coverage -- the obligation rows below are the measure.",
+    "origin_main_superseded": "was f2a2abf706026b18594012f9477552482b14dd05, measured before waves 7-8; refreshed 2026-09-27 (wave 9)",
+    "pin_integrity": {
+      "question": "does every delivered_test ref name a real def on this checkout?",
+      "command": "split each delivered_test on ',', then require ^def <name>\\( in the named file -- the field is sometimes a LIST and sometimes one string holding several refs, and treating a multi-ref string as one ref reports false dead pins",
+      "rows_with_a_pin": 19,
+      "refs_total": 27,
+      "refs_resolving": 27,
+      "dead_refs": 0
+    }
   },
   "status_vocabulary": {
     "COVERED_SUITE_GREEN": "Obligation's owning task is on main and the suite covering it is green.",
@@ -57,7 +66,7 @@
       "planned_test": "tests/test_mining_shared_contract.py::test_single_shared_kernel",
       "delivered_test": "tests/test_mining_composition.py::test_mining_definitions_loaded_from_committed_domain_file",
       "status": "PARTIAL_BY_CONSTRUCTION",
-      "note": "Satisfied for every construct T01' actually mints; the remainder is not expressible until a later task mints the construct it would constrain."
+      "note": "MEASURED 2026-09-27 (wave 9); status unchanged, reason replaced. The prior note -- \"satisfied for every construct T01' actually mints; the remainder is not expressible until a later task mints the construct it would constrain\" -- named no construct, no symbol and no falsifier, and this is the program's CORE reuse obligation (planned `test_single_shared_kernel`), so it was the one note in 40 unfalsifiable by inspection. Measured instead: this program CONSUMES the shared contract and REFUSES rather than substituting a local one. `mining_dependency_binding.py:109` holds the shared module as a STRING (`_SHARED_CONTRACT_MODULE = \"engine.theme_graph.curation_assertion\"`); `shared_contract()` resolves it by `importlib.import_module` at :305 and raises `MiningResearchRefusal` when the module is absent (:309) or does not expose BOTH `validate_assertion` and `curation_revision` (:317) -- an incomplete shared kernel is refused, never reimplemented. `client()` at :286 returns a typed `RouteUnbound` and discards entitlement at :293 (`del entitled`), so no route, client framework or publisher is minted here either. The payload declares `schema = 'market_ontology.mining_theme_research/v1'`, this program's own DOCUMENT schema id, which is not a kernel, and `authority` ships all five capability flags False (can_rank, can_gate, can_size, can_originate, can_open_entry). FALSIFIER, so this note cannot rot silently: the row stops being satisfied the moment a local definition of `validate_assertion`/`curation_revision` appears, or `_SHARED_CONTRACT_MODULE` stops being a lazy string import, or any capability flag ships True. The remainder stays PARTIAL_BY_CONSTRUCTION for the reason the prior note gave, which is still correct: a constraint on a construct nothing has minted is not expressible yet."
     },
     {
       "obligation_id": "MGD-02",
@@ -114,7 +123,7 @@
       "planned_test": "tests/test_mining_acceptance.py::test_w_r_real_source_journey",
       "delivered_test": null,
       "status": "NOT_RUN",
-      "note": "MEASURED G2-GATED 2026-09-27 (wave 7); status unchanged, reason replaced. Same class as MGD-06 for the W-R slice, with one extra dependency recorded: the conversion, commercial-stage and external/intra-group distinctions it demands are T02/T03 vocabulary, and on main `measure` passes through the composer verbatim (see MGD-23), so even a real journey could not yet keep them distinct. G2 plus T02/T03, in that order. No live MP Materials figure may become a fixture before G2."
+      "note": "MEASURED G2-GATED 2026-09-27 (wave 7); status unchanged, reason replaced. Same class as MGD-06 for the W-R slice, with one extra dependency recorded: the conversion, commercial-stage and external/intra-group distinctions it demands are T02/T03 vocabulary, and on main `measure` passes through the composer verbatim (see MGD-23), so even a real journey could not yet keep them distinct. G2 plus T02/T03, in that order. No live MP Materials figure may become a fixture before G2. PREMISE NOW PINNED 2026-09-27 (wave 8): the verbatim passthrough this reason cites is asserted by `test_the_composer_never_interprets_a_submitted_measure` (both slices, nine submitted measures each, including case variants, a trailing space and an unmappable string, so a normalizer or a whitelist-with-fallback cannot satisfy it). That guard protects THIS REASON'S PREMISE, not the obligation, and is NOT partial credit — the limit stated above is unchanged and still governs: a passthrough can no more keep the kinds DISTINCT than interchange them. Status deliberately unchanged. Its only effect is that if the composer ever begins reading a measure's meaning, the suite goes red instead of this reason going quietly stale."
     },
     {
       "obligation_id": "MGD-08",
@@ -141,7 +150,7 @@
       "planned_test": "tests/test_mining_composition.py::test_current_identity_not_historical_ownership",
       "delivered_test": null,
       "status": "SATISFIED_BY_ABSENCE_OF_CAPABILITY",
-      "note": "No `period` on native blocks and no validity window on identity at this head, so no historical-ownership claim is expressible. T04b carries `period` onto native blocks (T04B_FREEZE_PACKET 4.2), which makes this falsifiable and REQUIRES the two-armed pin in that same PR. NOT a code defect today."
+      "note": "No `period` on native blocks and no validity window on identity at this head, so no historical-ownership claim is expressible. T04b carries `period` onto native blocks (T04B_FREEZE_PACKET 4.2), which makes this falsifiable and REQUIRES the two-armed pin in that same PR. NOT a code defect today. RECEIPTED 2026-09-27 (wave 9): the absence is now measured, not asserted. A probe walked the WHOLE composed payload recursively for all 11 casebook cases -- 60 distinct key paths -- and the POSITIVE CONTROL is that the walk demonstrably reaches identity: it enumerates `companies[].cik`, `companies[].name`, `companies[].role`, `companies[].stable_subject_id`, `native_subjects[].kind`, `native_subjects[].label`. native_blocks carry exactly six keys (basis, measure, sign, source_label, stable_subject_id, value). Matches for period/as_of/valid_from/valid_to/validity/window/effective/historical anywhere in the payload: ZERO. Recorded because the FIRST version of that probe asked `payload[\"issuer\"]` and `payload[\"identity\"]` and NEITHER KEY EXISTS, so it answered NONE vacuously -- which is why the receipt is a whole-payload walk with an enumerated control rather than a field lookup. Independently, `identity_results` is a BUNDLE FIELD whose row CONTENT never originates in this module. All 11 reference sites in `engine/market_ontology/mining_theme_research.py` enumerated, because a claim quantified over every site must list them: :310 is a TEST SEAM that sets the field EMPTY `()`; :332 copies it through unchanged in the omission-appending helper; :473 and :1018 coerce CALLER-supplied rows (`tuple(bundle.get(\"identity_results\", ()))`, empty default); :541, :596, :607 and :676 READ it (`for ident in bundle.identity_results`); :536, :593 and :671 are comments. So the module mints no identity row -- CORRECTED 2026-09-27 (wave 9c): this clause first said \"a BUNDLE INPUT the module only reads (:332/473/541/596/607)\", written from a 5-site grep when there are 11, and :310/:332/:473/:1018 are assembly sites, so the sentence was false as phrased while the conclusion it served was right. Its fixture shape is exactly ['cik','fictional','name'] -- ONE shape across all 11 cases, no validity window; 10 of 11 carry one row and `missing_issuer` carries zero, which is that fixture's purpose. The two-armed pin is still OWED by T04b in the same PR that carries `period` onto native blocks."
     },
     {
       "obligation_id": "MGD-11",
@@ -177,7 +186,7 @@
       "planned_test": "tests/test_mining_witness_profiles.py::test_production_is_not_delivery",
       "delivered_test": null,
       "status": "NOT_RUN",
-      "note": "MEASURED SUBJECT 2026-09-27 (wave 6/7); status unchanged, reason replaced. Same shape as MGD-23 and measured the same way: the composer copies `measure` VERBATIM onto the block, so production, purchases, inventory, internal transfer and external delivery are neither interpreted nor mapped. Non-interpretation is not enforcement — a passthrough can no more keep the five kinds distinct than it can interchange them — so a test asserting the passthrough would NOT pin this. Needs T02 to mint the kind vocabulary first."
+      "note": "MEASURED SUBJECT 2026-09-27 (wave 6/7); status unchanged, reason replaced. Same shape as MGD-23 and measured the same way: the composer copies `measure` VERBATIM onto the block, so production, purchases, inventory, internal transfer and external delivery are neither interpreted nor mapped. Non-interpretation is not enforcement — a passthrough can no more keep the five kinds distinct than it can interchange them — so a test asserting the passthrough would NOT pin this. Needs T02 to mint the kind vocabulary first. PREMISE NOW PINNED 2026-09-27 (wave 8): the verbatim passthrough this reason cites is asserted by `test_the_composer_never_interprets_a_submitted_measure` (both slices, nine submitted measures each, including case variants, a trailing space and an unmappable string, so a normalizer or a whitelist-with-fallback cannot satisfy it). That guard protects THIS REASON'S PREMISE, not the obligation, and is NOT partial credit — the limit stated above is unchanged and still governs: a passthrough can no more keep the kinds DISTINCT than interchange them. Status deliberately unchanged. Its only effect is that if the composer ever begins reading a measure's meaning, the suite goes red instead of this reason going quietly stale."
     },
     {
       "obligation_id": "MGD-15",
@@ -213,7 +222,7 @@
       "planned_test": "tests/test_mining_composition.py::test_missing_threshold_keeps_contract_explanation",
       "delivered_test": null,
       "status": "SATISFIED_BY_ABSENCE_OF_CAPABILITY",
-      "note": "Clause 1 has no field to mis-encode: no ownership field exists on any delivered row or identity. Becomes falsifiable -- and owes a pin in the same PR -- the moment that field is minted."
+      "note": "Clause 1 has no field to mis-encode: no ownership field exists on any delivered row or identity. Becomes falsifiable -- and owes a pin in the same PR -- the moment that field is minted. RECEIPTED 2026-09-27 (wave 9): the absence is now measured, not asserted. A probe walked the WHOLE composed payload recursively for all 11 casebook cases -- 60 distinct key paths -- and the POSITIVE CONTROL is that the walk demonstrably reaches identity: it enumerates `companies[].cik`, `companies[].name`, `companies[].role`, `companies[].stable_subject_id`, `native_subjects[].kind`, `native_subjects[].label`. native_blocks carry exactly six keys (basis, measure, sign, source_label, stable_subject_id, value). Matches for ownership/owner/stake/interest_pct/held_by/parent/subsidiary anywhere in the payload: ZERO. Note `companies[].role` DOES exist and is not an ownership field -- the control proves the probe saw it and did not count it. A pin is still OWED in the same PR that mints an ownership field."
     },
     {
       "obligation_id": "MGD-19",
@@ -258,7 +267,7 @@
       "planned_test": "tests/test_mining_economic_inputs.py::test_cash_claims_not_operating_profit",
       "delivered_test": "",
       "status": "NOT_RUN",
-      "note": "REASON CORRECTED 2026-09-27; status unchanged. Measured: the composer is a PASSTHROUGH for `measure` -- submitted 'financing proceeds' composes verbatim as 'financing proceeds', never interpreted or mapped. Non-interpretation is not enforcement: because the composer never reads the measure's meaning, it can neither substitute financing for operating earnings NOR enforce that they stay distinct. So this is not absence of capability and not coverage -- it genuinely needs T03 to mint the input kind vocabulary (financing / cash availability / owned inventory / operating earnings) and then pin non-substitution against it. A test asserting the passthrough would NOT pin this obligation."
+      "note": "REASON CORRECTED 2026-09-27; status unchanged. Measured: the composer is a PASSTHROUGH for `measure` -- submitted 'financing proceeds' composes verbatim as 'financing proceeds', never interpreted or mapped. Non-interpretation is not enforcement: because the composer never reads the measure's meaning, it can neither substitute financing for operating earnings NOR enforce that they stay distinct. So this is not absence of capability and not coverage -- it genuinely needs T03 to mint the input kind vocabulary (financing / cash availability / owned inventory / operating earnings) and then pin non-substitution against it. A test asserting the passthrough would NOT pin this obligation. PREMISE NOW PINNED 2026-09-27 (wave 8): the verbatim passthrough this reason cites is asserted by `test_the_composer_never_interprets_a_submitted_measure` (both slices, nine submitted measures each, including case variants, a trailing space and an unmappable string, so a normalizer or a whitelist-with-fallback cannot satisfy it). That guard protects THIS REASON'S PREMISE, not the obligation, and is NOT partial credit — the limit stated above is unchanged and still governs: a passthrough can no more keep the kinds DISTINCT than interchange them. Status deliberately unchanged. Its only effect is that if the composer ever begins reading a measure's meaning, the suite goes red instead of this reason going quietly stale."
     },
     {
       "obligation_id": "MGD-24",

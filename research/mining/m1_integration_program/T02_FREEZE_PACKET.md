@@ -150,8 +150,22 @@ standard M11 met on T04a; nothing weaker counts.
 ## 5. Delivery gates — "not done unless"
 
 - Probes committed **RED first**, in their own commit; the receipt is commit order.
-- `tests/test_mining_witness_profiles.py` green, **plus** `tests/test_issuer_profiles.py` and
-  `tests/test_event_workspace_build.py` green — the shared-owner edit must not move a sibling.
+- `tests/test_mining_witness_profiles.py` green, **plus** `tests/test_issuer_profiles_a5a.py`,
+  `tests/test_refresh_event_workspaces.py` and
+  `tests/test_company_intelligence_event_workspace.py` green — the shared-owner edit must not
+  move a sibling. **CORRECTED 2026-09-27: this gate named `tests/test_issuer_profiles.py` and
+  `tests/test_event_workspace_build.py`, and NEITHER FILE EXISTS.** The suites it means exist
+  under the names above; measured green together (123 passed) on `origin/main` `509ffb5a6a5c`.
+  The gate's intent is unchanged — only the names were wrong. This mattered because pytest on
+  a missing path exits 4 (readable as an environment fault) while a pattern-based run collects
+  zero tests and prints "no tests ran", so the ONLY guard protecting the incumbent owner of
+  the shared `issuer_profiles.py` from T02's edit would not have executed. Resolve every
+  backticked path in a frozen gate against the tree BEFORE dispatch.
+  `tests/test_mining_witness_profiles.py` is ALSO absent today, and lawfully so — it is
+  T02's own deliverable, which T02 mints. The distinction is the point: that name is
+  NOT-YET-MINTED and becomes runnable on delivery, whereas the two corrected names were
+  NOT-A-SYMBOL and could never have bound. So this gate is only executable in full AFTER
+  T02 lands; the three sibling suites above are runnable now and were measured now.
 - The `issuer_profiles.py` edit is ONE contiguous block + 2 merge lines, the branch appended
   **after** the PG branch, homebuilder dicts untouched (R-IND-10 transfers verbatim).
 - T02 **mints** the Mining CI job (Audit A line 183) — `scope: exclusive`, appended at the END

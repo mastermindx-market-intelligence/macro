@@ -126,6 +126,42 @@ next_action: >
   was available has not finished.** Clause 1 still needs T03's definition vocabulary and is not
   claimed. Do NOT credit `test_internal_transfer_keeps_elimination_sign` to MGD-19: it asserts
   through a helper, and a helper pin is not a pin on the composed payload.
+
+  WAVE 9 (records only; no code, no status, no count changed) closed the program's last
+  UNRECEIPTED claims. Three classes, each a different failure of evidence rather than of fact.
+  (1) Two rows asserted an ABSENCE in prose - falsifiable, but with no record that anyone probed.
+  Both now carry a whole-payload recursive walk with an ENUMERATED positive control, written that
+  way because the first version of the probe read two keys that do not exist and answered NONE
+  vacuously: a negative result produced by looking in the wrong place is indistinguishable from a
+  real absence, and only a control that lists what the probe DID reach separates them.
+  (2) The program's CORE reuse row carried the one note in 40 unfalsifiable by inspection; it now
+  states the mechanism (the shared contract is a lazy string import, REFUSED when incomplete, never
+  reimplemented) and the four conditions that would break it.
+  (3) Four record sites justified measurements by naming scratchpad scripts that no longer exist,
+  and the ledger header quoted numbers from a head that no longer exists. Both are the same defect
+  the program already names as `green proof against a stale base`, appearing INSIDE the evidence
+  rather than in CI - so the repair scripts were written SELF-MEASURING, computing every figure at
+  run time, because a repair that pasted today's numbers as literals would rebuild the defect one
+  head later. The stale header vindicated its own rule on re-measurement: 38 false gaps then, 38
+  false gaps now, so the clause was DATED rather than deleted.
+  One correction rides along, recorded because it was mine: a sentence written from a five-site grep
+  claimed `identity_results` is never constructed in the module. There are ELEVEN sites and four
+  assemble the field. The accurate claim is stronger - no identity row's CONTENT originates there -
+  and all eleven are now enumerated in T03 section 6. A claim quantified over every site must list
+  them.
+  WAVE 8 (records only) fixed a gate that could not execute. T02's §5 sibling-regression gate
+  required `tests/test_issuer_profiles.py` and `tests/test_event_workspace_build.py` green and
+  NEITHER FILE EXISTS; the suites it means are `tests/test_issuer_profiles_a5a.py`,
+  `tests/test_refresh_event_workspaces.py` and
+  `tests/test_company_intelligence_event_workspace.py`, measured green together (123 passed).
+  That gate is the packet's ONLY protection against T02's edit to the shared
+  `issuer_profiles.py` regressing its incumbent owner, and it fails QUIETLY - a missing path
+  exits 4, a pattern run prints "no tests ran". All five packets were then swept
+  token-by-token: ZERO undeclared absent symbols, and no sibling repeats the class, so the
+  sweep is recorded do_not_redo. Also recorded: a gate named after a PR or a package is not
+  falsifiable by inspection - `engine/theme_graph/` has nine PRE-EXISTING modules on main while
+  #7870's `curation_assertion` and route/client/mount seam are absent, so state a gate as the
+  absent SYMBOL plus its probe.
   T05/T06 stay held for #7870's route/client/mount on main plus the answer to comment
   5811889498; T08 is last; G2 real-source admission remains an incumbent/operator act.
   Standing operator items: mini2 has no WAN (a bridge0 default route shadows the real gateway;
