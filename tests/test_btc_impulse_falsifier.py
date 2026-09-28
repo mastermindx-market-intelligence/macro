@@ -362,6 +362,37 @@ def test_validate_does_not_count_immature_tail_fires():
     assert result["legs"]["d2"]["pass"] is False
 
 
+def test_r3_episode_selection_requires_observed_onsets_and_no_future_labels():
+    from research.crypto_science.r3_cohort_study import episode_starts
+    idx = pd.date_range("2026-01-01", periods=12)
+    fire = pd.Series([pd.NA, True, False, True, True, False, True, False, False, True, False, False],
+                     index=idx, dtype="boolean")
+    # Jan2 is already positive when it first becomes observed: no invented onset.
+    assert list(episode_starts(fire, separation_days=3)) == [idx[3], idx[9]]
+    assert list(episode_starts(fire, separation_days=7)) == [idx[3]]
+    sparse = fire.drop(idx[2])
+    assert idx[3] not in episode_starts(sparse, separation_days=3)
+
+
+def test_r3_delay_uses_calendar_days_and_preserves_unknown():
+    from research.crypto_science.r3_cohort_study import delayed_observations
+    idx = pd.date_range("2026-01-01", periods=6)
+    fire = pd.Series([False, True], index=idx[[0, 2]], dtype="boolean")
+    shifted = delayed_observations(fire, idx, 1)
+    assert pd.isna(shifted.loc[idx[0]])
+    assert not bool(shifted.loc[idx[1]])
+    assert pd.isna(shifted.loc[idx[2]])
+    assert bool(shifted.loc[idx[3]])
+    assert shifted.iloc[4:].isna().all()
+
+
+def test_r3_episode_interval_abstains_with_one_event_block():
+    from research.crypto_science.r3_cohort_study import block_hit_interval
+    assert block_hit_interval(np.array([1, 0, 0]), np.array([1, 0, 0])) is None
+    got = block_hit_interval(np.array([1, 1, 0]), np.array([1, 1, 0]))
+    assert got == [1.0, 1.0]
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     for fn in fns:

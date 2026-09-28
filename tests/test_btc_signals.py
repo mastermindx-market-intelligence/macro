@@ -406,8 +406,51 @@ def test_bottom_pressure_matches_every_recent_prefix_without_repainting():
     assert full.between(0, 1).all()
 
 
+def _read_funding_fixture(frame):
+    from engine import btc_inputs as inputs
+    original = inputs.store.read
+    inputs.store.read = lambda group, name: frame
+    try:
+        return inputs._funding()
+    finally:
+        inputs.store.read = original
+
+
+def test_funding_selects_named_rate_regardless_of_physical_column_order():
+    idx = pd.date_range("2026-01-01", periods=4)
+    df = pd.DataFrame({"funding_rate_markPrice": [60000.] * 4,
+                       "funding_rate": [9.] * 4,
+                       "funding_rate_fundingRate": [0.0, -0.001, 0.002, np.nan]}, index=idx)
+    expected = df["funding_rate_fundingRate"]
+    pd.testing.assert_series_equal(_read_funding_fixture(df), expected)
+    pd.testing.assert_series_equal(_read_funding_fixture(df.iloc[:, ::-1]), expected)
+    source = (Path(__file__).resolve().parent.parent / "engine/btc_inputs.py").read_text()
+    assert '"funding": _funding()' in source
+
+
+def test_funding_never_falls_back_to_mark_price_or_unproven_legacy_field():
+    idx = pd.date_range("2026-01-01", periods=3)
+    for frame in [None, pd.DataFrame(),
+                  pd.DataFrame({"funding_rate_markPrice": [60000.] * 3}, index=idx),
+                  pd.DataFrame({"funding_rate": [0.001] * 3}, index=idx),
+                  pd.DataFrame(np.ones((3, 2)), index=idx,
+                               columns=["funding_rate_fundingRate"] * 2)]:
+        assert _read_funding_fixture(frame) is None
+
+
+def test_funding_keeps_signed_zero_and_unknown_instead_of_invented_rescale():
+    df = pd.DataFrame({"funding_rate_fundingRate": ["0", "-0.01", "bad", np.inf, -np.inf]},
+                      index=pd.date_range("2026-01-01", periods=5))
+    result = _read_funding_fixture(df)
+    assert result.iloc[0] == 0 and result.iloc[1] == -0.01
+    assert result.iloc[2:].isna().all()
+
+
 if __name__ == "__main__":
-    for fn in [test_completed_three_day_closes_preserve_membership_and_completion_date,
+    for fn in [test_funding_selects_named_rate_regardless_of_physical_column_order,
+               test_funding_never_falls_back_to_mark_price_or_unproven_legacy_field,
+               test_funding_keeps_signed_zero_and_unknown_instead_of_invented_rescale,
+               test_completed_three_day_closes_preserve_membership_and_completion_date,
                test_completed_three_day_closes_all_prefixes_and_invalid_bins,
                test_completed_three_day_closes_reject_malformed_daily_indices,
                test_bottom_pressure_matches_every_recent_prefix_without_repainting,

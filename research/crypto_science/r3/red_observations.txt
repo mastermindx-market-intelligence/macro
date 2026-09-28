@@ -1,0 +1,59 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+__________ test_observations_keep_warmup_and_missing_sources_unknown ___________
+tests/test_btc_impulse_radar.py:252: in test_observations_keep_warmup_and_missing_sources_unknown
+    missing = _observations(sig)
+              ^^^^^^^^^^^^^^^^^^
+tests/test_btc_impulse_radar.py:245: in _observations
+    return R.fire_series(sig, preserve_unknown=preserve)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: fire_series() got an unexpected keyword argument 'preserve_unknown'
+____________ test_observations_require_complete_calendar_lookbacks _____________
+tests/test_btc_impulse_radar.py:270: in test_observations_require_complete_calendar_lookbacks
+    out = _observations(sig, dv, sp)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_btc_impulse_radar.py:245: in _observations
+    return R.fire_series(sig, preserve_unknown=preserve)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: fire_series() got an unexpected keyword argument 'preserve_unknown'
+_____ test_observations_reject_nonfinite_invalid_and_zero_variance_sources _____
+tests/test_btc_impulse_radar.py:282: in test_observations_reject_nonfinite_invalid_and_zero_variance_sources
+    constant = _observations(sig, _dvol(idx, [0.04] * 160), _sopr(idx, [1.0] * 160))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_btc_impulse_radar.py:245: in _observations
+    return R.fire_series(sig, preserve_unknown=preserve)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: fire_series() got an unexpected keyword argument 'preserve_unknown'
+______ test_observations_default_fire_contract_is_unchanged_on_known_rows ______
+tests/test_btc_impulse_radar.py:299: in test_observations_default_fire_contract_is_unchanged_on_known_rows
+    qualified = _observations(sig, dv, sp)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_btc_impulse_radar.py:245: in _observations
+    return R.fire_series(sig, preserve_unknown=preserve)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: fire_series() got an unexpected keyword argument 'preserve_unknown'
+_______ test_observations_are_prefix_invariant_with_full_source_history ________
+tests/test_btc_impulse_radar.py:313: in test_observations_are_prefix_invariant_with_full_source_history
+    full = _observations(sig, dv, sp)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_btc_impulse_radar.py:245: in _observations
+    return R.fire_series(sig, preserve_unknown=preserve)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: fire_series() got an unexpected keyword argument 'preserve_unknown'
+_______________ test_observations_reject_malformed_signal_dates ________________
+tests/test_btc_impulse_radar.py:330: in test_observations_reject_malformed_signal_dates
+    _observations(bad)
+tests/test_btc_impulse_radar.py:245: in _observations
+    return R.fire_series(sig, preserve_unknown=preserve)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: fire_series() got an unexpected keyword argument 'preserve_unknown'
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_btc_impulse_radar.py::test_observations_keep_warmup_and_missing_sources_unknown
+FAILED tests/test_btc_impulse_radar.py::test_observations_require_complete_calendar_lookbacks
+FAILED tests/test_btc_impulse_radar.py::test_observations_reject_nonfinite_invalid_and_zero_variance_sources
+FAILED tests/test_btc_impulse_radar.py::test_observations_default_fire_contract_is_unchanged_on_known_rows
+FAILED tests/test_btc_impulse_radar.py::test_observations_are_prefix_invariant_with_full_source_history
+FAILED tests/test_btc_impulse_radar.py::test_observations_reject_malformed_signal_dates
+6 failed, 10 deselected, 19 warnings in 5.11s
