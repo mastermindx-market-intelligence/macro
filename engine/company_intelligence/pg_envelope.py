@@ -58,6 +58,7 @@ _YEAR_BEFORE = re.compile(r"(?:\A *|[A-Za-z0-9] *|[A-Za-z]\. *|[A-Za-z0-9] *[,/]
 _YEAR_AFTER = re.compile(r" *\Z| *[A-Za-z0-9]|[,/-][A-Za-z0-9]| *[,/] *(?:\Z|[A-Za-z0-9])| +- +[A-Za-z0-9]")
 _FIGURE = re.compile(r"\(?\$?[0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?\)?%?")
 _ODD_CHARACTER = re.compile(r"[^\S \t\n\r\f\xa0]|[\x00-\x08\x0b\x0e-\x1f\x7f-\x9f]")
+_UNPRINTED_RAW_TEXT = frozenset({"script", "style"})
 _RAW_TEXT_ELEMENT = re.compile(rf"<({'|'.join(_RAW_TEXT_CLOSE)})\b[^>]*>.*?</\1{_HTML_SPACE}*>", re.I | re.S)
 _NON_ASCII = re.compile(r"[^\x00-\x7f]")
 _PERIOD_LABEL = "<period>"
@@ -1151,7 +1152,16 @@ def _prior_note_present(document: Document, prior_end: date) -> bool:
         f"(1) For the three months ended {_ENGLISH_MONTHS[prior_end.month - 1]} {prior_end.day}, {prior_end.year}, "
         "there were no adjustments to or reconciling items for Core EPS."
     )
-    return _norm(sentence) in _norm(_text(_RAW_TEXT_ELEMENT.sub(" ", document.source[end:following])))
+    region = document.source[end:following]
+    if any(match.group(1).lower() not in _UNPRINTED_RAW_TEXT for match in _RAW_TEXT_ELEMENT.finditer(region)):
+        return False
+    region = _RAW_TEXT_ELEMENT.sub(" ", region)
+    if any(
+        kind == "reference" and not decoded or _ODD_CHARACTER.search(decoded)
+        for kind, decoded, _start, _end in _units(region)
+    ):
+        return False
+    return _norm(sentence) in _norm(_text(region))
 
 
 def _table_start(source: str, ordinal: int) -> int:
