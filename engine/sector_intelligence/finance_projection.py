@@ -31,7 +31,7 @@ import hashlib
 import json
 import re
 from dataclasses import dataclass, replace
-from datetime import datetime, date
+from datetime import datetime, date, time, timezone
 from typing import Any, Iterable, Mapping, Sequence
 
 
@@ -666,7 +666,7 @@ def _strip_correction_extras(correction: Any) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 # The clocks that say when a row became knowable. A row that any of them
-# dates after the knowledge cutoff could not be known at the cutoff. The
+# dates past the knowledge cutoff could not be known at the cutoff. The
 # clocks that say when a row holds in the world (a report period, an
 # effective_at, a record's business validity) are not listed: a row can be
 # known before the time it describes.
@@ -675,36 +675,87 @@ _CELL_KNOWN_CLOCKS = ("evidence_date",) + _OBSERVATION_KNOWN_CLOCKS
 _SOURCE_KNOWN_CLOCKS = ("published_at", "observed_at", "retained_at")
 
 
-def _known_by(clocks: Any, names: Sequence[str], knowledge_cutoff: date) -> bool:
-    """False when any named clock parses to a date after the cutoff. A clock
-    that is absent or does not parse says nothing, so it never removes a
-    row: how an undated row is read stays each reader's rule."""
+def _contract_instant(value: Any) -> datetime | None:
+    """The UTC instant the shared contracts read from a clock
+    (contracts._parse_temporal): a bare date is the start of its day in UTC,
+    a time without an offset is UTC, and an offset is honoured. None when
+    the value names no instant: it does not parse, it is a time of day with
+    no date, or its offset carries it outside the range of a datetime."""
+    try:
+        # Structural check: datetime has a ``time`` part, date does not.
+        # Survives a monkey-patched ``datetime`` symbol.
+        if hasattr(value, "hour") and hasattr(value, "minute"):
+            if not hasattr(value, "date"):
+                return None
+            parsed = value
+        elif isinstance(value, date):
+            return datetime.combine(value, time.min, tzinfo=timezone.utc)
+        elif isinstance(value, str):
+            text = value.strip()
+            if re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", text):
+                return datetime.combine(date.fromisoformat(text), time.min, tzinfo=timezone.utc)
+            parsed = datetime.fromisoformat(text[:-1] + "+00:00" if text.endswith("Z") else text)
+        else:
+            return None
+        if getattr(parsed, "tzinfo", None) is None:
+            return parsed.replace(tzinfo=timezone.utc)
+        return parsed.astimezone(timezone.utc)
+    except (AttributeError, OverflowError, TypeError, ValueError):
+        return None
+
+
+def _known_by(clocks: Any, names: Sequence[str], cutoff: datetime) -> bool:
+    """False when any named clock dates the row past the cutoff instant.
+
+    A clock is read two ways, and either one past the cutoff withholds the
+    row: as the instant the shared contracts read from it, and as the date
+    this composer publishes for it, the calendar date the clock was written
+    in. So every date the document publishes from a row is on or before the
+    cutoff. A time written late on the cutoff's date in a zone behind UTC is
+    past the cutoff by its instant; a time written early on the next day in
+    a zone ahead of UTC is withheld by its date, although its instant is
+    not past the cutoff. A clock that is absent or does not parse says
+    nothing, so it never removes a row: how an undated row is read stays
+    each reader's rule."""
     if not isinstance(clocks, Mapping):
         return True
+    cutoff_day = cutoff.date()
     for name in names:
-        when = _coerce_date(clocks.get(name))
-        if when is not None and when > knowledge_cutoff:
+        value = clocks.get(name)
+        instant = _contract_instant(value)
+        if instant is not None and instant > cutoff:
+            return False
+        day = _coerce_date(value)
+        if day is not None and day > cutoff_day:
             return False
     return True
 
 
-def _known_rows(rows: Any, names: Sequence[str], knowledge_cutoff: date, clocks_at: str | None = None) -> Any:
-    """The rows of an owner list known at the cutoff, judged by each row's
-    own clocks or by the mapping it holds under ``clocks_at``. A value that
-    is not a list passes unchanged, so each reader keeps its own handling
-    of a malformed input."""
-    if not isinstance(rows, (list, tuple)):
+def _known_rows(rows: Any, names: Sequence[str], cutoff: datetime, clocks_at: str | None = None) -> Any:
+    """The rows of an owner sequence known at the cutoff, judged by each
+    row's own clocks or by the mapping it holds under ``clocks_at``.
+
+    Every iterable of rows is gated, since a reader iterates whatever it is
+    given: a list stays a list, a tuple a tuple, and any other iterable
+    becomes a list. A string, bytes or a mapping is not a row sequence and
+    passes unchanged, so each reader keeps its own handling of a malformed
+    input."""
+    if rows is None or isinstance(rows, (str, bytes, bytearray, Mapping)):
+        return rows
+    try:
+        iterator = iter(rows)
+    except TypeError:
         return rows
     kept = [
         row
-        for row in rows
+        for row in iterator
         if not isinstance(row, Mapping)
-        or _known_by(row.get(clocks_at) if clocks_at else row, names, knowledge_cutoff)
+        or _known_by(row.get(clocks_at) if clocks_at else row, names, cutoff)
     ]
     return tuple(kept) if isinstance(rows, tuple) else kept
 
 
-def _known_packet(packet: Any, knowledge_cutoff: date) -> Any:
+def _known_packet(packet: Any, cutoff: datetime) -> Any:
     if not isinstance(packet, Mapping):
         return packet
     known = dict(packet)
@@ -715,42 +766,91 @@ def _known_packet(packet: Any, knowledge_cutoff: date) -> Any:
         block = dict(block)
         for key, names in (("observations", _OBSERVATION_KNOWN_CLOCKS), ("cells", _CELL_KNOWN_CLOCKS)):
             if key in block:
-                block[key] = _known_rows(block[key], names, knowledge_cutoff)
+                block[key] = _known_rows(block[key], names, cutoff)
         known[plane] = block
     return known
 
 
-def _known_per_slice(observations: Any, knowledge_cutoff: date) -> Any:
+def _known_per_slice(observations: Any, cutoff: datetime) -> Any:
     if not isinstance(observations, Mapping):
         return observations
     return {
-        slice_id: _known_rows(rows, _OBSERVATION_KNOWN_CLOCKS, knowledge_cutoff)
+        slice_id: _known_rows(rows, _OBSERVATION_KNOWN_CLOCKS, cutoff)
         for slice_id, rows in observations.items()
     }
 
 
-def _known_at_cutoff(inputs: FinanceOwnerInputs, knowledge_cutoff: date) -> FinanceOwnerInputs:
+def _known_at_cutoff(inputs: FinanceOwnerInputs, cutoff: datetime) -> FinanceOwnerInputs:
     """The owner inputs as they stood at the knowledge cutoff.
 
     The shared contracts state the rule as feature.point_in_time: an
     observation cannot postdate the knowledge cutoff. It is applied here,
     once, before any reader runs, to every dated owner row a reader can
     publish: operating and valuation observations and cells, expectation
-    and market observations, and source records, by their source's clocks.
-    Only the valuation anchor used to apply the cutoff. Every other plane,
-    the company cells, the source records, freshness and conflicts read
-    rows dated after it, and the contract accepted the document.
+    and market observations, and theme evidence and source records, by
+    their source's clocks. Only the valuation anchor used to apply the
+    cutoff. Every other plane, the company cells, the source records, the
+    curation revisions, freshness and conflicts read rows dated after it,
+    and the contract accepted the document.
     """
     packets = inputs.financial_packets
     if isinstance(packets, Mapping):
-        packets = {ticker: _known_packet(packet, knowledge_cutoff) for ticker, packet in packets.items()}
+        packets = {ticker: _known_packet(packet, cutoff) for ticker, packet in packets.items()}
     return replace(
         inputs,
         financial_packets=packets,
-        expectation_observations=_known_per_slice(inputs.expectation_observations, knowledge_cutoff),
-        market_observations=_known_per_slice(inputs.market_observations, knowledge_cutoff),
-        source_records=_known_rows(inputs.source_records, _SOURCE_KNOWN_CLOCKS, knowledge_cutoff, clocks_at="source"),
+        expectation_observations=_known_per_slice(inputs.expectation_observations, cutoff),
+        market_observations=_known_per_slice(inputs.market_observations, cutoff),
+        theme_evidence=_known_rows(inputs.theme_evidence, _SOURCE_KNOWN_CLOCKS, cutoff, clocks_at="source"),
+        source_records=_known_rows(inputs.source_records, _SOURCE_KNOWN_CLOCKS, cutoff, clocks_at="source"),
     )
+
+
+def _row_count(rows: Any) -> int:
+    """How many rows an owner sequence holds; 0 for anything that is not a
+    sized sequence of rows."""
+    if rows is None or isinstance(rows, (str, bytes, bytearray, Mapping)):
+        return 0
+    try:
+        return len(rows)
+    except TypeError:
+        return 0
+
+
+def _packet_rows(packets: Any) -> int:
+    if not isinstance(packets, Mapping):
+        return 0
+    return sum(
+        _row_count(block.get(key))
+        for packet in packets.values()
+        if isinstance(packet, Mapping)
+        for block in (packet.get("operating"), packet.get("valuation"))
+        if isinstance(block, Mapping)
+        for key in ("observations", "cells")
+    )
+
+
+def _per_slice_rows(observations: Any) -> int:
+    if not isinstance(observations, Mapping):
+        return 0
+    return sum(_row_count(rows) for rows in observations.values())
+
+
+def _withheld_by_cutoff(owner_inputs: FinanceOwnerInputs, known: FinanceOwnerInputs) -> frozenset[str]:
+    """The input receipts whose every dated row the knowledge cutoff
+    withheld. The gate keeps their keyed maps, so such an input is not
+    empty, but the document holds none of its rows: its receipt reads
+    DEGRADED, as an empty input's does. Theme evidence and source records
+    need no entry: the gate empties their lists."""
+    withheld: set[str] = set()
+    for owner, rows in (
+        ("financial_intelligence", lambda i: _packet_rows(i.financial_packets)),
+        ("expectations_revisions", lambda i: _per_slice_rows(i.expectation_observations)),
+        ("market_data", lambda i: _per_slice_rows(i.market_observations)),
+    ):
+        if rows(owner_inputs) and not rows(known):
+            withheld.add(owner)
+    return frozenset(withheld)
 
 
 # ---------------------------------------------------------------------------
@@ -1163,8 +1263,8 @@ def _valuation_anchor(
       over an untagged one, because it is the more specific filing.
     Two observations filed the same way on one date keep the owner's order:
     which company's reading anchors a slice is not decided here. An
-    observation dated after the knowledge cutoff never reaches the anchor:
-    _known_at_cutoff removes it before any plane reads.
+    observation that a knowledge clock dates past the knowledge cutoff never
+    reaches the anchor: _known_at_cutoff removes it before any plane reads.
     """
     candidates: list[tuple[tuple[date, bool], Mapping[str, Any]]] = []
     for packet in financial_packets.values():
@@ -2181,7 +2281,7 @@ def _constraints_for(inputs: FinanceOwnerInputs, slices: Sequence[Mapping[str, A
     return out
 
 
-def _input_receipts(inputs: FinanceOwnerInputs) -> list[dict[str, Any]]:
+def _input_receipts(inputs: FinanceOwnerInputs, withheld: frozenset[str] = frozenset()) -> list[dict[str, Any]]:
     receipts: list[dict[str, Any]] = []
     if inputs.sector_dossier is None:
         receipts.append({
@@ -2206,19 +2306,19 @@ def _input_receipts(inputs: FinanceOwnerInputs) -> list[dict[str, Any]]:
     receipts.append({
         "owner": "financial_intelligence",
         "generation": "financial_packet_v1",
-        "state": "READ" if inputs.financial_packets else "DEGRADED",
+        "state": "READ" if inputs.financial_packets and "financial_intelligence" not in withheld else "DEGRADED",
         "note": "Financial Intelligence packets are consumed for supported facts only.",
     })
     receipts.append({
         "owner": "expectations_revisions",
         "generation": "expectation_observations_v1",
-        "state": "READ" if inputs.expectation_observations else "DEGRADED",
+        "state": "READ" if inputs.expectation_observations and "expectations_revisions" not in withheld else "DEGRADED",
         "note": "Dated consensus and management guidance are admitted without inference.",
     })
     receipts.append({
         "owner": "market_data",
         "generation": "market_observations_v1",
-        "state": "READ" if inputs.market_observations else "DEGRADED",
+        "state": "READ" if inputs.market_observations and "market_data" not in withheld else "DEGRADED",
         "note": "Market observations are admitted as supplied by the owner.",
     })
     receipts.append({
@@ -2332,7 +2432,8 @@ def compose_finance_projection(
     is the minimum over the input as-of dates actually consumed, never
     ``now``).
 
-    An owner row dated after ``knowledge_cutoff`` is never read
+    An owner row that a knowledge clock dates past ``knowledge_cutoff``, by
+    its instant or by the date published for it, is never read
     (_known_at_cutoff).
     """
     # Every Finance slice is its own atlas id. (A lookup into the owner's
@@ -2346,10 +2447,11 @@ def compose_finance_projection(
         knowledge_cutoff_date = knowledge_cutoff.date()
     else:
         knowledge_cutoff_date = knowledge_cutoff
-    # Every reader below reads the inputs as they stood at the cutoff. The
-    # digest still identifies the snapshot the owner supplied.
+    # Every reader below reads the inputs as they stood at the cutoff, the
+    # instant the published knowledge_cutoff states. The digest still
+    # identifies the snapshot the owner supplied.
     owner_inputs = inputs
-    inputs = _known_at_cutoff(inputs, knowledge_cutoff_date)
+    inputs = _known_at_cutoff(inputs, _contract_instant(knowledge_cutoff))
 
     source_records, source_record_extras = _source_records_block(inputs)
 
@@ -2564,7 +2666,7 @@ def compose_finance_projection(
     degraded = _degraded_sections(inputs, company_rows)
 
     # Input receipts
-    input_receipts = _input_receipts(inputs)
+    input_receipts = _input_receipts(inputs, _withheld_by_cutoff(owner_inputs, inputs))
 
     document: dict[str, Any] = {
         "contract_id": "finance_intelligence_read_model.v1",

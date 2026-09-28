@@ -1195,6 +1195,40 @@ def test_compose_assertion_refs_sorted_by_curation_revision(monkeypatch):
     assert revisions.index(revision_b) < revisions.index(revision_a)
 
 
+def test_an_assertion_retained_past_the_knowledge_cutoff_is_not_consumed(monkeypatch):
+    """The run context's knowledge cutoff binds theme evidence. An assertion
+    whose source was retained a minute after the cutoff instant is not a
+    curation revision the dossier consumed: no assertion ref names it, and
+    ``select_evidence`` refuses it as ``not_available``. Retained on the
+    cutoff instant, the same assertion is named and selectable."""
+    reg = _import_reg()
+    theme_id = "synthetic_theme"
+    known = _assertion(revision="gmirca_" + ("a" * 32), theme_id=theme_id)
+    other_revision = "gmirca_" + ("b" * 32)
+    _install_resolver_double(monkeypatch, reg,
+                             lambda p: _ref_for(theme_id, p.get("curation_revision")))
+    query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
+
+    def named_and_selected(retained_at: str) -> tuple[list[str], str | None]:
+        other = _assertion(revision=other_revision, theme_id=theme_id)
+        other["source"]["retained_at"] = retained_at
+        bundle = _bundle_with_run_context(assertions=(known, other))
+        envelope = reg.compose(query, bundle)
+        named = [entry["curation_revision"] for entry in envelope["assertion_refs"]]
+        query_full = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF,
+                            expected_generation=envelope["generation"])
+        try:
+            selected = reg.select_evidence(query_full, bundle, _ref_for(theme_id, other_revision))
+        except ValueError as exc:
+            return named, getattr(exc, "code", None)
+        return named, selected["assertion"]["curation_revision"]
+
+    assert named_and_selected("2026-09-25T07:49:00Z") == (
+        [known["curation_revision"]], "not_available")
+    assert named_and_selected("2026-09-25T07:48:00Z") == (
+        [known["curation_revision"], other_revision], other_revision)
+
+
 def test_evidence_envelope_assertion_is_deep_copied_and_mutable(monkeypatch):
     """B4: the evidence envelope's ``assertion`` is a deep copy — mutating
     the envelope MUST NOT reach back into the source assertion."""

@@ -7,6 +7,7 @@ is copied from the live research carrier or from the schema fixture.
 from __future__ import annotations
 
 import builtins
+import collections
 import copy
 import dataclasses
 import datetime as _dt
@@ -2204,7 +2205,7 @@ def _without_digest(document: dict[str, Any]) -> dict[str, Any]:
 
 
 @pytest.mark.parametrize("fixture", _FENCE_FIXTURES)
-def test_nothing_dated_after_the_knowledge_cutoff_reaches_the_document(fixture: str) -> None:
+def test_nothing_dated_past_the_knowledge_cutoff_reaches_the_document(fixture: str) -> None:
     """Move every owner clock that says when a row became knowable to the
     day after the knowledge cutoff. The document validates, and nothing in
     it is dated after the cutoff. The walk finds the moved clocks in the
@@ -2223,7 +2224,8 @@ def test_nothing_dated_after_the_knowledge_cutoff_reaches_the_document(fixture: 
 def _one_more_row(where: str, clock: str, when: str) -> tuple[FinanceOwnerInputs, FinanceOwnerInputs]:
     """A fixture, and the same fixture with one more row at ``where``: a copy
     of a row there, dated on the knowledge cutoff, with a value no other row
-    carries and ``clock`` set to ``when``."""
+    carries and ``clock`` set to ``when``. Theme evidence gets a curation
+    revision no other row carries, since the fixture's row has no clocks."""
     on = _day(0)
     if where in ("operating cell", "valuation cell"):
         base = _extended_owner_inputs("default")
@@ -2241,6 +2243,11 @@ def _one_more_row(where: str, clock: str, when: str) -> tuple[FinanceOwnerInputs
         row["source"] = dict(row["source"], published_at=on, observed_at=on, retained_at=on)
         row["source"][clock] = when
         return base, dataclasses.replace(base, source_records=[*base.source_records, row])
+    if where == "theme evidence":
+        row = {"theme_id": "SYNTHETIC-theme", "curation_revision": "SYNTHETIC-revision-one-more-row",
+               "source": {"published_at": on, "observed_at": on, "retained_at": on}}
+        row["source"][clock] = when
+        return base, dataclasses.replace(base, theme_evidence=[*base.theme_evidence, row])
     if where in ("market", "expectation"):
         field = f"{where}_observations"
         observations = copy.deepcopy(dict(getattr(base, field)))
@@ -2264,12 +2271,13 @@ _ONE_MORE_ROW_CASES = [
       for clock in ("as_of", "observed_at", "published_at")),
     *((where, clock) for where in ("operating cell", "valuation cell")
       for clock in ("evidence_date", "as_of", "observed_at", "published_at")),
-    *(("source record", clock) for clock in ("published_at", "observed_at", "retained_at")),
+    *((where, clock) for where in ("source record", "theme evidence")
+      for clock in ("published_at", "observed_at", "retained_at")),
 ]
 
 
 @pytest.mark.parametrize(("where", "clock"), _ONE_MORE_ROW_CASES)
-def test_a_row_dated_after_the_knowledge_cutoff_changes_nothing_but_the_digest(where: str, clock: str) -> None:
+def test_a_row_dated_past_the_knowledge_cutoff_changes_nothing_but_the_digest(where: str, clock: str) -> None:
     """Add one row, dated on the knowledge cutoff but for ``clock``, which
     falls the day after it. The document is the one composed without that
     row, except the input digest, which still covers every row the owner
@@ -2306,3 +2314,128 @@ def test_a_row_known_by_the_cutoff_is_read_however_far_ahead_it_holds() -> None:
     document = _composed(dataclasses.replace(base, source_records=records))
     (change,) = document["material_changes"]
     assert change["event_clock"]["effective_at"] == ahead, change
+
+
+# The knowledge cutoff as an instant late on its day, written in UTC and in a
+# zone whose calendar date is already the next day.
+_CUTOFF_INSTANT = _dt.datetime(2026, 9, 24, 20, 0, tzinfo=_dt.timezone.utc)
+_CUTOFF_WRITTEN = {
+    "utc": _CUTOFF_INSTANT,
+    "utc+8": _CUTOFF_INSTANT.astimezone(_dt.timezone(_dt.timedelta(hours=8))),
+}
+# A market row's as_of, and whether the row is read at that cutoff.
+_CLOCKS_AT_THE_CUTOFF_INSTANT = [
+    ("2026-09-24", True),                  # the start of the cutoff's day in UTC
+    ("2026-09-24T19:00:00Z", True),
+    ("2026-09-24T12:00:00-07:00", True),   # 19:00 UTC
+    ("2026-09-24T21:00:00Z", False),
+    ("2026-09-24T20:30:00-08:00", False),  # 04:30 UTC the next day, written on the cutoff's date
+    ("2026-09-25T01:00:00+08:00", False),  # 17:00 UTC, but published as the next day's date
+    ("2026-09-25Tlate", False),            # no instant, and published as the next day's date
+]
+
+
+@pytest.mark.parametrize("written", sorted(_CUTOFF_WRITTEN))
+@pytest.mark.parametrize(("as_of", "read"), _CLOCKS_AT_THE_CUTOFF_INSTANT)
+def test_the_knowledge_cutoff_is_an_instant_no_published_date_passes(written: str, as_of: str, read: bool) -> None:
+    """The shared contracts read the published knowledge_cutoff as an
+    instant, and a published date as the start of its day in UTC. So a row
+    is read only when its clock's instant is not past the cutoff instant and
+    the date published for it is not past the cutoff's date in UTC. A time
+    written late on the cutoff's date in a zone behind UTC is withheld, and
+    so is a time written early on the next day in a zone ahead of it, whose
+    instant is before the cutoff. The outcome does not depend on the zone
+    the cutoff itself is written in."""
+    cutoff = _CUTOFF_WRITTEN[written]
+
+    def composed(inputs: FinanceOwnerInputs) -> dict[str, Any]:
+        document = compose_finance_projection(inputs, generated_at=cutoff, knowledge_cutoff=cutoff)
+        validate_contract(CONTRACT_ID, document)
+        return document
+
+    base, one_more = _one_more_row("market", "as_of", as_of)
+    before, after = composed(base), composed(one_more)
+    assert after["snapshot_identity"]["input_digest"] != before["snapshot_identity"]["input_digest"]
+    assert (_without_digest(after) != _without_digest(before)) is read
+
+
+# Clocks that name no instant: a time of day with no date, and offsets that
+# carry a time outside the range of a datetime. A market row's as_of, and
+# whether the date read from it places the row after the cutoff.
+_CLOCKS_WITHOUT_AN_INSTANT = {
+    "a time of day": (_dt.time(12, 0), False),
+    "an offset before year one": ("0001-01-01T00:00:00+05:00", False),
+    "an aware datetime before year one": (_dt.datetime(1, 1, 1, tzinfo=_dt.timezone(_dt.timedelta(hours=5))), False),
+    "an offset past year 9999": ("9999-12-31T23:59:59-05:00", True),
+}
+
+
+@pytest.mark.parametrize("clock", sorted(_CLOCKS_WITHOUT_AN_INSTANT))
+def test_a_clock_with_no_instant_never_stops_the_composer(clock: str) -> None:
+    """A clock the gate cannot turn into an instant is read by its date
+    alone, and the composer still returns a document the contract accepts.
+    A row whose date is after the cutoff is withheld: it changes nothing but
+    the digest. Any other row reaches the readers, whose rule for an undated
+    or an old row is unchanged."""
+    as_of, after_the_cutoff = _CLOCKS_WITHOUT_AN_INSTANT[clock]
+    base, one_more = _one_more_row("market", "as_of", as_of)
+    before, after = _composed(base), _composed(one_more)
+    assert after["snapshot_identity"]["input_digest"] != before["snapshot_identity"]["input_digest"]
+    if after_the_cutoff:
+        assert _without_digest(after) == _without_digest(before)
+
+
+def test_rows_in_any_sequence_are_held_to_the_knowledge_cutoff() -> None:
+    """The gate holds every sequence of rows a reader iterates to the
+    cutoff, not only a list or a tuple. With the expectation rows in a
+    deque, one more row dated the day after the cutoff changes nothing but
+    the digest, and the same row on the cutoff changes the document."""
+
+    def in_a_deque(inputs: FinanceOwnerInputs) -> FinanceOwnerInputs:
+        observations = {
+            slice_id: collections.deque(rows) for slice_id, rows in inputs.expectation_observations.items()
+        }
+        return dataclasses.replace(inputs, expectation_observations=observations)
+
+    base, late = _one_more_row("expectation", "as_of", _day(1))
+    _, on_cutoff = _one_more_row("expectation", "as_of", _day(0))
+    before = _composed(in_a_deque(base))
+    after = _composed(in_a_deque(late))
+    assert _without_digest(after) == _without_digest(before)
+    assert after["snapshot_identity"]["input_digest"] != before["snapshot_identity"]["input_digest"]
+    assert _without_digest(_composed(in_a_deque(on_cutoff))) != _without_digest(before)
+
+
+# The input receipt that answers for each owner input a reader can publish rows from.
+_RECEIPT_FOR_INPUT = {
+    "financial_packets": "financial_intelligence",
+    "expectation_observations": "expectations_revisions",
+    "market_observations": "market_data",
+    "theme_evidence": "theme_graph",
+    "source_records": "private_publication",
+}
+
+
+@pytest.mark.parametrize("field", sorted(_RECEIPT_FOR_INPUT))
+def test_an_input_the_knowledge_cutoff_withholds_is_received_as_degraded(field: str) -> None:
+    """An input receipt reads READ only while the document holds rows from
+    that input. Move every knowledge clock of one input a day past the
+    cutoff: that input's receipt turns from READ to DEGRADED, and no other
+    receipt changes. The gate keeps the keyed maps of packets, expectation
+    and market rows, so their receipts used to read READ over an input the
+    document held no row of."""
+    base = _extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+    # The fixture's theme evidence has no clocks; give it its source's.
+    base = dataclasses.replace(base, theme_evidence=[
+        dict(row, source={"retained_at": _day(0)}) for row in base.theme_evidence
+    ])
+    late = dataclasses.replace(base, **{field: _with_every_known_clock(getattr(base, field), _day(1))})
+
+    def receipts(inputs: FinanceOwnerInputs) -> dict[str, str]:
+        return {receipt["owner"]: receipt["state"] for receipt in _composed(inputs)["input_receipts"]}
+
+    before, after = receipts(base), receipts(late)
+    owner = _RECEIPT_FOR_INPUT[field]
+    assert before[owner] == "READ", before
+    assert after[owner] == "DEGRADED", after
+    assert {o: s for o, s in after.items() if o != owner} == {o: s for o, s in before.items() if o != owner}
