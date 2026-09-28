@@ -4475,7 +4475,9 @@ concurrency:
   # head's SHA. GitHub's mergeability check and the sweeper both read only the
   # PR's current head, so that red blocks nothing. Pinned by
   # tests/test_ci_plan_workflow.py
-  # (test_only_ci_gate_may_outlive_a_cancelled_run).
+  # (test_only_ci_gate_may_outlive_a_cancelled_run). The supersede experiment
+  # for this change ran on its own PR #8116, whose body records the run ids and
+  # timestamps.
   cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 jobs:
