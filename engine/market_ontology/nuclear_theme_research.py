@@ -208,12 +208,11 @@ class _Selection:
         if slug_keyed:
             self.limitations.add(f"scope_slug_keyed:{slug_keyed}")
         self.known_revisions = {
-            item.get("curation_revision") for item in bundle.assertions
-            if isinstance(item, Mapping)
+            assertion["curation_revision"] for assertion in self.assertions
         }
         absent = sum(
             1 for block in bundle.interpretation_blocks
-            if not self._inputs_known(block)
+            if self._reviewed_by_cutoff(block) and not self._inputs_known(block)
         )
         if absent:
             self.limitations.add(f"interpretation_inputs_absent:{absent}")
@@ -321,13 +320,17 @@ class _Selection:
         for block in self.bundle.interpretation_blocks:
             if not self._inputs_known(block):
                 continue
-            if self.query.time_mode == "system_replay":
-                reviewed = block.get("reviewed_at")
-                if not isinstance(reviewed, str) or not _le(
-                        reviewed, self.query.recorded_cutoff):
-                    continue
+            if not self._reviewed_by_cutoff(block):
+                continue
             chosen.append(dict(block))
         return sorted(chosen, key=lambda block: block.get("interpretation_id", ""))
+
+    def _reviewed_by_cutoff(self, block: Mapping[str, Any]) -> bool:
+        if self.query.time_mode != "system_replay":
+            return True
+        reviewed = block.get("reviewed_at")
+        return isinstance(reviewed, str) and _le(
+            reviewed, self.query.recorded_cutoff)
 
     def _inputs_known(self, block: Mapping[str, Any]) -> bool:
         refs = block.get("input_revisions") or []

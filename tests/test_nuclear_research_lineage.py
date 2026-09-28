@@ -87,3 +87,10 @@ def test_a_collapsed_copy_is_walked_because_the_selector_serves_it():
         QUERY, nuclear_bundle(served, syndicated, root, N04))
     assert "syndicated_collapsed" in payload["limitations"]
     assert lineage(served, syndicated, root, N04) == refs(syndicated, root)
+
+
+def test_after_a_served_hop_the_pointer_comes_from_the_last_served_record():
+    root = variant("N05", "L5C", review=REJECTED)
+    middle = corrects("N05", "L5B", root)
+    served = corrects("N05", "L5A", middle)
+    assert lineage(served, middle, root) == refs(middle, root)
