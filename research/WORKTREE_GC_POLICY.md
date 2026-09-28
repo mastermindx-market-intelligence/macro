@@ -510,6 +510,49 @@ correct `SAFE_MERGED` verdict is reached and then cannot be acted on — the con
 | `/Volumes/Mastermind/agent-workspaces` | **354** | **mandated** by the global SSD worktree-placement policy; `…/claude` alone measures **462 GiB** |
 | `/Volumes/Mastermind/worktrees` | **142** | the ungoverned mint root; hosts the web/Sol review trees |
 
+**REACH CORRECTED 2026-09-28 — both counts in that table are THIS CLONE'S REGISTRY, not the
+roots' populations.** `/Volumes/Mastermind/worktrees` is a mint root shared by **12 distinct git
+stores**: 353 directories sit directly under it, 336 of them linked worktrees, and only **140
+belong to `Macro Dashboard`** — the clone every instrument in this document reads. The other 196
+(58%) are owned by 11 other stores, two of which are self-hosted Actions runner workspaces, and
+they **cannot be enumerated from here at all** — there is no registration to read. So "142" was
+never the root's population, and neither a `roots` edit nor a host-detection repair can reach the
+other 196: a per-clone sweeper structurally cannot govern a shared mint root
+(`DSC:A-ONE-MINT-ROOT-IS-SHARED-BY-TWELVE-GIT-STORES`). Governing it would need per-entry owner
+resolution plus a removal issued against the OWNING store — the one git shape a worktree-isolated
+session may not run — so it belongs in a host-local daemon, not in this script. **Report the
+instrument's REACH beside every per-root number from here on.** And the root is far larger
+than any figure elsewhere in this document: `du` measures `/Volumes/Mastermind/worktrees` at
+**726.4 GiB** (2026-09-28), against the 462 GiB recorded above for `…/agent-workspaces/claude`.
+With 58% of its trees owned by stores we cannot enumerate, most of those bytes are not
+addressable from this checkout at all.
+
+**A THIRD absent location, found 2026-09-28 — an entire VOLUME that no root and no census
+covered.** `/Volumes/Worktrees` (`/dev/disk4s1`, 931 GiB, **130 GiB free / 87% used**) hosts **9
+fleet linked worktrees** across 4 stores. Six are owned by `Macro Dashboard` and therefore DO
+appear in the same `git worktree list` every figure above is derived from — registry-visible is
+not the same as governable — yet they are unreachable three times over: no root covers the volume
+(the 7 relative roots are repo-relative session dirs; the 1 absolute root is
+`~/.codex/worktrees`), the host-checkout belt refuses the path, and 4 of the 9 are `sol-*`
+HUMAN-class that §9 never auto-reclaims. One — `sol-consumer-cyclical-7804` — carries a **dead
+registration owned by `/Volumes/mini2/…`, another machine's volume**, so nothing on this host can
+ever prune it. The volume also holds the user's own `Backups`/`Companies`/`Documents` and the
+operator-protected `.ADSPOWER_GLOBAL`, which makes it **REPORT-ONLY for any sweeper,
+permanently.** The correctness worry that prompted the look is **FALSIFIED**: the mount is exFAT
+through Darwin 25 `fskit`, where a direct probe shows symlinks and mode bits both honoured, the
+repo's one tracked symlink materialized correctly in all 6 trees that carry it, and both stores
+set `core.filemode = false` anyway — so **do not migrate these trees for filesystem reasons**
+(`DSC:A-SECOND-EXTERNAL-VOLUME-HOSTS-FLEET-WORKTREES-UNGOVERNED`).
+
+**Full-clone census 2026-09-28 — a NULL result, recorded so nobody re-runs it.** Worktrees are not
+the only disk consumer, so the non-worktree git clones were swept too: **331 clones / 163.2 GiB**,
+of which essentially nothing is safely reclaimable under §9. **77.1 GiB is DIRTY** (uncommitted
+work, led by one 38.9 GiB `sol-biocatalyst-6389-recovery`); **69.7 GiB is clean+pushed but almost
+entirely `sol-*` HUMAN-class**, one of them last written **0.1 h** ago; 16.3 GiB is undecidable for
+want of an upstream, and 0.1 GiB is unpushed. The result matches §9's shape: what bounds the
+reclaimable pool is the judgment gate, not the byte count.
+
+
 **The placement policy moved to the external SSD and the GC's scope never followed.** That
 half stands: the roots really are absent, and the 496 trees behind them really are invisible
 to the report. What did NOT stand is the size of the act. This paragraph read, from
