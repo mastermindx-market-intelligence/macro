@@ -1,99 +1,69 @@
-# Commodities WTI/EIA Slice A — implementation evidence
+# Commodities WTI/EIA Slice A — review repair and exact-source evidence
 
-Status: **BUILT_NOT_PROVEN**. This is an additive implementation of the frozen WTI physical-evidence slice, not the complete R2 redesign, a deployment, or release acceptance.
+**BUILT_NOT_PROVEN · MISSION_COMPLETE:false.** PR #8125 remains a draft implementation of the first physical-evidence vertical, not the whole Commodities redesign or a release.
 
-## Real path
+## Current candidate/source
 
-`collectors/eia.py` cached series → existing `engine/commodity_supply_context.py` → `_oil_supply_read()` → `_wti_physical_evidence_vm()` → oil-only sector-detail projection → `_commodity_oil_physical.html.j2` → generated `site/commodities.html`.
+Repaired source and generated page were committed **before** capture at `c5030870e1d60663210540d479762c1fc7065ea5`. Integrated main: `f6dae649ee6d32ec65a95ccea411b205d0b0bc45`. The following evidence-only commit must preserve all source/page/driver blobs below. Current procedure: Mastermind `dcc4829a811d3f6e4fe8c16a103f813c3501f48e`.
 
-The generated page showed the actual local EIA observation dated **2026-09-18**, separate from daily commodity analysis **2026-09-25**. It displayed **426.4 million barrels**, **−2.5 million barrels over four weeks**, and **+0.46σ crude seasonal anomaly**, with the composite physical balance labeled Tight. The latter combines available inventory categories and is not the crude-only anomaly. At the 2026-09-28 UTC build evaluation this was correctly labeled **STALE_LAST_KNOWN**, not fresh evidence. Publication and receipt instants were explicitly unavailable.
+Canonical `capture.json` now records `target.resolved_sha_or_none = c5030870e1d60663210540d479762c1fc7065ea5`. This identifies the actual committed capture source, not the older pre-integration parent. Before and after capture, working page/driver/source bytes were compared to `git show <source>:<path>`. The WTI adapter also validates every actual HTTP page response against the expected generated-page SHA256 and verifies the page file did not change during the cell.
 
-No forecast, price target, trading instruction, portfolio sizing, alert activation, or new evidence store was added. Research-case attachment remains the next slice.
+| Exact source path | Git blob | SHA256 |
+|---|---|---|
+| `site/commodities.html` | `521306f9989b1f6ab4c4d40e9bf95af29cb8640f` | `af1f202826211a336d66b5f68b52985d3f6dfc4807b2f08599509fde3a18ab3c` |
+| `scripts/capture_commodities_wti_slice_a.py` | `567b3aa93c82d1302cb572b9875fe51f5255db1a` | `da1fcd71316948aa7a51642fe14685e0b4e84e2d0483852d1daa1c3fb7984507` |
+| `scripts/capture_page_evidence.py` | `6f184c6469f6fd653d003716ad96605055e71f56` | `8d753e2859d5261eb0d0bad3f626f8870eedf03e23a7f87b4b588bd792e88f16` |
+| `scripts/build_commodities.py` | `174ca6d1f419826f0bc0692510bea101c3f4e9b0` | `9b469e11b32d28d4c151bc5ee15bbbe8a8921bcb1937fc2b4b66e53f151f3aad` |
+| `templates/_commodity_oil_physical.html.j2` | `2659a9eeafaa2aef350ad833f9f5a5a23a422496` | `7b8a79951c99425e853b6f225bdd2436a5de466141b5ae1d994fad5624d299ed` |
+| `templates/commodities.html.j2` | `787b16f35937505c945eba5687f6daeb4b13c4c8` | `2b290ae10f8d5cb3851947266eb8d7efcb30a8dc48b89ad49a468b5da332bc26` |
 
-## Tests and falsifiers
+Manifest SHA256: `bd81817caaf543187ff4fd485fab52fbea4dccb0d9494eae4cb07d76706b57e5`. All referenced PNG hashes and byte lengths were verified. No new schema, evidence store or global capture-owner change was introduced.
 
-New date/value/markup review regressions were run before fixes: **17 failed, 9 passed**. A second future/wrong-source withholding regression run failed **2 tests** before the correction, then passed. Tests cover invalid and future clocks, chronological ordering, wrong source, unknown method, finite values, genuine zero, source-read errors, missing observations, stale analysis, unequal inventory periods, Chinese balance wording, and native disclosure markup.
+## Independent review findings and corrections
 
-The focused integration command includes:
+Codex review5333803932 reviewed prior head `b19a3b2ee956005db9f2084319f7754f274aadbe` and returned two P2 findings, not an approval.
 
-```
-python3 -m pytest tests/test_commodities_r2_wti_physical.py \
-  tests/test_commodity_supply_context.py tests/test_phase_buildout.py \
-  tests/test_commodities_w6_truth.py tests/test_commodity_coverage_matrix.py \
-  tests/test_bilingual_span_leak.py tests/test_i18n_attribute_guard.py \
-  tests/test_f01_fx_commodity_source_rights.py -q --tb=short
-```
+1. **4118419745 — evidence binding:** the prior adapter put page/driver hashes into arbitrary `CellObservation.observed` keys, which canonical serialization discards. The prior manifest targeted `369f9150...`, so the earlier exact integrated-page binding claim was not supported. Those unused fields were removed; this evidence was regenerated from the committed repaired source above. The canonical manifest and exact source commit now provide the binding. Do not restore the old claim or assume every observed key is persisted.
+2. **4118419749 — categorical balance:** a rejected NaN composite could leave the word Tight. The VM now calls the existing balance-word owner with the validated finite composite only. Missing/invalid composite returns n/a with a limitation while retaining usable crude data. It does not invent a new scoring threshold. Contradictory supplied labels cannot override a valid score.
 
-Latest result: **843 passed, 3 warnings**. The warnings were existing covariance degrees-of-freedom/divide warnings in `test_short_interest_factor_if_cache`, not WTI test failures.
+Nine selected tests failed before these repairs, then the complete WTI suite passed **51 tests**. True-zero composite maps to balanced; negative valid anomalies and physical changes remain legitimate.
 
-A whole-repository `python3 -m pytest -q --maxfail=1 --tb=short` attempt **did not pass**: collection stopped in `collectors/marketdesk_extractor/extractor/tests/test_allocator.py` with `ModuleNotFoundError: No module named 'marketdesk_extractor'`. This environment/package issue is not waived or represented as a green repository suite.
+## CI registration correction
 
-## Browser evidence
+Hosted run36374799145 / contract-delta job108778326171 found exactly one introduced unwired suite: `tests/test_commodities_r2_wti_physical.py`. The suite and subjects are now registered in the existing `unrun-macro-panels` job of `.github/ci/legacy-jobs.yml`. No waiver, pipeline, dependency or weakened check was added.
 
-`capture.json` is emitted by the existing `scripts/capture_page_evidence.py` owner using its injected PageDriver seam. `scripts/capture_commodities_wti_slice_a.py` navigates the **real locally served generated page** in anonymous ephemeral Chrome, clicks the existing Oil tab, and checks the new panel. It is not a `set_content` mock or an authenticated production session.
+Canonical `gated_unrun_suites()` reproduced one finding before registration and none afterward. The exact pytest command read from that job after all repairs passed **957 tests,337 warnings in55.08s**, exit0. This is a broader existing-owner command, not a directly comparable increase from the earlier853-test subset. Warnings include existing pandas fragmentation, fixture deprecation and covariance warnings.
 
-**16/16 cells captured**: desktop 1440/mobile 390 × English/Chinese × dark/light, each at rest and with actual keyboard-visible source-summary focus. Rest cells also opened/closed the source disclosure using Enter and verified the EIA source link. Focus cells traversed Shift+Tab/Tab and asserted `:focus-visible`. No observed page exceptions or local HTTP error responses. Screenshots are content-hashed by the canonical manifest.
+Three focused CI manifest/scope contract tests also passed. The complete hosted contract-delta must still run on the new pushed head; these local checks are not an overall hosted-CI pass.
 
-External networking was deliberately blocked in this local browser test and recorded by the driver. It does **not** establish live quotes, sign-in, account sync, EIA fetching, or external integration availability. This is generated-page and interaction evidence. The actual captured source state is stale; other degraded states have unit/template coverage, not a complete live-browser matrix.
+A preliminary owner run counted957 passing cases but correctly exited1 through MM_DATA_GUARD because a concurrently running legitimate builder changed the generated page. No guard was disabled or broad cleanup used. Build and tests were serialized; the accepted exit0 run preserved page bytes throughout. Logs remain in worktree Git metadata `wti-ci-registration/`.
 
-The first mobile capture failed at 473px document width on a 390px viewport. A diagnostic removed the new WTI panel and retained 473px overflow, locating the cause in the incumbent early-warning row's nowrap/fixed-width layout. A page-local responsive grid fix preserves its values while removing that overflow. Final captures assert document width equals viewport width; no global overflow-hiding rule was added.
+## Real generated-page and browser proof
 
-## Visual treatment
+Existing cached EIA series → incumbent display-only physical-balance reader → WTI VM → oil-only template projection → actual generated `site/commodities.html`. Builder exited0. The current-main conflict was only generated-page build clocks; the page was rebuilt, not taken from a stale side. Equivalent incumbent whitespace was preserved. A dataframe-equal incidental signals-index rewrite was restored to the existing Git bytes; no model-data change is retained.
 
-Dark: existing command-surface layers, neutral hairlines and information/limitation ink. Light: white panel with the existing shadow token, cooler metric wells, no dark blur. Market direction colors are not used to imply that qualified physical evidence predicts a price rise. Long producer caveats and method detail are disclosed, not repeated in the primary reading. The section retains one concise non-directional warning.
+The real cached observation is **2026-09-18**, separate from daily analysis **2026-09-25**. It shows426.4million barrels, four-week change−2.5million barrels, crude seasonal anomaly+0.46σ, and a separately derived composite balance. It remains stale at build evaluation. Missing publication/receipt instants remain unknown; a quote cannot refresh physical evidence.
 
-Desktop dark/light and mobile English/Chinese-light section captures were visually reviewed. Shared assistant launcher overlap remains inherited global UI, not changed by this slice. Full screen-reader, production negative-state, performance and live release review remain owed.
+Canonical Chrome capture produced **24/24 cells**, using the incumbent matrix including tablet:
+- desktop1440×900, tablet820×1180, mobile390×844;
+- EN/ZH × dark/light;
+- rest and actual keyboard-visible source focus.
 
-## Guard results
+All cells loaded the real localhost-served committed page, selected Oil, exercised native disclosure open/close and source link visibility, and passed the no-page-overflow assertion. No captured page exceptions or local HTTP failures were recorded. Each referenced PNG's SHA256 and byte length match the manifest. The initial verification wrapper expected16 cells and failed its count assertion because the canonical owner now supplies24; the successful captures were preserved and their complete actual axes verified, not rerun or relabeled.
 
-- Python compilation: passed.
-- Actual candidate-diff design-system added-lines check: passed after mapping new styling to shared tokens.
-- Canonical visual-evidence guard: passed with real image hashes/state matrix.
-- Runtime style-injection guard: passed.
-- Template/site plain-copy parity: 105 pairs passed.
-- Agent OS validation: 0 errors; existing overdue-review warnings remain.
-- Diff whitespace check: passed; unchanged generated-page whitespace was preserved rather than reformatting unrelated sections.
+Fresh visual review inspected the tablet-dark and Chinese-mobile-light component captures. Shared assistant-launcher overlay still obscures some lower tablet text; it is inherited and not fixed here. Functional capture/contrast review does not close independent full visual/accessibility acceptance.
 
-An incidental regenerated `signals_index.parquet` was dataframe-equal to HEAD and was restored; no model-data diff is included.
+External requests were deliberately blocked in anonymous local Chrome. This is **not** live EIA fetching, live quote delivery, authentication, account synchronization, production persistence or deployment proof. Invalid-state coverage remains predominantly unit/template tests; the actual browser source state was stale.
 
-## Boundaries and continuation
+## Commands and limits
 
-Protected procedure: Mastermind `aebb2ed19e68bda072e38221638925d674b656dc`. Implementation base: Macro `46963311ba19fe8167553774be506bae43d3460b`. Source carrier: `claude/commodities-wti-eia-slice-a-20260927`. Cumulative program record: Macro #8049.
+- WTI tests: `python3 -m pytest tests/test_commodities_r2_wti_physical.py -q` →51 passed.
+- CI owner command: execute the existing `unrun-macro-panels` run step from `.github/ci/legacy-jobs.yml` →957 passed, exit0.
+- Actual build: `python3 -m scripts.build_commodities` →exit0.
+- Capture: `python3 scripts/capture_commodities_wti_slice_a.py --site-dir site --routes /commodities.html --force-state 'focus:focus(.oil-phys-receipt summary)'`, with outputs directed to this canonical evidence directory →24/24 captured.
+- Python compilation, actual-diff design guard, runtime-style guard and105 paired assets passed; Agent OS validation0 errors/81 existing warnings. Final visual-manifest/whitespace/source-identity verification occurs before the evidence commit.
+- Full-repository pytest is **not green**: previously stopped at collection with missing `marketdesk_extractor`. That unchanged failure was not rerun or waived here.
 
-Preserve #7596 Gold-publication and #7601 shared-navigation ownership. Before release: exact-head CI, independent code/visual review, generated-page/source reconciliation on current main, and live verification. Only after this slice's acceptance should Research-case evidence attachment be integrated. No production release or mission completion is claimed.
+## Remaining release gates
 
-
-## Current-main integration and second review — 2026-09-28
-
-Integrated protected Macro main `808432ecfb2824b55ec37dcbf6b448e5fd31411a`
-into the continuing branch. Source/template/rights paths were unchanged since the
-original base; the sole conflict was generated `site/commodities.html`. It was
-rebuilt through the incumbent builder, not resolved by dropping another source.
-An incidental index parquet was dataframe-equal to the merged index and restored.
-
-Additional self-review found two classes of unsafe input: absent source identity
-inherited EIA attribution, and negative/bool physical levels could survive into
-the display. New tests reproduced **7 failures** plus **2 raw-reader failures**
-before the fixes. The contract now requires explicit EIA identity, rejects
-negative physical levels and pre-coercion booleans, and preserves legitimate
-zero levels, negative changes and negative seasonal anomalies. This is self-review,
-not an independent code-review receipt.
-
-Fresh focused integration: **853 passed, 3 existing covariance warnings**.
-Fresh real builder: exit0. Fresh canonical local browser matrix: **16/16**,
-with no captured page exceptions or HTTP failures. Same external-network block
-and production-proof limitations apply. Current source-page content hashes are
-recorded by the capture driver; the manifest's Git revision is the pre-commit
-parent, not a claim that uncommitted integration was already a published commit.
-
-The whole-repository pytest attempt still fails during collection in
-`collectors/marketdesk_extractor/extractor/tests/test_allocator.py` because the
-`marketdesk_extractor` package is not installed on that interpreter's path.
-No unrelated collector/package files were changed or that failure waived.
-
-Current procedure pin: Mastermind `dcc4829a811d3f6e4fe8c16a103f813c3501f48e`.
-Independent review, exact-head hosted CI, merge and live proof remain gates.
-The Executive review-dispatch route was not usable in this session:
-`executive_state` returned readonly/backend_unavailable (installed Macro source
-worktree observation failed); the Workbench interface exposes canary recipes,
-not a general review dispatcher. No reviewer START is inferred from that discovery.
+Required new-head CI and independent rereview of both fixes; full visual/accessibility and generated/live release proof. Preserve #7596 Gold-publication and #7601 shared-navigation ownership. No merge, deployment, new source store, alert owner, score/forecast/portfolio authority or Research persistence. Slice B remains unimplemented.

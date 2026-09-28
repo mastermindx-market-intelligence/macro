@@ -42,9 +42,12 @@ verified:
   command: scripts.audit_unrun_tests.gated_unrun_suites()
   result: Before one finding (WTI); after no findings. Existing owner command had947 passing tests before
     the ten additional review cases; final serialized rerun pending at source-commit preparation.
+- claim: Canonical screenshot evidence is bound to an immutable committed page and driver.
+  command: Capture from committed source; compare target SHA and git-show bytes before/after; verify every
+    PNG digest.
+  result: 24/24 browser cells at1440/820/390, EN/ZH, dark/light, rest/focus; source c5030870e1d60663210540d479762c1fc7065ea5;
+    no page exceptions or local HTTP failures. External network blocked.
 unverified:
-- Fresh canonical capture must be made after this repaired source and generated page are committed; historical
-  screenshot target did not bind the integrated page.
 - New-head hosted CI and independent rereview; merge, deployment, full visual/accessibility and live acceptance.
 - 'Whole repository suite not green: previously observed missing marketdesk_extractor package at collection.'
 - Research-case attachment/persistence remains Slice B, not implemented.
@@ -52,12 +55,10 @@ unresolved:
 - Current cached EIA observation lacks publication and receipt timestamps; do not synthesize them.
 - Shared assistant-launcher overlay is inherited global UI; not part of this slice.
 next_actions:
-- Finish serialized owner/CI checks and commit the repaired source plus regenerated page on this same
-  branch.
-- Capture canonical16-cell evidence from that immutable source commit; verify source/page/driver identities
-  and commit evidence-only follow-up.
-- Push non-force with exact readback; request head-scoped rereview for the two findings and consume required
-  CI before release.
+- Push the source and evidence commits on the same branch with exact remote readback; answer review findings
+  and request head-scoped independent rereview.
+- Consume new-head required CI and review. Complete release/live proof before Research persistence Slice
+  B.
 do_not_redo:
 - Do not rebuild Paper R2 or North Star 50–56 or convergence spec 07.
 - Do not recreate the continuing worktree, duplicate the EIA producer, or refresh model authority.
@@ -71,10 +72,6 @@ prs:
 supersedes: []
 ---
 
-Protected source law: Mastermind `dcc4829a811d3f6e4fe8c16a103f813c3501f48e`; INDEX `94d1af402598894372858793a5b1931019c5fa77`.
-Integrated main for this repair: `f6dae649ee6d32ec65a95ccea411b205d0b0bc45`.
-Previous published head: `b19a3b2ee956005db9f2084319f7754f274aadbe`.
-Source carrier: `/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/commodities-wti-eia-slice-a-20260927`.
-Cumulative checkpoint: Macro #8049 comment5862072495. Independent review5333803932; findings4118419745 and4118419749. No release approval.
-
-MISSION_COMPLETE:false; BUILT_NOT_PROVEN. Same source/effect carrier; no Paper edits, new worker, watcher or automatic wake. Do not restore the old capture-binding claim: arbitrary observed hashes were discarded. The planned recapture must bind a committed source candidate.
+Current protected Mastermind: dcc4829a811d3f6e4fe8c16a103f813c3501f48e. Integrated main: f6dae649ee6d32ec65a95ccea411b205d0b0bc45.
+Capture source commit: c5030870e1d60663210540d479762c1fc7065ea5. PR #8125; cumulative checkpoint Macro #8049 comment5862072495.
+MISSION_COMPLETE:false; BUILT_NOT_PROVEN. Evidence-only follow-up must preserve source/page/driver blobs at the capture source. No unresolved effect, Paper change or autonomous wake.
