@@ -7,20 +7,31 @@ is copied from the live research carrier or from the schema fixture.
 from __future__ import annotations
 
 import builtins
+import copy
+import dataclasses
 import datetime as _dt
+import functools
 import hashlib
 import json
 import re
 import socket as _socket
 import time as _time
+from pathlib import Path
 from typing import Any
 
 import pytest
 
-from engine.sector_intelligence.contracts import validate_contract
+from engine.sector_intelligence.contracts import ContractRegistry, ContractValidationError, validate_contract
 from engine.sector_intelligence.finance_projection import (
     FinanceOwnerInputs,
     _FINANCE_SLICE_IDS,
+    _METRIC_FIELDS,
+    _build_primary_metric,
+    _has_forbidden_key,
+    _owner_key,
+    _owner_refs,
+    _owner_text,
+    _withhold_unevidenced,
     compose_finance_projection,
 )
 
@@ -393,20 +404,27 @@ def test_no_forbidden_keys() -> None:
     forbidden = re.compile(r"(^|_)(score|rank|attractiveness|composite)(_|$)", re.IGNORECASE)
     authority_block = document["authority_caps"]
 
-    def walk(node: object) -> None:
+    def walk(node: object) -> list[str]:
+        # The pattern carries its own underscore boundaries, so it must be
+        # searched: under fullmatch it matches only a bare word, and
+        # peer_rank passes.
+        found: list[str] = []
         if isinstance(node, dict):
             for key, child in node.items():
-                if key == "rank" and node is authority_block:
-                    pass
-                else:
-                    assert forbidden.fullmatch(key) is None, key
-                walk(child)
-            return
-        if isinstance(node, list):
+                if not (key == "rank" and node is authority_block) and forbidden.search(key):
+                    found.append(key)
+                found += walk(child)
+        elif isinstance(node, list):
             for child in node:
-                walk(child)
+                found += walk(child)
+        return found
 
-    walk(document)
+    # Positive control: a clean document cannot tell a live walk from a dead one.
+    assert walk({"slices": [{"peer_rank": 1, "composite_score": 2, "ranking": 3}]}) == [
+        "peer_rank",
+        "composite_score",
+    ]
+    assert walk(document) == []
     assert document["authority_caps"]["rank"] is False
 
 
@@ -534,6 +552,288 @@ def test_adjusted_close_is_not_valuation_quote() -> None:
     assert card["rerating"]["valuation"]["state"] == "PRICE_BASIS_UNQUALIFIED"
     assert card["rerating"]["price"]["state"] == "PRICE_BASIS_UNQUALIFIED"
     validate_contract(CONTRACT_ID, document)
+
+
+def _valuation_of(document: dict[str, Any], slice_id: str) -> dict[str, Any]:
+    return next(sl for sl in document["slices"] if sl["slice_id"] == slice_id)["rerating"]["valuation"]
+
+
+def test_a_valuation_observation_anchors_only_the_slice_it_is_filed_under() -> None:
+    """The conflict fixture files one P/E observation under card_networks.
+    Give a second slice a qualified price basis of its own and it has a price
+    but no valuation anchor: it must say so, not publish card_networks'
+    multiple as its own reading. The anchor used to be the first valuation
+    observation of any packet, whatever slice it was filed under."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    other = "ach_instant_b2b"
+    assert not base.market_observations.get(other)
+    market = dict(base.market_observations)
+    market[other] = [dict(obs, source="synthetic-market-" + other) for obs in base.market_observations["card_networks"]]
+    document = compose_finance_projection(
+        dataclasses.replace(base, market_observations=market),
+        generated_at=_today(),
+        knowledge_cutoff=_knowledge_cutoff(),
+    )
+    validate_contract(CONTRACT_ID, document)
+    card = _valuation_of(document, "card_networks")
+    assert card["state"] == "OBSERVED" and card["primary_metric"]["value"] == 18.0
+    stray = _valuation_of(document, other)
+    assert stray["state"] == "VALUATION_ANCHOR_UNAVAILABLE", stray
+    assert stray["primary_metric"] is None and stray["clock"] is None
+
+
+def test_the_valuation_plane_reads_its_slices_freshest_anchor() -> None:
+    """card_networks' packet carries two valuation observations on two
+    dates. The plane publishes the fresher, in either order. An untagged
+    observation is company data and counts for the slice; one filed under
+    another slice never does, however fresh. The plane used to publish
+    whichever came first."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    (ticker, packet), = base.financial_packets.items()
+    (anchor,) = packet["valuation"]["observations"]
+
+    def observation(as_of: str, value: float, **tag: Any) -> dict[str, Any]:
+        obs = {key: val for key, val in copy.deepcopy(anchor).items() if key != "slice_id"}
+        obs.update(tag, as_of=as_of)
+        obs["metric"] = dict(obs["metric"], value=value, period_end=as_of)
+        return obs
+
+    def anchor_values(*observations: dict[str, Any]) -> set[float]:
+        values = set()
+        for ordered in (observations, observations[::-1]):
+            packets = {ticker: dict(packet, valuation=dict(packet["valuation"], observations=list(ordered)))}
+            document = compose_finance_projection(
+                dataclasses.replace(base, financial_packets=packets),
+                generated_at=_today(),
+                knowledge_cutoff=_knowledge_cutoff(),
+            )
+            validate_contract(CONTRACT_ID, document)
+            values.add(_valuation_of(document, "card_networks")["primary_metric"]["value"])
+        return values
+
+    stale = observation("2026-06-30", 21.0, slice_id="card_networks")
+    assert anchor_values(stale, observation("2026-09-20", 18.0, slice_id="card_networks")) == {18.0}
+    assert anchor_values(stale, observation("2026-09-20", 17.0)) == {17.0}
+    assert anchor_values(stale, observation("2026-09-23", 30.0, slice_id="ach_instant_b2b")) == {21.0}
+
+
+def test_an_undated_valuation_observation_never_anchors() -> None:
+    """An anchor publishes its date as the slice's information clock, which
+    the contract requires, so an observation that carries no date cannot
+    anchor. Beside a dated one it is passed over, in either order; alone it
+    leaves the slice without an anchor, said in words. It used to refuse the
+    whole document whenever it came first."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    (ticker, packet), = base.financial_packets.items()
+    (anchor,) = packet["valuation"]["observations"]
+    undated = {key: val for key, val in copy.deepcopy(anchor).items() if key not in ("as_of", "observed_at")}
+    undated["metric"] = dict(undated["metric"], value=99.0)
+
+    def valuation(*observations: dict[str, Any]) -> dict[str, Any]:
+        packets = {ticker: dict(packet, valuation=dict(packet["valuation"], observations=list(observations)))}
+        document = compose_finance_projection(
+            dataclasses.replace(base, financial_packets=packets),
+            generated_at=_today(),
+            knowledge_cutoff=_knowledge_cutoff(),
+        )
+        validate_contract(CONTRACT_ID, document)
+        return _valuation_of(document, "card_networks")
+
+    for ordered in ((anchor, undated), (undated, anchor)):
+        assert valuation(*ordered)["primary_metric"]["value"] == 18.0
+    alone = valuation(undated)
+    assert alone["state"] == "VALUATION_ANCHOR_UNAVAILABLE", alone
+    assert alone["primary_metric"] is None and alone["clock"] is None
+
+
+def _with_valuation_observations(base: FinanceOwnerInputs, *observations: dict[str, Any]) -> dict[str, Any]:
+    """Compose the one-packet conflict fixture with its valuation observations
+    replaced, in the order given, and return the validated document."""
+    (ticker, packet), = base.financial_packets.items()
+    packets = {ticker: dict(packet, valuation=dict(packet["valuation"], observations=list(observations)))}
+    document = compose_finance_projection(
+        dataclasses.replace(base, financial_packets=packets),
+        generated_at=_today(),
+        knowledge_cutoff=_knowledge_cutoff(),
+    )
+    validate_contract(CONTRACT_ID, document)
+    return document
+
+
+def test_a_conflict_reads_the_direction_of_the_valuation_reading_the_plane_publishes() -> None:
+    """EARNINGS_UP_P_E_DOWN compares the operating and valuation readings the
+    slice publishes. Beside card_networks' anchor, add an older observation
+    saying the opposite, dated by as_of, dated only by observed_at, or not
+    dated at all. The plane publishes the anchor, in either order, and the
+    conflict follows the anchor's direction: it fires when the published P/E
+    is falling and stays silent when it is rising. When the anchor states no
+    direction, the older observation says the P/E is falling and the
+    conflict still stays silent: the reading the plane publishes does not
+    say so. The conflict used to re-select its own valuation direction by
+    as_of alone, so an observation the plane had passed over could decide
+    it."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    (ticker, packet), = base.financial_packets.items()
+    (anchor,) = packet["valuation"]["observations"]
+    for published, opposite in (("DOWN", "UP"), ("UP", "DOWN"), (None, "DOWN")):
+        reading = {key: val for key, val in copy.deepcopy(anchor).items() if key != "direction"}
+        if published is not None:
+            reading["direction"] = published
+        undated = {key: val for key, val in copy.deepcopy(anchor).items() if key not in ("as_of", "observed_at")}
+        undated.update(direction=opposite)
+        undated["metric"] = dict(undated["metric"], value=21.0)
+        for passed_over in (dict(undated, as_of="2026-09-10"), dict(undated, observed_at="2026-06-01"), undated):
+            for ordered in ((reading, passed_over), (passed_over, reading)):
+                document = _with_valuation_observations(base, *ordered)
+                assert _valuation_of(document, "card_networks")["primary_metric"]["value"] == 18.0
+                fired = [c["label"] for c in document["conflicts"]].count("EARNINGS_UP_P_E_DOWN")
+                clock = (passed_over.get("as_of"), passed_over.get("observed_at"))
+                assert fired == (1 if published == "DOWN" else 0), (published, clock, ordered[0] is reading)
+
+
+def test_a_conflict_reads_the_direction_of_the_price_reading_the_plane_publishes() -> None:
+    """PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN compares the price reading the
+    slice publishes. Beside card_networks' rising qualified price, add a
+    falling observation the plane passes over: a fresher one on an adjusted
+    historical basis, which is never a qualified price, or an undated one,
+    which the plane reads as the oldest. The plane publishes the rising
+    price and the conflict fires, in either order. Then add a fresher
+    qualified price that states no direction: the plane publishes it and
+    the conflict stays silent, in either order, although the rising price
+    it passed over says the price is up. The conflict used to re-select its
+    own price direction from every market observation by as_of alone, so
+    the observation the plane passed over decided it."""
+    base = _conflict_inputs_for("PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN")
+    (rising,) = base.market_observations["card_networks"]
+
+    def published(*ordered: dict[str, Any]) -> tuple[Any, int]:
+        market = dict(base.market_observations, card_networks=list(ordered))
+        document = compose_finance_projection(
+            dataclasses.replace(base, market_observations=market),
+            generated_at=_today(),
+            knowledge_cutoff=_knowledge_cutoff(),
+        )
+        validate_contract(CONTRACT_ID, document)
+        price = next(s for s in document["slices"] if s["slice_id"] == "card_networks")["rerating"]["price"]
+        assert price["state"] == "OBSERVED", price
+        fired = [c["label"] for c in document["conflicts"]].count("PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN")
+        return price["primary_metric"]["value"], fired
+
+    adjusted = dict(rising, as_of="2026-09-22", price_basis="ADJUSTED_HISTORICAL", direction="DOWN", value=90.0)
+    undated = {key: val for key, val in dict(rising, direction="DOWN", value=90.0).items() if key != "as_of"}
+    for passed_over in (adjusted, undated):
+        for ordered in ((rising, passed_over), (passed_over, rising)):
+            assert published(*ordered) == (100.0, 1), (passed_over["price_basis"], "as_of" in passed_over, ordered[0] is rising)
+    silent = {key: val for key, val in dict(rising, as_of="2026-09-23", value=95.0).items() if key != "direction"}
+    for ordered in ((rising, silent), (silent, rising)):
+        assert published(*ordered) == (95.0, 0), ordered[0] is rising
+
+
+def test_only_an_absent_or_null_slice_tag_means_company_data() -> None:
+    """A slice tag files an observation under that slice. Only an absent or
+    null tag leaves it untagged, which is company data and reaches every
+    slice. Retag card_networks' operating and valuation observations with a
+    malformed tag and give ach_instant_b2b a price basis of its own: neither
+    slice publishes them. A falsy malformed tag used to count as untagged, so
+    the readings reached every slice; a truthy one already reached none."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    other = "ach_instant_b2b"
+    market = dict(base.market_observations)
+    market[other] = [dict(obs, source="synthetic-market-" + other) for obs in base.market_observations["card_networks"]]
+    (ticker, packet), = base.financial_packets.items()
+
+    def states(tag: Any) -> dict[str, tuple[str, str]]:
+        retagged = {
+            plane: dict(packet[plane], observations=[dict(copy.deepcopy(obs), slice_id=tag) for obs in packet[plane]["observations"]])
+            for plane in ("operating", "valuation")
+        }
+        document = compose_finance_projection(
+            dataclasses.replace(base, market_observations=market, financial_packets={ticker: dict(packet, **retagged)}),
+            generated_at=_today(),
+            knowledge_cutoff=_knowledge_cutoff(),
+        )
+        validate_contract(CONTRACT_ID, document)
+        rerating = {s["slice_id"]: s["rerating"] for s in document["slices"]}
+        return {sid: (rerating[sid]["operating"]["state"], rerating[sid]["valuation"]["state"]) for sid in ("card_networks", other)}
+
+    untagged = states(None)
+    assert untagged == {sid: ("OBSERVED", "OBSERVED") for sid in ("card_networks", other)}, untagged
+    for malformed in ("", 0, False, [], {}, ["card_networks"]):
+        found = states(malformed)
+        assert found == {sid: ("MISSING", "VALUATION_ANCHOR_UNAVAILABLE") for sid in ("card_networks", other)}, (malformed, found)
+
+
+def test_on_one_date_the_slice_tagged_valuation_observation_anchors() -> None:
+    """Two valuation observations share a date: one the owner tags with
+    card_networks and one left untagged (company data). The slice's own
+    filing is the more specific, so it anchors, in either order. The anchor
+    used to be whichever came last."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    (ticker, packet), = base.financial_packets.items()
+    (anchor,) = packet["valuation"]["observations"]
+    untagged = {key: val for key, val in copy.deepcopy(anchor).items() if key != "slice_id"}
+    untagged["metric"] = dict(untagged["metric"], value=25.0)
+    for ordered in ((anchor, untagged), (untagged, anchor)):
+        document = _with_valuation_observations(base, *ordered)
+        assert _valuation_of(document, "card_networks")["primary_metric"]["value"] == 18.0, ordered[0] is anchor
+
+
+def test_a_valuation_observation_dated_after_the_knowledge_cutoff_never_anchors() -> None:
+    """Nothing dated after the knowledge cutoff can be known at it. A
+    valuation observation dated the day after the cutoff is passed over
+    beside card_networks' anchor, in either order; alone, it leaves the slice
+    without an anchor, said in words. One dated on the cutoff itself still
+    anchors. The freshest observation used to win however far past the
+    cutoff its date was."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    (ticker, packet), = base.financial_packets.items()
+    (anchor,) = packet["valuation"]["observations"]
+    cutoff = _knowledge_cutoff().date()
+
+    def dated(day: _dt.date, value: float) -> dict[str, Any]:
+        obs = dict(copy.deepcopy(anchor), as_of=day.isoformat())
+        obs["metric"] = dict(obs["metric"], value=value)
+        return obs
+
+    after = dated(cutoff + _dt.timedelta(days=1), 55.0)
+    for ordered in ((anchor, after), (after, anchor)):
+        valuation = _valuation_of(_with_valuation_observations(base, *ordered), "card_networks")
+        assert valuation["primary_metric"]["value"] == 18.0, ordered[0] is anchor
+    alone = _valuation_of(_with_valuation_observations(base, after), "card_networks")
+    assert alone["state"] == "VALUATION_ANCHOR_UNAVAILABLE", alone
+    assert alone["primary_metric"] is None and alone["clock"] is None
+    on_cutoff = _valuation_of(_with_valuation_observations(base, anchor, dated(cutoff, 19.0)), "card_networks")
+    assert on_cutoff["primary_metric"]["value"] == 19.0
+    assert on_cutoff["clock"]["observed_at"] == cutoff.isoformat()
+
+
+def test_a_constraint_is_published_under_the_slice_its_record_is_filed_under() -> None:
+    """A source record is filed under its business_scope, and its record_id is
+    evidence of that slice only. Its constraints are published under that
+    slice, whatever slice_id extra the record carries. They used to follow the
+    extra: a foreign one published a constraint under a slice its evidence is
+    not filed under, and a record carrying none had its constraints dropped."""
+    base = _default_8slice_inputs()
+    (target,) = [rec["record_id"] for rec in base.source_records if rec.get("business_scope") == "card_networks"]
+    constraint = {"constraint": "capital", "economic_effect": "SYNTHETIC economic effect."}
+
+    def published_constraints(**extra: Any) -> list[tuple[str, list[str]]]:
+        records = copy.deepcopy(list(base.source_records))
+        for rec in records:
+            if rec["record_id"] == target:
+                rec.update(extra, constraints=[constraint])
+        document = compose_finance_projection(
+            dataclasses.replace(base, source_records=records),
+            generated_at=_today(),
+            knowledge_cutoff=_knowledge_cutoff(),
+        )
+        validate_contract(CONTRACT_ID, document)
+        return [(c["slice_id"], c["evidence_refs"]) for c in document["constraints"]]
+
+    filed = [("card_networks", [target])]
+    assert published_constraints() == filed
+    assert published_constraints(slice_id="issuer_processing") == filed
+    assert published_constraints(slice_id="card_networks") == filed
 
 
 def test_volume_never_populates_revenue_exposure() -> None:
@@ -1142,3 +1442,703 @@ def test_a_material_change_without_a_known_freshness_is_published_as_no_evidence
     validate_contract(CONTRACT_ID, document)
     changes = [c for c in document["material_changes"] if c["change_id"] == "mc-freshness-001"]
     assert [c["freshness_state"] for c in changes] == [published]
+
+
+# ---------------------------------------------------------------------------
+# An owner key the contract does not know never crosses into the document.
+# ---------------------------------------------------------------------------
+
+_SCHEMA_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "contracts"
+    / "sector_intelligence"
+    / "finance_intelligence_read_model.v1.schema.json"
+)
+_PLANTED_NOTE = "zz_planted_private_note"
+_PLANTED_RANK = "zz_planted_peer_rank"
+
+
+_PLANTED_KEYS = {_PLANTED_NOTE: "SYNTHETIC-private", _PLANTED_RANK: 1}
+
+# What a plant carries out, however a path reshapes it: the planted key or the
+# planted value, in any letter case. A path that hashes, encodes or truncates
+# them is beyond this search.
+_PLANTED_MARKERS = ("zz_planted", "synthetic-private")
+
+
+def _carries_planted(text: str) -> bool:
+    folded = text.casefold()
+    return any(marker in folded for marker in _PLANTED_MARKERS)
+
+
+def _plant_owner_keys(node: object, keys: dict = _PLANTED_KEYS) -> int:
+    """Plant ``keys`` (by default a private note and a peer rank) into every
+    owner record under ``node``.
+
+    A dict whose values are all containers is a map keyed by data (issuer
+    labels, plane names), not a record, and is left alone, as is an empty
+    dict. Returns the number of records planted.
+    """
+    planted = 0
+    if isinstance(node, dict):
+        for child in list(node.values()):
+            planted += _plant_owner_keys(child, keys)
+        if node and not all(isinstance(v, (dict, list, tuple)) for v in node.values()):
+            node.update(keys)
+            planted += 1
+    elif isinstance(node, (list, tuple)):
+        for child in node:
+            planted += _plant_owner_keys(child, keys)
+    return planted
+
+
+_FENCE_FIXTURES = (
+    "default",
+    "EARNINGS_UP_P_E_DOWN",
+    "BOOK_UP_P_B_DOWN",
+    "POLICY_SUPPORT_NIM_PRESSURE",
+    "REGULATORY_RATIO_DOWN_REGIME_BREAK",
+    "PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN",
+)
+# A map from source family to rights class, keyed by data: its family names
+# are published by design in generation.rights_profile.
+_UNPLANTED_FIELDS = frozenset({"rights_snapshot"})
+
+
+def _extended_owner_inputs(fixture: str) -> FinanceOwnerInputs:
+    """The fixture, with the four owner fields every committed fixture leaves
+    empty filled in memory with SYNTHETIC records the composer reads. Without
+    them a fence over the owner fields never reaches the dossier, theme
+    evidence, expectation or basket paths. Two owner keys no committed fixture
+    carries are added the same way, since a plant reaches only the keys a
+    record holds: a source record's constraints, whose economic effect is
+    published as free text, and a material change's conflict_ids."""
+    base = _default_8slice_inputs() if fixture == "default" else _conflict_inputs_for(fixture)
+    records = copy.deepcopy(list(base.source_records))
+    for rec in records:
+        if isinstance(rec, dict) and isinstance(rec.get("material_change"), dict):
+            rec["material_change"].setdefault("conflict_ids", ["SYNTHETIC-conflict-ref"])
+            break
+    for rec in records:
+        if isinstance(rec, dict) and isinstance(rec.get("business_scope"), str):
+            rec.setdefault("slice_id", rec["business_scope"])
+            rec.setdefault("constraints", [{"constraint": "capital", "economic_effect": "SYNTHETIC economic effect."}])
+            break
+    expectations = dict(base.expectation_observations)
+    expectations.setdefault("card_networks", [
+        {"as_of": "2026-09-15", "source": "src-consensus-001", "metric": "consensus:net_revenue_yoy",
+         "value": 0.04, "unit": "ratio"},
+    ])
+    expectations.setdefault("issuer_processing", [
+        {"as_of": "2026-09-15", "source": "src-guidance-002", "metric": "guidance:net_revenue_yoy",
+         "value": 0.05, "unit": "ratio"},
+    ])
+    baskets = dict(base.basket_context)
+    baskets.setdefault("card_networks", {
+        "posture": "BROAD_CONTEXT_AVAILABLE",
+        "incumbent_basket_ids": ["payments_fintech"],
+        "membership_state": "CURRENT_MEMBERSHIP_ONLY",
+        "member_count": 12,
+        "weighting_family": "EQUAL_WEIGHT",
+        "price_basis_state": "PRICE_BASIS_UNQUALIFIED",
+    })
+    return dataclasses.replace(
+        base,
+        sector_dossier=base.sector_dossier or {
+            "schema_version": "sector_dossier_read_model.v1",
+            "dossier_id": "SYNTHETIC-dossier-finance",
+            "dossier_hash": "SYNTHETIC-dossier-hash",
+        },
+        theme_evidence=list(base.theme_evidence) or [
+            {"theme_id": "SYNTHETIC-theme", "curation_revision": "SYNTHETIC-revision-1"},
+        ],
+        expectation_observations=expectations,
+        basket_context=baskets,
+        source_records=records,
+    )
+
+
+def test_the_owner_fences_plant_every_owner_field() -> None:
+    """The fences below reach only the records they plant. Across the fixtures,
+    every owner field but the one exempted by name carries a record, and each
+    extended fixture still composes a document the contract accepts."""
+    planted = set()
+    for fixture in _FENCE_FIXTURES:
+        base = _extended_owner_inputs(fixture)
+        validate_contract(
+            CONTRACT_ID,
+            compose_finance_projection(base, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff()),
+        )
+        for field in dataclasses.fields(base):
+            if field.name not in _UNPLANTED_FIELDS and _plant_owner_keys(copy.deepcopy(getattr(base, field.name))):
+                planted.add(field.name)
+    assert planted == {field.name for field in dataclasses.fields(FinanceOwnerInputs)} - _UNPLANTED_FIELDS
+
+
+# Keys the composer reads that no owner record carries, each with its reason.
+_COMPOSER_READ_KEYS_NOT_OWNER_CARRIED = frozenset({
+    "_freshness_state_raw",  # composer-authored; popped before the document is returned
+    "_ticker_hint",  # composer-authored from a source record; compared, never published as read
+    "cells", "observations", "operating", "primary_metric", "valuation",  # the composer's own planes and rows
+    "clock",  # the composer's own plane clock; published only into a date-format field
+    "row_id",  # composer-minted company row id
+    "support",  # an owner macro key read only as a truth test; never published
+})
+
+
+def test_every_owner_key_the_composer_reads_is_planted() -> None:
+    """The value fence mutates only the keys the fixture records hold, so a key
+    the composer reads that no fixture carries is a key no plant reaches. Every
+    ``.get()`` key the composer gives as a string literal, in either quote, is
+    carried by an owner record of an extended fixture or named above with its
+    reason. Bounds: the census is
+    by key name, not by owner field, and reads through a variable key or a
+    subscript are outside it. The list is non-empty, so a census that matched
+    nothing cannot pass."""
+    import engine.sector_intelligence.finance_projection as _fp_mod
+
+    source = Path(_fp_mod.__file__).read_text(encoding="utf-8")
+    read = set(re.findall(r'\.get\(\s*["\']([A-Za-z_][A-Za-z0-9_]*)["\']', source))
+    carried: set[str] = set()
+    for fixture in _FENCE_FIXTURES:
+        base = _extended_owner_inputs(fixture)
+        for field in dataclasses.fields(base):
+            if field.name in _UNPLANTED_FIELDS:
+                continue
+            value = getattr(base, field.name)
+            for path in _owner_record_paths(value):
+                carried.update(map(str, _owner_record_at(value, path)))
+    assert read - carried == _COMPOSER_READ_KEYS_NOT_OWNER_CARRIED, sorted(read - carried)
+
+
+def test_the_metric_vocabulary_is_the_schemas() -> None:
+    metric = json.loads(_SCHEMA_PATH.read_text(encoding="utf-8"))["$defs"]["metric"]
+    assert metric["additionalProperties"] is False
+    assert _METRIC_FIELDS == tuple(metric["properties"])
+    assert set(_METRIC_FIELDS) == set(metric["required"])
+
+
+def test_an_owner_metric_crosses_only_through_the_metric_vocabulary() -> None:
+    owner = _metric_payload(native_name="nim", family="NIM", value=3.5, unit="%")
+    owner.update({_PLANTED_NOTE: "SYNTHETIC-private", _PLANTED_RANK: 1, "composite_score": 0.9})
+    metric = _build_primary_metric({"as_of": "2026-09-20", "metric": owner})
+    assert tuple(metric) == _METRIC_FIELDS
+    # Every stated value is the owner's own object, never a re-derived copy.
+    assert all(metric[key] is owner[key] for key in _METRIC_FIELDS)
+
+
+@pytest.mark.parametrize("fixture", _FENCE_FIXTURES)
+def test_an_owner_key_outside_the_contract_never_reaches_the_document(fixture: str) -> None:
+    """Every owner record under one input field at a time carries a private
+    note and a peer rank that the contract does not know. The document must
+    still validate and must hold neither: the composer projects owner records
+    onto the read model's vocabulary and never copies one wholesale."""
+    base = _extended_owner_inputs(fixture)
+    planted_fields = []
+    for field in dataclasses.fields(base):
+        if field.name in _UNPLANTED_FIELDS:
+            continue
+        value = copy.deepcopy(getattr(base, field.name))
+        if not _plant_owner_keys(value):
+            continue
+        planted_fields.append(field.name)
+        document = compose_finance_projection(
+            dataclasses.replace(base, **{field.name: value}),
+            generated_at=_today(),
+            knowledge_cutoff=_knowledge_cutoff(),
+        )
+        validate_contract(CONTRACT_ID, document)
+        # Assert a bare bool: pytest explains a failed `not in` over this
+        # document's 148 KB dump with a superlinear diff, about 130 s per
+        # failure (DSC:PYTEST-EXPLAINS-A-FAILED-NOT-IN-OVER-A-LONG-STRING-WITH-A-SUPERLINEAR-DIFF).
+        leaked = _carries_planted(json.dumps(document, default=str))
+        assert not leaked, field.name
+    assert {
+        "financial_packets", "sector_dossier", "theme_evidence", "expectation_observations", "basket_context",
+    } <= set(planted_fields)
+
+
+@pytest.mark.parametrize(
+    "admitted, refusal",
+    [
+        (_PLANTED_NOTE, None),
+        (_PLANTED_RANK, "forbidden score/rank/attractiveness/composite field under .*slices"),
+    ],
+)
+def test_the_owner_key_fences_fire_on_a_key_the_composer_admits(
+    monkeypatch: pytest.MonkeyPatch, admitted: str, refusal: str | None
+) -> None:
+    """Positive control for the fences above. A composer that admits one more
+    metric key lets the planted private note through, and the contract rejects
+    the document. If the admitted key is a peer rank, the composer's own emit
+    guard refuses it first, naming the section and never the key."""
+    import engine.sector_intelligence.finance_projection as _fp_mod
+
+    monkeypatch.setattr(_fp_mod, "_METRIC_FIELDS", _METRIC_FIELDS + (admitted,))
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    packets = copy.deepcopy(base.financial_packets)
+    assert _plant_owner_keys(packets)
+    inputs = dataclasses.replace(base, financial_packets=packets)
+    if refusal is not None:
+        with pytest.raises(AssertionError, match=refusal) as excinfo:
+            compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+        assert not _carries_planted(str(excinfo.value))
+        return
+    document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+    carried = admitted in json.dumps(document, default=str)
+    assert carried
+    with pytest.raises(ContractValidationError):
+        validate_contract(CONTRACT_ID, document)
+
+
+# ---------------------------------------------------------------------------
+# An owner value crosses into free text only as a scalar.
+#
+# Most of the contract's free-text fields ask only for a non-empty string, so
+# the key plant above cannot see an owner mapping the composer stringifies: the
+# planted keys ride inside one string value and the document still validates.
+# The plant below reaches the composer's fallbacks and conversions instead, by
+# deleting, emptying or replacing each owner value in turn.
+# ---------------------------------------------------------------------------
+
+# The note alone: it carries no authority word, so the composer's emit guard
+# cannot intercept it, and only the composer's own projection or the contract
+# stands between it and the page. (A structure carrying the peer rank is
+# refused by the emit guard wherever it lands, which hides the contract.)
+_PLANTED_STRUCTURE = {_PLANTED_NOTE: "SYNTHETIC-private"}
+
+
+def _owner_record_paths(node: object, path: tuple = ()) -> list[tuple]:
+    """The path of every owner record under ``node``, by the rule of :func:`_plant_owner_keys`."""
+    paths: list[tuple] = []
+    if isinstance(node, dict):
+        for key, child in node.items():
+            paths += _owner_record_paths(child, path + (key,))
+        if node and not all(isinstance(v, (dict, list, tuple)) for v in node.values()):
+            paths.append(path)
+    elif isinstance(node, (list, tuple)):
+        for index, child in enumerate(node):
+            paths += _owner_record_paths(child, path + (index,))
+    return paths
+
+
+def _owner_record_at(node: object, path: tuple) -> dict:
+    for step in path:
+        node = node[step]  # type: ignore[index]
+    assert isinstance(node, dict)
+    return node
+
+
+def _owner_value_mutations(base: FinanceOwnerInputs, exercised: set | None = None):
+    """Every owner record key, one at a time: deleted, emptied, or replaced by
+    a structure carrying a private note (and by a list holding one, where the
+    owner value is a list). Every record of the field carries the note as a key
+    too, so a fallback that stringifies an owner mapping carries it out.
+
+    Records of one shape at one position are exercised once per fixture, and a
+    record already exercised with identical content, at the same position, by
+    an earlier fixture sharing ``exercised`` is not exercised again."""
+    exercised = set() if exercised is None else exercised
+    for field in dataclasses.fields(base):
+        if field.name in _UNPLANTED_FIELDS:
+            continue
+        original = getattr(base, field.name)
+        shapes = set()
+        for path in _owner_record_paths(original):
+            record = _owner_record_at(original, path)
+            shape = (tuple("#" if isinstance(step, int) else step for step in path), tuple(sorted(map(str, record))))
+            if shape in shapes:
+                continue
+            shapes.add(shape)
+            identity = (field.name, path, json.dumps(record, sort_keys=True, default=str))
+            if identity in exercised:
+                continue
+            exercised.add(identity)
+            for key, value in record.items():
+                variants = ["absent", "empty", "structure"]
+                if isinstance(value, (list, tuple)):
+                    variants.append("structure-in-list")
+                for variant in variants:
+                    mutated = copy.deepcopy(original)
+                    _plant_owner_keys(mutated, _PLANTED_STRUCTURE)
+                    target = _owner_record_at(mutated, path)
+                    if variant == "absent":
+                        del target[key]
+                    elif variant == "empty":
+                        target[key] = ""
+                    elif variant == "structure":
+                        target[key] = dict(_PLANTED_STRUCTURE)
+                    else:
+                        target[key] = [dict(_PLANTED_STRUCTURE)]
+                    yield (field.name, path, key, variant), dataclasses.replace(base, **{field.name: mutated})
+
+
+@functools.lru_cache(maxsize=None)
+def _contract_registry() -> ContractRegistry:
+    # One registry for the whole plant: validate_contract builds a fresh one
+    # per call, about 0.9 s against 0.05 s for a reused one.
+    return ContractRegistry()
+
+
+def _owner_fence_outcome(inputs: FinanceOwnerInputs) -> str:
+    """``clean``: no planted key or value, in any case, reached the document.
+    ``sealed``: one did, and the contract refuses the document. ``refused``:
+    the composer raised without repeating anything planted. ``LEAKED``:
+    something planted reached a document the contract accepts, or an error
+    message."""
+    try:
+        document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+    except Exception as exc:  # a refusal fails closed unless it repeats the planted content
+        return "LEAKED" if _carries_planted(str(exc)) else "refused"
+    if not _carries_planted(json.dumps(document, default=str)):
+        return "clean"
+    try:
+        _contract_registry().validate(CONTRACT_ID, document)
+    except ContractValidationError:
+        return "sealed"
+    return "LEAKED"
+
+
+@functools.lru_cache(maxsize=None)
+def _value_fence_outcomes() -> tuple[tuple[str, tuple, str], ...]:
+    # One pass of the value plant (about 15 s) serves both assertions below.
+    exercised: set = set()
+    return tuple(
+        (fixture, case, _owner_fence_outcome(inputs))
+        for fixture in _FENCE_FIXTURES
+        for case, inputs in _owner_value_mutations(_extended_owner_inputs(fixture), exercised)
+    )
+
+
+def test_an_owner_value_crosses_into_free_text_only_as_a_scalar() -> None:
+    outcomes: dict[str, int] = {}
+    for _fixture, _case, outcome in _value_fence_outcomes():
+        outcomes[outcome] = outcomes.get(outcome, 0) + 1
+    leaks = [(fixture, *case) for fixture, case, outcome in _value_fence_outcomes() if outcome == "LEAKED"]
+    assert outcomes.get("clean", 0) > 0 and outcomes.get("sealed", 0) > 0, outcomes
+    assert not leaks, (outcomes, leaks[:20])
+
+
+# The owner-text seam with its gate removed: a structure is published as it is,
+# upper-cased, or as the mapping's values alone. Scalars keep the real gate.
+_RESHAPED_OWNER_TEXT = {
+    "str": str,
+    "upper": lambda value: str(value).upper(),
+    "values": lambda value: " ".join(map(str, value.values())) if isinstance(value, dict) else str(value),
+}
+
+
+@pytest.mark.parametrize("reshape", sorted(_RESHAPED_OWNER_TEXT))
+def test_the_owner_value_fence_fires_on_a_stringified_owner_metric(monkeypatch: pytest.MonkeyPatch, reshape: str) -> None:
+    """Positive control for the fence above. With the gate removed at the
+    owner-text seam, an operating observation whose metric mapping has lost its
+    name publishes the mapping as the name, and the contract accepts the
+    document: a name only has to be a non-empty string. The fence must call it
+    LEAKED however the mapping is rendered, including upper-cased or as its
+    values alone, which carry the private note without its key."""
+    import engine.sector_intelligence.finance_projection as _fp_mod
+
+    cases = [
+        inputs
+        for (field, _path, key, variant), inputs in _owner_value_mutations(_extended_owner_inputs("EARNINGS_UP_P_E_DOWN"))
+        if field == "financial_packets" and key == "native_metric_name" and variant in ("absent", "empty")
+    ]
+    assert cases
+    assert "LEAKED" not in {_owner_fence_outcome(inputs) for inputs in cases}
+    render = _RESHAPED_OWNER_TEXT[reshape]
+    monkeypatch.setattr(
+        _fp_mod, "_owner_text", lambda value: render(value) if isinstance(value, (dict, list, tuple)) else _owner_text(value)
+    )
+    assert "LEAKED" in {_owner_fence_outcome(inputs) for inputs in cases}
+
+
+def test_a_malformed_owner_value_is_refused_by_the_contract_never_by_a_crash() -> None:
+    """The same plant, read for totality. A structure where the composer
+    looks a value up (a rights family, a slice id, a price basis, a metric
+    name) raised TypeError or AttributeError inside the composer, so the
+    publish step saw an arbitrary exception instead of the contract's refusal.
+    Every such value now reaches the contract or is treated as absent."""
+    crashes = [(fixture, *case) for fixture, case, outcome in _value_fence_outcomes() if outcome == "refused"]
+    assert not crashes, crashes[:20]
+
+
+def test_the_owner_value_fence_fires_on_an_ungated_owner_lookup(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Positive control for the totality test above. With the lookup gate
+    removed, a structure given as a source family is hashed by the rights
+    lookup and the composer raises."""
+    import engine.sector_intelligence.finance_projection as _fp_mod
+
+    cases = [
+        inputs
+        for (field, _path, key, variant), inputs in _owner_value_mutations(_extended_owner_inputs("default"))
+        if (field, key, variant) == ("source_records", "source_family", "structure")
+    ]
+    assert cases
+    assert "refused" not in {_owner_fence_outcome(inputs) for inputs in cases}
+    monkeypatch.setattr(_fp_mod, "_owner_key", lambda value: value)
+    assert "refused" in {_owner_fence_outcome(inputs) for inputs in cases}
+
+
+def test_owner_text_is_a_scalar_or_nothing() -> None:
+    assert _owner_text("nim") == "nim"
+    assert _owner_text(3) == "3"
+    assert _owner_text(_dt.date(2026, 9, 15)) == "2026-09-15"
+    assert _owner_text(None) is None
+    assert _owner_text(dict(_PLANTED_STRUCTURE)) is None
+    assert _owner_text([_PLANTED_NOTE]) is None
+    # A mapping is not a list of references: iterating it would publish its keys.
+    assert _owner_refs(dict(_PLANTED_STRUCTURE)) == []
+    assert _owner_refs(["ref-1", "", None, dict(_PLANTED_STRUCTURE), 7]) == ["ref-1", "7"]
+    # A looked-up value is text or absent: a structure is unhashable.
+    assert _owner_key("card_networks") == "card_networks"
+    assert _owner_key("") == ""
+    assert _owner_key(None) is None
+    assert _owner_key(dict(_PLANTED_STRUCTURE)) is None
+    assert _owner_key([_PLANTED_NOTE]) is None
+
+
+def test_the_emit_guard_walks_tuples() -> None:
+    assert _has_forbidden_key({"cells": ({"peer_rank": 1},)})
+    assert not _has_forbidden_key({"cells": ({"value": 1},)})
+
+
+# ---------------------------------------------------------------------------
+# Evidence refs: every ref is the owner's, and no reading goes unbacked
+# ---------------------------------------------------------------------------
+
+_PLANES = ("operating", "expectations", "valuation", "price")
+_OWNER_REF_KEYS = frozenset({"record_id", "evidence_ref", "evidence_refs", "source"})
+
+
+def _owner_ref_values(value: Any) -> set[str]:
+    """Every string an owner input carries under a reference key: a record
+    id, an evidence ref or ref list, or an observation's source."""
+    found: set[str] = set()
+    stack: list[Any] = [value]
+    while stack:
+        node = stack.pop()
+        if dataclasses.is_dataclass(node) and not isinstance(node, type):
+            stack.extend(getattr(node, field.name) for field in dataclasses.fields(node))
+        elif isinstance(node, dict):
+            for key, child in node.items():
+                if key in _OWNER_REF_KEYS:
+                    if isinstance(child, str):
+                        found.add(child)
+                    elif isinstance(child, (list, tuple)):
+                        found.update(item for item in child if isinstance(item, str))
+                stack.append(child)
+        elif isinstance(node, (list, tuple)):
+            stack.extend(node)
+    return found
+
+
+def _published_refs(document: dict[str, Any]) -> list[tuple[str, str]]:
+    """(path, ref) for every evidence ref the document publishes."""
+    found: list[tuple[str, str]] = []
+    stack: list[tuple[str, Any]] = [("", document)]
+    while stack:
+        path, node = stack.pop()
+        if isinstance(node, dict):
+            for key, child in node.items():
+                if key == "evidence_refs" and isinstance(child, list):
+                    found.extend((f"{path}.{key}", ref) for ref in child)
+                else:
+                    stack.append((f"{path}.{key}", child))
+        elif isinstance(node, list):
+            stack.extend((f"{path}[]", child) for child in node)
+    return found
+
+
+@pytest.mark.parametrize("fixture", _FENCE_FIXTURES)
+def test_every_published_evidence_ref_is_an_owner_ref(fixture: str) -> None:
+    """The composer never mints an evidence ref. It used to publish
+    "slice:<id>" for any slice no owner ref backed, so the contract's rule
+    that an OBSERVED plane cites evidence could never fail: 220 of the 263
+    refs on the default fixture pointed at no record. Every ref is now a
+    string the owner inputs carry under a reference key, and every plane that
+    publishes a reading cites one."""
+    inputs = _extended_owner_inputs(fixture)
+    document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+    validate_contract(CONTRACT_ID, document)
+    owner_refs = _owner_ref_values(inputs)
+    minted = [(path, ref) for path, ref in _published_refs(document) if ref not in owner_refs]
+    assert not minted, minted[:10]
+    unbacked = [
+        (slice_doc["slice_id"], plane)
+        for slice_doc in document["slices"]
+        for plane in _PLANES
+        if slice_doc["rerating"][plane]["primary_metric"] is not None and not slice_doc["rerating"][plane]["evidence_refs"]
+    ]
+    assert not unbacked, unbacked
+
+
+@pytest.mark.parametrize("mint", ["prefixed", "bare"])
+def test_the_evidence_ref_oracle_fires_on_a_minted_ref(monkeypatch: pytest.MonkeyPatch, mint: str) -> None:
+    """Positive control for the test above. Restore the old fallback, or mint
+    the bare slice id, and the oracle finds the minted refs: it asks whether
+    the owner carries a ref, not whether the ref has a known prefix."""
+    import engine.sector_intelligence.finance_projection as _fp_mod
+
+    owner_only = _fp_mod._slice_evidence_refs
+    make = {"prefixed": lambda slice_id: "slice:" + slice_id, "bare": lambda slice_id: slice_id}[mint]
+    monkeypatch.setattr(
+        _fp_mod, "_slice_evidence_refs",
+        lambda slice_id, *rest: owner_only(slice_id, *rest) or [make(slice_id)],
+    )
+    inputs = _extended_owner_inputs("default")
+    document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+    owner_refs = _owner_ref_values(inputs)
+    assert [ref for _path, ref in _published_refs(document) if ref not in owner_refs]
+
+
+def _owner_refs_by_slice(inputs: FinanceOwnerInputs) -> dict[str, set[str]]:
+    """The refs the owner files under each slice: a source record's by its
+    business_scope, an observation's by the slice it is keyed under."""
+    owned: dict[str, set[str]] = {}
+    for rec in inputs.source_records:
+        if isinstance(rec, dict):
+            owned.setdefault(rec.get("business_scope"), set()).update(_owner_ref_values(rec))
+    for observations in (inputs.expectation_observations, inputs.market_observations):
+        for slice_id, obs in (observations or {}).items():
+            owned.setdefault(slice_id, set()).update(_owner_ref_values(obs))
+    return owned
+
+
+def _refs_outside_their_slice(inputs: FinanceOwnerInputs, document: dict[str, Any]) -> list[tuple]:
+    owned = _owner_refs_by_slice(inputs)
+    foreign = [
+        (slice_doc["slice_id"], path, ref)
+        for slice_doc in document["slices"]
+        for path, ref in _published_refs(slice_doc)
+        if ref not in owned.get(slice_doc["slice_id"], set())
+    ]
+    for conflict in document["conflicts"]:
+        joined = set().union(*(owned.get(slice_id, set()) for slice_id in conflict["slice_ids"]))
+        foreign += [(tuple(conflict["slice_ids"]), path, ref) for path, ref in _published_refs(conflict) if ref not in joined]
+    return foreign
+
+
+@pytest.mark.parametrize("fixture", _FENCE_FIXTURES)
+def test_a_slice_cites_only_evidence_its_owner_files_under_it(fixture: str) -> None:
+    """A section's evidence button opens the refs its slice publishes, so a
+    ref the owner files under another slice would open that slice's record.
+    Each slice, on the slice and on its four planes, cites only refs the owner
+    files under it, and a conflict cites only refs of the slices it joins.
+    The owner-ref oracle above pools every slice's refs and cannot see this."""
+    inputs = _extended_owner_inputs(fixture)
+    document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+    foreign = _refs_outside_their_slice(inputs, document)
+    assert not foreign, foreign[:10]
+
+
+def test_the_slice_evidence_oracle_fires_on_an_unscoped_composer(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Positive control for the test above. A composer that stops scoping
+    source records by slice cites every record on every slice. Each ref is
+    still one the owner carries, so the pooled oracle passes, and only the
+    per-slice oracle finds the refs a slice does not own."""
+    import engine.sector_intelligence.finance_projection as _fp_mod
+
+    scoped = _fp_mod._slice_evidence_refs
+
+    def unscoped(slice_id, source_records, *rest):
+        records = [dict(rec, business_scope=slice_id) if isinstance(rec, dict) else rec for rec in source_records]
+        return scoped(slice_id, records, *rest)
+
+    monkeypatch.setattr(_fp_mod, "_slice_evidence_refs", unscoped)
+    inputs = _extended_owner_inputs("default")
+    document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+    owner_refs = _owner_ref_values(inputs)
+    assert not [ref for _path, ref in _published_refs(document) if ref not in owner_refs]
+    assert _refs_outside_their_slice(inputs, document)
+
+
+@pytest.mark.parametrize("fixture", _FENCE_FIXTURES[1:])
+def test_a_reading_no_owner_ref_backs_is_withheld(fixture: str) -> None:
+    """Drop the one source record behind card_networks in a conflict fixture.
+    The old composer still published OBSERVED planes there, citing only the
+    minted "slice:card_networks", and the contract accepted the document.
+    Now each reading is withheld. An OBSERVED plane becomes MISSING with its
+    own plane's note, any other state keeps its words, and the fixture's
+    conflict is not drawn, since it rested on those readings. The readings'
+    dates are withheld too, so the slice's freshness says it has no evidence.
+    The document stays valid, so one slice's missing evidence never refuses
+    the other slices."""
+    base = _conflict_inputs_for(fixture)
+    kept = [rec for rec in base.source_records if not (isinstance(rec, dict) and rec.get("business_scope") == "card_networks")]
+    assert len(kept) < len(base.source_records)
+
+    def card_networks(inputs: FinanceOwnerInputs) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+        document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+        validate_contract(CONTRACT_ID, document)
+        slice_doc = next(s for s in document["slices"] if s["slice_id"] == "card_networks")
+        return slice_doc, [c for c in document["conflicts"] if "card_networks" in c["slice_ids"]]
+
+    before, conflicts = card_networks(base)
+    assert conflicts and any(before["rerating"][plane]["primary_metric"] is not None for plane in _PLANES)
+    after, conflicts = card_networks(dataclasses.replace(base, source_records=kept))
+    assert not conflicts, conflicts
+    for plane in _PLANES:
+        published = after["rerating"][plane]
+        assert published["evidence_refs"] == [], plane
+        assert published["primary_metric"] is None and published["clock"] is None, plane
+        assert published["state"] != "OBSERVED", plane
+        if before["rerating"][plane]["state"] == "OBSERVED":
+            assert published["note"] == f"{plane.capitalize()} evidence is not available for this slice.", plane
+    assert after["freshness"] == {"evidence_latest_observed_at": None, "state": "NO_EVIDENCE"}
+
+
+def test_a_withheld_reading_publishes_no_date() -> None:
+    """A withheld reading's date is withheld with it. Give a slice no owner
+    ref backs one qualified price row, dated years before every other input:
+    its price plane publishes no reading, its freshness says it has no
+    evidence, and the document's common_as_of and freshness are what they are
+    without the row. The date used to reach all three, and the document read
+    SOURCE_STALE from a price it never published. With an owner source the
+    row is evidence: its reading is published and its date counts."""
+    base = _default_8slice_inputs()
+    row = {"as_of": "2019-01-02", "price_basis": "PRICE_RETURN", "value": 42.0, "unit": "USD", "direction": "UP"}
+
+    def compose_with(market_row: dict[str, Any] | None) -> tuple[dict[str, Any], dict[str, Any]]:
+        market = dict(base.market_observations)
+        if market_row is not None:
+            market["private_credit_managers"] = [market_row]
+        document = compose_finance_projection(
+            dataclasses.replace(base, market_observations=market),
+            generated_at=_today(),
+            knowledge_cutoff=_knowledge_cutoff(),
+        )
+        validate_contract(CONTRACT_ID, document)
+        return document, next(s for s in document["slices"] if s["slice_id"] == "private_credit_managers")
+
+    baseline, slice_doc = compose_with(None)
+    assert not slice_doc["evidence_refs"]
+    withheld, slice_doc = compose_with(row)
+    assert slice_doc["rerating"]["price"]["primary_metric"] is None
+    assert slice_doc["freshness"] == {"evidence_latest_observed_at": None, "state": "NO_EVIDENCE"}
+    assert (withheld["common_as_of"], withheld["freshness"]) == (baseline["common_as_of"], baseline["freshness"])
+
+    evidenced, slice_doc = compose_with(dict(row, source="synthetic-market-private_credit_managers"))
+    assert slice_doc["rerating"]["price"]["primary_metric"] is not None
+    assert slice_doc["freshness"] == {"evidence_latest_observed_at": "2019-01-02", "state": "SOURCE_STALE"}
+    assert evidenced["common_as_of"] == "2019-01-02"
+
+
+def test_a_plane_publishes_a_reading_only_with_an_owner_ref() -> None:
+    reading = {
+        "state": "OBSERVED",
+        "primary_metric": {"value": 1.0},
+        "clock": {"as_of": "2026-09-01"},
+        "comparability_state": "COMPARABLE",
+        "evidence_refs": [],
+        "note": "Operating observation is preserved as supplied by the owner.",
+    }
+    missing = "Operating evidence is not available for this slice."
+    assert _withhold_unevidenced(reading, missing) == dict(
+        reading, state="MISSING", primary_metric=None, clock=None, comparability_state=None, note=missing,
+    )
+    regime = dict(reading, state="REGIME_BREAK", comparability_state="REGIME_BREAK_NOT_COMPARABLE", note="A regime break.")
+    assert _withhold_unevidenced(regime, missing) == dict(regime, primary_metric=None, clock=None)
+    backed = dict(reading, evidence_refs=["src-1"])
+    assert _withhold_unevidenced(backed, missing) is backed
+    absent = dict(reading, state="MISSING", primary_metric=None, clock=None)
+    assert _withhold_unevidenced(absent, missing) is absent

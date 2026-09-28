@@ -56,6 +56,30 @@ verified:
       test_p0b_receipt_closure_job_owns_every_receipt_pinned_path and
       test_p0b_receipt_closure_job_would_block_6872_diff_shape. A separate -rs
       run confirmed that reason. They remain required for full-checkout CI.
+  - claim: "The candidate integrates the three intervening CI repairs without changing its bounded PR delta."
+    command: "git merge --no-commit --no-ff origin/main at 7878cc44564e677057c220fea7f01811ddc32c6c; git diff --cached origin/main; targeted commit/path census"
+    result: >
+      The merge was conflict-free. PR #8116 cancellation, #8122 shell-comment
+      tokenization, and #8131 self-mod payload transport are present. The candidate
+      delta against that main remains exactly tests/test_ci_pack.py plus this handoff:
+      276 insertions and 26 deletions. Current manifest inference is 237 jobs,
+      186 derived scopes, 50 declared exclusive, and 236 scoped jobs.
+  - claim: "Every current-main test function is preserved across the integration except the declared fixture substitutions."
+    command: "AST comparison of origin/main tests/test_ci_pack.py with the integrated tree, normalizing only the 13 real_manifest_scopes fixture substitutions"
+    result: >
+      Current main had 157 functions; the integrated tree has 165. Eight additions
+      are the test-only reader, fixtures/helpers, and four regressions. Zero current
+      functions were removed and zero normalized current functions mismatched.
+  - claim: "The complete integrated packing-contract surface passes on the current material base."
+    command: "minimal-venv/bin/python -m pytest tests/test_ci_pack.py tests/test_run_ci_pack_fetch_fallback.py tests/test_merge_on_green.py tests/test_merge_on_green_semantic.py tests/test_check_conflict_markers.py tests/test_release_hold_text.py -q --durations=20 --basetemp=/tmp/ci8126-integrated-pytest; focused cancellation tests; check_runner_policy.py; agentos.py validate"
+    result: >
+      Packing contracts: 568 passed, 2 skipped in 476.89s. The two skips are the
+      same sparse-checkout mockups tests and remain owed to hosted full-checkout CI.
+      Both cancellation tests passed; runner-policy check exited 0. Agent OS
+      validation reported 1,340 records, 0 errors and 119 pre-existing warnings.
+      Candidate-only diff whitespace check passed. During the run main advanced
+      from 7878cc4 to 453c767 only through a White House alert update; the compared
+      CI material paths did not move.
 unverified:
   - claim: "Hosted exact-head CI acceptance, including the two full-checkout P0B receipt tests."
     what_would_verify: >
@@ -71,13 +95,13 @@ unverified:
       and a bounded repair/recovery path. The restored Executive read endpoint
       alone is not this proof. No modifying CI watcher was armed by this source patch.
 unresolved:
-  - "PR #8116 owns cancellation behavior; PR #8122 owns shell-comment tokenization. Both touch separate hunks in this test file."
   - "PR #8094 remains a separate frozen production optimization; PR #8061's registration mismatch remains with its incumbent carrier."
   - "Two supplemental Studio compound reads were safety-refused before dispatch. Their intended reads were not retried; neither was a source mutation."
+  - "The integrated source still owes a new immutable head, hosted full-checkout CI, and independent rereview before release."
 next_actions:
-  - "Publish the exact source and this handoff on the owned branch; request one bounded independent review."
-  - "Reconcile material main changes, especially #8122, without ancestry-only commits; qualify exact current-base CI and normal release."
-  - "After acceptance, measure a real hosted invocation before declaring latency PROVEN_LIVE."
+  - "Commit and push the conflict-free integration on the existing PR #8126 branch; do not create a replacement carrier."
+  - "Bind hosted CI and independent review to the new exact head and current PR base; repair only concrete returned findings."
+  - "On concluded-green exact-head evidence, complete normal expected-head release and post-merge readback; retain BUILT_NOT_PROVEN until a subsequent real hosted observation supports PROVEN_LIVE."
 do_not_redo:
   - "Do not rebuild #8116's cancellation fix, #8122's tokenizer repair, or expand #8094."
   - "Do not infer runner shortage from a red PR or restore the rejected old self-mod-fence weight 1100."
@@ -98,9 +122,11 @@ OPERATION: ci-scope-test-reuse-20260927-c3
 PARENT_OPERATION: ci-fleet-efficiency-audit-20260927
 
 Protected procedure: Mastermind
-`0decc3b5a8cd608232445871adea804549ca25db`, Skillpack 1.0.1,
+`5c6b010a6157895d4f697548c75263cdff641ea6`, Skillpack 1.0.1,
 INDEX blob `94d1af402598894372858793a5b1931019c5fa77`.
-Source base: Macro `7bd3ddbb466e4db0e06306728e4710883f477c4b`.
+Original source base: Macro `7bd3ddbb466e4db0e06306728e4710883f477c4b`.
+Current integration parents: candidate `ecb8753f71f14bf7cb06fe571010eae64111452d`
+and material main `7878cc44564e677057c220fea7f01811ddc32c6c`.
 
 The workspace is the locked linked worktree under the canonical Macro root:
 `/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/ci-scope-test-reuse-20260927-c3`.

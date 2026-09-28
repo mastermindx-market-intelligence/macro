@@ -317,6 +317,62 @@ def test_drawer_focus_ownership_keeps_shell_and_nav_inert_when_open() -> None:
     assert active["isPressed"] and active["connected"], active
 
 
+_DRAWER_STATES = ("evidence-empty", "evidence-none", "evidence-missing")
+
+
+def _drawer_after_pressing(doc: dict, selector: str) -> tuple:
+    # One tick for the hashchange task a cited trigger queues, one for the
+    # drawer's requestAnimationFrame focus move.
+    out = _run({"routes": _route(doc),
+                "actions": [{"do": "press", "selector": selector}, {"do": "tick"}, {"do": "tick"}]})
+    root = _dom(out["second"])
+    shown = [m for m in _DRAWER_STATES if not root.one("p", data_fi_mount=m).hidden]
+    return root, shown
+
+
+@needs_node
+def test_an_evidence_trigger_opens_words_for_what_it_cites() -> None:
+    """The read model publishes no reading that owner evidence does not back,
+    so a section can cite no evidence at all. Its button then says no evidence
+    is on file. It never shows the contents link's "choose an evidence action"
+    prompt, because the reader just chose one. A cited record that is not in
+    source_records says so, and the contents link, which cites nothing, still
+    opens the bare prompt. Each state shows exactly its own mount; the words
+    are the template's (test_the_drawer_says_when_a_section_cites_no_evidence)."""
+    doc = copy.deepcopy(VALID_DOC)
+    doc["slices"][0]["rerating"]["operating"] = {"state": "MISSING", "primary_metric": None,
+                                                 "evidence_refs": []}
+    step = '[data-fi-mount="rerating-steps"] .fi-node-{} .fi-step-evidence'
+    for selector, want in (
+        (step.format("operating"), "evidence-none"),       # the section cites nothing
+        (step.format("expectations"), "evidence-missing"),  # cites src.b, not on file
+        (".fi-toc-evidence", "evidence-empty"),             # the contents link
+    ):
+        root, shown = _drawer_after_pressing(doc, selector)
+        assert not root.one("aside", id="evidence-drawer").hidden, selector
+        assert shown == [want], (selector, shown)
+
+
+@needs_node
+def test_a_record_opened_after_an_empty_section_shows_only_the_record() -> None:
+    """The drawer is reused. A reader who opens a section that cites no
+    evidence and then one whose record is on file sees that record's fields,
+    and none of the words the empty section showed."""
+    doc = copy.deepcopy(VALID_DOC)
+    doc["slices"][0]["rerating"]["expectations"] = {"state": "MISSING", "primary_metric": None,
+                                                    "evidence_refs": []}
+    step = '[data-fi-mount="rerating-steps"] .fi-node-{} .fi-step-evidence'
+    out = _run({"routes": _route(doc), "actions": [
+        {"do": "press", "selector": step.format("expectations")}, {"do": "tick"}, {"do": "tick"},
+        {"do": "press", "selector": step.format("operating")}, {"do": "tick"}, {"do": "tick"},
+    ]})
+    root = _dom(out["second"])
+    drawer = root.one("aside", id="evidence-drawer")
+    assert not drawer.hidden
+    assert [m for m in _DRAWER_STATES if not root.one("p", data_fi_mount=m).hidden] == []
+    assert drawer.one("dl").elements(), "the on-file record's fields did not render"
+
+
 @needs_node
 def test_template_and_site_assets_remain_byte_equivalent() -> None:
     site = ROOT / "site"

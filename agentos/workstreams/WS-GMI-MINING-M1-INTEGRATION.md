@@ -149,6 +149,51 @@ next_action: >
   assemble the field. The accurate claim is stronger - no identity row's CONTENT originates there -
   and all eleven are now enumerated in T03 section 6. A claim quantified over every site must list
   them.
+
+  WAVE 10 (records only; no code, no status, no count changed) is the wave 9 receipt turned on
+  ITSELF. Wave 9 shipped a citation-integrity check reporting 27 pin refs and ZERO dead, and that
+  check cannot see the defect that was actually present: it asks whether a ref RESOLVES, which a
+  pin aimed at an unrelated green test satisfies completely. Resolution is not relevance. A screen
+  comparing each row's NAMED symbols against its cited test's body flagged two rows -- MGD-01 at
+  0 of 9 and MGD-22 at 1 of 4 -- and hand-reading both confirmed it: each cited a green test that
+  asserts something adjacent to, but not, the mechanism the row's reason turns on. Coverage was
+  never the problem, so nothing moved status; the citations were wrong, which is worse than it
+  sounds, because a pin's whole purpose is to send a reader to the assertion.
+  Two things generalise. FIRST, the family: an integrity check that passes tells you only that the
+  thing it measured is fine. Presence is not uniqueness, a misdirected probe answers NONE
+  vacuously, and a resolving pin need not assert -- three instances in three waves, each one a
+  clean instrument result that WAS the bug. Ship a positive control with every such check and state
+  what it cannot see. SECOND, and less obvious: MGD-01's mismatch was created by IMPROVING the row.
+  Its previous note was vague enough that no screen could flag it, and the weak pin looked fine
+  beside vague prose; replacing it with a real mechanism is what made the mismatch visible. A note
+  and its pin are one artifact, so a rewritten justification owes a re-checked citation in the same
+  commit. The screen is deliberately kept a SCREEN and not a gate -- a pin may assert a mechanism
+  in different words, so a zero score orders a READING, never a verdict.
+
+  WAVE 11 audited the rows the instruments CANNOT REACH, and the defect was there. Wave 10's
+  pin-relevance screen scores a row's note against its cited test body, so a note naming no
+  backticked symbol scores 0 of 0 and is excluded -- five rows sat in that exclusion, and all five
+  justified their status by the delivered test's NAME plus a suite-wide pass count, which is the
+  one thing this ledger's own authority block forbids. The count had been stale for two waves.
+  Measured by SUBJECT against the obligation statements read from the carrier trace: three confirmed
+  (two of them stronger than the row claimed -- MGD-09 is two-armed because its fixture supplies a
+  complete economics block and omits only the issuer, and MGD-34 holds over all 11 payloads against
+  an oracle literal with a falsy-but-not-False negative control); two had a clause NO delivered test
+  reached and both were PINNED in this wave with control arms and mutation probes; one moved status.
+  MGD-12 -> PARTIAL_BY_CONSTRUCTION, and T08 §5's mechanism for it is withdrawn as WRONG: it
+  recorded a 'dedup path' and there is none -- two rows sharing one subject id go in and two come
+  out, as that test itself asserts. The obligation's operative verb has no construct on main to
+  violate, enumerated over all 11 cases with a positive control on the walk.
+  Three things generalise. FIRST: a rule a file states about its own method is not a rule its rows
+  obey -- audit the stated rule against the rows EXEMPT from your instruments, never the rows they
+  score. SECOND: report a screen's REACH beside its score. 'pin_relevance 14 of 14' was true and
+  invited exactly the wrong conclusion; the honest line is 14 of 40 rows scored, and wave 11 moved
+  it to 19 of 40 by making five vague notes specific. THIRD: a screen that names its own blind spot
+  tells you where to look next -- this one named 'a stale count in a sibling record', and two
+  do_not_redo entries asserting a two-wave-old pass count in the present tense were found by grep
+  minutes later. Both are now dated rather than rewritten, as is MGD-08's closure receipt, which
+  the stale-count screen flagged as a FALSE POSITIVE of its own making (174 was the seven-suite
+  total; the screen compared it to the single-suite figure).
   WAVE 8 (records only) fixed a gate that could not execute. T02's §5 sibling-regression gate
   required `tests/test_issuer_profiles.py` and `tests/test_event_workspace_build.py` green and
   NEITHER FILE EXISTS; the suites it means are `tests/test_issuer_profiles_a5a.py`,
@@ -188,7 +233,7 @@ do_not_redo:
   - "Shared requests 5809132661 / 5809893850 and the accepted R4/R12 architecture answers on #7870 are consumed - never repeat them; an acknowledgment is not interface delivery."
   - "Original plan T01 (generic kernel extraction) is a shared-owner proposal, not Mining work; never create or copy engine/market_ontology/theme_research.py, a generic response schema, route, publisher, client or page shell."
   - "Canonical P05 blob is 42c90b46; the excluded local blob 587ee020 is never republished. Healthcare #7787 stays settled and separate."
-  - "T04a is spent: #7950 is merged and proven green on main (53 passed). Three fabric rounds and three Opus reviews are consumed and R-MIN-31/32/33/33a-33g are tabled - never re-spec or re-review it."
+  - "T04a is spent: #7950 is merged and proven green on main (53 passed AS MEASURED AT THAT MERGE - a receipt of that head, not a current gate; the same suite passes 61 today). Three fabric rounds and three Opus reviews are consumed and R-MIN-31/32/33/33a-33g are tabled - never re-spec or re-review it."
   - "Never re-derive the MGD partition by grepping test names. Planned names resolve 0/40 on main and 2/40 at #7950, so a name audit reports 38 false gaps. MGD_EXECUTION_STATUS.json is keyed by obligation id for exactly that reason."
 landmines:
   - "Shared files (issuer_profiles.py, event_workspace_build.py, receipts.py, legacy-jobs.yml, test_ci_pack.py, config/theme_sources.yml, the shared theme-research client/mount) stay owned by their incumbents and are touched only at named seams."

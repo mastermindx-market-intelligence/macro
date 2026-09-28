@@ -48,6 +48,11 @@ scope: >
   shape is a BOUNDARY-STEM pattern under fullmatch, not fullmatch as such. The one real
   sibling does NOT have this defect -- finance_projection.py has no fullmatch call at
   all; it has the adjacent one in DSC:A-GUARD-NAMED-IN-THE-DOCSTRING-CAN-HAVE-ZERO-CALL-SITES.
+  ADDED 2026-09-28 (Finance seat 938d17d6): the Finance MODULE has no fullmatch call, but
+  its TEST oracle did. tests/test_finance_intelligence_projection.py::test_no_forbidden_keys
+  walked keys with `forbidden.fullmatch(key)` on this exact pattern, so it could never
+  report a compound key. Now repaired, with a positive control; see
+  DSC:A-LEAK-TEST-OVER-A-CLEAN-FIXTURE-CANNOT-FAIL-PLANT-THE-OWNER-KEYS.
 confidence: verified
 ---
 

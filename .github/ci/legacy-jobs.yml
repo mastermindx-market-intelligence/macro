@@ -5826,7 +5826,12 @@ jobs:
       - "tests/test_finance_overlap.py"
       - "engine/sector_intelligence/contracts.py"
       - "engine/sector_intelligence/finance_projection.py"
+      # FIN-T10 registration adapter — fixture-only, §8 sector_profile pending.
+      # Once §8 is adjudicated the same factory pattern (technology @ #7891)
+      # will be applied here.
+      - "engine/sector_intelligence/finance_research_registration.py"
       - "tests/test_finance_intelligence_projection.py"
+      - "tests/test_finance_research_registration.py"
       # FIN-T9 entry points — sector deep-dive card on the Theme Tracker
       # + Financials launch module (skip-mode while PR #7669 is OPEN).
       - "templates/_finance_sector_deep_dive.html.j2"
@@ -5899,7 +5904,7 @@ jobs:
       - name: finance intelligence page + hydration tests
         run: python -m pytest tests/test_finance_intelligence_page.py tests/test_finance_intelligence_hydration.py -q
       - name: finance intelligence contract tests
-        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py -q
+        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py tests/test_finance_research_registration.py -q
 
 
   consumer-cyclical-economic-change:
@@ -7327,7 +7332,20 @@ jobs:
           # retained solely for the one-head bootstrap where the PR must still be
           # proven by the pre-upgrade executor loaded from main.
           BRANCH="${CI_HEAD_REF:-${GITHUB_HEAD_REF:-}}"
-          TRAILERS=""
+          # Both populations this fence classifies are unbounded, so only FILE
+          # HANDLES cross argv (DSC:CI-SELF-MOD-FENCE-ARGV-BYPASSES-BOUNDED-TRANSPORT).
+          # #6223 moved the two fences.yml copies of this check onto handles and
+          # missed this packed copy: run 36360866211 (PR #8006, 2026-09-28) died
+          # here with exit 126, "Argument list too long", before Python started.
+          # run_ci_pack had deepened the tested merge to depth 32 to reach a merge
+          # base, and origin/main..HEAD then walked ~117 commits (~372 KB of
+          # squash-merge PR bodies) into ONE argv string, past the 131,072-byte
+          # Linux MAX_ARG_STRLEN. Shell variables below never meet execve: printf
+          # is a builtin, and every external command reads a population on stdin.
+          SELF_MOD_INPUT_DIR=$(mktemp -d "${RUNNER_TEMP:-${TMPDIR:-/tmp}}/self-mod-fence.XXXXXX")
+          trap 'rm -rf "$SELF_MOD_INPUT_DIR"' EXIT
+          FILES_FILE="$SELF_MOD_INPUT_DIR/changed-files.json"
+          TRAILERS_FILE="$SELF_MOD_INPUT_DIR/commit-messages.txt"
           FILES=""
           PARSE_RC=0
           FILES=$(python3 scripts/check_self_mod_fence.py --print-planner-files) || PARSE_RC=$?
@@ -7342,11 +7360,15 @@ jobs:
               echo "self-mod-fence: ci-plan reported no changed files — zero changes to classify (pass)"
               exit 0
             fi
+            # --print-planner-files frames the list one path per line, the same
+            # framing the retired unquoted expansion split on. NUL-frame it into
+            # the canonical changed-files JSON handle.
+            printf '%s\n' "$FILES" | tr '\n' '\0' |
+              python3 scripts/check_self_mod_fence.py --write-files-file-from-nul "$FILES_FILE"
           else
             # Unset env (local / pre-#5564): fall back to git. Fail-closed only when
             # that fallback cannot determine files either.
             git fetch origin ${{ github.base_ref || 'main' }}
-            TRAILERS=$(git log --format="%B" origin/${{ github.base_ref || 'main' }}..HEAD 2>/dev/null || echo "")
             FILES=$(git diff --name-only origin/${{ github.base_ref || 'main' }}...HEAD 2>/dev/null || echo "")
             if [ -z "$FILES" ]; then
               if [ "${GITHUB_EVENT_NAME:-}" = "workflow_dispatch" ] && \
@@ -7370,12 +7392,18 @@ jobs:
               echo "Possible causes: CI_CHANGED_FILES_FILE/CI_CHANGED_FILES_JSON unset/malformed, git diff error, or base_ref resolution failure." >&2
               exit 1
             fi
+            # -z: raw pathnames, with no core.quotePath escaping and no shell split.
+            git diff --name-only -z origin/${{ github.base_ref || 'main' }}...HEAD |
+              python3 scripts/check_self_mod_fence.py --write-files-file-from-nul "$FILES_FILE"
           fi
-          TRAILERS=$(git log --format="%B" origin/${{ github.base_ref || 'main' }}..HEAD 2>/dev/null || echo "")
+          # Same range and same failure semantics as the retired argv form (a git
+          # log error still reads as no commit messages); only the transport moved.
+          # The fence fails closed on a handle it cannot read.
+          { git log --format="%B" origin/${{ github.base_ref || 'main' }}..HEAD 2>/dev/null || echo ""; } > "$TRAILERS_FILE"
           python3 scripts/check_self_mod_fence.py \
             --branch "$BRANCH" \
-            --files $FILES \
-            --trailers "$TRAILERS"
+            --files-file "$FILES_FILE" \
+            --trailers-file "$TRAILERS_FILE"
       - name: self-mod-fence test suite
         run: python -m pytest tests/test_self_mod_fence.py tests/test_ci_authority.py -q
       - name: agent-os record contract (schema fail-closed, join fail-open)

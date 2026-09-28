@@ -92,3 +92,38 @@ discharge them. Missing private-runtime proof may hold live admission while auth
 synthetic source work proceeds.
 
 Recorded as `DSC:D2-WAITS-ON-A-BUILT-V1-1-NOT-ONLY-ON-THE-BASE-MERGE` (with falsifier).
+
+## D1 falsifier verdict (2026-09-28)
+
+D1 shipped with a published falsifier on carrier #7788: *after the first post-merge nightly
+writes the FDA observation sidecar and a later render bakes it, the live chip MUST leave
+`UNAVAILABLE` and carry a real `source generation <gen>`; if it still reads "source unavailable"
+then the cause is NOT sequencing and this seat owns a live data-availability defect.*
+
+**Verdict: the antecedent never fired, and the chip is correct.** The post-merge nightly
+(`daily.yml` `36367461114`) concluded **success** at 2026-09-28T01:49:36Z and advanced no
+sidecar — `last_refresh.attempted_at` stayed at 2026-09-27T06:08:08Z. The sidecar on `main`
+carries `failure_code: "PAGE_FAILED"`, `qualified: false`, `partial_rows_observed: 0`,
+`selected_capture: null`, `parquet_sha256: null`: no qualified generation has ever been
+selected. `qualified is False` drives `summarize_supply` to `_UNAVAILABLE`
+(`engine/fda_scarcity.py:243`) and, with no generation on file, `_label` selects exactly the
+leaf the live page shows. Re-captured 2026-09-28T06:0xZ — 43 `fx-chip` anchors, one medical
+chip, EN+ZH both present, zero pill glyphs, banned substrings zero inside the chip.
+
+**`R-D1-FALS-01`.** The `UNAVAILABLE` leaf is adjudicated CORRECT and is **not** re-opened as a
+defect. The public seam is performing the refusal D1 was built to add — never assert supply from
+an unqualified capture (`NO_SOURCE_GENERATION`). The open condition is upstream in the openFDA
+sweep (`collectors/fda_shortages.py`), it is non-fatal by design, and it belongs to that
+collector's owner: **Healthcare consumes this feed and mints no part of it**, so no Healthcare
+release changes the sweep. Two instrument corrections are binding on any successor lane: the
+sidecar is `data/fda/shortages.observation.json` (never `<parquet>.observation.json`), and a
+green `daily.yml` conclusion is **not** evidence the drip ran, because the drip's `except` is
+explicitly non-fatal and `RENDER_NO_DRIP=1` skips it outright.
+
+**Scope note for the banned-substring gate.** D1's ban is CHIP-scoped. A page-wide grep of the
+served `foresight.html` returns `glut` ×2 and `catching up` ×2 — all four in the pre-existing
+cross-theme lifecycle legend ("7/18 themes have a glut read", "estimates catching up — runway",
+"supply catching up — exit clock") and the page methodology prose. None is healthcare copy and
+none is a D1 regression; a successor running an unscoped grep must not report them as one.
+
+Recorded as `DSC:FDA-UNAVAILABLE-CHIP-IS-CORRECT-THE-DRIP-NEVER-QUALIFIED` (with falsifier).

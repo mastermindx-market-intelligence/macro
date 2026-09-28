@@ -319,6 +319,42 @@ def _to_iso(value: datetime | date | str) -> str:
     return str(value)
 
 
+# Most of the read model's free-text fields are typed only as a non-empty
+# string, so str() of an owner mapping or list would carry every key and value
+# inside it past the contract as one opaque string: the closed metric
+# vocabulary and every sealed object, skipped in one call. An owner value is
+# published as text only when it is a scalar; a structure where text is
+# expected is treated as absent, and a required field left empty is refused by
+# the contract.
+_OWNER_TEXT_SCALARS = (str, int, float, date)
+
+
+def _owner_text(value: Any) -> str | None:
+    """An owner scalar as published text, or None for anything else."""
+    return str(value) if isinstance(value, _OWNER_TEXT_SCALARS) else None
+
+
+def _owner_ref(value: Any) -> str | None:
+    """A present owner scalar as a reference; falsy values and structures are absent."""
+    return _owner_text(value) if value else None
+
+
+def _owner_refs(values: Any) -> list[str]:
+    """Owner references from a list. A mapping is not a list of references:
+    iterating one would publish its key names."""
+    if not isinstance(values, (list, tuple)):
+        return []
+    return [ref for ref in map(_owner_ref, values) if ref]
+
+
+def _owner_key(value: Any) -> str | None:
+    """An owner value the composer looks up or compares as text: a string, or
+    None. A mapping or list is unhashable, so a membership test on one raised
+    inside the composer before the contract could refuse anything; it names no
+    slice, rights family, price basis or metric, so it is treated as absent."""
+    return value if isinstance(value, str) else None
+
+
 def _hash_inputs(inputs: FinanceOwnerInputs, composer_version: str) -> str:
     payload = {
         "composer_version": composer_version,
@@ -402,7 +438,7 @@ def _curation_revisions(theme_evidence: Sequence[Mapping[str, Any]]) -> list[str
         revision = row.get("curation_revision") if isinstance(row, Mapping) else None
         if revision is None:
             continue
-        text = str(revision).strip()
+        text = (_owner_text(revision) or "").strip()
         if text:
             revisions.add(text)
     return sorted(revisions)
@@ -424,11 +460,10 @@ def _coerce_rights_state(
     source_family: str | None,
     rights_snapshot: Mapping[str, str],
 ) -> str:
-    if not source_family:
+    family = _owner_key(source_family)
+    if not family or family not in rights_snapshot:
         return "SOURCE_RIGHTS_HELD"
-    if source_family not in rights_snapshot:
-        return "SOURCE_RIGHTS_HELD"
-    cls = rights_snapshot.get(source_family)
+    cls = rights_snapshot.get(family)
     if cls == "internal_only":
         return "INTERNAL_ONLY"
     if cls == "unresolved":
@@ -438,15 +473,6 @@ def _coerce_rights_state(
     if cls == "derived_display_ok":
         return "DERIVED_DISPLAY_OK"
     return "SOURCE_RIGHTS_HELD"
-
-
-def _source_record_evidence_ref(rec: Mapping[str, Any]) -> str | None:
-    ref = rec.get("evidence_ref")
-    if ref is None:
-        rid = rec.get("record_id")
-        return str(rid) if rid else None
-    text = str(ref).strip()
-    return text or None
 
 
 def _source_record_observed_at(rec: Mapping[str, Any]) -> date | None:
@@ -683,40 +709,6 @@ def _observation_value(obs: Mapping[str, Any]) -> Any:
     return None
 
 
-def _observation_unit(obs: Mapping[str, Any]) -> str | None:
-    unit = obs.get("unit")
-    if unit is not None:
-        return str(unit)
-    metric = obs.get("metric")
-    if isinstance(metric, Mapping):
-        unit = metric.get("unit")
-        if unit is not None:
-            return str(unit)
-    return None
-
-
-def _plane_evidence_refs(
-    expectation_obs: Sequence[Mapping[str, Any]],
-    market_obs: Sequence[Mapping[str, Any]],
-    source_records: Sequence[Mapping[str, Any]],
-) -> list[str]:
-    refs: set[str] = set()
-    for obs in expectation_obs:
-        ref = obs.get("source") if isinstance(obs, Mapping) else None
-        if ref:
-            refs.add(str(ref))
-    for obs in market_obs:
-        if isinstance(obs, Mapping):
-            ref = obs.get("source") or obs.get("evidence_ref")
-            if ref:
-                refs.add(str(ref))
-    for rec in source_records:
-        rid = rec.get("record_id") if isinstance(rec, Mapping) else None
-        if rid:
-            refs.add(str(rid))
-    return sorted(refs)
-
-
 def _plane_clock(obs: Mapping[str, Any] | None) -> dict[str, Any] | None:
     if obs is None:
         return None
@@ -752,26 +744,35 @@ def _empty_metric() -> dict[str, Any]:
     }
 
 
+# The read model's metric is a closed object (schema $defs/metric,
+# additionalProperties: false). An owner metric crosses into it only through
+# these names, as a source record crosses only through allowed_top_level: a
+# peer rank, a composite score or a private note riding on the owner's metric
+# stays behind, and every stated value keeps the owner's bytes.
+_METRIC_FIELDS: tuple[str, ...] = tuple(_empty_metric())
+
+
 def _build_primary_metric(obs: Mapping[str, Any]) -> dict[str, Any]:
     metric_in = obs.get("metric") if isinstance(obs, Mapping) else None
     if isinstance(metric_in, Mapping):
-        metric = dict(metric_in)
+        metric = {key: metric_in[key] for key in _METRIC_FIELDS if key in metric_in}
     else:
         metric = _empty_metric()
-        metric["native_metric_name"] = str(obs.get("metric", ""))
+        metric["native_metric_name"] = _owner_text(metric_in) or ""
         metric["normalized_metric_family"] = metric["native_metric_name"]
         metric["value"] = obs.get("value")
-        unit = obs.get("unit")
-        metric["unit"] = str(unit) if unit is not None else None
+        metric["unit"] = _owner_text(obs.get("unit"))
     if "native_metric_name" not in metric or not metric["native_metric_name"]:
-        metric["native_metric_name"] = str(obs.get("metric", ""))
+        # Only a scalar row metric can name the metric. When the row's metric
+        # is the owner's mapping, str() of it would publish every key inside it,
+        # so the name stays empty and the contract refuses the document.
+        metric["native_metric_name"] = _owner_text(metric_in) or ""
     if "normalized_metric_family" not in metric or not metric["normalized_metric_family"]:
         metric["normalized_metric_family"] = metric["native_metric_name"]
     if "value" not in metric:
         metric["value"] = obs.get("value")
     if "unit" not in metric:
-        unit = obs.get("unit")
-        metric["unit"] = str(unit) if unit is not None else None
+        metric["unit"] = _owner_text(obs.get("unit"))
     metric.setdefault("currency", None)
     metric.setdefault("period_start", None)
     metric.setdefault("period_end", None)
@@ -792,7 +793,7 @@ def _build_price_primary_metric(obs: Mapping[str, Any]) -> dict[str, Any]:
     placeholders that satisfy the schema's minLength requirements while
     reflecting the price semantics.
     """
-    basis = str(obs.get("price_basis") or "")
+    basis = _owner_ref(obs.get("price_basis")) or ""
     metric = {
         "native_metric_name": basis or "price",
         "normalized_metric_family": basis or "price",
@@ -862,40 +863,74 @@ def _has_change_pct_or_delta(value: Any) -> bool:
                 return True
             if _has_change_pct_or_delta(value[key]):
                 return True
-    elif isinstance(value, list):
+    elif isinstance(value, (list, tuple)):
         for child in value:
             if _has_change_pct_or_delta(child):
                 return True
     return False
 
 
-def _operating_plane(
+def _has_forbidden_key(value: Any) -> bool:
+    if isinstance(value, dict):
+        for key in value:
+            if _FORBIDDEN_KEY_RE.search(str(key)):
+                return True
+            if _has_forbidden_key(value[key]):
+                return True
+    elif isinstance(value, (list, tuple)):
+        for child in value:
+            if _has_forbidden_key(child):
+                return True
+    return False
+
+
+def _filed_under(obs: Mapping[str, Any], slice_id: str) -> bool:
+    """Whether an owner observation belongs to this slice.
+
+    It does when the owner tags it with the slice, or leaves it untagged,
+    which means company data. Only an absent or null tag is untagged. Any
+    other value that is not this slice's id, an empty string or a malformed
+    non-string included, files the observation somewhere else, so it never
+    reaches this slice. (A falsy malformed tag used to count as untagged, so
+    it reached every slice.)
+    """
+    tag = obs.get("slice_id")
+    return tag is None or tag == slice_id
+
+
+def _operating_reading(
     slice_id: str,
     financial_packets: Mapping[str, Mapping[str, Any]],
-    regime_breaks: Sequence[Mapping[str, Any]],
-    evidence_refs: list[str],
-) -> dict[str, Any]:
-    # Pick the freshest operating observation across all financial_packets
-    # that carries an explicit ``direction``. Source records are display-tier
-    # (schema-strict) and never carry direction.
+) -> Mapping[str, Any] | None:
+    """The operating observation the slice publishes, or None.
+
+    It is the freshest operating observation filed under the slice that
+    carries an explicit ``direction``. Source records are display-tier
+    (schema-strict) and never carry direction. The conflict grammar reads
+    this same observation.
+    """
     candidates: list[tuple[date | None, Mapping[str, Any]]] = []
-    for label, packet in financial_packets.items():
+    for packet in financial_packets.values():
         if not isinstance(packet, Mapping):
             continue
         operating = packet.get("operating")
         if isinstance(operating, Mapping):
             for obs in operating.get("observations") or ():
-                if not isinstance(obs, Mapping):
-                    continue
-                if _direction(obs) is None:
-                    continue
-                # The composer is per-slice; only consume observations that
-                # explicitly tag the slice or that have no tag (interpreted
-                # as universal company data).
-                if not obs.get("slice_id") or obs.get("slice_id") == slice_id:
+                if isinstance(obs, Mapping) and _direction(obs) is not None and _filed_under(obs, slice_id):
                     candidates.append((_coerce_date(obs.get("as_of")), obs))
-
     if not candidates:
+        return None
+    candidates.sort(key=lambda c: (c[0] or date.max))
+    return candidates[-1][1]
+
+
+def _operating_plane(
+    slice_id: str,
+    freshest: Mapping[str, Any] | None,
+    regime_breaks: Sequence[Mapping[str, Any]],
+    evidence_refs: list[str],
+) -> dict[str, Any]:
+    if freshest is None:
         if _plane_is_regime_break(regime_breaks, slice_id, "operating"):
             return _plane_block(
                 state="REGIME_BREAK",
@@ -914,8 +949,6 @@ def _operating_plane(
             note="Operating evidence is not available for this slice.",
         )
 
-    candidates.sort(key=lambda c: (c[0] or date.max))
-    freshest = candidates[-1][1]
     primary = _build_primary_metric(freshest)
     clock = _plane_clock(freshest)
 
@@ -1017,28 +1050,61 @@ def _expectations_plane(
     }
 
 
-def _valuation_plane(
+def _valuation_anchor(
     slice_id: str,
     financial_packets: Mapping[str, Mapping[str, Any]],
-    market_obs: Sequence[Mapping[str, Any]],
-    evidence_refs: list[str],
-    regime_breaks: Sequence[Mapping[str, Any]],
-) -> dict[str, Any]:
-    anchor_obs: Mapping[str, Any] | None = None
-    for label, packet in financial_packets.items():
+    knowledge_cutoff: date,
+) -> Mapping[str, Any] | None:
+    """The valuation observation the slice publishes as its anchor, or None.
+
+    The anchor is the slice's freshest dated valuation observation filed
+    under the slice (_filed_under). An observation tagged with another slice
+    never anchors this one. (The anchor used to be the first observation of
+    whichever packet iterated last, so every slice with a qualified price
+    basis published that one slice's multiple.) The conflict grammar reads
+    this same observation.
+
+    The anchor's date is published as the slice's information clock, so:
+    - an observation with no date (neither as_of nor observed_at, the dates
+      _plane_clock reads) never anchors: the contract requires the clock and
+      would refuse the whole document;
+    - an observation dated after the knowledge cutoff never anchors, because
+      nothing dated after the cutoff can be known at it;
+    - on one date, an observation the owner tags with this slice anchors
+      over an untagged one, because it is the more specific filing.
+    Two observations filed the same way on one date keep the owner's order:
+    which company's reading anchors a slice is not decided here.
+    """
+    candidates: list[tuple[tuple[date, bool], Mapping[str, Any]]] = []
+    for packet in financial_packets.values():
         if not isinstance(packet, Mapping):
             continue
         valuation = packet.get("valuation")
         if isinstance(valuation, Mapping):
             for obs in valuation.get("observations") or ():
-                if isinstance(obs, Mapping):
-                    anchor_obs = obs
-                    break
+                if not isinstance(obs, Mapping) or not _filed_under(obs, slice_id):
+                    continue
+                observed = _coerce_date(obs.get("as_of")) or _coerce_date(obs.get("observed_at"))
+                if observed is not None and observed <= knowledge_cutoff:
+                    candidates.append(((observed, obs.get("slice_id") == slice_id), obs))
+    if not candidates:
+        return None
+    candidates.sort(key=lambda c: c[0])
+    return candidates[-1][1]
+
+
+def _valuation_plane(
+    slice_id: str,
+    anchor_obs: Mapping[str, Any] | None,
+    market_obs: Sequence[Mapping[str, Any]],
+    evidence_refs: list[str],
+    regime_breaks: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
     price_basis: str | None = None
     for obs in market_obs:
         if not isinstance(obs, Mapping):
             continue
-        basis = obs.get("price_basis")
+        basis = _owner_key(obs.get("price_basis"))
         if basis in _PRICE_BASIS_QUALIFIED:
             price_basis = basis
             break
@@ -1107,18 +1173,31 @@ def _valuation_plane(
     )
 
 
+def _price_reading(market_obs: Sequence[Mapping[str, Any]]) -> Mapping[str, Any] | None:
+    """The market observation the slice's price plane publishes, or None.
+
+    It is the freshest observation on a qualified price basis; an undated
+    one counts as the oldest. The conflict grammar reads this same
+    observation.
+    """
+    qualified = [
+        o
+        for o in market_obs
+        if isinstance(o, Mapping) and _owner_key(o.get("price_basis")) in _PRICE_BASIS_QUALIFIED
+    ]
+    if not qualified:
+        return None
+    return max(qualified, key=lambda o: _coerce_date(o.get("as_of")) or date.min)
+
+
 def _price_plane(
     slice_id: str,
+    freshest: Mapping[str, Any] | None,
     market_obs: Sequence[Mapping[str, Any]],
     evidence_refs: list[str],
     regime_breaks: Sequence[Mapping[str, Any]],
 ) -> dict[str, Any]:
-    qualified = [
-        o
-        for o in market_obs
-        if isinstance(o, Mapping) and o.get("price_basis") in _PRICE_BASIS_QUALIFIED
-    ]
-    if not qualified:
+    if freshest is None:
         for obs in market_obs:
             if isinstance(obs, Mapping) and obs.get("price_basis") == "ADJUSTED_HISTORICAL":
                 return _plane_block(
@@ -1137,7 +1216,6 @@ def _price_plane(
             evidence_refs=evidence_refs,
             note="No qualified price basis is admitted for the price plane.",
         )
-    freshest = max(qualified, key=lambda o: _coerce_date(o.get("as_of")) or date.min)
     primary = _build_price_primary_metric(freshest)
     clock = _plane_clock(freshest)
     if _plane_is_regime_break(regime_breaks, slice_id, "price"):
@@ -1288,27 +1366,36 @@ def _slice_evidence_refs(
     refs: set[str] = set()
     for rec in source_records:
         if isinstance(rec, Mapping) and rec.get("business_scope") == slice_id:
-            rid = rec.get("record_id")
-            if rid:
-                refs.add(str(rid))
-            elif rec.get("evidence_ref"):
-                refs.add(str(rec.get("evidence_ref")))
-    for obs in expectation_obs:
-        if isinstance(obs, Mapping):
-            ref = obs.get("source") or obs.get("evidence_ref")
+            ref = _owner_ref(rec.get("record_id")) or _owner_ref(rec.get("evidence_ref"))
             if ref:
-                refs.add(str(ref))
-    for obs in market_obs:
+                refs.add(ref)
+    for obs in (*expectation_obs, *market_obs):
         if isinstance(obs, Mapping):
-            ref = obs.get("source") or obs.get("evidence_ref")
+            ref = _owner_ref(obs.get("source")) or _owner_ref(obs.get("evidence_ref"))
             if ref:
-                refs.add(str(ref))
-    if not refs:
-        # Fall back to the slice id as a synthetic ref so the schema's
-        # non-empty evidence_refs requirement is satisfied when no
-        # owner-supplied ref is present.
-        refs.add("slice:" + slice_id)
+                refs.add(ref)
+    # Never mint a ref. A slice no owner ref backs publishes an empty list,
+    # and its planes publish no reading (see _withhold_unevidenced). A
+    # synthetic "slice:<id>" ref used to sit here to satisfy the contract's
+    # rule that an OBSERVED plane cites evidence; it pointed at no record, so
+    # that rule could never fail.
     return sorted(refs)
+
+
+def _withhold_unevidenced(plane: dict[str, Any], missing_note: str) -> dict[str, Any]:
+    """A plane publishes a reading only when an owner evidence ref backs it.
+
+    An OBSERVED plane with no owner ref is published as MISSING, in words,
+    with its reading withheld. Any other state keeps its state and words and
+    loses only the reading. The contract's OBSERVED rule then holds because
+    the evidence exists, and no conflict is drawn from a reading the page
+    could not back: the conflict detector reads these planes."""
+    if plane.get("evidence_refs") or plane.get("primary_metric") is None:
+        return plane
+    withheld = dict(plane, primary_metric=None, clock=None)
+    if plane.get("state") == "OBSERVED":
+        withheld.update(state="MISSING", comparability_state=None, note=missing_note)
+    return withheld
 
 
 # ---------------------------------------------------------------------------
@@ -1345,13 +1432,14 @@ def _material_changes_for(
         material = rec.get("material_change")
         if not isinstance(material, Mapping):
             continue
-        change_id = material.get("change_id") or rec.get("record_id")
+        change_id = _owner_ref(material.get("change_id")) or _owner_ref(rec.get("record_id"))
         if not change_id:
             continue
+        record_ref = _owner_ref(rec.get("record_id"))
         observed_at = _source_record_observed_at(rec)
         published_at = _coerce_date((rec.get("source") or {}).get("published_at")) if isinstance(rec.get("source"), Mapping) else None
         out.append({
-            "change_id": str(change_id),
+            "change_id": change_id,
             "event_clock": {
                 "published_at": published_at.isoformat() if published_at else None,
                 "published_at_grain": "DAY",
@@ -1362,9 +1450,9 @@ def _material_changes_for(
             },
             "domain_ids": list(material.get("domain_ids") or [_domain_of(slice_id)]),
             "slice_ids": [slice_id],
-            "operating_implication": str(material.get("operating_implication", "")),
-            "evidence_refs": [str(rec.get("record_id"))] if rec.get("record_id") else [],
-            "conflict_ids": list(material.get("conflict_ids") or []),
+            "operating_implication": _owner_text(material.get("operating_implication")) or "",
+            "evidence_refs": [record_ref] if record_ref else [],
+            "conflict_ids": _owner_refs(material.get("conflict_ids")),
             # CAUSAL_EFFECT_UNMEASURED is an internal flag used by the
             # conflict detector; the document's freshness_state enum
             # only admits FRESH / AGING / SOURCE_STALE / NO_EVIDENCE,
@@ -1391,15 +1479,21 @@ def _conflicts_for(
     regime_breaks: Sequence[Mapping[str, Any]],
     material_changes: Sequence[Mapping[str, Any]],
     macro_context: Mapping[str, Any],
-    operating_observations: Sequence[Mapping[str, Any]] = (),
-    valuation_observations: Sequence[Mapping[str, Any]] = (),
-    market_observations: Sequence[Mapping[str, Any]] = (),
+    operating_reading: Mapping[str, Any] | None = None,
+    valuation_reading: Mapping[str, Any] | None = None,
+    price_reading: Mapping[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     conflicts: list[dict[str, Any]] = []
 
-    operating_direction = _direction_from_observations(operating_observations)
-    valuation_direction = _direction_from_observations(valuation_observations)
-    price_direction = _direction_from_observations(market_observations)
+    # A conflict judges the readings its planes publish, so each direction is
+    # read from the observation that plane selected; nothing is re-selected
+    # here. (Directions used to be re-selected from every observation by a
+    # rule of their own, so a document could publish a rising P/E beside a
+    # "P/E down" conflict, the direction taken from an observation the
+    # valuation plane had passed over.)
+    operating_direction = _direction(operating_reading) if operating_reading is not None else None
+    valuation_direction = _direction(valuation_reading) if valuation_reading is not None else None
+    price_direction = _direction(price_reading) if price_reading is not None else None
 
     if (
         operating["state"] == "OBSERVED"
@@ -1419,7 +1513,7 @@ def _conflicts_for(
         support = macro_for_slice.get("policy_rates_support") or macro_for_slice.get("support")
         if support:
             for obs in (operating.get("primary_metric") or {},):
-                if (obs.get("native_metric_name") or "").lower().startswith("nim") and operating_direction == "DOWN":
+                if (_owner_key(obs.get("native_metric_name")) or "").lower().startswith("nim") and operating_direction == "DOWN":
                     conflicts.append(_new_conflict(
                         "conflict-" + slice_id + "-policy-support-nim-pressure",
                         "POLICY_SUPPORT_NIM_PRESSURE",
@@ -1468,43 +1562,6 @@ def _conflicts_for(
     return conflicts
 
 
-def _plane_direction(plane: dict[str, Any]) -> str | None:
-    metric = plane.get("primary_metric")
-    if not isinstance(metric, Mapping):
-        return None
-    direction = metric.get("direction")
-    if direction is None:
-        return None
-    text = str(direction).strip().upper()
-    if text in ("UP", "DOWN", "FLAT"):
-        return text
-    return None
-
-
-def _direction_from_observations(observations: Sequence[Mapping[str, Any]]) -> str | None:
-    """Pick the direction from the freshest observation that carries one.
-
-    Conflicts compare explicit directions across planes; if no observation
-    carries one the direction is ``None`` and the rule fires only when the
-    rule's other preconditions are already met.
-    """
-    candidates: list[tuple[date | None, str]] = []
-    for obs in observations or ():
-        if not isinstance(obs, Mapping):
-            continue
-        direction = _direction(obs)
-        if direction is None:
-            continue
-        as_of = _coerce_date(obs.get("as_of")) if hasattr(obs.get("as_of", None), "__class__") else None
-        if as_of is None and isinstance(obs.get("as_of"), str):
-            as_of = _coerce_date(obs.get("as_of"))
-        candidates.append((as_of, direction))
-    if not candidates:
-        return None
-    candidates.sort(key=lambda c: (c[0] or date.max))
-    return candidates[-1][1]
-
-
 def _new_conflict(
     conflict_id: str,
     label: str,
@@ -1520,7 +1577,7 @@ def _new_conflict(
         "conflict_id": conflict_id,
         "label": label,
         "slice_ids": [slice_id],
-        "company_row_ids": [str(row.get("row_id")) for row in company_rows if isinstance(row, Mapping) and row.get("row_id")],
+        "company_row_ids": _owner_refs([row.get("row_id") for row in company_rows if isinstance(row, Mapping)]),
         "left": {
             "plane": left_plane.get("state") and ("operating" if left_plane is not None else "operating"),
             "statement": left_statement or "The owner-supplied left side is preserved verbatim.",
@@ -1656,7 +1713,7 @@ def _company_row_for_issuer(
                 obs.get("retained_risk"),
                 obs.get("materiality", "UNMEASURED"),
                 obs.get("evidence_date"),
-                [str(ref) for ref in (obs.get("evidence_refs") or []) if ref],
+                _owner_refs(obs.get("evidence_refs")),
             )
 
     valuation = packet.get("valuation") if isinstance(packet, Mapping) else None
@@ -1680,7 +1737,7 @@ def _company_row_for_issuer(
                 obs.get("retained_risk"),
                 obs.get("materiality", "UNMEASURED"),
                 obs.get("evidence_date"),
-                [str(ref) for ref in (obs.get("evidence_refs") or []) if ref],
+                _owner_refs(obs.get("evidence_refs")),
             )
 
     # Surface any slices for which expectations/market observations exist
@@ -1779,7 +1836,7 @@ def _company_row_for_issuer(
             None,
             "MATERIAL",
             observed_at,
-            [str(record_id)] if record_id else [],
+            _owner_refs([record_id]),
         )
 
     if not cells:
@@ -1992,10 +2049,11 @@ def _macro_matrix(inputs: FinanceOwnerInputs, slices: Sequence[Mapping[str, Any]
         for driver, payload in drivers_map.items():
             if not isinstance(payload, Mapping):
                 continue
+            mechanism = _owner_text(payload.get("mechanism"))
             out.append({
                 "slice_id": sl["slice_id"],
                 "driver": driver,
-                "mechanism": str(payload.get("mechanism", "Macro mechanism is preserved as supplied by the owner.")),
+                "mechanism": mechanism if mechanism is not None else "Macro mechanism is preserved as supplied by the owner.",
                 "lag": str(payload.get("lag", "UNKNOWN")),
                 "state": str(payload.get("state", "DESCRIBED")),
             })
@@ -2010,7 +2068,13 @@ def _constraints_for(inputs: FinanceOwnerInputs, slices: Sequence[Mapping[str, A
     for rec in inputs.source_records:
         if not isinstance(rec, Mapping):
             continue
-        slice_id = rec.get("slice_id")
+        # A record is filed under its business_scope, the schema's scope field,
+        # and its record_id is evidence of that slice only, so its constraints
+        # are published under that slice. (They used to be published under a
+        # slice_id extra outside the record schema: a foreign extra filed a
+        # constraint under a slice its evidence is not filed under, and a record
+        # carrying no extra had its constraints dropped.)
+        slice_id = _owner_key(rec.get("business_scope"))
         constraints = rec.get("constraints")
         if not isinstance(constraints, list) or slice_id not in by_slice:
             continue
@@ -2019,9 +2083,9 @@ def _constraints_for(inputs: FinanceOwnerInputs, slices: Sequence[Mapping[str, A
                 continue
             out.append({
                 "slice_id": slice_id,
-                "constraint": str(c.get("constraint", "")),
-                "economic_effect": str(c.get("economic_effect", "")),
-                "evidence_refs": [str(rec.get("record_id"))] if rec.get("record_id") else [],
+                "constraint": _owner_text(c.get("constraint")) or "",
+                "economic_effect": _owner_text(c.get("economic_effect")) or "",
+                "evidence_refs": _owner_refs([rec.get("record_id")]),
             })
     return out
 
@@ -2038,7 +2102,7 @@ def _input_receipts(inputs: FinanceOwnerInputs) -> list[dict[str, Any]]:
     else:
         receipts.append({
             "owner": "sector_intelligence",
-            "generation": str(inputs.sector_dossier.get("schema_version", "")) or None,
+            "generation": _owner_text(inputs.sector_dossier.get("schema_version")) or None,
             "state": "READ",
             "note": "Sector dossier is admitted as supplied by the owner.",
         })
@@ -2177,13 +2241,10 @@ def compose_finance_projection(
     is the minimum over the input as-of dates actually consumed, never
     ``now``).
     """
-    slice_catalog = {c.get("slice_id"): c for c in inputs.slice_catalog if isinstance(c, Mapping)}
-    slice_id_to_atlas_id: dict[str, str] = {}
-    for slice_id in _FINANCE_SLICE_IDS:
-        if slice_id in slice_catalog:
-            slice_id_to_atlas_id[slice_id] = slice_id
-        else:
-            slice_id_to_atlas_id[slice_id] = slice_id
+    # Every Finance slice is its own atlas id. (A lookup into the owner's
+    # catalog used to sit here; both of its branches mapped a slice to itself,
+    # so it changed nothing and raised on an unhashable catalog slice_id.)
+    slice_id_to_atlas_id: dict[str, str] = {slice_id: slice_id for slice_id in _FINANCE_SLICE_IDS}
 
     source_records, source_record_extras = _source_records_block(inputs)
     # Structural check: datetime has a ``time`` part, date does not.
@@ -2200,6 +2261,8 @@ def compose_finance_projection(
 
     slices_out: list[dict[str, Any]] = []
     all_observed_dates: list[date] = []
+    used_observations: list[Mapping[str, Any]] = []
+    readings_by_slice: dict[str, tuple[Mapping[str, Any] | None, Mapping[str, Any] | None, Mapping[str, Any] | None]] = {}
     for slice_id in all_slice_ids:
         per_slice = _slice_inputs_for(slice_id, inputs)
         expectation_obs = per_slice["expectation_obs"]
@@ -2208,38 +2271,28 @@ def compose_finance_projection(
         regime = per_slice["regime"]
         evidence_refs = _slice_evidence_refs(slice_id, source_records, expectation_obs, market_obs)
 
+        # Each plane selects the observation it publishes once; the conflict
+        # grammar reads the same observations, in both passes.
+        operating_reading = _operating_reading(slice_id, inputs.financial_packets)
+        valuation_reading = _valuation_anchor(slice_id, inputs.financial_packets, knowledge_cutoff_date)
+        price_reading = _price_reading(market_obs)
+        readings_by_slice[slice_id] = (operating_reading, valuation_reading, price_reading)
         operating = _operating_plane(
             slice_id,
-            inputs.financial_packets,
+            operating_reading,
             regime,
             evidence_refs,
         )
         expectations = _expectations_plane(slice_id, expectation_obs, evidence_refs, regime)
-        valuation = _valuation_plane(slice_id, inputs.financial_packets, market_obs, evidence_refs, regime)
-        price = _price_plane(slice_id, market_obs, evidence_refs, regime)
+        valuation = _valuation_plane(slice_id, valuation_reading, market_obs, evidence_refs, regime)
+        price = _price_plane(slice_id, price_reading, market_obs, evidence_refs, regime)
+        operating = _withhold_unevidenced(operating, "Operating evidence is not available for this slice.")
+        expectations = _withhold_unevidenced(expectations, "Expectations evidence is not available for this slice.")
+        valuation = _withhold_unevidenced(valuation, "Valuation evidence is not available for this slice.")
+        price = _withhold_unevidenced(price, "Price evidence is not available for this slice.")
 
         material_changes = _material_changes_for(slice_id, inputs.source_records)
         company_rows_for_slice: list[dict[str, Any]] = []  # populated below
-        # Collect operating and valuation observations across all
-        # financial_packets for this slice so the conflict grammar can
-        # read the freshest direction.
-        op_observations: list[Mapping[str, Any]] = []
-        val_observations: list[Mapping[str, Any]] = []
-        for label, packet in inputs.financial_packets.items():
-            if not isinstance(packet, Mapping):
-                continue
-            operating_packet = packet.get("operating")
-            if isinstance(operating_packet, Mapping):
-                for obs in operating_packet.get("observations") or ():
-                    if isinstance(obs, Mapping):
-                        if not obs.get("slice_id") or obs.get("slice_id") == slice_id:
-                            op_observations.append(obs)
-            valuation_packet = packet.get("valuation")
-            if isinstance(valuation_packet, Mapping):
-                for obs in valuation_packet.get("observations") or ():
-                    if isinstance(obs, Mapping):
-                        if not obs.get("slice_id") or obs.get("slice_id") == slice_id:
-                            val_observations.append(obs)
         conflicts = _conflicts_for(
             slice_id,
             company_rows_for_slice,
@@ -2249,17 +2302,24 @@ def compose_finance_projection(
             regime,
             material_changes,
             inputs.macro_context,
-            operating_observations=op_observations,
-            valuation_observations=val_observations,
-            market_observations=list(market_obs),
+            operating_reading=operating_reading,
+            valuation_reading=valuation_reading,
+            price_reading=price_reading,
         )
 
         slice_state = _slice_state_for(slice_id, operating, expectations, valuation, price, rights_profiles)
+        # A slice no owner ref backs publishes no reading (_withhold_unevidenced),
+        # and so none of its inputs' dates either: its freshness says there is
+        # no evidence, and no date of its reaches the document's freshness or
+        # common_as_of.
+        dated = (source_records, expectation_obs, market_obs) if evidence_refs else ((), (), ())
         slice_freshness, latest_obs = _slice_freshness(
-            slice_id, source_records, expectation_obs, market_obs, knowledge_cutoff_date, stale_after_days
+            slice_id, *dated, knowledge_cutoff_date, stale_after_days
         )
         if latest_obs is not None:
             all_observed_dates.append(latest_obs)
+        if evidence_refs:
+            used_observations.extend((*expectation_obs, *market_obs))
 
         name_en, name_zh = _name_pair(slice_id)
         slice_doc = {
@@ -2307,30 +2367,13 @@ def compose_finance_projection(
         slice_id = slice_doc["slice_id"]
         per_slice = _slice_inputs_for(slice_id, inputs)
         expectation_obs = per_slice["expectation_obs"]
-        market_obs = per_slice["market_obs"]
         evidence_refs = slice_doc["evidence_refs"]
         operating = slice_doc["rerating"]["operating"]
         valuation = slice_doc["rerating"]["valuation"]
         price = slice_doc["rerating"]["price"]
         material_changes = _material_changes_for(slice_id, inputs.source_records)
         rows_for_slice = company_rows_by_slice.get(slice_id, [])
-        op_observations: list[Mapping[str, Any]] = []
-        val_observations: list[Mapping[str, Any]] = []
-        for label, packet in inputs.financial_packets.items():
-            if not isinstance(packet, Mapping):
-                continue
-            operating_packet = packet.get("operating")
-            if isinstance(operating_packet, Mapping):
-                for obs in operating_packet.get("observations") or ():
-                    if isinstance(obs, Mapping):
-                        if not obs.get("slice_id") or obs.get("slice_id") == slice_id:
-                            op_observations.append(obs)
-            valuation_packet = packet.get("valuation")
-            if isinstance(valuation_packet, Mapping):
-                for obs in valuation_packet.get("observations") or ():
-                    if isinstance(obs, Mapping):
-                        if not obs.get("slice_id") or obs.get("slice_id") == slice_id:
-                            val_observations.append(obs)
+        operating_reading, valuation_reading, price_reading = readings_by_slice[slice_id]
         # Always re-compute conflicts: the first pass used an empty
         # company-row list because rows were built later. Re-running with
         # the now-final rows gives every slice a deterministic
@@ -2344,9 +2387,9 @@ def compose_finance_projection(
             per_slice["regime"],
             material_changes,
             inputs.macro_context,
-            operating_observations=op_observations,
-            valuation_observations=val_observations,
-            market_observations=list(market_obs),
+            operating_reading=operating_reading,
+            valuation_reading=valuation_reading,
+            price_reading=price_reading,
         )
         slice_doc["conflict_ids"] = [c["conflict_id"] for c in conflicts]
         conflicts_out.extend(conflicts)
@@ -2373,24 +2416,20 @@ def compose_finance_projection(
     # System views
     system_views_doc = _system_views(slices_out)
 
-    # common_as_of = min over the input as-ofs actually used, never now.
+    # common_as_of = min over the input as-ofs actually used, never now. An
+    # observation is used only when a slice published it: a slice no owner ref
+    # backs withholds its readings, and an observation filed under no Finance
+    # slice is never read.
     as_of_candidates: list[date] = []
     for rec in source_records:
         d = _source_record_observed_at(rec)
         if d is not None:
             as_of_candidates.append(d)
-    for obs in (inputs.expectation_observations or {}).values():
-        for row in obs or ():
-            if isinstance(row, Mapping):
-                d = _coerce_date(row.get("as_of"))
-                if d is not None:
-                    as_of_candidates.append(d)
-    for obs in (inputs.market_observations or {}).values():
-        for row in obs or ():
-            if isinstance(row, Mapping):
-                d = _coerce_date(row.get("as_of"))
-                if d is not None:
-                    as_of_candidates.append(d)
+    for row in used_observations:
+        if isinstance(row, Mapping):
+            d = _coerce_date(row.get("as_of"))
+            if d is not None:
+                as_of_candidates.append(d)
     as_of_candidates.append(knowledge_cutoff_date)
     common_as_of = _min_date(as_of_candidates) or knowledge_cutoff_date
 
@@ -2459,10 +2498,21 @@ def compose_finance_projection(
         "authority_caps": dict(_AUTHORITY_CAPS),
     }
 
-    # Forbidden-key guard (defensive). authority_caps.rank is permitted by
-    # the schema (additionalProperties=false, but the rank key is allowed).
+    # Forbidden-key guards (defensive). authority_caps is exempt from the
+    # score/rank walk: its rank key is how the read model states that it may
+    # NOT rank. The error names document sections only, never an owner key.
     if _has_change_pct_or_delta(document):
         raise AssertionError("composer emitted a forbidden change_pct/delta field under regime break")
+    offending = sorted(
+        section
+        for section, value in document.items()
+        if section != "authority_caps" and _has_forbidden_key({section: value})
+    )
+    if offending:
+        raise AssertionError(
+            "composer emitted a forbidden score/rank/attractiveness/composite field under "
+            + ", ".join(offending)
+        )
     return document
 
 
