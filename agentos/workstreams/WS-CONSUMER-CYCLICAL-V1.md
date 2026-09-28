@@ -36,6 +36,7 @@ discoveries:
   - "DSC:TWO-ENDS-OF-ONE-POINTER-VALIDATED-IN-ISOLATION-BOTH-PASS-WHILE-IT-DANGLES"
   - "DSC:A-BLOCKLIST-ENUMERATES-THE-RULES-NOUNS-NOT-THE-VIOLATIONS-VOCABULARY"
   - "DSC:FULLMATCH-ON-A-BOUNDARY-STEM-PATTERN-IS-A-DEAD-GUARD-THAT-LOOKS-ALIVE"
+  - "DSC:A-GUARD-NAMED-IN-THE-DOCSTRING-CAN-HAVE-ZERO-CALL-SITES"
 waves:
   - id: CC-V1-CORE
     title: "V1-CORE deterministic composition"
@@ -347,6 +348,42 @@ next_action: >
   pattern never fires. The surviving mutation indicted the test first and the
   module second. 118 passed; 4/4 mutations caught; no legal contract property
   name is refused by the widened guard; oracle and envelope sweep unchanged.
+  .
+  WAVE 8 MERGED + PRODUCTION_PROOF. Squash 2dac71fc659b, 2026-09-28T00:19:08Z,
+  merged by the sweeper 9s after the last check concluded (26 checks, 0
+  unconcluded; sole red ci-authority/codex/merge-queue-pilot, red by design and
+  name-excluded). Proof from main's own re-extracted bytes: 8 of 8 assertions
+  OK, 118 passed, oracle exact both cases, sweep unchanged 17 REFUSED / 4
+  MINTED. Reported on carrier #7804 (comment 5861199381). ACCEPTANCE remains
+  Sol's and is not claimed.
+  .
+  WAVE 9 (sibling census) -- the wave-8 unresolved lead, RUN, and it refuted its
+  own premise. The lead said "probe the Finance / Mining / Industrials /
+  Healthcare / Energy authority guards". engine/sector_intelligence/ holds
+  exactly TWO projection modules, consumer_cyclical and finance; the other three
+  have no module there. That five-name list was written from the PROGRAM ROSTER,
+  not from a module census -- A ROSTER IS NOT A CENSUS. The lead's suggested
+  discriminator was also wrong: grep -rn "_RE.fullmatch" engine/ returns 475
+  hits, nearly all correct format validators where fullmatch is right; the shape
+  is a boundary-stem PATTERN under fullmatch, not fullmatch as such.
+  .
+  The refuted lead sat in THREE records (the wave-8 handoff's unresolved AND its
+  unverified, plus the wave-8 DSC's scope). All three are corrected AT SOURCE in
+  this same commit, not superseded from a newer file -- a reader travels into
+  the wrong record, so that is where the correction has to be.
+  .
+  FINDING, routed as knowledge and NOT acted on: the one real sibling carries the
+  shape in a deader form. finance_projection.py:296 defines _FORBIDDEN_KEY_RE
+  with ZERO call sites repo-wide (7 hits total; the other 6 are local copies in
+  lib/project_runtime_state.py and a test, each of which DOES use its own), while
+  the module docstring line 15 advertises the protection. Finance imports only
+  stdlib so it cannot validate at emit; its real protection is a 43/43-sealed
+  contract enforced by validate_contract at
+  tests/test_finance_intelligence_contract.py:95 -- at CI time, in the test.
+  Classified FALSE CONFIDENCE, not a demonstrated reachable leak: reachability
+  was NOT verified and needs a mutation probe of that test. finance_projection.py
+  is seat 938d17d6's custody and was not edited from this seat. See
+  DSC:A-GUARD-NAMED-IN-THE-DOCSTRING-CAN-HAVE-ZERO-CALL-SITES.
 ---
 
 ## Scope

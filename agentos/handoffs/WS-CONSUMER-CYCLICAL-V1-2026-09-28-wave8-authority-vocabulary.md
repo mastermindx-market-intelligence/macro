@@ -53,25 +53,61 @@ verified:
   - claim: 4 of 4 mutations caught (blocklist reverted, $defs/fact unsealed, size|weight added to the live pattern, search reverted to fullmatch)
     command: python3 -m pytest tests/test_consumer_cyclical_projection.py -k "authority or compound or widening or seal" -q
 unverified:
-  - claim: the same two defects exist in the Finance / Mining / Industrials / Healthcare guards
+  - claim: >
+      SUPERSEDED 2026-09-28 (wave 9). This entry previously read "the same two defects
+      exist in the Finance / Mining / Industrials / Healthcare guards ... NOT RUN". It
+      HAS now been run and the claim was WRONG AS FRAMED: three of those four guards do
+      not exist -- `engine/sector_intelligence/` holds only consumer_cyclical and
+      finance. What survives is narrower and unverified in a different direction:
+      whether finance_projection.py's dead `_FORBIDDEN_KEY_RE` (zero call sites
+      repo-wide, line 296) is REACHABLE past the sealed contract.
     what_would_verify: >
-      grep -rn "_RE.fullmatch" engine/ for the dead-matcher shape, and probe each sibling
-      guard with 30 category-representative keys as done here. The source comment reads
-      "mirrors the finance idiom", which is why the lead exists. NOT RUN -- an unrun
-      sibling probe is a lead, never a null.
+      Mutation-probe tests/test_finance_intelligence_contract.py:95 -- confirm
+      validate_contract there receives the REAL composer output on every emit path, not
+      only a fixture, then add an authority key to that output and confirm the 43/43
+      seal refuses it. Until that runs, the dead guard is false confidence, NOT a
+      demonstrated leak. OWNED BY SEAT 938d17d6 (finance_projection.py is its custody);
+      this seat routed the finding as knowledge and must not edit that module.
 unresolved:
   - >
-    Whether the two defects repaired here also exist in the Finance / Mining /
-    Industrials / Healthcare / Energy authority guards. The comment at the Consumer
-    site reads "mirrors the finance idiom", so the shape is EXPECTED there -- but
-    expectation is not measurement and this was not probed. Cheapest discriminator:
-    `grep -rn "_RE.fullmatch" engine/` for the dead-matcher shape, then probe each
-    guard with 30 category-representative keys as done here. A census question, not a
-    V1 widening; until it is run it is a lead, never a null.
+    CORRECTION 2026-09-28 (wave 9, census RUN): the ORIGINAL LEAD below was REFUTED AT
+    ITS PREMISE. It is corrected here, at source, rather than only in a newer file,
+    because a reader arrives at THIS record and would otherwise be sent after it.
+    `engine/sector_intelligence/` holds exactly TWO projection modules --
+    consumer_cyclical_projection.py and finance_projection.py. Mining, Industrials,
+    Healthcare and Energy have NO projection module in that package at all: that
+    five-name list was written from the PROGRAM ROSTER (five sibling seats exist),
+    never from a module census. A roster is not a census. Nor was the dead-matcher
+    discriminator right as written -- `grep -rn "_RE.fullmatch" engine/` returns 475
+    hits, nearly all correct format validators (sha256, dates, contract ids), so the
+    shape is the boundary-stem PATTERN under fullmatch, not fullmatch itself.
+    See DSC:A-GUARD-NAMED-IN-THE-DOCSTRING-CAN-HAVE-ZERO-CALL-SITES.
+  - >
+    STILL OPEN, and it is seat 938d17d6's, NOT this seat's: whether the one real
+    sibling's dead guard is REACHABLE. finance_projection.py:296 defines
+    `_FORBIDDEN_KEY_RE` with ZERO call sites repo-wide (7 hits total; the other 6 are
+    local copies in lib/project_runtime_state.py and a test, each of which DOES use
+    its own). Finance imports only stdlib, so it does not validate at emit either; its
+    real protection is the sealed contract (43/43 definition object-nodes
+    additionalProperties:false) enforced by validate_contract at
+    tests/test_finance_intelligence_contract.py:95 -- at CI time, in the test, not at
+    emit in the module. I did NOT verify that test exercises the real composer output
+    on every path and did NOT mutation-probe it, so this is the same false-confidence
+    family, not a demonstrated reachable leak. finance_projection.py is that seat's
+    custody: routed as knowledge, never edited from here.
+  - >
+    ORIGINAL LEAD (refuted above; retained so the refutation has its subject): whether
+    the two defects repaired here also exist in the Finance / Mining / Industrials /
+    Healthcare / Energy authority guards, on the grounds that the Consumer comment
+    reads "mirrors the finance idiom" so the shape is EXPECTED there. Expectation was
+    not measurement -- and the measurement refuted the roster, not just the shape.
 next_actions:
   - Merge this PR, then run the production proof from main's re-extracted bytes.
   - Report the wave on carrier #7804 as waves 5-7 were reported. ACCEPTANCE stays Sol's.
-  - Optional wave 9 -- run the sibling probe above. It is a census, not a V1 widening.
+  - >
+    DONE 2026-09-28 (wave 9) -- the sibling probe above was RUN. Result was a FINDING,
+    not the null it was filed as, and it refuted the lead's own premise. Do not re-run
+    it as specified; read the CORRECTION in `unresolved` first.
 do_not_redo:
   - Do not re-sweep source_records, explanation, or availability. Waves 6-7 closed all three; source_records is fully jsonschema-validated, NOT a passthrough.
   - Do not "repair" the module toward frozen-spec section 4a's native_ref prose. It is STALE, marked at source in wave 7, and repairing toward it re-introduces the wave-7 defect.

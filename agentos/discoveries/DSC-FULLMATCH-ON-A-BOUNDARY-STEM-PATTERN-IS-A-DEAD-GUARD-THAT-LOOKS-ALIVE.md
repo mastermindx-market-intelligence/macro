@@ -37,11 +37,17 @@ kind: landmine
 verified_at: 2026-09-27
 verified_by: claude-opus-5 (CC-V1 wave 8) — engine/sector_intelligence/consumer_cyclical_projection.py:1393 and tests/test_consumer_cyclical_projection.py:1880
 scope: >
-  Verified on the Consumer Cyclical guard only. The construct is generic Python and the
-  comment at the site reads "mirrors the finance idiom", so the same `fullmatch` call may
-  exist in the Finance / Mining / Industrials / Healthcare verticals -- NOT checked, and
-  an unrun sibling probe is a lead, not a null. Grep target:
-  `grep -rn "_KEY_RE.fullmatch\|_RE.fullmatch" engine/`.
+  Verified on the Consumer Cyclical guard. CORRECTED 2026-09-28 (wave 9): this field
+  previously said the same call "may exist in the Finance / Mining / Industrials /
+  Healthcare verticals -- NOT checked". The probe HAS now been run and that framing was
+  wrong twice over. (a) `engine/sector_intelligence/` holds only TWO projection modules,
+  consumer_cyclical and finance -- the other three have no module there; the list came
+  from the program roster, not a census. (b) The suggested grep is the wrong
+  discriminator: `grep -rn "_RE.fullmatch" engine/` returns 475 hits, nearly all CORRECT
+  format validators (sha256, dates, contract ids) where fullmatch is exactly right. The
+  shape is a BOUNDARY-STEM pattern under fullmatch, not fullmatch as such. The one real
+  sibling does NOT have this defect -- finance_projection.py has no fullmatch call at
+  all; it has the adjacent one in DSC:A-GUARD-NAMED-IN-THE-DOCSTRING-CAN-HAVE-ZERO-CALL-SITES.
 confidence: verified
 ---
 
