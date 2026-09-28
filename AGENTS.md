@@ -184,7 +184,7 @@ only — a human/Opus reviewer owns visual taste.
   configured root** — 580 of 807 trees are not, which is why an armed correct sweeper freed
   1.5 of 308 GiB; `/Volumes/Mastermind/agent-workspaces` alone holds 354 trees / 462 GiB and
   is *mandated* by the SSD placement policy, and widening `roots` is its own operator
-  ratification act), and **a hard per-root population cap**
+  ratification act — a nearly INERT one, see the 2026-09-28 correction below), and **a hard per-root population cap**
   evicting landed-and-clean trees oldest-first — the org-enforced-retention pattern, because
   per-user cleanup discipline does not hold at fleet scale (54 trees minted/day, ~0
   removed). Retrofit-to-sparse is a one-time backlog drain, NOT an ongoing lever: correctly
@@ -215,6 +215,27 @@ only — a human/Opus reviewer owns visual taste.
   needs landed AND nothing attached, and a web conversation's attachment is undetectable.
   Safe to arm: `…/agent-workspaces/claude`, `…/agent-workspaces/tmp`. **Never**
   `/Volumes/Mastermind/worktrees`, `…/agent-workspaces` itself, `…/sol`, `…/review`.
+  **CORRECTED 2026-09-28 — widening `roots` arms almost nothing, and the reason matters more
+  than the number** (`DSC:A-HOST-CHECKOUT-BELT-MAKES-A-WIDER-ROOTS-LIST-INERT`). This file said
+  from 09-27 that widening "widens an armed deleter from 227 to 807 trees". Measured over the
+  live 804-registration registry: `in_scope` moves 225 → 721 but the belt-reachable population
+  moves 225 → **226**. `worktree_gc.py` never decides "session tree vs host checkout" from
+  `roots` — `rel_roots` (~line 861) drops every absolute and `~`-prefixed entry, and
+  `path_under_session_root` (line 165) segment-matches only `.claude/worktrees` and its six
+  siblings, so every `/Volumes/Mastermind/…` path (nameable only absolutely) is classified a
+  **host checkout** and refused by the belt at ~line 688 (`refused — host checkout`). Widening
+  therefore buys +496 trees of REPORTING and +1 of deletion, and is inert without a companion
+  CODE change making session-tree detection follow the configured roots. **The corollary is the
+  danger and it runs opposite to the relief:** the 527 human-driven SSD checkouts — `sol/`,
+  `review/`, the whole of `/Volumes/Mastermind/worktrees` — are protected today by that naming
+  heuristic ALONE, not by any decision, so the obvious repair that makes widening work is the
+  same commit that silently deletes them. A `human_driven_roots` deny-list honoured ahead of
+  every verdict is therefore the FIRST thing to ratify, not the last: it is purely protective
+  and can delete nothing. Two further facts for anyone touching this code: an absolute-only
+  `roots` list empties `rel_roots` and disables deletion ENTIRELY (fails closed, but silently —
+  the refusals go to `summary["errors"]`, which line 949 counts and never prints, so
+  `deleted=0 errors=N` with no messages is this); and `expand_roots` is ALREADY at 4,047 sweep
+  roots (7 relative × 578 hosts + 1), a pre-existing cost that widening raises by 2, not 4,000.
   The genuinely unreachable remainder is DIRTY + UNPUSHED (~308 GiB of real work, whose commits
   `refs/salvage/*` preserves for ~40 bytes each) and the 318 detached lanes, which need a
   lane-exit receipt rather than a merge. The durable fix is still upstream of storage: how many
