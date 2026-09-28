@@ -196,14 +196,43 @@ def _prior_severe(previous: Any, market: str) -> dict | None:
     if not isinstance(candidate, Mapping):
         return None
     state = candidate.get("state")
+    session = _session(candidate.get("source_session"))
+    source_schema = "risk_radar.v2" if market == "us" else "risk_radar_intl.v1"
     if (candidate.get("schema") != SCHEMA or candidate.get("market") != market
             or candidate.get("status") != "current"
             or not isinstance(state, str) or state not in ("elevated", "risk-off")
             or candidate.get("attention") != _STATE_ATTENTION[state]
-            or _session(candidate.get("source_session")) is None
-            or candidate.get("id") != f"rw-{market}-{candidate.get('source_session')}-{state}"):
+            or session is None or candidate.get("expected_session") != session
+            or candidate.get("source_schema") != source_schema
+            or candidate.get("id") != f"rw-{market}-{session}-{state}"):
         return None
-    return dict(candidate)
+    # A cached projection is a receipt, not an extensible authority object.
+    # Rebuild only owned, bounded fields through the same pure constructor;
+    # never retain arbitrary extensions, nested authority or malformed numbers.
+    score = candidate.get("score")
+    ungated = candidate.get("state_ungated")
+    source = {
+        "schema": source_schema, "market": market, "asof": session,
+        "state": state, "top_score": score if _finite_number(score, 0, 100) else None,
+        "state_ungated": (ungated if isinstance(ungated, str)
+                          and ungated in _STATE_ATTENTION else None),
+        "dominant_label_en": candidate.get("driver_en"),
+        "dominant_label_zh": candidate.get("driver_zh"),
+    }
+    value = project_radar_warning(source, market=market, expected_session=session)
+    quality = candidate.get("underlying_input_status")
+    if quality in ("unknown", "reported_current", "degraded"):
+        value["underlying_input_status"] = quality
+    details = candidate.get("underlying_input_details")
+    age = details.get("worst_input_age_days") if isinstance(details, Mapping) else None
+    if _finite_number(age, 0, 365000):
+        value["underlying_input_details"]["worst_input_age_days"] = age
+    known_reasons = ("underlying_inputs_stale", "invalid_input_quality",
+                     "invalid_input_age", "source_reports_degradation")
+    reasons = candidate.get("reason_codes")
+    if isinstance(reasons, list):
+        value["reason_codes"] = [reason for reason in known_reasons if reason in reasons]
+    return value
 
 
 def retain_unresolved_warning(current: dict, previous: Any) -> dict:
