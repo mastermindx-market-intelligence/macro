@@ -577,3 +577,11 @@ def test_h5_stale_snapshot_explains_date_problem_without_showing_old_target():
     assert 'data-allocation-state="unavailable"' in html
     assert "different snapshot" in html and "快照日期不一致" in html
     assert "60%" not in html and 'class="alloc-bar"' not in html
+
+
+def test_h5_compact_layout_has_its_own_readable_non_overflowing_hierarchy():
+    source = (ROOT / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
+    assert "#allocation .alloc-grid{grid-template-columns:minmax(0,1fr)}" in source
+    assert "#allocation .alloc-top{display:grid;grid-template-columns:minmax(0,1fr)" in source
+    assert "#allocation .alloc-main,#allocation .alloc-side{min-width:0}" in source
+    assert "#allocation .alloc-top p,#allocation .alloc-note{font-size:var(--fs-body,14px)" in source
