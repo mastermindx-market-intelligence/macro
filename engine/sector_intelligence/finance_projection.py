@@ -319,6 +319,34 @@ def _to_iso(value: datetime | date | str) -> str:
     return str(value)
 
 
+# Most of the read model's free-text fields are typed only as a non-empty
+# string, so str() of an owner mapping or list would carry every key and value
+# inside it past the contract as one opaque string: the closed metric
+# vocabulary and every sealed object, skipped in one call. An owner value is
+# published as text only when it is a scalar; a structure where text is
+# expected is treated as absent, and a required field left empty is refused by
+# the contract.
+_OWNER_TEXT_SCALARS = (str, int, float, date)
+
+
+def _owner_text(value: Any) -> str | None:
+    """An owner scalar as published text, or None for anything else."""
+    return str(value) if isinstance(value, _OWNER_TEXT_SCALARS) else None
+
+
+def _owner_ref(value: Any) -> str | None:
+    """A present owner scalar as a reference; falsy values and structures are absent."""
+    return _owner_text(value) if value else None
+
+
+def _owner_refs(values: Any) -> list[str]:
+    """Owner references from a list. A mapping is not a list of references:
+    iterating one would publish its key names."""
+    if not isinstance(values, (list, tuple)):
+        return []
+    return [ref for ref in map(_owner_ref, values) if ref]
+
+
 def _hash_inputs(inputs: FinanceOwnerInputs, composer_version: str) -> str:
     payload = {
         "composer_version": composer_version,
@@ -402,7 +430,7 @@ def _curation_revisions(theme_evidence: Sequence[Mapping[str, Any]]) -> list[str
         revision = row.get("curation_revision") if isinstance(row, Mapping) else None
         if revision is None:
             continue
-        text = str(revision).strip()
+        text = (_owner_text(revision) or "").strip()
         if text:
             revisions.add(text)
     return sorted(revisions)
@@ -441,12 +469,10 @@ def _coerce_rights_state(
 
 
 def _source_record_evidence_ref(rec: Mapping[str, Any]) -> str | None:
-    ref = rec.get("evidence_ref")
+    ref = _owner_text(rec.get("evidence_ref"))
     if ref is None:
-        rid = rec.get("record_id")
-        return str(rid) if rid else None
-    text = str(ref).strip()
-    return text or None
+        return _owner_ref(rec.get("record_id"))
+    return ref.strip() or None
 
 
 def _source_record_observed_at(rec: Mapping[str, Any]) -> date | None:
@@ -684,14 +710,12 @@ def _observation_value(obs: Mapping[str, Any]) -> Any:
 
 
 def _observation_unit(obs: Mapping[str, Any]) -> str | None:
-    unit = obs.get("unit")
+    unit = _owner_text(obs.get("unit"))
     if unit is not None:
-        return str(unit)
+        return unit
     metric = obs.get("metric")
     if isinstance(metric, Mapping):
-        unit = metric.get("unit")
-        if unit is not None:
-            return str(unit)
+        return _owner_text(metric.get("unit"))
     return None
 
 
@@ -702,18 +726,18 @@ def _plane_evidence_refs(
 ) -> list[str]:
     refs: set[str] = set()
     for obs in expectation_obs:
-        ref = obs.get("source") if isinstance(obs, Mapping) else None
+        ref = _owner_ref(obs.get("source")) if isinstance(obs, Mapping) else None
         if ref:
-            refs.add(str(ref))
+            refs.add(ref)
     for obs in market_obs:
         if isinstance(obs, Mapping):
-            ref = obs.get("source") or obs.get("evidence_ref")
+            ref = _owner_ref(obs.get("source")) or _owner_ref(obs.get("evidence_ref"))
             if ref:
-                refs.add(str(ref))
+                refs.add(ref)
     for rec in source_records:
-        rid = rec.get("record_id") if isinstance(rec, Mapping) else None
+        rid = _owner_ref(rec.get("record_id")) if isinstance(rec, Mapping) else None
         if rid:
-            refs.add(str(rid))
+            refs.add(rid)
     return sorted(refs)
 
 
@@ -766,20 +790,21 @@ def _build_primary_metric(obs: Mapping[str, Any]) -> dict[str, Any]:
         metric = {key: metric_in[key] for key in _METRIC_FIELDS if key in metric_in}
     else:
         metric = _empty_metric()
-        metric["native_metric_name"] = str(obs.get("metric", ""))
+        metric["native_metric_name"] = _owner_text(metric_in) or ""
         metric["normalized_metric_family"] = metric["native_metric_name"]
         metric["value"] = obs.get("value")
-        unit = obs.get("unit")
-        metric["unit"] = str(unit) if unit is not None else None
+        metric["unit"] = _owner_text(obs.get("unit"))
     if "native_metric_name" not in metric or not metric["native_metric_name"]:
-        metric["native_metric_name"] = str(obs.get("metric", ""))
+        # Only a scalar row metric can name the metric. When the row's metric
+        # is the owner's mapping, str() of it would publish every key inside it,
+        # so the name stays empty and the contract refuses the document.
+        metric["native_metric_name"] = _owner_text(metric_in) or ""
     if "normalized_metric_family" not in metric or not metric["normalized_metric_family"]:
         metric["normalized_metric_family"] = metric["native_metric_name"]
     if "value" not in metric:
         metric["value"] = obs.get("value")
     if "unit" not in metric:
-        unit = obs.get("unit")
-        metric["unit"] = str(unit) if unit is not None else None
+        metric["unit"] = _owner_text(obs.get("unit"))
     metric.setdefault("currency", None)
     metric.setdefault("period_start", None)
     metric.setdefault("period_end", None)
@@ -800,7 +825,7 @@ def _build_price_primary_metric(obs: Mapping[str, Any]) -> dict[str, Any]:
     placeholders that satisfy the schema's minLength requirements while
     reflecting the price semantics.
     """
-    basis = str(obs.get("price_basis") or "")
+    basis = _owner_ref(obs.get("price_basis")) or ""
     metric = {
         "native_metric_name": basis or "price",
         "normalized_metric_family": basis or "price",
@@ -870,7 +895,7 @@ def _has_change_pct_or_delta(value: Any) -> bool:
                 return True
             if _has_change_pct_or_delta(value[key]):
                 return True
-    elif isinstance(value, list):
+    elif isinstance(value, (list, tuple)):
         for child in value:
             if _has_change_pct_or_delta(child):
                 return True
@@ -884,7 +909,7 @@ def _has_forbidden_key(value: Any) -> bool:
                 return True
             if _has_forbidden_key(value[key]):
                 return True
-    elif isinstance(value, list):
+    elif isinstance(value, (list, tuple)):
         for child in value:
             if _has_forbidden_key(child):
                 return True
@@ -1310,21 +1335,14 @@ def _slice_evidence_refs(
     refs: set[str] = set()
     for rec in source_records:
         if isinstance(rec, Mapping) and rec.get("business_scope") == slice_id:
-            rid = rec.get("record_id")
-            if rid:
-                refs.add(str(rid))
-            elif rec.get("evidence_ref"):
-                refs.add(str(rec.get("evidence_ref")))
-    for obs in expectation_obs:
-        if isinstance(obs, Mapping):
-            ref = obs.get("source") or obs.get("evidence_ref")
+            ref = _owner_ref(rec.get("record_id")) or _owner_ref(rec.get("evidence_ref"))
             if ref:
-                refs.add(str(ref))
-    for obs in market_obs:
+                refs.add(ref)
+    for obs in (*expectation_obs, *market_obs):
         if isinstance(obs, Mapping):
-            ref = obs.get("source") or obs.get("evidence_ref")
+            ref = _owner_ref(obs.get("source")) or _owner_ref(obs.get("evidence_ref"))
             if ref:
-                refs.add(str(ref))
+                refs.add(ref)
     if not refs:
         # Fall back to the slice id as a synthetic ref so the schema's
         # non-empty evidence_refs requirement is satisfied when no
@@ -1367,13 +1385,14 @@ def _material_changes_for(
         material = rec.get("material_change")
         if not isinstance(material, Mapping):
             continue
-        change_id = material.get("change_id") or rec.get("record_id")
+        change_id = _owner_ref(material.get("change_id")) or _owner_ref(rec.get("record_id"))
         if not change_id:
             continue
+        record_ref = _owner_ref(rec.get("record_id"))
         observed_at = _source_record_observed_at(rec)
         published_at = _coerce_date((rec.get("source") or {}).get("published_at")) if isinstance(rec.get("source"), Mapping) else None
         out.append({
-            "change_id": str(change_id),
+            "change_id": change_id,
             "event_clock": {
                 "published_at": published_at.isoformat() if published_at else None,
                 "published_at_grain": "DAY",
@@ -1384,9 +1403,9 @@ def _material_changes_for(
             },
             "domain_ids": list(material.get("domain_ids") or [_domain_of(slice_id)]),
             "slice_ids": [slice_id],
-            "operating_implication": str(material.get("operating_implication", "")),
-            "evidence_refs": [str(rec.get("record_id"))] if rec.get("record_id") else [],
-            "conflict_ids": list(material.get("conflict_ids") or []),
+            "operating_implication": _owner_text(material.get("operating_implication")) or "",
+            "evidence_refs": [record_ref] if record_ref else [],
+            "conflict_ids": _owner_refs(material.get("conflict_ids")),
             # CAUSAL_EFFECT_UNMEASURED is an internal flag used by the
             # conflict detector; the document's freshness_state enum
             # only admits FRESH / AGING / SOURCE_STALE / NO_EVIDENCE,
@@ -1542,7 +1561,7 @@ def _new_conflict(
         "conflict_id": conflict_id,
         "label": label,
         "slice_ids": [slice_id],
-        "company_row_ids": [str(row.get("row_id")) for row in company_rows if isinstance(row, Mapping) and row.get("row_id")],
+        "company_row_ids": _owner_refs([row.get("row_id") for row in company_rows if isinstance(row, Mapping)]),
         "left": {
             "plane": left_plane.get("state") and ("operating" if left_plane is not None else "operating"),
             "statement": left_statement or "The owner-supplied left side is preserved verbatim.",
@@ -1678,7 +1697,7 @@ def _company_row_for_issuer(
                 obs.get("retained_risk"),
                 obs.get("materiality", "UNMEASURED"),
                 obs.get("evidence_date"),
-                [str(ref) for ref in (obs.get("evidence_refs") or []) if ref],
+                _owner_refs(obs.get("evidence_refs")),
             )
 
     valuation = packet.get("valuation") if isinstance(packet, Mapping) else None
@@ -1702,7 +1721,7 @@ def _company_row_for_issuer(
                 obs.get("retained_risk"),
                 obs.get("materiality", "UNMEASURED"),
                 obs.get("evidence_date"),
-                [str(ref) for ref in (obs.get("evidence_refs") or []) if ref],
+                _owner_refs(obs.get("evidence_refs")),
             )
 
     # Surface any slices for which expectations/market observations exist
@@ -1801,7 +1820,7 @@ def _company_row_for_issuer(
             None,
             "MATERIAL",
             observed_at,
-            [str(record_id)] if record_id else [],
+            _owner_refs([record_id]),
         )
 
     if not cells:
@@ -2014,10 +2033,11 @@ def _macro_matrix(inputs: FinanceOwnerInputs, slices: Sequence[Mapping[str, Any]
         for driver, payload in drivers_map.items():
             if not isinstance(payload, Mapping):
                 continue
+            mechanism = _owner_text(payload.get("mechanism"))
             out.append({
                 "slice_id": sl["slice_id"],
                 "driver": driver,
-                "mechanism": str(payload.get("mechanism", "Macro mechanism is preserved as supplied by the owner.")),
+                "mechanism": mechanism if mechanism is not None else "Macro mechanism is preserved as supplied by the owner.",
                 "lag": str(payload.get("lag", "UNKNOWN")),
                 "state": str(payload.get("state", "DESCRIBED")),
             })
@@ -2041,9 +2061,9 @@ def _constraints_for(inputs: FinanceOwnerInputs, slices: Sequence[Mapping[str, A
                 continue
             out.append({
                 "slice_id": slice_id,
-                "constraint": str(c.get("constraint", "")),
-                "economic_effect": str(c.get("economic_effect", "")),
-                "evidence_refs": [str(rec.get("record_id"))] if rec.get("record_id") else [],
+                "constraint": _owner_text(c.get("constraint")) or "",
+                "economic_effect": _owner_text(c.get("economic_effect")) or "",
+                "evidence_refs": _owner_refs([rec.get("record_id")]),
             })
     return out
 
@@ -2060,7 +2080,7 @@ def _input_receipts(inputs: FinanceOwnerInputs) -> list[dict[str, Any]]:
     else:
         receipts.append({
             "owner": "sector_intelligence",
-            "generation": str(inputs.sector_dossier.get("schema_version", "")) or None,
+            "generation": _owner_text(inputs.sector_dossier.get("schema_version")) or None,
             "state": "READ",
             "note": "Sector dossier is admitted as supplied by the owner.",
         })

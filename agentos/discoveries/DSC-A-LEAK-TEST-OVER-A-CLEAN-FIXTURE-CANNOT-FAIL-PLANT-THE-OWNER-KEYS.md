@@ -17,7 +17,10 @@ claim: >-
   contract does not know. The leak was latent: nothing serves the read model yet (T4-T7 are
   held). The composer now projects an owner metric onto `_METRIC_FIELDS` (pinned to the
   schema's `$defs/metric`) and runs `_FORBIDDEN_KEY_RE` over the whole document before it
-  returns. It is still stdlib-only and validates nothing else at emit.
+  returns. It is still stdlib-only and validates nothing else at emit. The key plant this
+  record introduced was itself blind to a second channel: an owner structure the composer
+  turns into a string (27 leaks at 8 sites on the round-1 head, see
+  DSC:A-SEALED-CONTRACT-CANNOT-SEE-A-STRUCTURE-STRINGIFIED-INTO-FREE-TEXT).
 falsifier: >-
   Restore `metric = dict(metric_in)` in `_build_primary_metric`, then run
   `python3 -m pytest tests/test_finance_intelligence_projection.py -q -k owner_key_outside`.
@@ -30,12 +33,15 @@ so_what: >-
   contract does not know into every owner record, one input field at a time, and assert
   two things: the document still validates, and it holds none of the planted keys. Every
   oracle also needs its own positive control, because a walk that finds nothing on a clean
-  document looks exactly like a dead walk. (2) A guard named in a docstring is a claim
+  document looks exactly like a dead walk. Adding keys is necessary and not sufficient: it
+  never runs a fallback, so the fence must also delete, empty and replace owner values. (2) A guard named in a docstring is a claim
   until it has a call site. The cheap check is to grep the constant and subtract the
   definition line. (3) The Finance integration wave's publish step (T6) must call
   validate_contract on the composed document before anything is served. The sealed contract
-  is the only complete key check, and the composer does not run it. (4) An owner mapping
-  that crosses into the read model goes through a closed vocabulary, never through dict().
+  is the only complete KEY check, and the composer does not run it. It is no check at all
+  on content the composer has already turned into a string. (4) An owner mapping that
+  crosses into the read model goes through a closed vocabulary, never through dict(), and
+  owner text crosses only as a scalar, never through str() of a structure.
   (5) rights_snapshot is a map keyed by data (source family to rights class), and
   generation.rights_profile publishes its family names by design. A plant-based fence must
   skip maps keyed by data, or it reports its own plant as a leak.
