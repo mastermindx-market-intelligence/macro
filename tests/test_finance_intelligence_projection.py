@@ -7,20 +7,29 @@ is copied from the live research carrier or from the schema fixture.
 from __future__ import annotations
 
 import builtins
+import copy
+import dataclasses
 import datetime as _dt
+import functools
 import hashlib
 import json
 import re
 import socket as _socket
 import time as _time
+from pathlib import Path
 from typing import Any
 
 import pytest
 
-from engine.sector_intelligence.contracts import validate_contract
+from engine.sector_intelligence.contracts import ContractRegistry, ContractValidationError, validate_contract
 from engine.sector_intelligence.finance_projection import (
     FinanceOwnerInputs,
     _FINANCE_SLICE_IDS,
+    _METRIC_FIELDS,
+    _build_primary_metric,
+    _has_forbidden_key,
+    _owner_refs,
+    _owner_text,
     compose_finance_projection,
 )
 
@@ -393,20 +402,27 @@ def test_no_forbidden_keys() -> None:
     forbidden = re.compile(r"(^|_)(score|rank|attractiveness|composite)(_|$)", re.IGNORECASE)
     authority_block = document["authority_caps"]
 
-    def walk(node: object) -> None:
+    def walk(node: object) -> list[str]:
+        # The pattern carries its own underscore boundaries, so it must be
+        # searched: under fullmatch it matches only a bare word, and
+        # peer_rank passes.
+        found: list[str] = []
         if isinstance(node, dict):
             for key, child in node.items():
-                if key == "rank" and node is authority_block:
-                    pass
-                else:
-                    assert forbidden.fullmatch(key) is None, key
-                walk(child)
-            return
-        if isinstance(node, list):
+                if not (key == "rank" and node is authority_block) and forbidden.search(key):
+                    found.append(key)
+                found += walk(child)
+        elif isinstance(node, list):
             for child in node:
-                walk(child)
+                found += walk(child)
+        return found
 
-    walk(document)
+    # Positive control: a clean document cannot tell a live walk from a dead one.
+    assert walk({"slices": [{"peer_rank": 1, "composite_score": 2, "ranking": 3}]}) == [
+        "peer_rank",
+        "composite_score",
+    ]
+    assert walk(document) == []
     assert document["authority_caps"]["rank"] is False
 
 
@@ -1108,3 +1124,456 @@ def test_no_io(monkeypatch: pytest.MonkeyPatch) -> None:
         knowledge_cutoff=_knowledge_cutoff(),
     )
     validate_contract(CONTRACT_ID, document)
+
+
+@pytest.mark.parametrize(
+    "stated, published",
+    [
+        (None, "NO_EVIDENCE"),
+        ("", "NO_EVIDENCE"),
+        ("NOT_A_FRESHNESS_STATE", "NO_EVIDENCE"),
+        ("aging", "AGING"),
+        ("SOURCE_STALE", "SOURCE_STALE"),
+    ],
+)
+def test_a_material_change_without_a_known_freshness_is_published_as_no_evidence(stated, published) -> None:
+    """A material change whose owner states no freshness, or a freshness the
+    projection does not recognise, is published as NO_EVIDENCE. It must never
+    read as FRESH: freshness is a claim, and an absent claim is not a fresh one
+    (``None`` means the key is absent)."""
+    op_record = _schema_strict_source_record(slice_id="card_networks")
+    material = {
+        "change_id": "mc-freshness-001",
+        "domain_ids": ["payments"],
+        "operating_implication": "Synthetic material change.",
+    }
+    if stated is not None:
+        material["freshness_state"] = stated
+    op_record["material_change"] = material
+    document = compose_finance_projection(
+        _default_8slice_inputs(source_records=[op_record]),
+        generated_at=_today(),
+        knowledge_cutoff=_knowledge_cutoff(),
+    )
+    validate_contract(CONTRACT_ID, document)
+    changes = [c for c in document["material_changes"] if c["change_id"] == "mc-freshness-001"]
+    assert [c["freshness_state"] for c in changes] == [published]
+
+
+# ---------------------------------------------------------------------------
+# An owner key the contract does not know never crosses into the document.
+# ---------------------------------------------------------------------------
+
+_SCHEMA_PATH = (
+    Path(__file__).resolve().parents[1]
+    / "contracts"
+    / "sector_intelligence"
+    / "finance_intelligence_read_model.v1.schema.json"
+)
+_PLANTED_NOTE = "zz_planted_private_note"
+_PLANTED_RANK = "zz_planted_peer_rank"
+
+
+_PLANTED_KEYS = {_PLANTED_NOTE: "SYNTHETIC-private", _PLANTED_RANK: 1}
+
+# What a plant carries out, however a path reshapes it: the planted key or the
+# planted value, in any letter case. A path that hashes, encodes or truncates
+# them is beyond this search.
+_PLANTED_MARKERS = ("zz_planted", "synthetic-private")
+
+
+def _carries_planted(text: str) -> bool:
+    folded = text.casefold()
+    return any(marker in folded for marker in _PLANTED_MARKERS)
+
+
+def _plant_owner_keys(node: object, keys: dict = _PLANTED_KEYS) -> int:
+    """Plant ``keys`` (by default a private note and a peer rank) into every
+    owner record under ``node``.
+
+    A dict whose values are all containers is a map keyed by data (issuer
+    labels, plane names), not a record, and is left alone, as is an empty
+    dict. Returns the number of records planted.
+    """
+    planted = 0
+    if isinstance(node, dict):
+        for child in list(node.values()):
+            planted += _plant_owner_keys(child, keys)
+        if node and not all(isinstance(v, (dict, list, tuple)) for v in node.values()):
+            node.update(keys)
+            planted += 1
+    elif isinstance(node, (list, tuple)):
+        for child in node:
+            planted += _plant_owner_keys(child, keys)
+    return planted
+
+
+_FENCE_FIXTURES = (
+    "default",
+    "EARNINGS_UP_P_E_DOWN",
+    "BOOK_UP_P_B_DOWN",
+    "POLICY_SUPPORT_NIM_PRESSURE",
+    "REGULATORY_RATIO_DOWN_REGIME_BREAK",
+    "PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN",
+)
+# A map from source family to rights class, keyed by data: its family names
+# are published by design in generation.rights_profile.
+_UNPLANTED_FIELDS = frozenset({"rights_snapshot"})
+
+
+def _extended_owner_inputs(fixture: str) -> FinanceOwnerInputs:
+    """The fixture, with the four owner fields every committed fixture leaves
+    empty filled in memory with SYNTHETIC records the composer reads. Without
+    them a fence over the owner fields never reaches the dossier, theme
+    evidence, expectation or basket paths. Two owner keys no committed fixture
+    carries are added the same way, since a plant reaches only the keys a
+    record holds: a source record's constraints, whose economic effect is
+    published as free text, and a material change's conflict_ids."""
+    base = _default_8slice_inputs() if fixture == "default" else _conflict_inputs_for(fixture)
+    records = copy.deepcopy(list(base.source_records))
+    for rec in records:
+        if isinstance(rec, dict) and isinstance(rec.get("material_change"), dict):
+            rec["material_change"].setdefault("conflict_ids", ["SYNTHETIC-conflict-ref"])
+            break
+    for rec in records:
+        if isinstance(rec, dict) and isinstance(rec.get("business_scope"), str):
+            rec.setdefault("slice_id", rec["business_scope"])
+            rec.setdefault("constraints", [{"constraint": "capital", "economic_effect": "SYNTHETIC economic effect."}])
+            break
+    expectations = dict(base.expectation_observations)
+    expectations.setdefault("card_networks", [
+        {"as_of": "2026-09-15", "source": "src-consensus-001", "metric": "consensus:net_revenue_yoy",
+         "value": 0.04, "unit": "ratio"},
+    ])
+    expectations.setdefault("issuer_processing", [
+        {"as_of": "2026-09-15", "source": "src-guidance-002", "metric": "guidance:net_revenue_yoy",
+         "value": 0.05, "unit": "ratio"},
+    ])
+    baskets = dict(base.basket_context)
+    baskets.setdefault("card_networks", {
+        "posture": "BROAD_CONTEXT_AVAILABLE",
+        "incumbent_basket_ids": ["payments_fintech"],
+        "membership_state": "CURRENT_MEMBERSHIP_ONLY",
+        "member_count": 12,
+        "weighting_family": "EQUAL_WEIGHT",
+        "price_basis_state": "PRICE_BASIS_UNQUALIFIED",
+    })
+    return dataclasses.replace(
+        base,
+        sector_dossier=base.sector_dossier or {
+            "schema_version": "sector_dossier_read_model.v1",
+            "dossier_id": "SYNTHETIC-dossier-finance",
+            "dossier_hash": "SYNTHETIC-dossier-hash",
+        },
+        theme_evidence=list(base.theme_evidence) or [
+            {"theme_id": "SYNTHETIC-theme", "curation_revision": "SYNTHETIC-revision-1"},
+        ],
+        expectation_observations=expectations,
+        basket_context=baskets,
+        source_records=records,
+    )
+
+
+def test_the_owner_fences_plant_every_owner_field() -> None:
+    """The fences below reach only the records they plant. Across the fixtures,
+    every owner field but the one exempted by name carries a record, and each
+    extended fixture still composes a document the contract accepts."""
+    planted = set()
+    for fixture in _FENCE_FIXTURES:
+        base = _extended_owner_inputs(fixture)
+        validate_contract(
+            CONTRACT_ID,
+            compose_finance_projection(base, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff()),
+        )
+        for field in dataclasses.fields(base):
+            if field.name not in _UNPLANTED_FIELDS and _plant_owner_keys(copy.deepcopy(getattr(base, field.name))):
+                planted.add(field.name)
+    assert planted == {field.name for field in dataclasses.fields(FinanceOwnerInputs)} - _UNPLANTED_FIELDS
+
+
+# Keys the composer reads that no owner record carries, each with its reason.
+_COMPOSER_READ_KEYS_NOT_OWNER_CARRIED = frozenset({
+    "_freshness_state_raw",  # composer-authored; popped before the document is returned
+    "_ticker_hint",  # composer-authored from a source record; compared, never published as read
+    "cells", "observations", "operating", "primary_metric", "valuation",  # the composer's own planes and rows
+    "clock",  # the composer's own plane clock; published only into a date-format field
+    "row_id",  # composer-minted company row id
+    "support",  # an owner macro key read only as a truth test; never published
+})
+
+
+def test_every_owner_key_the_composer_reads_is_planted() -> None:
+    """The value fence mutates only the keys the fixture records hold, so a key
+    the composer reads that no fixture carries is a key no plant reaches. Every
+    ``.get()`` key the composer gives as a string literal, in either quote, is
+    carried by an owner record of an extended fixture or named above with its
+    reason. Bounds: the census is
+    by key name, not by owner field, and reads through a variable key or a
+    subscript are outside it. The list is non-empty, so a census that matched
+    nothing cannot pass."""
+    import engine.sector_intelligence.finance_projection as _fp_mod
+
+    source = Path(_fp_mod.__file__).read_text(encoding="utf-8")
+    read = set(re.findall(r'\.get\(\s*["\']([A-Za-z_][A-Za-z0-9_]*)["\']', source))
+    carried: set[str] = set()
+    for fixture in _FENCE_FIXTURES:
+        base = _extended_owner_inputs(fixture)
+        for field in dataclasses.fields(base):
+            if field.name in _UNPLANTED_FIELDS:
+                continue
+            value = getattr(base, field.name)
+            for path in _owner_record_paths(value):
+                carried.update(map(str, _owner_record_at(value, path)))
+    assert read - carried == _COMPOSER_READ_KEYS_NOT_OWNER_CARRIED, sorted(read - carried)
+
+
+def test_the_metric_vocabulary_is_the_schemas() -> None:
+    metric = json.loads(_SCHEMA_PATH.read_text(encoding="utf-8"))["$defs"]["metric"]
+    assert metric["additionalProperties"] is False
+    assert _METRIC_FIELDS == tuple(metric["properties"])
+    assert set(_METRIC_FIELDS) == set(metric["required"])
+
+
+def test_an_owner_metric_crosses_only_through_the_metric_vocabulary() -> None:
+    owner = _metric_payload(native_name="nim", family="NIM", value=3.5, unit="%")
+    owner.update({_PLANTED_NOTE: "SYNTHETIC-private", _PLANTED_RANK: 1, "composite_score": 0.9})
+    metric = _build_primary_metric({"as_of": "2026-09-20", "metric": owner})
+    assert tuple(metric) == _METRIC_FIELDS
+    # Every stated value is the owner's own object, never a re-derived copy.
+    assert all(metric[key] is owner[key] for key in _METRIC_FIELDS)
+
+
+@pytest.mark.parametrize("fixture", _FENCE_FIXTURES)
+def test_an_owner_key_outside_the_contract_never_reaches_the_document(fixture: str) -> None:
+    """Every owner record under one input field at a time carries a private
+    note and a peer rank that the contract does not know. The document must
+    still validate and must hold neither: the composer projects owner records
+    onto the read model's vocabulary and never copies one wholesale."""
+    base = _extended_owner_inputs(fixture)
+    planted_fields = []
+    for field in dataclasses.fields(base):
+        if field.name in _UNPLANTED_FIELDS:
+            continue
+        value = copy.deepcopy(getattr(base, field.name))
+        if not _plant_owner_keys(value):
+            continue
+        planted_fields.append(field.name)
+        document = compose_finance_projection(
+            dataclasses.replace(base, **{field.name: value}),
+            generated_at=_today(),
+            knowledge_cutoff=_knowledge_cutoff(),
+        )
+        validate_contract(CONTRACT_ID, document)
+        # Assert a bare bool: pytest explains a failed `not in` over this
+        # document's 148 KB dump with a superlinear diff, about 130 s per
+        # failure (DSC:PYTEST-EXPLAINS-A-FAILED-NOT-IN-OVER-A-LONG-STRING-WITH-A-SUPERLINEAR-DIFF).
+        leaked = _carries_planted(json.dumps(document, default=str))
+        assert not leaked, field.name
+    assert {
+        "financial_packets", "sector_dossier", "theme_evidence", "expectation_observations", "basket_context",
+    } <= set(planted_fields)
+
+
+@pytest.mark.parametrize(
+    "admitted, refusal",
+    [
+        (_PLANTED_NOTE, None),
+        (_PLANTED_RANK, "forbidden score/rank/attractiveness/composite field under .*slices"),
+    ],
+)
+def test_the_owner_key_fences_fire_on_a_key_the_composer_admits(
+    monkeypatch: pytest.MonkeyPatch, admitted: str, refusal: str | None
+) -> None:
+    """Positive control for the fences above. A composer that admits one more
+    metric key lets the planted private note through, and the contract rejects
+    the document. If the admitted key is a peer rank, the composer's own emit
+    guard refuses it first, naming the section and never the key."""
+    import engine.sector_intelligence.finance_projection as _fp_mod
+
+    monkeypatch.setattr(_fp_mod, "_METRIC_FIELDS", _METRIC_FIELDS + (admitted,))
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    packets = copy.deepcopy(base.financial_packets)
+    assert _plant_owner_keys(packets)
+    inputs = dataclasses.replace(base, financial_packets=packets)
+    if refusal is not None:
+        with pytest.raises(AssertionError, match=refusal) as excinfo:
+            compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+        assert not _carries_planted(str(excinfo.value))
+        return
+    document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+    carried = admitted in json.dumps(document, default=str)
+    assert carried
+    with pytest.raises(ContractValidationError):
+        validate_contract(CONTRACT_ID, document)
+
+
+# ---------------------------------------------------------------------------
+# An owner value crosses into free text only as a scalar.
+#
+# Most of the contract's free-text fields ask only for a non-empty string, so
+# the key plant above cannot see an owner mapping the composer stringifies: the
+# planted keys ride inside one string value and the document still validates.
+# The plant below reaches the composer's fallbacks and conversions instead, by
+# deleting, emptying or replacing each owner value in turn.
+# ---------------------------------------------------------------------------
+
+# The note alone: it carries no authority word, so the composer's emit guard
+# cannot intercept it, and only the composer's own projection or the contract
+# stands between it and the page. (A structure carrying the peer rank is
+# refused by the emit guard wherever it lands, which hides the contract.)
+_PLANTED_STRUCTURE = {_PLANTED_NOTE: "SYNTHETIC-private"}
+
+
+def _owner_record_paths(node: object, path: tuple = ()) -> list[tuple]:
+    """The path of every owner record under ``node``, by the rule of :func:`_plant_owner_keys`."""
+    paths: list[tuple] = []
+    if isinstance(node, dict):
+        for key, child in node.items():
+            paths += _owner_record_paths(child, path + (key,))
+        if node and not all(isinstance(v, (dict, list, tuple)) for v in node.values()):
+            paths.append(path)
+    elif isinstance(node, (list, tuple)):
+        for index, child in enumerate(node):
+            paths += _owner_record_paths(child, path + (index,))
+    return paths
+
+
+def _owner_record_at(node: object, path: tuple) -> dict:
+    for step in path:
+        node = node[step]  # type: ignore[index]
+    assert isinstance(node, dict)
+    return node
+
+
+def _owner_value_mutations(base: FinanceOwnerInputs, exercised: set | None = None):
+    """Every owner record key, one at a time: deleted, emptied, or replaced by
+    a structure carrying a private note (and by a list holding one, where the
+    owner value is a list). Every record of the field carries the note as a key
+    too, so a fallback that stringifies an owner mapping carries it out.
+
+    Records of one shape at one position are exercised once per fixture, and a
+    record already exercised with identical content, at the same position, by
+    an earlier fixture sharing ``exercised`` is not exercised again."""
+    exercised = set() if exercised is None else exercised
+    for field in dataclasses.fields(base):
+        if field.name in _UNPLANTED_FIELDS:
+            continue
+        original = getattr(base, field.name)
+        shapes = set()
+        for path in _owner_record_paths(original):
+            record = _owner_record_at(original, path)
+            shape = (tuple("#" if isinstance(step, int) else step for step in path), tuple(sorted(map(str, record))))
+            if shape in shapes:
+                continue
+            shapes.add(shape)
+            identity = (field.name, path, json.dumps(record, sort_keys=True, default=str))
+            if identity in exercised:
+                continue
+            exercised.add(identity)
+            for key, value in record.items():
+                variants = ["absent", "empty", "structure"]
+                if isinstance(value, (list, tuple)):
+                    variants.append("structure-in-list")
+                for variant in variants:
+                    mutated = copy.deepcopy(original)
+                    _plant_owner_keys(mutated, _PLANTED_STRUCTURE)
+                    target = _owner_record_at(mutated, path)
+                    if variant == "absent":
+                        del target[key]
+                    elif variant == "empty":
+                        target[key] = ""
+                    elif variant == "structure":
+                        target[key] = dict(_PLANTED_STRUCTURE)
+                    else:
+                        target[key] = [dict(_PLANTED_STRUCTURE)]
+                    yield (field.name, path, key, variant), dataclasses.replace(base, **{field.name: mutated})
+
+
+@functools.lru_cache(maxsize=None)
+def _contract_registry() -> ContractRegistry:
+    # One registry for the whole plant: validate_contract builds a fresh one
+    # per call, about 0.9 s against 0.05 s for a reused one.
+    return ContractRegistry()
+
+
+def _owner_fence_outcome(inputs: FinanceOwnerInputs) -> str:
+    """``clean``: no planted key or value, in any case, reached the document.
+    ``sealed``: one did, and the contract refuses the document. ``refused``:
+    the composer raised without repeating anything planted. ``LEAKED``:
+    something planted reached a document the contract accepts, or an error
+    message."""
+    try:
+        document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+    except Exception as exc:  # a refusal fails closed unless it repeats the planted content
+        return "LEAKED" if _carries_planted(str(exc)) else "refused"
+    if not _carries_planted(json.dumps(document, default=str)):
+        return "clean"
+    try:
+        _contract_registry().validate(CONTRACT_ID, document)
+    except ContractValidationError:
+        return "sealed"
+    return "LEAKED"
+
+
+def test_an_owner_value_crosses_into_free_text_only_as_a_scalar() -> None:
+    outcomes: dict[str, int] = {}
+    leaks = []
+    exercised: set = set()
+    for fixture in _FENCE_FIXTURES:
+        for case, inputs in _owner_value_mutations(_extended_owner_inputs(fixture), exercised):
+            outcome = _owner_fence_outcome(inputs)
+            outcomes[outcome] = outcomes.get(outcome, 0) + 1
+            if outcome == "LEAKED":
+                leaks.append((fixture, *case))
+    assert outcomes.get("clean", 0) > 0 and outcomes.get("sealed", 0) > 0, outcomes
+    assert not leaks, (outcomes, leaks[:20])
+
+
+# The owner-text seam with its gate removed: a structure is published as it is,
+# upper-cased, or as the mapping's values alone. Scalars keep the real gate.
+_RESHAPED_OWNER_TEXT = {
+    "str": str,
+    "upper": lambda value: str(value).upper(),
+    "values": lambda value: " ".join(map(str, value.values())) if isinstance(value, dict) else str(value),
+}
+
+
+@pytest.mark.parametrize("reshape", sorted(_RESHAPED_OWNER_TEXT))
+def test_the_owner_value_fence_fires_on_a_stringified_owner_metric(monkeypatch: pytest.MonkeyPatch, reshape: str) -> None:
+    """Positive control for the fence above. With the gate removed at the
+    owner-text seam, an operating observation whose metric mapping has lost its
+    name publishes the mapping as the name, and the contract accepts the
+    document: a name only has to be a non-empty string. The fence must call it
+    LEAKED however the mapping is rendered, including upper-cased or as its
+    values alone, which carry the private note without its key."""
+    import engine.sector_intelligence.finance_projection as _fp_mod
+
+    cases = [
+        inputs
+        for (field, _path, key, variant), inputs in _owner_value_mutations(_extended_owner_inputs("EARNINGS_UP_P_E_DOWN"))
+        if field == "financial_packets" and key == "native_metric_name" and variant in ("absent", "empty")
+    ]
+    assert cases
+    assert "LEAKED" not in {_owner_fence_outcome(inputs) for inputs in cases}
+    render = _RESHAPED_OWNER_TEXT[reshape]
+    monkeypatch.setattr(
+        _fp_mod, "_owner_text", lambda value: render(value) if isinstance(value, (dict, list, tuple)) else _owner_text(value)
+    )
+    assert "LEAKED" in {_owner_fence_outcome(inputs) for inputs in cases}
+
+
+def test_owner_text_is_a_scalar_or_nothing() -> None:
+    assert _owner_text("nim") == "nim"
+    assert _owner_text(3) == "3"
+    assert _owner_text(_dt.date(2026, 9, 15)) == "2026-09-15"
+    assert _owner_text(None) is None
+    assert _owner_text(dict(_PLANTED_STRUCTURE)) is None
+    assert _owner_text([_PLANTED_NOTE]) is None
+    # A mapping is not a list of references: iterating it would publish its keys.
+    assert _owner_refs(dict(_PLANTED_STRUCTURE)) == []
+    assert _owner_refs(["ref-1", "", None, dict(_PLANTED_STRUCTURE), 7]) == ["ref-1", "7"]
+
+
+def test_the_emit_guard_walks_tuples() -> None:
+    assert _has_forbidden_key({"cells": ({"peer_rank": 1},)})
+    assert not _has_forbidden_key({"cells": ({"value": 1},)})

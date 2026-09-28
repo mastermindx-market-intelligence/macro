@@ -1,6 +1,6 @@
 {
   "disclaimer": "Heuristics identify review targets; they do not determine that a page is bad.",
-  "generated_at": "2026-09-28T02:32:48Z",
+  "generated_at": "2026-09-28T03:39:04Z",
   "metric_notes": {
     "asof_present": "approximate contract probe (selector OR case-insensitive text pattern); absence is a prompt to look, not a verdict",
     "console_error_count": "distinct console 'error' texts across every state of the page the driver attempted, captured or not — a state that failed to load is often the one carrying the evidence",
@@ -70,7 +70,7 @@
     "base_url": null,
     "kind": "site_dir",
     "resolved_gitdir_or_none": "/Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/commodities-wti-eia-slice-a-20260927",
-    "resolved_sha_or_none": "46963311ba19fe8167553774be506bae43d3460b",
+    "resolved_sha_or_none": "369f9150f42c5dfb447cf0cbace27703d0ed3968",
     "resolved_sha_source": "HEAD of the nearest git directory at or above --site-dir: /Users/chriswong/Documents/Cluade/Macro Dashboard/.git/worktrees/commodities-wti-eia-slice-a-20260927 (nearest-above is git's own rule; that this checkout produced --site-dir is not verified)",
     "site_dir": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/commodities-wti-eia-slice-a-20260927/site"
   },

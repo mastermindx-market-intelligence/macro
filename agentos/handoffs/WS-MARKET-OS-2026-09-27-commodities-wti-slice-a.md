@@ -63,7 +63,8 @@ danger_areas:
   - Preserve Macro 7596 Gold publication/receipt and 7601 shared-navigation ownership.
   - Local browser tests block external network and prove neither live quotes nor account synchronization.
   - MISSION_COMPLETE remains false; BUILT_NOT_PROVEN is not deployed or accepted.
-prs: []
+prs:
+  - 8125
 supersedes: []
 ---
 
@@ -73,3 +74,5 @@ Continuing Studio worktree: `/Users/chriswong/Documents/Cluade/macro-main/.claud
 Cumulative checkpoint: Macro #8049 comment 5862072495. Read its latest revision before continuing.
 
 The existing Agent OS model enum records the Sol role; system-exposed model identity for this session is GPT-6 Astra Pro. Turn disposition: CHECKPOINTED_CONTINUATION, MISSION_COMPLETE:false. The repository enum ci_handoff denotes the upcoming code/CI review boundary, not worker delivery or production acceptance.
+
+Integration continuation: see VERIFICATION.md current-main section. Frozen integration main: 808432ecfb2824b55ec37dcbf6b448e5fd31411a. Additional self-review fixes are source identity and nonnegative physical levels; 853 focused tests and16 canonical captures passed. The whole suite still fails on the missing marketdesk_extractor package. Independent review/hosted CI/live release remain unproven.

@@ -105,8 +105,83 @@ next_action: >
   packet. R-MIN-36 records it. One new pin shipped
   (`test_mgd17_refused_comparison_does_not_delete_the_supported_facts`, 175 passed), which was
   the only MGD coverage work available while both #7870 and #7905 are closed. Reconcile by
-  SUBJECT, clause by clause, never by owning task; 23 rows remain un-re-measured and the ledger
-  names them.
+  SUBJECT, clause by clause, never by owning task.
+  WAVE 7 (same day) CLOSED that audit: the 14 rows wave 6 had left, plus the 8 it read without
+  writing their evidence onto the rows, were all measured. Six more moved on delivered, green,
+  CONTROLLED pins - MGD-05/24/27/28/29/30 - so twelve of forty moved in total, and `NOT_RUN` is
+  now 18. **All 40 rows carry a subject-level measurement and NO row explains its status by
+  whether a task has landed.** The 18 remaining each state one of three measured reasons:
+  subject-absent (own vocabulary at zero occurrences across module, binding, schema and all
+  seven suites), G2-gated (the unit is a real-source demonstration no test may satisfy), or
+  operative-clause-blocked (a later clause is unviolatable while the FIRST needs T02's unlanded
+  vocabulary). Counts 6/1/18/12/3 = 40, UNPINNED 0. Two NON-moves are deliberate and recorded
+  on their rows - MGD-35 (absent wiring is not a guarantee about future wiring; the row's value
+  is that it is owed) and MGD-38 (half a demonstration is none). R-MIN-37 records the closure.
+  Waves 5+6 MERGED as #8100 -> `ce0065d89732` and verified on origin/main; wave 7 is #8110.
+  THIRD PART of the same wave delivered the one row the closed audit had identified as
+  PAYLOAD-PINNABLE TODAY: MGD-19 clause 2 now has a payload pin - the elimination must reach
+  `native_blocks` with `-120` and `sign == '-'`, against a one-block-fewer control and an
+  unperturbed-neighbour control - so the row moved to `PARTIAL_BY_CONSTRUCTION` and `NOT_RUN` is
+  17. Counts 6/1/17/13/3 = 40, UNPINNED 0, 176 passed. **An audit that ends in a note where a pin
+  was available has not finished.** Clause 1 still needs T03's definition vocabulary and is not
+  claimed. Do NOT credit `test_internal_transfer_keeps_elimination_sign` to MGD-19: it asserts
+  through a helper, and a helper pin is not a pin on the composed payload.
+
+  WAVE 9 (records only; no code, no status, no count changed) closed the program's last
+  UNRECEIPTED claims. Three classes, each a different failure of evidence rather than of fact.
+  (1) Two rows asserted an ABSENCE in prose - falsifiable, but with no record that anyone probed.
+  Both now carry a whole-payload recursive walk with an ENUMERATED positive control, written that
+  way because the first version of the probe read two keys that do not exist and answered NONE
+  vacuously: a negative result produced by looking in the wrong place is indistinguishable from a
+  real absence, and only a control that lists what the probe DID reach separates them.
+  (2) The program's CORE reuse row carried the one note in 40 unfalsifiable by inspection; it now
+  states the mechanism (the shared contract is a lazy string import, REFUSED when incomplete, never
+  reimplemented) and the four conditions that would break it.
+  (3) Four record sites justified measurements by naming scratchpad scripts that no longer exist,
+  and the ledger header quoted numbers from a head that no longer exists. Both are the same defect
+  the program already names as `green proof against a stale base`, appearing INSIDE the evidence
+  rather than in CI - so the repair scripts were written SELF-MEASURING, computing every figure at
+  run time, because a repair that pasted today's numbers as literals would rebuild the defect one
+  head later. The stale header vindicated its own rule on re-measurement: 38 false gaps then, 38
+  false gaps now, so the clause was DATED rather than deleted.
+  One correction rides along, recorded because it was mine: a sentence written from a five-site grep
+  claimed `identity_results` is never constructed in the module. There are ELEVEN sites and four
+  assemble the field. The accurate claim is stronger - no identity row's CONTENT originates there -
+  and all eleven are now enumerated in T03 section 6. A claim quantified over every site must list
+  them.
+
+  WAVE 10 (records only; no code, no status, no count changed) is the wave 9 receipt turned on
+  ITSELF. Wave 9 shipped a citation-integrity check reporting 27 pin refs and ZERO dead, and that
+  check cannot see the defect that was actually present: it asks whether a ref RESOLVES, which a
+  pin aimed at an unrelated green test satisfies completely. Resolution is not relevance. A screen
+  comparing each row's NAMED symbols against its cited test's body flagged two rows -- MGD-01 at
+  0 of 9 and MGD-22 at 1 of 4 -- and hand-reading both confirmed it: each cited a green test that
+  asserts something adjacent to, but not, the mechanism the row's reason turns on. Coverage was
+  never the problem, so nothing moved status; the citations were wrong, which is worse than it
+  sounds, because a pin's whole purpose is to send a reader to the assertion.
+  Two things generalise. FIRST, the family: an integrity check that passes tells you only that the
+  thing it measured is fine. Presence is not uniqueness, a misdirected probe answers NONE
+  vacuously, and a resolving pin need not assert -- three instances in three waves, each one a
+  clean instrument result that WAS the bug. Ship a positive control with every such check and state
+  what it cannot see. SECOND, and less obvious: MGD-01's mismatch was created by IMPROVING the row.
+  Its previous note was vague enough that no screen could flag it, and the weak pin looked fine
+  beside vague prose; replacing it with a real mechanism is what made the mismatch visible. A note
+  and its pin are one artifact, so a rewritten justification owes a re-checked citation in the same
+  commit. The screen is deliberately kept a SCREEN and not a gate -- a pin may assert a mechanism
+  in different words, so a zero score orders a READING, never a verdict.
+  WAVE 8 (records only) fixed a gate that could not execute. T02's §5 sibling-regression gate
+  required `tests/test_issuer_profiles.py` and `tests/test_event_workspace_build.py` green and
+  NEITHER FILE EXISTS; the suites it means are `tests/test_issuer_profiles_a5a.py`,
+  `tests/test_refresh_event_workspaces.py` and
+  `tests/test_company_intelligence_event_workspace.py`, measured green together (123 passed).
+  That gate is the packet's ONLY protection against T02's edit to the shared
+  `issuer_profiles.py` regressing its incumbent owner, and it fails QUIETLY - a missing path
+  exits 4, a pattern run prints "no tests ran". All five packets were then swept
+  token-by-token: ZERO undeclared absent symbols, and no sibling repeats the class, so the
+  sweep is recorded do_not_redo. Also recorded: a gate named after a PR or a package is not
+  falsifiable by inspection - `engine/theme_graph/` has nine PRE-EXISTING modules on main while
+  #7870's `curation_assertion` and route/client/mount seam are absent, so state a gate as the
+  absent SYMBOL plus its probe.
   T05/T06 stay held for #7870's route/client/mount on main plus the answer to comment
   5811889498; T08 is last; G2 real-source admission remains an incumbent/operator act.
   Standing operator items: mini2 has no WAN (a bridge0 default route shadows the real gateway;

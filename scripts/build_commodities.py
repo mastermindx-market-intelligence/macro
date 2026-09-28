@@ -434,7 +434,11 @@ def _oil_supply_read() -> dict | None:
             return None
         values = pd.to_numeric(d.iloc[:, 0], errors="coerce")
         dates = pd.to_datetime(d.index, errors="coerce", utc=True)
-        valid = np.isfinite(values.to_numpy(dtype=float)) & ~pd.isna(dates)
+        # These EIA columns are physical levels/rates, not signed changes.
+        # Reject booleans before numeric coercion and impossible negative levels.
+        booleans = d.iloc[:, 0].map(lambda value: isinstance(value, (bool, np.bool_))).to_numpy()
+        valid = (np.isfinite(values.to_numpy(dtype=float)) & ~pd.isna(dates)
+                 & (values.to_numpy(dtype=float) >= 0) & ~booleans)
         result = pd.Series(values.to_numpy()[valid], index=dates[valid]).sort_index()
         result = result[~result.index.duplicated(keep="last")]
         if result.empty:
@@ -602,9 +606,12 @@ def _wti_physical_evidence_vm(
         "gasoline_days", "distillate_days", "production_mbd", "production_chg_4w",
         "refinery_util", "spr_chg_4w_mb",
     )
+    nonnegative_levels = {"crude_stocks_mb", "cushing_mb", "days_supply", "gasoline_days",
+                          "distillate_days", "production_mbd", "refinery_util"}
     for key in numeric_keys:
         value = supply.get(key)
-        if isinstance(value, Real) and not isinstance(value, (bool, np.bool_)) and np.isfinite(value):
+        if (isinstance(value, Real) and not isinstance(value, (bool, np.bool_))
+                and np.isfinite(value) and (key not in nonnegative_levels or value >= 0)):
             base["values"][key] = float(value)
         elif value is not None:
             limitations.append(f"invalid_{key}")
@@ -614,7 +621,7 @@ def _wti_physical_evidence_vm(
     base["available"] = "crude_stocks_mb" in base["values"]
     if not base["available"] or "crude_z" not in base["values"]:
         limitations.append("physical_measurement_incomplete")
-    if supply.get("source_id", "eia_wpsr") != "eia_wpsr":
+    if supply.get("source_id") != "eia_wpsr":
         limitations.append("source_identity_mismatch")
     if supply.get("series_read_errors"):
         limitations.append("partial_series_read_error")

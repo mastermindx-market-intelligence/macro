@@ -23,6 +23,16 @@ missing 1..40  : none    out of range : none
 PARTITIONS 1..40 EXACTLY : True
 ```
 
+**RECEIPT RE-DERIVED INLINE 2026-09-27 (wave 9).** `scratchpad/mgd_coverage.py` no longer
+exists, so the block above was unverifiable by a later reader. No gate executed it, so nothing
+was broken — but a measurement whose only receipt is a deleted file is prose, and R-MIN-33e
+already requires the command inline. Re-measured at HEAD `d985e668c4ab` against the ledger itself,
+reproducing the block above exactly (assigned 40, duplicates none, missing none):
+
+```
+python3 -c "import json,re;d=json.load(open('research/mining/m1_integration_program/MGD_EXECUTION_STATUS.json'));n=sorted(int(re.match(r'MGD-(\d+)\$',r['obligation_id']).group(1)) for r in d['obligations']);print(len(n),sorted({x for x in n if n.count(x)>1}),sorted(set(range(1,41))-set(n)))"
+```
+
 The concern that prompted this audit (only 16 distinct MGD ids appear across all program
 records) was unfounded as a *map* defect. Every obligation has an owning task. Recorded so
 no later wave re-audits it.
@@ -60,6 +70,19 @@ Falsified against real files before reporting (`scratchpad/verify_names.py`): on
 `test_mining_shared_contract.py` has 15 tests and **neither** planned name; at #7950
 `test_mining_composition.py` has 43 tests and only 2 of the 8 planned T04 names.
 
+**RE-MEASURED 2026-09-27 (wave 9); the CONCLUSION is unchanged and now rests on a current
+number.** Both cited scripts (`scratchpad/trace_reality.py`, `scratchpad/verify_names.py`) are
+gone, and the `0/40 on main` figure was taken before #7950 merged — so the head it described no
+longer exists. At HEAD `d985e668c4ab`: **40 of 40 rows carry a planned name and 2 resolve, so a
+name-matching audit would report 38 false gaps TODAY** — the same figure §4 reported, which is
+why the rule `status_is_never_inferred_from_a_test_name` is vindicated rather than merely
+restated. The ledger's `authority.rationale` carries the dated re-measurement, and its
+`measured_against.pin_integrity` block carries the converse check the original pair never ran:
+every `delivered_test` ref resolving to a real `def`. That check has its own trap — the field is
+sometimes a LIST and sometimes ONE string holding several comma-separated refs, and treating a
+multi-ref string as one ref reports false dead pins (it did, on MGD-34 and MGD-39, both of which
+resolve).
+
 This is mostly a NAMING divergence, not a coverage hole — the delivered suites named their
 tests after the *mechanism* pinned rather than the *obligation*. §5 resolves it per row.
 **Consequence for T08: a name-matching audit would report 38 false gaps.** Never audit this
@@ -82,7 +105,7 @@ another not. `GAP` = no delivered test pins it.
 | 15 | Measures | `test_composition_matches_the_frozen_truth_table[signed_loss-row9]`, `test_expected_oracle_shape_is_pinned_per_case[signed_loss-shape9]` | **ADDED 2026-09-27 — PARTIAL by construction.** Trace task **T03**, but the subject is T04a's native financial route, MERGED at #7950. Clause 1 (negatives keep their sign) pinned green through the real compose+validate route: −375 in → −375 out, `sign='-'`, no coercion. Clause 2 ("shared nonnegative fields are not bypassed") NOT EXPRESSIBLE on main — same #7870 shared-contract seam as row 01. Delivered contract's only nonnegative numerics are `request.page` (≥1) and the derived `context_block_count` (≥0), neither a financial value. |
 | 16 | Measures | `test_packet_driven_missing_required_field_withholds_row_and_mints_unqualified`, `test_ir01_both_null_definitions_no_badge_no_model_readable_field` | **ADDED 2026-09-27 — PARTIAL by construction.** Subject is the COMPARISON channel, delivered by T04a (`mining_theme_research.py:802`), not unlanded T03 code: a leg missing a required definition field withholds the row and mints `definition_unqualified:<field>`. Pinned green both ways. `currency` and `attribution` are not definition fields on main (reserved set = unit / perimeter / basis / mev), so those two clauses arrive with T03. |
 | 17 | Measures | `test_mgd17_refused_comparison_does_not_delete_the_supported_facts` | **ADDED 2026-09-27 — PARTIAL by construction.** The operative verb is "refuse dependent arithmetic" and no dependent arithmetic can exist: `economics['derived']` is literal `[]` on all 11 cases. Owes a pin in the PR that first populates `derived`. Its second clause ("without deleting supported facts") IS delivered and measured — a refused comparison leaves the supported block intact (expectations 0, blocks 1 @ 1250) — and is now **pinned green** by a test delivered in this wave, with a positive control arm; see §6.4. |
-| 19 | Economics | — (do NOT credit `test_internal_transfer_keeps_elimination_sign`) | **ADDED 2026-09-27 — GAP, reason corrected.** The construct EXISTS on main (a packet `measure='intersegment elimination', value=-120` composes a block with sign `-`), so this is not absence of capability; what is missing is a casebook FIXTURE plus T03's product-sales vs contractual-support definitions. The existing test carries an MGD-19 docstring but calls the helper `_signed_value` directly and its own comment concedes the casebook "exposes no internal-transfer row" — **a helper pin is not a pin on the composed payload.** |
+| 19 | Economics | `test_mgd19_an_intragroup_elimination_reaches_the_payload_with_its_sign` (do NOT credit `test_internal_transfer_keeps_elimination_sign`) | **ADDED 2026-09-27 — PARTIAL by construction; clause 2 PINNED in this wave.** The construct EXISTS on main (a packet `measure='intersegment elimination', value=-120` composes a block with sign `-`), so this is not absence of capability; what is missing is a casebook FIXTURE plus T03's product-sales vs contractual-support definitions. The existing test carries an MGD-19 docstring but calls the helper `_signed_value` directly and its own comment concedes the casebook "exposes no internal-transfer row" — **a helper pin is not a pin on the composed payload.** A PAYLOAD pin was therefore written in this wave: the elimination is submitted as a native packet and must reach `native_blocks` with `-120` / `sign='-'`, against two control arms (one block fewer without it; the neighbouring measurement identical). Clause 1 still needs T03's definitions. |
 | 20 | Economics | — | **ADDED 2026-09-27 — SATISFIED by absence of capability.** `derived` is literal `[]` on all 11 cases, so no displayed derivation can lack receipts. Worth recording: the contract ALREADY mandates them — `derived[]` requires `formula_version` + `inputs` with `additionalProperties: false`, validated on every return path — so the first derivation cannot ship receiptless. The "browser does not invent arithmetic" half is unlanded T06. |
 | 21 | Economics | `test_unsupported_contract_calculation_is_missing_derivation_not_invented_value`, `test_composition_matches_the_frozen_truth_table[same_horizon_revision-row8]` | **ADDED 2026-09-27 — PARTIAL by construction.** The protected behaviour is delivered and pinned green: a same-horizon revision is refused a derivation (`next_period_outlook` → `missing_derivation`, 0 expectations, 0 blocks) rather than relabeled. PARTIAL for one honest reason — the obligation is phrased "to satisfy `assess_management_sequence`" and **that symbol does not exist anywhere in the tree**, so the motive clause cannot be tested and must not be counted. |
 | 22 | Economics | `test_rare_earth_usable_case_carries_slice_definitional_codes_only` | **ADDED 2026-09-27 — PARTIAL by construction.** Distinctness is enforced by the DELIVERED contract: `expectations[].is_range` and `.is_consensus` are `const: false`, validated on every return path, so a payload asserting consensus fails validation rather than shipping. The "labels and summaries" half is delivered too — `_BADGE_VOCABULARY` (beat/miss/improvement/above/below/confirmed/surprise) mints `definition_unqualified:headline`. PARTIAL because "house forecasts" has no delivered field at all. |
@@ -114,9 +137,36 @@ the composed payload, not a helper — row 19), and a clause may be pinned while
 obligation's OPERATIVE clause is not (row 15 clause 2). Rows whose subjects are wholly
 unlanded — the T05/T06/T07 route, client, mount and update families, and the T08 real-source
 journeys, which additionally need G2 before any live figure — remain `NOT_RUN` on that measured
-basis. Scope of what was and was NOT re-measured is recorded in the ledger's
-`scope_of_the_2026_09_27_subject_reaudit` key; do not read this table as a completed 40-row
-subject audit.
+basis. **COMPLETED the same day (wave 7).** The caveat that stood here — *"do not read this table as a completed 40-row subject audit"* — is withdrawn, because the audit it warned about is
+finished. Every one of the 40 rows now carries a SUBJECT-level measurement in
+`MGD_EXECUTION_STATUS.json`, and **no row explains its status by whether a task has landed.**
+Wave 7 measured the 14 rows wave 6 had left plus the 8 it had read without writing their
+evidence onto the rows:
+
+- **MOVED to `PARTIAL_BY_CONSTRUCTION` on delivered, green, controlled pins** — MGD-05 (the
+  `SLICE_ANCHORS` binding plus `slice_theme_mismatch`), MGD-24 (`time_mode` separates `latest`
+  from `system_replay`, and replay without a cutoff refuses), MGD-27 (a refresh pairing changed
+  quantities with stale causal text refuses), MGD-28 (`expected_generation_required` /
+  `generation_changed`), MGD-29 (`route_unbound` with `read_count == 0`, identical for entitled
+  and unentitled callers, **with a positive control that sets the counter to 3**), MGD-30
+  (`live_admission == 'refused'` across the whole parametrized casebook).
+- **Measured SUBJECT-ABSENT** — MGD-03/26/31/32/33/36/40: each obligation's own vocabulary
+  occurs ZERO times across the delivered module, binding, schema and all seven suites.
+- **Measured G2-GATED** — MGD-06/07/37/38: the unit is a real-source demonstration, which no
+  test this program may write could satisfy, because every case is synthetic and live admission
+  is refused by design. These are admission gates, not coverage gaps.
+- **Measured OPERATIVE-CLAUSE-BLOCKED** — MGD-02/13/14/25: a later clause is already
+  unviolatable (`ownership` 0 occurrences; `measure` copied verbatim; ordering by
+  `stable_subject_id` only, never by time) while the FIRST clause needs T02's unlanded
+  vocabulary. The unviolatable half must not be read as the row.
+
+Two deliberate NON-moves are recorded on their own rows so a later lane does not "fix" them:
+**MGD-35** stays `NOT_RUN` although the wiring that could violate it is absent, because the
+hazard is entirely future and the row's whole value to a T07 lane is that it is still owed;
+**MGD-38** stays `NOT_RUN` although half its vocabulary is delivered, because its unit is a
+demonstration and half a demonstration is none. Counts after wave 7:
+`COVERED_SUITE_GREEN 6 · DEFERRED_LAWFUL 1 · NOT_RUN 18 · PARTIAL_BY_CONSTRUCTION 12 ·
+SATISFIED_BY_ABSENCE_OF_CAPABILITY 3 = 40`, `UNPINNED 0`, rederived from rows.
 
 ## §6.4 The one unblocked pin this program could still write — DELIVERED 2026-09-27
 
@@ -146,6 +196,25 @@ casebook can only SET fixture keys, never delete them, and `financial_packets` i
 from the presence of the `economics` key — **so the T04a casebook cannot express an empty
 economic path at all.** Whoever writes the §6.2 pin must build the bundle directly
 (`dataclasses.replace(case.bundle, financial_packets=())`) or add a fixture.
+
+**RECEIPT RE-DERIVED INLINE 2026-09-27 (wave 9).** Both probes named here are deleted, so the
+refutation that saved a lane from implementing the wrong behaviour had no reproducible receipt.
+Re-measured at HEAD `d985e668c4ab` — the module shape the refutation turned on:
+
+```
+python3 -c "import sys;sys.path.insert(0,'.');from engine.market_ontology import mining_theme_research as c;from tests.mining_casebook import synthetic_case as s;k=s('copper_complete');p=c.compose_mining_research(k.query,k.bundle);b=p['economics']['native_blocks'][0];print(sorted(b),'period' in b,b['stable_subject_id'])"
+```
+
+```
+['basis', 'measure', 'sign', 'source_label', 'stable_subject_id', 'value']
+period present: False
+stable_subject_id: '0000000421'
+```
+
+The behaviour half of §6 is no longer merely measured: waves 5–6 shipped the MGD-08 clause 2
+behaviour fix and its pin, and R-MIN-35 amends R-MIN-34 with the reason the original
+measurement generalized a copper-only result to both slices. Read that amendment before
+re-using anything in this section.
 
 ### 6.1 MGD-10 — satisfied by absence of capability; becomes live at T03
 

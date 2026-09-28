@@ -5826,7 +5826,12 @@ jobs:
       - "tests/test_finance_overlap.py"
       - "engine/sector_intelligence/contracts.py"
       - "engine/sector_intelligence/finance_projection.py"
+      # FIN-T10 registration adapter — fixture-only, §8 sector_profile pending.
+      # Once §8 is adjudicated the same factory pattern (technology @ #7891)
+      # will be applied here.
+      - "engine/sector_intelligence/finance_research_registration.py"
       - "tests/test_finance_intelligence_projection.py"
+      - "tests/test_finance_research_registration.py"
       # FIN-T9 entry points — sector deep-dive card on the Theme Tracker
       # + Financials launch module (skip-mode while PR #7669 is OPEN).
       - "templates/_finance_sector_deep_dive.html.j2"
@@ -5899,7 +5904,7 @@ jobs:
       - name: finance intelligence page + hydration tests
         run: python -m pytest tests/test_finance_intelligence_page.py tests/test_finance_intelligence_hydration.py -q
       - name: finance intelligence contract tests
-        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py -q
+        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py tests/test_finance_research_registration.py -q
 
 
   consumer-cyclical-economic-change:
@@ -6965,12 +6970,16 @@ jobs:
           # paths as a downloaded JSON handle. Prefer that authoritative input:
           # re-fetching the moving base here cost the R25 candidate the entire
           # 10-minute job budget before the gate itself could execute.
+          # A main proof or base replay publishes the planner null token (full
+          # suite, no list). The event tells the checker that null is
+          # legitimate there and still a refusal on a pull_request. Keep
+          # apostrophes out of this block: one blinds the closure inference.
           if [ -n "${CI_CHANGED_FILES_FILE:-}" ]; then
             if [ ! -r "$CI_CHANGED_FILES_FILE" ]; then
               echo "::error title=p0b-receipt-closure::configured CI_CHANGED_FILES_FILE is unreadable; refusing rather than falling back to a different comparison question."
               exit 2
             fi
-            python3 scripts/check_p0b_receipt_closure.py --diff-file "$CI_CHANGED_FILES_FILE"
+            python3 scripts/check_p0b_receipt_closure.py --diff-file "$CI_CHANGED_FILES_FILE" --event "${GITHUB_EVENT_NAME:-}"
           else
             if ! git fetch origin ${{ github.base_ref || 'main' }}; then
               echo "::error title=p0b-receipt-closure::could not fetch origin/${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."

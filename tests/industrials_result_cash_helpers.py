@@ -34,6 +34,53 @@ from engine.company_intelligence.documents import ABSENCE_REASONS
 
 FIXTURE_DIR = Path(__file__).resolve().parent / "fixtures" / "industrials_result_cash"
 FIXTURE_NAMES = frozenset(path.stem for path in FIXTURE_DIR.glob("*.json"))
+
+# ---------------------------------------------------------------------------
+# The frozen plan's requirement-to-owning-test table, VENDORED into the repo.
+#
+# The plan lives on a research branch, so nothing on ``main`` ever resolved its
+# traceability rows: a task could merge CI-green while none of the exact test
+# ids the table named existed, because a suite run names FILES and a missing
+# test is not a failing test (``pytest path::absent`` reports ``ERROR: not
+# found`` and ``no tests ran``, a shape that never occurs in normal CI).
+# Measured 2026-09-27 on this program: 13 of the 15 anchors the table assigned
+# to T01 and T04 did not exist, and no ``IND-*`` id appeared anywhere in either
+# landed suite -- so there was no weaker traceability mechanism standing behind
+# the table either.  See ``DSC:A-PLANS-TRACEABILITY-TABLE-IS-NOT-COVERAGE``.
+#
+# Keeping the map HERE, next to the fixtures both suites already import, is what
+# makes it gradeable: ``test_every_plan_named_requirement_anchor_exists`` in the
+# dependency-binding suite resolves every row by AST, so deleting or renaming an
+# anchor reds the exclusive ``industrials-result-cash`` CI job instead of
+# silently reducing coverage.  Both files named below are already in that job's
+# ``paths:`` and on its run line, so this needs no ``.github/ci/**`` edit.
+#
+# ADDING A ROW IS A CLAIM.  A row asserts that the named test discriminates the
+# requirement's compliant case from its violating one -- not merely that some
+# test touches the same code.  Rows for requirements owned by tasks that have
+# not started yet do not belong here: their absence is the honest signal.
+_T01_SUITE = "tests/test_industrials_dependency_binding.py"
+_T04_SUITE = "tests/test_industrials_result_cash.py"
+
+PLAN_REQUIREMENT_ANCHORS: Mapping[str, tuple[str, str]] = {
+    # T01 — synthetic corpus, helper harness, delivery-input validator.
+    "IND-SF07": (_T01_SUITE, "test_ind_sf07"),
+    "IND-D02": (_T01_SUITE, "test_ind_d02"),
+    "IND-D06": (_T01_SUITE, "test_ind_d06"),
+    # T04 — signed exact-decimal result-to-cash derivation.
+    "IND-SF01": (_T04_SUITE, "test_ind_sf01"),
+    "IND-D07": (_T04_SUITE, "test_ind_d07"),
+    "IND-D08": (_T04_SUITE, "test_ind_d08"),
+    "IND-D09": (_T04_SUITE, "test_ind_d09"),
+    "IND-D10": (_T04_SUITE, "test_ind_d10"),
+    "IND-D11": (_T04_SUITE, "test_ind_d11"),
+    "IND-D12": (_T04_SUITE, "test_ind_d12"),
+    "IND-D13": (_T04_SUITE, "test_ind_d13"),
+    "IND-D14": (_T04_SUITE, "test_ind_d14"),
+    "IND-D15": (_T04_SUITE, "test_ind_d15"),
+    "IND-D16": (_T04_SUITE, "test_ind_d16"),
+    "IND-R208": (_T04_SUITE, "test_ind_r208"),
+}
 _COMPARISON_PURPOSES = frozenset(
     {"same_period", "year_over_year", "final_vs_preview", "segment_bridge", "rollforward"}
 )

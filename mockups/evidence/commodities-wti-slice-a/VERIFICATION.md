@@ -61,3 +61,39 @@ An incidental regenerated `signals_index.parquet` was dataframe-equal to HEAD an
 Protected procedure: Mastermind `aebb2ed19e68bda072e38221638925d674b656dc`. Implementation base: Macro `46963311ba19fe8167553774be506bae43d3460b`. Source carrier: `claude/commodities-wti-eia-slice-a-20260927`. Cumulative program record: Macro #8049.
 
 Preserve #7596 Gold-publication and #7601 shared-navigation ownership. Before release: exact-head CI, independent code/visual review, generated-page/source reconciliation on current main, and live verification. Only after this slice's acceptance should Research-case evidence attachment be integrated. No production release or mission completion is claimed.
+
+
+## Current-main integration and second review — 2026-09-28
+
+Integrated protected Macro main `808432ecfb2824b55ec37dcbf6b448e5fd31411a`
+into the continuing branch. Source/template/rights paths were unchanged since the
+original base; the sole conflict was generated `site/commodities.html`. It was
+rebuilt through the incumbent builder, not resolved by dropping another source.
+An incidental index parquet was dataframe-equal to the merged index and restored.
+
+Additional self-review found two classes of unsafe input: absent source identity
+inherited EIA attribution, and negative/bool physical levels could survive into
+the display. New tests reproduced **7 failures** plus **2 raw-reader failures**
+before the fixes. The contract now requires explicit EIA identity, rejects
+negative physical levels and pre-coercion booleans, and preserves legitimate
+zero levels, negative changes and negative seasonal anomalies. This is self-review,
+not an independent code-review receipt.
+
+Fresh focused integration: **853 passed, 3 existing covariance warnings**.
+Fresh real builder: exit0. Fresh canonical local browser matrix: **16/16**,
+with no captured page exceptions or HTTP failures. Same external-network block
+and production-proof limitations apply. Current source-page content hashes are
+recorded by the capture driver; the manifest's Git revision is the pre-commit
+parent, not a claim that uncommitted integration was already a published commit.
+
+The whole-repository pytest attempt still fails during collection in
+`collectors/marketdesk_extractor/extractor/tests/test_allocator.py` because the
+`marketdesk_extractor` package is not installed on that interpreter's path.
+No unrelated collector/package files were changed or that failure waived.
+
+Current procedure pin: Mastermind `dcc4829a811d3f6e4fe8c16a103f813c3501f48e`.
+Independent review, exact-head hosted CI, merge and live proof remain gates.
+The Executive review-dispatch route was not usable in this session:
+`executive_state` returned readonly/backend_unavailable (installed Macro source
+worktree observation failed); the Workbench interface exposes canary recipes,
+not a general review dispatcher. No reviewer START is inferred from that discovery.

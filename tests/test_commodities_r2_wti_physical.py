@@ -339,3 +339,45 @@ def test_vm_does_not_mutate_source_dictionary():
     before = copy.deepcopy(source)
     _wti_physical_evidence_vm(source, '2026-09-25')
     assert source == before
+
+
+# Integration-review regressions: absence is not EIA identity; a physical stock
+# cannot be negative even though a change or seasonal anomaly legitimately can.
+def test_missing_source_identity_does_not_inherit_eia_rights():
+    source = _supply()
+    del source['source_id']
+    result = _wti_physical_evidence_vm(source, '2026-09-25')
+    assert result['available'] is False
+    assert result['values'] == {}
+    assert 'source_identity_mismatch' in result['limitations']
+
+
+@pytest.mark.parametrize('field', ['crude_stocks_mb', 'cushing_mb', 'days_supply',
+                                   'gasoline_days', 'distillate_days', 'production_mbd'])
+def test_negative_physical_levels_are_not_displayed(field):
+    result = _wti_physical_evidence_vm(_supply(**{field: -0.1}), '2026-09-25')
+    assert field not in result['values']
+    assert 'invalid_' + field in result['limitations']
+    if field == 'crude_stocks_mb':
+        assert result['available'] is False
+
+
+def test_zero_level_and_negative_change_and_anomaly_remain_valid():
+    result = _wti_physical_evidence_vm(_supply(crude_stocks_mb=0.0,
+        crude_chg_4w_mb=-2.5, crude_z=-0.7), '2026-09-25')
+    assert result['available'] is True
+    assert result['values']['crude_stocks_mb'] == 0.0
+    assert result['values']['crude_chg_4w_mb'] == -2.5
+    assert result['values']['crude_z'] == -0.7
+
+
+@pytest.mark.parametrize('last_value', [-100.0, True])
+def test_invalid_raw_inventory_level_cannot_enter_physical_balance(monkeypatch, last_value):
+    from scripts.build_commodities import _oil_supply_read
+    from lib import store
+    frame = pd.DataFrame({'crude_stocks': [420500.0, last_value]},
+                         index=pd.to_datetime(['2026-09-18', '2026-09-25']))
+    monkeypatch.setattr(store, 'read', lambda group, name: frame if name == 'crude_stocks' else None)
+    result = _oil_supply_read()
+    assert result['crude_stocks_mb'] == 420.5
+    assert result['observed_at'] == '2026-09-18'

@@ -145,6 +145,59 @@ def test_source_only_business_stays_useful():
     _validate(result)
 
 
+def test_mgd11_withheld_identity_is_never_invented_and_the_source_stays_useful():
+    """MGD-11 clause 2: with NO identity supplied, none is invented, and it stays useful.
+
+    The test above cannot observe this clause. The ``source_only`` fixture omits
+    ECONOMICS and still SUPPLIES ``Ardent Copper Holdings`` / CIK ``0000000421`` --
+    the very identifiers the obligation is about are handed to it. Emptying
+    ``identity_results`` on the same case is the arm that can observe it, and the
+    CONTROL arm is what makes the absence earned rather than vacuous: the bound
+    case must PRODUCE the identifiers the unbound case must not.
+    """
+    from dataclasses import replace as _replace
+
+    def _cik_shaped_paths(payload):
+        """Every 10-digit string anywhere in the payload, by path."""
+        found = []
+
+        def walk(obj, path=""):
+            if isinstance(obj, dict):
+                for key, value in obj.items():
+                    walk(value, path + "/" + str(key))
+            elif isinstance(obj, (list, tuple)):
+                for index, value in enumerate(obj):
+                    walk(value, path + "/%d" % index)
+            elif isinstance(obj, str) and obj.isdigit() and len(obj) == 10:
+                found.append(path)
+
+        walk(payload)
+        return sorted(found)
+
+    case = synthetic_case("source_only")
+
+    # CONTROL: identity supplied, so the identifiers do reach the payload.
+    bound = composition.compose_mining_research(case.query, case.bundle)
+    assert _cik_shaped_paths(bound) == [
+        "/companies/0/cik",
+        "/companies/0/stable_subject_id",
+        "/native_subjects/0/stable_subject_id",
+    ]
+
+    # CLAIM: identity withheld, so not one identifier is minted -- and the
+    # description is still useful. ``refused`` is the third status value the
+    # module can return, so ``degraded`` is a measured outcome, not the only one.
+    unbound = composition.compose_mining_research(
+        case.query, _replace(case.bundle, identity_results=())
+    )
+    assert _cik_shaped_paths(unbound) == []
+    assert unbound["companies"] == []
+    assert unbound["native_subjects"] == []
+    assert unbound["summary"]["status"] == "degraded"
+    assert unbound["limitations"] == ["source_only"]
+    _validate(unbound)
+
+
 # ---------------------------------------------------------------------------
 # row ordering: stable source identity, never magnitude
 # ---------------------------------------------------------------------------
@@ -301,6 +354,31 @@ def test_industry_total_unknown_is_absent_on_w_c_slice():
     case = synthetic_case("copper_complete")
     result = composition.compose_mining_research(case.query, case.bundle)
     assert "industry_total_unknown" not in result["limitations"]
+
+
+def test_mgd39_coverage_scope_is_named_and_the_total_is_explicitly_null_on_both_slices():
+    """MGD-39 clause 1: the coverage gap is visible on EVERY slice, not only where a code is minted.
+
+    Two of this obligation's three delivered tests assert that
+    ``industry_total_unknown`` is ABSENT on W-C, which read alone says a null
+    total carries no signal there at all. What actually makes the gap visible is
+    ``authorized_coverage``: the field is present, the total is explicitly null,
+    and ``count_scope`` NAMES the scope as two closed definitions. That
+    declaration is slice-independent exactly where the limitation CODE is not --
+    and it had one site in the tree and zero assertions before this test.
+    """
+    minted = {}
+    for case_name in ("copper_complete", "rare_earth_complete"):
+        case = synthetic_case(case_name)
+        result = composition.compose_mining_research(case.query, case.bundle)
+        coverage = result["authorized_coverage"]
+        assert "industry_total" in coverage  # present and explicitly null,
+        assert coverage["industry_total"] is None  # never quietly omitted
+        assert coverage["count_scope"] == "two_closed_definitions"
+        minted[case_name] = "industry_total_unknown" in result["limitations"]
+        _validate(result)
+    # The scope declaration holds on both slices; the code is slice-scoped.
+    assert minted == {"copper_complete": False, "rare_earth_complete": True}
 
 
 def test_unsupported_contract_calculation_is_missing_derivation_not_invented_value():
@@ -676,6 +754,112 @@ def test_mgd17_refused_comparison_does_not_delete_the_supported_facts():
     assert refused["economics"]["native_blocks"] == control["economics"]["native_blocks"]
     assert refused["summary"]["status"] != "refused"
     _validate(refused)
+
+
+@pytest.mark.parametrize("slice_name", ["copper_complete", "rare_earth_complete"])
+def test_mgd19_an_intragroup_elimination_reaches_the_payload_with_its_sign(slice_name):
+    """MGD-19 clause 2: intra-group eliminations are not ignored, on BOTH slices.
+
+    The construct is delivered, but the only test that names MGD-19 asserts it through
+    ``composition._signed_value`` and its own comment concedes the casebook exposes no
+    internal-transfer row. **A helper pin is not a pin on the composed payload**, which is why the
+    obligation sat unpinned while its subject was already on main.
+
+    This pins the payload: the elimination is submitted as a native financial packet and must reach
+    ``economics["native_blocks"]`` carrying its negative value and ``sign == "-"``. Two control arms
+    keep the assertion from passing vacuously. The same bundle composed WITHOUT the elimination must
+    yield exactly one block fewer, so the elimination genuinely CONTRIBUTES rather than being
+    silently dropped at the builder -- a drop mints no limitation anywhere, so nothing else in the
+    payload would reveal it. And the measurement block beside it must be identical across both
+    compositions, so admitting a negative does not perturb the facts it is netted against.
+
+    Clause 1 -- product sales and contractual support income remaining separately DEFINED -- needs
+    T03's definition vocabulary and is deliberately NOT claimed here.
+
+    Parametrized across BOTH slices because MGD-19 governs both deliverables, W-C and
+    W-R, and MGD-17's pin is two-armed across slices for the same reason. The behaviour
+    was measured identical on both before widening, so this adds no claim about today --
+    it is the guard for tomorrow: if the rare-earth path ever gets its own netting or
+    sign handling, a copper-only pin stays green while the W-R half silently loses it.
+    """
+    case = synthetic_case(slice_name)
+    measurement = dict(case.bundle.financial_packets[0])
+    # ``positive_witness`` is a casebook oracle flag the engine never reads; signed_loss.json sets it
+    # False for a negative, so an elimination follows that shape rather than inheriting True.
+    elimination = dict(
+        measurement, measure="intersegment elimination", value=-120, positive_witness=False
+    )
+
+    composed = composition.compose_mining_research(
+        case.query, _replace(case.bundle, financial_packets=(measurement, elimination))
+    )
+    control = composition.compose_mining_research(
+        case.query, _replace(case.bundle, financial_packets=(measurement,))
+    )
+
+    blocks = composed["economics"]["native_blocks"]
+    netted = [b for b in blocks if b["measure"] == "intersegment elimination"]
+    assert len(netted) == 1, blocks
+    assert netted[0]["value"] == -120
+    assert netted[0]["sign"] == "-"
+
+    # The elimination contributes a row of its own, and perturbs nothing beside it.
+    assert len(blocks) == len(control["economics"]["native_blocks"]) + 1
+    assert [b for b in blocks if b["measure"] != "intersegment elimination"] == (
+        control["economics"]["native_blocks"]
+    )
+    _validate(composed)
+
+
+@pytest.mark.parametrize("slice_name", ["copper_complete", "rare_earth_complete"])
+def test_the_composer_never_interprets_a_submitted_measure(slice_name):
+    """``measure`` is opaque text to this program, and across 46 tests nothing asserted it.
+
+    Non-interpretation is a stated design property here -- the module mints no vocabulary and reads
+    no meaning -- and three NOT_RUN ledger rows cite it BY NAME as the ground for their status
+    (MGD-07, MGD-14, MGD-23: "the composer copies ``measure`` VERBATIM onto the block"). Before this
+    pin the only ``measure="..."`` anywhere in the suite was the MGD-19 elimination, so the premise
+    those reasons rest on was carried entirely by prose.
+
+    This guards the PREMISE, not the obligation. MGD-14 states the limit correctly and it still
+    holds: a passthrough can no more keep production, purchases, inventory, internal transfer and
+    external delivery DISTINCT than it can interchange them, so nothing here claims the distinctions
+    those rows owe -- they wait on T02/T03 to mint the kind vocabulary. What this adds is
+    falsifiability: if the composer ever begins reading a measure's meaning, THIS goes red instead of
+    three reasons going quietly stale.
+
+    The adversarial arms are the load-bearing part, because the obvious version of this test is
+    satisfiable by a mapper. One that normalized only the known vocabulary is caught by the plain
+    words; one that lowercased or trimmed would pass those and is caught by ``"PRODUCTION"`` and the
+    trailing space; one that whitelisted known kinds and substituted or dropped the rest would pass
+    every arm above and is caught by a string this program can have no opinion about.
+    """
+    case = synthetic_case(slice_name)
+    base = dict(case.bundle.financial_packets[0])
+    # A baseline that already equalled a probed value would make the arms pass without composing.
+    assert base["measure"] == "reported operating income", base["measure"]
+
+    for submitted in (
+        # the exact vocabulary MGD-14 and MGD-23 name
+        "production",
+        "purchases",
+        "inventory",
+        "internal transfer",
+        "external delivery",
+        "financing proceeds",
+        # a normalizer would pass every word above and fail these two
+        "PRODUCTION",
+        "production ",
+        # a whitelist with a fallback would pass everything above and fail this
+        "unmapped_nonsense_zzz",
+    ):
+        composed = composition.compose_mining_research(
+            case.query,
+            _replace(case.bundle, financial_packets=(dict(base, measure=submitted),)),
+        )
+        blocks = composed["economics"]["native_blocks"]
+        assert [b["measure"] for b in blocks] == [submitted], (submitted, blocks)
+        _validate(composed)
 
 
 def test_packet_driven_non_numeric_value_withholds_row_and_mints_omitted_expectations():
