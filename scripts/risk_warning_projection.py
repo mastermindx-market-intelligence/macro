@@ -348,44 +348,59 @@ def _owner_sources(risk_envelope: Any) -> list[Mapping]:
 
 def _briefing_drivers(radar: Any, risk_envelope: Any) -> list[dict]:
     out: list[dict] = []
+    remaining_scares: list[Mapping] = []
     if isinstance(radar, Mapping):
         scares = radar.get("scares")
         if isinstance(scares, list):
             candidates = [s for s in scares if isinstance(s, Mapping)]
             candidates.sort(key=lambda s: -float(_safe_num(s.get("score"), lower=0, upper=100) or -1))
-            for scare in candidates[:3]:
-                key = scare.get("scare")
-                label = scare.get("label_en")
-                if not isinstance(key, str) or not isinstance(label, str) or not label.strip():
-                    continue
-                out.append({
-                    "key": f"radar:{key}", "kind": "risk_radar",
-                    "label_en": label.strip()[:160],
-                    "label_zh": (scare.get("label_zh") if isinstance(scare.get("label_zh"), str)
-                                 else label)[:160],
-                    "state": scare.get("band") if isinstance(scare.get("band"), str) else None,
-                    "score": _safe_num(scare.get("score"), lower=0, upper=100),
-                })
+            dominant = radar.get("dominant_scare")
+            ordered = ([s for s in candidates if s.get("scare") == dominant] +
+                       [s for s in candidates if s.get("scare") != dominant])
+            remaining_scares = ordered
+            if ordered:
+                scare = ordered.pop(0)
+                key, label = scare.get("scare"), scare.get("label_en")
+                if isinstance(key, str) and isinstance(label, str) and label.strip():
+                    out.append({
+                        "key": f"radar:{key}", "kind": "risk_radar",
+                        "label_en": label.strip()[:160],
+                        "label_zh": (scare.get("label_zh") if isinstance(scare.get("label_zh"), str) else label)[:160],
+                        "state": scare.get("band") if isinstance(scare.get("band"), str) else None,
+                        "score": _safe_num(scare.get("score"), lower=0, upper=100),
+                    })
     known = {d["key"] for d in out}
+    owner_rows = []
     for source in _owner_sources(risk_envelope):
         source_id = source.get("source_id")
         if not isinstance(source_id, str) or source_id in ("risk-radar-us",) or source_id in known:
             continue
-        state = source.get("state")
         label = source.get("label_en")
         if not isinstance(label, str) or not label.strip():
             continue
-        out.append({
+        owner_rows.append({
             "key": source_id, "kind": str(source.get("role") or "owner_evidence"),
             "label_en": label.strip()[:160],
-            "label_zh": (source.get("label_zh") if isinstance(source.get("label_zh"), str)
-                         else label)[:160],
-            "state": state if isinstance(state, str) else None,
+            "label_zh": (source.get("label_zh") if isinstance(source.get("label_zh"), str) else label)[:160],
+            "state": source.get("state") if isinstance(source.get("state"), str) else None,
             "score": None,
             "coverage": source.get("coverage") if isinstance(source.get("coverage"), str) else None,
         })
+    owner_rows.sort(key=lambda row: (0 if row.get("state") in ("BROKEN", "RISK_OFF", "elevated", "risk-off") else 1, row["key"]))
+    out.extend(owner_rows[:2])
+    for scare in remaining_scares:
         if len(out) >= 5:
             break
+        key, label = scare.get("scare"), scare.get("label_en")
+        if not isinstance(key, str) or not isinstance(label, str) or not label.strip():
+            continue
+        out.append({
+            "key": f"radar:{key}", "kind": "risk_radar",
+            "label_en": label.strip()[:160],
+            "label_zh": (scare.get("label_zh") if isinstance(scare.get("label_zh"), str) else label)[:160],
+            "state": scare.get("band") if isinstance(scare.get("band"), str) else None,
+            "score": _safe_num(scare.get("score"), lower=0, upper=100),
+        })
     return out
 
 
@@ -443,14 +458,26 @@ def _backdrop_view(regime: Any, market_state: Any, material_risk: bool) -> dict:
     ms = market_state if isinstance(market_state, Mapping) else {}
     name = rg.get("quad_name") if isinstance(rg.get("quad_name"), str) else None
     verdict = ms.get("verdict") if isinstance(ms.get("verdict"), str) else None
-    components = ms.get("components") if isinstance(ms.get("components"), Mapping) else {}
+    components = ms.get("components")
     component_rows = []
-    for key, value in components.items():
+    if isinstance(components, Mapping):
+        iterable = [(key, value) for key, value in components.items()]
+    elif isinstance(components, list):
+        iterable = [(value.get("key"), value) for value in components if isinstance(value, Mapping)]
+    else:
+        iterable = []
+    for key, value in iterable:
         if not isinstance(key, str) or not isinstance(value, Mapping):
             continue
         score = _safe_num(value.get("score"), lower=0, upper=100)
-        if score is not None:
-            component_rows.append({"key": key, "score": score})
+        if score is None:
+            continue
+        row = {"key": key, "score": score}
+        if isinstance(value.get("label_en"), str):
+            row["label_en"] = value["label_en"][:160]
+        if isinstance(value.get("read_en"), str):
+            row["read_en"] = value["read_en"][:240]
+        component_rows.append(row)
     separation = None
     if material_risk and name == "Reflation":
         separation = "Reflation does not mean the tape is safe. The economic backdrop and market damage are different reads."
