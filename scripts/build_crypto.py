@@ -22,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from engine import alt_cycle, btc_mtf  # noqa: E402
 from engine.btc_options import build_contract as build_btc_options, write_contract as write_btc_options  # noqa: E402
 from engine.crypto_market_state import build_market_state  # noqa: E402
-from engine.crypto_universe import breadth_read, load_universe  # noqa: E402
+from engine.crypto_universe import breadth_read, load_universe_snapshot  # noqa: E402
 from engine.eth_state import build_states as build_asset_states  # noqa: E402
 from engine.event_calendar import us_macro_events  # noqa: E402
 from lib import config, store  # noqa: E402
@@ -159,12 +159,18 @@ def _enrich_universe(rows: list[dict]) -> list[dict]:
             deep[symbol] = _series("yahoo", f"{symbol}-USD")
     for row in rows:
         series = deep.get(row["symbol"])
+        if series is not None and row.get("as_of"):
+            # A deeper history must not advance a dated Market Board snapshot.
+            dates = pd.to_datetime(series.index, utc=True)
+            cutoff = pd.Timestamp(row["as_of"], tz="UTC")
+            series = series.loc[dates.normalize() <= cutoff]
+            series = series.loc[series.map(lambda x: math.isfinite(x) and x > 0)]
         if series is not None and len(series) >= 30:
             hist = series.tail(90)
             row["spark_dates"] = [str(pd.Timestamp(x).date()) for x in hist.index]
             row["spark_values"] = [float(x) for x in hist.to_numpy()]
             row["history_days"] = len(hist)
-            row["history_chip"] = "90D"
+            row["history_chip"] = f"{len(hist)}D"
         if len(row.get("spark_values") or []) >= 4:
             row["spark"] = illus(
                 {"dates": row["spark_dates"], "vals": row["spark_values"]},
@@ -461,7 +467,8 @@ def build(site_dir: Path | None = None) -> Path:
     site.mkdir(parents=True, exist_ok=True)
     e0 = _load_e0(site)
     market = build_market_state()
-    universe = _enrich_universe(load_universe(50))
+    universe_snapshot = load_universe_snapshot(50)
+    universe = _enrich_universe(universe_snapshot["rows"])
     breadth = breadth_read(universe)
     breadth["state_zh"] = _state_zh(breadth["state"])
     signals = store.read("vector", "signals")
@@ -490,6 +497,13 @@ def build(site_dir: Path | None = None) -> Path:
         "tier": "display",
         "display_only": True,
         "as_of": market["as_of"],
+        "universe_coverage": {
+            "as_of": universe_snapshot["as_of"],
+            "listed": len(universe),
+            "requested": universe_snapshot["requested"],
+            "excluded": universe_snapshot["excluded"],
+            "breadth": breadth,
+        },
         "market": {
             "stance": market.get("stance"),
             "total_state": market.get("total_state"),
@@ -562,6 +576,7 @@ def build(site_dir: Path | None = None) -> Path:
         "top_assets": universe[:20],
         "more_assets": universe[20:50],
         "universe_count": len(universe),
+        "universe_snapshot": universe_snapshot,
         "universe_sources": sorted({row.get("source") for row in universe if row.get("source")}),
         "breadth": breadth,
         "allocation": allocation,

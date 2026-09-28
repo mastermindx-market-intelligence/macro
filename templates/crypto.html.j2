@@ -115,6 +115,18 @@ body.crypto-page::before{opacity:.34}
 .alloc-side dt{color:var(--muted);font-size:10px}.alloc-side dd{margin:0;font:700 11px/1 var(--font-mono)}
 .alloc-note{margin-top:16px;color:var(--muted);font-size:10px}
 
+/* Snapshot evidence is separate from the independently owned Market Board rows. */
+#universe-snapshot{margin:16px 0 0;padding:14px 18px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel2);font-size:var(--fs-body,14px);line-height:1.5}
+#universe-snapshot .snapshot-summary{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+#universe-snapshot p{margin:8px 0;color:var(--muted)}
+#universe-snapshot summary{display:list-item;min-height:44px;padding:12px 0;cursor:pointer;color:var(--ink-link,var(--link))}
+#universe-snapshot .breadth-receipt{padding:12px 0;border-top:1px solid var(--line)}
+#universe-snapshot .excluded-observation{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,2fr);gap:14px;padding:12px 0;border-top:1px solid var(--line);overflow-wrap:anywhere}
+#universe-snapshot small{display:block;color:var(--muted);font-size:var(--fs-sm,12.5px)}
+@media(max-width:600px){
+  #universe-snapshot .excluded-observation{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  #universe-snapshot .excluded-observation>div:last-child{grid-column:1/-1}
+}
 /* H5-only reading hierarchy; keep the shared shell and Market Board untouched. */
 #allocation .alloc-main,#allocation .alloc-side{min-width:0}
 #allocation .alloc-top p,#allocation .alloc-note{font-size:var(--fs-body,14px);line-height:1.6}
@@ -196,6 +208,35 @@ body.crypto-page::before{opacity:.34}
       </div>
     </div>
   </section>
+
+    {# Universe snapshot receipt #}
+    <div id="universe-snapshot" data-universe-as-of="{{ universe_snapshot.as_of or '' }}">
+      <div class="snapshot-summary">
+        <div>{% if universe_snapshot.as_of %}{{ t('Market Board snapshot','市场看板快照') }} <strong>{{ universe_snapshot.as_of }}</strong>{% else %}<strong>{{ t('No ranked snapshot available','暂无可用的排名快照') }}</strong>{% endif %}</div>
+        <div>{{ universe_count }} / {{ universe_snapshot.requested }} {{ t('assets listed','项资产已列出') }}</div>
+      </div>
+      <p>{{ t('Ranks and research use this date. Quote cells may refresh separately. Older observations never fill missing ranks.','排名与研究采用此快照日期，报价可能单独刷新。不会用旧观测补足当前排名。') }}</p>
+      <details class="universe-coverage">
+        <summary>{{ t('Review excluded observations','查看未纳入的观测') }} · {{ universe_snapshot.excluded|length }}</summary>
+        <div class="breadth-receipt">{% if breadth.available %}<strong>{{ t('Positive 30-day returns','30日回报为正') }}: {{ breadth.positive }} / {{ breadth.eligible }}</strong>{% else %}<strong>{{ t('Insufficient comparable returns','可比回报数据不足') }}</strong> · {{ breadth.eligible }} / {{ breadth.required }} {{ t('minimum','最低所需') }}{% endif %}<p>{{ t('Only assets with sufficient recorded history and a numeric 30-day return enter that count. Missing returns are not losses. Not a Bitcoin-relative or altseason measure.','仅历史记录充分且有数值型30日回报的资产纳入统计。缺失回报不等于下跌；此指标并非相对比特币强弱或山寨季指标。') }}</p><p>{{ breadth.excluded }} {{ t('listed assets excluded from the return count','项已列资产未纳入回报统计') }}</p></div>
+        {% set reasons = {
+          'OLDER_SNAPSHOT': ['Older snapshot', '较早的快照'],
+          'FUTURE_OBSERVATION': ['Future-dated observation', '观测日期尚未到来'],
+          'INVALID_RANK': ['Invalid rank', '排名无效'],
+          'OUTSIDE_RANK_RANGE': ['Outside requested rank range', '超出所选排名范围'],
+          'INVALID_LATEST_PRICE': ['Latest price unavailable or invalid', '最新价格缺失或无效'],
+          'MISSING_ASSET_IDENTITY': ['Asset identity missing', '缺少资产身份'],
+          'EMPTY_HISTORY': ['No observations', '暂无观测'],
+          'UNREADABLE_HISTORY': ['Source history could not be read', '无法读取来源历史']
+        } %}
+        {% for item in universe_snapshot.excluded %}
+        <div class="excluded-observation"><div><strong>{{ item.symbol or item.file }}</strong><small>{{ item.source or '—' }}</small></div><div>{{ item.as_of or '—' }}</div><div>{{ t(*reasons.get(item.reason, ['Not comparable', '不可比较'])) }}</div></div>
+        {% endfor %}
+        {% if not universe_snapshot.excluded %}<p>{{ t('No stored observations were excluded from this ranked snapshot.','本排名快照没有排除任何已存观测。') }}</p>{% endif %}
+        <p>{{ t('Excluded source records are retained for review. Histories restart at unqualified source or asset-identity changes.','未纳入的原始记录会保留供复核。来源或资产身份发生尚未确认可衔接的变化时，历史序列会重新积累。') }}</p>
+      </details>
+    </div>
+    {# End universe snapshot receipt #}
 
   <section class="crypto-shelf" data-shelf="H2" id="market-board">
     <div class="shelf-pad"><div class="shelf-head"><span class="shelf-index">H2</span><h2 class="shelf-title">{{ t('Market Board','市场看板') }}</h2><span class="shelf-sub">{{ universe_count }} {{ t('assets accruing daily','项资产每日积累') }}</span></div></div>

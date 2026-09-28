@@ -590,3 +590,149 @@ def test_h5_compact_layout_has_its_own_readable_non_overflowing_hierarchy():
 def test_h5_styles_do_not_occupy_the_market_board_owned_insertion_point():
     source = (ROOT / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
     assert source.index("/* H5-only reading hierarchy;") < source.index('{% include "_crypto_house_style.html.j2" %}')
+
+
+def _write_universe_fixture(root, symbol, rank, end, *, price=100.0, change=5.0, source="CoinGecko"):
+    dates = pd.date_range(end=end, periods=31, freq="D")
+    frame = pd.DataFrame({
+        "source": source, "coin_id": symbol.lower(), "symbol": symbol,
+        "name": symbol, "market_cap_rank": rank,
+        "current_price": [99.0] * 30 + [price], "market_cap": 1_000_000.0,
+        "total_volume": 100_000.0, "change_24h_pct": change,
+        "change_7d_pct": change, "change_30d_pct": change,
+    }, index=dates)
+    frame.to_parquet(root / f"market_{symbol.lower()}.parquet")
+
+
+def test_universe_current_snapshot_cannot_be_displaced_by_an_old_rank(tmp_path):
+    _write_universe_fixture(tmp_path, "BTC", 1, "2026-09-26")
+    _write_universe_fixture(tmp_path, "ETH", 2, "2026-09-26")
+    _write_universe_fixture(tmp_path, "DARK", 1, "2026-09-01", change=31_531_510, source="CoinPaprika")
+    rows = load_universe(2, root=tmp_path)
+    assert [r["symbol"] for r in rows] == ["BTC", "ETH"]
+    assert {r["as_of"] for r in rows} == {"2026-09-26"}
+
+
+def test_universe_snapshot_keeps_exclusion_receipts_without_erasing_source(tmp_path):
+    from engine.crypto_universe import load_universe_snapshot
+    _write_universe_fixture(tmp_path, "BTC", 1, "2026-09-26")
+    _write_universe_fixture(tmp_path, "OLD", 2, "2026-09-01")
+    old_bytes = (tmp_path / "market_old.parquet").read_bytes()
+    snapshot = load_universe_snapshot(50, root=tmp_path)
+    assert snapshot["as_of"] == "2026-09-26"
+    assert len(snapshot["rows"]) == 1
+    assert snapshot["excluded"][0]["symbol"] == "OLD"
+    assert snapshot["excluded"][0]["reason"] == "OLDER_SNAPSHOT"
+    assert snapshot["excluded"][0]["as_of"] == "2026-09-01"
+    assert (tmp_path / "market_old.parquet").read_bytes() == old_bytes
+
+
+@pytest.mark.parametrize("price", [None, 0.0, -1.0, float("inf")])
+def test_universe_invalid_latest_quote_is_not_rescued_by_older_history(tmp_path, price):
+    _write_universe_fixture(tmp_path, "BAD", 1, "2026-09-26", price=price)
+    assert load_universe(50, root=tmp_path) == []
+
+
+def test_breadth_missing_returns_are_not_negative_participation():
+    known = [{"history_days": 31, "change_30d": 5.0, "as_of": "2026-09-26"} for _ in range(10)]
+    unknown = [{"history_days": 31, "change_30d": None, "as_of": "2026-09-26"} for _ in range(20)]
+    result = breadth_read(known + unknown)
+    assert result["available"] is True and result["value"] == 100
+    assert result["eligible"] == 10 and result["excluded"] == 20
+    assert result["positive"] == 10
+    assert result["basis"] == "reported_30d_return_positive"
+
+
+def test_breadth_valid_zero_is_distinct_from_insufficient_return_coverage():
+    zeroes = [{"history_days": 31, "change_30d": 0.0} for _ in range(10)]
+    missing = [{"history_days": 31, "change_30d": None} for _ in range(10)]
+    assert breadth_read(zeroes)["available"] is True
+    assert breadth_read(zeroes)["value"] == 0
+    result = breadth_read(missing)
+    assert result["available"] is False and result["value"] is None
+    assert result["eligible"] == 0
+
+
+def test_breadth_uses_one_snapshot_and_rejects_nonfinite_return_values():
+    rows = [{"history_days": 31, "change_30d": 2.0, "as_of": "2026-09-26"} for _ in range(10)]
+    rows += [{"history_days": 90, "change_30d": -5.0, "as_of": "2026-09-01"} for _ in range(20)]
+    rows += [{"history_days": 31, "change_30d": float("inf"), "as_of": "2026-09-26"}]
+    result = breadth_read(rows)
+    assert result["as_of"] == "2026-09-26"
+    assert result["eligible"] == 10 and result["value"] == 100
+    assert result["excluded"] == 21
+
+
+def test_universe_deep_history_stops_at_the_row_date_and_labels_actual_length(monkeypatch):
+    dates = pd.date_range("2026-08-01", "2026-09-28", freq="D")
+    series = pd.Series(range(100, 100 + len(dates)), index=dates, dtype=float)
+    monkeypatch.setattr(build_crypto, "_series", lambda *args: series)
+    row = {"symbol": "BTC", "as_of": "2026-09-01", "price": 1.0, "change_24h": 0.0,
+           "state": "Firm", "spark_dates": [], "spark_values": []}
+    enriched = build_crypto._enrich_universe([row])[0]
+    assert enriched["spark_dates"][-1] == "2026-09-01"
+    assert enriched["history_days"] == 32 and enriched["history_chip"] == "32D"
+
+
+def test_universe_history_does_not_stitch_different_assets_behind_one_symbol(tmp_path):
+    _write_universe_fixture(tmp_path, "SAME", 1, "2026-09-26")
+    path = tmp_path / "market_same.parquet"
+    frame = pd.read_parquet(path)
+    frame.loc[frame.index[:-1], "coin_id"] = "different-asset"
+    frame.to_parquet(path)
+    row = load_universe(50, root=tmp_path)[0]
+    assert row["history_days"] == 1
+    assert row["history_chip"] == "Building"
+    assert row["history_reset"] == "SOURCE_IDENTITY_CHANGED"
+    assert row["price"] == 100.0
+
+
+def test_universe_snapshot_partial_coverage_never_backfills_with_stale_members(tmp_path):
+    from engine.crypto_universe import load_universe_snapshot
+    _write_universe_fixture(tmp_path, "BTC", 1, "2026-09-26")
+    _write_universe_fixture(tmp_path, "ETH", 2, "2026-09-25")
+    snap = load_universe_snapshot(50, root=tmp_path)
+    assert len(snap["rows"]) == 1 and snap["requested"] == 50
+    assert snap["as_of"] == "2026-09-26"
+    assert len(snap["excluded"]) == 1
+
+
+def _render_universe_receipt(snapshot, breadth):
+    source = (ROOT / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
+    assert '{# Universe snapshot receipt #}' in source
+    macros = source.split('<!DOCTYPE html>', 1)[0]
+    fragment = source.split('{# Universe snapshot receipt #}', 1)[1].split('{# End universe snapshot receipt #}', 1)[0]
+    return Environment(autoescape=True).from_string(macros + fragment).render(
+        universe_snapshot=snapshot, universe_count=len(snapshot["rows"]), breadth=breadth,
+    )
+
+
+def test_universe_receipt_explains_dated_ranking_and_exclusions_without_return_hype():
+    snapshot = {"as_of": "2026-09-26", "requested": 50, "rows": [{}] * 50,
+                "excluded": [{"symbol": "DARK", "source": "CoinPaprika", "as_of": "2026-09-01", "reason": "OLDER_SNAPSHOT"}]}
+    receipt = _render_universe_receipt(snapshot, {"available": True, "positive": 10, "eligible": 20, "excluded": 30})
+    assert 'data-universe-as-of="2026-09-26"' in receipt
+    assert "Review excluded observations" in receipt and "查看未纳入的观测" in receipt
+    assert "Older snapshot" in receipt and "较早的快照" in receipt
+    assert "CoinPaprika" in receipt and "2026-09-01" in receipt
+    assert "Positive 30-day returns" in receipt and "10 / 20" in receipt
+    assert "Not a Bitcoin-relative or altseason measure" in receipt
+
+
+def test_universe_receipt_handles_empty_snapshot_and_escapes_source_text():
+    snapshot = {"as_of": None, "requested": 50, "rows": [], "excluded": [
+        {"symbol": '<script>alert(1)</script>', "source": "Unknown", "as_of": None, "reason": "UNREADABLE_HISTORY"}]}
+    receipt = _render_universe_receipt(snapshot, {"available": False, "positive": 0, "eligible": 0, "required": 10, "excluded": 0})
+    assert "No ranked snapshot available" in receipt and "暂无可用的排名快照" in receipt
+    assert "Insufficient comparable returns" in receipt
+    assert "<script>alert" not in receipt and "&lt;script&gt;" in receipt
+
+
+def test_universe_future_observation_cannot_replace_the_recorded_snapshot(tmp_path):
+    from engine.crypto_universe import load_universe_snapshot
+    _write_universe_fixture(tmp_path, "BTC", 1, "2026-09-26")
+    _write_universe_fixture(tmp_path, "FUTURE", 2, "2100-01-01")
+    snapshot = load_universe_snapshot(50, root=tmp_path)
+    assert snapshot["as_of"] == "2026-09-26"
+    assert [r["symbol"] for r in snapshot["rows"]] == ["BTC"]
+    assert snapshot["excluded"][0]["reason"] == "FUTURE_OBSERVATION"
