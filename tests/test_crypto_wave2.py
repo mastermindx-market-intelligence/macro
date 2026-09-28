@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 
 import pandas as pd
+import pytest
 from jinja2 import Environment, FileSystemLoader
 
 from collectors.crypto_misc import CryptoUniverseAdapter
@@ -485,3 +486,94 @@ def test_h5_named_override_consumes_final_not_raw_budget(monkeypatch):
     assert out["exposure"] == 40
     assert out["btc"] + out["eth"] + out["alts"] == 40
     assert out["cash"] == 60
+
+
+def test_h5_recovery_copy_makes_no_unearned_validation_claim():
+    from scripts.check_validated_claims import scan_text
+
+    source = (ROOT / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
+    h5 = source.split('data-shelf="H5"', 1)[1].split('data-shelf="H6"', 1)[0]
+    findings, _ = scan_text("templates/crypto.html.j2", h5, [])
+    assert findings == [], "Recovery copy must not imply a missing validation receipt"
+
+
+def _render_h5_state(allocation):
+    """Render the real H5 section with the real template translation macros."""
+    source = (ROOT / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
+    macros = source.split("<!DOCTYPE html>", 1)[0]
+    start = source.index('<section class="crypto-shelf" data-shelf="H5"')
+    end = source.index('<section class="crypto-shelf" data-shelf="H6"')
+    return Environment(autoescape=True).from_string(macros + source[start:end]).render(allocation=allocation)
+
+
+def test_h5_preserves_known_budget_when_only_class_inputs_are_missing(monkeypatch):
+    index = pd.to_datetime(["2026-07-28", "2026-07-29"])
+    _patch_h5_split_context(monkeypatch, index)
+    signals = pd.DataFrame({"close": [100.0, None]}, index=index)
+
+    out = build_crypto._allocation(signals, {}, _decision_projection(60))
+
+    assert out["budget_available"] is True
+    assert out["available"] is False
+    assert (out["exposure"], out["cash"]) == (60, 40)
+    assert all(out[k] is None for k in ("btc", "eth", "alts"))
+    html = _render_h5_state(out)
+    assert 'data-allocation-state="breakdown-unavailable"' in html
+    assert "Breakdown unavailable" in html and "类别明细暂不可用" in html
+    assert "60%" in html and "40%" in html
+    assert 'class="alloc-bar"' not in html and 'class="alloc-legend"' not in html
+    assert "did not provide a valid" not in html
+
+
+def test_h5_zero_needs_no_class_model_when_snapshot_date_matches(monkeypatch):
+    index = pd.to_datetime(["2026-07-29"])
+    signals = pd.DataFrame({"close": [None]}, index=index)
+
+    def unexpected(*args, **kwargs):
+        raise AssertionError("A zero total has no risky assets to split")
+
+    monkeypatch.setattr(build_crypto.config, "load", unexpected)
+    monkeypatch.setattr(build_crypto.alt_cycle, "alloc_grid", unexpected)
+    out = build_crypto._allocation(signals, {}, _decision_projection(0))
+
+    assert out["budget_available"] is True and out["available"] is True
+    assert [out[k] for k in ("btc", "eth", "alts", "cash", "exposure")] == [0, 0, 0, 100, 0]
+    assert out["season_score"] is None
+    html = _render_h5_state(out)
+    assert 'data-allocation-state="available"' in html
+    assert "100%" in html and "Allocation unavailable" not in html
+
+
+@pytest.mark.parametrize("target", [True, False, "60", float("nan"), float("inf"), -1, 101, 60.5, 10 ** 400])
+def test_h5_rejects_malformed_projected_target_without_numeric_coercion(target):
+    signals = pd.DataFrame({"close": [100.0]}, index=pd.to_datetime(["2026-07-29"]))
+    out = build_crypto._allocation(signals, {}, _decision_projection(target))
+    assert out["budget_available"] is False
+    assert out["exposure"] is None and out["cash"] is None
+
+
+@pytest.mark.parametrize("weights", [
+    {"btc": -10, "eth": 70, "alts": 40},
+    {"btc": float("nan"), "eth": 25, "alts": 15},
+    {"btc": 0, "eth": 0, "alts": 0},
+    {"btc": 60, "eth": 25},
+])
+def test_h5_invalid_split_keeps_valid_total_without_fabricating_destinations(monkeypatch, weights):
+    index = pd.to_datetime(["2026-07-28", "2026-07-29"])
+    _patch_h5_split_context(monkeypatch, index)
+    monkeypatch.setattr(build_crypto.alt_cycle, "alloc_grid", lambda *args: {**weights, "regime_key": "bull"})
+    signals = pd.DataFrame({"close": [100.0, 110.0]}, index=index)
+    out = build_crypto._allocation(signals, {}, _decision_projection(60))
+    assert out["budget_available"] is True and out["available"] is False
+    assert (out["exposure"], out["cash"]) == (60, 40)
+    assert all(out[k] is None for k in ("btc", "eth", "alts"))
+
+
+def test_h5_stale_snapshot_explains_date_problem_without_showing_old_target():
+    signals = pd.DataFrame({"close": [100.0]}, index=pd.to_datetime(["2026-07-29"]))
+    out = build_crypto._allocation(signals, {}, _decision_projection(60, as_of="2026-07-28"))
+    assert out["budget_available"] is False
+    html = _render_h5_state(out)
+    assert 'data-allocation-state="unavailable"' in html
+    assert "different snapshot" in html and "快照日期不一致" in html
+    assert "60%" not in html and 'class="alloc-bar"' not in html
