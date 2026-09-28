@@ -59,3 +59,13 @@ Complete the two source fixes and bounded paired replay, then report what eviden
 
 Pandas official resampling documentation: https://pandas.pydata.org/docs/user_guide/timeseries.html and https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.resample.html . Labels and closed sides are independent and defaults can pull information backward.
 Pandas nullable boolean / missing data semantics: https://pandas.pydata.org/docs/user_guide/missing_data.html . Ordinary NaN comparisons versus nullable missing outcomes must not be conflated.
+
+## Execution disposition — appended after outcomes, not a rewritten preregistration
+
+Tasks1–2 source candidates implemented in existing engines; RED/GREEN receipts preserved. Original three-day membership was retained and only completion availability moved; no R1 right-closed re-anchoring was promoted. Nullable outcome labels retain maturity/price/date validity through lift and permutation consumers. Final malformed-index coverage was added as a guard for the already-implemented validation behavior, not falsely described as another pre-fix RED cycle.
+
+Task3 completed as a paired stored-vintage diagnostic:4393x197 frames, every4393 daily bottom-pressure prefix, all96 declared variant/period/cost rows, both evaluator returns, and55input/18gate/9source hashes. Original frame agrees exactly with the six checked stored-baseline columns. Corrected bottom-pressure prefix mismatches0 versus54 original; no future-outcome tail coerced to a negative label. Latest stored target unchanged. Independent code/science review and historical source-availability proof remain open.
+
+Final test pack:235passed,25warnings; source-claim checker/static/diff checks pass. See exact immutable source a5a2d98cbb192f02113fc957fba28f40f37deff2 and `research/crypto_science/r2/verification.txt`. No new forecast accuracy claim, live gate write, model fitting, deployment or strategy promotion.
+
+A narrowly related source read resolved R1's funding-depth discrepancy: current implicit first-column selection chooses80 recent observations while an older1,089-row funding field is present. This is recorded as an exploratory input-contract finding, not patched or silently joined. That schema/unit/venue/time qualification is the next material research dependency.

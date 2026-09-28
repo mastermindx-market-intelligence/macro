@@ -1,0 +1,48 @@
+{
+  "classification": "EXPLORATORY_SOURCE_CONTRACT_FINDING_NOT_A_PATCH",
+  "source_sha256": "67680c313f83c628b41edcc9d4725b207e6005fdac3dfc10eef5295b019c3870",
+  "input_sha256": "5e2c73d82da16f41befcb78feaafc39d694457748c3dc82b50e3e48626a8aa75",
+  "input_unchanged": true,
+  "stored_rows": 1168,
+  "column_order": [
+    "funding_rate_fundingRate",
+    "funding_rate_markPrice",
+    "funding_rate"
+  ],
+  "column_coverage": [
+    {
+      "column": "funding_rate_fundingRate",
+      "nonnull": 80,
+      "first": "2026-07-01 00:00:00",
+      "last": "2026-09-18 00:00:00"
+    },
+    {
+      "column": "funding_rate_markPrice",
+      "nonnull": 80,
+      "first": "2026-07-01 00:00:00",
+      "last": "2026-09-18 00:00:00"
+    },
+    {
+      "column": "funding_rate",
+      "nonnull": 1089,
+      "first": "2023-07-09 00:00:00",
+      "last": "2026-07-01 00:00:00"
+    }
+  ],
+  "observed_selection": "btc_inputs._col with no explicit field chooses first physical column",
+  "finding": "Only 80 recent source rows enter funding via current selection; the older 1089-row field is not selected. The derived 83-row coverage includes a 3-day forward-fill.",
+  "unresolved": [
+    "Old/new funding units, exchange coverage, funding interval and revision identity are not proven equivalent.",
+    "Do not concatenate fields merely to maximize apparent backtest length."
+  ],
+  "stored_impulse_gate": {
+    "asof": "2026-09-26",
+    "statuses": {
+      "d2": "demoted",
+      "d3": "demoted",
+      "u1": "insufficient_n"
+    },
+    "sha256": "3f90368be3d9547d3476ec91b49799f09d82c3815e1b2e4e1c7f7625728a9937"
+  },
+  "gate_effect": "Read only; no validate/main/write_gate invocation in this probe."
+}

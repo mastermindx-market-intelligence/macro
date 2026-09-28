@@ -378,6 +378,21 @@ def test_completed_three_day_closes_all_prefixes_and_invalid_bins():
     assert pd.isna(S._completed_three_day_closes(sparse).iloc[0])
 
 
+def test_completed_three_day_closes_reject_malformed_daily_indices():
+    close = pd.Series([10., 20., 30., 40.], index=pd.date_range("2026-01-01", periods=4))
+    invalid = [close.iloc[::-1], pd.concat([close.iloc[:2], close.iloc[1:]])]
+    intraday = close.copy()
+    intraday.index = intraday.index + pd.Timedelta(hours=1)
+    invalid.extend([intraday, close.reset_index(drop=True)])
+    for series in invalid:
+        try:
+            S._completed_three_day_closes(series)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("Malformed time index must not form completed daily bins")
+
+
 def test_bottom_pressure_matches_every_recent_prefix_without_repainting():
     # Fixed synthetic path: incumbent code repaints 2020-11-11 by 0.0930233.
     price = _synthetic(n=360, trend=-0.0005, vol=0.05, seed=19)["price"]
@@ -394,6 +409,7 @@ def test_bottom_pressure_matches_every_recent_prefix_without_repainting():
 if __name__ == "__main__":
     for fn in [test_completed_three_day_closes_preserve_membership_and_completion_date,
                test_completed_three_day_closes_all_prefixes_and_invalid_bins,
+               test_completed_three_day_closes_reject_malformed_daily_indices,
                test_bottom_pressure_matches_every_recent_prefix_without_repainting,
                test_momentum_bounds_and_direction, test_risk_index_range_and_regime,
                test_hysteresis_reduces_flips, test_allocation_base_grid_preserved,
