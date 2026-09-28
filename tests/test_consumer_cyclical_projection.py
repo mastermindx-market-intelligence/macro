@@ -33,6 +33,9 @@ from engine.sector_intelligence.consumer_cyclical_projection import (
     RESULT_KEY_ADVERTISING_SHARE_OF_REVENUE_CHANGE_PCT,
     RESULT_KEY_TOTAL_REVENUE_CHANGE,
     SCHEMA_VERSION,
+    _FORBIDDEN_BARE_KEYS,
+    _assert_document_matches_contract_shape,
+    _assert_no_forbidden_authority_keys,
     _check_explanation_for_forbidden,
     project_economic_change,
 )
@@ -1786,3 +1789,120 @@ def test_no_period_band_can_admit_an_incoherent_period() -> None:
         assert low < high, f"{kind} band is empty"
     assert mod._PRIOR_YEAR_GAP_DAYS[0] > 0
     assert mod._PRIOR_YEAR_GAP_DAYS[0] < mod._PRIOR_YEAR_GAP_DAYS[1]
+
+
+# ---------------------------------------------------------------------------
+# Wave 8 -- the authority guard's vocabulary, and which gate is load-bearing
+# ---------------------------------------------------------------------------
+
+
+def test_the_authority_guard_refuses_implementation_vocabulary() -> None:
+    """A blocklist written from the rule's prose blocks the rule's own words.
+
+    Measured 2026-09-27 on the pre-repair module: the eight-name list caught
+    4 of 30 category-representative keys. ``sizing`` -- the policy's noun --
+    was refused, while ``position_size``, ``weight``, ``allocation``,
+    ``notional`` and ``exposure`` -- what a violating field would actually be
+    called -- all passed. Frozen-spec section 6 rule 10 names CATEGORIES, so
+    the guard must carry the categories' vocabulary, not their labels.
+    """
+    for key in (
+        "position_size",
+        "weight",
+        "allocation",
+        "notional",
+        "exposure",
+        "recommendation",
+        "signal",
+        "conviction",
+        "percentile",
+        "entry_price",
+        "stop_loss",
+    ):
+        assert key not in {"sizing", "origination", "gate"}, "MUTATION WAS A NO-OP"
+        with pytest.raises(CaseShapeError) as excinfo:
+            _assert_no_forbidden_authority_keys({"facts": [{key: 1}]})
+        assert "forbidden authority key" in str(excinfo.value), str(excinfo.value)
+        assert key in str(excinfo.value), str(excinfo.value)
+
+
+def test_the_contract_seal_is_what_actually_refuses_an_unlisted_key() -> None:
+    """The documented guard is the SECOND line; the schema seal is the first.
+
+    This is the test whose absence let a decorative guard read as the
+    enforcement point. ``action`` is deliberately NOT in the blocklist -- it
+    is ordinary English with a plausible non-authority reading -- so the
+    authority walk passes it. It is still refused, by
+    ``additionalProperties: false`` on every composite ``$defs``. If a future
+    change ever unseals a definition, this test goes red and names the real
+    mechanism instead of letting the blocklist take undeserved credit.
+    """
+    document = project_economic_change(_plnt_case())
+    assert document["facts"], "MUTATION WAS A NO-OP"
+
+    polluted = dict(document)
+    polluted["facts"] = [dict(document["facts"][0], action="BUY")] + list(
+        document["facts"][1:]
+    )
+
+    # The guard passes it -- on purpose, and this assertion pins that.
+    _assert_no_forbidden_authority_keys(polluted)
+
+    # The seal refuses it.
+    with pytest.raises(CaseShapeError) as excinfo:
+        _assert_document_matches_contract_shape(polluted)
+    assert "violates" in str(excinfo.value), str(excinfo.value)
+
+
+def test_widening_the_blocklist_did_not_refuse_ordinary_names() -> None:
+    """Negative control: defense in depth must not become spurious refusal.
+
+    ``size`` and ``weight`` are in the bare set (exact match) but kept OUT of
+    the compound pattern, because that pattern also judges names that do not
+    exist yet and ``sample_size`` / ``batch_size`` are ordinary engineering
+    names. This is the live control on that boundary.
+    """
+    for key in (
+        "sample_size",
+        "batch_size",
+        "display_quantum",
+        "accession_no",
+        "comparison_basis",
+        "acceptance_clock_basis",
+    ):
+        _assert_no_forbidden_authority_keys({"facts": [{key: 1}]})
+
+    # And the real document still emits unharmed.
+    document = project_economic_change(_fixture_case())
+    assert document["availability"] == "ready", document["availability"]
+
+
+def test_the_compound_authority_pattern_actually_catches_compound_keys() -> None:
+    """The one construct named for compound keys caught none of them.
+
+    Measured 2026-09-27: the guard called ``_FORBIDDEN_COMPOUND_KEY_RE
+    .fullmatch(k)``. A pattern of ``(^|_)(stem)(_|$)`` cannot consume a whole
+    compound name -- ``composite_score`` matches ``composite``, then
+    ``(_|$)`` takes one underscore and leaves ``score`` unconsumed -- so
+    every compound authority key passed. A BARE stem did fullmatch, which is
+    why the dead call looked alive: its only hits were names the bare
+    frozenset already carried.
+
+    Each key below is asserted absent from ``_FORBIDDEN_BARE_KEYS`` first,
+    so a pass here can only mean the PATTERN fired. Without that assertion
+    this test would stay green if the pattern were deleted entirely.
+    """
+    for key in (
+        "composite_score",
+        "analyst_rank",
+        "conviction_score",
+        "signal_strength",
+        "sizing_weight",
+        "market_entry",
+    ):
+        assert key.lower() not in _FORBIDDEN_BARE_KEYS, (
+            f"{key} is in the bare set; this test would not prove the pattern fired"
+        )
+        with pytest.raises(CaseShapeError) as excinfo:
+            _assert_no_forbidden_authority_keys({"facts": [{key: 1}]})
+        assert key in str(excinfo.value), str(excinfo.value)

@@ -34,6 +34,8 @@ discoveries:
   - "DSC:AN-ENUMERATED-GUARD-IS-BLIND-OUTSIDE-ITS-ENUMERATION"
   - "DSC:A-MUTATION-THAT-DIES-UPSTREAM-NEVER-TESTS-THE-GATE-YOU-AIMED-AT"
   - "DSC:TWO-ENDS-OF-ONE-POINTER-VALIDATED-IN-ISOLATION-BOTH-PASS-WHILE-IT-DANGLES"
+  - "DSC:A-BLOCKLIST-ENUMERATES-THE-RULES-NOUNS-NOT-THE-VIOLATIONS-VOCABULARY"
+  - "DSC:FULLMATCH-ON-A-BOUNDARY-STEM-PATTERN-IS-A-DEAD-GUARD-THAT-LOOKS-ALIVE"
 waves:
   - id: CC-V1-CORE
     title: "V1-CORE deterministic composition"
@@ -302,13 +304,49 @@ next_action: >
   exactly the "source-coordinate-bound, not natively admitted" posture 4a
   itself describes. Forcing null destroys information and breaks the oracle.
   .
-  The honest unswept remainder is now the explanation object and
-  availability/state derivation. source_records itself is NOT unswept in the
+  CORRECTION 2026-09-28 (wave 8): the sentence that stood here -- "the honest
+  unswept remainder is now the explanation object and availability/state
+  derivation" -- is SPENT, not wrong-at-the-time. Wave 7 swept both and both
+  returned NULL: `explanation` is assembled from frozen constants with no
+  number interpolation, and `availability` is derived from READY results and
+  makes no independent claim. Wave 8 then swept the authority guard and found
+  TWO real defects (see the two DSC keys registered above). Do not re-sweep
+  explanation or availability; the open lead is the SIBLING verticals, not
+  this module. source_records itself is NOT unswept in the
   passthrough sense first suspected: it is copied verbatim from the case but
   _assert_document_matches_contract_shape runs full jsonschema validation over
   the whole document, so every record is deeply checked against the 12
   required fields of $defs/source_record. What was missing was only the
   RELATION between it and native_ref, which wave 7 closed.
+  .
+  WAVE 8 (authority vocabulary). _assert_no_forbidden_authority_keys carried a
+  docstring asserting the full frozen-spec section 6 rule 10 guarantee -- no
+  ranking, entry, gating, sizing or origination field -- and enforced 4 of 30
+  category-representative keys. Two distinct defects. (a) The blocklist held
+  the RULE'S OWN NOUNS: "sizing" was refused while position_size, weight,
+  allocation, notional and exposure were not. (b) The compound pattern was
+  applied with re.fullmatch, under which "(^|_)(stem)(_|$)" cannot consume a
+  compound name, so composite_score / analyst_rank / conviction_score /
+  signal_strength ALL passed the one construct named for catching them; its
+  only hits were bare stems the exact-match frozenset already held, so its
+  marginal contribution was zero. Both repaired; guard now 28 of 30, pattern
+  live, docstring corrected to name additionalProperties:false as the FIRST
+  line and itself as the second.
+  .
+  NEITHER DEFECT WAS REACHABLE. The root and every composite $defs carry
+  additionalProperties:false, and injecting each key into a real emitted
+  document showed position_size / weight / recommendation refused at the SHAPE
+  gate and only rank at the authority gate. So wave 8 is a false-confidence
+  repair, not a vulnerability fix, and it must not be described as the latter.
+  The risk it removes is that a future change unsealing a $defs would drop the
+  real protection while the guard that appears to cover it still passed review.
+  .
+  Defect (b) was found by a mutation that SURVIVED: a negative-control test
+  asserting sample_size stays unrefused should have gone red when size|weight
+  was added to the compound pattern, and did not -- impossible unless the
+  pattern never fires. The surviving mutation indicted the test first and the
+  module second. 118 passed; 4/4 mutations caught; no legal contract property
+  name is refused by the widened guard; oracle and envelope sweep unchanged.
 ---
 
 ## Scope
