@@ -4437,6 +4437,45 @@ concurrency:
   # holds dispatches ONLY. Every run in a given group evaluates this expression
   # to the same value, which is why the fix does not depend on whether GitHub
   # reads the flag from the arriving run or the in-progress one.
+  #
+  # WHAT A CANCEL CAN ACTUALLY STOP (2026-09-28). Cancelling a run — this flag,
+  # or a plain `gh run cancel` — re-evaluates the job-level `if:` of every job
+  # still RUNNING, and any job whose condition is still true keeps running
+  # (GitHub's "Workflow cancellation" reference names `if: always()` as the
+  # example). `ci-pack` opened its `if:` with `always()`, so a started pack
+  # outlived its own supersession; only `POST .../runs/{id}/force-cancel`
+  # stopped it. The group admits one running run, so the NEWER run sat `pending`
+  # with zero jobs until the obsolete packs finished, for up to their 180-minute
+  # timeout: the cancel above saved nothing once a pack had started. Measured on
+  # PR #8102 (2026-09-27): superseded run 36353898581 (head e117abf72193) still
+  # had ci-pack-0 and ci-pack-4 in progress on healthy hosted runners at 22:28Z,
+  # while run 36354874511 (created 22:19:13Z) had no jobs until a force-cancel
+  # at ~22:30Z let its ci-plan start. The same hold ran 20 min on #7996 (a plain
+  # `gh run cancel` did nothing), 33 min on #8018 and 1h25m on #8011.
+  #
+  # So `ci-pack` opens with `!cancelled()`. Any status function suppresses the
+  # implicit `success()` (the reason `always()` was there: `trusted-ci` is
+  # normally SKIPPED, and a skipped need otherwise skips every job that needs
+  # it), but `!cancelled()` turns false once the run is cancelled, so the
+  # re-evaluation cancels the pack. The step-level `always()` fragment upload
+  # inside the pack is unchanged: it serves a pack that keeps running past a red
+  # step, and it lasts seconds.
+  #
+  # `ci-gate` KEEPS `always()`, deliberately. It must publish after a failed or
+  # skipped pack, which `!cancelled()` would also allow; the two differ only in a
+  # CANCELLED run. There, `!cancelled()` leaves the gate `skipped`, and GitHub
+  # documents that a skipped job reports "Success" and does not block a merge
+  # even when it is a required check. `ci-gate` IS a required check: ruleset
+  # 21813020 (c0b-native-main-interlock, `evaluate` mode on 2026-09-28) names it.
+  # Once that ruleset enforces, a head whose run was cancelled (by hand, or by a
+  # same-SHA `reopened`) would read as proven with no pack run. Under `always()`
+  # the gate runs inside the cancelled run and publishes a real `failure`, which
+  # fails closed. The price is one short hosted job before the superseded run
+  # completes and the next run leaves `pending`, plus a red gate on the dead
+  # head's SHA. GitHub's mergeability check and the sweeper both read only the
+  # PR's current head, so that red blocks nothing. Pinned by
+  # tests/test_ci_plan_workflow.py
+  # (test_only_ci_gate_may_outlive_a_cancelled_run).
   cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 jobs:
@@ -4694,8 +4733,12 @@ jobs:
     # sweeper requires an affirmative pass, since absence of red is not a pass
     # (#4779), so a PR whose only packs were skipped would otherwise read unproven
     # and never merge.
+    #
+    # `!cancelled()`, NEVER `always()` (2026-09-28): `always()` stays true through
+    # a cancel, so a superseded pack kept running and held this PR's next run
+    # `pending` with zero jobs until it finished. See the concurrency block.
     if: >-
-      always() && needs.ci-plan.result == 'success' &&
+      !cancelled() && needs.ci-plan.result == 'success' &&
       needs.ci-plan.outputs.has_work == 'true' &&
       (github.event.pull_request.head.repo.full_name != github.repository ||
       vars.CI_EXECUTION_ROUTE != 'pc' ||
@@ -5170,6 +5213,9 @@ jobs:
   ci-gate:
     # `always()` is what makes this job publish even when `ci-pack` was skipped or
     # failed — WITHOUT it the aggregate would vanish exactly when it is needed.
+    # It stays `always()`, NOT `!cancelled()`, unlike `ci-pack` (2026-09-28): in a
+    # cancelled run a skipped gate would count as a PASS for a required check, so
+    # the gate runs anyway and publishes a real failure. See the concurrency block.
     if: always()
     name: ci-gate
     needs: [ci-plan, ci-pack, contract-delta]
