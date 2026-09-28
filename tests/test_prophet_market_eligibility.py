@@ -10,11 +10,14 @@ from copy import deepcopy
 from hashlib import sha256
 import io
 import json
+import os
+import subprocess
 from pathlib import Path
 import sys
 import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -366,6 +369,22 @@ class ContractTests(unittest.TestCase):
         self.board["buy"][0]["prophet"]["score"] = 100
         with self.assertRaises(m.MarketEligibilityError): self.bound_view(old)
 
+    def test_coverage_inventory_cannot_omit_or_duplicate_sources(self):
+        cases = [
+            ("duplicate_fresh", lambda x: x["coverage"]["fresh"].append("measured")),
+            ("overlapping_roles", lambda x: x["coverage"]["optional"].append("measured")),
+            ("unreported_optional", lambda x: x["coverage"]["optional"].append("new-source")),
+            ("wrong_source_count", lambda x: x["coverage"].update(source_count=3)),
+            ("boolean_source_count", lambda x: x["coverage"].update(source_count=True)),
+            ("extra_clock", lambda x: x["freshness"]["per_source"].update(extra={
+                "as_of": SESSION, "state": "FRESH", "matches_session": True})),
+        ]
+        for name, edit in cases:
+            with self.subTest(case=name):
+                self.envelope = envelope_fixture()
+                edit(self.envelope); reseal(self.envelope)
+                self.unavailable("ENVELOPE_COVERAGE_UNQUALIFIED")
+
     def test_pure_module_contains_no_io_clock_or_registry(self):
         tree = ast.parse(Path(m.__file__).read_text())
         calls = [n.func.id if isinstance(n.func, ast.Name) else n.func.attr
@@ -408,6 +427,38 @@ class CliTests(unittest.TestCase):
         self.assertEqual(code, 1); self.assertEqual(out, "")
         self.assertIn("SOURCE_READ_FAILED", err)
         self.assertNotIn("missing", err)
+
+    @unittest.skipUnless(hasattr(os, "O_NOFOLLOW"), "POSIX descriptor guard required")
+    def test_symlink_swap_cannot_pass_a_prior_path_check(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td); target = root / "target"; target.write_bytes(b"fictional")
+            link = root / "link"; link.symlink_to(target)
+            # Deterministically represents the link being swapped after a prior
+            # path check. The opened descriptor must enforce refusal itself.
+            with patch.object(Path, "is_symlink", return_value=False):
+                with self.assertRaises((OSError, m.MarketEligibilityError)):
+                    cli._read(link)
+
+    @unittest.skipUnless(os.name == "posix", "POSIX regular-file policy")
+    def test_device_source_is_not_a_regular_file(self):
+        with self.assertRaises(m.MarketEligibilityError):
+            cli._read(Path(os.devnull))
+
+    @unittest.skipUnless(hasattr(os, "mkfifo"), "POSIX FIFO fixture")
+    def test_fifo_source_refuses_without_waiting_for_a_writer(self):
+        with tempfile.TemporaryDirectory() as td:
+            fifo = Path(td) / "fixture.fifo"; os.mkfifo(fifo)
+            command = [sys.executable, "-c", (
+                "from pathlib import Path; "
+                "from scripts.build_prophet_market_eligibility import _read; "
+                "_read(Path(__import__('sys').argv[1]))"), str(fifo)]
+            try:
+                result = subprocess.run(command, cwd=ROOT, capture_output=True,
+                                        text=True, timeout=2, check=False)
+            except subprocess.TimeoutExpired:
+                self.fail("source acquisition waited for a FIFO writer")
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("SOURCE_NOT_REGULAR_FILE", result.stderr)
 
     def test_explicit_unavailable_has_distinct_exit(self):
         def change(args, _):

@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import stat
 from pathlib import Path
 import sys
 
@@ -22,11 +24,27 @@ from engine.prophet_market_eligibility import (  # noqa: E402
 
 
 def _read(path: Path) -> bytes:
-    # No interpretation of missing/unreadable files as an observed empty source.
+    # A path check alone races the open. Bind admission to the actual opened
+    # descriptor, and never wait on FIFOs/devices masquerading as source files.
     if path.is_symlink():
         raise MarketEligibilityError("SYMLINKED_SOURCE_REFUSED")
-    with path.open("rb") as handle:
-        raw = handle.read(MAX_INPUT_BYTES + 1)
+    if not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "O_NONBLOCK"):
+        raise MarketEligibilityError("SOURCE_DESCRIPTOR_GUARD_UNAVAILABLE")
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    try:
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode):
+            raise MarketEligibilityError("SOURCE_NOT_REGULAR_FILE")
+        if info.st_size > MAX_INPUT_BYTES:
+            raise MarketEligibilityError("SOURCE_SIZE_LIMIT")
+        # fdopen owns the descriptor after successful construction. No path reread.
+        handle = os.fdopen(fd, "rb")
+        fd = None
+        with handle:
+            raw = handle.read(MAX_INPUT_BYTES + 1)
+    finally:
+        if fd is not None:
+            os.close(fd)
     if len(raw) > MAX_INPUT_BYTES:
         raise MarketEligibilityError("SOURCE_SIZE_LIMIT")
     return raw

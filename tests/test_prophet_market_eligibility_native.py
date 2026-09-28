@@ -112,6 +112,22 @@ class NativeComposerCompatibility(unittest.TestCase):
         self.assertEqual(sidecar["source_state"], "UNAVAILABLE")
         self.assertIn("ENVELOPE_SOURCE_CLOCKS_UNQUALIFIED", sidecar["errors"])
 
+    def test_optional_native_unknown_clock_is_not_qualified(self):
+        reads = sources() + [SourceRead(source_id="optional-radar", role="hazard_evidence",
+                                       state="caution", hazard_stage="FRAGILE", as_of=None)]
+        native, sidecar, _ = self.compose(reads)
+        self.assertEqual(native["data_state"], "FRESH")
+        self.assertTrue(native["freshness"]["all_on_session"])
+        self.assertIn("optional-radar", native["hazard_summary"]["contributing_sources"])
+        self.assertEqual(sidecar["source_state"], "UNAVAILABLE")
+        self.assertIn("ENVELOPE_SOURCE_CLOCKS_UNQUALIFIED", sidecar["errors"])
+
+    def test_optional_native_qualified_clock_remains_usable(self):
+        reads = sources() + [SourceRead(source_id="optional-radar", role="hazard_evidence",
+                                       state="caution", hazard_stage="FRAGILE", as_of=SESSION)]
+        _, sidecar, _ = self.compose(reads)
+        self.assertEqual(sidecar["source_state"], "AVAILABLE")
+
     def test_off_session_native_source_rejected(self):
         reads = sources(); reads[1] = replace(reads[1], as_of="2026-09-24")
         _, sidecar, _ = self.compose(reads)

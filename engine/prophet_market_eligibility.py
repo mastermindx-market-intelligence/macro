@@ -185,27 +185,42 @@ def _check_envelope(doc: dict[str, Any], session: str, now: datetime,
             or not _exact(freshness.get("off_session_sources"), [])):
         errors.append("ENVELOPE_SOURCE_SESSION_UNQUALIFIED")
     coverage = doc["coverage"]
-    if (not isinstance(coverage, dict) or not isinstance(coverage.get("required"), list)
-            or not coverage["required"] or not isinstance(coverage.get("fresh"), list)
+    per_source = freshness.get("per_source") if isinstance(freshness, dict) else None
+    # FRESH is not clock qualification. Native optional sources can contribute
+    # evidence while carrying as_of=None and all_on_session=True. This narrow
+    # zero-policy intake requires every declared present source to be qualified;
+    # it neither changes native source requirements nor changes live behavior.
+    inventory: list[str] = []
+    if (not isinstance(coverage, dict)
+            or not all(isinstance(coverage.get(key), list)
+                       for key in ("required", "optional", "fresh"))
+            or not coverage["required"]
             or not _exact(coverage.get("missing"), [])
             or not _exact(coverage.get("stale"), [])):
         errors.append("ENVELOPE_COVERAGE_UNQUALIFIED")
     else:
-        required, fresh = coverage["required"], coverage["fresh"]
-        if (not all(isinstance(x, str) and x for x in required + fresh)
-                or len(set(required)) != len(required)
-                or not set(required).issubset(fresh)):
+        required, optional, fresh = (coverage[key] for key in ("required", "optional", "fresh"))
+        if not all(isinstance(source, str) and source for source in required + optional + fresh):
             errors.append("ENVELOPE_COVERAGE_UNQUALIFIED")
-        per_source = freshness.get("per_source") if isinstance(freshness, dict) else None
-        if not isinstance(per_source, dict):
-            errors.append("ENVELOPE_SOURCE_CLOCKS_UNQUALIFIED")
         else:
-            for source in required:
-                entry = per_source.get(source) if isinstance(source, str) else None
-                if (not isinstance(entry, dict) or entry.get("state") != "FRESH"
-                        or entry.get("as_of") != session or entry.get("matches_session") is not True):
-                    errors.append("ENVELOPE_SOURCE_CLOCKS_UNQUALIFIED")
-                    break
+            inventory = required + optional
+            if (len(set(inventory)) != len(inventory)
+                    or len(set(fresh)) != len(fresh)
+                    or set(inventory) != set(fresh)
+                    or type(coverage.get("source_count")) is not int
+                    or coverage["source_count"] != len(inventory)):
+                errors.append("ENVELOPE_COVERAGE_UNQUALIFIED")
+    if not isinstance(per_source, dict):
+        errors.append("ENVELOPE_SOURCE_CLOCKS_UNQUALIFIED")
+    else:
+        if set(per_source) != set(inventory):
+            errors.append("ENVELOPE_COVERAGE_UNQUALIFIED")
+        for source in inventory:
+            entry = per_source.get(source)
+            if (not isinstance(entry, dict) or entry.get("state") != "FRESH"
+                    or entry.get("as_of") != session or entry.get("matches_session") is not True):
+                errors.append("ENVELOPE_SOURCE_CLOCKS_UNQUALIFIED")
+                break
     try:
         observed = _utc(doc["observed_at"], "ENVELOPE_CLOCK_INVALID")
         produced = _utc(doc["produced_at"], "ENVELOPE_CLOCK_INVALID")
