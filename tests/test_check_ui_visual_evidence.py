@@ -1367,6 +1367,9 @@ def test_diff_scoped_steps_fail_closed_without_a_comparison_base():
         "expected exactly 1 base-dependent p0b-receipt-closure step "
         f"(the receipt-closure gate), found {len(p0b_base_dependent)}")
     assert "check_p0b_receipt_closure.py --diff-file" in p0b_base_dependent[0]["run"]
+    # The planner-handle branch must name the event: without it the gate
+    # refuses the `null` a main proof publishes (#7237 redded every one).
+    assert '--event "${GITHUB_EVENT_NAME:-}"' in p0b_base_dependent[0]["run"]
 
     for step in base_dependent + p0b_base_dependent:
         run = step["run"]

@@ -4818,8 +4818,11 @@ jobs:
     # every job and suite through the planner, and no exclusive list can name
     # every suite. So a PR that moves one of those verdicts without touching a
     # path below merges without running this job. Each such shape has another
-    # owner. contract-delta (ci.yml, every PR) re-runs the unrun census and the
-    # curated-closure check differentially. integration-baseline.yml runs
+    # owner. contract-delta (ci.yml, every PR) re-runs the unrun census, the
+    # curated-closure check, the packing probes and the skip-only and
+    # trigger-closure censuses differentially (probes and both censuses since
+    # 2026-09-27), so a PR that breaches a probe ceiling, adds a skip-only gate or
+    # opens a trigger gap reds on its own head. integration-baseline.yml runs
     # test_ci_pack.py and the skip-only census on every source push to main and
     # every 4 hours, and merge-on-green pauses ordinary merges while it is red.
     # Every ci.yml run on main runs this whole job; the merge sweeper dispatches
@@ -6962,12 +6965,16 @@ jobs:
           # paths as a downloaded JSON handle. Prefer that authoritative input:
           # re-fetching the moving base here cost the R25 candidate the entire
           # 10-minute job budget before the gate itself could execute.
+          # A main proof or base replay publishes the planner null token (full
+          # suite, no list). The event tells the checker that null is
+          # legitimate there and still a refusal on a pull_request. Keep
+          # apostrophes out of this block: one blinds the closure inference.
           if [ -n "${CI_CHANGED_FILES_FILE:-}" ]; then
             if [ ! -r "$CI_CHANGED_FILES_FILE" ]; then
               echo "::error title=p0b-receipt-closure::configured CI_CHANGED_FILES_FILE is unreadable; refusing rather than falling back to a different comparison question."
               exit 2
             fi
-            python3 scripts/check_p0b_receipt_closure.py --diff-file "$CI_CHANGED_FILES_FILE"
+            python3 scripts/check_p0b_receipt_closure.py --diff-file "$CI_CHANGED_FILES_FILE" --event "${GITHUB_EVENT_NAME:-}"
           else
             if ! git fetch origin ${{ github.base_ref || 'main' }}; then
               echo "::error title=p0b-receipt-closure::could not fetch origin/${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."

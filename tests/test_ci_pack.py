@@ -25,6 +25,8 @@ from scripts.ci_scope_dependencies import suite_dependency_closure
 from scripts.run_ci_pack import (
     curated_exclusive_closure_findings,
     inferred_as_if_not_exclusive,
+    packing_probe_breaches,
+    packing_probe_measurements,
 )
 import yaml
 
@@ -975,6 +977,27 @@ def test_resolve_changed_files_prefers_planner_json(
     monkeypatch.setattr(PACK, "changed_files", lambda base: ["from-git.py"])
     assert PACK.resolve_changed_files("abc123") == ["from-git.py"]
     assert PACK.resolve_changed_files(None) is None
+
+
+def test_p0b_closure_accepts_null_on_exactly_the_events_that_publish_it() -> None:
+    """The p0b closure gate's `null` allow-list is the planner's own table.
+
+    Every main proof publishes `null` (a full-suite plan has no list), and so
+    does the base replay for its base-as-main child. #7237 refused `null`
+    outright, which redded every main ci.yml proof. The fix accepts it on
+    those events and nowhere else. If the planner gains a main-role event,
+    this fails until the gate's set follows.
+    """
+    from scripts import check_p0b_receipt_closure as P0B
+
+    main_role_events = {
+        event for role, event in PACK.SUPPORTED_PLAN_ROLE_EVENTS if role == "main"
+    }
+    source = Path(PACK.__file__).read_text(encoding="utf-8")
+    assert '"GITHUB_EVENT_NAME": "base_replay"' in source
+    assert 'base_changed_files.write_text("null\\n"' in source
+    assert P0B.NO_DIFF_SUBJECT_EVENTS == main_role_events | {"base_replay"}
+    assert "pull_request" not in P0B.NO_DIFF_SUBJECT_EVENTS
 
 
 # ─── The 2026-08-14 E2BIG transport regression (run 31775693780) ──────────────
@@ -4491,6 +4514,19 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
     assert not owned_losses, owned_losses
 
 
+# The packing probes and their ceilings: (changed path, max selected jobs, max
+# selected weight-seconds), plus one pack ceiling for every probe. The history of
+# each number is the docstring of the test below. scripts/check_contract_delta.py
+# reads both names with ast.literal_eval, so keep them plain module-level literals.
+PACKING_PROBES = (
+    ("templates/index.html", 134, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 132, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 127, 5_600),
+)
+# Twelve packs per shape was the pre-curation measurement.
+PACKING_PROBE_MAX_PACKS = 10
+
+
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
@@ -5023,22 +5059,30 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     the drift surfaces after merge, on integration-baseline.yml. That lane
     runs this file on every source push to main and every 4 hours, and
     merge-on-green pauses ordinary merges while it is red.
+
+    2026-09-27: that drift now reds its own PR. The measurement and the
+    verdict moved to scripts/run_ci_pack.py (packing_probe_measurements,
+    packing_probe_breaches) and the ceilings to PACKING_PROBES above, so
+    this test and ci.yml's contract-delta job share one copy. contract-delta
+    runs on every PR, whatever it touches. It measures the probes on the
+    PR's tested merge and on that merge's base, and reds when the PR takes
+    a probe over its ceiling, or further over a ceiling the base already
+    breaches. The case the #8033 review measured is now caught before
+    merge: a suite edited to read templates/index.html puts a job on this
+    probe (134 -> 135) without selecting ci-control-plane-contracts.
+    Nothing was re-measured and no ceiling moved. integration-baseline.yml
+    still runs this file on main.
     """
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
-    for probe, max_jobs, max_weight in (
-        ("templates/index.html", 134, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-        ("scripts/build_free_content.py", 132, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-        ("engine/prophet/plan_book.py", 127, 5_600),
-    ):
-        selected, reason = PACK.select_jobs(jobs, [probe])
-        weight = sum(job.weight for job in selected)
-        assert len(selected) <= max_jobs, (probe, len(selected), reason)
-        assert weight <= max_weight, (probe, weight, reason)
-        # Runners are what the incident actually spends: build_plan derives the
-        # pack count from the SELECTED weight, so the weight cut above is a
-        # runner cut. Twelve packs per shape was the pre-curation measurement.
-        packs = max(1, min(12, -(-weight // PACK.PACK_TARGET_SECONDS)))
-        assert packs <= 10, (probe, packs, weight, reason)
+    rows = packing_probe_measurements(
+        MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
+    )
+    breaches = packing_probe_breaches(rows)
+    assert not breaches, [
+        (breach, row["reason"])
+        for breach in breaches
+        for row in rows
+        if row["probe"] == breach[0]
+    ]
 
 
 def test_deliberately_unscoped_gates_stay_always_on() -> None:

@@ -639,6 +639,45 @@ def test_packet_driven_missing_required_field_withholds_row_and_mints_unqualifie
     assert "definition_unqualified:unit" in result["limitations"]
 
 
+def test_mgd17_refused_comparison_does_not_delete_the_supported_facts():
+    """MGD-17 clause 2: a refused dependent comparison withholds its row WITHOUT deleting the
+    supported measurement facts.
+
+    The obligation's operative clause — "mismatches refuse dependent arithmetic" — is satisfied by
+    absence of capability, because ``economics["derived"]`` is the literal ``[]`` on every payload
+    and no dependent arithmetic is ever emitted. This pins the half that IS expressible today: the
+    measurement channel survives the refusal intact.
+
+    The control arm is load-bearing. "The block survived" would prove nothing if the pipeline kept
+    blocks unconditionally, so the same bundle is composed WITHOUT the bad comparison and the two
+    native-block lists are required to be identical — the refusal must change the expectations
+    channel and nothing else. ``definition_unqualified:unit`` is deliberately not in
+    ``OMISSION_TO_LIMITATION.values()``, so it must not reach ``_suppress_native_blocks``.
+    """
+    case = synthetic_case("copper_complete")
+    measurement = dict(case.bundle.financial_packets[0])
+    bad_packet = _mev_packet("sales", 1700, 1680)
+    del bad_packet["earlier_point_estimate"]["unit"]
+    del bad_packet["later_actual"]["unit"]
+
+    refused = composition.compose_mining_research(
+        case.query, _replace(case.bundle, financial_packets=(measurement, bad_packet))
+    )
+    control = composition.compose_mining_research(
+        case.query, _replace(case.bundle, financial_packets=(measurement,))
+    )
+
+    # The comparison is refused, and the refusal is named rather than silent.
+    assert refused["expectations"] == []
+    assert "definition_unqualified:unit" in refused["limitations"]
+
+    # The supported facts are not deleted, and are identical to the no-comparison control.
+    assert refused["economics"]["native_blocks"], refused["economics"]
+    assert refused["economics"]["native_blocks"] == control["economics"]["native_blocks"]
+    assert refused["summary"]["status"] != "refused"
+    _validate(refused)
+
+
 def test_packet_driven_non_numeric_value_withholds_row_and_mints_omitted_expectations():
     """A packet whose ``value`` is the string ``"quarter"`` (the BLOCKER-A fabrication)
     withholds the row and mints ``omitted:expectations`` (MINOR-I) — the
@@ -793,3 +832,82 @@ def test_minor_h_empty_source_label_degrades_to_synthetic_source():
     bundle = _replace(case.bundle, financial_packets=(empty_packet,))
     result = composition.compose_mining_research(case.query, bundle)
     assert result["economics"]["native_blocks"][0]["source_label"] == "synthetic-source"
+
+def test_mgd08_clause2_wholly_empty_economic_path_degrades_on_both_slices():
+    """MGD-08 clause 2 / R-MIN-34 as amended 2026-09-27: a wholly empty economic path
+    degrades — it never reports ``ready``.
+
+    Two-armed on purpose, and both arms are load-bearing:
+
+    * the EMPTY arm is the obligation — a bundle carrying no ``financial_packets`` at all
+      submitted nothing, so every content channel of the economics panel is empty and the
+      payload must not claim readiness over it;
+    * the POPULATED arm is the positive control — without it, a pipeline that degraded
+      *everything* would satisfy the empty arm vacuously and this pin would be a negative
+      assertion with no subject.
+
+    Both delivered slices are covered because the W-R vocabulary mints
+    ``stream_threshold_unknown`` on every payload, and that code used to short-circuit
+    ``_summarize_status`` to ``ready`` before the native-block channel was consulted: rare
+    earth reported ``ready`` over an empty panel (headline: "the contract explanation is
+    retained") while copper degraded on the identical input. The threshold code explains
+    why a *submitted* block was withheld — ``missing_stream_threshold`` ships one packet
+    and stays ``ready``, which this pin does not disturb — so it may not also excuse a
+    path that submitted nothing.
+    """
+    for name in ("copper_complete", "rare_earth_complete"):
+        case = synthetic_case(name)
+
+        # Positive control: the same fixture, economic input intact.
+        populated = composition.compose_mining_research(case.query, case.bundle)
+        assert populated["summary"]["status"] == "ready", (name, populated["summary"])
+        assert len(populated["economics"]["native_blocks"]) == 1, name
+        _validate(populated)
+
+        # The obligation, arm 1: strip every economic packet and nothing else.
+        empty = composition.compose_mining_research(
+            case.query, _replace(case.bundle, financial_packets=())
+        )
+        _assert_empty_path_degrades(empty, "%s/no-packets" % name)
+
+        # The obligation, arm 2: a packet the module routes out of EVERY channel must not buy
+        # readiness either. Each of these reached `ready` on W-R while the readiness clause was
+        # scoped to "a packet was submitted" rather than to a NAMED ABSENCE: an empty mapping, a
+        # None value and a non-numeric value are all dropped silently by the native-block
+        # builder, and a `management_estimate_vs_actual` packet is skipped out of native blocks
+        # outright. "Submitted" is not "contributed".
+        packet = dict(case.bundle.financial_packets[0])
+        for label, junk in (
+            ("empty-mapping", {}),
+            ("value-None", dict(packet, value=None)),
+            ("value-non-numeric", dict(packet, value="n/a")),
+            ("mev-only", {"kind": "management_estimate_vs_actual", "pair": "sales"}),
+        ):
+            junk_result = composition.compose_mining_research(
+                case.query, _replace(case.bundle, financial_packets=(junk,))
+            )
+            _assert_empty_path_degrades(junk_result, "%s/%s" % (name, label))
+
+
+def _assert_empty_path_degrades(result, label):
+    """A payload whose economic channels are all empty degrades, fabricates nothing, stays valid.
+
+    Only the INDEPENDENT channels are asserted as evidence. ``economics["derived"]`` is the
+    literal ``[]`` on every payload including the ready baseline, and
+    ``reported_economic_context.context_block_count`` is ``len(native_blocks)``, so neither is a
+    separate witness; ``economics["status"]`` and ``summary["status"]`` are the same value. The
+    two real channels are ``native_blocks`` and top-level ``expectations``.
+    """
+    economics = result["economics"]
+    assert economics["native_blocks"] == [], (label, economics["native_blocks"])
+    assert list(result.get("expectations") or []) == [], (label, result.get("expectations"))
+    # Both status fields are surfaced, because both are what a consumer reads.
+    assert economics["status"] == "degraded", (label, economics["status"])
+    assert result["summary"]["status"] == "degraded", (label, result["summary"])
+    # The glance-tier sentence may not assert retention over a panel with nothing in it.
+    assert "contract explanation is retained" not in result["summary"]["headline"], (
+        label, result["summary"]["headline"])
+    # An empty collection never becomes a fabricated total.
+    assert result["authorized_coverage"]["industry_total"] is None, label
+    # A degraded payload is still a VALID payload, never a raised exception.
+    _validate(result)
