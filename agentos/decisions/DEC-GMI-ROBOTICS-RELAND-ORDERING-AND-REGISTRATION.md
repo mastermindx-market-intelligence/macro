@@ -8,21 +8,44 @@ answer: >
   because the shared registry imports a vertical's composer eagerly at
   registry-import time; and the registry entry MUST use a lazy loader wrapper
   that defers the owner-bundle import inside a function body, never a top-level
-  import, with the composer itself staying free of third-party imports
-  imports. (7) Merge is not acceptance, and a green main is not acceptance
-  either. (10) No split re-land: the carrier re-lands whole, behind the shared
-  foundation PR #7870, or not at all. Read-only retrieval of the reverted paths
-  for measurement is permitted and does not violate ruling 10; adding any subset
-  of them to main does.
+  import, with the composer itself staying free of third-party imports. (7)
+  Merge is not acceptance, and a green main is not acceptance either. (10) No
+  split re-land: the carrier re-lands whole, behind the shared foundation PR
+  #7870, or not at all. Read-only retrieval of the reverted paths for
+  measurement is permitted and does not violate ruling 10; adding any subset of
+  them to main does. TWO AMENDMENTS, verified 2026-09-28 from the reverted
+  carrier's own CI rather than from this record's prior reasoning. First, #7870
+  is a HARD COMPILE DEPENDENCY, not a sequencing preference: four first-party
+  symbols the Robotics modules import at import time do not exist on main and
+  all four exist at #7870's head, so ruling 10 is mechanically forced rather
+  than merely prudent. Second, the re-land manifest is NOT the 35 reverted
+  paths - it is those 35 paths PLUS CI wiring naming all six Robotics test
+  suites by full relative path, because on the merged carrier all six were
+  wired into no job and therefore never executed. Restoring only what the
+  revert removed reproduces that defect exactly.
 rationale: >
-  The revert exists because a carrier was merged while its correct CI run was
-  still in flight - that run had been created 2m22s earlier against the correct
-  base and failed four minutes later on exactly the defect. Eleven first-party
-  import sites became unresolvable on a main lacking #7870's modules, and the
-  repository's static import sweep is deliberately not softened by a
-  try/except, because its own guard synthesises a try-wrapped import to catch
-  that. So the ordering constraint is not stylistic: it is the measured cause of
-  the revert. Ruling 10 follows because the dependent top-level import is the
+  The revert exists because the carrier was merged 2m22s into its own CI run,
+  before a single job had concluded, and that run then went red on the defects
+  that mattered. Measured per job on 2026-09-28: run 36107534349 (ci,
+  pull_request, attempt 1) started 2026-09-25T07:25:12Z on head d259ec08d58c;
+  the PR merged at 07:27:34Z with ZERO jobs concluded and contract-delta alive
+  for six seconds; contract-delta then failed at 07:37:21Z (+9m47s), ci-pack-4
+  at 07:55:09Z (+27m35s), and the ci-gate adjudicator at 08:28:10Z (+1h00m36s).
+  So merge-on-green merged on essentially no adjudicated evidence, and the run
+  it outran found TWO independent defects rather than one. D1: ci-pack-4's
+  failing step is
+  tests/test_first_party_import_names.py::test_every_first_party_import_resolves,
+  a static AST guard, and it names four absences - curation_assertion,
+  semiconductor_theme_research, theme_research_binding, and
+  rights.load_registry_snapshot - each present at #7870's head a0d7b054ff23 and
+  absent on main. That sweep is deliberately not softened by a try/except,
+  because its own guard synthesises a try-wrapped import to catch exactly that
+  evasion, so the two try-wrapped sites get no exemption. D2: contract-delta
+  reported all six Robotics suites as "a new pytest suite named by no run: step
+  in any workflow", so 3729 lines of tests never executed; the revert's 35-path
+  manifest contains no .github/ file, and that absence WAS the defect. Hence
+  the ordering constraint is not stylistic AND the re-land manifest is not the
+  revert inverted: both are measured causes of the revert. Ruling 10 follows because the dependent top-level import is the
   composer's assertion vocabulary - strip it and the carrier has no semantics
   left, so "land without the dependent modules" is void here rather than a
   standing escape hatch. Ruling 6's lazy-wrapper requirement is not defensive
@@ -56,6 +79,33 @@ alternatives:
       variable that exists nowhere on the merged tree - so it could never have
       rendered. It is also the partial-copying the shared-shell architecture
       ruling forbids.
+  - option: "Re-land exactly the 35 paths the revert removed - that restores the reverted change byte for byte."
+    why_not: >
+      REFUTED by measurement, and this is the most likely re-land mistake. The
+      revert e5512ef66a74 is additions: 0 / deletions: 14404 over 35 paths,
+      top-level split {agentos: 1, contracts: 1, engine: 2, research: 1,
+      tests: 30}, with no .github/ entry anywhere. On the merged carrier all six
+      new suites were named by no run: step, contract-delta failed on exactly
+      that, and 3729 lines of tests never ran. Restoring the manifest verbatim
+      restores the hole verbatim. The re-land must add CI wiring the original
+      never had.
+  - option: "Clear the unrun-suite gate by adding the six suites to the audit baseline, or by filing waivers for them."
+    why_not: >
+      Both are escape hatches that make the tests permanently unrun.
+      gated_unrun_suites() is census minus baseline minus waivers
+      (scripts/audit_unrun_tests.py:745), so either one turns contract-delta
+      green while the 3729 lines stay dead - which is precisely the state that
+      was reverted. Rejected on the record: the gate is correct and the carrier
+      was wrong.
+  - option: "Wire the suites with one glob, e.g. `python -m pytest tests/test_robotics_*.py`."
+    why_not: >
+      Does not satisfy the gate. Coverage is _named_by_a_run_step
+      (scripts/audit_unrun_tests.py:591), a plain substring match of each
+      suite's FULL relative path against the concatenated body of every
+      workflow run: step, with the basename fallback disabled for basenames two
+      suites share. A glob matches none of the six. All six full paths must
+      appear literally - in a workflow file or in .github/ci/legacy-jobs.yml,
+      which is explicitly appended to the scanned set (:450-451, :127).
   - option: "(none considered) treat the revert as a signal to rebuild the work."
     why_not: >
       All 35 reverted paths are retrievable at 36efe9c92b96, verified 35 of 35
@@ -67,6 +117,10 @@ evidence:
   - "engine/market_ontology/theme_research_mounts.py:135 anchor_theme_id=\"ai_semiconductors\" (the only literal DECLARED anchor) and engine/market_ontology/theme_research_registry.py:169 _MOUNTS[\"ai_semiconductors\"] (the only ENROLMENT), both at #7870 head a0d7b054ff23"
   - "engine/theme_graph/curation_assertion.py 27838B at 1e38d5c955dc to 28610B at a0d7b054ff23: module-level import jsonschema plus eager Draft202012Validator replaced by a deferred _validator() accessor, pinned by test_unprovisioned_app_import_defers_biocatalyst_contract_runtime"
   - "Import audit of the Robotics modules at 36efe9c92b96, re-measured by AST walk 2026-09-27 after a column-anchored grep undercounted it: the composer (60749B) has 8 stdlib/__future__ imports plus TWO first-party ones that execute at import time - engine.theme_graph.curation_assertion at :45 and engine.market_ontology.semiconductor_theme_research at :123 inside a module-level try at :122 - and defers engine.theme_graph.identity at :68. The owner bundle (12407B) has 3 stdlib plus TWO import-time first-party - engine.market_ontology.robotics_theme_research at :156 and engine.market_ontology.theme_research_binding at :162 inside a module-level try at :161 - and defers engine.theme_graph.rights at :197. THIRD-PARTY imports anywhere in either file, deferred sites included: zero. A try-wrapped import still executes at import time and is not exempt from the repo static sweep; the two sites this audit first missed are named in #8013 own body among the four absences that broke main. Classify by AST parent chain, never by a line-anchored grep."
+  - "Macro run 36107534349 (ci, pull_request, attempt 1) on head d259ec08d58c: created/started 2026-09-25T07:25:12Z, completed/FAILURE 08:28:11Z. Per job via actions/runs/36107534349/jobs?per_page=100 --paginate: contract-delta failure 07:27:28Z->07:37:21Z, ci-pack-4 failure 07:31:23Z->07:55:09Z, trusted-ci skipped, ci-gate failure 08:28:01Z->08:28:10Z. pulls/7908 merged_at 07:27:34Z - 2m22s after the run started, with zero jobs concluded."
+  - "ci-pack-4 job 107985021309 via gh run view --repo {o}/{r} --job 107985021309 --log: the failing step is tests/test_first_party_import_names.py::test_every_first_party_import_resolves, reporting robotics_theme_research.py:45 engine.theme_graph.curation_assertion absent, :123 engine.market_ontology.semiconductor_theme_research absent, robotics_owner_bundle.py:162 engine.market_ontology.theme_research_binding absent, :197 engine.theme_graph.rights defines no load_registry_snapshot. Each probed at ?ref=a0d7b054ff23 (present) and ?ref=main (absent) by EXIT CODE, with agentos/README.md as positive control at both refs."
+  - "contract-delta job 107983974666 via gh run view --log with terminal colour stripped: each of the six Robotics suites reported as '<suite> is a new pytest suite named by no run: step in any workflow - wire it into the job that owns its scope'; summary 'contract-delta: 6 introduced, 4 inherited (base 92e2f19513fb)'. Corroborated in pack4.log: zero pytest invocations of any Robotics suite."
+  - "scripts/audit_unrun_tests.py at ref=main: :591 _named_by_a_run_step is a substring match of the full relative path with the shared-basename fallback disabled; :450-451 scans WORKFLOWS.glob('*.yml') plus an explicit append of CI_MANIFEST (:127) = .github/ci/legacy-jobs.yml; :745 gated_unrun_suites = census minus baseline minus waivers. main carries 237 legacy jobs, 165 gate:code / 72 gate:data, 160 code-gate jobs naming an explicit tests path."
   - "agentos/handoffs/GMI-THEME-GRAPH-2026-09-27-robotics-reland-hold.md"
 affects:
   - "WS:GMI-THEME-GRAPH"
@@ -86,11 +140,20 @@ decisions as DEC records (`DEC-IND-FIRST-VERTICAL-CARRIER-AND-ORDERING`); Roboti
 the 368 on `main`. This closes that gap for the four rulings a successor is most likely to
 violate, because each of them forbids something that looks locally reasonable: slicing a blocked
 re-land, pre-staging a registry entry, shipping an interim partial, and reading a merge as done.
+The 2026-09-28 amendments add a fifth trap of the same shape, and it is the one I walked into
+myself: treating the revert's own file list as the re-land manifest. Inverting a revert looks like
+the definition of a faithful re-land, and it is exactly how the second defect gets restored -
+because what the carrier was missing was never in the carrier to be removed.
 
 # The falsifier
 
 Ruling 6 and ruling 10 both stop applying the moment #7870's modules are on `main`. At that point
 the ordering constraint is discharged, the re-land is a normal carrier, and the registration
 becomes a normal additive commit - still subject to the lazy-wrapper requirement, which is
-independent of #7870 and outlives it. Ruling 7 has no expiry: it is discharged only by the
-real-path acceptance evidence, not by any merge.
+independent of #7870 and outlives it. The CI-wiring requirement also outlives #7870 and is
+falsified differently: it is discharged the moment contract-delta reports 0 introduced unrun
+suites on the re-land head, and it would be refuted as a requirement only by evidence that the
+six suites are named by a run: step somewhere I did not scan - which means a workflow file outside
+.github/workflows/*.yml and outside .github/ci/legacy-jobs.yml, since those are the two surfaces
+the gate itself reads. Ruling 7 has no expiry: it is discharged only by the real-path acceptance
+evidence, not by any merge.

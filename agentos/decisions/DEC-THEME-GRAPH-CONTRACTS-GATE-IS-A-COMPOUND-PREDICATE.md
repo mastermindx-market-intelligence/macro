@@ -8,14 +8,27 @@ answer: >
   `data/`, and require (1) exit 0, (2) stdout carries no
   `::warning title=theme graph contract breach::` line, and (3) every
   `::notice title=theme graph - <class>::` is enumerated and triaged against the
-  script's own taxonomy - `identity resolution census` and
-  `licensing snapshots - designed` are designed and non-blocking, while
-  `theme graph indeterminate` (store incomplete), either
-  `side-car MISSING - half-finished build` and `capability promoted itself` block
-  as INDETERMINATE or worse. If `data/` is not materialised the honest verdict is
-  INDETERMINATE, not pass. Condition (2) is redundant under `--strict` and is kept
-  anyway, because the failure being guarded against is a gate step that silently
-  loses the flag.
+  script's own taxonomy. Two classes are designed and non-blocking:
+  `[identity resolution census]` and `[licensing snapshots — designed]`. Four
+  classes block as INDETERMINATE or worse: `theme graph indeterminate` (store
+  incomplete), `[capability side-car MISSING — half-finished build]`,
+  `[identity resolution side-car MISSING — half-finished build]`, and
+  `[capability promoted itself]`. Those six are the whole taxonomy - the script
+  has exactly 6 notices.append sites against 33 breaches.append, identical on
+  both refs read. If `data/` is not materialised the honest verdict is
+  INDETERMINATE, not pass. Condition (2) is redundant under `--strict` and is
+  kept anyway, because the failure being guarded against is a gate step that
+  silently loses the flag. TWO CORRECTIONS, 2026-09-28. (a) REF: every line
+  number this record first cited came from a0d7b054ff23, which is #7870 lineage
+  at 87600B, not from main at 85824B; all citations are now dual-stated and the
+  main ones were resolved BY CONTENT, because the offset between the two refs is
+  NOT uniform (-28 to -37) and arithmetic would have been wrong in several
+  places. The substance survived re-measurement unchanged. (b) SCOPE: this Gate
+  C governs POST-MERGE ENROLMENT of the Robotics mount, not the re-land merge.
+  The guard reads contracts/theme_graph/ and data/theme_graph/; the re-land's 35
+  paths write neither; a gate whose read set is disjoint from the diff's write
+  set returns the same verdict with or without the change and therefore cannot
+  gate it.
 rationale: >
   A gate whose pass condition is satisfied by a tree that violates the contract is
   not a gate, and neither is one that no clean tree can ever satisfy. Both were
@@ -35,7 +48,20 @@ rationale: >
   store the marker line never prints, clean or not, and a gate built on it is red
   forever and indistinguishable from a real breach. Notices are a mixture of
   designed always-on output and genuine incidents, which is why they must be
-  triaged by their printed class titles rather than counted.
+  triaged by their printed class titles rather than counted. One further
+  correction belongs in the reasoning and not only in a footnote: I analysed the
+  wrong version of this script for the whole operation. Both refs I ever read,
+  1e38d5c955dc and a0d7b054ff23, are byte-identical #7870-lineage blobs at
+  87600B, and main is 85824B - so a record about a gate for a carrier targeting
+  main was built entirely on a blob that is not on main. Re-measured against
+  main by content on 2026-09-28, every load-bearing property holds: the marker
+  is still double-guarded, the census notice is still unconditional on file
+  existence, the sidecar is still committed, the advisory default is still
+  documented, and the notice/breach site counts are still 6 and 33. Only the
+  line numbers moved, and they moved by different amounts in different regions.
+  The lesson is the one this operation keeps paying for: reading a file at a ref
+  that is convenient rather than the ref the claim is about is an instrument
+  error, and it is invisible precisely when the substance happens to survive.
 alternatives:
   - option: "Gate C := stdout contains the literal `theme graph contracts OK`."
     why_not: >
@@ -77,6 +103,41 @@ evidence:
   - "LANE MAP VERIFIED AGAINST THE WORKFLOWS, not the doc, because the doc row is stale on this point. The --strict invocation is real: .github/ci/legacy-jobs.yml:11456 runs `python -m scripts.check_theme_graph_contracts --strict` after --selftest at 11455. But that file is not under .github/workflows/ and its job unrun-intl-libraries carries `if: false` (11341) and `gate: data` (11342); its steps execute only through scripts/run_ci_pack.py, which filters `job.gate == gate` (run_ci_pack.py:1690). Sweeping all 99 workflow files with the read pipeline positively controlled: `--gate code` appears in ci.yml, selfhosted-ci-canary.yml and trusted-ci-executor.yml; `--gate data` appears in data-health.yml ONLY, whose triggers are schedule, workflow_run on daily, and workflow_dispatch - never pull_request. So NO pull-request lane runs this guard, the house-law row lane: pr_ci is stale, and a carrier PR receives no theme-graph contract verdict from CI at all."
   - "Notice class taxonomy read from the same blob: designed = `[licensing snapshots - designed]` (505), `[identity resolution census]` (1044); incident or indeterminate = store incomplete (375, untagged so it prints as `::notice title=theme graph indeterminate::`), `[capability side-car MISSING - half-finished build]` (843), `[identity resolution side-car MISSING - half-finished build]` (1053), `[capability promoted itself]` (835). Lines 1090-1091 state the intent: distinct titles per class so the designed notice cannot visually mask a half-finished build."
   - "Controls on the read: 21 occurrences of 'def ' (positive), 0 occurrences of a nonsense token (negative). The two blobs at 1e38d5c955dc and a0d7b054ff23 are byte-identical at 87600B, so reading both is one observation and not an independent confirmation."
+  - >
+    MAIN CITATIONS, resolved by content on 2026-09-28 rather than by offset
+    arithmetic (gh api contents/scripts/check_theme_graph_contracts.py?ref=main
+    | base64 -d, 85824B, then grep -n per construct). Pairs are
+    a0d7b054ff23 -> main: `if not breaches:` 1097 -> 1061; `if not notices:`
+    1098 -> 1062; marker print 1099 -> 1063; clean-path `return 0` 1101 -> 1065;
+    `::warning title=theme graph contract breach::` 1102 -> 1066;
+    `return 1 if strict else 0` 1109 -> 1073; `--strict` help "advisory rc 0"
+    1582 -> 1546; `[identity resolution census]` notice 1044 -> 1009 (its
+    notices.append opens at 1008); `idres is not None` guard 856 -> 820;
+    `idres_path.exists()` guard 850 -> 814; `[licensing snapshots — designed]`
+    505 -> 470; store-incomplete notice 375 -> 347;
+    `[capability promoted itself]` 835 -> 800;
+    `[capability side-car MISSING — half-finished build]` 843 -> 808;
+    `[identity resolution side-car MISSING — half-finished build]` 1053 -> 1018;
+    taxonomy-intent comment 1090-1091 -> 1055; selftest "designed, always-on
+    notice" comment 1229-1232 -> 1193; selftest census assertion 1334 -> 1298.
+    Also on main only and not previously cited: the census is excluded from the
+    incident list at 1196, `::notice title=theme graph indeterminate::` prints
+    at 1060, and the state<->ids biconditional breach block runs 884-923.
+    Counts identical at both refs: 6 notices.append, 33 breaches.append.
+  - >
+    THE OFFSET IS NOT UNIFORM, which is why none of the above may be derived by
+    subtraction: measured deltas range from -28 (store-incomplete notice) through
+    -35 (licensing, capability side-car, taxonomy comment) to -37 (the
+    biconditional block). A successor who applies a single offset to this
+    record's a0d7b054ff23 citations will land on the wrong lines.
+  - >
+    THE PRINTED CLASS TITLES USE EM-DASHES, not hyphens. The source strings are
+    `[licensing snapshots — designed]` and
+    `[capability side-car MISSING — half-finished build]`; an earlier draft of
+    this record wrote them with ASCII hyphens, so a grep for those literals
+    returns zero hits and reads as absence. Verified by
+    grep -no '\[licensing snapshots[^]]*\]' on main, which returns exactly one
+    hit at 470 with U+2014.
   - "Macro PR #7780 comment 5852920768 (the exit-code measurement posted to the shared owner on the Sol coordination carrier, including this seat's own exposure; carrier verified by .issue_url, not by recall)"
 affects:
   - "WS:GMI-THEME-GRAPH"
@@ -99,6 +160,17 @@ It matters more than it first appeared, because **no pull-request lane runs this
 `pull_request`. So a carrier PR gets no theme-graph contract verdict from CI, and this local
 predicate is not a supplement to a CI gate; for a PR it is the only Gate C there is.
 
+**It is not, however, a gate on the re-land.** I originally attached this predicate to the
+Robotics re-land, and that was wrong on a point that has nothing to do with whether the predicate
+is correct. The guard reads `contracts/theme_graph/` and `data/theme_graph/`; the re-land's 35
+restored paths are 1 agentos, 1 contracts, 2 engine, 1 research and 30 tests, writing neither of
+those directories. A gate whose read set is disjoint from the diff's write set returns the same
+verdict whether the diff is applied or not, so running it proves the tree was already clean and
+says nothing about the change. Gate C therefore governs **post-merge enrolment** of the Robotics
+mount — the commit that adds the registry entry and can actually move theme-graph state. The
+re-land's own gates are different ones: the first-party import resolver, `contract-delta`
+reporting zero introduced unrun suites, the CI-startability test, and `ci-gate`.
+
 # Why the obvious fix is the wrong fix
 
 The script prints its own success line only when `breaches` AND `notices` are both empty. The
@@ -119,6 +191,17 @@ documents them. The general lesson is not new - a read scoped to the lines you a
 confirms whatever you brought to it - but the specific trap is: a guard you can see is not a
 guard you understand until you have enumerated everything that can trip it.
 
+# What this record's second draft got wrong
+
+The first draft's error was the answer; the second draft's error was the ref. Every line number in
+it was read at `a0d7b054ff23`, a #7870-lineage blob, while the claim was about the gate a carrier
+targeting `main` would face — and I never compared the two file sizes, which differ by 1776 bytes.
+The substance survived re-measurement intact, and that is the trap: a wrong-ref reading that
+happens to be substantively right leaves no symptom, so nothing prompts the check. The durable
+rule is to state the ref beside every citation, and to resolve a second ref's line numbers by
+content rather than by offset — here the offsets ranged from -28 to -37 across regions of the same
+file.
+
 # The falsifier
 
 If the census notice is later made conditional, or moved out of `notices`, or the script is
@@ -126,3 +209,9 @@ changed so the notices path returns non-zero, the marker line becomes reachable 
 materialised store and this record should be superseded rather than edited. Until then, a Gate C
 claim that cites the marker line is unproven, a claim that cites a bare exit code from a
 non-strict run is unproven, and only the compound predicate above decides in either direction.
+
+Separately falsifiable, and separately: the SCOPE claim. This predicate would become a re-land
+gate the moment a re-land diff writes `contracts/theme_graph/` or `data/theme_graph/`. Until then
+the test to apply before attaching this or any gate to a change is mechanical — intersect the
+gate's read set with the diff's write set, and if the intersection is empty the gate cannot
+discriminate the change no matter how correct it is.
