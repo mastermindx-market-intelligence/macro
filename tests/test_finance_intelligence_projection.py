@@ -1108,3 +1108,37 @@ def test_no_io(monkeypatch: pytest.MonkeyPatch) -> None:
         knowledge_cutoff=_knowledge_cutoff(),
     )
     validate_contract(CONTRACT_ID, document)
+
+
+@pytest.mark.parametrize(
+    "stated, published",
+    [
+        (None, "NO_EVIDENCE"),
+        ("", "NO_EVIDENCE"),
+        ("NOT_A_FRESHNESS_STATE", "NO_EVIDENCE"),
+        ("aging", "AGING"),
+        ("SOURCE_STALE", "SOURCE_STALE"),
+    ],
+)
+def test_a_material_change_without_a_known_freshness_is_published_as_no_evidence(stated, published) -> None:
+    """A material change whose owner states no freshness, or a freshness the
+    projection does not recognise, is published as NO_EVIDENCE. It must never
+    read as FRESH: freshness is a claim, and an absent claim is not a fresh one
+    (``None`` means the key is absent)."""
+    op_record = _schema_strict_source_record(slice_id="card_networks")
+    material = {
+        "change_id": "mc-freshness-001",
+        "domain_ids": ["payments"],
+        "operating_implication": "Synthetic material change.",
+    }
+    if stated is not None:
+        material["freshness_state"] = stated
+    op_record["material_change"] = material
+    document = compose_finance_projection(
+        _default_8slice_inputs(source_records=[op_record]),
+        generated_at=_today(),
+        knowledge_cutoff=_knowledge_cutoff(),
+    )
+    validate_contract(CONTRACT_ID, document)
+    changes = [c for c in document["material_changes"] if c["change_id"] == "mc-freshness-001"]
+    assert [c["freshness_state"] for c in changes] == [published]

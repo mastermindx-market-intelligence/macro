@@ -37,6 +37,7 @@ discoveries:
   - "DSC:A-BLOCKLIST-ENUMERATES-THE-RULES-NOUNS-NOT-THE-VIOLATIONS-VOCABULARY"
   - "DSC:FULLMATCH-ON-A-BOUNDARY-STEM-PATTERN-IS-A-DEAD-GUARD-THAT-LOOKS-ALIVE"
   - "DSC:A-GUARD-NAMED-IN-THE-DOCSTRING-CAN-HAVE-ZERO-CALL-SITES"
+  - "DSC:A-REQUIRED-ENUM-FIELD-CAN-HAVE-ONE-PRODUCIBLE-VALUE-AND-ZERO-READERS"
 waves:
   - id: CC-V1-CORE
     title: "V1-CORE deterministic composition"
@@ -384,6 +385,35 @@ next_action: >
   was NOT verified and needs a mutation probe of that test. finance_projection.py
   is seat 938d17d6's custody and was not edited from this seat. See
   DSC:A-GUARD-NAMED-IN-THE-DOCSTRING-CAN-HAVE-ZERO-CALL-SITES.
+  .
+  Wave 9 MERGED as #8115 (squash e274e2c5f5be), 11/11 records verified in main's
+  bytes.
+  .
+  Wave 10 measured the last two unswept Consumer surfaces and BOTH returned a
+  null against the wave-8 thesis -- recording the null is the result. The
+  explanation object cannot carry the defect: _build_explanation selects between
+  exactly two module-owned documents, no caller text enters, both directions have
+  named tests, and _check_explanation_for_forbidden reads all four emitted keys
+  with zero uncovered. degraded_dependency.state is a three-value contract enum
+  with exactly ONE producible value -- _degraded defaults state to "unavailable"
+  and all seven call sites omit the argument -- and zero readers outside the
+  producing module; "available" on an entry in a list OF degraded dependencies is
+  self-contradictory. Censused across all twelve contract enums it is the ONLY
+  module-authored one that cannot be fully exercised: seven are fully exercised
+  and the four others that look narrow (fact.basis / role / perimeter,
+  source_record.retention_state) are CALLER-authored passthroughs whose enums
+  correctly constrain input -- the wave-7 who-writes-it rule is the
+  discriminator, and skipping it gives four false positives out of five flags.
+  Classified LOOSE, not false: the document never claims
+  anything untrue, so no contract narrowing was opened with no consumer to
+  benefit. Shipped one mutation-probed pin
+  (tests/test_consumer_cyclical_projection.py:1911) that asserts each mutation
+  changed the case and requires >1 distinct reason before asserting the state
+  set, so a stale fact-key filter fails loudly instead of passing on an empty
+  list. Suite 103 passed (119 with the sibling contract file). This CLOSES the
+  Consumer correctness sweep; see do_not_redo in the wave-10 handoff. V1 has not
+  returned to Sol and ACCEPTANCE remains Sol's.
+  See DSC:A-REQUIRED-ENUM-FIELD-CAN-HAVE-ONE-PRODUCIBLE-VALUE-AND-ZERO-READERS.
 ---
 
 ## Scope
