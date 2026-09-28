@@ -377,6 +377,11 @@ var main = attach(makeNode('main', { id: 'fi-main', class: 'fi-shell' }));
 main.setAttribute('data-fi-mount', 'shell');
 body.appendChild(main);
 
+// the contents' Evidence link: an evidence trigger that carries no list
+var tocEvidence = attach(makeNode('button', { type: 'button', class: 'fi-toc-evidence', 'aria-controls': 'evidence-drawer' }));
+tocEvidence.innerHTML = '<span class="l-en">Evidence</span><span class="l-zh">证据</span>';
+main.appendChild(tocEvidence);
+
 // hero mounts
 [
   'hero-asof', 'hero-asof-zh', 'hero-cutoff', 'hero-cutoff-zh',
@@ -456,7 +461,7 @@ var drawer = attach(makeNode('aside', { id: 'evidence-drawer', class: 'fi-drawer
 drawer.setAttribute('role', 'dialog');
 drawer.setAttribute('aria-modal', 'true');
 body.appendChild(drawer);
-['evidence-empty', 'evidence-private-notice', 'evidence-fields'].forEach(function (m) {
+['evidence-empty', 'evidence-missing', 'evidence-none', 'evidence-private-notice', 'evidence-fields'].forEach(function (m) {
   var tag = m === 'evidence-fields' ? 'dl' : 'p';
   var el = attach(makeNode(tag, { 'data-fi-mount': m }));
   el.hidden = true;

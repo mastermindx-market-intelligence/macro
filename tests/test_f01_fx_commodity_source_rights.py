@@ -476,3 +476,28 @@ def test_charter_names_master_switch_frame() -> None:
         "def master_switch_frame(",
     )
     assert "recorded-and-adverse" not in text
+
+
+# PR #8125 review 4118582194: downstream readers must receive the same
+# narrow direct-EIA ruling as the vendor row, without clearing other vendors.
+def _assert_current_eia_summary(prefix: str) -> None:
+    line = next(line for line in _text(F01).splitlines() if line.startswith(prefix))
+    assert "DEC:EIA-SPR-RIGHTS" in line, f"{prefix}: missing current direct-EIA decision"
+    assert "direct EIA-authored petroleum" in line
+    assert "attribution" in line
+    assert "third-party" in line and "excluded" in line
+    assert "CFTC" in line and "unknown" in line
+    assert "CFTC/EIA `unknown`" not in line
+    assert "CFTC and EIA typed `unknown" not in line
+
+
+def test_f01_disposition_uses_current_scoped_eia_ruling() -> None:
+    _assert_current_eia_summary("The correct MO-PAID-003 disposition")
+
+
+def test_f01_fx_closure_uses_current_scoped_eia_ruling() -> None:
+    _assert_current_eia_summary("MO-PAID-003: rights recorded")
+
+
+def test_f01_commodity_closure_uses_current_scoped_eia_ruling() -> None:
+    _assert_current_eia_summary("MO-PAID-004: producer chain")

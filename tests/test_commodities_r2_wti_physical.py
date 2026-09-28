@@ -411,3 +411,45 @@ def test_capture_rejects_served_bytes_different_from_bound_page():
     check(b'committed generated page', expected)
     with pytest.raises(ValueError, match='page identity mismatch'):
         check(b'another page', expected)
+
+
+def test_capture_focus_roundtrip_stays_inside_source_disclosure():
+    """The prior Shift+Tab first focused an unrelated tooltip behind the panel."""
+    from scripts import capture_commodities_wti_slice_a as driver
+    actions = []
+
+    class Locator:
+        def __init__(self, selector):
+            self.selector = selector
+        def focus(self):
+            actions.append(('focus', self.selector))
+        def evaluate(self, script):
+            return True
+        def get_attribute(self, attribute):
+            opened = sum(a == ('key', 'Enter') for a in actions) % 2
+            return '' if opened else None
+
+    class Panel:
+        def locator(self, selector):
+            return Locator(selector)
+
+    class Keyboard:
+        def press(self, key):
+            actions.append(('key', key))
+
+    from types import SimpleNamespace
+    exercise = getattr(driver, 'focus_source_receipt', None)
+    assert callable(exercise), 'capture must use a target-local keyboard roundtrip'
+    exercise(SimpleNamespace(keyboard=Keyboard()), Panel())
+    assert actions == [('focus', 'summary'), ('key', 'Enter'), ('key', 'Tab'),
+                       ('key', 'Shift+Tab'), ('key', 'Enter')]
+
+
+def test_capture_rejects_visually_obscured_focus():
+    from scripts import capture_commodities_wti_slice_a as driver
+    from types import SimpleNamespace
+    check = getattr(driver, 'require_clear_source_focus', None)
+    assert callable(check), 'focused is not proof that a control is unobscured'
+    with pytest.raises(AssertionError, match='obscured'):
+        check(SimpleNamespace(evaluate=lambda script: False))
+    check(SimpleNamespace(evaluate=lambda script: True))

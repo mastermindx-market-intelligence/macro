@@ -49,9 +49,10 @@ so_what: >
   fixture was never validated, here the fixture is the ONLY thing validated. (4) THE DISCRIMINATOR IS WHO WRITES THE
   REFERENCE, not whether one exists. A CALLER-SUPPLIED reference can dangle and needs an
   enforced relation; a MODULE-DERIVED one is safe by construction because the emitter
-  reads the referent to build it. Consumer's own `input_refs` and Finance's
-  `evidence_refs` are both module-derived and both provably cannot dangle -- only
-  `native_ref`, copied verbatim from the case, could. Audit by asking of each reference
+  reads the referent to build it. Consumer's own `input_refs` are module-derived and
+  provably cannot dangle -- only `native_ref`, copied verbatim from the case, could.
+  (Finance's `evidence_refs` were once cited here as a second module-derived case. They
+  are owner-supplied and can dangle -- see the scope note.) Audit by asking of each reference
   field: did this value enter from outside? (5) Sweep
   the whole convention when you fix one instance: 22 test refs still used a hyphenated
   ad-hoc spelling (`src-tr-c`) that could never resolve, because a prior wave corrected
@@ -76,11 +77,16 @@ scope: >
   falsifier was then RUN rather than left open, and returned a null with a mechanism:
   searching every tracked file for `source_records` and every `engine/`+`scripts/`+
   `contracts/` file for a reference field, NO other module in this repo today has a
-  CALLER-SUPPLIED reference into its own source ledger. Finance Intelligence has both
-  ends (`evidence_refs` + `$defs/source_record`) but `_plane_evidence_refs`
-  (`engine/sector_intelligence/finance_projection.py:698`) DERIVES the refs from
-  `record_id` at line 714, so they cannot dangle; the mining modules carry `native_ref`
-  with no `source_records` at all, i.e. only one end. Bound of that search: literal
+  CALLER-SUPPLIED reference into its own source ledger. That null does not hold for
+  Finance Intelligence (corrected 2026-09-28 by seat 938d17d6), which has both ends
+  (`evidence_refs` + `$defs/source_record`). The `_plane_evidence_refs` helper this note
+  cited as deriving refs from `record_id` had no call site. The live
+  `_slice_evidence_refs` minted a `slice:<slice_id>` ref that named no record (220 of 263
+  published refs on the default fixture). It also publishes owner refs with no check that
+  they resolve: a committed conflict fixture carries 2 exposure-cell refs to records its
+  ledger lacks. So Finance refs CAN dangle, and the page puts each one in words
+  (DSC:A-MINTED-REF-SATISFIES-A-MIN-ITEMS-RULE-THE-EVIDENCE-DOES-NOT). The mining modules
+  carry `native_ref` with no `source_records` at all, i.e. only one end. Bound of that search: literal
   string match, tracked files only -- a dynamically assembled ref would not appear.
 confidence: verified
 ---

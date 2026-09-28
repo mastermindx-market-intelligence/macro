@@ -23,6 +23,41 @@ def verify_served_page(body: bytes, expected_sha256: str) -> None:
         raise ValueError("page identity mismatch: served bytes differ from bound page")
 
 
+def focus_source_receipt(page, panel) -> None:
+    """Exercise keyboard navigation inside the receipt, not a preceding tooltip.
+
+    Shift+Tab from a closed receipt used to focus the unrelated oscillator help
+    trigger. Its delayed mobile sheet polluted the later screenshot despite the
+    source summary being document.activeElement.
+    """
+    summary = panel.locator("summary")
+    summary.focus()
+    page.keyboard.press("Enter")
+    assert panel.locator("details").get_attribute("open") is not None
+    page.keyboard.press("Tab")
+    link = panel.locator('a[href="https://www.eia.gov/petroleum/supply/weekly/"]')
+    assert link.evaluate("e => e === document.activeElement"), "source link did not receive keyboard focus"
+    page.keyboard.press("Shift+Tab")
+    assert summary.evaluate("e => e === document.activeElement"), "focus did not return to source summary"
+    page.keyboard.press("Enter")
+    assert panel.locator("details").get_attribute("open") is None
+    assert summary.evaluate("e => e === document.activeElement && e.matches(':focus-visible')")
+
+
+def require_clear_source_focus(summary) -> None:
+    """Reject an active-but-covered control after screenshot-driven scrolling."""
+    clear = summary.evaluate("""e => {
+        const r = e.getBoundingClientRect();
+        const x = r.left + Math.min(r.width / 2, 100);
+        const y = r.top + r.height / 2;
+        const top = document.elementFromPoint(x, y);
+        return e === document.activeElement && e.matches(':focus-visible') &&
+            r.width > 0 && r.height > 0 && top !== null &&
+            (top === e || e.contains(top));
+    }""")
+    assert clear, "source focus is obscured or not visibly focused"
+
+
 class WtiDriver:
     def __init__(self, **kwargs):
         self.page_sha256 = hashlib.sha256((ROOT / "site/commodities.html").read_bytes()).hexdigest()
@@ -61,11 +96,7 @@ class WtiDriver:
             applied_force = None
             if cell.force_state:
                 applied_force = owner._apply_interaction_force(page, cell.force_state, timeout_ms=5000)
-                # Programmatic focus after a pointer click may not activate
-                # :focus-visible. Exercise actual keyboard navigation too.
-                page.keyboard.press("Shift+Tab")
-                page.keyboard.press("Tab")
-                assert panel.locator("summary").evaluate("e => e === document.activeElement && e.matches(':focus-visible')")
+                focus_source_receipt(page, panel)
             observed = page.evaluate(owner._OBSERVER_SCRIPT, self.observer)
             observed.update({
                 "selected_commodity": "oil", "interaction_setup": "clicked existing Oil detail tab",
@@ -90,9 +121,14 @@ class WtiDriver:
                 summary.evaluate('(e) => e.blur()')
                 panel.scroll_into_view_if_needed()
                 observed['keyboard_details_toggle'] = True
+            # Native scrolling centers the review subject above the fixed
+            # launcher; no product element, stylesheet or overlay is hidden.
+            panel.evaluate("e => e.scrollIntoView({block: 'center', inline: 'nearest', behavior: 'instant'})")
             out = ROOT/'mockups/evidence/commodities-wti-slice-a/sections'
             out.mkdir(parents=True, exist_ok=True)
             panel.screenshot(path=str(out/f'{cell.viewport}-{cell.locale}-{cell.theme}-{cell.force_state.name if cell.force_state else "rest"}.png'))
+            if cell.force_state:
+                require_clear_source_focus(panel.locator("summary"))
             verify_served_page((ROOT / "site/commodities.html").read_bytes(), self.page_sha256)
             return owner.CellObservation(cell_id=cell.cell_id, loaded=True,
                 screenshot_png=page.screenshot(full_page=False), observed=observed,
