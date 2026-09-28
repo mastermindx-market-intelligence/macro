@@ -1317,13 +1317,19 @@ def _slice_evidence_refs(
 
 
 def _public_freshness(value: Any) -> str:
-    """Coerce an internal freshness_state to the schema-admitted enum."""
+    """Coerce an internal freshness_state to the schema-admitted enum.
+
+    Fails closed: a freshness state the owner did not supply, or one this
+    projection does not recognise, is published as ``NO_EVIDENCE``, never as
+    ``FRESH``. Only the conflict detector's internal flags keep their
+    documented ``FRESH`` mapping (see :func:`_material_changes_for`).
+    """
     text = str(value or "").strip().upper()
     if text in ("FRESH", "AGING", "SOURCE_STALE", "NO_EVIDENCE"):
         return text
     if text in ("CAUSAL_EFFECT_UNMEASURED", "EXPERIMENTAL", "PROVISIONAL"):
         return "FRESH"
-    return "FRESH"
+    return "NO_EVIDENCE"
 
 
 def _material_changes_for(

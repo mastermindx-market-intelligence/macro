@@ -678,6 +678,54 @@ def test_mgd17_refused_comparison_does_not_delete_the_supported_facts():
     _validate(refused)
 
 
+def test_mgd19_an_intragroup_elimination_reaches_the_payload_with_its_sign():
+    """MGD-19 clause 2: intra-group eliminations are not ignored.
+
+    The construct is delivered, but the only test that names MGD-19 asserts it through
+    ``composition._signed_value`` and its own comment concedes the casebook exposes no
+    internal-transfer row. **A helper pin is not a pin on the composed payload**, which is why the
+    obligation sat unpinned while its subject was already on main.
+
+    This pins the payload: the elimination is submitted as a native financial packet and must reach
+    ``economics["native_blocks"]`` carrying its negative value and ``sign == "-"``. Two control arms
+    keep the assertion from passing vacuously. The same bundle composed WITHOUT the elimination must
+    yield exactly one block fewer, so the elimination genuinely CONTRIBUTES rather than being
+    silently dropped at the builder -- a drop mints no limitation anywhere, so nothing else in the
+    payload would reveal it. And the measurement block beside it must be identical across both
+    compositions, so admitting a negative does not perturb the facts it is netted against.
+
+    Clause 1 -- product sales and contractual support income remaining separately DEFINED -- needs
+    T03's definition vocabulary and is deliberately NOT claimed here.
+    """
+    case = synthetic_case("copper_complete")
+    measurement = dict(case.bundle.financial_packets[0])
+    # ``positive_witness`` is a casebook oracle flag the engine never reads; signed_loss.json sets it
+    # False for a negative, so an elimination follows that shape rather than inheriting True.
+    elimination = dict(
+        measurement, measure="intersegment elimination", value=-120, positive_witness=False
+    )
+
+    composed = composition.compose_mining_research(
+        case.query, _replace(case.bundle, financial_packets=(measurement, elimination))
+    )
+    control = composition.compose_mining_research(
+        case.query, _replace(case.bundle, financial_packets=(measurement,))
+    )
+
+    blocks = composed["economics"]["native_blocks"]
+    netted = [b for b in blocks if b["measure"] == "intersegment elimination"]
+    assert len(netted) == 1, blocks
+    assert netted[0]["value"] == -120
+    assert netted[0]["sign"] == "-"
+
+    # The elimination contributes a row of its own, and perturbs nothing beside it.
+    assert len(blocks) == len(control["economics"]["native_blocks"]) + 1
+    assert [b for b in blocks if b["measure"] != "intersegment elimination"] == (
+        control["economics"]["native_blocks"]
+    )
+    _validate(composed)
+
+
 def test_packet_driven_non_numeric_value_withholds_row_and_mints_omitted_expectations():
     """A packet whose ``value`` is the string ``"quarter"`` (the BLOCKER-A fabrication)
     withholds the row and mints ``omitted:expectations`` (MINOR-I) — the
