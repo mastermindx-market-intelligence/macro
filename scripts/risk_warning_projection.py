@@ -321,3 +321,293 @@ def project_warning_set(snapshots: Any, expected_sessions: Any, *, previous: Any
         },
         "last_known_severe_markets": sorted(row["market"] for row in rows if row["status"] == "unverified"),
     }
+
+
+BRIEFING_SCHEMA = "mastermind.risk_warning_briefing/v1"
+_BRIEF_STANCE = {
+    "calm": ("Observe", "观察"),
+    "watch": ("Get ready", "做好准备"),
+    "caution": ("Reduce concentration", "降低集中度"),
+    "elevated": ("Protect gains / reduce gross", "保护收益／降低总敞口"),
+    "risk-off": ("Stand aside / protect capital", "暂避风险／保护资本"),
+}
+
+
+def _safe_num(value: Any, *, lower: float = -1_000_000.0,
+              upper: float = 1_000_000.0) -> float | int | None:
+    return value if _finite_number(value, lower, upper) else None
+
+
+def _owner_sources(risk_envelope: Any) -> list[Mapping]:
+    if not isinstance(risk_envelope, Mapping):
+        return []
+    provenance = risk_envelope.get("provenance")
+    sources = provenance.get("sources") if isinstance(provenance, Mapping) else None
+    return [source for source in sources if isinstance(source, Mapping)] if isinstance(sources, list) else []
+
+
+def _briefing_drivers(radar: Any, risk_envelope: Any) -> list[dict]:
+    out: list[dict] = []
+    if isinstance(radar, Mapping):
+        scares = radar.get("scares")
+        if isinstance(scares, list):
+            candidates = [s for s in scares if isinstance(s, Mapping)]
+            candidates.sort(key=lambda s: -float(_safe_num(s.get("score"), lower=0, upper=100) or -1))
+            for scare in candidates[:3]:
+                key = scare.get("scare")
+                label = scare.get("label_en")
+                if not isinstance(key, str) or not isinstance(label, str) or not label.strip():
+                    continue
+                out.append({
+                    "key": f"radar:{key}", "kind": "risk_radar",
+                    "label_en": label.strip()[:160],
+                    "label_zh": (scare.get("label_zh") if isinstance(scare.get("label_zh"), str)
+                                 else label)[:160],
+                    "state": scare.get("band") if isinstance(scare.get("band"), str) else None,
+                    "score": _safe_num(scare.get("score"), lower=0, upper=100),
+                })
+    known = {d["key"] for d in out}
+    for source in _owner_sources(risk_envelope):
+        source_id = source.get("source_id")
+        if not isinstance(source_id, str) or source_id in ("risk-radar-us",) or source_id in known:
+            continue
+        state = source.get("state")
+        label = source.get("label_en")
+        if not isinstance(label, str) or not label.strip():
+            continue
+        out.append({
+            "key": source_id, "kind": str(source.get("role") or "owner_evidence"),
+            "label_en": label.strip()[:160],
+            "label_zh": (source.get("label_zh") if isinstance(source.get("label_zh"), str)
+                         else label)[:160],
+            "state": state if isinstance(state, str) else None,
+            "score": None,
+            "coverage": source.get("coverage") if isinstance(source.get("coverage"), str) else None,
+        })
+        if len(out) >= 5:
+            break
+    return out
+
+
+def _downside_view(warning: Mapping, radar: Any) -> dict:
+    blank = {
+        "target": None, "h5": None, "h10": None, "h21": None,
+        "base_h21": None, "lift_h21": None, "above_base": None,
+        "calibration_status": "unavailable", "precision_grade": False,
+        "interpretation": "unavailable", "limitations": [],
+    }
+    if warning.get("status") != "current" or not isinstance(radar, Mapping):
+        return blank
+    market = warning.get("market")
+    dp = radar.get("drawdown_prob")
+    if not isinstance(dp, Mapping):
+        return blank
+    if market != "us":
+        blank["calibration_status"] = "directional_only"
+        blank["interpretation"] = "directional_only"
+        return blank
+    evidence = dp.get("calibration_evidence")
+    if not isinstance(evidence, Mapping):
+        return blank
+    target = evidence.get("target") if isinstance(evidence.get("target"), Mapping) else {}
+    depth = _safe_num(target.get("depth"), lower=0, upper=1)
+    horizons = target.get("horizons") if isinstance(target.get("horizons"), list) else []
+    path = target.get("price_path") if isinstance(target.get("price_path"), str) else None
+    target_text = None
+    if depth is not None and horizons:
+        target_text = f">={round(depth * 100)}% SPY pullback / {max(horizons)} sessions"
+        if path:
+            target_text += f" ({path})"
+    h5 = _safe_num(dp.get("h5"), lower=0, upper=1)
+    h10 = _safe_num(dp.get("h10"), lower=0, upper=1)
+    h21 = _safe_num(dp.get("h21"), lower=0, upper=1)
+    base = _safe_num(dp.get("base_h21"), lower=0, upper=1)
+    lift = _safe_num(dp.get("lift_h21"), lower=0, upper=100)
+    above = dp.get("state_above_base") if type(dp.get("state_above_base")) is bool else (
+        bool(h21 > base) if h21 is not None and base is not None else None)
+    limitations = evidence.get("limitations")
+    if not isinstance(limitations, list):
+        limitations = []
+    return {
+        "target": target_text, "h5": h5, "h10": h10, "h21": h21,
+        "base_h21": base, "lift_h21": lift, "above_base": above,
+        "calibration_status": str(evidence.get("evidence_class") or "available"),
+        "precision_grade": bool(evidence.get("precision_grade") is True),
+        "interpretation": "above_base" if above is True else ("early_flag_not_edge" if above is False else "unavailable"),
+        "limitations": [str(item)[:240] for item in limitations if isinstance(item, str)][:4],
+    }
+
+
+def _backdrop_view(regime: Any, market_state: Any, material_risk: bool) -> dict:
+    rg = regime if isinstance(regime, Mapping) else {}
+    ms = market_state if isinstance(market_state, Mapping) else {}
+    name = rg.get("quad_name") if isinstance(rg.get("quad_name"), str) else None
+    verdict = ms.get("verdict") if isinstance(ms.get("verdict"), str) else None
+    components = ms.get("components") if isinstance(ms.get("components"), Mapping) else {}
+    component_rows = []
+    for key, value in components.items():
+        if not isinstance(key, str) or not isinstance(value, Mapping):
+            continue
+        score = _safe_num(value.get("score"), lower=0, upper=100)
+        if score is not None:
+            component_rows.append({"key": key, "score": score})
+    separation = None
+    if material_risk and name == "Reflation":
+        separation = "Reflation does not mean the tape is safe. The economic backdrop and market damage are different reads."
+    elif material_risk and name:
+        separation = f"{name} is economic backdrop, not a safety signal. Market damage is a separate read."
+    return {
+        "regime": name,
+        "quad": rg.get("quad") if isinstance(rg.get("quad"), str) else None,
+        "transition": rg.get("transition_state") if isinstance(rg.get("transition_state"), str) else None,
+        "growth_score": _safe_num(rg.get("growth_score")),
+        "inflation_score": _safe_num(rg.get("inflation_score")),
+        "market_state_score": _safe_num(ms.get("score"), lower=0, upper=100),
+        "market_state_verdict": verdict,
+        "components": component_rows,
+        "separation_note_en": separation,
+    }
+
+
+def _recovery_view(recovery: Any) -> dict:
+    base = {"state": "UNESTABLISHED", "reentry_authorized": False,
+            "headline_en": None, "phase": None, "channels": {"liquidity": None, "market": None, "veto": None}}
+    if not isinstance(recovery, Mapping) or recovery.get("present") is not True:
+        return base
+    channels = recovery.get("channels") if isinstance(recovery.get("channels"), Mapping) else {}
+    normalized = {key: (channels.get(key) if type(channels.get(key)) is bool else None)
+                  for key in ("liquidity", "market", "veto")}
+    if recovery.get("suppressed") is True:
+        state = "FAILED_REPAIR"
+    elif recovery.get("turn_confirmed_full") is True:
+        state = "CONFIRMED_REPAIR"
+    elif recovery.get("turn_confirmed") is True:
+        state = "EARLY_REPAIR"
+    elif recovery.get("receding") is True or recovery.get("peaking") is True:
+        state = "STABILIZING"
+    else:
+        state = "UNESTABLISHED"
+    return {
+        "state": state, "reentry_authorized": False,
+        "headline_en": recovery.get("headline_en") if isinstance(recovery.get("headline_en"), str) else None,
+        "phase": recovery.get("phase") if isinstance(recovery.get("phase"), str) else None,
+        "channels": normalized,
+    }
+
+
+def _pathways(radar: Any, risk_envelope: Any, recovery_view: Mapping) -> tuple[list[dict], list[dict]]:
+    scares = {}
+    if isinstance(radar, Mapping) and isinstance(radar.get("scares"), list):
+        for scare in radar["scares"]:
+            if isinstance(scare, Mapping) and isinstance(scare.get("scare"), str):
+                scares[scare["scare"]] = scare
+    dominant = radar.get("dominant_scare") if isinstance(radar, Mapping) else None
+    rate_observed = dominant in ("rates", "rate_shock") or any(
+        key in str(dominant or "") for key in ("rate", "inflation"))
+    leadership = next((s for s in _owner_sources(risk_envelope)
+                       if s.get("source_id") == "leadership-crack-latest"), None)
+    leadership_observed = isinstance(leadership, Mapping) and leadership.get("state") == "BROKEN"
+    credit = scares.get("credit")
+    credit_hot = isinstance(credit, Mapping) and credit.get("band") in ("caution", "elevated", "risk-off")
+    deterioration = [
+        {"key": "rates_pressure", "status": "observed" if rate_observed else "not_active",
+         "label_en": "Rates / inflation pressure"},
+        {"key": "leadership_damage", "status": "observed" if leadership_observed else "unavailable" if leadership is None else "not_active",
+         "label_en": "Leadership damage"},
+        {"key": "credit_broadening", "status": "observed" if credit_hot else "watch",
+         "label_en": "Credit / bank stress broadens"},
+    ]
+    channels = recovery_view.get("channels") if isinstance(recovery_view.get("channels"), Mapping) else {}
+    liquidity = channels.get("liquidity")
+    market = channels.get("market")
+    veto = channels.get("veto")
+    full_state = recovery_view.get("state")
+    resolution = [
+        {"key": "liquidity_turn", "status": "observed" if liquidity is True else "missing" if liquidity is False else "unavailable",
+         "label_en": "Market-local liquidity turns supportive"},
+        {"key": "market_internals", "status": "observed" if market is True else "missing" if market is False else "unavailable",
+         "label_en": "Breadth / internals confirm repair"},
+        {"key": "volatility_veto", "status": "blocked" if veto is True else "observed" if veto is False else "unavailable",
+         "label_en": "Volatility veto clears"},
+        {"key": "full_repair", "status": "observed" if full_state == "CONFIRMED_REPAIR" else "near" if full_state == "EARLY_REPAIR" else "not_active",
+         "label_en": "Recovery owner confirms durable repair"},
+    ]
+    return deterioration, resolution
+
+
+def compose_capital_protection_briefing(
+    warning: Mapping, *, radar: Any = None, regime: Any = None,
+    market_state: Any = None, risk_envelope: Any = None,
+    recovery: Any = None,
+) -> dict:
+    """Compose the answer-first Capital Protection Briefing display model.
+
+    All financial state comes from the supplied canonical owners. This function
+    only chooses deterministic presentation language and preserves a display-only
+    authority ceiling. It never writes, ranks, sizes, gates, trades or upgrades
+    a recovery into re-entry permission.
+    """
+    if not isinstance(warning, Mapping) or warning.get("schema") != SCHEMA:
+        raise ValueError("warning must be mastermind.risk_warning/v1")
+    market = _market_key(warning.get("market"))
+    status = warning.get("status") if isinstance(warning.get("status"), str) else "unavailable"
+    state = warning.get("state") if isinstance(warning.get("state"), str) and warning.get("state") in _STATE_ATTENTION else None
+    attention = warning.get("attention") if isinstance(warning.get("attention"), str) else "unavailable"
+    if status == "current" and state is not None:
+        label_en, label_zh = _BRIEF_STANCE[state]
+        stance_note = ("State-derived display guidance only. No exact exposure target is validated; "
+                       "this is not an automatic all-cash instruction or execution command.")
+    elif status == "unverified" and attention in ("high", "critical"):
+        label_en, label_zh = "Keep defensive posture pending verification", "核实前维持防御"
+        stance_note = ("The prior severe warning has not been cleared by current evidence. "
+                       "No exact exposure target is validated; this is not an automatic all-cash instruction.")
+    else:
+        label_en, label_zh = "Verification unavailable", "当前状态待核实"
+        stance_note = "Missing evidence is not an all-clear and carries no execution authority."
+    severity = {
+        "state": state, "attention": attention,
+        "ungated_state": warning.get("state_ungated") if isinstance(warning.get("state_ungated"), str) else None,
+        "confirmation": warning.get("confirmation") if isinstance(warning.get("confirmation"), str) else "unknown",
+        "intensity": _safe_num(warning.get("score"), lower=0, upper=100),
+    }
+    material = attention in ("warning", "high", "critical")
+    rec_view = _recovery_view(recovery)
+    deterioration, resolution = _pathways(radar, risk_envelope, rec_view)
+    drivers = _briefing_drivers(radar, risk_envelope)
+    primary = drivers[0]["label_en"] if drivers else (warning.get("driver_en") or "Current risk")
+    summary_headline = {
+        "calm": "No active warning", "watch": "Early risk watch",
+        "caution": "Risk is building", "elevated": "High market risk",
+        "risk-off": "Critical risk-off conditions",
+    }.get(state, "Current risk cannot be verified" if status != "unverified" else "Last verified severe risk remains unresolved")
+    why = f"{primary} is the leading risk read."
+    if any(d.get("key") == "leadership-crack-latest" and d.get("state") == "BROKEN" for d in drivers):
+        why += " Leadership damage remains broken."
+    if warning.get("confirmation") == "pending":
+        why += " Confirmation is incomplete."
+    freshness = {
+        "status": status,
+        "source_session": _session(warning.get("source_session")),
+        "expected_session": _session(warning.get("expected_session")),
+        "artifact_freshness": warning.get("artifact_freshness") if isinstance(warning.get("artifact_freshness"), str) else "unavailable",
+        "underlying_input_status": warning.get("underlying_input_status") if isinstance(warning.get("underlying_input_status"), str) else "unknown",
+    }
+    return {
+        "schema": BRIEFING_SCHEMA, "market": market,
+        "severity": severity,
+        "stance": {
+            "label_en": label_en, "label_zh": label_zh,
+            "authority": "display_guidance", "exact_exposure_target": None,
+            "authority_note_en": stance_note,
+        },
+        "summary": {"headline_en": summary_headline, "why_now_en": why},
+        "downside": _downside_view(warning, radar),
+        "backdrop": _backdrop_view(regime, market_state, material),
+        "drivers": drivers,
+        "deterioration_path": deterioration,
+        "resolution_path": resolution,
+        "recovery": rec_view,
+        "freshness": freshness,
+        "changed_since_prior": [],
+        "authority": _authority(),
+    }
