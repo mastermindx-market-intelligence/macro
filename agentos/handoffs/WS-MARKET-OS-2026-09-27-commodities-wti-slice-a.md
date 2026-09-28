@@ -75,3 +75,7 @@ supersedes: []
 Current protected Mastermind: dcc4829a811d3f6e4fe8c16a103f813c3501f48e. Integrated main: f6dae649ee6d32ec65a95ccea411b205d0b0bc45.
 Capture source commit: c5030870e1d60663210540d479762c1fc7065ea5. PR #8125; cumulative checkpoint Macro #8049 comment5862072495.
 MISSION_COMPLETE:false; BUILT_NOT_PROVEN. Evidence-only follow-up must preserve source/page/driver blobs at the capture source. No unresolved effect, Paper change or autonomous wake.
+
+## Current dual-theme review repair
+
+Current source/capture commit `c3d048cef470f0b4d223daea3c4e41af05ae2fc9`, main integration `dea858959c6f37122fd500dd673c44b271f19fa9`. Supersedes earlier visual-review counts and focus-image acceptance claims only. See VERIFICATION.md and DESIGN_ADJUDICATION.md for exact24-cell self-adjudication, capture keyboard repair,959 registered-owner tests,25 rights tests and direct-EIA summary correction. Same previously generated Sep25 page retained after proving incoming page movement was clock-only; out-of-scope Sep27 rebuild outputs were archived rather than published. No whole-repository, independent-review, merge, deployment or live acceptance is claimed. MISSION_COMPLETE:false. Continue via #8049 comment5862072495 and PR #8125; keep independent review and live acceptance separate.
