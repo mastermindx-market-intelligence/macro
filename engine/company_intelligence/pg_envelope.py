@@ -54,6 +54,8 @@ _SPAN_LIMITS = {"colspan": 1000, "rowspan": 65534}
 _READABLE = frozenset(map(chr, range(0x20, 0x7F))) | {_DASH}
 _YEAR = re.compile(r"(?<![0-9])20[0-9]{2}(?![0-9])")
 _FOOTNOTE_MARKER = re.compile(r"\([0-9]\)")
+_YEAR_BEFORE = re.compile(r"(?:\A *|[A-Za-z0-9] *|[A-Za-z]\. *|[A-Za-z0-9] *[,/] *|[A-Za-z0-9]-|[A-Za-z0-9] +- +)\Z")
+_YEAR_AFTER = re.compile(r" *\Z| *[A-Za-z0-9]|[,/-][A-Za-z0-9]| *[,/] *(?:\Z|[A-Za-z0-9])| +- +[A-Za-z0-9]")
 _FIGURE = re.compile(r"\(?\$?[0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?\)?%?")
 _ODD_CHARACTER = re.compile(r"[^\S \t\n\r\f\xa0]|[\x00-\x08\x0b\x0e-\x1f\x7f-\x9f]")
 _RAW_TEXT_ELEMENT = re.compile(rf"<({'|'.join(_RAW_TEXT_CLOSE)})\b[^>]*>.*?</\1{_HTML_SPACE}*>", re.I | re.S)
@@ -839,7 +841,7 @@ def _period_titles(rows: Sequence[Sequence[Cell]], cell: Cell) -> list[date | No
 
 def _parse_period_title(value: str) -> date | None:
     folded = " ".join(value.split()).casefold()
-    match = re.fullmatch(r"three months ended ([a-z]+) (\d{1,2})(?:, (\d{4}))?", folded)
+    match = re.fullmatch(r"three months ended ([a-z]+) ([0-9]{1,2})(?:, ([0-9]{4}))?", folded)
     if match:
         month = month_number(match.group(1))
         day = int(match.group(2))
@@ -847,7 +849,7 @@ def _parse_period_title(value: str) -> date | None:
         if month is None or not _valid_day(year, month, day):
             return None
         return PeriodTitle(month, day, year)
-    match = re.fullmatch(r"([a-z]+) - ([a-z]+) (\d{4})", folded)
+    match = re.fullmatch(r"([a-z]+) - ([a-z]+) ([0-9]{4})", folded)
     if match:
         start = month_number(match.group(1))
         end = month_number(match.group(2))
@@ -923,10 +925,25 @@ def _header_years(rows: Sequence[Sequence[Cell]], cell: Cell) -> set[int] | None
             continue
         if _FIGURE.fullmatch(value):
             continue
-        if any(_figure_character(character) for character in _FOOTNOTE_MARKER.sub("", _YEAR.sub("", value))):
+        named, rest = _named_years(value)
+        if any(_figure_character(character) for character in rest):
             return None
-        years.update(int(year) for year in _YEAR.findall(value))
+        years.update(named)
     return years
+
+
+def _named_years(value: str) -> tuple[list[int], str]:
+    text = _FOOTNOTE_MARKER.sub(" ", value)
+    named: list[int] = []
+    rest: list[str] = []
+    start = 0
+    for match in _YEAR.finditer(text):
+        if _YEAR_BEFORE.search(text, 0, match.start()) and _YEAR_AFTER.match(text, match.end()):
+            named.append(int(match.group()))
+            rest.append(text[start : match.start()])
+            start = match.end()
+    rest.append(text[start:])
+    return named, " ".join(rest)
 
 
 def _parse_year(value: str) -> int | None:
