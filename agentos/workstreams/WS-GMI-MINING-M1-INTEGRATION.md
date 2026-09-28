@@ -149,6 +149,26 @@ next_action: >
   assemble the field. The accurate claim is stronger - no identity row's CONTENT originates there -
   and all eleven are now enumerated in T03 section 6. A claim quantified over every site must list
   them.
+
+  WAVE 10 (records only; no code, no status, no count changed) is the wave 9 receipt turned on
+  ITSELF. Wave 9 shipped a citation-integrity check reporting 27 pin refs and ZERO dead, and that
+  check cannot see the defect that was actually present: it asks whether a ref RESOLVES, which a
+  pin aimed at an unrelated green test satisfies completely. Resolution is not relevance. A screen
+  comparing each row's NAMED symbols against its cited test's body flagged two rows -- MGD-01 at
+  0 of 9 and MGD-22 at 1 of 4 -- and hand-reading both confirmed it: each cited a green test that
+  asserts something adjacent to, but not, the mechanism the row's reason turns on. Coverage was
+  never the problem, so nothing moved status; the citations were wrong, which is worse than it
+  sounds, because a pin's whole purpose is to send a reader to the assertion.
+  Two things generalise. FIRST, the family: an integrity check that passes tells you only that the
+  thing it measured is fine. Presence is not uniqueness, a misdirected probe answers NONE
+  vacuously, and a resolving pin need not assert -- three instances in three waves, each one a
+  clean instrument result that WAS the bug. Ship a positive control with every such check and state
+  what it cannot see. SECOND, and less obvious: MGD-01's mismatch was created by IMPROVING the row.
+  Its previous note was vague enough that no screen could flag it, and the weak pin looked fine
+  beside vague prose; replacing it with a real mechanism is what made the mismatch visible. A note
+  and its pin are one artifact, so a rewritten justification owes a re-checked citation in the same
+  commit. The screen is deliberately kept a SCREEN and not a gate -- a pin may assert a mechanism
+  in different words, so a zero score orders a READING, never a verdict.
   WAVE 8 (records only) fixed a gate that could not execute. T02's §5 sibling-regression gate
   required `tests/test_issuer_profiles.py` and `tests/test_event_workspace_build.py` green and
   NEITHER FILE EXISTS; the suites it means are `tests/test_issuer_profiles_a5a.py`,
