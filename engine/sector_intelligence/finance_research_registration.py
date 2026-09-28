@@ -423,14 +423,6 @@ def _generation(request: Mapping[str, Any], bundle: Any) -> str:
 
 
 # Field-name list, in the projection's declaration order. Used for limitations.
-#: An owner omission reaches the public envelopes only as a machine name
-#: (``owner_omission:<name>``), the same snake_case shape as every other code
-#: this adapter emits. Anything else (owner prose, a position, a client
-#: name) collapses to the single ``owner_omission:unrecognized`` marker; a
-#: blank one stays ``owner_omission:unnamed`` (review F5).
-_OMISSION_NAME_RE = re.compile(r"[a-z][a-z0-9_]{0,63}")
-
-
 _OWNER_INPUT_FIELDS: tuple[str, ...] = (
     "sector_dossier",
     "theme_evidence",
@@ -462,6 +454,16 @@ _OWNER_BUNDLE_UNMAPPED_FIELDS: tuple[str, ...] = (
     "interpretation_blocks",
     "native_refs",
 )
+
+#: The closed vocabulary of owner omissions: the owner inputs and owner-bundle
+#: fields this adapter already declares, and nothing else. An omission reaches
+#: the public envelopes only as one of these names (``owner_omission:<name>``).
+#: Any other string, however it is spelled (owner prose, a position, a client
+#: name in snake_case), collapses to the single ``owner_omission:unrecognized``
+#: marker, and a blank one stays ``owner_omission:unnamed``. A shape filter was
+#: not enough: it let snake_case owner text through (review F5, re-review M1).
+#: Collapse, never refuse: the omissions source raises nothing (M7).
+_OMISSION_NAMES: frozenset[str] = frozenset(_OWNER_INPUT_FIELDS) | frozenset(_OWNER_BUNDLE_UNMAPPED_FIELDS)
 
 
 def _owner_inputs_from_bundle(bundle: Any) -> tuple[Any, datetime, datetime]:
@@ -535,8 +537,10 @@ def _build_limitations(inputs: Any, bundle: Any) -> list[str]:
       (once per field per compose). ``native_refs`` is special — see
       :data:`_OWNER_BUNDLE_UNMAPPED_FIELDS`; it counts only when at least
       one entry has kind != :data:`RUN_CONTEXT_KIND`.
-    * Each :attr:`bundle.omissions` entry produces an
-      ``owner_omission:<reason>`` marker. A blank string or a non-string
+    * Each :attr:`bundle.omissions` entry named in :data:`_OMISSION_NAMES`
+      produces an ``owner_omission:<name>`` marker; any other non-blank
+      string collapses to the single ``owner_omission:unrecognized`` marker,
+      so owner text never reaches an envelope. A blank string or a non-string
       omission is NEVER silently dropped (M7): it surfaces as the single
       limitation ``owner_omission:unnamed`` — deduplicated across any
       number of such entries — when that string satisfies the envelope
@@ -562,7 +566,7 @@ def _build_limitations(inputs: Any, bundle: Any) -> list[str]:
             # is blank — it cannot carry an omission reason, so it collapses
             # to the single deduplicated ``owner_omission:unnamed`` marker.
             if isinstance(omission, str) and omission.strip():
-                if _OMISSION_NAME_RE.fullmatch(omission):
+                if omission in _OMISSION_NAMES:
                     limitations.add(f"owner_omission:{omission}")
                 else:
                     unrecognized_present = True
@@ -878,7 +882,10 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: str) -> dict[str, An
         validated = validator(dict(matched))
     except ValueError:
         validated = None
-    if not isinstance(validated, Mapping):
+    else:
+        if not isinstance(validated, Mapping):
+            raise TypeError("shell validate_assertion returned a non-mapping")
+    if validated is None:
         _refuse("not_available")
 
     source_records = _collect_source_records(dossier, matched["curation_revision"])

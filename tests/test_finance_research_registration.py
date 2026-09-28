@@ -411,7 +411,7 @@ def test_limitations_mark_unmapped_fields_and_foreign_native_ref_kinds_once_each
         financial_packets=({"metric": "x"},),
         interpretation_blocks=({"interpretation_id": "i1"},),
         native_refs=(_synthetic_run_context_ref(), foreign_ref),
-        omissions=("omitted_reason",),
+        omissions=("event_workspaces",),
     )
     # B3(c): a present assertion list with no resolver raises
     # shared_shell_unavailable. The limitations exercise is independent of
@@ -428,7 +428,7 @@ def test_limitations_mark_unmapped_fields_and_foreign_native_ref_kinds_once_each
     assert limitations.count("owner_field_unmapped:event_workspaces") == 1
     assert limitations.count("owner_field_unmapped:interpretation_blocks") == 1
     assert limitations.count("owner_field_unmapped:native_refs") == 1
-    assert "owner_omission:omitted_reason" in limitations
+    assert "owner_omission:event_workspaces" in limitations
 
 
 def test_limitations_are_sorted_and_unique():
@@ -1609,12 +1609,12 @@ def test_omissions_blank_string_or_non_string_emits_unnamed_marker():
     query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
     bundle = _Bundle(
         native_refs=(_synthetic_run_context_ref(),),
-        omissions=("", "valid", None, 0, "valid"),  # mixed bad + good, dedup
+        omissions=("", "macro_context", None, 0, "macro_context"),  # mixed bad + good, dedup
     )
     envelope = reg.compose(query, bundle)
     limitations = envelope["limitations"]
     assert "owner_omission:unnamed" in limitations
-    assert "owner_omission:valid" in limitations
+    assert "owner_omission:macro_context" in limitations
     # Dedup: exactly one unnamed marker.
     assert limitations.count("owner_omission:unnamed") == 1
 
@@ -1631,12 +1631,12 @@ def test_omissions_whitespace_only_string_emits_unnamed_marker():
     query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
     bundle = _Bundle(
         native_refs=(_synthetic_run_context_ref(),),
-        omissions=("  ", "valid", "  "),  # two whitespace-only + one valid
+        omissions=("  ", "macro_context", "  "),  # two whitespace-only + one valid
     )
     envelope = reg.compose(query, bundle)
     limitations = envelope["limitations"]
     assert "owner_omission:unnamed" in limitations
-    assert "owner_omission:valid" in limitations
+    assert "owner_omission:macro_context" in limitations
     # Dedup: exactly one unnamed marker even with two whitespace-only entries.
     assert limitations.count("owner_omission:unnamed") == 1
 
@@ -1664,7 +1664,7 @@ def test_secret_strings_do_not_leak_into_any_envelope(monkeypatch):
         event_workspaces=({"event_id": "SECRET_EVENT"},),
         financial_packets=({"metric": "SECRET_FIN"},),
         interpretation_blocks=({"interpretation_id": "SECRET_INTERP"},),
-        omissions=("SECRET_OMISSION client=ACME pos=+5MM",),
+        omissions=("SECRET_OMISSION client=ACME pos=+5MM", "client_acme_short_5mm_block"),
         native_refs=({
             "kind": "finance_run_context",
             "generated_at": "2026-09-25T07:48:00Z",
@@ -1689,6 +1689,8 @@ def test_secret_strings_do_not_leak_into_any_envelope(monkeypatch):
     evidence_blob = json.dumps(evidence_env, sort_keys=True, ensure_ascii=False,
                                separators=(",", ":"), default=str)
     assert "SECRET_" not in evidence_blob, evidence_blob
+    for blob in (compose_blob, evidence_blob):
+        assert "client_acme" not in blob, blob
 
 
 # ---------------------------------------------------------------------------
@@ -1760,16 +1762,22 @@ def test_evidence_refuses_an_assertion_the_shell_validator_rejects(monkeypatch):
     assert excinfo.value.__context__ is None and excinfo.value.__cause__ is None
 
 
-def test_evidence_lets_a_broken_validator_fail_as_itself(monkeypatch):
-    """F2: only the validator's refusal type (a ``ValueError``) means
-    "invalid". Any other failure is a broken shell and propagates, so it can
-    never pass for an assertion that is merely not available."""
+def _raises_keyerror(_payload):
+    raise KeyError("observation")
+
+
+def _returns_none(_payload):
+    return None
+
+
+@pytest.mark.parametrize("validator, broken", [(_raises_keyerror, KeyError), (_returns_none, TypeError)])
+def test_evidence_lets_a_broken_validator_fail_as_itself(monkeypatch, validator, broken):
+    """F2 / re-review N-b: only the validator's refusal type (a
+    ``ValueError``) means "invalid". Any other failure, and a return that is
+    not a mapping, is a broken shell and propagates, so it can never pass for
+    an assertion that is merely not available."""
     reg = _import_reg()
-
-    def validator(_payload):
-        raise KeyError("observation")
-
-    with pytest.raises(KeyError):
+    with pytest.raises(broken):
         _select_with_validator(monkeypatch, reg, _assertion(), validator)
 
 
@@ -1794,32 +1802,41 @@ def test_evidence_without_the_shell_validator_is_shared_shell_unavailable(monkey
     assert str(excinfo.value) == "shared_shell_unavailable"
 
 
-def test_an_owner_omission_reaches_the_envelope_only_as_a_machine_name():
-    """F5: omissions were emitted verbatim. A snake_case name passes; owner
-    prose, mixed case, an over-long name and any other shape collapse into one
+def test_an_owner_omission_reaches_the_envelope_only_as_a_declared_name():
+    """F5 / re-review M1: omissions were emitted verbatim, and a snake_case
+    shape filter still passed owner text spelled in snake_case. Only a name
+    in the closed vocabulary (the owner inputs and bundle fields the adapter
+    declares) passes; everything else collapses into one
     ``owner_omission:unrecognized`` marker, and a blank stays ``unnamed``."""
     reg = _import_reg()
+    assert "financial_packets" in reg._OMISSION_NAMES
+    assert reg._OMISSION_NAMES == set(reg._OWNER_INPUT_FIELDS) | set(reg._OWNER_BUNDLE_UNMAPPED_FIELDS)
     query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
     bundle = _bundle_with_run_context(omissions=(
         "financial_packets",
-        "a" + "b" * 63,
+        "event_workspaces",
+        "client_acme_short_5mm_block",
         "SECRET_OMISSION client=ACME pos=+5MM",
         "Mixed_Case",
-        "a" + "b" * 64,
-        "trailing ",
+        "financial_packets ",
         "   ",
     ))
     envelope = reg.compose(query, bundle)
     markers = [m for m in envelope["limitations"] if m.startswith("owner_omission:")]
     assert markers == [
-        "owner_omission:a" + "b" * 63,
+        "owner_omission:event_workspaces",
         "owner_omission:financial_packets",
         "owner_omission:unnamed",
         "owner_omission:unrecognized",
     ], markers
     blob = json.dumps(envelope, sort_keys=True, ensure_ascii=False, default=str)
-    for leaked in ("SECRET", "ACME", "Mixed_Case", "b" * 64, "trailing"):
+    for leaked in ("client_acme", "SECRET", "ACME", "Mixed_Case"):
         assert leaked not in blob, leaked
+    # Re-review N-a: an omission spelled like one of the adapter's own markers
+    # is not a declared name, so it cannot pass as that marker.
+    markers_only = reg.compose(query, _bundle_with_run_context(omissions=("unnamed", "unrecognized")))
+    assert [m for m in markers_only["limitations"] if m.startswith("owner_omission:")] == [
+        "owner_omission:unrecognized"]
 
 
 class _FailingSiblingFinder:
