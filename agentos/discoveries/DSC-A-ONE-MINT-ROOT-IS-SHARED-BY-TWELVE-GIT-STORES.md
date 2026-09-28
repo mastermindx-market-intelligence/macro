@@ -45,7 +45,18 @@ so_what: >
   its number), and expect orphaned registrations to accumulate in stores you are not standing
   in — the contract-delta reaper prunes only its own clone's, by design. Note also that two
   owners are self-hosted runner workspaces, so CI's own checkout plants trees in the shared
-  human/Sol mint root; a sweeper that did govern this root could delete a live runner's tree.
+  human/Sol mint root. **That last sentence originally read "a sweeper that did govern this
+  root could delete a live runner's tree" and is CORRECTED 2026-09-28, same day, by the
+  follow-up measurement:** neither runner store owns a LIVE tree here — both runner-owned
+  entries ARE the root's two already-orphaned registrations
+  (`sol-flow-velocity-recovery-proof-20260920`, **7.2 GiB**, and
+  `prophet-b4-session-policy-repair-20260922-a11`, 408 KiB), whose gitdir targets are gone.
+  So the hazard is not a sweeper deleting a live runner tree; it is that CI leftovers
+  accumulate here that NO store registers, so no `worktree prune` anywhere can see them —
+  and being unregistered, `git` cannot run in the tree at all, so their landedness is
+  UNPROVABLE and the completion-signal law fails them closed. They are the largest clean
+  reclaim candidate found on this volume and still need an operator judgement, not an
+  automated verdict.
 kind: architecture
 verified_at: 2026-09-28
 verified_by: >
