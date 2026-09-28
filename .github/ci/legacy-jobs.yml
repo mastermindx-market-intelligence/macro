@@ -166,6 +166,8 @@ jobs:
       # pyarrow only; no render deps needed for this module's own kills).
       - name: HK discovery challenger — K-D1-K-D9 (hk_discovery_v1)
         run: python -m pytest tests/test_hk_discovery_challenger.py -q
+      - name: Prophet discovery outcomes - canonical grading and degraded clocks
+        run: python -m pytest tests/test_grading.py -q
 
   board-contradictions:
     if: ${{ false }}
@@ -4816,8 +4818,11 @@ jobs:
     # every job and suite through the planner, and no exclusive list can name
     # every suite. So a PR that moves one of those verdicts without touching a
     # path below merges without running this job. Each such shape has another
-    # owner. contract-delta (ci.yml, every PR) re-runs the unrun census and the
-    # curated-closure check differentially. integration-baseline.yml runs
+    # owner. contract-delta (ci.yml, every PR) re-runs the unrun census, the
+    # curated-closure check, the packing probes and the skip-only and
+    # trigger-closure censuses differentially (probes and both censuses since
+    # 2026-09-27), so a PR that breaches a probe ceiling, adds a skip-only gate or
+    # opens a trigger gap reds on its own head. integration-baseline.yml runs
     # test_ci_pack.py and the skip-only census on every source push to main and
     # every 4 hours, and merge-on-green pauses ordinary merges while it is red.
     # Every ci.yml run on main runs this whole job; the merge sweeper dispatches
@@ -5828,7 +5833,12 @@ jobs:
       - "tests/test_finance_overlap.py"
       - "engine/sector_intelligence/contracts.py"
       - "engine/sector_intelligence/finance_projection.py"
+      # FIN-T10 registration adapter — fixture-only, §8 sector_profile pending.
+      # Once §8 is adjudicated the same factory pattern (technology @ #7891)
+      # will be applied here.
+      - "engine/sector_intelligence/finance_research_registration.py"
       - "tests/test_finance_intelligence_projection.py"
+      - "tests/test_finance_research_registration.py"
       # FIN-T9 entry points — sector deep-dive card on the Theme Tracker
       # + Financials launch module (skip-mode while PR #7669 is OPEN).
       - "templates/_finance_sector_deep_dive.html.j2"
@@ -5901,7 +5911,7 @@ jobs:
       - name: finance intelligence page + hydration tests
         run: python -m pytest tests/test_finance_intelligence_page.py tests/test_finance_intelligence_hydration.py -q
       - name: finance intelligence contract tests
-        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py -q
+        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py tests/test_finance_research_registration.py -q
 
 
   consumer-cyclical-economic-change:
@@ -6963,16 +6973,32 @@ jobs:
         run: pip install pytest
       - name: p0b receipt-closure (pinned construction inputs require a same-diff receipt remint)
         run: |
-          if ! git fetch origin ${{ github.base_ref || 'main' }}; then
-            echo "::error title=p0b-receipt-closure::could not fetch origin/${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
-            exit 1
+          # Semantic packs already carry the planner exact tested-tree changed
+          # paths as a downloaded JSON handle. Prefer that authoritative input:
+          # re-fetching the moving base here cost the R25 candidate the entire
+          # 10-minute job budget before the gate itself could execute.
+          # A main proof or base replay publishes the planner null token (full
+          # suite, no list). The event tells the checker that null is
+          # legitimate there and still a refusal on a pull_request. Keep
+          # apostrophes out of this block: one blinds the closure inference.
+          if [ -n "${CI_CHANGED_FILES_FILE:-}" ]; then
+            if [ ! -r "$CI_CHANGED_FILES_FILE" ]; then
+              echo "::error title=p0b-receipt-closure::configured CI_CHANGED_FILES_FILE is unreadable; refusing rather than falling back to a different comparison question."
+              exit 2
+            fi
+            python3 scripts/check_p0b_receipt_closure.py --diff-file "$CI_CHANGED_FILES_FILE" --event "${GITHUB_EVENT_NAME:-}"
+          else
+            if ! git fetch origin ${{ github.base_ref || 'main' }}; then
+              echo "::error title=p0b-receipt-closure::could not fetch origin/${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
+              exit 1
+            fi
+            if ! mb=$(git merge-base "origin/${{ github.base_ref || 'main' }}" HEAD); then
+              echo "::error title=p0b-receipt-closure::no merge base with ${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
+              exit 1
+            fi
+            git diff --name-only "$mb" HEAD > /tmp/p0b.changed
+            python3 scripts/check_p0b_receipt_closure.py --diff-file /tmp/p0b.changed
           fi
-          if ! mb=$(git merge-base "origin/${{ github.base_ref || 'main' }}" HEAD); then
-            echo "::error title=p0b-receipt-closure::no merge base with ${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
-            exit 1
-          fi
-          git diff --name-only "$mb" HEAD > /tmp/p0b.changed
-          python3 scripts/check_p0b_receipt_closure.py --diff-file /tmp/p0b.changed
       - name: p0b receipt-closure selftest (gate fires when a pinned path moves without receipts)
         run: python3 scripts/check_p0b_receipt_closure.py --selftest
       - name: p0b receipt-closure unit suite
@@ -7313,7 +7339,20 @@ jobs:
           # retained solely for the one-head bootstrap where the PR must still be
           # proven by the pre-upgrade executor loaded from main.
           BRANCH="${CI_HEAD_REF:-${GITHUB_HEAD_REF:-}}"
-          TRAILERS=""
+          # Both populations this fence classifies are unbounded, so only FILE
+          # HANDLES cross argv (DSC:CI-SELF-MOD-FENCE-ARGV-BYPASSES-BOUNDED-TRANSPORT).
+          # #6223 moved the two fences.yml copies of this check onto handles and
+          # missed this packed copy: run 36360866211 (PR #8006, 2026-09-28) died
+          # here with exit 126, "Argument list too long", before Python started.
+          # run_ci_pack had deepened the tested merge to depth 32 to reach a merge
+          # base, and origin/main..HEAD then walked ~117 commits (~372 KB of
+          # squash-merge PR bodies) into ONE argv string, past the 131,072-byte
+          # Linux MAX_ARG_STRLEN. Shell variables below never meet execve: printf
+          # is a builtin, and every external command reads a population on stdin.
+          SELF_MOD_INPUT_DIR=$(mktemp -d "${RUNNER_TEMP:-${TMPDIR:-/tmp}}/self-mod-fence.XXXXXX")
+          trap 'rm -rf "$SELF_MOD_INPUT_DIR"' EXIT
+          FILES_FILE="$SELF_MOD_INPUT_DIR/changed-files.json"
+          TRAILERS_FILE="$SELF_MOD_INPUT_DIR/commit-messages.txt"
           FILES=""
           PARSE_RC=0
           FILES=$(python3 scripts/check_self_mod_fence.py --print-planner-files) || PARSE_RC=$?
@@ -7328,11 +7367,15 @@ jobs:
               echo "self-mod-fence: ci-plan reported no changed files — zero changes to classify (pass)"
               exit 0
             fi
+            # --print-planner-files frames the list one path per line, the same
+            # framing the retired unquoted expansion split on. NUL-frame it into
+            # the canonical changed-files JSON handle.
+            printf '%s\n' "$FILES" | tr '\n' '\0' |
+              python3 scripts/check_self_mod_fence.py --write-files-file-from-nul "$FILES_FILE"
           else
             # Unset env (local / pre-#5564): fall back to git. Fail-closed only when
             # that fallback cannot determine files either.
             git fetch origin ${{ github.base_ref || 'main' }}
-            TRAILERS=$(git log --format="%B" origin/${{ github.base_ref || 'main' }}..HEAD 2>/dev/null || echo "")
             FILES=$(git diff --name-only origin/${{ github.base_ref || 'main' }}...HEAD 2>/dev/null || echo "")
             if [ -z "$FILES" ]; then
               if [ "${GITHUB_EVENT_NAME:-}" = "workflow_dispatch" ] && \
@@ -7356,12 +7399,18 @@ jobs:
               echo "Possible causes: CI_CHANGED_FILES_FILE/CI_CHANGED_FILES_JSON unset/malformed, git diff error, or base_ref resolution failure." >&2
               exit 1
             fi
+            # -z: raw pathnames, with no core.quotePath escaping and no shell split.
+            git diff --name-only -z origin/${{ github.base_ref || 'main' }}...HEAD |
+              python3 scripts/check_self_mod_fence.py --write-files-file-from-nul "$FILES_FILE"
           fi
-          TRAILERS=$(git log --format="%B" origin/${{ github.base_ref || 'main' }}..HEAD 2>/dev/null || echo "")
+          # Same range and same failure semantics as the retired argv form (a git
+          # log error still reads as no commit messages); only the transport moved.
+          # The fence fails closed on a handle it cannot read.
+          { git log --format="%B" origin/${{ github.base_ref || 'main' }}..HEAD 2>/dev/null || echo ""; } > "$TRAILERS_FILE"
           python3 scripts/check_self_mod_fence.py \
             --branch "$BRANCH" \
-            --files $FILES \
-            --trailers "$TRAILERS"
+            --files-file "$FILES_FILE" \
+            --trailers-file "$TRAILERS_FILE"
       - name: self-mod-fence test suite
         run: python -m pytest tests/test_self_mod_fence.py tests/test_ci_authority.py -q
       - name: agent-os record contract (schema fail-closed, join fail-open)
@@ -12847,10 +12896,14 @@ jobs:
         with:
           python-version: "3.12"
       - name: install minimal deps
-        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 openpyxl scikit-learn
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly requests beautifulsoup4 html5lib openpyxl scikit-learn
       - name: US candidate and plan source-date truth (PR-time gated journey)
         run: >-
           python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "candidate_heading_discloses_source_date or gated_candidate_journey or historical_plan_wall_does_not"
+      - name: Shared Prophet card - record identity and explicit unavailable action
+        run: python -m pytest tests/test_prophet_card_shared.py -q
+      - name: Prophet Today and Company context - owner selection and typed responses
+        run: python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "today or company_context"
       - name: stock-brief context health (R2 context must yield a nonempty batch)
         run: >-
           python -m pytest tests/test_catalyst_stock.py -q -k "build_stock_briefs_all_no_context_is_failure or build_stock_briefs_empty_result_is_failure"
@@ -14003,6 +14056,14 @@ jobs:
       - "templates/_stock_decision.css.j2"
       - "templates/_track_record_dlg.html.j2"
       - "templates/_us_board_cards.html.j2"
+      # Packet 2 plan records are rendered by dashboard.html.j2 through this
+      # partial, so the curated import closure must own it explicitly.
+      - "templates/_us_prophet_plan_cards.html.j2"
+      # Packet 2: existing shared-card tests consume these source-bound details.
+      - "templates/_prophet_setup_detail.html.j2"
+      - "templates/_us_candidate_pool_rows.html.j2"
+      - "templates/theme.js"
+      - "site/theme.js"
       - "templates/canada.html.j2"
       - "templates/china.html.j2"
       - "templates/dashboard.html.j2"
@@ -14234,6 +14295,60 @@ jobs:
         run: pip install pytest
       - name: B4 entry-policy calibration preregistration law (A1 amendment, six distinct cells, single primary endpoint)
         run: python -m pytest tests/test_b4_entry_policy_calibration_prereg.py -q
+
+  healthcare-fda-supply:
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "tests/test_foresight_cascade.py"
+      - "tests/test_fda_shortages_generation.py"
+      - "tests/test_fda_supply_probes.py"
+      - "tests/test_fda_supply_probes_t02r.py"
+      - "tests/test_fda_supply_probes_t02r2.py"
+      - "tests/test_fda_supply_probes_t01r.py"
+      - "tests/test_fda_supply_probes_t02r3.py"
+      - "tests/test_fda_supply_probes_final.py"
+      - "tests/test_fda_supply_probes_mixed.py"
+      - "collectors/fda_shortages.py"
+      - "engine/fda_scarcity.py"
+      - "engine/foresight_cascade.py"
+      - "scripts/build_foresight.py"
+      - "collectors/__init__.py"
+      - "templates/foresight.html.j2"
+      - "engine/__init__.py"
+      - "engine/altdata_confirmers.py"
+      - "engine/bottleneck.py"
+      - "engine/demand_capex.py"
+      - "engine/demand_chain.py"
+      - "engine/foresight_earliness.py"
+      - "engine/foresight_enb.py"
+      - "engine/foresight_health.py"
+      - "engine/foresight_score.py"
+      - "engine/foresight_sizing.py"
+      - "engine/glut_watch.py"
+      - "engine/guidance_gap.py"
+      - "engine/ledger_lane.py"
+      - "engine/news_flow.py"
+      - "engine/policy_calendar.py"
+      - "engine/theme_fingerprint.py"
+      - "engine/theme_revisions.py"
+      - "lib/__init__.py"
+      - "lib/config.py"
+      - "lib/store.py"
+    timeout-minutes: 8
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps for the FDA supply suites
+        run: pip install pytest pandas numpy pyarrow pyyaml jinja2 requests
+      - name: FDA foresight cascade and qualified observation suites
+        run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py -q
+      - name: FDA supply acceptance probes
+        run: python -m pytest tests/test_fda_supply_probes.py tests/test_fda_supply_probes_t02r.py tests/test_fda_supply_probes_t02r2.py tests/test_fda_supply_probes_t01r.py tests/test_fda_supply_probes_t02r3.py tests/test_fda_supply_probes_final.py tests/test_fda_supply_probes_mixed.py -q
 
   prophet-us-context-and-grades:
     # PROPHET US §W7 — the full-population candidate record: the PIT context store that
@@ -14524,8 +14639,14 @@ jobs:
       # is the first failure a reader sees; a panel or calibration regression
       # above remains the masking unit. No new job; paths widened below to
       # cover the new suite's imports and its engine/template subjects.
+      # RIC F3 W3 backfill 2026-09-27 (CEO A seat, PR #8051): tests/test_credit_momentum_yield_consumer.py
+      # rides this step because its subject — the yield_momentum organ that engine/credit_momentum.py
+      # now consumes display-only — is already governed here via tests/test_yield_momentum.py; the
+      # job that owns engine/credit_momentum.py (ccw-w3-credit-momentum) is disabled (`if: false`).
+      # Placed right after test_yield_momentum.py so a source regression is the masking unit and a
+      # consumer regression is the next failure a reader sees. Paths widened for the suite + engine.
       - name: commodities / forex / rates / news / policy panels and their calibration guards
-        run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_forex_context_bus.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py tests/test_commodities_w6_truth.py tests/test_build_forex_stance.py -q
+        run: python -m pytest tests/test_factor_universe_hold.py tests/test_build_dispersion_regime.py tests/test_build_factor_panel.py tests/test_commodity_mtf_verdict_honesty.py tests/test_congress_score.py tests/test_context_risk.py tests/test_cross_asset_context.py tests/test_crossasset_flows.py tests/test_financial_news.py tests/test_forex.py tests/test_forex_context_bus.py tests/test_news_event_ledger.py tests/test_phase_buildout.py tests/test_policy_lever.py tests/test_rates_command.py tests/test_yield_momentum.py tests/test_credit_momentum_yield_consumer.py tests/test_inputs_yield_curve.py tests/test_reflexivity_overlay.py tests/test_scorecard_incremental.py tests/test_us_sector_rotation_wiring.py tests/test_validation.py tests/test_whitehouse_build.py tests/test_commodities_ignition_copy.py tests/test_commodities_w6_truth.py tests/test_build_forex_stance.py -q
       - name: A-F01-W4-1 bonds hub byte-preservation guard (T10)
         run: python -m pytest tests/test_macro_rates_curves_bonds_guard.py -q
     # T10 lives here (gate: data), not on ccw-w4-credit-desk (gate: code).
@@ -14549,6 +14670,8 @@ jobs:
       - "tests/test_policy_lever.py"
       - "tests/test_rates_command.py"
       - "tests/test_yield_momentum.py"
+      - "tests/test_credit_momentum_yield_consumer.py"
+      - "engine/credit_momentum.py"
       - "tests/test_inputs_yield_curve.py"
       - "tests/test_reflexivity_overlay.py"
       - "tests/test_scorecard_incremental.py"
@@ -17567,10 +17690,14 @@ jobs:
     # casebook, the closed delivery-input validator and the typed route_unbound client
     # (engine/market_ontology/mining_dependency_binding.py). Later Mining task PRs APPEND
     # their own suites and paths to this ONE block (never to a sibling sector's job).
-    # Gate-code pure: the suites import the standard library, jsonschema/pyyaml, the Mining
-    # modules and, through engine/market_ontology/__init__.py, exposure_map.py (stdlib-only);
-    # the shared-contract probe imports engine.theme_graph lazily and degrades to a typed
-    # refusal when it is absent. Every fixture is synthetic; no data/ or site/ input.
+    # T04a (this append): the per-sector composition module, the closed response schema,
+    # and the composition suite (engine/market_ontology/mining_theme_research.py,
+    # contracts/market_ontology/mining_theme_research.v1.schema.json,
+    # tests/test_mining_composition.py). Gate-code pure: the suites import the standard
+    # library, jsonschema/pyyaml, the Mining modules and, through
+    # engine/market_ontology/__init__.py, exposure_map.py (stdlib-only); the shared-contract
+    # probe imports engine.theme_graph lazily and degrades to a typed refusal when it is
+    # absent. Every fixture is synthetic; no data/ or site/ input.
     if: ${{ false }}
     gate: code
     scope: exclusive
@@ -17578,8 +17705,23 @@ jobs:
       - "tests/mining_casebook.py"
       - "tests/test_mining_shared_contract.py"
       - "tests/test_mining_shared_contract_probes.py"
+      - "tests/test_mining_composition.py"
+      - "tests/test_mining_composition_probes.py"
+      - "tests/test_mining_composition_probes_r2.py"
+      - "tests/test_mining_composition_probes_r3.py"
+      - "tests/test_mining_composition_truth_table.py"
+      - "research/mining/m1_integration_program/domain/MINING_DOMAIN_DEFINITIONS_M1_2026-09-24.md"
+      - "engine/theme_graph/rights.py"
+      - "engine/theme_graph/store.py"
+      - "engine/transmission_chains.py"
+      - "config/theme_crosswalk.yml"
+      - "config/theme_sources.yml"
+      - "lib/__init__.py"
+      - "lib/config.py"
       - "tests/fixtures/mining_economic_dossier/**"
       - "engine/market_ontology/mining_dependency_binding.py"
+      - "engine/market_ontology/mining_theme_research.py"
+      - "contracts/market_ontology/mining_theme_research.v1.schema.json"
       - "engine/market_ontology/__init__.py"
       - "engine/market_ontology/exposure_map.py"
       - "engine/theme_graph/__init__.py"
@@ -17596,3 +17738,83 @@ jobs:
         run: pip install pytest jsonschema pyyaml
       - name: mining economic dossier — shared-contract harness
         run: TZ=UTC python -m pytest tests/test_mining_shared_contract.py tests/test_mining_shared_contract_probes.py -q
+      - name: mining economic dossier — per-sector composition suite (T04a)
+        run: TZ=UTC python -m pytest tests/test_mining_composition.py tests/test_mining_composition_probes.py tests/test_mining_composition_probes_r2.py tests/test_mining_composition_probes_r3.py tests/test_mining_composition_truth_table.py -q
+
+  industrials-result-cash:
+    # GMI INDUSTRIALS first vertical, T01 (R-IND-02, PR #7924): synthetic result-to-cash
+    # corpus, helper harness and the delivery-input validator. One exclusive gate:code job
+    # for the whole Industrials program; every later task adds its suite to `paths:` and
+    # the run line (never a second job). Disabled entry: the file is a pack inventory
+    # read by scripts/run_ci_pack.py.
+    if: ${{ false }}
+    gate: code
+    # CURATED SCOPE (2026-09-24, step 6): the suite, its helper, the fixture corpus, the
+    # owned validator module, and the TRANSITIVE import closure that
+    # `tests/test_ci_pack.py::test_curated_exclusive_scopes_cover_their_own_import_closure`
+    # computes from `tests/test_industrials_dependency_binding.py` and
+    # `tests/industrials_result_cash_helpers.py`. Recompute the closure whenever the
+    # suite's imports change (the named test asserts every transitively-needed module
+    # is listed under `paths:` below).
+    scope: exclusive
+    paths:
+      - "tests/test_industrials_dependency_binding.py"
+      - "tests/industrials_result_cash_helpers.py"
+      - "tests/fixtures/industrials_result_cash/**"
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/financial_dossier.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/earnings_narrative/context_packets.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/private_publication.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/earnings_transcript_intake.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/company_intelligence_reader.py"
+      - "engine/press/earnings_adapter.py"
+      - "engine/research_vault/r2_store.py"
+      - "scripts/publish_company_intelligence_r2.py"
+      - "scripts/refresh_event_workspaces.py"
+      - "engine/fundamental_forensics/industrials_result_cash.py"
+      - "tests/test_industrials_result_cash.py"
+    timeout-minutes: 6
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps for the Industrials result-to-cash suite
+        # pyyaml: engine.earnings_narrative.promotion imports yaml (transitive via
+        # engine.company_intelligence.documents -> ..earnings_narrative.contracts).
+        # requests: scripts.refresh_event_workspaces imports
+        # engine.neuralweb.company_intelligence_reader at module scope (:77), and that
+        # module imports requests at module scope (:21). The lazy import inside
+        # _http_get is NOT the binding reason — a lazy-only need would not fail here.
+        # Stated identically in clean-venv proof below.
+        run: pip install pytest pyyaml requests
+      - name: Industrials synthetic dependency binding (T01)
+        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py -q

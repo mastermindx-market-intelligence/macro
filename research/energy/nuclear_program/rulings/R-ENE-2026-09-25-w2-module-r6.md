@@ -75,10 +75,10 @@ It has three strata. Only one depends on nuclear's review contract.
 - Mechanical application of packet `ene_w2_nuclear_module_r6fix` to a fresh export of `b3ea8a19ea05` gives files byte-identical to the sim: engine sha256 `cd2b4d2d594970e3…`, test `5f3a9ec9a24046b8…` (3838 bytes).
 
 ## Relays (no Energy change)
-- **The lineage walk in Robotics.** `robotics_theme_research.py:1295-1320` (read at `a1c8968f8e2f`, the pre-revert main copy) has the same mechanism: `by_revision` is built over `bundle.assertions` (:1300).
+- **The lineage walk in Robotics.** `robotics_theme_research.py:1295-1320` (read at `a1c8968f8e2f`, the pre-revert main copy) has the same mechanism: `by_revision` is built over `bundle.assertions` (:1300). **[Erratum 2026-09-28: the build is at :1298-1299, not :1300 — round-6 closure NIT; see `R-ENE-2026-09-28-w2-module-r7.md`.]**
   - The gate that builds `self.assertions` is at :372-396: validation, canonical theme, facet, the slug-keyed drop, and the time mode. There is no in-composer rights gate.
   - So the reachable Robotics cases are: another slice, a slug-keyed or other-theme record, a record not yet available, and a malformed row.
   - The Robotics lineage pins read were RBV-17: `test_robotics_research_composition.py:358`, `test_market_ontology_robotics_theme_research.py:502` and `test_robotics_research_temporal.py:156`. They cover in-scope chains only. None asserts or forbids a cross-scope walk.
   - This is mechanism only, not probed against Robotics fixtures, and it is for the owner's measurement. It is the scope/rights-seam class RULING 11 said it would take seriously.
-- (6b) `known_revisions` and the identity-vintage NIT: relay-only, as the round-5 closure agreed.
+- (6b) `known_revisions` and the identity-vintage NIT: relay-only, as the round-5 closure agreed. **[Superseded for nuclear 2026-09-28 by R-ENE-31: the round-6 closure found `known_revisions` crosses the scope and time gate, and in nuclear it gates whether a block's text is shown, so it is fixed in Energy's own module. It stays a relay for Robotics (count-only per #7870 comment 5835307458). The identity-vintage NIT stays relay-only. See `R-ENE-2026-09-28-w2-module-r7.md`.]**
 - R-ENE-28 (label-to-node binding) is unchanged.

@@ -6,6 +6,7 @@ import importlib.util
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -25,6 +26,8 @@ from scripts.ci_scope_dependencies import suite_dependency_closure
 from scripts.run_ci_pack import (
     curated_exclusive_closure_findings,
     inferred_as_if_not_exclusive,
+    packing_probe_breaches,
+    packing_probe_measurements,
 )
 import yaml
 
@@ -977,6 +980,27 @@ def test_resolve_changed_files_prefers_planner_json(
     assert PACK.resolve_changed_files(None) is None
 
 
+def test_p0b_closure_accepts_null_on_exactly_the_events_that_publish_it() -> None:
+    """The p0b closure gate's `null` allow-list is the planner's own table.
+
+    Every main proof publishes `null` (a full-suite plan has no list), and so
+    does the base replay for its base-as-main child. #7237 refused `null`
+    outright, which redded every main ci.yml proof. The fix accepts it on
+    those events and nowhere else. If the planner gains a main-role event,
+    this fails until the gate's set follows.
+    """
+    from scripts import check_p0b_receipt_closure as P0B
+
+    main_role_events = {
+        event for role, event in PACK.SUPPORTED_PLAN_ROLE_EVENTS if role == "main"
+    }
+    source = Path(PACK.__file__).read_text(encoding="utf-8")
+    assert '"GITHUB_EVENT_NAME": "base_replay"' in source
+    assert 'base_changed_files.write_text("null\\n"' in source
+    assert P0B.NO_DIFF_SUBJECT_EVENTS == main_role_events | {"base_replay"}
+    assert "pull_request" not in P0B.NO_DIFF_SUBJECT_EVENTS
+
+
 # ─── The 2026-08-14 E2BIG transport regression (run 31775693780) ──────────────
 #
 # PR #5578 carried a handful of files, and every one of its twelve packs died
@@ -1841,6 +1865,124 @@ def test_inventory_preserves_omitted_tracked_existence_but_never_fakes_content(
         )
         with pytest.raises(DEPS.ScopeMaterializationError, match="omitted.py"):
             DEPS.suite_dependency_closure("site/omitted.py")
+
+
+# A legacy-jobs `run:` block whose full-line comment holds ONE apostrophe, beside
+# the same block with that comment line removed. The apostrophe used to be an
+# unclosed quote to shlex, so the whole block was "unparseable" and the job lost
+# its inferred closure (DSC:CI-RUN-BLOCK-COMMENT-QUOTE-BLINDS-CLOSURE-INFERENCE).
+# Exactly one per block: a second apostrophe pairs with the first into a valid
+# shlex quote and the case then proves nothing, which the positive control in
+# the test below refuses.
+_COMMENT_QUOTE_RUN_BLOCKS = (
+    pytest.param(
+        "# the planner's token names the tested tree\n"
+        "python3 -m pytest {target}\n",
+        "python3 -m pytest {target}\n",
+        id="top-level-comment",
+    ),
+    pytest.param(
+        "if true; then\n"
+        "  # it's indented, and still a full-line comment\n"
+        "  python3 -m pytest {target}\n"
+        "fi\n",
+        "if true; then\n  python3 -m pytest {target}\nfi\n",
+        id="indented-comment",
+    ),
+)
+_UNPARSEABLE_RUN_BLOCK = ("unparseable pytest invocation: No closing quotation",)
+
+
+def _single_run_step_job(run: str) -> object:
+    return PACK.LegacyJob(
+        job_id="run-block-comment-quote",
+        definition={"runs-on": "ubuntu-latest", "steps": [{"run": run}]},
+        ordinal=0,
+        weight=1,
+    )
+
+
+@pytest.mark.parametrize(("commented", "comment_free"), _COMMENT_QUOTE_RUN_BLOCKS)
+def test_full_line_comment_apostrophe_resolves_the_comment_free_targets(
+    commented: str, comment_free: str
+) -> None:
+    suite = "tests/test_ci_trigger_closure.py"
+    # Positive control: the fixture must still break a whole-block shlex, or
+    # it no longer reproduces the defect and pins nothing.
+    with pytest.raises(ValueError, match="No closing quotation"):
+        shlex.split(commented.format(target=suite), comments=False, posix=True)
+
+    for target, expected in (
+        (suite, ()),
+        ("tests", ("directory pytest target 'tests'",)),
+    ):
+        assert DEPS.pytest_invocation_ambiguities(commented.format(target=target)) == expected
+        assert DEPS.pytest_invocation_ambiguities(comment_free.format(target=target)) == expected
+
+    # The loss was the job's whole inferred closure, so pin that too: the
+    # commented job must derive exactly the comment-free job's scope.
+    [commented_job], _ = PACK.infer_job_scopes(
+        [_single_run_step_job(commented.format(target=suite))]
+    )
+    [comment_free_job], _ = PACK.infer_job_scopes(
+        [_single_run_step_job(comment_free.format(target=suite))]
+    )
+    assert suite in comment_free_job.paths, "the control job must derive a closure"
+    assert (commented_job.paths, commented_job.fallback_paths) == (
+        comment_free_job.paths,
+        comment_free_job.fallback_paths,
+    )
+
+
+def test_run_block_quote_outside_a_full_line_comment_still_fails_closed() -> None:
+    # On a command line an apostrophe is a real shell quote.
+    assert (
+        DEPS.pytest_invocation_ambiguities(
+            "echo it's done\npython3 -m pytest tests/test_ci_trigger_closure.py"
+        )
+        == _UNPARSEABLE_RUN_BLOCK
+    )
+    # A trailing inline comment is deliberately left in place: only a line whose
+    # first non-blank character is `#` is dropped, so this stays ambiguous.
+    assert (
+        DEPS.pytest_invocation_ambiguities(
+            "python3 -m pytest tests/test_ci_trigger_closure.py  # the planner's token"
+        )
+        == _UNPARSEABLE_RUN_BLOCK
+    )
+
+
+def test_a_comment_that_names_pytest_is_not_the_invocation() -> None:
+    """The first ``pytest`` word used to be taken from prose.
+
+    self-mod-fence's agent-os step opens with a comment saying the pytest suite
+    skips itself "when agentos/ is outside a sparse cone". Read as argv, that
+    made ``agentos/`` a directory target, so the job stayed unscoped.
+    """
+    run = (
+        "# the pytest suite skips itself\n"
+        "# when agentos/ is outside a sparse cone\n"
+        "python3 -m pytest tests/test_ci_trigger_closure.py\n"
+    )
+    # Positive control: whole-block tokens meet the comment's `pytest` first.
+    tokens = shlex.split(run, comments=False, posix=True)
+    assert tokens.index("pytest") < tokens.index("agentos/")
+    assert DEPS.pytest_invocation_ambiguities(run) == ()
+
+
+def test_comment_stripping_keeps_a_mid_word_hash_expansion_whole() -> None:
+    """``${VAR#pattern}`` is one bash word, never the start of a comment.
+
+    ``shlex.split(..., comments=True)`` would cut it to ``${PYTEST_TARGET`` and
+    drop the rest of the line, hiding the ``tests`` directory target after it.
+    """
+    assert DEPS.pytest_invocation_ambiguities(
+        "# strip the planner's ./ prefix\n"
+        "python3 -m pytest ${PYTEST_TARGET#./} tests"
+    ) == (
+        "directory pytest target 'tests'",
+        "dynamic pytest target '${PYTEST_TARGET#./}'",
+    )
 
 
 def test_invalid_inventory_enters_the_existing_full_suite_planner_fallback(
@@ -3578,7 +3720,7 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
         "ceiling is account-wide and this key cannot raise it"
     )
     assert pack["if"] == (
-        "always() && needs.ci-plan.result == 'success' && "
+        "!cancelled() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
         "(github.event.pull_request.head.repo.full_name != github.repository || "
         "vars.CI_EXECUTION_ROUTE != 'pc' || needs.trusted-ci.result == 'success')"
@@ -4082,6 +4224,9 @@ CURATED_EXCLUSIVE = {
     # is gate-code pure (synthetic casebook + validator + typed route_unbound harness), so its
     # curated scope is exactly the Mining files it names.
     "mining-economic-dossier",
+    # 2026-09-24 Healthcare D1 T02: gate:code home for the qualified FDA
+    # observation and frozen supply probes; T01 probes remain intentionally red.
+    "healthcare-fda-supply",
     # 2026-09-22 UD-B2 W4B (#7712). `markets-regime-strip` is the gate:code
     # home for tests/test_markets_regime_strip.py — its thematic neighbours
     # (engine-render-guards, unrun-picks-boards) are `gate: data`, which the
@@ -4294,6 +4439,19 @@ CURATED_EXCLUSIVE = {
     # for templates/index.html (133 > 132). Curate the stated owner boundary;
     # do not fund that unrelated match by raising the packing ceiling.
     "research-vault-source-lineage",
+    # 2026-09-24 GMI INDUSTRIALS first vertical T01 (PR #7924, R-IND-02).
+    # `industrials-result-cash` is the gate:code home for the synthetic
+    # result-to-cash corpus, helper harness, and delivery-input validator.
+    # One exclusive gate:code job for the whole Industrials program; every
+    # later task (T02+) appends its suite to `paths:` and the run line (never
+    # a second job). The suite imports three engine modules directly
+    # (documents, financial_dossier, earnings_narrative.private_publication)
+    # and reads the corpus. TWO non-stdlib transitive needs, both carried by the
+    # job's install line: pyyaml (engine.earnings_narrative.promotion -> yaml) and
+    # requests (scripts.refresh_event_workspaces:77 imports
+    # engine.neuralweb.company_intelligence_reader, whose module scope imports
+    # requests at :21). A T02+ suite appended to this job must keep BOTH.
+    "industrials-result-cash",
     # 2026-09-23 gate:data -> PR-gate follow-up to #7712. `dashboard-render-contract`
     # is the gate:code home for the five suites that only gate:data lanes
     # (unrun-picks-boards, engine-render-guards) ran, so the #7503 pins in
@@ -4473,6 +4631,19 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
             if was and not now and was[1] != "fallback":
                 owned_losses.append(f"{job_id} lost {probe} (tier={was[1]})")
     assert not owned_losses, owned_losses
+
+
+# The packing probes and their ceilings: (changed path, max selected jobs, max
+# selected weight-seconds), plus one pack ceiling for every probe. The history of
+# each number is the docstring of the test below. scripts/check_contract_delta.py
+# reads both names with ast.literal_eval, so keep them plain module-level literals.
+PACKING_PROBES = (
+    ("templates/index.html", 134, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 132, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 127, 5_600),
+)
+# Twelve packs per shape was the pre-curation measurement.
+PACKING_PROBE_MAX_PACKS = 10
 
 
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
@@ -5007,22 +5178,30 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     the drift surfaces after merge, on integration-baseline.yml. That lane
     runs this file on every source push to main and every 4 hours, and
     merge-on-green pauses ordinary merges while it is red.
+
+    2026-09-27: that drift now reds its own PR. The measurement and the
+    verdict moved to scripts/run_ci_pack.py (packing_probe_measurements,
+    packing_probe_breaches) and the ceilings to PACKING_PROBES above, so
+    this test and ci.yml's contract-delta job share one copy. contract-delta
+    runs on every PR, whatever it touches. It measures the probes on the
+    PR's tested merge and on that merge's base, and reds when the PR takes
+    a probe over its ceiling, or further over a ceiling the base already
+    breaches. The case the #8033 review measured is now caught before
+    merge: a suite edited to read templates/index.html puts a job on this
+    probe (134 -> 135) without selecting ci-control-plane-contracts.
+    Nothing was re-measured and no ceiling moved. integration-baseline.yml
+    still runs this file on main.
     """
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
-    for probe, max_jobs, max_weight in (
-        ("templates/index.html", 134, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-        ("scripts/build_free_content.py", 132, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-        ("engine/prophet/plan_book.py", 127, 5_600),
-    ):
-        selected, reason = PACK.select_jobs(jobs, [probe])
-        weight = sum(job.weight for job in selected)
-        assert len(selected) <= max_jobs, (probe, len(selected), reason)
-        assert weight <= max_weight, (probe, weight, reason)
-        # Runners are what the incident actually spends: build_plan derives the
-        # pack count from the SELECTED weight, so the weight cut above is a
-        # runner cut. Twelve packs per shape was the pre-curation measurement.
-        packs = max(1, min(12, -(-weight // PACK.PACK_TARGET_SECONDS)))
-        assert packs <= 10, (probe, packs, weight, reason)
+    rows = packing_probe_measurements(
+        MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
+    )
+    breaches = packing_probe_breaches(rows)
+    assert not breaches, [
+        (breach, row["reason"])
+        for breach in breaches
+        for row in rows
+        if row["probe"] == breach[0]
+    ]
 
 
 def test_deliberately_unscoped_gates_stay_always_on() -> None:

@@ -67,3 +67,4 @@
 {"run_date": "2026-09-25", "degraded": true, "produced_at": "2026-09-25T21:32:44.996631+00:00", "reasons_count": 9}
 {"run_date": "2026-09-26", "degraded": true, "produced_at": "2026-09-26T10:08:13.647283+00:00", "reasons_count": 6}
 {"run_date": "2026-09-26", "degraded": true, "produced_at": "2026-09-26T20:26:52.488175+00:00", "reasons_count": 4}
+{"run_date": "2026-09-27", "degraded": true, "produced_at": "2026-09-27T08:53:34.432006+00:00", "reasons_count": 3}

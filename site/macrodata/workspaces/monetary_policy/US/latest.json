@@ -86,20 +86,15 @@
   },
   "availability": {
     "contradiction": {
-      "components": [
-        "hawk_score",
-        "ease_score"
-      ],
-      "en": "Hawkish and easing pressure legs are both active and roughly balanced (hawk=3 vs ease=4): Two-sided — watch the tape.",
-      "kind": "hawk_ease_split",
-      "present": true,
-      "zh": "鹰派与宽松压力腿同时激活且大体制衡（鹰=3 对 宽松=4）：双向——观察市场走势。"
+      "components": [],
+      "en": null,
+      "kind": null,
+      "present": false,
+      "zh": null
     },
     "coverage_ratio": 1.0,
     "degraded": [],
-    "reasons": [
-      "contradiction=hawk_ease_split"
-    ],
+    "reasons": [],
     "required": [
       {
         "component_id": "fed_funds_rate",
@@ -167,8 +162,8 @@
         "prior_value": 3.88
       },
       {
-        "current_value": 86.0,
-        "delta": -4.0,
+        "current_value": 87.0,
+        "delta": -3.0,
         "metric_id": "market_implied_path_12m_bp",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 90.0
@@ -195,10 +190,12 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [],
-    "correction_state": "none",
-    "note": "Reference period differs from the predecessor print (a new observation, not a revision of the same period); no correction asserted.",
-    "predecessor_generation_id": "monetary_policy-US-e1c5086a32fb4555"
+    "changed_fingerprints": [
+      "market_implied_path_12m_bp:market_implied_path_12m_bp:ace6bdc91745b980"
+    ],
+    "correction_state": "superseded",
+    "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
+    "predecessor_generation_id": "monetary_policy-US-c319cd91fde35654"
   },
   "drivers": {
     "balance_sheet": [
@@ -263,7 +260,7 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "market_implied_path_12m_bp",
-        "impact_magnitude": 86.0,
+        "impact_magnitude": 87.0,
         "impact_sign": 1,
         "label": {
           "en": "Market-implied 12m path",
@@ -272,7 +269,7 @@
         "note": "positive = market prices net hikes over 12m; negative = net cuts; a market PRICE, not a forecast",
         "owner_field": "board.rate_path_row.implied_bp_12m",
         "unit": "bp",
-        "value": 86.0
+        "value": 87.0
       },
       {
         "coverage_state": "PRESENT",
@@ -319,11 +316,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-26T16:36:52Z",
+    "built_at": "2026-09-27T05:09:23Z",
     "calculation_as_of": "2026-09-25",
-    "code_version": "dfc33bd922faab4ea09089fad779f4df3ceb01e0",
-    "content_sha256": "c319cd91fde35654a1e2448a26a59211f4d15566e2914ac1e12689ed40cd2cb2",
-    "generation_id": "monetary_policy-US-c319cd91fde35654",
+    "code_version": "980c1eea29a12ef70c8a550429c7ecc003aaa237",
+    "content_sha256": "331819566a782719375bd2059ff8ccb420b71f76a9592038943da5e7472f3ed0",
+    "generation_id": "monetary_policy-US-331819566a782719",
     "producer": "engine.market_os.macro_workspaces.monetary_policy",
     "rendered_at": null
   },
@@ -383,22 +380,20 @@
           "credit"
         ],
         "confidence": {
-          "contradiction_state": "PRESENT",
+          "contradiction_state": "ABSENT",
           "data_coverage": "HIGH",
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
           "revision_risk": "MEDIUM",
           "source_health": "HIGH"
         },
-        "contradictions": [
-          "hawk_ease_split"
-        ],
+        "contradictions": [],
         "evidence_class": "DESCRIPTIVE",
         "horizon": "current",
         "implication_id": "policy_stance_descriptive",
         "text": {
-          "en": "Outlook is two-sided: futures price about three hikes; hawkish and easing inputs are roughly balanced (3 vs 4). Front-end futures repricing and a deeper equity pullback are pulling against each other.",
-          "zh": "前景双向：期货定价约三次加息；鹰派与宽松因素大体制衡（3对4）。 期货利率重新定价与股市进一步回调相互制衡。"
+          "en": "Easing pressure is building — futures still price about three hikes. A deeper equity pullback is the main offset.",
+          "zh": "宽松压力积聚——期货仍定价约三次加息。 股市进一步回调是主要对冲。"
         },
         "trace_ref": "data/rates_command/latest.json#stance"
       },
@@ -408,32 +403,7 @@
           "curve"
         ],
         "confidence": {
-          "contradiction_state": "PRESENT",
-          "data_coverage": "HIGH",
-          "evidence_breadth": "MEDIUM",
-          "method_stability": "HIGH",
-          "revision_risk": "MEDIUM",
-          "source_health": "HIGH"
-        },
-        "contradictions": [
-          "hawk_ease_split"
-        ],
-        "evidence_class": "DESCRIPTIVE",
-        "horizon": "current",
-        "implication_id": "contradiction_hawk_ease_split",
-        "text": {
-          "en": "Hawkish and easing pressure legs are both active and roughly balanced (hawk=3 vs ease=4): Two-sided — watch the tape.",
-          "zh": "鹰派与宽松压力腿同时激活且大体制衡（鹰=3 对 宽松=4）：双向——观察市场走势。"
-        },
-        "trace_ref": "data/rates_command/latest.json#divergence"
-      },
-      {
-        "channels": [
-          "rates",
-          "curve"
-        ],
-        "confidence": {
-          "contradiction_state": "PRESENT",
+          "contradiction_state": "ABSENT",
           "data_coverage": "HIGH",
           "evidence_breadth": "MEDIUM",
           "method_stability": "HIGH",
@@ -643,7 +613,7 @@
           "value": null
         },
         "unit": "bp",
-        "value": 86.0,
+        "value": 87.0,
         "value_type": "basis_points"
       },
       {
@@ -679,7 +649,7 @@
           "value": null
         },
         "unit": "percent",
-        "value": 4.39,
+        "value": 4.4,
         "value_type": "percent"
       },
       {
@@ -715,7 +685,7 @@
           "value": null
         },
         "unit": "percent",
-        "value": 4.74,
+        "value": 4.75,
         "value_type": "percent"
       },
       {
@@ -804,7 +774,7 @@
         "market_session": null,
         "metric_id": "policy_uncertainty_state",
         "model_version": "monetary_policy.compose.v1",
-        "null_reason": "DISAGREEMENT",
+        "null_reason": null,
         "observed_at": "2026-09-25",
         "owner_ref": "engine.rates_inflation_command",
         "reference_id": "mastermind.market_reference/v1#policy_uncertainty_state",
@@ -816,7 +786,7 @@
         "source_refs": [
           "engine.rates_inflation_command"
         ],
-        "status": "DISAGREEMENT",
+        "status": "PRESENT",
         "transformation": null,
         "uncertainty": {
           "kind": null,

@@ -77,7 +77,7 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script>try{var t=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',t||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<link rel="stylesheet" href="theme.css?v=d58d35e9">
+<link rel="stylesheet" href="theme.css?v=4a7e3297">
 
 <script>
 (function(){
@@ -110,7 +110,7 @@
 
 
 
-<link rel="stylesheet" href="assets/css/c0cba28a.css?v=c0cba28a">
+<link rel="stylesheet" href="assets/css/c2d11012.css?v=c2d11012">
 
 <link rel="stylesheet" href="assets/css/7689f0db.css?v=7689f0db">
 <link rel="stylesheet" href="assets/css/5b12dcfe.css?v=5b12dcfe">
@@ -499,7 +499,7 @@
             <div class="ms-alerts-wrap">
               <label class="ms-alerts" for="ms-alerts-toggle" tabindex="0" aria-haspopup="dialog" aria-controls="ms-alerts-pop">
                 <span class="dot"></span><span class="l-en">Fired alerts</span><span class="l-zh">已触发警报</span>
-                <span class="ct">2</span>
+                <span class="ct">1</span>
               </label>
               <div class="ms-alerts-pop" id="ms-alerts-pop" role="dialog" aria-label="Fired alerts · 已触发警报">
                 <div class="ms-pop-head">
@@ -516,18 +516,9 @@
                   
                   
                   
-                  <a class="ms-sig sev-warn" data-ms-jump href="#health">
-                    <div class="ms-sig-head"><span class="ms-sig-ico">🔌</span><span class="ms-sig-title"><span class="l-en">A data source went dark</span><span class="l-zh">某数据源中断</span></span><span class="ms-sig-jump"><span class="l-en">View ↓</span><span class="l-zh">查看 ↓</span></span></div>
-                    <div class="ms-sig-detail"><span class="l-en">Source &#39;hkma&#39; marked dead after 3 consecutive failures — collector skipped until it recovers; affected signals degrade</span><span class="l-zh">数据源 &#39;hkma&#39; 连续 3 次失败后被标记为中断 —采集器暂停直至恢复；相关信号置信度下降</span></div>
-                    <div class="ms-sig-what"><span class="l-en">A feed this dashboard relies on failed several runs in a row, so it’s paused until it recovers. Any signals that depend on it automatically lose confidence until it’s back. This is a plumbing notice, not a market signal.</span><span class="l-zh">本仪表盘依赖的某个数据源连续多次失败，已暂停直至恢复。依赖它的信号会自动降低置信度，直到其恢复。这是系统管线提示，并非市场信号。</span></div>
-                    <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Plumbing — data health, not a market signal.</span><span class="l-zh">管线 — 数据健康度，而非市场信号。</span></div>
-                  </a>
-                  
-                  
-                  
                   <a class="ms-sig sev-warn" data-ms-dlg="dlg-events" href="#dlg-events">
                     <div class="ms-sig-head"><span class="ms-sig-ico">📅</span><span class="ms-sig-title"><span class="l-en">Major event on deck — expect bigger swings either way</span><span class="l-zh">重大事件临近 — 双向波动或加大</span></span><span class="ms-sig-jump"><span class="l-en">View →</span><span class="l-zh">查看 →</span></span></div>
-                    <div class="ms-sig-detail"><span class="l-en">Event-risk window: GDP (BEA estimate) in 4 days — elevated two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：GDP 数据（4 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span></div>
+                    <div class="ms-sig-detail"><span class="l-en">Event-risk window: GDP (BEA estimate) in 3 days — elevated two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：GDP 数据（3 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span></div>
                     <div class="ms-sig-what"><span class="l-en">A high-impact scheduled release (CPI, Fed decision, jobs report) lands in the coming sessions — the message says which and when. Moves around these prints are two-sided and often retraced — a volatility warning, not a directional call. Size positions for the noise; avoid forcing new trades right into the print.</span><span class="l-zh">未来数个交易日内将有高影响力的既定事件（CPI、美联储决议、就业报告）——具体是哪个、何时，见提示内容。事件前后的波动是双向的、常被回补 —这是波动性提示，并非方向判断。按噪声调整仓位，避免在数据公布前强行开新仓。</span></div>
                     <div class="ms-sig-edge"><b><span class="l-en">Conviction:</span><span class="l-zh">可信度：</span></b> <span class="l-en">Context — a volatility window, not a direction call. Size for the noise.</span><span class="l-zh">背景 — 波动窗口而非方向判断。按噪声调整仓位。</span></div>
                   </a>
@@ -4714,15 +4705,15 @@
               <stop offset="100%" stop-color="var(--isle-policy)" stop-opacity="0"/>
             </linearGradient>
           </defs>
-          <path d="M0,29.9 L30,32.0 L60,22.0 L90,12.0 L120,0.0 L120,36 L0,36 Z" fill="url(#plSpkGrad)"/>
-          <polyline points="0,29.9 30,32.0 60,22.0 90,12.0 120,0.0" fill="none" stroke="var(--isle-policy)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+          <path d="M0,30.0 L30,32.0 L60,21.9 L90,11.8 L120,0.0 L120,36 L0,36 Z" fill="url(#plSpkGrad)"/>
+          <polyline points="0,30.0 30,32.0 60,21.9 90,11.8 120,0.0" fill="none" stroke="var(--isle-policy)" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
         </svg>
         <div class="plf-spark-label">
           
-          <span class="l-en">Market prices ~3 hikes over the next 12m (funds 3.88% → 4.75%)</span>
+          <span class="l-en">Market prices ~4 hikes over the next 12m (funds 3.88% → 4.77%)</span>
           
           
-          <span class="l-zh">市场为未来12个月定价约加息3次（基金利率 3.88% → 4.75%）</span>
+          <span class="l-zh">市场为未来12个月定价约加息4次（基金利率 3.88% → 4.77%）</span>
           
           
         </div>
@@ -4769,13 +4760,13 @@
       
       <div class="mx5-ai-ticker-pills">
         
-        <span class="mx5-ai-ticker-pill">QQQ</span>
-        
-        <span class="mx5-ai-ticker-pill">XHB</span>
-        
         <span class="mx5-ai-ticker-pill">META</span>
         
-        <span class="mx5-ai-ticker-pill">BA</span>
+        <span class="mx5-ai-ticker-pill">QQQ</span>
+        
+        <span class="mx5-ai-ticker-pill">MSFT</span>
+        
+        <span class="mx5-ai-ticker-pill">SPY</span>
         
       </div>
       
@@ -4838,8 +4829,8 @@
         
         
         <div class="mx5-card-badge" style="color:var(--mx5-warn-ink);background:var(--mx5-warn-dim);border:1px solid rgba(245,158,11,.20);">
-          <span class="l-en">1 need action · of 2</span>
-          <span class="l-zh">1 条需处理 · 共 2 条</span>
+          <span class="l-en">1 need action · of 1</span>
+          <span class="l-zh">1 条需处理 · 共 1 条</span>
         </div>
         
       </div>
@@ -4875,11 +4866,11 @@
             <div class="mx5-alert-title">
               <span class="mx5-alert-k"><span class="l-en">Headline</span><span class="l-zh">头条</span></span>
               <span style="font-size:12px;margin-right:3px">📰</span>
-              <span class="l-en">Meta&#39;s Muse reignites AI disruption fears. Traders are targeting this brokerage …</span>
-              <span class="l-zh">Meta的Muse重新点燃了AI颠覆担忧。交易员正瞄准这只券商股作为下一个受害者</span>
+              <span class="l-en">BOJ minutes signal readiness for further rate hikes to anchor inflation at 2%</span>
+              <span class="l-zh">日本央行会议纪要暗示准备进一步加息，以将通胀锚定在2%</span>
             </div>
             <div class="mx5-alert-detail">
-              <span>CNBC - Investing</span> · 
+              <span>Seeking Alpha - Market Currents</span> · 
               <span style="color:var(--mx5-warn-ink,#9c6212);font-weight:600"><span class="l-en">High impact</span><span class="l-zh">高影响</span></span>
             </div>
           </div>
@@ -4893,8 +4884,8 @@
       <div class="mx5-alert-footer">
         <span>
           
-          <span class="l-en">1 need action · of 2</span>
-          <span class="l-zh">1 条需处理 · 共 2 条</span>
+          <span class="l-en">1 need action · of 1</span>
+          <span class="l-zh">1 条需处理 · 共 1 条</span>
           
         </span>
         <button type="button" class="gbtn gbtn-sm gbtn-quiet" onclick="event.stopPropagation();mx5OpenDlg('dlg-news')">
@@ -5486,10 +5477,6 @@
         
         
         
-        
-        
-        
-        
   <div class="mx5-dlg-eyebrow"><span class="l-en">Market-implied benchmark &mdash; what traders price, not our read</span><span class="l-zh">市场隐含基准 &mdash; 交易者定价，非本系统观点</span></div>
   <div class="fbm-bench">
     
@@ -5512,19 +5499,9 @@
       </div>
       
       <div class="fbm-bench-arrow pos"
-           data-tip-en="Odds moved +0.6 points since the last update."
-           data-tip-zh="自上次更新以来概率变动 +0.6 个百分点。">
-        ▲ +0.6
-      </div>
-      
-    </div>
-    
-    
-    <div class="fbm-bench-row">
-      <div class="fbm-bench-odds">10<small>%</small></div>
-      <div class="fbm-bench-body">
-        <div class="fbm-bench-outcome"><span class="l-en">US recession by end of 2026?</span><span class="l-zh">US recession by end of 2026?</span></div>
-        <div class="fbm-bench-label"><span class="l-en">US recession</span><span class="l-zh">美国衰退</span></div>
+           data-tip-en="Odds moved +0.7 points since the last update."
+           data-tip-zh="自上次更新以来概率变动 +0.7 个百分点。">
+        ▲ +0.7
       </div>
       
     </div>
@@ -6657,13 +6634,13 @@
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">20d</span><span class="l-zh">20日</span></span>
-                    <span class="row-pop-val" style="color:var(--down)">-4.7%</span>
+                    <span class="row-pop-val" style="color:var(--down)">-4.3%</span>
                   </div>
                   
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">off-high</span><span class="l-zh">距高</span></span>
-                    <span class="row-pop-val" style="color:var(--ink-down, var(--down))">-6.5%</span>
+                    <span class="row-pop-val" style="color:var(--ink-down, var(--down))">-6.3%</span>
                   </div>
                   
                 </div>
@@ -6755,13 +6732,13 @@
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">20d</span><span class="l-zh">20日</span></span>
-                    <span class="row-pop-val" style="color:var(--up)">+4.0%</span>
+                    <span class="row-pop-val" style="color:var(--up)">+0.8%</span>
                   </div>
                   
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">off-high</span><span class="l-zh">距高</span></span>
-                    <span class="row-pop-val" style="color:var(--ink-down, var(--down))">-22.3%</span>
+                    <span class="row-pop-val" style="color:var(--ink-down, var(--down))">-23.6%</span>
                   </div>
                   
                 </div>
@@ -6839,8 +6816,8 @@
                 
                 <ul class="row-pop-why">
                   <li>
-                    <span class="l-en"><b>Trying to bottom</b> — Watch — don&#39;t catch the knife</span>
-                    <span class="l-zh"><b>尝试筑底</b> — 观察 — 不要急于抄底</span>
+                    <span class="l-en"><b>Healthy trend</b> — Healthy trend</span>
+                    <span class="l-zh"><b>趋势健康</b> — 趋势健康</span>
                   </li>
                 </ul>
                 
@@ -6850,13 +6827,13 @@
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">20d</span><span class="l-zh">20日</span></span>
-                    <span class="row-pop-val" style="color:var(--up)">+0.8%</span>
+                    <span class="row-pop-val" style="color:var(--up)">+0.3%</span>
                   </div>
                   
                   
                   <div class="row-pop-cell">
                     <span class="row-pop-lbl"><span class="l-en">off-high</span><span class="l-zh">距高</span></span>
-                    <span class="row-pop-val" style="color:var(--ink-down, var(--down))">-8.3%</span>
+                    <span class="row-pop-val" style="color:var(--ink-down, var(--down))">-8.1%</span>
                   </div>
                   
                 </div>
@@ -7398,7 +7375,7 @@
           
           
           
-          <div class="riskdlg-scare" data-band="sc-band-calm" data-reading-state="AVAILABLE">
+          <div class="riskdlg-scare" data-band="sc-band-calm" data-reading-state="PARTIAL">
             <span class="rkc-sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h3l3 7 4-16 3 9h5"/></svg></span>
             <span class="sc-name">
               <span class="l-en">Volatility event</span>
@@ -8187,44 +8164,44 @@
             </linearGradient>
           </defs>
           
-          <path class="fbm-chart-area" d="M50,111.4 L185.0,116.8 L320.0,90.8 L455.0,64.8 L590,33.4 L590,150 L50,150 Z" fill="url(#plxChartGrad)"/>
+          <path class="fbm-chart-area" d="M50,112.0 L185.0,117.3 L320.0,90.7 L455.0,64.2 L590,33.3 L590,150 L50,150 Z" fill="url(#plxChartGrad)"/>
           
-          <line x1="50" y1="111.4" x2="590" y2="111.4" stroke="rgba(255,255,255,.18)" stroke-width="1" stroke-dasharray="4,4"/>
+          <line x1="50" y1="112.0" x2="590" y2="112.0" stroke="rgba(255,255,255,.18)" stroke-width="1" stroke-dasharray="4,4"/>
           
-          <polyline class="fbm-chart-line" style="--dash:760" points="50,111.4 185.0,116.8 320.0,90.8 455.0,64.8 590,33.4" fill="none" stroke="var(--isle-policy)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-          
-          
-          
-          
-          <circle class="fbm-chart-node" cx="50" cy="111.4" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
-          <text class="fbm-chart-node" x="50" y="103.4" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">3.88%</text>
-          
-          
-          
-          <circle class="fbm-chart-node" cx="185.0" cy="116.8" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
-          <text class="fbm-chart-node" x="185.0" y="108.8" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">3.82%</text>
-          
-          
-          
-          <circle class="fbm-chart-node" cx="320.0" cy="90.8" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
-          <text class="fbm-chart-node" x="320.0" y="82.8" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">4.11%</text>
-          
-          
-          
-          <circle class="fbm-chart-node" cx="455.0" cy="64.8" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
-          <text class="fbm-chart-node" x="455.0" y="56.8" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">4.40%</text>
-          
-          
-          
-          <circle class="fbm-chart-node" cx="590" cy="33.4" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
-          <text class="fbm-chart-node" x="590" y="25.4" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">4.75%</text>
+          <polyline class="fbm-chart-line" style="--dash:760" points="50,112.0 185.0,117.3 320.0,90.7 455.0,64.2 590,33.3" fill="none" stroke="var(--isle-policy)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
           
           
           
           
+          <circle class="fbm-chart-node" cx="50" cy="112.0" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
+          <text class="fbm-chart-node" x="50" y="104.0" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">3.88%</text>
           
           
-          <polygon class="fbm-chart-diamond" points="455.0,85.7 461.0,91.7 455.0,97.7 449.0,91.7" fill="var(--warn,#f59e0b)" fill-opacity=".85"/>
+          
+          <circle class="fbm-chart-node" cx="185.0" cy="117.3" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
+          <text class="fbm-chart-node" x="185.0" y="109.3" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">3.82%</text>
+          
+          
+          
+          <circle class="fbm-chart-node" cx="320.0" cy="90.7" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
+          <text class="fbm-chart-node" x="320.0" y="82.7" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">4.12%</text>
+          
+          
+          
+          <circle class="fbm-chart-node" cx="455.0" cy="64.2" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
+          <text class="fbm-chart-node" x="455.0" y="56.2" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">4.42%</text>
+          
+          
+          
+          <circle class="fbm-chart-node" cx="590" cy="33.3" r="4" fill="var(--isle-policy)" stroke="rgba(13,17,24,.8)" stroke-width="1.5"/>
+          <text class="fbm-chart-node" x="590" y="25.299999999999997" text-anchor="middle" font-size="10" fill="var(--isle-policy)" font-family="inherit" font-variant-numeric="tabular-nums">4.77%</text>
+          
+          
+          
+          
+          
+          
+          <polygon class="fbm-chart-diamond" points="455.0,86.5 461.0,92.5 455.0,98.5 449.0,92.5" fill="var(--warn,#f59e0b)" fill-opacity=".85"/>
           
           
           
@@ -8270,19 +8247,19 @@
         
         <div class="plx-chart-caption">
           
-          <span class="l-en">At end-2026 the market implies 4.11% vs the Fed&#39;s 4.10% median dot (+1bp — market ≈ the Fed). The near-term forward spread is positive — no cuts priced near-term (+1.08pp).</span>
+          <span class="l-en">At end-2026 the market implies 4.12% vs the Fed&#39;s 4.10% median dot (+2bp — market ≈ the Fed). The near-term forward spread is positive — no cuts priced near-term (+1.08pp).</span>
           
           
           
-          <span class="l-zh">在end-2026，市场隐含 4.11% 对比美联储 4.10% 的中位点（+1基点 — 市场与美联储基本一致）。近端远期利差为正——近端未为降息定价（+1.08个百分点）。</span>
+          <span class="l-zh">在end-2026，市场隐含 4.12% 对比美联储 4.10% 的中位点（+2基点 — 市场与美联储基本一致）。近端远期利差为正——近端未为降息定价（+1.08个百分点）。</span>
           
           
           
           <span class="plx-chart-gap-chip"
-            data-tip-en="Fed dot at end-2026: 4.1%. Market: 4.11%. Gap 1bp."
-            data-tip-zh="美联储点图end-2026: 4.1%，市场定价: 4.11%，差距1bp。">
-            <span class="l-en">market ≈ the Fed (1bp at end-2026)</span>
-            <span class="l-zh">市场与美联储基本一致（1bp @ end-2026）</span>
+            data-tip-en="Fed dot at end-2026: 4.1%. Market: 4.12%. Gap 2bp."
+            data-tip-zh="美联储点图end-2026: 4.1%，市场定价: 4.12%，差距2bp。">
+            <span class="l-en">market ≈ the Fed (2bp at end-2026)</span>
+            <span class="l-zh">市场与美联储基本一致（2bp @ end-2026）</span>
           </span>
           
         </div>
@@ -8311,7 +8288,7 @@
           
           <div class="plx-drivers-chips">
             
-            <span class="plx-driver-chip"><span class="l-en">market prices ~3.0 hike(s) over 12m</span><span class="l-zh">市场计入未来12个月约3.0次加息</span></span>
+            <span class="plx-driver-chip"><span class="l-en">market prices ~4.0 hike(s) over 12m</span><span class="l-zh">市场计入未来12个月约4.0次加息</span></span>
             
             <span class="plx-driver-chip"><span class="l-en">statement guidance tightening</span><span class="l-zh">声明指引偏紧</span></span>
             
@@ -8336,7 +8313,7 @@
             </div>
           </div>
           <div class="plx-jaw-count-box">
-            <div class="plx-jaw-count-num">10</div>
+            <div class="plx-jaw-count-num">9</div>
             <div class="plx-jaw-count-lbl">
               <span class="l-en">speeches 30d</span><span class="l-zh">30日发声</span>
             </div>
@@ -8346,7 +8323,7 @@
         
         
         
-        <div class="plx-jaw-bar-track"><div class="plx-jaw-bar-fill" style="width:10%"></div></div>
+        <div class="plx-jaw-bar-track"><div class="plx-jaw-bar-fill" style="width:11%"></div></div>
         
         <div class="plx-jaw-ts">
           <span class="l-en">Last event: 2026-09-26</span>
@@ -8381,9 +8358,9 @@
               
               
               <div class="plx-lever-stoch"
-                   data-tip-en="Setup gauge (stochastic %K): 7/100 — how coiled this lever's asset is; state is set by the Armed/Quiet flag, not this bar"
-                   data-tip-zh="蓄势程度（随机指标%K）：7/100 — 状态以“已触发/平静”标记为准，非此条形">
-                <div class="plx-lever-stoch-fill" style="width:7%;background:color-mix(in srgb,var(--isle-policy) 55%,transparent)"></div>
+                   data-tip-en="Setup gauge (stochastic %K): 9/100 — how coiled this lever's asset is; state is set by the Armed/Quiet flag, not this bar"
+                   data-tip-zh="蓄势程度（随机指标%K）：9/100 — 状态以“已触发/平静”标记为准，非此条形">
+                <div class="plx-lever-stoch-fill" style="width:9%;background:color-mix(in srgb,var(--isle-policy) 55%,transparent)"></div>
               </div>
               
               
@@ -8466,7 +8443,7 @@
         
         
         <div class="plx-cal-row">
-          <span class="plx-cal-countdown">38</span>
+          <span class="plx-cal-countdown">36</span>
           <div>
             <div style="font-size:12px;font-weight:600">
               <span class="l-en">days to the midterm election</span>
@@ -8474,8 +8451,8 @@
             </div>
             
             <div class="plx-cal-note">
-              <span class="l-en">US midterm elections: 38 days (2026-11-03). Policy cycle context only — no directional read.</span>
-              <span class="l-zh">美国中期选举：38天（2026年11月3日）。仅作政策周期背景参考，不作方向性判断。</span>
+              <span class="l-en">US midterm elections: 36 days (2026-11-03). Policy cycle context only — no directional read.</span>
+              <span class="l-zh">美国中期选举：36天（2026年11月3日）。仅作政策周期背景参考，不作方向性判断。</span>
             </div>
             
           </div>
@@ -8539,11 +8516,11 @@
     </div><span class="aib2-badge"><span class="l-en">A read-through of existing signals — not a signal source</span><span class="l-zh">仅为现有信号的汇总解读 — 非独立信号源</span></span>
   </div><div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">The gist</span><span class="l-zh">要点</span></span></div>
   <div class="aib2-gist">
-    <ul class="aib2-gist-list"><li><span class="l-en"><b>New regime</b>: Reflation is gaining ground, but confidence remains low.</span><span class="l-zh"><b>新格局</b>：再通胀势头正在增强，但信心依然不足。</span></li><li><span class="l-en"><b>Narrow lead</b>: Chip stocks drive gains while wider participation lags.</span><span class="l-zh"><b>领涨面狭窄</b>：芯片股推动上涨，但大盘参与度仍显不足。</span></li><li><span class="l-en"><b>Bond caution</b>: Credit is widening despite otherwise healthy bond markets.</span><span class="l-zh"><b>债市谨慎信号</b>：尽管债券市场总体健康，信用利差仍在扩大。</span></li><li><span class="l-en"><b>Global split</b>: China and Hong Kong remain weak as US growth firms.</span><span class="l-zh"><b>全球分化</b>：中国内地和香港市场持续疲软，而美国经济增长趋稳。</span></li></ul><div class="aib2-stance aib2-stance--accent">
+    <ul class="aib2-gist-list"><li><span class="l-en"><b>Main driver</b>: Chip stocks lead a narrow market rise</span><span class="l-zh"><b>主要驱动因素</b>：芯片股领涨，市场涨幅集中于少数板块</span></li><li><span class="l-en"><b>New regime</b>: Reflation is gaining ground, but conviction remains modest</span><span class="l-zh"><b>新格局</b>：再通胀趋势日益明显，但市场信心仍较温和</span></li><li><span class="l-en"><b>Bond warning</b>: Credit is widening despite otherwise healthy bond markets</span><span class="l-zh"><b>债券预警</b>：尽管债券市场整体健康，信用利差仍在扩大</span></li><li><span class="l-en"><b>Global split</b>: China and Hong Kong remain weak as US liquidity expands</span><span class="l-zh"><b>全球分化</b>：随着美国流动性扩张，中国内地及香港市场依然疲弱</span></li></ul><div class="aib2-stance aib2-stance--accent">
       <span class="aib2-stance-mark" aria-hidden="true">&#x25B8;</span>
       <span class="aib2-stance-body">
-        <span class="l-en"><b>What to do</b>: Get ready — watch credit and breadth before trusting the shift.</span>
-        <span class="l-zh"><b>应对策略</b>：做好准备——在确认市场转向前，密切关注信用利差和市场广度。</span>
+        <span class="l-en"><b>What to do</b>: Get ready</span>
+        <span class="l-zh"><b>应对策略</b>：做好准备</span>
       </span>
     </div>
   </div>
@@ -8562,53 +8539,60 @@
       <span class="aib2-kf-k"><span class="l-en">What&#39;s moving markets</span><span class="l-zh">当前主导</span></span><span class="aib2-kf-v"><span class="l-en">AI / semis</span><span class="l-zh">AI / semis</span></span>
     </span></div><div class="aib2-conf">
     <div class="aib2-conf-bar" role="img"
-         data-tip-en="Confidence Low — how firmly the read holds, from the AI synthesis."
-         data-tip-zh="置信度 低 — 该解读的把握程度，来自 AI 综合。">
+         data-tip-en="Confidence Medium — how firmly the read holds, from the AI synthesis."
+         data-tip-zh="置信度 中 — 该解读的把握程度，来自 AI 综合。">
+      <span class="aib2-conf-seg on"></span>
       <span class="aib2-conf-seg on"></span>
       <span class="aib2-conf-seg"></span>
-      <span class="aib2-conf-seg"></span>
     </div>
-    <span class="aib2-conf-label"><span class="l-en">Confidence: Low</span><span class="l-zh">置信度：低</span></span><span class="aib2-conf-asof"><span class="l-en">as of</span><span class="l-zh">数据截至</span> 2026-09-25</span></div>
+    <span class="aib2-conf-label"><span class="l-en">Confidence: Medium</span><span class="l-zh">置信度：中</span></span><span class="aib2-conf-asof"><span class="l-en">as of</span><span class="l-zh">数据截至</span> 2026-09-25</span></div>
   <div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">The full read</span><span class="l-zh">完整解读</span></span></div>
   <div class="aib2-regime">
-    <span class="l-en">The US has just moved into Reflation on the map. Growth and inflation are strengthening, and Reflation is still gaining ground, but the position is not settled.
+    <span class="l-en">The US has newly moved into Reflation on the map and is drifting further that way. Growth and inflation are strengthening, with chip leadership the clear driver.
 
-Chip leadership is today&#39;s dominant driver. The tape remains narrow, while rising real yields and widening credit add pressure beneath calm markets.</span>
-    <span class="l-zh">美国刚刚在经济周期图上进入再通胀阶段。增长和通胀都在增强，再通胀仍在推进，但态势尚未稳固。
+The move is not settled. Participation is narrow, real yields are restrictive, and China and Hong Kong remain in growth scares with contracting liquidity.</span>
+    <span class="l-zh">美国最新进入图谱中的再通胀区间，并进一步朝该方向移动。增长和通胀正在增强，芯片板块显然是主要驱动力。
 
-芯片股领涨是今日市场的主导驱动因素。行情参与面依然狭窄，而实际收益率上升和信用利差扩大，正给表面平静的市场带来压力。</span>
+这一趋势尚未稳固。参与面较窄，实际收益率仍具限制性，而中国内地和香港仍处于增长恐慌之中，流动性持续收缩。</span>
   </div>
   <div class="aib2-grid"><div class="aib2-card aib2-card--conflicts">
       <div class="aib2-eyebrow"><span class="l-en">&#x2696;&#xFE0E; Where signals disagree</span><span class="l-zh">&#x2696;&#xFE0E; 信号分歧</span></div>
-      <ul class="aib2-items"><li><span class="l-en"><b>Stocks versus credit</b>: Stocks look upbeat, but credit is widening — treat the rally with more caution.</span><span class="l-zh"><b>股票与信用市场</b>：股票表现乐观，但信用利差正在扩大——应更谨慎地看待这轮上涨。</span></li><li><span class="l-en"><b>US versus Asia</b>: US growth is firming, but China and Hong Kong remain weak — global demand is uneven.</span><span class="l-zh"><b>美国与亚洲</b>：美国增长正在增强，但中国内地和香港仍然疲弱——全球需求并不均衡。</span></li><li><span class="l-en"><b>Policy versus markets</b>: Risk appetite is calm, but the Fed remains firm — higher rates can still squeeze expensive assets.</span><span class="l-zh"><b>政策与市场</b>：风险偏好保持平稳，但美联储立场依然坚定——较高利率仍可能挤压高估值资产。</span></li></ul>
+      <ul class="aib2-items"><li><span class="l-en"><b>Stocks versus credit</b>: Stocks look calm and risk-seeking, but credit is widening — confidence should stay measured.</span><span class="l-zh"><b>股票与信贷</b>：股市表现平静且偏好风险，但信用利差正在扩大——信心仍应保持审慎。</span></li><li><span class="l-en"><b>US versus Asia</b>: US liquidity is expanding, while China and Hong Kong liquidity contracts — global growth is uneven.</span><span class="l-zh"><b>美国与亚洲</b>：美国流动性正在扩张，而中国内地和香港的流动性正在收缩——全球增长并不均衡。</span></li><li><span class="l-en"><b>Growth versus rates</b>: Chip stocks lead, but rising real yields pressure expensive growth shares — leadership may stay narrow.</span><span class="l-zh"><b>增长与利率</b>：芯片股领涨，但实际收益率上升令高估值成长股承压——领涨范围可能仍然狭窄。</span></li></ul>
     </div><div class="aib2-card aib2-card--tx">
       <div class="aib2-eyebrow"><span class="l-en">&#x26D3;&#xFE0E; Chain reactions</span><span class="l-zh">&#x26D3;&#xFE0E; 连锁反应</span></div>
-      <ul class="aib2-items"><li><span class="l-en">If rising real yields keep up → expensive growth shares and Bitcoin feel more pressure</span><span class="l-zh">如果实际收益率持续上升 → 高估值成长股和 Bitcoin 将承受更大压力</span></li><li><span class="l-en">If credit keeps widening → calm stock markets face a stronger warning</span><span class="l-zh">若信用利差持续扩大 → 平静的股市将面临更强烈的警告</span></li></ul>
-    </div></div><div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">What to watch</span><span class="l-zh">关注事项</span></span></div>
+      <ul class="aib2-items"><li><span class="l-en">If the rise in real yields keeps up → expensive growth shares and Bitcoin face more pressure</span><span class="l-zh">如果实际收益率持续上升 → 高估值成长股和比特币将面临更大压力</span></li><li><span class="l-en">If the softer dollar keeps up → US and emerging-market stocks retain support</span><span class="l-zh">如果美元持续走软 → 美国及新兴市场股票将继续获得支撑</span></li></ul>
+    </div></div>
+  <div class="aib2-card aib2-card--full aib2-card--playbook">
+    <div class="aib2-eyebrow"><span class="l-en">&#x267B;&#xFE0E; Playbook check</span><span class="l-zh">&#x267B;&#xFE0E; 剧本对照</span></div>
+    <div class="aib2-prose">
+      <span class="l-en">Chip leadership is confirmed, but China and Hong Kong remain weak while Bitcoin is already risk-on. The sequence is fragmented rather than clean.</span>
+      <span class="l-zh">芯片板块的领涨地位得到确认，但中国内地和香港仍然疲弱，而 Bitcoin 已进入风险偏好模式。整体演变较为割裂，并不流畅。</span>
+    </div>
+  </div><div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">What to watch</span><span class="l-zh">关注事项</span></span></div>
   <div class="aib2-card aib2-card--full">
     <ul class="aib2-watch"><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>Chip leadership fades</b>: the main market driver is losing force</span>
-          <span class="l-zh"><b>芯片股领涨势头消退</b>：市场主要驱动力正在减弱</span>
+          <span class="l-en"><b>Credit spreads</b>: Further widening would strengthen the bond market’s warning</span>
+          <span class="l-zh"><b>信用利差</b>：进一步扩大将强化债券市场的警示信号</span>
         </span>
       </li><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>Credit widens further</b>: bond-market concern becomes harder to dismiss</span>
-          <span class="l-zh"><b>信用利差进一步扩大</b>：债券市场的担忧愈发不容忽视</span>
+          <span class="l-en"><b>Chip leadership</b>: A reversal would remove today’s main market driver</span>
+          <span class="l-zh"><b>芯片股领涨</b>：一旦逆转，将削弱当前市场的主要驱动力</span>
         </span>
       </li><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>Stock participation broadens</b>: the new regime gains credibility</span>
-          <span class="l-zh"><b>股票参与度扩大</b>：新格局的可信度提升</span>
+          <span class="l-en"><b>Real yields</b>: Continued increases would tighten pressure on growth assets</span>
+          <span class="l-zh"><b>实际收益率</b>：持续上升将加大成长型资产的压力</span>
         </span>
       </li><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>China liquidity turns up</b>: global risk appetite gains a missing leg</span>
-          <span class="l-zh"><b>中国流动性回升</b>：全球风险偏好获得了此前缺失的支撑</span>
+          <span class="l-en"><b>Asian liquidity</b>: Stabilization would make the global reflation story broader</span>
+          <span class="l-zh"><b>亚洲流动性</b>：企稳将使全球再通胀叙事更加广泛</span>
         </span>
       </li></ul>
   </div>
@@ -8616,8 +8600,8 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
   <div class="aib2-card aib2-card--full">
     <div class="aib2-cat-rail"><span class="aib2-cat"><span class="aib2-cat-d num">09-30</span> GDP (BEA estimate)</span><span class="aib2-cat"><span class="aib2-cat-d num">09-30</span> PCE / personal income (BEA)</span><span class="aib2-cat"><span class="aib2-cat-d num">10-02</span> Jobs report (nonfarm payrolls)</span></div>
     <div class="aib2-cat-read">
-      <span class="l-en">Growth and inflation data arrive together, making this the first meaningful test of the new Reflation position.</span>
-      <span class="l-zh">Growth and inflation data arrive together, making this the first meaningful test of the new Reflation position.</span>
+      <span class="l-en">Growth and inflation data arrive together, followed by jobs. The mix will test whether reflation can broaden without forcing rates higher.</span>
+      <span class="l-zh">Growth and inflation data arrive together, followed by jobs. The mix will test whether reflation can broaden without forcing rates higher.</span>
     </div></div>
         <div class="isle-aibrief-footer"><span></span><a href="aibrief.html" class="isle-aibrief-link"><span class="l-en">Full brief page (China &amp; Bitcoin lenses) →</span><span class="l-zh">完整简报页（中国与比特币视角）→</span></a></div>
         
@@ -8665,7 +8649,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
                 <span style="font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:rgba(245,158,11,.12);color:var(--mx5-warn-ink,#9c6212);border:1px solid rgba(245,158,11,.22);white-space:nowrap"><span class="l-en">Event</span><span class="l-zh">事件</span></span>
                 
               </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5"><span class="l-en">Event-risk window: GDP (BEA estimate) in 4 days — elevated two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：GDP 数据（4 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span></div>
+              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.36));line-height:1.5"><span class="l-en">Event-risk window: GDP (BEA estimate) in 3 days — elevated two-sided volatility expected. Not a sell signal; size for the noise.</span><span class="l-zh">事件风险窗口：GDP 数据（3 天后）—— 预计升高的两面性波动。非卖出信号；按噪声调整仓位。</span></div>
               
               <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">A high-impact scheduled release (CPI, Fed decision, jobs report) lands in the coming sessions — the message says which and when. Moves around these prints are two-sided and often retraced — a volatility warning, not a directional call. Size positions for the noise; avoid forcing new trades right into the print.</span><span class="l-zh">未来数个交易日内将有高影响力的既定事件（CPI、美联储决议、就业报告）——具体是哪个、何时，见提示内容。事件前后的波动是双向的、常被回补 —这是波动性提示，并非方向判断。按噪声调整仓位，避免在数据公布前强行开新仓。</span></div>
               
@@ -8676,30 +8660,6 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         </div>
         
         
-        
-        <div class="isle-head"><div class="isle-head-dot"></div><span class="isle-head-label"><span class="l-en">Context</span><span class="l-zh">背景</span></span><div class="isle-head-line"></div></div>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;opacity:.8">
-          
-          <div data-al-row>
-          <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid rgba(255,255,255,.05)">
-            <div style="width:6px;height:6px;border-radius:50%;background:var(--ink-3,rgba(255,255,255,.30));flex-shrink:0;margin-top:5px"></div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:3px">
-                <div style="font-size:12.5px;font-weight:600;color:var(--ink-2,rgba(255,255,255,.7))">
-                  <span style="font-size:11px;margin-right:3px">🔌</span>
-                  <span class="l-en">A data source went dark</span><span class="l-zh">某数据源中断</span>
-                </div>
-                <span style="font-size:10px;font-weight:600;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--ink-3,rgba(255,255,255,.36));border:1px solid rgba(255,255,255,.09);white-space:nowrap"><span class="l-en">Context</span><span class="l-zh">背景</span></span>
-              </div>
-              <div style="font-size:11px;color:var(--ink-3,rgba(255,255,255,.30));line-height:1.5"><span class="l-en">Source &#39;hkma&#39; marked dead after 3 consecutive failures — collector skipped until it recovers; affected signals degrade</span><span class="l-zh">数据源 &#39;hkma&#39; 连续 3 次失败后被标记为中断 —采集器暂停直至恢复；相关信号置信度下降</span></div>
-              
-              <div style="font-size:11px;color:var(--ink-2);line-height:1.5;margin-top:6px"><span class="l-en">A feed this dashboard relies on failed several runs in a row, so it’s paused until it recovers. Any signals that depend on it automatically lose confidence until it’s back. This is a plumbing notice, not a market signal.</span><span class="l-zh">本仪表盘依赖的某个数据源连续多次失败，已暂停直至恢复。依赖它的信号会自动降低置信度，直到其恢复。这是系统管线提示，并非市场信号。</span></div>
-              
-            </div>
-          </div>
-          </div>
-          
-        </div>
         
         
         
@@ -8712,15 +8672,15 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4647379-boeing-identifies-737-max-software-glitch-could-impact-navigation?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4647422-boj-minutes-signal-readiness-for-further-rate-hikes-to-anchor-inflation-at-2?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Boeing identifies 737 MAX software glitch that could impact navigation: WSJ</span><span class="l-zh">Boeing identifies 737 MAX software glitch that could impact navigation: WSJ</span></span>
+              <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
+              <span class="nbx-title"><span class="l-en">BOJ minutes signal readiness for further rate hikes to anchor inflation at 2%</span><span class="l-zh">日本央行会议纪要暗示准备进一步加息，以将通胀锚定在2%</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 26</span>
+              <span class="nbx-date">Sep 28</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -8730,15 +8690,15 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4647295-real-estate-stocks-slump-amid-rising-bond-yields-sector-rotation-into-technology?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.cnbc.com/2026/09/27/jim-cramer-apple-microsoft-and-meta-prove-stock-picking-for-individuals-is-not-a-fools-errand.html" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Rates</span><span class="l-zh">利率</span></span>
-              <span class="nbx-title"><span class="l-en">Real estate stocks slump amid rising bond yields, sector rotation into technology</span><span class="l-zh">Real estate stocks slump amid rising bond yields, sector rotation into technology</span></span>
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">Apple, Microsoft, and Meta prove stock picking for individuals is not a fool&#39;s errand</span><span class="l-zh">苹果、微软和Meta证明个人选股并非徒劳之举</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 26</span>
+              <span class="nbx-date">Sep 27</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -8748,15 +8708,15 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
           
           
           
-          <a class="nbx-item" href="https://www.cnbc.com/2026/09/24/meta-mark-zuckerberg-muse-charm-openai-agent.html" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://seekingalpha.com/news/4647426-northern-star-shares-jump-as-miner-rejects-27b-gold-fields-bid?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Meta gets to consumer AI device market before OpenAI, but Zuckerberg&#39;s strategy remains unproven</span><span class="l-zh">Meta抢在OpenAI之前进入消费者AI设备市场，但扎克伯格的战略仍未得到验证</span></span>
+              <span class="nbx-title"><span class="l-en">Northern Star shares jump as miner rejects $27B Gold Fields bid</span><span class="l-zh">Northern Star股价大涨，因该矿商拒绝Gold Fields的270亿美元收购要约</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 24</span>
+              <span class="nbx-date">Sep 28</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -8766,15 +8726,69 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4647367-sa-asks-is-now-the-time-to-buy-streaming-stocks-if-so-which-ones?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.cnbc.com/2026/09/28/china-posts-weakest-industrial-profit-growth-this-year-expanding-4point2percent-in-august-.html" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">SA Asks: Is now the time to buy streaming stocks? If so, which ones?</span><span class="l-zh">SA提问：现在是买入流媒体股票的时候吗？如果是，该买哪些？</span></span>
+              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
+              <span class="nbx-title"><span class="l-en">China posts weakest industrial profit growth this year, expanding 4.2% in August</span><span class="l-zh">中国8月工业利润同比增长4.2%，创下今年最弱增速</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 26</span>
+              <span class="nbx-date">Sep 28</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://seekingalpha.com/news/4647421-nidec-shares-plunge-18-following-reported-1t-impairment-and-ceo-dismissal?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">Nidec shares plunge 18% following reported ¥1T impairment and CEO dismissal</span><span class="l-zh">尼得科股价暴跌18%，此前传出1万亿日元减值和CEO被解职的消息</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Sep 28</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://seekingalpha.com/news/4647420-asian-markets-decline-amid-rising-oil-prices-middle-east-tensions-and-us-futures-decline?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
+              <span class="nbx-title"><span class="l-en">Asian markets decline amid rising oil prices, Middle East tensions, and US futures decline</span><span class="l-zh">油价上涨、中东紧张局势及美国期货下跌，亚洲市场走低</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Sep 28</span>
+              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
+            </div>
+            
+          </a>
+          
+          
+          
+          
+          
+          <a class="nbx-item" href="https://www.marketwatch.com/story/micron-could-dethrone-nvidia-and-become-the-biggest-driver-of-s-p-500-profit-growth-d62e0e68?mod=mw_rss_topstories" target="_blank" rel="noopener">
+            <div class="nbx-top">
+              <span class="nbx-theme"><span class="l-en">Earnings</span><span class="l-zh">业绩</span></span>
+              <span class="nbx-title"><span class="l-en">Micron could dethrone Nvidia and become the biggest driver of S&amp;P 500 profit growth</span><span class="l-zh">美光可能取代英伟达，成为标普500利润增长的最大推动力</span></span>
+            </div>
+            <div class="nbx-meta">
+              <span class="nbx-src">news_rss</span>
+              <span class="nbx-dot">·</span>
+              <span class="nbx-date">Sep 27</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -8802,15 +8816,15 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
           
           
           
-          <a class="nbx-item" href="https://seekingalpha.com/news/4647374-tiktok-100m-settlement-alabama?utm_source=feed_news_all&amp;utm_medium=referral&amp;feed_item_type=news" target="_blank" rel="noopener">
+          <a class="nbx-item" href="https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm" target="_blank" rel="noopener">
             <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">TikTok in $100M+ settlement with Alabama</span><span class="l-zh">TikTok与阿拉巴马州达成超1亿美元和解</span></span>
+              <span class="nbx-theme"><span class="l-en">Fed</span><span class="l-zh">美联储</span></span>
+              <span class="nbx-title"><span class="l-en">Federal Reserve issues FOMC statement</span><span class="l-zh">美联储发布FOMC声明</span></span>
             </div>
             <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
+              <span class="nbx-src">official</span>
               <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 26</span>
+              <span class="nbx-date">Sep 16</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -8823,48 +8837,12 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
           <a class="nbx-item" href="https://www.npr.org/2026/09/26/nx-s1-5980302/mortgage-rates-break-past-7-as-bond-yields-surge-deepening-u-s-housing-gridlock" target="_blank" rel="noopener">
             <div class="nbx-top">
               <span class="nbx-theme"><span class="l-en">Rates</span><span class="l-zh">利率</span></span>
-              <span class="nbx-title"><span class="l-en">Mortgage rates break past 7% as bond yields surge, deepening U.S. housing gridlock</span><span class="l-zh">Mortgage rates break past 7% as bond yields surge, deepening U.S. housing gridlock</span></span>
+              <span class="nbx-title"><span class="l-en">Mortgage rates break past 7% as bond yields surge, deepening U.S. housing gridlock</span><span class="l-zh">债券收益率飙升，抵押贷款利率突破7%，美国楼市僵局加深</span></span>
             </div>
             <div class="nbx-meta">
               <span class="nbx-src">news_rss</span>
               <span class="nbx-dot">·</span>
               <span class="nbx-date">Sep 26</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.marketwatch.com/story/tax-free-bond-yields-are-in-a-sweet-spot-get-in-before-its-too-late-94b8adac?mod=mw_rss_topstories" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Rates</span><span class="l-zh">利率</span></span>
-              <span class="nbx-title"><span class="l-en">Tax-free bond yields are in a sweet spot. Get in before it’s too late.</span><span class="l-zh">免税债券收益率正处于甜蜜点。趁还来得及，赶快入场。</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 26</span>
-              <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
-            </div>
-            
-          </a>
-          
-          
-          
-          
-          
-          <a class="nbx-item" href="https://www.cnbc.com/2026/09/23/metas-muse-ai-causes-schwab-selloff.html" target="_blank" rel="noopener">
-            <div class="nbx-top">
-              <span class="nbx-theme"><span class="l-en">Stocks</span><span class="l-zh">个股</span></span>
-              <span class="nbx-title"><span class="l-en">Meta&#39;s Muse reignites AI disruption fears. Traders are targeting this brokerage stock as next casualty</span><span class="l-zh">Meta的Muse重新点燃了AI颠覆担忧。交易员正瞄准这只券商股作为下一个受害者</span></span>
-            </div>
-            <div class="nbx-meta">
-              <span class="nbx-src">news_rss</span>
-              <span class="nbx-dot">·</span>
-              <span class="nbx-date">Sep 23</span>
               <span class="nbx-arrow"><span class="l-en">Read</span><span class="l-zh">阅读</span> →</span>
             </div>
             
@@ -9216,11 +9194,11 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
       
       
       <div class="fbm-row">
-        <span class="fbm-row-state" style="color:var(--warn,#f59e0b)"><span class="fbm-row-dot" style="background:var(--warn,#f59e0b)"></span><span class="l-en">Next CPI · 18d</span><span class="l-zh">下次CPI · 18天</span></span>
+        <span class="fbm-row-state" style="color:var(--warn,#f59e0b)"><span class="fbm-row-dot" style="background:var(--warn,#f59e0b)"></span><span class="l-en">Next CPI · 17d</span><span class="l-zh">下次CPI · 17天</span></span>
         <span class="fbm-row-line"><span class="l-en">Recent data leans in line — a print either way can reset the read.</span><span class="l-zh">近期数据大致符合 — 任一方向的数据都可能重置解读。</span></span>
         <span class="fbm-tip"
-          data-tip-en="Release 2026-10-14 (18 days out). Surprise skew: inline, -0.29σ."
-          data-tip-zh="发布 2026-10-14（18 天后）。惊喜偏向：inline，-0.29σ。">?</span>
+          data-tip-en="Release 2026-10-14 (17 days out). Surprise skew: inline, -0.29σ."
+          data-tip-zh="发布 2026-10-14（17 天后）。惊喜偏向：inline，-0.29σ。">?</span>
       </div>
       
       <div class="mx5-dlg-sep"></div>
@@ -9288,10 +9266,10 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <span class="fbm-chip"
-          data-tip-en="Policy intel is 75 days old (as of 2026-07-13)."
-          data-tip-zh="政策情报为 75 天前（截至 2026-07-13）。">
+          data-tip-en="Policy intel is 76 days old (as of 2026-07-13)."
+          data-tip-zh="政策情报为 76 天前（截至 2026-07-13）。">
           <span class="fbm-chip-k"><span class="l-en">Intel</span><span class="l-zh">情报</span></span>
-          <span><span class="l-en">75d old</span><span class="l-zh">75天前</span></span>
+          <span><span class="l-en">76d old</span><span class="l-zh">76天前</span></span>
         </span>
         
       </div>
@@ -9300,8 +9278,8 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
       
       <div class="fbm-chips">
         <span class="fbm-chip warn"
-          data-tip-en="Intel as of 2026-07-13 (75d old) — Conditions only, no direction or probability assigned."
-          data-tip-zh="情报截至2026-07-13（75天前） — 条件性观察，不赋予方向或概率。">
+          data-tip-en="Intel as of 2026-07-13 (76d old) — Conditions only, no direction or probability assigned."
+          data-tip-zh="情报截至2026-07-13（76天前） — 条件性观察，不赋予方向或概率。">
           <span class="fbm-chip-k"><span class="l-en">Geopolitics</span><span class="l-zh">地缘</span></span>
           <span><span class="l-en">Iran / Middle East -- ceasefire COLLAPSED (as of 7/8)</span><span class="l-zh">伊朗/中东 —— 停火已崩溃（截至7/8）</span></span>
         </span>
@@ -9387,26 +9365,26 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
     
     
     <div class="fbm-bench-row">
-      <div class="fbm-bench-odds">97<small>%</small></div>
+      <div class="fbm-bench-odds">96<small>%</small></div>
       <div class="fbm-bench-body">
         <div class="fbm-bench-outcome"><span class="l-en">0 (0 bps)</span><span class="l-zh">0 (0 bps)</span></div>
         <div class="fbm-bench-label"><span class="l-en">Fed cuts this year</span><span class="l-zh">今年降息次数</span></div>
-      </div>
-      
-      <div class="fbm-bench-arrow pos"
-           data-tip-en="Odds moved +0.6 points since the last update."
-           data-tip-zh="自上次更新以来概率变动 +0.6 个百分点。">
-        ▲ +0.6
       </div>
       
     </div>
     
     
     <div class="fbm-bench-row">
-      <div class="fbm-bench-odds">10<small>%</small></div>
+      <div class="fbm-bench-odds">9<small>%</small></div>
       <div class="fbm-bench-body">
         <div class="fbm-bench-outcome"><span class="l-en">US recession by end of 2026?</span><span class="l-zh">US recession by end of 2026?</span></div>
         <div class="fbm-bench-label"><span class="l-en">US recession</span><span class="l-zh">美国衰退</span></div>
+      </div>
+      
+      <div class="fbm-bench-arrow neg"
+           data-tip-en="Odds moved -0.5 points since the last update."
+           data-tip-zh="自上次更新以来概率变动 -0.5 个百分点。">
+        ▼ -0.5
       </div>
       
     </div>
@@ -9447,7 +9425,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
       <div style="font-size:10.5px;color:var(--ink-3,rgba(255,255,255,.4));line-height:1.6;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
         <span class="l-en">As of 2026-09-25 — a read on conditions, not a forecast. Some inputs are display-only or a few days stale.</span>
         <span class="l-zh">截至 2026-09-25 — 对条件的解读，非预测。部分输入仅供展示或略有滞后。</span>
-        <span class="fbm-tip" data-tip-en="Data notes: futures-implied path reflects risk premium not stripped — not a forecast · All legs are display-tier context only; no scoring or authority. · commodity/shock_state.json oil entry is 8d old (&gt;7d threshold) — H3 leg judged on trend+cause_badge only · policy/intel.json is 75d old — policy row quotes as-of 2026-07-13" data-tip-zh="数据说明：futures-implied path reflects risk premium not stripped — not a forecast · All legs are display-tier context only; no scoring or authority. · commodity/shock_state.json oil entry is 8d old (&gt;7d threshold) — H3 leg judged on trend+cause_badge only · policy/intel.json is 75d old — policy row quotes as-of 2026-07-13" style="width:14px;height:14px;font-size:9px">?</span>
+        <span class="fbm-tip" data-tip-en="Data notes: futures-implied path reflects risk premium not stripped — not a forecast · All legs are display-tier context only; no scoring or authority. · commodity/shock_state.json oil entry is 8d old (&gt;7d threshold) — H3 leg judged on trend+cause_badge only · policy/intel.json is 76d old — policy row quotes as-of 2026-07-13" data-tip-zh="数据说明：futures-implied path reflects risk premium not stripped — not a forecast · All legs are display-tier context only; no scoring or authority. · commodity/shock_state.json oil entry is 8d old (&gt;7d threshold) — H3 leg judged on trend+cause_badge only · policy/intel.json is 76d old — policy row quotes as-of 2026-07-13" style="width:14px;height:14px;font-size:9px">?</span>
       </div>
       
 
@@ -10651,7 +10629,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
     <summary><span class="l-en">Data health</span><span class="l-zh">数据健康度</span>
       <span class="help" tabindex="0" role="button">?<span class="tip"><span class="l-en">Observed health entries for data sources this dashboard depends on. No entries means health is unavailable, not healthy. OK = fresh. STALE = no new data lately (signal confidence reduced automatically). FAILED = today&#39;s fetch broke (yesterday&#39;s data still used). BLOCKED = a known, documented limitation — not a malfunction. DEAD = failed 3+ runs and paused until it recovers.</span><span class="l-zh">本仪表盘依赖数据源的已观测健康记录。没有记录表示健康状态不可用，并不代表正常。OK = 新鲜。STALE = 近期无新数据（信号置信度已自动下调）。FAILED = 今日抓取失败（仍沿用昨日数据）。BLOCKED = 已知且有记录的限制 — 并非故障。DEAD = 连续 3 次以上失败，已暂停直至恢复。</span></span></span>
       
-      <span class="fold-stat">9 <span class="l-en">need attention</span><span class="l-zh">需关注</span> · 190 <span class="l-en">sources</span><span class="l-zh">数据源</span></span>
+      <span class="fold-stat">11 <span class="l-en">need attention</span><span class="l-zh">需关注</span> · 190 <span class="l-en">sources</span><span class="l-zh">数据源</span></span>
       <span class="fold-caret">▾</span>
     </summary>
     <table>
@@ -10662,7 +10640,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10671,7 +10649,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>12</td><td>2026-09-25</td>
+        <td>19</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10680,7 +10658,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10698,7 +10676,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>5</td><td>2026-09-26</td>
+        <td>5</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10725,7 +10703,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>370</td><td>2026-09-26</td>
+        <td>367</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10833,7 +10811,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>30</td><td>2026-09-24</td>
+        <td>29</td><td>2026-09-24</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10860,7 +10838,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10869,7 +10847,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10878,7 +10856,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>5</td><td>2026-09-25</td>
+        <td>4</td><td>2026-09-25</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10905,7 +10883,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10914,7 +10892,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10923,7 +10901,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10950,7 +10928,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10959,7 +10937,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>6</td><td>2026-09-26</td>
+        <td>6</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10968,7 +10946,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10977,7 +10955,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -10986,7 +10964,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11004,7 +10982,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>7008</td><td>2026-09-26</td>
+        <td>709</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11031,7 +11009,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11040,7 +11018,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>143469</td><td>2026-09-26</td>
+        <td>143469</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11067,7 +11045,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11076,7 +11054,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11094,7 +11072,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11112,7 +11090,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11121,7 +11099,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11130,7 +11108,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>23</td><td>2026-09-26</td>
+        <td>39</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11139,7 +11117,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11148,7 +11126,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>60</td><td>2026-09-25</td>
+        <td>67</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11157,7 +11135,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11175,7 +11153,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>50</td><td>2026-09-26</td>
+        <td>50</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11184,7 +11162,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>5315</td><td>2026-09-26</td>
+        <td>5319</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11193,7 +11171,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>6</td><td>2026-09-26</td>
+        <td>6</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11202,7 +11180,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11211,7 +11189,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11220,7 +11198,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11229,7 +11207,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11237,7 +11215,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         <td class="l">eia</td>
         
         
-        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td class="l"><span class="pill pill-stale"><span class="l-en">stale</span><span class="l-zh">过期</span></span></td>
         <td>24931</td><td>2026-09-18</td>
         <td class="l muted"></td>
       </tr>
@@ -11247,7 +11225,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11265,7 +11243,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>3156</td><td>2026-09-26</td>
+        <td>3158</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11283,7 +11261,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11292,7 +11270,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11301,7 +11279,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11319,7 +11297,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11346,7 +11324,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>0</td><td>2026-09-26</td>
+        <td>0</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11364,7 +11342,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>681315</td><td>2029-01-01</td>
+        <td>681317</td><td>2029-01-01</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11382,7 +11360,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>5830</td><td>2026-09-26</td>
+        <td>5830</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11427,7 +11405,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11436,7 +11414,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11445,7 +11423,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>19</td><td>2026-09-25</td>
+        <td>17</td><td>2026-09-25</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11463,7 +11441,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11508,7 +11486,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11544,7 +11522,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11580,7 +11558,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>189</td><td>2026-09-26</td>
+        <td>191</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11634,7 +11612,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11643,7 +11621,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>367</td><td>2026-09-26</td>
+        <td>367</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11653,7 +11631,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
         <td>0</td><td>—</td>
-        <td class="l muted">ReadTimeout: HTTPSConnectionPool(host=&#39;api.hkma.gov.hk&#39;, port=443): Read timed out. (read </td>
+        <td class="l muted">HTTPError: HTTP 502</td>
       </tr>
       
       <tr>
@@ -11661,7 +11639,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11670,7 +11648,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11679,7 +11657,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11688,7 +11666,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11706,7 +11684,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>26478</td><td>2026-09-26</td>
+        <td>26480</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11715,7 +11693,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>37053</td><td>2026-09-26</td>
+        <td>5832</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11723,9 +11701,9 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         <td class="l">intl_universe</td>
         
         
-        <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
-        <td>0</td><td>—</td>
-        <td class="l muted">RuntimeError: intl_universe: no closes downloaded</td>
+        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td>1</td><td>2026-09-28</td>
+        <td class="l muted"></td>
       </tr>
       
       <tr>
@@ -11751,7 +11729,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11769,7 +11747,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11778,7 +11756,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>34</td><td>2026-09-26</td>
+        <td>34</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11796,7 +11774,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1282</td><td>2026-09-25</td>
+        <td>1280</td><td>2026-09-25</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11804,7 +11782,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         <td class="l">ofac_sdn</td>
         
         
-        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td class="l"><span class="pill pill-stale"><span class="l-en">stale</span><span class="l-zh">过期</span></span></td>
         <td>1</td><td>2026-09-23</td>
         <td class="l muted"></td>
       </tr>
@@ -11814,7 +11792,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11832,7 +11810,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>637</td><td>2026-09-26</td>
+        <td>637</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11841,7 +11819,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11850,7 +11828,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11877,7 +11855,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11886,7 +11864,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11895,7 +11873,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11904,7 +11882,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11913,7 +11891,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11922,7 +11900,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11931,7 +11909,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11940,7 +11918,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11958,7 +11936,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11967,7 +11945,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11976,7 +11954,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11985,7 +11963,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -11994,7 +11972,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12003,7 +11981,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12012,7 +11990,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12021,7 +11999,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12030,7 +12008,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12039,7 +12017,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12057,7 +12035,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12075,7 +12053,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12084,7 +12062,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12093,7 +12071,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>65</td><td>2026-09-25</td>
+        <td>65</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12111,7 +12089,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12129,7 +12107,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12156,7 +12134,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12175,7 +12153,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         <td class="l"><span class="pill pill-failed"><span class="l-en">failed</span><span class="l-zh">失败</span></span></td>
         <td>0</td><td>—</td>
-        <td class="l muted">circuit open (45 consecutive failures)</td>
+        <td class="l muted">ValueError: NAAIM since-inception workbook link not found on page</td>
       </tr>
       
       <tr>
@@ -12201,7 +12179,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12210,7 +12188,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>18833</td><td>2026-09-25</td>
+        <td>18882</td><td>2026-09-25</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12219,7 +12197,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12228,7 +12206,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12273,7 +12251,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12281,7 +12259,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         <td class="l">tsa</td>
         
         
-        <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
+        <td class="l"><span class="pill pill-stale"><span class="l-en">stale</span><span class="l-zh">过期</span></span></td>
         <td>2824</td><td>2026-09-24</td>
         <td class="l muted"></td>
       </tr>
@@ -12291,7 +12269,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>30482</td><td>2026-09-25</td>
+        <td>30484</td><td>2026-09-27</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12309,7 +12287,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12318,7 +12296,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12327,7 +12305,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>1</td><td>2026-09-26</td>
+        <td>1</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12336,7 +12314,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>145529</td><td>2026-09-25</td>
+        <td>144318</td><td>2026-09-26</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12345,7 +12323,7 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>4105</td><td>2026-09-25</td>
+        <td>4106</td><td>2026-09-26</td>
         <td class="l muted"></td>
       </tr>
       
@@ -12363,15 +12341,15 @@ Chip leadership is today&#39;s dominant driver. The tape remains narrow, while r
         
         
         <td class="l"><span class="pill pill-ok"><span class="l-en">ok</span><span class="l-zh">正常</span></span></td>
-        <td>38098</td><td>2026-09-26</td>
+        <td>64457</td><td>2026-09-28</td>
         <td class="l muted"></td>
       </tr>
       
     </table>
     <p class="muted"><span class="l-en">A failed source never crashes the dashboard — affected signals just lose confidence until it heals.
-       Generated 2026-09-26 21:14 UTC · <a href="aibrief.html">AI daily brief</a> ·
+       Generated 2026-09-28 06:11 UTC · <a href="aibrief.html">AI daily brief</a> ·
        <a href="history.html">history & charts</a></span><span class="l-zh">数据源失败绝不会让仪表盘崩溃 — 受影响的信号只是降低置信度，直到其恢复。
-       生成于 2026-09-26 21:14 UTC · <a href="aibrief.html">AI每日简报</a> ·
+       生成于 2026-09-28 06:11 UTC · <a href="aibrief.html">AI每日简报</a> ·
        <a href="history.html">历史与图表</a></span></p>
   </details>
   
@@ -12462,7 +12440,7 @@ window.__CHART_SWAP__ = {
            "HY OAS %":"高收益债利差 %","% S&P500 > 50DMA":"标普500 高于50日均线 %"}
 };
 </script>
-<script src="theme.js?v=3ffc953f" defer></script>
+<script src="theme.js?v=86834717" defer></script>
 <script src="tier_preview.js?v=d80100db" defer></script>
 <script src="chart_i18n.js?v=23272c48" defer></script>
 <script src="timemachine.js?v=92798ed7" defer></script>
