@@ -1,6 +1,6 @@
 {
   "schema": "prophet_arena.scoreboard/v1",
-  "as_of": "2026-09-26",
+  "as_of": "2026-09-28",
   "tier": "display",
   "authority": {
     "tier": "display",
@@ -71,12 +71,8 @@
   "standing_line_zh": "\u5f71\u5b50\u8bb0\u5f55 \u2014 \u5b9e\u76d8\u7b56\u7565\u4ec5\u5728\u64cd\u4f5c\u8005\u6279\u51c6\u540e\u624d\u4f1a\u66f4\u6539",
   "headline_min_closed": 20,
   "harness_validity": {
-    "c0_plan_ids": [
-      "AEIS-BULL-20260922"
-    ],
-    "live_plan_ids": [
-      "AEIS-BULL-20260922"
-    ],
+    "c0_plan_ids": [],
+    "live_plan_ids": [],
     "c0_mismatch_count": 0,
     "missing_from_mirror": [],
     "extra_in_mirror": [],
@@ -313,10 +309,10 @@
     }
   ],
   "tonight": {
-    "asof": "2026-09-26",
+    "asof": "2026-09-28",
     "standouts_as_of": "2026-09-25",
     "price_through": "2026-09-25",
-    "observed_at_utc": "2026-09-27T05:09:25.668209+00:00",
+    "observed_at_utc": "2026-09-28T05:29:02.480694+00:00",
     "source_delayed": false,
     "source_unknown": false,
     "source_basis": "panel_majority",
@@ -325,7 +321,7 @@
     "dispersion": {
       "mode": "not_lean_in",
       "state": "lean_out",
-      "artifact_as_of": "2026-09-26",
+      "artifact_as_of": "2026-09-27",
       "stale_sessions": 0,
       "cap": 6,
       "path": "data/dispersion/regime.json"
@@ -354,7 +350,7 @@
           "2B",
           "3B"
         ],
-        "runtime_s": 22.2
+        "runtime_s": 25.1
       }
     },
     "policies": {
@@ -385,8 +381,8 @@
           "WABC",
           "BKSY",
           "BKR",
-          "EU",
           "TLN",
+          "EU",
           "PLAB",
           "LMAT",
           "KLAC",
@@ -401,10 +397,8 @@
           "NVR",
           "PBH"
         ],
-        "plan_ids": [
-          "AEIS-BULL-20260922"
-        ],
-        "n_plans": 1,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 40,
           "cap": null,
@@ -414,13 +408,13 @@
         },
         "origination": {
           "offered": 40,
-          "skipped_duplicate_id": 24,
+          "skipped_duplicate_id": 25,
           "skipped_open_plan": 6,
           "skipped_clock_provenance": 9,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-27",
+          "recorded_at": "2026-09-28",
           "price_basis_date": "2026-09-25",
           "clock_errors": [],
           "validation_failures": [
@@ -497,10 +491,10 @@
               ]
             }
           ],
-          "originated": 1,
+          "originated": 0,
           "validation_failed": 9
         },
-        "ledger_rows_appended": 1,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C1_buy_soon_first": {
@@ -518,10 +512,8 @@
           "GAP",
           "AEIS"
         ],
-        "plan_ids": [
-          "AEIS-BULL-20260922"
-        ],
-        "n_plans": 1,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 40,
           "cap": 12,
@@ -531,13 +523,13 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 5,
+          "skipped_duplicate_id": 6,
           "skipped_open_plan": 1,
           "skipped_clock_provenance": 5,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-27",
+          "recorded_at": "2026-09-28",
           "price_basis_date": "2026-09-25",
           "clock_errors": [],
           "validation_failures": [
@@ -582,10 +574,10 @@
               ]
             }
           ],
-          "originated": 1,
+          "originated": 0,
           "validation_failed": 5
         },
-        "ledger_rows_appended": 1,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C3_door_w_union": {
@@ -627,7 +619,7 @@
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-27",
+          "recorded_at": "2026-09-28",
           "price_basis_date": "2026-09-25",
           "clock_errors": [],
           "validation_failures": [
@@ -702,7 +694,7 @@
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-27",
+          "recorded_at": "2026-09-28",
           "price_basis_date": "2026-09-25",
           "clock_errors": [],
           "validation_failures": [
@@ -767,7 +759,7 @@
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-27",
+          "recorded_at": "2026-09-28",
           "price_basis_date": "2026-09-25",
           "clock_errors": [],
           "validation_failures": [],
@@ -804,8 +796,8 @@
           "WABC",
           "BKSY",
           "BKR",
-          "EU",
           "TLN",
+          "EU",
           "PLAB",
           "LMAT",
           "KLAC",
@@ -820,10 +812,8 @@
           "NVR",
           "PBH"
         ],
-        "plan_ids": [
-          "AEIS-BULL-20260922"
-        ],
-        "n_plans": 1,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 40,
           "cap": null,
@@ -833,13 +823,13 @@
         },
         "origination": {
           "offered": 40,
-          "skipped_duplicate_id": 24,
+          "skipped_duplicate_id": 25,
           "skipped_open_plan": 6,
           "skipped_clock_provenance": 9,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-27",
+          "recorded_at": "2026-09-28",
           "price_basis_date": "2026-09-25",
           "clock_errors": [],
           "validation_failures": [
@@ -916,10 +906,10 @@
               ]
             }
           ],
-          "originated": 1,
+          "originated": 0,
           "validation_failed": 9
         },
-        "ledger_rows_appended": 1,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       },
       "C7_buy_soon_admitted": {
@@ -937,10 +927,8 @@
           "GAP",
           "AEIS"
         ],
-        "plan_ids": [
-          "AEIS-BULL-20260922"
-        ],
-        "n_plans": 1,
+        "plan_ids": [],
+        "n_plans": 0,
         "selection": {
           "admitted": 40,
           "cap": 12,
@@ -953,13 +941,13 @@
         },
         "origination": {
           "offered": 12,
-          "skipped_duplicate_id": 5,
+          "skipped_duplicate_id": 6,
           "skipped_open_plan": 1,
           "skipped_clock_provenance": 5,
           "skipped_no_spot": 0,
           "skipped_door_w_no_geometry": 0,
           "skipped_door_w_tickers": [],
-          "recorded_at": "2026-09-27",
+          "recorded_at": "2026-09-28",
           "price_basis_date": "2026-09-25",
           "clock_errors": [],
           "validation_failures": [
@@ -1004,10 +992,10 @@
               ]
             }
           ],
-          "originated": 1,
+          "originated": 0,
           "validation_failed": 5
         },
-        "ledger_rows_appended": 1,
+        "ledger_rows_appended": 0,
         "ledger_closures_appended": 0
       }
     }
