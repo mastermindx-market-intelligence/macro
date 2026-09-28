@@ -434,6 +434,15 @@ def build_live_payload(
         raise LiveContractError("baseline date is after the live session")
 
     normalized = _normalize_quote_map(quotes, baseline)
+    # A fresh maximum timestamp proves only ONE stock is current. Account only
+    # for individually source-current observations, against the same canonical
+    # segment clock (fixed at 11:30 during lunch and 15:00 after the close).
+    expected_ms = int(_utc(cn_clock.expected_latest_quote_time(now_utc)).timestamp() * 1000)
+    normalized = {
+        ticker: quote for ticker, quote in normalized.items()
+        if -MAX_FUTURE_SKEW_SECONDS * 1000
+        <= expected_ms - quote["ts"] <= MAX_SOURCE_LAG_SECONDS * 1000
+    }
     _source_contract(source, fallback, len(normalized))
     requested = len(baseline.tickers)
     resolved = len(normalized)

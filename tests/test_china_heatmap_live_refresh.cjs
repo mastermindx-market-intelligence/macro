@@ -57,7 +57,9 @@ test('running snapshot fetches immediately then schedules two seconds',async()=>
 });
 
 test('break snapshot uses heartbeat cadence without treating the source as stale',async()=>{
- const p=live({phase:'session_break',status:'break'}),h=harness([p]),b=registered(h);
+ const p=live({phase:'session_break',status:'break',generated_at:'2026-09-28T04:00:00Z',source_observed_at:'2026-09-28T03:29:59Z'});
+ for(const q of Object.values(p.quotes))q.ts=Date.parse(p.source_observed_at);
+ const h=harness([p]),b=registered(h);h.setNow(Date.parse(p.generated_at));
  await h.runTimer(t=>t.delay===0);assert.equal(h.meta(b).status,'break');assert.equal([...h.timers.values()][0].delay,30000);
 });
 
@@ -84,4 +86,48 @@ test('transient transport failure retries without destroying accepted state',asy
  await h.runTimer(t=>t.delay===0);const accepted=h.meta(b).source_observed_at;
  await h.runTimer(t=>t.delay===2000);assert.equal(h.meta(b).source_observed_at,accepted);
  await h.runTimer(t=>t.delay===2000);assert.equal(h.meta(b).source_observed_at,accepted);
+});
+
+
+test('one fresh name cannot bless a stale neighbor',()=>{
+ const h=harness(),p=live();p.quotes['000001.SZ'].ts-=86400000;
+ assert.throws(()=>h.validate(p,base()),/clock|fresh|quote|usab/i);
+});
+test('source expiry removes live values even while producer heartbeat is recent',()=>{
+ const h=harness(),b=base();h.start(b);h.commit('marketdata/china_heatmap.json',live());
+ h.setNow(NOW+36000);assert.equal(h.value(b,b.tiles[0],'1D'),b.tiles[0].perf['1D']);
+});
+test('failed poll emits the transition to daily fallback without a new payload',async()=>{
+ const h=harness([new Error('offline')]),b=base();h.start(b);h.commit('marketdata/china_heatmap.json',live());
+ const count=h.events.length;h.setNow(NOW+36000);await h.runTimer(t=>t.delay===0);
+ assert.equal(h.events.length,count+1);assert.equal(h.value(b,b.tiles[0],'1D'),1);
+});
+test('explicit unavailable response clears a live claim immediately',()=>{
+ const h=harness(),b=base();h.start(b);h.commit('marketdata/china_heatmap.json',live());
+ h.setNow(NOW+2000);
+ const p=live({generated_at:'2026-09-28T02:15:42Z',source:null,status:'unavailable',source_observed_at:null,quotes:{},resolved:0,coverage:0,usable:false,breadth:{n:0,adv:0,dec:0,flat:0,pctUp:0}});
+ assert.equal(h.commit('marketdata/china_heatmap.json',p),true);
+ assert.equal(h.value(b,b.tiles[0],'1D'),1);
+});
+test('individual quote cannot regress inside a batch with a newer maximum timestamp',()=>{
+ const h=harness(),b=base();h.start(b);h.commit('marketdata/china_heatmap.json',live());
+ const p=live({generated_at:'2026-09-28T02:15:41Z',source_observed_at:'2026-09-28T02:15:31Z'});
+ p.quotes['600519.SS'].ts+=1000;p.quotes['000001.SZ'].ts-=1000;
+ assert.equal(h.commit('marketdata/china_heatmap.json',p),false);
+});
+
+
+test('a break label cannot excuse a quote from the prior trading day',()=>{
+ const h=harness(),p=live({phase:'session_break',status:'break',generated_at:'2026-09-28T04:00:00Z',source_observed_at:'2026-09-24T07:00:00Z'});
+ for(const q of Object.values(p.quotes))q.ts=Date.parse(p.source_observed_at);
+ h.setNow(Date.parse(p.generated_at));assert.throws(()=>h.validate(p,base()));
+});
+test('a morning label expires at the lunch boundary even with a recent heartbeat',()=>{
+ const h=harness(),b=base(),p=live({generated_at:'2026-09-28T03:29:59Z',source_observed_at:'2026-09-28T03:29:58Z'});
+ for(const q of Object.values(p.quotes))q.ts=Date.parse(p.source_observed_at);
+ h.setNow(Date.parse(p.generated_at));h.start(b);h.commit('marketdata/china_heatmap.json',p);
+ h.setNow(Date.parse('2026-09-28T03:30:01Z'));assert.equal(h.value(b,b.tiles[0],'1D'),1);
+});
+test('valid but wrong session date cannot be called live',()=>{
+ const h=harness(),p=live({session_date:'2026-09-29'});assert.throws(()=>h.validate(p,base()));
 });

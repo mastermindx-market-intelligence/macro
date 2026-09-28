@@ -637,6 +637,25 @@ def _prophet_live_cfg() -> dict:
     return _PROPHET_LIVE_CFG
 
 
+
+
+from app.china_heatmap_status import status_projection as _china_heatmap_live_status_projection
+
+
+def _served_china_heatmap_asof() -> str | None:
+    try:
+        payload = json.loads(
+            (SITE / "marketdata" / "china_heatmap.json").read_text(encoding="utf-8")
+        )
+        value = payload.get("asof") if isinstance(payload, dict) else None
+        return value if isinstance(value, str) else None
+    except Exception:  # noqa: BLE001 - public health must never leak filesystem detail
+        log.warning("served China heatmap baseline unavailable", exc_info=True)
+        return None
+
+
+
+
 @app.get("/api/status")
 def status() -> dict:
     """At-a-glance health of the VPS loops — the freshness each cron is producing.
@@ -672,6 +691,7 @@ def status() -> dict:
         ("overlay", "overlay.json"),
         ("risk_state", "risk_state.json"),
         ("china_risk_state", "china_risk_state.json"),
+        ("china_heatmap_live", "china_heatmap.json"),
         ("quotes", "quotes.json"),
         ("basket_pulse", "basket_pulse.json"),
         ("flow_pulse", "flow_pulse.json"),
@@ -680,6 +700,41 @@ def status() -> dict:
         ("breadth", "breadth.json"),
     ):
         artifact = _live_artifact(filename)
+        if key == "china_heatmap_live":
+            served_asof = _served_china_heatmap_asof()
+            if artifact.exists():
+                age = round((now - artifact.stat().st_mtime) / 60, 1)
+                try:
+                    data = json.loads(artifact.read_text(encoding="utf-8"))
+                    if not isinstance(data, dict):
+                        raise ValueError("live overlay root is not an object")
+                    checks[key] = _china_heatmap_live_status_projection(
+                        data,
+                        now=datetime.fromtimestamp(now, tz=timezone.utc),
+                        age_min=age,
+                        served_baseline_asof=served_asof,
+                    )
+                except Exception:  # noqa: BLE001 - coarsen public diagnostics
+                    log.warning("status check %s unavailable", key, exc_info=True)
+                    checks[key] = {
+                        "error": "unavailable",
+                        "age_min": age,
+                        "expected_phase": _china_heatmap_live_status_projection(
+                            None,
+                            now=datetime.fromtimestamp(now, tz=timezone.utc),
+                            age_min=None,
+                            served_baseline_asof=served_asof,
+                        )["expected_phase"],
+                        "served_baseline_asof": served_asof,
+                    }
+            else:
+                checks[key] = _china_heatmap_live_status_projection(
+                    None,
+                    now=datetime.fromtimestamp(now, tz=timezone.utc),
+                    age_min=None,
+                    served_baseline_asof=served_asof,
+                )
+            continue
         if artifact.exists():
             try:
                 data = json.loads(artifact.read_text())

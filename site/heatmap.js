@@ -278,7 +278,7 @@
   var CHINA_LIVE_IDLE_MS = 30000;
   var CHINA_LIVE_TIMEOUT_MS = 5000;
   var CHINA_LIVE_HEARTBEAT_MS = 120000;
-  var CHINA_LIVE_SOURCE_MS = 120000;
+  var CHINA_LIVE_SOURCE_MS = 45000;
   var CHINA_LIVE_FUTURE_MS = 5000;
   var _chinaLiveStates = {};
   var _chinaLivePhases = {
@@ -329,6 +329,28 @@
     }
     return stable(value, true);
   }
+  // Bounds on an already server-attested session/phase, not a holiday calendar.
+  // These mirror cn_clock's wall-clock segments; the server still owns which
+  // dates are trading sessions. A stale morning label cannot survive lunch.
+  var _chinaLiveWindows = {
+    morning: [570,690], session_break: [690,780], afternoon: [780,897],
+    closing_auction: [897,900], post_close: [900,915], closed: [915,1440]
+  };
+  function chinaLiveSourceAnchor(payload, nowMs) {
+    var window = _chinaLiveWindows[payload.phase];
+    var day = Date.parse(payload.session_date + 'T00:00:00+08:00');
+    var minute = (nowMs - day) / 60000;
+    if (!window || !isFinite(day) || minute < window[0] || minute >= window[1]) return NaN;
+    if (payload.phase === 'session_break') return day + 690 * 60000;
+    if (payload.phase === 'post_close' || payload.phase === 'closed') return day + 900 * 60000;
+    return nowMs;
+  }
+  function chinaLiveFreshRange(payload, oldest, newest, nowMs) {
+    var anchor = chinaLiveSourceAnchor(payload, nowMs);
+    return isFinite(anchor) && isFinite(oldest) && newest > 0
+      && oldest >= anchor - CHINA_LIVE_SOURCE_MS
+      && newest <= anchor + CHINA_LIVE_FUTURE_MS;
+  }
   function validateChinaLiveSnapshot(payload, base, nowMs) {
     nowMs = nowMs == null ? Date.now() : Number(nowMs);
     if (!chinaLiveExactKeys(payload, _chinaLiveKeys)) throw new Error('China live field allowlist mismatch');
@@ -342,7 +364,7 @@
     if (!chinaRecord(payload.quotes)) throw new Error('China live quotes invalid');
     var quoteKeys = Object.keys(payload.quotes), allowed = chinaLiveTickerSet(base);
     if (payload.resolved !== quoteKeys.length || !chinaNumber(payload.coverage) || Math.abs(payload.coverage - quoteKeys.length / payload.requested) > 1e-12) throw new Error('China live coverage mismatch');
-    var adv = 0, dec = 0, flat = 0, maxTs = 0;
+    var adv = 0, dec = 0, flat = 0, maxTs = 0, minTs = Infinity;
     quoteKeys.forEach(function (ticker) {
       if (!/^\d{6}\.(?:SS|SZ)$/.test(ticker) || !allowed[ticker]) throw new Error('China live ticker outside baseline');
       var quote = payload.quotes[ticker];
@@ -355,7 +377,7 @@
       ['open','high','low'].forEach(function (key) { if (quote[key] !== null && (!chinaNumber(quote[key]) || quote[key] <= 0)) throw new Error('China live quote range invalid'); });
       ['vol','amount'].forEach(function (key) { if (quote[key] !== null && (!chinaNumber(quote[key]) || quote[key] < 0)) throw new Error('China live quote activity invalid'); });
       if (quote.high !== null && quote.low !== null && quote.high < quote.low) throw new Error('China live quote range inverted');
-      maxTs = Math.max(maxTs, quote.ts);
+      maxTs = Math.max(maxTs, quote.ts); minTs = Math.min(minTs, quote.ts);
       if (change > 0.05) adv++; else if (change < -0.05) dec++; else flat++;
     });
     var sourceStamp = payload.source_observed_at === null ? NaN : chinaLiveIso(payload.source_observed_at);
@@ -367,10 +389,7 @@
     if (payload.status !== expectedStatus) throw new Error('China live status mismatch');
     var breadth = payload.breadth, n = adv + dec + flat;
     if (!chinaRecord(breadth) || breadth.n !== n || breadth.adv !== adv || breadth.dec !== dec || breadth.flat !== flat || !chinaNumber(breadth.pctUp) || Math.abs(breadth.pctUp - (n ? 100 * adv / n : 0)) > 1e-10) throw new Error('China live breadth mismatch');
-    var sourceFresh = true;
-    if (_chinaLiveRunning[payload.phase]) {
-      sourceFresh = quoteKeys.length > 0 && maxTs <= nowMs + CHINA_LIVE_FUTURE_MS && nowMs - maxTs <= CHINA_LIVE_SOURCE_MS;
-    }
+    var sourceFresh = chinaLiveFreshRange(payload, minTs, maxTs, nowMs);
     var expectedUsable = !!payload.source && payload.coverage >= 0.95 && !!_chinaLiveActive[payload.phase] && sourceFresh;
     if (typeof payload.usable !== 'boolean' || payload.usable !== expectedUsable) throw new Error('China live usability mismatch');
     chinaLiveContentKey(payload);
@@ -379,29 +398,50 @@
   function chinaLiveStateFor(baseUrl) {
     return _chinaLiveStates[baseUrl] || (_chinaLiveStates[baseUrl] = {
       base: null, data: null, owner: false, timer: null,
-      inFlight: null, generation: 0, liveUrl: CHINA_LIVE_URL
+      inFlight: null, generation: 0, liveUrl: CHINA_LIVE_URL,
+      sourceWatermark: 0, quoteWatermarks: Object.create(null), viewState: null,
+      oldestQuoteTs: Infinity, newestQuoteTs: 0, freshnessData: null
     });
+  }
+  function chinaLiveViewKey(state) {
+    var meta = chinaLiveMeta(state.base);
+    return meta ? (meta.usable ? 'live:' + meta.phase : 'fallback') : 'daily';
+  }
+  function chinaLiveEmit(state) {
+    try { document.dispatchEvent(new CustomEvent('hm-live-refresh', { detail: { url: state.baseUrl } })); } catch (e) { /* no-op */ }
+  }
+  function chinaLiveNotifyExpiry(state) {
+    var next = chinaLiveViewKey(state), previous = state.viewState;
+    state.viewState = next;
+    if (previous !== null && previous !== next) chinaLiveEmit(state);
   }
   function commitChinaLiveSnapshot(baseUrl, payload) {
     var state = _chinaLiveStates[baseUrl];
     if (!state || !state.base) throw new Error('China live baseline not registered');
     var fresh = validateChinaLiveSnapshot(payload, state.base, Date.now());
     var current = state.data;
-    if (current) {
-      var freshSource = fresh.source_observed_at === null ? 0 : chinaLiveIso(fresh.source_observed_at);
-      var currentSource = current.source_observed_at === null ? 0 : chinaLiveIso(current.source_observed_at);
-      if (freshSource < currentSource || chinaLiveIso(fresh.generated_at) < chinaLiveIso(current.generated_at)) return false;
-    }
+    var freshSource = fresh.source_observed_at === null ? 0 : chinaLiveIso(fresh.source_observed_at);
+    if (current && chinaLiveIso(fresh.generated_at) < chinaLiveIso(current.generated_at)) return false;
+    // An explicit unavailable response is a de-escalation, not a regressive
+    // quote. Keep the quote watermarks so recovery cannot replay an older price.
+    if (freshSource && freshSource < state.sourceWatermark) return false;
+    var tickers = Object.keys(fresh.quotes), marks = state.quoteWatermarks;
+    if (tickers.some(function (ticker) { return marks[ticker] != null && fresh.quotes[ticker].ts < marks[ticker]; })) return false;
     var changed = !current || chinaLiveContentKey(current) !== chinaLiveContentKey(fresh);
-    state.data = fresh;
-    if (changed) {
-      try { document.dispatchEvent(new CustomEvent('hm-live-refresh', { detail: { url: baseUrl } })); } catch (e) { /* no-op */ }
-    }
+    var previousView = state.viewState;
+    state.data = fresh; state.freshnessData = null;
+    state.sourceWatermark = Math.max(state.sourceWatermark, freshSource);
+    var allowed = chinaLiveTickerSet(state.base);
+    Object.keys(marks).forEach(function (ticker) { if (!allowed[ticker]) delete marks[ticker]; });
+    tickers.forEach(function (ticker) { marks[ticker] = fresh.quotes[ticker].ts; });
+    state.viewState = chinaLiveViewKey(state);
+    changed = changed || (previousView !== null && previousView !== state.viewState);
+    if (changed) chinaLiveEmit(state);
     return changed;
   }
   function chinaLiveDelay(state) {
     var data = state.data;
-    return data && data.usable && _chinaLiveRunning[data.phase]
+    return data && _chinaLiveRunning[data.phase]
       ? CHINA_LIVE_RUNNING_MS : CHINA_LIVE_IDLE_MS;
   }
   function chinaLiveFetch(url, generation) {
@@ -437,6 +477,7 @@
   function chinaLiveTick(state) {
     if (!state.owner) return;
     if (document.hidden) { chinaLiveSchedule(state, CHINA_LIVE_IDLE_MS); return; }
+    chinaLiveNotifyExpiry(state);
     if (state.inFlight !== null) return;
     var generation = ++state.generation;
     state.inFlight = generation;
@@ -446,6 +487,7 @@
     }).catch(function () { /* retain accepted state */ }).then(function () {
       if (state.inFlight !== generation) return;
       state.inFlight = null;
+      chinaLiveNotifyExpiry(state);
       chinaLiveSchedule(state, chinaLiveDelay(state));
     });
   }
@@ -469,6 +511,19 @@
     if (!state || !state.data || state.data.baseline_asof !== base.asof) return null;
     var generated = chinaLiveIso(state.data.generated_at), now = Date.now();
     if (!isFinite(generated) || generated > now + CHINA_LIVE_FUTURE_MS || now - generated > CHINA_LIVE_HEARTBEAT_MS) return null;
+    if (state.data.usable) {
+      // O(n) once per accepted snapshot; all tile/sector/hover reads are O(1).
+      if (state.freshnessData !== state.data) {
+        state.oldestQuoteTs = Infinity; state.newestQuoteTs = 0;
+        Object.keys(state.data.quotes).forEach(function (ticker) {
+          var ts = state.data.quotes[ticker].ts;
+          state.oldestQuoteTs = Math.min(state.oldestQuoteTs, ts);
+          state.newestQuoteTs = Math.max(state.newestQuoteTs, ts);
+        });
+        state.freshnessData = state.data;
+      }
+      if (!chinaLiveFreshRange(state.data, state.oldestQuoteTs, state.newestQuoteTs, now)) return null;
+    }
     return state.data;
   }
   function chinaLiveValue(base, tile, timeframe) {

@@ -514,3 +514,20 @@ During `morning` or `afternoon`, verify two successive source ticks and both rea
 - [ ] **Step 9: Record final capability state**
 
 `PROVEN_LIVE` requires the real-path receipts above. Otherwise leave `BUILT_NOT_PROVEN` with the exact remaining natural-session or human gate. Close/supersede PR #7193 only after the new carrier preserves its settled-close guarantees and the repository state is reconciled.
+
+
+## 2026-09-28 recovered execution frontier
+
+**MISSION_COMPLETE:false. BUILT_NOT_PROVEN. Release and deployment remain held.**
+
+The interrupted approved turn committed Tasks 1–5 through `6c31bc9cfbb1e8aa729cb42484179110541c8e73`; those effects were reconciled and preserved. Current protected procedure is Mastermind `5c6b010a6157895d4f697548c75263cdff641ea6`, INDEX blob `94d1af402598894372858793a5b1931019c5fa77`, compatible Skillpack 1.0.1/bootstrap1.
+
+Task 6 now adds aggregate-only `/api/status` reporting and the existing external heartbeat's China checks. The status helper is isolated from API startup; its API wiring test stays with the incumbent VPS suite. The six live-heatmap suites have one executable CI owner, `china-board-breadth`, with the measured exact import/read closure. Source and served Node runs use the harnesses' actual environment keys.
+
+Qualification found and repaired several real false-live cases: one current stock certifying stale neighbors; a restart at lunch losing the existing atomic snapshot; publication using the clock from before a slow network request; per-name timestamp regression inside a newer batch; source expiry failing to repaint after transport failure; and an explicit unavailable response being rejected as a regressive price. Coverage now counts individual current observations. Browser phase bounds only constrain the server-attested session and are pinned against canonical `cn_clock` constants; they do not select trading dates.
+
+Latest focused qualification: 166 Python checks passed, including two corrected CI manifest gates; 38 Node checks passed on the source. Template/served bytes match. The exact China job closure has zero missing paths. DAG conformance passes for 27 lanes, retaining two pre-existing visible suspect divergences. A preceding full local CI-pack run had 139 passes and two introduced failures; both have targeted corrective proof, but a new complete exact-candidate CI run remains owed.
+
+Next: qualify real browser flows over the full 1,702-name baseline with explicitly synthetic live inputs, settle remaining post-close/startup edge cases, obtain independent whole-branch review, and consume exact-head/current-base CI before normal release. PR #7967 overlaps the shared heatmap JS and must be reconciled before merge. PR #7193's settled-close scope is not taken over or closed by this live overlay.
+
+No production install, token delivery, provider entitlement proof, or natural-session browser proof is claimed. The earlier privileged VPS-inspection safety denial and a later compound public-probe safety-status refusal were not retried through another carrier. Their blocked checks are not evidence of a provider or host outage.

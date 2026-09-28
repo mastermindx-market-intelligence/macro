@@ -119,6 +119,29 @@ class ChinaHeatmapLiveProducer:
     def request_stop(self) -> None:
         self._stopped = True
 
+    def _restore_last_good(self, baseline: contract.BaselineHeatmap) -> None:
+        """Recover the existing atomic artifact, never a second snapshot store.
+
+        Validate its original publication first. step() then rechecks every
+        recovered quote against the current session clock before using it.
+        This keeps a lunch restart from erasing the valid morning close.
+        """
+        try:
+            if not self.out_path.is_file() or self.out_path.stat().st_size > 8 * 1024 * 1024:
+                return
+            payload = json.loads(self.out_path.read_text(encoding="utf-8"))
+            generated = datetime.fromisoformat(payload["generated_at"].replace("Z", "+00:00"))
+            if generated.tzinfo is None:
+                return
+            restored = contract.validate_live_payload(payload, baseline, now=generated)
+            if restored["usable"] and restored["quotes"]:
+                self._last_good_quotes = restored["quotes"]
+                self._last_good_source = restored["source"]
+                self._last_good_fallback = restored["fallback"]
+        except (OSError, ValueError, TypeError, KeyError, OverflowError):
+            # Corrupt/old/baseline-mismatched data is not a startup authority.
+            log.warning("Prior China heatmap artifact is not reusable")
+
     def _load_baseline(self) -> contract.BaselineHeatmap:
         current = self.base_path.stat()
         signature = (current.st_ino, current.st_mtime_ns, current.st_size)
@@ -131,8 +154,11 @@ class ChinaHeatmapLiveProducer:
             self._last_good_source = None
             self._last_good_fallback = False
             self._last_fallback_at = None
+        first_load = self._baseline is None
         self._baseline = baseline
         self._baseline_signature = signature
+        if first_load:
+            self._restore_last_good(baseline)
         return baseline
 
     def _candidate_usable(
@@ -145,12 +171,21 @@ class ChinaHeatmapLiveProducer:
         phase: str,
         now: datetime,
     ) -> bool:
-        candidate = contract.build_live_payload(
-            baseline, quotes, source=source, fallback=fallback,
-            phase=phase, now=now,
+        try:
+            candidate = contract.build_live_payload(
+                baseline, quotes, source=source, fallback=fallback,
+                phase=phase, now=now,
+            )
+            contract.validate_live_payload(candidate, baseline, now=now)
+        except (contract.LiveContractError, TypeError, ValueError, OverflowError):
+            return False
+        if not candidate["usable"]:
+            return False
+        previous = self._last_good_quotes or {}
+        return not any(
+            ticker in previous and quote["ts"] < previous[ticker]["ts"]
+            for ticker, quote in candidate["quotes"].items()
         )
-        contract.validate_live_payload(candidate, baseline, now=now)
-        return bool(candidate["usable"])
 
     def step(
         self,
@@ -167,8 +202,13 @@ class ChinaHeatmapLiveProducer:
         if phase in FETCH_PHASES:
             try:
                 fresh_quotes = self.tushare_fetch(baseline)
-            except Exception:  # noqa: BLE001 - last-good state remains authoritative
-                log.exception("Tushare live heatmap fetch failed")
+            except Exception as exc:  # noqa: BLE001 - do not echo request-bearing errors
+                log.warning("Tushare live heatmap fetch failed (%s)", type(exc).__name__)
+        # Explicit now= is the deterministic test seam. Production calls resample
+        # after each network leg, so latency cannot fabricate future/fresh quotes
+        # or carry a morning decision across the lunch boundary.
+        instant = (now or self.clock()).astimezone(timezone.utc)
+        phase = self.phase_fn(instant)
         if fresh_quotes:
             if self._candidate_usable(
                 baseline, fresh_quotes, source="tushare-rt-k", fallback=False,
@@ -186,9 +226,11 @@ class ChinaHeatmapLiveProducer:
                 self._last_fallback_at = instant
                 try:
                     fresh_quotes = self.tencent_fetch(baseline) or None
-                except Exception:  # noqa: BLE001 - bounded fallback may fail independently
-                    log.exception("Tencent live heatmap fallback failed")
+                except Exception as exc:  # noqa: BLE001 - bounded independent fallback
+                    log.warning("Tencent live heatmap fallback failed (%s)", type(exc).__name__)
                     fresh_quotes = None
+                instant = (now or self.clock()).astimezone(timezone.utc)
+                phase = self.phase_fn(instant)
                 if fresh_quotes and self._candidate_usable(
                     baseline, fresh_quotes, source="tencent", fallback=True,
                     phase=phase, now=instant,
@@ -221,9 +263,9 @@ class ChinaHeatmapLiveProducer:
             instant = self.clock().astimezone(timezone.utc)
             phase = self.phase_fn(instant)
             try:
-                self.step(instant)
-            except Exception:  # noqa: BLE001 - retain the last atomic artifact
-                log.exception("China heatmap live iteration failed")
+                self.step()
+            except Exception as exc:  # noqa: BLE001 - retain the last atomic artifact
+                log.warning("China heatmap live iteration failed (%s)", type(exc).__name__)
             if self._stopped:
                 break
             delay = self.interval if phase in FAST_PHASES else self.heartbeat_interval
@@ -268,8 +310,8 @@ def main(argv: list[str] | None = None) -> int:
         else:
             instance.run_forever()
         return 0
-    except Exception:  # noqa: BLE001 - CLI must fail loud and preserve last output
-        log.exception("China heatmap live publisher failed")
+    except Exception as exc:  # noqa: BLE001 - preserve output, omit request-bearing errors
+        log.error("China heatmap live publisher failed (%s)", type(exc).__name__)
         return 1
 
 

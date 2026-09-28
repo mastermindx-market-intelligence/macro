@@ -349,3 +349,49 @@ def test_validation_rejects_incoherent_or_leaky_payloads(monkeypatch, mutate) ->
     mutate(broken)
     with pytest.raises(LiveContractError):
         validate_live_payload(broken, baseline, now=LIVE_NOW)
+
+
+@pytest.mark.parametrize("bad_time", [
+    datetime(2026, 9, 24, 7, 0, tzinfo=timezone.utc),
+    datetime(2026, 9, 28, 2, 14, 54, tzinfo=timezone.utc),
+    datetime(2026, 9, 28, 2, 15, 46, tzinfo=timezone.utc),
+])
+def test_one_fresh_name_cannot_certify_old_neighbors(monkeypatch, bad_time) -> None:
+    _clock(monkeypatch)
+    quotes = _live_quotes()
+    quotes["000001.SZ"]["ts"] = int(bad_time.timestamp() * 1000)
+    payload = build_live_payload(validate_baseline(BASELINE), quotes,
+        source="tushare-rt-k", fallback=False, phase="morning", now=LIVE_NOW)
+    assert "000001.SZ" not in payload["quotes"]
+    assert payload["resolved"] == 1 and payload["coverage"] == 0.5
+    assert payload["usable"] is False
+    assert payload["breadth"]["n"] == 1
+
+
+def test_validator_rejects_fresh_batch_with_stale_individual_quote(monkeypatch) -> None:
+    _clock(monkeypatch)
+    baseline = validate_baseline(BASELINE)
+    payload = build_live_payload(baseline, _live_quotes(), source="tushare-rt-k",
+                                fallback=False, phase="morning", now=LIVE_NOW)
+    payload["quotes"]["000001.SZ"]["ts"] -= 86400000
+    with pytest.raises(LiveContractError):
+        validate_live_payload(payload, baseline, now=LIVE_NOW)
+
+
+def test_browser_phase_bounds_are_a_projection_of_the_canonical_clock() -> None:
+    from pathlib import Path
+    import re
+    source = (Path(__file__).resolve().parents[1] / "templates/heatmap.js").read_text()
+    block = re.search(r"var _chinaLiveWindows = \{(.*?)\};", source, re.S).group(1)
+    actual = {name: [int(lo), int(hi)] for name, lo, hi in
+              re.findall(r"(\w+): \[(\d+),(\d+)\]", block)}
+    c = live.cn_clock
+    minute = lambda value: value.hour * 60 + value.minute
+    assert actual == {
+        "morning": [minute(c.MORNING_OPEN), minute(c.MORNING_CLOSE)],
+        "session_break": [minute(c.MORNING_CLOSE), minute(c.AFTERNOON_OPEN)],
+        "afternoon": [minute(c.AFTERNOON_OPEN), minute(c.CLOSING_AUCTION_START)],
+        "closing_auction": [minute(c.CLOSING_AUCTION_START), minute(c.SESSION_CLOSE)],
+        "post_close": [minute(c.SESSION_CLOSE), minute(c.POST_CLOSE_END)],
+        "closed": [minute(c.POST_CLOSE_END), 1440],
+    }

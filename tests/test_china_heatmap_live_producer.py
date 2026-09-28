@@ -300,3 +300,57 @@ def test_low_coverage_primary_falls_through_to_full_fallback(tmp_path, monkeypat
     assert payload["source"] == "tencent"
     assert payload["fallback"] is True
     assert payload["coverage"] == 1.0 and payload["usable"] is True
+
+
+def test_publication_clock_is_sampled_after_network(tmp_path, monkeypatch) -> None:
+    from datetime import timedelta
+    pin_clock(monkeypatch)
+    monkeypatch.setattr(contract.cn_clock, "expected_latest_quote_time", lambda now=None: now)
+    base = tmp_path / "base.json"; base.write_text(json.dumps(baseline_payload()))
+    wall = {"now": NOW}
+    def fetch(_baseline):
+        wall["now"] = NOW + timedelta(seconds=10)
+        return live_quotes(wall["now"])
+    instance = producer.ChinaHeatmapLiveProducer(base_path=base, out_path=tmp_path / "live.json",
+        tushare_fetch=fetch, tencent_fetch=lambda _: {}, phase_fn=lambda _: "morning",
+        clock=lambda: wall["now"])
+    payload = instance.step()
+    assert payload["usable"] is True
+    assert payload["generated_at"] == wall["now"].isoformat()
+
+
+def test_restart_at_lunch_recovers_same_atomic_artifact(tmp_path, monkeypatch) -> None:
+    close = datetime(2026, 9, 28, 3, 30, tzinfo=timezone.utc)
+    before = datetime(2026, 9, 28, 3, 29, 58, tzinfo=timezone.utc)
+    lunch = datetime(2026, 9, 28, 4, 0, tzinfo=timezone.utc)
+    pin_clock(monkeypatch, close)
+    base = tmp_path / "base.json"; base.write_text(json.dumps(baseline_payload()))
+    out = tmp_path / "live.json"
+    first = producer.ChinaHeatmapLiveProducer(base_path=base, out_path=out,
+        tushare_fetch=lambda _: live_quotes(before), tencent_fetch=lambda _: {},
+        phase_fn=lambda _: "morning").step(before)
+    def no_network(_):
+        pytest.fail("lunch restart must reuse the last accepted atomic artifact")
+    restarted = producer.ChinaHeatmapLiveProducer(base_path=base, out_path=out,
+        tushare_fetch=no_network, tencent_fetch=no_network, phase_fn=lambda _: "session_break")
+    payload = restarted.step(lunch)
+    assert payload["usable"] is True and payload["status"] == "break"
+    assert payload["source_observed_at"] == first["source_observed_at"]
+    assert payload["generated_at"] == lunch.isoformat()
+
+
+def test_a_newer_batch_cannot_regress_one_stock(tmp_path, monkeypatch) -> None:
+    from datetime import timedelta
+    pin_clock(monkeypatch)
+    base = tmp_path / "base.json"; base.write_text(json.dumps(baseline_payload()))
+    first = live_quotes()
+    second = live_quotes(NOW)
+    second["000001.SZ"]["ts"] = first["000001.SZ"]["ts"] - 1000
+    second["000001.SZ"]["price"] = 11.0
+    second["000001.SZ"]["changePct"] = (11.0 / 11.2 - 1) * 100
+    queue = iter([first, second])
+    instance = producer.ChinaHeatmapLiveProducer(base_path=base, out_path=tmp_path / "live.json",
+        tushare_fetch=lambda _: next(queue), tencent_fetch=lambda _: {}, phase_fn=lambda _: "morning")
+    accepted = instance.step(NOW)
+    after = instance.step(NOW + timedelta(seconds=2))
+    assert after["quotes"] == accepted["quotes"]
