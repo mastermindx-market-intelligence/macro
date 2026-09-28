@@ -2142,3 +2142,167 @@ def test_a_plane_publishes_a_reading_only_with_an_owner_ref() -> None:
     assert _withhold_unevidenced(backed, missing) is backed
     absent = dict(reading, state="MISSING", primary_metric=None, clock=None)
     assert _withhold_unevidenced(absent, missing) is absent
+
+
+# ---------------------------------------------------------------------------
+# Point in time: no owner row dated after the knowledge cutoff is read
+# ---------------------------------------------------------------------------
+
+# Keys that date the document itself, or when a row holds in the world. A
+# report period, an effective date or a business validity may fall after
+# the cutoff for a row known before it.
+_NOT_KNOWLEDGE_CLOCKS = frozenset({
+    "generated_at",
+    "knowledge_cutoff",
+    "effective_at",
+    "business_valid_from",
+    "business_valid_to",
+    "period_start",
+    "period_end",
+})
+# The owner clocks that say when a row became knowable.
+_OWNER_KNOWN_CLOCKS = frozenset({"as_of", "observed_at", "published_at", "retained_at", "evidence_date"})
+
+
+def _day(offset: int) -> str:
+    """The knowledge cutoff's date moved by ``offset`` days, as ISO text."""
+    return (_knowledge_cutoff().date() + _dt.timedelta(days=offset)).isoformat()
+
+
+def _dates_after_the_cutoff(node: object, key: str = "") -> list[tuple[str, str]]:
+    """Every (key, value) in ``node`` whose value is a date after the knowledge
+    cutoff, except under the keys that date the document or the world."""
+    if isinstance(node, dict):
+        return [hit for name, value in node.items() for hit in _dates_after_the_cutoff(value, str(name))]
+    if isinstance(node, (list, tuple)):
+        return [hit for value in node for hit in _dates_after_the_cutoff(value, key)]
+    if isinstance(node, str) and key not in _NOT_KNOWLEDGE_CLOCKS and re.match(r"\d{4}-\d{2}-\d{2}", node):
+        return [(key, node)] if node[:10] > _day(0) else []
+    return []
+
+
+def _with_every_known_clock(node: object, when: str) -> object:
+    """``node`` with every owner clock that says when a row became knowable set to ``when``."""
+    if isinstance(node, dict):
+        return {
+            name: when if name in _OWNER_KNOWN_CLOCKS and isinstance(value, str) else _with_every_known_clock(value, when)
+            for name, value in node.items()
+        }
+    if isinstance(node, list):
+        return [_with_every_known_clock(value, when) for value in node]
+    return node
+
+
+def _composed(inputs: FinanceOwnerInputs) -> dict[str, Any]:
+    document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+    validate_contract(CONTRACT_ID, document)
+    return document
+
+
+def _without_digest(document: dict[str, Any]) -> dict[str, Any]:
+    return dict(document, snapshot_identity=dict(document["snapshot_identity"], input_digest=None))
+
+
+@pytest.mark.parametrize("fixture", _FENCE_FIXTURES)
+def test_nothing_dated_after_the_knowledge_cutoff_reaches_the_document(fixture: str) -> None:
+    """Move every owner clock that says when a row became knowable to the
+    day after the knowledge cutoff. The document validates, and nothing in
+    it is dated after the cutoff. The walk finds the moved clocks in the
+    owner inputs, so it can see them. Only the valuation anchor used to
+    apply the cutoff: the other planes, the company cells, the source
+    records and freshness published the moved dates."""
+    base = _extended_owner_inputs(fixture)
+    late = dataclasses.replace(base, **{
+        field.name: _with_every_known_clock(getattr(base, field.name), _day(1))
+        for field in dataclasses.fields(base)
+    })
+    assert _dates_after_the_cutoff(dataclasses.asdict(late)), "the walk found no moved clock"
+    assert _dates_after_the_cutoff(_composed(late)) == []
+
+
+def _one_more_row(where: str, clock: str, when: str) -> tuple[FinanceOwnerInputs, FinanceOwnerInputs]:
+    """A fixture, and the same fixture with one more row at ``where``: a copy
+    of a row there, dated on the knowledge cutoff, with a value no other row
+    carries and ``clock`` set to ``when``."""
+    on = _day(0)
+    if where in ("operating cell", "valuation cell"):
+        base = _extended_owner_inputs("default")
+        packets = copy.deepcopy(dict(base.financial_packets))
+        (cell,) = packets["SYN1"]["operating"]["cells"]
+        row = dict(cell, evidence_date=on, value=0.77)
+        row[clock] = when
+        plane = where.split()[0]
+        packets["SYN1"].setdefault(plane, {}).setdefault("cells", []).append(row)
+        return base, dataclasses.replace(base, financial_packets=packets)
+    base = _extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+    if where == "source record":
+        row = copy.deepcopy(dict(base.source_records[0]))
+        row.update(record_id="src-one-more-row", evidence_ref="src-one-more-row")
+        row["source"] = dict(row["source"], published_at=on, observed_at=on, retained_at=on)
+        row["source"][clock] = when
+        return base, dataclasses.replace(base, source_records=[*base.source_records, row])
+    if where in ("market", "expectation"):
+        field = f"{where}_observations"
+        observations = copy.deepcopy(dict(getattr(base, field)))
+        row = dict(observations["card_networks"][0], as_of=on, value=77.0)
+        row[clock] = when
+        observations["card_networks"].append(row)
+        return base, dataclasses.replace(base, **{field: observations})
+    packets = copy.deepcopy(dict(base.financial_packets))
+    (packet,) = packets.values()
+    plane = where.split()[0]
+    (reading,) = packet[plane]["observations"]
+    row = dict(reading, as_of=on)
+    row["metric"] = dict(row["metric"], value=77.0)
+    row[clock] = when
+    packet[plane]["observations"].append(row)
+    return base, dataclasses.replace(base, financial_packets=packets)
+
+
+_ONE_MORE_ROW_CASES = [
+    *((where, clock) for where in ("operating observation", "valuation observation", "market", "expectation")
+      for clock in ("as_of", "observed_at", "published_at")),
+    *((where, clock) for where in ("operating cell", "valuation cell")
+      for clock in ("evidence_date", "as_of", "observed_at", "published_at")),
+    *(("source record", clock) for clock in ("published_at", "observed_at", "retained_at")),
+]
+
+
+@pytest.mark.parametrize(("where", "clock"), _ONE_MORE_ROW_CASES)
+def test_a_row_dated_after_the_knowledge_cutoff_changes_nothing_but_the_digest(where: str, clock: str) -> None:
+    """Add one row, dated on the knowledge cutoff but for ``clock``, which
+    falls the day after it. The document is the one composed without that
+    row, except the input digest, which still covers every row the owner
+    supplied. The same row with ``clock`` on the cutoff is read and changes
+    the document, so the row is one a reader publishes."""
+    base, late = _one_more_row(where, clock, _day(1))
+    _, on_cutoff = _one_more_row(where, clock, _day(0))
+    before = _composed(base)
+    after = _composed(late)
+    assert _without_digest(after) == _without_digest(before)
+    assert after["snapshot_identity"]["input_digest"] != before["snapshot_identity"]["input_digest"]
+    assert _without_digest(_composed(on_cutoff)) != _without_digest(before)
+
+
+def test_a_row_known_by_the_cutoff_is_read_however_far_ahead_it_holds() -> None:
+    """A row can be known before the time it holds for. An operating
+    observation known on the cutoff but effective a month after it is
+    published with that effective_at, and so is a material change. Only the
+    clocks that say when a row became knowable bind to the cutoff."""
+    ahead = _day(30)
+    base = _extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+    packets = copy.deepcopy(dict(base.financial_packets))
+    (packet,) = packets.values()
+    (reading,) = packet["operating"]["observations"]
+    reading["effective_at"] = ahead
+    document = _composed(dataclasses.replace(base, financial_packets=packets))
+    operating = next(s for s in document["slices"] if s["slice_id"] == "card_networks")["rerating"]["operating"]
+    assert operating["primary_metric"]["value"] == reading["metric"]["value"], operating
+    assert operating["clock"]["effective_at"] == ahead, operating
+
+    base = _extended_owner_inputs("PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN")
+    records = copy.deepcopy(list(base.source_records))
+    records[0]["material_change"]["effective_at"] = ahead
+    document = _composed(dataclasses.replace(base, source_records=records))
+    (change,) = document["material_changes"]
+    assert change["event_clock"]["effective_at"] == ahead, change

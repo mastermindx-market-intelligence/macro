@@ -30,7 +30,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, date
 from typing import Any, Iterable, Mapping, Sequence
 
@@ -662,6 +662,98 @@ def _strip_correction_extras(correction: Any) -> dict[str, Any]:
 
 
 # ---------------------------------------------------------------------------
+# Point in time: the owner inputs as they stood at the knowledge cutoff
+# ---------------------------------------------------------------------------
+
+# The clocks that say when a row became knowable. A row that any of them
+# dates after the knowledge cutoff could not be known at the cutoff. The
+# clocks that say when a row holds in the world (a report period, an
+# effective_at, a record's business validity) are not listed: a row can be
+# known before the time it describes.
+_OBSERVATION_KNOWN_CLOCKS = ("as_of", "observed_at", "published_at")
+_CELL_KNOWN_CLOCKS = ("evidence_date",) + _OBSERVATION_KNOWN_CLOCKS
+_SOURCE_KNOWN_CLOCKS = ("published_at", "observed_at", "retained_at")
+
+
+def _known_by(clocks: Any, names: Sequence[str], knowledge_cutoff: date) -> bool:
+    """False when any named clock parses to a date after the cutoff. A clock
+    that is absent or does not parse says nothing, so it never removes a
+    row: how an undated row is read stays each reader's rule."""
+    if not isinstance(clocks, Mapping):
+        return True
+    for name in names:
+        when = _coerce_date(clocks.get(name))
+        if when is not None and when > knowledge_cutoff:
+            return False
+    return True
+
+
+def _known_rows(rows: Any, names: Sequence[str], knowledge_cutoff: date, clocks_at: str | None = None) -> Any:
+    """The rows of an owner list known at the cutoff, judged by each row's
+    own clocks or by the mapping it holds under ``clocks_at``. A value that
+    is not a list passes unchanged, so each reader keeps its own handling
+    of a malformed input."""
+    if not isinstance(rows, (list, tuple)):
+        return rows
+    kept = [
+        row
+        for row in rows
+        if not isinstance(row, Mapping)
+        or _known_by(row.get(clocks_at) if clocks_at else row, names, knowledge_cutoff)
+    ]
+    return tuple(kept) if isinstance(rows, tuple) else kept
+
+
+def _known_packet(packet: Any, knowledge_cutoff: date) -> Any:
+    if not isinstance(packet, Mapping):
+        return packet
+    known = dict(packet)
+    for plane in ("operating", "valuation"):
+        block = known.get(plane)
+        if not isinstance(block, Mapping):
+            continue
+        block = dict(block)
+        for key, names in (("observations", _OBSERVATION_KNOWN_CLOCKS), ("cells", _CELL_KNOWN_CLOCKS)):
+            if key in block:
+                block[key] = _known_rows(block[key], names, knowledge_cutoff)
+        known[plane] = block
+    return known
+
+
+def _known_per_slice(observations: Any, knowledge_cutoff: date) -> Any:
+    if not isinstance(observations, Mapping):
+        return observations
+    return {
+        slice_id: _known_rows(rows, _OBSERVATION_KNOWN_CLOCKS, knowledge_cutoff)
+        for slice_id, rows in observations.items()
+    }
+
+
+def _known_at_cutoff(inputs: FinanceOwnerInputs, knowledge_cutoff: date) -> FinanceOwnerInputs:
+    """The owner inputs as they stood at the knowledge cutoff.
+
+    The shared contracts state the rule as feature.point_in_time: an
+    observation cannot postdate the knowledge cutoff. It is applied here,
+    once, before any reader runs, to every dated owner row a reader can
+    publish: operating and valuation observations and cells, expectation
+    and market observations, and source records, by their source's clocks.
+    Only the valuation anchor used to apply the cutoff. Every other plane,
+    the company cells, the source records, freshness and conflicts read
+    rows dated after it, and the contract accepted the document.
+    """
+    packets = inputs.financial_packets
+    if isinstance(packets, Mapping):
+        packets = {ticker: _known_packet(packet, knowledge_cutoff) for ticker, packet in packets.items()}
+    return replace(
+        inputs,
+        financial_packets=packets,
+        expectation_observations=_known_per_slice(inputs.expectation_observations, knowledge_cutoff),
+        market_observations=_known_per_slice(inputs.market_observations, knowledge_cutoff),
+        source_records=_known_rows(inputs.source_records, _SOURCE_KNOWN_CLOCKS, knowledge_cutoff, clocks_at="source"),
+    )
+
+
+# ---------------------------------------------------------------------------
 # Slice state machines
 # ---------------------------------------------------------------------------
 
@@ -1053,7 +1145,6 @@ def _expectations_plane(
 def _valuation_anchor(
     slice_id: str,
     financial_packets: Mapping[str, Mapping[str, Any]],
-    knowledge_cutoff: date,
 ) -> Mapping[str, Any] | None:
     """The valuation observation the slice publishes as its anchor, or None.
 
@@ -1068,12 +1159,12 @@ def _valuation_anchor(
     - an observation with no date (neither as_of nor observed_at, the dates
       _plane_clock reads) never anchors: the contract requires the clock and
       would refuse the whole document;
-    - an observation dated after the knowledge cutoff never anchors, because
-      nothing dated after the cutoff can be known at it;
     - on one date, an observation the owner tags with this slice anchors
       over an untagged one, because it is the more specific filing.
     Two observations filed the same way on one date keep the owner's order:
-    which company's reading anchors a slice is not decided here.
+    which company's reading anchors a slice is not decided here. An
+    observation dated after the knowledge cutoff never reaches the anchor:
+    _known_at_cutoff removes it before any plane reads.
     """
     candidates: list[tuple[tuple[date, bool], Mapping[str, Any]]] = []
     for packet in financial_packets.values():
@@ -1085,7 +1176,7 @@ def _valuation_anchor(
                 if not isinstance(obs, Mapping) or not _filed_under(obs, slice_id):
                     continue
                 observed = _coerce_date(obs.get("as_of")) or _coerce_date(obs.get("observed_at"))
-                if observed is not None and observed <= knowledge_cutoff:
+                if observed is not None:
                     candidates.append(((observed, obs.get("slice_id") == slice_id), obs))
     if not candidates:
         return None
@@ -2240,19 +2331,27 @@ def compose_finance_projection(
     (``generated_at`` / ``knowledge_cutoff`` are parameters; ``common_as_of``
     is the minimum over the input as-of dates actually consumed, never
     ``now``).
+
+    An owner row dated after ``knowledge_cutoff`` is never read
+    (_known_at_cutoff).
     """
     # Every Finance slice is its own atlas id. (A lookup into the owner's
     # catalog used to sit here; both of its branches mapped a slice to itself,
     # so it changed nothing and raised on an unhashable catalog slice_id.)
     slice_id_to_atlas_id: dict[str, str] = {slice_id: slice_id for slice_id in _FINANCE_SLICE_IDS}
 
-    source_records, source_record_extras = _source_records_block(inputs)
     # Structural check: datetime has a ``time`` part, date does not.
     # Survives a monkey-patched ``datetime`` symbol.
     if hasattr(knowledge_cutoff, "hour") and hasattr(knowledge_cutoff, "minute"):
         knowledge_cutoff_date = knowledge_cutoff.date()
     else:
         knowledge_cutoff_date = knowledge_cutoff
+    # Every reader below reads the inputs as they stood at the cutoff. The
+    # digest still identifies the snapshot the owner supplied.
+    owner_inputs = inputs
+    inputs = _known_at_cutoff(inputs, knowledge_cutoff_date)
+
+    source_records, source_record_extras = _source_records_block(inputs)
 
     all_slice_ids = _all_slices_sorted()
     rights_profiles: set[str] = set()
@@ -2274,7 +2373,7 @@ def compose_finance_projection(
         # Each plane selects the observation it publishes once; the conflict
         # grammar reads the same observations, in both passes.
         operating_reading = _operating_reading(slice_id, inputs.financial_packets)
-        valuation_reading = _valuation_anchor(slice_id, inputs.financial_packets, knowledge_cutoff_date)
+        valuation_reading = _valuation_anchor(slice_id, inputs.financial_packets)
         price_reading = _price_reading(market_obs)
         readings_by_slice[slice_id] = (operating_reading, valuation_reading, price_reading)
         operating = _operating_plane(
@@ -2477,7 +2576,7 @@ def compose_finance_projection(
         "outer_dossier_ref": outer,
         "snapshot_identity": {
             "composer_version": composer_version,
-            "input_digest": _hash_inputs(inputs, composer_version),
+            "input_digest": _hash_inputs(owner_inputs, composer_version),
             "curation_revision_set": _curation_revisions(inputs.theme_evidence),
             "rights_profile": _rights_profile(inputs.rights_snapshot),
             "view_scope": "first_vertical",
