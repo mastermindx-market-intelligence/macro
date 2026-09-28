@@ -6,7 +6,12 @@ about makes the block absent here, never stale, so nothing outside the query
 decides what it shows. A review-withheld input is still known: a block citing
 one is shown, marked stale. A replay never reads a block reviewed after its
 cutoff, not even to count it, and treats a block without a readable review
-time the same way (R-ENE-34). R-ENE-33 pins the rest of that review clock.
+time the same way (R-ENE-34). Only a replay reads the review time, and only
+against the recorded cutoff; a review on the cutoff day is by the cutoff
+(R-ENE-33). An instant review time is readable, and against an instant cutoff
+it compares as an instant (R-ENE-36). The guard reads only the block's clock,
+so a malformed query cutoff still fails the query instead of withholding the
+block (R-ENE-35).
 """
 
 from __future__ import annotations
@@ -150,3 +155,42 @@ def test_a_replay_withholds_a_block_without_a_readable_review_time(reviewed_at):
     assert shown(compose(REPLAY, EARLY, blocks=[block]), revision) == []
     block = interpretation(["gmirca_" + "c" * 32], reviewed_at=reviewed_at)
     assert counted_absent(compose(REPLAY, EARLY, blocks=[block])) == []
+
+
+@pytest.mark.parametrize("recorded_cutoff", ["not-a-date", "2026-13-45"])
+def test_the_review_guard_never_swallows_a_malformed_replay_cutoff(recorded_cutoff):
+    malformed = dataclasses.replace(REPLAY, recorded_cutoff=recorded_cutoff)
+    elsewhere = variant("N05", "K1other_slice", **UNKNOWABLE_INPUT["other_slice"][0])
+    block = interpretation([elsewhere["curation_revision"]])
+    for assertions in ((elsewhere,), ()):
+        assert counted_absent(compose(REPLAY, *assertions, blocks=[block])) == [ABSENT]
+        with pytest.raises(ValueError):
+            compose(malformed, *assertions, blocks=[block])
+
+
+def test_a_replay_reads_an_instant_review_time():
+    revision = EARLY["curation_revision"]
+    block = interpretation([revision], reviewed_at="2026-09-20T00:00:00Z")
+    assert shown(compose(REPLAY, EARLY, blocks=[block]), revision) == SUPPORTED
+
+
+@pytest.mark.parametrize(("reviewed_at", "expected"), [
+    ("2026-12-31T11:00:00Z", SUPPORTED), ("2026-12-31T23:00:00Z", [])])
+def test_a_replay_compares_an_instant_review_time_with_an_instant_cutoff(
+        reviewed_at, expected):
+    noon = dataclasses.replace(REPLAY, recorded_cutoff="2026-12-31T12:00:00Z")
+    revision = EARLY["curation_revision"]
+    block = interpretation([revision], reviewed_at=reviewed_at)
+    assert shown(compose(noon, EARLY, blocks=[block]), revision) == expected
+
+
+@pytest.mark.parametrize("reviewed_at", [None, "", "not-a-date"])
+@pytest.mark.parametrize("time_mode", ["latest", "source_history"])
+def test_outside_a_replay_the_review_time_is_never_read(time_mode, reviewed_at):
+    cutoffs = {} if time_mode == "latest" else {
+        "source_cutoff": "2026-12-31T00:00:00Z", "recorded_cutoff": "2026-12-31"}
+    query = nuclear_query(
+        "nuclear_components", "economics", time_mode=time_mode, **cutoffs)
+    revision = EARLY["curation_revision"]
+    block = interpretation([revision], reviewed_at=reviewed_at)
+    assert shown(compose(query, EARLY, blocks=[block]), revision) == SUPPORTED
