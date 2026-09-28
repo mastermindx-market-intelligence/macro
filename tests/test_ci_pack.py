@@ -3720,7 +3720,7 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
         "ceiling is account-wide and this key cannot raise it"
     )
     assert pack["if"] == (
-        "always() && needs.ci-plan.result == 'success' && "
+        "!cancelled() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
         "(github.event.pull_request.head.repo.full_name != github.repository || "
         "vars.CI_EXECUTION_ROUTE != 'pc' || needs.trusted-ci.result == 'success')"
