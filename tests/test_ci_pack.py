@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+from copy import deepcopy
 import errno
 import importlib.util
 import json
@@ -76,6 +77,109 @@ def _closure_of(source: str) -> SimpleNamespace:
         ROOT / "engine" / "_ci_scope_probe.py", ast.parse(source)
     )
     return SimpleNamespace(ambiguities=tuple(sorted(findings)))
+
+
+def _manifest_scope_reader(manifest: Path):
+    """Lazily snapshot one immutable test manifest; never share mutable results.
+
+    This is test setup only, scoped to one reader in one pytest process. The
+    production planner and synthetic/mutating planner tests keep recomputing.
+    A new reader (including a new pytest invocation) reads the source afresh.
+    Exceptions propagate; a failed derivation never becomes an empty snapshot.
+    """
+    snapshot = None
+
+    def read():
+        nonlocal snapshot
+        if snapshot is None:
+            snapshot = PACK.infer_job_scopes(PACK.load_legacy_jobs(manifest))
+        return deepcopy(snapshot)
+
+    return read
+
+
+@pytest.fixture(scope="module")
+def _real_manifest_scope_reader():
+    # Construction is deliberately lazy: function-level environment isolation
+    # must run before the first real derivation, not after a module fixture.
+    return _manifest_scope_reader(MANIFEST)
+
+
+@pytest.fixture
+def real_manifest_scopes(_real_manifest_scope_reader, _isolate_pack_runner_planner_env):
+    # Every opted-in assertion receives its own list, LegacyJobs and nested
+    # definition dictionaries. It cannot poison another test's scope snapshot.
+    return _real_manifest_scope_reader()
+
+
+def _scope_reader_probe_manifest(tmp_path: Path, job_id: str) -> Path:
+    manifest = tmp_path / "scope-reader.yml"
+    manifest.write_text(yaml.safe_dump({"jobs": {job_id: {
+        "if": PACK.DISABLED_IF,
+        "runs-on": "ubuntu-latest",
+        "steps": [{"name": "scope reader fixture", "run": "echo fixture"}],
+    }}}), encoding="utf-8")
+    return manifest
+
+
+def test_manifest_scope_reader_is_lazy_and_derives_once(tmp_path, monkeypatch):
+    monkeypatch.setattr(AUDIT, "ROOT", tmp_path)
+    monkeypatch.setattr(DEPS, "ROOT", tmp_path)
+    manifest = _scope_reader_probe_manifest(tmp_path, "fixture")
+    actual_inference = PACK.infer_job_scopes
+    calls = []
+
+    def measured(jobs):
+        result = actual_inference(jobs)
+        calls.append(result)
+        return result
+
+    monkeypatch.setattr(PACK, "infer_job_scopes", measured)
+    reader = _manifest_scope_reader(manifest)
+    assert calls == [], "module fixture construction must not infer before env isolation"
+    first, second = reader(), reader()
+    assert len(calls) == 1
+    assert first == second
+    assert [job.job_id for job in first[0]] == ["fixture"]
+
+
+def test_manifest_scope_reader_returns_deeply_isolated_jobs(tmp_path, monkeypatch):
+    monkeypatch.setattr(AUDIT, "ROOT", tmp_path)
+    monkeypatch.setattr(DEPS, "ROOT", tmp_path)
+    reader = _manifest_scope_reader(_scope_reader_probe_manifest(tmp_path, "fixture"))
+    first, second = reader(), reader()
+    assert first == second
+    assert first[0] is not second[0]
+    assert first[0][0] is not second[0][0]
+    assert first[0][0].definition is not second[0][0].definition
+    first[0][0].definition["steps"][0]["run"] = "echo poisoned"
+    first[0].clear()
+    assert reader() == second
+    assert second[0][0].definition["steps"][0]["run"] == "echo fixture"
+
+
+def test_new_manifest_scope_reader_reads_changed_source(tmp_path, monkeypatch):
+    monkeypatch.setattr(AUDIT, "ROOT", tmp_path)
+    monkeypatch.setattr(DEPS, "ROOT", tmp_path)
+    manifest = _scope_reader_probe_manifest(tmp_path, "before")
+    original = _manifest_scope_reader(manifest)
+    assert original()[0][0].job_id == "before"
+    _scope_reader_probe_manifest(tmp_path, "after")
+    fresh = _manifest_scope_reader(manifest)
+    assert fresh()[0][0].job_id == "after"
+    assert original()[0][0].job_id == "before"
+
+
+def test_manifest_scope_reader_propagates_invalid_source(tmp_path, monkeypatch):
+    monkeypatch.setattr(AUDIT, "ROOT", tmp_path)
+    monkeypatch.setattr(DEPS, "ROOT", tmp_path)
+    manifest = _scope_reader_probe_manifest(tmp_path, "fixture")
+    manifest.write_text("jobs: [broken", encoding="utf-8")
+    reader = _manifest_scope_reader(manifest)
+    with pytest.raises(PACK.ManifestError):
+        reader()
+    _scope_reader_probe_manifest(tmp_path, "repaired")
+    assert reader()[0][0].job_id == "repaired"
 
 
 def test_all_legacy_jobs_are_disabled_and_packable() -> None:
@@ -732,7 +836,7 @@ def test_safe_manifest_job_delta_reads_the_exact_base_commit(
     ) is None
 
 
-def test_selection_fails_safe_toward_running_everything() -> None:
+def test_selection_fails_safe_toward_running_everything(real_manifest_scopes) -> None:
     """Unknown changed-sets and global invalidators still widen; unowned paths do not.
 
     A wasted runner-minute is cheap; a false green on a control-plane file is
@@ -740,7 +844,7 @@ def test_selection_fails_safe_toward_running_everything() -> None:
     rather than merely unowned. An unowned path used to be a third widener and
     that was the speed hole: one hook file ran all 185 jobs (PR #5488).
     """
-    jobs, summary = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, summary = real_manifest_scopes
     scoped = [job for job in jobs if job.paths]
     assert len(scoped) >= 25, summary
 
@@ -802,9 +906,9 @@ def test_every_declared_scope_in_the_real_manifest_is_covered() -> None:
     PACK.load_legacy_jobs(MANIFEST)  # raises ManifestError on any gap
 
 
-def test_real_manifest_has_non_vacuous_derived_scopes() -> None:
+def test_real_manifest_has_non_vacuous_derived_scopes(real_manifest_scopes) -> None:
     """The mechanism shipped with 0/179 owners; the 180-job manifest must stay live."""
-    jobs, summary = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, summary = real_manifest_scopes
     scoped = {job.job_id: set(job.paths) for job in jobs if job.paths}
     assert len(scoped) >= 25, summary
     assert "unrun-government-revenue-candidate-projection" in scoped
@@ -852,7 +956,7 @@ def _declared_scan_dirs(rel: str) -> tuple[str, ...]:
     raise AssertionError(f"{rel} no longer declares SCAN_DIRS at module level")
 
 
-def test_whole_tree_glob_job_owns_every_scanned_code_root() -> None:
+def test_whole_tree_glob_job_owns_every_scanned_code_root(real_manifest_scopes) -> None:
     """A tree scan cannot be narrowed to the scanner suite's import closure.
 
     `all-exports-resolve` AST-walks every `*.py` under eight directories, so a
@@ -873,7 +977,7 @@ def test_whole_tree_glob_job_owns_every_scanned_code_root() -> None:
     """
     scan_dirs = _declared_scan_dirs("tests/test_all_exports_resolve.py")
     assert len(scan_dirs) >= 8, scan_dirs
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     export_guard = next(job for job in jobs if job.job_id == "all-exports-resolve")
     surface = export_guard.paths + export_guard.fallback_paths
     missing = [f"{root}/**" for root in scan_dirs if f"{root}/**" not in surface]
@@ -1317,7 +1421,7 @@ def test_a_code_suffix_must_end_a_filename_not_merely_appear_in_one() -> None:
     assert any("code traversal" in item for item in code.ambiguities)
 
 
-def test_derived_scopes_are_startable_by_the_ci_workflow() -> None:
+def test_derived_scopes_are_startable_by_the_ci_workflow(real_manifest_scopes) -> None:
     """A job owner is useless when its dependency edit cannot start ci.yml.
 
     BOTH tiers are audited. #5586 split the PROVENANCE of a claim out of
@@ -1331,7 +1435,7 @@ def test_derived_scopes_are_startable_by_the_ci_workflow() -> None:
     dropping `ops/**` from ci.yml's triggers opens 448 gaps that the
     `paths`-only form still reports as zero.
     """
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     on = _yaml(WORKFLOW).get("on") or _yaml(WORKFLOW).get(True)
     triggers = tuple(on["pull_request"]["paths"])
     gaps: list[tuple[str, str]] = []
@@ -1389,9 +1493,9 @@ def test_startability_accepts_only_provable_narrowings_of_a_trigger() -> None:
         assert not PACK.scope_pattern_is_startable(uncovered, triggers), uncovered
 
 
-def test_representative_narrow_diffs_skip_at_least_one_quarter_of_jobs() -> None:
+def test_representative_narrow_diffs_skip_at_least_one_quarter_of_jobs(real_manifest_scopes) -> None:
     """The conservative first tranche must still deliver material speed."""
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     cases = {
         "govrev": [
             "research/GOVERNMENT_REVENUE_FORESIGHT_HANDOFF_2026-08-09.md",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
@@ -1416,14 +1520,14 @@ def test_representative_narrow_diffs_skip_at_least_one_quarter_of_jobs() -> None
     assert any(job.job_id == "free-content-estate" for job in content)
 
 
-def test_a_named_suite_edit_does_not_select_peer_pytest_jobs() -> None:
+def test_a_named_suite_edit_does_not_select_peer_pytest_jobs(real_manifest_scopes) -> None:
     """PR #5550 shape: one prophet test file used to mint 133/187 jobs and 12 packs.
 
     unrun-market-plumbing names tests/test_prophet_w1_intake_repair.py. marketing-engine
     and engine-render-guards do not. After exclude_peer_test_ownership they must not
     run for this diff, and the matrix must not be the full twelve.
     """
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     changed = ["tests/test_prophet_w1_intake_repair.py"]
     selected, reason = PACK.select_jobs(jobs, changed)
     ids = {job.job_id for job in selected}
@@ -1437,7 +1541,7 @@ def test_a_named_suite_edit_does_not_select_peer_pytest_jobs() -> None:
     assert len(nonempty) < 12, nonempty
 
 
-def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate() -> None:
+def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
     """D5's hermetic real-reader chain suite must run before a PR can merge.
 
     A path-only owner is insufficient: the selected ``gate: code`` job must
@@ -1457,14 +1561,14 @@ def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate() -> N
         "Python 3.12 job; keep those dependencies on this owning job's install line"
     )
 
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     code_jobs = [job for job in jobs if job.gate == "code"]
     selected, reason = PACK.select_jobs(code_jobs, [suite])
     assert "prophet-lab" in {job.job_id for job in selected}, reason
     assert "unowned path" not in reason, reason
 
 
-def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> None:
+def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
     """P0B's hermetic first-frame contract must run in the merge gate.
 
     The generated-page population receipt remains data-dependent and belongs
@@ -1519,7 +1623,7 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> N
     assert data_suite in data_runs
     assert code_suite not in data_runs
 
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     code_jobs = [job for job in jobs if job.gate == "code"]
     for changed in (
         [code_suite],
@@ -1536,7 +1640,7 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> N
         assert "unowned path" not in reason, reason
 
 
-def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
+def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
     """BC-2 ran only on the data gate, so nothing graded a claim before merge.
 
     Every job that executed the checker was ``gate: data``, and ci.yml packs only
@@ -1577,7 +1681,7 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
     assert f"python3 {checker}" in data_runs, "the data gate keeps the full scan"
     assert not any("--scope" in run for run in data_runs)
 
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     code_jobs = [job for job in jobs if job.gate == "code"]
     for changed, owners in (
         (["templates/dashboard.html.j2"], {"validated-claims-source"}),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
@@ -1602,7 +1706,7 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
             changed, reason)
 
 
-def test_unscoped_hook_diff_does_not_pull_the_full_suite() -> None:
+def test_unscoped_hook_diff_does_not_pull_the_full_suite(real_manifest_scopes) -> None:
     """PR #5488 shape: `.claude/hooks/gh_quota_guard.py` used to mint 187/187 jobs.
 
     CI_SCOPE_MODE is already active in ci.yml unless the repo var is exactly
@@ -1610,7 +1714,7 @@ def test_unscoped_hook_diff_does_not_pull_the_full_suite() -> None:
     full-suite invalidator. After this PR the hook is owned by unrun-dark-guards
     and an unowned sibling still does not widen.
     """
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     selected, reason = PACK.select_jobs(
         jobs, [".claude/hooks/gh_quota_guard.py"]  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     )
@@ -1626,15 +1730,15 @@ def test_unscoped_hook_diff_does_not_pull_the_full_suite() -> None:
 
 
 @pytest.mark.parametrize("graph", ["config/dag.yml", "config/synapse.yml"])  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-def test_graph_metadata_is_a_global_invalidator(graph: str) -> None:
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+def test_graph_metadata_is_a_global_invalidator(graph: str, real_manifest_scopes) -> None:
+    jobs, _ = real_manifest_scopes
     selected, reason = PACK.select_jobs(jobs, [graph])
     assert len(selected) == len(jobs)
     assert "global invalidator" in reason
 
 
-def test_passive_markdown_stays_scoped_and_unknown_root_does_not_widen() -> None:
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+def test_passive_markdown_stays_scoped_and_unknown_root_does_not_widen(real_manifest_scopes) -> None:
+    jobs, _ = real_manifest_scopes
     docs, _ = PACK.select_jobs(jobs, ["research/UNOWNED_HANDOFF.md"])
     code, reason = PACK.select_jobs(jobs, ["brand_new_root/unowned_runtime.xyz"])
     assert len(docs) < len(jobs)
@@ -5204,7 +5308,7 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     ]
 
 
-def test_deliberately_unscoped_gates_stay_always_on() -> None:
+def test_deliberately_unscoped_gates_stay_always_on(real_manifest_scopes) -> None:
     """The wave-8 entrants are always-on BY DESIGN — pin both directions.
 
     Each of these gates carries a header comment documenting deliberate
@@ -5217,7 +5321,7 @@ def test_deliberately_unscoped_gates_stay_always_on() -> None:
     on an ordinary user-facing PR. Both now red here, with the probe named.
     """
     jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
-    scoped_jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    scoped_jobs, _ = real_manifest_scopes
     # Measured membership at wave 8 (main a8075391fa89): each gate pinned on
     # the probes that are its SUBJECT. design-governance is a user-facing
     # diff ratchet, so it rides the template and site-builder probes but has
