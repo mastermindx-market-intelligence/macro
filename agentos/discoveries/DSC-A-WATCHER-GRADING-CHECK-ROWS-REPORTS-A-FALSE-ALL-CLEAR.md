@@ -46,6 +46,12 @@ so_what: >
   branch concurrency group so the live head's run never starts - diagnose a
   long-`pending` run by listing the branch's runs per head, and cancel the
   abandoned one, which is releasing a lock rather than outrunning CI.
+  A third fact outranks both, because it survives a fully correct watcher:
+  a verdict is bound to the head it graded and expires when that head moves.
+  Re-read `headRefOid` in the same breath as the merge and refuse to act on a
+  verdict that names a different sha - the mover is often the merge sweeper
+  itself, whose update-branch refresh is exactly what a seat waiting for that
+  sweeper is least likely to suspect.
 kind: landmine
 verified_at: 2026-09-27
 verified_by: >
@@ -97,6 +103,37 @@ therefore be written as positive requirements over expected names - "every run a
 completed AND `ci-gate` is present AND no non-excluded row failed" - never as the absence of
 pending rows. The corrected watcher for this pull request does exactly that, and refuses to
 speak while `ci-gate` is missing.
+
+### A correct watcher's verdict still expires when the head moves
+
+The corrected watcher above was re-armed on this same pull request and behaved exactly as
+specified: it pinned the head, graded the runs at that head, waited for every one to reach
+`completed`, required `ci-gate` by name, and excluded only the by-design pilot red.
+
+```
+23:46:19Z poll 7: head=54821ee935c0 runs=3 RUNS_PENDING ci(in_progress)
+23:51:22Z poll 8: head=54821ee935c0 ALL_SETTLED rows=26 runs=fences=success,ci=success,ci-authority=success verdict=GREEN
+23:51:22Z WATCHER EXIT: checks settled
+```
+
+That verdict was true. It was also already stale: the live head was `c94a361d1941`, a
+`Merge branch 'main' into claude/ind-requirement-traceability` pushed at 23:51:29Z - two
+seconds after the watcher spoke - and at that head `fences` and `ci-authority` were green
+while `ci` (run 36360090612) had restarted and was `in_progress`. Merging on the watcher's
+exit would have merged a head whose `ci` had run for eight seconds.
+
+The mover is the part worth remembering. It was not a sibling seat and not the author: it was
+the **merge sweeper's own `update-branch` base refresh**, the mechanism fleet law describes as
+the thing that drains an armed backlog once main is healed. A seat waiting for the sweeper to
+merge its pull request is therefore waiting on the one actor most able to invalidate its
+proof, and least likely to be suspected of it. Any armed pull request can have its head moved
+under a correct verdict at any moment.
+
+So the exit condition and the consumption of the verdict are two separate cures. The first is
+in this record above. The second: **re-read `headRefOid` in the same breath as the merge**,
+compare it to the sha the verdict names, and refuse the merge on any mismatch - then regrade
+the runs at the new head. The cost of the check is one `gh pr view --json headRefOid`; the
+cost of skipping it is a merge over a run that had barely started.
 
 Related: `DSC:CI-PLAN-PUBLISHES-THE-PACK-SET-SO-ZERO-PACKS-IS-NOT-PROOF` (the same
 absence, read once from a rollup rather than continuously by an instrument);

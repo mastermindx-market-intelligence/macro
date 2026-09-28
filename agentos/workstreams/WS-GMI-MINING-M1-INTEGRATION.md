@@ -126,6 +126,19 @@ next_action: >
   was available has not finished.** Clause 1 still needs T03's definition vocabulary and is not
   claimed. Do NOT credit `test_internal_transfer_keeps_elimination_sign` to MGD-19: it asserts
   through a helper, and a helper pin is not a pin on the composed payload.
+  WAVE 8 (records only) fixed a gate that could not execute. T02's §5 sibling-regression gate
+  required `tests/test_issuer_profiles.py` and `tests/test_event_workspace_build.py` green and
+  NEITHER FILE EXISTS; the suites it means are `tests/test_issuer_profiles_a5a.py`,
+  `tests/test_refresh_event_workspaces.py` and
+  `tests/test_company_intelligence_event_workspace.py`, measured green together (123 passed).
+  That gate is the packet's ONLY protection against T02's edit to the shared
+  `issuer_profiles.py` regressing its incumbent owner, and it fails QUIETLY - a missing path
+  exits 4, a pattern run prints "no tests ran". All five packets were then swept
+  token-by-token: ZERO undeclared absent symbols, and no sibling repeats the class, so the
+  sweep is recorded do_not_redo. Also recorded: a gate named after a PR or a package is not
+  falsifiable by inspection - `engine/theme_graph/` has nine PRE-EXISTING modules on main while
+  #7870's `curation_assertion` and route/client/mount seam are absent, so state a gate as the
+  absent SYMBOL plus its probe.
   T05/T06 stay held for #7870's route/client/mount on main plus the answer to comment
   5811889498; T08 is last; G2 real-source admission remains an incumbent/operator act.
   Standing operator items: mini2 has no WAN (a bridge0 default route shadows the real gateway;

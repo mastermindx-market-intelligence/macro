@@ -7,7 +7,7 @@ objective: >
   Exponent and Pentair dossiers pass the T09 real-path proofs (two journeys, correction,
   revocation, ordinary refresh, non-interference) with every one of the 56 inherited
   requirements executed — never a merged slice alone.
-status: awaiting_ci
+status: blocked
 program: earnings-intelligence
 repos: [macro]
 owner: fable-meta-ceo
@@ -54,20 +54,17 @@ waves:
     depends_on: [IND-W4]
     next_action: "Wait for Semiconductor B's shared route family and aggregator on main; never build against #7870's branch."
 next_action: >
-  IN CI: IND-T02a, the harness gate (branch claude/ind-t02a-harness-gate) - own it to
-  merged. T02's plan-mandated two-run test could not fail against merged main (members()
-  was a bare `return set()` stub, _PublicationHarness had no get(), and run_refresh's
-  changes mapping was unused), so the gate was ungradeable; it is now gradeable, 103
-  passed with 7 of 7 mutations caught. The frozen plan authorizes exactly this during a
-  hold: "Synthetic tests may be authored while a gate is held, but cannot make that
-  gate passed." It does NOT make T02 started - T02 still owes its four factories, their
-  registration, the discovery-population extension and
-  tests/test_industrials_issuer_enrollment.py with IND-D04/D05/R210.
-  After that PR merges the product chain is ALL_SCOPED_LANES_BLOCKED again: T02 waits
-  on the shared seam held by #7870 and #7905, T03 waits on T02, T05 on T03, T06 on T01-T05,
-  T07-T09 on Semiconductor B reaching main (G1). The unblocking act is not owned by this
-  program - re-check both PRs' changed-file lists before dispatching T02, and never edit
-  base-owned files ahead of the base.
+  NOTHING IS DISPATCHABLE AT THIS SEAT. IND-T04b (#8105, 717e16cccc24) and the records pair
+  #8109 (4e61869bfecd) are merged and verified in origin/main's own bytes; T01, T04, T02a and
+  every records PR before them are closed. The honest state is ALL_SCOPED_LANES_BLOCKED:
+  T02 waits on the shared seam held by #7870 and #7905, T03 on T02, T05 on T03, T06 on
+  T01-T05, T07-T09 on Semiconductor B reaching main for G1. The unblocking act belongs to
+  those PRs, not to this program - do not manufacture a lane, and do not dispatch T05
+  (args_ind_t05_source_history.json stays PARKED; rulings_t05 R8 forbids it).
+  Coverage is 15 of 56 as MEASURED (3 in T01, 12 in T04), never from the plan's table.
+  Two absences are deliberate: tests/test_industrials_issuer_enrollment.py is not created
+  and no anchor-map row exists for a T02 requirement - in both cases the absence is the
+  honest signal that T02 is unstarted.
 artifacts:
   - agentos/handoffs/GMI-INDUSTRIALS-2026-09-24-first-vertical-implementation.md
   - research/industrials/first_vertical_program/rulings/R-IND-2026-09-24-wave1.md
@@ -76,18 +73,23 @@ artifacts:
   - research/industrials/first_vertical_program/rulings/R-IND-2026-09-26-t05-source-editions.md
   - research/industrials/first_vertical_program/rulings/R-IND-2026-09-26-t06-financial-dossier.md
   - research/industrials/first_vertical_program/rulings/R-IND-2026-09-27-t02a-harness-gate.md
+  - research/industrials/first_vertical_program/rulings/R-IND-2026-09-27-requirement-anchors.md
 carrier:
   operation: gmi-industrials-fable-ceo-e2e-20260924-chairman-001
   research_pr: 7789
-  records_pr: [7912, 7915, 7919, 8070, 8072, 8073, 8075, 8077, 8084]
+  records_pr: [7912, 7915, 7919, 8070, 8072, 8073, 8075, 8077, 8084, 8105, 8109]
 do_not_redo:
   - "Research Waves 1-14, the nine-task plan (blob a5462dc7) and the 56-requirement traceability are frozen - do not re-research Industrials economics."
   - "R14-01..R14-05, the R4 private-mechanism choice and the #7669 aggregator choice are decided - never reopen the GET route or a direct mount."
   - "Never put implementation on the research carrier #7789; never edit #7870's branch."
+  - "IND-T04b (#8105) delivers the 15 vendored anchor rows, the 13 built anchors and four cures (IND-D08 unit comparison, IND-D09 definition agreement, IND-D10 matched_pair_unequal, IND-R208 purpose comparison), mutation-verified 17/17. Do not re-derive them. Do not 'tidy' test_ind_d08_conversion_receipt_is_trusted_not_applied: it asserts the raw-magnitude value on purpose so that implementing the conversion FAILS it and the anchor is updated deliberately rather than drifting."
   - "T01 (#7924, merged c5e6f0bb5d39) and T04 (#8062, MERGED 50549f8e839e) are adjudicated closed and DELIVERED - T01 after five lane rounds and three READ_ONLY red-teams, T04 after two lane rounds that each self-reported PASS and each carried defects (round 1: five blockers and two majors; round 2: B6, the sixth blocker, which no reviewer saw). Do not re-review either finding set and do not re-derive T04's arithmetic, which was clean throughout and deliberately left alone. Reviews: reviews/OPUS_T01_REDTEAM_2026-09-24.md, reviews/OPUS_T04_REDTEAM_2026-09-26.md."
 landmines:
   - "A plan-frozen example test is a requirement, never evidence the requirement is enforced. T02's mandated two-run test had one vacuous assertion (members() -> `return set()`, so `before <= members()` could not fail) and two that raised AttributeError (no get() on _PublicationHarness). Resolve every attribute against the owning CLASS and mutation-probe each assertion before dispatch: DSC:A-FROZEN-PLANS-EXAMPLE-TEST-CAN-BE-HALF-DEAD."
   - "run_refresh's empty-changes branch is byte-identical to the pre-T02a behaviour on purpose: the three merged run_refresh tests are T01's round-5 N3 cures and all pass changes={}. Refactoring that branch away reds them."
+  - "A PLAN'S TRACEABILITY TABLE IS NOT COVERAGE: 13 of 15 named anchors did not exist across two merged, green tasks, because a pytest run names FILES and `pytest path::absent` reports `no tests ran` rather than a failure. Never report a requirement count from the table. Auditing existing tests BY NAME is the wrong instrument - build the anchor from the requirement text, which is how IND-D10 surfaced. DSC:A-PLANS-TRACEABILITY-TABLE-IS-NOT-COVERAGE."
+  - "The synthetic helper comparison(purpose, cells) sets EVERY checked flag True, so a probe built on it excuses every comparability mismatch and mints phantom gaps. Build the receipt, then set the ONE flag under test False - the landed idiom, carried by the anchors as _unchecked()."
+  - "`metric` encodes the period ROLE here (revenue_current / revenue_prior), not measure semantics - the measure lives in quality.definition. A first IND-D09 cure compared metric equality and broke eight landed tests that were right."
   - "Shared files (issuer_profiles.py, event_workspace.py, event_workspace_build.py, refresh_event_workspaces.py, private_publication.py, app/earnings.py, the shared theme-research client/mount) stay owned by their incumbent workstreams and are touched at named seams only, serialized behind #7870 and #7905."
   - "Sparse worktrees truncate data/ and site/ on write."
   - "A red pack on an Industrials PR may be a SIBLING seat's dangling agentos artifacts: entry, not your diff: self-mod-fence is always-on and refuses any [phantom-artifact] string anywhere in the store, so it reds any PR whose merge ref predates the referenced file. #8062 lost one run that way (DSC:A-DANGLING-ARTIFACT-ENTRY-REDS-EVERY-STALE-MERGE-REF). Triage the path at origin/main AND at refs/pull/<N>/merge before touching code; the cure is a base refresh, and rerunning the job reuses the stale merge commit."
