@@ -1215,8 +1215,21 @@ def _extended_owner_inputs(fixture: str) -> FinanceOwnerInputs:
     """The fixture, with the four owner fields every committed fixture leaves
     empty filled in memory with SYNTHETIC records the composer reads. Without
     them a fence over the owner fields never reaches the dossier, theme
-    evidence, expectation or basket paths."""
+    evidence, expectation or basket paths. Two owner keys no committed fixture
+    carries are added the same way, since a plant reaches only the keys a
+    record holds: a source record's constraints, whose economic effect is
+    published as free text, and a material change's conflict_ids."""
     base = _default_8slice_inputs() if fixture == "default" else _conflict_inputs_for(fixture)
+    records = copy.deepcopy(list(base.source_records))
+    for rec in records:
+        if isinstance(rec, dict) and isinstance(rec.get("material_change"), dict):
+            rec["material_change"].setdefault("conflict_ids", ["SYNTHETIC-conflict-ref"])
+            break
+    for rec in records:
+        if isinstance(rec, dict) and isinstance(rec.get("business_scope"), str):
+            rec.setdefault("slice_id", rec["business_scope"])
+            rec.setdefault("constraints", [{"constraint": "capital", "economic_effect": "SYNTHETIC economic effect."}])
+            break
     expectations = dict(base.expectation_observations)
     expectations.setdefault("card_networks", [
         {"as_of": "2026-09-15", "source": "src-consensus-001", "metric": "consensus:net_revenue_yoy",
@@ -1247,6 +1260,7 @@ def _extended_owner_inputs(fixture: str) -> FinanceOwnerInputs:
         ],
         expectation_observations=expectations,
         basket_context=baskets,
+        source_records=records,
     )
 
 
@@ -1265,6 +1279,41 @@ def test_the_owner_fences_plant_every_owner_field() -> None:
             if field.name not in _UNPLANTED_FIELDS and _plant_owner_keys(copy.deepcopy(getattr(base, field.name))):
                 planted.add(field.name)
     assert planted == {field.name for field in dataclasses.fields(FinanceOwnerInputs)} - _UNPLANTED_FIELDS
+
+
+# Keys the composer reads that no owner record carries, each with its reason.
+_COMPOSER_READ_KEYS_NOT_OWNER_CARRIED = frozenset({
+    "_freshness_state_raw",  # composer-authored; popped before the document is returned
+    "_ticker_hint",  # composer-authored from a source record; compared, never published as read
+    "cells", "observations", "operating", "primary_metric", "valuation",  # the composer's own planes and rows
+    "clock",  # the composer's own plane clock; published only into a date-format field
+    "row_id",  # composer-minted company row id
+    "support",  # an owner macro key read only as a truth test; never published
+})
+
+
+def test_every_owner_key_the_composer_reads_is_planted() -> None:
+    """The value fence mutates only the keys the fixture records hold, so a key
+    the composer reads that no fixture carries is a key no plant reaches. Every
+    ``.get("<literal>")`` key in the composer is carried by an owner record of
+    an extended fixture or named above with its reason. Bounds: the census is
+    by key name, not by owner field, and reads through a variable key or a
+    subscript are outside it. The list is non-empty, so a census that matched
+    nothing cannot pass."""
+    import engine.sector_intelligence.finance_projection as _fp_mod
+
+    source = Path(_fp_mod.__file__).read_text(encoding="utf-8")
+    read = set(re.findall(r'\.get\(\s*"([A-Za-z_][A-Za-z0-9_]*)"', source))
+    carried: set[str] = set()
+    for fixture in _FENCE_FIXTURES:
+        base = _extended_owner_inputs(fixture)
+        for field in dataclasses.fields(base):
+            if field.name in _UNPLANTED_FIELDS:
+                continue
+            value = getattr(base, field.name)
+            for path in _owner_record_paths(value):
+                carried.update(map(str, _owner_record_at(value, path)))
+    assert read - carried == _COMPOSER_READ_KEYS_NOT_OWNER_CARRIED, sorted(read - carried)
 
 
 def test_the_metric_vocabulary_is_the_schemas() -> None:
