@@ -347,6 +347,14 @@ def _owner_refs(values: Any) -> list[str]:
     return [ref for ref in map(_owner_ref, values) if ref]
 
 
+def _owner_key(value: Any) -> str | None:
+    """An owner value the composer looks up or compares as text: a string, or
+    None. A mapping or list is unhashable, so a membership test on one raised
+    inside the composer before the contract could refuse anything; it names no
+    slice, rights family, price basis or metric, so it is treated as absent."""
+    return value if isinstance(value, str) else None
+
+
 def _hash_inputs(inputs: FinanceOwnerInputs, composer_version: str) -> str:
     payload = {
         "composer_version": composer_version,
@@ -452,11 +460,10 @@ def _coerce_rights_state(
     source_family: str | None,
     rights_snapshot: Mapping[str, str],
 ) -> str:
-    if not source_family:
+    family = _owner_key(source_family)
+    if not family or family not in rights_snapshot:
         return "SOURCE_RIGHTS_HELD"
-    if source_family not in rights_snapshot:
-        return "SOURCE_RIGHTS_HELD"
-    cls = rights_snapshot.get(source_family)
+    cls = rights_snapshot.get(family)
     if cls == "internal_only":
         return "INTERNAL_ONLY"
     if cls == "unresolved":
@@ -1085,7 +1092,7 @@ def _valuation_plane(
     for obs in market_obs:
         if not isinstance(obs, Mapping):
             continue
-        basis = obs.get("price_basis")
+        basis = _owner_key(obs.get("price_basis"))
         if basis in _PRICE_BASIS_QUALIFIED:
             price_basis = basis
             break
@@ -1163,7 +1170,7 @@ def _price_plane(
     qualified = [
         o
         for o in market_obs
-        if isinstance(o, Mapping) and o.get("price_basis") in _PRICE_BASIS_QUALIFIED
+        if isinstance(o, Mapping) and _owner_key(o.get("price_basis")) in _PRICE_BASIS_QUALIFIED
     ]
     if not qualified:
         for obs in market_obs:
@@ -1460,7 +1467,7 @@ def _conflicts_for(
         support = macro_for_slice.get("policy_rates_support") or macro_for_slice.get("support")
         if support:
             for obs in (operating.get("primary_metric") or {},):
-                if (obs.get("native_metric_name") or "").lower().startswith("nim") and operating_direction == "DOWN":
+                if (_owner_key(obs.get("native_metric_name")) or "").lower().startswith("nim") and operating_direction == "DOWN":
                     conflicts.append(_new_conflict(
                         "conflict-" + slice_id + "-policy-support-nim-pressure",
                         "POLICY_SUPPORT_NIM_PRESSURE",
@@ -2052,7 +2059,7 @@ def _constraints_for(inputs: FinanceOwnerInputs, slices: Sequence[Mapping[str, A
     for rec in inputs.source_records:
         if not isinstance(rec, Mapping):
             continue
-        slice_id = rec.get("slice_id")
+        slice_id = _owner_key(rec.get("slice_id"))
         constraints = rec.get("constraints")
         if not isinstance(constraints, list) or slice_id not in by_slice:
             continue
@@ -2219,13 +2226,10 @@ def compose_finance_projection(
     is the minimum over the input as-of dates actually consumed, never
     ``now``).
     """
-    slice_catalog = {c.get("slice_id"): c for c in inputs.slice_catalog if isinstance(c, Mapping)}
-    slice_id_to_atlas_id: dict[str, str] = {}
-    for slice_id in _FINANCE_SLICE_IDS:
-        if slice_id in slice_catalog:
-            slice_id_to_atlas_id[slice_id] = slice_id
-        else:
-            slice_id_to_atlas_id[slice_id] = slice_id
+    # Every Finance slice is its own atlas id. (A lookup into the owner's
+    # catalog used to sit here; both of its branches mapped a slice to itself,
+    # so it changed nothing and raised on an unhashable catalog slice_id.)
+    slice_id_to_atlas_id: dict[str, str] = {slice_id: slice_id for slice_id in _FINANCE_SLICE_IDS}
 
     source_records, source_record_extras = _source_records_block(inputs)
     # Structural check: datetime has a ``time`` part, date does not.

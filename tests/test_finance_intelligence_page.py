@@ -11,6 +11,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
+import pytest
 import yaml
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
@@ -795,6 +796,7 @@ def test_f2_weighting_chip_uses_spec_enum():
     assert "weighting_family || 'EQUAL_WEIGHT'" not in js
 
 
+@pytest.mark.needs_full_checkout("site")
 def test_shell_ships_the_not_connected_binding_until_integration():
     """T8 seat ruling: the read-model endpoint is bound only through
     ``<main data-fi-read-url>``; an empty value must render the bilingual
