@@ -6,6 +6,7 @@ Prepared 2026-09-25 by the Energy seat (session 8955bbc3), operation `gmi-energy
 - The carrier opens only after #7870 merges to main and #8002 is rebased onto that merge.
 - Until then this packet is context. It is not a build order.
 - The copy decisions below are recorded as seat ruling R-ENE-23. They land with the round-3 records.
+- **Re-verified 2026-09-28** at #7870 head `a0d7b054ff23` and #8002 head `3c775ea592a6` (§1b). Two carrier obligations were added (§3b). The status is unchanged: PREPARED, not dispatched.
 
 ## 1. Facts this packet rests on
 
@@ -24,6 +25,24 @@ Every fact was read at #7870 head `6cd958e92b25` and #8002 head `9e3237efdef6`. 
 | Slice cohorts: reactor technology is SMR and OKLO; nuclear components is BWXT; fuel cycle is CCJ and LEU. | `nuclear_theme_research.py:37-41` |
 | A basket page mounts the crosswalk theme whose `primary_basket_id` is that basket, and only if that theme's `id` is a MOUNTS key. The crosswalk row `id: nuclear_power` has `primary_basket_id: nuclear_power` and `basket_ids: [nuclear_power, uranium_miners]`. So the `nuclear_power` page mounts, and `uranium_miners` is membership only, so it mounts nothing. | `theme_research_mounts.py` `registered_anchor_for_basket`; `config/theme_crosswalk.yml:121-128` (main `90704bbea8f0`) |
 | House Chinese terms: the basket label is `nuclear_power → 核电`, and the house prose uses `核燃料循环` and `反应堆`. | `templates/committee.html.j2:1477`; `templates/report_second_act.html.j2:137,1659` |
+
+## 1b. Re-verification, 2026-09-28 (#7870 `a0d7b054ff23`, #8002 `3c775ea592a6`)
+
+The seat read every section-1 fact again with `git show` at both heads. It used the seat script `regcheck.py`, whose output is summarised here.
+
+| Fact | Status at the new heads | Where now |
+|---|---|---|
+| `MountFacts` fields | HOLDS. The docstring is still stale. | `theme_research_mounts.py:76-99` (docstring `:80-86`); `_ENTRIES` `:153`; `registered_anchor_for_basket` `:257` |
+| `VerticalRegistration` fields, the lazy loader and the entry | HOLDS | `theme_research_registry.py:84-110`; loader `:147-160`; entry `:169-190`; `REGISTRY` `:202` |
+| The import closure stays light | HOLDS. Nuclear's eager closure adds `engine.theme_graph.identity` (`re`, `functools`, `pathlib`, `yaml`) and `rights` (`hashlib`, `logging`, `functools`, `pathlib`, `yaml`). None of these is on the test's list. The carrier still proves the test green. | `tests/test_theme_research_registry.py:199-213` |
+| The registry's own imports | HOLDS. The nuclear import has root `engine`, which is inside the allowed set `{__future__, collections, dataclasses, types, typing, engine}`. | `tests/test_theme_research_registry.py:330-341` |
+| The client needs no edit | HOLDS. A remembered slice is checked by `parseStoredSelectionFor(SPEC, raw)`, which tests `spec.slices`, and then against `SLICES`. The compiled `TR_SLICE_KEYS` (`:112`) is read only by the legacy `parseStoredSelection` (`:118-129`). | `site/assets/js/theme-research.js:591-603`, `:1048-1060`; chips `:1405-1406`; `data-slice-labels` `:1901` |
+| `TR_VIEW_KEYS` equals nuclear `VIEWS` | HOLDS | `theme-research.js:113`; `nuclear_theme_research.py:36` |
+| The four closed-set pins | HOLDS, at the same lines. `:582-583` derives from `_ENTRIES` and needs no edit. | registry test `:89`, `:94`, `:275`; mount-context test `:185` |
+| Nuclear entry points and ids | HOLDS. Only the line numbers moved. | `nuclear_theme_research.py:32-36`, `:780`, `:806`; `nuclear_owner_bundle.py:25` |
+| The crosswalk row | HOLDS. It is identical on main and on the base. | `config/theme_crosswalk.yml:121-134` (`theme_node_id: "theme:nuclear_power"`) |
+| House Chinese terms | HOLDS | `templates/committee.html.j2:1477` |
+| The evidence-route pattern | **STILL NARROW.** RULING 8's widening is not on #7870's head, so §4.6 stays gated. | `app/theme_research.py:207`: `^gmi-curation://[a-z0-9_]+/gmirca_[0-9a-f]{32}$` |
 
 ## 2. Seat copy decisions (R-ENE-23)
 
@@ -82,6 +101,24 @@ _NUCLEAR = VerticalRegistration(
 
 The registry already imports `semiconductor_theme_research`, and `nuclear_theme_research` imports only that module plus `engine.theme_graph.*`. So the eager `compose` import adds no forbidden module. The carrier must still prove this with `test_registry_import_closure_stays_light` green.
 
+## 3b. Carrier obligations added 2026-09-28 (Semiconductors B's carried laws, verified at `a0d7b054ff23`)
+
+1. **The macro-api restart regex** is in `app/deploy/update.sh`, between `# BEGIN MACRO_API_RESTART_TRIGGER` and `# END`, at line 1261.
+   - Registration puts nuclear inside the API's import closure: `app/theme_research.py:64` imports the registry at module level.
+   - The seat ran the regex itself against the paths. `nuclear_theme_research.py`, `nuclear_owner_bundle.py` and `engine/theme_graph/identity.py` do **not** match it today. `theme_graph/rights.py` and `curation_assertion.py` do.
+   - Add `nuclear_theme_research` and `nuclear_owner_bundle` to the `engine/market_ontology/(…)` group, and `identity` to the `engine/theme_graph/(…)` group. Enumerate the names; never glob.
+   - `tests/test_deploy_update_self_heal.py::test_api_load_time_import_closure_is_covered_by_restart_regex` enforces the two modules imported at load time.
+   - It cannot see `nuclear_owner_bundle`, which the registry's lazy loader imports inside a function, at request time. After the first request that module is pinned in `sys.modules` just the same. Append it to that file's `MUST_RESTART` list so a guard pins it.
+2. **The curated CI closure lists** are in `.github/ci/legacy-jobs.yml`.
+   - Every curated exclusive job that names `engine/market_ontology/theme_research_registry.py` must also name `nuclear_theme_research.py` and `nuclear_owner_bundle.py`. It must also name any `engine/theme_graph/*` file its paths do not already cover.
+   - At `a0d7b054ff23` there are six such blocks, near lines 2250, 2525, 9120, 9764, 11870 and 12252.
+   - Resolve each list as a UNION with whatever main has added since. Dropping either side breaks that side's audit.
+   - Prove it with `tests/test_ci_pack.py -k "closure or curated or scope"` and the curated-exclusive closure audit. Re-run both after ANY merge or rebase, not only after your own edits.
+3. **Gate discipline.**
+   - Run `python3 scripts/worktree_sparse.py add site` before trusting any gate. The mount-context suite reads `site/assets/js/theme-research.js`, and a sparse `site/` gives failures that look exactly like code regressions.
+   - For checks that need data, run `git sparse-checkout add data/regime data/theme_graph`, never the whole `data/`.
+   - Attribute a red pack by reading its traceback, never by the job's name.
+
 ## 4. Tests the carrier adds or updates
 
 **Append only.** No test is deleted or renamed (R-ENE-19 carries over).
@@ -99,5 +136,6 @@ The registry already imports `semiconductor_theme_research`, and `nuclear_theme_
 - **Served proof.** On success AND on every error path, the nuclear query and evidence responses carry the accepted `private` / `no-store` / `noindex` / `noarchive` headers. The receipt is a raw `curl -sD-`, pasted in the PR body.
 - **Privacy.** No full-fidelity paid research is written to public Git, Pages, public R2, static public JSON, a source map, or persistent browser storage. `localStorage` holds only the three-key selection (`slice_key` / `view` / `time_mode`). Proof is a grep of the built page, plus the stored key read back in the browser.
 - **Browser proof.** Crops for dark and light × EN and ZH × 1440 and 390 are posted in the PR body. The mount renders the three plain-word chips. The `uranium_miners` basket page renders no mount.
+- `tests/test_deploy_update_self_heal.py` is green, including the appended `MUST_RESTART` row (§3b.1). The curated-exclusive closure audit reports zero MISS (§3b.2).
 - The carrier's own Opus READ_ONLY review returns PASS before the PR leaves DRAFT.
 - The live rung stays behind the VPS pull-cron hold (`# MMX-DISK-TRIAGE-HOLD`, #6902). That hold is an EXACT_HUMAN_GATE and the seat never lifts it.
