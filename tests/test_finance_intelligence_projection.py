@@ -554,6 +554,288 @@ def test_adjusted_close_is_not_valuation_quote() -> None:
     validate_contract(CONTRACT_ID, document)
 
 
+def _valuation_of(document: dict[str, Any], slice_id: str) -> dict[str, Any]:
+    return next(sl for sl in document["slices"] if sl["slice_id"] == slice_id)["rerating"]["valuation"]
+
+
+def test_a_valuation_observation_anchors_only_the_slice_it_is_filed_under() -> None:
+    """The conflict fixture files one P/E observation under card_networks.
+    Give a second slice a qualified price basis of its own and it has a price
+    but no valuation anchor: it must say so, not publish card_networks'
+    multiple as its own reading. The anchor used to be the first valuation
+    observation of any packet, whatever slice it was filed under."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    other = "ach_instant_b2b"
+    assert not base.market_observations.get(other)
+    market = dict(base.market_observations)
+    market[other] = [dict(obs, source="synthetic-market-" + other) for obs in base.market_observations["card_networks"]]
+    document = compose_finance_projection(
+        dataclasses.replace(base, market_observations=market),
+        generated_at=_today(),
+        knowledge_cutoff=_knowledge_cutoff(),
+    )
+    validate_contract(CONTRACT_ID, document)
+    card = _valuation_of(document, "card_networks")
+    assert card["state"] == "OBSERVED" and card["primary_metric"]["value"] == 18.0
+    stray = _valuation_of(document, other)
+    assert stray["state"] == "VALUATION_ANCHOR_UNAVAILABLE", stray
+    assert stray["primary_metric"] is None and stray["clock"] is None
+
+
+def test_the_valuation_plane_reads_its_slices_freshest_anchor() -> None:
+    """card_networks' packet carries two valuation observations on two
+    dates. The plane publishes the fresher, in either order. An untagged
+    observation is company data and counts for the slice; one filed under
+    another slice never does, however fresh. The plane used to publish
+    whichever came first."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    (ticker, packet), = base.financial_packets.items()
+    (anchor,) = packet["valuation"]["observations"]
+
+    def observation(as_of: str, value: float, **tag: Any) -> dict[str, Any]:
+        obs = {key: val for key, val in copy.deepcopy(anchor).items() if key != "slice_id"}
+        obs.update(tag, as_of=as_of)
+        obs["metric"] = dict(obs["metric"], value=value, period_end=as_of)
+        return obs
+
+    def anchor_values(*observations: dict[str, Any]) -> set[float]:
+        values = set()
+        for ordered in (observations, observations[::-1]):
+            packets = {ticker: dict(packet, valuation=dict(packet["valuation"], observations=list(ordered)))}
+            document = compose_finance_projection(
+                dataclasses.replace(base, financial_packets=packets),
+                generated_at=_today(),
+                knowledge_cutoff=_knowledge_cutoff(),
+            )
+            validate_contract(CONTRACT_ID, document)
+            values.add(_valuation_of(document, "card_networks")["primary_metric"]["value"])
+        return values
+
+    stale = observation("2026-06-30", 21.0, slice_id="card_networks")
+    assert anchor_values(stale, observation("2026-09-20", 18.0, slice_id="card_networks")) == {18.0}
+    assert anchor_values(stale, observation("2026-09-20", 17.0)) == {17.0}
+    assert anchor_values(stale, observation("2026-09-23", 30.0, slice_id="ach_instant_b2b")) == {21.0}
+
+
+def test_an_undated_valuation_observation_never_anchors() -> None:
+    """An anchor publishes its date as the slice's information clock, which
+    the contract requires, so an observation that carries no date cannot
+    anchor. Beside a dated one it is passed over, in either order; alone it
+    leaves the slice without an anchor, said in words. It used to refuse the
+    whole document whenever it came first."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    (ticker, packet), = base.financial_packets.items()
+    (anchor,) = packet["valuation"]["observations"]
+    undated = {key: val for key, val in copy.deepcopy(anchor).items() if key not in ("as_of", "observed_at")}
+    undated["metric"] = dict(undated["metric"], value=99.0)
+
+    def valuation(*observations: dict[str, Any]) -> dict[str, Any]:
+        packets = {ticker: dict(packet, valuation=dict(packet["valuation"], observations=list(observations)))}
+        document = compose_finance_projection(
+            dataclasses.replace(base, financial_packets=packets),
+            generated_at=_today(),
+            knowledge_cutoff=_knowledge_cutoff(),
+        )
+        validate_contract(CONTRACT_ID, document)
+        return _valuation_of(document, "card_networks")
+
+    for ordered in ((anchor, undated), (undated, anchor)):
+        assert valuation(*ordered)["primary_metric"]["value"] == 18.0
+    alone = valuation(undated)
+    assert alone["state"] == "VALUATION_ANCHOR_UNAVAILABLE", alone
+    assert alone["primary_metric"] is None and alone["clock"] is None
+
+
+def _with_valuation_observations(base: FinanceOwnerInputs, *observations: dict[str, Any]) -> dict[str, Any]:
+    """Compose the one-packet conflict fixture with its valuation observations
+    replaced, in the order given, and return the validated document."""
+    (ticker, packet), = base.financial_packets.items()
+    packets = {ticker: dict(packet, valuation=dict(packet["valuation"], observations=list(observations)))}
+    document = compose_finance_projection(
+        dataclasses.replace(base, financial_packets=packets),
+        generated_at=_today(),
+        knowledge_cutoff=_knowledge_cutoff(),
+    )
+    validate_contract(CONTRACT_ID, document)
+    return document
+
+
+def test_a_conflict_reads_the_direction_of_the_valuation_reading_the_plane_publishes() -> None:
+    """EARNINGS_UP_P_E_DOWN compares the operating and valuation readings the
+    slice publishes. Beside card_networks' anchor, add an older observation
+    saying the opposite, dated by as_of, dated only by observed_at, or not
+    dated at all. The plane publishes the anchor, in either order, and the
+    conflict follows the anchor's direction: it fires when the published P/E
+    is falling and stays silent when it is rising. When the anchor states no
+    direction, the older observation says the P/E is falling and the
+    conflict still stays silent: the reading the plane publishes does not
+    say so. The conflict used to re-select its own valuation direction by
+    as_of alone, so an observation the plane had passed over could decide
+    it."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    (ticker, packet), = base.financial_packets.items()
+    (anchor,) = packet["valuation"]["observations"]
+    for published, opposite in (("DOWN", "UP"), ("UP", "DOWN"), (None, "DOWN")):
+        reading = {key: val for key, val in copy.deepcopy(anchor).items() if key != "direction"}
+        if published is not None:
+            reading["direction"] = published
+        undated = {key: val for key, val in copy.deepcopy(anchor).items() if key not in ("as_of", "observed_at")}
+        undated.update(direction=opposite)
+        undated["metric"] = dict(undated["metric"], value=21.0)
+        for passed_over in (dict(undated, as_of="2026-09-10"), dict(undated, observed_at="2026-06-01"), undated):
+            for ordered in ((reading, passed_over), (passed_over, reading)):
+                document = _with_valuation_observations(base, *ordered)
+                assert _valuation_of(document, "card_networks")["primary_metric"]["value"] == 18.0
+                fired = [c["label"] for c in document["conflicts"]].count("EARNINGS_UP_P_E_DOWN")
+                clock = (passed_over.get("as_of"), passed_over.get("observed_at"))
+                assert fired == (1 if published == "DOWN" else 0), (published, clock, ordered[0] is reading)
+
+
+def test_a_conflict_reads_the_direction_of_the_price_reading_the_plane_publishes() -> None:
+    """PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN compares the price reading the
+    slice publishes. Beside card_networks' rising qualified price, add a
+    falling observation the plane passes over: a fresher one on an adjusted
+    historical basis, which is never a qualified price, or an undated one,
+    which the plane reads as the oldest. The plane publishes the rising
+    price and the conflict fires, in either order. Then add a fresher
+    qualified price that states no direction: the plane publishes it and
+    the conflict stays silent, in either order, although the rising price
+    it passed over says the price is up. The conflict used to re-select its
+    own price direction from every market observation by as_of alone, so
+    the observation the plane passed over decided it."""
+    base = _conflict_inputs_for("PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN")
+    (rising,) = base.market_observations["card_networks"]
+
+    def published(*ordered: dict[str, Any]) -> tuple[Any, int]:
+        market = dict(base.market_observations, card_networks=list(ordered))
+        document = compose_finance_projection(
+            dataclasses.replace(base, market_observations=market),
+            generated_at=_today(),
+            knowledge_cutoff=_knowledge_cutoff(),
+        )
+        validate_contract(CONTRACT_ID, document)
+        price = next(s for s in document["slices"] if s["slice_id"] == "card_networks")["rerating"]["price"]
+        assert price["state"] == "OBSERVED", price
+        fired = [c["label"] for c in document["conflicts"]].count("PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN")
+        return price["primary_metric"]["value"], fired
+
+    adjusted = dict(rising, as_of="2026-09-22", price_basis="ADJUSTED_HISTORICAL", direction="DOWN", value=90.0)
+    undated = {key: val for key, val in dict(rising, direction="DOWN", value=90.0).items() if key != "as_of"}
+    for passed_over in (adjusted, undated):
+        for ordered in ((rising, passed_over), (passed_over, rising)):
+            assert published(*ordered) == (100.0, 1), (passed_over["price_basis"], "as_of" in passed_over, ordered[0] is rising)
+    silent = {key: val for key, val in dict(rising, as_of="2026-09-23", value=95.0).items() if key != "direction"}
+    for ordered in ((rising, silent), (silent, rising)):
+        assert published(*ordered) == (95.0, 0), ordered[0] is rising
+
+
+def test_only_an_absent_or_null_slice_tag_means_company_data() -> None:
+    """A slice tag files an observation under that slice. Only an absent or
+    null tag leaves it untagged, which is company data and reaches every
+    slice. Retag card_networks' operating and valuation observations with a
+    malformed tag and give ach_instant_b2b a price basis of its own: neither
+    slice publishes them. A falsy malformed tag used to count as untagged, so
+    the readings reached every slice; a truthy one already reached none."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    other = "ach_instant_b2b"
+    market = dict(base.market_observations)
+    market[other] = [dict(obs, source="synthetic-market-" + other) for obs in base.market_observations["card_networks"]]
+    (ticker, packet), = base.financial_packets.items()
+
+    def states(tag: Any) -> dict[str, tuple[str, str]]:
+        retagged = {
+            plane: dict(packet[plane], observations=[dict(copy.deepcopy(obs), slice_id=tag) for obs in packet[plane]["observations"]])
+            for plane in ("operating", "valuation")
+        }
+        document = compose_finance_projection(
+            dataclasses.replace(base, market_observations=market, financial_packets={ticker: dict(packet, **retagged)}),
+            generated_at=_today(),
+            knowledge_cutoff=_knowledge_cutoff(),
+        )
+        validate_contract(CONTRACT_ID, document)
+        rerating = {s["slice_id"]: s["rerating"] for s in document["slices"]}
+        return {sid: (rerating[sid]["operating"]["state"], rerating[sid]["valuation"]["state"]) for sid in ("card_networks", other)}
+
+    untagged = states(None)
+    assert untagged == {sid: ("OBSERVED", "OBSERVED") for sid in ("card_networks", other)}, untagged
+    for malformed in ("", 0, False, [], {}, ["card_networks"]):
+        found = states(malformed)
+        assert found == {sid: ("MISSING", "VALUATION_ANCHOR_UNAVAILABLE") for sid in ("card_networks", other)}, (malformed, found)
+
+
+def test_on_one_date_the_slice_tagged_valuation_observation_anchors() -> None:
+    """Two valuation observations share a date: one the owner tags with
+    card_networks and one left untagged (company data). The slice's own
+    filing is the more specific, so it anchors, in either order. The anchor
+    used to be whichever came last."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    (ticker, packet), = base.financial_packets.items()
+    (anchor,) = packet["valuation"]["observations"]
+    untagged = {key: val for key, val in copy.deepcopy(anchor).items() if key != "slice_id"}
+    untagged["metric"] = dict(untagged["metric"], value=25.0)
+    for ordered in ((anchor, untagged), (untagged, anchor)):
+        document = _with_valuation_observations(base, *ordered)
+        assert _valuation_of(document, "card_networks")["primary_metric"]["value"] == 18.0, ordered[0] is anchor
+
+
+def test_a_valuation_observation_dated_after_the_knowledge_cutoff_never_anchors() -> None:
+    """Nothing dated after the knowledge cutoff can be known at it. A
+    valuation observation dated the day after the cutoff is passed over
+    beside card_networks' anchor, in either order; alone, it leaves the slice
+    without an anchor, said in words. One dated on the cutoff itself still
+    anchors. The freshest observation used to win however far past the
+    cutoff its date was."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    (ticker, packet), = base.financial_packets.items()
+    (anchor,) = packet["valuation"]["observations"]
+    cutoff = _knowledge_cutoff().date()
+
+    def dated(day: _dt.date, value: float) -> dict[str, Any]:
+        obs = dict(copy.deepcopy(anchor), as_of=day.isoformat())
+        obs["metric"] = dict(obs["metric"], value=value)
+        return obs
+
+    after = dated(cutoff + _dt.timedelta(days=1), 55.0)
+    for ordered in ((anchor, after), (after, anchor)):
+        valuation = _valuation_of(_with_valuation_observations(base, *ordered), "card_networks")
+        assert valuation["primary_metric"]["value"] == 18.0, ordered[0] is anchor
+    alone = _valuation_of(_with_valuation_observations(base, after), "card_networks")
+    assert alone["state"] == "VALUATION_ANCHOR_UNAVAILABLE", alone
+    assert alone["primary_metric"] is None and alone["clock"] is None
+    on_cutoff = _valuation_of(_with_valuation_observations(base, anchor, dated(cutoff, 19.0)), "card_networks")
+    assert on_cutoff["primary_metric"]["value"] == 19.0
+    assert on_cutoff["clock"]["observed_at"] == cutoff.isoformat()
+
+
+def test_a_constraint_is_published_under_the_slice_its_record_is_filed_under() -> None:
+    """A source record is filed under its business_scope, and its record_id is
+    evidence of that slice only. Its constraints are published under that
+    slice, whatever slice_id extra the record carries. They used to follow the
+    extra: a foreign one published a constraint under a slice its evidence is
+    not filed under, and a record carrying none had its constraints dropped."""
+    base = _default_8slice_inputs()
+    (target,) = [rec["record_id"] for rec in base.source_records if rec.get("business_scope") == "card_networks"]
+    constraint = {"constraint": "capital", "economic_effect": "SYNTHETIC economic effect."}
+
+    def published_constraints(**extra: Any) -> list[tuple[str, list[str]]]:
+        records = copy.deepcopy(list(base.source_records))
+        for rec in records:
+            if rec["record_id"] == target:
+                rec.update(extra, constraints=[constraint])
+        document = compose_finance_projection(
+            dataclasses.replace(base, source_records=records),
+            generated_at=_today(),
+            knowledge_cutoff=_knowledge_cutoff(),
+        )
+        validate_contract(CONTRACT_ID, document)
+        return [(c["slice_id"], c["evidence_refs"]) for c in document["constraints"]]
+
+    filed = [("card_networks", [target])]
+    assert published_constraints() == filed
+    assert published_constraints(slice_id="issuer_processing") == filed
+    assert published_constraints(slice_id="card_networks") == filed
+
+
 def test_volume_never_populates_revenue_exposure() -> None:
     record = _default_operating_record(
         slice_id="card_networks",

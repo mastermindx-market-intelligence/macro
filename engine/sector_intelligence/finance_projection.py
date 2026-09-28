@@ -884,33 +884,53 @@ def _has_forbidden_key(value: Any) -> bool:
     return False
 
 
-def _operating_plane(
+def _filed_under(obs: Mapping[str, Any], slice_id: str) -> bool:
+    """Whether an owner observation belongs to this slice.
+
+    It does when the owner tags it with the slice, or leaves it untagged,
+    which means company data. Only an absent or null tag is untagged. Any
+    other value that is not this slice's id, an empty string or a malformed
+    non-string included, files the observation somewhere else, so it never
+    reaches this slice. (A falsy malformed tag used to count as untagged, so
+    it reached every slice.)
+    """
+    tag = obs.get("slice_id")
+    return tag is None or tag == slice_id
+
+
+def _operating_reading(
     slice_id: str,
     financial_packets: Mapping[str, Mapping[str, Any]],
-    regime_breaks: Sequence[Mapping[str, Any]],
-    evidence_refs: list[str],
-) -> dict[str, Any]:
-    # Pick the freshest operating observation across all financial_packets
-    # that carries an explicit ``direction``. Source records are display-tier
-    # (schema-strict) and never carry direction.
+) -> Mapping[str, Any] | None:
+    """The operating observation the slice publishes, or None.
+
+    It is the freshest operating observation filed under the slice that
+    carries an explicit ``direction``. Source records are display-tier
+    (schema-strict) and never carry direction. The conflict grammar reads
+    this same observation.
+    """
     candidates: list[tuple[date | None, Mapping[str, Any]]] = []
-    for label, packet in financial_packets.items():
+    for packet in financial_packets.values():
         if not isinstance(packet, Mapping):
             continue
         operating = packet.get("operating")
         if isinstance(operating, Mapping):
             for obs in operating.get("observations") or ():
-                if not isinstance(obs, Mapping):
-                    continue
-                if _direction(obs) is None:
-                    continue
-                # The composer is per-slice; only consume observations that
-                # explicitly tag the slice or that have no tag (interpreted
-                # as universal company data).
-                if not obs.get("slice_id") or obs.get("slice_id") == slice_id:
+                if isinstance(obs, Mapping) and _direction(obs) is not None and _filed_under(obs, slice_id):
                     candidates.append((_coerce_date(obs.get("as_of")), obs))
-
     if not candidates:
+        return None
+    candidates.sort(key=lambda c: (c[0] or date.max))
+    return candidates[-1][1]
+
+
+def _operating_plane(
+    slice_id: str,
+    freshest: Mapping[str, Any] | None,
+    regime_breaks: Sequence[Mapping[str, Any]],
+    evidence_refs: list[str],
+) -> dict[str, Any]:
+    if freshest is None:
         if _plane_is_regime_break(regime_breaks, slice_id, "operating"):
             return _plane_block(
                 state="REGIME_BREAK",
@@ -929,8 +949,6 @@ def _operating_plane(
             note="Operating evidence is not available for this slice.",
         )
 
-    candidates.sort(key=lambda c: (c[0] or date.max))
-    freshest = candidates[-1][1]
     primary = _build_primary_metric(freshest)
     clock = _plane_clock(freshest)
 
@@ -1032,23 +1050,56 @@ def _expectations_plane(
     }
 
 
-def _valuation_plane(
+def _valuation_anchor(
     slice_id: str,
     financial_packets: Mapping[str, Mapping[str, Any]],
-    market_obs: Sequence[Mapping[str, Any]],
-    evidence_refs: list[str],
-    regime_breaks: Sequence[Mapping[str, Any]],
-) -> dict[str, Any]:
-    anchor_obs: Mapping[str, Any] | None = None
-    for label, packet in financial_packets.items():
+    knowledge_cutoff: date,
+) -> Mapping[str, Any] | None:
+    """The valuation observation the slice publishes as its anchor, or None.
+
+    The anchor is the slice's freshest dated valuation observation filed
+    under the slice (_filed_under). An observation tagged with another slice
+    never anchors this one. (The anchor used to be the first observation of
+    whichever packet iterated last, so every slice with a qualified price
+    basis published that one slice's multiple.) The conflict grammar reads
+    this same observation.
+
+    The anchor's date is published as the slice's information clock, so:
+    - an observation with no date (neither as_of nor observed_at, the dates
+      _plane_clock reads) never anchors: the contract requires the clock and
+      would refuse the whole document;
+    - an observation dated after the knowledge cutoff never anchors, because
+      nothing dated after the cutoff can be known at it;
+    - on one date, an observation the owner tags with this slice anchors
+      over an untagged one, because it is the more specific filing.
+    Two observations filed the same way on one date keep the owner's order:
+    which company's reading anchors a slice is not decided here.
+    """
+    candidates: list[tuple[tuple[date, bool], Mapping[str, Any]]] = []
+    for packet in financial_packets.values():
         if not isinstance(packet, Mapping):
             continue
         valuation = packet.get("valuation")
         if isinstance(valuation, Mapping):
             for obs in valuation.get("observations") or ():
-                if isinstance(obs, Mapping):
-                    anchor_obs = obs
-                    break
+                if not isinstance(obs, Mapping) or not _filed_under(obs, slice_id):
+                    continue
+                observed = _coerce_date(obs.get("as_of")) or _coerce_date(obs.get("observed_at"))
+                if observed is not None and observed <= knowledge_cutoff:
+                    candidates.append(((observed, obs.get("slice_id") == slice_id), obs))
+    if not candidates:
+        return None
+    candidates.sort(key=lambda c: c[0])
+    return candidates[-1][1]
+
+
+def _valuation_plane(
+    slice_id: str,
+    anchor_obs: Mapping[str, Any] | None,
+    market_obs: Sequence[Mapping[str, Any]],
+    evidence_refs: list[str],
+    regime_breaks: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
     price_basis: str | None = None
     for obs in market_obs:
         if not isinstance(obs, Mapping):
@@ -1122,18 +1173,31 @@ def _valuation_plane(
     )
 
 
-def _price_plane(
-    slice_id: str,
-    market_obs: Sequence[Mapping[str, Any]],
-    evidence_refs: list[str],
-    regime_breaks: Sequence[Mapping[str, Any]],
-) -> dict[str, Any]:
+def _price_reading(market_obs: Sequence[Mapping[str, Any]]) -> Mapping[str, Any] | None:
+    """The market observation the slice's price plane publishes, or None.
+
+    It is the freshest observation on a qualified price basis; an undated
+    one counts as the oldest. The conflict grammar reads this same
+    observation.
+    """
     qualified = [
         o
         for o in market_obs
         if isinstance(o, Mapping) and _owner_key(o.get("price_basis")) in _PRICE_BASIS_QUALIFIED
     ]
     if not qualified:
+        return None
+    return max(qualified, key=lambda o: _coerce_date(o.get("as_of")) or date.min)
+
+
+def _price_plane(
+    slice_id: str,
+    freshest: Mapping[str, Any] | None,
+    market_obs: Sequence[Mapping[str, Any]],
+    evidence_refs: list[str],
+    regime_breaks: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
+    if freshest is None:
         for obs in market_obs:
             if isinstance(obs, Mapping) and obs.get("price_basis") == "ADJUSTED_HISTORICAL":
                 return _plane_block(
@@ -1152,7 +1216,6 @@ def _price_plane(
             evidence_refs=evidence_refs,
             note="No qualified price basis is admitted for the price plane.",
         )
-    freshest = max(qualified, key=lambda o: _coerce_date(o.get("as_of")) or date.min)
     primary = _build_price_primary_metric(freshest)
     clock = _plane_clock(freshest)
     if _plane_is_regime_break(regime_breaks, slice_id, "price"):
@@ -1416,15 +1479,21 @@ def _conflicts_for(
     regime_breaks: Sequence[Mapping[str, Any]],
     material_changes: Sequence[Mapping[str, Any]],
     macro_context: Mapping[str, Any],
-    operating_observations: Sequence[Mapping[str, Any]] = (),
-    valuation_observations: Sequence[Mapping[str, Any]] = (),
-    market_observations: Sequence[Mapping[str, Any]] = (),
+    operating_reading: Mapping[str, Any] | None = None,
+    valuation_reading: Mapping[str, Any] | None = None,
+    price_reading: Mapping[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     conflicts: list[dict[str, Any]] = []
 
-    operating_direction = _direction_from_observations(operating_observations)
-    valuation_direction = _direction_from_observations(valuation_observations)
-    price_direction = _direction_from_observations(market_observations)
+    # A conflict judges the readings its planes publish, so each direction is
+    # read from the observation that plane selected; nothing is re-selected
+    # here. (Directions used to be re-selected from every observation by a
+    # rule of their own, so a document could publish a rising P/E beside a
+    # "P/E down" conflict, the direction taken from an observation the
+    # valuation plane had passed over.)
+    operating_direction = _direction(operating_reading) if operating_reading is not None else None
+    valuation_direction = _direction(valuation_reading) if valuation_reading is not None else None
+    price_direction = _direction(price_reading) if price_reading is not None else None
 
     if (
         operating["state"] == "OBSERVED"
@@ -1491,43 +1560,6 @@ def _conflicts_for(
                 break
 
     return conflicts
-
-
-def _plane_direction(plane: dict[str, Any]) -> str | None:
-    metric = plane.get("primary_metric")
-    if not isinstance(metric, Mapping):
-        return None
-    direction = metric.get("direction")
-    if direction is None:
-        return None
-    text = str(direction).strip().upper()
-    if text in ("UP", "DOWN", "FLAT"):
-        return text
-    return None
-
-
-def _direction_from_observations(observations: Sequence[Mapping[str, Any]]) -> str | None:
-    """Pick the direction from the freshest observation that carries one.
-
-    Conflicts compare explicit directions across planes; if no observation
-    carries one the direction is ``None`` and the rule fires only when the
-    rule's other preconditions are already met.
-    """
-    candidates: list[tuple[date | None, str]] = []
-    for obs in observations or ():
-        if not isinstance(obs, Mapping):
-            continue
-        direction = _direction(obs)
-        if direction is None:
-            continue
-        as_of = _coerce_date(obs.get("as_of")) if hasattr(obs.get("as_of", None), "__class__") else None
-        if as_of is None and isinstance(obs.get("as_of"), str):
-            as_of = _coerce_date(obs.get("as_of"))
-        candidates.append((as_of, direction))
-    if not candidates:
-        return None
-    candidates.sort(key=lambda c: (c[0] or date.max))
-    return candidates[-1][1]
 
 
 def _new_conflict(
@@ -2036,7 +2068,13 @@ def _constraints_for(inputs: FinanceOwnerInputs, slices: Sequence[Mapping[str, A
     for rec in inputs.source_records:
         if not isinstance(rec, Mapping):
             continue
-        slice_id = _owner_key(rec.get("slice_id"))
+        # A record is filed under its business_scope, the schema's scope field,
+        # and its record_id is evidence of that slice only, so its constraints
+        # are published under that slice. (They used to be published under a
+        # slice_id extra outside the record schema: a foreign extra filed a
+        # constraint under a slice its evidence is not filed under, and a record
+        # carrying no extra had its constraints dropped.)
+        slice_id = _owner_key(rec.get("business_scope"))
         constraints = rec.get("constraints")
         if not isinstance(constraints, list) or slice_id not in by_slice:
             continue
@@ -2224,6 +2262,7 @@ def compose_finance_projection(
     slices_out: list[dict[str, Any]] = []
     all_observed_dates: list[date] = []
     used_observations: list[Mapping[str, Any]] = []
+    readings_by_slice: dict[str, tuple[Mapping[str, Any] | None, Mapping[str, Any] | None, Mapping[str, Any] | None]] = {}
     for slice_id in all_slice_ids:
         per_slice = _slice_inputs_for(slice_id, inputs)
         expectation_obs = per_slice["expectation_obs"]
@@ -2232,15 +2271,21 @@ def compose_finance_projection(
         regime = per_slice["regime"]
         evidence_refs = _slice_evidence_refs(slice_id, source_records, expectation_obs, market_obs)
 
+        # Each plane selects the observation it publishes once; the conflict
+        # grammar reads the same observations, in both passes.
+        operating_reading = _operating_reading(slice_id, inputs.financial_packets)
+        valuation_reading = _valuation_anchor(slice_id, inputs.financial_packets, knowledge_cutoff_date)
+        price_reading = _price_reading(market_obs)
+        readings_by_slice[slice_id] = (operating_reading, valuation_reading, price_reading)
         operating = _operating_plane(
             slice_id,
-            inputs.financial_packets,
+            operating_reading,
             regime,
             evidence_refs,
         )
         expectations = _expectations_plane(slice_id, expectation_obs, evidence_refs, regime)
-        valuation = _valuation_plane(slice_id, inputs.financial_packets, market_obs, evidence_refs, regime)
-        price = _price_plane(slice_id, market_obs, evidence_refs, regime)
+        valuation = _valuation_plane(slice_id, valuation_reading, market_obs, evidence_refs, regime)
+        price = _price_plane(slice_id, price_reading, market_obs, evidence_refs, regime)
         operating = _withhold_unevidenced(operating, "Operating evidence is not available for this slice.")
         expectations = _withhold_unevidenced(expectations, "Expectations evidence is not available for this slice.")
         valuation = _withhold_unevidenced(valuation, "Valuation evidence is not available for this slice.")
@@ -2248,26 +2293,6 @@ def compose_finance_projection(
 
         material_changes = _material_changes_for(slice_id, inputs.source_records)
         company_rows_for_slice: list[dict[str, Any]] = []  # populated below
-        # Collect operating and valuation observations across all
-        # financial_packets for this slice so the conflict grammar can
-        # read the freshest direction.
-        op_observations: list[Mapping[str, Any]] = []
-        val_observations: list[Mapping[str, Any]] = []
-        for label, packet in inputs.financial_packets.items():
-            if not isinstance(packet, Mapping):
-                continue
-            operating_packet = packet.get("operating")
-            if isinstance(operating_packet, Mapping):
-                for obs in operating_packet.get("observations") or ():
-                    if isinstance(obs, Mapping):
-                        if not obs.get("slice_id") or obs.get("slice_id") == slice_id:
-                            op_observations.append(obs)
-            valuation_packet = packet.get("valuation")
-            if isinstance(valuation_packet, Mapping):
-                for obs in valuation_packet.get("observations") or ():
-                    if isinstance(obs, Mapping):
-                        if not obs.get("slice_id") or obs.get("slice_id") == slice_id:
-                            val_observations.append(obs)
         conflicts = _conflicts_for(
             slice_id,
             company_rows_for_slice,
@@ -2277,9 +2302,9 @@ def compose_finance_projection(
             regime,
             material_changes,
             inputs.macro_context,
-            operating_observations=op_observations,
-            valuation_observations=val_observations,
-            market_observations=list(market_obs),
+            operating_reading=operating_reading,
+            valuation_reading=valuation_reading,
+            price_reading=price_reading,
         )
 
         slice_state = _slice_state_for(slice_id, operating, expectations, valuation, price, rights_profiles)
@@ -2342,30 +2367,13 @@ def compose_finance_projection(
         slice_id = slice_doc["slice_id"]
         per_slice = _slice_inputs_for(slice_id, inputs)
         expectation_obs = per_slice["expectation_obs"]
-        market_obs = per_slice["market_obs"]
         evidence_refs = slice_doc["evidence_refs"]
         operating = slice_doc["rerating"]["operating"]
         valuation = slice_doc["rerating"]["valuation"]
         price = slice_doc["rerating"]["price"]
         material_changes = _material_changes_for(slice_id, inputs.source_records)
         rows_for_slice = company_rows_by_slice.get(slice_id, [])
-        op_observations: list[Mapping[str, Any]] = []
-        val_observations: list[Mapping[str, Any]] = []
-        for label, packet in inputs.financial_packets.items():
-            if not isinstance(packet, Mapping):
-                continue
-            operating_packet = packet.get("operating")
-            if isinstance(operating_packet, Mapping):
-                for obs in operating_packet.get("observations") or ():
-                    if isinstance(obs, Mapping):
-                        if not obs.get("slice_id") or obs.get("slice_id") == slice_id:
-                            op_observations.append(obs)
-            valuation_packet = packet.get("valuation")
-            if isinstance(valuation_packet, Mapping):
-                for obs in valuation_packet.get("observations") or ():
-                    if isinstance(obs, Mapping):
-                        if not obs.get("slice_id") or obs.get("slice_id") == slice_id:
-                            val_observations.append(obs)
+        operating_reading, valuation_reading, price_reading = readings_by_slice[slice_id]
         # Always re-compute conflicts: the first pass used an empty
         # company-row list because rows were built later. Re-running with
         # the now-final rows gives every slice a deterministic
@@ -2379,9 +2387,9 @@ def compose_finance_projection(
             per_slice["regime"],
             material_changes,
             inputs.macro_context,
-            operating_observations=op_observations,
-            valuation_observations=val_observations,
-            market_observations=list(market_obs),
+            operating_reading=operating_reading,
+            valuation_reading=valuation_reading,
+            price_reading=price_reading,
         )
         slice_doc["conflict_ids"] = [c["conflict_id"] for c in conflicts]
         conflicts_out.extend(conflicts)
