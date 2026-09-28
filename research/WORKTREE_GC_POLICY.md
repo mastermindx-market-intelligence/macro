@@ -552,6 +552,32 @@ entirely `sol-*` HUMAN-class**, one of them last written **0.1 h** ago; 16.3 GiB
 want of an upstream, and 0.1 GiB is unpushed. The result matches §9's shape: what bounds the
 reclaimable pool is the judgment gate, not the byte count.
 
+**Scratchpad census 2026-09-28 — a second NULL result, and the safety check earned its keep.**
+`/private/tmp/claude-501` holds **216.6 GiB across 924 session scratchpad dirs** on the INTERNAL
+data volume (1.5 Ti used / **85%** — the tightest of the three volumes, and the one whose free
+space `df /` misreports as 4% because that row is the sealed read-only system snapshot, not
+`/System/Volumes/Data`). A scratchpad is a different object from a worktree — scratch files by
+contract, no checkout, nothing referenced by `origin/main` — so it looked like the first pool whose
+dead entries would be plainly reclaimable. It is not: **the >7-day pure-scratch bucket is 144 dirs
+and 0.00 GiB.** The bytes are 160.8 GiB across 431 dirs written within 24 h (live sessions), 1.2 GiB
+idle 1–7 d, 0.0 GiB in 254 empty dirs, and **47.0 GiB across 12 dirs that contain a git checkout or
+store** — refused on sight, two of them live and over 20 GiB each. A single LIVE session holds
+**134.8 GiB**, 62% of the whole pool. Two lessons. The naive reading ("216 GiB of temp files") would
+have destroyed live sessions' working state for zero yield. And `/private/tmp` is carrying 47 GiB of
+git checkouts although the house rule names `/private/tmp` as a place project work may never live —
+a placement question for the operator, never bytes a sweeper may take.
+
+**The largest clean reclaim candidate on the SSD is 7.2 GiB, and it still fails closed.** The shared
+mint root's two already-orphaned registrations are both self-hosted runner workspaces whose gitdir
+target is gone: `sol-flow-velocity-recovery-proof-20260920` (**7.2 GiB**) and
+`prophet-b4-session-policy-repair-20260922-a11` (408 KiB). No store registers them, so no
+`worktree prune` anywhere can see them and no configured root covers them; and because the
+registration is gone, `git` cannot run inside the tree at all, so landedness is **unprovable** and
+§9 fails it closed. Recorded rather than taken — clearing it is an operator judgement ("CI
+leftovers, re-derivable from `origin`"), which is precisely the class of call §9 reserves for a
+human.
+
+
 
 **The placement policy moved to the external SSD and the GC's scope never followed.** That
 half stands: the roots really are absent, and the 496 trees behind them really are invisible
