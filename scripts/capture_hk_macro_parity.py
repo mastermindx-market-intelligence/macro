@@ -94,18 +94,43 @@ def prepare(ref, scratch):
 
 
 def shot(page, selector, state, out):
+    # Capture the shared search's real reduced-motion idle state, not an
+    # arbitrary frame of its JS typewriter. Interactions run with motion on.
+    page.emulate_media(reduced_motion="reduce")
+    page.wait_for_timeout(1400)
+    idle = page.locator(".idle-ticker").first
+    idle_text = idle.text_content() if idle.count() else None
+    search = page.locator(".ticker-input")
+    assert all(not value for value in search.evaluate_all("es=>es.map(e=>e.value)")), "unexpected search input"
     # Fixed overlays must be captured at the actual viewport. Enlarging the
     # viewport for an element screenshot exposes the page below a scrollport.
     png = (page.screenshot(type="png", animations="disabled") if "dlg-panel" in selector
            else page.locator(selector).first.screenshot(type="png", animations="disabled"))
     name, sha, width, height = content_address_png(png, out)
+    page.emulate_media(reduced_motion="no-preference")
     return dict(state, captured=True, file=name, sha256=sha, bytes=len(png),
                 width=width, height=height,
+                capture_reduced_motion=True, idle_ticker=idle_text, search_value="",
                 applied_theme=page.locator("html").get_attribute("data-theme"),
                 applied_locale=page.locator("html").get_attribute("data-lang"))
 
 
+def panel_visibility(dlg):
+    """Check visible panel corners, centre and close control, not just centre."""
+    return dlg.locator(".hkx-dlg-panel").evaluate("""p=>{
+        const r=p.getBoundingClientRect(),left=Math.max(0,r.left)+20,right=Math.min(innerWidth,r.right)-20;
+        const top=Math.max(0,r.top)+20,bottom=Math.min(innerHeight,r.bottom)-20;
+        const close=p.querySelector('.hkx-dlg-close').getBoundingClientRect();
+        const points=[[left,top],[right,top],[left,bottom],[right,bottom],[(left+right)/2,(top+bottom)/2],
+                      [close.x+close.width/2,close.y+close.height/2]];
+        return points.filter(([x,y])=>x>=0&&x<innerWidth&&y>=0&&y<innerHeight).map(([x,y])=>{
+            const hit=document.elementFromPoint(x,y);return {x,y,inside:p.contains(hit)};
+        });
+    }""")
+
+
 def show(page, url, theme, locale):
+    page.emulate_media(reduced_motion="no-preference")
     response = page.goto(url, wait_until="load")
     assert response and response.ok
     page.evaluate(_APPLY_STATE_SCRIPT, {"theme": theme, "locale": locale})
@@ -151,7 +176,7 @@ def main():
                         try:
                             show(page, base + "/hk.html", theme, locale)
                             assert page.evaluate("document.documentElement.scrollWidth<=innerWidth"), "horizontal page overflow"
-                            capture(page, "hk-overview", ".hkx-wrap", state)
+                            capture(page, "hk-overview", "body", state)
                             inert_before = page.locator("[inert]").count()
                             ids = page.locator(".hkx-dlg").evaluate_all("els=>els.map(e=>e.id)")
                             assert len(ids) == 15, ids
@@ -184,6 +209,17 @@ def main():
                                 assert dlg.get_attribute("aria-modal") == "true"
                                 assert dlg.evaluate("d=>d.contains(document.activeElement)"), panel_id + " entry focus"
                                 assert page.evaluate("document.body.style.overflow==='hidden'"), panel_id + " scroll lock"
+                                # Explicit positive control: this selector must really
+                                # open the shared tooltip before dismissal is evidence.
+                                lens_control = None
+                                if panel_id == "hkx-dlg-risk":
+                                    help_trigger = dlg.locator("span.help.help-upgraded").first
+                                    assert help_trigger.count(), "risk help trigger exists"
+                                    help_trigger.focus()
+                                    page.locator(".lens-pop.open").wait_for(state="visible")
+                                    dlg.locator(".hkx-dlg-close").focus()
+                                    page.wait_for_function("!document.querySelector('.lens-pop.open')")
+                                    lens_control = dict(opened=True, dismissed=True, trigger="span.help.help-upgraded")
                                 # Reverse wrap from the close button, then forward wrap.
                                 page.keyboard.press("Shift+Tab")
                                 assert dlg.evaluate("d=>d.contains(document.activeElement)"), panel_id + " reverse trap"
@@ -220,11 +256,23 @@ def main():
                                 page.mouse.move(0, 0)
                                 page.wait_for_function("!document.querySelector('.lens-pop.open')")
                                 page.wait_for_timeout(250)
-                                assert dlg.locator(".hkx-dlg-panel").evaluate("""p=>{
-                                    const r=p.getBoundingClientRect();
-                                    const hit=document.elementFromPoint((r.left+r.right)/2,Math.min(innerHeight-1,(r.top+r.bottom)/2));
-                                    return p.contains(hit);
-                                }"""), panel_id + " unobscured panel"
+                                assert dlg.evaluate("d=>d.contains(document.activeElement)"), "capture focus owner"
+                                points = panel_visibility(dlg)
+                                assert len(points) >= 5 and all(p["inside"] for p in points), panel_id + " panel perimeter"
+                                chrome = page.evaluate("""()=>({
+                                    wrapper_z:Number(getComputedStyle(document.querySelector('.hkx-wrap')).zIndex),
+                                    search_z:Number(getComputedStyle(document.querySelector('.nav-search')).zIndex),
+                                    search_inert:!!document.querySelector('.nav-search').closest('[inert]'),
+                                    search_value:document.querySelector('.ticker-input').value,
+                                    launchers:[...document.querySelectorAll('#mmb-boot,#mmb-launch')].map(e=>({
+                                        id:e.id,visibility:getComputedStyle(e).visibility,inert:!!e.closest('[inert]')}))
+                                })""")
+                                assert chrome["wrapper_z"] > chrome["search_z"] and chrome["search_inert"] and not chrome["search_value"]
+                                assert chrome["launchers"] and all(x["visibility"] == "hidden" and x["inert"] for x in chrome["launchers"])
+                                sector_colors = None
+                                if panel_id == "hkx-dlg-sector":
+                                    sector_colors = dlg.locator('table[data-research-table="sectors"] td.hkx-up,table[data-research-table="sectors"] td.hkx-dn').evaluate_all("es=>es.map(e=>({sign:e.classList.contains('hkx-up')?'up':'down',color:getComputedStyle(e).color}))")
+                                    assert len({x["color"] for x in sector_colors}) == 2, "signed sector values have distinct computed colours"
                                 capture(page, panel_id, "#" + panel_id + " .hkx-dlg-panel", state)
                                 charts = dlg.locator(".ilx")
                                 assert charts.evaluate_all("els=>els.every(e=>e.classList.contains('ilx-in'))"), panel_id + " chart reveal"
@@ -252,8 +300,11 @@ def main():
                                 assert trigger.evaluate("e=>e===document.activeElement"), panel_id + " return focus"
                                 assert page.evaluate("document.body.style.overflow!== 'hidden'"), panel_id + " unlock"
                                 assert page.locator("[inert]").count() == inert_before, panel_id + " inert cleanup"
+                                assert page.locator("#mmb-boot").is_visible(), "copilot restored after close"
                                 checks.append(dict(state, panel=panel_id, opened_by="tap" if viewport == "mobile" else "keyboard",
-                                                   entry_focus=True, focus_trap=True, focus_return=True, scroll=scroll, tables=table_metrics))
+                                                   entry_focus=True, focus_trap=True, focus_return=True, scroll=scroll, tables=table_metrics,
+                                                   capture_focus_inside=True, lens_absent=True, lens_positive_control=lens_control,
+                                                   panel_probe=points, chrome=chrome, copilot_restored=True, sector_colors=sector_colors))
                             # Popup focus/Escape and concrete hover/focus states in both themes.
                             pop_trigger = page.locator('[aria-controls="hkx-pop-signals"]')
                             pop_trigger.click()
@@ -268,7 +319,11 @@ def main():
                                     if force == "focus": page.mouse.move(0, 0)
                                     applied = _apply_interaction_force(page, parse_force_state(f"btn-{force}:{force}(.hkx-hbtn)"))
                                     assert applied == "btn-" + force
-                                    capture(page, "hk-overview", ".hkx-wrap", dict(state, force_state=applied, applied_force_state=applied))
+                                    page.wait_for_function("!document.querySelector('.lens-pop.open')")
+                                    hero_clear = page.locator('.hkx-hbtn').first.evaluate("""e=>{const r=e.getBoundingClientRect();return e.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));}""")
+                                    assert hero_clear, "hero force-state unobscured"
+                                    checks.append(dict(state, force_state=applied, hero_unobscured=True, lens_absent=True))
+                                    capture(page, "hk-overview", "body", dict(state, force_state=applied, applied_force_state=applied))
                             assert not exceptions, exceptions
                             for route, key in (("/macro.html", "us-reference"), ("/china.html", "china-reference")):
                                 show(page, base + route, theme, locale)

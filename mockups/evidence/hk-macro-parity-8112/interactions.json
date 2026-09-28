@@ -35,7 +35,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 472.5,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -64,7 +114,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 602.75,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 602.75,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 333.875,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -93,7 +193,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 328.5,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 328.5,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 196.75,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -129,7 +279,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 507.34375,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 507.34375,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 286.171875,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -158,7 +358,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 277.5,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 277.5,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 171.25,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -187,7 +437,61 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": {
+        "opened": true,
+        "dismissed": true,
+        "trigger": "span.help.help-upgraded"
+      },
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 675.8125,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 675.8125,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 370.40625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -229,7 +533,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 778.75,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 778.75,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 421.875,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -258,7 +612,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 472.5,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -294,6 +698,161 @@
           "table": "table",
           "contained": true
         }
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 472.5,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": [
+        {
+          "sign": "up",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        }
       ]
     },
     {
@@ -323,7 +882,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 153.625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -352,7 +961,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 153.625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -381,7 +1040,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 648.5,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 648.5,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 356.75,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -423,7 +1132,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 396.75,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 396.75,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 230.875,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -452,7 +1211,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 153.625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -481,7 +1290,79 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 372.25,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 372.25,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 218.625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": "btn-hover",
+      "hero_unobscured": true,
+      "lens_absent": true
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": "btn-focus",
+      "hero_unobscured": true,
+      "lens_absent": true
     },
     {
       "viewport": "desktop",
@@ -517,7 +1398,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 472.5,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -546,7 +1477,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 602.75,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 602.75,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 333.875,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -575,7 +1556,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 328.5,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 328.5,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 196.75,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -611,7 +1642,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 507.34375,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 507.34375,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 286.171875,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -640,7 +1721,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 277.5,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 277.5,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 171.25,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -669,7 +1800,61 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": {
+        "opened": true,
+        "dismissed": true,
+        "trigger": "span.help.help-upgraded"
+      },
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 675.8125,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 675.8125,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 370.40625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -711,7 +1896,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 778.75,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 778.75,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 421.875,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -740,7 +1975,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 472.5,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -776,6 +2061,161 @@
           "table": "table",
           "contained": true
         }
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 472.5,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": [
+        {
+          "sign": "up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        }
       ]
     },
     {
@@ -805,7 +2245,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 153.625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -834,7 +2324,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 153.625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -863,7 +2403,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 648.5,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 648.5,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 356.75,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -905,7 +2495,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 396.75,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 396.75,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 230.875,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -934,7 +2574,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 153.625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -963,7 +2653,79 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 372.25,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 372.25,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 218.625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": "btn-hover",
+      "hero_unobscured": true,
+      "lens_absent": true
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": "btn-focus",
+      "hero_unobscured": true,
+      "lens_absent": true
     },
     {
       "viewport": "desktop",
@@ -999,7 +2761,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 472.5,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1028,7 +2840,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 583,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 583,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 324,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1057,7 +2919,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 309.75,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 309.75,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 187.375,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1093,7 +3005,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 488.59375,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 488.59375,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 276.796875,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1122,7 +3084,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 153.625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1151,7 +3163,61 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": {
+        "opened": true,
+        "dismissed": true,
+        "trigger": "span.help.help-upgraded"
+      },
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 675.8125,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 675.8125,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 370.40625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1193,7 +3259,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 779.75,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 779.75,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 422.375,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1222,7 +3338,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 472.5,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1258,6 +3424,161 @@
           "table": "table",
           "contained": true
         }
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 472.5,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": [
+        {
+          "sign": "up",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        }
       ]
     },
     {
@@ -1287,7 +3608,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 153.625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1316,7 +3687,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 153.625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1345,7 +3766,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 648.5,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 648.5,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 356.75,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1387,7 +3858,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 396.75,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 396.75,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 230.875,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1416,7 +3937,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 153.625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1445,7 +4016,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 353.5,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 353.5,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 209.25,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1481,7 +4102,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 472.5,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1510,7 +4181,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 583,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 583,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 324,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1539,7 +4260,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 309.75,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 309.75,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 187.375,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1575,7 +4346,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 488.59375,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 488.59375,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 276.796875,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1604,7 +4425,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 153.625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1633,7 +4504,61 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": {
+        "opened": true,
+        "dismissed": true,
+        "trigger": "span.help.help-upgraded"
+      },
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 675.8125,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 675.8125,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 370.40625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1675,7 +4600,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 779.75,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 779.75,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 422.375,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1704,7 +4679,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 472.5,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1740,6 +4765,161 @@
           "table": "table",
           "contained": true
         }
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 880,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 472.5,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": [
+        {
+          "sign": "up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        }
       ]
     },
     {
@@ -1769,7 +4949,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 153.625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1798,7 +5028,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 153.625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1827,7 +5107,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 648.5,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 648.5,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 356.75,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1869,7 +5199,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 396.75,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 396.75,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 230.875,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1898,7 +5278,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 242.25,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 153.625,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "desktop",
@@ -1927,7 +5357,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 290,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 65,
+          "inside": true
+        },
+        {
+          "x": 290,
+          "y": 353.5,
+          "inside": true
+        },
+        {
+          "x": 1150,
+          "y": 353.5,
+          "inside": true
+        },
+        {
+          "x": 720,
+          "y": 209.25,
+          "inside": true
+        },
+        {
+          "x": 1131,
+          "y": 78,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -1963,7 +5443,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 472.640625,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 138.28125,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -1992,7 +5522,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 123,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 123,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 473.5,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 140,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2021,7 +5601,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 419.5,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 419.5,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 621.75,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 436.5,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2057,7 +5687,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 123.15625,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 123.15625,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 473.578125,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 140.15625,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2086,7 +5766,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 533,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 533,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 678.5,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 550,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2115,7 +5845,61 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": {
+        "opened": true,
+        "dismissed": true,
+        "trigger": "span.help.help-upgraded"
+      },
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 168.59375,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 168.59375,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 496.296875,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 185.59375,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2144,7 +5928,57 @@
           "reached": 244
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 472.640625,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 138.28125,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2173,7 +6007,57 @@
           "reached": 1350
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 472.640625,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 138.28125,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2209,6 +6093,161 @@
           "table": "table",
           "contained": true
         }
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 472.640625,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 138.28125,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": [
+        {
+          "sign": "up",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        }
       ]
     },
     {
@@ -2238,7 +6277,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 601.25,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 601.25,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 712.625,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 618.25,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2267,7 +6356,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 550.25,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 550.25,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 687.125,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 567.25,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2296,7 +6435,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 176.25,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 176.25,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 500.125,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 193.25,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2338,7 +6527,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 394.25,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 394.25,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 609.125,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 411.25,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2367,7 +6606,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 603.5,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 603.5,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 713.75,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 620.5,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2396,7 +6685,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 457,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 457,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 640.5,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 474,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2432,7 +6771,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 472.640625,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 138.28125,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2461,7 +6850,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 123,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 123,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 473.5,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 140,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2490,7 +6929,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 419.5,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 419.5,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 621.75,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 436.5,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2526,7 +7015,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 123.15625,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 123.15625,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 473.578125,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 140.15625,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2555,7 +7094,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 533,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 533,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 678.5,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 550,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2584,7 +7173,61 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": {
+        "opened": true,
+        "dismissed": true,
+        "trigger": "span.help.help-upgraded"
+      },
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 168.59375,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 168.59375,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 496.296875,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 185.59375,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2613,7 +7256,57 @@
           "reached": 244
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 472.640625,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 138.28125,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2642,7 +7335,57 @@
           "reached": 1350
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 472.640625,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 138.28125,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2678,6 +7421,161 @@
           "table": "table",
           "contained": true
         }
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 472.640625,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 138.28125,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": [
+        {
+          "sign": "up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        }
       ]
     },
     {
@@ -2707,7 +7605,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 601.25,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 601.25,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 712.625,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 618.25,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2736,7 +7684,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 550.25,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 550.25,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 687.125,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 567.25,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2765,7 +7763,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 176.25,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 176.25,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 500.125,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 193.25,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2807,7 +7855,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 394.25,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 394.25,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 609.125,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 411.25,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2836,7 +7934,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 603.5,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 603.5,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 713.75,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 620.5,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2865,7 +8013,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 457,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 457,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 640.5,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 474,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2901,7 +8099,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 472.640625,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 138.28125,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2930,7 +8178,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 215.5,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 215.5,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 519.75,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 232.5,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2959,7 +8257,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 457,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 457,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 640.5,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 474,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -2995,7 +8343,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 193.65625,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 193.65625,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 508.828125,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 210.65625,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3024,7 +8422,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 587,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 587,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 705.5,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 604,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3053,7 +8501,61 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": {
+        "opened": true,
+        "dismissed": true,
+        "trigger": "span.help.help-upgraded"
+      },
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 218.546875,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 218.546875,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 521.2734375,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 235.546875,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3082,7 +8584,57 @@
           "reached": 205
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 472.640625,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 138.28125,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3111,7 +8663,57 @@
           "reached": 1257
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 472.640625,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 138.28125,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3147,6 +8749,161 @@
           "table": "table",
           "contained": true
         }
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 472.640625,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 138.28125,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": [
+        {
+          "sign": "up",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.878431 0.392157 0.392157)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.270588 0.721569 0.45098)"
+        }
       ]
     },
     {
@@ -3176,7 +8933,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 620,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 620,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 722,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 637,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3205,7 +9012,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 603.5,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 603.5,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 713.75,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 620.5,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3234,7 +9091,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 195,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 195,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 509.5,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 212,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3276,7 +9183,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 465.5,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 465.5,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 644.75,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 482.5,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3305,7 +9262,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 620,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 620,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 722,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 637,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3334,7 +9341,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 473.5,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 473.5,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 648.75,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 490.5,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3370,7 +9427,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 472.640625,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 138.28125,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3399,7 +9506,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 215.5,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 215.5,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 519.75,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 232.5,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3428,7 +9585,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 457,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 457,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 640.5,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 474,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3464,7 +9671,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 193.65625,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 193.65625,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 508.828125,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 210.65625,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3493,7 +9750,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 587,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 587,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 705.5,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 604,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3522,7 +9829,61 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": {
+        "opened": true,
+        "dismissed": true,
+        "trigger": "span.help.help-upgraded"
+      },
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 218.546875,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 218.546875,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 521.2734375,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 235.546875,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3551,7 +9912,57 @@
           "reached": 205
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 472.640625,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 138.28125,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3580,7 +9991,57 @@
           "reached": 1257
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 472.640625,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 138.28125,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3616,6 +10077,161 @@
           "table": "table",
           "contained": true
         }
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 121.28125,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 472.640625,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 138.28125,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": [
+        {
+          "sign": "up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "up",
+          "color": "color(srgb 0.710745 0.246588 0.26102)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        },
+        {
+          "sign": "down",
+          "color": "color(srgb 0.143922 0.459373 0.325882)"
+        }
       ]
     },
     {
@@ -3645,7 +10261,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 620,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 620,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 722,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 637,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3674,7 +10340,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 603.5,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 603.5,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 713.75,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 620.5,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3703,7 +10419,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 195,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 195,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 509.5,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 212,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3745,7 +10511,57 @@
           "table": "table",
           "contained": true
         }
-      ]
+      ],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 465.5,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 465.5,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 644.75,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 482.5,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3774,7 +10590,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 620,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 620,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 722,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 637,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "viewport": "mobile",
@@ -3803,7 +10669,57 @@
           "reached": 0
         }
       ],
-      "tables": []
+      "tables": [],
+      "capture_focus_inside": true,
+      "lens_absent": true,
+      "lens_positive_control": null,
+      "panel_probe": [
+        {
+          "x": 32,
+          "y": 473.5,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 473.5,
+          "inside": true
+        },
+        {
+          "x": 32,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 358,
+          "y": 824,
+          "inside": true
+        },
+        {
+          "x": 195,
+          "y": 648.75,
+          "inside": true
+        },
+        {
+          "x": 335,
+          "y": 490.5,
+          "inside": true
+        }
+      ],
+      "chrome": {
+        "wrapper_z": 200,
+        "search_z": 110,
+        "search_inert": true,
+        "search_value": "",
+        "launchers": [
+          {
+            "id": "mmb-boot",
+            "visibility": "hidden",
+            "inert": true
+          }
+        ]
+      },
+      "copilot_restored": true,
+      "sector_colors": null
     },
     {
       "stress_width": 320,

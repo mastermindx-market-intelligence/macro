@@ -1000,6 +1000,10 @@
   /* Mechanic #2: 1500px wrap with US-width body padding */
   @media(min-width:1100px){body.page-hk{padding:26px max(40px,calc((100vw - 1500px)/2))}}
   body.page-hk .hkx-wrap{position:relative;z-index:1;max-width:1500px;margin:0 auto;padding:0}
+  /* Keep the existing dialog layer above the shared search's 110 layer;
+     the page wrapper otherwise confines every modal to stacking level 1. */
+  body.page-hk .hkx-wrap:has(.hkx-dlg.open){z-index:200}
+  body.page-hk #mmb-boot[inert],body.page-hk #mmb-root[inert] #mmb-launch{visibility:hidden}
   body.page-hk .hkx-aurora{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
   body.page-hk .hkx-aurora::before{content:"";position:absolute;top:-220px;left:12%;width:820px;height:560px;border-radius:50%;filter:blur(90px);background:radial-gradient(ellipse,rgba(69,184,115,.12) 0%,transparent 70%)}
   body.page-hk .hkx-aurora::after{content:"";position:absolute;bottom:-100px;right:-100px;width:700px;height:600px;border-radius:50%;filter:blur(90px);background:radial-gradient(ellipse,rgba(99,102,241,.10) 0%,transparent 70%)}
@@ -1342,7 +1346,7 @@
     transition:background .2s ease,border-color .2s ease,color .2s ease,transform .16s ease,box-shadow .25s ease}
   body.page-hk .hkx-dlg-close:hover{background:var(--gbtn-bg-hover,rgba(255,255,255,.08));border-color:var(--gbtn-brd-hover,rgba(255,255,255,.28));color:var(--text);transform:translateY(-1px);box-shadow:inset 0 1px 0 var(--gbtn-sheen),0 8px 20px -10px rgba(3,7,18,.55)}
   body.page-hk .hkx-dlg-close:active{transform:translateY(0) scale(.985);box-shadow:inset 0 1px 0 var(--gbtn-sheen)}
-  body.page-hk .hkx-dlg-close:focus-visible{outline:2px solid var(--up);outline-offset:2px}
+  body.page-hk .hkx-dlg-close:focus-visible{outline:2px solid var(--link);outline-offset:2px}
   @media (prefers-reduced-motion:reduce){body.page-hk .hkx-dlg-close,body.page-hk .hkx-dlg-close:hover,body.page-hk .hkx-dlg-close:active{transform:none}}
   body.page-hk .hkx-dlg-body{padding:18px 22px 22px}
   /* Mechanic #6: dialog body 2-col with minmax(0,1fr) */
@@ -1380,8 +1384,14 @@
   [data-theme="light"] body.page-hk .hkx-card{box-shadow:0 4px 24px rgba(0,0,0,.09),0 1px 0 rgba(255,255,255,.95) inset}
   [data-theme="light"] body.page-hk .hkx-card[role="button"]:hover{background:rgba(255,255,255,.92);border-color:rgba(0,0,0,.14);box-shadow:0 6px 24px rgba(0,0,0,.12)}
   [data-theme="light"] body.page-hk .hkx-pop{background:rgba(255,255,255,.98);border-color:rgba(0,0,0,.1);box-shadow:0 8px 32px rgba(0,0,0,.13)}
-  [data-theme="light"] body.page-hk .hkx-dlg-panel{background:rgba(255,255,255,.98);border-color:rgba(0,0,0,.1)}
-  [data-theme="light"] body.page-hk .hkx-dlg-backdrop{background:rgba(20,24,30,.34)}
+  [data-theme="light"] body.page-hk .hkx-dlg-panel{background:var(--panel);border-color:var(--line)}
+  [data-theme="light"] body.page-hk .hkx-dlg-backdrop{background:var(--pv-dialog-backdrop)}
+  /* Light material needs stronger weak-cell tint to distinguish it from
+     a neutral/missing cell. Keep the same ordering and semantic colours. */
+  [data-theme="light"] body.page-hk .hkx-heat i{box-shadow:inset 0 0 0 1px var(--line)}
+  [data-theme="light"] body.page-hk .hkx-heat i.h2{background:var(--up);opacity:.8}
+  [data-theme="light"] body.page-hk .hkx-heat i.h3{background:var(--up);opacity:.6}
+  [data-theme="light"] body.page-hk .hkx-heat i.c2{background:var(--down);opacity:.7}
   [data-theme="light"] body.page-hk .hkx-dlg-head{border-bottom-color:rgba(0,0,0,.09)}
   [data-theme="light"] body.page-hk .hkx-dlg-close{border-color:rgba(0,0,0,.18)}
   [data-theme="light"] body.page-hk .hkx-hm-wrap{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.1)}
@@ -1580,6 +1590,8 @@ body.page-hk .hkx-fe-row:focus-visible,body.page-hk .hkx-stock-context>summary:f
 body.page-hk table[data-research-table="sectors"]{min-width:640px}
 body.page-hk table[data-research-table="sectors"] caption{text-align:left;color:var(--muted);font-size:var(--fs-sm,12.5px);line-height:1.55;padding:var(--sp-3,12px) var(--sp-2,8px)}
 body.page-hk table[data-research-table="sectors"] td{font-variant-numeric:tabular-nums}
+body.page-hk table[data-research-table="sectors"] td.hkx-up{color:var(--ink-up,var(--up))}
+body.page-hk table[data-research-table="sectors"] td.hkx-dn{color:var(--ink-down,var(--down))}
 body.page-hk table[data-research-table="sectors"] [data-sector-field="rank"]{text-align:right}
 body.page-hk table[data-research-table="sectors"] td:nth-child(2),body.page-hk table[data-research-table="sectors"] td:nth-child(5),body.page-hk table[data-research-table="sectors"] td:nth-child(6){text-align:left}
 body.page-hk .hkx-breadth-panels h3{font-size:var(--fs-h3,14px);margin:var(--sp-2,8px) 0}
