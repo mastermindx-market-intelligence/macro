@@ -90,6 +90,13 @@ def _fiscal_scope(value: Any) -> tuple[date, date, date, date]:
     return current_start, current_end, prior_start, prior_end
 
 
+def _finite(value: Real) -> bool:
+    try:
+        return math.isfinite(float(value))
+    except OverflowError:
+        return False
+
+
 def _fact_id(event_id: Any, metric: Any, period: Any, basis: Any) -> str:
     identity = "|".join(str(item) for item in (event_id, metric, period, basis))
     return f"fact_{hashlib.sha256(identity.encode('utf-8')).hexdigest()[:16]}"
@@ -158,7 +165,11 @@ def _validate_row_structure(
     metric = row.get("metric")
     definition = _definition(metric)
     period = row.get("period") if expected_keys is PRESENT_KEYS else metric
-    if row.get("fact_id") != _fact_id(event_id, metric, period, definition.basis):
+    try:
+        fact_id = _fact_id(event_id, metric, period, definition.basis)
+    except RecursionError as exc:
+        raise EconomicObservationError("selected row is nested too deeply") from exc
+    if row.get("fact_id") != fact_id:
         raise EconomicObservationError("fact_id does not follow event, metric, period, and basis identity")
 
     if expected_keys is ABSENT_KEYS:
@@ -189,7 +200,7 @@ def _validate_row_structure(
         if definition.value_kind == "bounded_text":
             if not isinstance(value, str) or not value.strip() or len(value) > 240:
                 raise EconomicObservationError("bounded text observation is invalid")
-        elif isinstance(value, bool) or not isinstance(value, Real) or not math.isfinite(float(value)):
+        elif isinstance(value, bool) or not isinstance(value, Real) or not _finite(value):
             raise EconomicObservationError("numeric observation must be finite and non-boolean")
     return metric, definition, period, expected_keys
 
@@ -208,6 +219,10 @@ def _validate_fact_structure(
         raise EconomicObservationError("fact_id is missing or duplicate")
     fact_ids.add(fact_id)
     scope_key = (event_id, metric, definition.scope, period, definition.basis)
+    try:
+        hash(scope_key)
+    except (TypeError, RecursionError) as exc:
+        raise EconomicObservationError("selected row period is not a scalar") from exc
     if duplicate_scope and scope_key in metric_scope_periods:
         raise EconomicObservationError("metric, scope, and period duplicate")
     metric_scope_periods.add(scope_key)
@@ -342,6 +357,8 @@ def _validate_envelope_rows(
 ) -> list[dict[str, Any]]:
     from ..earnings_release.binding import bind_release_document
 
+    if not isinstance(event_id, str):
+        raise EconomicObservationError("workspace event identity is not a string")
     admission = _pg_envelope.admit(source, fiscal_scope)
     definitions = {definition.metric: definition for definition in PG_DEFINITIONS}
     if admission.code == "F1-Q" and admission.roles is not None:
@@ -408,7 +425,7 @@ def _validate_envelope_rows(
         metric = row.get("metric")
         try:
             serialised = json.dumps(dict(row), sort_keys=True)
-        except (TypeError, ValueError) as exc:
+        except (TypeError, ValueError, RecursionError) as exc:
             raise EconomicObservationError("selected observation is not JSON data") from exc
         if serialised != json.dumps(replayed[metric], sort_keys=True):
             raise EconomicObservationError("selected observation does not replay from source bytes")
@@ -509,8 +526,11 @@ def validate_selected_facts(
         raise EconomicObservationError("workspace quarter does not match fiscal_scope")
     if str(fiscal_period.get("year")) != str(expected_year):
         raise EconomicObservationError("workspace fiscal year does not match fiscal_scope")
+    sources = workspace.get("sources", [])
+    if not isinstance(sources, (list, tuple)):
+        raise EconomicObservationError("workspace sources must be a list")
     releases = [
-        source for source in workspace.get("sources", [])
+        source for source in sources
         if isinstance(source, Mapping)
         and source.get("kind") == "issuer_release"
         and source.get("receipt_state") == "byte_replayed"
