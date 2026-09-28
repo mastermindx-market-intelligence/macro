@@ -4,142 +4,144 @@ session: "sol/risk-regime-mechanism-research-20260927"
 model: sol
 ended_because: complete
 mission: >-
-  Deliver world-class regime-aware risk diagnosis, mechanism propagation,
-  historical-path research and eventually qualified warnings across country
-  dashboards. This boundary completes source qualification and the R2-D1
-  supplementary diagnostic, not the parent program or original R2 comparison.
+  Deliver regime-aware risk diagnosis, propagation, historical paths and qualified
+  warnings across country dashboards. R3 completes a temporal adapter and
+  descriptive recipient-outcome audit, not the parent delivery or original R2
+  source-native/incumbent forecast comparison.
 state_before: >-
-  R1 preserved nine mechanisms, 76 measurements, fourteen hypothetical links,
-  forty primary sources and the original R2 empirical protocol. Causal regime
-  history, actual vintage coverage and conditional model performance were unproven.
+  R1 defined mechanisms and candidate indicators. R2 demonstrated historical
+  parameter lookahead and rejected a supplementary four-interaction forecasting
+  model. Exact source-native vintage reconstruction and recipient-specific loss
+  semantics remained unfinished.
 changed:
-  - path: research/grey_deer/regime_mechanisms/R2_D1_PREREGISTRATION.md
+  - path: research/grey_deer/regime_mechanisms/R3_RECONSTRUCTION_AND_RECIPIENT_PROTOCOL.md
     what: >-
-      Freezes a separately named vintage-native diagnostic before outcomes,
-      preserving the unrun original incumbent/regime comparison.
-  - path: research/grey_deer/regime_mechanisms/r2_d1.py
+      Freezes the independent temporal and recipient-outcome studies before
+      new outcomes and preserves the exact refused source-inspection boundary.
+  - path: research/grey_deer/regime_mechanisms/r3.py
     what: >-
-      Implements pinned input reads, same-vintage macro features, past-only
-      nested fitting, three loss targets, warning/episode accounting and uncertainty.
-  - path: research/grey_deer/regime_mechanisms/tests/test_r2_d1.py
+      Pure full-vintage selector, available-score endpoint callback, explicit
+      knowledge hashes and no-fill recipient targets. No new live regime model.
+  - path: research/grey_deer/regime_mechanisms/run_r3.py
     what: >-
-      Adds twenty research tests including the pre-outcome nested-validation
-      availability repair; no production source or test suite is replaced.
-  - path: research/grey_deer/regime_mechanisms/R2_FINDINGS.md
+      Runs allowed pinned-source endpoint diagnostics and common-calendar
+      SPY/KRE/XLF outcomes in an isolated research directory.
+  - path: research/grey_deer/regime_mechanisms/tests/test_r3.py
     what: >-
-      Records historical-parameter leakage, full-vintage source discovery,
-      negative model results, dated failure paths, revision sensitivity and
-      exact unperformed research obligations.
-  - path: research/grey_deer/regime_mechanisms/R2_D1_RESULTS.json
+      Thirty-four synthetic/discriminating temporal and outcome tests, including
+      future revisions, missing/expired inputs, mutation isolation and independent labels.
+  - path: research/grey_deer/regime_mechanisms/R3_RESULTS.json
     what: >-
-      Preserves the exact 2621-byte verified native summary: metrics, source
-      identities, reproduction, independent labels and first-warning checks.
+      Exact 4478-byte verified native summary: reconstruction, macro checks,
+      recipient tables/cases and byte-identical reproduction receipts.
+  - path: research/grey_deer/regime_mechanisms/R3_FINDINGS.md
+    what: >-
+      Records temporal proof limits, recipient-target mismatch, stage distinctions,
+      structural fund changes, tested results and the next mechanism-data frontier.
 verified:
-  - claim: The supplementary protocol preceded real outcome construction.
-    command: "GitHub.create_file R2_D1_PREREGISTRATION.md; execute immutable a250295c research source"
-    result: "Preregistration commit 1d0d0e2c6861e680fe4e0de73f90e74b302752a7 precedes source a250295cc44fa6a1cf7c13f2f9284e29e0554ced and native run."
-  - claim: Published research source and tests match the tested local artifacts.
-    command: "sha256 immutable GitHub source/test downloads before native execution"
-    result: "Source 953951dc8c9410b4d1218985f0393dc43402ceb883aef146e68f126404b1dd8a; tests 54fc1296f7d9895bdc42ffa79151c6646b853bc1d7d01f5088584c681c4d3c14."
-  - claim: The twenty-test research suite passed locally and on the native host.
-    command: "python -m pytest tests/test_r2_d1.py -q"
-    result: "20 passed locally; exact published mirror 20 passed in 2.06s on native Python3.12. Not full-repository CI or scientific review."
-  - claim: All three real-data targets completed and reproduced identically.
-    command: "python3.12 r2_d1.py --repo-root /Users/chriswong/Documents/Cluade/macro-main --out <new-isolated-output>"
-    result: "Process91966 exit0; process2535 reran all targets and matched all six output hashes. Full results SHA256 d94f6a91cc5a8032f180aab7a66a575d4d4a897773b9d8f79e8f5e4597068672."
-  - claim: Independent label and first-warning implementations match the study.
-    command: "Native process20203: loop-based pinned SPY future-window oracle and saved-threshold episode audit"
-    result: "Zero Y21/Y63 label mismatches; primary10% warning anchors match D1=4/0hits and D2=5/0hits."
-  - claim: The native delivery summary was transferred without byte changes.
+  - claim: R3 protocol preceded new recipient outcomes.
+    command: "GitHub.create_file R3_RECONSTRUCTION_AND_RECIPIENT_PROTOCOL.md; execute immutable e9ff7f8e source set"
+    result: "Preregistration c3f2f5e4ee0419d8b059231a394f347467e7f476 predates published source and native run."
+  - claim: Exact published local and native research suites pass.
+    command: "python -m pytest -q in isolated R3 research directory"
+    result: "34 passed locally and 34 passed on native published mirror in 1.56 seconds. Not full repository CI."
+  - claim: Existing endpoint is called on bounded score history with valid decision cutoffs.
+    command: "run_r3.py parameter-only reconstruction over 56 declared dates"
+    result: "56 endpoints available; zero cutoff violations. Three prespecified actual-source truncated-versus-extended comparisons were identical. SciPy emission reference substitutes only unavailable hmmlearn density."
+  - claim: Full-vintage knowledge selection is extension-invariant at fixed episode dates.
+    command: "run_r3.py archive_asof comparisons for PAYEMS and CPIAUCSL"
+    result: "12 dates per archive; all24 extension comparisons and24 direct-vintage comparisons match."
+  - claim: Recipient outcomes complete and reproduce without label discrepancies.
+    command: "run_r3.py plus independent loop oracle; complete second run"
+    result: "4943 common mature dates; zero primary-label mismatches; both runs exit0 and match two output hashes exactly."
+  - claim: Compact result was transferred without byte changes.
     command: "sha256 native delivery_summary.json and conversation evidence/delivery_summary.json"
-    result: "Both 2621 bytes, SHA256 4fb6d80cc7aada8befb68146d4260620876bc4f2699a32dd6715bc6b8cfce134."
+    result: "Both4478bytes, SHA256 7d6be94e51a40019c36683b7f1e20aa3d3e98c5a70e5a0b5c0df2e78d0e8a2b4."
 unverified:
-  - claim: The original R2 B1/B2/C1 comparison is complete.
+  - claim: Historical source-native regime inputs are fully vintage-qualified.
     what_would_verify: >-
-      Qualify source-native historical regime inputs and past-only parameter fits,
-      bind the exact incumbent replay, then run the original common-sample study.
-  - claim: The new interactions improve useful early risk forecasting.
+      Complete the input-vintage-to-source-native-score construction and parameter
+      lineage under restored permitted source inspection. Current native endpoint
+      test uses current-snapshot legacy scores and declared date-label availability.
+  - claim: Original exact-incumbent R2 comparison is complete.
     what_would_verify: >-
-      A genuinely new preregistered construction would need independent evidence;
-      this exact R2-D1 construction did not earn promotion and is not retuned.
-  - claim: All historical inputs are fully vendor-vintage point-in-time.
+      Lawfully inspect and bind the accepted incumbent replay and run the original
+      common-sample protocol. The denied read is not routed through another carrier.
+  - claim: The recipient audit detects or predicts bank runs or propagation.
     what_would_verify: >-
-      Vendor publication/availability and adjustment histories for daily market
-      inputs; current evidence uses archived macro vintages plus prior-date market snapshots.
-  - claim: The historical regime leakage is a production-repaired defect.
+      Separate preregistered tests with independent bank-funding observations,
+      historically valid exposure, mechanism outcomes and forecast evaluation.
+  - claim: R3 is independently reviewed, fully repository-validated or live.
     what_would_verify: >-
-      Separate source-custody-qualified repair, exact-path tests and accepted
-      integration; this wave only demonstrates and records the source behavior.
-  - claim: Full repository validation, independent scientific review or live integration is complete.
-    what_would_verify: >-
-      Actual repository Agent OS/CI checks and independent review, followed by
-      admitted integration and real country-consumer proof; none is inferred from research tests.
+      Independent scientific review, actual Agent OS/hosted source checks and
+      subsequent admitted consumer integration/proof. Research tests supply none of these.
 unresolved:
-  - "Current _causal_filtered_pquad fits parameters on all supplied data before filtering;172/189 historical dates changed under future extension, one modal flip."
-  - "The dependency-isolated leakage probe uses scipy Gaussian emissions because native hmmlearn is unavailable; it is not full production execution."
-  - "Full payroll/CPI vintages exist and were used; generic first-release archive alone is not the complete historical knowledge path."
-  - "R2-D1 D2 Brier is worse than D0 on all three targets; Y21 .155417 versus D1 .145512 and D0 .133287."
-  - "2021 extrapolation and March2020 slow-macro lag expose distinct failure modes; posthoc diagnosis is not a new validated detector."
-  - "Forty-eight of4964 feature dates2007on excluded; no missing source becomes calm."
-  - "Full native panel/prediction CSVs remain on the original host with immutable hashes; downloadable package contains code/tests and verified compact evidence, not those CSVs."
-  - "Original MOVE shared snapshot/projection/UI refusal remains EFFECT_NONE and is not retried or rerouted."
+  - "At this turn's start an exact Studio read covering axes.py, regime.py, risk_radar_backtest.py and inputs.py was safety-refused. No mutation was requested. No retry, rephrasing, delegation or cross-carrier source read followed. No known exact human control resolves it."
+  - "Original incumbent comparison and full source-native vintage input construction remain open. R3's adapter is not a production patch."
+  - "The parameter-only diagnostic assumes score-date23:00UTC availability; this is synthetic diagnostic timing, not historical publisher evidence."
+  - "KRE recipient-only5% loss windows1140/1930=59.1%; fixed-grid52/88=59.1%. This is target mismatch, not signal recall or causal bank-crisis evidence."
+  - "Different volatility and fund exposure can mechanically change barrier frequencies; matched-tail-risk comparisons were not performed."
+  - "Full native result/replay remain on original Studio host; downloadable package contains exact compact result, not those full artifacts."
+  - "Prior MOVE denied shared integration remains EFFECT_NONE and separate."
 next_actions:
-  - "Build a research-only source-native regime-history reconstruction contract: explicit input vintage, available_at, parameter fit cutoff and prefix-invariant issued state; use existing regime owners, not a second regime engine."
-  - "Prove historical states do not change under future input extension or later revisions; bind the exact incumbent Risk Radar replay before running original R2 common-sample comparisons."
-  - "Advance mechanism-and-stage-specific bank/funding, energy, propagation and repair studies; assess recipients and containment, not just broad-index future drawdown."
-  - "Obtain independent scientific review and required source/CI gates before any shadow/predictive promotion; defer final native implementation handoff until research is ready."
+  - "Begin bank-funding mechanism source qualification: identify existing historically available balance-sheet, runnable-funding, liquidity and fast-stress inputs; retain exact release clocks, bank IDs, historical membership and missing coverage before freezing a numerical experiment."
+  - "Keep recipient equity loss separate from bank-run/funding/credit-access outcomes and from current damage, future incremental risk, containment and repair."
+  - "Resume full source-native regime/accepted-incumbent comparison only after genuine permitted recovery of the exact denied source-inspection action; do not retry it via another tool or actor."
+  - "Continue the broader energy/FX/propagation/novelty/repair and country research program; independent review and source/CI/live-consumer gates precede promotion."
 do_not_redo:
-  - "Do not recreate the R1 taxonomy,76-indicator map or forty-source survey without material evidence."
-  - "Do not retune R2-D1 on its inspected outcomes or relabel it as the original R2 incumbent comparison."
-  - "Do not use historical full-sample parameters or smoothed states as then-known predictors."
-  - "Do not equate positive/negative payroll and CPI acceleration with a fully identified causal risk regime."
-  - "Do not double-count global sources across countries or daily overlapping warnings as independent episodes."
-  - "Do not create another score, lifecycle, ledger, alert, publication or authority plane."
-  - "Do not retry, delegate or route around denied prior MOVE shared integration effects or release sibling HOLDs."
+  - "Retain R1's76-indicator/nine-mechanism survey and R2-D1 negative findings; do not retune the inspected R2 model."
+  - "Do not redo the34 passing R3 tests or full recipient run absent material code/data invalidation."
+  - "Do not call the parameter-only endpoint proof a fully PIT history or call callback recursion proof installed hmmlearn parity."
+  - "Do not count1140 overlapping recipient windows as independent crises or 59.1% as detector recall."
+  - "Do not impose current ETF holdings on earlier periods; preserve KRE2011 and XLF2016 structural boundaries."
+  - "Do not create another live regime, episode, score, ledger, alert, publication or policy authority."
+  - "Do not retry/reroute the newly denied source reads or earlier MOVE producer/projection/UI edits; sibling China/Radar/recovery HOLDs remain."
 danger_areas:
-  - "A causal recursion does not prove a causal parameter or data history."
-  - "A low future-loss prediction cannot erase observed acute stress; current damage is not a successful prediction of further loss."
-  - "Base effects and out-of-support inputs can create extreme but uncalibrated probabilities."
-  - "Bank/funding risks are not refuted by a broad-equity barrier failing to fire."
-  - "Reported crisis exclusions are aggregation sensitivity, not leave-one-crisis-out refits."
+  - "Input vintages, parameter-fit cutoff and filtered state must all satisfy historical availability independently."
+  - "A zero additional-loss target is not calm or repaired funding after a severe prior loss."
+  - "Equity prices alone cannot identify bank runs, sovereign funding or collateral transmission."
+  - "Post-result structural-change sensitivity is not a new independent predictive test."
 prs: [8133]
 ---
 
-# Cumulative R2 checkpoint — parent mission remains incomplete
+# Cumulative R3 checkpoint
 
 `FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION`
 `MISSION_COMPLETE: false`
 
-The schema's complete marker applies only to this coherent source-audit and
-supplementary-diagnostic batch. The next source-native historical reconstruction
-and mechanism-specific study are materially heavier new units. This is not a
-stop based on elapsed time or a claim that the complete program is done.
+The bounded R3 reconstruction/recipient diagnostic is complete at its declared
+research ceiling. Bank-funding source qualification and the broader conditional
+forecast studies are materially heavier next phases, not completed by this record.
+The full original incumbent comparison is held by the action-specific read refusal.
 
 Operation: `risk-regime-mechanism-research-20260927-sol-001`.
-Carrier: Macro #8133 / `sol/risk-regime-mechanism-research-20260927`.
-Cumulative issue: #8128. Existing parent Grey Deer / MAS-258.
+Carrier: GitHub macro#8133 / `sol/risk-regime-mechanism-research-20260927`.
+Cumulative issue: #8128. Parent: existing Grey Deer / MAS-258.
+Protected Mastermind pin: `dcc4829a811d3f6e4fe8c16a103f813c3501f48e`, compatible
+Skillpack1.0.1/bootstrap1. Source/data pin: `f6dae649ee6d32ec65a95ccea411b205d0b0bc45`.
 
-Protected procedure remains Mastermind
-`dcc4829a811d3f6e4fe8c16a103f813c3501f48e`, Skillpack1.0.1/bootstrap1.
-R2 data/source pin: `f6dae649ee6d32ec65a95ccea411b205d0b0bc45`.
-Report commit: `318ec7d1cd8900275b414f5208dc36f0a1e54406`.
-Verified summary commit: `5c63c2e15abfeb8327810a493431631234cdbcad`.
-The tested numerical source remains the unchanged a250295c version; later records
-are not a retuned model. No effect is unresolved on this R2 carrier.
+R3 preregistration: `c3f2f5e4ee0419d8b059231a394f347467e7f476`.
+Executed source set: `e9ff7f8e5abb3706b92124554d22c647bbd48913`.
+Published tests: `dba3b26f37f6991906e966209f09d4067c2d977b`.
+Compact result commit: `df2cec5407065770cbe2382bc3bd560b4f8719a8`.
+Findings commit: `2c27fb99a0d79a41104c8a0dda41148d3540933e`.
 
-Native run and reproduction root:
-`/Volumes/Mastermind/research/risk-regime-mechanism-research-20260927-sol-001/r2-d1-a250295c`.
-The original run, full reproduction, twenty-test mirror, verification summary and
-posthoc case paths are preserved there. No process, worker or watcher is running.
+Native root:
+`/Volumes/Mastermind/research/risk-regime-mechanism-research-20260927-sol-001/r3-e9ff7f8e`.
+Source hashes: r3.py `ec44dd8aab43f479765de66da4d803cd7909817a859c279ad622ad3571898225`;
+run_r3.py `b32be53b28c0c56702f9f2c99af625f0ab80d42676b5fbeaadb3398b14fddb14`.
+Full result: `d95369aeaa64dc422441e5982a229d1315c3d33d410704860525128fda5a28e6`.
+Replay CSV: `7106254898685f656c939ee82673c228281ac5a9e4199028e09462fa041a4bea`.
+A complete reproduction matched both. Processes27591 and31031 completed exit0;
+no running process, admitted worker or watcher remains for this operation.
 
-Resume the same healthy foreground research session, or a properly assigned
-successor after current procedure/custody/effect reconciliation. Do not transfer
-source custody by inference. Sol retains the end-to-end research scope; no early
-native implementation handoff has been issued.
+R1/R2 records remain on the same branch. R2 complete evidence and its original
+native root are preserved in R2_FINDINGS.md, not replayed here. No production
+engine/template, data store, current score, forecast probability, sizing, policy,
+ledger, deployment or release changed. PR stays Draft/HOLD under Sol with no
+merge-on-green or auto-deploy. No native final implementation handoff issued.
 
-Prior MOVE work remains separate on `claude/move-risk-radar-20260927-sol`,
-preregistration `cde02b08c8c7ceab0a06ffee7724c1c0b374eadb`. Preserve its original
-worktree/uncommitted evidence and its exact refused integration effect. R2 adds
-research code and records only; no live source, score, probability, policy, sizing,
-ledger or production release changes. PR #8133 remains Draft/HOLD under Sol,
-without merge-on-green or automatic deployment authority.
+Resume the same healthy foreground research conversation or a properly assigned
+successor after current procedure, custody and effect reconciliation. This checkpoint
+transfers no source lease or runtime assignment and grants no refusal-retry authority.
+Its legacy `model: sol` field is the Agent OS author category, not served-model telemetry.
