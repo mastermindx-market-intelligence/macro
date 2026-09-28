@@ -680,27 +680,63 @@
     });
     return sectors;
   }
-  function medianPc(tiles, tf) {
-    var a = []; tiles.forEach(function (t) { var v = t.perf[tf]; if (v != null && !isNaN(v)) a.push(v); });
+  function heatmapValue(data, tile, tf) {
+    if (data && data.market === 'china') return chinaLiveValue(data, tile, tf);
+    return tile && tile.perf ? tile.perf[tf] : null;
+  }
+  function medianPc(data, tiles, tf) {
+    var a = []; tiles.forEach(function (t) { var v = heatmapValue(data, t, tf); if (v != null && !isNaN(v)) a.push(v); });
     if (!a.length) return null;
     a.sort(function (x, y) { return x - y; });
     var m = a.length >> 1; return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2;
   }
-  function weightedPc(tiles, tf) {
+  function weightedPc(data, tiles, tf) {
     var num = 0, den = 0;
-    tiles.forEach(function (t) { var v = t.perf[tf]; if (v != null && !isNaN(v)) { num += (t.size || 0) * v; den += (t.size || 0); } });
+    tiles.forEach(function (t) { var v = heatmapValue(data, t, tf); if (v != null && !isNaN(v)) { num += (t.size || 0) * v; den += (t.size || 0); } });
     return den > 0 ? num / den : null;
   }
   function sectorAgg(data, tiles, tf) {
-    return data.size_basis === 'marketcap' ? weightedPc(tiles, tf) : medianPc(tiles, tf);
+    return data.size_basis === 'marketcap' ? weightedPc(data, tiles, tf) : medianPc(data, tiles, tf);
   }
-  // Same ±0.05% dead-band as computeSummary — the two used to disagree (strict zero
-  // here, banded there), so the status strip and the breadth card printed adv/dec
-  // pairs a couple of names apart for the same timeframe on the same screen.
-  function breadth(tiles, tf) {
+  // Same ±0.05% dead-band as computeSummary — every surface reads the same
+  // accepted value, including China current-session coverage/null semantics.
+  function breadth(data, tiles, tf) {
     var adv = 0, dec = 0;
-    tiles.forEach(function (t) { var v = t.perf[tf]; if (v > 0.05) adv++; else if (v < -0.05) dec++; });
+    tiles.forEach(function (t) { var v = heatmapValue(data, t, tf); if (v > 0.05) adv++; else if (v < -0.05) dec++; });
     return { adv: adv, dec: dec };
+  }
+  function chinaLiveDescriptor(data) {
+    if (!data || data.market !== 'china') return null;
+    var meta = chinaLiveMeta(data);
+    if (!meta) return {
+      state: 'daily', dot: '',
+      en: 'Daily close · ' + (data.asof || '—'),
+      zh: '日线收盘 · ' + (data.asof || '—'), breadth: null
+    };
+    var sourceDate = meta.source_observed_at ? new Date(meta.source_observed_at) : null;
+    var clock = sourceDate && !isNaN(sourceDate.getTime())
+      ? sourceDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Shanghai' }) + ' CST'
+      : '— CST';
+    var coverage = meta.resolved + '/' + meta.requested;
+    var fallback = meta.fallback ? ' · fallback feed' : '';
+    var fallbackZh = meta.fallback ? ' · 备用行情源' : '';
+    if (!meta.usable) return {
+      state: 'degraded', dot: 'degraded',
+      en: 'Live feed degraded · ' + coverage + ' · Daily fallback ' + (data.asof || '—'),
+      zh: '实时行情降级 · ' + coverage + ' · 回退日线 ' + (data.asof || '—'), breadth: null
+    };
+    var phase = meta.phase, state = 'live', enPhase = 'Live', zhPhase = '实时';
+    if (phase === 'session_break') { state = 'break'; enPhase = 'Lunch break'; zhPhase = '午间休市'; }
+    else if (phase === 'closing_auction') { state = 'auction'; enPhase = 'Closing auction'; zhPhase = '收盘集合竞价'; }
+    else if (phase === 'post_close' || phase === 'closed') { state = 'closed'; enPhase = 'Market closed'; zhPhase = '已收盘'; }
+    else if (phase === 'morning') { enPhase = 'Live morning'; zhPhase = '上午实时'; }
+    else if (phase === 'afternoon') { enPhase = 'Live afternoon'; zhPhase = '下午实时'; }
+    return {
+      state: state, dot: state,
+      en: enPhase + fallback + ' · ' + clock + ' · ' + coverage,
+      zh: zhPhase + fallbackZh + ' · ' + clock + ' · ' + coverage,
+      breadth: meta.breadth
+    };
   }
   function sectorLabels(data) {
     var m = {}; (data.sectors || []).forEach(function (s) { m[s.key] = { en: s.en, zh: s.zh }; }); return m;
@@ -977,7 +1013,7 @@
   function cardBaseHtml(data, t) {
     var labs = sectorLabels(data);
     var lab = labs[t.sector] || { en: t.sector, zh: t.sector };
-    var cur = t.perf[data._tf];
+    var cur = heatmapValue(data, t, data._tf);
     var cls = cur == null ? '' : (cur >= 0 ? 'up' : 'dn');
     var cap = realSize(data) ? fmtCap(t.size, data.currency) : '';
     var px = t.px != null ? (CUR_SYM[data.currency] || '$')
@@ -986,7 +1022,7 @@
     var strip = '';
     (data.timeframes || []).forEach(function (tf) {
       if (CARD_TFS.indexOf(tf.key) === -1) return;
-      var v = t.perf[tf.key];
+      var v = heatmapValue(data, t, tf.key);
       if (v == null || isNaN(v)) return;
       var kl = CARD_TF_LAB[tf.key] || [tf.en, tf.zh];
       strip += '<div class="hm-c-m"><span class="k">' + L(kl[0], kl[1]) + '</span>'
@@ -1222,14 +1258,14 @@
     var lab = labs[sectorName] || { en: sectorName, zh: sectorName };
     var tf = data._tf, edges = edgesFor(tf), pal = binPalette();
     var agg = sectorAgg(data, tiles, tf);
-    var br = breadth(tiles, tf);
+    var br = breadth(data, tiles, tf);
     var ttl = subName
       ? L(esc(lab.en) + ' <span class="sub">— ' + esc(subName) + '</span>', esc(lab.zh) + ' <span class="sub">— ' + esc(indZh(subName)) + '</span>')
       : L(esc(lab.en), esc(lab.zh));
     var rows = tiles.slice().sort(function (a, b) { return (b.size || 0) - (a.size || 0); });
     var cap = 18, more = Math.max(0, rows.length - cap), body = '';
     rows.slice(0, cap).forEach(function (t) {
-      var pc = t.perf[tf], c = pal[binIndex(pc, edges)];
+      var pc = heatmapValue(data, t, tf), c = pal[binIndex(pc, edges)];
       var rnm = (isZh() && t.name_zh) ? t.name_zh : t.name;
       body += '<div class="hm-mem-row">'
         + '<span class="hm-mem-pc" style="background-color:' + rgb(c) + ';color:' + fgFor(c) + '">' + fmtPc(pc) + '</span>'
@@ -1251,23 +1287,23 @@
     var lab = labs[tile.sector] || { en: tile.sector, zh: tile.sector };
     var tf = data._tf, edges = edgesFor(tf), pal = binPalette();
     var members = (tile.members || []).map(function (m) { return { t: m.t, perf: m.perf || {} }; });
-    var br = breadth(members, tf);
+    var br = breadth(data, members, tf);
     var subLabel = tile.name + (tile.desc && tile.desc !== tile.name ? ' · ' + tile.desc : '');
     var ttl = L(esc(lab.en) + ' <span class="sub">— ' + esc(subLabel) + '</span>',
                 esc(lab.zh) + ' <span class="sub">— ' + esc(subLabel) + '</span>');
     var rows = members.slice().sort(function (a, b) {
-      var av = a.perf[tf], bv = b.perf[tf];
+      var av = heatmapValue(data, a, tf), bv = heatmapValue(data, b, tf);
       return (bv == null ? -1e9 : bv) - (av == null ? -1e9 : av);
     });
     var cap = 22, more = Math.max(0, rows.length - cap), body = '';
     rows.slice(0, cap).forEach(function (m) {
-      var pc = m.perf[tf], c = pal[binIndex(pc, edges)];
+      var pc = heatmapValue(data, m, tf), c = pal[binIndex(pc, edges)];
       body += '<div class="hm-mem-row">'
         + '<span class="hm-mem-pc" style="background-color:' + rgb(c) + ';color:' + fgFor(c) + '">' + fmtPc(pc) + '</span>'
         + '<span class="hm-mem-t">' + esc(m.t) + '</span></div>';
     });
     if (more) body += '<div class="hm-mem-more">+' + more + ' ' + L('more', '更多') + '</div>';
-    memShow(key, memShellHtml(ttl, tile.perf[tf], members.length, br, 'members', '成员', body), cx, cy);
+    memShow(key, memShellHtml(ttl, heatmapValue(data, tile, tf), members.length, br, 'members', '成员', body), cx, cy);
   }
   // Themes: a theme header → its subsectors (name · move · member count).
   function showThemeSubs(data, themeName, subTiles, cx, cy) {
@@ -1277,14 +1313,14 @@
     var lab = labs[themeName] || { en: themeName, zh: themeName };
     var tf = data._tf, edges = edgesFor(tf), pal = binPalette();
     var agg = sectorAgg(data, subTiles, tf);
-    var br = breadth(subTiles, tf);
+    var br = breadth(data, subTiles, tf);
     var rows = subTiles.slice().sort(function (a, b) {
-      var av = a.perf[tf], bv = b.perf[tf];
+      var av = heatmapValue(data, a, tf), bv = heatmapValue(data, b, tf);
       return (bv == null ? -1e9 : bv) - (av == null ? -1e9 : av);
     });
     var body = '';
     rows.forEach(function (t) {
-      var pc = t.perf[tf], c = pal[binIndex(pc, edges)];
+      var pc = heatmapValue(data, t, tf), c = pal[binIndex(pc, edges)];
       body += '<div class="hm-mem-row">'
         + '<span class="hm-mem-pc" style="background-color:' + rgb(c) + ';color:' + fgFor(c) + '">' + fmtPc(pc) + '</span>'
         + '<span class="hm-mem-t">' + esc(t.name) + '</span>'
@@ -1439,24 +1475,27 @@
         + '<span class="hm-lg-step">' + L('bins', '分档') + ' ±' + edgeFmt(e[0]) + '/' + edgeFmt(e[1]) + '/' + edgeFmt(e[2]) + '</span>';
     }
     function updateRead() {
-      // Same rule as the breadth card: quote the whole board when the payload carries
-      // it for this session, else the tiles. Two adv/dec pairs on one page disagreeing
-      // by 3x is how the sample-vs-board confusion reads to a user.
+      var descriptor = (data.market === 'china' && TF === '1D') ? chinaLiveDescriptor(data) : null;
+      var liveBreadth = descriptor && descriptor.breadth;
       var b = data.board_breadth;
-      var br = (b && b.n > 0 && TF === (data.default_tf || '1D'))
-        ? { adv: b.adv, dec: b.dec }
-        : breadth(data.tiles, TF);
+      var br = liveBreadth
+        ? { adv: liveBreadth.adv, dec: liveBreadth.dec }
+        : ((b && b.n > 0 && TF === (data.default_tf || '1D'))
+          ? { adv: b.adv, dec: b.dec }
+          : breadth(data, data.tiles, TF));
       var live = data.source === 'polygon-live';
       var when = live ? (fmtUpdated(data) || data.asof || '—') : (data.asof || '—');
-      var srcEn, srcZh;
-      if (IS_THEMES) {
+      var srcEn, srcZh, dot = live ? 'live' : '';
+      if (descriptor) {
+        srcEn = descriptor.en; srcZh = descriptor.zh; dot = descriptor.dot;
+      } else if (IS_THEMES) {
         srcEn = 'Themes · ' + (data.asof || '—');
         srcZh = '主题 · ' + (data.asof || '—');
       } else {
         srcEn = (live ? 'Live · 15-min delayed' : 'Daily close') + ' · ' + when;
         srcZh = (live ? '实时 · 延迟15分钟' : '日线收盘') + ' · ' + when;
       }
-      readEl.innerHTML = '<span class="hm-dot ' + (live ? 'live' : '') + '"></span>'
+      readEl.innerHTML = '<span class="hm-dot ' + dot + '"></span>'
         + '<span class="hm-read-src">' + L(srcEn, srcZh) + '</span>'
         + '<span class="hm-read-br"><b class="up">' + fmtInt(br.adv) + ' ▲</b> <b class="dn">' + fmtInt(br.dec) + ' ▼</b></span>';
     }
@@ -1467,7 +1506,7 @@
       // readable size — never clipped, never squeezed below legibility. Tiles
       // too small for that are pure colour (their name lives in the hover card
       // and the sector member list).
-      var pc = t.perf[TF];
+      var pc = heatmapValue(data, t, TF);
       // CN/HK maps opt into a company-name label (data.tile_label==='name') — a
       // bare 601398 / 0700 code is meaningless at a glance. Prefer the Chinese
       // name, fall back to the English name, then the ticker. US / Canada leave
@@ -1563,7 +1602,7 @@
 
     /* ----- themes treemap (theme → subsector-leaf tile) ----- */
     function tileLabelThemes(t, tw, th) {
-      var pc = t.perf[TF];
+      var pc = heatmapValue(data, t, TF);
       var showName = tw >= 30 && th >= 16;
       if (!showName) return '';
       var nameF = Math.max(8.5, Math.min(tw / 6.2, th * 0.34, 15));
@@ -1642,7 +1681,7 @@
     var _liveObserver = null;  // MutationObserver watching .nb-chg[data-sym] mutations
 
     // Live market-id for each market key (matches live.js regionOf() logic).
-    var _LIVE_MKT = { hk: 'hk', china: 'cn', canada: 'ca' };
+    var _LIVE_MKT = { hk: 'hk', canada: 'ca' };
 
     function _parsePc(text) {
       // Parse live.js chg% text like "+1.23%" or "-0.45%" -> float, or null.
@@ -1779,14 +1818,14 @@
     function recolor() {
       var edges = edgesFor(TF), pal = binPalette();
       tileEls.forEach(function (rec) {
-        // On 1D, prefer the live chg% already painted by live.js (if any) over the
-        // stale EOD value; other timeframes always use the EOD close data.
-        var livePc = null;
-        if (TF === '1D' && rec.el) {
+        var pc = heatmapValue(data, rec.t, TF);
+        // HK/Canada retain the existing live.js overlay. China has its own
+        // full-universe, atomically validated current-session contract.
+        if (data.market !== 'china' && TF === '1D' && rec.el) {
           var chgSpan = rec.el.querySelector('.nb-chg.hm-live-chg[data-sym]');
-          if (chgSpan && chgSpan.textContent) livePc = _parsePc(chgSpan.textContent);
+          var legacyPc = chgSpan && chgSpan.textContent ? _parsePc(chgSpan.textContent) : null;
+          if (legacyPc != null) pc = legacyPc;
         }
-        var pc = (livePc != null) ? livePc : rec.t.perf[TF];
         var c = pal[binIndex(pc, edges)];
         rec.el.style.backgroundColor = rgb(c);
         rec.el.style.color = fgFor(c);
@@ -1813,7 +1852,7 @@
       secKeys.forEach(function (k) {
         var s = sectors[k], lab = labs[k] || { en: k, zh: k };
         var agg = sectorAgg(data, s.tiles, TF);
-        var br = breadth(s.tiles, TF), tot = Math.max(1, br.adv + br.dec);
+        var br = breadth(data, s.tiles, TF), tot = Math.max(1, br.adv + br.dec);
         html.push('<div class="hm-mgrp">'
           + '<div class="hm-mhd"><span class="nm">' + L(esc(lab.en), esc(lab.zh)) + '</span>'
           + '<span class="pc ' + (agg == null ? '' : agg >= 0 ? 'up' : 'dn') + '">' + fmtPc(agg) + '</span>'
@@ -1822,13 +1861,13 @@
         var rows = s.tiles.slice().sort(function (a, b) {
           if (SORT === 'az') return a.t < b.t ? -1 : a.t > b.t ? 1 : 0;
           if (SORT === 'move') {
-            var av = a.perf[TF], bv = b.perf[TF];
+            var av = heatmapValue(data, a, TF), bv = heatmapValue(data, b, TF);
             return (bv == null ? -1e9 : bv) - (av == null ? -1e9 : av);
           }
           return (b.size || 0) - (a.size || 0);
         });
         rows.forEach(function (t) {
-          var pc = t.perf[TF], c = pal[binIndex(pc, edges)];
+          var pc = heatmapValue(data, t, TF), c = pal[binIndex(pc, edges)];
           if (IS_THEMES) {
             // subsector row: name + a member count / description (no per-stock page)
             var det = t.members && t.members.length
@@ -1929,6 +1968,7 @@
     document.addEventListener('themechange', onTheme);
     document.addEventListener('langchange', onLang);
     document.addEventListener('hm-refresh', onRefresh);
+    document.addEventListener('hm-live-refresh', onRefresh);
 
     /* ---------------------------------------------------------------- */
     /*  DASHBOARD CHROME — market pulse · breadth stats · movers board   */
@@ -1944,10 +1984,10 @@
       return l ? L(esc(l.en), esc(l.zh)) : esc(name);
     }
     function computeSummary(tf) {
-      var ts = data.tiles.filter(function (t) { var v = t.perf[tf]; return v != null && !isNaN(v); });
+      var ts = data.tiles.filter(function (t) { var v = heatmapValue(data, t, tf); return v != null && !isNaN(v); });
       var adv = 0, dec = 0, flat = 0;
-      ts.forEach(function (t) { var v = t.perf[tf]; if (v > 0.05) adv++; else if (v < -0.05) dec++; else flat++; });
-      var sorted = ts.slice().sort(function (a, b) { return b.perf[tf] - a.perf[tf]; });
+      ts.forEach(function (t) { var v = heatmapValue(data, t, tf); if (v > 0.05) adv++; else if (v < -0.05) dec++; else flat++; });
+      var sorted = ts.slice().sort(function (a, b) { return heatmapValue(data, b, tf) - heatmapValue(data, a, tf); });
       var byS = {};
       ts.forEach(function (t) { (byS[t.sector] || (byS[t.sector] = [])).push(t); });
       var secs = Object.keys(byS).map(function (k) {
@@ -1957,7 +1997,7 @@
       var sm = {
         n: ts.length, adv: adv, dec: dec, flat: flat,
         pctUp: ts.length ? adv / ts.length * 100 : 0,
-        med: medianPc(ts, tf),
+        med: medianPc(data, ts, tf),
         gainers: sorted.slice(0, 5),
         losers: sorted.slice(-5).reverse(),
         secs: secs
@@ -1975,14 +2015,28 @@
     // snapshot with no history behind it. Every other timeframe keeps the tile count
     // and says so, via scopeOf() below.
     function applyBoard(sm, tf) {
+      if (tf !== (data.default_tf || '1D')) return sm;
+      var liveMeta = chinaLiveMeta(data);
+      if (liveMeta && liveMeta.usable && liveMeta.breadth) {
+        var lb = liveMeta.breadth;
+        sm.n = lb.n; sm.adv = lb.adv; sm.dec = lb.dec; sm.flat = lb.flat;
+        sm.pctUp = lb.pctUp;
+        sm.scope = {
+          whole: true, n: lb.n,
+          en: 'Live coverage ' + liveMeta.resolved + '/' + liveMeta.requested,
+          zh: '实时覆盖 ' + liveMeta.resolved + '/' + liveMeta.requested
+        };
+        return sm;
+      }
       var b = data.board_breadth;
-      if (!b || tf !== (data.default_tf || '1D') || !(b.n > 0)) return sm;
+      if (!b || !(b.n > 0)) return sm;
       sm.n = b.n; sm.adv = b.adv; sm.dec = b.dec; sm.flat = b.flat;
       sm.pctUp = b.pct_up;
       if (b.med_pct != null) sm.med = b.med_pct;
       sm.scope = { whole: true, n: b.n, en: b.scope_en, zh: b.scope_zh };
       return sm;
     }
+
     // The denominator, in plain words — the piece that was missing. Whole-board when
     // we have it; otherwise name the map's own sample rather than let a partial count
     // read as the market's.
@@ -2035,7 +2089,10 @@
     function renderPulse(sm) {
       if (!pulseEl) return;
       var st = stanceOf(sm);
-      var when = (data.source === 'polygon-live' ? (fmtUpdated(data) || data.asof) : data.asof) || '—';
+      var liveDescriptor = TF === '1D' ? chinaLiveDescriptor(data) : null;
+      var when = liveDescriptor
+        ? L(esc(liveDescriptor.en), esc(liveDescriptor.zh))
+        : esc((data.source === 'polygon-live' ? (fmtUpdated(data) || data.asof) : data.asof) || '—');
       var pctUp = Math.round(sm.pctUp), medTxt = fmtPc(sm.med);
       var lead = _leadPhrase(sm);
       var read = lz(pctUp + '% of names advancing · median ' + medTxt + '. ',
@@ -2046,7 +2103,7 @@
         + '<div class="hx-pulse-top">'
         +   '<span class="hx-stance"><span class="ic"></span>' + L(esc(st.en), esc(st.zh)) + '</span>'
         +   '<span class="hx-pulse-lab">' + L('Market pulse', '市场脉搏') + '</span>'
-        +   '<span class="hx-pulse-when">' + esc(when) + '</span>'
+        +   '<span class="hx-pulse-when">' + when + '</span>'
         + '</div>'
         + '<div class="hx-pulse-read">' + read + '</div>';
     }
@@ -2086,7 +2143,7 @@
       if (!boardsEl) return;
       var linkable = !IS_THEMES;
       function moverRow(t, maxAbs, dir) {
-        var v = t.perf[TF];
+        var v = heatmapValue(data, t, TF);
         var nm = (data.tile_label === 'name') ? (t.name_zh || t.name || dispT(t.t)) : (t.name || dispT(t.t));
         var w = maxAbs > 0 ? Math.max(6, Math.min(100, Math.abs(v) / maxAbs * 100)) : 0;
         var col = dir > 0 ? 'var(--up)' : 'var(--down)';
@@ -2099,8 +2156,8 @@
           : '<div class="hx-row">' + inner + '</div>';
       }
       function amax(arr, f) { return arr.length ? Math.max.apply(null, arr.map(f)) : 0; }
-      var gMax = amax(sm.gainers, function (t) { return Math.abs(t.perf[TF]); });
-      var lMax = amax(sm.losers, function (t) { return Math.abs(t.perf[TF]); });
+      var gMax = amax(sm.gainers, function (t) { return Math.abs(heatmapValue(data, t, TF)); });
+      var lMax = amax(sm.losers, function (t) { return Math.abs(heatmapValue(data, t, TF)); });
       var secMax = amax(sm.secs, function (s) { return Math.abs(s.agg); });
       function secRow(s) {
         var w = secMax > 0 ? Math.max(4, Math.abs(s.agg) / secMax * 100) : 0;
@@ -2154,6 +2211,7 @@
     data._tf = TF;
     buildTabs(); buildSort(); updateLegend(); updateRead(); layout(); renderDash();
     startAutoRefresh(data._url || JSON_URL);
+    startChinaLiveRefresh(data);
 
     return {
       destroy: function () {
@@ -2161,6 +2219,7 @@
         document.removeEventListener('themechange', onTheme);
         document.removeEventListener('langchange', onLang);
         document.removeEventListener('hm-refresh', onRefresh);
+        document.removeEventListener('hm-live-refresh', onRefresh);
         tm.removeEventListener('mousemove', onMove);
         tm.removeEventListener('mouseleave', onLeave);
         tm.removeEventListener('click', onClick);
@@ -2204,12 +2263,15 @@
     root.querySelector('.hm-sc-exp').addEventListener('click', openOverlay);
 
     function paintMeta() {
+      var descriptor = chinaLiveDescriptor(data);
       var live = data.source === 'polygon-live';
       var when = live ? (fmtUpdated(data) || data.asof || '—') : (data.asof || '—');
-      root.querySelector('.hm-sc-meta').innerHTML = '<span class="hm-dot ' + (live ? 'live' : '') + '"></span>'
-        + L((live ? 'Live · 15-min delayed' : 'Daily close') + ' · ' + when + ' · ' + data.n_tiles + ' names',
-            (live ? '实时 · 延迟15分钟' : '日线收盘') + ' · ' + when + ' · ' + data.n_tiles + ' 只');
+      var dot = descriptor ? descriptor.dot : (live ? 'live' : '');
+      var en = descriptor ? descriptor.en : (live ? 'Live · 15-min delayed' : 'Daily close') + ' · ' + when + ' · ' + data.n_tiles + ' names';
+      var zh = descriptor ? descriptor.zh : (live ? '实时 · 延迟15分钟' : '日线收盘') + ' · ' + when + ' · ' + data.n_tiles + ' 只';
+      root.querySelector('.hm-sc-meta').innerHTML = '<span class="hm-dot ' + dot + '"></span>' + L(en, zh);
     }
+
 
     var mapBox = root.querySelector('.hm-sc-map');
     var tm = root.querySelector('.hm-sc-tm');
@@ -2244,7 +2306,7 @@
       if (symF < (cjk ? 10 : 11)) return '';
       var s = '<span class="sym' + (symF < 13 ? ' sm' : '') + '" style="font-size:' + symF.toFixed(1) + 'px">' + esc(sym) + '</span>';
       if (tw >= 46 && th >= 30) {
-        var pcText = fmtPc(t.perf[TF]);
+        var pcText = fmtPc(heatmapValue(data, t, TF));
         var pcF = Math.min(tw / 5.6, th * 0.32, fitTextFont(tw, pcText, 0.62, 11, 12));
         if (pcF >= 11) s += '<span class="pc" style="font-size:' + pcF.toFixed(1) + 'px">' + pcText + '</span>';
       }
@@ -2297,7 +2359,7 @@
           var t = tr.ref;
           var tw = tr.w - TILE_GAP, th = tr.h - TILE_GAP;
           if (tw < 1.5 || th < 1.5) return;
-          var c = pal[binIndex(t.perf[TF], edges)];
+          var c = pal[binIndex(heatmapValue(data, t, TF), edges)];
           var cls = 'hm-tile' + inkCls(c);
           if (tw >= 88 && th >= 50) cls += ' big';
           if (animate) cls += ' hm-in';
@@ -2321,13 +2383,17 @@
         + '<span class="hm-lg-end">+' + edgeFmt(e[2]) + '%</span>';
     }
     function paintBreadth() {
-      var br = breadth(data.tiles, TF), tot = Math.max(1, br.adv + br.dec);
+      var descriptor = chinaLiveDescriptor(data);
+      var lb = descriptor && descriptor.breadth;
+      var br = lb ? { adv: lb.adv, dec: lb.dec } : breadth(data, data.tiles, TF);
+      var tot = Math.max(1, br.adv + br.dec);
       root.querySelector('.hm-sc-breadth').innerHTML =
         '<span class="hm-sc-blab">' + L('Breadth', '涨跌广度') + '</span>'
         + '<span class="hm-sc-bar"><i class="up" style="width:' + (100 * br.adv / tot) + '%"></i>'
         + '<i class="dn" style="width:' + (100 * br.dec / tot) + '%"></i></span>'
         + '<span class="hm-sc-bn"><b class="up">' + br.adv + '▲</b> <b class="dn">' + br.dec + '▼</b></span>';
     }
+
 
     /* ----- hover (desktop only) / tap-through ----- */
     function onMove(e) {
@@ -2373,11 +2439,14 @@
     window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(function () { hideCard(); hideMembers(); paint(); }, 160); });
     document.addEventListener('themechange', function () { hideCard(); hideMembers(); paint(); });
     document.addEventListener('langchange', function () { hideCard(); hideMembers(); paint(); });
-    document.addEventListener('hm-refresh', function (e) {
+    function onScoreRefresh(e) {
       if (e.detail && e.detail.url !== (data._url || JSON_URL)) return;
       hideCard(); hideMembers(); paint();
-    });
+    }
+    document.addEventListener('hm-refresh', onScoreRefresh);
+    document.addEventListener('hm-live-refresh', onScoreRefresh);
     startAutoRefresh(data._url || JSON_URL);
+    startChinaLiveRefresh(data);
   }
 
   /* ====================================================================== */
@@ -2488,6 +2557,10 @@
       + '.hm-read-br{font-variant-numeric:tabular-nums;font-weight:700;}'
       + '.hm-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);display:inline-block;}'
       + '.hm-dot.live{background:var(--up);box-shadow:0 0 0 3px color-mix(in srgb,var(--up) 24%,transparent);}'
+      + '.hm-dot.break{background:var(--warn);box-shadow:none;}'
+      + '.hm-dot.auction{background:var(--act);box-shadow:0 0 0 3px color-mix(in srgb,var(--act) 20%,transparent);}'
+      + '.hm-dot.closed{background:var(--muted);box-shadow:none;}'
+      + '.hm-dot.degraded{background:var(--warn);box-shadow:none;}'
       + '.hm-sort{display:none;align-items:center;gap:6px;margin:-2px 0 12px;font-size:11px;}'
       + '.hm-sort-lab{color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700;font-size:10px;}'
       + '.hm-sortb{font:600 12px Inter,sans-serif;color:var(--muted);background:var(--panel2);border:1px solid var(--line);padding:5px 11px;border-radius:8px;cursor:pointer;}'
