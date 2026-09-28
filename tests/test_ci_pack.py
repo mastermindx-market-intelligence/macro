@@ -6,6 +6,7 @@ import importlib.util
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -1864,6 +1865,124 @@ def test_inventory_preserves_omitted_tracked_existence_but_never_fakes_content(
         )
         with pytest.raises(DEPS.ScopeMaterializationError, match="omitted.py"):
             DEPS.suite_dependency_closure("site/omitted.py")
+
+
+# A legacy-jobs `run:` block whose full-line comment holds ONE apostrophe, beside
+# the same block with that comment line removed. The apostrophe used to be an
+# unclosed quote to shlex, so the whole block was "unparseable" and the job lost
+# its inferred closure (DSC:CI-RUN-BLOCK-COMMENT-QUOTE-BLINDS-CLOSURE-INFERENCE).
+# Exactly one per block: a second apostrophe pairs with the first into a valid
+# shlex quote and the case then proves nothing, which the positive control in
+# the test below refuses.
+_COMMENT_QUOTE_RUN_BLOCKS = (
+    pytest.param(
+        "# the planner's token names the tested tree\n"
+        "python3 -m pytest {target}\n",
+        "python3 -m pytest {target}\n",
+        id="top-level-comment",
+    ),
+    pytest.param(
+        "if true; then\n"
+        "  # it's indented, and still a full-line comment\n"
+        "  python3 -m pytest {target}\n"
+        "fi\n",
+        "if true; then\n  python3 -m pytest {target}\nfi\n",
+        id="indented-comment",
+    ),
+)
+_UNPARSEABLE_RUN_BLOCK = ("unparseable pytest invocation: No closing quotation",)
+
+
+def _single_run_step_job(run: str) -> object:
+    return PACK.LegacyJob(
+        job_id="run-block-comment-quote",
+        definition={"runs-on": "ubuntu-latest", "steps": [{"run": run}]},
+        ordinal=0,
+        weight=1,
+    )
+
+
+@pytest.mark.parametrize(("commented", "comment_free"), _COMMENT_QUOTE_RUN_BLOCKS)
+def test_full_line_comment_apostrophe_resolves_the_comment_free_targets(
+    commented: str, comment_free: str
+) -> None:
+    suite = "tests/test_ci_trigger_closure.py"
+    # Positive control: the fixture must still break a whole-block shlex, or
+    # it no longer reproduces the defect and pins nothing.
+    with pytest.raises(ValueError, match="No closing quotation"):
+        shlex.split(commented.format(target=suite), comments=False, posix=True)
+
+    for target, expected in (
+        (suite, ()),
+        ("tests", ("directory pytest target 'tests'",)),
+    ):
+        assert DEPS.pytest_invocation_ambiguities(commented.format(target=target)) == expected
+        assert DEPS.pytest_invocation_ambiguities(comment_free.format(target=target)) == expected
+
+    # The loss was the job's whole inferred closure, so pin that too: the
+    # commented job must derive exactly the comment-free job's scope.
+    [commented_job], _ = PACK.infer_job_scopes(
+        [_single_run_step_job(commented.format(target=suite))]
+    )
+    [comment_free_job], _ = PACK.infer_job_scopes(
+        [_single_run_step_job(comment_free.format(target=suite))]
+    )
+    assert suite in comment_free_job.paths, "the control job must derive a closure"
+    assert (commented_job.paths, commented_job.fallback_paths) == (
+        comment_free_job.paths,
+        comment_free_job.fallback_paths,
+    )
+
+
+def test_run_block_quote_outside_a_full_line_comment_still_fails_closed() -> None:
+    # On a command line an apostrophe is a real shell quote.
+    assert (
+        DEPS.pytest_invocation_ambiguities(
+            "echo it's done\npython3 -m pytest tests/test_ci_trigger_closure.py"
+        )
+        == _UNPARSEABLE_RUN_BLOCK
+    )
+    # A trailing inline comment is deliberately left in place: only a line whose
+    # first non-blank character is `#` is dropped, so this stays ambiguous.
+    assert (
+        DEPS.pytest_invocation_ambiguities(
+            "python3 -m pytest tests/test_ci_trigger_closure.py  # the planner's token"
+        )
+        == _UNPARSEABLE_RUN_BLOCK
+    )
+
+
+def test_a_comment_that_names_pytest_is_not_the_invocation() -> None:
+    """The first ``pytest`` word used to be taken from prose.
+
+    self-mod-fence's agent-os step opens with a comment saying the pytest suite
+    skips itself "when agentos/ is outside a sparse cone". Read as argv, that
+    made ``agentos/`` a directory target, so the job stayed unscoped.
+    """
+    run = (
+        "# the pytest suite skips itself\n"
+        "# when agentos/ is outside a sparse cone\n"
+        "python3 -m pytest tests/test_ci_trigger_closure.py\n"
+    )
+    # Positive control: whole-block tokens meet the comment's `pytest` first.
+    tokens = shlex.split(run, comments=False, posix=True)
+    assert tokens.index("pytest") < tokens.index("agentos/")
+    assert DEPS.pytest_invocation_ambiguities(run) == ()
+
+
+def test_comment_stripping_keeps_a_mid_word_hash_expansion_whole() -> None:
+    """``${VAR#pattern}`` is one bash word, never the start of a comment.
+
+    ``shlex.split(..., comments=True)`` would cut it to ``${PYTEST_TARGET`` and
+    drop the rest of the line, hiding the ``tests`` directory target after it.
+    """
+    assert DEPS.pytest_invocation_ambiguities(
+        "# strip the planner's ./ prefix\n"
+        "python3 -m pytest ${PYTEST_TARGET#./} tests"
+    ) == (
+        "directory pytest target 'tests'",
+        "dynamic pytest target '${PYTEST_TARGET#./}'",
+    )
 
 
 def test_invalid_inventory_enters_the_existing_full_suite_planner_fallback(
