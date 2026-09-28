@@ -34,13 +34,34 @@ answer: >
   also ENROL both Robotics modules in the deploy restart set. Ruling 6's lazy
   loader wrapper is precisely what removes them from the machine-checked import
   closure, so rulings 6 and 13 are a PAIR - satisfying 6 while skipping 13 ships
-  a Robotics change that deploys and never goes live. Measured: the restart ERE
-  at app/deploy/update.sh:1261 matches theme_research_registry.py,
+  a Robotics change that deploys and never goes live. Measured: the API restart
+  ERE in app/deploy/update.sh - located by the string API_UNIT_UPDATED on its
+  `grep -qE` line, NEVER by line number - matches theme_research_registry.py,
   semiconductor_theme_research.py, theme_graph/rights.py and
   theme_graph/curation_assertion.py, and matches NEITHER
   engine/market_ontology/robotics_theme_research.py NOR
   engine/market_ontology/robotics_owner_bundle.py; and no MUST_RESTART list in
   tests/test_deploy_update_self_heal.py contains the string "robotics" at all.
+  TWO CORRECTIONS to an earlier version of this entry, from a four-ref re-probe.
+  First, the enrolment target DOES NOT EXIST ON MAIN: the ERE's
+  engine/market_ontology/(...) group is introduced by #7870. update.sh is 128811
+  chars on main 05b242506be7, on #8085's base 5d4be1f1a93f and at the revert
+  parent 36efe9c92b96, with the gate at :1254, an ERE of 2825B and the string
+  market_ontology occurring ZERO times in the whole file; it is 129401 chars at
+  #7870's head a0d7b054ff23, with the gate at :1261, an ERE of 2993B and
+  engine/market_ontology/ present in the group list. So this component cannot be
+  WRITTEN before #7870 merges, which is a stronger statement than the sequencing
+  the rest of this decision records. The earlier anchor ":1261" was measured at
+  a0d7b054ff23 and named no ref; on main that line is `disarm_options_timer`, a
+  real shell call, so the stale anchor RESOLVED TO SOMETHING PLAUSIBLE INSTEAD OF
+  FAILING. Second, tests/test_deploy_update_self_heal.py is byte-identical at
+  41908 chars on main and at a0d7b054ff23, with RESTART lists at :248 :479 :595
+  and market_ontology occurring ZERO times at BOTH refs: #7870 enrolled the
+  vertical in the deploy ERE and added NOTHING to any MUST_RESTART list, so this
+  record must not cite it as precedent for that half. The ERE lives in update.sh
+  and governs what the deploy actually restarts; the MUST_RESTART lists are test
+  constants asserting what the ERE must cover. Enrolling Robotics in both remains
+  this seat's conservative choice, recorded as a choice, not as a pattern.
 rationale: >
   The revert exists because the carrier was merged 2m22s into its own CI run,
   before a single job had concluded, and that run then went red on the defects
