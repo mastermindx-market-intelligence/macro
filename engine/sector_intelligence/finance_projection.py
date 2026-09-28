@@ -475,13 +475,6 @@ def _coerce_rights_state(
     return "SOURCE_RIGHTS_HELD"
 
 
-def _source_record_evidence_ref(rec: Mapping[str, Any]) -> str | None:
-    ref = _owner_text(rec.get("evidence_ref"))
-    if ref is None:
-        return _owner_ref(rec.get("record_id"))
-    return ref.strip() or None
-
-
 def _source_record_observed_at(rec: Mapping[str, Any]) -> date | None:
     source = rec.get("source") or {}
     if isinstance(source, Mapping):
@@ -714,38 +707,6 @@ def _observation_value(obs: Mapping[str, Any]) -> Any:
     if "metric" in obs and isinstance(obs["metric"], Mapping):
         return obs["metric"].get("value")
     return None
-
-
-def _observation_unit(obs: Mapping[str, Any]) -> str | None:
-    unit = _owner_text(obs.get("unit"))
-    if unit is not None:
-        return unit
-    metric = obs.get("metric")
-    if isinstance(metric, Mapping):
-        return _owner_text(metric.get("unit"))
-    return None
-
-
-def _plane_evidence_refs(
-    expectation_obs: Sequence[Mapping[str, Any]],
-    market_obs: Sequence[Mapping[str, Any]],
-    source_records: Sequence[Mapping[str, Any]],
-) -> list[str]:
-    refs: set[str] = set()
-    for obs in expectation_obs:
-        ref = _owner_ref(obs.get("source")) if isinstance(obs, Mapping) else None
-        if ref:
-            refs.add(ref)
-    for obs in market_obs:
-        if isinstance(obs, Mapping):
-            ref = _owner_ref(obs.get("source")) or _owner_ref(obs.get("evidence_ref"))
-            if ref:
-                refs.add(ref)
-    for rec in source_records:
-        rid = _owner_ref(rec.get("record_id")) if isinstance(rec, Mapping) else None
-        if rid:
-            refs.add(rid)
-    return sorted(refs)
 
 
 def _plane_clock(obs: Mapping[str, Any] | None) -> dict[str, Any] | None:
@@ -1413,12 +1374,28 @@ def _slice_evidence_refs(
             ref = _owner_ref(obs.get("source")) or _owner_ref(obs.get("evidence_ref"))
             if ref:
                 refs.add(ref)
-    if not refs:
-        # Fall back to the slice id as a synthetic ref so the schema's
-        # non-empty evidence_refs requirement is satisfied when no
-        # owner-supplied ref is present.
-        refs.add("slice:" + slice_id)
+    # Never mint a ref. A slice no owner ref backs publishes an empty list,
+    # and its planes publish no reading (see _withhold_unevidenced). A
+    # synthetic "slice:<id>" ref used to sit here to satisfy the contract's
+    # rule that an OBSERVED plane cites evidence; it pointed at no record, so
+    # that rule could never fail.
     return sorted(refs)
+
+
+def _withhold_unevidenced(plane: dict[str, Any], missing_note: str) -> dict[str, Any]:
+    """A plane publishes a reading only when an owner evidence ref backs it.
+
+    An OBSERVED plane with no owner ref is published as MISSING, in words,
+    with its reading withheld. Any other state keeps its state and words and
+    loses only the reading. The contract's OBSERVED rule then holds because
+    the evidence exists, and no conflict is drawn from a reading the page
+    could not back: the conflict detector reads these planes."""
+    if plane.get("evidence_refs") or plane.get("primary_metric") is None:
+        return plane
+    withheld = dict(plane, primary_metric=None, clock=None)
+    if plane.get("state") == "OBSERVED":
+        withheld.update(state="MISSING", comparability_state=None, note=missing_note)
+    return withheld
 
 
 # ---------------------------------------------------------------------------
@@ -2284,6 +2261,7 @@ def compose_finance_projection(
 
     slices_out: list[dict[str, Any]] = []
     all_observed_dates: list[date] = []
+    used_observations: list[Mapping[str, Any]] = []
     readings_by_slice: dict[str, tuple[Mapping[str, Any] | None, Mapping[str, Any] | None, Mapping[str, Any] | None]] = {}
     for slice_id in all_slice_ids:
         per_slice = _slice_inputs_for(slice_id, inputs)
@@ -2308,6 +2286,10 @@ def compose_finance_projection(
         expectations = _expectations_plane(slice_id, expectation_obs, evidence_refs, regime)
         valuation = _valuation_plane(slice_id, valuation_reading, market_obs, evidence_refs, regime)
         price = _price_plane(slice_id, price_reading, market_obs, evidence_refs, regime)
+        operating = _withhold_unevidenced(operating, "Operating evidence is not available for this slice.")
+        expectations = _withhold_unevidenced(expectations, "Expectations evidence is not available for this slice.")
+        valuation = _withhold_unevidenced(valuation, "Valuation evidence is not available for this slice.")
+        price = _withhold_unevidenced(price, "Price evidence is not available for this slice.")
 
         material_changes = _material_changes_for(slice_id, inputs.source_records)
         company_rows_for_slice: list[dict[str, Any]] = []  # populated below
@@ -2326,11 +2308,18 @@ def compose_finance_projection(
         )
 
         slice_state = _slice_state_for(slice_id, operating, expectations, valuation, price, rights_profiles)
+        # A slice no owner ref backs publishes no reading (_withhold_unevidenced),
+        # and so none of its inputs' dates either: its freshness says there is
+        # no evidence, and no date of its reaches the document's freshness or
+        # common_as_of.
+        dated = (source_records, expectation_obs, market_obs) if evidence_refs else ((), (), ())
         slice_freshness, latest_obs = _slice_freshness(
-            slice_id, source_records, expectation_obs, market_obs, knowledge_cutoff_date, stale_after_days
+            slice_id, *dated, knowledge_cutoff_date, stale_after_days
         )
         if latest_obs is not None:
             all_observed_dates.append(latest_obs)
+        if evidence_refs:
+            used_observations.extend((*expectation_obs, *market_obs))
 
         name_en, name_zh = _name_pair(slice_id)
         slice_doc = {
@@ -2427,24 +2416,20 @@ def compose_finance_projection(
     # System views
     system_views_doc = _system_views(slices_out)
 
-    # common_as_of = min over the input as-ofs actually used, never now.
+    # common_as_of = min over the input as-ofs actually used, never now. An
+    # observation is used only when a slice published it: a slice no owner ref
+    # backs withholds its readings, and an observation filed under no Finance
+    # slice is never read.
     as_of_candidates: list[date] = []
     for rec in source_records:
         d = _source_record_observed_at(rec)
         if d is not None:
             as_of_candidates.append(d)
-    for obs in (inputs.expectation_observations or {}).values():
-        for row in obs or ():
-            if isinstance(row, Mapping):
-                d = _coerce_date(row.get("as_of"))
-                if d is not None:
-                    as_of_candidates.append(d)
-    for obs in (inputs.market_observations or {}).values():
-        for row in obs or ():
-            if isinstance(row, Mapping):
-                d = _coerce_date(row.get("as_of"))
-                if d is not None:
-                    as_of_candidates.append(d)
+    for row in used_observations:
+        if isinstance(row, Mapping):
+            d = _coerce_date(row.get("as_of"))
+            if d is not None:
+                as_of_candidates.append(d)
     as_of_candidates.append(knowledge_cutoff_date)
     common_as_of = _min_date(as_of_candidates) or knowledge_cutoff_date
 

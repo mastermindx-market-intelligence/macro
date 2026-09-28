@@ -31,6 +31,7 @@ from engine.sector_intelligence.finance_projection import (
     _owner_key,
     _owner_refs,
     _owner_text,
+    _withhold_unevidenced,
     compose_finance_projection,
 )
 
@@ -1883,3 +1884,245 @@ def test_owner_text_is_a_scalar_or_nothing() -> None:
 def test_the_emit_guard_walks_tuples() -> None:
     assert _has_forbidden_key({"cells": ({"peer_rank": 1},)})
     assert not _has_forbidden_key({"cells": ({"value": 1},)})
+
+
+# ---------------------------------------------------------------------------
+# Evidence refs: every ref is the owner's, and no reading goes unbacked
+# ---------------------------------------------------------------------------
+
+_PLANES = ("operating", "expectations", "valuation", "price")
+_OWNER_REF_KEYS = frozenset({"record_id", "evidence_ref", "evidence_refs", "source"})
+
+
+def _owner_ref_values(value: Any) -> set[str]:
+    """Every string an owner input carries under a reference key: a record
+    id, an evidence ref or ref list, or an observation's source."""
+    found: set[str] = set()
+    stack: list[Any] = [value]
+    while stack:
+        node = stack.pop()
+        if dataclasses.is_dataclass(node) and not isinstance(node, type):
+            stack.extend(getattr(node, field.name) for field in dataclasses.fields(node))
+        elif isinstance(node, dict):
+            for key, child in node.items():
+                if key in _OWNER_REF_KEYS:
+                    if isinstance(child, str):
+                        found.add(child)
+                    elif isinstance(child, (list, tuple)):
+                        found.update(item for item in child if isinstance(item, str))
+                stack.append(child)
+        elif isinstance(node, (list, tuple)):
+            stack.extend(node)
+    return found
+
+
+def _published_refs(document: dict[str, Any]) -> list[tuple[str, str]]:
+    """(path, ref) for every evidence ref the document publishes."""
+    found: list[tuple[str, str]] = []
+    stack: list[tuple[str, Any]] = [("", document)]
+    while stack:
+        path, node = stack.pop()
+        if isinstance(node, dict):
+            for key, child in node.items():
+                if key == "evidence_refs" and isinstance(child, list):
+                    found.extend((f"{path}.{key}", ref) for ref in child)
+                else:
+                    stack.append((f"{path}.{key}", child))
+        elif isinstance(node, list):
+            stack.extend((f"{path}[]", child) for child in node)
+    return found
+
+
+@pytest.mark.parametrize("fixture", _FENCE_FIXTURES)
+def test_every_published_evidence_ref_is_an_owner_ref(fixture: str) -> None:
+    """The composer never mints an evidence ref. It used to publish
+    "slice:<id>" for any slice no owner ref backed, so the contract's rule
+    that an OBSERVED plane cites evidence could never fail: 220 of the 263
+    refs on the default fixture pointed at no record. Every ref is now a
+    string the owner inputs carry under a reference key, and every plane that
+    publishes a reading cites one."""
+    inputs = _extended_owner_inputs(fixture)
+    document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+    validate_contract(CONTRACT_ID, document)
+    owner_refs = _owner_ref_values(inputs)
+    minted = [(path, ref) for path, ref in _published_refs(document) if ref not in owner_refs]
+    assert not minted, minted[:10]
+    unbacked = [
+        (slice_doc["slice_id"], plane)
+        for slice_doc in document["slices"]
+        for plane in _PLANES
+        if slice_doc["rerating"][plane]["primary_metric"] is not None and not slice_doc["rerating"][plane]["evidence_refs"]
+    ]
+    assert not unbacked, unbacked
+
+
+@pytest.mark.parametrize("mint", ["prefixed", "bare"])
+def test_the_evidence_ref_oracle_fires_on_a_minted_ref(monkeypatch: pytest.MonkeyPatch, mint: str) -> None:
+    """Positive control for the test above. Restore the old fallback, or mint
+    the bare slice id, and the oracle finds the minted refs: it asks whether
+    the owner carries a ref, not whether the ref has a known prefix."""
+    import engine.sector_intelligence.finance_projection as _fp_mod
+
+    owner_only = _fp_mod._slice_evidence_refs
+    make = {"prefixed": lambda slice_id: "slice:" + slice_id, "bare": lambda slice_id: slice_id}[mint]
+    monkeypatch.setattr(
+        _fp_mod, "_slice_evidence_refs",
+        lambda slice_id, *rest: owner_only(slice_id, *rest) or [make(slice_id)],
+    )
+    inputs = _extended_owner_inputs("default")
+    document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+    owner_refs = _owner_ref_values(inputs)
+    assert [ref for _path, ref in _published_refs(document) if ref not in owner_refs]
+
+
+def _owner_refs_by_slice(inputs: FinanceOwnerInputs) -> dict[str, set[str]]:
+    """The refs the owner files under each slice: a source record's by its
+    business_scope, an observation's by the slice it is keyed under."""
+    owned: dict[str, set[str]] = {}
+    for rec in inputs.source_records:
+        if isinstance(rec, dict):
+            owned.setdefault(rec.get("business_scope"), set()).update(_owner_ref_values(rec))
+    for observations in (inputs.expectation_observations, inputs.market_observations):
+        for slice_id, obs in (observations or {}).items():
+            owned.setdefault(slice_id, set()).update(_owner_ref_values(obs))
+    return owned
+
+
+def _refs_outside_their_slice(inputs: FinanceOwnerInputs, document: dict[str, Any]) -> list[tuple]:
+    owned = _owner_refs_by_slice(inputs)
+    foreign = [
+        (slice_doc["slice_id"], path, ref)
+        for slice_doc in document["slices"]
+        for path, ref in _published_refs(slice_doc)
+        if ref not in owned.get(slice_doc["slice_id"], set())
+    ]
+    for conflict in document["conflicts"]:
+        joined = set().union(*(owned.get(slice_id, set()) for slice_id in conflict["slice_ids"]))
+        foreign += [(tuple(conflict["slice_ids"]), path, ref) for path, ref in _published_refs(conflict) if ref not in joined]
+    return foreign
+
+
+@pytest.mark.parametrize("fixture", _FENCE_FIXTURES)
+def test_a_slice_cites_only_evidence_its_owner_files_under_it(fixture: str) -> None:
+    """A section's evidence button opens the refs its slice publishes, so a
+    ref the owner files under another slice would open that slice's record.
+    Each slice, on the slice and on its four planes, cites only refs the owner
+    files under it, and a conflict cites only refs of the slices it joins.
+    The owner-ref oracle above pools every slice's refs and cannot see this."""
+    inputs = _extended_owner_inputs(fixture)
+    document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+    foreign = _refs_outside_their_slice(inputs, document)
+    assert not foreign, foreign[:10]
+
+
+def test_the_slice_evidence_oracle_fires_on_an_unscoped_composer(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Positive control for the test above. A composer that stops scoping
+    source records by slice cites every record on every slice. Each ref is
+    still one the owner carries, so the pooled oracle passes, and only the
+    per-slice oracle finds the refs a slice does not own."""
+    import engine.sector_intelligence.finance_projection as _fp_mod
+
+    scoped = _fp_mod._slice_evidence_refs
+
+    def unscoped(slice_id, source_records, *rest):
+        records = [dict(rec, business_scope=slice_id) if isinstance(rec, dict) else rec for rec in source_records]
+        return scoped(slice_id, records, *rest)
+
+    monkeypatch.setattr(_fp_mod, "_slice_evidence_refs", unscoped)
+    inputs = _extended_owner_inputs("default")
+    document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+    owner_refs = _owner_ref_values(inputs)
+    assert not [ref for _path, ref in _published_refs(document) if ref not in owner_refs]
+    assert _refs_outside_their_slice(inputs, document)
+
+
+@pytest.mark.parametrize("fixture", _FENCE_FIXTURES[1:])
+def test_a_reading_no_owner_ref_backs_is_withheld(fixture: str) -> None:
+    """Drop the one source record behind card_networks in a conflict fixture.
+    The old composer still published OBSERVED planes there, citing only the
+    minted "slice:card_networks", and the contract accepted the document.
+    Now each reading is withheld. An OBSERVED plane becomes MISSING with its
+    own plane's note, any other state keeps its words, and the fixture's
+    conflict is not drawn, since it rested on those readings. The readings'
+    dates are withheld too, so the slice's freshness says it has no evidence.
+    The document stays valid, so one slice's missing evidence never refuses
+    the other slices."""
+    base = _conflict_inputs_for(fixture)
+    kept = [rec for rec in base.source_records if not (isinstance(rec, dict) and rec.get("business_scope") == "card_networks")]
+    assert len(kept) < len(base.source_records)
+
+    def card_networks(inputs: FinanceOwnerInputs) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+        document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+        validate_contract(CONTRACT_ID, document)
+        slice_doc = next(s for s in document["slices"] if s["slice_id"] == "card_networks")
+        return slice_doc, [c for c in document["conflicts"] if "card_networks" in c["slice_ids"]]
+
+    before, conflicts = card_networks(base)
+    assert conflicts and any(before["rerating"][plane]["primary_metric"] is not None for plane in _PLANES)
+    after, conflicts = card_networks(dataclasses.replace(base, source_records=kept))
+    assert not conflicts, conflicts
+    for plane in _PLANES:
+        published = after["rerating"][plane]
+        assert published["evidence_refs"] == [], plane
+        assert published["primary_metric"] is None and published["clock"] is None, plane
+        assert published["state"] != "OBSERVED", plane
+        if before["rerating"][plane]["state"] == "OBSERVED":
+            assert published["note"] == f"{plane.capitalize()} evidence is not available for this slice.", plane
+    assert after["freshness"] == {"evidence_latest_observed_at": None, "state": "NO_EVIDENCE"}
+
+
+def test_a_withheld_reading_publishes_no_date() -> None:
+    """A withheld reading's date is withheld with it. Give a slice no owner
+    ref backs one qualified price row, dated years before every other input:
+    its price plane publishes no reading, its freshness says it has no
+    evidence, and the document's common_as_of and freshness are what they are
+    without the row. The date used to reach all three, and the document read
+    SOURCE_STALE from a price it never published. With an owner source the
+    row is evidence: its reading is published and its date counts."""
+    base = _default_8slice_inputs()
+    row = {"as_of": "2019-01-02", "price_basis": "PRICE_RETURN", "value": 42.0, "unit": "USD", "direction": "UP"}
+
+    def compose_with(market_row: dict[str, Any] | None) -> tuple[dict[str, Any], dict[str, Any]]:
+        market = dict(base.market_observations)
+        if market_row is not None:
+            market["private_credit_managers"] = [market_row]
+        document = compose_finance_projection(
+            dataclasses.replace(base, market_observations=market),
+            generated_at=_today(),
+            knowledge_cutoff=_knowledge_cutoff(),
+        )
+        validate_contract(CONTRACT_ID, document)
+        return document, next(s for s in document["slices"] if s["slice_id"] == "private_credit_managers")
+
+    baseline, slice_doc = compose_with(None)
+    assert not slice_doc["evidence_refs"]
+    withheld, slice_doc = compose_with(row)
+    assert slice_doc["rerating"]["price"]["primary_metric"] is None
+    assert slice_doc["freshness"] == {"evidence_latest_observed_at": None, "state": "NO_EVIDENCE"}
+    assert (withheld["common_as_of"], withheld["freshness"]) == (baseline["common_as_of"], baseline["freshness"])
+
+    evidenced, slice_doc = compose_with(dict(row, source="synthetic-market-private_credit_managers"))
+    assert slice_doc["rerating"]["price"]["primary_metric"] is not None
+    assert slice_doc["freshness"] == {"evidence_latest_observed_at": "2019-01-02", "state": "SOURCE_STALE"}
+    assert evidenced["common_as_of"] == "2019-01-02"
+
+
+def test_a_plane_publishes_a_reading_only_with_an_owner_ref() -> None:
+    reading = {
+        "state": "OBSERVED",
+        "primary_metric": {"value": 1.0},
+        "clock": {"as_of": "2026-09-01"},
+        "comparability_state": "COMPARABLE",
+        "evidence_refs": [],
+        "note": "Operating observation is preserved as supplied by the owner.",
+    }
+    missing = "Operating evidence is not available for this slice."
+    assert _withhold_unevidenced(reading, missing) == dict(
+        reading, state="MISSING", primary_metric=None, clock=None, comparability_state=None, note=missing,
+    )
+    regime = dict(reading, state="REGIME_BREAK", comparability_state="REGIME_BREAK_NOT_COMPARABLE", note="A regime break.")
+    assert _withhold_unevidenced(regime, missing) == dict(regime, primary_metric=None, clock=None)
+    backed = dict(reading, evidence_refs=["src-1"])
+    assert _withhold_unevidenced(backed, missing) is backed
+    absent = dict(reading, state="MISSING", primary_metric=None, clock=None)
+    assert _withhold_unevidenced(absent, missing) is absent

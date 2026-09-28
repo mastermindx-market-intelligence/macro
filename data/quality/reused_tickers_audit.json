@@ -1,5 +1,5 @@
 {
- "asof": "2026-09-26",
+ "asof": "2026-09-28",
  "audit": "stocks",
  "config": {
   "price_max_gap_days": 4,
@@ -766,7 +766,7 @@
   "ticker_key_migrations": {
    "SATS": "ECHO"
   },
-  "ledger_rows": 60464
+  "ledger_rows": 60478
  },
  "grace_days": 30,
  "stale_calendar_days": 7,
