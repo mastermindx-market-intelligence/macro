@@ -678,8 +678,9 @@ def test_mgd17_refused_comparison_does_not_delete_the_supported_facts():
     _validate(refused)
 
 
-def test_mgd19_an_intragroup_elimination_reaches_the_payload_with_its_sign():
-    """MGD-19 clause 2: intra-group eliminations are not ignored.
+@pytest.mark.parametrize("slice_name", ["copper_complete", "rare_earth_complete"])
+def test_mgd19_an_intragroup_elimination_reaches_the_payload_with_its_sign(slice_name):
+    """MGD-19 clause 2: intra-group eliminations are not ignored, on BOTH slices.
 
     The construct is delivered, but the only test that names MGD-19 asserts it through
     ``composition._signed_value`` and its own comment concedes the casebook exposes no
@@ -696,8 +697,14 @@ def test_mgd19_an_intragroup_elimination_reaches_the_payload_with_its_sign():
 
     Clause 1 -- product sales and contractual support income remaining separately DEFINED -- needs
     T03's definition vocabulary and is deliberately NOT claimed here.
+
+    Parametrized across BOTH slices because MGD-19 governs both deliverables, W-C and
+    W-R, and MGD-17's pin is two-armed across slices for the same reason. The behaviour
+    was measured identical on both before widening, so this adds no claim about today --
+    it is the guard for tomorrow: if the rare-earth path ever gets its own netting or
+    sign handling, a copper-only pin stays green while the W-R half silently loses it.
     """
-    case = synthetic_case("copper_complete")
+    case = synthetic_case(slice_name)
     measurement = dict(case.bundle.financial_packets[0])
     # ``positive_witness`` is a casebook oracle flag the engine never reads; signed_loss.json sets it
     # False for a negative, so an elimination follows that shape rather than inheriting True.
@@ -724,6 +731,57 @@ def test_mgd19_an_intragroup_elimination_reaches_the_payload_with_its_sign():
         control["economics"]["native_blocks"]
     )
     _validate(composed)
+
+
+@pytest.mark.parametrize("slice_name", ["copper_complete", "rare_earth_complete"])
+def test_the_composer_never_interprets_a_submitted_measure(slice_name):
+    """``measure`` is opaque text to this program, and across 46 tests nothing asserted it.
+
+    Non-interpretation is a stated design property here -- the module mints no vocabulary and reads
+    no meaning -- and three NOT_RUN ledger rows cite it BY NAME as the ground for their status
+    (MGD-07, MGD-14, MGD-23: "the composer copies ``measure`` VERBATIM onto the block"). Before this
+    pin the only ``measure="..."`` anywhere in the suite was the MGD-19 elimination, so the premise
+    those reasons rest on was carried entirely by prose.
+
+    This guards the PREMISE, not the obligation. MGD-14 states the limit correctly and it still
+    holds: a passthrough can no more keep production, purchases, inventory, internal transfer and
+    external delivery DISTINCT than it can interchange them, so nothing here claims the distinctions
+    those rows owe -- they wait on T02/T03 to mint the kind vocabulary. What this adds is
+    falsifiability: if the composer ever begins reading a measure's meaning, THIS goes red instead of
+    three reasons going quietly stale.
+
+    The adversarial arms are the load-bearing part, because the obvious version of this test is
+    satisfiable by a mapper. One that normalized only the known vocabulary is caught by the plain
+    words; one that lowercased or trimmed would pass those and is caught by ``"PRODUCTION"`` and the
+    trailing space; one that whitelisted known kinds and substituted or dropped the rest would pass
+    every arm above and is caught by a string this program can have no opinion about.
+    """
+    case = synthetic_case(slice_name)
+    base = dict(case.bundle.financial_packets[0])
+    # A baseline that already equalled a probed value would make the arms pass without composing.
+    assert base["measure"] == "reported operating income", base["measure"]
+
+    for submitted in (
+        # the exact vocabulary MGD-14 and MGD-23 name
+        "production",
+        "purchases",
+        "inventory",
+        "internal transfer",
+        "external delivery",
+        "financing proceeds",
+        # a normalizer would pass every word above and fail these two
+        "PRODUCTION",
+        "production ",
+        # a whitelist with a fallback would pass everything above and fail this
+        "unmapped_nonsense_zzz",
+    ):
+        composed = composition.compose_mining_research(
+            case.query,
+            _replace(case.bundle, financial_packets=(dict(base, measure=submitted),)),
+        )
+        blocks = composed["economics"]["native_blocks"]
+        assert [b["measure"] for b in blocks] == [submitted], (submitted, blocks)
+        _validate(composed)
 
 
 def test_packet_driven_non_numeric_value_withholds_row_and_mints_omitted_expectations():

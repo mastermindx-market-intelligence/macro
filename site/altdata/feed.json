@@ -1,6 +1,6 @@
 {
-  "generated_utc": "2026-09-27T22:02:35.162117+00:00",
-  "as_of": "2026-09-27",
+  "generated_utc": "2026-09-28T00:13:40.587906+00:00",
+  "as_of": "2026-09-28",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
   "note": "Deterministic alt-data signals + normalized event feed for the reasoning brain. Display/context-only \u2014 not a scored axis.",
@@ -6104,15 +6104,6 @@
           "parties": "D"
         },
         {
-          "ticker": "NVDA",
-          "net": -10,
-          "buys": 4,
-          "sells": 14,
-          "members": 6,
-          "est_usd": 32002.0,
-          "parties": "D/R"
-        },
-        {
           "ticker": "LYV",
           "net": -10,
           "buys": 0,
@@ -6140,16 +6131,16 @@
           "parties": "D"
         },
         {
-          "ticker": "ABT",
+          "ticker": "NVDA",
           "net": -8,
-          "buys": 0,
-          "sells": 8,
-          "members": 4,
-          "est_usd": 0.0,
+          "buys": 4,
+          "sells": 12,
+          "members": 6,
+          "est_usd": 32002.0,
           "parties": "D/R"
         },
         {
-          "ticker": "CCI",
+          "ticker": "ABT",
           "net": -8,
           "buys": 0,
           "sells": 8,
@@ -6192,6 +6183,15 @@
           "members": 1,
           "est_usd": 0.0,
           "parties": "D"
+        },
+        {
+          "ticker": "LH",
+          "net": -8,
+          "buys": 0,
+          "sells": 8,
+          "members": 1,
+          "est_usd": 0.0,
+          "parties": "D"
         }
       ]
     },
@@ -6214,10 +6214,10 @@
       },
       {
         "ticker": "GD",
-        "total_usd": 131437910.0,
-        "contracts": 39,
-        "agencies": 11,
-        "accel_x": 1.87,
+        "total_usd": 118032131.0,
+        "contracts": 38,
+        "agencies": 10,
+        "accel_x": 1.41,
         "top_agency": "Department of Health and Human Services"
       },
       {
@@ -6229,14 +6229,6 @@
         "top_agency": "Department of Veterans Affairs"
       },
       {
-        "ticker": "ACN",
-        "total_usd": 74265298.0,
-        "contracts": 21,
-        "agencies": 11,
-        "accel_x": 0.37,
-        "top_agency": "Department of Homeland Security"
-      },
-      {
         "ticker": "GEO",
         "total_usd": 69986897.0,
         "contracts": 3,
@@ -6245,20 +6237,20 @@
         "top_agency": "Department of Homeland Security"
       },
       {
-        "ticker": "DELL",
-        "total_usd": 66659233.0,
-        "contracts": 47,
-        "agencies": 17,
-        "accel_x": 48.52,
-        "top_agency": "Social Security Administration"
+        "ticker": "ACN",
+        "total_usd": 67495840.0,
+        "contracts": 19,
+        "agencies": 11,
+        "accel_x": 0.32,
+        "top_agency": "Department of Homeland Security"
       },
       {
-        "ticker": "BAH",
-        "total_usd": 61231788.0,
-        "contracts": 23,
-        "agencies": 6,
-        "accel_x": 2.33,
-        "top_agency": "Department of Health and Human Services"
+        "ticker": "DELL",
+        "total_usd": 66496367.0,
+        "contracts": 44,
+        "agencies": 17,
+        "accel_x": 43.27,
+        "top_agency": "Social Security Administration"
       },
       {
         "ticker": "SAIC",
@@ -6269,11 +6261,19 @@
         "top_agency": "Department of the Treasury"
       },
       {
+        "ticker": "BAH",
+        "total_usd": 57836790.0,
+        "contracts": 22,
+        "agencies": 6,
+        "accel_x": 1.95,
+        "top_agency": "Department of Health and Human Services"
+      },
+      {
         "ticker": "GM",
-        "total_usd": 54958351.0,
-        "contracts": 73,
+        "total_usd": 54695171.0,
+        "contracts": 67,
         "agencies": 2,
-        "accel_x": 5.61,
+        "accel_x": 5.44,
         "top_agency": "Department of Homeland Security"
       },
       {
@@ -6286,18 +6286,18 @@
       },
       {
         "ticker": "KELYB",
-        "total_usd": 40911769.0,
-        "contracts": 234,
+        "total_usd": 40442376.0,
+        "contracts": 231,
         "agencies": 1,
-        "accel_x": 7.77,
+        "accel_x": 7.05,
         "top_agency": "Department of Health and Human Services"
       },
       {
         "ticker": "CDW",
-        "total_usd": 38440639.0,
-        "contracts": 91,
+        "total_usd": 33892868.0,
+        "contracts": 81,
         "agencies": 9,
-        "accel_x": 1.01,
+        "accel_x": 0.79,
         "top_agency": "Department of Transportation"
       },
       {
@@ -6310,8 +6310,8 @@
       },
       {
         "ticker": "MCK",
-        "total_usd": 21048903.0,
-        "contracts": 66,
+        "total_usd": 21025023.0,
+        "contracts": 63,
         "agencies": 4,
         "accel_x": 0.9,
         "top_agency": "Department of Justice"
@@ -27201,13 +27201,6 @@
         "top_issue": "Agriculture"
       },
       {
-        "ticker": "ALVO",
-        "spend_usd": 0.0,
-        "filings": 1,
-        "spike_x": null,
-        "top_issue": "Health Issues"
-      },
-      {
         "ticker": "ARQT",
         "spend_usd": 0.0,
         "filings": 1,
@@ -27297,6 +27290,13 @@
         "filings": 1,
         "spike_x": null,
         "top_issue": "Defense"
+      },
+      {
+        "ticker": "PLAB",
+        "spend_usd": 0.0,
+        "filings": 1,
+        "spike_x": null,
+        "top_issue": "Budget/Appropriations"
       }
     ],
     "offexchange": [
@@ -28704,14 +28704,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "QQQ",
-        "mentions": 25,
-        "sentiment": 0.074
-      },
-      {
         "ticker": "MSFT",
         "mentions": 25,
         "sentiment": 0.015
+      },
+      {
+        "ticker": "QQQ",
+        "mentions": 25,
+        "sentiment": 0.074
       },
       {
         "ticker": "OKLO",
@@ -30375,191 +30375,219 @@
       {
         "ticker": "JEF",
         "next_date": "2026-09-28",
-        "days_to": 1,
+        "days_to": 0,
         "eps_forecast": 1.04,
         "last_surprise_pct": -5.5
       },
       {
         "ticker": "MU",
         "next_date": "2026-09-30",
-        "days_to": 3,
+        "days_to": 2,
         "eps_forecast": 31.24,
         "last_surprise_pct": 18.6
       },
       {
         "ticker": "ACN",
         "next_date": "2026-10-01",
-        "days_to": 4,
+        "days_to": 3,
         "eps_forecast": 3.19,
         "last_surprise_pct": 2.7
       },
       {
         "ticker": "NKE",
         "next_date": "2026-10-01",
-        "days_to": 4,
+        "days_to": 3,
         "eps_forecast": 0.44,
         "last_surprise_pct": 81.8
       },
       {
         "ticker": "PENG",
         "next_date": "2026-10-06",
-        "days_to": 9,
+        "days_to": 8,
         "eps_forecast": 0.61,
         "last_surprise_pct": 44.9
       },
       {
         "ticker": "RPM",
         "next_date": "2026-10-06",
-        "days_to": 9,
+        "days_to": 8,
         "eps_forecast": 1.95,
         "last_surprise_pct": 2.7
       },
       {
         "ticker": "PEP",
         "next_date": "2026-10-08",
-        "days_to": 11,
+        "days_to": 10,
         "eps_forecast": 2.3,
         "last_surprise_pct": 0.5
       },
       {
         "ticker": "DAL",
         "next_date": "2026-10-09",
-        "days_to": 12,
+        "days_to": 11,
         "eps_forecast": 2.03,
         "last_surprise_pct": 3.3
       },
       {
         "ticker": "BLK",
         "next_date": "2026-10-13",
-        "days_to": 16,
+        "days_to": 15,
         "eps_forecast": 14.24,
         "last_surprise_pct": 9.8
       },
       {
         "ticker": "C",
         "next_date": "2026-10-13",
-        "days_to": 16,
+        "days_to": 15,
         "eps_forecast": 2.67,
         "last_surprise_pct": 15.8
       },
       {
         "ticker": "GS",
         "next_date": "2026-10-13",
-        "days_to": 16,
+        "days_to": 15,
         "eps_forecast": 15.18,
         "last_surprise_pct": 45.0
       },
       {
         "ticker": "JNJ",
         "next_date": "2026-10-13",
-        "days_to": 16,
+        "days_to": 15,
         "eps_forecast": 2.96,
         "last_surprise_pct": 2.1
       },
       {
         "ticker": "JPM",
         "next_date": "2026-10-13",
-        "days_to": 16,
+        "days_to": 15,
         "eps_forecast": 5.84,
         "last_surprise_pct": 9.8
       },
       {
         "ticker": "UNH",
         "next_date": "2026-10-13",
-        "days_to": 16,
+        "days_to": 15,
         "eps_forecast": 4.12,
         "last_surprise_pct": 29.1
       },
       {
         "ticker": "BAC",
         "next_date": "2026-10-14",
-        "days_to": 17,
+        "days_to": 16,
         "eps_forecast": 1.16,
         "last_surprise_pct": 7.1
       },
       {
         "ticker": "MS",
         "next_date": "2026-10-14",
-        "days_to": 17,
+        "days_to": 16,
         "eps_forecast": 3.06,
         "last_surprise_pct": 19.7
       },
       {
         "ticker": "STT",
         "next_date": "2026-10-14",
-        "days_to": 17,
+        "days_to": 16,
         "eps_forecast": 3.6,
         "last_surprise_pct": 10.6
       },
       {
         "ticker": "WFC",
         "next_date": "2026-10-14",
-        "days_to": 17,
+        "days_to": 16,
         "eps_forecast": 1.84,
         "last_surprise_pct": 13.3
       },
       {
         "ticker": "MMC",
         "next_date": "2026-10-15",
-        "days_to": 18,
+        "days_to": 17,
         "eps_forecast": 1.96,
         "last_surprise_pct": 2.8
       },
       {
         "ticker": "OZK",
         "next_date": "2026-10-15",
-        "days_to": 18,
+        "days_to": 17,
         "eps_forecast": 1.44,
         "last_surprise_pct": 2.0
       },
       {
         "ticker": "SCHW",
         "next_date": "2026-10-15",
-        "days_to": 18,
+        "days_to": 17,
         "eps_forecast": 1.67,
         "last_surprise_pct": 5.9
       },
       {
         "ticker": "TSM",
         "next_date": "2026-10-15",
-        "days_to": 18,
+        "days_to": 17,
         "eps_forecast": 4.45,
         "last_surprise_pct": 11.4
       },
       {
         "ticker": "USB",
         "next_date": "2026-10-15",
-        "days_to": 18,
+        "days_to": 17,
         "eps_forecast": 1.32,
         "last_surprise_pct": 5.5
       },
       {
         "ticker": "IBN",
         "next_date": "2026-10-16",
-        "days_to": 19,
+        "days_to": 18,
         "eps_forecast": 0.4,
         "last_surprise_pct": 7.5
       },
       {
         "ticker": "SLB",
         "next_date": "2026-10-16",
-        "days_to": 19,
+        "days_to": 18,
         "eps_forecast": 0.62,
         "last_surprise_pct": 7.8
       },
       {
         "ticker": "TFC",
         "next_date": "2026-10-16",
-        "days_to": 19,
+        "days_to": 18,
         "eps_forecast": 1.11,
         "last_surprise_pct": 13.9
       },
       {
         "ticker": "TRV",
         "next_date": "2026-10-16",
-        "days_to": 19,
+        "days_to": 18,
         "eps_forecast": 6.77,
         "last_surprise_pct": 89.1
+      },
+      {
+        "ticker": "CCK",
+        "next_date": "2026-10-19",
+        "days_to": 21,
+        "eps_forecast": 2.25,
+        "last_surprise_pct": 15.8
+      },
+      {
+        "ticker": "FITB",
+        "next_date": "2026-10-19",
+        "days_to": 21,
+        "eps_forecast": 1.08,
+        "last_surprise_pct": 4.1
+      },
+      {
+        "ticker": "RLI",
+        "next_date": "2026-10-19",
+        "days_to": 21,
+        "eps_forecast": 0.54,
+        "last_surprise_pct": 16.9
+      },
+      {
+        "ticker": "WTFC",
+        "next_date": "2026-10-19",
+        "days_to": 21,
+        "eps_forecast": 3.26,
+        "last_surprise_pct": 4.8
       }
     ],
     "retail": [
@@ -30708,17 +30736,6 @@
         "why": "13f_add: Ascentis Wealth Management, LLC +$3,159,945,245 \u00b7 analyst_upgrade_cluster: net upgrades +36 revision delta \u00b7 congress_buy: 2 member(s) net +4 \u00b7 trump: CROWDSTRIKE HLDGS INC CL A"
       },
       {
-        "ticker": "BAH",
-        "score": 3,
-        "weighted_score": 1.6,
-        "channel_list": [
-          "gov_contract_accel",
-          "special_situation",
-          "trump"
-        ],
-        "why": "gov_contract_accel: $61,231,788, 2.3x accel \u00b7 special_situation: Acquisitions \u00b7 trump: BOOZ ALLEN HAMILTON HLDG CLASS A"
-      },
-      {
         "ticker": "PLTR",
         "score": 4,
         "weighted_score": 1.55,
@@ -30796,6 +30813,17 @@
         "why": "analyst_upgrade_cluster: net upgrades +30 revision delta \u00b7 retail_buzz: 51 WSB mentions \u00b7 stocktwits_bull: 84% bull \u00b7 563,282 watching \u00b7 trump: ADVANCED MICRO DEVICES INC"
       },
       {
+        "ticker": "BAH",
+        "score": 3,
+        "weighted_score": 1.15,
+        "channel_list": [
+          "gov_contract",
+          "special_situation",
+          "trump"
+        ],
+        "why": "gov_contract: $57,836,790 awarded \u00b7 special_situation: Acquisitions \u00b7 trump: BOOZ ALLEN HAMILTON HLDG CLASS A"
+      },
+      {
         "ticker": "CBRS",
         "score": 2,
         "weighted_score": 1.15,
@@ -30857,7 +30885,7 @@
           "activist_13d",
           "gov_contract_accel"
         ],
-        "why": "activist_13d: 13D activist campaign \u00b7 gov_contract_accel: $66,659,233, 48.5x accel"
+        "why": "activist_13d: 13D activist campaign \u00b7 gov_contract_accel: $66,496,367, 43.3x accel"
       },
       {
         "ticker": "INTC",
@@ -30909,7 +30937,7 @@
           "gov_contract",
           "insider_mspr"
         ],
-        "why": "gov_contract: $131,437,910 awarded \u00b7 insider_mspr: MSPR 91.9"
+        "why": "gov_contract: $118,032,131 awarded \u00b7 insider_mspr: MSPR 91.9"
       },
       {
         "ticker": "RTX",

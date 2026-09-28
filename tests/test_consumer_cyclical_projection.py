@@ -1906,3 +1906,64 @@ def test_the_compound_authority_pattern_actually_catches_compound_keys() -> None
         with pytest.raises(CaseShapeError) as excinfo:
             _assert_no_forbidden_authority_keys({"facts": [{key: 1}]})
         assert key in str(excinfo.value), str(excinfo.value)
+
+
+def test_a_degraded_entry_only_ever_reports_the_unavailable_state() -> None:
+    """``state`` is a constant; the granularity lives entirely in ``reason``.
+
+    The contract admits three values for ``degraded_dependency.state``
+    (``available``/``partial``/``unavailable``) but ``_degraded`` carries
+    ``state: str = "unavailable"`` and all seven call sites omit the
+    argument, so ``unavailable`` is the only value a consumer can ever see --
+    and ``available``, on an entry inside a list *of degraded dependencies*,
+    would contradict the list it sits in. That gap is LOOSE, not false: the
+    document never claims anything untrue, it is the contract that permits
+    more than the producer emits. Pinned so the looseness is measured rather
+    than assumed, and so a change that starts emitting a second state
+    surfaces as a consumer-facing decision instead of silently widening what
+    downstream code has to handle.
+
+    Two independent degradation branches are driven -- a metric left with
+    only one side of its pair, and an unparseable ``value_text`` on a metric
+    whose pair is intact. Each mutation asserts that it changed the case,
+    and the distinct-``reason`` assertion is what stops the state assertion
+    passing for free on an empty list: a filter written against the bare
+    metric name rather than the ``_current``/``_prior`` fact key silently
+    mutates nothing, and every assertion below it then holds vacuously.
+    """
+    entries: list[dict[str, Any]] = []
+
+    # Branch 1: one side of a pair removed -- nothing left to compare against.
+    case = _fixture_case()
+    before = len(case["facts"])
+    case["facts"] = [f for f in case["facts"] if f["key"] != "advertising_expense_prior"]
+    assert len(case["facts"]) == before - 1, (
+        "fixture no longer carries 'advertising_expense_prior'; this branch "
+        "mutated nothing and proves nothing"
+    )
+    entries += project_economic_change(case)["degraded_dependencies"]
+
+    # Branch 2: both sides present, one of them unreadable.
+    case = _fixture_case()
+    case["facts"] = [
+        dict(f, value_text="not-a-number") if f["key"] == "total_revenue_current" else f
+        for f in case["facts"]
+    ]
+    assert any(f["value_text"] == "not-a-number" for f in case["facts"]), (
+        "fixture no longer carries 'total_revenue_current'; this branch "
+        "mutated nothing and proves nothing"
+    )
+    entries += project_economic_change(case)["degraded_dependencies"]
+
+    reasons = {e["reason"] for e in entries}
+    assert len(reasons) > 1, (
+        f"both mutations were no-ops -- {len(entries)} entries, reasons "
+        f"{reasons!r}; the state assertion below would pass vacuously"
+    )
+
+    states = {e["state"] for e in entries}
+    assert states == {"unavailable"}, (
+        f"degraded entries reported {sorted(states)!r} across reasons "
+        f"{sorted(reasons)!r}; only 'unavailable' is produced today, so a new "
+        "state is a contract-visible change that needs a consumer decision"
+    )

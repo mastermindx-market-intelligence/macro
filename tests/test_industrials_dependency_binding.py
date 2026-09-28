@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from engine.company_intelligence.financial_dossier import DELIVERY_INPUT_VALIDATOR_VERSION
 from tests.industrials_result_cash_helpers import (
     FIXTURE_NAMES,
+    PLAN_REQUIREMENT_ANCHORS,
     case,
     cell,
     comparison,
@@ -491,3 +494,158 @@ def test_uppercase_digest_is_digest_malformed() -> None:
     release = result["bindings"]["release_binding"]
     assert release["status"] == "unavailable"
     assert release["reason"] == "digest_malformed"
+
+
+# ---------------------------------------------------------------------------
+# Plan-named requirement anchors (IND-D02, IND-D06) and the test that makes the
+# frozen plan's traceability table gradeable.
+#
+# `test_ind_sf07` above is one of only two anchors the plan's table named that
+# actually existed before 2026-09-27 -- and it existed because the plan also
+# froze its BODY, not because the table named it.  See
+# `DSC:A-PLANS-TRACEABILITY-TABLE-IS-NOT-COVERAGE` and the map's own commentary
+# in `tests/industrials_result_cash_helpers.py`.
+# ---------------------------------------------------------------------------
+
+
+def _admissible_payload() -> dict:
+    """The payload `test_registered_pair_with_accepted_bindings_is_admissible`
+    proves clean: a registered pair with both bindings accepted and no join."""
+    payload = case("source_only")
+    payload["identity"] = {
+        "company_id": "synthetic:northgate",
+        "external_ids": {"cik": "0000987654"},
+    }
+    payload["release_binding"] = {
+        "status": "accepted",
+        "owner_ref": "synthetic:release:candidate",
+        "revision": "r1",
+        "digest": "0" * 64,
+    }
+    payload["private_binding"] = {
+        "status": "accepted",
+        "owner_ref": "synthetic:private:candidate",
+        "revision": "r1",
+        "digest": "0" * 64,
+        "rights_state": "public_primary",
+    }
+    return payload
+
+
+def test_ind_d02(tmp_path) -> None:
+    """IND-D02 — a new curation payload on the current GMI schema and store is
+    refused until the shared native schema, persistence AND the reader
+    round-trip are all admitted.
+
+    The requirement is a CONJUNCTION, which is exactly how it can be
+    half-satisfied and read as done.  Persistence is admitted here: ``publish``
+    validates a locally built staging tree, freezes one generation, and the
+    store records the read.  A delivery claim resting on that alone would look
+    satisfied.  The reader round-trip is NOT admitted -- the route is unbound for
+    an entitled client as much as an unentitled one, and no store read happens
+    behind that refusal -- and the curation payload itself is still refused by
+    the delivery-input validator with a reason from the closed set.
+
+    Research continues throughout: ``research_usable`` stays True, which is the
+    half of the requirement that must NOT be over-enforced.
+    """
+    harness = publication_harness()
+
+    published = harness.publish({}, stage_dir=tmp_path)
+    assert published["status"] == "ok", published
+    assert published["generation_id"].startswith("earnpriv_"), published
+    assert published["read_count"] > 0, published        # persistence admitted
+
+    before = harness.read_count
+    for entitled in (False, True):
+        response = harness.client(entitled=entitled).get("anything")
+        assert response["status"] == "unavailable", (entitled, response)
+        assert response["reason"] == "route_unbound", (entitled, response)
+    # A refusal that read the store anyway would be a partial round-trip
+    # masquerading as none.
+    assert harness.read_count == before, harness.read_count
+
+    admission = _validate(case("source_only"), registry=issuer_registry())
+    assert admission["live_admission"] == "refused", admission
+    assert "accepted_binding_missing" in admission["reasons"], admission
+    assert admission["research_usable"] is True, admission
+
+
+def test_ind_d06() -> None:
+    """IND-D06 — a caller-declared cross-type K1 join: the required composition
+    refuses, while the optional exclusions and the denominator stay VISIBLE.
+
+    The refusal must be surgical.  Built on the payload that is otherwise fully
+    admissible, adding the join produces exactly ONE reason, and it withdraws
+    nothing the caller could still legitimately read: each binding keeps
+    reporting its own accepted / resolved state, and ``research_usable`` is
+    unchanged from the identical payload without the join.  A validator that
+    answered a refused composition by blanking its bindings, by adding
+    collateral reasons, or by dropping research usability would satisfy the
+    refusal assertion and fail these -- which is the failure mode the
+    requirement's second clause exists to prevent.
+    """
+    base = _admissible_payload()
+    without_join = _validate(base, registry=issuer_registry())
+    assert without_join["live_admission"] == "admissible", without_join
+    assert without_join["reasons"] == [], without_join
+
+    joined = dict(base)
+    joined["cross_subject_join"] = {"claimed_binding": "caller-authored"}
+    result = _validate(joined, registry=issuer_registry())
+
+    assert result["live_admission"] == "refused", result
+    assert result["reasons"] == ["unsupported_cross_subject_join"], result
+    # Exclusions and denominator remain visible.
+    assert result["bindings"]["release_binding"] == (
+        without_join["bindings"]["release_binding"]
+    ), result
+    assert result["bindings"]["private_binding"] == (
+        without_join["bindings"]["private_binding"]
+    ), result
+    assert result["bindings"]["identity"] == without_join["bindings"]["identity"], result
+    assert result["research_usable"] == without_join["research_usable"], result
+
+
+def test_every_plan_named_requirement_anchor_exists() -> None:
+    """The frozen plan's traceability table, made gradeable.
+
+    This is the enforcing half of ``PLAN_REQUIREMENT_ANCHORS``.  Before it
+    existed, the table was prose on a research branch: 13 of the 15 anchors it
+    named for T01 and T04 did not exist, both tasks were merged and CI-green, and
+    nothing in the repository could resolve a single row -- a suite run names
+    FILES, so a missing test is not a failing test.
+
+    Resolution is by AST rather than by import or ``getattr`` so a row cannot be
+    satisfied by a name that merely happens to be reachable, and so a syntax
+    error in a suite surfaces here as a failure rather than a collection skip.
+    """
+    import ast
+
+    repo_root = Path(__file__).resolve().parent.parent
+    seen: dict[str, set[str]] = {}
+    for requirement, (relative_path, test_name) in sorted(
+        PLAN_REQUIREMENT_ANCHORS.items()
+    ):
+        suite_path = repo_root / relative_path
+        assert suite_path.is_file(), f"{requirement}: no such suite {relative_path}"
+        if relative_path not in seen:
+            tree = ast.parse(suite_path.read_text(encoding="utf-8"), filename=str(suite_path))
+            seen[relative_path] = {
+                node.name
+                for node in ast.walk(tree)
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            }
+        assert test_name in seen[relative_path], (
+            f"{requirement}: the plan assigns {relative_path}::{test_name}, "
+            f"which does not exist. A missing anchor is invisible to a suite run "
+            f"-- `pytest {relative_path}::{test_name}` reports `no tests ran`, "
+            f"not a failure -- so it is asserted here instead."
+        )
+
+    # The map is a claim about coverage, so its own shape is asserted too: an
+    # empty or silently-truncated map would pass every loop above.
+    assert len(PLAN_REQUIREMENT_ANCHORS) == 15, sorted(PLAN_REQUIREMENT_ANCHORS)
+    assert all(
+        requirement.startswith("IND-") for requirement in PLAN_REQUIREMENT_ANCHORS
+    ), sorted(PLAN_REQUIREMENT_ANCHORS)
