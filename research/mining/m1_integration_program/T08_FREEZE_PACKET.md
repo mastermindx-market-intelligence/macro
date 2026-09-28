@@ -23,6 +23,16 @@ missing 1..40  : none    out of range : none
 PARTITIONS 1..40 EXACTLY : True
 ```
 
+**RECEIPT RE-DERIVED INLINE 2026-09-27 (wave 9).** `scratchpad/mgd_coverage.py` no longer
+exists, so the block above was unverifiable by a later reader. No gate executed it, so nothing
+was broken — but a measurement whose only receipt is a deleted file is prose, and R-MIN-33e
+already requires the command inline. Re-measured at HEAD `d985e668c4ab` against the ledger itself,
+reproducing the block above exactly (assigned 40, duplicates none, missing none):
+
+```
+python3 -c "import json,re;d=json.load(open('research/mining/m1_integration_program/MGD_EXECUTION_STATUS.json'));n=sorted(int(re.match(r'MGD-(\d+)\$',r['obligation_id']).group(1)) for r in d['obligations']);print(len(n),sorted({x for x in n if n.count(x)>1}),sorted(set(range(1,41))-set(n)))"
+```
+
 The concern that prompted this audit (only 16 distinct MGD ids appear across all program
 records) was unfounded as a *map* defect. Every obligation has an owning task. Recorded so
 no later wave re-audits it.
@@ -59,6 +69,19 @@ rows still NOT_RUN in the trace       : 40/40
 Falsified against real files before reporting (`scratchpad/verify_names.py`): on main
 `test_mining_shared_contract.py` has 15 tests and **neither** planned name; at #7950
 `test_mining_composition.py` has 43 tests and only 2 of the 8 planned T04 names.
+
+**RE-MEASURED 2026-09-27 (wave 9); the CONCLUSION is unchanged and now rests on a current
+number.** Both cited scripts (`scratchpad/trace_reality.py`, `scratchpad/verify_names.py`) are
+gone, and the `0/40 on main` figure was taken before #7950 merged — so the head it described no
+longer exists. At HEAD `d985e668c4ab`: **40 of 40 rows carry a planned name and 2 resolve, so a
+name-matching audit would report 38 false gaps TODAY** — the same figure §4 reported, which is
+why the rule `status_is_never_inferred_from_a_test_name` is vindicated rather than merely
+restated. The ledger's `authority.rationale` carries the dated re-measurement, and its
+`measured_against.pin_integrity` block carries the converse check the original pair never ran:
+every `delivered_test` ref resolving to a real `def`. That check has its own trap — the field is
+sometimes a LIST and sometimes ONE string holding several comma-separated refs, and treating a
+multi-ref string as one ref reports false dead pins (it did, on MGD-34 and MGD-39, both of which
+resolve).
 
 This is mostly a NAMING divergence, not a coverage hole — the delivered suites named their
 tests after the *mechanism* pinned rather than the *obligation*. §5 resolves it per row.
@@ -173,6 +196,25 @@ casebook can only SET fixture keys, never delete them, and `financial_packets` i
 from the presence of the `economics` key — **so the T04a casebook cannot express an empty
 economic path at all.** Whoever writes the §6.2 pin must build the bundle directly
 (`dataclasses.replace(case.bundle, financial_packets=())`) or add a fixture.
+
+**RECEIPT RE-DERIVED INLINE 2026-09-27 (wave 9).** Both probes named here are deleted, so the
+refutation that saved a lane from implementing the wrong behaviour had no reproducible receipt.
+Re-measured at HEAD `d985e668c4ab` — the module shape the refutation turned on:
+
+```
+python3 -c "import sys;sys.path.insert(0,'.');from engine.market_ontology import mining_theme_research as c;from tests.mining_casebook import synthetic_case as s;k=s('copper_complete');p=c.compose_mining_research(k.query,k.bundle);b=p['economics']['native_blocks'][0];print(sorted(b),'period' in b,b['stable_subject_id'])"
+```
+
+```
+['basis', 'measure', 'sign', 'source_label', 'stable_subject_id', 'value']
+period present: False
+stable_subject_id: '0000000421'
+```
+
+The behaviour half of §6 is no longer merely measured: waves 5–6 shipped the MGD-08 clause 2
+behaviour fix and its pin, and R-MIN-35 amends R-MIN-34 with the reason the original
+measurement generalized a copper-only result to both slices. Read that amendment before
+re-using anything in this section.
 
 ### 6.1 MGD-10 — satisfied by absence of capability; becomes live at T03
 
