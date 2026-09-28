@@ -36,9 +36,19 @@ changed:
   - path: research/energy/nuclear_program/rulings/R-ENE-2026-09-28-w2-module-r7.md
     what: "Seat rulings R-ENE-31 (interpretation inputs gated by served scope and replay cutoff) and R-ENE-32 (lineage pointer pin), plus the relay adjudications, the a0d7b054ff23 re-proof and the lane result."
   - path: research/energy/nuclear_program/rulings/R-ENE-2026-09-25-w2-module-r6.md
-    what: "Corrected at source: the :1300 to :1298-1299 erratum, and (6b) marked superseded for nuclear by R-ENE-31."
+    what: "Corrected at source: the :1300 to :1298-1299 erratum, and (6b) marked superseded for nuclear by R-ENE-31. Both were corrected again on 2026-09-28 by the round-7 closure: the erratum is withdrawn (NIT-1, :1300 was correct) and the Robotics count-only premise is wrong (MINOR-1)."
   - path: research/energy/nuclear_program/REG-PACKET-2026-09-25-nuclear_power.md
-    what: "Re-verified at #7870 a0d7b054ff23 (section 1b). Carrier obligations added in section 3b: the restart regex with a MUST_RESTART row for the lazy module, curated closure lists as a UNION, and `add site` before any gate."
+    what: "Re-verified at #7870 a0d7b054ff23 (section 1b). Carrier obligations added in section 3b: the restart regex with a MUST_RESTART row for the lazy module, curated closure lists as a UNION, and `add site` before any gate. Amended 2026-09-28 by the registration dry-run (section 1c): receipts, the definition-version import corrected in section 3, seven curated blocks not six, the skip-set rule, the five section-4 tests as proven bytes (section 4b), and the plain-language gap in section 5."
+  - path: research/energy/nuclear_program/reviews/OPUS-REVIEW-2026-09-28-w2-module-r7-closure.md
+    what: "Round-7 closure by the same Opus READ_ONLY reviewer, verbatim. ACCEPT_WITH_NITS: R-ENE-31/32 closed, one MINOR on the seat records (Robotics known_revisions is not count-only), four NITs (a retracted line-number NIT, the review clock unpinned, two wording points, an unreadable review time failing the request)."
+  - path: research/energy/nuclear_program/rulings/R-ENE-2026-09-28-w2-module-r8.md
+    what: "Seat rulings R-ENE-33 (the review clock pinned) and R-ENE-34 (an unreadable replay review time withheld, not failed), the disposition of every round-7 closure finding, the queued malformed-cutoff relay, and the lane and post-lane results."
+  - path: research/energy/nuclear_program/rulings/R-ENE-2026-09-28-w2-module-r7.md
+    what: "Corrected at source by the round-7 closure: the :1298-1299 erratum withdrawn (NIT-1), the Robotics count-only premise and the carve-out acceptance withdrawn (MINOR-1), and two wording points (NIT-3)."
+  - path: research/energy/nuclear_program/reviews/OPUS-REVIEW-2026-09-25-w2-module-r6-closure.md
+    what: "Seat annotations at the three places the retracted line-number NIT appears; the reviewer's verbatim text is otherwise unchanged."
+  - path: agentos/handoffs/GMI-ENERGY-2026-09-24-nuclear-first-vertical-implementation.md
+    what: "Section 15: round 7 closed ACCEPT_WITH_NITS, round 8 delivered and gated, the registration dry-run, the #7870 relay 5866433049, and the at-source corrections."
 verified:
   - claim: "Current protected procedure is compatible and loaded from one pin."
     command: "cd Mastermind && git fetch origin master && git rev-parse origin/master; git show <sha>:docs/sol_skills/INDEX.md plus COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE, CLOSEOUT, COMMISSION_WAVE, WORKER_AVENUE_ROUTING, WATCHER_ACTION_LOOP, REVIEW_RETURN, docs/AGENT_DIALOGUE_SESSION_CLOSE_LAW.md, docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md at that sha"
@@ -85,6 +95,12 @@ verified:
   - claim: "Nuclear's registration adds modules that the macro-api restart regex does not match."
     command: "extract the ERE from git show a0d7b054ff23:app/deploy/update.sh line 1261 (the test's own _ere_on_line rule) and grep -qE each path"
     result: "no-match: nuclear_theme_research.py, nuclear_owner_bundle.py, theme_graph/identity.py, and #7870's own semiconductor_owner_bundle.py, semiconductor_witness_scope.py, workspace_projection.py. RESTART: theme_research_registry.py, theme_graph/rights.py, curation_assertion.py, neuralweb/company_intelligence_reader.py."
+  - claim: "The round-8 lane delivered exactly the seat's bytes and the module is green on both bases."
+    command: "bash $SP/r8gate/postlane8.sh (git ls-remote/log/diff against 3c775ea592a6, cmp against r8gate/sim, pytest over tests/test_*nuclear*.py on the frozen base and on the a0d7b054ff23 compat tree, pyflakes, matrix8.sh, gh pr view 8002)"
+    result: "8bae70522f38, parent 3c775ea592a6; one commit with the exact subject; exactly 3 paths, IDENTICAL (engine 3a795c54c70e3a08, scope test 55f5580590aeea2d, route test dff63c3926ef02a6); 99 passed on both bases; route 4 passed; pyflakes rc 0; survivors = the 6 classified equivalents + m34_broad; #8002 DRAFT, no labels, auto null; no nuclear commit on main."
+  - claim: "The registration packet applies at #7870 a0d7b054ff23 plus #8002 and every gate it names passes."
+    command: "python3 $SP/regdry/apply_reg.py <scratch tree>; $SP/regdry/run.sh applied1; pytest tests/test_theme_research_nuclear_registration_dryrun.py; pytest tests/test_ci_pack.py -k \"closure or curated or scope\"; python3 $SP/regdry/closure_audit.py with and without the nuclear lines"
+    result: "710 passed/2 skipped before and 711 passed/2 skipped after (the one new case is the MUST_RESTART row); section-4 tests 5 passed with the lazy-import positive control; test_ci_pack 21 passed, 2 skipped, 112 deselected; closure audit 0 MISS, and 7 jobs MISS with the lines stripped."
 unverified:
   - claim: "Semiconductor B's theme-research response envelope can carry a shared economic-change dossier section without a second route."
     what_would_verify: "B's T08/T09 landed shape on #7870 (schema semiconductor_theme_research.v1 top-level fields, /api/themes/v1/research/query request schema) read at its exact head; decision reserved to Task 7 (ruling R-ENE-04)."
@@ -98,10 +114,12 @@ unresolved:
   - "Route/private-role custody for Tasks 6-7 depends on B's T09 and R4 outcomes (see unverified)."
   - "The shell's evidence route refuses every theme:-scoped assertion_ref (app/theme_research.py:207 at #7870 @6cd958e92b25). RULING 8 (Robotics seat, #7870 comment 5829833052) chose to widen the pattern to ^gmi-curation://(?:theme:)?[a-z0-9_]+/gmirca_[0-9a-f]{32}$; the edit is the shell owner's and is not yet on #7870's head (scheduled watch check F)."
   - "#7870's lazily bound loader chain (semiconductor_owner_bundle.py, semiconductor_witness_scope.py, workspace_projection.py) is imported at request time in macro-api. It matches neither the restart regex nor MUST_RESTART, and the AST load-time probe cannot see function-level imports. This is the owner's to fix; Energy relays the mechanism only."
+  - "A malformed replay cutoff in a user query answers 503 service_unavailable/retry_later instead of a 400 (app/theme_research.py:197-198 bound only length; _validate_query never parses). Base-owned; queued for the next #7870 post (R-ENE-2026-09-28-w2-module-r8.md)."
+  - "The shell's Limitations line prints wire tokens verbatim in EN and ZH. Asked on #7870 comment 5866433049 item 6 whether a token-to-plain-words map is planned; Energy offered a bilingual table for its 20 tokens. Unanswered."
 next_actions:
-  - "Round-7 closure: the brief went to reviewer a14e0071943034a00 at 2026-09-28 ~07:45Z. Record the verdict under research/energy/nuclear_program/reviews/. On ACCEPT or ACCEPT_WITH_NITS, refresh the #8002 body and keep the HOLD line. On FIX_REQUIRED, rule R-ENE-33 onward and transcribe by script on mb."
-  - "Post ONE #7870 relay after the carrier fence. It carries the class-sweep corrected reason, the :1298-1299 erratum, the fact that RULING 8's widening is still absent at a0d7b054ff23, and the lazy-loader restart-regex gap (handoff section 14)."
-  - "After #7870 merges: rebase #8002 onto main. Then open the registration carrier per REG-PACKET-2026-09-25-nuclear_power.md sections 3, 3b, 4 and 5. Then served, browser and privacy proof, then Task 10."
+  - "Round-8 closure: brief the same reviewer carrier (a14e0071943034a00) on #8002 at 8bae70522f38, with the records PR's at-source corrections in scope. Record the verdict under research/energy/nuclear_program/reviews/. On ACCEPT or ACCEPT_WITH_NITS, refresh the #8002 body (head 8bae70522f38) and keep the HOLD line. On FIX_REQUIRED, rule R-ENE-35 onward and transcribe by script on mb."
+  - "Next #7870 post, after the carrier fence and only with substance: the malformed-cutoff 503 relay (R-ENE-2026-09-28-w2-module-r8.md) plus round-8 status. Answer the owner's replies to 5866433049 (RULING 8 widening, registration writer, limitation tokens) when they come."
+  - "After #7870 merges: rebase #8002 onto main. Then open the registration carrier per REG-PACKET-2026-09-25-nuclear_power.md sections 3, 3b, 4, 4b and 5, re-running the section-1c gates at the post-merge heads. Then served, browser and privacy proof, then Task 10."
   - "Fresh-read the Slack root and #7870 before every substantive write; the two-hourly scheduled watch watch-gmi-energy-fable-ceo-e2e-20260923 reports #7870 merge/close, the shared registry file landing on main, and counterpart edges."
 do_not_redo:
   - "Do not repeat R1-R6 research, the 78-requirement design, the 11-task plan or the first-vertical choice (Nuclear first, Power-Demand next)."
@@ -114,7 +132,10 @@ do_not_redo:
   - "Do not redo the Power-Demand scope census (PR #8016), and do not design or build Power-Demand before nuclear ACCEPTANCE (R-ENE-16)."
   - "Do not change nuclear VIEWS: they already equal the shared client's TR_VIEW_KEYS, which Robotics' #7870 comment 5828876066 showed to be hard-pinned."
   - "Do not re-run the round-6 closure, and do not re-derive the round-7 packet. The seat sim r7gate/sim plus apply_r7.py are the byte reference."
-  - "Do not reopen (6b) for Robotics. There it is count-only by the owner's own measurement (#7870 5835307458); the corrected reason is relayed, not raised as a finding."
+  - "Do not re-raise Robotics' known_revisions. It is NOT count-only (a1c8968f8e2f: read at :549 inside _inputs_known, called at :404 for the count and at :530 where the block's text is withheld); that was relayed as #7870 comment 5866433049 item 4, and the owner decides. (Corrected 2026-09-28: this item used to say count-only.)"
+  - "Do not re-derive the round-8 packet. The seat sim r8gate/sim plus apply_r8.py are the byte reference; m34_broad is the one documented residual and stays unpinned (R-ENE-34)."
+  - "Do not re-run the registration dry-run at a0d7b054ff23; REG-PACKET section 1c is the record. Re-run its gates at the post-merge heads."
+  - "Do not re-introduce the :1298-1299 erratum. :1300 was correct; the reviewer retracted its own NIT (round-7 closure NIT-1)."
   - "Do not re-verify the REG-PACKET facts again at a0d7b054ff23; section 1b is the record. Re-verify only at the post-merge heads."
 danger_areas:
   - "Macro is public: no full-fidelity paid research bodies, source PDFs, credentials or private production captures on this carrier; fixtures are SYNTHETIC and never copies of live Cameco/Centrus/BWXT/NuScale/Oklo values."
@@ -127,7 +148,8 @@ danger_areas:
   - "Fix lanes have deleted packet-named tests and re-defined packet fixtures (NEW-1, NEW-9) while reporting success: a file-level post-lane check does not catch it; diff test names and fixture definitions (R-ENE-19)."
   - "A registration carrier that skips REG-PACKET section 3b.1 deploys nuclear code that never goes live, because sys.modules pins the old module. No test fails for the lazily loaded nuclear_owner_bundle unless the MUST_RESTART row is added."
   - "m1's lane volume (/Volumes/STORAGE) was still wedged on 2026-09-28. Route fabric lanes to mb."
-prs: [7791, 7881, 8001, 8002, 8016]
+  - "_le and _parse_day are the base's (semiconductor_theme_research.py); Energy guards its own call sites and never edits the base helper. A test that pins today's 503 for a malformed user cutoff would fight the base's fix (a 400); do not write one."
+prs: [7791, 7881, 8001, 8002, 8016, 8139]
 ---
 
 # GMI Energy — Nuclear Value Capture first vertical: implementation operation working checkpoint
@@ -509,7 +531,7 @@ The round-4 closure brief went to reviewer `a14e0071943034a00` at about 11:00Z, 
 - R-ENE-29 is correct and R-ENE-30 is SOUND.
 - MINOR: `known_revisions` crosses the scope and time gate. It becomes R-ENE-31.
 - NIT: the lineage pointer after a served hop was not pinned. It becomes R-ENE-32.
-- NIT: the relay cited :1300, but the build is at :1298-1299. The erratum is marked at source in the r6 ruling, together with the (6b) supersession.
+- **[Withdrawn 2026-09-28 (round-7 closure NIT-1): :1300 was correct, and the erratum is withdrawn at source; see section 15.]** NIT: the relay cited :1300, but the build is at :1298-1299. The erratum is marked at source in the r6 ruling, together with the (6b) supersession.
 - The reviewer's GAP 3 is refuted by `postlane6.out`: `r9_evrefs_pre 3 failed, 77 passed`.
 
 **Round 7** (`rulings/R-ENE-2026-09-28-w2-module-r7.md`) is the E6 engine change, a new test file of 5 tests and 8 cases, and one appended pin.
@@ -527,7 +549,7 @@ The round-4 closure brief went to reviewer `a14e0071943034a00` at about 11:00Z, 
 
 **Relays adjudicated, with no Energy change.**
 - RULING 12 and its fix: Robotics indexes over `selection.assertions` under RBV-18, and nuclear indexes over `review_ok` under R-ENE-20. That is one principle applied to opposite pinned contracts.
-- The class sweep: the set is count-only in Robotics. The corrected reason is that a count built over the raw bundle is still a replay look-ahead.
+- **[Corrected 2026-09-28 (round-7 closure MINOR-1): not count-only; see section 15.]** The class sweep: the set is count-only in Robotics. The corrected reason is that a count built over the raw bundle is still a replay look-ahead.
 - The fleet-blocker retraction: the ordering constraint it kept binds #8002, which imports four modules that are not on main. #8002 stays DRAFT/HOLD until #7870 lands.
 
 **Registration packet re-verified** (REG-PACKET §1b and §3b).
@@ -554,3 +576,51 @@ Two standing items:
 - Power-Demand stays preparation-only (R-ENE-16); census #8016 stands.
 
 **do_not_redo / danger_areas:** the frontmatter lists carry them. The new items are the round-6/round-7 byte references, (6b) for Robotics, the §1b re-verification, the restart-regex trap, and the m1 volume.
+
+## 15. State 2026-09-28 ~09:10Z — round 7 closed ACCEPT_WITH_NITS; round 8 (R-ENE-33/34) delivered by script and gated; registration dry-run done; records corrected at source
+
+**Round 7 closed ACCEPT_WITH_NITS.** The record is `research/energy/nuclear_program/reviews/OPUS-REVIEW-2026-09-28-w2-module-r7-closure.md`, from the same reviewer carrier `a14e0071943034a00`. The dispositions are in `rulings/R-ENE-2026-09-28-w2-module-r8.md`.
+- R-ENE-31 and R-ENE-32 are closed. There is no BLOCKER or MAJOR in #8002's three changed files.
+- MINOR-1, on the seat's records: Robotics' `known_revisions` is NOT count-only. At `a1c8968f8e2f` it is read at :549 inside `_inputs_known`, which is called at :404 for the count and at :530, where the block's text is withheld. The r6 and r7 records, section 14 and `do_not_redo` are corrected at source.
+- NIT-1: the reviewer retracted its own round-6 line-number NIT. `:1300` was correct, and the erratum is withdrawn at source in four files.
+- NIT-2 becomes R-ENE-33, NIT-3 is two wording corrections in the r7 ruling, and NIT-4 becomes R-ENE-34.
+
+**#7870 relay posted** as comment 5866433049, after the carrier fence. It carries a status line and:
+1. an ask: RULING 8's widening is still absent at `app/theme_research.py:207`;
+2. an ask: confirm that Energy's carrier is the one registration writer, with the dry-run results and client readiness;
+3. a report: the lazily bound loader chain is outside the restart regex;
+4. a report: the MINOR-1 correction, with effects (a) and (b) and R-ENE-31 as the reference fix. It says relay 5832062081 stands as posted;
+5. a report: the base's unreadable-`reviewed_at` 503;
+6. a report and question: the Limitations line shows wire tokens.
+
+No reply had come when this was written.
+
+**Round 8** is `3c775ea592a6..8bae70522f38f251e224cdf81a0a975710be9be0`. It is transcribed BY SCRIPT on mb (`apply_r8.py`, sha256 `e7e4f15b…`).
+- R-ENE-33 adds five review-clock pins. R-ENE-34 is a narrow guard that parses only the block's clock and withholds on `ValueError`, plus a route test that requires 200 with the private headers.
+- The post-lane gate (`r8gate/postlane8.sh`) confirmed:
+  - one commit, 3 paths, each byte-identical to the seat tree;
+  - `99 passed` on the frozen base and on the `a0d7b054ff23` compat tree, and route `4 passed` on each;
+  - pyflakes clean;
+  - survivors are exactly the 6 equivalents plus `m34_broad`, which is the documented residual;
+  - #8002 is DRAFT, with no labels and auto-merge null.
+- The seat red check was `4 failed, 95 passed`.
+
+**Registration dry-run** (REG-PACKET §1c). The packet applies at `a0d7b054ff23` plus #8002, and every gate passes:
+- `711 passed`;
+- the §4 tests `5 passed`, with a lazy-import positive control;
+- `test_ci_pack` `21 passed`;
+- the closure audit reports 0 MISS, and 7 jobs MISS with the lines stripped.
+
+It corrected two facts in the packet: the definition-version import, and the curated block count, which is seven, not six. The five §4 tests are now in the packet as proven bytes (§4b). The registration needs nothing from #7870 except RULING 8's widening.
+
+**Queued for the next #7870 post.** A malformed user replay cutoff answers 503 `retry_later` instead of 400. Nuclear shows it at `a0d7b054ff23`; semis was not probed, because the instrument's positive control did not fire there.
+
+**Gates, unchanged.**
+- #8002 stays DRAFT/HOLD until #7870 lands, because it imports four #7870 modules that are not on main.
+- Power-Demand stays preparation-only (R-ENE-16).
+- The #8001 live rung stays an EXACT_HUMAN_GATE behind `# MMX-DISK-TRIAGE-HOLD` (#6902).
+
+**Exact next actions.** They are the frontmatter `next_actions`, in order:
+1. the round-8 closure, then the #8002 body refresh;
+2. the next #7870 post, only with substance;
+3. after #7870 merges: rebase, then the registration carrier (re-running §1c at the post-merge heads), then served, browser and privacy proof, then Task 10.
