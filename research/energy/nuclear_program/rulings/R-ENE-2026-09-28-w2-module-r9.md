@@ -1,5 +1,7 @@
 # R-ENE-35..36 — Energy nuclear module, round 9 (a malformed query cutoff still fails the query; the instant review clock pinned)
 
+**[Corrected 2026-09-28 (round-9 closure NIT-1): the title's "a malformed query cutoff still fails the query" holds only where the guard compares a readable review time with the cutoff. A block with no readable review time is withheld before the cutoff is read. See R-ENE-37 in `R-ENE-2026-09-28-w2-module-r10.md`.]**
+
 - Seat: Energy Fable CEO, session 8955bbc3 (claude8). Operation `gmi-energy-fable-ceo-e2e-20260923-chairman-001`.
 - Issued 2026-09-28. PR #8002 at `8bae70522f38f251e224cdf81a0a975710be9be0` (round 8).
 - Triggers, in order:
@@ -19,7 +21,7 @@
 | **NIT-A.** The reason the r8 records give for leaving `m34_broad` unpinned is false. | Accepted. This is **R-ENE-35**, which pins it. The false reason is corrected at source in the r8 ruling and in the handoff's `do_not_redo` and `danger_areas`. |
 | **NIT-B.** The instant review clock has no pins, and the scope test's docstring overclaims. | Accepted. This is **R-ENE-36**, which pins it and rewrites the docstring's closing sentences. |
 | **NIT-C.** Four copies of the withdrawn line-number point are unmarked. | Accepted. They are annotated at source: the r6 closure record :16 and :209, the r7 ruling :9, and the handoff's count at :49. The r8 ruling's :16 claim that the withdrawal was complete is annotated too. |
-| **NIT-D.** The queued relay's headline holds only when the bundle has content. | Accepted. The seat re-probed before posting, and the corrected relay went to #7870 as comment 5868018569, item 7 (below). The r8 ruling's queued-relay section and the handoff (:117, :616) are annotated at source. |
+| **NIT-D.** The queued relay's headline holds only when the bundle has content. | Accepted. The seat re-probed before posting, and the corrected relay went to #7870 as comment 5868018569, item 7 (below). The r8 ruling's queued-relay section and the handoff (:117, :616) are annotated at source. **[Corrected 2026-09-28 (round-9 closure O2): :117 and :616 are the handoff's lines at the parent `fbd78d1242a3`. The annotated places are the `unresolved` item that begins "A malformed cutoff in a user query" and the paragraph that begins "Queued for the next #7870 post"; locate them by those strings.]** |
 | **O1.** `_le` reads an instant against a date-only cutoff on the instant's own local day. | Base-owned. The seat reproduced it and relayed it in 5868018569 as an observation with no ask. Nuclear inherits the owner's answer by construction. |
 | **O2.** The r8 ruling cites semis `:141-163`, but the helpers span `:138-164`. | Corrected at source. |
 | **O3.** The r8 ruling's R-ENE-19 bullet does not name the docstring edit. | Corrected at source. |
@@ -38,7 +40,7 @@ Take a replay whose `recorded_cutoff` is `'not-a-date'`, with one block that has
 
 `ResearchRefusal` subclasses `ValueError` (`semiconductor_theme_research.py:121` at `a0d7b054ff23`). So an engine `pytest.raises(ValueError)` kills `m34_broad` and the reviewer's `my8_swallow_cutoff`, pins no HTTP status, and keeps passing after the base fix.
 
-**Ruling.** There is no engine change. The contract is the one R-ENE-34 stated: the guard reads only the block's clock, so a malformed query cutoff still fails the query instead of withholding the block. One test is appended: `test_the_review_guard_never_swallows_a_malformed_replay_cutoff`, parametrized over `'not-a-date'` and `'2026-13-45'`.
+**Ruling.** There is no engine change. The contract is the one R-ENE-34 stated: the guard reads only the block's clock, so a malformed query cutoff still fails the query instead of withholding the block. **[Corrected 2026-09-28 (round-9 closure NIT-1): the guard reads only the block's clock to judge readability, then compares a readable review time with the cutoff (`return _le(reviewed, self.query.recorded_cutoff)`). A malformed cutoff fails the query wherever that comparison runs; a block with no readable review time is withheld before the cutoff is read. R-ENE-37 rescopes the docstring.]** One test is appended: `test_the_review_guard_never_swallows_a_malformed_replay_cutoff`, parametrized over `'not-a-date'` and `'2026-13-45'`.
 - It builds one block with a readable review time, citing an input from another slice (`K1other_slice`) that the query does not know.
 - For each of two bundles, one holding that out-of-slice assertion and one holding no assertion:
   - **positive control:** the well-formed replay counts the block absent, so the block does reach the review guard;
@@ -54,7 +56,7 @@ Take a replay whose `recorded_cutoff` is `'not-a-date'`, with one block that has
 | `system_replay`, `source_cutoff` `not-a-date` | 503 | 200 |
 | `source_history`, `source_cutoff` `not-a-date` | 503 | 200 |
 
-- The empty-bundle 200s carry exactly the limitations of the well-formed control, so the malformed cutoff leaves no trace. An empty bundle is what nuclear's own owner loader returns today.
+- The empty-bundle 200s carry exactly the limitations of the well-formed control, so the malformed cutoff leaves no trace. An empty bundle is what nuclear's own owner loader returns today. **[Corrected 2026-09-28 (round-9 closure NIT-3): "no trace" is false. Against the control, the 200 differs at `.generation` and echoes the malformed value at `.request.recorded_cutoff`; only the limitations match.]**
 - A bare `ValueError` from `_le` reaches the route's catch-all (`app/theme_research.py:683-687` at `a0d7b054ff23`), which answers 503.
 - A simulated fix that parses only the two replay cutoffs (`r9gate/basefix9.py`) turns every replay row into 400 `invalid_request`/`fix_request`. It leaves the `source_history` row at 503 and 200.
 - **Posted** to #7870 as comment 5868018569, item 7, after the carrier fence (2026-09-28 10:20:50Z). It names the fix shape as the owner's call:
@@ -105,6 +107,8 @@ it compares as an instant (R-ENE-36). The guard reads only the block's clock,
 so a malformed query cutoff still fails the query instead of withholding the
 block (R-ENE-35).
 ```
+
+**[Corrected 2026-09-28 (round-9 closure NIT-1): the last two sentences above overstate the engine, and the R-ENE-33 sentence holds only when either side is date-only. The round-10 wording is quoted under R-ENE-37 in `R-ENE-2026-09-28-w2-module-r10.md`.]**
 
 ## Tests (append-only, R-ENE-19)
 

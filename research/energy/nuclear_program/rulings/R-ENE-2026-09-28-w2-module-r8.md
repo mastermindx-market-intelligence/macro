@@ -76,6 +76,8 @@ The absent count (`test_a_replay_never_counts_a_block_reviewed_after_its_cutoff`
 
 **[Corrected 2026-09-28 (round-8 closure NIT-D): the headline holds only when a time gate reads the cutoff. On an empty bundle, which is what nuclear's own owner loader returns, a malformed cutoff answers a silent 200, and `source_history` is affected too. The seat re-probed before posting, and the corrected relay went to #7870 as comment 5868018569, item 7. See R-ENE-35 in `R-ENE-2026-09-28-w2-module-r9.md`.]**
 
+**[Corrected again 2026-09-28 (round-9 closure NIT-3): "only when a time gate reads the cutoff" misses two nuclear readers, the replay review guard and the review-expiry gate, and the headline holds only within the 32-character bound. The relay was corrected on #7870 in comment 5869344590; see `R-ENE-2026-09-28-w2-module-r10.md`.]**
+
 - `_QueryBody.source_cutoff` and `recorded_cutoff` are bounded only by length (`app/theme_research.py:197-198`), and `_validate_query` never parses them.
 - Seat probe (`r8gate/probe_cutoff400.py`, nuclear on the `a0d7b054ff23` compat tree):
   - `'2026-12-31'` gives 200;
