@@ -172,3 +172,26 @@ def test_projection_is_pure_and_never_mutates_owner_payloads():
     originals = deepcopy((w,rr,rg,ms,re))
     rw.compose_capital_protection_briefing(w, radar=rr, regime=rg, market_state=ms, risk_envelope=re)
     assert (w,rr,rg,ms,re) == originals
+
+
+def test_real_market_state_component_list_is_preserved_as_source_native_rows():
+    ms = {"score":59,"verdict":"MIXED","components":[
+        {"key":"trend","label_en":"Trend & technicals","score":61,"read_en":"2/3 indices up"},
+        {"key":"vol","label_en":"Volatility regime","score":86,"read_en":"VIX term calm"},
+        {"key":"breadth","label_en":"Breadth & participation","score":0,"read_en":"Breadth 8%ile; divergence"},
+        {"key":"liquidity","label_en":"Liquidity & credit","score":72,"read_en":"Fed liquidity expanding; HY widening"},
+    ]}
+    got = rw.compose_capital_protection_briefing(warning(), radar=us_radar(), market_state=ms)
+    assert got["backdrop"]["components"] == [
+        {"key":"trend","label_en":"Trend & technicals","score":61,"read_en":"2/3 indices up"},
+        {"key":"vol","label_en":"Volatility regime","score":86,"read_en":"VIX term calm"},
+        {"key":"breadth","label_en":"Breadth & participation","score":0,"read_en":"Breadth 8%ile; divergence"},
+        {"key":"liquidity","label_en":"Liquidity & credit","score":72,"read_en":"Fed liquidity expanding; HY widening"},
+    ]
+
+
+def test_broken_leadership_is_promoted_beside_dominant_radar_driver_without_fake_score():
+    got = rw.compose_capital_protection_briefing(
+        warning(), radar=us_radar(), risk_envelope=envelope())
+    assert [d["key"] for d in got["drivers"][:3]] == ["radar:rates", "leadership-crack-latest", "radar:credit"]
+    assert got["drivers"][1]["score"] is None
