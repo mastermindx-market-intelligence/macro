@@ -11,8 +11,8 @@
   "source_url": "https://www.gov.uk/government/news/healey-pledges-new-age-of-industrialisation-as-government-backs-british-shipbuilding",
   "doc_version": "8d344b29-959f-4e23-8445-d3497a36e75f@2026-09-28T00:01:03+01:00",
   "published_iso": "2026-09-27T23:01:03+00:00",
-  "known_at_iso": "2026-09-28T08:43:01.393068+00:00",
-  "age_days": 0.4,
+  "known_at_iso": "2026-09-28T08:56:44.736385+00:00",
+  "age_days": 0.41,
   "stance": null,
   "model_unavailable": true,
   "summary_en": null,
@@ -21,6 +21,6 @@
   "watch_zh": null,
   "excerpt": "Two major maritime projects to be part of \u201cnew age of industrialisation\u201d for Britain.",
   "provider_label": "assistant",
-  "generated_utc": "2026-09-28 08:43 UTC",
+  "generated_utc": "2026-09-28 08:56 UTC",
   "state": "model_unavailable"
 }
