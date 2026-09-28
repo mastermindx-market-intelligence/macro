@@ -33,6 +33,17 @@
     ],
     "PreToolUse": [
       {
+        "matcher": "Bash|PowerShell|Edit|Write|MultiEdit|NotebookEdit|Agent|Task|Workflow|Skill|EnterWorktree|mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/ship_loop_guard.py\"",
+            "timeout": 10,
+            "statusMessage": "Checking session delivery root"
+          }
+        ]
+      },
+      {
         "matcher": "Agent|Task|Workflow",
         "hooks": [
           {
