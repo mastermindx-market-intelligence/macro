@@ -17,6 +17,8 @@ state_before: >
   #7950 while its CI was in flight. Five freeze packets (T02/T03/T04b/T07/T08) written but held
   in a session scratchpad, so not durable. T02 gated on another seat's #7905; T05/T06 on #7870.
 changed:
+  - path: "research/mining/m1_integration_program/T02_FREEZE_PACKET.md (wave 8)"
+    what: "FIXED A GATE THAT COULD NOT EXECUTE. T02's §5 delivery gate required `tests/test_issuer_profiles.py` and `tests/test_event_workspace_build.py` green as its sibling-regression guard, and NEITHER FILE EXISTS. The suites it means are `tests/test_issuer_profiles_a5a.py`, `tests/test_refresh_event_workspaces.py` and `tests/test_company_intelligence_event_workspace.py` - measured green together, 123 passed. The gate's INTENT is unchanged; only the names were wrong. This was load-bearing: that gate is the packet's ONLY protection against T02's edit to the SHARED engine/company_intelligence/issuer_profiles.py regressing its incumbent owner, which every sector vertical risks because all five edit the same sites with no registration seam. It fails QUIETLY both ways - pytest on a missing path exits 4 (readable as an environment fault) and a pattern-based run collects zero tests and prints 'no tests ran', which several harnesses do not treat as a failure."
   - path: engine/market_ontology/mining_theme_research.py
     what: "WAVE 5. `_summarize_status` takes a new `has_named_absence` keyword
       (`bool(bundle.omissions)` at the sole call site) and the `stream_threshold_unknown`
@@ -73,6 +75,15 @@ changed:
   - path: "tests/test_mining_composition.py + MGD_EXECUTION_STATUS.json (wave 7, third part)"
     what: "MGD-19 clause 2 is PINNED at the payload level and the row moved NOT_RUN -> PARTIAL_BY_CONSTRUCTION. The audit in this same PR identified exactly one row that was payload-pinnable TODAY - delivered construct, no payload assertion - and an audit that ends in a note where a pin was available has not finished. `test_mgd19_an_intragroup_elimination_reaches_the_payload_with_its_sign` submits the elimination as a native financial packet and requires it to reach `economics['native_blocks']` with `-120` and `sign == '-'`. Two control arms keep it non-vacuous: the same bundle WITHOUT the elimination must yield exactly one block fewer (a silent drop at the builder mints NO limitation, so nothing else in the payload would reveal it), and the measurement block beside it must be byte-identical across both compositions. Counts 6/1/17/13/3 = 40, UNPINNED 0, 176 passed. Clause 1 - product sales and contractual support income remaining separately DEFINED - needs T03's definition vocabulary and is deliberately NOT claimed on the row."
 verified:
+  - claim: "The composer treats `measure` as opaque text, verbatim on both slices, and until this wave NOTHING in 46 tests asserted it."
+    command: "submit 16 measure strings per slice through compose_mining_research and compare economics.native_blocks[*].measure to the submitted value; grep the suite for `measure=`"
+    what: "32/32 verbatim across copper_complete and rare_earth_complete - the named vocabulary (production, purchases, inventory, internal transfer, external delivery, financing proceeds), case variants, a trailing space, CJK, and pure nonsense all reach the payload unchanged with a VALID schema. The only `measure=` submission in the whole suite was the MGD-19 elimination shipped in #8110, so this stated design property was carried entirely by prose while THREE NOT_RUN rows (MGD-07, MGD-14, MGD-23) cite it BY NAME as the ground for their status. Now pinned by `test_the_composer_never_interprets_a_submitted_measure`. That guard protects the REASON'S PREMISE, never the obligation - MGD-14's limit is correct and unchanged: a passthrough can no more keep the five kinds DISTINCT than interchange them, so the rows stay NOT_RUN and still wait on T02/T03 to mint the kind vocabulary. Counts are unchanged by this wave. Note also measured: the schema does NOT constrain the measure vocabulary at all - `unmapped_nonsense_zzz` composes VALID - which is consistent with non-interpretation by design, but a reader should not assume the schema filters it."
+  - claim: "All five Mining freeze packets were resolved token-by-token against the tree; exactly ONE had a defect."
+    command: "extract every backticked span from T02/T03/T04b/T07/T08, resolve symbols against a 12,573-file corpus and paths by basename, then check whether the packet DECLARES each miss"
+    what: "ZERO undeclared absent SYMBOLS in all five - the symbol discipline is sound. `assess_management_sequence` is handled CORRECTLY at source in both packets that name it (T03: 'audit VOCABULARY, not code ... Do NOT assert on'; T08: 'that symbol does not exist anywhere in the tree', so the motive clause 'must not be counted'), so that earlier defect is CLOSED. Every other miss resolved to the packet's own deliverable - mining_issuer_profiles.py (T02/T03/T04b), tests/test_mining_witness_profiles.py (T02), tests/test_mining_economic_inputs.py (T03), tests/test_mining_updates.py (T07) - or to a probe false positive. The ONLY genuine defect was T02's §5 gate; no sibling packet repeats the class."
+  - claim: "Both gates blocking this program are still CLOSED on origin/main 509ffb5a6a5c, measured as symbols rather than as PR numbers."
+    command: "grep fiscal_scope in engine/company_intelligence/issuer_profiles.py; importlib.import_module('engine.theme_graph.curation_assertion'); grep register_route/mount/private_route/def client across engine/theme_graph/"
+    what: "fiscal_scope 0 occurrences (#7905 not landed, T02 not dispatchable). curation_assertion absent repo-wide and the live import raises ModuleNotFoundError - which is exactly what mining_dependency_binding.shared_contract() converts into MiningResearchRefusal('shared_contract_unavailable'). No route/client/mount seam anywhere, so T05/T06 have nothing to consume. IMPORTANT for the next lane: engine/theme_graph/ DOES exist on main with NINE modules (capability, identity, identity_resolution, local_sources, materialize, probation, rights, store, __init__) - that is the PRE-EXISTING package, NOT #7870's additions. Checking 'does engine/theme_graph exist' answers the wrong question and reads the gate as open."
   - claim: "MGD-08 clause 2 was NOT satisfied by the delivered code on the rare-earth
       slice. R-MIN-34's 'NOT a code defect' held on W-C only, and its evidence cell
       measured the copper limitation set."
@@ -195,6 +206,12 @@ next_actions:
   - "A T03 lane owes MGD-19 a PAYLOAD-level fixture (an intersegment elimination row in the casebook), not another helper assertion - and must NOT credit test_internal_transfer_keeps_elimination_sign, which calls _signed_value directly. It owes MGD-23 the input-kind vocabulary (financing / cash availability / owned inventory / operating earnings) BEFORE any non-substitution pin, because the composer currently passes `measure` through verbatim and so can neither substitute nor enforce."
   - "Operator items still open and not seat-actionable: mini2 WAN routing fix, mini2 MiniMax provisioning, mini2 keychain unlock for cursor-agent."
 do_not_redo:
+  - "Do not re-run the freeze-packet symbol/path audit. All five packets (T02, T03, T04b, T07,
+    T08) were swept 2026-09-27 token-by-token against the tree: zero undeclared absent SYMBOLS,
+    and the single genuine defect (T02's §5 sibling gate naming two nonexistent suites) is FIXED
+    in this wave. `assess_management_sequence` is correctly declared dead in both T03 and T08 -
+    do not 'fix' those declarations, and do not assert on that symbol. The remaining absent paths
+    are each the naming packet's own deliverable and are expected to be absent until it lands."
   - "Do not re-open MGD-08 clause 2, and do not revert it to UNPINNED to satisfy T08
     acceptance item 3 - that item is amended and MGD-08 is exempt. It is
     COVERED_SUITE_GREEN, pinned two-armed across both slices by a test that failed before
@@ -212,6 +229,20 @@ do_not_redo:
   - "Do not re-audit the nine rows this wave measured (MGD-08/15/16/17/19/20/21/22/23) or the eight it read and left unchanged (MGD-02/03/05/06/07/13/14/25). Each carries its measurement and its evidence in the row note. A fresh session is not a material invalidator."
   - "Do not re-status MGD-15 COVERED_SUITE_GREEN. That was my first draft and the shared-contract seam refuted it: clause 2's subject is absent from main until #7870. The refutation is recorded inside the row so it cannot be lost."
 danger_areas:
+  - "A GATE NAMED AFTER A PR OR A PACKAGE IS NOT FALSIFIABLE BY INSPECTION. This program records
+    its blockers as '#7870 has not landed' and 'waits on the shared route/client/mount', and a
+    lane that tests those by asking whether `engine/theme_graph/` exists finds NINE modules and
+    can reasonably conclude the shared base is present. It is not: those are pre-existing, and
+    #7870's additions (`curation_assertion`, the route/client/mount seam) are absent. State every
+    cross-PR gate as the specific absent SYMBOL plus the probe that answers it, and prefer a live
+    import probe over a grep when the consumer uses a lazy string import - the grep matches
+    `_SHARED_CONTRACT_MODULE = \"engine.theme_graph.curation_assertion\"` in the consumer itself
+    and answers the wrong question."
+  - "Five citations in frozen records point at DELETED scratchpad probe scripts
+    (probe_mgd_08_10.py, probe_mgd_08_10_v2.py, mgd_coverage.py, trace_reality.py,
+    verify_names.py). No gate executes them, so nothing is broken - but those measurements can no
+    longer be re-verified by a later reader. A receipt should be the command plus its measured
+    output INLINE, the same lesson R-MIN-33e established for commissions."
   - "A SLICE-LEVEL VOCABULARY CODE THAT SHORT-CIRCUITS A STATUS LADDER MAKES THAT LADDER
     BLIND ON THAT WHOLE SLICE. `stream_threshold_unknown` is minted on every W-R payload by
     the slice's own definitional vocabulary, so an early `return \"ready\"` keyed on it
