@@ -100,7 +100,16 @@ do_not_redo:
   - >
     Do NOT re-run the Consumer correctness sweep as a whole. Waves 6-10 closed it: envelope
     integrity, declared basis, authority vocabulary, the native_ref pointer pair, the
-    explanation object, and the degraded-state derivation are all measured.
+    explanation object, and the degraded-state derivation are all measured. SEARCH BOUND,
+    because a do_not_redo is read as permission to skip: "closed" means every one of the
+    eleven top-level contract properties has had at least one derive-don't-enumerate pass
+    (5 root scalars incl. availability, 21 fact fields, results via basis binding /
+    input_refs / pair agreement / authority vocabulary, source_records via the wave-7
+    pointer, subject via case reconciliation, and explanation + degraded_dependencies in
+    wave 10). It is NOT a proof that no defect remains, and it says nothing about the
+    entitled/browser legs, which are externally blocked and were never in this sweep. A
+    NEW class of probe -- one no wave has run -- is legitimate; re-running a wave's own
+    probe is not.
 danger_areas:
   - >
     A degradation probe MUST filter on the real fact keys, which are suffixed
