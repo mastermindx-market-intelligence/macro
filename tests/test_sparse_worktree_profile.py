@@ -28,6 +28,7 @@ import importlib.util
 import hashlib
 import io
 import json
+import os
 import subprocess
 import sys
 import tomllib
@@ -490,6 +491,159 @@ def test_clean_deletes_nothing_when_git_cannot_classify(synthetic_repo: Path, mo
     monkeypatch.setattr(WS, "_sparse_rules_include", _no_answer)
     assert WS.clean_stray(synthetic_repo, force=True) == 1
     assert stray.exists(), "an unclassified file must never be deleted"
+
+
+def test_clean_force_never_deletes_a_file_git_wrote_for_a_conflict(synthetic_repo: Path):
+    """git writes a conflicted file to disk even outside the sparse rules, and
+    it may hold a resolution in progress. The rules still exclude it, so a
+    rules-only scan called it a stray and deleted it, and the run exited 0: the
+    casualty check subtracts the strays, so it cannot see a file wrongly
+    called one."""
+    repo = synthetic_repo
+    conflicted = repo / "data" / "other" / "o.txt"
+    conflicted.parent.mkdir()
+    conflicted.write_text("base\n", encoding="utf-8")
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-qm", "base o.txt")
+    main = _git(repo, "rev-parse", "--abbrev-ref", "HEAD")
+    _git(repo, "checkout", "-qb", "side")
+    conflicted.write_text("side\n", encoding="utf-8")
+    _git(repo, "commit", "-qam", "side")
+    _git(repo, "checkout", "-q", main)
+    conflicted.write_text("main\n", encoding="utf-8")
+    _git(repo, "commit", "-qam", "main")
+    _make_sparse(repo, ["engine", "scripts", "templates"])
+    merge = subprocess.run(("git", "-C", str(repo), "merge", "side"),
+                           capture_output=True, text=True)
+    assert merge.returncode != 0 and conflicted.is_file(), (
+        "precondition: git wrote the conflict outside the sparse rules")
+    conflicted.write_text("my careful resolution\n", encoding="utf-8")
+    stray = repo / "data" / "new" / "n.txt"
+    stray.parent.mkdir()
+    stray.write_text("written by a test\n", encoding="utf-8")
+
+    assert WS.stray_content(repo, WS.missing_dirs(repo)) == ["data/new/n.txt"]
+    assert WS.clean_stray(repo, force=True) == 0
+    assert not stray.exists()
+    assert conflicted.read_text(encoding="utf-8") == "my careful resolution\n"
+    assert _git(repo, "ls-files", "-u"), "the conflict is still git's to resolve"
+
+
+def test_clean_force_under_a_non_cone_negation_leaves_no_stray(synthetic_repo: Path):
+    """Under a pattern file git reads as non-cone, `list` echoes the raw
+    patterns, and `data/sub` looked like a nested include. A scan that skipped
+    nested includes never entered `data/sub/secret/`, which `!data/sub/secret`
+    excludes, so a truncated tracked file there survived a `clean --force` that
+    exited 0 saying 'no stray content'. git's per-file answer now decides alone."""
+    repo = synthetic_repo
+    for rel, body in (("data/sub/s.txt", "s\n"), ("data/sub/secret/k.txt", "k\n")):
+        (repo / rel).parent.mkdir(parents=True, exist_ok=True)
+        (repo / rel).write_text(body, encoding="utf-8")
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-qm", "sub")
+    _make_sparse(repo, ["engine", "scripts", "templates"])
+    pattern_file = Path(_git(repo, "rev-parse", "--path-format=absolute",
+                             "--git-path", "info/sparse-checkout"))
+    pattern_file.write_text("/*\n!/*/\n/engine/\n/scripts/\n/templates/\n"
+                            "data/sub\n!data/sub/secret\n", encoding="utf-8")
+    _git(repo, "sparse-checkout", "reapply")
+    included = repo / "data" / "sub" / "s.txt"
+    assert included.read_text(encoding="utf-8") == "s\n", "precondition: data/sub is checked out"
+    truncated = repo / "data" / "sub" / "secret" / "k.txt"
+    assert not truncated.exists(), "precondition: the negation excludes it"
+    truncated.parent.mkdir(exist_ok=True)
+    truncated.write_text("TRUNC", encoding="utf-8")
+
+    assert "data/sub/secret/k.txt" in WS.stray_content(repo, WS.missing_dirs(repo))
+    assert WS.clean_stray(repo, force=True) == 0
+    assert not truncated.exists()
+    assert included.read_text(encoding="utf-8") == "s\n"
+    assert _git(repo, "status", "--porcelain") == ""
+
+
+def test_clean_force_unlinks_a_symlinked_omitted_tree_without_following_it(
+    synthetic_repo: Path, tmp_path: Path,
+):
+    """An omitted top-level tree replaced by a symlink (say, to another
+    checkout's data/) was skipped whole, so `clean` exited 0 saying 'no stray
+    content' while `git status` stayed dirty. The link itself is the stray, since
+    git never checks out a link there, and removing it never touches the target."""
+    other = tmp_path / "other_data"
+    (other / "big").mkdir(parents=True)
+    (other / "keep.txt").write_text("another checkout's data\n", encoding="utf-8")
+    (other / "big" / "x.bin").write_bytes(b"X" * 64)
+    _make_sparse(synthetic_repo, ["engine", "scripts", "templates"])
+    link = synthetic_repo / "data"
+    assert not link.exists(), "precondition: data/ is omitted"
+    link.symlink_to(other, target_is_directory=True)
+
+    assert WS.stray_content(synthetic_repo, WS.missing_dirs(synthetic_repo)) == ["data"]
+    assert WS.clean_stray(synthetic_repo, force=True) == 0
+    assert not link.is_symlink() and not link.exists()
+    assert (other / "keep.txt").read_text(encoding="utf-8") == "another checkout's data\n"
+    assert (other / "big" / "x.bin").read_bytes() == b"X" * 64
+    assert _git(synthetic_repo, "status", "--porcelain") == ""
+
+
+def test_names_git_still_quotes_are_read_raw(synthetic_repo: Path):
+    """`core.quotePath=false` only stops git octal-escaping non-ASCII bytes. A
+    name holding `"`, `\\` or a tab is still C-quoted by `sparse-checkout list`
+    (`"data/q\\"uote"`), so such a nested include read as a top-level dir named
+    `"data`, and its tree was reported omitted instead of partial."""
+    names = ('data/q"uote', "data/b\\s", "data/t\tab")
+    for name in (*names, 'we"ird'):
+        (synthetic_repo / name).mkdir(parents=True)
+        (synthetic_repo / name / "f.txt").write_text("checked out\n", encoding="utf-8")
+    _git(synthetic_repo, "add", "-A")
+    _git(synthetic_repo, "commit", "-qm", "names git quotes")
+    _make_sparse(synthetic_repo, ["engine", "scripts", "templates", 'we"ird'])
+    _git(synthetic_repo, "sparse-checkout", "add", *names)
+
+    assert 'we"ird' in WS.tracked_top_level_dirs(synthetic_repo)
+    assert WS.missing_dirs(synthetic_repo) == ["data", "mockups", "site"]
+    assert WS.partial_dirs(synthetic_repo) == ["data"]
+    assert sorted(WS._nested_includes(synthetic_repo)["data"]) == sorted(names)
+    assert WS.clean_stray(synthetic_repo, force=True) == 0
+    for name in (*names, 'we"ird'):
+        assert (synthetic_repo / name / "f.txt").is_file(), f"clean --force removed {name}"
+
+
+def test_clean_force_refuses_while_a_sparse_checkout_lock_is_held(synthetic_repo: Path):
+    """`git sparse-checkout add` writes the newly included files BEFORE it
+    writes the new rules, holding info/sparse-checkout.lock throughout. A clean
+    in that window would judge those files by the old rules and delete them."""
+    _make_sparse(synthetic_repo, ["engine", "scripts", "templates"])
+    stray = synthetic_repo / "data" / "keep.txt"
+    stray.parent.mkdir(exist_ok=True)
+    stray.write_text("written by a test\n", encoding="utf-8")
+    lock = WS.sparse_checkout_lock_path(synthetic_repo)
+    lock.write_text("", encoding="utf-8")
+
+    assert WS.clean_stray(synthetic_repo, force=True) == 1
+    assert stray.exists(), "nothing is deleted while git holds the lock"
+    assert lock.exists(), "a young lock is never removed"
+
+
+@pytest.mark.skipif(hasattr(os, "geteuid") and os.geteuid() == 0,
+                    reason="root can list a mode-000 directory")
+def test_clean_deletes_nothing_when_a_directory_cannot_be_read(synthetic_repo: Path):
+    """`os.walk` silently skips a directory it cannot list, so a stray inside
+    one was invisible to the scan and to the post-delete re-check alike, and
+    the run exited 0. An unreadable directory now fails the scan."""
+    _make_sparse(synthetic_repo, ["engine", "scripts", "templates"])
+    visible = synthetic_repo / "data" / "keep.txt"
+    visible.parent.mkdir(exist_ok=True)
+    visible.write_text("written by a test\n", encoding="utf-8")
+    unreadable = synthetic_repo / "data" / "unreadable"
+    unreadable.mkdir()
+    (unreadable / "hidden.txt").write_text("written by a test\n", encoding="utf-8")
+    unreadable.chmod(0)
+    try:
+        assert WS.clean_stray(synthetic_repo, force=True) == 1
+        assert visible.exists(), "nothing is deleted when the scan is incomplete"
+    finally:
+        unreadable.chmod(0o755)
+    assert (unreadable / "hidden.txt").exists()
 
 
 # --------------------------------------------------------------------------

@@ -60,7 +60,7 @@ partial tree must never be is CLEANABLE as if it were omitted. Measured
 checked-out files, because it treated every file under `data/` as a stray and
 removed the whole tree. `partial_dirs()` names these trees, and a stray is
 now decided per FILE by git's own rules (`git sparse-checkout check-rules`):
-anything git checks out is never a stray.
+anything git checks out, or wrote for an unresolved conflict, is never a stray.
 
 Usage:
     python3 scripts/worktree_sparse.py status        # what is / is not materialized
@@ -826,19 +826,57 @@ def is_session_worktree(root: Path = ROOT) -> bool:
     return is_linked_worktree(root) and path_under_session_root(root)
 
 
+_C_ESCAPES = {ord("a"): 7, ord("b"): 8, ord("f"): 12, ord("n"): 10, ord("r"): 13,
+              ord("t"): 9, ord("v"): 11, ord('"'): 34, ord("\\"): 92}
+
+
+def _c_unquote(entry: str) -> str:
+    """Undo git's C-style quoting of one listed path (git's ``unquote_c_style``);
+    an entry that is not quoted comes back unchanged.
+
+    ``core.quotePath=false`` only stops git octal-escaping non-ASCII bytes. A
+    name holding ``"``, ``\\`` or a control character is still quoted
+    (``"data/q\\"uote"``), and the quoted form never equals the raw name.
+    """
+    if len(entry) < 2 or entry[0] != '"' or entry[-1] != '"':
+        return entry
+    body = os.fsencode(entry[1:-1])
+    out = bytearray()
+    i = 0
+    while i < len(body):
+        octal = body[i + 1:i + 4]
+        if body[i] != 0x5C or i + 1 == len(body):  # not a backslash escape
+            out.append(body[i])
+            i += 1
+        elif body[i + 1] in _C_ESCAPES:
+            out.append(_C_ESCAPES[body[i + 1]])
+            i += 2
+        elif len(octal) == 3 and all(0x30 <= b <= 0x37 for b in octal):
+            out.append(int(octal, 8) & 0xFF)
+            i += 4
+        else:
+            out.append(body[i])
+            i += 1
+    return os.fsdecode(bytes(out))
+
+
 def _cone_included(root: Path) -> list[str]:
     """Cone-mode include set as git lists it; [] when not cone mode.
 
     Usually top-level directory names, but an entry can be a NESTED path
     (``data/sector_intelligence/fixtures``) after ``git sparse-checkout add``
-    of a subdirectory — see :func:`partial_dirs`. ``core.quotePath=false``
-    keeps a non-ASCII entry raw; git otherwise C-quotes it
-    (``"data/\\303\\251"``) and the quoted form never equals the tracked name.
+    of a subdirectory — see :func:`partial_dirs`. Entries are RAW names, to
+    compare against :func:`tracked_top_level_dirs`: ``core.quotePath=false``
+    keeps a non-ASCII entry raw (git otherwise C-quotes it as
+    ``"data/\\303\\251"``), and :func:`_c_unquote` undoes the quoting git
+    still applies to ``"``, ``\\`` and control characters.
     """
     if (_git(root, "config", "--get", "core.sparseCheckoutCone") or "").lower() != "true":
         return []
     listed = _git(root, "-c", "core.quotePath=false", "sparse-checkout", "list")
-    return [ln.strip() for ln in listed.splitlines() if ln.strip()] if listed else []
+    if not listed:
+        return []
+    return [_c_unquote(ln.strip()) for ln in listed.splitlines() if ln.strip()]
 
 
 def _nested_includes(root: Path) -> dict[str, list[str]]:
@@ -864,11 +902,11 @@ def _nested_includes(root: Path) -> dict[str, list[str]]:
 def tracked_top_level_dirs(root: Path = ROOT, ref: str = "HEAD") -> list[str]:
     """Top-level directories the given ref tracks (sparse state is irrelevant here).
 
-    Raw names (``core.quotePath=false``), like :func:`_cone_included`: the two
-    lists are compared name for name, so they must quote identically.
+    Raw names (``-z``, which never quotes), like :func:`_cone_included`: the
+    two lists are compared name for name, so they must quote identically.
     """
-    listed = _git(root, "-c", "core.quotePath=false", "ls-tree", "-d", "--name-only", ref)
-    return sorted(ln.strip() for ln in listed.splitlines() if ln.strip()) if listed else []
+    listed = _git_bytes(root, "ls-tree", "-d", "--name-only", "-z", ref)
+    return sorted(os.fsdecode(p) for p in listed.split(b"\0") if p) if listed else []
 
 
 def _has_content(path: Path) -> bool:
@@ -1522,35 +1560,72 @@ def add_dirs(names: list[str], root: Path = ROOT, timeout: float = ADD_TIMEOUT_S
     return 0
 
 
-def _nested_include_paths(root: Path) -> set[str]:
-    """Every nested cone include, flattened (``{"data/sub", "site/x/y"}``)."""
-    return {p for paths in _nested_includes(root).values() for p in paths}
+def _walk_error(exc: OSError) -> None:
+    """``os.walk`` onerror for the stray scan. By default ``os.walk`` silently
+    skips a directory it cannot list, and a stray inside one would be invisible
+    to the scan and to the post-delete re-check alike, so an unreadable
+    directory fails the scan instead."""
+    if isinstance(exc, FileNotFoundError):  # vanished mid-walk: nothing left to judge
+        return
+    raise RuntimeError(f"cannot read {exc.filename}: {exc.strerror or exc}")
 
 
-def _files_outside_nested_includes(root: Path, dirs: list[str]) -> list[str]:
-    """Every file under ``dirs`` (repo-relative), never descending into a nested
-    include — everything beneath one is checked out by definition, and one can
-    be large. A symlink is a leaf, never followed, and a symlinked top-level dir
-    is skipped whole: walking it would classify, and could delete, files that
-    live in some other checkout."""
-    keep = _nested_include_paths(root)
+def _entries_under(root: Path, dirs: list[str]) -> tuple[list[str], list[str]]:
+    """``(misplaced, files)`` under ``dirs``, repo-relative.
+
+    ``misplaced`` holds each top-level name that is not a real directory: a
+    symlink (say, to another checkout's ``data/``) or a plain file where git
+    checks out a directory. It is never walked, because walking would classify,
+    and could delete, files that live somewhere else. Git never puts a link or
+    a file there, so the entry itself is the stray, and removing a link never
+    touches what it points to.
+
+    ``files`` holds every other file, walked in full. Whether git checks one
+    out is decided by :func:`_sparse_rules_include` alone, never by a shortcut
+    through the include list. Under a pattern file git reads as non-cone,
+    ``data/sub`` then ``!data/sub/secret`` reads as a nested include, and
+    skipping it hid a stray the negation excludes. A symlink below the top
+    level is a leaf and is never followed. Raises ``RuntimeError`` when a
+    directory cannot be read.
+    """
+    misplaced: list[str] = []
     found: list[str] = []
     for name in dirs:
         base = root / name
-        if not base.is_dir() or base.is_symlink():
+        if base.is_symlink() or (base.exists() and not base.is_dir()):
+            misplaced.append(name)
             continue
-        for dirpath, dirnames, filenames in os.walk(base):
+        if not base.is_dir():
+            continue
+        for dirpath, dirnames, filenames in os.walk(base, onerror=_walk_error):
             rel_dir = Path(dirpath).relative_to(root).as_posix()
             descend = []
             for d in sorted(dirnames):
-                rel = f"{rel_dir}/{d}"
                 if os.path.islink(os.path.join(dirpath, d)):
-                    found.append(rel)
-                elif rel not in keep:
+                    found.append(f"{rel_dir}/{d}")
+                else:
                     descend.append(d)
             dirnames[:] = descend
             found.extend(f"{rel_dir}/{f}" for f in sorted(filenames))
-    return found
+    return misplaced, found
+
+
+def _unmerged_paths(root: Path) -> set[str]:
+    """Paths with an unresolved conflict (``git ls-files -u``).
+
+    Git writes a conflicted file to disk even outside the sparse rules, and
+    the file may hold a resolution in progress. The rules still exclude it, so
+    it must be exempted by name. Raises ``RuntimeError`` when git cannot answer.
+    """
+    out = _git_bytes(root, "ls-files", "-u", "-z")
+    if out is None:
+        raise RuntimeError("`git ls-files -u` failed")
+    paths: set[str] = set()
+    for record in out.split(b"\0"):
+        _meta, tab, path = record.partition(b"\t")
+        if tab:
+            paths.add(os.fsdecode(path))
+    return paths
 
 
 def stray_content(root: Path, dirs: list[str], limit: int | None = 20) -> list[str]:
@@ -1566,16 +1641,23 @@ def stray_content(root: Path, dirs: list[str], limit: int | None = 20) -> list[s
     obvious.
 
     ``dirs`` is normally :func:`missing_dirs`, which also names PARTIALLY
-    materialized trees, so being under one of them proves nothing: each file is
-    classified by :func:`_sparse_rules_include`, and a file git checks out is
-    never a stray. Raises ``RuntimeError`` when git cannot classify them.
-    ``limit=None`` returns every stray.
+    materialized trees, so being under one of them proves nothing. Each file is
+    classified by :func:`_sparse_rules_include`: a file git checks out is never
+    a stray, and neither is one git wrote for an unresolved conflict
+    (:func:`_unmerged_paths`). A top-level entry that is not a real directory
+    is a stray itself (:func:`_entries_under`). Raises ``RuntimeError`` when
+    the files cannot be classified. ``limit=None`` returns every stray.
     """
-    candidates = _files_outside_nested_includes(root, dirs)
-    if not candidates:
+    if not sparse_enabled(root):
+        return []  # nothing is omitted, so nothing can be a stray
+    misplaced, candidates = _entries_under(root, dirs)
+    if not misplaced and not candidates:
         return []
+    unmerged = _unmerged_paths(root)
     included = _sparse_rules_include(root, candidates)
-    stray = [rel for rel in candidates if rel not in included]
+    stray = [name for name in misplaced
+             if not any(p.startswith(f"{name}/") for p in unmerged)]
+    stray += [rel for rel in candidates if rel not in included and rel not in unmerged]
     return stray if limit is None else stray[:limit]
 
 
@@ -1590,28 +1672,37 @@ def _deleted_tracked_files(root: Path) -> set[str] | None:
 
 
 def _prune_emptied_dirs(root: Path, dirs: list[str]) -> None:
-    """Remove the directories a stray purge left empty under ``dirs``, deepest
-    first, never entering a nested include. ``rmdir`` refuses a non-empty
-    directory, so a directory still holding a checked-out file cannot go."""
-    keep = _nested_include_paths(root)
+    """Remove the empty directories left under ``dirs`` once the strays are
+    gone, deepest first.
+
+    A directory is kept when git's rules would check out a file placed directly
+    in it: a nested include, or a parent of one. Git is asked, like every other
+    decision here, so an empty output directory inside a checked-out subtree
+    survives. ``rmdir`` refuses a non-empty directory, so a directory still
+    holding a file cannot go.
+    """
+    walked: list[str] = []
     for name in dirs:
         base = root / name
         if not base.is_dir() or base.is_symlink():
             continue
-        walked: list[str] = []
         for dirpath, dirnames, _files in os.walk(base):
-            rel_dir = Path(dirpath).relative_to(root).as_posix()
-            dirnames[:] = [
-                d for d in dirnames
-                if f"{rel_dir}/{d}" not in keep
-                and not os.path.islink(os.path.join(dirpath, d))
-            ]
-            walked.append(dirpath)
-        for dirpath in reversed(walked):  # top-down walk, so reversed = children first
-            try:
-                os.rmdir(dirpath)
-            except OSError:
-                pass
+            dirnames[:] = [d for d in dirnames if not os.path.islink(os.path.join(dirpath, d))]
+            walked.append(Path(dirpath).relative_to(root).as_posix())
+    if not walked:
+        return
+    probes = {rel: f"{rel}/.worktree-sparse-probe" for rel in walked}
+    try:
+        populated = _sparse_rules_include(root, list(probes.values()))
+    except RuntimeError:
+        return  # cannot tell; an empty directory costs nothing, so keep them all
+    for rel in reversed(walked):  # top-down walk, so reversed = children first
+        if probes[rel] in populated:
+            continue
+        try:
+            os.rmdir(root / rel)
+        except OSError:
+            pass
 
 
 def clean_stray(root: Path = ROOT, force: bool = False) -> int:
@@ -1638,7 +1729,14 @@ def clean_stray(root: Path = ROOT, force: bool = False) -> int:
     25 such tracked files. Deletion is per file now; when git cannot classify
     the files nothing is deleted, and a checked-out file that goes missing
     anyway fails the run loudly, naming the restore command.
+
+    ``--force`` refuses to run while git holds a sparse-checkout or index lock
+    (:func:`refuse_if_locked`). ``git sparse-checkout add`` writes the newly
+    included files BEFORE it writes the new rules, so a clean in that window
+    would judge those files by the old rules and delete them.
     """
+    if force and refuse_if_locked(root):
+        return 1
     absent = missing_dirs(root)
     try:
         stray = stray_content(root, absent, limit=None)
