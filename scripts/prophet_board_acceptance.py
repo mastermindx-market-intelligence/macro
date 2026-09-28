@@ -211,6 +211,19 @@ def check(
     if not isinstance(index, dict):
         return problems + [f"{index_path} missing or unreadable"]
 
+    # Additive GD-6A read qualification. This remains the existing acceptance
+    # ALARM, not a policy/entry gate. An honest unavailable result does not
+    # rewrite research or stop native plans; a claimed mismatched file is a breach.
+    if "market_eligibility_shadow" in index:
+        from scripts.build_prophet_market_eligibility import read_publication_shadow
+        try:
+            read_publication_shadow(
+                index, ledger_dir=root / "data" / "prophet",
+                index_dir=index_path.parent, read_at=now,
+            )
+        except (OSError, ValueError, RuntimeError, EOFError):
+            problems.append("market eligibility publication: unqualified source/receipt binding")
+
     intake = index.get("intake")
     originated_count: int | None = None
     if not isinstance(intake, dict):

@@ -23,7 +23,9 @@ sys.path.insert(0, str(ROOT))
 from engine.risk_envelope import SourceRead, compose_envelope, canonical_json
 from engine.prophet_market_eligibility import bind_shadow_view
 from scripts import build_prophet as bp
-from scripts.build_prophet_market_eligibility import prepare_publication_shadow
+from scripts.build_prophet_market_eligibility import (
+    prepare_publication_shadow, read_publication_shadow, MarketEligibilityError,
+)
 
 
 class NativePublicationTests(unittest.TestCase):
@@ -218,6 +220,163 @@ class NativePublicationTests(unittest.TestCase):
             with self.subTest(path=path):
                 r=subprocess.run(['bash','-c','rel="$1"\n'+case,'--',path],capture_output=True,text=True)
                 self.assertEqual(r.returncode==0,allowed)
+
+
+    def published_index(self):
+        receipt, doc = self.publish()
+        self.assertEqual(receipt['artifact_status'], 'WRITTEN')
+        index = deepcopy(self.index)
+        index['market_eligibility_shadow'] = receipt
+        return index, doc
+
+    def read_index(self, index, read_at=None):
+        return read_publication_shadow(index, ledger_dir=self.ledger,
+            index_dir=self.index_path.parent, read_at=read_at or self.now)
+
+    def test_read_published_full_source_chain(self):
+        index, _ = self.published_index()
+        before = {str(p.relative_to(self.root)): p.read_bytes()
+                  for p in self.root.rglob('*') if p.is_file()}
+        view = self.read_index(index)
+        self.assertEqual([r['candidate'] for r in view['rows']], self.board['buy'])
+        self.assertEqual(view['source_state'], 'AVAILABLE')
+        self.assertFalse(any(view['authority'].values()))
+        self.assertEqual(before, {str(p.relative_to(self.root)): p.read_bytes()
+                  for p in self.root.rglob('*') if p.is_file()})
+
+    def test_read_uses_frozen_sources_not_mutable_latest(self):
+        index, _ = self.published_index()
+        self.board_path.unlink(); self.risk_path.unlink()
+        self.assertEqual(len(self.read_index(index)['rows']), 2)
+
+    def test_read_written_missing_risk_preserves_research(self):
+        self.risk_path.unlink()
+        index, _ = self.published_index()
+        view = self.read_index(index)
+        self.assertEqual(view['source_state'], 'UNAVAILABLE')
+        self.assertEqual([r['candidate'] for r in view['rows']], self.board['buy'])
+
+    def test_read_legacy_absence_does_not_open_old_file(self):
+        self.publish()
+        with patch('scripts.build_prophet_market_eligibility._read', side_effect=AssertionError('no file read')):
+            self.assertIsNone(self.read_index(self.index))
+
+    def test_read_failed_publication_never_reuses_old_file(self):
+        self.publish()
+        index = deepcopy(self.index)
+        index['market_eligibility_shadow'] = {
+            'mode':'SHADOW_ONLY','production_behavior':'UNCHANGED',
+            'source_state':'UNAVAILABLE','artifact_status':'UNAVAILABLE',
+            'file':None,'error_type':'OSError'}
+        with patch('scripts.build_prophet_market_eligibility._read', side_effect=AssertionError('no file read')):
+            self.assertIsNone(self.read_index(index))
+
+    def test_read_bad_unavailable_receipt_refused(self):
+        index, _ = self.published_index()
+        index['market_eligibility_shadow']['artifact_status'] = 'UNAVAILABLE'
+        with self.assertRaises(MarketEligibilityError): self.read_index(index)
+
+    def test_read_null_receipt_not_legacy(self):
+        index = deepcopy(self.index); index['market_eligibility_shadow'] = None
+        with self.assertRaises(MarketEligibilityError): self.read_index(index)
+
+    def test_read_artifact_hash_mismatch(self):
+        index, _ = self.published_index()
+        (self.index_path.parent/'market_eligibility.json').write_text('{}')
+        with self.assertRaisesRegex(MarketEligibilityError, 'ARTIFACT_HASH_MISMATCH'): self.read_index(index)
+
+    def test_read_rehashed_authority_cannot_pass(self):
+        index, doc = self.published_index()
+        doc['authority']['can_gate_new_entry'] = True
+        raw = json.dumps(doc).encode(); (self.index_path.parent/'market_eligibility.json').write_bytes(raw)
+        index['market_eligibility_shadow']['sha256'] = sha256(raw).hexdigest()
+        with self.assertRaisesRegex(MarketEligibilityError, 'SIDECAR_SEMANTIC_MISMATCH'): self.read_index(index)
+
+    def test_read_rehashed_population_change_cannot_pass(self):
+        index, doc = self.published_index(); doc['rows'].pop()
+        raw = json.dumps(doc).encode(); (self.index_path.parent/'market_eligibility.json').write_bytes(raw)
+        index['market_eligibility_shadow']['sha256'] = sha256(raw).hexdigest()
+        with self.assertRaisesRegex(MarketEligibilityError, 'SIDECAR_SEMANTIC_MISMATCH'): self.read_index(index)
+
+    def test_read_receipt_summary_cannot_override_source(self):
+        index, _ = self.published_index()
+        for key, value in [('row_count', 0), ('row_count', True), ('source_state', 'UNAVAILABLE'),
+                           ('source_board_sha256', 'f'*64), ('sidecar_id', 'pme:'+'f'*64),
+                           ('can_gate_new_entry', True), ('risk_source_read', 'UNAVAILABLE')]:
+            trial = deepcopy(index); trial['market_eligibility_shadow'][key] = value
+            with self.subTest(key=key,value=value), self.assertRaises(MarketEligibilityError):
+                self.read_index(trial)
+
+    def test_read_receipt_path_cannot_select_another_file(self):
+        index, _ = self.published_index()
+        index['market_eligibility_shadow']['file'] = '../../riskdata/risk_envelope.json'
+        with self.assertRaisesRegex(MarketEligibilityError, 'REFERENCE_INVALID'): self.read_index(index)
+
+    def test_read_board_snapshot_corruption_refused(self):
+        index, _ = self.published_index()
+        (self.root/index['source_board_snapshot_path']).write_bytes(gzip.compress(b'{}'))
+        with self.assertRaises(MarketEligibilityError): self.read_index(index)
+
+    def test_read_risk_snapshot_missing_is_not_silent_fallback(self):
+        index, _ = self.published_index()
+        (self.root/index['market_eligibility_shadow']['risk_envelope_snapshot_path']).unlink()
+        with self.assertRaisesRegex(MarketEligibilityError, 'PUBLICATION_SOURCE_UNREADABLE'): self.read_index(index)
+
+    def test_read_risk_reference_retarget_refused(self):
+        index, _ = self.published_index()
+        index['market_eligibility_shadow']['risk_envelope_snapshot_path'] = index['source_board_snapshot_path']
+        with self.assertRaisesRegex(MarketEligibilityError, 'PUBLICATION_RISK_REFERENCE_INVALID'): self.read_index(index)
+
+    def test_read_expired_and_predecision_refused(self):
+        index, _ = self.published_index()
+        for now in [datetime(2026,9,28,12,59,tzinfo=timezone.utc), datetime(2026,9,28,21,tzinfo=timezone.utc)]:
+            with self.subTest(now=now), self.assertRaisesRegex(MarketEligibilityError, 'OUTSIDE_VALIDITY'):
+                self.read_index(index, now)
+
+    def test_read_window_is_calendar_bound_not_caller_extended(self):
+        index, _ = self.published_index()
+        index['market_eligibility_shadow']['valid_until'] = '2026-09-29T21:00:00Z'
+        with self.assertRaisesRegex(MarketEligibilityError, 'PUBLICATION_WINDOW_MISMATCH'): self.read_index(index)
+
+    def test_read_naive_clock_refused(self):
+        index, _ = self.published_index()
+        with self.assertRaisesRegex(MarketEligibilityError, 'NAIVE_READ_CLOCK'):
+            self.read_index(index, datetime(2026,9,28,13))
+
+    def test_read_symlinked_sidecar_refused(self):
+        index, _ = self.published_index(); p=self.index_path.parent/'market_eligibility.json'
+        other=p.with_suffix('.bak');p.rename(other);p.symlink_to(other)
+        with self.assertRaisesRegex(MarketEligibilityError, 'SYMLINKED'): self.read_index(index)
+
+    def acceptance_input(self, index):
+        index = deepcopy(index)
+        index['plans'] = []
+        index['intake'] = {k:0 for k in ['originated','admitted','duplicate_id_blocked',
+            'reorigination_blocked','eligible_after_skips','validation_failed','truncated','unaccounted']}
+        self.index_path.parent.mkdir(parents=True, exist_ok=True)
+        self.index_path.write_text(json.dumps(index))
+
+    def test_native_acceptance_consumes_correct_shadow(self):
+        from scripts.prophet_board_acceptance import check
+        index, _ = self.published_index();self.acceptance_input(index)
+        self.assertEqual(check(self.root,'synthetic-run',self.now), [])
+
+    def test_native_acceptance_detects_wrong_published_file(self):
+        from scripts.prophet_board_acceptance import check
+        index, _ = self.published_index();self.acceptance_input(index)
+        (self.index_path.parent/'market_eligibility.json').write_text('{}')
+        problems=check(self.root,'synthetic-run',self.now)
+        self.assertEqual(problems,['market eligibility publication: unqualified source/receipt binding'])
+
+    def test_native_acceptance_missing_risk_is_not_a_breach(self):
+        from scripts.prophet_board_acceptance import check
+        self.risk_path.unlink();index,_=self.published_index();self.acceptance_input(index)
+        self.assertEqual(check(self.root,'synthetic-run',self.now), [])
+
+    def test_native_acceptance_legacy_index_unchanged(self):
+        from scripts.prophet_board_acceptance import check
+        self.acceptance_input(self.index)
+        self.assertEqual(check(self.root,'synthetic-run',self.now), [])
 
 
 if __name__=='__main__':

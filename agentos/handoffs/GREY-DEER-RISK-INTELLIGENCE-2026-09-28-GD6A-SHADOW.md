@@ -5,64 +5,52 @@ model: sol
 prs:
 - 8141
 ended_because: ci_handoff
-mission: Connect existing GD-6A to the native Prophet frozen-source/build/checkpoint
-  path, without activating market policy. Parent mission remains incomplete.
-state_before: R4 source/CLI and 69 tests existed, but no normal build call or owned
-  publication filename was connected.
+mission: Qualify published GD-6A through its existing read/acceptance path and resolve
+  the actual CI scope defect. MISSION_COMPLETE:false.
+state_before: R5 builder/checkpoint were connected; the native acceptance alarm did
+  not bind the new publication, and declared CI import coverage was incomplete.
 changed:
-- path: engine/prophet_market_eligibility.py
-  what: Separate source and wrapper clocks; withhold unknown hazard/measurement interpretation.
 - path: scripts/build_prophet_market_eligibility.py
-  what: Prepare native frozen-source publication using existing source/calendar owners.
-- path: scripts/build_prophet.py
-  what: Write additive shadow artifact and exact index receipt after native plan computations.
-- path: scripts/ci/daily_engine_prophet_checkpoint.sh
-  what: Admit exactly the new sidecar filename under existing checkpoint law.
+  what: Shared native window and receipt helpers; read-only published-result consumer.
+- path: scripts/prophet_board_acceptance.py
+  what: Consume the receipt in the existing alarm, never a new policy or gate.
 - path: tests/test_prophet_market_eligibility_publication.py
-  what: Native freeze/writer/reader/calendar and failure cases.
-- path: tests/test_prophet_bridge.py
-  what: Full main smoke proves actual receipt wiring.
+  what: 23 reader and native-alarm tests.
 - path: .github/ci/legacy-jobs.yml
-  what: Register the new suite in the existing owning command.
+  what: Add exactly two missing import paths to the existing job.
+- path: research/grey_deer/GD6A_ZERO_POLICY_SHADOW_INTAKE_2026-09-28.md
+  what: Current source, CI evidence and remaining policy boundary.
 verified:
-- claim: 88 tests and 58 subtests pass on the candidate.
+- claim: Whole bridge file and all GD6A suites pass with new reader tests.
   command: python3.12 -m pytest tests/test_prophet_market_eligibility.py tests/test_prophet_market_eligibility_native.py
-    tests/test_prophet_market_eligibility_publication.py tests/test_prophet_bridge.py::test_end_to_end_smoke
-    --basetemp <owned-test-directory> -q
-  result: 88 passed, 58 subtests passed; isolated native-source fixture, synthetic
-    tests. Log SHA256949c61ea2ffd3d00df9c033dc3d13f8a3ead82ebcbe47748829745378472d862.
-- claim: Real committed board/risk bytes survive native frozen-source publication
-    and read binding.
-  command: python3.12 /Volumes/Mastermind/evidence/gd6a-us-shadow-intake-20260928-sol-001/publication-r5/real_source_probe.py
-  result: 69/69 rows, exact order/content, AVAILABLE, zero errors, all action flags
-    false; isolated output, not production.
-- claim: Qualified versus missing risk changes no native plan/state/intake/ledger
-    output across two actual main runs.
-  command: python3.12 -m pytest tests/test_prophet_bridge.py::test_gd6a_full_builder_preserves_plan_outputs_across_risk_availability
-    --basetemp <owned-test-directory> -q
-  result: One additional paired regression passed, two plans per run and exact native
-    output parity. Distinct inventory89 with prior88 unchanged. LogSHA256129d6bf5db5a76730f76f2745a6a72aa2915246d2366bdcaa01c99a0d9b8cc1b.
+    tests/test_prophet_market_eligibility_publication.py tests/test_prophet_bridge.py
+    -q
+  result: 212 passed, 67 subtests passed; isolated native-source fixture; log 5d021a2345dc2e7ae358eb0d509f12ed9985cf47d4d78897aa6d51e03d9b4d98.
+- claim: Real committed input survives actual producer and reader.
+  command: python3.12 release-r6/real_reader_probe.py
+  result: 69/69 original rows, exact order/content, zero action flags and no reader
+    writes; not served production.
+- claim: The tests discriminate disconnecting the alarm and omitting receipt comparison.
+  command: python3 release-r6/reader_fault_controls.py
+  result: Intended assertion failures; originals restored.
 unverified:
-- claim: Required hosted/current-base qualification and ordinary served publication.
-  what_would_verify: Permitted exact-head checks and normal settled build -> accepted
-    Git checkpoint -> entitled served index/sidecar -> bound reader plus ordinary
-    refresh.
-- claim: Active policy or improved trading performance.
-  what_would_verify: Original per-policy source/authority/promotion, scoped consumer
-    adoption and actual economic/real-path results.
+- claim: Exact R6 hosted/current-base release acceptance.
+  what_would_verify: Required concluded checks on the new head, including differential
+    scope validation.
+- claim: Ordinary served publication or active risk enforcement.
+  what_would_verify: Accepted normal checkpoint plus entitled bound reader/refresh,
+    and separately adopted per-policy source/authority.
 unresolved:
-- Required CI/current-base conclusions remain unverified; prior denied status request
-  is not retried or proxied.
-- Self-audit is authorized by current Chairman; it is not independent review or policy-promotion
-  approval.
-- No live market-policy producer or held-position action is added.
+- R5 scope gate reported two omitted paths; R6 repair still requires hosted confirmation.
+- Two unrelated jobs failed installing dependencies; no bypass or global dependency
+  edit.
+- The inspected registry/envelope has no active GD6A policy.
+- Separate compound app/deploy-source inspection was refused; no retry or proxy.
 next_actions:
-- Qualify and release this same source under remaining required checks; no reviewer
-  placement wait for this software slice.
-- Verify ordinary publication and exact bound consumer plus refresh without rank/plan
-  changes.
-- Continue existing native-policy/source research toward explicit no-new-long enforcement,
-  never infer it from this shadow.
+- Consume new-head CI and resolve actual remaining release blockers.
+- Accept source under concluded checks, then witness normal publication/read/refresh.
+- Advance a separately registered native risk policy, preserving research and all
+  scope/expiry gates.
 do_not_redo:
 - Do not recreate GD-6A or add a second risk policy, identity, registry, collector,
   ledger or publisher.
@@ -81,6 +69,6 @@ danger_areas:
   a proxy retry.
 ---
 
-# GD-6A R5 source continuation
+# GD-6A R6 continuation
 
-MISSION_COMPLETE:false. Same operation, branch and PR#8141. Current Chairman allows self-audit; source tests do not become independent review or live policy acceptance. Exact evidence and limits are in research/grey_deer/GD6A_ZERO_POLICY_SHADOW_INTAKE_2026-09-28.md.
+MISSION_COMPLETE:false. Same operation, source branch and PR. No source-writer release or automatic wake.
