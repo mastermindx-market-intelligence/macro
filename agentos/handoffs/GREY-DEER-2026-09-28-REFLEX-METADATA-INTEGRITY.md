@@ -2,7 +2,8 @@
 workstream: WS:GREY-DEER-RISK-INTELLIGENCE
 session: claude/prophet-reflex-record-integrity-20260928
 model: sol
-prs: []
+prs:
+- 8154
 ended_because: ci_handoff
 mission: Fix the existing Reflex firing metadata contract before future risk-policy
   evidence reuses it. MISSION_COMPLETE:false.
@@ -29,6 +30,8 @@ unverified:
 unresolved:
 - No active policy grant or predictive claim is conferred by this metadata repair.
 - 'GD6A #8141 remains separately frozen pending its actual compatibility qualification.'
+- An additional native spine-consumer source read was refused before dispatch; it
+  was not retried or proxied. The proven scope remains the writer/load boundary.
 next_actions:
 - Read exact branch/PR results and resolve actual CI findings.
 - Do not use this operation to retry the separately refused GD6A compatibility read.
@@ -40,6 +43,6 @@ danger_areas:
 - A context-only marker is not financial authority or proof of single-writer admission.
 ---
 
-# Same Grey Deer program, bounded prerequisite repair
+# Existing Grey Deer / Prophet prerequisite
 
-MISSION_COMPLETE:false. Existing parent #6817 retains integration responsibility. No production effect or background worker is claimed.
+PR #8154; implementation head d3c26386464d365979e3e6bbd24bdedc4f01e72a. Five new regression methods, twenty passing writer/load cases. This is source implementation, not production acceptance. MISSION_COMPLETE:false.
