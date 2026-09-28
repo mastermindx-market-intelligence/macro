@@ -18,8 +18,10 @@ holdout fires — a thin sample cannot award act-tier weight:
   u1  SOPR capitulation(UP)    holdout lift >= 1.3   (reactive bounce caller)
 
 Label (the locked taxonomy): DOWN = forward-min over (t,t+3] <= -5%; UP =
-forward-max over (t,t+3] >= +5%. The label at row t uses closes STRICTLY in
-(t, t+3] — invariant to close[t] and every prior bar — so it can never overlap
+forward-max over (t,t+3] >= +5%. Future extrema at row t use closes STRICTLY in
+(t, t+3]; close[t] is the return denominator, not a future extreme. No prior bar
+enters the outcome window, and immature outcomes remain unknown rather than
+negative examples. Thus the future-extrema calculation does not overlap
 a same-day-firing trigger (the prior `shift(-1).rolling(3)` construction leaked
 the prior + signal bars, inflating same-day legs like u1). All features come
 from btc_impulse_radar's shared causal condition builders, so the gate cannot
@@ -53,44 +55,57 @@ LEGS = {
 }
 
 
-def _labels(close: pd.Series):
-    """Strictly-forward labels: at row t use closes in (t, t+LABEL_H] ONLY.
+def _labels(close: pd.Series) -> tuple[pd.Series, pd.Series]:
+    """Nullable outcomes over exactly the next H complete observations.
 
-    The label at t must be invariant to close[t] and every prior bar so it can
-    never overlap the trigger. `FixedForwardWindowIndexer(window_size=H)` at
-    position p spans [close[p], ..., close[p+H-1]]; `.shift(-1)` then moves that
-    aggregate back one row so the value landing at t is over (close[t+1] ...
-    close[t+H]) = the forward window (t, t+H]. The window requires a full H bars
-    of *future* data, so the final H rows are NaN (no forward outcome yet) —
-    matching the ledger's `pos + LABEL_H >= len(close)` skip. (The old
-    `close.shift(-1).rolling(H).min()` computed min(close[t-1], close[t],
-    close[t+1]) — it leaked the prior and signal bars and reached only 1 day
-    forward, directly overlapping same-day-firing triggers like u1.)
+    Future extrema exclude the signal and all prior bars; close[t] remains the
+    legitimate return denominator. The original forward-indexer construction is
+    retained, but incomplete/invalid windows are unknown rather than False.
+    Date-indexed inputs must be ordered daily observations, and windows crossing
+    a missing calendar day are unscored. Non-date indices use H observations.
+    A full future horizon is required even when a partial window has crossed a
+    barrier, so evaluation cohorts do not depend on which outcome arrives first.
     """
+    if not close.index.is_monotonic_increasing or close.index.has_duplicates:
+        raise ValueError("Impulse labels require unique increasing observations")
+    dated = isinstance(close.index, pd.DatetimeIndex)
+    if dated and not close.index.equals(close.index.normalize()):
+        raise ValueError("Impulse labels require daily observation dates")
+    numeric = pd.to_numeric(close, errors="coerce")
+    valid_price = (np.isfinite(numeric) & (numeric > 0)).fillna(False)
+    usable = numeric.where(valid_price)
     idx = pd.api.indexers.FixedForwardWindowIndexer(window_size=LABEL_H)
-    fwd_min = close.rolling(idx, min_periods=LABEL_H).min().shift(-1)
-    fwd_max = close.rolling(idx, min_periods=LABEL_H).max().shift(-1)
-    return (fwd_min / close - 1.0) <= -LABEL_THR, (fwd_max / close - 1.0) >= LABEL_THR
+    fwd_min = usable.rolling(idx, min_periods=LABEL_H).min().shift(-1)
+    fwd_max = usable.rolling(idx, min_periods=LABEL_H).max().shift(-1)
+    mature = valid_price & fwd_min.notna() & fwd_max.notna()
+    if dated:
+        dates = close.index.to_series()
+        mature &= (dates.shift(-LABEL_H) - dates) == pd.Timedelta(days=LABEL_H)
+    down = ((fwd_min / usable - 1.0) <= -LABEL_THR).astype("boolean").where(mature)
+    up = ((fwd_max / usable - 1.0) >= LABEL_THR).astype("boolean").where(mature)
+    return down, up
 
 
 def _lift(fire: pd.Series, label: pd.Series, mask: pd.Series):
-    v = fire.notna() & label.notna() & mask
+    v = fire.notna() & label.notna() & mask.fillna(False)
     n = int((v & fire).sum())
-    base = label[v].mean()
-    cond = label[v & fire].mean() if n else np.nan
-    lift = (cond / base) if (base and not np.isnan(cond)) else np.nan
-    return float(base) if pd.notna(base) else np.nan, float(lift) if pd.notna(lift) else np.nan, n
+    base = float(label[v].mean()) if v.any() else np.nan
+    cond = float(label[v & fire].mean()) if n else np.nan
+    lift = cond / base if np.isfinite(base) and base > 0 and np.isfinite(cond) else np.nan
+    return base, float(lift), n
 
 
 def _perm_p(fire: pd.Series, label: pd.Series, mask: pd.Series, observed_lift: float, rng) -> float:
     """Circular-shift permutation p — preserves the autocorrelation of `fire`
     (block structure) while breaking its alignment with the labels."""
-    v = fire.notna() & label.notna() & mask
+    v = fire.notna() & label.notna() & mask.fillna(False)
     f = fire[v].to_numpy().astype(bool)
     lab = label[v].to_numpy().astype(float)
-    base = lab.mean()
     L = len(f)
-    if L < 30 or base <= 0 or np.isnan(observed_lift) or f.sum() == 0:
+    if L < 30 or not np.isfinite(observed_lift) or f.sum() == 0:
+        return np.nan
+    base = lab.mean()
+    if not np.isfinite(base) or base <= 0:
         return np.nan
     ge = 0
     for _ in range(PERM_N):

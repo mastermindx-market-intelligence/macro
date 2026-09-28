@@ -1,0 +1,11 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__________ test_r2_suites_are_invoked_by_the_existing_vector_ci_owner __________
+tests/test_vector_r2_frontdoor.py:71: in test_r2_suites_are_invoked_by_the_existing_vector_ci_owner
+    raise AssertionError("R2 regressions are not invoked by the existing Vector CI owner")
+E   AssertionError: R2 regressions are not invoked by the existing Vector CI owner
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_vector_r2_frontdoor.py::test_r2_suites_are_invoked_by_the_existing_vector_ci_owner
+1 failed, 19 warnings in 3.09s

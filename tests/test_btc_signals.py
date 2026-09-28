@@ -349,8 +349,53 @@ def test_allocation_midterm_gate_forces_flat() -> None:
             f"{c} must be 0 in mid-blackout window"
 
 
+def test_completed_three_day_closes_preserve_membership_and_completion_date():
+    close = pd.Series([10., 20., 30., 40., 50.],
+                      index=pd.date_range("2026-01-01", periods=5))
+    got = S._completed_three_day_closes(close)
+    assert list(got.index) == [pd.Timestamp("2026-01-03")]
+    assert got.iloc[0] == 30.0
+    completed = pd.concat([close, pd.Series([60.], index=[pd.Timestamp("2026-01-06")])])
+    got = S._completed_three_day_closes(completed)
+    assert list(got.index) == [pd.Timestamp("2026-01-03"), pd.Timestamp("2026-01-06")]
+    assert got.tolist() == [30., 60.]
+    assert S._completed_three_day_closes(close.iloc[:0]).empty
+
+
+def test_completed_three_day_closes_all_prefixes_and_invalid_bins():
+    close = pd.Series(np.arange(1., 15.), index=pd.date_range("2026-01-01", periods=14))
+    full = S._completed_three_day_closes(close)
+    for end in range(1, len(close) + 1):
+        partial = S._completed_three_day_closes(close.iloc[:end])
+        pd.testing.assert_series_equal(partial, full.loc[:close.index[end - 1]], check_freq=False)
+    for bad in [np.nan, np.inf, 0., -1.]:
+        broken = close.copy()
+        broken.iloc[1] = bad
+        result = S._completed_three_day_closes(broken)
+        assert pd.isna(result.iloc[0]), "Incomplete or invalid bins are not complete evidence"
+        assert result.iloc[1] == 6.0
+    sparse = close.drop(close.index[1])
+    assert pd.isna(S._completed_three_day_closes(sparse).iloc[0])
+
+
+def test_bottom_pressure_matches_every_recent_prefix_without_repainting():
+    # Fixed synthetic path: incumbent code repaints 2020-11-11 by 0.0930233.
+    price = _synthetic(n=360, trend=-0.0005, vol=0.05, seed=19)["price"]
+    full = S.bottom_pressure(price)
+    mismatches = []
+    for date in price.index[-90:]:
+        actual = S.bottom_pressure(price.loc[:date]).iloc[-1]
+        if not np.isclose(actual, full.loc[date], rtol=0, atol=1e-12):
+            mismatches.append((str(date), float(actual), float(full.loc[date])))
+    assert not mismatches, f"Historical bottom pressure repainted: {mismatches}"
+    assert full.between(0, 1).all()
+
+
 if __name__ == "__main__":
-    for fn in [test_momentum_bounds_and_direction, test_risk_index_range_and_regime,
+    for fn in [test_completed_three_day_closes_preserve_membership_and_completion_date,
+               test_completed_three_day_closes_all_prefixes_and_invalid_bins,
+               test_bottom_pressure_matches_every_recent_prefix_without_repainting,
+               test_momentum_bounds_and_direction, test_risk_index_range_and_regime,
                test_hysteresis_reduces_flips, test_allocation_base_grid_preserved,
                test_conviction_multiplier_monotone_in_tier,
                test_drawdown_brake_reduces_exposure_when_underwater,

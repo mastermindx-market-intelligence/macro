@@ -56,6 +56,10 @@ def test_r2_suites_are_invoked_by_the_existing_vector_ci_owner() -> None:
         "tests/test_vector_wave1.py",
         "tests/test_vector_r2_data_boundary.py",
         "tests/test_vector_r2_frontdoor.py",
+        "tests/test_btc_signals.py",
+        "tests/test_btc_impulse_falsifier.py",
+        "tests/test_btc_impulse_radar.py",
+        "tests/test_btc_impulse_alerts.py",
     }
     for step in job["steps"]:
         command = shlex.split(step.get("run", ""))

@@ -59,8 +59,8 @@ def test_labels_are_strictly_forward_provable_by_hand():
     for i in range(len(close)):
         window = close.iloc[i + 1: i + 1 + H]           # strictly forward, H bars
         if len(window) < H:                              # last H rows: no full future
-            assert not bool(down.iloc[i]) and not bool(up.iloc[i]), (
-                f"row {i} must be unlabeled (insufficient forward data)")
+            assert pd.isna(down.iloc[i]) and pd.isna(up.iloc[i]), (
+                f"row {i} must be unknown, not a negative outcome")
             continue
         exp_down = (window.min() / close.iloc[i] - 1.0) <= -BT.LABEL_THR
         exp_up = (window.max() / close.iloc[i] - 1.0) >= BT.LABEL_THR
@@ -287,6 +287,79 @@ def test_ledger_grade_skips_a_bad_row():
         assert rows[1]["outcome"] is None                                          # bad row skipped, not fatal
     finally:
         LED._path = orig
+
+
+def test_labels_keep_tail_unknown_and_denominator_mature_only():
+    close = pd.Series([100., 100., 100., 94., 94., 94., 94., 94.],
+                      index=pd.date_range("2026-01-01", periods=8))
+    down, up = BT._labels(close)
+    assert str(down.dtype) == "boolean" and str(up.dtype) == "boolean"
+    assert down.notna().sum() == 5 and down.tail(3).isna().all()
+    assert down.iloc[:5].tolist() == [True, True, True, False, False]
+    fires = pd.Series(False, index=close.index)
+    fires.iloc[-3:] = True
+    base, lift, n = BT._lift(fires, down, pd.Series(True, index=close.index))
+    assert np.isclose(base, 0.6) and np.isnan(lift) and n == 0
+
+
+def test_labels_preserve_invalid_reference_and_future_as_unknown():
+    base = pd.Series(np.linspace(100., 130., 12), index=pd.date_range("2026-01-01", periods=12))
+    for invalid in [np.nan, np.inf, -np.inf, 0., -1.]:
+        close = base.copy()
+        close.iloc[4] = invalid
+        down, up = BT._labels(close)
+        assert down.iloc[1:5].isna().all() and up.iloc[1:5].isna().all()
+        assert pd.notna(down.iloc[0]) and pd.notna(down.iloc[5])
+
+
+def test_labels_do_not_treat_three_observations_as_three_days_across_gaps():
+    close = pd.Series(np.arange(100., 112.), index=pd.date_range("2026-01-01", periods=12))
+    close = close.drop(close.index[2])
+    down, up = BT._labels(close)
+    assert down.iloc[:2].isna().all() and up.iloc[:2].isna().all()
+    assert pd.notna(down.iloc[2])
+
+
+def test_labels_reject_duplicate_reversed_or_intraday_dates():
+    close = pd.Series([100., 101., 102., 103., 104.], index=pd.date_range("2026-01-01", periods=5))
+    cases = [close.iloc[::-1], pd.concat([close.iloc[:2], close.iloc[1:]])]
+    intraday = close.copy()
+    intraday.index = intraday.index + pd.Timedelta(hours=1)
+    cases.append(intraday)
+    for invalid in cases:
+        try:
+            BT._labels(invalid)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("Malformed daily dates must not become scored outcomes")
+
+
+def test_lift_and_permutation_have_no_evidence_when_no_outcome_matured():
+    close = pd.Series([100., 90.], index=pd.date_range("2026-01-01", periods=2))
+    down, up = BT._labels(close)
+    assert down.isna().all() and up.isna().all()
+    fire = pd.Series(True, index=close.index)
+    mask = pd.Series(True, index=close.index)
+    base, lift, n = BT._lift(fire, down, mask)
+    assert np.isnan(base) and np.isnan(lift) and n == 0
+    assert np.isnan(BT._perm_p(fire, down, mask, lift, np.random.default_rng(0)))
+    assert all(s.empty for s in BT._labels(close.iloc[:0]))
+
+
+def test_validate_does_not_count_immature_tail_fires():
+    sig = _sig_with_drops()
+    fire = pd.Series(False, index=sig.index)
+    fire.iloc[-BT.LABEL_H:] = True
+    original = _patch_fire_series(pd.DataFrame({"d2": fire}))
+    try:
+        result = BT.validate(sig)
+    finally:
+        BT.radar.fire_series = original
+    assert result["ok"] is True
+    assert result["legs"]["d2"]["n_fires_full"] == 0
+    assert result["legs"]["d2"]["n_fires_holdout"] == 0
+    assert result["legs"]["d2"]["pass"] is False
 
 
 if __name__ == "__main__":
