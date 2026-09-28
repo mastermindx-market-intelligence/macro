@@ -145,6 +145,59 @@ def test_source_only_business_stays_useful():
     _validate(result)
 
 
+def test_mgd11_withheld_identity_is_never_invented_and_the_source_stays_useful():
+    """MGD-11 clause 2: with NO identity supplied, none is invented, and it stays useful.
+
+    The test above cannot observe this clause. The ``source_only`` fixture omits
+    ECONOMICS and still SUPPLIES ``Ardent Copper Holdings`` / CIK ``0000000421`` --
+    the very identifiers the obligation is about are handed to it. Emptying
+    ``identity_results`` on the same case is the arm that can observe it, and the
+    CONTROL arm is what makes the absence earned rather than vacuous: the bound
+    case must PRODUCE the identifiers the unbound case must not.
+    """
+    from dataclasses import replace as _replace
+
+    def _cik_shaped_paths(payload):
+        """Every 10-digit string anywhere in the payload, by path."""
+        found = []
+
+        def walk(obj, path=""):
+            if isinstance(obj, dict):
+                for key, value in obj.items():
+                    walk(value, path + "/" + str(key))
+            elif isinstance(obj, (list, tuple)):
+                for index, value in enumerate(obj):
+                    walk(value, path + "/%d" % index)
+            elif isinstance(obj, str) and obj.isdigit() and len(obj) == 10:
+                found.append(path)
+
+        walk(payload)
+        return sorted(found)
+
+    case = synthetic_case("source_only")
+
+    # CONTROL: identity supplied, so the identifiers do reach the payload.
+    bound = composition.compose_mining_research(case.query, case.bundle)
+    assert _cik_shaped_paths(bound) == [
+        "/companies/0/cik",
+        "/companies/0/stable_subject_id",
+        "/native_subjects/0/stable_subject_id",
+    ]
+
+    # CLAIM: identity withheld, so not one identifier is minted -- and the
+    # description is still useful. ``refused`` is the third status value the
+    # module can return, so ``degraded`` is a measured outcome, not the only one.
+    unbound = composition.compose_mining_research(
+        case.query, _replace(case.bundle, identity_results=())
+    )
+    assert _cik_shaped_paths(unbound) == []
+    assert unbound["companies"] == []
+    assert unbound["native_subjects"] == []
+    assert unbound["summary"]["status"] == "degraded"
+    assert unbound["limitations"] == ["source_only"]
+    _validate(unbound)
+
+
 # ---------------------------------------------------------------------------
 # row ordering: stable source identity, never magnitude
 # ---------------------------------------------------------------------------
@@ -301,6 +354,31 @@ def test_industry_total_unknown_is_absent_on_w_c_slice():
     case = synthetic_case("copper_complete")
     result = composition.compose_mining_research(case.query, case.bundle)
     assert "industry_total_unknown" not in result["limitations"]
+
+
+def test_mgd39_coverage_scope_is_named_and_the_total_is_explicitly_null_on_both_slices():
+    """MGD-39 clause 1: the coverage gap is visible on EVERY slice, not only where a code is minted.
+
+    Two of this obligation's three delivered tests assert that
+    ``industry_total_unknown`` is ABSENT on W-C, which read alone says a null
+    total carries no signal there at all. What actually makes the gap visible is
+    ``authorized_coverage``: the field is present, the total is explicitly null,
+    and ``count_scope`` NAMES the scope as two closed definitions. That
+    declaration is slice-independent exactly where the limitation CODE is not --
+    and it had one site in the tree and zero assertions before this test.
+    """
+    minted = {}
+    for case_name in ("copper_complete", "rare_earth_complete"):
+        case = synthetic_case(case_name)
+        result = composition.compose_mining_research(case.query, case.bundle)
+        coverage = result["authorized_coverage"]
+        assert "industry_total" in coverage  # present and explicitly null,
+        assert coverage["industry_total"] is None  # never quietly omitted
+        assert coverage["count_scope"] == "two_closed_definitions"
+        minted[case_name] = "industry_total_unknown" in result["limitations"]
+        _validate(result)
+    # The scope declaration holds on both slices; the code is slice-scoped.
+    assert minted == {"copper_complete": False, "rare_earth_complete": True}
 
 
 def test_unsupported_contract_calculation_is_missing_derivation_not_invented_value():
