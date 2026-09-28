@@ -228,6 +228,13 @@ def run_watchdog(
     if not confirmed:
         log("RECOVERED candidates cleared during confirmation window; no action")
         return 0
+    if len(confirmed) > 1:
+        names = ",".join(spec.name for spec in confirmed)
+        log(
+            "INDETERMINATE multiple M2 runners remain offline "
+            f"({names}); refusing fleet-wide restart"
+        )
+        return 0
 
     failures = 0
     for spec in confirmed:

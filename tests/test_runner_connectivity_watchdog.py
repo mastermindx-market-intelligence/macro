@@ -71,3 +71,22 @@ def test_m2_default_mapping_is_unique_and_complete():
     }
     assert len({s.service for s in specs}) == len(specs)
     assert len({s.root for s in specs}) == len(specs)
+
+
+def test_multiple_offline_runners_are_visible_as_multiple_candidates():
+    first = _spec()
+    second = watchdog.RunnerSpec(
+        "mac-builder-5",
+        "actions.runner.example.mac-builder-5",
+        Path("/tmp/actions-runner-5"),
+    )
+    candidates = watchdog.restart_candidates(
+        {
+            first.name: {"status": "offline", "busy": False},
+            second.name: {"status": "offline", "busy": False},
+        },
+        (first, second),
+        loaded={first.name: True, second.name: True},
+        workers={first.name: False, second.name: False},
+    )
+    assert candidates == [first, second]
