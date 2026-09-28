@@ -41,6 +41,10 @@ so_what: >-
   structure that carries no authority word. The composer's emit guard refuses a structure
   holding a peer rank wherever it lands. That hides whether the contract, or the composer's
   own projection, would have held it: 164 of the first 170 refusals were that guard.
+  And recognize the plant however a path reshapes it. The oracle searches the document for
+  the planted key and the planted value, case-folded. A search for the literal key alone
+  called an upper-cased rendering, or one publishing only the mapping's values, clean
+  (found by the round-2 review; hashed, encoded or truncated renderings stay beyond it).
   (4) The composer is not total over malformed owner input. A structure given as a
   source_family, as a slice_id, as a market price_basis or as a metric name raises TypeError or
   AttributeError. That failure is closed for a leak, but it is open for the page: one
@@ -48,7 +52,7 @@ so_what: >-
   state in words.
 kind: landmine
 verified_at: 2026-09-28
-verified_by: "tests/test_finance_intelligence_projection.py::test_an_owner_value_crosses_into_free_text_only_as_a_scalar (847 mutations over six fixtures: 657 clean, 183 sealed by the contract, 7 refused, 0 leaked with the fix; 29 LEAKED with 6c78279feacb swapped in), ::test_the_owner_value_fence_fires_on_a_stringified_owner_metric (LEAKED with str() restored at the seam) and ::test_every_owner_key_the_composer_reads_is_planted"
+verified_by: "tests/test_finance_intelligence_projection.py::test_an_owner_value_crosses_into_free_text_only_as_a_scalar (847 mutations over six fixtures: 657 clean, 183 sealed by the contract, 7 refused, 0 leaked with the fix; 29 LEAKED with 6c78279feacb swapped in), ::test_the_owner_value_fence_fires_on_a_stringified_owner_metric[str,upper,values] (LEAKED with the seam rendering a structure as is, upper-cased or as its values; upper and values read clean under a literal-key oracle) and ::test_every_owner_key_the_composer_reads_is_planted"
 scope:
   - macro
   - engine/sector_intelligence/finance_projection.py

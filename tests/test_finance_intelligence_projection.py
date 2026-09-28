@@ -1176,6 +1176,16 @@ _PLANTED_RANK = "zz_planted_peer_rank"
 
 _PLANTED_KEYS = {_PLANTED_NOTE: "SYNTHETIC-private", _PLANTED_RANK: 1}
 
+# What a plant carries out, however a path reshapes it: the planted key or the
+# planted value, in any letter case. A path that hashes, encodes or truncates
+# them is beyond this search.
+_PLANTED_MARKERS = ("zz_planted", "synthetic-private")
+
+
+def _carries_planted(text: str) -> bool:
+    folded = text.casefold()
+    return any(marker in folded for marker in _PLANTED_MARKERS)
+
 
 def _plant_owner_keys(node: object, keys: dict = _PLANTED_KEYS) -> int:
     """Plant ``keys`` (by default a private note and a peer rank) into every
@@ -1295,15 +1305,16 @@ _COMPOSER_READ_KEYS_NOT_OWNER_CARRIED = frozenset({
 def test_every_owner_key_the_composer_reads_is_planted() -> None:
     """The value fence mutates only the keys the fixture records hold, so a key
     the composer reads that no fixture carries is a key no plant reaches. Every
-    ``.get("<literal>")`` key in the composer is carried by an owner record of
-    an extended fixture or named above with its reason. Bounds: the census is
+    ``.get()`` key the composer gives as a string literal, in either quote, is
+    carried by an owner record of an extended fixture or named above with its
+    reason. Bounds: the census is
     by key name, not by owner field, and reads through a variable key or a
     subscript are outside it. The list is non-empty, so a census that matched
     nothing cannot pass."""
     import engine.sector_intelligence.finance_projection as _fp_mod
 
     source = Path(_fp_mod.__file__).read_text(encoding="utf-8")
-    read = set(re.findall(r'\.get\(\s*"([A-Za-z_][A-Za-z0-9_]*)"', source))
+    read = set(re.findall(r'\.get\(\s*["\']([A-Za-z_][A-Za-z0-9_]*)["\']', source))
     carried: set[str] = set()
     for fixture in _FENCE_FIXTURES:
         base = _extended_owner_inputs(fixture)
@@ -1356,7 +1367,7 @@ def test_an_owner_key_outside_the_contract_never_reaches_the_document(fixture: s
         # Assert a bare bool: pytest explains a failed `not in` over this
         # document's 148 KB dump with a superlinear diff, about 130 s per
         # failure (DSC:PYTEST-EXPLAINS-A-FAILED-NOT-IN-OVER-A-LONG-STRING-WITH-A-SUPERLINEAR-DIFF).
-        leaked = "zz_planted" in json.dumps(document, default=str)
+        leaked = _carries_planted(json.dumps(document, default=str))
         assert not leaked, field.name
     assert {
         "financial_packets", "sector_dossier", "theme_evidence", "expectation_observations", "basket_context",
@@ -1387,7 +1398,7 @@ def test_the_owner_key_fences_fire_on_a_key_the_composer_admits(
     if refusal is not None:
         with pytest.raises(AssertionError, match=refusal) as excinfo:
             compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
-        assert "zz_planted" not in str(excinfo.value)
+        assert not _carries_planted(str(excinfo.value))
         return
     document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
     carried = admitted in json.dumps(document, default=str)
@@ -1486,15 +1497,16 @@ def _contract_registry() -> ContractRegistry:
 
 
 def _owner_fence_outcome(inputs: FinanceOwnerInputs) -> str:
-    """``clean``: nothing planted reached the document. ``sealed``: something
-    did, and the contract refuses the document. ``refused``: the composer
-    raised without naming anything planted. ``LEAKED``: something planted
-    reached a document the contract accepts, or an error message."""
+    """``clean``: no planted key or value, in any case, reached the document.
+    ``sealed``: one did, and the contract refuses the document. ``refused``:
+    the composer raised without repeating anything planted. ``LEAKED``:
+    something planted reached a document the contract accepts, or an error
+    message."""
     try:
         document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
-    except Exception as exc:  # a refusal fails closed unless it repeats the planted value
-        return "LEAKED" if "zz_planted" in str(exc) else "refused"
-    if "zz_planted" not in json.dumps(document, default=str):
+    except Exception as exc:  # a refusal fails closed unless it repeats the planted content
+        return "LEAKED" if _carries_planted(str(exc)) else "refused"
+    if not _carries_planted(json.dumps(document, default=str)):
         return "clean"
     try:
         _contract_registry().validate(CONTRACT_ID, document)
@@ -1517,12 +1529,23 @@ def test_an_owner_value_crosses_into_free_text_only_as_a_scalar() -> None:
     assert not leaks, (outcomes, leaks[:20])
 
 
-def test_the_owner_value_fence_fires_on_a_stringified_owner_metric(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Positive control for the fence above. With str() restored at the
+# The owner-text seam with its gate removed: a structure is published as it is,
+# upper-cased, or as the mapping's values alone. Scalars keep the real gate.
+_RESHAPED_OWNER_TEXT = {
+    "str": str,
+    "upper": lambda value: str(value).upper(),
+    "values": lambda value: " ".join(map(str, value.values())) if isinstance(value, dict) else str(value),
+}
+
+
+@pytest.mark.parametrize("reshape", sorted(_RESHAPED_OWNER_TEXT))
+def test_the_owner_value_fence_fires_on_a_stringified_owner_metric(monkeypatch: pytest.MonkeyPatch, reshape: str) -> None:
+    """Positive control for the fence above. With the gate removed at the
     owner-text seam, an operating observation whose metric mapping has lost its
-    name publishes the whole mapping as the name, the private note inside it,
-    and the contract accepts the document: a name only has to be a non-empty
-    string."""
+    name publishes the mapping as the name, and the contract accepts the
+    document: a name only has to be a non-empty string. The fence must call it
+    LEAKED however the mapping is rendered, including upper-cased or as its
+    values alone, which carry the private note without its key."""
     import engine.sector_intelligence.finance_projection as _fp_mod
 
     cases = [
@@ -1532,7 +1555,10 @@ def test_the_owner_value_fence_fires_on_a_stringified_owner_metric(monkeypatch: 
     ]
     assert cases
     assert "LEAKED" not in {_owner_fence_outcome(inputs) for inputs in cases}
-    monkeypatch.setattr(_fp_mod, "_owner_text", lambda value: None if value is None else str(value))
+    render = _RESHAPED_OWNER_TEXT[reshape]
+    monkeypatch.setattr(
+        _fp_mod, "_owner_text", lambda value: render(value) if isinstance(value, (dict, list, tuple)) else _owner_text(value)
+    )
     assert "LEAKED" in {_owner_fence_outcome(inputs) for inputs in cases}
 
 
