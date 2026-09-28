@@ -59,7 +59,7 @@ import os
 import sys
 import tempfile
 from collections.abc import Iterable
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -2877,6 +2877,8 @@ def main() -> None:
         log.warning("build_prophet: board read join failed (%s: %s)", type(e).__name__, e)
         print(f"::warning title=prophet board read::join failed ({type(e).__name__}) —"
               " index.json ships without the board-read block", flush=True)
+    # Additive GD-6A receipt; no sidecar row is fed into admission or management.
+    index["market_eligibility_shadow"] = _write_market_eligibility_shadow(index)
     _write_json(INDEX_PATH, index)
     log.info("build_prophet: wrote index.json (%d active plans)", len(active_entries))
 
@@ -2903,6 +2905,41 @@ def main() -> None:
         )
 
     return active_entries
+
+
+
+def _write_market_eligibility_shadow(index: dict[str, Any], now: datetime | None = None) -> dict[str, Any]:
+    """Use this builder's frozen source and publication plane; zero live authority.
+
+    The old helper's name says board, but its contract snapshots any JSON object
+    under the existing content-addressed provenance root. Reuse it for the exact
+    envelope bytes; no second store or collector. Source gaps do not stop plans.
+    """
+    from scripts.build_prophet_market_eligibility import prepare_publication_shadow
+    path = INDEX_PATH.parent / "market_eligibility.json"
+    try:
+        root = LEDGER_DIR.parents[1]
+        sidecar, receipt = prepare_publication_shadow(
+            index, ledger_dir=LEDGER_DIR,
+            risk_envelope_path=root / "site" / "riskdata" / "risk_envelope.json",
+            observed_at=now if now is not None else datetime.now(timezone.utc),
+            freeze_source=_freeze_origination_source_board,
+        )
+        _write_json(path, sidecar)
+        expected = json.dumps(sidecar, allow_nan=False, default=str, indent=2).encode("utf-8")
+        if path.is_symlink() or path.read_bytes() != expected:
+            raise RuntimeError("SHADOW_ARTIFACT_WRITE_MISMATCH")
+        receipt["sha256"] = hashlib.sha256(expected).hexdigest()
+        receipt["artifact_status"] = "WRITTEN"
+        return receipt
+    except Exception as exc:  # additive shadow must not prevent native plans
+        print("::warning title=prophet market eligibility::"
+              "shadow publication unavailable; live recommendations unchanged", flush=True)
+        return {
+            "mode": "SHADOW_ONLY", "production_behavior": "UNCHANGED",
+            "source_state": "UNAVAILABLE", "artifact_status": "UNAVAILABLE",
+            "file": None, "error_type": type(exc).__name__,
+        }
 
 
 def _read_standouts_gate_go(standouts_doc: dict[str, Any] | None = None) -> bool:

@@ -169,10 +169,15 @@ class ContractTests(unittest.TestCase):
         self.assertEqual(result["board"]["sha256"], sha256(raw).hexdigest())
 
     def test_session_and_definition_mismatch(self):
-        for kw in ({"expected_source_session": "2026-09-24"},
-                   {"expected_board_definition": "us_prophet_v2_fallback"}):
-            with self.subTest(kw=kw), self.assertRaises(m.MarketEligibilityError):
-                self.compose(**kw)
+        # A source-session mismatch with an intact, hash-bound board is disclosed
+        # on every row, not confused with an unreadable population. The wrapper
+        # publication date is a distinct clock and cannot repair stale prices.
+        result = self.compose(expected_source_session="2026-09-24")
+        self.assertEqual(result["source_state"], "UNAVAILABLE")
+        self.assertIn("BOARD_SOURCE_HEALTH_UNQUALIFIED", result["errors"])
+        self.assertEqual(len(result["rows"]), len(self.board["buy"]))
+        with self.assertRaises(m.MarketEligibilityError):
+            self.compose(expected_board_definition="us_prophet_v2_fallback")
 
     def test_malformed_board_has_no_partial_denominator(self):
         for raw in (b"[]", b"null", b"", b'{"buy": [1]}', b'{"x":1,"x":2}'):

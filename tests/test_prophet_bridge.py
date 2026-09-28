@@ -1541,6 +1541,10 @@ def test_end_to_end_smoke(tmp_path):
 
         assert bp.INDEX_PATH.exists()
         assert bp.LEDGER_PATH.exists()
+        published = json.loads(bp.INDEX_PATH.read_text())
+        assert "market_eligibility_shadow" in published
+        assert published["market_eligibility_shadow"]["mode"] == "SHADOW_ONLY"
+        assert published["market_eligibility_shadow"]["production_behavior"] == "UNCHANGED"
     finally:
         bp.STANDOUTS_PATH = orig_standouts
         bp.PLANS_DIR = orig_plans

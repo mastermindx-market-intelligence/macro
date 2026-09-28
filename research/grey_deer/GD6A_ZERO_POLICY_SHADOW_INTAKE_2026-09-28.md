@@ -1,144 +1,62 @@
-# GD-6A zero-policy shadow intake — R4 source qualification
+# GD-6A R5: existing Prophet build and publication integration
 
-**PARTIAL / BUILT_NOT_PROVEN. MISSION_COMPLETE:false. PR #8141 remains under
-HOLD-FOR-SOL: no release, live policy, ranking, sizing or trading activation.**
+**BUILT_NOT_PROVEN / PARTIAL. MISSION_COMPLETE:false. PR #8141 stays DRAFT/HOLD-FOR-SOL until required release evidence is available.**
 
-Operation: `gd6a-us-shadow-intake-20260928-sol-001`, existing
-`WS:GREY-DEER-RISK-INTELLIGENCE` / GD-6A. Parent #6817; R2 common inputs and
-research adjudication5865326642; original R3 checkpoint5866759684; cumulative
-R4 qualification on #8141/5867109469. The original CEO's UI work, H1/Cycle and
-Seat B's #7107/#7094 remain separate. No source custody is transferred.
+Operation `gd6a-us-shadow-intake-20260928-sol-001`, same branch
+`claude/gd6a-us-shadow-intake-20260928`; R5 begins from
+`56a4c5b83195e4a11445a481543499e6c63b23a8`.
 
-## Existing owner and scope
+## Current review decision
 
-This implements the existing `prophet.market_eligibility/v1` after-rank sidecar,
-not another detector, policy registry, identity plane, allocator, ledger or publisher.
-Current native `engine/risk_envelope.py` supplies zero policies and episodes.
-Nonempty, null or unsupported policy inputs remain UNAVAILABLE, never an invented
-active rule. The native composer is unchanged.
+The current Chairman explicitly permits self-audit instead of waiting for an independent reviewer. R5 uses author/Sol source audit and discriminating tests. This is not called independent review. It removes the reviewer-placement dependency for this software slice, not financial-policy promotion, required CI, deployment authorization or ordinary production proof. The current exposed Executive route is readonly and its state call returned incomplete installed Macro objects. No reviewer, worker or watcher was dispatched.
 
-Every row of the exact raw board's `/buy` array retains its original order, nullable
-rank/lane and full candidate content. Array positions are exact-board pointers, not
-issuer/security/episode identities. Off-board research stays with its existing owner.
-The bound server-side view recomputes all sidecar semantics from independently supplied
-source bindings. Hashes do not establish authority, entitlement or current freshness.
+## Actual product-path change
 
-AVAILABLE / ELIGIBLE means only
-`NO_MARKET_POLICY_CONSTRAINT_NOT_BUY_PERMISSION`. All eight downstream authority
-flags remain false and `production_behavior=UNCHANGED`. B4, rankers, plans, personal
-holdings, alerts and production publication are untouched. The explicit validity
-window comes from the caller's actual owner; no calendar or financial TTL is invented.
+The previous component had only a qualification CLI. `scripts/build_prophet.py` now calls its additive shadow writer after native plan/rank/management computations and before publishing its existing index. The writer reuses the exact board already frozen by `_freeze_origination_source_board`; it never rereads the mutable current board. The same existing JSON snapshot helper freezes the risk envelope in the existing content-addressed `data/prophet/origination_sources/` root. It does not create another store, collector or ledger.
 
-## R4 implementation changes
+The generated `site/prophet/market_eligibility.json` is accompanied by an additive `market_eligibility_shadow` index receipt carrying its raw SHA256, sidecar identity, source snapshots, decision/window clocks, row count and data status. This is a server-side binding, not a browser-generated eligibility decision. Existing full plan-book protection and the public-R2 health-only split remain unchanged.
 
-### CI registration is complete, not still a materialization blocker
+The existing `scripts/ci/daily_engine_prophet_checkpoint.sh` accepts exactly the new sidecar filename. All existing race checks, manifest bounds and output ownership remain; no new workflow/publisher. The existing synapse-read-gate test command gains the new publication test, with every prior suite retained.
 
-Commit `69601edd13829d6a32a5a51ffa07e781ff314ef3` changes exactly one existing
-`synapse-read-gate` command in `.github/ci/legacy-jobs.yml`. It retains its six original
-suites and adds both GD-6A test files. No new workflow or indirect test-discovery path.
+## Source truth and failure behavior
 
-The entire preimage was obtained and verified before replacement:
+The board's price-through session is distinct from its wrapper publication date. A newer wrapper cannot refresh old prices. A mismatched price session yields one UNAVAILABLE disposition per intact row; an unreadable board, malformed/future wrapper or wrong digest still refuses. This explicitly corrects the R4 test that conflated wrapper-date equality with the source-session contract. It does not widen eligibility.
 
-- Before: 1,033,991 bytes, Git blob `272a7fe415b82811f34946bbd50816ee7aee8069`.
-- After: 1,034,080 bytes, Git blob `2542e6eeaf5a6f8a8737414bac22d49977534577`.
-- After SHA256: `aecd1a59453419f0f7cfd9c478049596e8420aba4e5c34b718eba9b454d1ebee`.
+The native `lib.nyse_calendar.expected_last_session` and its next-session/settle boundary determine the window. No new calendar or arbitrary hour/day TTL is introduced. This remains an EOD-source shadow window, not an assertion of intraday market-risk freshness. Subsecond observation time is retained so newly produced evidence is not falsely rejected by a rounded-down decision clock.
 
-The native authenticated gh route completed this new bounded operation. It did not
-retry the earlier denied host inspection. Every original manifest line except the
-single appended command is preserved. Registration does not prove CI executed it.
+A native FRESH coverage summary with missing/unmapped hazard interpretation or absent measured-state interpretation is UNAVAILABLE. Zero policies is not missing risk knowledge. A source gap can still publish an unavailable shadow artifact, retaining every board row. On snapshot/artifact failure the index publishes an explicit unavailable receipt with **no artifact path**: it does not point at an old apparently healthy file. Consumers must follow the exact index/hash binding, not fetch an unbound latest sidecar.
 
-### Complete source inventory and clocks
+The existing snapshot helper retains its own filesystem contract; the prior R4 no-follow/nonblocking CLI hardening is not asserted to cover every ancestor or every native builder read.
 
-Repair commit `3b759248902e49a597ed8c3e740f4bde52c8631b` closes a reproduced gap:
-an optional contributing native source can have `as_of=null` while summaries say
-FRESH and `all_on_session=true`. Checking only required clocks admitted that input.
+## No activation
 
-The narrow FRESH-only shadow now verifies required/optional inventory disjointness,
-fresh-set equality and uniqueness, integer source count, complete per-source keys
-and every declared source clock. A genuine optional source with a qualified clock
-remains usable. This is validation of the existing input contract, not a change to
-native required-source policy or production recommendations. Missing evidence keeps
-the intact board visible as UNAVAILABLE; it does not invent Calm or a liquidation.
+Current Risk Envelope v0 emits zero policies and episodes. No synthetic active policy is added. AVAILABLE/ELIGIBLE continues to mean `NO_MARKET_POLICY_CONSTRAINT_NOT_BUY_PERMISSION`. All eight action flags remain false. Rank, admission, B4 entry truth, original plans, personal holdings, sizing, buy alerts and trading are unchanged. Re-entry, reductions and live recommendation restrictions remain separately qualified native-policy capabilities. No numerical study, outcome, fit or predictive-performance claim is introduced.
 
-### Descriptor-bound source reading
+## Executed qualification
 
-The stdout-only CLI now applies no-follow and nonblocking flags to the actual open,
-then checks the opened descriptor is a regular file and enforces the size limit.
-This rejects a final-component symlink swap, devices and FIFOs without waiting for
-a producer. Descriptors close on success and failure. The guard concerns the opened
-file, not a new filesystem authorization system; source hashes and owner bindings
-remain mandatory. The CLI still creates no publication, scheduler or runtime store.
+Python3.12.13: **88 tests passed, 58 subtests passed**. This includes all existing GD-6A tests, 18 new publication tests, and the existing full `build_prophet.main` smoke now asserting the new receipt. The main smoke uses its original synthetic price/management fixtures; it is not a production-market full-nightly run. Full native modules execute; 61 imported source files were copied from exact matching source blobs into an isolated fixture, not a shared checkout.
 
-## Executed qualification and exact scope
+Command:
 
-Six new test methods bring the suite from63 to69. One method has six inventory
-subcases; failure counts are not inflated into independent market observations.
+```sh
+python3.12 -m pytest tests/test_prophet_market_eligibility.py tests/test_prophet_market_eligibility_native.py tests/test_prophet_market_eligibility_publication.py tests/test_prophet_bridge.py::test_end_to_end_smoke --basetemp <owned-test-directory> -q
+```
 
-| Run | Result | Scope |
-|---|---|---|
-| New tests against original implementation |69 methods,10 assertion failures,0 errors|Reproduces the gaps before repair; no market data.|
-| Repaired source, conversation Linux/Python3.13.5 |69 PASS,0 failures/errors/skips|Actual modules and CLI, fictional observations/files.|
-| Same repaired blobs, native Mac/Python3.14.7 |69 PASS,0 failures/errors/skips|Same distinct tests, not69 additional cases.|
-| Native Agent OS validator at code head3b759248 |1,340 records,0 errors,755 warnings|Complete exact-candidate Agent OS store; not a full application checkout or CI.|
+Final log SHA256 `949c61ea2ffd3d00df9c033dc3d13f8a3ead82ebcbe47748829745378472d862`.
 
-The native composer dependency remains30,642 bytes / Git blob
-`3b0df2d426f50245142b943e38faf4996f96e995`, SHA256
-`f0d9b1786b524f8092cfcaa194e8d590f1ff4b3db97ca8d2b0b2af5595331099`.
-It was verified before import, not rewritten or mocked.
+Two changed-path fault controls failed for the intended assertions: deleting the actual builder call fails the main smoke; removing the exact checkpoint allowlist addition fails the executed native shell-case test. Originals were restored byte-for-byte. The shell test is the actual allowlist fragment, not a full remote commit/publish run. An initial default-pytest invocation emitted unrelated stale temporary-directory cleanup warnings; subsequent tests used an explicit owned base directory, and no unrelated cleanup repair was attempted.
 
-Repaired blobs:
-- Module: `3ba4c0e5cd10db3e3787cd1e17a0f6469aae2f64`.
-- CLI: `c2a48d8a2454a66ecf6c092b87eae08c239265ba`.
-- Unit tests: `a08a2f78af5485e00bcacf210331d06c07b2345c`.
-- Native compatibility tests: `43f5246a37618298dfdc7ab4d7cf10e20792f677`.
-- Native69-test log SHA256: `966e986d33f05cc17ff7c1e70843bd306d3007c8d48292b0ee736bf6b5ed8c10`.
+Real committed board and risk envelope at the R5 base were also processed through the actual freeze/writer/helper and bound reader in an isolated output directory: **69/69 rows, exact order/content preserved, source state AVAILABLE, zero errors, all action flags false**. Source session2026-09-25. Raw source hashes:
 
-The Agent OS run used all1,347 exact files from tree
-`ecd992f146bccee1e162d8780724e119bcdd88b1`, the complete native validator blob
-`a0e69ea9bf279ea38eb89a7ade694c294cc42876` and actual program registry. It reused
-1,297 locally available byte-matching files and fetched only50 differing versions.
-An initial20-file materialization bound stopped before validation; the preserved
-prefix was then completed under an explicit bounded50-file plan. No installed
-source was modified and no substitute knowledge plane was created.
+- board `934f56ac94e057cd5c0f1466d4a24a09382e8e253c2e59f10c9b248bcf7445a8`;
+- envelope `ae32e124808cf4fb64ef69687b32ad78382a71dd2f9b366eebbc06995ede45ae`.
 
-Warnings are retained:249 artifact-path and477 owned-path warnings in this isolated
-metadata fixture,27 overdue reviews,1 active-but-complete and1 blocked-without-cause.
-The path warnings cannot establish absence in the real checkout. The other warnings
-remain organizational findings, not repaired by this PR. Log SHA256:
-`b8dde406422249c1d017451a7758d4e56a623661c0cccd09e256f93bdfaa226c`.
-This run predates the records-only R4 handoff refresh; its final exact-source rerun
-receipt belongs on the cumulative qualification comment rather than a recursive
-claim that a document validates itself.
+This is real-input native-helper proof, **not** hosted CI, deployed publication, authenticated browser/API behavior or forward-outcome accrual. Native evidence is retained under `/Volumes/Mastermind/evidence/gd6a-us-shadow-intake-20260928-sol-001/publication-r5/`.
 
-## Remaining release gates
+## Exact next capability
 
-A compound native PR/workflow/check-status inspection was blocked before dispatch
-by the tool safety layer. It was not retried through another carrier or delegated
-as a proxy request. Current CI execution/conclusion is therefore not claimed here.
-This is an action-scoped observation limitation, not proof of a GitHub outage.
+Obtain permitted required current-base/registered-suite release evidence and consume actual diagnostics; the prior explicitly blocked CI-status request is not retried or proxied. Release this same source only when its remaining checks/acceptance are satisfied. Then prove one ordinary settled build -> Git checkpoint -> served sidecar/index -> bound consumer, with rank/plan parity and the next ordinary refresh. The saved source receipt is not that production event.
 
-The exposed Executive ingress reports readonly. No review Job or worker was
-submitted, started or inferred from available-worker counts. Independent review
-remains outstanding; author tests and a changed account label are not independence.
+After publication, the unfinished business capability is individually registered risk/de-risking policy -> shadow counterfactual evaluation -> scoped recommendation enforcement and portfolio-specific exposure controls. Keep existing Grey Deer policy/grant/promotion owners; do not convert a red label or this zero-policy shadow into a live order. Preserve H1/Cycle, Seat B#7107/#7094, the other research seats and original CEO UI release.
 
-Keep HOLD until independently reviewed exact source, owning-suite/registered CI
-execution, current-base integration and remaining release conditions are proved.
-Do not arm automatic merge, repeat an unchanged source proof for activity, or
-reopen a protected study. Source-layer tests are not authenticated user proof.
-
-## Next product capability
-
-After source acceptance, connect the existing frozen origination-board receipt
-and settled envelope through the normal after-rank publication owner. Prove
-unchanged board/rank/plans, lossless shadow counts, the next ordinary refresh and
-existing counterfactual accrual. No duplicate scheduler, store or grader.
-
-Actual risk-off/de-risking recommendations require separately supported,
-individually authorized policy records with scope, version, clocks, expiry,
-repair and kill conditions. Original Grey Deer promotion and mandate requirements
-remain; R2's research budget does not supersede them. This zero-policy source slice
-is not a completed no-new-long filter or a forecast-performance result.
-
-Protected Skillpack: Mastermind `e981ec1b0b6e3bd47e267b6abc92adee4a94d6a8`,
-compatible1.0.1/bootstrap1. The exact next step is registered qualification and
-independent review of this same PR, followed by the existing publication connection.
+Protected procedure loaded: Mastermind `e981ec1b0b6e3bd47e267b6abc92adee4a94d6a8`, compatible Skillpack1.0.1/bootstrap1. Current outer Chairman intent supplies the self-audit exception. No source custody transfer, automatic wake or production activation.

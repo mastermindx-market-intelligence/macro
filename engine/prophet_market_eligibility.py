@@ -179,6 +179,16 @@ def _check_envelope(doc: dict[str, Any], session: str, now: datetime,
         errors.append("REPAIR_PRODUCER_NOT_SUPPORTED")
     if doc["data_state"] != "FRESH":
         errors.append("ENVELOPE_DATA_NOT_FRESH")
+    # A coverage summary can be FRESH while a required hazard is unmapped.
+    # Missing interpretation is not a qualified risk reading, even in shadow.
+    measured = doc["measured_state"]
+    hazard = doc["hazard_summary"]
+    if (not isinstance(measured, dict) or measured.get("usable") is not True
+            or measured.get("verdict") not in ("RISK_ON", "MIXED", "RISK_OFF")):
+        errors.append("ENVELOPE_MEASURED_STATE_UNAVAILABLE")
+    if (not isinstance(hazard, dict)
+            or hazard.get("stage") not in ("NONE", "FRAGILE", "TRANSMITTING", "BREAKDOWN")):
+        errors.append("ENVELOPE_HAZARD_UNAVAILABLE")
     freshness = doc["freshness"]
     if (not isinstance(freshness, dict) or freshness.get("source_session") != session
             or freshness.get("all_on_session") is not True
@@ -262,8 +272,14 @@ def compose_market_eligibility(
     board = _load(raw_board, "BOARD_UNREADABLE")
     if sha256(raw_board).hexdigest() != expected_hash:
         raise MarketEligibilityError("BOARD_HASH_MISMATCH")
-    if board.get("board_definition") != definition or board.get("as_of") != session:
+    if board.get("board_definition") != definition:
         raise MarketEligibilityError("BOARD_DEFINITION_OR_SESSION_MISMATCH")
+    try:
+        board_asof = _session(board.get("as_of"))
+    except MarketEligibilityError as exc:
+        raise MarketEligibilityError("BOARD_PUBLICATION_CLOCK_INVALID") from exc
+    if not session <= board_asof <= now.date().isoformat():
+        raise MarketEligibilityError("BOARD_PUBLICATION_CLOCK_INVALID")
     rows = board.get("buy")
     if (not isinstance(rows, list) or len(rows) > MAX_BOARD_ROWS
             or any(not isinstance(row, dict) for row in rows)):
@@ -308,7 +324,8 @@ def compose_market_eligibility(
         "market": "US", "decision_at": decision_at, "valid_until": valid_until,
         "validity_basis": "EXPLICIT_CALLER_WINDOW_AND_NATIVE_SOURCE_SESSION",
         "board": {"sha256": expected_hash, "definition": definition,
-                  "source_session": session, "population_pointer": "/buy", "row_count": len(rows)},
+                  "source_session": session, "source_board_asof": board_asof,
+                  "population_pointer": "/buy", "row_count": len(rows)},
         "risk_envelope": {
             "sha256": actual_envelope_hash, "expected_sha256": expected_envelope_sha256,
             "bundle_id": envelope.get("bundle_id") if envelope else None,
