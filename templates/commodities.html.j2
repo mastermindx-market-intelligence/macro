@@ -165,6 +165,48 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 [data-theme='light'] .cov-covered .cov-fam { font-weight: 650; }
 [data-theme='light'] .cov-state { background: var(--panel2); }
 [data-theme='light'] .cov-covered .cov-state { background: color-mix(in srgb, var(--blue) 7%, transparent); border-color: color-mix(in srgb, var(--blue) 28%, transparent); }
+
+/* WTI physical evidence — separate weekly clock, neutral/non-directional treatment. */
+.oil-phys { margin-top: 14px; padding: 16px 18px; }
+.oil-phys-head { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; flex-wrap:wrap; }
+.oil-phys-head h3 { margin:0; font-size:15px; font-weight:650; color:var(--tx); }
+.oil-phys-head p { margin:5px 0 0; max-width:720px; font-size:12px; color:var(--mut); }
+.oil-phys-state { flex:0 0 auto; border:1px solid var(--line2); border-radius:var(--r-pill,999px); padding:4px 8px;
+  font:600 10px/1.2 var(--font-ui); letter-spacing:.04em; color:var(--mut); }
+.oil-phys[data-evidence-state='QUALIFIED'] .oil-phys-state { color:var(--ink-link,var(--blue)); border-color:var(--line2); }
+.oil-phys[data-evidence-state='PARTIAL_EVIDENCE'] .oil-phys-state,
+.oil-phys[data-evidence-state='STALE_LAST_KNOWN'] .oil-phys-state { color:var(--amb); border-color:var(--ink-warn,var(--amb)); }
+.oil-phys[data-evidence-state='NOT_CONNECTED'] .oil-phys-state,
+.oil-phys[data-evidence-state='METHOD_NOT_VERIFIED'] .oil-phys-state { color:var(--faint); }
+.oil-phys-clocks { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-top:13px; }
+.oil-phys-clocks > div, .oil-phys-values > div { min-width:0; padding:9px 10px; border:1px solid var(--line); border-radius:var(--r-ctl,8px); background:var(--panel); }
+.oil-phys-clocks > div > span, .oil-phys-values > div > span { display:block; font-size:10px; letter-spacing:.04em; color:var(--faint); }
+.oil-phys-clocks strong, .oil-phys-values strong { display:block; margin-top:4px; font-size:12px; font-weight:600; color:var(--tx); }
+.oil-phys-values { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-top:8px; }
+.oil-phys-caveat { display:flex; gap:8px; align-items:flex-start; margin-top:10px; padding:10px 12px; border:1px solid var(--line); border-radius:var(--r-card,12px); background:var(--panel); font-size:11px; line-height:1.5; color:var(--mut); }
+.oil-phys-caveat strong { color:var(--tx); white-space:nowrap; }
+.oil-phys-receipt { margin-top:10px; border-top:1px solid var(--line); padding-top:9px; }
+.oil-phys-receipt summary { cursor:pointer; color:var(--blue); font-size:11px; }
+.oil-phys-receipt summary:focus-visible { outline:2px solid var(--blue); outline-offset:3px; border-radius:var(--r-ctl,4px); }
+.oil-phys-receipt dl { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:5px 18px; margin:10px 0; }
+.oil-phys-receipt dl > div { display:grid; grid-template-columns:92px minmax(0,1fr); gap:7px; font-size:10.5px; }
+.oil-phys-receipt dt { color:var(--faint); } .oil-phys-receipt dd { margin:0; color:var(--tx); overflow-wrap:anywhere; }
+.oil-phys-receipt p { margin:7px 0 0; font-size:10.5px; line-height:1.5; color:var(--mut); }
+.oil-phys .oil-phys-warning { color:var(--ink-warn,var(--amb)); font-size:12px; line-height:1.55; }
+.oil-phys-receipt a { color:var(--ink-link,var(--blue)); }
+.oil-phys-receipt a:focus-visible { outline:2px solid var(--ink-link,var(--blue)); outline-offset:3px; }
+.oil-phys-empty { display:flex; flex-direction:column; gap:4px; margin-top:12px; padding:12px; border:1px dashed var(--line2); border-radius:var(--r-ctl,8px); color:var(--mut); font-size:11px; }
+.oil-phys-empty strong { color:var(--tx); }
+[data-theme='light'] .oil-phys { background:var(--panel); box-shadow:var(--card-shadow,none); backdrop-filter:none; -webkit-backdrop-filter:none; }
+[data-theme='light'] .oil-phys-clocks > div,
+[data-theme='light'] .oil-phys-values > div,
+[data-theme='light'] .oil-phys-caveat { background:var(--bg); }
+@media(max-width:780px) {
+  .oil-phys-clocks, .oil-phys-values, .oil-phys-receipt dl { grid-template-columns:1fr; }
+  .oil-phys-caveat { flex-direction:column; gap:3px; }
+  .oil-phys-caveat strong { white-space:normal; }
+}
+
 .panel2 { background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 13px 15px; }
 .grid { display: grid; gap: 14px; }
 .g2 { grid-template-columns: 1.35fr 1fr; }
@@ -331,7 +373,7 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 
 /* ── BOTTOMS & TOPS BOARD ─── */
 .board { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
-@media(max-width:640px){ .board { grid-template-columns: 1fr; } }
+
 .bcol .bh { display: flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 600;
              margin-bottom: 12px; letter-spacing: .02em; }
 .bcol .bh .ic { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center;
@@ -352,6 +394,15 @@ body.page-commod .aurora.au-red .au-a3   { background: radial-gradient(ellipse, 
 .meter.t i { background: linear-gradient(90deg, var(--amb), var(--dn)); }
 .meter.b i { background: linear-gradient(90deg, var(--blue), var(--up)); }
 .brow .sc { width: 28px; text-align: right; font-size: 12.5px; font-weight: 600; flex-shrink: 0; }
+@media(max-width:640px){
+  .board { grid-template-columns:minmax(0,1fr); }
+  .brow { display:grid; grid-template-columns:minmax(0,1fr) 28px; }
+  .brow .nm { width:auto; grid-column:1 / -1; }
+  .brow .st { min-width:0; grid-column:1 / -1; overflow-wrap:anywhere; }
+  .brow .rcpt-item { white-space:normal; }
+  .brow .meter { grid-column:1; width:100%; }
+  .brow .sc { grid-column:2; }
+}
 .badge { font-size: 10.5px; font-weight: 600; padding: 2px 7px; border-radius: 5px;
          letter-spacing: .02em; display: inline-block; margin-top: 2px; }
 .badge.top  { background: rgba(242,178,77,.14); color: var(--ink-warn, var(--amb)); }
@@ -1274,6 +1325,9 @@ html[data-theme="light"] :is(
   {% if d.name == 'gold' %}
     {% set g = d.get('china_gold_premium') or {} %}
     {% include "_china_gold_premium.html.j2" %}
+  {% endif %}
+  {% if d.name == 'oil' %}
+    {% include "_commodity_oil_physical.html.j2" %}
   {% endif %}
   {% endif %}
 </div>

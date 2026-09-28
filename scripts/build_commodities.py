@@ -421,16 +421,33 @@ def _oil_supply_read() -> dict | None:
     from lib import store
     from engine import commodity_supply_context as _sc
 
+    series_read_errors: list[str] = []
+    series_dates: dict[str, str] = {}
+
     def col(name: str) -> pd.Series | None:
-        d = store.read("eia", name)
-        return None if d is None or d.empty else d.iloc[:, 0]
+        try:
+            d = store.read("eia", name)
+        except Exception:  # a failed context source must not break other commodities
+            series_read_errors.append(name)
+            return None
+        if d is None or d.empty:
+            return None
+        values = pd.to_numeric(d.iloc[:, 0], errors="coerce")
+        dates = pd.to_datetime(d.index, errors="coerce", utc=True)
+        valid = np.isfinite(values.to_numpy(dtype=float)) & ~pd.isna(dates)
+        result = pd.Series(values.to_numpy()[valid], index=dates[valid]).sort_index()
+        result = result[~result.index.duplicated(keep="last")]
+        if result.empty:
+            return None
+        series_dates[name] = result.index[-1].date().isoformat()
+        return result
 
     def rz(v: float | None) -> float | None:
         return None if v is None else round(v, 2)
 
     crude = col("crude_stocks")
     if crude is None or _sc.last_value(crude) is None:
-        return None
+        return {"source_read_failed": True} if series_read_errors else None
     scfg = config.load()["eia"]["supply"]
     yrs, dosw = scfg.get("seasonal_years", 5), scfg.get("dos_window_weeks", 4)
 
@@ -439,10 +456,27 @@ def _oil_supply_read() -> dict | None:
             "gasoline": _sc.seasonal_z(gasoline, yrs), "distillate": _sc.seasonal_z(distillate, yrs)}
     bz = _sc.balance_z(zmap)
 
+    _observed = pd.to_datetime(crude.index, errors="coerce")
+    _observed = _observed[~pd.isna(_observed)]
+    observed_at = str(_observed.max().date()) if len(_observed) else None
     out = {"crude_stocks_mb": round(_sc.last_value(crude) / 1000, 1),
            "crude_z": rz(zmap["crude"]),
            "balance_z": rz(bz), "balance_word": _sc.balance_word(bz),
-           "caveat_en": _sc.SUPPLY_CAVEAT["en"], "caveat_zh": _sc.SUPPLY_CAVEAT["zh"]}
+           "caveat_en": _sc.SUPPLY_CAVEAT["en"], "caveat_zh": _sc.SUPPLY_CAVEAT["zh"],
+           # Source/receipt identity is additive display metadata only. The
+           # historical XLS store carries the observation date but does not
+           # preserve publication or ingestion timestamps, so those remain
+           # explicit nulls rather than inferred clocks.
+           "observed_at": observed_at,
+           "published_at": None,
+           "received_at": None,
+           "source_id": "eia_wpsr",
+           "source_name": "U.S. Energy Information Administration",
+           "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
+           "method_version": "eia_wpsr_seasonal_anomaly_v1",
+           "method_parameters": {"seasonal_years": yrs, "dos_window_weeks": dosw},
+           "series_observed_at": series_dates,
+           "series_read_errors": series_read_errors}
     d4 = _sc.delta_4w(crude)
     if d4 is not None:
         out["crude_chg_4w_mb"], out["draw"] = round(d4 / 1000, 1), d4 < 0
@@ -474,7 +508,149 @@ def _oil_supply_read() -> dict | None:
     spr_d = _sc.delta_4w(col("spr_stocks"))
     if spr_d is not None:
         out["spr_chg_4w_mb"] = round(spr_d / 1000, 1)
+    inventory_dates = [series_dates.get(name) for name in
+                       ("crude_stocks", "cushing_stocks", "gasoline_stocks", "distillate_stocks")]
+    if any(value is not None and value != observed_at for value in inventory_dates):
+        # Do not display a composite of different observation weeks as one balance.
+        out["unaligned_inventory_periods"] = True
+        out["balance_z"], out["balance_word"] = None, "n/a"
     return out
+
+
+def _wti_physical_evidence_vm(
+    supply: dict | None,
+    analysis_asof,
+    *,
+    stale_after_days: int = 9,
+    now=None,
+) -> dict:
+    """Display-only WTI evidence; validate clocks before granting qualification.
+
+    Freshness is evaluated at this build, NOT at the last trading observation.
+    Historical XLS files do not carry publication/receipt instants. Never infer
+    those instants, timezone offsets, or a provider refresh from file mtime.
+    """
+    from numbers import Real
+
+    def stamp(value, *, instant=False):
+        if value is None or isinstance(value, (bool, Real)):
+            return None
+        try:
+            ts = pd.Timestamp(value)
+            if pd.isna(ts) or (instant and ts.tzinfo is None):
+                return None
+            return ts.tz_localize("UTC") if ts.tzinfo is None else ts.tz_convert("UTC")
+        except (TypeError, ValueError, OverflowError):
+            return None
+
+    def day(ts):
+        return ts.date().isoformat() if ts is not None else None
+
+    def iso(ts):
+        return ts.isoformat().replace("+00:00", "Z") if ts is not None else None
+
+    analysis_ts = stamp(analysis_asof)
+    evaluated_ts = stamp(datetime.now(timezone.utc) if now is None else now)
+    base = {
+        "available": False,
+        "state": "NOT_CONNECTED",
+        "quote_clock": {"kind": "RUNTIME_INDEPENDENT",
+                        "label_en": "Runtime quote feed", "label_zh": "运行时报价"},
+        "analysis_clock": {"asof": day(analysis_ts)},
+        "evaluated_at": iso(evaluated_ts),
+        "physical_clock": {"observed_at": None, "published_at": None, "received_at": None},
+        "source_id": "eia_wpsr",
+        "source_name": "U.S. Energy Information Administration",
+        "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
+        "rights_decision": "DEC:EIA-SPR-RIGHTS",
+        "method_version": None,
+        "method_parameters": {},
+        "directional_authority": False,
+        "values": {},
+        "limitations": [],
+        "caveat_en": "Physical balance ≠ price direction.",
+        "caveat_zh": "实物供需≠价格方向。",
+    }
+    if not isinstance(supply, dict) or not supply:
+        return base
+    if supply.get("source_read_failed"):
+        base["state"] = "FETCH_ERROR"
+        base["limitations"] = ["source_read_failed"]
+        return base
+
+    limitations = base["limitations"]
+    observed_ts = stamp(supply.get("observed_at"))
+    published_ts = stamp(supply.get("published_at"), instant=True)
+    received_ts = stamp(supply.get("received_at"), instant=True)
+    for key, value in (("observation", observed_ts), ("publication", published_ts),
+                       ("receipt", received_ts), ("analysis", analysis_ts),
+                       ("evaluation", evaluated_ts)):
+        if value is None:
+            limitations.append(f"{key}_time_unavailable")
+    base["physical_clock"] = {"observed_at": day(observed_ts),
+                              "published_at": iso(published_ts), "received_at": iso(received_ts)}
+    base["method_version"] = supply.get("method_version")
+    if isinstance(supply.get("method_parameters"), dict):
+        base["method_parameters"] = dict(supply["method_parameters"])
+    for key in ("caveat_en", "caveat_zh"):
+        if isinstance(supply.get(key), str) and supply[key]:
+            base[key] = supply[key]
+
+    numeric_keys = (
+        "crude_stocks_mb", "crude_chg_4w_mb", "crude_z", "balance_z",
+        "cushing_mb", "cushing_z", "gasoline_z", "distillate_z", "days_supply",
+        "gasoline_days", "distillate_days", "production_mbd", "production_chg_4w",
+        "refinery_util", "spr_chg_4w_mb",
+    )
+    for key in numeric_keys:
+        value = supply.get(key)
+        if isinstance(value, Real) and not isinstance(value, (bool, np.bool_)) and np.isfinite(value):
+            base["values"][key] = float(value)
+        elif value is not None:
+            limitations.append(f"invalid_{key}")
+    word = supply.get("balance_word")
+    if word in ("tight", "ample", "balanced", "n/a"):
+        base["values"]["balance_word"] = word
+    base["available"] = "crude_stocks_mb" in base["values"]
+    if not base["available"] or "crude_z" not in base["values"]:
+        limitations.append("physical_measurement_incomplete")
+    if supply.get("source_id", "eia_wpsr") != "eia_wpsr":
+        limitations.append("source_identity_mismatch")
+    if supply.get("series_read_errors"):
+        limitations.append("partial_series_read_error")
+    if supply.get("unaligned_inventory_periods"):
+        limitations.append("unaligned_inventory_periods")
+
+    # Date-only observations and analysis days are not fabricated exact instants.
+    if evaluated_ts is not None:
+        for key, ts in (("observation", observed_ts), ("analysis", analysis_ts)):
+            if ts is not None and ts.date() > evaluated_ts.date():
+                limitations.append(f"future_{key}")
+        for key, ts in (("publication", published_ts), ("receipt", received_ts)):
+            if ts is not None and ts > evaluated_ts:
+                limitations.append(f"future_{key}")
+    if published_ts is not None and observed_ts is not None and published_ts.date() < observed_ts.date():
+        limitations.append("publication_before_observation")
+    if received_ts is not None and published_ts is not None and received_ts < published_ts:
+        limitations.append("receipt_before_publication")
+
+    unsafe = {"source_identity_mismatch", "future_observation", "future_publication",
+              "future_receipt", "publication_before_observation", "receipt_before_publication"}
+    if unsafe.intersection(limitations):
+        base["available"], base["values"] = False, {}
+        base["state"] = "PARTIAL_EVIDENCE"
+        return base
+
+    if base["method_version"] != "eia_wpsr_seasonal_anomaly_v1":
+        base["state"] = "METHOD_NOT_VERIFIED"
+    elif (observed_ts is not None and evaluated_ts is not None
+          and (evaluated_ts.date() - observed_ts.date()).days > stale_after_days):
+        base["state"] = "STALE_LAST_KNOWN"
+    elif limitations:
+        base["state"] = "PARTIAL_EVIDENCE"
+    else:
+        base["state"] = "QUALIFIED"
+    return base
 
 
 def _carry_read(asset: str) -> dict | None:
@@ -559,6 +735,10 @@ def asset_vm(asset: str, df: pd.DataFrame, calib: dict, drivers: dict | None = N
         sup = _oil_supply_read()
         if sup:
             vm["supply"] = sup
+        vm["physical_evidence"] = _wti_physical_evidence_vm(
+            sup,
+            analysis_asof=df.index.max(),
+        )
 
     # --- macro cycle-ladder + multi-timeframe technical confluence -------------
     # Ported from engine.cycles via engine.commodity_mtf — the SAME calibrated
@@ -1419,6 +1599,7 @@ def _build_sector_vm_inner(
             "is_core4":     name in core4,
             "dollar_usd_dir": (a_vm or {}).get("dollar_usd_dir"),
             "dollar_effect":  (a_vm or {}).get("dollar_effect"),
+            "physical_evidence": (a_vm or {}).get("physical_evidence"),
             # --- W-C display-tier chips (never scored, never ranked) ----------
             "basing":          _basing,
             "igniting":        bool(mconf.get("armed_recent")),

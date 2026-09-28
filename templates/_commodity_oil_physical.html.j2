@@ -1,0 +1,68 @@
+{% set p = d.get('physical_evidence') or {} %}
+{% set evidence_state = p.get('state', 'NOT_CONNECTED') %}
+{% set state_labels = {'QUALIFIED': ('Qualified evidence', '证据合格'), 'PARTIAL_EVIDENCE': ('Partial evidence', '部分证据'), 'STALE_LAST_KNOWN': ('Last known · stale', '上次已知 · 已过期'), 'METHOD_NOT_VERIFIED': ('Method not verified', '方法未验证'), 'NOT_CONNECTED': ('Not connected', '尚未连接'), 'FETCH_ERROR': ('Source unavailable', '来源暂不可用')} %}
+{% set state_label = state_labels.get(evidence_state, ('Evidence unavailable', '证据不可用')) %}
+<section class="oil-phys panel2" data-evidence-state="{{ evidence_state }}" aria-labelledby="oil-physical-title">
+  <div class="oil-phys-head">
+    <div>
+      <div class="kick">{{ t('Physical confirmation', '实物供需确认') }}</div>
+      <h3 id="oil-physical-title">{{ t('U.S. petroleum inventories', '美国石油库存') }}</h3>
+      <p>{{ t('Weekly supply context, separate from price momentum and live quotes.', '周频供需背景，与价格动量及实时报价分开。') }}</p>
+    </div>
+    <span class="oil-phys-state">{{ t(state_label[0], state_label[1]) }}</span>
+  </div>
+  {% if not p.get('available') %}
+    <div class="oil-phys-empty">
+      {% if evidence_state == 'FETCH_ERROR' %}
+      <strong>{{ t('The source could not be read for this build.', '本次构建无法读取来源。') }}</strong>
+      {% elif evidence_state == 'PARTIAL_EVIDENCE' %}
+      <strong>{{ t('Physical values are withheld because the source or timing could not be verified.', '由于无法验证来源或时间，实物数值暂不展示。') }}</strong>
+      {% else %}
+      <strong>{{ t('Physical evidence is not connected for this build.', '本次构建未连接实物证据。') }}</strong>
+      {% endif %}
+      <span>{{ t('The price and technical views remain available. Missing physical evidence is not a neutral supply reading.', '价格与技术视图仍可使用。实物证据缺失不代表供需中性。') }}</span>
+    </div>
+  {% else %}
+    <div class="oil-phys-clocks" role="group" aria-labelledby="oil-physical-title">
+      <div><span>{{ t('Quote clock', '报价时钟') }}</span><strong>{{ t('Runtime · independent', '运行时 · 独立') }}</strong></div>
+      <div><span>{{ t('Daily analysis', '每日分析') }}</span><strong>{{ p.analysis_clock.asof or '—' }}</strong></div>
+      <div><span>{{ t('Physical observation', '实物观测') }}</span><strong>{{ p.physical_clock.observed_at or '—' }}</strong></div>
+    </div>
+    <div class="oil-phys-values">
+      {% if p['values'].crude_stocks_mb is defined %}<div><span>{{ t('Commercial crude stocks', '商业原油库存') }}</span><strong>{{ '%.1f'|format(p['values'].crude_stocks_mb) }} {{ t('million bbl', '百万桶') }}</strong></div>{% endif %}
+      {% if p['values'].crude_chg_4w_mb is defined %}<div><span>{{ t('4-week change', '4周变化') }}</span><strong>{{ '%+.1f'|format(p['values'].crude_chg_4w_mb) }} {{ t('million bbl', '百万桶') }}</strong></div>{% endif %}
+      {% if p['values'].crude_z is defined %}<div><span>{{ t('Crude vs seasonal norm', '原油相对季节常态') }}</span><strong>{{ '%+.2f'|format(p['values'].crude_z) }}σ</strong></div>{% endif %}
+      {% if p['values'].balance_word is defined %}
+      {% set balance_labels = {'tight': ('Tight', '偏紧'), 'ample': ('Ample', '充裕'), 'balanced': ('Balanced', '平衡'), 'n/a': ('Not established', '尚未确定')} %}
+      {% set balance = balance_labels.get(p['values'].balance_word, ('Not established', '尚未确定')) %}
+      <div><span>{{ t('Physical balance', '实物供需') }}</span><strong>{{ t(balance[0], balance[1]) }}</strong></div>
+      {% endif %}
+    </div>
+    <div class="oil-phys-caveat"><strong>{{ t('Physical context, not a buy signal.', '实物背景信息，不是买入信号。') }}</strong><span>{{ t('Physical balance ≠ price direction.', '实物供需≠价格方向。') }}</span></div>
+    {% if evidence_state == 'STALE_LAST_KNOWN' %}
+    <p class="oil-phys-warning">{{ t('Showing the last known observation. A fresh quote or an old analysis date cannot make this weekly source current.', '显示上次已知观测。新报价或较早的分析日期不能让这项周频来源变成最新数据。') }}</p>
+    {% elif evidence_state == 'METHOD_NOT_VERIFIED' %}
+    <p class="oil-phys-warning">{{ t('The calculation method is not verified. Inspect the source before relying on this context.', '计算方法尚未验证。使用这项背景信息前，请检查来源。') }}</p>
+    {% elif evidence_state == 'PARTIAL_EVIDENCE' %}
+    <p class="oil-phys-warning">{{ t('Some source dates, inputs, or receipt details are unavailable or inconsistent. Use this as limited context, not complete physical confirmation.', '部分来源日期、输入或回执信息缺失或不一致。仅作有限背景参考，不代表完整的实物确认。') }}</p>
+    {% endif %}
+    <details class="oil-phys-receipt">
+      <summary>{{ t('Source, method & limitations', '来源、方法与局限') }}</summary>
+      <p>{{ t('A positive crude anomaly means stocks are above their usual seasonal level. The balance label also includes available Cushing, gasoline and distillate inventories, so it can differ from crude alone.', '原油偏离值为正表示库存高于通常的季节水平。供需标签还综合可用的库欣、汽油及馏分油库存，因此可能与原油单项不同。') }}</p>
+      <p><span class="l-en">{{ p.caveat_en }}</span><span class="l-zh">{{ p.caveat_zh }}</span></p>
+      <dl>
+        <div><dt>{{ t('Source', '来源') }}</dt><dd>{{ t('U.S. Energy Information Administration', '美国能源信息署') }}</dd></div>
+        <div><dt>{{ t('Observation', '观测时间') }}</dt><dd>{{ p.physical_clock.observed_at or t('Not captured', '未记录') }}</dd></div>
+        <div><dt>{{ t('Publication', '发布时间') }}</dt><dd>{% if p.physical_clock.published_at %}{{ p.physical_clock.published_at }}{% else %}{{ t('Publication time not captured', '发布时间未记录') }}{% endif %}</dd></div>
+        <div><dt>{{ t('Received', '接收时间') }}</dt><dd>{% if p.physical_clock.received_at %}{{ p.physical_clock.received_at }}{% else %}{{ t('Received time not captured', '接收时间未记录') }}{% endif %}</dd></div>
+        <div><dt>{{ t('Evaluated', '评估时间') }}</dt><dd>{{ p.evaluated_at or t('Not captured', '未记录') }}</dd></div>
+        <div><dt>{{ t('Method', '方法') }}</dt><dd>{{ p.method_version or t('Method not verified', '方法未验证') }}</dd></div>
+        <div><dt>{{ t('Lookback', '回溯区间') }}</dt><dd>{% if p.method_parameters.get('seasonal_years') %}{{ p.method_parameters.seasonal_years }} {{ t('years · same seasonal week', '年 · 相同季节周') }}{% else %}{{ t('Not supplied', '未提供') }}{% endif %}</dd></div>
+        <div><dt>{{ t('Rights', '使用权') }}</dt><dd>{{ p.rights_decision }}</dd></div>
+      </dl>
+      <p><a href="https://www.eia.gov/petroleum/supply/weekly/">{{ t('Open EIA Weekly Petroleum Status Report', '打开 EIA 每周石油状况报告') }}</a></p>
+      <p>{{ t('Source: U.S. Energy Information Administration; observation dated above. Publication time is not preserved by the current series store. Calculations and Chinese explanations are by MastermindX, not EIA.', '来源：美国能源信息署；观测日期见上方。当前序列存储未保留发布时间。计算与中文说明由 MastermindX 提供，并非 EIA 原文。') }}</p>
+      <p>{{ t('Direct EIA-authored petroleum data only. Third-party material and EIA branding are outside the recorded reuse scope.', '仅限 EIA 自有石油数据。第三方材料及 EIA 品牌标识不在记录的使用范围内。') }}</p>
+    </details>
+  {% endif %}
+</section>
