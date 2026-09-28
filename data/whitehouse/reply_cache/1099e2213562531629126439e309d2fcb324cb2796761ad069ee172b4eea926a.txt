@@ -1,0 +1,71 @@
+{
+  "activate": true,
+  "importance": 78,
+  "banner_days": 5,
+  "tone": "mixed",
+  "banner_title": "U.S.-China reciprocal tariff relief framework — importers gain, domestic-competing industries watch",
+  "banner_title_zh": "美中互惠降关税框架启动——进口商受益，本土竞争行业承压",
+  "summary": "The White House has announced a U.S.-China Board of Trade with '30-for-30' reciprocal product lists to be considered for reduced tariff treatment, signaling the first concrete bilateral tariff-reduction mechanism since the trade war escalation.",
+  "summary_zh": "白宫宣布成立美中贸易委员会，提出“30对30”互惠产品清单供考虑降低关税，标志着贸易战升级以来首个具体的双边降关税机制。",
+  "analysis": "The announcement establishes a formal U.S.-China Board of Trade and commits both sides to consider reciprocal reduced-tariff treatment for 30 U.S. products entering China and 30 Chinese products entering the United States. This is a framework agreement — actual tariff reductions remain subject to each country's domestic legal processes — but the existence of a named bilateral mechanism is itself a meaningful de-escalation signal. The '30-for-30' structure implies roughly balanced concessions, which suggests the administration is seeking tariff relief in areas where U.S. exporters face the steepest Chinese duties (agriculture, energy, certain machinery/electronics) while offering Chinese access in sectors where U.S. buyers face the largest input-cost squeeze (consumer electronics components, chemicals, mineral inputs). The market transmission is through two channels: first, direct margin relief for importers of listed Chinese goods and for U.S. exporters whose products appear on China's list; second, a broader risk-premium compression on U.S.-China supply chains and trade-exposed equities. The key uncertainty is timing and scope — the lists themselves are not published in this release, so specific winners remain unidentified until further detail emerges. The market will also weigh whether this framework survives the next round of executive actions or is a placeholder pending larger negotiations.",
+  "sectors": [
+    {
+      "name": "U.S. importers / retailers / consumer electronics",
+      "impact": "tailwind",
+      "rationale": "Reduced tariffs on Chinese goods lower landed costs and protect margins for import-heavy businesses."
+    },
+    {
+      "name": "U.S. agriculture and energy exporters",
+      "impact": "tailwind",
+      "rationale": "These are historically the first sectors Beijing offers tariff relief on, improving competitiveness in the China market."
+    },
+    {
+      "name": "U.S. domestic manufacturers competing with Chinese imports",
+      "impact": "headwind",
+      "rationale": "Cheaper Chinese alternatives re-enter the U.S. market at lower tariff rates, intensifying price competition."
+    },
+    {
+      "name": "Shipping and logistics",
+      "impact": "tailwind",
+      "rationale": "Any normalization of bilateral trade flows supports freight volumes on trans-Pacific routes."
+    }
+  ],
+  "tickers": [
+    {
+      "symbol": "WMT",
+      "direction": "benefit",
+      "rationale": "Large importer of Chinese consumer goods; lower tariffs directly improve gross margins."
+    },
+    {
+      "symbol": "TGT",
+      "direction": "benefit",
+      "rationale": "Heavy exposure to Chinese-sourced merchandise; tariff relief flows through to cost of goods sold."
+    },
+    {
+      "symbol": "AAPL",
+      "direction": "benefit",
+      "rationale": "Assembles products in China; reduced tariffs on listed component/finished goods categories lowers import costs."
+    },
+    {
+      "symbol": "ADM",
+      "direction": "benefit",
+      "rationale": "U.S. agricultural exporter positioned to regain China market access if soy/corn appear on China's reduced-tariff list."
+    },
+    {
+      "symbol": "DE",
+      "direction": "benefit",
+      "rationale": "U.S. farm machinery in China would see demand lift if tariffs on U.S. equipment are reduced."
+    },
+    {
+      "symbol": "WHRL",
+      "direction": "hurt",
+      "rationale": "Domestic appliance maker facing cheaper Chinese imports if home-appliance categories are included."
+    },
+    {
+      "symbol": "F",
+      "direction": "hurt",
+      "rationale": "U.S. automaker potentially facing renewed import competition from Chinese auto parts or vehicles at reduced tariffs."
+    }
+  ],
+  "confidence": "medium"
+}
