@@ -1,0 +1,27 @@
+Source: 31a60448e058f09b5cea4795cb4bdcfc3f7cfcba
+Carrier: M2 Studio Direct, existing crypto-vector-r2-20260926-sol-001 workspace
+
+Final existing-suite command:
+python3 -m pytest tests/test_btc_decision.py tests/test_vector_catalyst.py tests/test_vector_forward_risk.py tests/test_vector_kelly.py tests/test_vector_timeline_gated.py tests/test_hub_alerts_explanation.py tests/test_hub_market_card_labels.py tests/test_hub_glance_copy.py tests/test_vector_wave1.py tests/test_vector_r2_data_boundary.py tests/test_vector_r2_frontdoor.py tests/test_crypto_*.py -q --tb=short --disable-warnings
+Observed: 182 passed, 25 warnings in 11.49s.
+
+python3 scripts/check_validated_claims.py --scope source
+Observed: OK. No validator/allowlist was weakened.
+
+python3 scripts/check_design_system.py --mode enforce-added --diff-file <full-branch template diff>
+Observed: 0 blocking findings; pre-existing estate debt remained non-blocking.
+
+python3 scripts/check_ui_visual_evidence.py --diff-file <full-branch UI diff>
+Observed: exit 0 with the current snapshot evidence receipt present.
+
+Python compile and git diff --check: exit 0.
+Combined final command printed SNAPSHOT_FINAL_CHECKS_PASS and exited 0.
+
+Browser: 64/64 semantic and geometry cells, exact results in browser_matrix.json.
+Canonical captures: 32/32; all PNG hashes matched the manifest.
+Source-store input hashes: 67/67 unchanged during real-builder scenarios.
+Existing crypto.class_state/v1 schema: all four generated outputs validated.
+
+Proof is local controlled/generated/combined-template evidence. It is not hosted
+CI acceptance, provider-source certification, a merged release, a live deployed
+route, a completed alert/review workflow or participant-usability acceptance.

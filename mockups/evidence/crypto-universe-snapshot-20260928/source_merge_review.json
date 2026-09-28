@@ -1,0 +1,10 @@
+{
+  "base": "2b62f49603e731daf68877516d3f6f748497b160",
+  "peer": "74298e32bbbbc7f00884ece259455b9bbe46fd6f",
+  "exit": 0,
+  "conflicts": 0,
+  "snapshot_receipt": 1,
+  "h2_accessible": true,
+  "ours_sha256": "7e9d1aeb506b04f2c8e532d4af9d4a48eccfb124733928a16728c8f788678ed1",
+  "combined_sha256": "6e8d1cb2b3d752022d4e7180a4a009673c66fab3c428b8eaa1d6a635db2c991e"
+}

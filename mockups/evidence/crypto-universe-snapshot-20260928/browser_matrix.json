@@ -1,0 +1,3942 @@
+[
+  {
+    "mode": "stored",
+    "width": 320,
+    "theme": "dark",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/favicon.svg",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "stored",
+    "width": 320,
+    "theme": "dark",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "stored",
+    "width": 320,
+    "theme": "light",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "stored",
+    "width": 320,
+    "theme": "light",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "stored",
+    "width": 390,
+    "theme": "dark",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "stored",
+    "width": 390,
+    "theme": "dark",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "stored",
+    "width": 390,
+    "theme": "light",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "stored",
+    "width": 390,
+    "theme": "light",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "stored",
+    "width": 768,
+    "theme": "dark",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "stored",
+    "width": 768,
+    "theme": "dark",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "stored",
+    "width": 768,
+    "theme": "light",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "stored",
+    "width": 768,
+    "theme": "light",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "stored",
+    "width": 1440,
+    "theme": "dark",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "stored",
+    "width": 1440,
+    "theme": "dark",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "500"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "stored",
+    "width": 1440,
+    "theme": "light",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "stored",
+    "width": 1440,
+    "theme": "light",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "500"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "empty",
+    "width": 320,
+    "theme": "dark",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "",
+    "ranked_rows": 0,
+    "excluded": 1,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "empty",
+    "width": 320,
+    "theme": "dark",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "",
+    "ranked_rows": 0,
+    "excluded": 1,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "empty",
+    "width": 320,
+    "theme": "light",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "",
+    "ranked_rows": 0,
+    "excluded": 1,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "empty",
+    "width": 320,
+    "theme": "light",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "",
+    "ranked_rows": 0,
+    "excluded": 1,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "empty",
+    "width": 390,
+    "theme": "dark",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "",
+    "ranked_rows": 0,
+    "excluded": 1,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "empty",
+    "width": 390,
+    "theme": "dark",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "",
+    "ranked_rows": 0,
+    "excluded": 1,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "empty",
+    "width": 390,
+    "theme": "light",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "",
+    "ranked_rows": 0,
+    "excluded": 1,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "empty",
+    "width": 390,
+    "theme": "light",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "",
+    "ranked_rows": 0,
+    "excluded": 1,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "empty",
+    "width": 768,
+    "theme": "dark",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "",
+    "ranked_rows": 0,
+    "excluded": 1,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "empty",
+    "width": 768,
+    "theme": "dark",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "",
+    "ranked_rows": 0,
+    "excluded": 1,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "empty",
+    "width": 768,
+    "theme": "light",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "",
+    "ranked_rows": 0,
+    "excluded": 1,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "empty",
+    "width": 768,
+    "theme": "light",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "",
+    "ranked_rows": 0,
+    "excluded": 1,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "empty",
+    "width": 1440,
+    "theme": "dark",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "",
+    "ranked_rows": 0,
+    "excluded": 1,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "empty",
+    "width": 1440,
+    "theme": "dark",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "",
+    "ranked_rows": 0,
+    "excluded": 1,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "500"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "empty",
+    "width": 1440,
+    "theme": "light",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "",
+    "ranked_rows": 0,
+    "excluded": 1,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "empty",
+    "width": 1440,
+    "theme": "light",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "",
+    "ranked_rows": 0,
+    "excluded": 1,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "500"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "returns-missing",
+    "width": 320,
+    "theme": "dark",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "returns-missing",
+    "width": 320,
+    "theme": "dark",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "returns-missing",
+    "width": 320,
+    "theme": "light",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "returns-missing",
+    "width": 320,
+    "theme": "light",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "returns-missing",
+    "width": 390,
+    "theme": "dark",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "returns-missing",
+    "width": 390,
+    "theme": "dark",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "returns-missing",
+    "width": 390,
+    "theme": "light",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "returns-missing",
+    "width": 390,
+    "theme": "light",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "returns-missing",
+    "width": 768,
+    "theme": "dark",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "returns-missing",
+    "width": 768,
+    "theme": "dark",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "returns-missing",
+    "width": 768,
+    "theme": "light",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "returns-missing",
+    "width": 768,
+    "theme": "light",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "returns-missing",
+    "width": 1440,
+    "theme": "dark",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "returns-missing",
+    "width": 1440,
+    "theme": "dark",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "500"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "returns-missing",
+    "width": 1440,
+    "theme": "light",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "returns-missing",
+    "width": 1440,
+    "theme": "light",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 0,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "500"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "combined",
+    "width": 320,
+    "theme": "dark",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 1,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "combined",
+    "width": 320,
+    "theme": "dark",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 1,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "combined",
+    "width": 320,
+    "theme": "light",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 1,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "combined",
+    "width": 320,
+    "theme": "light",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 1,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "combined",
+    "width": 390,
+    "theme": "dark",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 1,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "combined",
+    "width": 390,
+    "theme": "dark",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 1,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "combined",
+    "width": 390,
+    "theme": "light",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 1,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "combined",
+    "width": 390,
+    "theme": "light",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 1,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "combined",
+    "width": 768,
+    "theme": "dark",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 1,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "combined",
+    "width": 768,
+    "theme": "dark",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 1,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "combined",
+    "width": 768,
+    "theme": "light",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 1,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "combined",
+    "width": 768,
+    "theme": "light",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 1,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "combined",
+    "width": 1440,
+    "theme": "dark",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 1,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "combined",
+    "width": 1440,
+    "theme": "dark",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 1,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "500"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "combined",
+    "width": 1440,
+    "theme": "light",
+    "locale": "en",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "Inter, -apple-system, \"system-ui\", \"SF Pro Text\", system-ui, \"Segoe UI\", Roboto, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 1,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  },
+  {
+    "mode": "combined",
+    "width": 1440,
+    "theme": "light",
+    "locale": "zh",
+    "http": 200,
+    "shelf_count": 8,
+    "snapshot_date": "2026-09-26",
+    "ranked_rows": 50,
+    "excluded": 17,
+    "closed_initially": true,
+    "keyboard_open": true,
+    "disclosure_target_height": 45,
+    "font": {
+      "size": 14,
+      "family": "\"PingFang SC\", \"Hiragino Sans GB\", \"Microsoft YaHei\", \"Noto Sans CJK SC\", \"Microsoft JhengHei\", \"Heiti SC\", -apple-system, \"system-ui\", Inter, sans-serif"
+    },
+    "geometry_failures": [],
+    "document_overflow": false,
+    "h5_count": 1,
+    "peer_accessible": 1,
+    "js_errors": [],
+    "failed_responses": [
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/quotes.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/live/overlay.json",
+        "status": 404
+      },
+      {
+        "url": "http://127.0.0.1:8766/universe-snapshot/nav_market.js?v=20260913-account-actions",
+        "status": 404
+      }
+    ],
+    "fonts_loaded": [
+      {
+        "family": "Inter",
+        "weight": "400"
+      },
+      {
+        "family": "Inter",
+        "weight": "500"
+      },
+      {
+        "family": "Inter",
+        "weight": "600"
+      },
+      {
+        "family": "Inter",
+        "weight": "700"
+      },
+      {
+        "family": "Inter",
+        "weight": "800"
+      },
+      {
+        "family": "Inter",
+        "weight": "900"
+      }
+    ],
+    "open_after_language_change": true,
+    "passed": true
+  }
+]
