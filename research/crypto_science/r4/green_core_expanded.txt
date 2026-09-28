@@ -1,0 +1,13 @@
+.......F                                                                 [100%]
+=================================== FAILURES ===================================
+_________ test_r4_preentry_shock_is_not_credited_as_future_prediction __________
+tests/test_btc_impulse_falsifier.py:505: in test_r4_preentry_shock_is_not_credited_as_future_prediction
+    assert got['category']=='neither' and got['worst_excursion']==-.01
+E   AssertionError: assert ('neither' == 'neither'
+E
+E       neither and -0.010000000000000009 == -0.01)
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_btc_impulse_falsifier.py::test_r4_preentry_shock_is_not_credited_as_future_prediction
+1 failed, 7 passed, 20 deselected, 19 warnings in 3.32s

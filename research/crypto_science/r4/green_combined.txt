@@ -1,0 +1,6 @@
+COMMAND /opt/homebrew/opt/python@3.14/bin/python3.14 -m pytest tests/test_btc_decision.py tests/test_vector_catalyst.py tests/test_vector_forward_risk.py tests/test_vector_kelly.py tests/test_vector_timeline_gated.py tests/test_hub_alerts_explanation.py tests/test_hub_market_card_labels.py tests/test_hub_glance_copy.py tests/test_vector_wave1.py tests/test_vector_r2_data_boundary.py tests/test_vector_r2_frontdoor.py tests/test_btc_signals.py tests/test_btc_impulse_falsifier.py tests/test_btc_impulse_radar.py tests/test_btc_impulse_alerts.py -q --tb=short --disable-warnings tests/test_crypto_cockpit_contract.py tests/test_crypto_collectors.py tests/test_crypto_data_models.py tests/test_crypto_house_style.py tests/test_crypto_wave2.py tests/test_crypto_wave3.py
+........................................................................ [ 28%]
+........................................................................ [ 56%]
+........................................................................ [ 84%]
+.......................................                                  [100%]
+255 passed, 25 warnings in 21.11s

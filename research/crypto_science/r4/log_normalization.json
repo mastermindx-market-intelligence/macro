@@ -1,0 +1,7 @@
+{
+  "path": "research/crypto_science/r4/green_core_expanded.txt",
+  "before_sha256": "aa8e8bd10ad1f8b01ceb6e480e8bd196a7f1f3eb020bf10b91a132dcefa11d8c",
+  "after_sha256": "8f1a730d41bbc7dbe82a62566a09e38d8a2012873e8364194bde7080e9ee8bd5",
+  "change": "rstrip whitespace only; failed float-equality assertion and counts preserved. Final core log separately records 8 passed.",
+  "wrapper_note": "The earlier combined pytest child printed 255 passed; its shell epilogue used zsh read-only variable status and failed. No model failure was hidden; final verification will preserve actual subprocess exit codes."
+}

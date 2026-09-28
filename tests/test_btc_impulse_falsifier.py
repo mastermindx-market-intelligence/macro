@@ -393,6 +393,118 @@ def test_r3_episode_interval_abstains_with_one_event_block():
     assert got == [1.0, 1.0]
 
 
+def _r4_bars(n=120, freq="h"):
+    idx = pd.date_range("2020-01-01", periods=n, freq=freq)
+    close = 100 + np.sin(np.arange(n) / 3)
+    return pd.DataFrame({"open": close, "high": close + 1,
+                         "low": close - 1, "close": close}, index=idx)
+
+
+def test_r4_hourly_features_use_completed_past_only_and_reject_gaps():
+    from research.crypto_science.r4_sequence_study import hourly_conditions
+    bars = _r4_bars()
+    bars.loc[bars.index[95], ["open", "high", "low", "close"]] = [100, 100, 90, 91]
+    full = hourly_conditions(bars)
+    assert full.iloc[:73].isna().all().all()
+    assert bool(full.d0.iloc[95]) and bool(full.d1.iloc[95])
+    for stop in [80, 96, 109, 120]:
+        pd.testing.assert_frame_equal(hourly_conditions(bars.iloc[:stop]), full.iloc[:stop])
+    broken = hourly_conditions(bars.drop(bars.index[85]))
+    assert broken.loc[bars.index[85]:].isna().all().all()
+    bad = bars.copy(); bad.loc[bad.index[99], "high"] = np.inf
+    assert hourly_conditions(bad).iloc[99:].isna().all().all()
+    for invalid in [bars.iloc[::-1], pd.concat([bars.iloc[:3], bars.iloc[2:]])]:
+        try:
+            hourly_conditions(invalid)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("Malformed indices must not be silently sorted/deduplicated")
+
+
+def test_r4_onsets_do_not_invent_start_after_missing_observations():
+    from research.crypto_science.r4_sequence_study import onsets, execution_time
+    idx = pd.date_range("2020-01-01", periods=8, freq="h")
+    s = pd.Series([pd.NA, True, False, True, True, False, True, False], index=idx, dtype="boolean")
+    assert list(onsets(s, step="1h", separation="3h")) == [idx[3]]
+    assert execution_time(idx[3], bar_hours=1, delay_hours=1) == idx[5]
+    assert execution_time(idx[3], bar_hours=24, delay_hours=6) == idx[3] + pd.Timedelta(hours=30)
+
+
+def test_r4_barriers_distinguish_unknown_order_opening_gap_and_censoring():
+    from research.crypto_science.r4_sequence_study import barrier_label
+    b = _r4_bars(4); b.loc[:, :] = [100, 101, 99, 100]
+    b.loc[b.index[1], ["high", "low"]] = [104, 94]
+    assert barrier_label(b, b.index[0], hours=3, lower=-.05, upper=.03)["category"] == "ambiguous"
+    b.loc[b.index[1], "open"] = 94
+    assert barrier_label(b, b.index[0], hours=3, lower=-.05, upper=.03)["category"] == "lower_first"
+    b.loc[b.index[1], "open"] = 104
+    assert barrier_label(b, b.index[0], hours=3, lower=-.05, upper=.03)["category"] == "upper_first"
+    assert barrier_label(b.iloc[:-1], b.index[0], hours=3, lower=-.05, upper=.03)["category"] == "censored"
+    b.loc[b.index[1], :] = [100, 101, 99, 100]
+    assert barrier_label(b, b.index[0], hours=3, lower=-.05, upper=.03)["category"] == "neither"
+    assert barrier_label(b.drop(b.index[1]), b.index[0], hours=3, lower=-.05, upper=.03)["category"] == "censored"
+
+
+def test_r4_reclaim_is_first_observable_date_not_future_best_entry():
+    from research.crypto_science.r4_sequence_study import first_reclaim
+    b = _r4_bars(20, "D"); b.loc[:, :] = [100, 101, 99, 100]
+    b.loc[b.index[10], :] = [100, 101, 79, 80]
+    b.loc[b.index[11], :] = [80, 90, 79, 89]
+    b.loc[b.index[12], :] = [89, 101, 80, 100]
+    assert first_reclaim(b, b.index[10]) == ("confirmed", b.index[12])
+    assert first_reclaim(b.iloc[:13], b.index[10]) == ("confirmed", b.index[12])
+    status, when = first_reclaim(b.drop(b.index[11]), b.index[10])
+    assert status == "unknown" and when is None
+    flat = _r4_bars(20, "D"); flat.loc[:, :] = [100, 101, 99, 100]
+    assert first_reclaim(flat, flat.index[10]) == ("no_entry", None)
+
+
+def test_r4_account_holds_drifting_weights_and_charges_actual_changes():
+    from research.crypto_science.r4_sequence_study import account_path
+    assert np.isclose(account_path([100, 110, 99], [1, 1], cost_bps=0)["wealth"], .99)
+    assert np.isclose(account_path([100, 110, 99], [.5, .5], cost_bps=0)["wealth"], .995)
+    assert np.isclose(account_path([100, 100, 100], [.5, .5], cost_bps=100)["wealth"], .995**2)
+    assert account_path([100, 90, 80], [0, 0], cost_bps=25)["wealth"] == 1
+    cash = account_path([100, 90], [0], initial_weight=1, terminal_weight=1, cost_bps=10)
+    assert np.isclose(cash["wealth"], .999**2)
+    for bad in [[100, np.nan, 90], [100, 0, 90]]:
+        try:
+            account_path(bad, [1, 1], cost_bps=0)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("Unknown prices must not disappear from accounting")
+
+
+def test_r4_incumbent_target_appears_after_daily_close_and_explicit_delay():
+    from research.crypto_science.r4_sequence_study import incumbent_targets
+    day = pd.Timestamp("2020-01-01")
+    s = pd.Series([.6, np.nan, 0.], index=pd.date_range(day, periods=3))
+    idx = pd.date_range(day, periods=100, freq="h")
+    t = incumbent_targets(s, idx, delay_hours=1)
+    assert t.loc[:day + pd.Timedelta(hours=24)].isna().all()
+    assert t.loc[day + pd.Timedelta(hours=25)] == .6
+    assert t.loc[day + pd.Timedelta(hours=48)] == .6
+    assert pd.isna(t.loc[day + pd.Timedelta(hours=49)])
+    assert t.loc[day + pd.Timedelta(hours=73)] == 0
+
+
+def test_r4_block_interval_supports_signed_differences_without_fake_certainty():
+    from research.crypto_science.r4_sequence_study import interval90
+    frame = pd.DataFrame({'anchor':['2020-01-01','2020-07-01'], 'difference':[-.1,-.1]})
+    assert np.allclose(interval90(frame,'difference'),[-.1,-.1])
+    assert interval90(frame.iloc[:1],'difference') is None
+
+
+def test_r4_preentry_shock_is_not_credited_as_future_prediction():
+    from research.crypto_science.r4_sequence_study import barrier_label
+    bars = _r4_bars(5); bars.loc[:, :] = [100,101,99,100]
+    bars.loc[bars.index[0], :] = [130,130,80,100]
+    got = barrier_label(bars,bars.index[1],hours=3,lower=-.05,upper=.03)
+    assert got['category']=='neither' and np.isclose(got['worst_excursion'], -.01, rtol=0, atol=1e-12)
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     for fn in fns:
