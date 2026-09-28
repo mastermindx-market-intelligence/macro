@@ -1,150 +1,137 @@
 # GD-6A US market-eligibility: zero-policy shadow intake
 
-**Status: PARTIAL / source implementation; NOT live, NOT full GD-6A acceptance.**
+**PARTIAL / BUILT_NOT_PROVEN. PR #8141 is DRAFT / HOLD-FOR-SOL.**
 
-Operation: `gd6a-us-shadow-intake-20260928-sol-001`. Existing owner:
-`WS:GREY-DEER-RISK-INTELLIGENCE`, GD-6A. Parent integration: Macro #6817,
+Operation `gd6a-us-shadow-intake-20260928-sol-001`, existing
+`WS:GREY-DEER-RISK-INTELLIGENCE` / GD-6A. Parent #6817 research intake
 `PROPHET_RISK_RESEARCH_R1_20260927_SOL`, adjudication 5865326642.
-Source carrier: `claude/gd6a-us-shadow-intake-20260928`. No incumbent writer,
-source lease, H1/Cycle study or parallel UI release is transferred.
+Carrier `claude/gd6a-us-shadow-intake-20260928` began at
+`03e8961d22b48cc65666f6318ee8c8bd610f3caa`. No incumbent source, H1/Cycle study,
+Seat B repair or original CEO UI release is transferred.
 
-## 0. Acceptance and current boundary
+## Canonical owner and unchanged authority
 
-This slice is not complete for release until the new tests are registered in
-an existing CI owner, executed against the actual native composer, independently
-reviewed, and qualified at the exact integrated head. No merge-on-green, automatic
-merge, scheduler, publisher or live feature flag is added. The full GD-6A wave
-also owes the original ordinary-publication and counterfactual-accrual proof.
+The existing `DEC:PROPHET-RANK-PRESERVED-MARKET-ELIGIBILITY-SIDECAR`, Grey Deer
+architecture freeze and execution command packet already define
+`prophet.market_eligibility/v1`: server-side after rank, exact board/session
+binding, lossless dispositions, shadow birth. This is that owner, not a new
+risk engine, policy registry, identity, allocator, store or publisher.
 
-Current `engine/risk_envelope.py` produces `policies=[]` and `episodes=[]`, with
-all envelope action permissions false. This implementation supports exactly that
-native v0 policy state. It does not fabricate an active risk rule to make a test
-or a product screen look finished. An unknown/nonempty policy input is reported
-UNAVAILABLE. Individually authorized policies need a separately reviewed producer
-and consumer extension through the same owner, not a second risk engine.
+Current `engine/risk_envelope.py` produces zero policies and episodes with no
+envelope action authority. The new intake supports EXACTLY that native v0 state.
+Nonempty/null/malformed/unsupported policies are UNAVAILABLE, not permission to
+evaluate a caller-supplied rule. Individually authorized policy support remains
+a separately reviewed native producer/consumer extension. No score-to-policy
+mapping, R2 research threshold, automatic exit or liquidation is installed.
 
-## 1. Correct owner recovered
+## What works
 
-The R1/R2 search for a generic recommendation-policy join is narrowed by existing
-`DEC:PROPHET-RANK-PRESERVED-MARKET-ELIGIBILITY-SIDECAR` and the Grey Deer architecture
-and execution packet. They already define `prophet.market_eligibility/v1`, computed
-server-side after raw rank, exact board hash/session binding, lossless dispositions,
-and a shadow-only birth. This is an implementation of that owner, not a replacement.
+`engine/prophet_market_eligibility.py` composes one deterministic SHADOW disposition
+for every `/buy` row of the bound raw US board. It preserves order and nullable
+native rank/lane. Array pointers are not security/issuer/episode/plan identities.
+`bind_shadow_view` returns complete deep-copied raw rows with sidecar information;
+it does not replace the off-board candidate-pool owner or claim whole-universe proof.
 
-Observed baseline: Macro `1690e69040d2c6bea46c2ed1c3c06c51b311732c`; source carrier
-starts at later main `03e8961d22b48cc65666f6318ee8c8bd610f3caa`. Native envelope blob
-`3b0df2d426f50245142b943e38faf4996f96e995` is unchanged at both.
+Binding checks cover exact raw board digest, definition and session, native envelope
+semantic bundle plus complete raw digest, market/revision, zero-policy semantics,
+strict booleans, coverage, individual source clocks and observation/emission order.
+The native semantic bundle excludes outer clocks. The settled producer uses
+`stale_after=None`, so callers supply an explicit owner-qualified validity window.
+The sidecar never invents a market calendar or treats a hash as authorization.
 
-Native source references:
-- `agentos/decisions/DEC-PROPHET-RANK-PRESERVED-MARKET-ELIGIBILITY-SIDECAR.md`
-- `research/grey_deer/GREY_DEER_RISK_INTELLIGENCE_ARCHITECTURE_FREEZE_2026-08-19.md`, sections 5-10
-- `research/grey_deer/GREY_DEER_FABLE_EXECUTION_COMMAND_PACKET_2026-08-19.md`, GD-6A
-- `engine/risk_envelope.py`, composer, coverage, per-source freshness and bundle identity
-- `scripts/build_risk_envelope.py`, settled source selection and `stale_after=None`
-- `scripts/build_prophet.py::_freeze_origination_source_board`, existing raw-byte receipt
-- `engine/us_board_rank.py`, current and fallback board definitions
+Bad board identity/shape refuses: there is no trustworthy partial denominator.
+Missing or unqualified risk evidence preserves every intact board row with
+UNAVAILABLE, never Calm or a healthy empty market. The narrow v0 intake requires
+FRESH envelope coverage, including optional coverage; a PARTIAL shadow does not
+alter live candidate/rank/entry behavior. This is not a future active-policy rule.
 
-## 2. Implemented capability
+AVAILABLE / ELIGIBLE means only NO_MARKET_POLICY_CONSTRAINT_NOT_BUY_PERMISSION.
+All eight downstream authority booleans are false; production_behavior is UNCHANGED.
+The consumer recomposes every semantic field against independently supplied source
+bindings; rehashing changed permissions, rows or expiry does not pass. The interval
+is half-open. Corrected observations remain distinct and do not backdate orders.
 
-`engine/prophet_market_eligibility.py` composes one deterministic shadow disposition
-for each row in the exact raw board's `/buy` array. The pointer and raw position are
-not new security, issuer, episode or plan identities. Raw rank is copied only when
-`prophet.rank` exists; it is never inferred from array position. Other raw candidate
-fields are retained unchanged by the server-side `bind_shadow_view` projection.
-The off-board candidate-pool owner is not replaced or reconstructed here.
+The real `scripts/build_prophet_market_eligibility.py` entry point is stdout-only,
+requires explicit paths/hashes/session/window, and creates no scheduled publication.
+Exit 0 is available shadow, 2 unavailable shadow, 1 refusal. An unreadable input
+is not silently treated as an observed empty source.
 
-The input boundary checks the independent expected raw-board digest, definition
-and session; raw-envelope digest AND native semantic bundle; market, revision,
-authority, zero-policy schema, coverage and per-source clocks; observation/emission
-order; and an explicit caller-supplied validity window. The native settled composer
-has no expiry timestamp. This module therefore does not invent a trading calendar
-or claim that a content hash proves freshness. The caller must bind the actual
-expected session and window through its existing native source/clock owner.
+## Actual verification: original unit boundary plus native producer chain
 
-Malformed/mismatched board inputs refuse because the denominator is not trustworthy.
-An intact board with missing, stale, unsupported or incompatible envelope data keeps
-every raw row and emits UNAVAILABLE; it is not an empty market or a Calm forecast.
-
-An AVAILABLE/ELIGIBLE row means only **no constraint in this qualified zero-policy
-observation**. It is not a buy recommendation, B4 ENTRY_OPEN, a holdings decision,
-or permission to use a shadow strategy. All eight downstream authority booleans
-remain false. `production_behavior` is always `UNCHANGED`.
-
-The read consumer recomposes all semantics from independently supplied inputs.
-Rehashing a changed action, row order, permission or expiry cannot make it valid.
-The validity interval is half-open. Corrections remain separately bound bytes;
-no changed observation is backdated into an order or a historical decision.
-
-`scripts/build_prophet_market_eligibility.py` is a real stdout-only qualification
-entry point. It requires explicit source files, expected hashes/session/definition
-and decision/window clocks. It writes no source file, snapshot, ledger or public
-artifact. Exit 0 = available shadow; 2 = typed unavailable shadow; 1 = refusal.
-A missing file is not silently converted to an observed zero-policy source.
-
-## 3. Actual evidence and its limits
-
-Executed in Python 3.13.5:
+Python 3.13.5 commands:
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 python tests/test_prophet_market_eligibility.py
+PYTHONDONTWRITEBYTECODE=1 python tests/test_prophet_market_eligibility_native.py
 ```
 
-51 tests passed, zero failures/errors/skips. They execute the new module, its
-consumer and CLI with synthetic inputs. The exact three source/test Git blobs
-were checked against the locally tested bytes after remote creation.
+**51 unit/consumer/CLI tests PASS plus 12 distinct native-composer compatibility
+tests PASS: 63 total, zero failures/errors/skips.** All market observations are
+synthetic. The second suite imports the entire existing native composer, not a
+transcribed helper or mocked dependency. Its local source copy was verified BEFORE
+execution and remains identical to GitHub:
 
-Four in-memory negative controls were killed by assertions: accepting a caller's
-replacement board hash, granting live entry permission, dropping raw rows, and
-ignoring consumer expiry. The row-drop mutant also raises three downstream errors;
-those errors are not its claimed kill evidence. The first mutation harness demanded
-zero errors and consequently stopped; the retained corrected report separately
-counts assertion failures and errors. No production or tested source was mutated.
+- native Git blob: `3b0df2d426f50245142b943e38faf4996f96e995`
+- source: 30,642 bytes / 678 lines at the branch base above
+- native SHA256: `f0d9b1786b524f8092cfcaa194e8d590f1ff4b3db97ca8d2b0b2af5595331099`
+- new native test blob: `ad1752e12e9701a54bcd989dfe657de491cb35da`
+- native test SHA256: `7cde80b018705a52fa2ec83e8864b7baa507d1a97e1437d1576dc770e4cdb43c`
+- actual native test log SHA256: `6c619628560398ea04b7b23f58bee50e50eef6ef381391d7153e647c784c58ce`
 
-These are not market observations, native-composer integration, full-checkout tests,
-hosted CI, authenticated UI/API/send proof, outcome accrual or predictive evidence.
-A large committed board read returned no content through the current file adapter;
-that is not a claim that the actual board file is empty. No real-board run is claimed.
+Native cases cover fresh zero-policy composition, contradiction without fabricated
+policy, required gaps/staleness, optional partial coverage, unknown required clock,
+off-session input, provisional revision, source-order invariance, rebake clock
+changes, corrections and explicit expiry. The native unknown-clock case proves
+why all_on_session alone is insufficient: it can be true with a required as_of null,
+while the sidecar correctly withholds a qualified shadow reading.
 
-## 4. Existing CI owner: exact unlanded registration
+The original 51-test suite also killed four in-memory faulty variants by assertions:
+substituted board hash, live gate permission, dropped rows and ignored consumer expiry.
+The dropped-row variant additionally produced three downstream errors, separately
+reported, not claimed as kill proof. The initial mutation summary wrongly demanded
+zero errors; its diagnostic report was corrected without mutating source or results.
 
-The existing `.github/ci/legacy-jobs.yml` step named `synapse read-gate unit tests`
-already runs `tests/test_risk_envelope.py` and `tests/test_live_risk_envelope.py`.
-Add the new suite to THAT command after checking the current manifest/preimage:
+No full-checkout, native Agent OS validator, hosted CI, authenticated API/browser/send,
+ordinary publication, real board input, counterfactual accrual or predictive result is
+claimed. The large board-file adapter returned no content; that does not mean the
+real board is empty. The 12 native tests close the earlier function-chain gap only.
+
+## Exact next source operation: existing CI owner registration
+
+Add BOTH new suites to the existing `.github/ci/legacy-jobs.yml` step
+`synapse read-gate unit tests` which already owns the native envelope suites:
 
 ```text
-python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_prophet_market_eligibility.py -q
+python -m pytest tests/test_synapse_read_gate.py tests/test_horizon_firewall.py tests/test_delivery_waterfall.py tests/test_pricing_power_monitor.py tests/test_risk_envelope.py tests/test_live_risk_envelope.py tests/test_prophet_market_eligibility.py tests/test_prophet_market_eligibility_native.py -q
 ```
 
-This registration is identified but **not applied** by the current source slice.
-Do not claim the test is owned/running because the new file triggered CI. No new
-workflow, runner, queue or test-discovery trick substitutes for the owner update.
-Native compatibility must additionally generate a fresh synthetic envelope through
-the unmodified real `compose_envelope` and pass it through the new function, plus
-required-source gaps, stale and live-provisional cases. No dependency stub qualifies
-that proof. Review source-native fixtures rather than merely certifying fixtures
-that reproduce this adapter's own assumptions.
+Apply the minimal append to the ACTUAL existing command; do not replace or drop any
+existing suite. Registration is identified but NOT APPLIED in this candidate.
+The manifest is 1,033,991 bytes, blob `272a7fe415b82811f34946bbd50816ee7aee8069`
+at branch base. Native GitHub update_file requires the whole text and current blob;
+this turn did not materialize the full exact manifest for a safe replacement.
+No new CI workflow, indirect test-discovery trick or truncated replacement is allowed.
 
-## 5. Exact continuation
+Obtain native Agent OS validation, affected suite execution, current-base checks and
+independent exact-head review. Keep DRAFT with no merge-on-green or auto-merge until
+Sol's named release conditions are met. A triggered CI run is not proof these new
+tests were selected or passed. The old-head main authority check passed, not full CI.
 
-First finish native compatibility and existing-owner CI registration/review on this
-same source branch. Preserve every known commit and do not start a duplicate GD-6A.
-Then bind the existing Prophet builder's frozen-board receipt and normal settled
-Risk Envelope into the existing after-rank publication path. Prove unchanged raw
-board/index/plan output, lossless shadow counts, exact source bytes and the next
-ordinary refresh; counterfactual accrual remains with existing QLedger/Chronicle.
+## Next capability after this source slice
 
-Active policy support is a separate next capability: individually registered policy
-ID/version, exact scope predicates and vulnerability matches, time/expiry/kill and
-repair ownership, plus actual authorization. Intersect constraints without averaging;
-unknown vulnerability is not low risk; one repair cannot lift another rule. A new
-policy must not be injected into the current v0 envelope as a caller-controlled dict.
-Live actionability and Portfolio gross/reduction authority remain separate promotion
-boundaries. Original Grey Deer requirements remain controlling; R2's research claim
-budget did not supersede them. No risk score threshold, full-zero liquidation policy,
-personal holdings action or automatic exit is installed by this slice.
+Bind `scripts/build_prophet.py::_freeze_origination_source_board` and the normal
+settled envelope into existing after-rank publication. Prove unchanged raw board,
+rank, plans and population; exact source receipts, lossless shadow counts and next
+ordinary refresh. Use existing QLedger/Chronicle counterfactual accrual, not a new
+ledger. Full GD-6A and live policy acceptance remain outstanding.
+
+An active policy extension must bind individually registered IDs/versions, native
+scope/vulnerability predicates, authority, time/expiry, repair and kill state.
+Intersect constraints; never average into a new score. Unknown vulnerability is not
+low risk. One repair cannot lift another policy. Original Grey Deer promotion gates
+remain; R2 research budgets did not replace them. Personal holdings and automatic
+exit remain outside this slice.
 
 Protected procedure: Mastermind `5c6b010a6157895d4f697548c75263cdff641ea6`, compatible
-Skillpack 1.0.1/bootstrap 1. The host compound process inspection was refused before
-execution and was not retried or proxied. Independent native GitHub source work used
-its observed repository write permission and fresh isolated branch. No host checkout,
-existing PR head, source store, production publisher or worker was changed.
+Skillpack1.0.1/bootstrap1. No retry/proxy of the denied host compound inspection.
+Native GitHub is the sole source-modification carrier. MISSION_COMPLETE:false.
