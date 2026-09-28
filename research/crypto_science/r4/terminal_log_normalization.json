@@ -1,0 +1,5 @@
+{
+  "original_sha256": "a6376bee0942099647ac26b49adff6ef7c499c0924acfd54b270a71759ecc293",
+  "normalized_sha256": "1a10f74df0b164281bc9a837d756c77e7baf2fa1dced13008c92542ffb6f7d5e",
+  "change": "Only trailing whitespace; original failing terminal-open assertion retained."
+}

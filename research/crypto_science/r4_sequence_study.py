@@ -106,6 +106,9 @@ def complete_window(hourly: pd.DataFrame, entry, hours: int):
     valid = (np.isfinite(window).all(axis=1) & (window > 0).all(axis=1)
              & (window.high >= window[['open','close','low']].max(axis=1))
              & (window.low <= window[['open','close','high']].min(axis=1)))
+    # At the terminal timestamp only its opening trade belongs to this
+    # experiment. Do not condition maturity on that later bar's high/low/close.
+    valid.iloc[-1] = bool(np.isfinite(window.open.iloc[-1]) and window.open.iloc[-1] > 0)
     return window if valid.all() else None
 
 
@@ -255,6 +258,8 @@ def main():
         print('Corrected incumbent recomputed; new price-only features use Coinbase only.', flush=True)
     finally:
         store.read, store.upsert = original_read, original_upsert
+    # Immutable replay evidence only, not an issued forecast or second store.
+    corrected[['alloc_optimal']].to_csv(OUT/'incumbent_replay_targets.csv', index_label='date')
     hc = hourly_conditions(hourly); dc = daily_conditions(daily)
     target_maps = {lag:incumbent_targets(corrected.alloc_optimal,hc.index,delay_hours=lag) for lag in [1,6]}
     h_selected = {k:onsets(hc[k], step='1h', separation='24h') for k in ['d0','d1']}

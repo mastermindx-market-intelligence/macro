@@ -505,6 +505,16 @@ def test_r4_preentry_shock_is_not_credited_as_future_prediction():
     assert got['category']=='neither' and np.isclose(got['worst_excursion'], -.01, rtol=0, atol=1e-12)
 
 
+def test_r4_terminal_open_does_not_require_future_terminal_bar_extrema():
+    from research.crypto_science.r4_sequence_study import barrier_label
+    bars = _r4_bars(4); bars.loc[:, :] = [100, 101, 99, 100]
+    bars.loc[bars.index[-1], ['high','low','close']] = np.nan
+    got = barrier_label(bars, bars.index[0], hours=3, lower=-.05, upper=.03)
+    assert got['category']=='neither' and got['terminal_return']==0
+    bars.loc[bars.index[-1], 'open'] = np.nan
+    assert barrier_label(bars, bars.index[0], hours=3, lower=-.05, upper=.03)['category']=='censored'
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     for fn in fns:
