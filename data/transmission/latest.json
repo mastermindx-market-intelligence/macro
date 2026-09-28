@@ -2331,7 +2331,7 @@
     ]
   },
   "dollar_channel": {
-    "asof": "2026-09-27",
+    "asof": "2026-09-28",
     "usd_dir": "weakening",
     "roc_pct": null,
     "state": {
@@ -2385,14 +2385,7 @@
       "UST10": -0.17,
       "CL=F": 0.14
     },
-    "scenario": {
-      "key": "intervention_risk",
-      "label": {
-        "en": "FX intervention risk",
-        "zh": "外汇干预风险"
-      },
-      "n_active": 1
-    },
+    "scenario": null,
     "display_only": true
   },
   "hero": {

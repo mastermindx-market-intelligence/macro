@@ -1,8 +1,8 @@
 {
   "schema": "stage_context.v1",
-  "asof": "2026-09-27",
+  "asof": "2026-09-28",
   "data_session": "2026-09-25",
-  "built": "2026-09-27T06:23:08Z",
+  "built": "2026-09-28T07:13:38Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
@@ -63,8 +63,8 @@
     "stage1": 116,
     "stage2": 1343,
     "stage2_fresh": 296,
-    "stage3": 295,
-    "stage4": 960,
+    "stage3": 294,
+    "stage4": 961,
     "too_young": 369,
     "new_today": 16
   },
@@ -1089,13 +1089,17 @@
       "blackout": false,
       "arc_pos": 0.3375,
       "earnings": {
-        "present": false,
-        "sentiment": null,
-        "performance": null,
-        "tone_word": null,
-        "tags": [],
-        "quarter": null,
-        "summary": null
+        "present": true,
+        "sentiment": 0.5,
+        "performance": 7.5,
+        "tone_word": "confident",
+        "tags": [
+          "beat_and_raise",
+          "demand_acceleration",
+          "margin_expansion"
+        ],
+        "quarter": "Q2",
+        "summary": "Total revenues increased 19.7% to $54.0 million in Q2 FY2026, driven by a 29.1% rise in RIN sales revenue ($8.4M) which offset a 63.7% decline in RNG commodity revenue due to expired fixed-price contracts. Operating loss narrowed significantly to $75,000 from a $2.4 million lo…"
       },
       "why": [
         "Early in its climb — 7 weeks up so far",
@@ -6693,8 +6697,8 @@
       29
     ],
     "ES": [
-      3,
-      3
+      4,
+      1
     ],
     "ESCA": [
       2,
@@ -14426,6 +14430,11 @@
         "detail": "Rolled over into a declining stage"
       },
       {
+        "kind": "entered_stage4",
+        "ticker": "ES",
+        "detail": "Rolled over into a declining stage"
+      },
+      {
         "kind": "topping",
         "ticker": "ESE",
         "detail": "Advance is stalling — topping out"
@@ -14528,11 +14537,6 @@
       {
         "kind": "topping",
         "ticker": "GTY",
-        "detail": "Advance is stalling — topping out"
-      },
-      {
-        "kind": "topping",
-        "ticker": "HAL",
         "detail": "Advance is stalling — topping out"
       }
     ],
@@ -32616,7 +32620,7 @@
       "event": null
     },
     "ES": {
-      "stage": 3,
+      "stage": 4,
       "fresh": false,
       "event": null
     },

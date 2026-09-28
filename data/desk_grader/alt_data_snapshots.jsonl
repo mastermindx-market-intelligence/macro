@@ -4382,3 +4382,8 @@
 {"date":"2026-09-27","ticker":"PINS","rank":null,"score":13,"lean":1,"broken":true}
 {"date":"2026-09-27","ticker":"PH","departed":true,"left_desk":"2026-09-27","last_rank":29,"last_score":30}
 {"date":"2026-09-27","ticker":"RDNT","departed":true,"left_desk":"2026-09-27","last_rank":null,"last_score":17}
+{"date":"2026-09-27","ticker":"PWR","rank":20,"score":34,"lean":1,"broken":false}
+{"date":"2026-09-27","ticker":"PH","rank":30,"score":30,"lean":1,"broken":false}
+{"date":"2026-09-27","ticker":"GSK","rank":null,"score":11,"lean":1,"broken":true}
+{"date":"2026-09-27","ticker":"MOH","rank":null,"score":11,"lean":1,"broken":true}
+{"date":"2026-09-27","ticker":"HIMS","rank":null,"score":3,"lean":1,"broken":true}

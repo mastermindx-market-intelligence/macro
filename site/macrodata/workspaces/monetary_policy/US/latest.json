@@ -190,12 +190,10 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [
-      "market_implied_path_12m_bp:market_implied_path_12m_bp:ace6bdc91745b980"
-    ],
-    "correction_state": "superseded",
-    "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "monetary_policy-US-c319cd91fde35654"
+    "changed_fingerprints": [],
+    "correction_state": "none",
+    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
+    "predecessor_generation_id": "monetary_policy-US-331819566a782719"
   },
   "drivers": {
     "balance_sheet": [
@@ -316,11 +314,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-27T05:09:23Z",
+    "built_at": "2026-09-28T05:29:00Z",
     "calculation_as_of": "2026-09-25",
-    "code_version": "980c1eea29a12ef70c8a550429c7ecc003aaa237",
-    "content_sha256": "331819566a782719375bd2059ff8ccb420b71f76a9592038943da5e7472f3ed0",
-    "generation_id": "monetary_policy-US-331819566a782719",
+    "code_version": "85a15b95e36d652364185a1c5775f6995f1c02a9",
+    "content_sha256": "48e9b08bd9982da7db4c7785ce29c7264bb3ddc27ed2b48a73c43635ccd73cea",
+    "generation_id": "monetary_policy-US-48e9b08bd9982da7",
     "producer": "engine.market_os.macro_workspaces.monetary_policy",
     "rendered_at": null
   },
@@ -1189,7 +1187,7 @@
           "value": null
         },
         "unit": "days",
-        "value": 32.0,
+        "value": 31.0,
         "value_type": "count"
       },
       {
@@ -1225,7 +1223,7 @@
           "value": null
         },
         "unit": "days",
-        "value": 33.0,
+        "value": 32.0,
         "value_type": "count"
       },
       {
@@ -1261,7 +1259,7 @@
           "value": null
         },
         "unit": "days",
-        "value": 34.0,
+        "value": 33.0,
         "value_type": "count"
       }
     ]

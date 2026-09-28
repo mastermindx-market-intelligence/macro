@@ -1,8 +1,8 @@
 {
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
-  "asof": "2026-09-26",
-  "n_events_logged": 908,
+  "asof": "2026-09-27",
+  "n_events_logged": 912,
   "n_events_graded": 578,
   "classes": [
     {
@@ -99,7 +99,7 @@
     {
       "event_type": "equity_offering",
       "direction": "bearish",
-      "n": 30,
+      "n": 31,
       "n_graded": 14,
       "hit_5d": 0.2857142857142857,
       "hit_21d": 0.5555555555555556,
@@ -138,7 +138,7 @@
     {
       "event_type": "litigation",
       "direction": "bearish",
-      "n": 212,
+      "n": 213,
       "n_graded": 174,
       "hit_5d": 0.5057471264367817,
       "hit_21d": 0.4236111111111111,
@@ -203,7 +203,7 @@
     {
       "event_type": "policy_trade_control",
       "direction": "mixed",
-      "n": 79,
+      "n": 81,
       "n_graded": 30,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 1389,
+    "n_sampled": 1400,
     "n_graded": 0,
     "classes": []
   }

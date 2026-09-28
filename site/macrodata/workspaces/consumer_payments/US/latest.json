@@ -441,7 +441,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "consumer_payments-US-2b4a40c82b4a2294"
+    "predecessor_generation_id": "consumer_payments-US-02cc3f256c7ff938"
   },
   "drivers": {
     "balance_sheet": [
@@ -534,11 +534,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-27T05:09:23Z",
+    "built_at": "2026-09-28T05:29:00Z",
     "calculation_as_of": "2026-08-01",
-    "code_version": "980c1eea29a12ef70c8a550429c7ecc003aaa237",
-    "content_sha256": "02cc3f256c7ff93855e7829b43674a4fc4f6a0a129f66330b5a6d8862623b5f2",
-    "generation_id": "consumer_payments-US-02cc3f256c7ff938",
+    "code_version": "85a15b95e36d652364185a1c5775f6995f1c02a9",
+    "content_sha256": "b0f798b97b32e36c497ba6c6510b827b48f7018c9f9fb0dc26565575fc2f051f",
+    "generation_id": "consumer_payments-US-b0f798b97b32e36c",
     "producer": "engine.market_os.macro_workspaces.consumer_payments",
     "rendered_at": null
   },
