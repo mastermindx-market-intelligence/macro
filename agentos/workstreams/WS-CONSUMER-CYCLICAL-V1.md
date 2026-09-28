@@ -34,6 +34,9 @@ discoveries:
   - "DSC:AN-ENUMERATED-GUARD-IS-BLIND-OUTSIDE-ITS-ENUMERATION"
   - "DSC:A-MUTATION-THAT-DIES-UPSTREAM-NEVER-TESTS-THE-GATE-YOU-AIMED-AT"
   - "DSC:TWO-ENDS-OF-ONE-POINTER-VALIDATED-IN-ISOLATION-BOTH-PASS-WHILE-IT-DANGLES"
+  - "DSC:A-BLOCKLIST-ENUMERATES-THE-RULES-NOUNS-NOT-THE-VIOLATIONS-VOCABULARY"
+  - "DSC:FULLMATCH-ON-A-BOUNDARY-STEM-PATTERN-IS-A-DEAD-GUARD-THAT-LOOKS-ALIVE"
+  - "DSC:A-GUARD-NAMED-IN-THE-DOCSTRING-CAN-HAVE-ZERO-CALL-SITES"
 waves:
   - id: CC-V1-CORE
     title: "V1-CORE deterministic composition"
@@ -302,13 +305,85 @@ next_action: >
   exactly the "source-coordinate-bound, not natively admitted" posture 4a
   itself describes. Forcing null destroys information and breaks the oracle.
   .
-  The honest unswept remainder is now the explanation object and
-  availability/state derivation. source_records itself is NOT unswept in the
+  CORRECTION 2026-09-28 (wave 8): the sentence that stood here -- "the honest
+  unswept remainder is now the explanation object and availability/state
+  derivation" -- is SPENT, not wrong-at-the-time. Wave 7 swept both and both
+  returned NULL: `explanation` is assembled from frozen constants with no
+  number interpolation, and `availability` is derived from READY results and
+  makes no independent claim. Wave 8 then swept the authority guard and found
+  TWO real defects (see the two DSC keys registered above). Do not re-sweep
+  explanation or availability; the open lead is the SIBLING verticals, not
+  this module. source_records itself is NOT unswept in the
   passthrough sense first suspected: it is copied verbatim from the case but
   _assert_document_matches_contract_shape runs full jsonschema validation over
   the whole document, so every record is deeply checked against the 12
   required fields of $defs/source_record. What was missing was only the
   RELATION between it and native_ref, which wave 7 closed.
+  .
+  WAVE 8 (authority vocabulary). _assert_no_forbidden_authority_keys carried a
+  docstring asserting the full frozen-spec section 6 rule 10 guarantee -- no
+  ranking, entry, gating, sizing or origination field -- and enforced 4 of 30
+  category-representative keys. Two distinct defects. (a) The blocklist held
+  the RULE'S OWN NOUNS: "sizing" was refused while position_size, weight,
+  allocation, notional and exposure were not. (b) The compound pattern was
+  applied with re.fullmatch, under which "(^|_)(stem)(_|$)" cannot consume a
+  compound name, so composite_score / analyst_rank / conviction_score /
+  signal_strength ALL passed the one construct named for catching them; its
+  only hits were bare stems the exact-match frozenset already held, so its
+  marginal contribution was zero. Both repaired; guard now 28 of 30, pattern
+  live, docstring corrected to name additionalProperties:false as the FIRST
+  line and itself as the second.
+  .
+  NEITHER DEFECT WAS REACHABLE. The root and every composite $defs carry
+  additionalProperties:false, and injecting each key into a real emitted
+  document showed position_size / weight / recommendation refused at the SHAPE
+  gate and only rank at the authority gate. So wave 8 is a false-confidence
+  repair, not a vulnerability fix, and it must not be described as the latter.
+  The risk it removes is that a future change unsealing a $defs would drop the
+  real protection while the guard that appears to cover it still passed review.
+  .
+  Defect (b) was found by a mutation that SURVIVED: a negative-control test
+  asserting sample_size stays unrefused should have gone red when size|weight
+  was added to the compound pattern, and did not -- impossible unless the
+  pattern never fires. The surviving mutation indicted the test first and the
+  module second. 118 passed; 4/4 mutations caught; no legal contract property
+  name is refused by the widened guard; oracle and envelope sweep unchanged.
+  .
+  WAVE 8 MERGED + PRODUCTION_PROOF. Squash 2dac71fc659b, 2026-09-28T00:19:08Z,
+  merged by the sweeper 9s after the last check concluded (26 checks, 0
+  unconcluded; sole red ci-authority/codex/merge-queue-pilot, red by design and
+  name-excluded). Proof from main's own re-extracted bytes: 8 of 8 assertions
+  OK, 118 passed, oracle exact both cases, sweep unchanged 17 REFUSED / 4
+  MINTED. Reported on carrier #7804 (comment 5861199381). ACCEPTANCE remains
+  Sol's and is not claimed.
+  .
+  WAVE 9 (sibling census) -- the wave-8 unresolved lead, RUN, and it refuted its
+  own premise. The lead said "probe the Finance / Mining / Industrials /
+  Healthcare / Energy authority guards". engine/sector_intelligence/ holds
+  exactly TWO projection modules, consumer_cyclical and finance; the other three
+  have no module there. That five-name list was written from the PROGRAM ROSTER,
+  not from a module census -- A ROSTER IS NOT A CENSUS. The lead's suggested
+  discriminator was also wrong: grep -rn "_RE.fullmatch" engine/ returns 475
+  hits, nearly all correct format validators where fullmatch is right; the shape
+  is a boundary-stem PATTERN under fullmatch, not fullmatch as such.
+  .
+  The refuted lead sat in THREE records (the wave-8 handoff's unresolved AND its
+  unverified, plus the wave-8 DSC's scope). All three are corrected AT SOURCE in
+  this same commit, not superseded from a newer file -- a reader travels into
+  the wrong record, so that is where the correction has to be.
+  .
+  FINDING, routed as knowledge and NOT acted on: the one real sibling carries the
+  shape in a deader form. finance_projection.py:296 defines _FORBIDDEN_KEY_RE
+  with ZERO call sites repo-wide (7 hits total; the other 6 are local copies in
+  lib/project_runtime_state.py and a test, each of which DOES use its own), while
+  the module docstring line 15 advertises the protection. Finance imports only
+  stdlib so it cannot validate at emit; its real protection is a 43/43-sealed
+  contract enforced by validate_contract at
+  tests/test_finance_intelligence_contract.py:95 -- at CI time, in the test.
+  Classified FALSE CONFIDENCE, not a demonstrated reachable leak: reachability
+  was NOT verified and needs a mutation probe of that test. finance_projection.py
+  is seat 938d17d6's custody and was not edited from this seat. See
+  DSC:A-GUARD-NAMED-IN-THE-DOCSTRING-CAN-HAVE-ZERO-CALL-SITES.
 ---
 
 ## Scope

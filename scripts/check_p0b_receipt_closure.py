@@ -45,6 +45,19 @@ FIXTURE_NAME = "rendered-fixture.json"
 RECEIPT_SCHEMA = "mastermind.stock_dashboard_mobile_layout.v1"
 FIXTURE_SCHEMA = "mastermind.stock_dashboard_rendered_fixture.v1"
 
+# Events whose plan legitimately publishes the planner's `null` token: the
+# main-role events in run_ci_pack.SUPPORTED_PLAN_ROLE_EVENTS (a main proof is a
+# full-suite plan with no changed-file list) and the base replay, which hands
+# its base-as-main child a `null` handle. There is no diff there, so this gate
+# has nothing to close; whole-tree receipt consistency is the receipt tests'
+# job (tests/test_stock_dashboard_first_frame.py). On every other event, above
+# all `pull_request`, whose plan must carry an exact inventory, `null` means
+# the planner failed, and the gate still refuses it. tests/test_ci_pack.py
+# pins this set to the planner's table.
+NO_DIFF_SUBJECT_EVENTS = frozenset(
+    {"workflow_dispatch", "workflow_run", "schedule", "base_replay"}
+)
+
 
 def _posix(path: Path, root: Path) -> str:
     return path.resolve().relative_to(root.resolve()).as_posix()
@@ -63,16 +76,20 @@ def _sparse_refusal(root: Path) -> str | None:
     return remedy_line(absent) if absent else None
 
 
-def parse_changed_paths(text: str) -> set[str]:
+def parse_changed_paths(text: str, *, null_is_no_diff: bool = False) -> set[str]:
     """Accept planner JSON, `git diff --name-only`, or a unified diff.
 
     Semantic packs publish their authoritative changed-path list as a JSON
     array through CI_CHANGED_FILES_FILE.  A configured planner sentinel
     (`null`) or malformed JSON must REFUSE rather than degrade to a harmless
-    literal path and accidentally pass the closure gate.
+    literal path and accidentally pass the closure gate.  The one exception is
+    `null_is_no_diff`, which the caller sets only for NO_DIFF_SUBJECT_EVENTS:
+    there `null` is the planner's documented full-suite token, not a failure.
     """
     stripped = text.strip()
     if stripped == "null":
+        if null_is_no_diff:
+            return set()
         raise ValueError("planner changed-file handle is null / unavailable")
     if stripped.startswith(("[", "{")):
         try:
@@ -363,6 +380,19 @@ def run_selftest() -> int:
         print(f"selftest FAIL: unrelated path red: {clean}")
         return 1
 
+    # The planner's `null` token: a main proof has no diff to close, and
+    # anything else still refuses it.
+    if parse_changed_paths("null\n", null_is_no_diff=True):
+        print("selftest FAIL: a main-role null handle produced changed paths")
+        return 1
+    try:
+        parse_changed_paths("null\n")
+    except ValueError:
+        pass
+    else:
+        print("selftest FAIL: a null handle passed without a main-role event")
+        return 1
+
     print("check_p0b_receipt_closure selftest OK", flush=True)
     return 0
 
@@ -382,6 +412,18 @@ def main(argv: list[str] | None = None) -> int:
         "--selftest",
         action="store_true",
         help="Run the built-in selftest and exit.",
+    )
+    parser.add_argument(
+        "--event",
+        default="",
+        help=(
+            "GitHub event that minted the changed-file handle (CI passes "
+            "$GITHUB_EVENT_NAME). Deliberately never read from the environment, "
+            "so a test run inside a CI job cannot inherit it. The planner's "
+            "`null` token is accepted only for: "
+            + ", ".join(sorted(NO_DIFF_SUBJECT_EVENTS))
+            + "."
+        ),
     )
     args = parser.parse_args(argv)
 
@@ -413,11 +455,24 @@ def main(argv: list[str] | None = None) -> int:
         print(f"::error title=p0b-receipt-closure::{refuse}", flush=True)
         return 2
 
+    null_is_no_diff = args.event in NO_DIFF_SUBJECT_EVENTS
     try:
-        changed = parse_changed_paths(diff_text)
+        changed = parse_changed_paths(diff_text, null_is_no_diff=null_is_no_diff)
     except ValueError as exc:
-        print(f"::error title=p0b-receipt-closure::REFUSED: {exc}", flush=True)
+        print(
+            f"::error title=p0b-receipt-closure::REFUSED: {exc} "
+            f"(event={args.event or 'unset'})",
+            flush=True,
+        )
         return 2
+    if null_is_no_diff and diff_text.strip() == "null":
+        print(
+            f"::notice title=p0b-receipt-closure::{args.event} plan carries the "
+            "planner's null handle (full suite, no changed-file list): no diff "
+            "to close",
+            flush=True,
+        )
+        return 0
     findings = evaluate(changed, pin_sets)
     if not findings:
         return 0
