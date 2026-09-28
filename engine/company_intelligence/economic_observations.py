@@ -243,6 +243,7 @@ _PRINT_UNIT = re.compile(
 _SEPARATING = frozenset({b"td", b"th", b"tr", b"table", b"p", b"div", b"br"})
 _RAW_NAMES = frozenset(name.encode() for name in _pg_envelope._RAW_TEXT_CLOSE)
 _UNPRINTED_RAW = frozenset({"raw:script", "raw:style"})
+_LAYOUT_SPACE = frozenset(" \t\n\r\f\xa0")
 
 
 @functools.lru_cache(maxsize=4)
@@ -291,7 +292,7 @@ def _whole_printed_token(source_bytes: bytes, start: int, end: int) -> bool:
             printed = html.unescape(source_bytes[units[index][0]:units[index][1]].decode("utf-8"))
             if printed and kind.startswith("raw:"):
                 return False
-        return edge(printed).isspace()
+        return edge(printed) in _LAYOUT_SPACE
 
     return (
         separated(first, -1, source_bytes[units[first][0]:start], lambda printed: printed[-1])
@@ -332,7 +333,7 @@ def _validate_envelope_span(row: Mapping[str, Any], *, source: str) -> None:
     if gap_end < 0:
         gap_end = len(source_bytes)
     for gap in (source_bytes[gap_start:start], source_bytes[end:gap_end]):
-        if not all(character.isspace() for character in html.unescape(gap.decode("utf-8"))):
+        if not all(character in _LAYOUT_SPACE for character in html.unescape(gap.decode("utf-8"))):
             raise EconomicObservationError("present envelope observation span is not a whole literal")
     unescaped = html.unescape(raw)
     if any(character.isspace() for character in unescaped):
