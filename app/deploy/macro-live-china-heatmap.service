@@ -1,0 +1,33 @@
+# China A-share heatmap current-session overlay.
+#
+# Persistent rather than timer-owned because the approved product cadence is two
+# seconds during the mainland tape. The process publishes one display-only JSON
+# artifact by atomic rename; the Asia-close lane remains the sole daily/history
+# heatmap owner.
+[Unit]
+Description=Mastermind China heatmap live overlay
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/macro
+EnvironmentFile=-/etc/macro-live.env
+ExecStart=/opt/macro/.venv/bin/python -m scripts.build_china_heatmap_live --loop
+Restart=always
+RestartSec=2s
+TimeoutStopSec=20s
+Nice=5
+CPUWeight=40
+CPUQuota=100%
+MemoryHigh=384M
+MemoryMax=512M
+IOWeight=40
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=-/var/lib/macro-live/public/live
+
+[Install]
+WantedBy=multi-user.target

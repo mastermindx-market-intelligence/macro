@@ -486,6 +486,10 @@ def test_generated_data_is_not_accidentally_public():
         # Reviewed machine-readable marketing metadata; contains no signal rows.
         "/brand-facts.json",
         "/live/quotes.json",
+        # Current-session A-share price/change overlay for the already-public
+        # China heatmap universe. Derived display facts only: no score, rank,
+        # signal, customer data, raw vendor payload, or prefix widening.
+        "/live/china_heatmap.json",
         "/live/intraday_quotes.json",
         "/live/flow_pulse.json",
         "/live/breadth.json",

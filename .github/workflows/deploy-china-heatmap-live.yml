@@ -1,0 +1,71 @@
+name: deploy-china-heatmap-live
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, macstudio-light]
+    timeout-minutes: 5
+    steps:
+      - name: deliver Tushare token and restart China heatmap live
+        env:
+          TUSHARE_TOKEN: ${{ secrets.TUSHARE_TOKEN }}
+          SSH_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
+        run: |
+          set -euo pipefail
+          [ -n "$TUSHARE_TOKEN" ] || { echo "::error::TUSHARE_TOKEN secret is empty/absent"; exit 1; }
+          [ -n "$SSH_KEY" ] || { echo "::error::VPS_DEPLOY_KEY secret is empty/absent"; exit 1; }
+          umask 077
+          KEYFILE="$RUNNER_TEMP/vps_key"
+          printf '%s\n' "$SSH_KEY" > "$KEYFILE"
+          chmod 600 "$KEYFILE"
+          trap 'rm -f "$KEYFILE"' EXIT
+
+          printf '%s\n' "$TUSHARE_TOKEN" | ssh -i "$KEYFILE" \
+            -o BatchMode=yes -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=accept-new root@146.190.142.17 '
+            set -euo pipefail
+            umask 077
+            IFS= read -r TOKEN
+            [ -n "$TOKEN" ]
+            touch /etc/macro-live.env
+            grep -v "^TUSHARE_TOKEN=" /etc/macro-live.env > /etc/macro-live.env.new || true
+            printf "TUSHARE_TOKEN=%s\n" "$TOKEN" >> /etc/macro-live.env.new
+            chmod 600 /etc/macro-live.env.new
+            mv /etc/macro-live.env.new /etc/macro-live.env
+            systemctl restart macro-live-china-heatmap.service
+            systemctl is-active macro-live-china-heatmap.service
+            ART=/var/lib/macro-live/public/live/china_heatmap.json
+            BASE=/opt/macro/site/marketdata/china_heatmap.json
+            for _ in $(seq 1 30); do
+              [ -s "$ART" ] && break
+              sleep 1
+            done
+            test -s "$ART"
+            test -s "$BASE"
+            python3 - "$ART" "$BASE" <<"PY"
+          import json
+          import sys
+          artifact = json.load(open(sys.argv[1], encoding="utf-8"))
+          baseline = json.load(open(sys.argv[2], encoding="utf-8"))
+          assert artifact.get("schema") == "china_heatmap_live.v1"
+          assert artifact.get("baseline_asof") == baseline.get("asof")
+          assert artifact.get("requested") == baseline.get("n_tiles")
+          assert artifact.get("resolved") == len(artifact.get("quotes") or {})
+          if artifact.get("phase") in {"morning", "afternoon", "closing_auction"}:
+              assert artifact.get("usable") is True
+              assert float(artifact.get("coverage") or 0) >= 0.95
+          PY
+          '
+
+          HEADERS=$(curl --fail --silent --show-error --head \
+            'https://www.mastermind-x.com/live/china_heatmap.json')
+          printf '%s\n' "$HEADERS" | tr '[:upper:]' '[:lower:]' \
+            | tr -d '\r' | grep -qx 'cache-control: no-store'
+          curl --fail --silent --show-error \
+            'https://www.mastermind-x.com/live/china_heatmap.json' \
+            | python3 -c 'import json,sys; assert json.load(sys.stdin).get("schema") == "china_heatmap_live.v1"'
