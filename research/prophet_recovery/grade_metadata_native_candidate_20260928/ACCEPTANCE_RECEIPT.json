@@ -1,0 +1,74 @@
+{
+  "candidate_files": [
+    {
+      "bytes": 60616,
+      "git_blob": "5d4dbd2ea628efdfff70b4929a257308721721ed",
+      "path": "engine/us_prophet_grades.py",
+      "sha256": "be79c7a1c0e54152cbbe2fb1cf7168fff674588a9b684050fedde64ec8583f8f"
+    },
+    {
+      "bytes": 66638,
+      "git_blob": "fb5e1f528d30c124df75d59f6f9edeb3879b37e3",
+      "path": "tests/test_us_prophet_grades.py",
+      "sha256": "dd6a8b8282ae2490bfdeccad6b02e53a2199e1eeba99c205f400d22176e38b8f"
+    }
+  ],
+  "dependency_imports_guarded": [
+    "config/default data root",
+    "us_context_vector STORE_DIR",
+    "ledger_lane",
+    "forward_metrics"
+  ],
+  "deployed": false,
+  "experiment_run": false,
+  "financial_data_read": false,
+  "full_native_module_loaded": true,
+  "hosted_ci_executed": false,
+  "known_limitations": [
+    "private encoded-object snapshot copies/hashes full encoded bytes; only permitted metadata columns decoded; not a byte-range access guarantee",
+    "footer statistics and pandas metadata not exported; caller must qualify source rights",
+    "expected catalogue is supplied evidence, not newly created canonical authority",
+    "grade catalogue completeness is not candidate-universe completeness",
+    "graded_asof remains price-panel last-bar date; no label-usable clock synthesized",
+    "native source-owner adoption, full integration/security review and ordinary release remain owed"
+  ],
+  "legacy_body_ast_identical": true,
+  "mutation_cases_caught": 9,
+  "original_source_branch_or_workspace_modified": false,
+  "patch_bytes": 33973,
+  "patch_sha256": "b85bda281b8a307069db0f294a05d93053e853c38286bd661a87c92f55c306d8",
+  "real_parquet_io": true,
+  "repository_suite_executed": false,
+  "schema": "review_evidence_not_runtime_authority",
+  "source_blob": "0653dd6fecbdb484557c101a634f2188dacf10a5",
+  "source_commit": "c72d5d7e5defc9582e032f72fa23a8fc90737aac",
+  "source_test_blob": "f8db9523b69dbab0c7b7de66f37de1d3632f5ae4",
+  "test_cases_failed": 0,
+  "test_cases_passed": 73,
+  "unchanged_existing_functions": [
+    "_store_dir",
+    "_part_path",
+    "_key_frame",
+    "graded_keys",
+    "_coerce_objects",
+    "append_grades",
+    "load_bench",
+    "matured_horizons",
+    "grade_row",
+    "classify_signal",
+    "resolve_signal_labels",
+    "normalize_cohort",
+    "resolve_discriminator",
+    "load_candidate_keys",
+    "run",
+    "coverage",
+    "load_graded_frame",
+    "summary_line"
+  ],
+  "versions": {
+    "pandas": "3.0.5",
+    "pyarrow": "25.0.1",
+    "pytest": "9.1.1",
+    "python": "3.14.7"
+  }
+}
