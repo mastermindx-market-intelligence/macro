@@ -129,7 +129,8 @@ def test_shell_mount_points_match_every_section_renderer_in_the_js():
         "constraint-list",
         "provenance",
         "notice", "notice-en", "notice-zh",
-        "evidence-fields", "evidence-empty", "evidence-private-notice",
+        "evidence-fields", "evidence-empty", "evidence-missing", "evidence-none",
+        "evidence-private-notice",
     ):
         assert f'data-fi-mount="{mount}"' in html, mount
 
@@ -531,6 +532,17 @@ def test_runtime_never_turns_a_missing_state_into_a_positive_fact():
     assert "try { return decodeURIComponent(raw); } catch (e) { return null; }" in js
     # A named record missing from source_records says so.
     assert 'data-fi-mount="evidence-missing"' in _render()
+
+
+def test_the_drawer_says_when_a_section_cites_no_evidence() -> None:
+    """The read model publishes no reading that owner evidence does not back,
+    so a section can cite no evidence at all. The drawer then says so in both
+    languages, in the spec's NO_EVIDENCE words (D.12, D.15)."""
+    found = re.search(r'<p class="fi-evidence-empty" data-fi-mount="evidence-none" hidden>(.*?)</p>',
+                      _render(), re.S)
+    assert found, "no evidence-none mount in the drawer"
+    assert '<span class="l-en">No evidence on file.</span>' in found.group(1)
+    assert '<span class="l-zh">暂无证据。</span>' in found.group(1)
 
 
 # ──────────────────────────────────────────────────────────────────────────
