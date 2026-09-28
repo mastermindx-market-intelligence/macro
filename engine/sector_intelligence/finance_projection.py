@@ -1078,13 +1078,17 @@ def _valuation_plane(
     evidence_refs: list[str],
     regime_breaks: Sequence[Mapping[str, Any]],
 ) -> dict[str, Any]:
-    # The anchor is the slice's freshest valuation observation: one the owner
-    # tags with this slice or leaves untagged (company data), the scope the
-    # operating plane and the conflict detector already apply. An observation
-    # tagged with another slice never anchors this one. (The anchor used to be
-    # the first observation of whichever packet iterated last, so every slice
-    # with a qualified price basis published that one slice's multiple.)
-    candidates: list[tuple[date | None, Mapping[str, Any]]] = []
+    # The anchor is the slice's freshest dated valuation observation: one the
+    # owner tags with this slice or leaves untagged (company data), the scope
+    # the operating plane and the conflict detector already apply. An
+    # observation tagged with another slice never anchors this one. (The anchor
+    # used to be the first observation of whichever packet iterated last, so
+    # every slice with a qualified price basis published that one slice's
+    # multiple.) The anchor's date is published as the slice's information
+    # clock, which the contract requires, so an observation that carries no
+    # date (the date _plane_clock reads) never anchors: it would refuse the
+    # whole document.
+    candidates: list[tuple[date, Mapping[str, Any]]] = []
     for packet in financial_packets.values():
         if not isinstance(packet, Mapping):
             continue
@@ -1092,8 +1096,10 @@ def _valuation_plane(
         if isinstance(valuation, Mapping):
             for obs in valuation.get("observations") or ():
                 if isinstance(obs, Mapping) and (not obs.get("slice_id") or obs.get("slice_id") == slice_id):
-                    candidates.append((_coerce_date(obs.get("as_of")), obs))
-    candidates.sort(key=lambda c: (c[0] or date.max))
+                    observed = _coerce_date(obs.get("as_of")) or _coerce_date(obs.get("observed_at"))
+                    if observed is not None:
+                        candidates.append((observed, obs))
+    candidates.sort(key=lambda c: c[0])
     anchor_obs: Mapping[str, Any] | None = candidates[-1][1] if candidates else None
     price_basis: str | None = None
     for obs in market_obs:

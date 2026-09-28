@@ -617,6 +617,35 @@ def test_the_valuation_plane_reads_its_slices_freshest_anchor() -> None:
     assert anchor_values(stale, observation("2026-09-23", 30.0, slice_id="ach_instant_b2b")) == {21.0}
 
 
+def test_an_undated_valuation_observation_never_anchors() -> None:
+    """An anchor publishes its date as the slice's information clock, which
+    the contract requires, so an observation that carries no date cannot
+    anchor. Beside a dated one it is passed over, in either order; alone it
+    leaves the slice without an anchor, said in words. It used to refuse the
+    whole document whenever it came first."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    (ticker, packet), = base.financial_packets.items()
+    (anchor,) = packet["valuation"]["observations"]
+    undated = {key: val for key, val in copy.deepcopy(anchor).items() if key not in ("as_of", "observed_at")}
+    undated["metric"] = dict(undated["metric"], value=99.0)
+
+    def valuation(*observations: dict[str, Any]) -> dict[str, Any]:
+        packets = {ticker: dict(packet, valuation=dict(packet["valuation"], observations=list(observations)))}
+        document = compose_finance_projection(
+            dataclasses.replace(base, financial_packets=packets),
+            generated_at=_today(),
+            knowledge_cutoff=_knowledge_cutoff(),
+        )
+        validate_contract(CONTRACT_ID, document)
+        return _valuation_of(document, "card_networks")
+
+    for ordered in ((anchor, undated), (undated, anchor)):
+        assert valuation(*ordered)["primary_metric"]["value"] == 18.0
+    alone = valuation(undated)
+    assert alone["state"] == "VALUATION_ANCHOR_UNAVAILABLE", alone
+    assert alone["primary_metric"] is None and alone["clock"] is None
+
+
 def test_a_constraint_is_published_under_the_slice_its_record_is_filed_under() -> None:
     """A source record is filed under its business_scope, and its record_id is
     evidence of that slice only. Its constraints are published under that

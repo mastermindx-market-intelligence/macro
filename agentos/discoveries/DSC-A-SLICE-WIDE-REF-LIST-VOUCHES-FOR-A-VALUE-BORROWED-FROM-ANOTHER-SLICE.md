@@ -15,9 +15,9 @@ claim: >-
   business_scope. A foreign extra published a constraint under a slice its record is not
   filed under, and a record carrying no extra had its constraints dropped.
 falsifier: >-
-  `python3 -m pytest tests/test_finance_intelligence_projection.py -q -k "anchors_only_the_slice or freshest_anchor or constraint_is_published"`
-  passes (3). Swap in engine/sector_intelligence/finance_projection.py from f6dae649ee6d and
-  all 3 must fail. Put back only the constraints scope (business_scope reverted to the
+  `python3 -m pytest tests/test_finance_intelligence_projection.py -q -k "anchors_only_the_slice or freshest_anchor or undated_valuation or constraint_is_published"`
+  passes (4). Swap in engine/sector_intelligence/finance_projection.py from f6dae649ee6d and
+  all 4 must fail. Put back only the constraints scope (business_scope reverted to the
   slice_id extra) and only the constraint test must fail. If the swap passes, the reads
   were already scoped and this record is wrong.
 so_what: >-
@@ -38,7 +38,7 @@ so_what: >-
   adopts it in the later integration wave (DEC:FINANCE-COMPOSER-NEVER-MINTS-AN-EVIDENCE-REF).
 kind: landmine
 verified_at: 2026-09-28
-verified_by: "tests/test_finance_intelligence_projection.py::test_a_valuation_observation_anchors_only_the_slice_it_is_filed_under, ::test_the_valuation_plane_reads_its_slices_freshest_anchor and ::test_a_constraint_is_published_under_the_slice_its_record_is_filed_under (all 3 fail with the composer from f6dae649ee6d; reverting only the constraints scope fails only the last); probe on #8134's head d275a9e72654: the borrowed-P/E document validates and _refs_outside_their_slice returns []; probe on f6dae649ee6d: a constraint on the card_networks record is dropped with no extra, and is published under issuer_processing, citing the card_networks record, with a slice_id extra of issuer_processing"
+verified_by: "tests/test_finance_intelligence_projection.py::test_a_valuation_observation_anchors_only_the_slice_it_is_filed_under, ::test_the_valuation_plane_reads_its_slices_freshest_anchor, ::test_an_undated_valuation_observation_never_anchors and ::test_a_constraint_is_published_under_the_slice_its_record_is_filed_under (all 4 fail with the composer from f6dae649ee6d; reverting only the constraints scope fails only the last); probe on #8134's head d275a9e72654: the borrowed-P/E document validates and _refs_outside_their_slice returns []; probe on f6dae649ee6d: a constraint on the card_networks record is dropped with no extra, and is published under issuer_processing, citing the card_networks record, with a slice_id extra of issuer_processing"
 scope:
   - macro
   - engine/sector_intelligence/finance_projection.py
@@ -54,9 +54,14 @@ anchor is the slice's own.
 
 ## The fixes
 
-- **Anchor.** The anchor is now the slice's freshest valuation observation: one tagged
-  with the slice, or an untagged one. An observation tagged with another slice never
+- **Anchor.** The anchor is now the slice's freshest dated valuation observation: one
+  tagged with the slice, or an untagged one. An observation tagged with another slice never
   anchors it, however fresh.
+- **Undated observations.** An observation with no date never anchors. The anchor's date
+  is published as the slice's information clock, which the contract requires. The first
+  version of this fix sorted an undated observation as the freshest. That refused the
+  whole document in either order, where main refused it only when the undated observation
+  came first.
 - **Anchor order.** The old code also published whichever of a slice's observations came
   first. A test now reads both orders.
 - **Constraints.** A constraint is published under its record's business_scope.
