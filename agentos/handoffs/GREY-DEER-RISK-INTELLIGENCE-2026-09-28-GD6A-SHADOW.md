@@ -2,6 +2,7 @@
 workstream: WS:GREY-DEER-RISK-INTELLIGENCE
 session: claude/gd6a-us-shadow-intake-20260928
 model: sol
+prs: [8141]
 ended_because: ci_handoff
 mission: >-
   Implement the existing GD-6A after-rank US market-eligibility shadow intake,
@@ -18,11 +19,13 @@ changed:
     what: Stdout-only qualification entry point with explicit owner inputs and typed exits.
   - path: tests/test_prophet_market_eligibility.py
     what: Synthetic module, consumer, boundary and CLI tests; no market observations.
+  - path: tests/test_prophet_market_eligibility_native.py
+    what: Actual unchanged native composer through the new module and consumer on synthetic observations.
   - path: research/grey_deer/GD6A_ZERO_POLICY_SHADOW_INTAKE_2026-09-28.md
     what: Native owner reconciliation, scoped evidence and unlanded CI/publication dependencies.
 verified:
   - claim: The new implementation and CLI pass 51 synthetic tests locally.
-    command: PYTHONDONTWRITEBYTECODE=1 python tests/test_prophet_market_eligibility.py
+    command: PYTHONDONTWRITECODE=1 python tests/test_prophet_market_eligibility.py
     result: 51 passed; zero failures, errors or skips. Python 3.13.5; not hosted CI or a native full-checkout run.
   - claim: The source module committed on the carrier matches tested bytes.
     command: GitHub fetch_file at f5dde3c32b6efbf785d5340ee22061399205c2c5 and local Git blob computation
@@ -30,11 +33,17 @@ verified:
   - claim: Source test and CLI copies match their locally tested bytes.
     command: GitHub fetch_file at 20d140a564d8c4b5c083163204f3ec4d61be0a59 and local Git blob computation
     result: Test blob c106a176d7113093bc05ae708895acc9a62d46a2 and CLI blob 21743440a9a3fec687dd54ca09aa9fd339efeab7 match.
+  - claim: The actual native composer is compatible with the new intake and bound view.
+    command: PYTHONDONTWRITEBYTECODE=1 python tests/test_prophet_market_eligibility_native.py
+    result: >-
+      12 additional tests passed, zero failures/errors/skips. Whole native file
+      30642 bytes matched Git blob3b0df2d426f50245142b943e38faf4996f96e995
+      before execution. No dependency mocked; observations remain synthetic.
 unverified:
-  - claim: Existing-owner CI registration and native composer compatibility.
+  - claim: Existing-owner CI registration and full native repository acceptance.
     what_would_verify: >-
-      Add the new suite to the existing synapse read-gate step, execute the actual
-      unchanged native composer into the sidecar and pass exact integrated-head CI.
+      Add both suites to the existing synapse read-gate step, run the existing
+      native Agent OS validator and pass exact integrated-head CI/review.
   - claim: Complete GD-6A source-to-publication and counterfactual accrual.
     what_would_verify: >-
       Existing Prophet frozen-board receipt through ordinary shadow publication and
@@ -49,7 +58,7 @@ unresolved:
   - Current native envelope has zero policies; policy dictionaries are not admitted by this module.
   - Real complete board bytes and natural publication inputs have not been qualified in this source slice.
 next_actions:
-  - Finish actual native composer compatibility and existing-owner CI registration on this same branch.
+  - Register both suites in the existing CI manifest on this same branch; the 12 native function-chain checks are already complete.
   - Obtain independent exact-head review and current-base checks; keep release held until acceptance.
   - Bind the existing frozen-board and ordinary settled-publication owners without changing live recommendations.
 do_not_redo:
@@ -72,3 +81,8 @@ The exact scope and next proof are in
 `research/grey_deer/GD6A_ZERO_POLICY_SHADOW_INTAKE_2026-09-28.md`.
 The main source carrier began at `03e8961d22b48cc65666f6318ee8c8bd610f3caa`.
 Protected procedure was read at Mastermind `5c6b010a6157895d4f697548c75263cdff641ea6`.
+
+The actual native-composer test blob is ad1752e12e9701a54bcd989dfe657de491cb35da.
+Its 12 checks close the former function-chain gap; full checkout, CI, real input
+and publication proof remain outstanding. Earlier 51-test and four mutation
+receipts remain unchanged. The branch is not released or terminal.
