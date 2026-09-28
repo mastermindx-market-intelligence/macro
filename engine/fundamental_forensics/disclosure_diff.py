@@ -75,9 +75,14 @@ _SPAN_VALUE = re.compile(r"[ \t\n\f\r]*\+?([0-9]+)")
 def _span_value(value: str | None) -> int | None:
     """A ``colspan``/``rowspan`` attribute as HTML's rules for parsing non-negative integers read it: ASCII
     whitespace and an optional "+" are skipped, the leading run of ASCII digits is the value and anything after
-    it is ignored ("2.0", "2_0", "+2" and "3px" are 2, 2, 2 and 3; a non-ASCII digit or blank is an error)."""
+    it is ignored ("2.0", "2_0", "+2" and "3px" are 2, 2, 2 and 3; a non-ASCII digit or blank is an error).  A value
+    past six significant digits reads as 10**6 without being converted: every such value is above the span limits,
+    and Python refuses to convert more than 4,300 digits (R181)."""
     match = _SPAN_VALUE.match(str(value or ""))
-    return int(match.group(1)) if match else None
+    if match is None:
+        return None
+    digits = match.group(1).lstrip("0")
+    return int(digits or "0") if len(digits) <= 6 else 10**6
 
 
 def _span_attribute(value: str | None, *, rowspan: bool = False) -> int:

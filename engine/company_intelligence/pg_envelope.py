@@ -384,7 +384,8 @@ def _grid(source: str, ordinal: int, start: int, end: int) -> tuple[tuple[Cell, 
             widths = []
             for key in ("colspan", "rowspan"):
                 match = _SPAN_PATTERNS[key].search(attributes)
-                widths.append(int(match.group(1)) if match else 1)
+                digits = match.group(1).lstrip("0") if match else "1"
+                widths.append(min(int(digits or "0") if len(digits) <= 6 else _SPAN_LIMITS[key], _SPAN_LIMITS[key]))
             colspan, rowspan = widths
             cell_start = row_match.start(1) + cell_match.start(3)
             cell_end = row_match.start(1) + cell_match.end(3)
