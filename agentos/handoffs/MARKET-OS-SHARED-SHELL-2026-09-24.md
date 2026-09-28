@@ -2,7 +2,7 @@
 workstream: "WS:MARKET-OS"
 session: sol/market-os-shared-shell-design-20260924
 model: sol
-ended_because: checkpointed_continuation
+ended_because: blocked
 mission: >
   Deliver the shared Macro/Terminal experience with prepared understanding,
   advanced depth, long-page reading and reversible navigation. All tools is
