@@ -416,15 +416,15 @@ INSIDE_LIMIT = {
     "script_text_outside_tables": "<script>1.63</script>",
     "comment_interior_between_brackets": "<!-- x>1.63<y -->",
     "bare_legacy_reference": "<p>&nbsp1.63</p>",
-    "code_point_unescape_drops": "<p>&#1;1.63</p>",
+    # R185 (round 7) refuses the fourth case, '<p>&#1;1.63</p>': the R7 suite pins it as before_x01.
 }
 
 
 @pytest.mark.parametrize("form", sorted(INSIDE_LIMIT))
 def test_r166_a_relocation_inside_the_restated_limit_is_accepted(monkeypatch, form):
     """R166 (records R155's restated limit): the Q3 diluted-EPS receipt relocated through R143's seam onto '1.63' in
-    script text outside a table, in a comment between a '>' and a '<', after a bare legacy reference, or after a
-    reference html.unescape drops.  The markup is admitted and the relocation is accepted, before and after R163."""
+    script text outside a table, in a comment between a '>' and a '<', or after a bare legacy reference.  The markup
+    is admitted and the relocation is accepted, before and after R163."""
     fragment = INSIDE_LIMIT[form]
     body = before_text_end(src(), fragment)
     at = text_end(src()) + fragment.index("1.63")

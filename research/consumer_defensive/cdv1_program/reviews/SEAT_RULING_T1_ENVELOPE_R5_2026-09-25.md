@@ -29,7 +29,7 @@ The bars are the commission's review standard: (a) wrong bind, (b) present fact 
 | B2, a `%` cell carried by rowspan beside a per-share value is not read | BLOCKER (a) | BLOCKER | R164 |
 | B3, a relocation onto a literal glued to a text `<` or `>` is accepted | BLOCKER (c); repair by widening R155's limit | BLOCKER; repaired in code, and the limit is not widened | R163, R166 |
 | m1, R155's premise that `html.unescape` reads references with R143's grammar | minor | minor; the premise is corrected | R166 |
-| m2, `&#1;` decodes to nothing | minor, inside the limit | minor, inside the limit | R166 |
+| m2, `&#1;` decodes to nothing | minor, inside the limit | minor, inside the limit | R166; withdrawn by R185 (round 7) |
 | m3, `_parse_year` reads only a header value's first year | minor, code read only | **BLOCKER** (e) | R165 |
 
 - **B1 and B3 are one class, and the seat found more of it.** In each construction the engine, or the validator, reads markup by a grammar an HTML reader does not share. A value then binds where a reader sees no such literal, or sees another. At `a1220205b09` all 36 of the seat's constructions of the class are admitted and validate, and DIL binds 1.63 in 34 of them. Beyond the audit's comment and bracket forms they cover:
@@ -111,7 +111,7 @@ The bars are the commission's review standard: (a) wrong bind, (b) present fact 
       - in hidden text, which counts as printed (R151);
       - in script or style text outside tables;
       - inside a well-formed comment, where the comment's own text puts a `>` before it and a `<` after it;
-      - after a bare legacy reference (m1), or after a code point that `html.unescape` drops (m2).
+      - after a bare legacy reference (m1), or after a code point that `html.unescape` drops (m2; withdrawn by R185 in round 7, see below).
   - **Now outside the envelope, by R163:**
     - a literal glued to a text `<` or `>` (B3);
     - a literal inside an attribute value that holds `<` or `>` (the attribute form of R155's limit);
@@ -122,6 +122,7 @@ The bars are the commission's review standard: (a) wrong bind, (b) present fact 
     - R154 keeps the extractor's spans off such a unit, so the difference reaches only a seam shift. There the literal is delimited by the no-break space a reader sees.
   - **m2.** `&#1;` decodes to nothing under `html.unescape`, where a reader renders U+0001, an invisible control character. The literal stays delimited to a reader.
   - Four frozen cases pin the restated limit: `<script>1.63</script>`, `<!-- x>1.63<y -->`, `<p>&nbsp1.63</p>` and `<p>&#1;1.63</p>`. Each passes before and after the repair.
+  - **Amended by R185 (round 7, `SEAT_RULING_T1_ENVELOPE_R7_2026-09-28.md`).** m2's premise does not hold. A reader keeps U+0001 in the text, so `&#1;1.63` prints as one token and the literal is not delimited. R185 refuses the relocation. `<p>&#1;1.63</p>` leaves the R5 suite's accepted list, and the R7 suite pins its refusal as `before_x01`. The other three cases stand.
 
 - **R167 (the round-5 freeze, the gate, the repair, the witness and the hold).**
   - **The freeze.** `tests/test_pg_envelope_f1_probes_r5.py` holds 61 cases, all authored by the seat from the audit's findings and the seat's widened constructions.
