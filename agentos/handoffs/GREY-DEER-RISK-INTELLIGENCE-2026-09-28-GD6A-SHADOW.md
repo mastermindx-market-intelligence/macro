@@ -36,6 +36,12 @@ verified:
   command: python3.12 /Volumes/Mastermind/evidence/gd6a-us-shadow-intake-20260928-sol-001/publication-r5/real_source_probe.py
   result: 69/69 rows, exact order/content, AVAILABLE, zero errors, all action flags
     false; isolated output, not production.
+- claim: Qualified versus missing risk changes no native plan/state/intake/ledger
+    output across two actual main runs.
+  command: python3.12 -m pytest tests/test_prophet_bridge.py::test_gd6a_full_builder_preserves_plan_outputs_across_risk_availability
+    --basetemp <owned-test-directory> -q
+  result: One additional paired regression passed, two plans per run and exact native
+    output parity. Distinct inventory89 with prior88 unchanged. LogSHA256129d6bf5db5a76730f76f2745a6a72aa2915246d2366bdcaa01c99a0d9b8cc1b.
 unverified:
 - claim: Required hosted/current-base qualification and ordinary served publication.
   what_would_verify: Permitted exact-head checks and normal settled build -> accepted
