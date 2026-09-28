@@ -25,7 +25,7 @@ changed:
     what: Native owner reconciliation, scoped evidence and unlanded CI/publication dependencies.
 verified:
   - claim: The new implementation and CLI pass 51 synthetic tests locally.
-    command: PYTHONDONTWRITECODE=1 python tests/test_prophet_market_eligibility.py
+    command: PYTHONDONTWRITEBYTECODE=1 python tests/test_prophet_market_eligibility.py
     result: 51 passed; zero failures, errors or skips. Python 3.13.5; not hosted CI or a native full-checkout run.
   - claim: The source module committed on the carrier matches tested bytes.
     command: GitHub fetch_file at f5dde3c32b6efbf785d5340ee22061399205c2c5 and local Git blob computation
