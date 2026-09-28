@@ -2359,6 +2359,67 @@ def test_the_knowledge_cutoff_is_an_instant_no_published_date_passes(written: st
     assert (_without_digest(after) != _without_digest(before)) is read
 
 
+def _no_dated_evidence() -> FinanceOwnerInputs:
+    return FinanceOwnerInputs(
+        sector_dossier=None,
+        theme_evidence=[],
+        financial_packets={},
+        expectation_observations={},
+        market_observations={},
+        basket_context={},
+        macro_context={},
+        identity_bindings={},
+        source_records=[],
+        regime_breaks=[],
+        slice_catalog=_base_slice_catalog(),
+        rights_snapshot={},
+    )
+
+
+@pytest.mark.parametrize("inputs", ["default", "no dated evidence"])
+def test_the_zone_a_knowledge_cutoff_is_written_in_changes_only_the_cutoff_published(inputs: str) -> None:
+    """The dates the document derives from the knowledge cutoff (staleness,
+    and the bound on common_as_of) are the cutoff's date in UTC, the date
+    the shared contracts read for it. The same cutoff instant, written in
+    UTC and in UTC+8, where its calendar date is already the next day, gives
+    documents that differ only in the knowledge_cutoff they publish. With no
+    dated evidence, common_as_of is the cutoff's date in UTC. It used to be
+    the next day's date, which the contracts read as the start of that day
+    in UTC, after the cutoff, and the contract accepted the document."""
+    owner_inputs = _no_dated_evidence() if inputs == "no dated evidence" else _default_8slice_inputs()
+    documents = {}
+    for written, cutoff in _CUTOFF_WRITTEN.items():
+        document = compose_finance_projection(owner_inputs, generated_at=_CUTOFF_INSTANT, knowledge_cutoff=cutoff)
+        validate_contract(CONTRACT_ID, document)
+        documents[written] = document
+    assert documents["utc+8"]["knowledge_cutoff"] != documents["utc"]["knowledge_cutoff"]
+    assert dict(documents["utc+8"], knowledge_cutoff=None) == dict(documents["utc"], knowledge_cutoff=None)
+    if inputs == "no dated evidence":
+        assert documents["utc+8"]["common_as_of"] == _CUTOFF_INSTANT.date().isoformat()
+
+
+# Cutoffs that name no instant: a time of day, and aware times whose instant
+# in UTC falls outside the range of a datetime.
+_CUTOFFS_WITHOUT_AN_INSTANT = {
+    "a time of day": _dt.time(20, 0),
+    "an offset past year 9999": _dt.datetime(9999, 12, 31, 23, 0, tzinfo=_dt.timezone(_dt.timedelta(hours=-5))),
+    "an offset before year one": _dt.datetime(1, 1, 1, 1, 0, tzinfo=_dt.timezone(_dt.timedelta(hours=5))),
+}
+
+
+@pytest.mark.parametrize("cutoff", sorted(_CUTOFFS_WITHOUT_AN_INSTANT))
+def test_a_knowledge_cutoff_that_names_no_instant_is_refused(cutoff: str) -> None:
+    """The shared contracts read the published knowledge_cutoff as an
+    instant. A cutoff that names none cannot say which rows were known, so
+    the composer refuses it with a ValueError that names it, never an error
+    from inside the gate, and never a document whose point in time the
+    contracts cannot read."""
+    with pytest.raises(ValueError, match="knowledge_cutoff names no instant"):
+        compose_finance_projection(
+            _default_8slice_inputs(), generated_at=_today(), knowledge_cutoff=_CUTOFFS_WITHOUT_AN_INSTANT[cutoff],
+        )
+
+
 # Clocks that name no instant: a time of day with no date, and offsets that
 # carry a time outside the range of a datetime. A market row's as_of, and
 # whether the date read from it places the row after the cutoff.

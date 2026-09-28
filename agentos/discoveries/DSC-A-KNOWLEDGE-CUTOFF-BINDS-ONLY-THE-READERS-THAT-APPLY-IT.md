@@ -10,22 +10,34 @@ claim: >-
   the late readings it was given. The anchor also admitted an observation dated on the cutoff
   by as_of but observed or published after it, because it read as_of first. A cutoff compared
   by calendar date is not the cutoff either: the shared contracts read knowledge_cutoff as an
-  instant, so a time written late on the cutoff's date in a zone behind UTC is past it. The
+  instant, so a time written late on the cutoff's date in a zone behind UTC is past it, and a
+  date derived from the cutoff by the date it was written in can fall after its instant. Nor
+  does the set of curation revisions a document publishes identify the rows behind it: a
+  reader that keeps the owner's assertions whose revision is in that set names and selects a
+  withheld assertion that shares a revision with one the document read. The
   shared rule that states the cutoff, feature.point_in_time in
   engine/sector_intelligence/contracts.py, belongs to feature_snapshot.v1, not to the Finance
   read model.
 falsifier: >-
   `python3 -m pytest tests/test_finance_intelligence_projection.py -q -k "knowledge_cutoff or however_far_ahead"`
-  passes (54). Swap in engine/sector_intelligence/finance_projection.py from 2a93791563bb
-  (#8135's squash) and 45 must fail, each on an assertion after validate_contract accepted
-  the document. The 9 that still pass are the valuation-observation as_of case, the
-  world-valid test, the anchor's own cutoff test and the six instant cases whose row is read.
-  If the swap passes, the readers already applied the cutoff and this record is wrong.
+  passes (59). Swap in engine/sector_intelligence/finance_projection.py from 2a93791563bb
+  (#8135's squash) and 49 must fail: 46 on an assertion after validate_contract accepted
+  the document, and the 3 cutoffs that name no instant, none of which that composer refuses:
+  it composes the two whose offset carries them outside a datetime's range, which the contract
+  then refuses (schema.invalid_in_memory_document), and a time of day stops it with
+  AttributeError.
+  The 10 that still pass are the valuation-observation as_of case, the world-valid test,
+  the anchor's own cutoff test, the six instant cases whose row is read, and the zone case
+  whose evidence dates are all before the cutoff's date. If the swap passes, the readers
+  already applied the cutoff and this record is wrong.
 so_what: >-
   (1) Apply a knowledge cutoff once, at the input boundary, before any reader runs. The
   composer now reads its inputs through _known_at_cutoff, so a reader added later inherits
   the cutoff. A cutoff check inside one reader covers that reader only, and the contract
-  will not catch the others.
+  will not catch the others. A caller that walks owner rows itself is another input boundary
+  and reads them through the composer's own rule: the registration adapter names and
+  selects assertions through theme_evidence_known_at, never the raw bundle list. A set of
+  revisions the document published is not a row filter.
   (2) Gate only the clocks that say when a row became knowable:
   - observations: as_of, observed_at and published_at;
   - company cells: those three and evidence_date;
@@ -43,7 +55,13 @@ so_what: >-
   zone ahead of UTC is withheld although its instant is before the cutoff, because the date
   the document would publish for it is not. A clock that names no instant, a time of day or
   an offset that carries it outside the range of a datetime, is read by its date alone, and
-  the gate never raises: the composer stays total over malformed owner values.
+  the gate never raises: the composer stays total over malformed owner values. The dates the
+  composer derives from the cutoff, staleness and the bound on common_as_of, are the cutoff's
+  date in UTC, so the zone the cutoff is written in changes only the knowledge_cutoff the
+  document publishes. A cutoff that names no instant is refused with a ValueError, and the
+  registration adapter refuses such a seal clock as sealed_input_unavailable:run_context:
+  the contract refuses a document whose knowledge_cutoff it cannot read as an instant
+  (schema.invalid_in_memory_document).
   (4) Gate every iterable of rows a reader can iterate, not only a list or a tuple. A deque
   passed through the first round of the gate and published a late date.
   (5) The input digest still covers the owner's whole snapshot, so it still identifies which
@@ -62,7 +80,7 @@ so_what: >-
   a contract change and is not made here.
 kind: landmine
 verified_at: 2026-09-28
-verified_by: "tests/test_finance_intelligence_projection.py: ::test_nothing_dated_past_the_knowledge_cutoff_reaches_the_document (6 fixtures), ::test_a_row_dated_past_the_knowledge_cutoff_changes_nothing_but_the_digest (26 row and clock cases), ::test_a_row_known_by_the_cutoff_is_read_however_far_ahead_it_holds, ::test_the_knowledge_cutoff_is_an_instant_no_published_date_passes (7 clocks x 2 ways of writing the cutoff), ::test_rows_in_any_sequence_are_held_to_the_knowledge_cutoff and ::test_an_input_the_knowledge_cutoff_withholds_is_received_as_degraded (5 inputs) and ::test_a_clock_with_no_instant_never_stops_the_composer (4 clocks); tests/test_finance_research_registration.py::test_an_assertion_retained_past_the_knowledge_cutoff_is_not_consumed. With the composer from 2a93791563bb, 45 of the 54 projection tests in the falsifier's selection fail after validate_contract accepts each document, and so does the registration test."
+verified_by: "tests/test_finance_intelligence_projection.py: ::test_nothing_dated_past_the_knowledge_cutoff_reaches_the_document (6 fixtures), ::test_a_row_dated_past_the_knowledge_cutoff_changes_nothing_but_the_digest (26 row and clock cases), ::test_a_row_known_by_the_cutoff_is_read_however_far_ahead_it_holds, ::test_the_knowledge_cutoff_is_an_instant_no_published_date_passes (7 clocks x 2 ways of writing the cutoff), ::test_rows_in_any_sequence_are_held_to_the_knowledge_cutoff and ::test_an_input_the_knowledge_cutoff_withholds_is_received_as_degraded (5 inputs) and ::test_a_clock_with_no_instant_never_stops_the_composer (4 clocks), ::test_the_zone_a_knowledge_cutoff_is_written_in_changes_only_the_cutoff_published (2 inputs) and ::test_a_knowledge_cutoff_that_names_no_instant_is_refused (3 cutoffs); tests/test_finance_research_registration.py::test_an_assertion_retained_past_the_knowledge_cutoff_is_not_consumed, ::test_a_withheld_assertion_sharing_a_consumed_revision_is_never_named_or_selected and ::test_compose_run_context_with_no_instant_is_sealed_input_unavailable (2 clocks). With engine/sector_intelligence/finance_projection.py from 2a93791563bb, 49 of the 59 projection tests in the falsifier's selection fail; with that file and engine/sector_intelligence/finance_research_registration.py from 2a93791563bb, so do the three registration tests, in all four of their cases."
 scope:
   - macro
   - engine/sector_intelligence/finance_projection.py
@@ -85,6 +103,14 @@ ungated. Receipts read READ over an input the gate had emptied. Reading a clock 
 then raised on a time of day, or on an offset that carries a time outside the range of a
 datetime, until the reader returned no instant for them.
 
+The review of the second round found three more. The registration adapter kept the bundle's
+assertions whose revision the dossier published, so a withheld assertion that shared a
+revision with a read one was named and selectable. The dates derived from the cutoff used
+the date it was written in, so a cutoff written in UTC+8 early on its day published a
+common_as_of after its own instant, and the contract accepted it. A cutoff that names no
+instant made the gate raise. The adapter's seal-clock parser raised OverflowError on such a
+clock too, on main, instead of its typed refusal.
+
 ## The fix
 
 - `_known_at_cutoff` removes every owner row that one of its knowledge clocks dates past the
@@ -97,6 +123,10 @@ datetime, until the reader returned no instant for them.
   reaches it.
 - The digest is computed over the owner's inputs, not the gated ones.
 - `_withheld_by_cutoff` tells the receipts which keyed inputs the cutoff emptied.
+- `theme_evidence_known_at` is the composer's rule for theme evidence, published for callers
+  that walk it. The registration adapter names and selects assertions through it.
+- The dates derived from the cutoff are its date in UTC. A cutoff that names no instant is
+  refused, by the composer and by the adapter's seal-clock parser.
 
 Related: [[DSC:A-SLICE-WIDE-REF-LIST-VOUCHES-FOR-A-VALUE-BORROWED-FROM-ANOTHER-SLICE]] (the
 same pattern for slice scope: one rule per input kind, applied where the input enters).

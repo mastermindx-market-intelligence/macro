@@ -755,6 +755,35 @@ def _known_rows(rows: Any, names: Sequence[str], cutoff: datetime, clocks_at: st
     return tuple(kept) if isinstance(rows, tuple) else kept
 
 
+def _known_sources(rows: Any, cutoff: datetime) -> Any:
+    """Theme evidence or source records known at the cutoff, judged by the
+    clocks of the source each row holds."""
+    return _known_rows(rows, _SOURCE_KNOWN_CLOCKS, cutoff, clocks_at="source")
+
+
+def _knowledge_cutoff_instant(knowledge_cutoff: Any) -> datetime:
+    """The instant the shared contracts read from the published
+    knowledge_cutoff. A cutoff that names no instant is refused: the
+    contracts cannot read the document's point in time from it, so no row
+    can be judged known or not by it."""
+    cutoff = _contract_instant(knowledge_cutoff)
+    if cutoff is None:
+        raise ValueError(f"knowledge_cutoff names no instant: {knowledge_cutoff!r}")
+    return cutoff
+
+
+def theme_evidence_known_at(theme_evidence: Any, knowledge_cutoff: Any) -> Any:
+    """The theme evidence rows compose_finance_projection reads at
+    ``knowledge_cutoff``.
+
+    A reader outside the composer that walks the owner's theme evidence
+    reads it through this, so it reads exactly the rows the composer read.
+    The document publishes only the set of curation revisions it read, and
+    a revision does not identify one row: a row the cutoff withheld can
+    carry the revision of a row it read."""
+    return _known_sources(theme_evidence, _knowledge_cutoff_instant(knowledge_cutoff))
+
+
 def _known_packet(packet: Any, cutoff: datetime) -> Any:
     if not isinstance(packet, Mapping):
         return packet
@@ -801,8 +830,8 @@ def _known_at_cutoff(inputs: FinanceOwnerInputs, cutoff: datetime) -> FinanceOwn
         financial_packets=packets,
         expectation_observations=_known_per_slice(inputs.expectation_observations, cutoff),
         market_observations=_known_per_slice(inputs.market_observations, cutoff),
-        theme_evidence=_known_rows(inputs.theme_evidence, _SOURCE_KNOWN_CLOCKS, cutoff, clocks_at="source"),
-        source_records=_known_rows(inputs.source_records, _SOURCE_KNOWN_CLOCKS, cutoff, clocks_at="source"),
+        theme_evidence=_known_sources(inputs.theme_evidence, cutoff),
+        source_records=_known_sources(inputs.source_records, cutoff),
     )
 
 
@@ -2434,24 +2463,27 @@ def compose_finance_projection(
 
     An owner row that a knowledge clock dates past ``knowledge_cutoff``, by
     its instant or by the date published for it, is never read
-    (_known_at_cutoff).
+    (_known_at_cutoff). The dates derived from the cutoff are its date in
+    UTC, so the zone it is written in changes only the knowledge_cutoff the
+    document publishes. A ``knowledge_cutoff`` that names no instant raises
+    ValueError.
     """
     # Every Finance slice is its own atlas id. (A lookup into the owner's
     # catalog used to sit here; both of its branches mapped a slice to itself,
     # so it changed nothing and raised on an unhashable catalog slice_id.)
     slice_id_to_atlas_id: dict[str, str] = {slice_id: slice_id for slice_id in _FINANCE_SLICE_IDS}
 
-    # Structural check: datetime has a ``time`` part, date does not.
-    # Survives a monkey-patched ``datetime`` symbol.
-    if hasattr(knowledge_cutoff, "hour") and hasattr(knowledge_cutoff, "minute"):
-        knowledge_cutoff_date = knowledge_cutoff.date()
-    else:
-        knowledge_cutoff_date = knowledge_cutoff
-    # Every reader below reads the inputs as they stood at the cutoff, the
-    # instant the published knowledge_cutoff states. The digest still
+    # The instant the published knowledge_cutoff states, as the shared
+    # contracts read it. Every reader below reads the inputs as they stood
+    # at that instant. The dates derived from the cutoff (staleness, the
+    # bound on common_as_of) are its date in UTC: the contracts read a
+    # published date as the start of its day in UTC, so the date the cutoff
+    # was written in can fall after its instant. The digest still
     # identifies the snapshot the owner supplied.
+    cutoff = _knowledge_cutoff_instant(knowledge_cutoff)
+    knowledge_cutoff_date = cutoff.date()
     owner_inputs = inputs
-    inputs = _known_at_cutoff(inputs, _contract_instant(knowledge_cutoff))
+    inputs = _known_at_cutoff(inputs, cutoff)
 
     source_records, source_record_extras = _source_records_block(inputs)
 
