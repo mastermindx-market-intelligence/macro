@@ -115,6 +115,22 @@ body.crypto-page::before{opacity:.34}
 .alloc-side dt{color:var(--muted);font-size:10px}.alloc-side dd{margin:0;font:700 11px/1 var(--font-mono)}
 .alloc-note{margin-top:16px;color:var(--muted);font-size:10px}
 
+/* H5-only reading hierarchy; keep the shared shell and Market Board untouched. */
+#allocation .alloc-main,#allocation .alloc-side{min-width:0}
+#allocation .alloc-top p,#allocation .alloc-note{font-size:var(--fs-body,14px);line-height:1.6}
+#allocation .alloc-side dt,#allocation .alloc-side dd,#allocation .source-line{font-size:var(--fs-sm,12.5px);line-height:1.5}
+#allocation .alloc-side dd{text-align:right;overflow-wrap:anywhere}
+#allocation .source-line a{display:inline-flex;align-items:center;min-height:44px}
+@media(max-width:720px){
+  #allocation .alloc-grid{grid-template-columns:minmax(0,1fr)}
+  #allocation .alloc-top{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+  #allocation .exposure-big{display:flex;align-items:baseline;gap:12px;text-align:left}
+  #allocation .exposure-big span{font-size:var(--fs-sm,12.5px);white-space:nowrap;letter-spacing:normal}
+  #allocation .alloc-main{border-right:0}
+  #allocation .alloc-side div{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:start;gap:12px}
+}
+
+
 /* H6/H7/H8 */
 .lane-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line)}
 .asset-lane{padding:24px;border-right:1px solid var(--line);text-decoration:none;color:inherit}.asset-lane:last-child{border-right:0}
@@ -155,20 +171,6 @@ body.crypto-page::before{opacity:.34}
   .compact-market{grid-template-columns:repeat(2,1fr)}.source-line{display:block}
 }
 {% include "_crypto_house_style.html.j2" %}
-/* H5-only reading hierarchy; keep the shared shell and Market Board untouched. */
-#allocation .alloc-main,#allocation .alloc-side{min-width:0}
-#allocation .alloc-top p,#allocation .alloc-note{font-size:var(--fs-body,14px);line-height:1.6}
-#allocation .alloc-side dt,#allocation .alloc-side dd,#allocation .source-line{font-size:var(--fs-sm,12.5px);line-height:1.5}
-#allocation .alloc-side dd{text-align:right;overflow-wrap:anywhere}
-#allocation .source-line a{display:inline-flex;align-items:center;min-height:44px}
-@media(max-width:720px){
-  #allocation .alloc-grid{grid-template-columns:minmax(0,1fr)}
-  #allocation .alloc-top{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
-  #allocation .exposure-big{display:flex;align-items:baseline;gap:12px;text-align:left}
-  #allocation .exposure-big span{font-size:var(--fs-sm,12.5px);white-space:nowrap;letter-spacing:normal}
-  #allocation .alloc-main{border-right:0}
-  #allocation .alloc-side div{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);align-items:start;gap:12px}
-}
 </style>
 </head>
 <body class="crypto-page">

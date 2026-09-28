@@ -585,3 +585,8 @@ def test_h5_compact_layout_has_its_own_readable_non_overflowing_hierarchy():
     assert "#allocation .alloc-top{display:grid;grid-template-columns:minmax(0,1fr)" in source
     assert "#allocation .alloc-main,#allocation .alloc-side{min-width:0}" in source
     assert "#allocation .alloc-top p,#allocation .alloc-note{font-size:var(--fs-body,14px)" in source
+
+
+def test_h5_styles_do_not_occupy_the_market_board_owned_insertion_point():
+    source = (ROOT / "templates" / "crypto.html.j2").read_text(encoding="utf-8")
+    assert source.index("/* H5-only reading hierarchy;") < source.index('{% include "_crypto_house_style.html.j2" %}')
