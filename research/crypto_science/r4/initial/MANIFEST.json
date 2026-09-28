@@ -1,0 +1,26 @@
+{
+  "source_commit": "03f5b5c02d12745ee8098102fc9e03d398b3fd1a",
+  "files": {
+    "results.json": {
+      "sha256": "dfc97ef3899f0de7cc36c53e0bb520e633b2fea4326f36ba64cb0711d4539444",
+      "bytes": 153930
+    },
+    "downside_events.csv": {
+      "sha256": "859f11c4cd169e8cf0bfe95f70b3b4ed072552e772591e66a8878174fed4ad1b",
+      "bytes": 432620
+    },
+    "recovery_events.csv": {
+      "sha256": "cc3d4406685b87d146dbfa93329b3b6c66c7e377caf9bcc666dd9e91c543156d",
+      "bytes": 44290
+    },
+    "policy_events.csv": {
+      "sha256": "8df8acc482cc0b09305abb00a04d68424b59d0e263592ace633dfa497eeb2a51",
+      "bytes": 1628658
+    },
+    "study_log.txt": {
+      "sha256": "90c7a8bb947add760fbe677212d2a7ace470a91cd011e8d9ee934296869be561",
+      "bytes": 583
+    }
+  },
+  "reason": "Initial execution preserved before terminal-open qualification correction; no outcome thresholds or trading choices changed."
+}

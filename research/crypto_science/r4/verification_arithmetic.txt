@@ -1,0 +1,4 @@
+R4_PATHS_VERIFIED: 2308 mature first-passage paths; 6738 cash/coin-account checks independent of the research weight recurrence.
+R4_COUNTS_VERIFIED: 2378 event rows; 6738 account rows; all summary arithmetic agrees.
+R4_HASHES_VERIFIED: 54 input identities, 18 gates and 31 prior evidence files unchanged.
+RETROSPECTIVE ONLY: no whole-portfolio performance, calibrated probability, independent review or live acceptance implied.
