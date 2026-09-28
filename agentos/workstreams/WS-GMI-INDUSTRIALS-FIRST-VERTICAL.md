@@ -7,7 +7,7 @@ objective: >
   Exponent and Pentair dossiers pass the T09 real-path proofs (two journeys, correction,
   revocation, ordinary refresh, non-interference) with every one of the 56 inherited
   requirements executed — never a merged slice alone.
-status: awaiting_ci
+status: blocked
 program: earnings-intelligence
 repos: [macro]
 owner: fable-meta-ceo
@@ -54,30 +54,17 @@ waves:
     depends_on: [IND-W4]
     next_action: "Wait for Semiconductor B's shared route family and aggregator on main; never build against #7870's branch."
 next_action: >
-  IN CI: IND-T04b, the requirement anchors (PR #8105, branch
-  claude/ind-requirement-traceability, merge-on-green armed) - own it to merged, then
-  verify in origin/main's bytes. IND-T02a merged at 62f5eb879fc6 and is verified in
-  main's bytes. T04b exists because measuring coverage for the first #7789 delivery
-  report showed the frozen plan's traceability table is an assignment of intent and not
-  evidence: of the 15 anchors it names for T01 and T04, 13 did not exist, and no IND-*
-  id appeared anywhere in either landed suite, while both tasks were merged and green.
-  Building those 13 anchors exposed FOUR requirements merged T04 did not enforce -
-  IND-D08 (unit never compared; scale is fixed at 1 here so the existing scale check
-  could never see thousands vs millions), IND-D09 (quality.definition checked for
-  presence, never agreement), IND-D10 (both-or-neither on operand presence, never on the
-  matched legs' amounts), IND-R208 (declared purpose carried, never compared) - each
-  returning ready with an EMPTY limitations list. All four cured; 118 passed (was 103),
-  17 of 17 mutations caught with six caught by the new anchor only. The plan's table is
-  now gradeable: PLAN_REQUIREMENT_ANCHORS vendors the 15 rows into the repo and an
-  AST-resolving test reds the exclusive industrials-result-cash job if a named anchor
-  stops existing.
-  Coverage is 15 of 56 as MEASURED (3 in T01, 12 in T04) - report it that way, never
-  from the table. After #8105 merges the product chain is ALL_SCOPED_LANES_BLOCKED
-  again: T02 waits on the shared seam held by #7870 and #7905, T03 on T02, T05 on T03,
-  T06 on T01-T05, T07-T09 on Semiconductor B reaching main (G1). The unblocking act is
-  not owned by this program. Do NOT create
-  tests/test_industrials_issuer_enrollment.py and do NOT add an anchor-map row for a T02
-  requirement: in both cases the absence is the honest signal that T02 is unstarted.
+  NOTHING IS DISPATCHABLE AT THIS SEAT. IND-T04b (#8105, 717e16cccc24) and the records pair
+  #8109 (4e61869bfecd) are merged and verified in origin/main's own bytes; T01, T04, T02a and
+  every records PR before them are closed. The honest state is ALL_SCOPED_LANES_BLOCKED:
+  T02 waits on the shared seam held by #7870 and #7905, T03 on T02, T05 on T03, T06 on
+  T01-T05, T07-T09 on Semiconductor B reaching main for G1. The unblocking act belongs to
+  those PRs, not to this program - do not manufacture a lane, and do not dispatch T05
+  (args_ind_t05_source_history.json stays PARKED; rulings_t05 R8 forbids it).
+  Coverage is 15 of 56 as MEASURED (3 in T01, 12 in T04), never from the plan's table.
+  Two absences are deliberate: tests/test_industrials_issuer_enrollment.py is not created
+  and no anchor-map row exists for a T02 requirement - in both cases the absence is the
+  honest signal that T02 is unstarted.
 artifacts:
   - agentos/handoffs/GMI-INDUSTRIALS-2026-09-24-first-vertical-implementation.md
   - research/industrials/first_vertical_program/rulings/R-IND-2026-09-24-wave1.md
@@ -90,7 +77,7 @@ artifacts:
 carrier:
   operation: gmi-industrials-fable-ceo-e2e-20260924-chairman-001
   research_pr: 7789
-  records_pr: [7912, 7915, 7919, 8070, 8072, 8073, 8075, 8077, 8084, 8105]
+  records_pr: [7912, 7915, 7919, 8070, 8072, 8073, 8075, 8077, 8084, 8105, 8109]
 do_not_redo:
   - "Research Waves 1-14, the nine-task plan (blob a5462dc7) and the 56-requirement traceability are frozen - do not re-research Industrials economics."
   - "R14-01..R14-05, the R4 private-mechanism choice and the #7669 aggregator choice are decided - never reopen the GET route or a direct mount."
