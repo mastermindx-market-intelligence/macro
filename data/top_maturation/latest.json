@@ -8,14 +8,14 @@
     "model": null,
     "probabilities": false
   },
-  "asof": "2026-09-27",
+  "asof": "2026-09-28",
   "data_last_day": "2026-09-25",
-  "tape_lag_sessions": 0,
+  "tape_lag_sessions": 1,
   "universe_n": 2621,
   "null_state": false,
   "macro_backdrop": {
     "froth_quadrant": "benign",
-    "stage3_count": 295
+    "stage3_count": 294
   },
   "tiers": [
     {
@@ -65348,7 +65348,7 @@
     }
   ],
   "_vintage": {
-    "generated_utc": "2026-09-27T06:24:00Z",
+    "generated_utc": "2026-09-28T07:14:38Z",
     "source": "scripts/build_top_maturation.py",
     "store_vintage": {
       "store": "massive_stock_day",
@@ -65400,7 +65400,7 @@
     "n_segments": 8189,
     "n_sessions": 1313,
     "trailing_sessions": 760,
-    "scan_seconds": 43.58,
+    "scan_seconds": 59.05,
     "readable": true,
     "n_extended": 214,
     "per_state": {
@@ -65555,7 +65555,7 @@
     "library_rows": 33598,
     "thresholds_present": true,
     "ext_variant_stamp": null,
-    "tier_seconds": 13.42,
+    "tier_seconds": 15.46,
     "n_themes": 13,
     "n_us_stock_metadata": 2859,
     "n_screened_post_intersection": 2621,
@@ -65716,7 +65716,7 @@
         "library_rows": 33598,
         "thresholds_present": true,
         "ext_variant_stamp": null,
-        "tier_seconds": 13.42,
+        "tier_seconds": 15.46,
         "n_themes": 13
       },
       "r63": {
@@ -65851,7 +65851,7 @@
         "library_rows": 29801,
         "thresholds_present": true,
         "ext_variant_stamp": "r63",
-        "tier_seconds": 12.62
+        "tier_seconds": 15.96
       },
       "atrz": {
         "readable": true,
@@ -66552,9 +66552,9 @@
         "library_rows": 123988,
         "thresholds_present": true,
         "ext_variant_stamp": "atrz",
-        "tier_seconds": 24.38
+        "tier_seconds": 36.61
       }
     },
-    "total_seconds": 111.65
+    "total_seconds": 147.22
   }
 }

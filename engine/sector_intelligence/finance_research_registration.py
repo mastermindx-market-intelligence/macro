@@ -291,7 +291,12 @@ def _parse_seal_clock(value: Any) -> datetime | None:
         return None
     if moment.tzinfo is None:
         return None
-    return moment.astimezone(timezone.utc)
+    try:
+        return moment.astimezone(timezone.utc)
+    except OverflowError:
+        # Its offset carries it outside the range of a datetime, so it
+        # names no instant.
+        return None
 
 
 def _seal_clock_interval(generated_at: datetime, knowledge_cutoff: datetime) -> None:
@@ -618,6 +623,26 @@ def _dossier(inputs: Any, generated_at: datetime, knowledge_cutoff: datetime) ->
     )
 
 
+def _known_assertions(bundle: Any, knowledge_cutoff: datetime) -> tuple[Any, ...]:
+    """The bundle's assertions the dossier could have read: those the run
+    context's knowledge cutoff does not withhold, by the composer's own rule
+    (``theme_evidence_known_at``).
+
+    Naming and selecting walk these, never the raw list. The dossier
+    publishes only the set of curation revisions it read, and an assertion
+    ref pairs a revision with its theme, so a revision does not identify one
+    assertion: an assertion the cutoff withheld can carry the revision of
+    one the dossier read.
+    """
+    fp_module = importlib.import_module(
+        "engine.sector_intelligence.finance_projection"
+    )
+    known_at = getattr(fp_module, "theme_evidence_known_at", None)
+    if not callable(known_at):
+        raise FinanceRegistrationRefusal("shared_shell_unavailable")
+    return tuple(known_at(tuple(getattr(bundle, "assertions", ()) or ()), knowledge_cutoff))
+
+
 def _consumed_revision_set(dossier: Mapping[str, Any]) -> set[str]:
     """Extract the dossier's consumed ``curation_revision`` set verbatim.
 
@@ -734,7 +759,7 @@ def compose(query: Any, bundle: Any) -> dict[str, Any]:
     resolver = _import_resolver()
     consumed = _consumed_revision_set(dossier)
     assertion_refs = _compose_assertion_refs(
-        resolver, tuple(getattr(bundle, "assertions", ()) or ()), consumed
+        resolver, _known_assertions(bundle, knowledge_cutoff), consumed
     )
     limitations = _build_limitations(inputs, bundle)
 
@@ -846,8 +871,9 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: str) -> dict[str, An
       the projection module is absent (fixture-only: nothing to query
       against).
     * ``not_available`` — the ref is not a well-formed ``assertion_ref``, no
-      assertion in the bundle resolves to it AFTER the consumed-set filter
-      (B2), or the shell's validator rejects the one that does.
+      assertion the run's knowledge cutoff leaves (:func:`_known_assertions`)
+      resolves to it AFTER the consumed-set filter (B2), or the shell's
+      validator rejects the one that does.
     * ``sealed_input_unavailable:run_context`` — see compose.
     """
     request = _validate_query(query)
@@ -867,7 +893,7 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: str) -> dict[str, An
         raise FinanceRegistrationRefusal("shared_shell_unavailable")
 
     consumed = _consumed_revision_set(dossier)
-    assertions = tuple(getattr(bundle, "assertions", ()) or ())
+    assertions = _known_assertions(bundle, knowledge_cutoff)
     matched = _find_assertion_by_ref(resolver, assertions, assertion_ref, consumed)
     if matched is None:
         _refuse("not_available")

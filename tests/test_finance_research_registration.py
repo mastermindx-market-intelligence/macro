@@ -580,6 +580,19 @@ def test_compose_run_context_unparseable_is_sealed_input_unavailable():
     assert code == "sealed_input_unavailable:run_context"
 
 
+@pytest.mark.parametrize("clock", ["9999-12-31T23:00:00-05:00", "0001-01-01T01:00:00+05:00"])
+def test_compose_run_context_with_no_instant_is_sealed_input_unavailable(clock):
+    """A seal clock whose offset carries it outside the range of a datetime
+    names no instant. The run context is refused with its typed code; it
+    used to raise OverflowError."""
+    reg = _import_reg()
+    query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
+    for field in ("generated_at", "knowledge_cutoff"):
+        ref = dict(_synthetic_run_context_ref(), **{field: clock})
+        code, _ = _refuse_compose(query, _Bundle(native_refs=(ref,)), reg)
+        assert code == "sealed_input_unavailable:run_context", field
+
+
 # ---------------------------------------------------------------------------
 # 6. Generation
 # ---------------------------------------------------------------------------
@@ -1193,6 +1206,79 @@ def test_compose_assertion_refs_sorted_by_curation_revision(monkeypatch):
     assert revisions == sorted(revisions)
     # And explicit ordering check.
     assert revisions.index(revision_b) < revisions.index(revision_a)
+
+
+def test_an_assertion_retained_past_the_knowledge_cutoff_is_not_consumed(monkeypatch):
+    """The run context's knowledge cutoff binds theme evidence. An assertion
+    whose source was retained a minute after the cutoff instant is not a
+    curation revision the dossier consumed: no assertion ref names it, and
+    ``select_evidence`` refuses it as ``not_available``. Retained on the
+    cutoff instant, the same assertion is named and selectable."""
+    reg = _import_reg()
+    theme_id = "synthetic_theme"
+    known = _assertion(revision="gmirca_" + ("a" * 32), theme_id=theme_id)
+    other_revision = "gmirca_" + ("b" * 32)
+    _install_resolver_double(monkeypatch, reg,
+                             lambda p: _ref_for(theme_id, p.get("curation_revision")))
+    query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
+
+    def named_and_selected(retained_at: str) -> tuple[list[str], str | None]:
+        other = _assertion(revision=other_revision, theme_id=theme_id)
+        other["source"]["retained_at"] = retained_at
+        bundle = _bundle_with_run_context(assertions=(known, other))
+        envelope = reg.compose(query, bundle)
+        named = [entry["curation_revision"] for entry in envelope["assertion_refs"]]
+        query_full = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF,
+                            expected_generation=envelope["generation"])
+        try:
+            selected = reg.select_evidence(query_full, bundle, _ref_for(theme_id, other_revision))
+        except ValueError as exc:
+            return named, getattr(exc, "code", None)
+        return named, selected["assertion"]["curation_revision"]
+
+    assert named_and_selected("2026-09-25T07:49:00Z") == (
+        [known["curation_revision"]], "not_available")
+    assert named_and_selected("2026-09-25T07:48:00Z") == (
+        [known["curation_revision"], other_revision], other_revision)
+
+
+def test_a_withheld_assertion_sharing_a_consumed_revision_is_never_named_or_selected(monkeypatch):
+    """A curation revision does not identify one assertion: an assertion ref
+    pairs it with a theme. An assertion the run's knowledge cutoff withholds
+    is not named and not selectable, although an assertion the dossier read
+    carries the same revision. Retained on the cutoff, it is named and
+    selectable beside the other."""
+    reg = _import_reg()
+    revision = "gmirca_" + ("a" * 32)
+    known = _assertion(revision=revision, theme_id="theme_known")
+    _install_resolver_double(monkeypatch, reg,
+                             lambda p: _ref_for(p["scope"]["canonical_theme_id"], p.get("curation_revision")))
+    query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
+
+    def named_and_selected(retained_at: str) -> tuple[list[str], dict[str, str | None]]:
+        other = _assertion(revision=revision, theme_id="theme_other")
+        other["source"]["retained_at"] = retained_at
+        bundle = _bundle_with_run_context(assertions=(known, other))
+        envelope = reg.compose(query, bundle)
+        named = sorted(entry["assertion_ref"] for entry in envelope["assertion_refs"])
+        query_full = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF,
+                            expected_generation=envelope["generation"])
+        selected: dict[str, str | None] = {}
+        for theme_id in ("theme_known", "theme_other"):
+            try:
+                evidence = reg.select_evidence(query_full, bundle, _ref_for(theme_id, revision))
+            except ValueError as exc:
+                selected[theme_id] = getattr(exc, "code", None)
+            else:
+                selected[theme_id] = evidence["assertion"]["scope"]["canonical_theme_id"]
+        return named, selected
+
+    assert named_and_selected("2026-09-25T07:49:00Z") == (
+        [_ref_for("theme_known", revision)],
+        {"theme_known": "theme_known", "theme_other": "not_available"})
+    assert named_and_selected("2026-09-25T07:48:00Z") == (
+        sorted([_ref_for("theme_known", revision), _ref_for("theme_other", revision)]),
+        {"theme_known": "theme_known", "theme_other": "theme_other"})
 
 
 def test_evidence_envelope_assertion_is_deep_copied_and_mutable(monkeypatch):
