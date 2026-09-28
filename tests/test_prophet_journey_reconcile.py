@@ -61,6 +61,7 @@ def _full_page(*, ticker: str = "TEST1", with_plan: bool = True,
                pool_digest: str = "",
                detail_as_of: str = "2026-09-26",
                detail_entry_status: str = "bounce_wait",
+               detail_signal_asof: str = "2026-09-26",
                detail_entry_signal: dict | None = None,
                detail_signal: dict | None = None,
                detail_hold: dict | None = None,
@@ -122,9 +123,11 @@ def _full_page(*, ticker: str = "TEST1", with_plan: bool = True,
     return _wrap(f"""
 <section id="us-standouts" data-prophet-src="today" data-board-asof="2026-09-26">
   {x_market_a}
-  <article class="pvcard pv-buy" data-ticker="{ticker}" data-mkt="US"
+  <article class="pvcard pv-buy" data-ticker="{ticker}" data-life="live"
            data-stage="setting_up">
-    <div class="pv-bd"><span class="pv-tk">{ticker}</span></div>
+    <div class="pv-bd"><span class="pv-tk">{ticker}</span>
+      <span class="nb-px pv-px" data-sym="{ticker}" data-mkt="US">$178.42</span>
+    </div>
   </article>
   {x_market_mkt}
   {plan_card}
@@ -228,7 +231,7 @@ def _full_page(*, ticker: str = "TEST1", with_plan: bool = True,
   <div class="pvs-field" data-source-field="signal_asof">
     <dt><span class="l-en">Signal as-of</span>
         <span class="l-zh">信号日期</span></dt>
-    <dd>2026-09-26</dd>
+    <dd>{detail_signal_asof}</dd>
   </div>
 </div>
 </details>
@@ -337,9 +340,40 @@ def _write_io(html: str, standouts: dict, index: dict,
 # Unit tests — call the script's helpers directly with synthetic inputs.
 # =========================================================================== #
 def test_j1_pass_card_present():
+    """Production cards carry the ticker on the card and market on .nb-px."""
     soup = BeautifulSoup(_full_page(ticker="TEST1"), "lxml")
     chk = _pjr._check_j1(soup, "TEST1")
     assert chk["status"] == "PASS", chk
+
+
+def test_j1_pass_production_lowercase_nested_market():
+    """The US board renders a lowercase nested data-mkt value."""
+    html = _wrap(
+        '<section id="us-standouts">'
+        '<article class="pvcard" data-ticker="TEST1" data-life="live" '
+        'data-stage="setting_up"><span class="nb-px pv-px" '
+        'data-sym="TEST1" data-mkt="us">$178.42</span></article>'
+        '</section>')
+    chk = _pjr._check_j1(BeautifulSoup(html, "lxml"), "TEST1")
+    assert chk["status"] == "PASS", chk
+
+
+def test_j1_pass_record_only_card_without_price_market():
+    """A record-only card has no nested price market and still matches."""
+    html = _wrap(
+        '<section id="us-standouts">'
+        '<a class="pvcard" data-ticker="TEST1" data-life="live" '
+        'data-stage="setting_up" data-record-only="1">TEST1</a>'
+        '</section>')
+    chk = _pjr._check_j1(BeautifulSoup(html, "lxml"), "TEST1")
+    assert chk["status"] == "PASS", chk
+
+
+def test_j1_na_container_absent():
+    """A missing board container is N/A, not a candidate failure."""
+    html = _wrap("<p>Dialog-only snapshot.</p>")
+    chk = _pjr._check_j1(BeautifulSoup(html, "lxml"), "TEST1")
+    assert chk["status"] == "N/A", chk
 
 
 def test_j1_fail_card_missing():
@@ -461,6 +495,26 @@ def test_j6_fail_money_mismatch():
     assert chk["status"] == "FAIL", chk
 
 
+def test_j5_fail_entry_status_mismatch():
+    """A DOM entry status that disagrees with the payload must fail."""
+    soup = BeautifulSoup(
+        _full_page(detail_entry_status="wrong_status"), "lxml")
+    chk = _pjr._check_j5(soup, _standouts_payload(), "TEST1")
+    assert chk["status"] == "FAIL", chk
+    assert chk["observed"]["data_entry_status"] == "wrong_status", chk
+    assert chk["observed"]["payload_entry_status"] == "bounce_wait", chk
+
+
+def test_j6_fail_signal_asof_string_mismatch():
+    """A string mismatch must gate J6 even when numeric fields reconcile."""
+    soup = BeautifulSoup(
+        _full_page(detail_signal_asof="2099-01-01"), "lxml")
+    chk = _pjr._check_j6(soup, _standouts_payload(), "TEST1")
+    assert chk["status"] == "FAIL", chk
+    assert chk["observed"]["str_misses"], chk
+    assert chk["observed"]["str_misses"][0]["path"] == "signal_asof", chk
+
+
 def test_j6_fail_bool_mismatch():
     html = _full_page(ticker="TEST1").replace(
         '<span class="l-en">Yes</span><span class="l-zh">是</span>',
@@ -531,14 +585,12 @@ def test_j8_fail_fabricated_link():
     assert chk["status"] == "FAIL", chk
 
 
-def test_j9_pass_index_clocks():
-    """Clocks reconcile (R1+R2) AND #plv-asof stamp is rendered (R3) → PASS.
+def test_j9_pass_index_clocks_with_mutation_binding():
+    """Clocks reconcile (R1+R2) and the panel stamp is rendered (R3).
 
-    The harness's synthetic page emits ``<span id="plv-asof">4:00 pm ET</span>``
-    via ``_full_page`` to mirror the JS-rendered _plvAsOf stamp. R1 uses
-    the standouts.as_of passed alongside the index; R2 reads the
-    publication stamp at the builder's ``index["asof"]`` key (with
-    legacy ``as_of`` accepted); R3 sees the visible stamp.
+    Mutations that turn this red: change R1 from ``!=`` to ``==`` after
+    changing a fixture date, change R2 from ``>`` to ``>=``, or delete the
+    non-empty panel-stamp requirement.
     """
     soup = BeautifulSoup(_full_page(), "lxml")
     ix = _index_payload()
@@ -556,6 +608,9 @@ def test_j9_pass_index_asof_key_alias():
     index.get("as_of")`` so a real builder-shaped index (no ``as_of``)
     still resolves the publication stamp. With ``asof=2026-09-26`` and
     source_board_asof=2026-09-26, R2 holds and J9 PASSes.
+
+    Mutation that turns this red: remove the builder-key
+    ``index.get("asof")`` branch, which must make observed index_as_of None.
     """
     soup = BeautifulSoup(_full_page(), "lxml")
     ix = {"asof": "2026-09-26", "source_board_asof": "2026-09-26",
@@ -564,10 +619,15 @@ def test_j9_pass_index_asof_key_alias():
           "candidate_pool": {"rows": []}}
     chk = _pjr._check_j9(soup, ix, su)
     assert chk["status"] == "PASS", chk
+    assert chk["observed"]["index_as_of"] == "2026-09-26", chk
 
 
 def test_j9_fail_source_ahead_of_index():
-    """R2 fail: index.asof < source_board_asof → publication predates source."""
+    """R2 fail: index.asof < source_board_asof → publication predates source.
+
+    Mutation that turns this red: invert R2 from ``source > asof`` to
+    ``source < asof``.
+    """
     soup = BeautifulSoup(_full_page(), "lxml")
     ix = _index_payload(as_of="2026-09-25", source_board_asof="2026-09-26")
     chk = _pjr._check_j9(soup, ix)
@@ -577,7 +637,10 @@ def test_j9_fail_source_ahead_of_index():
 
 
 def test_j9_fail_source_neq_standouts():
-    """R1 fail: index.source_board_asof != standouts.as_of → vintage drift."""
+    """R1 fail: index.source_board_asof != standouts.as_of → vintage drift.
+
+    Mutation that turns this red: change R1 from ``!=`` to ``==``.
+    """
     soup = BeautifulSoup(_full_page(), "lxml")
     ix = _index_payload(source_board_asof="2026-09-27")  # ≠ standouts default
     su = _standouts_payload()  # as_of="2026-09-26"
@@ -587,7 +650,10 @@ def test_j9_fail_source_neq_standouts():
 
 
 def test_j9_fail_empty_panel_stamp():
-    """R3 fail: #plv-asof node present but stamp empty → JS did not fill."""
+    """R3 fail: #plv-asof node present but stamp empty → JS did not fill.
+
+    Mutation that turns this red: delete the R3 failure append entirely.
+    """
     # _full_page with cross_market=True strips the #plv-asof span entirely
     # (== plv is None, which is N/A, not FAIL). Use a smaller override:
     # build a synthetic page where #plv-asof exists but with empty text.
@@ -608,6 +674,9 @@ def test_j9_na_missing_panel_node():
     The spec's "N/A with observed text" applies when the node is missing,
     not when it is present-but-empty (the latter is R3 FAIL because it
     is a defect on a populated snapshot).
+
+    Mutation that turns this red: return FAIL instead of N/A when the
+    panel node is absent.
     """
     # A synthetic page with no #plv-asof node at all.
     html = '<!doctype html><html><body><section id="us-standouts"></section></body></html>'
