@@ -315,6 +315,43 @@ html[data-theme="dark"] .cm-state-tag.propagating{color:#f0995a}
   font-size:11.5px;font-weight:500;color:var(--text);line-height:1.5;text-transform:none;letter-spacing:0}
 .cmq:hover .cmq-tip,.cmq:focus .cmq-tip{display:block}
 
+/* ---------- affected-company continuation (MO-J1A) ---------- */
+/* shared base — tokens only, no literals. Dark vs light is TWO art directions
+   (TP-0): dark adds restrained luminance depth (a sub-card darker than the
+   surrounding .cm-card with a hairline inner edge); light keeps a single
+   hairline and a flat surface. No "same CSS, swap tokens". */
+.cm-cos{margin-top:12px;padding:10px 12px;border:1px solid var(--grid);border-radius:var(--r-card,12px);background:var(--card)}
+.cm-cos>summary{list-style:none;cursor:pointer;font-size:12px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:8px;min-height:24px}
+.cm-cos>summary::-webkit-details-marker{display:none}
+.cm-cos>summary::after{content:'+';margin-left:auto;color:var(--muted);font-weight:700}
+.cm-cos[open]>summary::after{content:'−'}
+.cm-cos-head{margin-top:8px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cm-cos-unavail{font-size:12px;color:var(--muted);padding:4px 0 2px}
+/* No per-component :hover / :focus rule here on purpose. The page already
+   carries one global `:focus-visible` outline that covers every focusable
+   element in this block, and no other link on this page defines its own
+   hover — a second focus idiom would be an outlier, and an interaction state
+   inside a collapsed <details> cannot be captured as evidence. */
+.cm-cos-qlabel{display:block;font-size:11px;color:var(--muted);margin:8px 0 4px;font-weight:600}
+.cm-cos-q{display:block;width:100%;padding:6px 10px;font-size:12px;color:var(--text);background:var(--card);border:1px solid var(--grid);border-radius:var(--r-ctl,8px);box-sizing:border-box}
+.cm-cos-list{margin:4px 0 6px;padding:0;list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 10px;max-height:240px;overflow:auto;font-size:12px;line-height:1.5}
+@media(max-width:820px){.cm-cos-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.cm-cos-list{grid-template-columns:1fr}}
+.cm-cos-list li{padding:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cm-cos-list a{color:var(--ink-link,var(--blue));text-decoration:none;font-weight:600}
+.cm-cos-plain{color:var(--muted)}
+.cm-cos-uneval{margin-top:6px;font-size:11px;color:var(--faint,var(--muted))}
+.cm-cos-ranknote{margin-top:2px;font-size:10.5px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;font-weight:700}
+/* DARK TREATMENT — command-center depth. Background = --bg (deeper than the
+   surrounding --card on .cm-card), border = --grid hairline, inner top edge =
+   --grid at 0 spread. Solid tokens only; no color-mix, no literals. */
+html[data-theme="dark"] .cm-cos{background:var(--bg);border-color:var(--grid);box-shadow:inset 0 1px 0 var(--grid)}
+html[data-theme="dark"] .cm-cos-list{background:transparent}
+/* LIGHT TREATMENT — research workspace. Hairline discipline: one border,
+   zero glow, zero depth. The flat surface lets the page read as a workspace. */
+html[data-theme="light"] .cm-cos{background:var(--card);border-color:var(--grid);box-shadow:none}
+html[data-theme="light"] .cm-cos-list{background:transparent}
+
 /* ---------- scenarios (if this holds for three months) ---------- */
 .sx-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media(max-width:820px){.sx-grid{grid-template-columns:1fr}}
