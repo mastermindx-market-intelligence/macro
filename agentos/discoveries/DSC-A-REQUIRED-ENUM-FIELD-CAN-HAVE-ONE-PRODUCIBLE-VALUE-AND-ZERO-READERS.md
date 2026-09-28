@@ -13,7 +13,12 @@ claim: >
   needs lives in the sibling `reason` field, which is measurably varied: five
   distinct reasons across two independent degradation branches. Note the
   vocabulary is NOT an echo of the top-level `availability` enum, which is a
-  different, binary set (ready / unavailable).
+  different, binary set (ready / unavailable). Censused across ALL TWELVE enums
+  in the contract, `state` is the ONLY one a module-authored value cannot fully
+  exercise: seven are fully exercised, and the four others that look narrow
+  (`fact.basis`, `fact.role`, `fact.perimeter`, `source_record.retention_state`)
+  are CALLER-authored passthroughs whose enums correctly constrain input, not
+  output. The discriminator is the wave-7 rule -- who WRITES the value.
 falsifier: >
   `grep -n '_degraded(' engine/sector_intelligence/consumer_cyclical_projection.py
   | grep -v 'def _degraded' | grep -c ', *"[a-z_]*" *, *"'` must print 0 -- no call
@@ -35,6 +40,9 @@ so_what: >
   of which is self-contradictory. Branch on `reason`, treat `state` as a constant.
   Generally: an enum's WIDTH is a statement about what the contract tolerates, never
   evidence of what the producer varies -- census the call sites before believing it.
+  And when censusing, split the enums by AUTHOR first: a caller-authored enum that
+  the module never writes is not loose at all, it is an input constraint doing its
+  job. Skipping that split produced four false positives out of five flags here.
 kind: landmine
 verified_at: 2026-09-28
 verified_by: claude-opus-5 (CC-V1 wave 10) — engine/sector_intelligence/consumer_cyclical_projection.py:1183 and tests/test_consumer_cyclical_projection.py:1911

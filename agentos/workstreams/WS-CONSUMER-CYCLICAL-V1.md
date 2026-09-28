@@ -398,7 +398,13 @@ next_action: >
   with exactly ONE producible value -- _degraded defaults state to "unavailable"
   and all seven call sites omit the argument -- and zero readers outside the
   producing module; "available" on an entry in a list OF degraded dependencies is
-  self-contradictory. Classified LOOSE, not false: the document never claims
+  self-contradictory. Censused across all twelve contract enums it is the ONLY
+  module-authored one that cannot be fully exercised: seven are fully exercised
+  and the four others that look narrow (fact.basis / role / perimeter,
+  source_record.retention_state) are CALLER-authored passthroughs whose enums
+  correctly constrain input -- the wave-7 who-writes-it rule is the
+  discriminator, and skipping it gives four false positives out of five flags.
+  Classified LOOSE, not false: the document never claims
   anything untrue, so no contract narrowing was opened with no consumer to
   benefit. Shipped one mutation-probed pin
   (tests/test_consumer_cyclical_projection.py:1911) that asserts each mutation

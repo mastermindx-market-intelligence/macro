@@ -49,6 +49,10 @@ verified:
     command: grep -c '_degraded(' engine/sector_intelligence/consumer_cyclical_projection.py
   - claim: the contract admits three states while the producer emits one
     command: python3 -c "import json;print(json.load(open('contracts/sector_intelligence/consumer_cyclical_intelligence_read_model.v1.schema.json'))['\$defs']['degraded_dependency']['properties']['state']['enum'])"
+  - claim: state is the only module-authored enum the producer cannot fully exercise
+    command: grep -c '_degraded(' engine/sector_intelligence/consumer_cyclical_projection.py
+  - claim: the other narrow-looking enums are CALLER-authored passthroughs, not looseness
+    command: grep -c 'fact.get("basis")\|fact.get("role")\|fact.get("perimeter")\|source_records = case.get' engine/sector_intelligence/consumer_cyclical_projection.py
   - claim: zero non-test code readers of degraded_dependencies outside the producer
     command: grep -rl 'degraded_dependencies' --include='*.py' --include='*.js' --include='*.j2' . | grep -v '^tests/'
   - claim: the forbidden-conclusion guard reads every key _build_explanation emits
