@@ -381,3 +381,33 @@ def test_invalid_raw_inventory_level_cannot_enter_physical_balance(monkeypatch, 
     result = _oil_supply_read()
     assert result['crude_stocks_mb'] == 420.5
     assert result['observed_at'] == '2026-09-18'
+
+
+@pytest.mark.parametrize('value', [float('nan'), float('inf'), -float('inf'), True, 'nan', None])
+def test_invalid_composite_score_cannot_leave_directional_balance_label(value):
+    result = _wti_physical_evidence_vm(
+        _supply(balance_z=value, balance_word='tight'), '2026-09-25')
+    assert result['available'] is True  # valid crude observations remain useful
+    assert result['values']['balance_word'] == 'n/a'
+    assert 'balance_z' not in result['values']
+    assert 'composite_balance_unavailable' in result['limitations']
+    assert '>Tight<' not in _render_partial(result)
+
+
+@pytest.mark.parametrize('score,label', [(-0.61, 'tight'), (0.0, 'balanced'), (0.61, 'ample')])
+def test_balance_label_uses_existing_method_on_validated_score(score, label):
+    result = _wti_physical_evidence_vm(
+        _supply(balance_z=score, balance_word='tight'), '2026-09-25')
+    assert result['values']['balance_z'] == score
+    assert result['values']['balance_word'] == label
+
+
+def test_capture_rejects_served_bytes_different_from_bound_page():
+    import hashlib
+    from scripts import capture_commodities_wti_slice_a as capture
+    check = getattr(capture, 'verify_served_page', None)
+    assert callable(check), 'WTI capture needs an actual-response page identity check'
+    expected = hashlib.sha256(b'committed generated page').hexdigest()
+    check(b'committed generated page', expected)
+    with pytest.raises(ValueError, match='page identity mismatch'):
+        check(b'another page', expected)

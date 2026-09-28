@@ -615,9 +615,13 @@ def _wti_physical_evidence_vm(
             base["values"][key] = float(value)
         elif value is not None:
             limitations.append(f"invalid_{key}")
-    word = supply.get("balance_word")
-    if word in ("tight", "ample", "balanced", "n/a"):
-        base["values"]["balance_word"] = word
+    # A source-supplied label is not evidence when its underlying score failed
+    # validation. Reuse the incumbent method on the validated score only.
+    from engine.commodity_supply_context import balance_word as physical_balance_word
+    balance = base["values"].get("balance_z")
+    base["values"]["balance_word"] = physical_balance_word(balance)
+    if balance is None:
+        limitations.append("composite_balance_unavailable")
     base["available"] = "crude_stocks_mb" in base["values"]
     if not base["available"] or "crude_z" not in base["values"]:
         limitations.append("physical_measurement_incomplete")

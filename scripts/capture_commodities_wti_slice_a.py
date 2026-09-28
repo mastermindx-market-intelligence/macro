@@ -17,8 +17,15 @@ sys.path.insert(0, str(ROOT))
 from scripts import capture_page_evidence as owner
 
 
+def verify_served_page(body: bytes, expected_sha256: str) -> None:
+    """Refuse evidence if the HTTP response is not the bound generated page."""
+    if hashlib.sha256(body).hexdigest() != expected_sha256:
+        raise ValueError("page identity mismatch: served bytes differ from bound page")
+
+
 class WtiDriver:
     def __init__(self, **kwargs):
+        self.page_sha256 = hashlib.sha256((ROOT / "site/commodities.html").read_bytes()).hexdigest()
         from playwright.sync_api import sync_playwright
         self.manager = sync_playwright().start()
         self.browser = self.manager.chromium.launch(channel="chrome", headless=True)
@@ -44,6 +51,7 @@ class WtiDriver:
         try:
             response = page.goto(url, wait_until="domcontentloaded", timeout=timeout_s * 1000)
             assert response and response.ok, "generated page did not load"
+            verify_served_page(response.body(), self.page_sha256)
             page.evaluate(owner._APPLY_STATE_SCRIPT, state)
             page.wait_for_timeout(1300)
             page.locator('button[data-det="oil"]').click()
@@ -67,8 +75,6 @@ class WtiDriver:
                 "document_client_width": page.evaluate('document.documentElement.clientWidth'),
                 "external_network": "blocked for local offline test",
                 "blocked_external_urls": sorted(set(blocked)),
-                "capture_driver_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-                "page_content_sha256": hashlib.sha256((ROOT/'site/commodities.html').read_bytes()).hexdigest(),
             })
             assert observed['document_scroll_width'] <= observed['document_client_width'], "horizontal page overflow"
             assert page.locator('.oil-phys:visible').count() == 1
@@ -87,6 +93,7 @@ class WtiDriver:
             out = ROOT/'mockups/evidence/commodities-wti-slice-a/sections'
             out.mkdir(parents=True, exist_ok=True)
             panel.screenshot(path=str(out/f'{cell.viewport}-{cell.locale}-{cell.theme}-{cell.force_state.name if cell.force_state else "rest"}.png'))
+            verify_served_page((ROOT / "site/commodities.html").read_bytes(), self.page_sha256)
             return owner.CellObservation(cell_id=cell.cell_id, loaded=True,
                 screenshot_png=page.screenshot(full_page=False), observed=observed,
                 console_errors=tuple(errors), failed_responses=tuple(failures),
