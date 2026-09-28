@@ -1,0 +1,3852 @@
+{
+  "pass_all": true,
+  "checks": [
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-read",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 1632,
+          "overflow": "auto",
+          "reached": 732
+        },
+        {
+          "height": 1486,
+          "total": 1486,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 854,
+          "content": 854,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-policy",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 576,
+          "total": 576,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-flows",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 302,
+          "total": 302,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-overnight",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 480,
+          "total": 480,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 416,
+          "content": 416,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-news",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 251,
+          "total": 251,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-risk",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 649,
+          "total": 649,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "nested_heatmap": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "parent_lock": true
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-markets",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 752,
+          "total": 752,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-sentiment",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 1919,
+          "overflow": "auto",
+          "reached": 1019
+        },
+        {
+          "height": 1773,
+          "total": 1773,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-sector",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 1207,
+          "overflow": "auto",
+          "reached": 307
+        },
+        {
+          "height": 1061,
+          "total": 1061,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 854,
+          "content": 854,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-property",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 215,
+          "total": 215,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-aibrief",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 215,
+          "total": 215,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-playbook",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 622,
+          "total": 622,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-events",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 370,
+          "total": 370,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 854,
+          "content": 854,
+          "table": "table",
+          "contained": true
+        },
+        {
+          "width": 854,
+          "content": 854,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-alerts",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 215,
+          "total": 215,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-health",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 345,
+          "total": 345,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-read",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 1632,
+          "overflow": "auto",
+          "reached": 732
+        },
+        {
+          "height": 1486,
+          "total": 1486,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 854,
+          "content": 854,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-policy",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 576,
+          "total": 576,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-flows",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 302,
+          "total": 302,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-overnight",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 480,
+          "total": 480,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 416,
+          "content": 416,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-news",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 251,
+          "total": 251,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-risk",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 649,
+          "total": 649,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "nested_heatmap": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "parent_lock": true
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-markets",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 752,
+          "total": 752,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-sentiment",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 1919,
+          "overflow": "auto",
+          "reached": 1019
+        },
+        {
+          "height": 1773,
+          "total": 1773,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-sector",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 1207,
+          "overflow": "auto",
+          "reached": 307
+        },
+        {
+          "height": 1061,
+          "total": 1061,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 854,
+          "content": 854,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-property",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 215,
+          "total": 215,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-aibrief",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 215,
+          "total": 215,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-playbook",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 622,
+          "total": 622,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-events",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 370,
+          "total": 370,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 854,
+          "content": 854,
+          "table": "table",
+          "contained": true
+        },
+        {
+          "width": 854,
+          "content": 854,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-alerts",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 215,
+          "total": 215,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-health",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 345,
+          "total": 345,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-read",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 1632,
+          "overflow": "auto",
+          "reached": 732
+        },
+        {
+          "height": 1486,
+          "total": 1486,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 854,
+          "content": 854,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-policy",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 556,
+          "total": 556,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-flows",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 283,
+          "total": 283,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-overnight",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 462,
+          "total": 462,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 416,
+          "content": 416,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-news",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 215,
+          "total": 215,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-risk",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 649,
+          "total": 649,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "nested_heatmap": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "parent_lock": true
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-markets",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 753,
+          "total": 753,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-sentiment",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 1919,
+          "overflow": "auto",
+          "reached": 1019
+        },
+        {
+          "height": 1773,
+          "total": 1773,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-sector",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 1169,
+          "overflow": "auto",
+          "reached": 269
+        },
+        {
+          "height": 1023,
+          "total": 1023,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 854,
+          "content": 854,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-property",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 215,
+          "total": 215,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-aibrief",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 215,
+          "total": 215,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-playbook",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 622,
+          "total": 622,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-events",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 370,
+          "total": 370,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 854,
+          "content": 854,
+          "table": "table",
+          "contained": true
+        },
+        {
+          "width": 854,
+          "content": 854,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-alerts",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 215,
+          "total": 215,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-health",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 327,
+          "total": 327,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-read",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 1632,
+          "overflow": "auto",
+          "reached": 732
+        },
+        {
+          "height": 1486,
+          "total": 1486,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 854,
+          "content": 854,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-policy",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 556,
+          "total": 556,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-flows",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 283,
+          "total": 283,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-overnight",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 462,
+          "total": 462,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 416,
+          "content": 416,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-news",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 215,
+          "total": 215,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-risk",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 649,
+          "total": 649,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "nested_heatmap": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "parent_lock": true
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-markets",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 753,
+          "total": 753,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-sentiment",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 1919,
+          "overflow": "auto",
+          "reached": 1019
+        },
+        {
+          "height": 1773,
+          "total": 1773,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-sector",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 1169,
+          "overflow": "auto",
+          "reached": 269
+        },
+        {
+          "height": 1023,
+          "total": 1023,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 854,
+          "content": 854,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-property",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 215,
+          "total": 215,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-aibrief",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 215,
+          "total": 215,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-playbook",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 622,
+          "total": 622,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-events",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 370,
+          "total": 370,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 854,
+          "content": 854,
+          "table": "table",
+          "contained": true
+        },
+        {
+          "width": 854,
+          "content": 854,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-alerts",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 215,
+          "total": 215,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-health",
+      "opened_by": "keyboard",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 900,
+          "total": 900,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 327,
+          "total": 327,
+          "overflow": "visible",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-read",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 741,
+          "total": 1603,
+          "overflow": "auto",
+          "reached": 862
+        }
+      ],
+      "tables": [
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-policy",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 739,
+          "total": 739,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-flows",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 443,
+          "total": 443,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-overnight",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 739,
+          "total": 739,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-news",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 329,
+          "total": 329,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-risk",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 693,
+          "total": 693,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-markets",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 741,
+          "total": 985,
+          "overflow": "auto",
+          "reached": 244
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-sentiment",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 741,
+          "total": 2091,
+          "overflow": "auto",
+          "reached": 1350
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-sector",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 741,
+          "total": 1277,
+          "overflow": "auto",
+          "reached": 536
+        }
+      ],
+      "tables": [
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-property",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 261,
+          "total": 261,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-aibrief",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 312,
+          "total": 312,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-playbook",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 686,
+          "total": 686,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-events",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 468,
+          "total": 468,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        },
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-alerts",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 259,
+          "total": 259,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-health",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 405,
+          "total": 405,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-read",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 741,
+          "total": 1603,
+          "overflow": "auto",
+          "reached": 862
+        }
+      ],
+      "tables": [
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-policy",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 739,
+          "total": 739,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-flows",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 443,
+          "total": 443,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-overnight",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 739,
+          "total": 739,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-news",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 329,
+          "total": 329,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-risk",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 693,
+          "total": 693,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-markets",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 741,
+          "total": 985,
+          "overflow": "auto",
+          "reached": 244
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-sentiment",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 741,
+          "total": 2091,
+          "overflow": "auto",
+          "reached": 1350
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-sector",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 741,
+          "total": 1277,
+          "overflow": "auto",
+          "reached": 536
+        }
+      ],
+      "tables": [
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-property",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 261,
+          "total": 261,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-aibrief",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 312,
+          "total": 312,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-playbook",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 686,
+          "total": 686,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-events",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 468,
+          "total": 468,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        },
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-alerts",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 259,
+          "total": 259,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "en",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-health",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 405,
+          "total": 405,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-read",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 741,
+          "total": 1548,
+          "overflow": "auto",
+          "reached": 807
+        }
+      ],
+      "tables": [
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-policy",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 647,
+          "total": 647,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-flows",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 405,
+          "total": 405,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-overnight",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 668,
+          "total": 668,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-news",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 275,
+          "total": 275,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-risk",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 643,
+          "total": 643,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-markets",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 741,
+          "total": 946,
+          "overflow": "auto",
+          "reached": 205
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-sentiment",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 741,
+          "total": 1998,
+          "overflow": "auto",
+          "reached": 1257
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-sector",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 741,
+          "total": 1201,
+          "overflow": "auto",
+          "reached": 460
+        }
+      ],
+      "tables": [
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-property",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 242,
+          "total": 242,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-aibrief",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 259,
+          "total": 259,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-playbook",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 667,
+          "total": 667,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-events",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 397,
+          "total": 397,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        },
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-alerts",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 242,
+          "total": 242,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "dark",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-health",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 389,
+          "total": 389,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-read",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 741,
+          "total": 1548,
+          "overflow": "auto",
+          "reached": 807
+        }
+      ],
+      "tables": [
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-policy",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 647,
+          "total": 647,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-flows",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 405,
+          "total": 405,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-overnight",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 668,
+          "total": 668,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-news",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 275,
+          "total": 275,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-risk",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 643,
+          "total": 643,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-markets",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 741,
+          "total": 946,
+          "overflow": "auto",
+          "reached": 205
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-sentiment",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 741,
+          "total": 1998,
+          "overflow": "auto",
+          "reached": 1257
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-sector",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 741,
+          "total": 1201,
+          "overflow": "auto",
+          "reached": 460
+        }
+      ],
+      "tables": [
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-property",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 242,
+          "total": 242,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-aibrief",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 259,
+          "total": 259,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-playbook",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 667,
+          "total": 667,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-events",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 397,
+          "total": 397,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": [
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        },
+        {
+          "width": 320,
+          "content": 320,
+          "table": "table",
+          "contained": true
+        }
+      ]
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-alerts",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 242,
+          "total": 242,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "locale": "zh",
+      "theme": "light",
+      "access": "anonymous",
+      "force_state": null,
+      "panel": "hkx-dlg-health",
+      "opened_by": "tap",
+      "entry_focus": true,
+      "focus_trap": true,
+      "focus_return": true,
+      "scroll": [
+        {
+          "height": 844,
+          "total": 844,
+          "overflow": "auto",
+          "reached": 0
+        },
+        {
+          "height": 389,
+          "total": 389,
+          "overflow": "auto",
+          "reached": 0
+        }
+      ],
+      "tables": []
+    },
+    {
+      "stress_width": 320,
+      "theme": "dark",
+      "locale": "zh",
+      "reduced_motion": true,
+      "rapid_reopen": true
+    },
+    {
+      "stress_width": 320,
+      "theme": "light",
+      "locale": "zh",
+      "reduced_motion": true,
+      "rapid_reopen": true
+    },
+    {
+      "stress_width": 430,
+      "theme": "dark",
+      "locale": "zh",
+      "reduced_motion": true,
+      "rapid_reopen": true
+    },
+    {
+      "stress_width": 430,
+      "theme": "light",
+      "locale": "zh",
+      "reduced_motion": true,
+      "rapid_reopen": true
+    },
+    {
+      "stress_width": 768,
+      "theme": "dark",
+      "locale": "zh",
+      "reduced_motion": true,
+      "rapid_reopen": true
+    },
+    {
+      "stress_width": 768,
+      "theme": "light",
+      "locale": "zh",
+      "reduced_motion": true,
+      "rapid_reopen": true
+    }
+  ],
+  "failures": []
+}
