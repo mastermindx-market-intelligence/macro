@@ -663,26 +663,32 @@ def _with_valuation_observations(base: FinanceOwnerInputs, *observations: dict[s
 def test_a_conflict_reads_the_direction_of_the_valuation_reading_the_plane_publishes() -> None:
     """EARNINGS_UP_P_E_DOWN compares the operating and valuation readings the
     slice publishes. Beside card_networks' anchor, add an older observation
-    saying the opposite, dated only by observed_at or not dated at all. The
-    plane publishes the anchor, in either order, and the conflict follows the
-    anchor's direction: it fires when the published P/E is falling and stays
-    silent when it is rising. The conflict used to re-select its own
-    valuation direction by as_of alone, so an observation the plane had
-    passed over could decide it."""
+    saying the opposite, dated by as_of, dated only by observed_at, or not
+    dated at all. The plane publishes the anchor, in either order, and the
+    conflict follows the anchor's direction: it fires when the published P/E
+    is falling and stays silent when it is rising. When the anchor states no
+    direction, the older observation says the P/E is falling and the
+    conflict still stays silent: the reading the plane publishes does not
+    say so. The conflict used to re-select its own valuation direction by
+    as_of alone, so an observation the plane had passed over could decide
+    it."""
     base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
     (ticker, packet), = base.financial_packets.items()
     (anchor,) = packet["valuation"]["observations"]
-    for published, opposite in (("DOWN", "UP"), ("UP", "DOWN")):
-        reading = dict(copy.deepcopy(anchor), direction=published)
+    for published, opposite in (("DOWN", "UP"), ("UP", "DOWN"), (None, "DOWN")):
+        reading = {key: val for key, val in copy.deepcopy(anchor).items() if key != "direction"}
+        if published is not None:
+            reading["direction"] = published
         undated = {key: val for key, val in copy.deepcopy(anchor).items() if key not in ("as_of", "observed_at")}
         undated.update(direction=opposite)
         undated["metric"] = dict(undated["metric"], value=21.0)
-        for passed_over in (dict(undated, observed_at="2026-06-01"), undated):
+        for passed_over in (dict(undated, as_of="2026-09-10"), dict(undated, observed_at="2026-06-01"), undated):
             for ordered in ((reading, passed_over), (passed_over, reading)):
                 document = _with_valuation_observations(base, *ordered)
                 assert _valuation_of(document, "card_networks")["primary_metric"]["value"] == 18.0
                 fired = [c["label"] for c in document["conflicts"]].count("EARNINGS_UP_P_E_DOWN")
-                assert fired == (1 if published == "DOWN" else 0), (published, passed_over.get("observed_at"), ordered[0] is reading)
+                clock = (passed_over.get("as_of"), passed_over.get("observed_at"))
+                assert fired == (1 if published == "DOWN" else 0), (published, clock, ordered[0] is reading)
 
 
 def test_a_conflict_reads_the_direction_of_the_price_reading_the_plane_publishes() -> None:
@@ -691,26 +697,36 @@ def test_a_conflict_reads_the_direction_of_the_price_reading_the_plane_publishes
     falling observation the plane passes over: a fresher one on an adjusted
     historical basis, which is never a qualified price, or an undated one,
     which the plane reads as the oldest. The plane publishes the rising
-    price and the conflict fires, in either order. The conflict used to
-    re-select its own price direction from every market observation by
-    as_of alone, so the observation the plane passed over decided it."""
+    price and the conflict fires, in either order. Then add a fresher
+    qualified price that states no direction: the plane publishes it and
+    the conflict stays silent, in either order, although the rising price
+    it passed over says the price is up. The conflict used to re-select its
+    own price direction from every market observation by as_of alone, so
+    the observation the plane passed over decided it."""
     base = _conflict_inputs_for("PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN")
     (rising,) = base.market_observations["card_networks"]
+
+    def published(*ordered: dict[str, Any]) -> tuple[Any, int]:
+        market = dict(base.market_observations, card_networks=list(ordered))
+        document = compose_finance_projection(
+            dataclasses.replace(base, market_observations=market),
+            generated_at=_today(),
+            knowledge_cutoff=_knowledge_cutoff(),
+        )
+        validate_contract(CONTRACT_ID, document)
+        price = next(s for s in document["slices"] if s["slice_id"] == "card_networks")["rerating"]["price"]
+        assert price["state"] == "OBSERVED", price
+        fired = [c["label"] for c in document["conflicts"]].count("PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN")
+        return price["primary_metric"]["value"], fired
+
     adjusted = dict(rising, as_of="2026-09-22", price_basis="ADJUSTED_HISTORICAL", direction="DOWN", value=90.0)
     undated = {key: val for key, val in dict(rising, direction="DOWN", value=90.0).items() if key != "as_of"}
     for passed_over in (adjusted, undated):
         for ordered in ((rising, passed_over), (passed_over, rising)):
-            market = dict(base.market_observations, card_networks=list(ordered))
-            document = compose_finance_projection(
-                dataclasses.replace(base, market_observations=market),
-                generated_at=_today(),
-                knowledge_cutoff=_knowledge_cutoff(),
-            )
-            validate_contract(CONTRACT_ID, document)
-            price = next(s for s in document["slices"] if s["slice_id"] == "card_networks")["rerating"]["price"]
-            assert price["state"] == "OBSERVED" and price["primary_metric"]["value"] == 100.0, price
-            fired = [c["label"] for c in document["conflicts"]].count("PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN")
-            assert fired == 1, (passed_over["price_basis"], "as_of" in passed_over, ordered[0] is rising)
+            assert published(*ordered) == (100.0, 1), (passed_over["price_basis"], "as_of" in passed_over, ordered[0] is rising)
+    silent = {key: val for key, val in dict(rising, as_of="2026-09-23", value=95.0).items() if key != "direction"}
+    for ordered in ((rising, silent), (silent, rising)):
+        assert published(*ordered) == (95.0, 0), ordered[0] is rising
 
 
 def test_only_an_absent_or_null_slice_tag_means_company_data() -> None:

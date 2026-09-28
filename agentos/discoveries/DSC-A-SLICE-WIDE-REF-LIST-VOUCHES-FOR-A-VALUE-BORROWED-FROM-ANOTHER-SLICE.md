@@ -44,7 +44,10 @@ so_what: >-
   selection over the same list drifts from the first as soon as either rule changes, and
   the drift is invisible in the document: the conflict names a direction the plane does not
   show. Tests pin it by planting a second observation that the plane passes over, with the
-  opposite direction, in both orders.
+  opposite direction, in both orders. They also plant a published reading that states no
+  direction beside a passed-over one that states the conflict's direction. Without that
+  case, a detector with its own rule, the freshest observation carrying a direction, passes
+  every test while the published reading carries a direction.
   (4) The structural fix is per-reading evidence, where each published value names its
   own observation. That grammar is the shared base's evidence_claim.v1 (#7870), and Finance
   adopts it in the later integration wave (DEC:FINANCE-COMPOSER-NEVER-MINTS-AN-EVIDENCE-REF).
