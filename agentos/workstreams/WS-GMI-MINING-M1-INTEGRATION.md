@@ -117,7 +117,15 @@ next_action: >
   vocabulary). Counts 6/1/18/12/3 = 40, UNPINNED 0. Two NON-moves are deliberate and recorded
   on their rows - MGD-35 (absent wiring is not a guarantee about future wiring; the row's value
   is that it is owed) and MGD-38 (half a demonstration is none). R-MIN-37 records the closure.
-  Waves 5+6 MERGED as #8100 -> `ce0065d89732` and verified on origin/main; wave 7 is its own PR.
+  Waves 5+6 MERGED as #8100 -> `ce0065d89732` and verified on origin/main; wave 7 is #8110.
+  THIRD PART of the same wave delivered the one row the closed audit had identified as
+  PAYLOAD-PINNABLE TODAY: MGD-19 clause 2 now has a payload pin - the elimination must reach
+  `native_blocks` with `-120` and `sign == '-'`, against a one-block-fewer control and an
+  unperturbed-neighbour control - so the row moved to `PARTIAL_BY_CONSTRUCTION` and `NOT_RUN` is
+  17. Counts 6/1/17/13/3 = 40, UNPINNED 0, 176 passed. **An audit that ends in a note where a pin
+  was available has not finished.** Clause 1 still needs T03's definition vocabulary and is not
+  claimed. Do NOT credit `test_internal_transfer_keeps_elimination_sign` to MGD-19: it asserts
+  through a helper, and a helper pin is not a pin on the composed payload.
   T05/T06 stay held for #7870's route/client/mount on main plus the answer to comment
   5811889498; T08 is last; G2 real-source admission remains an incumbent/operator act.
   Standing operator items: mini2 has no WAN (a bridge0 default route shadows the real gateway;
