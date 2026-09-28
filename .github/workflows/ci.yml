@@ -1950,6 +1950,13 @@ on:
       - "docs/NEURAL_WEB_CASE_LAW.md"
       - "site/neuralwebdata/ruling_graph.json"
       - "data/neuralweb/ruling_conflicts_allowlist.json"
+      # The execution continuation law's fourth surface. self-mod-fence re-proves
+      # its cross-surface parity on an edit to CLAUDE.md, AGENTS.md or this tree.
+      # scope_pattern_is_startable accepts a glob scope only through its own
+      # entry or an ancestor subtree entry, never through the "**" catch-all. The
+      # gap stayed hidden while a comment naming pytest left that job unscoped
+      # (DSC:CI-RUN-BLOCK-COMMENT-QUOTE-BLINDS-CLOSURE-INFERENCE).
+      - ".cursor/rules/**"
       # Metabolism Phase 0 (F1/F2/F3): grader manifest, self-mod fence, capability broker.
       # Any change to these files re-proves all three cage fences.
       # NOTE: the full IMMUTABLE set (R-AUT-4) must be covered here so the self-mod-fence
