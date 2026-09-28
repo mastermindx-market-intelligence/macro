@@ -154,7 +154,37 @@ both the `interpretation_inputs_absent` count and the served list - with a pin t
 record recorded after a replay's cutoff changes that replay's served text. It would be REFUTED as
 a defect only by a contract statement, somewhere in the composer or its pins, that a replay's text
 is *intended* to reflect records recorded after its own cutoff. No such statement exists at
-`a1c8968f8e2f`; the route's own comment at `app/theme_research.py:384-388` points the other way.
+`a1c8968f8e2f`.
+
+**WITHDRAWN, 2026-09-28, from an earlier version of this paragraph: the second half of that
+sentence claimed "the route's own comment at `app/theme_research.py:384-388` points the other
+way". It does not, and it was cited at a ref where the file does not exist.** Measured, with
+`agentos/README.md` at 11115 B as a positive control that resolved at every ref: `app/theme_research.py`
+exists ONLY at `a0d7b054ff23`, #7870's head, at 34786 B / 761 lines, and returns 404 at `main`
+`05b242506be7`, at the revert parent `36efe9c92b96`, at `a1c8968f8e2f` and at the revert
+`e5512ef66a74`. At the one ref where it does exist, `:384-388` reads: "A row this transport cannot
+read is WITHHELD, never fatal. Before this, ``assertion.get(...)`` raised AttributeError, the
+route's catch-all turned it into a 503, and one malformed row from the owner took down the entire
+request instead of dropping itself. Withholding is the fail-closed answer; 503 is not." That is a
+statement about withholding an unreadable row instead of returning 503 -- it is evidence for
+**14a**, the designed half of this split, and it says nothing about replay cutoffs. The file's
+`recorded_cutoff` / `system_replay` mentions sit at `:157` `:161` `:196` `:198` `:219`, nowhere near
+the cited range. The pillar is withdrawn rather than re-aimed.
+
+**14b's classification is unaffected, and this is why the withdrawal is safe to state plainly.**
+It rests on ruling 11's test applied to the pins directly: `known_revisions` is built with no
+scope, rights or time filter, and the pin that exists names the *consequence* (a withheld block)
+rather than the *input set*. A pin on the consequence is not a pin on the input set, so the
+unfiltered construction is unpinned and therefore not designed. The route comment was offered as
+corroboration and was never load-bearing; removing it leaves the ruling standing on the
+measurement that actually supports it.
+
+One generalisation earned by this correction, because it explains all five bad anchors found in
+this packet on 2026-09-28: **#7870 introduces the entire shared route / registry / restart
+surface.** `app/theme_research.py`, the `engine/market_ontology/` group of the deploy restart ERE,
+`theme_research_mounts.py` and `theme_research_registry.py` all exist at `a0d7b054ff23` and at no
+other ref probed. Any anchor into that surface resolves only at #7870's head, so cite that ref
+explicitly or the citation is unresolvable -- and locate by symbol or string, never by line.
 
 Symptom (iii) carries one extra precondition worth stating: it is a defect only if the bundle is
 slice-scoped. If a bundle deliberately carries every slice's assertions, then citing another
