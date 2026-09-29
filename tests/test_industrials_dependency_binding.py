@@ -646,7 +646,7 @@ def test_every_plan_named_requirement_anchor_exists() -> None:
 
     # The map is a claim about coverage, so its own shape is asserted too: an
     # empty or silently-truncated map would pass every loop above.
-    assert len(PLAN_REQUIREMENT_ANCHORS) == 18, sorted(PLAN_REQUIREMENT_ANCHORS)
+    assert len(PLAN_REQUIREMENT_ANCHORS) == 21, sorted(PLAN_REQUIREMENT_ANCHORS)
     assert all(
         requirement.startswith("IND-") for requirement in PLAN_REQUIREMENT_ANCHORS
     ), sorted(PLAN_REQUIREMENT_ANCHORS)
