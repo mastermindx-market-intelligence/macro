@@ -1,0 +1,5 @@
+R9 independent clock/features/labels 31372 26508
+R9 chronological memberships, gradients and predictions verified 70 25526
+R9 warnings/event matching and independent inventory paths 4665 65 27840
+R9_VERIFIED: 31372 calendar rows; 26508 features; 70 training snapshots; 25526 predictions; 4665 warnings; 1176 catalogue events; 65 strict advance matches; 27840 inventory paths; all forecast/alarm/monthly/economic summaries.
+R9_HASHES: 55 inputs; 18 gates; 114 prior artifacts unchanged. SAME-session arithmetic, not independent review.

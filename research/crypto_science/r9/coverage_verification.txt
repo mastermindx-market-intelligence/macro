@@ -1,0 +1,46 @@
+[
+  {
+    "period": "all_issued",
+    "lag_hours": 1,
+    "events": 78,
+    "reasons": {
+      "supported": 37,
+      "no_issued_clock_meets_lead_and_expiry": 18,
+      "no_past_qualified_prebreak_context": 12,
+      "price_or_target_history_unavailable": 11
+    }
+  },
+  {
+    "period": "reused_2024plus",
+    "lag_hours": 1,
+    "events": 15,
+    "reasons": {
+      "supported": 5,
+      "no_issued_clock_meets_lead_and_expiry": 5,
+      "no_past_qualified_prebreak_context": 4,
+      "price_or_target_history_unavailable": 1
+    }
+  },
+  {
+    "period": "all_issued",
+    "lag_hours": 6,
+    "events": 83,
+    "reasons": {
+      "supported": 33,
+      "no_issued_clock_meets_lead_and_expiry": 27,
+      "no_past_qualified_prebreak_context": 15,
+      "price_or_target_history_unavailable": 8
+    }
+  },
+  {
+    "period": "reused_2024plus",
+    "lag_hours": 6,
+    "events": 19,
+    "reasons": {
+      "no_issued_clock_meets_lead_and_expiry": 11,
+      "supported": 4,
+      "no_past_qualified_prebreak_context": 3,
+      "price_or_target_history_unavailable": 1
+    }
+  }
+]
