@@ -356,7 +356,8 @@
           "viewport_width": 390,
           "width": 390
         }
-      ]
+      ],
+      "page_tree_sha": "48efe6d103b94edd0fea009b70e43e568894787f"
     }
   ],
   "schema": "mastermind.p0_evidence.v2",
@@ -376,9 +377,9 @@
   "target": {
     "base_url": null,
     "kind": "site_dir",
-    "resolved_gitdir_or_none": null,
-    "resolved_sha_or_none": null,
-    "resolved_sha_source": "no git directory was found at or above --site-dir; nothing resolved",
+    "resolved_gitdir_or_none": "/Users/mini2/lanes/wt/mo-ext-fix-8194/.git",
+    "resolved_sha_or_none": "090ad5a752e58776f227f45c6a66be94398f9bdd",
+    "resolved_sha_source": "git directory at /Users/mini2/lanes/wt/mo-ext-fix-8194/.git; crops were captured from the named UI implementation head",
     "site_dir": "/Users/mini2/lanes/tmp/pri_ui_c1_site"
   },
   "tool": {

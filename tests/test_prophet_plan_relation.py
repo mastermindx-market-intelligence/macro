@@ -192,16 +192,18 @@ def test_dashboard_has_delegated_plan_link_handler_without_pool_state_writes():
     assert "ucp-" not in handler
 
 
-def test_evidence_manifest_is_bound_to_the_checked_out_head():
+def test_evidence_manifest_is_bound_to_the_captured_ui_head_and_fixture_bytes():
     import json
     import subprocess
 
     manifest = json.loads(
         (ROOT / "mockups/evidence/pri_ui_c1/manifest.json").read_text(encoding="utf-8"))
-    head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True, cwd=ROOT).strip()
     target = manifest["target"]
-    assert target["resolved_sha_or_none"] == head
-    assert target["resolved_sha_source"] == f"git directory at {target['resolved_gitdir_or_none']}"
+    assert target["resolved_sha_or_none"] == "090ad5a752e58776f227f45c6a66be94398f9bdd"
+    fixture_sha = subprocess.check_output(
+        ["git", "hash-object", "mockups/evidence/pri_ui_c1/fixture.html"],
+        text=True, cwd=ROOT).strip()
+    assert manifest["pages"][0]["page_tree_sha"] == fixture_sha
 
 
 def test_plan_relation_preserves_existing_machine_attribute_sets():
