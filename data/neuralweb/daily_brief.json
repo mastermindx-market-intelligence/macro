@@ -1,9 +1,9 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-09-29T15:58:05.617434+00:00",
+  "produced_at": "2026-09-29T17:02:03.942458+00:00",
   "as_of": "2026-09-25",
   "status": "degraded",
-  "phase": "engine",
+  "phase": "final",
   "did_the_brain_run": {
     "cortex_status": "degraded",
     "tool_call_batches": 0,
@@ -976,7 +976,7 @@
   },
   "causal_lab": {
     "available": true,
-    "asof": "2026-09-29T06:30:26Z",
+    "asof": "2026-09-29T16:02:37Z",
     "new_edges_this_week_by_verdict": {
       "insufficient_power": 22,
       "null": 11,
