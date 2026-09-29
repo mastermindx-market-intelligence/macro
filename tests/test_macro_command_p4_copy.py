@@ -880,11 +880,19 @@ def test_not_applicable_trade_is_unstated_not_e1(built: tuple[str, Path]) -> Non
 
 
 def test_credit_funding_e4_needs_the_capture_fixture_flag() -> None:
-    """P3 v5: withheld_command_tabs is fixture-only; credit/funding E4 needs the flag."""
+    """P3 v5: withheld_command_tabs is fixture-only; credit/funding E4 needs the flag.
+
+    The fabricated view pins the workspace's availability to CURRENT: the
+    assertion is about the E4 fixture gate, not about today's source
+    freshness. A STALE_SOURCE base (the 2026-09-29 nightly was cancelled at
+    collection, so capital_structure never published) is E2 by design and
+    outranks E4, which would make this test grade the bake instead of the
+    gate."""
     entries = copy.deepcopy(_live_entries())
     for entry in entries:
         if entry["workspace_id"] == "capital_structure":
             entry["snapshot"]["withheld_command_tabs"] = ["funding"]
+            entry["snapshot"]["availability"]["state"] = "CURRENT"
     closed = builder._macro_command_sections(entries, page_built_at=BUILT_AT)
     closed_credit = next(s for s in closed if s["id"] == "credit")
     closed_funding = next(t for t in closed_credit["subtabs"] if t["id"] == "funding")
