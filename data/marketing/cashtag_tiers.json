@@ -2,7 +2,7 @@
   "schema": "marketing.cashtag_tiers/v1",
   "schema_version": 1,
   "produced_by": "engine/marketing/radar_internal.py",
-  "produced_at": "2026-09-29T07:00:32Z",
+  "produced_at": "2026-09-29T16:36:07Z",
   "tier": "display",
   "as_of": "2026-09-25",
   "universe_n": 2702,
@@ -74,7 +74,6 @@
       "APPN",
       "AR",
       "ARE",
-      "ARES",
       "ARM",
       "AS",
       "ASML",
@@ -113,7 +112,6 @@
       "CAT",
       "CAVA",
       "CBOE",
-      "CBRE",
       "CBRL",
       "CBRS",
       "CCI",
@@ -125,7 +123,6 @@
       "CHE",
       "CHKP",
       "CHTR",
-      "CIEN",
       "CLBT",
       "CMG",
       "CNC",
@@ -146,7 +143,6 @@
       "CRWD",
       "CRWV",
       "CSCO",
-      "CSGP",
       "CSL",
       "CTAS",
       "CVNA",
@@ -155,7 +151,6 @@
       "CXM",
       "CXW",
       "DAL",
-      "DASH",
       "DDOG",
       "DELL",
       "DHR",
@@ -184,7 +179,6 @@
       "FEIM",
       "FICO",
       "FIGS",
-      "FIS",
       "FLEX",
       "FLNC",
       "FLY",
@@ -193,7 +187,6 @@
       "FRVO",
       "FSLR",
       "FUL",
-      "GDDY",
       "GDX",
       "GE",
       "GEN",
@@ -217,7 +210,6 @@
       "HHH",
       "HIG",
       "HNGE",
-      "HONA",
       "HP",
       "HPE",
       "HPQ",
@@ -243,7 +235,6 @@
       "JEF",
       "KBH",
       "KEYS",
-      "KKR",
       "KLAC",
       "KLIC",
       "KMT",
@@ -290,14 +281,13 @@
       "MUFG",
       "NAIL",
       "NBIS",
+      "NCLH",
       "NCPL",
       "NEE",
-      "NEM",
       "NET",
       "NKE",
       "NOW",
       "NOWL",
-      "NRG",
       "NTLA",
       "NTSK",
       "NU",
@@ -323,7 +313,6 @@
       "PRGO",
       "PRM",
       "PS",
-      "PSKY",
       "PSX",
       "PTRN",
       "PURR",
@@ -335,8 +324,7 @@
       "RAM",
       "RBLX",
       "RBRK",
-      "RDDT",
-      "REGN",
+      "RCL",
       "RHI",
       "RKLB",
       "RL",
@@ -450,7 +438,6 @@
       "XLK",
       "XLV",
       "XMTR",
-      "XYZ",
       "ZBRA",
       "ZS"
     ],
@@ -582,6 +569,7 @@
       "APUS",
       "ARCB",
       "ARCC",
+      "ARES",
       "ARGX",
       "ARIS",
       "ARKB",
@@ -812,6 +800,7 @@
       "CATY",
       "CB",
       "CBC",
+      "CBRE",
       "CBRG",
       "CBSH",
       "CBT",
@@ -860,6 +849,7 @@
       "CI",
       "CIB",
       "CIBR",
+      "CIEN",
       "CIFR",
       "CIGI",
       "CINF",
@@ -933,6 +923,7 @@
       "CRSP",
       "CRUS",
       "CRWG",
+      "CSGP",
       "CSHI",
       "CSIQ",
       "CSQR",
@@ -966,6 +957,7 @@
       "DAMD",
       "DAN",
       "DAR",
+      "DASH",
       "DAVE",
       "DB",
       "DBA",
@@ -1204,6 +1196,7 @@
       "FIBK",
       "FIG",
       "FIGR",
+      "FIS",
       "FISV",
       "FITB",
       "FIVE",
@@ -1279,6 +1272,7 @@
       "GCDT",
       "GCT",
       "GD",
+      "GDDY",
       "GDS",
       "GDXD",
       "GDXJ",
@@ -1389,6 +1383,7 @@
       "HOG",
       "HOMB",
       "HON",
+      "HONA",
       "HQY",
       "HR",
       "HRB",
@@ -1593,6 +1588,7 @@
       "KHC",
       "KIE",
       "KIM",
+      "KKR",
       "KLAR",
       "KMB",
       "KMI",
@@ -1801,13 +1797,13 @@
       "NBIL",
       "NBIX",
       "NBIZ",
-      "NCLH",
       "NCNO",
       "NDAQ",
       "NDSN",
       "NE",
       "NEAR",
       "NEBX",
+      "NEM",
       "NEO",
       "NEOG",
       "NESR",
@@ -1836,6 +1832,7 @@
       "NOV",
       "NOVT",
       "NPO",
+      "NRG",
       "NRIX",
       "NSC",
       "NSIT",
@@ -2024,6 +2021,7 @@
       "PRVA",
       "PSA",
       "PSI",
+      "PSKY",
       "PSLV",
       "PSMT",
       "PSN",
@@ -2073,8 +2071,8 @@
       "RBC",
       "RCAT",
       "RCI",
-      "RCL",
       "RCUS",
+      "RDDT",
       "RDN",
       "RDNT",
       "RDVI",
@@ -2083,6 +2081,7 @@
       "RDY",
       "REET",
       "REG",
+      "REGN",
       "RELX",
       "RELY",
       "REMX",
@@ -2693,6 +2692,7 @@
       "XSD",
       "XSMO",
       "XYL",
+      "XYZ",
       "YELP",
       "YETI",
       "YINN",
@@ -2730,9 +2730,9 @@
       ],
       "proxies": {
         "mcap_weight": 48714484789.82712,
-        "pct_1d": 1.4,
+        "pct_1d": -0.13,
         "pct_1w": 10.43,
-        "earnings_in_days": 30,
+        "earnings_in_days": 59,
         "dollar_vol_musd": 401.49897556,
         "pct_1d_source": "sp500_heatmap",
         "dollar_vol_source": "hot_tape_adv20",
@@ -2901,7 +2901,7 @@
       ],
       "proxies": {
         "mcap_weight": 4977637079490.967,
-        "pct_1d": -0.78,
+        "pct_1d": -1.73,
         "pct_1w": 1.47,
         "earnings_in_days": 34,
         "dollar_vol_musd": 10215.080826361083,
@@ -2946,7 +2946,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 467119776645.5232,
-        "pct_1d": 0.73,
+        "pct_1d": -0.91,
         "pct_1w": 0.14,
         "earnings_in_days": 35,
         "dollar_vol_musd": 671.5293266967774,
@@ -3038,7 +3038,7 @@
       ],
       "proxies": {
         "mcap_weight": 92842058064.24908,
-        "pct_1d": -0.88,
+        "pct_1d": -0.6,
         "pct_1w": -5.26,
         "earnings_in_days": 41,
         "dollar_vol_musd": 862.3844616851807,
@@ -3070,7 +3070,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 175270525636.05322,
-        "pct_1d": -0.31,
+        "pct_1d": -1.13,
         "pct_1w": -1.29,
         "earnings_in_days": 26,
         "dollar_vol_musd": 788.461625126648,
@@ -3147,9 +3147,9 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 32300750316.77838,
-        "pct_1d": 0.25,
+        "pct_1d": -0.38,
         "pct_1w": -2.3,
-        "earnings_in_days": 31,
+        "earnings_in_days": 32,
         "dollar_vol_musd": 424.28465008999996,
         "pct_1d_source": "sp500_heatmap",
         "dollar_vol_source": "hot_tape_adv20",
@@ -3271,7 +3271,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 107769125189.48982,
-        "pct_1d": -0.93,
+        "pct_1d": 0.29,
         "pct_1w": -2.86,
         "earnings_in_days": 6,
         "dollar_vol_musd": 895.04534455,
@@ -3349,7 +3349,7 @@
       ],
       "proxies": {
         "mcap_weight": 93599325485.22949,
-        "pct_1d": -1.89,
+        "pct_1d": 0.9,
         "pct_1w": -5.4,
         "earnings_in_days": 15,
         "dollar_vol_musd": 1440.6600858299998,
@@ -3379,7 +3379,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 190724969981.5529,
-        "pct_1d": 0.46,
+        "pct_1d": 2.01,
         "pct_1w": 4.76,
         "earnings_in_days": 37,
         "dollar_vol_musd": 967.429455001831,
@@ -3394,7 +3394,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 39096562696.70153,
-        "pct_1d": -0.91,
+        "pct_1d": -0.83,
         "pct_1w": -4.77,
         "earnings_in_days": 39,
         "dollar_vol_musd": 260.0869528060913,
@@ -3424,9 +3424,9 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 104746271199.12851,
-        "pct_1d": -0.71,
+        "pct_1d": -0.74,
         "pct_1w": -2.78,
-        "earnings_in_days": 40,
+        "earnings_in_days": 33,
         "dollar_vol_musd": 319.11981725158694,
         "pct_1d_source": "sp500_heatmap",
         "dollar_vol_source": "stocks_last_bar",
@@ -3454,7 +3454,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 43764598724.365234,
-        "pct_1d": -1.06,
+        "pct_1d": -1.19,
         "pct_1w": -3.48,
         "earnings_in_days": 29,
         "dollar_vol_musd": 531.77940225,
@@ -3484,7 +3484,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 27515450547.91829,
-        "pct_1d": 0.0,
+        "pct_1d": 0.4,
         "pct_1w": -2.78,
         "earnings_in_days": 40,
         "dollar_vol_musd": 241.21952851867675,
@@ -3561,7 +3561,7 @@
         "mcap_weight": null,
         "pct_1d": 0.3094697751186315,
         "pct_1w": null,
-        "earnings_in_days": 40,
+        "earnings_in_days": 33,
         "dollar_vol_musd": 427.33130282999997,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -3606,7 +3606,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 64429425778.515564,
-        "pct_1d": -0.13,
+        "pct_1d": 0.25,
         "pct_1w": -1.38,
         "earnings_in_days": 40,
         "dollar_vol_musd": 481.60164879074097,
@@ -3636,7 +3636,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 10608832346.453428,
-        "pct_1d": 0.0,
+        "pct_1d": 0.07,
         "pct_1w": 0.27,
         "earnings_in_days": 39,
         "dollar_vol_musd": 112.64060640999999,
@@ -3683,7 +3683,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 57012760460.55133,
-        "pct_1d": -0.15,
+        "pct_1d": -0.26,
         "pct_1w": -2.24,
         "earnings_in_days": 39,
         "dollar_vol_musd": 274.40052008,
@@ -3908,7 +3908,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 38782985387.28401,
-        "pct_1d": -1.87,
+        "pct_1d": 2.36,
         "pct_1w": -1.54,
         "earnings_in_days": 39,
         "dollar_vol_musd": 325.43412508,
@@ -4018,7 +4018,7 @@
       ],
       "proxies": {
         "mcap_weight": 13070798255.0,
-        "pct_1d": -0.55,
+        "pct_1d": -0.36,
         "pct_1w": -6.1,
         "earnings_in_days": 39,
         "dollar_vol_musd": 106.35363533,
@@ -4033,7 +4033,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 59240406664.5813,
-        "pct_1d": -0.71,
+        "pct_1d": -0.68,
         "pct_1w": -3.5,
         "earnings_in_days": 34,
         "dollar_vol_musd": 353.47172308999995,
@@ -4046,12 +4046,11 @@
     "AKAM": {
       "tier": "T2",
       "reasons": [
-        "move_1d",
         "move_1w"
       ],
       "proxies": {
         "mcap_weight": 16375070780.330627,
-        "pct_1d": -4.34,
+        "pct_1d": -1.77,
         "pct_1w": 9.01,
         "earnings_in_days": 41,
         "dollar_vol_musd": 552.0368329400001,
@@ -4098,7 +4097,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 12948695300.74514,
-        "pct_1d": -2.13,
+        "pct_1d": -0.08,
         "pct_1w": -1.06,
         "earnings_in_days": 40,
         "dollar_vol_musd": 315.99787201,
@@ -4160,7 +4159,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 10427229389.84143,
-        "pct_1d": -1.21,
+        "pct_1d": 0.25,
         "pct_1w": -0.56,
         "earnings_in_days": 40,
         "dollar_vol_musd": 140.17594698,
@@ -4254,7 +4253,7 @@
       ],
       "proxies": {
         "mcap_weight": 57550470963.32245,
-        "pct_1d": -0.02,
+        "pct_1d": -0.49,
         "pct_1w": -8.9,
         "earnings_in_days": 40,
         "dollar_vol_musd": 506.62091317,
@@ -4269,7 +4268,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 13135632437.22467,
-        "pct_1d": 0.59,
+        "pct_1d": -0.29,
         "pct_1w": 1.44,
         "earnings_in_days": 27,
         "dollar_vol_musd": 216.62281303999998,
@@ -4406,12 +4405,13 @@
     "AMAT": {
       "tier": "T2",
       "reasons": [
+        "move_1d",
         "move_1w",
         "dollar_volume"
       ],
       "proxies": {
         "mcap_weight": 384894759855.0,
-        "pct_1d": 0.36,
+        "pct_1d": 4.09,
         "pct_1w": 9.09,
         "earnings_in_days": 48,
         "dollar_vol_musd": 2522.776,
@@ -4475,7 +4475,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 19654314505.86811,
-        "pct_1d": 0.66,
+        "pct_1d": -0.74,
         "pct_1w": 1.46,
         "earnings_in_days": 40,
         "dollar_vol_musd": 103.97945589447022,
@@ -4492,7 +4492,7 @@
       ],
       "proxies": {
         "mcap_weight": 1029487743707.5295,
-        "pct_1d": -3.61,
+        "pct_1d": 0.99,
         "pct_1w": 12.65,
         "earnings_in_days": 39,
         "dollar_vol_musd": 11095.871872912598,
@@ -4524,7 +4524,7 @@
       ],
       "proxies": {
         "mcap_weight": 57484965579.92963,
-        "pct_1d": 0.37,
+        "pct_1d": -0.29,
         "pct_1w": 5.51,
         "earnings_in_days": 34,
         "dollar_vol_musd": 354.47149872000006,
@@ -4556,7 +4556,7 @@
       ],
       "proxies": {
         "mcap_weight": 224151427673.63586,
-        "pct_1d": 0.85,
+        "pct_1d": -0.17,
         "pct_1w": 7.51,
         "earnings_in_days": 39,
         "dollar_vol_musd": 917.573358581543,
@@ -4633,7 +4633,7 @@
       ],
       "proxies": {
         "mcap_weight": 43548276967.0,
-        "pct_1d": 0.64,
+        "pct_1d": -0.08,
         "pct_1w": -9.43,
         "earnings_in_days": 34,
         "dollar_vol_musd": 342.87104432,
@@ -4708,7 +4708,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 78761226344.64111,
-        "pct_1d": -0.61,
+        "pct_1d": 0.51,
         "pct_1w": -2.85,
         "earnings_in_days": 32,
         "dollar_vol_musd": 347.3228414916992,
@@ -4725,7 +4725,7 @@
         "mcap_weight": null,
         "pct_1d": -1.0824742268041088,
         "pct_1w": null,
-        "earnings_in_days": 45,
+        "earnings_in_days": 59,
         "dollar_vol_musd": 33.14815352,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -4770,7 +4770,7 @@
       ],
       "proxies": {
         "mcap_weight": 2693018889770.91,
-        "pct_1d": -1.41,
+        "pct_1d": -0.22,
         "pct_1w": -1.59,
         "earnings_in_days": 34,
         "dollar_vol_musd": 8542.783558348083,
@@ -4845,7 +4845,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 260505954893.35217,
-        "pct_1d": -0.79,
+        "pct_1d": -0.97,
         "pct_1w": 3.59,
         "earnings_in_days": 39,
         "dollar_vol_musd": 904.0693633575439,
@@ -4892,7 +4892,7 @@
       ],
       "proxies": {
         "mcap_weight": 58968747326.12256,
-        "pct_1d": -2.12,
+        "pct_1d": 0.37,
         "pct_1w": -5.97,
         "earnings_in_days": 35,
         "dollar_vol_musd": 676.69962546,
@@ -4922,7 +4922,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 7971038013.830025,
-        "pct_1d": -0.46,
+        "pct_1d": -0.39,
         "pct_1w": 2.99,
         "earnings_in_days": 32,
         "dollar_vol_musd": 86.13583472,
@@ -4937,7 +4937,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 14974024125.453377,
-        "pct_1d": -0.96,
+        "pct_1d": 0.28,
         "pct_1w": -4.75,
         "earnings_in_days": 40,
         "dollar_vol_musd": 251.89204702,
@@ -4967,7 +4967,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 62743877107.46338,
-        "pct_1d": -1.07,
+        "pct_1d": 0.75,
         "pct_1w": -0.85,
         "earnings_in_days": 41,
         "dollar_vol_musd": 227.54938388671874,
@@ -4999,7 +4999,7 @@
       ],
       "proxies": {
         "mcap_weight": 207363148767.61945,
-        "pct_1d": 0.63,
+        "pct_1d": -0.06,
         "pct_1w": 8.6,
         "earnings_in_days": 33,
         "dollar_vol_musd": 853.1771028442383,
@@ -5044,7 +5044,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 71863198460.46576,
-        "pct_1d": -2.21,
+        "pct_1d": 0.22,
         "pct_1w": -3.35,
         "earnings_in_days": 39,
         "dollar_vol_musd": 342.07265497000003,
@@ -5059,7 +5059,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 103992649400.75,
-        "pct_1d": -0.81,
+        "pct_1d": 1.32,
         "pct_1w": 0.87,
         "earnings_in_days": 40,
         "dollar_vol_musd": 938.496075,
@@ -5121,7 +5121,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 9299897085.583992,
-        "pct_1d": -2.57,
+        "pct_1d": 0.03,
         "pct_1w": 2.75,
         "earnings_in_days": 34,
         "dollar_vol_musd": 231.56940097999998,
@@ -5200,7 +5200,7 @@
       ],
       "proxies": {
         "mcap_weight": 8592717233.12931,
-        "pct_1d": -2.54,
+        "pct_1d": 0.37,
         "pct_1w": -6.32,
         "earnings_in_days": 31,
         "dollar_vol_musd": 95.23868026999999,
@@ -5211,13 +5211,11 @@
       }
     },
     "ARES": {
-      "tier": "T2",
-      "reasons": [
-        "move_1d"
-      ],
+      "tier": "T3",
+      "reasons": [],
       "proxies": {
         "mcap_weight": 27750888628.410606,
-        "pct_1d": -3.01,
+        "pct_1d": 0.74,
         "pct_1w": -1.45,
         "earnings_in_days": 38,
         "dollar_vol_musd": 278.63219305,
@@ -5793,7 +5791,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 26566691551.6967,
-        "pct_1d": -0.1,
+        "pct_1d": 0.46,
         "pct_1w": -1.93,
         "earnings_in_days": 40,
         "dollar_vol_musd": 163.56129098510743,
@@ -6009,7 +6007,7 @@
       ],
       "proxies": {
         "mcap_weight": 1684184341016.2803,
-        "pct_1d": -0.92,
+        "pct_1d": 2.45,
         "pct_1w": -1.16,
         "earnings_in_days": 23,
         "dollar_vol_musd": 5722.895689398193,
@@ -6159,7 +6157,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 12909751830.735535,
-        "pct_1d": 0.91,
+        "pct_1d": -0.74,
         "pct_1w": 1.57,
         "earnings_in_days": 33,
         "dollar_vol_musd": 207.31931117,
@@ -6189,7 +6187,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 26015612677.757294,
-        "pct_1d": -1.51,
+        "pct_1d": 0.29,
         "pct_1w": -3.67,
         "earnings_in_days": 40,
         "dollar_vol_musd": 161.3465795135498,
@@ -6234,7 +6232,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 34941023375.6488,
-        "pct_1d": -1.25,
+        "pct_1d": 0.32,
         "pct_1w": -3.94,
         "earnings_in_days": 39,
         "dollar_vol_musd": 516.64539792,
@@ -6249,7 +6247,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 208596464207.60388,
-        "pct_1d": -0.83,
+        "pct_1d": -0.01,
         "pct_1w": -0.86,
         "earnings_in_days": 28,
         "dollar_vol_musd": 964.8797387573242,
@@ -6373,7 +6371,7 @@
         "mcap_weight": null,
         "pct_1d": 1.227515799708323,
         "pct_1w": null,
-        "earnings_in_days": 41,
+        "earnings_in_days": 35,
         "dollar_vol_musd": 497.07703052,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -6389,7 +6387,7 @@
       ],
       "proxies": {
         "mcap_weight": 46451442258.54492,
-        "pct_1d": 1.43,
+        "pct_1d": -1.29,
         "pct_1w": 0.59,
         "earnings_in_days": 3,
         "dollar_vol_musd": 1260.3037694335937,
@@ -6452,7 +6450,7 @@
       ],
       "proxies": {
         "mcap_weight": 156548595650.24292,
-        "pct_1d": -6.91,
+        "pct_1d": 3.19,
         "pct_1w": -0.07,
         "earnings_in_days": 40,
         "dollar_vol_musd": 1064.9035873779296,
@@ -6484,7 +6482,7 @@
       ],
       "proxies": {
         "mcap_weight": 396488837630.54364,
-        "pct_1d": -2.17,
+        "pct_1d": -0.13,
         "pct_1w": -1.78,
         "earnings_in_days": 19,
         "dollar_vol_musd": 1620.8375618095397,
@@ -6531,7 +6529,7 @@
       ],
       "proxies": {
         "mcap_weight": 15043092262.996323,
-        "pct_1d": 0.53,
+        "pct_1d": -0.81,
         "pct_1w": -5.52,
         "earnings_in_days": 39,
         "dollar_vol_musd": 122.85489329,
@@ -6621,7 +6619,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 12082196930.51031,
-        "pct_1d": 0.51,
+        "pct_1d": 0.57,
         "pct_1w": 2.5,
         "earnings_in_days": 34,
         "dollar_vol_musd": 153.91430992,
@@ -6819,7 +6817,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 18982454394.0067,
-        "pct_1d": -0.66,
+        "pct_1d": -1.46,
         "pct_1w": -2.52,
         "earnings_in_days": 29,
         "dollar_vol_musd": 354.78457475,
@@ -6954,7 +6952,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 50070143571.02051,
-        "pct_1d": 0.01,
+        "pct_1d": -1.24,
         "pct_1w": 1.59,
         "earnings_in_days": 41,
         "dollar_vol_musd": 336.45939264,
@@ -6973,7 +6971,7 @@
       ],
       "proxies": {
         "mcap_weight": 85030048385.50452,
-        "pct_1d": -8.95,
+        "pct_1d": 12.94,
         "pct_1w": 8.69,
         "earnings_in_days": 32,
         "dollar_vol_musd": 4350.05936959,
@@ -7033,7 +7031,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 16776699800.779152,
-        "pct_1d": -1.03,
+        "pct_1d": -0.58,
         "pct_1w": 0.03,
         "earnings_in_days": 42,
         "dollar_vol_musd": 125.08463459000001,
@@ -7127,7 +7125,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 12003889102.38287,
-        "pct_1d": -0.5,
+        "pct_1d": -0.04,
         "pct_1w": 0.85,
         "earnings_in_days": null,
         "dollar_vol_musd": 70.09191262,
@@ -7204,7 +7202,7 @@
       ],
       "proxies": {
         "mcap_weight": 20940984407.0,
-        "pct_1d": 0.06,
+        "pct_1d": -0.72,
         "pct_1w": -5.69,
         "earnings_in_days": 40,
         "dollar_vol_musd": 241.39944057,
@@ -7371,9 +7369,9 @@
       ],
       "proxies": {
         "mcap_weight": 33628810846.618835,
-        "pct_1d": 0.48,
+        "pct_1d": -0.84,
         "pct_1w": 5.61,
-        "earnings_in_days": 34,
+        "earnings_in_days": 33,
         "dollar_vol_musd": 205.65256725999998,
         "pct_1d_source": "sp500_heatmap",
         "dollar_vol_source": "hot_tape_adv20",
@@ -7720,7 +7718,7 @@
       ],
       "proxies": {
         "mcap_weight": 123188830681.96869,
-        "pct_1d": -0.05,
+        "pct_1d": -0.77,
         "pct_1w": -2.35,
         "earnings_in_days": 32,
         "dollar_vol_musd": 1461.4994577957154,
@@ -7735,9 +7733,9 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 57406343343.57051,
-        "pct_1d": -1.23,
+        "pct_1d": -0.87,
         "pct_1w": 1.01,
-        "earnings_in_days": 27,
+        "earnings_in_days": 32,
         "dollar_vol_musd": 377.15570594177245,
         "pct_1d_source": "sp500_heatmap",
         "dollar_vol_source": "stocks_last_bar",
@@ -7801,7 +7799,7 @@
         "mcap_weight": null,
         "pct_1d": 4.5699892047499135,
         "pct_1w": null,
-        "earnings_in_days": 51,
+        "earnings_in_days": 59,
         "dollar_vol_musd": 33.84092074,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -7859,7 +7857,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 168236033818.66064,
-        "pct_1d": -1.39,
+        "pct_1d": -0.18,
         "pct_1w": 1.55,
         "earnings_in_days": 18,
         "dollar_vol_musd": 557.8202150878906,
@@ -8013,7 +8011,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 128405044522.93408,
-        "pct_1d": 1.62,
+        "pct_1d": -0.88,
         "pct_1w": -0.32,
         "earnings_in_days": 34,
         "dollar_vol_musd": 670.8922145141602,
@@ -8150,7 +8148,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 101877392780.03937,
-        "pct_1d": -1.14,
+        "pct_1d": -0.31,
         "pct_1w": -2.37,
         "earnings_in_days": 20,
         "dollar_vol_musd": 548.4378677062988,
@@ -8315,7 +8313,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 18673350345.613678,
-        "pct_1d": -0.52,
+        "pct_1d": -0.65,
         "pct_1w": 0.39,
         "earnings_in_days": 39,
         "dollar_vol_musd": 181.31799404,
@@ -8362,7 +8360,7 @@
       ],
       "proxies": {
         "mcap_weight": 1082086010189.6602,
-        "pct_1d": -0.47,
+        "pct_1d": -0.15,
         "pct_1w": -0.84,
         "earnings_in_days": null,
         "dollar_vol_musd": 1512.5478368743898,
@@ -8426,7 +8424,7 @@
       ],
       "proxies": {
         "mcap_weight": 20351001810.625023,
-        "pct_1d": -0.95,
+        "pct_1d": 0.08,
         "pct_1w": -6.46,
         "earnings_in_days": 31,
         "dollar_vol_musd": 144.53285061000003,
@@ -8548,7 +8546,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 63650158128.30148,
-        "pct_1d": 0.43,
+        "pct_1d": -1.33,
         "pct_1w": 1.34,
         "earnings_in_days": 33,
         "dollar_vol_musd": 945.37672288,
@@ -8886,12 +8884,11 @@
     "BX": {
       "tier": "T2",
       "reasons": [
-        "move_1d",
         "move_1w"
       ],
       "proxies": {
         "mcap_weight": 88889024625.44437,
-        "pct_1d": -3.26,
+        "pct_1d": 0.18,
         "pct_1w": -5.23,
         "earnings_in_days": 27,
         "dollar_vol_musd": 532.7597297622681,
@@ -8936,7 +8933,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 10122542894.0242,
-        "pct_1d": -1.53,
+        "pct_1d": 0.03,
         "pct_1w": 0.36,
         "earnings_in_days": 32,
         "dollar_vol_musd": 90.36621001,
@@ -8998,7 +8995,7 @@
       ],
       "proxies": {
         "mcap_weight": 225246209173.58768,
-        "pct_1d": -2.21,
+        "pct_1d": 0.08,
         "pct_1w": 1.9,
         "earnings_in_days": 18,
         "dollar_vol_musd": 1085.3449461334228,
@@ -9060,7 +9057,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 50993999238.565216,
-        "pct_1d": 0.03,
+        "pct_1d": -0.08,
         "pct_1w": -2.29,
         "earnings_in_days": 34,
         "dollar_vol_musd": 420.7110343,
@@ -9257,7 +9254,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 22119182354.933044,
-        "pct_1d": 1.3,
+        "pct_1d": -1.2,
         "pct_1w": 0.16,
         "earnings_in_days": 17,
         "dollar_vol_musd": 304.91538119506833,
@@ -9274,7 +9271,7 @@
       ],
       "proxies": {
         "mcap_weight": 377659703160.392,
-        "pct_1d": -0.2,
+        "pct_1d": 0.62,
         "pct_1w": 1.56,
         "earnings_in_days": 40,
         "dollar_vol_musd": 1625.2495898071288,
@@ -9321,7 +9318,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 128614097111.04163,
-        "pct_1d": -0.6,
+        "pct_1d": -0.43,
         "pct_1w": -2.13,
         "earnings_in_days": 25,
         "dollar_vol_musd": 507.5224805664063,
@@ -9349,11 +9346,12 @@
     "CBOE": {
       "tier": "T2",
       "reasons": [
+        "move_1d",
         "move_1w"
       ],
       "proxies": {
         "mcap_weight": 26946335705.09073,
-        "pct_1d": -1.85,
+        "pct_1d": 4.93,
         "pct_1w": -5.44,
         "earnings_in_days": 35,
         "dollar_vol_musd": 294.83907614,
@@ -9364,13 +9362,11 @@
       }
     },
     "CBRE": {
-      "tier": "T2",
-      "reasons": [
-        "move_1d"
-      ],
+      "tier": "T3",
+      "reasons": [],
       "proxies": {
         "mcap_weight": 38962357229.61368,
-        "pct_1d": -3.12,
+        "pct_1d": 0.62,
         "pct_1w": -3.55,
         "earnings_in_days": 27,
         "dollar_vol_musd": 266.46282604370117,
@@ -9526,7 +9522,7 @@
       ],
       "proxies": {
         "mcap_weight": 28862895423.69565,
-        "pct_1d": -1.09,
+        "pct_1d": 0.72,
         "pct_1w": -7.14,
         "earnings_in_days": 33,
         "dollar_vol_musd": 212.71230851745605,
@@ -9569,11 +9565,12 @@
     "CCL": {
       "tier": "T2",
       "reasons": [
+        "move_1d",
         "earnings_window"
       ],
       "proxies": {
         "mcap_weight": 30474692897.75,
-        "pct_1d": -0.49,
+        "pct_1d": 12.9,
         "pct_1w": 1.88,
         "earnings_in_days": 4,
         "dollar_vol_musd": 518.06499907,
@@ -9637,7 +9634,7 @@
       ],
       "proxies": {
         "mcap_weight": 89813920434.69238,
-        "pct_1d": 0.17,
+        "pct_1d": -2.76,
         "pct_1w": 15.28,
         "earnings_in_days": 31,
         "dollar_vol_musd": 796.16667725,
@@ -9665,12 +9662,11 @@
     "CDW": {
       "tier": "T2",
       "reasons": [
-        "move_1d",
         "move_1w"
       ],
       "proxies": {
         "mcap_weight": 16931109087.525024,
-        "pct_1d": -3.77,
+        "pct_1d": 0.93,
         "pct_1w": -7.36,
         "earnings_in_days": 39,
         "dollar_vol_musd": 237.46671794,
@@ -9715,7 +9711,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 93278499776.79288,
-        "pct_1d": -1.08,
+        "pct_1d": 2.4,
         "pct_1w": 3.36,
         "earnings_in_days": 42,
         "dollar_vol_musd": 507.7951548095703,
@@ -9777,7 +9773,7 @@
       ],
       "proxies": {
         "mcap_weight": 17353943089.991608,
-        "pct_1d": 0.73,
+        "pct_1d": 1.32,
         "pct_1w": -10.2,
         "earnings_in_days": 40,
         "dollar_vol_musd": 260.49583484039306,
@@ -9792,7 +9788,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 27599714403.50818,
-        "pct_1d": -1.11,
+        "pct_1d": -0.5,
         "pct_1w": -2.25,
         "earnings_in_days": 21,
         "dollar_vol_musd": 261.88441767,
@@ -10047,7 +10043,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 22861711905.16001,
-        "pct_1d": -0.79,
+        "pct_1d": -0.27,
         "pct_1w": 1.72,
         "earnings_in_days": 35,
         "dollar_vol_musd": 173.45097453,
@@ -10186,7 +10182,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 17188820765.00348,
-        "pct_1d": 0.77,
+        "pct_1d": 0.37,
         "pct_1w": -3.85,
         "earnings_in_days": 40,
         "dollar_vol_musd": 210.87927962999998,
@@ -10203,7 +10199,7 @@
       ],
       "proxies": {
         "mcap_weight": 12923407696.426239,
-        "pct_1d": -1.34,
+        "pct_1d": 1.04,
         "pct_1w": -11.91,
         "earnings_in_days": 35,
         "dollar_vol_musd": 332.28284977722166,
@@ -10248,7 +10244,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 71876057177.3335,
-        "pct_1d": -0.07,
+        "pct_1d": 0.61,
         "pct_1w": -1.19,
         "earnings_in_days": 34,
         "dollar_vol_musd": 495.54783579101564,
@@ -10289,13 +10285,11 @@
       }
     },
     "CIEN": {
-      "tier": "T2",
-      "reasons": [
-        "move_1d"
-      ],
+      "tier": "T3",
+      "reasons": [],
       "proxies": {
         "mcap_weight": 50612881177.06833,
-        "pct_1d": -3.56,
+        "pct_1d": 2.12,
         "pct_1w": 2.33,
         "earnings_in_days": 22,
         "dollar_vol_musd": 970.7865824600001,
@@ -10340,7 +10334,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 24946320403.86879,
-        "pct_1d": -0.38,
+        "pct_1d": -0.29,
         "pct_1w": -3.27,
         "earnings_in_days": 31,
         "dollar_vol_musd": 106.1921857,
@@ -10355,7 +10349,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 68604691717.51727,
-        "pct_1d": 0.53,
+        "pct_1d": -0.35,
         "pct_1w": -1.61,
         "earnings_in_days": 35,
         "dollar_vol_musd": 304.6696033569336,
@@ -10522,7 +10516,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 10134018588.05214,
-        "pct_1d": -2.84,
+        "pct_1d": 0.52,
         "pct_1w": 0.84,
         "earnings_in_days": 38,
         "dollar_vol_musd": 327.68411716,
@@ -10582,7 +10576,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 77750626772.95103,
-        "pct_1d": -0.55,
+        "pct_1d": -0.34,
         "pct_1w": -3.65,
         "earnings_in_days": 27,
         "dollar_vol_musd": 915.8774316215515,
@@ -10597,7 +10591,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 95101527428.69577,
-        "pct_1d": -0.47,
+        "pct_1d": 0.66,
         "pct_1w": -4.18,
         "earnings_in_days": 26,
         "dollar_vol_musd": 582.2527441864014,
@@ -10629,7 +10623,7 @@
       ],
       "proxies": {
         "mcap_weight": 39645545843.45627,
-        "pct_1d": 1.66,
+        "pct_1d": 1.08,
         "pct_1w": -6.28,
         "earnings_in_days": 33,
         "dollar_vol_musd": 415.3418089885712,
@@ -10644,7 +10638,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 72282115208.12506,
-        "pct_1d": -1.38,
+        "pct_1d": 0.49,
         "pct_1w": -1.35,
         "earnings_in_days": 41,
         "dollar_vol_musd": 426.3487180175781,
@@ -10674,7 +10668,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 19739680950.44037,
-        "pct_1d": -0.56,
+        "pct_1d": 0.74,
         "pct_1w": -3.66,
         "earnings_in_days": 34,
         "dollar_vol_musd": 218.95149995,
@@ -10706,7 +10700,7 @@
       ],
       "proxies": {
         "mcap_weight": 30538770749.24469,
-        "pct_1d": 1.15,
+        "pct_1d": -1.14,
         "pct_1w": -5.05,
         "earnings_in_days": 32,
         "dollar_vol_musd": 316.29621994,
@@ -10796,7 +10790,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 24267255510.43274,
-        "pct_1d": -0.6,
+        "pct_1d": 0.7,
         "pct_1w": -3.61,
         "earnings_in_days": 27,
         "dollar_vol_musd": 252.7076650466919,
@@ -10889,7 +10883,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 122819662294.99286,
-        "pct_1d": -1.87,
+        "pct_1d": 0.17,
         "pct_1w": -1.1,
         "earnings_in_days": 25,
         "dollar_vol_musd": 781.2204280914307,
@@ -10923,7 +10917,7 @@
       ],
       "proxies": {
         "mcap_weight": 57933050704.59662,
-        "pct_1d": -4.52,
+        "pct_1d": 5.94,
         "pct_1w": -6.78,
         "earnings_in_days": 40,
         "dollar_vol_musd": 1827.66489946,
@@ -10974,7 +10968,7 @@
       ],
       "proxies": {
         "mcap_weight": 51477222207.56328,
-        "pct_1d": -1.7,
+        "pct_1d": 0.62,
         "pct_1w": 0.44,
         "earnings_in_days": 34,
         "dollar_vol_musd": 1861.89702834,
@@ -11094,7 +11088,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 10530800384.827766,
-        "pct_1d": 2.15,
+        "pct_1d": 0.25,
         "pct_1w": 0.16,
         "earnings_in_days": 16,
         "dollar_vol_musd": 284.37084861,
@@ -11109,7 +11103,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 152930264742.89105,
-        "pct_1d": -0.99,
+        "pct_1d": -0.34,
         "pct_1w": -3.44,
         "earnings_in_days": 41,
         "dollar_vol_musd": 647.065915512085,
@@ -11139,7 +11133,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 58568676044.17648,
-        "pct_1d": -1.01,
+        "pct_1d": -0.64,
         "pct_1w": -0.6,
         "earnings_in_days": 40,
         "dollar_vol_musd": 401.28771912999997,
@@ -11221,7 +11215,7 @@
       ],
       "proxies": {
         "mcap_weight": 409228944628.7754,
-        "pct_1d": 0.02,
+        "pct_1d": -0.58,
         "pct_1w": 3.07,
         "earnings_in_days": 1,
         "dollar_vol_musd": 4271.7792514160155,
@@ -11298,7 +11292,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 26139741996.079468,
-        "pct_1d": -0.47,
+        "pct_1d": -1.46,
         "pct_1w": 0.09,
         "earnings_in_days": 40,
         "dollar_vol_musd": 176.74142435,
@@ -11360,7 +11354,7 @@
       ],
       "proxies": {
         "mcap_weight": 25543138929.64762,
-        "pct_1d": -1.34,
+        "pct_1d": -0.57,
         "pct_1w": -5.77,
         "earnings_in_days": 55,
         "dollar_vol_musd": 315.63738939999996,
@@ -11375,7 +11369,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 11355680871.22902,
-        "pct_1d": 0.29,
+        "pct_1d": 0.34,
         "pct_1w": -1.01,
         "earnings_in_days": 41,
         "dollar_vol_musd": 114.62747514,
@@ -11546,7 +11540,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 56575795424.52616,
-        "pct_1d": -1.52,
+        "pct_1d": 0.29,
         "pct_1w": -1.29,
         "earnings_in_days": 40,
         "dollar_vol_musd": 441.96138875808714,
@@ -11595,7 +11589,7 @@
       ],
       "proxies": {
         "mcap_weight": 13979851101.65503,
-        "pct_1d": 0.6,
+        "pct_1d": -0.63,
         "pct_1w": 5.32,
         "earnings_in_days": 40,
         "dollar_vol_musd": 272.06577798,
@@ -11612,7 +11606,7 @@
       ],
       "proxies": {
         "mcap_weight": 192598463516.23535,
-        "pct_1d": -2.88,
+        "pct_1d": 0.55,
         "pct_1w": -1.64,
         "earnings_in_days": 30,
         "dollar_vol_musd": 2044.2817473220825,
@@ -11705,7 +11699,7 @@
       ],
       "proxies": {
         "mcap_weight": 258164696713.14185,
-        "pct_1d": 2.82,
+        "pct_1d": 0.31,
         "pct_1w": 6.09,
         "earnings_in_days": 30,
         "dollar_vol_musd": 1923.8780022583007,
@@ -11754,7 +11748,7 @@
       ],
       "proxies": {
         "mcap_weight": 420674007317.2797,
-        "pct_1d": 0.04,
+        "pct_1d": -0.15,
         "pct_1w": -2.57,
         "earnings_in_days": 47,
         "dollar_vol_musd": 2128.6649391174315,
@@ -11765,13 +11759,11 @@
       }
     },
     "CSGP": {
-      "tier": "T2",
-      "reasons": [
-        "move_1d"
-      ],
+      "tier": "T3",
+      "reasons": [],
       "proxies": {
         "mcap_weight": 11382000308.748245,
-        "pct_1d": -3.81,
+        "pct_1d": 0.28,
         "pct_1w": -3.44,
         "earnings_in_days": 32,
         "dollar_vol_musd": 230.87367863,
@@ -11878,7 +11870,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 86658774355.93808,
-        "pct_1d": -0.04,
+        "pct_1d": 0.19,
         "pct_1w": -0.68,
         "earnings_in_days": 26,
         "dollar_vol_musd": 401.33496552734374,
@@ -11895,7 +11887,7 @@
       ],
       "proxies": {
         "mcap_weight": 79997898404.9747,
-        "pct_1d": 0.34,
+        "pct_1d": -1.1,
         "pct_1w": 1.15,
         "earnings_in_days": 2,
         "dollar_vol_musd": 410.63903371,
@@ -11940,7 +11932,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 25823967326.75798,
-        "pct_1d": -1.01,
+        "pct_1d": -0.52,
         "pct_1w": -4.24,
         "earnings_in_days": 40,
         "dollar_vol_musd": 373.02411555000003,
@@ -11955,7 +11947,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 52388227680.267334,
-        "pct_1d": -0.99,
+        "pct_1d": 0.19,
         "pct_1w": -2.5,
         "earnings_in_days": 39,
         "dollar_vol_musd": 326.8944500244141,
@@ -12092,7 +12084,7 @@
       ],
       "proxies": {
         "mcap_weight": 46837760202.291565,
-        "pct_1d": -7.06,
+        "pct_1d": 6.33,
         "pct_1w": -0.08,
         "earnings_in_days": 40,
         "dollar_vol_musd": 274.34499770507813,
@@ -12109,7 +12101,7 @@
       ],
       "proxies": {
         "mcap_weight": 113994625476.17297,
-        "pct_1d": -1.44,
+        "pct_1d": -0.85,
         "pct_1w": 0.33,
         "earnings_in_days": 40,
         "dollar_vol_musd": 1405.339405693817,
@@ -12141,7 +12133,7 @@
       ],
       "proxies": {
         "mcap_weight": 401049783382.9619,
-        "pct_1d": 0.94,
+        "pct_1d": -0.77,
         "pct_1w": -2.42,
         "earnings_in_days": 35,
         "dollar_vol_musd": 1458.6076132278442,
@@ -12325,7 +12317,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 53369634853.73002,
-        "pct_1d": -0.66,
+        "pct_1d": 0.13,
         "pct_1w": -4.56,
         "earnings_in_days": 35,
         "dollar_vol_musd": 297.70821749725343,
@@ -12357,7 +12349,7 @@
       ],
       "proxies": {
         "mcap_weight": 55858501773.724976,
-        "pct_1d": -1.07,
+        "pct_1d": 0.44,
         "pct_1w": 6.68,
         "earnings_in_days": 14,
         "dollar_vol_musd": 555.80676197,
@@ -12413,13 +12405,11 @@
       }
     },
     "DASH": {
-      "tier": "T2",
-      "reasons": [
-        "move_1d"
-      ],
+      "tier": "T3",
+      "reasons": [],
       "proxies": {
         "mcap_weight": 83782489362.78407,
-        "pct_1d": -7.74,
+        "pct_1d": 2.33,
         "pct_1w": 0.22,
         "earnings_in_days": 40,
         "dollar_vol_musd": 555.4072657531739,
@@ -12569,7 +12559,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 17786511143.9106,
-        "pct_1d": -0.55,
+        "pct_1d": -0.48,
         "pct_1w": 2.09,
         "earnings_in_days": 41,
         "dollar_vol_musd": 102.79966024017334,
@@ -12586,7 +12576,7 @@
       ],
       "proxies": {
         "mcap_weight": 96278787938.41602,
-        "pct_1d": 0.21,
+        "pct_1d": -2.15,
         "pct_1w": 16.62,
         "earnings_in_days": 41,
         "dollar_vol_musd": 850.55493249,
@@ -12616,7 +12606,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 186165567893.9065,
-        "pct_1d": -0.13,
+        "pct_1d": -1.12,
         "pct_1w": 0.95,
         "earnings_in_days": 36,
         "dollar_vol_musd": 768.2058204467774,
@@ -12631,7 +12621,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 10713426440.833572,
-        "pct_1d": -0.39,
+        "pct_1d": -0.45,
         "pct_1w": 0.31,
         "earnings_in_days": 27,
         "dollar_vol_musd": 270.56772063,
@@ -12644,12 +12634,11 @@
     "DELL": {
       "tier": "T2",
       "reasons": [
-        "move_1d",
         "dollar_volume"
       ],
       "proxies": {
         "mcap_weight": 357892648161.1633,
-        "pct_1d": -3.46,
+        "pct_1d": 0.98,
         "pct_1w": -0.91,
         "earnings_in_days": 24,
         "dollar_vol_musd": 5923.65552107,
@@ -12889,7 +12878,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 27541799255.677185,
-        "pct_1d": -0.38,
+        "pct_1d": -1.37,
         "pct_1w": 1.99,
         "earnings_in_days": 29,
         "dollar_vol_musd": 312.8615148223877,
@@ -12949,7 +12938,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 26083433243.598633,
-        "pct_1d": 0.55,
+        "pct_1d": -0.69,
         "pct_1w": -4.11,
         "earnings_in_days": 27,
         "dollar_vol_musd": 263.80003822,
@@ -12964,7 +12953,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 39580524756.72505,
-        "pct_1d": -1.48,
+        "pct_1d": 0.03,
         "pct_1w": 2.53,
         "earnings_in_days": 34,
         "dollar_vol_musd": 374.88110376,
@@ -12981,7 +12970,7 @@
       ],
       "proxies": {
         "mcap_weight": 157813343124.07773,
-        "pct_1d": 1.27,
+        "pct_1d": -1.23,
         "pct_1w": 5.99,
         "earnings_in_days": 26,
         "dollar_vol_musd": 993.0315392990112,
@@ -13088,7 +13077,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 183287817282.01514,
-        "pct_1d": -0.53,
+        "pct_1d": 0.06,
         "pct_1w": 3.39,
         "earnings_in_days": 48,
         "dollar_vol_musd": 769.2372160575867,
@@ -13225,7 +13214,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 66264082855.90965,
-        "pct_1d": -0.8,
+        "pct_1d": 0.05,
         "pct_1w": -1.93,
         "earnings_in_days": 27,
         "dollar_vol_musd": 264.9322139053345,
@@ -13240,7 +13229,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 21402988149.669777,
-        "pct_1d": 1.71,
+        "pct_1d": -1.26,
         "pct_1w": 1.88,
         "earnings_in_days": 29,
         "dollar_vol_musd": 342.04382339,
@@ -13330,7 +13319,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 14004298282.352715,
-        "pct_1d": -1.03,
+        "pct_1d": 0.42,
         "pct_1w": -0.1,
         "earnings_in_days": 27,
         "dollar_vol_musd": 105.15156886,
@@ -13405,7 +13394,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 25842442230.618286,
-        "pct_1d": -0.21,
+        "pct_1d": -1.13,
         "pct_1w": 2.38,
         "earnings_in_days": 27,
         "dollar_vol_musd": 267.97197642,
@@ -13420,7 +13409,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 20239987052.881336,
-        "pct_1d": -0.46,
+        "pct_1d": -0.56,
         "pct_1w": -2.47,
         "earnings_in_days": 27,
         "dollar_vol_musd": 247.71081404685975,
@@ -13465,7 +13454,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 9664498547.495728,
-        "pct_1d": 0.04,
+        "pct_1d": 1.86,
         "pct_1w": -0.7,
         "earnings_in_days": 18,
         "dollar_vol_musd": 271.15213282,
@@ -13514,7 +13503,7 @@
       ],
       "proxies": {
         "mcap_weight": 22679965761.0,
-        "pct_1d": -1.37,
+        "pct_1d": 0.12,
         "pct_1w": -4.55,
         "earnings_in_days": 1,
         "dollar_vol_musd": 268.80627592,
@@ -13589,7 +13578,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 25270215607.387512,
-        "pct_1d": -0.5,
+        "pct_1d": 0.99,
         "pct_1w": -4.64,
         "earnings_in_days": 34,
         "dollar_vol_musd": 235.2900047302246,
@@ -13634,7 +13623,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 88379242386.81888,
-        "pct_1d": 0.05,
+        "pct_1d": 0.23,
         "pct_1w": -3.56,
         "earnings_in_days": 41,
         "dollar_vol_musd": 424.9831492790222,
@@ -13694,7 +13683,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 11386386077.88086,
-        "pct_1d": -0.22,
+        "pct_1d": -1.18,
         "pct_1w": -2.93,
         "earnings_in_days": 40,
         "dollar_vol_musd": 132.38621154,
@@ -13709,7 +13698,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 51754999160.7666,
-        "pct_1d": -0.68,
+        "pct_1d": -0.01,
         "pct_1w": -3.21,
         "earnings_in_days": 40,
         "dollar_vol_musd": 506.14977679252627,
@@ -13769,7 +13758,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 32686990500.752296,
-        "pct_1d": 0.07,
+        "pct_1d": -0.62,
         "pct_1w": -3.06,
         "earnings_in_days": 34,
         "dollar_vol_musd": 351.06013305,
@@ -13889,7 +13878,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 48015500679.01611,
-        "pct_1d": -0.54,
+        "pct_1d": 0.13,
         "pct_1w": -3.52,
         "earnings_in_days": 40,
         "dollar_vol_musd": 308.45373436203005,
@@ -13949,7 +13938,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 26205415880.339905,
-        "pct_1d": -0.99,
+        "pct_1d": 0.42,
         "pct_1w": -3.58,
         "earnings_in_days": 41,
         "dollar_vol_musd": 303.6887240570068,
@@ -13964,7 +13953,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 78349038514.88599,
-        "pct_1d": 0.26,
+        "pct_1d": -0.23,
         "pct_1w": 3.72,
         "earnings_in_days": 32,
         "dollar_vol_musd": 281.19487917480467,
@@ -14009,7 +13998,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 38129331497.98629,
-        "pct_1d": -0.26,
+        "pct_1d": 0.3,
         "pct_1w": -2.21,
         "earnings_in_days": 41,
         "dollar_vol_musd": 198.1272670677185,
@@ -14150,7 +14139,7 @@
       ],
       "proxies": {
         "mcap_weight": 17400688018.26709,
-        "pct_1d": -1.57,
+        "pct_1d": -2.75,
         "pct_1w": -6.77,
         "earnings_in_days": 25,
         "dollar_vol_musd": 254.52491562999998,
@@ -14165,7 +14154,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 14203298674.789429,
-        "pct_1d": -0.17,
+        "pct_1d": -0.73,
         "pct_1w": -1.18,
         "earnings_in_days": 31,
         "dollar_vol_musd": 160.17524936,
@@ -14197,7 +14186,7 @@
         "mcap_weight": null,
         "pct_1d": -0.48395061728394584,
         "pct_1w": null,
-        "earnings_in_days": 27,
+        "earnings_in_days": 26,
         "dollar_vol_musd": 102.16410957,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -14225,7 +14214,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 20260456581.529533,
-        "pct_1d": -2.24,
+        "pct_1d": 2.1,
         "pct_1w": -4.81,
         "earnings_in_days": 32,
         "dollar_vol_musd": 196.24761568756102,
@@ -14240,7 +14229,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 34179111066.13864,
-        "pct_1d": 1.16,
+        "pct_1d": 0.08,
         "pct_1w": 1.11,
         "earnings_in_days": 34,
         "dollar_vol_musd": 264.3837454162598,
@@ -14315,7 +14304,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 85899756281.90094,
-        "pct_1d": -0.38,
+        "pct_1d": -0.56,
         "pct_1w": -3.62,
         "earnings_in_days": 25,
         "dollar_vol_musd": 482.91292353515627,
@@ -14375,7 +14364,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 33621008610.42169,
-        "pct_1d": 0.43,
+        "pct_1d": 0.03,
         "pct_1w": 1.62,
         "earnings_in_days": 34,
         "dollar_vol_musd": 267.9726067,
@@ -14422,7 +14411,7 @@
       ],
       "proxies": {
         "mcap_weight": 88260691616.82129,
-        "pct_1d": 0.73,
+        "pct_1d": -1.43,
         "pct_1w": 5.54,
         "earnings_in_days": 40,
         "dollar_vol_musd": 307.0611297088623,
@@ -14557,7 +14546,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 73617673053.07202,
-        "pct_1d": 0.2,
+        "pct_1d": -0.61,
         "pct_1w": -2.69,
         "earnings_in_days": 41,
         "dollar_vol_musd": 374.87486630249026,
@@ -14662,7 +14651,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 99468954909.1637,
-        "pct_1d": 0.3,
+        "pct_1d": 0.17,
         "pct_1w": -1.3,
         "earnings_in_days": 40,
         "dollar_vol_musd": 889.5298070800782,
@@ -14709,7 +14698,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 31782468819.015503,
-        "pct_1d": -1.85,
+        "pct_1d": -0.64,
         "pct_1w": 1.62,
         "earnings_in_days": 25,
         "dollar_vol_musd": 448.89620013275146,
@@ -14771,7 +14760,7 @@
       ],
       "proxies": {
         "mcap_weight": 11653320014.395203,
-        "pct_1d": -0.42,
+        "pct_1d": -0.45,
         "pct_1w": -6.77,
         "earnings_in_days": 34,
         "dollar_vol_musd": 74.92704572,
@@ -14848,7 +14837,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 23982880897.467926,
-        "pct_1d": -0.61,
+        "pct_1d": 0.08,
         "pct_1w": -4.87,
         "earnings_in_days": 39,
         "dollar_vol_musd": 182.56735274963378,
@@ -15017,7 +15006,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 17455949775.357788,
-        "pct_1d": 0.52,
+        "pct_1d": 0.29,
         "pct_1w": 0.58,
         "earnings_in_days": 40,
         "dollar_vol_musd": 153.10654874267578,
@@ -15139,7 +15128,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 170888236267.08984,
-        "pct_1d": -1.95,
+        "pct_1d": 0.66,
         "pct_1w": 3.58,
         "earnings_in_days": 39,
         "dollar_vol_musd": 623.4076775665283,
@@ -15186,7 +15175,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 47094526254.93388,
-        "pct_1d": -0.48,
+        "pct_1d": 0.08,
         "pct_1w": -3.37,
         "earnings_in_days": 40,
         "dollar_vol_musd": 329.1350859809875,
@@ -15246,7 +15235,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 17993462313.97055,
-        "pct_1d": -0.17,
+        "pct_1d": 0.15,
         "pct_1w": -2.18,
         "earnings_in_days": 41,
         "dollar_vol_musd": 175.0072247,
@@ -15276,7 +15265,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 49737556527.70996,
-        "pct_1d": 0.63,
+        "pct_1d": -0.46,
         "pct_1w": -2.23,
         "earnings_in_days": 34,
         "dollar_vol_musd": 289.93659660000003,
@@ -15520,7 +15509,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 41560445185.98428,
-        "pct_1d": -0.05,
+        "pct_1d": 0.17,
         "pct_1w": -4.11,
         "earnings_in_days": 39,
         "dollar_vol_musd": 278.76553705444337,
@@ -15535,7 +15524,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 20103788188.967804,
-        "pct_1d": -1.76,
+        "pct_1d": -1.15,
         "pct_1w": -0.74,
         "earnings_in_days": 32,
         "dollar_vol_musd": 220.23491471252441,
@@ -15610,7 +15599,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 24368042872.85977,
-        "pct_1d": 0.6,
+        "pct_1d": -0.36,
         "pct_1w": -1.82,
         "earnings_in_days": 39,
         "dollar_vol_musd": 188.99000119,
@@ -15627,7 +15616,7 @@
       ],
       "proxies": {
         "mcap_weight": 31705511451.897858,
-        "pct_1d": 0.02,
+        "pct_1d": -1.9,
         "pct_1w": -5.43,
         "earnings_in_days": 41,
         "dollar_vol_musd": 664.97051574,
@@ -15657,7 +15646,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 28172796848.78705,
-        "pct_1d": -1.25,
+        "pct_1d": 0.74,
         "pct_1w": -2.46,
         "earnings_in_days": 40,
         "dollar_vol_musd": 141.5110264770508,
@@ -15717,7 +15706,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 50682341079.6847,
-        "pct_1d": -2.6,
+        "pct_1d": -0.09,
         "pct_1w": -3.79,
         "earnings_in_days": 27,
         "dollar_vol_musd": 445.3329813365936,
@@ -15762,7 +15751,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 52271294059.90845,
-        "pct_1d": -0.77,
+        "pct_1d": -0.59,
         "pct_1w": -2.99,
         "earnings_in_days": 38,
         "dollar_vol_musd": 323.5551078262329,
@@ -15792,7 +15781,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 57868302956.57847,
-        "pct_1d": 0.12,
+        "pct_1d": -0.24,
         "pct_1w": 2.9,
         "earnings_in_days": 19,
         "dollar_vol_musd": 334.22904519,
@@ -16019,7 +16008,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 103838423582.22784,
-        "pct_1d": -0.48,
+        "pct_1d": -1.25,
         "pct_1w": 1.08,
         "earnings_in_days": 27,
         "dollar_vol_musd": 545.5210835815429,
@@ -16066,7 +16055,7 @@
       ],
       "proxies": {
         "mcap_weight": 9712238004.875336,
-        "pct_1d": -1.98,
+        "pct_1d": -0.03,
         "pct_1w": -3.79,
         "earnings_in_days": 5,
         "dollar_vol_musd": 241.02336276,
@@ -16098,7 +16087,7 @@
       ],
       "proxies": {
         "mcap_weight": 67652245289.2717,
-        "pct_1d": 1.33,
+        "pct_1d": -0.83,
         "pct_1w": -5.86,
         "earnings_in_days": 94,
         "dollar_vol_musd": 513.79567091,
@@ -16115,7 +16104,7 @@
       ],
       "proxies": {
         "mcap_weight": 16922462338.569313,
-        "pct_1d": -0.78,
+        "pct_1d": 0.9,
         "pct_1w": -5.79,
         "earnings_in_days": 92,
         "dollar_vol_musd": 211.46035773,
@@ -16130,7 +16119,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 25055108614.132767,
-        "pct_1d": -0.65,
+        "pct_1d": 0.49,
         "pct_1w": -4.33,
         "earnings_in_days": 33,
         "dollar_vol_musd": 187.75192283,
@@ -16237,7 +16226,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 43089659247.24751,
-        "pct_1d": 2.05,
+        "pct_1d": -0.68,
         "pct_1w": 3.88,
         "earnings_in_days": 46,
         "dollar_vol_musd": 303.563545,
@@ -16327,7 +16316,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 25089239118.670044,
-        "pct_1d": -1.69,
+        "pct_1d": -0.92,
         "pct_1w": 2.55,
         "earnings_in_days": 31,
         "dollar_vol_musd": 229.13405740000002,
@@ -16415,11 +16404,12 @@
     "FICO": {
       "tier": "T2",
       "reasons": [
+        "move_1d",
         "move_1w"
       ],
       "proxies": {
         "mcap_weight": 18640703372.16461,
-        "pct_1d": -2.57,
+        "pct_1d": -23.01,
         "pct_1w": -9.12,
         "earnings_in_days": 40,
         "dollar_vol_musd": 418.05193507999996,
@@ -16477,13 +16467,11 @@
       }
     },
     "FIS": {
-      "tier": "T2",
-      "reasons": [
-        "move_1d"
-      ],
+      "tier": "T3",
+      "reasons": [],
       "proxies": {
         "mcap_weight": 18261146442.279522,
-        "pct_1d": -3.11,
+        "pct_1d": -0.82,
         "pct_1w": -0.59,
         "earnings_in_days": 40,
         "dollar_vol_musd": 232.3001075,
@@ -16513,7 +16501,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 47249101200.59177,
-        "pct_1d": -1.02,
+        "pct_1d": -0.25,
         "pct_1w": -1.53,
         "earnings_in_days": 24,
         "dollar_vol_musd": 305.07035845,
@@ -16558,7 +16546,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 58384225524.32117,
-        "pct_1d": -0.04,
+        "pct_1d": 0.97,
         "pct_1w": 0.46,
         "earnings_in_days": 27,
         "dollar_vol_musd": 527.70641118,
@@ -16575,7 +16563,7 @@
       ],
       "proxies": {
         "mcap_weight": 42363133629.77284,
-        "pct_1d": -1.43,
+        "pct_1d": 0.27,
         "pct_1w": 5.69,
         "earnings_in_days": 40,
         "dollar_vol_musd": 367.07605911,
@@ -16654,7 +16642,7 @@
         "mcap_weight": null,
         "pct_1d": 5.2278820375335044,
         "pct_1w": null,
-        "earnings_in_days": 51,
+        "earnings_in_days": 59,
         "dollar_vol_musd": 74.13834565,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -17046,7 +17034,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 12000000000.0,
-        "pct_1d": 0.02,
+        "pct_1d": -0.78,
         "pct_1w": -2.08,
         "earnings_in_days": 34,
         "dollar_vol_musd": 38.22104061889648,
@@ -17061,7 +17049,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 22000000000.0,
-        "pct_1d": -0.02,
+        "pct_1d": -0.62,
         "pct_1w": -2.14,
         "earnings_in_days": 34,
         "dollar_vol_musd": 229.89645588760376,
@@ -17183,7 +17171,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 9602986687.47895,
-        "pct_1d": -0.62,
+        "pct_1d": -0.36,
         "pct_1w": -0.35,
         "earnings_in_days": 35,
         "dollar_vol_musd": 99.45489366,
@@ -17217,7 +17205,7 @@
       ],
       "proxies": {
         "mcap_weight": 19098456747.017883,
-        "pct_1d": -2.67,
+        "pct_1d": 0.14,
         "pct_1w": -9.31,
         "earnings_in_days": 34,
         "dollar_vol_musd": 476.54669204000004,
@@ -17382,7 +17370,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 127269975175.43602,
-        "pct_1d": 1.65,
+        "pct_1d": -1.08,
         "pct_1w": 2.13,
         "earnings_in_days": 40,
         "dollar_vol_musd": 754.64223511,
@@ -17442,7 +17430,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 16940136492.764145,
-        "pct_1d": -0.59,
+        "pct_1d": -0.93,
         "pct_1w": 1.98,
         "earnings_in_days": 40,
         "dollar_vol_musd": 131.82456173,
@@ -17744,7 +17732,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 91102019030.67001,
-        "pct_1d": -0.76,
+        "pct_1d": -0.14,
         "pct_1w": -4.63,
         "earnings_in_days": 28,
         "dollar_vol_musd": 492.65503378601073,
@@ -17755,13 +17743,11 @@
       }
     },
     "GDDY": {
-      "tier": "T2",
-      "reasons": [
-        "move_1d"
-      ],
+      "tier": "T3",
+      "reasons": [],
       "proxies": {
         "mcap_weight": 12302557889.260376,
-        "pct_1d": -3.53,
+        "pct_1d": 0.27,
         "pct_1w": -0.33,
         "earnings_in_days": 34,
         "dollar_vol_musd": 267.54991254,
@@ -17855,7 +17841,7 @@
       ],
       "proxies": {
         "mcap_weight": 339376318577.50256,
-        "pct_1d": -2.71,
+        "pct_1d": 0.31,
         "pct_1w": 4.08,
         "earnings_in_days": 25,
         "dollar_vol_musd": 1402.3329412994385,
@@ -17885,7 +17871,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 30095853730.166656,
-        "pct_1d": 0.23,
+        "pct_1d": -0.65,
         "pct_1w": 3.9,
         "earnings_in_days": 40,
         "dollar_vol_musd": 233.2175943,
@@ -17898,12 +17884,11 @@
     "GEN": {
       "tier": "T2",
       "reasons": [
-        "move_1d",
         "move_1w"
       ],
       "proxies": {
         "mcap_weight": 12941452134.19423,
-        "pct_1d": -3.56,
+        "pct_1d": -1.53,
         "pct_1w": -25.47,
         "earnings_in_days": 41,
         "dollar_vol_musd": 256.16852965,
@@ -17952,7 +17937,7 @@
       ],
       "proxies": {
         "mcap_weight": 255049028473.48694,
-        "pct_1d": -0.82,
+        "pct_1d": 2.09,
         "pct_1w": 1.84,
         "earnings_in_days": 33,
         "dollar_vol_musd": 1295.0030556030274,
@@ -18136,7 +18121,7 @@
         "mcap_weight": null,
         "pct_1d": -0.5429997064866465,
         "pct_1w": null,
-        "earnings_in_days": 40,
+        "earnings_in_days": 47,
         "dollar_vol_musd": 28.98324777,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -18179,7 +18164,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 187146422462.4472,
-        "pct_1d": 0.85,
+        "pct_1d": -0.98,
         "pct_1w": 0.55,
         "earnings_in_days": 34,
         "dollar_vol_musd": 797.5593602966309,
@@ -18197,7 +18182,7 @@
       ],
       "proxies": {
         "mcap_weight": 17984935111.768066,
-        "pct_1d": -0.12,
+        "pct_1d": 1.41,
         "pct_1w": -7.38,
         "earnings_in_days": 2,
         "dollar_vol_musd": 373.88927588999996,
@@ -18227,7 +18212,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 12836931110.92302,
-        "pct_1d": -0.21,
+        "pct_1d": -0.67,
         "pct_1w": -3.68,
         "earnings_in_days": 33,
         "dollar_vol_musd": 71.14499539,
@@ -18367,7 +18352,7 @@
       ],
       "proxies": {
         "mcap_weight": 135014011732.68742,
-        "pct_1d": -3.29,
+        "pct_1d": 5.75,
         "pct_1w": 4.4,
         "earnings_in_days": 32,
         "dollar_vol_musd": 1325.3230445,
@@ -18399,7 +18384,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 72503818422.83737,
-        "pct_1d": -2.41,
+        "pct_1d": -0.14,
         "pct_1w": 0.52,
         "earnings_in_days": 25,
         "dollar_vol_musd": 596.8034181625367,
@@ -18476,7 +18461,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 12293567394.850235,
-        "pct_1d": -1.41,
+        "pct_1d": 1.07,
         "pct_1w": 0.34,
         "earnings_in_days": 40,
         "dollar_vol_musd": 296.03626676,
@@ -18583,7 +18568,7 @@
       ],
       "proxies": {
         "mcap_weight": 1850000000000.0,
-        "pct_1d": -0.56,
+        "pct_1d": -1.09,
         "pct_1w": -0.97,
         "earnings_in_days": 40,
         "dollar_vol_musd": 4718.875722225952,
@@ -18600,7 +18585,7 @@
       ],
       "proxies": {
         "mcap_weight": 2200000000000.0,
-        "pct_1d": -0.34,
+        "pct_1d": -1.26,
         "pct_1w": -1.61,
         "earnings_in_days": 40,
         "dollar_vol_musd": 7516.2687174591065,
@@ -18660,7 +18645,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 17868003318.52292,
-        "pct_1d": -1.14,
+        "pct_1d": -0.12,
         "pct_1w": 1.19,
         "earnings_in_days": 25,
         "dollar_vol_musd": 128.80731561,
@@ -18750,7 +18735,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 22886843985.814133,
-        "pct_1d": -2.07,
+        "pct_1d": -0.45,
         "pct_1w": 1.68,
         "earnings_in_days": 39,
         "dollar_vol_musd": 216.87231713,
@@ -18904,7 +18889,7 @@
       ],
       "proxies": {
         "mcap_weight": 56725647764.02832,
-        "pct_1d": -0.03,
+        "pct_1d": -2.02,
         "pct_1w": 7.33,
         "earnings_in_days": 33,
         "dollar_vol_musd": 161.5711100463867,
@@ -18936,7 +18921,7 @@
       ],
       "proxies": {
         "mcap_weight": 272376297167.93848,
-        "pct_1d": -2.05,
+        "pct_1d": -0.33,
         "pct_1w": -0.7,
         "earnings_in_days": 18,
         "dollar_vol_musd": 1829.2724988708496,
@@ -19000,7 +18985,7 @@
         "mcap_weight": null,
         "pct_1d": -0.8257804632426868,
         "pct_1w": null,
-        "earnings_in_days": 40,
+        "earnings_in_days": 33,
         "dollar_vol_musd": 148.50909514,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -19171,7 +19156,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 58549765442.10425,
-        "pct_1d": 1.02,
+        "pct_1d": -0.29,
         "pct_1w": -1.86,
         "earnings_in_days": 40,
         "dollar_vol_musd": 340.55182331,
@@ -19263,7 +19248,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 27293349424.53834,
-        "pct_1d": -1.01,
+        "pct_1d": -0.94,
         "pct_1w": -2.62,
         "earnings_in_days": 25,
         "dollar_vol_musd": 322.129063495636,
@@ -19293,7 +19278,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 12424606581.509735,
-        "pct_1d": 1.54,
+        "pct_1d": 0.5,
         "pct_1w": 0.59,
         "earnings_in_days": 27,
         "dollar_vol_musd": 140.9737586,
@@ -19353,7 +19338,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 31599288572.29438,
-        "pct_1d": -2.17,
+        "pct_1d": 0.13,
         "pct_1w": -1.51,
         "earnings_in_days": 27,
         "dollar_vol_musd": 477.67181131,
@@ -19383,7 +19368,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 94310215243.59131,
-        "pct_1d": -0.69,
+        "pct_1d": -0.62,
         "pct_1w": 1.85,
         "earnings_in_days": 28,
         "dollar_vol_musd": 652.4204935,
@@ -19430,7 +19415,7 @@
       ],
       "proxies": {
         "mcap_weight": 292522610522.02844,
-        "pct_1d": -1.13,
+        "pct_1d": 0.55,
         "pct_1w": -2.26,
         "earnings_in_days": 53,
         "dollar_vol_musd": 1749.9935928588868,
@@ -19584,7 +19569,7 @@
       ],
       "proxies": {
         "mcap_weight": 33650429717.759323,
-        "pct_1d": 1.46,
+        "pct_1d": -0.19,
         "pct_1w": -5.81,
         "earnings_in_days": 31,
         "dollar_vol_musd": 216.053237,
@@ -19599,7 +19584,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 10403601531.048157,
-        "pct_1d": -2.64,
+        "pct_1d": 1.25,
         "pct_1w": -3.24,
         "earnings_in_days": 34,
         "dollar_vol_musd": 125.40542081,
@@ -19749,7 +19734,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 70661377220.43793,
-        "pct_1d": 2.01,
+        "pct_1d": 0.5,
         "pct_1w": 2.69,
         "earnings_in_days": 33,
         "dollar_vol_musd": 481.2064789031982,
@@ -19856,7 +19841,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 67365600092.72415,
-        "pct_1d": -0.48,
+        "pct_1d": -0.08,
         "pct_1w": 2.95,
         "earnings_in_days": 27,
         "dollar_vol_musd": 388.41387557678223,
@@ -19867,13 +19852,11 @@
       }
     },
     "HONA": {
-      "tier": "T2",
-      "reasons": [
-        "move_1d"
-      ],
+      "tier": "T3",
+      "reasons": [],
       "proxies": {
         "mcap_weight": 50325753288.59482,
-        "pct_1d": -4.07,
+        "pct_1d": 1.54,
         "pct_1w": -2.95,
         "earnings_in_days": 40,
         "dollar_vol_musd": 671.26147612,
@@ -19890,7 +19873,7 @@
       ],
       "proxies": {
         "mcap_weight": 107350424768.09067,
-        "pct_1d": -2.46,
+        "pct_1d": 0.58,
         "pct_1w": -0.35,
         "earnings_in_days": 40,
         "dollar_vol_musd": 1658.406321193695,
@@ -19924,7 +19907,7 @@
       ],
       "proxies": {
         "mcap_weight": 83550631367.26454,
-        "pct_1d": -0.49,
+        "pct_1d": -1.42,
         "pct_1w": 3.59,
         "earnings_in_days": 23,
         "dollar_vol_musd": 1593.3963711,
@@ -19941,7 +19924,7 @@
       ],
       "proxies": {
         "mcap_weight": 28226056641.68809,
-        "pct_1d": 0.06,
+        "pct_1d": -0.67,
         "pct_1w": -9.01,
         "earnings_in_days": 30,
         "dollar_vol_musd": 542.5899505,
@@ -20020,7 +20003,7 @@
       ],
       "proxies": {
         "mcap_weight": 10847413764.138794,
-        "pct_1d": 1.32,
+        "pct_1d": -0.3,
         "pct_1w": -5.38,
         "earnings_in_days": 29,
         "dollar_vol_musd": 105.63584912,
@@ -20065,7 +20048,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 9625638138.63707,
-        "pct_1d": -0.44,
+        "pct_1d": -1.06,
         "pct_1w": 1.8,
         "earnings_in_days": 39,
         "dollar_vol_musd": 97.4803553,
@@ -20080,7 +20063,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 15360489077.850843,
-        "pct_1d": 1.07,
+        "pct_1d": -0.64,
         "pct_1w": 2.66,
         "earnings_in_days": 40,
         "dollar_vol_musd": 139.73489247550964,
@@ -20095,7 +20078,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 33428000574.00769,
-        "pct_1d": -1.18,
+        "pct_1d": -0.82,
         "pct_1w": -2.01,
         "earnings_in_days": 34,
         "dollar_vol_musd": 164.57319916992188,
@@ -20170,7 +20153,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 24652734022.048462,
-        "pct_1d": -0.19,
+        "pct_1d": -0.22,
         "pct_1w": 4.41,
         "earnings_in_days": 32,
         "dollar_vol_musd": 217.21932912,
@@ -20217,7 +20200,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 47783556082.94556,
-        "pct_1d": -2.09,
+        "pct_1d": 0.06,
         "pct_1w": 3.03,
         "earnings_in_days": 42,
         "dollar_vol_musd": 380.37482199,
@@ -20279,7 +20262,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 92713347535.6566,
-        "pct_1d": -1.79,
+        "pct_1d": 0.49,
         "pct_1w": 1.22,
         "earnings_in_days": 34,
         "dollar_vol_musd": 509.8053826309204,
@@ -20508,7 +20491,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 40432695012.16061,
-        "pct_1d": -2.42,
+        "pct_1d": -0.33,
         "pct_1w": -1.6,
         "earnings_in_days": 20,
         "dollar_vol_musd": 340.94367875,
@@ -20523,7 +20506,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 212460721113.60123,
-        "pct_1d": -2.15,
+        "pct_1d": 0.99,
         "pct_1w": -1.76,
         "earnings_in_days": 26,
         "dollar_vol_musd": 934.4006622390747,
@@ -20598,7 +20581,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 86628781918.37799,
-        "pct_1d": -0.91,
+        "pct_1d": 0.31,
         "pct_1w": -0.75,
         "earnings_in_days": 34,
         "dollar_vol_musd": 504.23184838,
@@ -20778,7 +20761,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 40907883063.506836,
-        "pct_1d": 1.89,
+        "pct_1d": -0.45,
         "pct_1w": 1.49,
         "earnings_in_days": 38,
         "dollar_vol_musd": 265.9189617,
@@ -20900,7 +20883,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 16961473806.665161,
-        "pct_1d": 0.47,
+        "pct_1d": -0.92,
         "pct_1w": 2.84,
         "earnings_in_days": 40,
         "dollar_vol_musd": 125.32806982,
@@ -20915,7 +20898,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 21863800952.394714,
-        "pct_1d": 0.04,
+        "pct_1d": 0.06,
         "pct_1w": 3.29,
         "earnings_in_days": 39,
         "dollar_vol_musd": 133.1622637939453,
@@ -21142,7 +21125,7 @@
       ],
       "proxies": {
         "mcap_weight": 40770000000.0,
-        "pct_1d": 0.7,
+        "pct_1d": 0.69,
         "pct_1w": 12.68,
         "earnings_in_days": 34,
         "dollar_vol_musd": 934.41286145,
@@ -21247,7 +21230,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 25112223628.223114,
-        "pct_1d": 0.75,
+        "pct_1d": -1.29,
         "pct_1w": -1.13,
         "earnings_in_days": 32,
         "dollar_vol_musd": 188.85481965,
@@ -21459,7 +21442,7 @@
       ],
       "proxies": {
         "mcap_weight": 650190947226.0,
-        "pct_1d": -5.67,
+        "pct_1d": 0.79,
         "pct_1w": 13.26,
         "earnings_in_days": 27,
         "dollar_vol_musd": 11990.2491,
@@ -21477,7 +21460,7 @@
       ],
       "proxies": {
         "mcap_weight": 73701018723.51074,
-        "pct_1d": -2.32,
+        "pct_1d": 0.18,
         "pct_1w": -9.04,
         "earnings_in_days": 55,
         "dollar_vol_musd": 1144.80940606,
@@ -21507,7 +21490,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 15722390771.790737,
-        "pct_1d": -0.3,
+        "pct_1d": 0.43,
         "pct_1w": 0.04,
         "earnings_in_days": 40,
         "dollar_vol_musd": 141.42141645851135,
@@ -21646,7 +21629,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 18545537965.31786,
-        "pct_1d": -2.91,
+        "pct_1d": -1.53,
         "pct_1w": 1.42,
         "earnings_in_days": 33,
         "dollar_vol_musd": 156.39932204437255,
@@ -21706,7 +21689,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 44502901196.28906,
-        "pct_1d": 0.22,
+        "pct_1d": -0.62,
         "pct_1w": 1.48,
         "earnings_in_days": 32,
         "dollar_vol_musd": 434.26547972000003,
@@ -21723,7 +21706,7 @@
       ],
       "proxies": {
         "mcap_weight": 29518997268.768173,
-        "pct_1d": 0.39,
+        "pct_1d": -0.67,
         "pct_1w": 5.92,
         "earnings_in_days": 34,
         "dollar_vol_musd": 335.34543773,
@@ -21815,7 +21798,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 33158138382.894806,
-        "pct_1d": -0.3,
+        "pct_1d": 0.68,
         "pct_1w": -2.59,
         "earnings_in_days": 40,
         "dollar_vol_musd": 144.8051344291687,
@@ -21877,7 +21860,7 @@
       ],
       "proxies": {
         "mcap_weight": 143141192849.35437,
-        "pct_1d": 2.37,
+        "pct_1d": -1.56,
         "pct_1w": 3.01,
         "earnings_in_days": 25,
         "dollar_vol_musd": 1011.32926171875,
@@ -21892,7 +21875,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 11865692204.969238,
-        "pct_1d": -1.15,
+        "pct_1d": 0.19,
         "pct_1w": 1.14,
         "earnings_in_days": 39,
         "dollar_vol_musd": 197.78224659,
@@ -22029,7 +22012,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 78126338085.9375,
-        "pct_1d": -0.18,
+        "pct_1d": -1.21,
         "pct_1w": 1.82,
         "earnings_in_days": 28,
         "dollar_vol_musd": 339.81225952,
@@ -22151,7 +22134,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 13651173231.28376,
-        "pct_1d": -1.58,
+        "pct_1d": -0.07,
         "pct_1w": 1.28,
         "earnings_in_days": 32,
         "dollar_vol_musd": 133.06229176,
@@ -22618,7 +22601,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 21174062777.472427,
-        "pct_1d": 0.27,
+        "pct_1d": 1.02,
         "pct_1w": -3.75,
         "earnings_in_days": 26,
         "dollar_vol_musd": 302.5323202,
@@ -22636,7 +22619,7 @@
       ],
       "proxies": {
         "mcap_weight": 33190261546.548584,
-        "pct_1d": 0.69,
+        "pct_1d": 0.05,
         "pct_1w": 5.73,
         "earnings_in_days": 5,
         "dollar_vol_musd": 343.36393152999995,
@@ -22713,7 +22696,7 @@
       ],
       "proxies": {
         "mcap_weight": 90982366945.42374,
-        "pct_1d": -0.87,
+        "pct_1d": 0.42,
         "pct_1w": 5.12,
         "earnings_in_days": 40,
         "dollar_vol_musd": 434.58867117004394,
@@ -22881,7 +22864,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 10361941865.593262,
-        "pct_1d": 0.02,
+        "pct_1d": -0.46,
         "pct_1w": -4.56,
         "earnings_in_days": 39,
         "dollar_vol_musd": 165.91032955,
@@ -22988,7 +22971,7 @@
       ],
       "proxies": {
         "mcap_weight": 653612700420.1107,
-        "pct_1d": 0.27,
+        "pct_1d": -1.9,
         "pct_1w": 0.46,
         "earnings_in_days": 18,
         "dollar_vol_musd": 1108.1235589874268,
@@ -23095,7 +23078,7 @@
       ],
       "proxies": {
         "mcap_weight": 911917349566.9875,
-        "pct_1d": -1.89,
+        "pct_1d": -0.16,
         "pct_1w": -1.89,
         "earnings_in_days": 18,
         "dollar_vol_musd": 3931.570490020752,
@@ -23277,7 +23260,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 43478392952.32787,
-        "pct_1d": -0.82,
+        "pct_1d": -0.81,
         "pct_1w": 3.2,
         "earnings_in_days": 31,
         "dollar_vol_musd": 282.86613675460814,
@@ -23322,7 +23305,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 21993520149.26358,
-        "pct_1d": -1.02,
+        "pct_1d": -0.34,
         "pct_1w": -0.96,
         "earnings_in_days": 25,
         "dollar_vol_musd": 308.42747739,
@@ -23339,9 +23322,9 @@
       ],
       "proxies": {
         "mcap_weight": 61654133362.65854,
-        "pct_1d": -0.67,
+        "pct_1d": -0.18,
         "pct_1w": 8.1,
-        "earnings_in_days": 38,
+        "earnings_in_days": 59,
         "dollar_vol_musd": 361.57167228,
         "pct_1d_source": "sp500_heatmap",
         "dollar_vol_source": "hot_tape_adv20",
@@ -23399,7 +23382,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 28021014406.357098,
-        "pct_1d": -0.3,
+        "pct_1d": 0.19,
         "pct_1w": -3.27,
         "earnings_in_days": 40,
         "dollar_vol_musd": 573.78519906,
@@ -23429,7 +23412,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 15052513888.360174,
-        "pct_1d": 0.22,
+        "pct_1d": -0.29,
         "pct_1w": -0.4,
         "earnings_in_days": 34,
         "dollar_vol_musd": 88.50560610637665,
@@ -23440,13 +23423,11 @@
       }
     },
     "KKR": {
-      "tier": "T2",
-      "reasons": [
-        "move_1d"
-      ],
+      "tier": "T3",
+      "reasons": [],
       "proxies": {
         "mcap_weight": 86774431905.05013,
-        "pct_1d": -3.55,
+        "pct_1d": 0.15,
         "pct_1w": -2.17,
         "earnings_in_days": 42,
         "dollar_vol_musd": 379.04008632,
@@ -23459,12 +23440,13 @@
     "KLAC": {
       "tier": "T2",
       "reasons": [
+        "move_1d",
         "move_1w",
         "dollar_volume"
       ],
       "proxies": {
         "mcap_weight": 245526269069.0014,
-        "pct_1d": 0.67,
+        "pct_1d": 3.82,
         "pct_1w": 6.18,
         "earnings_in_days": 40,
         "dollar_vol_musd": 1341.823954925537,
@@ -23511,7 +23493,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 32735754811.835068,
-        "pct_1d": 0.35,
+        "pct_1d": -0.14,
         "pct_1w": 0.58,
         "earnings_in_days": 34,
         "dollar_vol_musd": 323.52956800308226,
@@ -23526,7 +23508,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 68474164236.75,
-        "pct_1d": -0.39,
+        "pct_1d": -0.26,
         "pct_1w": -3.42,
         "earnings_in_days": 33,
         "dollar_vol_musd": 308.105775,
@@ -23652,7 +23634,7 @@
       ],
       "proxies": {
         "mcap_weight": 377806838523.5594,
-        "pct_1d": -0.72,
+        "pct_1d": -0.1,
         "pct_1w": -0.5,
         "earnings_in_days": 25,
         "dollar_vol_musd": 1064.5557244018555,
@@ -23729,7 +23711,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 34691181229.28352,
-        "pct_1d": 1.62,
+        "pct_1d": 1.08,
         "pct_1w": -2.1,
         "earnings_in_days": 14,
         "dollar_vol_musd": 601.2861531814575,
@@ -23885,7 +23867,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 34189766247.16614,
-        "pct_1d": 0.45,
+        "pct_1d": -0.17,
         "pct_1w": 1.14,
         "earnings_in_days": 38,
         "dollar_vol_musd": 223.53417041893005,
@@ -23947,7 +23929,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 21428113548.01361,
-        "pct_1d": 0.12,
+        "pct_1d": 0.07,
         "pct_1w": -2.74,
         "earnings_in_days": 38,
         "dollar_vol_musd": 113.74841181000001,
@@ -24129,7 +24111,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 15512092031.084366,
-        "pct_1d": -1.02,
+        "pct_1d": 1.72,
         "pct_1w": -3.2,
         "earnings_in_days": 39,
         "dollar_vol_musd": 170.20858374000002,
@@ -24193,7 +24175,7 @@
       ],
       "proxies": {
         "mcap_weight": 19789536282.876816,
-        "pct_1d": -0.15,
+        "pct_1d": 0.91,
         "pct_1w": 7.48,
         "earnings_in_days": 9,
         "dollar_vol_musd": 372.03632844,
@@ -24298,7 +24280,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 25111805187.98828,
-        "pct_1d": -0.02,
+        "pct_1d": -0.15,
         "pct_1w": -3.45,
         "earnings_in_days": 32,
         "dollar_vol_musd": 262.68990450999996,
@@ -24313,7 +24295,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 44261352531.66553,
-        "pct_1d": 0.0,
+        "pct_1d": -0.09,
         "pct_1w": -3.88,
         "earnings_in_days": 34,
         "dollar_vol_musd": 418.04172685000003,
@@ -24358,7 +24340,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 12917743115.055084,
-        "pct_1d": -1.43,
+        "pct_1d": -0.87,
         "pct_1w": 4.05,
         "earnings_in_days": 33,
         "dollar_vol_musd": 184.00998245,
@@ -24373,7 +24355,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 216609975544.7091,
-        "pct_1d": 0.46,
+        "pct_1d": 0.35,
         "pct_1w": 2.06,
         "earnings_in_days": 35,
         "dollar_vol_musd": 760.5639777099609,
@@ -24433,11 +24415,12 @@
     "LITE": {
       "tier": "T2",
       "reasons": [
+        "move_1d",
         "dollar_volume"
       ],
       "proxies": {
         "mcap_weight": 84466007189.9414,
-        "pct_1d": -2.16,
+        "pct_1d": 6.86,
         "pct_1w": 1.15,
         "earnings_in_days": 39,
         "dollar_vol_musd": 4024.34018856,
@@ -24514,7 +24497,7 @@
       ],
       "proxies": {
         "mcap_weight": 1054885397326.2646,
-        "pct_1d": 0.11,
+        "pct_1d": -0.62,
         "pct_1w": 2.65,
         "earnings_in_days": 34,
         "dollar_vol_musd": 2276.030196875,
@@ -24574,7 +24557,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 119909643065.22601,
-        "pct_1d": -0.28,
+        "pct_1d": -0.26,
         "pct_1w": -2.59,
         "earnings_in_days": 25,
         "dollar_vol_musd": 585.4921612487793,
@@ -24634,7 +24617,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 16490506460.762947,
-        "pct_1d": -0.61,
+        "pct_1d": 0.63,
         "pct_1w": -3.06,
         "earnings_in_days": 41,
         "dollar_vol_musd": 153.16157854,
@@ -24739,7 +24722,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 106196304031.4396,
-        "pct_1d": -0.86,
+        "pct_1d": 0.33,
         "pct_1w": -1.67,
         "earnings_in_days": 54,
         "dollar_vol_musd": 653.9813237823487,
@@ -24848,12 +24831,13 @@
     "LRCX": {
       "tier": "T2",
       "reasons": [
+        "move_1d",
         "move_1w",
         "dollar_volume"
       ],
       "proxies": {
         "mcap_weight": 394428881717.5598,
-        "pct_1d": -0.23,
+        "pct_1d": 3.14,
         "pct_1w": 9.52,
         "earnings_in_days": 33,
         "dollar_vol_musd": 2565.2104314605713,
@@ -24975,7 +24959,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 11214925870.360184,
-        "pct_1d": -0.71,
+        "pct_1d": -2.41,
         "pct_1w": 3.3,
         "earnings_in_days": 22,
         "dollar_vol_musd": 872.3019709199999,
@@ -25020,7 +25004,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 20879406167.974495,
-        "pct_1d": -0.94,
+        "pct_1d": -0.14,
         "pct_1w": 4.15,
         "earnings_in_days": 33,
         "dollar_vol_musd": 238.73338222,
@@ -25050,7 +25034,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 25253870251.30493,
-        "pct_1d": -0.54,
+        "pct_1d": -0.23,
         "pct_1w": -2.48,
         "earnings_in_days": 33,
         "dollar_vol_musd": 249.55819284999998,
@@ -25097,7 +25081,7 @@
       ],
       "proxies": {
         "mcap_weight": 18781426332.11328,
-        "pct_1d": 0.22,
+        "pct_1d": -0.11,
         "pct_1w": -6.12,
         "earnings_in_days": 35,
         "dollar_vol_musd": 225.79699355000002,
@@ -25157,7 +25141,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 39805789481.85242,
-        "pct_1d": 0.6,
+        "pct_1d": -0.36,
         "pct_1w": 2.24,
         "earnings_in_days": 39,
         "dollar_vol_musd": 197.04727836914063,
@@ -25204,7 +25188,7 @@
       ],
       "proxies": {
         "mcap_weight": 497267063827.9614,
-        "pct_1d": 0.11,
+        "pct_1d": -0.73,
         "pct_1w": 0.43,
         "earnings_in_days": 34,
         "dollar_vol_musd": 1347.0902729370118,
@@ -25219,7 +25203,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 13731198433.914543,
-        "pct_1d": -0.01,
+        "pct_1d": 0.41,
         "pct_1w": -0.49,
         "earnings_in_days": 40,
         "dollar_vol_musd": 143.14071694,
@@ -25341,7 +25325,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 91797556046.32178,
-        "pct_1d": 1.86,
+        "pct_1d": 0.24,
         "pct_1w": 3.87,
         "earnings_in_days": 39,
         "dollar_vol_musd": 476.3317913482666,
@@ -25371,9 +25355,9 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 13576354254.61586,
-        "pct_1d": -0.71,
+        "pct_1d": -0.31,
         "pct_1w": 1.16,
-        "earnings_in_days": 40,
+        "earnings_in_days": 33,
         "dollar_vol_musd": 164.77051876,
         "pct_1d_source": "sp500_heatmap",
         "dollar_vol_source": "hot_tape_adv20",
@@ -25510,7 +25494,7 @@
       ],
       "proxies": {
         "mcap_weight": 167357222081.5,
-        "pct_1d": -1.23,
+        "pct_1d": 0.8,
         "pct_1w": -4.73,
         "earnings_in_days": 40,
         "dollar_vol_musd": 1544.345,
@@ -25542,7 +25526,7 @@
       ],
       "proxies": {
         "mcap_weight": 42729355220.49481,
-        "pct_1d": -0.91,
+        "pct_1d": 2.8,
         "pct_1w": 7.4,
         "earnings_in_days": 41,
         "dollar_vol_musd": 624.6227305900001,
@@ -25557,7 +25541,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 101041873898.18665,
-        "pct_1d": -1.19,
+        "pct_1d": -0.72,
         "pct_1w": -0.92,
         "earnings_in_days": 40,
         "dollar_vol_musd": 391.7212866210937,
@@ -25572,7 +25556,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 81169929314.82568,
-        "pct_1d": -1.84,
+        "pct_1d": -1.09,
         "pct_1w": 0.02,
         "earnings_in_days": 33,
         "dollar_vol_musd": 337.70701384,
@@ -25662,7 +25646,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 76897560434.25,
-        "pct_1d": -0.12,
+        "pct_1d": -1.07,
         "pct_1w": -0.99,
         "earnings_in_days": 32,
         "dollar_vol_musd": 336.092575,
@@ -25679,7 +25663,7 @@
       ],
       "proxies": {
         "mcap_weight": 113382781788.87619,
-        "pct_1d": 0.97,
+        "pct_1d": -1.71,
         "pct_1w": -3.0,
         "earnings_in_days": 53,
         "dollar_vol_musd": 1157.062232032776,
@@ -25773,7 +25757,7 @@
         "mcap_weight": null,
         "pct_1d": -1.5308683285929492,
         "pct_1w": null,
-        "earnings_in_days": 40,
+        "earnings_in_days": 34,
         "dollar_vol_musd": 53.562076950000005,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -25786,7 +25770,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 62086093828.57832,
-        "pct_1d": -1.92,
+        "pct_1d": -0.15,
         "pct_1w": 0.68,
         "earnings_in_days": 40,
         "dollar_vol_musd": 298.36272257999997,
@@ -25803,7 +25787,7 @@
       ],
       "proxies": {
         "mcap_weight": 1914858460669.0261,
-        "pct_1d": -4.79,
+        "pct_1d": 0.64,
         "pct_1w": 12.99,
         "earnings_in_days": 40,
         "dollar_vol_musd": 19357.57445438843,
@@ -25916,7 +25900,7 @@
       ],
       "proxies": {
         "mcap_weight": 8196892451.160095,
-        "pct_1d": -2.21,
+        "pct_1d": 0.31,
         "pct_1w": -13.83,
         "earnings_in_days": 40,
         "dollar_vol_musd": 143.45907527,
@@ -26083,7 +26067,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 12888743033.66858,
-        "pct_1d": 1.08,
+        "pct_1d": 0.03,
         "pct_1w": -1.6,
         "earnings_in_days": 6,
         "dollar_vol_musd": 158.65845034999998,
@@ -26158,7 +26142,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 34394685835.664185,
-        "pct_1d": 1.34,
+        "pct_1d": -0.67,
         "pct_1w": -1.29,
         "earnings_in_days": 39,
         "dollar_vol_musd": 534.8609065185547,
@@ -26218,7 +26202,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 87440737376.20992,
-        "pct_1d": -0.04,
+        "pct_1d": -0.14,
         "pct_1w": 2.21,
         "earnings_in_days": 25,
         "dollar_vol_musd": 426.621717678833,
@@ -26293,7 +26277,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 84454722741.7503,
-        "pct_1d": -2.9,
+        "pct_1d": -0.39,
         "pct_1w": -3.58,
         "earnings_in_days": 41,
         "dollar_vol_musd": 386.9682984786987,
@@ -26308,7 +26292,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 114911776477.7546,
-        "pct_1d": 0.45,
+        "pct_1d": -0.47,
         "pct_1w": -1.01,
         "earnings_in_days": 34,
         "dollar_vol_musd": 354.88409242630007,
@@ -26426,12 +26410,11 @@
     "MOS": {
       "tier": "T2",
       "reasons": [
-        "move_1d",
         "move_1w"
       ],
       "proxies": {
         "mcap_weight": 7314778887.220539,
-        "pct_1d": -3.3,
+        "pct_1d": 1.39,
         "pct_1w": -6.0,
         "earnings_in_days": 39,
         "dollar_vol_musd": 206.79113257,
@@ -26463,7 +26446,7 @@
       ],
       "proxies": {
         "mcap_weight": 110510157650.52701,
-        "pct_1d": -1.04,
+        "pct_1d": 0.24,
         "pct_1w": -7.38,
         "earnings_in_days": 39,
         "dollar_vol_musd": 762.5630347106934,
@@ -26510,7 +26493,7 @@
       ],
       "proxies": {
         "mcap_weight": 67199615129.5166,
-        "pct_1d": -1.19,
+        "pct_1d": 0.36,
         "pct_1w": 12.29,
         "earnings_in_days": 34,
         "dollar_vol_musd": 930.7149524099999,
@@ -26542,7 +26525,7 @@
       ],
       "proxies": {
         "mcap_weight": 367065793289.9559,
-        "pct_1d": -0.06,
+        "pct_1d": -0.76,
         "pct_1w": 1.3,
         "earnings_in_days": 34,
         "dollar_vol_musd": 1233.207653881836,
@@ -26560,7 +26543,7 @@
       ],
       "proxies": {
         "mcap_weight": 79400035553.71399,
-        "pct_1d": -0.8,
+        "pct_1d": 0.23,
         "pct_1w": 29.11,
         "earnings_in_days": 41,
         "dollar_vol_musd": 2511.25948586,
@@ -26624,7 +26607,7 @@
       ],
       "proxies": {
         "mcap_weight": 235406688523.32306,
-        "pct_1d": -3.83,
+        "pct_1d": 3.56,
         "pct_1w": 7.24,
         "earnings_in_days": 29,
         "dollar_vol_musd": 3247.794090270996,
@@ -26654,7 +26637,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 308317864948.12964,
-        "pct_1d": -1.36,
+        "pct_1d": -0.26,
         "pct_1w": -3.1,
         "earnings_in_days": 19,
         "dollar_vol_musd": 888.7542519470214,
@@ -26684,7 +26667,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 40083870935.05859,
-        "pct_1d": -1.57,
+        "pct_1d": -0.9,
         "pct_1w": -0.27,
         "earnings_in_days": 25,
         "dollar_vol_musd": 290.8113343,
@@ -26701,7 +26684,7 @@
       ],
       "proxies": {
         "mcap_weight": 3832843689188.0576,
-        "pct_1d": -1.35,
+        "pct_1d": -0.71,
         "pct_1w": 4.53,
         "earnings_in_days": 40,
         "dollar_vol_musd": 19694.052761950683,
@@ -26763,7 +26746,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 75610802669.51514,
-        "pct_1d": -1.05,
+        "pct_1d": -0.51,
         "pct_1w": -0.39,
         "earnings_in_days": 34,
         "dollar_vol_musd": 431.51175914,
@@ -26885,7 +26868,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 31943433344.358765,
-        "pct_1d": -0.34,
+        "pct_1d": -0.64,
         "pct_1w": -2.69,
         "earnings_in_days": 21,
         "dollar_vol_musd": 255.36059755000002,
@@ -26917,7 +26900,7 @@
       ],
       "proxies": {
         "mcap_weight": 30288064340.264282,
-        "pct_1d": 2.22,
+        "pct_1d": -0.88,
         "pct_1w": 8.57,
         "earnings_in_days": 41,
         "dollar_vol_musd": 304.56440335,
@@ -27058,7 +27041,7 @@
       ],
       "proxies": {
         "mcap_weight": 1222319652551.97,
-        "pct_1d": -2.61,
+        "pct_1d": 2.28,
         "pct_1w": 6.54,
         "earnings_in_days": 5,
         "dollar_vol_musd": 22587.6171234375,
@@ -27467,11 +27450,13 @@
       }
     },
     "NCLH": {
-      "tier": "T3",
-      "reasons": [],
+      "tier": "T2",
+      "reasons": [
+        "move_1d"
+      ],
       "proxies": {
         "mcap_weight": 6708734272.410364,
-        "pct_1d": -2.05,
+        "pct_1d": 5.14,
         "pct_1w": 3.47,
         "earnings_in_days": 39,
         "dollar_vol_musd": 262.4924625,
@@ -27518,7 +27503,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 52292334856.46356,
-        "pct_1d": -0.99,
+        "pct_1d": 0.04,
         "pct_1w": 0.01,
         "earnings_in_days": 25,
         "dollar_vol_musd": 304.04871354,
@@ -27533,7 +27518,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 18145181849.88849,
-        "pct_1d": 1.7,
+        "pct_1d": -1.06,
         "pct_1w": 4.56,
         "earnings_in_days": 37,
         "dollar_vol_musd": 113.98893887,
@@ -27596,7 +27581,7 @@
       ],
       "proxies": {
         "mcap_weight": 158701225960.2602,
-        "pct_1d": -0.78,
+        "pct_1d": 0.22,
         "pct_1w": -5.46,
         "earnings_in_days": 32,
         "dollar_vol_musd": 1252.3148701400758,
@@ -27607,13 +27592,11 @@
       }
     },
     "NEM": {
-      "tier": "T2",
-      "reasons": [
-        "move_1d"
-      ],
+      "tier": "T3",
+      "reasons": [],
       "proxies": {
         "mcap_weight": 127949852789.09137,
-        "pct_1d": -4.43,
+        "pct_1d": 1.28,
         "pct_1w": -1.6,
         "earnings_in_days": 27,
         "dollar_vol_musd": 427.44574407424926,
@@ -27722,7 +27705,7 @@
       ],
       "proxies": {
         "mcap_weight": 296264314301.06775,
-        "pct_1d": -2.69,
+        "pct_1d": 2.51,
         "pct_1w": -0.89,
         "earnings_in_days": 25,
         "dollar_vol_musd": 1648.9510903633118,
@@ -27782,7 +27765,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 18904258263.89923,
-        "pct_1d": -0.81,
+        "pct_1d": 0.73,
         "pct_1w": -2.86,
         "earnings_in_days": 40,
         "dollar_vol_musd": 226.19166651,
@@ -27859,7 +27842,7 @@
       ],
       "proxies": {
         "mcap_weight": 53035078632.25,
-        "pct_1d": 1.79,
+        "pct_1d": -0.33,
         "pct_1w": 0.68,
         "earnings_in_days": 6,
         "dollar_vol_musd": 1366.354275,
@@ -28009,7 +27992,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 72526014472.76898,
-        "pct_1d": -0.92,
+        "pct_1d": -0.09,
         "pct_1w": -3.2,
         "earnings_in_days": 25,
         "dollar_vol_musd": 423.15873668,
@@ -28082,12 +28065,11 @@
     "NOW": {
       "tier": "T2",
       "reasons": [
-        "move_1d",
         "dollar_volume"
       ],
       "proxies": {
         "mcap_weight": 140212359391.8457,
-        "pct_1d": -3.07,
+        "pct_1d": 0.49,
         "pct_1w": 0.11,
         "earnings_in_days": 40,
         "dollar_vol_musd": 2031.7563767899999,
@@ -28130,13 +28112,11 @@
       }
     },
     "NRG": {
-      "tier": "T2",
-      "reasons": [
-        "move_1d"
-      ],
+      "tier": "T3",
+      "reasons": [],
       "proxies": {
         "mcap_weight": 21098826756.070335,
-        "pct_1d": -3.36,
+        "pct_1d": 1.25,
         "pct_1w": -3.17,
         "earnings_in_days": 41,
         "dollar_vol_musd": 262.8389261924744,
@@ -28166,7 +28146,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 70302420749.0,
-        "pct_1d": 0.02,
+        "pct_1d": -0.32,
         "pct_1w": -0.37,
         "earnings_in_days": 27,
         "dollar_vol_musd": 367.61031303,
@@ -28196,7 +28176,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 39509681656.903534,
-        "pct_1d": 1.62,
+        "pct_1d": 0.45,
         "pct_1w": 1.7,
         "earnings_in_days": 23,
         "dollar_vol_musd": 484.87940617000004,
@@ -28303,7 +28283,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 32150796120.01912,
-        "pct_1d": -0.67,
+        "pct_1d": -0.41,
         "pct_1w": -1.21,
         "earnings_in_days": 26,
         "dollar_vol_musd": 176.38582925,
@@ -28382,7 +28362,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 56095010891.0,
-        "pct_1d": -1.12,
+        "pct_1d": -2.81,
         "pct_1w": -0.45,
         "earnings_in_days": 31,
         "dollar_vol_musd": 242.280275,
@@ -28474,7 +28454,7 @@
       ],
       "proxies": {
         "mcap_weight": 5434765466857.91,
-        "pct_1d": 1.68,
+        "pct_1d": 0.21,
         "pct_1w": 1.26,
         "earnings_in_days": 54,
         "dollar_vol_musd": 20213.177245776365,
@@ -28579,7 +28559,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 16782222596.240234,
-        "pct_1d": -0.47,
+        "pct_1d": -0.09,
         "pct_1w": 2.39,
         "earnings_in_days": 33,
         "dollar_vol_musd": 257.44071005,
@@ -28699,7 +28679,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 5000000000.0,
-        "pct_1d": 1.54,
+        "pct_1d": -2.3,
         "pct_1w": -2.85,
         "earnings_in_days": 41,
         "dollar_vol_musd": 42.882329479999996,
@@ -28714,7 +28694,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 11000000000.0,
-        "pct_1d": 2.14,
+        "pct_1d": -1.89,
         "pct_1w": -4.33,
         "earnings_in_days": 41,
         "dollar_vol_musd": 80.77484735107421,
@@ -28744,7 +28724,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 60035247007.64639,
-        "pct_1d": -0.74,
+        "pct_1d": 0.91,
         "pct_1w": 4.43,
         "earnings_in_days": 32,
         "dollar_vol_musd": 826.02049559,
@@ -28819,7 +28799,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 52552950419.10848,
-        "pct_1d": -0.34,
+        "pct_1d": 0.07,
         "pct_1w": -1.98,
         "earnings_in_days": 38,
         "dollar_vol_musd": 664.358382951355,
@@ -28896,7 +28876,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 35934903225.40219,
-        "pct_1d": 2.05,
+        "pct_1d": 0.33,
         "pct_1w": 0.17,
         "earnings_in_days": 40,
         "dollar_vol_musd": 344.28841822000004,
@@ -29018,7 +28998,7 @@
       ],
       "proxies": {
         "mcap_weight": 55873165930.41941,
-        "pct_1d": -0.01,
+        "pct_1d": -0.77,
         "pct_1w": -5.17,
         "earnings_in_days": 32,
         "dollar_vol_musd": 260.9178489143372,
@@ -29127,7 +29107,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 20891445805.668724,
-        "pct_1d": -1.38,
+        "pct_1d": -0.05,
         "pct_1w": -0.55,
         "earnings_in_days": 25,
         "dollar_vol_musd": 220.53040441894532,
@@ -29189,7 +29169,7 @@
       ],
       "proxies": {
         "mcap_weight": 30055395735.49388,
-        "pct_1d": -2.01,
+        "pct_1d": 1.97,
         "pct_1w": 10.32,
         "earnings_in_days": 38,
         "dollar_vol_musd": 801.0221725,
@@ -29373,7 +29353,7 @@
       ],
       "proxies": {
         "mcap_weight": 414554224055.4199,
-        "pct_1d": -3.28,
+        "pct_1d": 4.18,
         "pct_1w": -7.12,
         "earnings_in_days": 15,
         "dollar_vol_musd": 3228.622883734131,
@@ -29465,7 +29445,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 69667705628.91718,
-        "pct_1d": 0.46,
+        "pct_1d": -0.42,
         "pct_1w": 1.66,
         "earnings_in_days": 33,
         "dollar_vol_musd": 358.40561543045044,
@@ -29540,7 +29520,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 25101337143.028503,
-        "pct_1d": 0.59,
+        "pct_1d": -0.32,
         "pct_1w": -3.77,
         "earnings_in_days": 40,
         "dollar_vol_musd": 316.05922333999996,
@@ -29632,7 +29612,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 56839381525.19023,
-        "pct_1d": -1.34,
+        "pct_1d": -0.91,
         "pct_1w": -3.37,
         "earnings_in_days": 45,
         "dollar_vol_musd": 479.3468631454468,
@@ -29664,7 +29644,7 @@
       ],
       "proxies": {
         "mcap_weight": 41986633626.0,
-        "pct_1d": 2.7,
+        "pct_1d": 0.29,
         "pct_1w": 20.99,
         "earnings_in_days": 30,
         "dollar_vol_musd": 774.7251116900001,
@@ -29797,12 +29777,11 @@
     "PANW": {
       "tier": "T2",
       "reasons": [
-        "move_1d",
         "dollar_volume"
       ],
       "proxies": {
         "mcap_weight": 306537312011.71875,
-        "pct_1d": 4.63,
+        "pct_1d": -2.57,
         "pct_1w": 3.07,
         "earnings_in_days": 54,
         "dollar_vol_musd": 1828.393886352539,
@@ -29910,7 +29889,7 @@
       ],
       "proxies": {
         "mcap_weight": 36085741525.73957,
-        "pct_1d": -2.04,
+        "pct_1d": -0.49,
         "pct_1w": -12.72,
         "earnings_in_days": 2,
         "dollar_vol_musd": 384.76047169,
@@ -30047,7 +30026,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 58589681633.359314,
-        "pct_1d": 0.31,
+        "pct_1d": -0.08,
         "pct_1w": -4.09,
         "earnings_in_days": 25,
         "dollar_vol_musd": 402.47221884,
@@ -30060,12 +30039,11 @@
     "PCG": {
       "tier": "T2",
       "reasons": [
-        "move_1d",
         "move_1w"
       ],
       "proxies": {
         "mcap_weight": 37049208078.16483,
-        "pct_1d": -3.16,
+        "pct_1d": 0.63,
         "pct_1w": -6.52,
         "earnings_in_days": 27,
         "dollar_vol_musd": 412.6372651023865,
@@ -30236,7 +30214,7 @@
         "mcap_weight": null,
         "pct_1d": null,
         "pct_1w": null,
-        "earnings_in_days": 27,
+        "earnings_in_days": 31,
         "dollar_vol_musd": 37.81886422,
         "pct_1d_source": null,
         "dollar_vol_source": "hot_tape_adv20",
@@ -30249,7 +30227,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 33404108737.437057,
-        "pct_1d": -0.43,
+        "pct_1d": 0.57,
         "pct_1w": -3.94,
         "earnings_in_days": 38,
         "dollar_vol_musd": 220.10037097549437,
@@ -30326,7 +30304,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 175566007770.04956,
-        "pct_1d": -0.1,
+        "pct_1d": -0.24,
         "pct_1w": -0.86,
         "earnings_in_days": 13,
         "dollar_vol_musd": 862.515634741211,
@@ -30341,7 +30319,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 163409642231.4806,
-        "pct_1d": 0.17,
+        "pct_1d": -0.91,
         "pct_1w": 3.65,
         "earnings_in_days": 39,
         "dollar_vol_musd": 795.7415861175538,
@@ -30371,7 +30349,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 24572788928.834938,
-        "pct_1d": -0.11,
+        "pct_1d": -0.86,
         "pct_1w": -2.46,
         "earnings_in_days": 31,
         "dollar_vol_musd": 178.01398856999998,
@@ -30416,7 +30394,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 339644362260.2333,
-        "pct_1d": 1.91,
+        "pct_1d": -0.63,
         "pct_1w": -0.11,
         "earnings_in_days": 27,
         "dollar_vol_musd": 846.744790260315,
@@ -30461,7 +30439,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 119272200000.0,
-        "pct_1d": 1.93,
+        "pct_1d": -0.02,
         "pct_1w": -3.74,
         "earnings_in_days": 26,
         "dollar_vol_musd": 580.9074,
@@ -30506,7 +30484,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 123379561122.19147,
-        "pct_1d": -0.9,
+        "pct_1d": -0.47,
         "pct_1w": 3.69,
         "earnings_in_days": 41,
         "dollar_vol_musd": 579.0735371154785,
@@ -30521,7 +30499,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 22829789116.390892,
-        "pct_1d": -0.6,
+        "pct_1d": -0.44,
         "pct_1w": 2.21,
         "earnings_in_days": 27,
         "dollar_vol_musd": 194.01142059,
@@ -30671,7 +30649,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 21132333904.244568,
-        "pct_1d": -1.12,
+        "pct_1d": -0.88,
         "pct_1w": 1.89,
         "earnings_in_days": 26,
         "dollar_vol_musd": 114.27332047119141,
@@ -30731,7 +30709,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 126441858044.7873,
-        "pct_1d": -0.46,
+        "pct_1d": 0.22,
         "pct_1w": -1.33,
         "earnings_in_days": 20,
         "dollar_vol_musd": 338.3594627609253,
@@ -30825,7 +30803,7 @@
       ],
       "proxies": {
         "mcap_weight": 455788097501.4685,
-        "pct_1d": -1.15,
+        "pct_1d": -0.14,
         "pct_1w": 6.77,
         "earnings_in_days": 38,
         "dollar_vol_musd": 3372.3136004440307,
@@ -30902,7 +30880,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 296884681201.605,
-        "pct_1d": 1.72,
+        "pct_1d": -0.84,
         "pct_1w": 0.99,
         "earnings_in_days": 25,
         "dollar_vol_musd": 742.7195993408203,
@@ -30917,7 +30895,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 90017648778.38411,
-        "pct_1d": -0.87,
+        "pct_1d": -0.5,
         "pct_1w": -3.23,
         "earnings_in_days": 20,
         "dollar_vol_musd": 428.6934348403931,
@@ -30947,7 +30925,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 8564135975.646973,
-        "pct_1d": -1.17,
+        "pct_1d": 0.36,
         "pct_1w": -4.04,
         "earnings_in_days": 25,
         "dollar_vol_musd": 223.12224372999998,
@@ -30962,7 +30940,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 11118633988.254776,
-        "pct_1d": -0.46,
+        "pct_1d": 0.2,
         "pct_1w": -2.62,
         "earnings_in_days": 38,
         "dollar_vol_musd": 96.96001564,
@@ -30977,7 +30955,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 9441187448.51355,
-        "pct_1d": -2.22,
+        "pct_1d": -0.87,
         "pct_1w": -3.18,
         "earnings_in_days": 41,
         "dollar_vol_musd": 247.11695018,
@@ -31127,7 +31105,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 23901695253.753662,
-        "pct_1d": -0.47,
+        "pct_1d": -0.75,
         "pct_1w": 2.87,
         "earnings_in_days": 32,
         "dollar_vol_musd": 160.07577100219726,
@@ -31157,7 +31135,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 24104010338.59616,
-        "pct_1d": 0.25,
+        "pct_1d": 0.28,
         "pct_1w": -3.93,
         "earnings_in_days": 40,
         "dollar_vol_musd": 220.7635635864258,
@@ -31358,7 +31336,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 41210248947.143555,
-        "pct_1d": -2.81,
+        "pct_1d": -0.12,
         "pct_1w": 0.89,
         "earnings_in_days": 40,
         "dollar_vol_musd": 186.69247198,
@@ -31405,7 +31383,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 53807855619.24118,
-        "pct_1d": -1.1,
+        "pct_1d": -0.08,
         "pct_1w": -2.81,
         "earnings_in_days": 40,
         "dollar_vol_musd": 210.3908828918457,
@@ -31431,13 +31409,11 @@
       }
     },
     "PSKY": {
-      "tier": "T2",
-      "reasons": [
-        "move_1d"
-      ],
+      "tier": "T3",
+      "reasons": [],
       "proxies": {
         "mcap_weight": 11174580001.638836,
-        "pct_1d": 3.21,
+        "pct_1d": -1.99,
         "pct_1w": -2.45,
         "earnings_in_days": 39,
         "dollar_vol_musd": 225.66869513,
@@ -31529,7 +31505,7 @@
       ],
       "proxies": {
         "mcap_weight": 102049599267.0,
-        "pct_1d": -0.86,
+        "pct_1d": -0.73,
         "pct_1w": -6.36,
         "earnings_in_days": 33,
         "dollar_vol_musd": 848.6808,
@@ -31544,7 +31520,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 14986884239.504272,
-        "pct_1d": 1.14,
+        "pct_1d": -1.17,
         "pct_1w": 1.64,
         "earnings_in_days": 40,
         "dollar_vol_musd": 236.52574553,
@@ -31758,7 +31734,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 97592407432.1886,
-        "pct_1d": -0.73,
+        "pct_1d": 1.22,
         "pct_1w": 1.95,
         "earnings_in_days": 34,
         "dollar_vol_musd": 424.2713711914063,
@@ -31790,7 +31766,7 @@
       ],
       "proxies": {
         "mcap_weight": 47084567288.15782,
-        "pct_1d": -1.38,
+        "pct_1d": -0.29,
         "pct_1w": 5.02,
         "earnings_in_days": 32,
         "dollar_vol_musd": 774.26118463,
@@ -31837,7 +31813,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 26086213737.433044,
-        "pct_1d": 0.18,
+        "pct_1d": 1.32,
         "pct_1w": 3.87,
         "earnings_in_days": 53,
         "dollar_vol_musd": 205.67751957,
@@ -31865,13 +31841,12 @@
     "QCOM": {
       "tier": "T2",
       "reasons": [
-        "move_1d",
         "move_1w",
         "dollar_volume"
       ],
       "proxies": {
         "mcap_weight": 215716177863.17477,
-        "pct_1d": -7.17,
+        "pct_1d": 0.57,
         "pct_1w": 13.65,
         "earnings_in_days": 40,
         "dollar_vol_musd": 3596.1768567352296,
@@ -32372,11 +32347,13 @@
       }
     },
     "RCL": {
-      "tier": "T3",
-      "reasons": [],
+      "tier": "T2",
+      "reasons": [
+        "move_1d"
+      ],
       "proxies": {
         "mcap_weight": 64910619970.60101,
-        "pct_1d": -0.05,
+        "pct_1d": 6.62,
         "pct_1w": -1.27,
         "earnings_in_days": 32,
         "dollar_vol_musd": 653.2513117858887,
@@ -32402,13 +32379,11 @@
       }
     },
     "RDDT": {
-      "tier": "T2",
-      "reasons": [
-        "move_1d"
-      ],
+      "tier": "T3",
+      "reasons": [],
       "proxies": {
         "mcap_weight": 28828692353.822937,
-        "pct_1d": -4.51,
+        "pct_1d": 2.65,
         "pct_1w": -0.67,
         "earnings_in_days": 34,
         "dollar_vol_musd": 429.9359014923096,
@@ -32528,7 +32503,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 13409918271.533516,
-        "pct_1d": 0.14,
+        "pct_1d": -0.44,
         "pct_1w": 0.38,
         "earnings_in_days": 32,
         "dollar_vol_musd": 104.24488394,
@@ -32539,13 +32514,11 @@
       }
     },
     "REGN": {
-      "tier": "T2",
-      "reasons": [
-        "move_1d"
-      ],
+      "tier": "T3",
+      "reasons": [],
       "proxies": {
         "mcap_weight": 81132646481.32544,
-        "pct_1d": -4.54,
+        "pct_1d": -0.61,
         "pct_1w": 0.41,
         "earnings_in_days": 35,
         "dollar_vol_musd": 466.59847098999023,
@@ -32680,7 +32653,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 23530293670.687695,
-        "pct_1d": -1.3,
+        "pct_1d": -0.53,
         "pct_1w": -3.09,
         "earnings_in_days": 21,
         "dollar_vol_musd": 237.85376131,
@@ -32907,7 +32880,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 30752865798.303833,
-        "pct_1d": 0.81,
+        "pct_1d": -0.72,
         "pct_1w": -2.96,
         "earnings_in_days": 33,
         "dollar_vol_musd": 238.64996452,
@@ -32971,7 +32944,7 @@
       ],
       "proxies": {
         "mcap_weight": 21276817910.561127,
-        "pct_1d": 0.02,
+        "pct_1d": -1.09,
         "pct_1w": 6.87,
         "earnings_in_days": 41,
         "dollar_vol_musd": 249.79338549000002,
@@ -33031,7 +33004,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 32024011932.0,
-        "pct_1d": 0.05,
+        "pct_1d": -0.11,
         "pct_1w": -1.33,
         "earnings_in_days": 34,
         "dollar_vol_musd": 298.28206031,
@@ -33155,7 +33128,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 48211782007.61267,
-        "pct_1d": -0.67,
+        "pct_1d": -0.56,
         "pct_1w": 4.46,
         "earnings_in_days": 41,
         "dollar_vol_musd": 305.04483571,
@@ -33187,7 +33160,7 @@
       ],
       "proxies": {
         "mcap_weight": 14448796812.49633,
-        "pct_1d": 1.86,
+        "pct_1d": 0.92,
         "pct_1w": -7.4,
         "earnings_in_days": 40,
         "dollar_vol_musd": 220.34312399,
@@ -33202,7 +33175,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 35461897139.98279,
-        "pct_1d": -1.27,
+        "pct_1d": -0.55,
         "pct_1w": -3.8,
         "earnings_in_days": 27,
         "dollar_vol_musd": 322.69859412,
@@ -33217,7 +33190,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 75429266773.37036,
-        "pct_1d": 0.41,
+        "pct_1d": -0.93,
         "pct_1w": 4.2,
         "earnings_in_days": 55,
         "dollar_vol_musd": 404.44993963623045,
@@ -33324,7 +33297,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 64947774502.775696,
-        "pct_1d": 0.39,
+        "pct_1d": -0.41,
         "pct_1w": -2.74,
         "earnings_in_days": 34,
         "dollar_vol_musd": 372.99486271,
@@ -33416,7 +33389,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 255265384247.5371,
-        "pct_1d": -0.92,
+        "pct_1d": -0.16,
         "pct_1w": -2.37,
         "earnings_in_days": 25,
         "dollar_vol_musd": 694.6055376159668,
@@ -33495,7 +33468,7 @@
       ],
       "proxies": {
         "mcap_weight": 16861821123.216934,
-        "pct_1d": -0.06,
+        "pct_1d": -0.16,
         "pct_1w": 5.34,
         "earnings_in_days": 31,
         "dollar_vol_musd": 301.74352949,
@@ -33865,7 +33838,7 @@
       ],
       "proxies": {
         "mcap_weight": 17626538828.989563,
-        "pct_1d": -1.64,
+        "pct_1d": -0.07,
         "pct_1w": -6.97,
         "earnings_in_days": 38,
         "dollar_vol_musd": 147.27535458984374,
@@ -34002,7 +33975,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 108140400695.80078,
-        "pct_1d": 0.43,
+        "pct_1d": 0.4,
         "pct_1w": -1.01,
         "earnings_in_days": 40,
         "dollar_vol_musd": 690.8084684448243,
@@ -34259,7 +34232,7 @@
       ],
       "proxies": {
         "mcap_weight": 171256113646.4145,
-        "pct_1d": -0.74,
+        "pct_1d": 0.21,
         "pct_1w": -5.91,
         "earnings_in_days": 20,
         "dollar_vol_musd": 745.4978308105469,
@@ -34916,7 +34889,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 79891708975.77817,
-        "pct_1d": 1.12,
+        "pct_1d": -0.21,
         "pct_1w": 2.61,
         "earnings_in_days": 32,
         "dollar_vol_musd": 606.7945912536621,
@@ -35096,7 +35069,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 12925605143.0,
-        "pct_1d": -0.31,
+        "pct_1d": -0.06,
         "pct_1w": -1.59,
         "earnings_in_days": 30,
         "dollar_vol_musd": 168.45699747,
@@ -35284,7 +35257,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 76485361358.64258,
-        "pct_1d": -0.1,
+        "pct_1d": -2.26,
         "pct_1w": 0.82,
         "earnings_in_days": 21,
         "dollar_vol_musd": 374.1907146469116,
@@ -35346,7 +35319,7 @@
         "mcap_weight": null,
         "pct_1d": 1.2976022566995482,
         "pct_1w": null,
-        "earnings_in_days": 40,
+        "earnings_in_days": 34,
         "dollar_vol_musd": 51.65816639,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -35436,7 +35409,7 @@
       ],
       "proxies": {
         "mcap_weight": 28420321409.145416,
-        "pct_1d": -3.42,
+        "pct_1d": 0.44,
         "pct_1w": 10.67,
         "earnings_in_days": 39,
         "dollar_vol_musd": 1492.8565419000001,
@@ -35596,7 +35569,7 @@
         "mcap_weight": null,
         "pct_1d": 4.469914040114609,
         "pct_1w": null,
-        "earnings_in_days": 31,
+        "earnings_in_days": 59,
         "dollar_vol_musd": 530.98715634,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -35639,7 +35612,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 19097654812.23462,
-        "pct_1d": 0.0,
+        "pct_1d": -0.66,
         "pct_1w": -0.79,
         "earnings_in_days": 20,
         "dollar_vol_musd": 109.78960984,
@@ -35682,12 +35655,11 @@
     "SNDK": {
       "tier": "T2",
       "reasons": [
-        "move_1d",
         "dollar_volume"
       ],
       "proxies": {
         "mcap_weight": 260303707127.16528,
-        "pct_1d": -3.65,
+        "pct_1d": 1.69,
         "pct_1w": -0.78,
         "earnings_in_days": 41,
         "dollar_vol_musd": 13017.58529753418,
@@ -35751,7 +35723,7 @@
         "mcap_weight": null,
         "pct_1d": -3.898158803222085,
         "pct_1w": null,
-        "earnings_in_days": 51,
+        "earnings_in_days": 59,
         "dollar_vol_musd": 58.075450409999995,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -35813,7 +35785,7 @@
       ],
       "proxies": {
         "mcap_weight": 81591220272.41162,
-        "pct_1d": -1.91,
+        "pct_1d": -1.41,
         "pct_1w": 10.6,
         "earnings_in_days": 30,
         "dollar_vol_musd": 767.95180308,
@@ -35875,7 +35847,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 95342079462.51375,
-        "pct_1d": -0.64,
+        "pct_1d": 0.29,
         "pct_1w": -3.09,
         "earnings_in_days": 41,
         "dollar_vol_musd": 407.79445048599246,
@@ -35950,7 +35922,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 15235023745.5,
-        "pct_1d": 0.04,
+        "pct_1d": -0.64,
         "pct_1w": 0.74,
         "earnings_in_days": 41,
         "dollar_vol_musd": 80.2252743,
@@ -36199,7 +36171,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 66271462232.12067,
-        "pct_1d": -0.14,
+        "pct_1d": 0.18,
         "pct_1w": -0.24,
         "earnings_in_days": 38,
         "dollar_vol_musd": 187.0825946899414,
@@ -36214,7 +36186,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 118892836401.36719,
-        "pct_1d": -1.83,
+        "pct_1d": -0.88,
         "pct_1w": -0.5,
         "earnings_in_days": 34,
         "dollar_vol_musd": 531.025093927002,
@@ -36745,7 +36717,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 50958454319.19455,
-        "pct_1d": -1.33,
+        "pct_1d": 0.4,
         "pct_1w": -3.35,
         "earnings_in_days": 40,
         "dollar_vol_musd": 213.13855083465577,
@@ -36970,7 +36942,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 20370697268.187866,
-        "pct_1d": 0.99,
+        "pct_1d": -0.65,
         "pct_1w": 1.9,
         "earnings_in_days": 40,
         "dollar_vol_musd": 143.35463156,
@@ -37030,7 +37002,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 33490041566.963135,
-        "pct_1d": -1.4,
+        "pct_1d": -2.46,
         "pct_1w": -0.68,
         "earnings_in_days": 24,
         "dollar_vol_musd": 118.88620986328125,
@@ -37137,7 +37109,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 49814417059.11209,
-        "pct_1d": -0.89,
+        "pct_1d": -0.52,
         "pct_1w": -0.84,
         "earnings_in_days": 19,
         "dollar_vol_musd": 363.51382607,
@@ -37185,7 +37157,7 @@
       ],
       "proxies": {
         "mcap_weight": 208480740911.73108,
-        "pct_1d": 0.51,
+        "pct_1d": 0.23,
         "pct_1w": 6.84,
         "earnings_in_days": 32,
         "dollar_vol_musd": 2564.373557800293,
@@ -37200,7 +37172,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 19405552986.36302,
-        "pct_1d": -0.62,
+        "pct_1d": 0.06,
         "pct_1w": -4.49,
         "earnings_in_days": 11,
         "dollar_vol_musd": 301.00015041,
@@ -37382,7 +37354,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 24343108080.244156,
-        "pct_1d": -2.89,
+        "pct_1d": -0.63,
         "pct_1w": 4.69,
         "earnings_in_days": 40,
         "dollar_vol_musd": 150.0388885066986,
@@ -37397,7 +37369,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 13802921217.833107,
-        "pct_1d": -2.92,
+        "pct_1d": 1.83,
         "pct_1w": 2.03,
         "earnings_in_days": 40,
         "dollar_vol_musd": 154.97454725,
@@ -37412,7 +37384,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 13443237792.832214,
-        "pct_1d": -1.96,
+        "pct_1d": 1.69,
         "pct_1w": 0.65,
         "earnings_in_days": 32,
         "dollar_vol_musd": 670.56324115,
@@ -37472,7 +37444,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 23732549863.962402,
-        "pct_1d": -1.95,
+        "pct_1d": 0.46,
         "pct_1w": -2.8,
         "earnings_in_days": 25,
         "dollar_vol_musd": 228.63165237,
@@ -37487,7 +37459,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 104469949189.81421,
-        "pct_1d": 1.08,
+        "pct_1d": 0.76,
         "pct_1w": -1.0,
         "earnings_in_days": 34,
         "dollar_vol_musd": 636.5597577636719,
@@ -37504,7 +37476,7 @@
         "mcap_weight": null,
         "pct_1d": null,
         "pct_1w": null,
-        "earnings_in_days": 51,
+        "earnings_in_days": 59,
         "dollar_vol_musd": 73.73909739,
         "pct_1d_source": null,
         "dollar_vol_source": "hot_tape_adv20",
@@ -37549,7 +37521,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 37626926888.202126,
-        "pct_1d": 0.14,
+        "pct_1d": 0.71,
         "pct_1w": -0.75,
         "earnings_in_days": 32,
         "dollar_vol_musd": 429.3723449897766,
@@ -37564,7 +37536,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 173913542046.2491,
-        "pct_1d": -1.89,
+        "pct_1d": 0.08,
         "pct_1w": -0.08,
         "earnings_in_days": 26,
         "dollar_vol_musd": 581.592832768631,
@@ -37806,7 +37778,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 61699654505.95093,
-        "pct_1d": -0.63,
+        "pct_1d": -0.18,
         "pct_1w": 2.78,
         "earnings_in_days": 47,
         "dollar_vol_musd": 433.20968044,
@@ -37851,7 +37823,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 28469337704.680298,
-        "pct_1d": -0.54,
+        "pct_1d": -0.63,
         "pct_1w": 1.77,
         "earnings_in_days": 33,
         "dollar_vol_musd": 166.36393278,
@@ -37896,7 +37868,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 11386572356.894257,
-        "pct_1d": -0.14,
+        "pct_1d": -0.12,
         "pct_1w": 0.33,
         "earnings_in_days": 40,
         "dollar_vol_musd": 211.09630347,
@@ -37943,7 +37915,7 @@
       ],
       "proxies": {
         "mcap_weight": 63284695448.29089,
-        "pct_1d": -1.78,
+        "pct_1d": -0.33,
         "pct_1w": 6.41,
         "earnings_in_days": 40,
         "dollar_vol_musd": 410.67856671,
@@ -37994,7 +37966,7 @@
       ],
       "proxies": {
         "mcap_weight": 62283028748.38257,
-        "pct_1d": 0.73,
+        "pct_1d": 1.83,
         "pct_1w": 7.24,
         "earnings_in_days": 32,
         "dollar_vol_musd": 904.8033348600001,
@@ -38039,7 +38011,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 58222703933.67464,
-        "pct_1d": -1.2,
+        "pct_1d": -0.21,
         "pct_1w": -1.85,
         "earnings_in_days": 21,
         "dollar_vol_musd": 375.36152820999996,
@@ -38131,7 +38103,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 71529019696.79639,
-        "pct_1d": 0.62,
+        "pct_1d": -1.35,
         "pct_1w": -0.47,
         "earnings_in_days": 54,
         "dollar_vol_musd": 465.5638959762573,
@@ -38274,7 +38246,7 @@
       ],
       "proxies": {
         "mcap_weight": 143062623688.17645,
-        "pct_1d": 0.15,
+        "pct_1d": 0.81,
         "pct_1w": 2.22,
         "earnings_in_days": 54,
         "dollar_vol_musd": 1126.2675548583984,
@@ -38289,7 +38261,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 13355204137.789581,
-        "pct_1d": -0.6,
+        "pct_1d": -0.23,
         "pct_1w": -3.48,
         "earnings_in_days": 40,
         "dollar_vol_musd": 215.7515348373413,
@@ -38443,9 +38415,9 @@
       ],
       "proxies": {
         "mcap_weight": 249579418050.0,
-        "pct_1d": 0.53,
+        "pct_1d": -0.56,
         "pct_1w": 3.62,
-        "earnings_in_days": 33,
+        "earnings_in_days": 26,
         "dollar_vol_musd": 1415.8125,
         "pct_1d_source": "sp500_heatmap",
         "dollar_vol_source": "stocks_last_bar",
@@ -38458,7 +38430,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 177452057082.10846,
-        "pct_1d": 0.62,
+        "pct_1d": -1.08,
         "pct_1w": -1.64,
         "earnings_in_days": 33,
         "dollar_vol_musd": 637.0212727966309,
@@ -38672,7 +38644,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 23525195635.995667,
-        "pct_1d": -0.86,
+        "pct_1d": 0.44,
         "pct_1w": -3.29,
         "earnings_in_days": 40,
         "dollar_vol_musd": 98.15994810791015,
@@ -38687,7 +38659,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 22706723742.9944,
-        "pct_1d": -0.38,
+        "pct_1d": 0.06,
         "pct_1w": -0.97,
         "earnings_in_days": 41,
         "dollar_vol_musd": 382.15360768,
@@ -38753,7 +38725,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 59577514089.37015,
-        "pct_1d": -0.15,
+        "pct_1d": 0.18,
         "pct_1w": -4.91,
         "earnings_in_days": 40,
         "dollar_vol_musd": 261.53078855285645,
@@ -38813,7 +38785,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 13489453850.995789,
-        "pct_1d": -0.59,
+        "pct_1d": -0.77,
         "pct_1w": 0.5,
         "earnings_in_days": 40,
         "dollar_vol_musd": 214.35772921,
@@ -38858,7 +38830,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 22506955789.19182,
-        "pct_1d": -1.61,
+        "pct_1d": -0.05,
         "pct_1w": 1.3,
         "earnings_in_days": 35,
         "dollar_vol_musd": 159.38634181999998,
@@ -38918,7 +38890,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 75721077769.13727,
-        "pct_1d": 0.03,
+        "pct_1d": -0.23,
         "pct_1w": -3.09,
         "earnings_in_days": 21,
         "dollar_vol_musd": 542.6155350299999,
@@ -38948,7 +38920,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 16813965459.503246,
-        "pct_1d": -0.62,
+        "pct_1d": -0.09,
         "pct_1w": 0.19,
         "earnings_in_days": 27,
         "dollar_vol_musd": 309.47249688,
@@ -38997,7 +38969,7 @@
       ],
       "proxies": {
         "mcap_weight": 1469666022926.6418,
-        "pct_1d": -3.94,
+        "pct_1d": -0.79,
         "pct_1w": 2.15,
         "earnings_in_days": 33,
         "dollar_vol_musd": 17089.337132263183,
@@ -39140,7 +39112,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 17913732346.872192,
-        "pct_1d": 0.06,
+        "pct_1d": 0.59,
         "pct_1w": -3.51,
         "earnings_in_days": 52,
         "dollar_vol_musd": 204.13168353999998,
@@ -39157,7 +39129,7 @@
       ],
       "proxies": {
         "mcap_weight": 99987333093.04596,
-        "pct_1d": -0.52,
+        "pct_1d": -0.42,
         "pct_1w": 5.9,
         "earnings_in_days": 34,
         "dollar_vol_musd": 638.9426434326172,
@@ -39264,7 +39236,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 37665340894.41522,
-        "pct_1d": 0.45,
+        "pct_1d": 0.02,
         "pct_1w": -1.95,
         "earnings_in_days": 41,
         "dollar_vol_musd": 418.2498770690918,
@@ -39388,7 +39360,7 @@
       ],
       "proxies": {
         "mcap_weight": 253946790734.84583,
-        "pct_1d": 0.09,
+        "pct_1d": 1.62,
         "pct_1w": 4.29,
         "earnings_in_days": 25,
         "dollar_vol_musd": 1101.212843005371,
@@ -39433,7 +39405,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 13172477343.195099,
-        "pct_1d": 1.02,
+        "pct_1d": -1.21,
         "pct_1w": -3.89,
         "earnings_in_days": 27,
         "dollar_vol_musd": 151.56550172,
@@ -39448,7 +39420,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 13332832146.123413,
-        "pct_1d": -0.48,
+        "pct_1d": -1.12,
         "pct_1w": -3.53,
         "earnings_in_days": 40,
         "dollar_vol_musd": 351.6825622,
@@ -39523,7 +39495,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 36999303476.89426,
-        "pct_1d": -2.18,
+        "pct_1d": 0.88,
         "pct_1w": 4.86,
         "earnings_in_days": 26,
         "dollar_vol_musd": 421.49807291,
@@ -39553,7 +39525,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 142203041234.07892,
-        "pct_1d": -2.1,
+        "pct_1d": 2.24,
         "pct_1w": -1.25,
         "earnings_in_days": 39,
         "dollar_vol_musd": 757.1523398704529,
@@ -39570,7 +39542,7 @@
         "mcap_weight": null,
         "pct_1d": 2.4969046636401204,
         "pct_1w": null,
-        "earnings_in_days": 40,
+        "earnings_in_days": 33,
         "dollar_vol_musd": 115.40196215,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -39673,7 +39645,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 10871581321.50103,
-        "pct_1d": -0.03,
+        "pct_1d": 0.21,
         "pct_1w": -0.18,
         "earnings_in_days": 40,
         "dollar_vol_musd": 139.77883167,
@@ -39782,7 +39754,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 10541385108.871994,
-        "pct_1d": -0.77,
+        "pct_1d": -0.28,
         "pct_1w": 1.23,
         "earnings_in_days": 31,
         "dollar_vol_musd": 137.96114826,
@@ -39842,7 +39814,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 23311373711.141785,
-        "pct_1d": 0.72,
+        "pct_1d": 0.42,
         "pct_1w": 0.78,
         "earnings_in_days": 29,
         "dollar_vol_musd": 343.58129180000003,
@@ -39949,7 +39921,7 @@
       ],
       "proxies": {
         "mcap_weight": 338025240144.6395,
-        "pct_1d": 0.33,
+        "pct_1d": -0.99,
         "pct_1w": -0.08,
         "earnings_in_days": 18,
         "dollar_vol_musd": 1535.5080510681153,
@@ -39979,7 +39951,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 162651935673.74872,
-        "pct_1d": 0.11,
+        "pct_1d": -0.36,
         "pct_1w": -2.0,
         "earnings_in_days": 27,
         "dollar_vol_musd": 498.81801656799314,
@@ -40011,7 +39983,7 @@
       ],
       "proxies": {
         "mcap_weight": 79939436665.8062,
-        "pct_1d": 0.31,
+        "pct_1d": -0.03,
         "pct_1w": -5.15,
         "earnings_in_days": 32,
         "dollar_vol_musd": 459.37815513,
@@ -40086,7 +40058,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 65171624179.36084,
-        "pct_1d": -0.3,
+        "pct_1d": -1.96,
         "pct_1w": 3.27,
         "earnings_in_days": 33,
         "dollar_vol_musd": 440.54993634,
@@ -40161,7 +40133,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 92439195144.0574,
-        "pct_1d": -0.93,
+        "pct_1d": -0.2,
         "pct_1w": -1.22,
         "earnings_in_days": 20,
         "dollar_vol_musd": 380.45956974182127,
@@ -40420,7 +40392,7 @@
       ],
       "proxies": {
         "mcap_weight": 689702784218.1937,
-        "pct_1d": 0.1,
+        "pct_1d": -0.27,
         "pct_1w": -0.25,
         "earnings_in_days": 32,
         "dollar_vol_musd": 1681.388068347168,
@@ -40756,7 +40728,7 @@
       ],
       "proxies": {
         "mcap_weight": 45444574832.144165,
-        "pct_1d": -0.26,
+        "pct_1d": -0.74,
         "pct_1w": 7.87,
         "earnings_in_days": 55,
         "dollar_vol_musd": 467.88723706999997,
@@ -40989,7 +40961,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 25886333734.636654,
-        "pct_1d": -1.36,
+        "pct_1d": 0.19,
         "pct_1w": -0.89,
         "earnings_in_days": 34,
         "dollar_vol_musd": 211.4936110589981,
@@ -41157,7 +41129,7 @@
       ],
       "proxies": {
         "mcap_weight": 111479752241.13629,
-        "pct_1d": 0.62,
+        "pct_1d": -1.38,
         "pct_1w": -6.32,
         "earnings_in_days": 27,
         "dollar_vol_musd": 1476.7432100646972,
@@ -41172,7 +41144,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 23682085287.36035,
-        "pct_1d": -0.97,
+        "pct_1d": 0.11,
         "pct_1w": 2.8,
         "earnings_in_days": 32,
         "dollar_vol_musd": 171.32572844999999,
@@ -41232,7 +41204,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 31746791055.0,
-        "pct_1d": 0.47,
+        "pct_1d": -0.5,
         "pct_1w": 1.73,
         "earnings_in_days": 34,
         "dollar_vol_musd": 416.5735,
@@ -41262,7 +41234,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 47595152372.43744,
-        "pct_1d": -0.23,
+        "pct_1d": 0.26,
         "pct_1w": 0.47,
         "earnings_in_days": 32,
         "dollar_vol_musd": 266.0307427406311,
@@ -41611,7 +41583,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 22023699664.37018,
-        "pct_1d": -0.85,
+        "pct_1d": -0.43,
         "pct_1w": -3.53,
         "earnings_in_days": 40,
         "dollar_vol_musd": 220.438408,
@@ -41628,7 +41600,7 @@
       ],
       "proxies": {
         "mcap_weight": 25967400000.0,
-        "pct_1d": -1.8,
+        "pct_1d": -1.99,
         "pct_1w": -5.24,
         "earnings_in_days": 27,
         "dollar_vol_musd": 219.28645611000002,
@@ -41646,7 +41618,7 @@
       ],
       "proxies": {
         "mcap_weight": 97509803987.48373,
-        "pct_1d": -3.65,
+        "pct_1d": 3.77,
         "pct_1w": 1.56,
         "earnings_in_days": 33,
         "dollar_vol_musd": 1045.3118829620362,
@@ -41661,7 +41633,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 133368604218.36108,
-        "pct_1d": 0.28,
+        "pct_1d": -0.72,
         "pct_1w": 3.51,
         "earnings_in_days": 38,
         "dollar_vol_musd": 397.9048798461914,
@@ -41751,7 +41723,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 46472051353.11012,
-        "pct_1d": -0.32,
+        "pct_1d": 2.59,
         "pct_1w": -1.41,
         "earnings_in_days": 41,
         "dollar_vol_musd": 678.3432648925781,
@@ -41875,9 +41847,9 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 44416023347.34433,
-        "pct_1d": 0.52,
+        "pct_1d": -0.21,
         "pct_1w": -0.12,
-        "earnings_in_days": 40,
+        "earnings_in_days": 32,
         "dollar_vol_musd": 209.92012812194824,
         "pct_1d_source": "sp500_heatmap",
         "dollar_vol_source": "stocks_last_bar",
@@ -41892,7 +41864,7 @@
       ],
       "proxies": {
         "mcap_weight": 20479375017.48947,
-        "pct_1d": 2.47,
+        "pct_1d": -0.47,
         "pct_1w": 5.19,
         "earnings_in_days": 41,
         "dollar_vol_musd": 141.26042128,
@@ -42132,9 +42104,9 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 195606824117.7806,
-        "pct_1d": -0.85,
+        "pct_1d": -0.01,
         "pct_1w": -2.1,
-        "earnings_in_days": 40,
+        "earnings_in_days": 31,
         "dollar_vol_musd": 631.7006325683594,
         "pct_1d_source": "sp500_heatmap",
         "dollar_vol_source": "stocks_last_bar",
@@ -42162,7 +42134,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 48646325088.0,
-        "pct_1d": 1.52,
+        "pct_1d": -0.55,
         "pct_1w": 2.77,
         "earnings_in_days": 33,
         "dollar_vol_musd": 222.56630811000002,
@@ -42207,7 +42179,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 42594486882.46243,
-        "pct_1d": 2.17,
+        "pct_1d": -0.75,
         "pct_1w": 2.82,
         "earnings_in_days": 39,
         "dollar_vol_musd": 274.08140541,
@@ -42239,7 +42211,7 @@
       ],
       "proxies": {
         "mcap_weight": 77370240153.9548,
-        "pct_1d": 0.13,
+        "pct_1d": -0.11,
         "pct_1w": 11.01,
         "earnings_in_days": 41,
         "dollar_vol_musd": 732.5361784881592,
@@ -42299,7 +42271,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 45657449264.52637,
-        "pct_1d": -0.45,
+        "pct_1d": -0.21,
         "pct_1w": -2.28,
         "earnings_in_days": 29,
         "dollar_vol_musd": 607.4336018500001,
@@ -42316,7 +42288,7 @@
       ],
       "proxies": {
         "mcap_weight": 164698707748.4131,
-        "pct_1d": -0.78,
+        "pct_1d": 0.94,
         "pct_1w": 3.5,
         "earnings_in_days": 34,
         "dollar_vol_musd": 2711.3043785095215,
@@ -42331,7 +42303,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 33057418910.9366,
-        "pct_1d": 0.0,
+        "pct_1d": 0.76,
         "pct_1w": -1.67,
         "earnings_in_days": 34,
         "dollar_vol_musd": 285.29768141784666,
@@ -42346,7 +42318,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 166718742666.65198,
-        "pct_1d": 0.69,
+        "pct_1d": 0.06,
         "pct_1w": 1.09,
         "earnings_in_days": 31,
         "dollar_vol_musd": 533.7011677368164,
@@ -42438,7 +42410,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 250901228599.32544,
-        "pct_1d": -2.6,
+        "pct_1d": 0.25,
         "pct_1w": -3.66,
         "earnings_in_days": 19,
         "dollar_vol_musd": 784.1909665374756,
@@ -42684,7 +42656,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 82673092238.62036,
-        "pct_1d": -0.19,
+        "pct_1d": -0.23,
         "pct_1w": -2.02,
         "earnings_in_days": 32,
         "dollar_vol_musd": 362.6557252105713,
@@ -42699,7 +42671,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 84716581723.68762,
-        "pct_1d": -0.4,
+        "pct_1d": -0.12,
         "pct_1w": -3.87,
         "earnings_in_days": 38,
         "dollar_vol_musd": 445.5703717430115,
@@ -42748,7 +42720,7 @@
       ],
       "proxies": {
         "mcap_weight": 856685945736.2393,
-        "pct_1d": 0.69,
+        "pct_1d": -2.39,
         "pct_1w": 1.17,
         "earnings_in_days": 55,
         "dollar_vol_musd": 2117.930583843231,
@@ -42828,7 +42800,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 24805423374.49035,
-        "pct_1d": 1.26,
+        "pct_1d": -0.03,
         "pct_1w": -4.39,
         "earnings_in_days": 24,
         "dollar_vol_musd": 259.21675578,
@@ -42903,7 +42875,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 27312989499.832977,
-        "pct_1d": -0.38,
+        "pct_1d": -0.44,
         "pct_1w": 3.43,
         "earnings_in_days": 54,
         "dollar_vol_musd": 274.65032991000004,
@@ -42933,7 +42905,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 26069997447.095825,
-        "pct_1d": 1.41,
+        "pct_1d": -0.84,
         "pct_1w": 2.24,
         "earnings_in_days": 27,
         "dollar_vol_musd": 217.30635961000002,
@@ -43040,7 +43012,7 @@
       ],
       "proxies": {
         "mcap_weight": 27303419851.67749,
-        "pct_1d": -0.64,
+        "pct_1d": -0.62,
         "pct_1w": -5.16,
         "earnings_in_days": 34,
         "dollar_vol_musd": 159.93003733,
@@ -43087,7 +43059,7 @@
         "mcap_weight": null,
         "pct_1d": 1.3593960967227314,
         "pct_1w": null,
-        "earnings_in_days": 60,
+        "earnings_in_days": 59,
         "dollar_vol_musd": 246.72408600999998,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -43102,7 +43074,7 @@
       ],
       "proxies": {
         "mcap_weight": 14421927524.963379,
-        "pct_1d": -1.45,
+        "pct_1d": 0.46,
         "pct_1w": -5.7,
         "earnings_in_days": 34,
         "dollar_vol_musd": 142.60726963119507,
@@ -43134,7 +43106,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 8353242320.746239,
-        "pct_1d": -0.75,
+        "pct_1d": -0.38,
         "pct_1w": -0.69,
         "earnings_in_days": 41,
         "dollar_vol_musd": 187.07384747999998,
@@ -43213,7 +43185,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 43599476465.03262,
-        "pct_1d": -0.59,
+        "pct_1d": 0.45,
         "pct_1w": -3.46,
         "earnings_in_days": 34,
         "dollar_vol_musd": 521.9853628219604,
@@ -43542,7 +43514,7 @@
       ],
       "proxies": {
         "mcap_weight": 660331926598.1287,
-        "pct_1d": 1.2,
+        "pct_1d": -1.0,
         "pct_1w": -1.8,
         "earnings_in_days": 35,
         "dollar_vol_musd": 1765.9600127288818,
@@ -43707,7 +43679,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 23962750874.269318,
-        "pct_1d": -1.68,
+        "pct_1d": 0.09,
         "pct_1w": -4.58,
         "earnings_in_days": 32,
         "dollar_vol_musd": 290.84042882,
@@ -43718,13 +43690,11 @@
       }
     },
     "XYZ": {
-      "tier": "T2",
-      "reasons": [
-        "move_1d"
-      ],
+      "tier": "T3",
+      "reasons": [],
       "proxies": {
         "mcap_weight": 45912752799.9115,
-        "pct_1d": -4.07,
+        "pct_1d": 0.26,
         "pct_1w": 0.18,
         "earnings_in_days": 41,
         "dollar_vol_musd": 311.51018752,
@@ -43889,7 +43859,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 17364759381.18557,
-        "pct_1d": 0.64,
+        "pct_1d": -0.29,
         "pct_1w": -4.53,
         "earnings_in_days": 40,
         "dollar_vol_musd": 193.84654234,
@@ -43906,7 +43876,7 @@
       ],
       "proxies": {
         "mcap_weight": 17506837030.665894,
-        "pct_1d": 0.49,
+        "pct_1d": -0.23,
         "pct_1w": 6.75,
         "earnings_in_days": 39,
         "dollar_vol_musd": 201.93863982,
@@ -44013,7 +43983,7 @@
         "mcap_weight": null,
         "pct_1d": -0.7083563918096281,
         "pct_1w": null,
-        "earnings_in_days": 31,
+        "earnings_in_days": 59,
         "dollar_vol_musd": 281.01374137,
         "pct_1d_source": "hot_tape_pack",
         "dollar_vol_source": "hot_tape_adv20",
@@ -44088,7 +44058,7 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": 29359538183.158356,
-        "pct_1d": 0.53,
+        "pct_1d": -1.05,
         "pct_1w": -0.49,
         "earnings_in_days": 41,
         "dollar_vol_musd": 344.92751743,
