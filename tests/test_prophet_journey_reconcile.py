@@ -20,6 +20,8 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+
+import pytest
 import subprocess
 from datetime import date
 from importlib.util import find_spec
@@ -33,6 +35,34 @@ SCRIPT = ROOT / "scripts" / "prophet_journey_reconcile.py"
 FIXTURE_HTML = (ROOT / "mockups" / "evidence" / "prophet-packet2-r25-dialog"
                 / "fixture.html")
 TMP_DIR = Path(os.environ.get("TMPDIR", ".")) / "pri_journey_reconcile_tests"
+
+
+def _wrapped_amd_fixture() -> str:
+    """The R25 AMD dialog fixture wrapped the way the live board ships it.
+
+    The saved snapshot is ONLY the dialog body: no ``[data-setup-ticker]``
+    wrapper and no ``template.pvs-body-source`` copy. The board renders the
+    body inside a ``details.pv-setup-inline[data-setup-ticker]`` and keeps a
+    byte-equal copy in a ``<template class="pvs-body-source">`` (J6's
+    template-copy contract), so the wrapper is rebuilt here with the parser
+    the harness itself uses. The fixture bytes are never altered.
+    """
+    import copy
+
+    raw = FIXTURE_HTML.read_text(encoding="utf-8")
+    soup = BeautifulSoup(raw, _pjr.HTML_PARSER)
+    body = soup.select_one("div.pv-setup-body")
+    assert body is not None, "fixture lacks div.pv-setup-body"
+    body["data-plan-relation"] = "none"
+    details = soup.new_tag("details", attrs={
+        "class": "pv-setup-inline pv-setup-table",
+        "data-setup-ticker": "AMD", "data-setup-asof": "2026-09-27"})
+    template = soup.new_tag("template", attrs={"class": "pvs-body-source"})
+    template.append(copy.copy(body))
+    body.replace_with(details)
+    details.append(template)
+    details.append(body)
+    return str(soup)
 
 # Imports of the script's helpers — kept lazy under the fixtures so the
 # import errors surface in pytest output, not at module import time.
@@ -800,6 +830,45 @@ def test_j6_fail_whole_displayed_body_with_different_clock_text():
     chk = _pjr._check_j6(soup, _standouts_payload(), "TEST1")
     assert chk["status"] == "FAIL", chk
     assert chk["observed"]["first_difference"]["offset"] > 0
+
+
+def _with_summary_clock(text: str):
+    """Corrected fixture with a summary clock carrying ``text`` in BOTH the
+    displayed body and its existing template copy — the compliant shape —
+    RE-PARSED so the template's strings are filed exactly as a saved page's
+    would be (bs4 >= 4.13: TemplateString)."""
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    for body in soup.select(".pv-setup-body"):
+        clock = soup.new_tag("p", attrs={"class": "pvs-summary-clock"})
+        clock.string = text
+        body.insert(0, clock)
+    return BeautifulSoup(str(soup), _pjr.HTML_PARSER)
+
+
+def test_j6_pass_summary_clock_text_is_read_inside_the_template_copy():
+    """CONTROL: bs4 >= 4.13 files strings inside <template> as
+    TemplateString and get_text() skips them, so a template clock with text
+    used to bind as '' and never equal its displayed twin (CI-only red on
+    the R25 AMD fixture, 2026-09-29)."""
+    soup = _with_summary_clock("Source as-of 2026-09-26 · Quote time 2026-09-26T13:30:00Z")
+    template_clock = soup.select_one("template.pvs-body-source .pvs-summary-clock")
+    assert template_clock is not None
+    if hasattr(_pjr, "TemplateString") and _pjr.TemplateString is not _pjr.NavigableString:
+        # The control exercises the real path: the string IS a TemplateString.
+        assert all(isinstance(node, _pjr.TemplateString) for node in template_clock.strings)
+    template_body = template_clock.find_parent(class_="pv-setup-body")
+    assert _pjr._body_binding(template_body)["summary-clock-text"].startswith("Source as-of")
+    chk = _pjr._check_j6(soup, _standouts_payload(), "TEST1")
+    assert chk["status"] == "PASS", chk
+    assert chk["observed"]["template_count"] == 1
+
+
+def test_j6_fail_template_summary_clock_text_differs_from_displayed():
+    soup = _with_summary_clock("Source as-of 2026-09-26 · Quote time 2026-09-26T13:30:00Z")
+    soup.select_one("template.pvs-body-source .pvs-summary-clock").string = (
+        "Source as-of 2026-09-25 · Quote time 2026-09-25T13:30:00Z")
+    chk = _pjr._check_j6(soup, _standouts_payload(), "TEST1")
+    assert chk["status"] == "FAIL", chk
 
 
 def test_j6_fail_whole_displayed_body_with_different_plan_id():
@@ -1620,6 +1689,7 @@ def test_determinism_byte_identical_runs():
 # =========================================================================== #
 # Fixture-based tests (J5 / J6 spec requirement).
 # =========================================================================== #
+@pytest.mark.needs_full_checkout("mockups")
 def test_j5_against_committed_fixture():
     """J5 PASS against the committed fixture using AMD as the ticker.
 
@@ -1634,23 +1704,7 @@ def test_j5_against_committed_fixture():
     ``[data-setup-ticker]`` element — the harness's contract is the
     attribute, not the surrounding chrome.
     """
-    if not FIXTURE_HTML.exists():
-        # Sparse worktree: opt into the fixture if it isn't already there.
-        return
-    raw = FIXTURE_HTML.read_text(encoding="utf-8")
-    # Wrap the body in a [data-setup-ticker="AMD"] <details> with asof set
-    # to the fixture's envelope.as_of. We use regex — simple slice — to
-    # inject the wrapper without altering the fixture bytes themselves.
-    body_start = raw.find('<div class="pv-setup-body"')
-    assert body_start >= 0
-    wrapped = (raw[:body_start]
-               + '<details class="pv-setup-inline pv-setup-table" '
-                 'data-setup-ticker="AMD" data-setup-asof="2026-09-27">'
-               + raw[body_start:].replace(
-                   '<div class="pv-setup-body"',
-                   '<div class="pv-setup-body" data-plan-relation="none"', 1)
-               .replace(
-                   '</div></dialog>', '</div></details></dialog>', 1))
+    wrapped = _wrapped_amd_fixture()
     soup = BeautifulSoup(wrapped, _pjr.HTML_PARSER)
     # Synthetic standouts matching the fixture's bound fields.
     su = {
@@ -1684,6 +1738,7 @@ def test_j5_against_committed_fixture():
     assert chk["observed"]["asof_match"] == "standouts.as_of"
 
 
+@pytest.mark.needs_full_checkout("mockups")
 def test_j6_against_committed_fixture():
     """J6 PASS against the committed fixture for AMD.
 
@@ -1692,19 +1747,7 @@ def test_j6_against_committed_fixture():
     formatting (``$X.YY`` for money, ``Yes``/``No``/``是``/``否`` for
     booleans, verbatim for strings).
     """
-    if not FIXTURE_HTML.exists():
-        return
-    raw = FIXTURE_HTML.read_text(encoding="utf-8")
-    body_start = raw.find('<div class="pv-setup-body"')
-    assert body_start >= 0
-    wrapped = (raw[:body_start]
-               + '<details class="pv-setup-inline pv-setup-table" '
-                 'data-setup-ticker="AMD" data-setup-asof="2026-09-27">'
-               + raw[body_start:].replace(
-                   '<div class="pv-setup-body"',
-                   '<div class="pv-setup-body" data-plan-relation="none"', 1)
-               .replace(
-                   '</div></dialog>', '</div></details></dialog>', 1))
+    wrapped = _wrapped_amd_fixture()
     soup = BeautifulSoup(wrapped, _pjr.HTML_PARSER)
     su = {
         "as_of": "2026-09-27",
@@ -1737,6 +1780,7 @@ def test_j6_against_committed_fixture():
     assert fields >= 10, f"expected ≥10 source fields in AMD fixture; got {fields}"
 
 
+@pytest.mark.needs_full_checkout("mockups")
 def test_cli_against_committed_fixture():
     """End-to-end CLI run on the committed fixture.
 
@@ -1745,8 +1789,6 @@ def test_cli_against_committed_fixture():
     full board). We assert the verdict is reported and identify which
     checks landed N/A.
     """
-    if not FIXTURE_HTML.exists():
-        return
     su_p = TMP_DIR / "amd_standouts.json"
     ix_p = TMP_DIR / "amd_index.json"
     out = TMP_DIR / "amd_out.json"
@@ -1773,17 +1815,7 @@ def test_cli_against_committed_fixture():
     ix_p.write_text(json.dumps({
         "as_of": "2026-09-27", "source_board_asof": "2026-09-27",
         "plans": []}), encoding="utf-8")
-    # Wrap the fixture in a [data-setup-ticker] wrapper so J5/J6 can PASS.
-    raw = FIXTURE_HTML.read_text(encoding="utf-8")
-    body_start = raw.find('<div class="pv-setup-body"')
-    wrapped = (raw[:body_start]
-               + '<details class="pv-setup-inline pv-setup-table" '
-                 'data-setup-ticker="AMD" data-setup-asof="2026-09-27">'
-               + raw[body_start:].replace(
-                   '<div class="pv-setup-body"',
-                   '<div class="pv-setup-body" data-plan-relation="none"', 1)
-               .replace(
-                   '</div></dialog>', '</div></details></dialog>', 1))
+    wrapped = _wrapped_amd_fixture()
     wrapped_path = TMP_DIR / "fixture_wrapped.html"
     wrapped_path.write_text(wrapped, encoding="utf-8")
     rc = _pjr.run(["--page", str(wrapped_path), "--standouts", str(su_p),

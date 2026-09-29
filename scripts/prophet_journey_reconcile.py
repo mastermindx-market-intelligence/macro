@@ -136,6 +136,16 @@ try:
     from bs4 import BeautifulSoup, Comment, NavigableString, Tag
 except ImportError as exc:  # pragma: no cover - bs4 is in requirements
     raise SystemExit(f"beautifulsoup4 is required: {exc}")
+try:  # bs4 >= 4.13 files text inside <template> as TemplateString and
+    from bs4.element import TemplateString  # get_text() skips it by default
+except ImportError:  # pragma: no cover - older bs4 has no template class
+    TemplateString = NavigableString  # type: ignore[assignment,misc]
+
+# Strings inside a <template> are the SAME evidence as displayed strings for
+# this harness: J6 compares a template copy against the displayed body, so a
+# text read that silently returns '' inside <template> would make every
+# template binding differ from its displayed twin whenever the clock has text.
+_TEXT_TYPES: tuple[type, ...] = tuple({NavigableString, TemplateString})
 
 
 SCHEMA = "mastermind.prophet_journey_reconciliation.v1"
@@ -766,7 +776,8 @@ def _body_binding(body: Tag) -> dict[str, Any]:
         "data-plan-relation": str(body.get("data-plan-relation", "")),
         "data-entry-status": str(body.get("data-entry-status", "")),
         "data-native-id": str(body.get("data-native-id", "")),
-        "summary-clock-text": clock.get_text(" ", strip=True) if clock else "",
+        "summary-clock-text": (clock.get_text(" ", strip=True, types=_TEXT_TYPES)
+                               if clock else ""),
     }
 
 
