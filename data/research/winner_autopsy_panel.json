@@ -1,6 +1,6 @@
 {
   "schema": "winner_autopsy_panel.v1",
-  "generated_at": "2026-09-29T06:23:51Z",
+  "generated_at": "2026-09-29T15:57:09Z",
   "display_only": true,
   "horizon_role": "hold_thesis",
   "census": {
@@ -2070,7 +2070,7 @@
   },
   "watch": {
     "available": true,
-    "as_of": "2026-09-28",
+    "as_of": "2026-09-29",
     "state_counts": {
       "breakaway": 119,
       "emerging": 1842,
@@ -7539,25 +7539,6 @@
         }
       },
       {
-        "ticker": "IVPR",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": 99.06,
-        "excess_42d_pp": 95.63,
-        "new_high_63d": false,
-        "dollar_vol_z21": -0.28,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [
-          "extended_after_vertical_move"
-        ],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
         "ticker": "MAXNQ",
         "sector": "",
         "benchmark": "SPY",
@@ -7577,14 +7558,33 @@
         }
       },
       {
-        "ticker": "EPWKF",
+        "ticker": "IVPR",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 99.06,
-        "excess_42d_pp": -4.37,
+        "excess_42d_pp": 95.63,
+        "new_high_63d": false,
+        "dollar_vol_z21": -0.28,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [
+          "extended_after_vertical_move"
+        ],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
+        "ticker": "MOTS",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": 99.06,
+        "excess_42d_pp": 95.63,
         "new_high_63d": true,
-        "dollar_vol_z21": -0.61,
+        "dollar_vol_z21": -0.18,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [
@@ -7616,14 +7616,14 @@
         }
       },
       {
-        "ticker": "MOTS",
+        "ticker": "EPWKF",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 99.06,
-        "excess_42d_pp": 95.63,
+        "excess_42d_pp": -4.37,
         "new_high_63d": true,
-        "dollar_vol_z21": -0.18,
+        "dollar_vol_z21": -0.61,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [
@@ -12877,14 +12877,14 @@
         }
       },
       {
-        "ticker": "FCHS",
+        "ticker": "BSLK",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 49.06,
-        "excess_42d_pp": -4.37,
+        "excess_42d_pp": 2895.63,
         "new_high_63d": false,
-        "dollar_vol_z21": 0.26,
+        "dollar_vol_z21": -0.16,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [
@@ -12896,14 +12896,14 @@
         }
       },
       {
-        "ticker": "BSLK",
+        "ticker": "FCHS",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 49.06,
-        "excess_42d_pp": 2895.63,
+        "excess_42d_pp": -4.37,
         "new_high_63d": false,
-        "dollar_vol_z21": -0.16,
+        "dollar_vol_z21": 0.26,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [
@@ -26914,7 +26914,7 @@
         }
       },
       {
-        "ticker": "PBR-A",
+        "ticker": "PBR.A",
         "sector": "",
         "benchmark": "SPY",
         "state": "digestion",
@@ -26931,7 +26931,7 @@
         }
       },
       {
-        "ticker": "PBR.A",
+        "ticker": "PBR-A",
         "sector": "",
         "benchmark": "SPY",
         "state": "digestion",
@@ -30756,14 +30756,14 @@
         }
       },
       {
-        "ticker": "IVDA",
+        "ticker": "VASO",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 6.2,
-        "excess_42d_pp": 31.99,
+        "excess_42d_pp": 45.63,
         "new_high_63d": false,
-        "dollar_vol_z21": -0.87,
+        "dollar_vol_z21": 0.88,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -30773,14 +30773,14 @@
         }
       },
       {
-        "ticker": "VASO",
+        "ticker": "IVDA",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": 6.2,
-        "excess_42d_pp": 45.63,
+        "excess_42d_pp": 31.99,
         "new_high_63d": false,
-        "dollar_vol_z21": 0.88,
+        "dollar_vol_z21": -0.87,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -34802,48 +34802,14 @@
         }
       },
       {
-        "ticker": "IGTA",
+        "ticker": "ADHC",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": -0.94,
-        "excess_42d_pp": 4895.63,
+        "excess_42d_pp": 28.96,
         "new_high_63d": false,
-        "dollar_vol_z21": 0.0,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
-        "ticker": "SLNCF",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": -0.94,
-        "excess_42d_pp": 162.29,
-        "new_high_63d": false,
-        "dollar_vol_z21": -0.22,
-        "days_in_state": 0,
-        "gex_state": null,
-        "hazards": [],
-        "context": {
-          "context_only": true,
-          "note": ""
-        }
-      },
-      {
-        "ticker": "ENSC",
-        "sector": "",
-        "benchmark": "SPY",
-        "state": "emerging",
-        "excess_21d_pp": -0.94,
-        "excess_42d_pp": 59.77,
-        "new_high_63d": false,
-        "dollar_vol_z21": -1.13,
+        "dollar_vol_z21": -0.38,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],
@@ -34870,14 +34836,48 @@
         }
       },
       {
-        "ticker": "ADHC",
+        "ticker": "SLNCF",
         "sector": "",
         "benchmark": "SPY",
         "state": "emerging",
         "excess_21d_pp": -0.94,
-        "excess_42d_pp": 28.96,
+        "excess_42d_pp": 162.29,
         "new_high_63d": false,
-        "dollar_vol_z21": -0.38,
+        "dollar_vol_z21": -0.22,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
+        "ticker": "IGTA",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": -0.94,
+        "excess_42d_pp": 4895.63,
+        "new_high_63d": false,
+        "dollar_vol_z21": 0.0,
+        "days_in_state": 0,
+        "gex_state": null,
+        "hazards": [],
+        "context": {
+          "context_only": true,
+          "note": ""
+        }
+      },
+      {
+        "ticker": "ENSC",
+        "sector": "",
+        "benchmark": "SPY",
+        "state": "emerging",
+        "excess_21d_pp": -0.94,
+        "excess_42d_pp": 59.77,
+        "new_high_63d": false,
+        "dollar_vol_z21": -1.13,
         "days_in_state": 0,
         "gex_state": null,
         "hazards": [],

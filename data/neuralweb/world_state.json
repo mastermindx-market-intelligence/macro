@@ -1,11 +1,11 @@
 {
   "verdict": {
-    "verdict": "MIXED",
-    "score": 59,
+    "verdict": "RISK_ON",
+    "score": 61,
     "raw_score": 61,
     "is_display_only": true,
-    "label_en": "Mixed",
-    "label_zh": "混合",
+    "label_en": "Risk-on",
+    "label_zh": "风险偏好",
     "asof": "2026-09-28"
   },
   "radar": {
@@ -333,8 +333,8 @@
     "state_ungated": "elevated",
     "flow_status": {
       "min_history": 252,
-      "putcall_rows": 72,
-      "gex_rows": 73,
+      "putcall_rows": 73,
+      "gex_rows": 74,
       "mature": false,
       "putcall_missing_sessions": [
         "2026-07-02",
@@ -602,7 +602,7 @@
         {
           "index": "IWM",
           "metric": "ihm_macd_hist_depth_pctile",
-          "depth_pctile": 5.0,
+          "depth_pctile": 4.2,
           "reason": "low_depth",
           "washout_turn": true,
           "extreme": true
@@ -4366,7 +4366,7 @@
         "reason": "version-matched + fresh",
         "calibration_version": "w2.7-loro-v1",
         "calibration_generated_at": "2026-07-02T12:32:51Z",
-        "calibration_age_days": 88
+        "calibration_age_days": 89
       },
       "lag_passport": {
         "basis": "per_leg_schedule",
@@ -4947,7 +4947,7 @@
     ],
     "freshness": {
       "asof": "2026-09-28",
-      "built_at": "2026-09-29T04:38:57Z",
+      "built_at": "2026-09-29T14:01:53Z",
       "age_days": 1,
       "age_sessions": 1,
       "max_age_sessions": 1,
@@ -4959,18 +4959,16 @@
   },
   "vol": {
     "regime": "normalizing",
-    "risk_score": -0.097,
+    "risk_score": 0.007,
     "scored_score": null,
     "scored_active": false,
-    "vix": 16.07,
+    "vix": 14.87,
     "vrp_state": "normal",
-    "vvix_state": "complacent (vol-of-vol cheap vs vol — historically precedes rising vol)",
-    "vol_target_scalar": 0.75,
-    "fragility_confluence": 1,
-    "flags": [
-      "move_stress"
-    ],
-    "asof": "2026-09-28"
+    "vvix_state": "normal",
+    "vol_target_scalar": 0.81,
+    "fragility_confluence": 0,
+    "flags": [],
+    "asof": "2026-09-25"
   },
   "breadth": {
     "n_members": 502,
@@ -4986,11 +4984,11 @@
     "date": "2026-09-25"
   },
   "rotation": {
-    "asof": "2026-09-25",
+    "asof": "2026-09-28",
     "regime": {
       "n_active_complexes": 0,
-      "breadth": 0.2266,
-      "vix_regime": 0.1012,
+      "breadth": null,
+      "vix_regime": 0.2956,
       "rotation_tag": {
         "tag": "quiet",
         "tag_zh": "平静",
@@ -5124,7 +5122,7 @@
               0.1406
             ],
             [
-              "speculative_unprofitable",
+              "broken_growth",
               0.125
             ]
           ],
@@ -5405,7 +5403,7 @@
       "by_tier": {},
       "by_direction": {}
     },
-    "n_onset_watchlist": 2
+    "n_onset_watchlist": 0
   },
   "liquidity": {
     "liquidity_overlay": "expanding"
@@ -5449,7 +5447,7 @@
   },
   "alerts": {
     "asof": "2026-09-28",
-    "generated_utc": "2026-09-29 04:46",
+    "generated_utc": "2026-09-29 14:16",
     "total": 60,
     "critical": 2,
     "major": 3,
@@ -5460,13 +5458,13 @@
   "factor_weather": {
     "style_regime": "mixed",
     "style_regime_pending": null,
-    "style_regime_hold_days": 10,
+    "style_regime_hold_days": 9,
     "factor_leader": "investment",
     "factor_leader_ic": -0.0029,
-    "etf_pulse_summary": "IWF/IWD_20d=+0.0383; QQQ/SPY_20d=+0.0307; IWM/SPY_20d=-0.0599",
-    "ratio_iwf_iwd_20d": 0.03832601635251731,
-    "ratio_qqq_spy_20d": 0.030703725482305044,
-    "ratio_iwm_spy_20d": -0.059856141848160904,
+    "etf_pulse_summary": "IWF/IWD_20d=+0.0494; QQQ/SPY_20d=+0.0315; IWM/SPY_20d=-0.0483",
+    "ratio_iwf_iwd_20d": 0.049390847481092126,
+    "ratio_qqq_spy_20d": 0.031517167268822366,
+    "ratio_iwm_spy_20d": -0.04832387304616903,
     "display_only": true,
     "factor_state_as_of": "2026-09-29",
     "seasonal_climate": {
@@ -7080,43 +7078,43 @@
       ]
     ],
     "n_tinderbox": 292,
-    "n_event_override": 17,
+    "n_event_override": 15,
     "display_only": true
   },
   "context_risk": {
     "available": true,
-    "as_of": "2026-09-28T10:52Z",
+    "as_of": "2026-09-29T06:31Z",
     "board_top_overweights": [
       {
+        "archetype": "high_beta_momentum",
+        "ratio": 3.159,
+        "member_share": 0.0635,
+        "universe_share": 0.0201,
+        "member_n": 4
+      },
+      {
         "archetype": "dividend_defensive",
-        "ratio": 3.962,
+        "ratio": 2.781,
         "member_share": 0.0317,
-        "universe_share": 0.008,
+        "universe_share": 0.0114,
         "member_n": 2
       },
       {
-        "archetype": "high_beta_momentum",
-        "ratio": 3.26,
-        "member_share": 0.0476,
-        "universe_share": 0.0146,
-        "member_n": 3
-      },
-      {
         "archetype": "rate_sensitive",
-        "ratio": 1.843,
+        "ratio": 1.326,
         "member_share": 0.2381,
-        "universe_share": 0.1292,
+        "universe_share": 0.1796,
         "member_n": 15
       }
     ],
-    "weighted_p10_21d": -0.0833,
-    "weighted_median_21d": 0.0121,
+    "weighted_p10_21d": -0.0832,
+    "weighted_median_21d": 0.0123,
     "p10_interpretation": "per-type share-weighted average of marginal worst-decile returns; NOT a portfolio P10 — diversification and cross-type correlation are not modeled.",
     "n_board": 69,
     "regime_context": {
       "quad": "Q2",
       "liq": "expanding",
-      "as_of": "2026-09-25"
+      "as_of": "2026-09-28"
     },
     "insufficient_note": null,
     "covered_weight": 1.0,
@@ -7212,7 +7210,7 @@
   },
   "thematic_state": {
     "available": true,
-    "as_of": "2026-09-27",
+    "as_of": "2026-09-29",
     "n_themes": 18,
     "stage_counts": {
       "WATCH": 13,
@@ -7220,11 +7218,15 @@
       "BROADENING": 1,
       "RE-RATING": 2
     },
-    "n_falsifiers_fired": 5,
+    "n_falsifiers_fired": 6,
     "falsifiers_fired": [
       {
         "theme_id": "ai_semiconductors",
         "falsifier_id": "ai_semi_f3"
+      },
+      {
+        "theme_id": "semicap_equipment",
+        "falsifier_id": "wfe_f2"
       },
       {
         "theme_id": "nuclear_power",
@@ -7243,10 +7245,15 @@
         "falsifier_id": "ag_f1"
       }
     ],
-    "n_stale_legs": 6,
+    "n_stale_legs": 5,
     "noteworthy": [
       {
         "theme_id": "ai_semiconductors",
+        "reason": "falsifier_fired",
+        "stage": "WATCH"
+      },
+      {
+        "theme_id": "semicap_equipment",
         "reason": "falsifier_fired",
         "stage": "WATCH"
       },
@@ -7294,18 +7301,17 @@
   "live_overlay": {
     "source": "data/regime/latest.json:freshness",
     "asof": "2026-09-28",
-    "built_at": "2026-09-29T04:38:57Z",
+    "built_at": "2026-09-29T14:01:53Z",
     "age_days": 1,
     "stale": false
   },
   "contradictions": {
-    "n": 4,
+    "n": 3,
     "by_severity": {
-      "note": 2,
-      "tension": 2
+      "tension": 2,
+      "note": 1
     },
     "top_pair_ids": [
-      "regime_vector-vs-risk_radar",
       "briefing-divergences",
       "cross_asset_confirm-diverge",
       "liquidity_overlay_expanding-vs-quality_stress"
@@ -7669,10 +7675,10 @@
     "asof": "2026-09-28",
     "gamma": {
       "regime": "long",
-      "net_gex_bn": 11.397656,
-      "net_gex_pctile": 38.6,
-      "dist_to_flip_pct": 0.172485,
-      "days_in_regime": 8
+      "net_gex_bn": 10.630852,
+      "net_gex_pctile": 36.2,
+      "dist_to_flip_pct": 0.154585,
+      "days_in_regime": 9
     },
     "systematic": {
       "vc_state": "adding",
@@ -8125,13 +8131,13 @@
     "data/market_state/latest.json": "2026-09-28",
     "data/regime/latest.json": "2026-09-28",
     "data/breadth/breadth.parquet": "2026-09-25",
-    "site/basketdata/oracle_state.json": "2026-09-25",
+    "site/basketdata/oracle_state.json": "2026-09-28",
     "data/run_status.json": "2026-09-29T03:27:19.898482+00:00",
     "site/factordata/alerts_triage.json": "2026-09-28",
     "data/neuralweb/liquidity_plumbing.json": "2026-09-25",
     "data/rebalance_pulse/latest.json": "2026-09-25",
     "site/chinastatedata/market_state.json": null,
-    "data/neuralweb/theme_state.json": "2026-09-27",
+    "data/neuralweb/theme_state.json": "2026-09-29",
     "data/transmission/latest.json": "2026-09-25",
     "data/rates_command/latest.json": "2026-09-25",
     "data/forex/latest.json": "2026-09-28",
@@ -8153,7 +8159,7 @@
   },
   "schema_version": 1,
   "produced_by": "engine/neuralweb/world_state.py",
-  "produced_at": "2026-09-29T06:21:12Z",
-  "inputs_hash": "sha256:00a974cc12a354e534dc55940168cca5474f7bcaf62ec285894c05f0e6a91744",
+  "produced_at": "2026-09-29T15:54:28Z",
+  "inputs_hash": "sha256:719772e873925714b3160dd6d3007d88fc8cd0ece4569f6213b73bbe6b90b2fc",
   "tier": "infrastructure"
 }

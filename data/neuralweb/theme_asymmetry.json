@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_asymmetry.v1",
   "as_of": "2026-09-29",
-  "generated_at": "2026-09-29T06:23:55Z",
+  "generated_at": "2026-09-29T15:57:13Z",
   "hard_caveat": "not a buy score; no behavior-changing consumer",
   "authority": {
     "is_context_only": true,
@@ -912,8 +912,8 @@
           "note_zh": "瓶颈波段=band=TIGHTENING (fingerprint)，活动加速=accel=0.36，综合紧张度=0.26"
         },
         "stale_consensus_gap": {
-          "value": 0.35,
-          "band": "med",
+          "value": 0.15,
+          "band": "low",
           "inputs": [
             "foresight_cascade:demand_band",
             "foresight_cascade:broadening_state",
@@ -922,8 +922,8 @@
             "finnhub_recs:revision_direction"
           ],
           "stale": false,
-          "note_en": "activity accelerating (RISING) and revisions following (level=POSITIVE, breadth=0.704); gap narrowing. no_dispersion_data",
-          "note_zh": "活动加速（RISING）且修正跟进（水平=POSITIVE，广度=0.704）；差距收窄。no_dispersion_data"
+          "note_en": "activity not accelerating (ROLLING), revisions positive (level=POSITIVE, breadth=0.704); no gap. no_dispersion_data",
+          "note_zh": "活动未加速（ROLLING），修正正面（水平=POSITIVE，广度=0.704）；无差距。no_dispersion_data"
         },
         "cyclical_dislocation": {
           "value": 0.124,
@@ -1760,7 +1760,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-09-29T06:23:55Z",
-  "inputs_hash": "sha256:00535d83c12a28358e10c43171a95f5c8af7e4f0037f791f3327d521524ac34f",
+  "produced_at": "2026-09-29T15:57:13Z",
+  "inputs_hash": "sha256:d21aadb57a5872d086d241390eb1494f3dfba2beba66b9ca48c26b7030b2fb96",
   "tier": "display"
 }
