@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_thesis.v1",
-  "as_of": "2026-09-27",
-  "generated_at": "2026-09-27T08:52:32Z",
+  "as_of": "2026-09-29",
+  "generated_at": "2026-09-29T06:23:55Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -21,17 +21,17 @@
     ]
   },
   "n_theses": 18,
-  "n_falsifier_fired": 5,
-  "n_theses_with_fired": 4,
-  "n_ok": 14,
+  "n_falsifier_fired": 6,
+  "n_theses_with_fired": 5,
+  "n_ok": 13,
   "stale_legs": [],
   "theses": [
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-26",
+      "as_of": "2026-09-29",
       "thesis_id": "ai_semiconductors.v1",
-      "content_hash": "sha256:c19aca110b9c8ecee70ef8d0e421a480b50dfa7ba3018d51c833877f2106ff79",
-      "prev_content_hash": "sha256:5750c9205f54504955bca233d54d0f1f48d302b052835640d5de6e85b787c032",
+      "content_hash": "sha256:e3bfb4d9b3cfc2b94398e2796d66eb4984d11d919c1b3ff0f20694ca984e7fbc",
+      "prev_content_hash": "sha256:c19aca110b9c8ecee70ef8d0e421a480b50dfa7ba3018d51c833877f2106ff79",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -106,7 +106,7 @@
                 "condition_met": false
               },
               {
-                "as_of": "2026-09-26",
+                "as_of": "2026-09-29",
                 "value": 0.497,
                 "condition_met": false
               }
@@ -155,10 +155,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-26",
+      "as_of": "2026-09-29",
       "thesis_id": "memory_storage.v1",
-      "content_hash": "sha256:982629b83526165e04c9eddf6e6636495fca8dae234b8e6c90a990bfcd87e12a",
-      "prev_content_hash": "sha256:0203f3e612de04364d82b983dae3b022980c402b648a388753858477c0fee5df",
+      "content_hash": "sha256:cf7d6bbf5b96889902a4cb05cffbdc0adbc581d0c66b00c158388962ca86cd33",
+      "prev_content_hash": "sha256:982629b83526165e04c9eddf6e6636495fca8dae234b8e6c90a990bfcd87e12a",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -219,17 +219,17 @@
             "source_artifact": "data/foresight/log.jsonl",
             "observations": [
               {
-                "as_of": "2026-09-19",
+                "as_of": "2026-09-26",
                 "value": 0.655,
                 "condition_met": false
               },
               {
-                "as_of": "2026-09-26",
+                "as_of": "2026-09-29",
                 "value": 0.655,
                 "condition_met": false
               }
             ],
-            "corrections_superseded": 1
+            "corrections_superseded": 0
           }
         },
         {
@@ -257,10 +257,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-23",
+      "as_of": "2026-09-29",
       "thesis_id": "semicap_equipment.v1",
-      "content_hash": "sha256:16ff5a25407b5b49cdf5ea8e5ac94b4cd853d67d1f9ee8c186235dba8a48570d",
-      "prev_content_hash": "sha256:53ad594afdb267abcf3129865164b8f629c8f92126bf2bfefac35fae0b92196b",
+      "content_hash": "sha256:7f5bfeeb0b65bf209638cb6cf3d5ffc75c6950b06a81746745fd3a10ae59751f",
+      "prev_content_hash": "sha256:16ff5a25407b5b49cdf5ea8e5ac94b4cd853d67d1f9ee8c186235dba8a48570d",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -320,9 +320,9 @@
         {
           "id": "wfe_f2",
           "rule_en": "If tightness score falls below -0.1, the near-term supply/demand balance in WFE has shifted negative — excess equipment inventory probable.\n",
-          "state": "ARMED",
-          "fired": false,
-          "detail": "threshold check: 'tightness' lt -0.1 → value=-0.1"
+          "state": "FIRED",
+          "fired": true,
+          "detail": "threshold check: 'tightness' lt -0.1 → value=-0.12"
         },
         {
           "id": "wfe_f3",
@@ -333,11 +333,11 @@
         }
       ],
       "falsifier_summary": {
-        "n_fired": 0,
-        "n_armed": 2,
+        "n_fired": 1,
+        "n_armed": 1,
         "n_data_missing": 0,
         "n_qualitative": 1,
-        "any_fired": false
+        "any_fired": true
       }
     },
     {
@@ -1578,7 +1578,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-09-27T08:52:32Z",
-  "inputs_hash": "sha256:41c2b6530b0e535d8099881ac44fe9d8b6a3e9b3442425d8865a147e19644932",
+  "produced_at": "2026-09-29T06:23:55Z",
+  "inputs_hash": "sha256:828a456e2f2f14682a9de527970f4b6dee4d258576235e4a2163632169eb5959",
   "tier": "display"
 }
