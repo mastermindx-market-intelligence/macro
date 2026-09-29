@@ -593,7 +593,32 @@ def _unprintable(value: Any) -> bool:
     return False
 
 
+# R196: the validator returns the facts it accepts or refuses with EconomicObservationError, and the build raises
+# nothing else on the public path.  After R193 and R195 every value it reads is a built-in, so the only other
+# exceptions its body can raise are the ones a built-in operation raises when a value has the wrong type or range
+# where it is read: a list read as a document id is unhashable (B-R10-B2).  Testing each value before each use
+# leaves the next unguarded read to be found; the public entry turns exactly those exceptions into the refusal
+# they stand for.  It accepts nothing the body refuses, and every other exception still propagates.
+_UNREADABLE = (TypeError, ValueError, ArithmeticError, LookupError, AttributeError)
+
+
 def validate_selected_facts(
+    workspace: Mapping[str, Any],
+    *,
+    source_texts: Mapping[str, str],
+    fiscal_scope: tuple[str, str, str, str],
+) -> list[dict[str, Any]]:
+    try:
+        return _validate_selected_facts(workspace, source_texts=source_texts, fiscal_scope=fiscal_scope)
+    except EconomicObservationError:
+        raise
+    except _UNREADABLE as exc:
+        raise EconomicObservationError(
+            f"a value has the wrong type or range where the validator reads it ({type(exc).__name__})"
+        ) from exc
+
+
+def _validate_selected_facts(
     workspace: Mapping[str, Any],
     *,
     source_texts: Mapping[str, str],
