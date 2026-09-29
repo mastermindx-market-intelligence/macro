@@ -82,6 +82,7 @@ import sys
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from collections.abc import Sequence
 from pathlib import Path
 
 log = logging.getLogger("worktree_gc")
@@ -102,10 +103,14 @@ DEFAULT_CONFIG = {
         ".codex-worktrees",
         "~/.codex/worktrees",
     ],
+    # Subtrees whose checkouts belong to HUMAN-driven sessions. Never candidates, at any
+    # verdict, under any arming. Empty here on purpose: the built-in defaults are the
+    # disarmed fallback, and the real list lives in config/worktree_gc.json.
+    "human_driven_roots": [],
 }
 
 KEEP_VERDICTS = {
-    "PRIMARY", "SELF", "LOCKED", "ERROR", "LIVE_PROC", "RECENT",
+    "PRIMARY", "SELF", "PROTECTED", "LOCKED", "ERROR", "LIVE_PROC", "RECENT",
     "DIRTY", "OPEN_PR", "UNPUSHED", "OUT_OF_SCOPE",
 }
 SAFE_VERDICTS = {"SAFE_MERGED", "SAFE_REMOTE"}
@@ -254,6 +259,25 @@ def _under(path: Path, root: Path) -> bool:
         return True
     except (ValueError, OSError):
         return False
+
+
+def human_driven_protection(hosts: Path | list[Path], cfg: dict) -> list[Path]:
+    """Absolute subtrees whose checkouts are driven by a HUMAN, not by an agent process.
+
+    A Claude/Codex session is a shell: it exits between tool calls, so silence means dead and
+    every liveness probe this tool owns (`lsof` cwd, reflog entries, transcript mtimes) can see
+    it. A ChatGPT-web conversation has no shell and no process — it lives in a browser tab and
+    resumes the instant its human replies. Its attachment to a checkout is therefore
+    UNDETECTABLE, which is why a valid landed proof is not permission here: reclaim needs landed
+    AND nothing attached, and the second half is unanswerable for this population.
+
+    This list is honoured ahead of every verdict (see ``classify``) and again at the deletion
+    belt (see ``apply_deletions``), because the sweeper's two current protections for these
+    trees are accidents rather than decisions: the narrow ``roots`` list, and a host-checkout
+    belt that happens to classify every absolutely-named path as a host checkout. The repair
+    that makes a wider ``roots`` list actually delete anything removes both at once.
+    """
+    return expand_roots(hosts, list(cfg.get("human_driven_roots") or []))
 
 
 # ── probes ───────────────────────────────────────────────────────────────────
@@ -486,6 +510,7 @@ def classify(
     remote_fresh: bool,
     self_cwd: Path,
     now: float,
+    protected: Sequence[Path] = (),
 ) -> None:
     """Assign wt.verdict / wt.proof / wt.reasons.  Fail-closed at every step."""
     if wt.path.resolve() == primary.resolve():
@@ -493,6 +518,14 @@ def classify(
         return
     if _under(self_cwd, wt.path):
         wt.verdict = "SELF"
+        return
+    # BEFORE any proof is computed. A human-driven checkout with a perfectly valid landed
+    # proof must still never become a candidate — the proof establishes that the WORK is
+    # safe, and what deleting a checkout destroys is the SESSION's working directory.
+    if any(_under(wt.path, r) for r in protected):
+        wt.verdict = "PROTECTED"
+        wt.reasons.append("under a human_driven_roots entry — a resumable web session is "
+                          "undetectable, so no landed proof authorizes reclaim here")
         return
     if not wt.path.exists():
         wt.verdict = "MISSING"
@@ -660,6 +693,7 @@ def apply_deletions(
     roots: list[Path],
     dry_run: bool = False,
     hosts: list[Path] | None = None,
+    protected: list[Path] | None = None,
 ) -> dict:
     summary = {"deleted": [], "pruned": False, "branches_deleted": [], "errors": [], "skipped_cap": 0}
     now_iso = datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -676,6 +710,11 @@ def apply_deletions(
         eligible = eligible[:cap]
 
     for wt in eligible:
+        # Deliberate protection first, and deliberately NOT a function of the verdict: if the
+        # classify-side gate above is ever removed or reordered, this one still refuses.
+        if any(_under(wt.path, r) for r in (protected or ())):
+            summary["errors"].append(f"{wt.path}: refused — human_driven_roots")
+            continue
         # Final belt: target must sit strictly under a configured root and
         # must not be the primary checkout or the sweeper's own tree.
         if wt.path.resolve() == primary.resolve() or not any(_under(wt.path, r) for r in roots):
@@ -789,6 +828,30 @@ def reach_line(meta: dict) -> str | None:
     return " · ".join(parts) + "."
 
 
+def protection_line(meta: dict) -> str | None:
+    """State the deny-list's reach, because a silent protection cannot be audited.
+
+    "0 protected" has three producers a reader cannot tell apart: nothing matched, the volume
+    is not mounted, or the key is missing/mis-spelled. A protection that fires silently is the
+    same defect as a guard that passes having checked nothing — so say which happened.
+    """
+    nroots = meta.get("protected_roots")
+    if nroots is None:
+        return None
+    n = meta.get("protected") or 0
+    if not nroots:
+        return ("**human-driven protection: NONE configured** — no `human_driven_roots` entries, "
+                "so web/Sol checkouts are protected only by the narrow `roots` list and the "
+                "host-checkout belt. Neither is a deliberate safeguard.")
+    entry = "entry" if nroots == 1 else "entries"
+    out = (f"**human-driven protection: {n} registration(s) held by {nroots} `human_driven_roots` "
+           f"{entry}**")
+    if not n:
+        out += (" — which matched nothing on this host (an unmounted volume and a mis-spelled "
+                "path look identical here)")
+    return out + "."
+
+
 def group_refusals(errors: list[str]) -> list[str]:
     """Collapse the apply summary's messages so they can actually be printed.
 
@@ -827,6 +890,9 @@ def render_markdown(worktrees: list[Worktree], cfg: dict, meta: dict) -> str:
     reach = reach_line(meta)
     if reach:
         lines += [reach, ""]
+    protection = protection_line(meta)
+    if protection:
+        lines += [protection, ""]
     lines += [
         "| verdict | count | GiB |",
         "|---|---:|---:|",
@@ -915,6 +981,7 @@ def main(argv: list[str] | None = None) -> int:
                  if not r.startswith("~") and not os.path.isabs(r)]
     hosts = host_checkouts(primary, registered, rel_roots)
     roots = expand_roots(hosts, list(cfg["roots"]))
+    protected = human_driven_protection(hosts, cfg)
 
     in_scope: list[Worktree] = []
     for w in registered:
@@ -939,7 +1006,8 @@ def main(argv: list[str] | None = None) -> int:
 
     candidates = in_scope + orphans
     for w in candidates:
-        classify(w, primary, cfg, procs, pr_states, fetch_ok, self_cwd, now)
+        classify(w, primary, cfg, procs, pr_states, fetch_ok, self_cwd, now,
+                 protected=protected)
         if not args.no_sizes and w.path.exists() and w.verdict not in ("PRIMARY", "SELF"):
             w.size_kb = du_kb(w.path)
 
@@ -954,6 +1022,8 @@ def main(argv: list[str] | None = None) -> int:
         "registered_total": len(registered),
         "in_scope": len(in_scope),
         "orphans": len(orphans),
+        "protected_roots": len(protected),
+        "protected": sum(1 for w in candidates if w.verdict == "PROTECTED"),
     }
 
     apply_summary = None
@@ -969,7 +1039,8 @@ def main(argv: list[str] | None = None) -> int:
             log.error(refused)
         else:
             apply_summary = apply_deletions(primary, candidates, cfg, roots,
-                                            dry_run=args.dry_run, hosts=hosts)
+                                            dry_run=args.dry_run, hosts=hosts,
+                                            protected=protected)
 
     payload = {
         "meta": meta,
