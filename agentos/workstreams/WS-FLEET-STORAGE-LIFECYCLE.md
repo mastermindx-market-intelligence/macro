@@ -24,6 +24,8 @@ owns_paths:
   - config/sparse_worktree.json
   - scripts/worktree_gc_launchd.py
   - tests/test_worktree_gc_launchd.py
+  - scripts/worktree_gc_liveness.py
+  - tests/test_worktree_gc_liveness.py
 blocked_by:
   - "DONE 2026-09-29 (#8175, squash `43f81e98d0ea`) — the `human_driven_roots` deny-list, now
      live. Kept in this list rather than deleted so that the gate numbering used by
@@ -56,6 +58,7 @@ discoveries:
   - DSC:GC-DISABLED-RUNNER-STORES-ACCUMULATE-EVERY-TRANSFER-PATHOLOGY-FOREVER
   - DSC:THE-SWEEPERS-FOUR-DAY-NON-START-WAS-AN-UNLOADED-AGENT-NOT-A-CRASH
   - DSC:THE-SSD-TMP-POOLS-PROVEN-RECLAIM-IS-UNREACHABLE-BY-THIS-SWEEPER
+  - DSC:A-SHARED-CLONES-FETCH-CAN-LOSE-A-REF-LOCK-RACE-AND-IT-READS-AS-AN-OUTAGE
 landmines:
   - "`/Volumes/Worktrees/Documents/Photos Library.photoslibrary` (247 GB, the LIVE library) and
      `/Volumes/Mastermind/transfers/runner-fleet-resilience-worktrees-photoslib-20260924.tar`
@@ -137,6 +140,18 @@ do_not_redo:
      `origin/main` every run; the primary is only the git vantage point."
   - "Do NOT cite the unified log about this job. `log show` has zero rows for
      `com.macro.worktree-gc` even on days it demonstrably ran, so its silence carries no signal."
+  - "Do NOT build the availability check as an AGE threshold over the receipt's `started` field,
+     which is the shape §11 proposed. An elapsed-time constant cannot tell 'not due yet' from
+     'missed': at 00:58 local against an 05:17 schedule a receipt from yesterday is healthy, and
+     at 06:00 the same receipt is an outage. The expectation must be derived from the SCHEDULE
+     and the clock. Built that way in W17 as `scripts/worktree_gc_liveness.py`."
+  - "Do NOT count run starts with `grep -c '== worktree-gc '`. The completion marker
+     `== worktree-gc done rc=0 ==` shares the prefix, so that count reads 75 against 45 real
+     starts. A start marker's payload is a single token that parses as a timestamp."
+  - "Do NOT triage `cannot lock ref 'refs/remotes/origin/main'` in this job's log as a network or
+     TCC fault. It is a compare-and-swap loss against the fleet's own concurrency on the shared
+     primary clone, git updated every other ref normally, and the run was conservative as a
+     result — not dangerous."
 needs_ceo:
   question: >
     Four storage acts are fully measured and blocked only on a decision, not on evidence. Which,
@@ -273,10 +288,21 @@ waves:
       The SSD `tmp` pool's reach correction — §9 said the 44.19 GiB proven reclaim "lacks only
       authorization", which named a roots widening as the remedy; measured, that widening frees
       zero bytes because the two candidates are standalone clones the registry cannot see and all
-      17 registrations there are detached. Withdraws a ratification ask before it is made
-    status: awaiting_ci
+      17 registrations there are detached. Withdraws a ratification ask before it is made.
+      DONE 2026-09-29, squash `1d6cc57c5c39`
+    status: done
+    pr: 8180
     depends_on:
       - W15
+  - id: W17
+    title: >
+      The external liveness check — `scripts/worktree_gc_liveness.py` pays the availability debt
+      §11 recorded, comparing the plist schedule and the clock against the log's start markers so
+      a run that never happened can finally be noticed. Positive-controlled against the real
+      2026-09-18 → 09-21 gap; 14 tests, 7 of 7 mutants caught. Plus the ref-lock fetch race
+    status: awaiting_ci
+    depends_on:
+      - W16
 next_action: >
   Put the `needs_ceo` options to the operator. SUPERSEDED TEXT, quoted so a reader who remembers it
   can see what replaced it: "the CI runner git stores (177.26 GiB, 87% `.git`) are the largest real
@@ -298,15 +324,18 @@ next_action: >
   NOT done: running `scripts/install_worktree_gc_launchd.sh`. Until it runs, W12's availability fix
   is in the repo and not on the host, because the wrapper is the one file no merge reaches —
   measured 2026-09-29, the installed copy is 4,611 bytes dated 2026-08-12 against 10,957 on
-  `origin/main`. NEWLY OWED and not built: an EXTERNAL check comparing expected daily sweeper
-  starts against actual ones, because W14's census found the four-day gap was an UNLOADED AGENT
-  and no wrapper-side receipt can witness its own absence. W9 through W15 make the programme's
+  `origin/main`. The EXTERNAL availability check that was owed here is BUILT as of W17
+  (`scripts/worktree_gc_liveness.py`, positive-controlled against the 09-18 → 09-21 gap); what
+  remains is the same shape of act as the wrapper install — nothing SCHEDULES it, and giving it a
+  LaunchAgent is a host act needing an explicit operator yes. Until then it is a by-hand command.
+  W9 through W17 make the programme's
   bounds legible and free zero bytes; legibility is a precondition for ratifying the acts above,
   never a substitute for it.
 artifacts:
   - research/WORKTREE_GC_POLICY.md
   - scripts/worktree_gc.py
   - scripts/worktree_gc_launchd.py
+  - scripts/worktree_gc_liveness.py
   - config/worktree_gc.json
 ---
 
@@ -438,3 +467,36 @@ session. **That was not this programme.** No wave here has deleted anything — 
 behind a standing decline or an unratified gate — so something else on the host released it, and
 recording it as progress would attribute a reclaim to work that freed nothing. W9 through W16 buy
 legibility, which is a precondition for ratifying the acts in `needs_ceo`, never a substitute.
+
+## The instrument that can finally say "nothing ran"
+
+Every wave from W9 to W16 measured a bound. W17 builds the one thing the programme had proved it
+was missing: `scripts/worktree_gc_liveness.py`, which compares an expectation built OUTSIDE the
+job — its launchd schedule plus the clock — against the start markers in its log. That is the only
+shape that can witness an absence, because every receipt the sweeper writes is written by the
+sweeper and therefore describes a run that started.
+
+**The positive control is the whole argument.** Run against the real host it independently
+rediscovers the incident W14 found by hand — `MISSING 4 scheduled start(s): 2026-09-18,
+2026-09-19, 2026-09-20, 2026-09-21` — while reading the same log as 45 start markers, which is
+§11's census figure arrived at by a different route. A checker that can only report health is not
+a checker; this one was shown finding the real defect before it was believed.
+
+**§11's own proposal did not survive contact, and the correction is the reusable part.** It asked
+for an AGE check over the receipt's `started` field. An elapsed-time constant cannot distinguish
+"not due yet" from "missed": at 00:58 local against an 05:17 schedule, yesterday's receipt is
+perfectly healthy, and at 06:00 the identical receipt is an outage. The expectation has to come
+from the schedule and the clock. That is the same positional-question family this programme keeps
+hitting — an instrument answering "how long since" being read as "did it happen".
+
+Three more traps are pinned in the source and in `tests/test_worktree_gc_liveness.py`: the
+completion marker `== worktree-gc done rc=0 ==` shares the start marker's prefix (a bare `grep -c`
+reads 75 against 45); the markers are UTC while the schedule is local; and a rotated log must not
+manufacture a fortnight of outages out of days it simply cannot speak for. Mutation testing found
+that trap 1's two layers are individually removable without changing behaviour — so each is now
+asserted separately, because that is exactly the condition under which a later reader deletes the
+"redundant" half and sees a green suite. 7 of 7 mutants caught across 14 tests.
+
+**Nothing schedules it.** Giving it a LaunchAgent is a host act on the same footing as
+`scripts/install_worktree_gc_launchd.sh`, and no session may take it without an explicit operator
+yes. Until then: `python3 scripts/worktree_gc_liveness.py --days 20`.

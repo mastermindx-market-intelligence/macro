@@ -7254,11 +7254,21 @@ jobs:
       - scripts/check_self_mod_fence.py
       - scripts/worktree_gc.py
       # The launchd wrapper is the process that actually performs the sweep, and its
-      # own failures were invisible for a month (15 of 45 runs died mid-run with only a
-      # traceback in a log). Its suite reads the wrapper's SOURCE as well as importing
-      # it, so inference cannot reach this pair — the same reason .claude/hooks/** is
-      # declared above. closure widening 2026-09-29.
+      # own failures were invisible for a month. Its suite reads the wrapper's SOURCE as
+      # well as importing it, so inference cannot reach this pair — the same reason
+      # .claude/hooks/** is declared above. closure widening 2026-09-29.
+      #
+      # CORRECTED 2026-09-29 (W17): this comment said "15 of 45 runs died mid-run with only
+      # a traceback in a log". 15 of 45 wrote no completion marker, but only 13 CRASHED —
+      # the other 2 are the fail-closed refusal path returning without printing one, which
+      # is the guard working. Counting an absent marker as a death over-counts by exactly
+      # the number of code paths that exit quietly.
       - scripts/worktree_gc_launchd.py
+      # The external liveness check (W17). It is report-only and imports nothing from the
+      # sweeper, but its suite imports IT, so the job that owns the subject must re-run when
+      # either moves. A new pytest suite named by no `run:` step is exactly what
+      # contract-delta refuses, and it refused this one.
+      - scripts/worktree_gc_liveness.py
       - tests/test_agent_worktree_roots.py
       - tests/test_agentos_compile.py
       - tests/test_agentos_schema.py
@@ -7313,6 +7323,7 @@ jobs:
       - tests/test_warp_session_start_sparse.py
       - tests/test_worktree_gc.py
       - tests/test_worktree_gc_launchd.py
+      - tests/test_worktree_gc_liveness.py
       - tests/test_worktree_placement.py
       - tests/test_worktree_sparse.py
     # F2 (Metabolism Phase 0 / R-AUT-5): self-modification fence.
@@ -7349,7 +7360,7 @@ jobs:
         # host that has hit runner ENOSPC twice. tests/test_worktree_gc.py ran in NO
         # workflow before this line; it is grandfathered-dark rather than waived, so
         # contract-delta never asked for it.
-        run: python -m pytest tests/test_ship_loop_guard.py tests/test_ship_loop_semantic.py tests/test_execution_continuation_law.py tests/test_agent_worktree_roots.py tests/test_sparse_worktree_profile.py tests/test_warp_session_start_sparse.py tests/test_worktree_gc.py tests/test_worktree_gc_launchd.py tests/test_worktree_placement.py tests/test_worktree_sparse.py -q
+        run: python -m pytest tests/test_ship_loop_guard.py tests/test_ship_loop_semantic.py tests/test_execution_continuation_law.py tests/test_agent_worktree_roots.py tests/test_sparse_worktree_profile.py tests/test_warp_session_start_sparse.py tests/test_worktree_gc.py tests/test_worktree_gc_launchd.py tests/test_worktree_gc_liveness.py tests/test_worktree_placement.py tests/test_worktree_sparse.py -q
       - name: self-mod-fence live check (loop PR + immutable → BLOCKED)
         run: |
           # CI_HEAD_REF is the validated API identity published by the upgraded
