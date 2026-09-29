@@ -752,7 +752,8 @@ def test_j7_pass_recomputes_selected_row_digest():
     su = _standouts_payload(pool_digest="")
     soup = BeautifulSoup(_corrected_html(plan_relation="none"), "lxml")
     pool = soup.select_one("#us-candidate-pool")
-    pool["data-source-digest"] = _pjr._journey_digest(su, "TEST1")
+    pool["data-source-digest"] = _pjr._journey_digest(
+        su, "TEST1", "none", [])
     chk = _pjr._check_j7(soup, su, "TEST1")
     assert chk["status"] == "PASS", chk
 
@@ -763,7 +764,8 @@ def test_j7_fail_rendered_reason_differs_from_source():
     pool = soup.select_one("#us-candidate-pool")
     receipt = pool.select_one(".ucp-receipt")
     receipt.string = "cleared_admission"
-    pool["data-source-digest"] = _pjr._journey_digest(su, "TEST1")
+    pool["data-source-digest"] = _pjr._journey_digest(
+        su, "TEST1", "related_security", ["PLAN1"])
     chk = _pjr._check_j7(soup, su, "TEST1")
     assert chk["status"] == "FAIL", chk
 
@@ -785,7 +787,8 @@ def test_j7_fail_empty_reason_code():
     su["candidate_pool"]["rows"][0]["lane_reasons"] = [""]
     soup = BeautifulSoup(_corrected_html(), "lxml")
     pool = soup.select_one("#us-candidate-pool")
-    pool["data-source-digest"] = _pjr._journey_digest(su, "TEST1")
+    pool["data-source-digest"] = _pjr._journey_digest(
+        su, "TEST1", "related_security", ["PLAN1"])
     chk = _pjr._check_j7(soup, su, "TEST1")
     assert chk["status"] == "FAIL", chk
 
@@ -796,6 +799,14 @@ def test_j8_pass_link_target_page_ticker_and_open_book():
     chk, plan_ids = _pjr._check_j8(soup, ix, "TEST1")
     assert chk["status"] == "PASS", chk
     assert plan_ids == ["PLAN1"]
+
+
+def test_j7_digest_binds_displayed_plan_relation_and_ids():
+    standouts = _standouts_payload()
+    related = _pjr._journey_digest(
+        standouts, "TEST1", "related_security", ["PLAN1"])
+    unrelated = _pjr._journey_digest(standouts, "TEST1", "none", [])
+    assert related != unrelated
 
 
 def test_j8_fail_missing_target():
@@ -909,6 +920,28 @@ def test_j9_unsupported_without_runtime_payload():
     assert chk["status"] == "UNSUPPORTED", chk
 
 
+def test_j9_fail_valid_plan_book_attribute_with_unrelated_sentence():
+    soup = BeautifulSoup(_corrected_html(), "lxml")
+    clock = soup.select_one("#us-plan-book-asof")
+    clock.select_one(".l-en").string = "The moon is made of cheese."
+    clock.select_one(".l-zh").decompose()
+    chk = _pjr._check_j9(soup, _index_payload(), _standouts_payload(),
+                         _runtime_payload(), ticker="TEST1")
+    assert chk["status"] == "FAIL", chk
+
+
+def test_j9_pass_absent_signal_asof_renders_not_supplied():
+    standouts = _standouts_payload()
+    standouts["buy"][0].pop("signal_asof")
+    soup = BeautifulSoup(_corrected_html(assessment_asof=""), "lxml")
+    clock = soup.select_one(".pvs-assessment-clock")
+    clock.select_one(".l-en").string = "Entry read date not supplied"
+    clock.select_one(".l-zh").string = "入场判读日期 来源未提供"
+    chk = _pjr._check_j9(soup, _index_payload(), standouts,
+                         _runtime_payload(), ticker="TEST1")
+    assert chk["status"] == "PASS", chk
+
+
 def test_j10_pass_market_case_folding():
     html = _corrected_html().replace('data-mkt="US"', 'data-mkt="us"', 1)
     chk = _pjr._check_j10(BeautifulSoup(html, "lxml"), "TEST1", ["PLAN1"])
@@ -918,6 +951,14 @@ def test_j10_pass_market_case_folding():
 def test_j10_fail_mismatched_hk_market():
     html = _corrected_html().replace('data-mkt="US"', 'data-mkt="HK"', 1)
     chk = _pjr._check_j10(BeautifulSoup(html, "lxml"), "TEST1", ["PLAN1"])
+    assert chk["status"] == "FAIL", chk
+
+
+def test_j10_fail_journey_node_own_market():
+    soup = BeautifulSoup(_corrected_html(), "lxml")
+    wrapper = soup.select_one('[data-setup-ticker="TEST1"]')
+    wrapper["data-mkt"] = "HK"
+    chk = _pjr._check_j10(soup, "TEST1", ["PLAN1"])
     assert chk["status"] == "FAIL", chk
 
 
@@ -951,13 +992,28 @@ def test_j11_fail_fixed_refusal_vocabulary_even_when_payload_omits_it():
 def test_j11_pass_raw_code_only_inside_declared_raw_element():
     soup = BeautifulSoup(_corrected_html(), "lxml")
     receipt = soup.select_one(".ucp-receipt")
-    reason = soup.new_tag("span", attrs={"class": "ucp-reason", "data-reason": ""})
+    reason = soup.new_tag(
+        "span", attrs={"class": "ucp-reason", "data-reason": "unmapped_new_code"})
+    reason.append(soup.new_tag("span", attrs={"class": "l-en"}))
+    reason.span.append("Cleared for admission")
     reason.append(soup.new_tag("code", attrs={"class": "ucp-reason-raw"}))
     reason.code.append("unmapped_new_code")
     receipt.append(reason)
     chk = _pjr._check_j11(soup, "en", _standouts_payload(), _index_payload(),
                           "TEST1", ["PLAN1"])
     assert chk["status"] == "PASS", chk
+
+
+def test_j11_fail_human_reason_label_with_empty_binding():
+    soup = BeautifulSoup(_corrected_html(), "lxml")
+    receipt = soup.select_one(".ucp-receipt")
+    reason = soup.new_tag("span", attrs={"class": "ucp-reason"})
+    reason.append(soup.new_tag("span", attrs={"class": "l-en"}))
+    reason.span.append("Cleared for admission")
+    receipt.append(reason)
+    chk = _pjr._check_j11(soup, "en", _standouts_payload(), _index_payload(),
+                          "TEST1", ["PLAN1"])
+    assert chk["status"] == "FAIL", chk
 
 def test_j12_pass_alert_absent_with_sources():
     soup = BeautifulSoup(_full_page(ticker="TEST1"), "lxml")
@@ -993,7 +1049,8 @@ def test_cli_clean_journey_exit_code_zero():
     """A frozen corrected full journey returns PASS."""
     standouts = _standouts_payload(pool_digest="")
     index = _index_payload(with_plan=True)
-    digest = _pjr._journey_digest(standouts, "TEST1")
+    digest = _pjr._journey_digest(
+        standouts, "TEST1", "related_security", ["PLAN1"])
     soup = BeautifulSoup(_corrected_html(), "lxml")
     soup.select_one("#us-candidate-pool")["data-source-digest"] = digest
     page, standouts_path, index_path, out = _write_io(
@@ -1035,6 +1092,11 @@ def test_cli_without_runtime_is_partial():
     report = json.loads(out.read_text(encoding="utf-8"))
     assert report["checks"][8]["id"] == "J9"
     assert report["checks"][8]["status"] == "UNSUPPORTED"
+
+
+def test_verdict_counts_unsupported_as_not_proven():
+    assert _pjr._verdict([{"status": "UNSUPPORTED"}]) == "PARTIAL"
+
 
 def test_report_schema_keys():
     """Every required report key is present, nothing extra leaks payload rows."""
@@ -1286,8 +1348,8 @@ def test_cli_subprocess_pass():
     su = _standouts_payload(ticker="TEST1", pool_digest="")
     ix = _index_payload()
     soup = BeautifulSoup(_corrected_html(), "lxml")
-    digest = _pjr._journey_digest(su, "TEST1")
-    soup.select_one("#us-candidate-pool")["data-source-digest"] = digest
+    soup.select_one("#us-candidate-pool")["data-source-digest"] = (
+        _pjr._journey_digest(su, "TEST1", "related_security", ["PLAN1"]))
     page, su_p, ix_p, out = _write_io(str(soup), su, ix, "SUBP")
     (page.parent / "prophet_live.json").write_text(
         json.dumps(_runtime_payload()), encoding="utf-8")
@@ -1300,4 +1362,27 @@ def test_cli_subprocess_pass():
     assert proc.returncode == 0, (proc.stdout, proc.stderr)
     report = json.loads(out.read_text(encoding="utf-8"))
     assert report["verdict"] == "PASS"
+
+
+def test_cli_subprocess_prints_check_and_result_lines():
+    su = _standouts_payload(ticker="TEST1", pool_digest="")
+    ix = _index_payload()
+    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup.select_one("#us-candidate-pool")["data-source-digest"] = (
+        _pjr._journey_digest(su, "TEST1", "related_security", ["PLAN1"]))
+    page, su_p, ix_p, out = _write_io(str(soup), su, ix, "CLIOUT")
+    (page.parent / "prophet_live.json").write_text(
+        json.dumps(_runtime_payload()), encoding="utf-8")
+    proc = subprocess.run(
+        [sys.executable, str(SCRIPT), "--page", str(page),
+         "--standouts", str(su_p), "--index", str(ix_p),
+         "--ticker", "TEST1", "--out", str(out)],
+        check=False, capture_output=True, text=True,
+    )
+    assert proc.returncode == 0, (proc.stdout, proc.stderr)
+    lines = proc.stdout.splitlines()
+    assert len(lines) == 13, lines
+    assert lines[-1] == "RESULT: PASS"
+    assert lines[8] == "J9 PASS all clocks bound to their sources"
+    report = json.loads(out.read_text(encoding="utf-8"))
     assert report["generated_by"] == _pjr.GENERATED_BY

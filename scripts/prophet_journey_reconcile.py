@@ -9,7 +9,8 @@ and reports whether the ONE Prophet decision journey — Today → Screener
 no-plan path — shows the SAME record with reconciled clocks, preserved
 source values, plain language, and no cross-market interception.
 
-Output = a JSON receipt. Exit 0 PASS, 1 FAIL, 2 PARTIAL (no FAIL but ≥1 N/A).
+Output = a JSON receipt and one status line per check, followed by RESULT.
+Exit 0 PASS, 1 FAIL, 2 PARTIAL (no FAIL but ≥1 UNSUPPORTED or N/A).
 
 OWNED FILES (the only files this script is allowed to touch):
   - scripts/prophet_journey_reconcile.py     (this file)
@@ -324,6 +325,9 @@ def _hrefs(node: Tag) -> list[str]:
 
 def _data_mkts(node: Tag) -> list[str]:
     out: list[str] = []
+    own = node.get("data-mkt")
+    if own is not None:
+        out.append(own)
     for el in node.find_all(True):
         v = el.get("data-mkt")
         if v is not None:
@@ -778,7 +782,9 @@ def _check_j6(soup: BeautifulSoup, standouts: dict[str, Any],
     return _check_status("PASS", "displayed body binding and fields supported",
                          {**binding, "total_fields": len(displayed.select("[data-source-field]"))}, where)
 
-def _journey_digest(standouts: dict[str, Any], ticker: str) -> str | None:
+def _journey_digest(standouts: dict[str, Any], ticker: str,
+                    plan_relation: str | None = None,
+                    plan_ids: list[str] | None = None) -> str | None:
     """Hash exactly the selected row fields the journey renders."""
     row = _standouts_payload_row(standouts, ticker)
     if row is None:
@@ -788,14 +794,21 @@ def _journey_digest(standouts: dict[str, Any], ticker: str) -> str | None:
                      if str(candidate.get("ticker", "")).upper() == ticker.upper()), None)
     reasons = ((pool_row or {}).get("lane_reasons")
                or ([pool_row.get("headline_reason")] if pool_row and pool_row.get("headline_reason") is not None else []))
+    resolved_plan_relation = plan_relation
+    if resolved_plan_relation is None:
+        for candidate in ((standouts.get("buy") or [])
+                          + (standouts.get("watch") or [])):
+            if str(candidate.get("ticker", "")).upper() == ticker.upper():
+                resolved_plan_relation = str(candidate.get("plan_relation") or "none")
+                break
     payload = {
         "ticker": str(row.get("ticker", "")),
         "entry_status": ((row.get("entry_signal") or {}).get("status")
                          if isinstance(row.get("entry_signal"), dict) else None),
         "signal_asof": row.get("signal_asof"),
         "price_as_of": row.get("price_as_of"),
-        "plan_relation": None,
-        "plan_ids": [],
+        "plan_relation": resolved_plan_relation,
+        "plan_ids": list(plan_ids or []),
         "reason_codes": [str(reason) for reason in reasons if reason is not None],
     }
     return hashlib.sha256(json.dumps(payload, sort_keys=True,
@@ -804,7 +817,9 @@ def _journey_digest(standouts: dict[str, Any], ticker: str) -> str | None:
 
 
 def _check_j7(soup: BeautifulSoup, standouts: dict[str, Any],
-              ticker: str | None = None) -> dict[str, Any]:
+              ticker: str | None = None,
+              plan_relation: str | None = None,
+              plan_ids: list[str] | None = None) -> dict[str, Any]:
     """J7 - independently bind the selected row and its rendered digest."""
     where = "#us-candidate-pool clock, total, selected reasons and digest"
     pool = _select_first(soup, "#us-candidate-pool")
@@ -814,10 +829,10 @@ def _check_j7(soup: BeautifulSoup, standouts: dict[str, Any],
         return _check_status("FAIL", "selected row digest", "no ticker", where)
     if not standouts.get("candidate_pool", {}).get("rows"):
         return _check_status("N/A", "selected pool row", "candidate pool absent", where)
-    digest = _journey_digest(standouts, ticker)
     row = _standouts_payload_row(standouts, ticker)
     pool_row = next((candidate for candidate in ((standouts.get("candidate_pool") or {}).get("rows") or [])
                      if str(candidate.get("ticker", "")).upper() == ticker.upper()), None)
+    digest = _journey_digest(standouts, ticker, plan_relation, plan_ids)
     rendered = pool.select_one(f'.ucp-row[data-ticker="{ticker}"]')
     if digest is None or row is None or pool_row is None or rendered is None:
         return _check_status("FAIL", "selected source and rendered rows",
@@ -883,12 +898,11 @@ def _check_j8(soup: BeautifulSoup, index: dict[str, Any],
                   if isinstance(plan, dict)
                   and str(plan.get("asset", "")).upper() == ticker.upper()
                   and not plan.get("closed")]
-    expected_relation = "related_security" if open_plans else relation
     if relation != "related_security":
-        if links or relation != expected_relation:
+        if links or open_plans:
             return (_check_status("FAIL", "relation agrees with the open plan book",
                                   {"relation": relation,
-                                   "expected_relation": expected_relation,
+                                   "open_matching_plans": len(open_plans),
                                    "links": len(links)}, where), [])
         return (_check_status("PASS", "honest non-related plan relation",
                               relation, where), [])
@@ -938,6 +952,7 @@ def _check_j8(soup: BeautifulSoup, index: dict[str, Any],
     return (_check_status("PASS", "target exists, ticker matches, book open",
                           {"targets": [l.get("data-pvs-plan-target") for l in links]},
                           where), plan_ids)
+
 
 def _iso_date(value: Any) -> datetime | None:
     if not isinstance(value, str):
@@ -995,14 +1010,20 @@ def _check_j9(soup: BeautifulSoup, index: dict[str, Any],
     else:
         raw_asof = index.get("asof") or index.get("as_of")
         rendered = str(book.get("data-plan-book-asof", ""))
+        text = book.get_text(" ", strip=True)
         parsed_book = _iso_date(rendered)
+        raw_asof_date = _iso_date(raw_asof)
         if rendered == "":
-            if "Plan record date unavailable" not in book.get_text(" ", strip=True):
+            if raw_asof_date is not None or "Plan record date unavailable" not in text:
                 fails.append("plan book empty attribute with non-unavailable text")
         elif parsed_book is None:
             fails.append("plan book attribute is not YYYY-MM-DD")
         elif str(raw_asof) != rendered:
             fails.append("plan book attribute differs from index.asof")
+        elif raw_asof_date is None or not text:
+            fails.append("plan book dated text mismatch")
+        elif rendered not in text:
+            fails.append("plan book dated text mismatch")
     idx_asof = index.get("asof") or index.get("as_of")
     idx_source = index.get("source_board_asof")
     su_asof = (standouts or {}).get("as_of")
@@ -1020,8 +1041,17 @@ def _check_j9(soup: BeautifulSoup, index: dict[str, Any],
     else:
         rendered = str(clock.get("data-assessment-asof", ""))
         source = str(selected_row.get("signal_asof", ""))
-        if not rendered or _iso_date(rendered) is None or rendered != source:
+        source_date = _iso_date(source)
+        clock_text = clock.get_text(" ", strip=True)
+        if rendered and _iso_date(rendered) is None:
             fails.append("assessment clock differs from signal_asof")
+        elif source_date is not None and rendered != source:
+            fails.append("assessment clock differs from signal_asof")
+        elif source_date is None:
+            if rendered != "":
+                fails.append("assessment clock differs from signal_asof")
+            elif "not supplied" not in clock_text and "来源未提供" not in clock_text:
+                fails.append("assessment clock unavailable text mismatch")
     plv = _select_first(soup, "#plv-asof")
     if plv is None:
         fails.append("#plv-asof missing")
@@ -1139,6 +1169,15 @@ def _check_j11(soup: BeautifulSoup, locale: str,
     if not scopes:
         return _check_status("FAIL", "displayed scopes present",
                              "no displayed scopes", where)
+    for selector in (".ucp-receipt", ".pvs-section", ".pv-setup-body"):
+        for node in soup.select(selector):
+            if node.find_parent("template") is not None:
+                continue
+            if selector == ".ucp-receipt" and any(
+                    not str(reason.get("data-reason", ""))
+                    for reason in node.select(".ucp-reason")):
+                return _check_status("FAIL", "reason bindings non-empty",
+                                     "a displayed reason has an empty data-reason", where)
     banned = _enum_values(standouts, index)
     hits: list[dict[str, Any]] = []
     for node in scopes:
@@ -1153,6 +1192,7 @@ def _check_j11(soup: BeautifulSoup, locale: str,
                              hits[:20], where)
     return _check_status("PASS", "no internal enum tokens in displayed text",
                          {"scopes_walked": len(scopes)}, where)
+
 
 def _check_j12(soup: BeautifulSoup, index: dict[str, Any],
                standouts: dict[str, Any],
@@ -1198,6 +1238,8 @@ def _verdict(checks: list[dict[str, Any]]) -> str:
     statuses = {c["status"] for c in checks}
     if "FAIL" in statuses:
         return "FAIL"
+    if "UNSUPPORTED" in statuses:
+        return "PARTIAL"
     if "N/A" in statuses:
         return "PARTIAL"
     return "PASS"
@@ -1244,8 +1286,14 @@ def run(argv: list[str] | None = None) -> int:
                     if j1_observed else None)
     j5 = _check_j5(soup, standouts, ticker)
     j6 = _check_j6(soup, standouts, ticker)
-    j7 = _check_j7(soup, standouts, ticker)
     j8, plan_ids = _check_j8(soup, index, ticker)
+    displayed, _template = _setup_source_bodies(
+        soup, ticker) if ticker else (None, None)
+    j7 = _check_j7(
+        soup, standouts, ticker,
+        plan_relation=str(displayed.get("data-plan-relation", ""))
+        if displayed else None,
+        plan_ids=plan_ids)
     runtime_path = page_path.parent / "prophet_live.json"
     runtime = _load_json(runtime_path) if runtime_path.exists() else None
     j9 = _check_j9(soup, index, standouts, runtime, args.locale, ticker)
@@ -1259,6 +1307,10 @@ def run(argv: list[str] | None = None) -> int:
     for chk, cid in zip(checks, ids):
         chk["id"] = cid
     verdict = _verdict(checks)
+    for chk in checks:
+        reason = str(chk.get("expected", ""))
+        print(f"{chk['id']} {chk['status']} {reason}")
+    print(f"RESULT: {verdict}")
 
     report = {
         "schema": SCHEMA,
