@@ -1258,3 +1258,59 @@ def test_a_failed_push_cannot_advance_the_served_source_receipt(collect_steps):
         "no collect job output reads the push receipt any more — if that is "
         "deliberate, rewrite this pin against whatever consumes it now"
     )
+
+
+def test_a_no_op_rerun_cannot_mint_a_fictitious_source_session(collect_steps):
+    """A rerun that collects nothing must leave `committed` false.
+
+    The consumer half of this is already pinned: the push step is gated on
+    `steps.commitdata.outputs.committed == 'true'`
+    (test_each_checkpoint_keeps_the_commit_push_split) and the receipt only
+    advances inside push_do's success branch
+    (test_a_failed_push_cannot_advance_the_served_source_receipt). Neither one
+    pins the PRODUCER, so an edit that hoisted `committed=true` above the
+    empty-index check would hand a no-op rerun a published source session and
+    both existing tests would stay green — the served page would then call
+    itself current off a night that collected nothing.
+
+    The mechanism being pinned: `committed=false` is written first, the step
+    exits 0 on an empty index, and `committed=true` is reachable only after a
+    real `git commit`.
+    """
+    commit = collect_steps[_index_of(collect_steps, MARKET_COMMIT_STEP)]
+    lines = str(commit.get("run") or "").splitlines()
+
+    false_at = [i for i, l in enumerate(lines) if "committed=false" in l]
+    true_at = [i for i, l in enumerate(lines) if "committed=true" in l]
+    empty_at = [i for i, l in enumerate(lines) if "git diff --cached --quiet" in l]
+    commit_at = [i for i, l in enumerate(lines) if l.strip().startswith("git commit ")]
+
+    assert len(false_at) == 1, f"expected one committed=false default, found {len(false_at)}"
+    assert len(true_at) == 1, (
+        f"expected one committed=true, found {len(true_at)} — a second way to "
+        "claim a session is a second way to invent one"
+    )
+    assert empty_at, (
+        "the empty-index check is gone; a rerun with nothing staged would fall "
+        "through to the commit and mint a source session out of no data"
+    )
+    assert commit_at, f"{MARKET_COMMIT_STEP!r} no longer commits"
+
+    assert false_at[0] < empty_at[0], (
+        "committed=false must be the DEFAULT, written before the empty-index check"
+    )
+    # The discriminating order: the empty-index early exit has to sit between the
+    # default and the flip, so the no-op path can never reach committed=true.
+    assert empty_at[0] < true_at[0], (
+        f"committed=true (line {true_at[0]}) is reachable before the empty-index "
+        f"check (line {empty_at[0]}) — a rerun that collected nothing would report "
+        "a published source session"
+    )
+    assert commit_at[0] < true_at[0], (
+        f"committed=true (line {true_at[0]}) is set before `git commit` (line "
+        f"{commit_at[0]}) — it would claim a commit that had not happened yet"
+    )
+    assert "exit 0" in lines[empty_at[0]], (
+        "the empty-index check no longer exits the step; a bare message lets "
+        f"control reach committed=true anyway: {lines[empty_at[0]].strip()!r}"
+    )
