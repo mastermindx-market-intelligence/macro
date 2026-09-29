@@ -28,7 +28,7 @@ The bars are the commission's review standard: (a) wrong bind, (b) present fact 
 | n-A1, n-A2; n-B1, n-B2, n-B3 | notes | disposed of below | R197 |
 
 - **All three are integrity (d).** An exception escaping the validator is not a refusal. That is R176's rule, R183's, R189's and R193's.
-- None of them binds a wrong value. Each needs a tampered workspace or a tampered argument. Group B's walk accepted no tamper of a fact row: on the non-envelope route 0 of 45,074 runs were accepted, and on the envelope route no `facts[*]` path accepted a tamper that changes the workspace's JSON.
+- None of them binds a wrong value. Each needs a tampered workspace or a tampered argument. Group B's walk accepted no tamper of a fact row: on the envelope route no `facts[*]` path accepted a tamper that changes the workspace's JSON. Its non-envelope route refuses the untampered workspace too, by design: the release id is redirected so that the validator takes that branch. There 0 of 45,074 runs were accepted, which follows from the redirect; that walk's use is the 1,369 runs that raised.
 
 ## Rulings
 
@@ -129,7 +129,7 @@ Each line names the command or script that produced it. The scratch scripts are 
   - at `6caa2ffc1a95`, eight raised the construction's own exception, as the severity table lists. The other eight were refused: two under the walk's message, three under "fiscal_scope must contain four ISO dates", two under "workspace must be a mapping" and one under "source_texts must be a mapping";
   - with R195 and R196, all sixteen are refused and none raises: the workspace and nested values under the walk's message, `source_texts` under "source_texts must map document ids to text", and `fiscal_scope` under "fiscal_scope must contain four ISO dates".
 - The seat's sweep, `seat_walk.py`, group B's walker with the seat's additions. It sets each of 73 values at every path of the event id, the fiscal period, the release source entry and the `pg_` fact rows, and adds and renames keys in each mapping. Q1, Q2 and Q3, on both routes and both interpreters, with R195 and R196:
-  - the non-envelope route: 50,482 runs for each quarter on each interpreter, and every one refused;
+  - the non-envelope route: 50,482 runs for each quarter on each interpreter, and every one refused. The untampered workspace is refused on that route too, by group B's redirect, so these runs show that none raised, not that a tamper is caught;
   - the envelope route: 50,482 runs for each quarter on each interpreter, and none raised. 50,183 on Q1 and 50,185 on Q2 and Q3 were refused. Of the rest, 83, 81 and 80 left the workspace's JSON unchanged, and 216, 216 and 217 changed it.
     - Every change that was accepted is outside the facts. It is one of three kinds: an added key in the fiscal period or the release source entry (n-B2); the entry's `filing_key`, `source_sha256`, `form` or `url`, which the validator does not read (each fact's receipt carries its own `source_sha256`, and that one is checked against the bytes); and, on Q3, a quarter that compares equal by `str()` (n-B1).
     - No tamper of a `pg_` fact row was accepted.
