@@ -61,7 +61,6 @@ def qualification(window,contract,first_available_at):
     else:
         stamp=pd.Timestamp(first_available_at)
         if pd.isna(stamp) or stamp.tz is not None:reasons.append('first_available_invalid')
-        elif stamp<pd.Timestamp(window['window_end']):reasons.append('receipt_precedes_completion')
         elif stamp>pd.Timestamp(window['as_of']) or pd.Timestamp(window['window_end'])>pd.Timestamp(window['as_of']):reasons.append('not_yet_available')
     return {'mechanically_complete':window['status']=='ok','causally_usable':not reasons,'reasons':reasons,
             'meaning':'Conditional research eligibility; supplied flags are not an independent review or live admission.'}

@@ -1,0 +1,151 @@
+{
+  "flow_grid": {
+    "rows": 2957,
+    "grid_hours": 2966,
+    "missing_hours": 9,
+    "invalid_or_missing_hours": 9,
+    "gap_events": 1,
+    "max_contiguous_valid_hours": 2956,
+    "continuous_runs": 2
+  },
+  "row_vs_elapsed": {
+    "24": {
+      "row_windows": 2934,
+      "bridged_gap_windows": 1,
+      "max_covered_hours": 33.0,
+      "last_row_window_covered_hours": 24.0,
+      "last_exact_window_complete": true,
+      "strict_grid_complete_windows": 2933
+    },
+    "72": {
+      "row_windows": 2886,
+      "bridged_gap_windows": 1,
+      "max_covered_hours": 81.0,
+      "last_row_window_covered_hours": 72.0,
+      "last_exact_window_complete": true,
+      "strict_grid_complete_windows": 2885
+    }
+  },
+  "r9_coverage_scenarios": [
+    {
+      "label_assumption": "start",
+      "additional_delay_hours": 0,
+      "window_hours": 24,
+      "clock_count": 15686,
+      "mechanically_complete_clocks": 489,
+      "r9_forecast_qualified_clocks": 8879,
+      "overlap_mechanical_and_r9": 364,
+      "causally_qualified_clocks": 0
+    },
+    {
+      "label_assumption": "start",
+      "additional_delay_hours": 0,
+      "window_hours": 72,
+      "clock_count": 15686,
+      "mechanically_complete_clocks": 481,
+      "r9_forecast_qualified_clocks": 8879,
+      "overlap_mechanical_and_r9": 364,
+      "causally_qualified_clocks": 0
+    },
+    {
+      "label_assumption": "start",
+      "additional_delay_hours": 1,
+      "window_hours": 24,
+      "clock_count": 15686,
+      "mechanically_complete_clocks": 489,
+      "r9_forecast_qualified_clocks": 8879,
+      "overlap_mechanical_and_r9": 364,
+      "causally_qualified_clocks": 0
+    },
+    {
+      "label_assumption": "start",
+      "additional_delay_hours": 1,
+      "window_hours": 72,
+      "clock_count": 15686,
+      "mechanically_complete_clocks": 481,
+      "r9_forecast_qualified_clocks": 8879,
+      "overlap_mechanical_and_r9": 364,
+      "causally_qualified_clocks": 0
+    },
+    {
+      "label_assumption": "end",
+      "additional_delay_hours": 0,
+      "window_hours": 24,
+      "clock_count": 15686,
+      "mechanically_complete_clocks": 489,
+      "r9_forecast_qualified_clocks": 8879,
+      "overlap_mechanical_and_r9": 364,
+      "causally_qualified_clocks": 0
+    },
+    {
+      "label_assumption": "end",
+      "additional_delay_hours": 0,
+      "window_hours": 72,
+      "clock_count": 15686,
+      "mechanically_complete_clocks": 481,
+      "r9_forecast_qualified_clocks": 8879,
+      "overlap_mechanical_and_r9": 364,
+      "causally_qualified_clocks": 0
+    },
+    {
+      "label_assumption": "end",
+      "additional_delay_hours": 1,
+      "window_hours": 24,
+      "clock_count": 15686,
+      "mechanically_complete_clocks": 489,
+      "r9_forecast_qualified_clocks": 8879,
+      "overlap_mechanical_and_r9": 364,
+      "causally_qualified_clocks": 0
+    },
+    {
+      "label_assumption": "end",
+      "additional_delay_hours": 1,
+      "window_hours": 72,
+      "clock_count": 15686,
+      "mechanically_complete_clocks": 481,
+      "r9_forecast_qualified_clocks": 8879,
+      "overlap_mechanical_and_r9": 364,
+      "causally_qualified_clocks": 0
+    }
+  ],
+  "strict_qualification": {
+    "mechanically_complete": true,
+    "causally_usable": false,
+    "reasons": [
+      "unit_unverified",
+      "timestamp_role_unverified",
+      "contract_unverified",
+      "finality_unverified",
+      "vintage_unverified",
+      "first_available_missing"
+    ],
+    "meaning": "Conditional research eligibility; supplied flags are not an independent review or live admission."
+  },
+  "funding_field_overlap": [
+    {
+      "left": "funding_rate",
+      "right": "funding_rate_fundingRate",
+      "overlap_rows": 1,
+      "equal_numeric_rows": 1
+    }
+  ],
+  "offline_collector_probe": {
+    "classification": "OFFLINE_FAKE_HTTP_NO_PROVIDER_CALL",
+    "okx_daily_predicted_mean": 0.00019999999999999998,
+    "actual_settlement_mean": 0.00021,
+    "okx_retained_columns": [
+      "funding_rate_okx"
+    ],
+    "okx_date_label": "2026-01-01 00:00:00",
+    "last_settlement": "2026-01-01 16:00:00",
+    "bgeo_retained_columns": [
+      "funding_rate_fundingRate",
+      "funding_rate_markPrice",
+      "funding_rate_delayed",
+      "funding_rate_message"
+    ],
+    "bgeo_retained_unix_timestamp": false,
+    "bgeo_date_label": "2026-01-01 00:00:00",
+    "bgeo_delay_value": 1
+  }
+}

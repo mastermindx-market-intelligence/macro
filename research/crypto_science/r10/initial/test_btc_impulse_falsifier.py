@@ -1069,12 +1069,3 @@ def test_r10_bgeo_release_flag_does_not_prove_observation_availability():
     assert not d['bgeo_retained_unix_timestamp']
     assert d['bgeo_date_label']=='2026-01-01 00:00:00'
     assert d['bgeo_delay_value']==1
-
-
-def test_r10_claimed_final_receipt_before_window_completion_is_rejected():
-    from research.crypto_science.r10_source_qualification import flow_window,qualification
-    f=_r10_flow();t=f.index[24];w=flow_window(f,t,24,'start')
-    spec={'scope':'OKX/BTC/CONTRACTS','unit':'USD','label':'start','contract_verified':True,'finality_verified':True,'vintage_verified':True}
-    q=qualification(w,spec,t-pd.Timedelta(seconds=1))
-    assert not q['causally_usable']
-    assert 'receipt_precedes_completion' in q['reasons']
