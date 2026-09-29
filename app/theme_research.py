@@ -153,6 +153,17 @@ _RESEARCH_REFUSAL_MAP: dict[str, tuple[int, dict[str, str]]] = {
     "replay_cutoffs_required": (
         400, {"code": "invalid_request", "action": "fix_request"},
     ),
+    # A supplied cutoff the engine cannot read. It is a PERMANENT fault in the
+    # request, so it belongs with the other 400s: before this row existed the
+    # first parse happened inside a time gate, `_le` raised a bare ValueError,
+    # and the catch-all below answered 503 `retry_later` — telling the caller
+    # to try again with a string that can never work. Where no gate read it,
+    # the request answered a silent 200 that echoed the unreadable value back
+    # with no limitation marking it. Measured by the Energy seat over
+    # nuclear's route (#7870 issuecomment-5868018569 / 5869344590 / 5870740225).
+    "cutoff_unreadable": (
+        400, {"code": "invalid_request", "action": "fix_request"},
+    ),
     # A registered loader refuses a research mode it cannot serve (Sol
     # 5813801605: system_replay without a supported as-known identity). The
     # existing not_available refusal, with the mode named so the caller can
@@ -202,9 +213,20 @@ class _QueryBody(BaseModel):
 
 
 class _EvidenceBody(_QueryBody):
+    # The theme segment is the assertion's OWN `scope.canonical_theme_id`,
+    # because `source_ref_for` builds the ref from that field. Two forms are
+    # in use: the crosswalk SLUG the semiconductor corpus carries, and the
+    # identity owner's canonical NODE id `theme:<slug>` that the canonical-id
+    # law (#7870 issuecomment-5812295091) tells every vertical to mint. This
+    # pattern admitted only the first, so a ref minted by this repo's own
+    # `source_ref_for` from a law-conforming assertion was refused 400
+    # `string_pattern_mismatch` at the door — reported by the Energy seat as
+    # the one thing nuclear needs from this carrier (#7870
+    # issuecomment-5866433049 item 1). `ltheme:` stays refused: the identity
+    # owner declares it deliberately non-canonical.
     assertion_ref: str = Field(
         min_length=1, max_length=256,
-        pattern=r"^gmi-curation://[a-z0-9_]+/gmirca_[0-9a-f]{32}$",
+        pattern=r"^gmi-curation://(?:theme:)?[a-z0-9_]+/gmirca_[0-9a-f]{32}$",
     )
     expected_generation: str = Field(pattern=r"^gen_[0-9a-f]{32}$")
 

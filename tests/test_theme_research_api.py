@@ -1760,3 +1760,292 @@ def test_route_source_names_no_owner_surface():
                       "resolve_witness_scope", "read_event_workspace"):
         assert forbidden not in source, forbidden
     assert "registration.load_bundle(" in source
+
+
+# ---------------------------------------------------------------------------
+# Shared-foundation defects reported by the registered consumers and closed
+# here. Each test states the OLD behaviour it discriminates against, because a
+# test that passes before and after the fix pins nothing.
+# ---------------------------------------------------------------------------
+
+def _empty_bundle_loader(monkeypatch):
+    """A loader returning a bundle with no rows. This is the shape that made
+    the malformed-cutoff defect INVISIBLE: with nothing in the slice, no time
+    gate ever read the cutoff, so the request answered a silent 200."""
+    from engine.market_ontology.semiconductor_theme_research import OwnerBundle
+
+    def loader(*_a, **_kw):
+        return OwnerBundle(
+            revision_tuple=(), rights_revision="rev_empty", assertions=(),
+            identity_results=(), event_workspaces=(), financial_packets=(),
+            interpretation_blocks=(), native_refs=(), omissions=(),
+        )
+
+    monkeypatch.setattr(theme_research, "load_authorized_owner_bundle", loader)
+
+
+@pytest.mark.parametrize("bad", ["not-a-date", "2026-13-45", "", "20261231", "2026-W53-4"])
+@pytest.mark.parametrize("mode,field", [
+    ("latest", "source_cutoff"),
+    ("latest", "recorded_cutoff"),
+    ("source_history", "source_cutoff"),
+    ("system_replay", "source_cutoff"),
+    ("system_replay", "recorded_cutoff"),
+])
+def test_malformed_cutoff_is_a_400_never_a_503_or_a_silent_200(
+    entitled_client, monkeypatch, mode, field, bad,
+):
+    """Energy seat base item 7 (#7870 issuecomment-5868018569, corrected in
+    5869344590 / 5870740225).
+
+    A cutoff string the engine cannot read is a PERMANENT fault in the request.
+    Before this fix the first parse happened inside a time gate, so the answer
+    depended on the DATA: 503 ``retry_later`` where some gate reached the value
+    (telling the caller to retry a string that can never work), and a silent
+    200 where none did — echoing the unreadable value back with no limitation
+    marking it. The bundle here is EMPTY, which is the silent-200 half, so this
+    fails on the parent for every row.
+
+    ``20261231`` and ``2026-W53-4`` are the two shapes that make the parser
+    choice load-bearing: ``fromisoformat`` accepts both and ``_le`` then raises
+    on them, so a ``_parse_clock`` validator would have handed them straight
+    back to the 503 it exists to remove."""
+    _empty_bundle_loader(monkeypatch)
+    body = _valid_body(time_mode=mode)
+    if mode == "system_replay":
+        # Both cutoffs are REQUIRED in a replay and that check runs first, so
+        # the other one has to be well formed for the format check to be reached.
+        body["source_cutoff"] = "2026-12-31"
+        body["recorded_cutoff"] = "2026-12-31"
+    body[field] = bad
+
+    response = entitled_client.post("/api/themes/v1/research/query", json=body)
+
+    assert response.status_code == 400, response.text
+    _assert_private_headers(response)
+    error = response.json()["detail"]["error"]
+    assert error["code"] == "invalid_request"
+    assert error["action"] == "fix_request"
+    assert bad not in response.text or bad == "", "the unreadable value is not echoed"
+
+
+@pytest.mark.parametrize("mode,field", [
+    ("latest", "source_cutoff"),
+    ("latest", "recorded_cutoff"),
+    ("source_history", "recorded_cutoff"),
+])
+def test_a_wellformed_cutoff_is_never_refused_for_arriving_in_this_mode(
+    entitled_client, monkeypatch, mode, field,
+):
+    """The other half of item 7, and the one that protects the consumers.
+
+    The fix validates FORMAT only. A registered vertical may read a cutoff in a
+    mode this module does not — nuclear judges target windows from
+    ``source_cutoff`` in ``latest`` on purpose — so refusing a well-formed
+    cutoff for its mode would fail between two and six of its existing pins
+    (Energy seat, 5870740225 item 4). This is the control that keeps the
+    validator from over-reaching into a refusal."""
+    _empty_bundle_loader(monkeypatch)
+    response = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_valid_body(time_mode=mode, **{field: "2026-12-31"}),
+    )
+    assert response.status_code == 200, response.text
+
+
+def _rewrite_scopes_to_canonical(monkeypatch) -> None:
+    """Wrap the installed loader so every assertion's
+    ``scope.canonical_theme_id`` is re-minted through the identity owner's
+    resolver -- the ``theme:<slug>`` form the canonical-id law
+    (#7870 issuecomment-5812295091) tells every vertical to publish, while the
+    mount/API anchor stays the bare crosswalk slug.
+
+    ``curation_revision`` is a CONTENT fingerprint, so the row is re-stamped: a
+    hand-edited payload is refused as ``curation_revision_mismatch`` long before
+    the scope gate, which would make a test built on it pass for the wrong
+    reason on BOTH sides of the fix.
+    """
+    import copy
+
+    from engine.theme_graph.curation_assertion import curation_revision
+    from engine.theme_graph.identity import theme_node_id
+
+    good_loader = theme_research.load_authorized_owner_bundle
+
+    def canonical(*a, **kw):
+        bundle = good_loader(*a, **kw)
+        rewritten = []
+        for item in bundle.assertions:
+            row = copy.deepcopy(dict(item))
+            scope = dict(row["scope"])
+            scope["canonical_theme_id"] = theme_node_id(scope["canonical_theme_id"])
+            row["scope"] = scope
+            row["curation_revision"] = curation_revision(row)
+            rewritten.append(row)
+        return dataclasses.replace(bundle, assertions=tuple(rewritten))
+
+    monkeypatch.setattr(theme_research, "load_authorized_owner_bundle", canonical)
+
+
+def test_an_assertion_in_canonical_theme_node_form_is_in_anchor_scope(
+    entitled_client, monkeypatch, tmp_path,
+):
+    """The canonical-id law this carrier published (#7870
+    issuecomment-5812295091) tells every vertical to mint
+    ``scope.canonical_theme_id`` as the identity owner's node id
+    ``theme:<slug>``, while the mount/API anchor stays the bare crosswalk slug.
+    The scope gate compared the two as RAW STRINGS, so it admitted only the
+    slug form. The semiconductor corpus happens to carry the slug, which is why
+    the shipping vertical worked and this stayed invisible; a vertical that
+    followed the published law matched nothing — and because an out-of-scope
+    row is deliberately silent, it got zero rows and NO limitation saying why.
+
+    Control first with the corpus as shipped, then the SAME bundle with every
+    scope rewritten to the canonical form: both must select the same rows. On
+    the parent the second call selects zero."""
+    fixture = _install_warm_owner_state(monkeypatch, tmp_path)
+    slug_form = entitled_client.post(
+        "/api/themes/v1/research/query", json=_valid_body(),
+    )
+    assert slug_form.status_code == 200, slug_form.text
+    expected = slug_form.json()["authorized_coverage"]["selected"]
+    assert expected == fixture["expected_first_selected"]
+    assert expected > 0, "control is void if the slug form selects nothing"
+
+    _rewrite_scopes_to_canonical(monkeypatch)
+
+    node_form = entitled_client.post(
+        "/api/themes/v1/research/query", json=_valid_body(),
+    )
+    assert node_form.status_code == 200, node_form.text
+    assert node_form.json()["authorized_coverage"]["selected"] == expected
+
+
+def test_a_law_conforming_vertical_round_trips_query_to_evidence(
+    entitled_client, monkeypatch, tmp_path,
+):
+    """The integration proof the sector consumers actually need.
+
+    The two fixes on this carrier close HALVES of one path, and neither is
+    sufficient alone. Widening the evidence-ref pattern (Energy item 1) admits
+    ``gmi-curation://theme:<slug>/gmirca_...`` at the door -- but on a
+    law-conforming vertical the scope gate had already dropped every row
+    upstream, silently and uncounted, so ``select_evidence`` would have had
+    nothing to match and the route would never have minted such a ref at all.
+
+    So drive the whole path on a corpus minted the way the law says: query,
+    take a ref the SHELL produced, and spend it at the evidence route. The
+    assertions are ordered so a regression names which half broke.
+    """
+    _install_warm_owner_state(monkeypatch, tmp_path)
+    _rewrite_scopes_to_canonical(monkeypatch)
+
+    snapshot = entitled_client.post(
+        "/api/themes/v1/research/query", json=_valid_body(),
+    )
+    assert snapshot.status_code == 200, snapshot.text
+    payload = snapshot.json()
+    refs = [r for r in payload["evidence_refs"] if r.get("kind") == "assertion"]
+    assert refs, (
+        "the scope gate dropped every canonical-form row before selection: the "
+        "raw-string comparison is back, and the evidence half below is "
+        "unreachable, not passing"
+    )
+
+    ref = refs[0]["assertion_ref"]
+    # The shell derives the ref from `scope.canonical_theme_id`, so a
+    # conforming vertical's refs carry the node form. If this ever reads as a
+    # bare slug here, the corpus -- not the route -- stopped conforming.
+    assert ref.startswith("gmi-curation://theme:"), ref
+
+    evidence = entitled_client.post(
+        "/api/themes/v1/research/evidence",
+        json=_valid_body(
+            expected_generation=payload["generation"], assertion_ref=ref,
+        ),
+    )
+    assert evidence.status_code == 200, evidence.text
+    _assert_private_headers(evidence)
+    assert evidence.json()["assertion_ref"] == ref
+
+
+@pytest.mark.parametrize("ref,admitted", [
+    ("gmi-curation://ai_semiconductors/gmirca_" + "a" * 32, True),
+    ("gmi-curation://theme:ai_semiconductors/gmirca_" + "a" * 32, True),
+    ("gmi-curation://ltheme:ai_semiconductors/gmirca_" + "a" * 32, False),
+    ("gmi-curation://theme:theme:ai_semiconductors/gmirca_" + "a" * 32, False),
+    ("gmi-curation://theme:/gmirca_" + "a" * 32, False),
+])
+def test_evidence_ref_admission_accepts_the_canonical_node_form(ref, admitted):
+    """Energy seat item 1 (#7870 issuecomment-5866433049) — the only thing
+    nuclear needs from this carrier.
+
+    ``source_ref_for`` builds the ref from the assertion's OWN
+    ``scope.canonical_theme_id``, so a law-conforming assertion mints
+    ``gmi-curation://theme:<slug>/gmirca_…`` — and this repo's own route then
+    refused it at the door with ``string_pattern_mismatch``. ``ltheme:`` stays
+    refused: the identity owner declares that prefix deliberately
+    non-canonical, and it must never masquerade as a canonical theme."""
+    body = dict(_WITNESS_BODY)
+    body["assertion_ref"] = ref
+    body["expected_generation"] = "gen_" + "b" * 32
+    if admitted:
+        assert theme_research._EvidenceBody(**body).assertion_ref == ref
+    else:
+        with pytest.raises(Exception):
+            theme_research._EvidenceBody(**body)
+
+
+def test_an_unreadable_owner_review_time_withholds_the_block_not_the_request(
+    entitled_client, monkeypatch, tmp_path,
+):
+    """Energy seat base item 5 (#7870 issuecomment-5866433049).
+
+    In a replay the interpretation gate reads the block's ``reviewed_at``. The
+    neighbouring ``isinstance`` guard already withholds a NON-STRING review
+    time, but a string ``_le`` cannot parse raised ``ValueError`` straight into
+    the route's catch-all and answered 503 for the WHOLE request. The route's
+    own rule is the opposite: 'a row this transport cannot read is WITHHELD,
+    never fatal … withholding is the fail-closed answer; 503 is not.' An
+    unreadable value now behaves exactly like the non-string the guard beside
+    it already drops."""
+    _install_warm_owner_state(monkeypatch, tmp_path)
+    good_loader = theme_research.load_authorized_owner_bundle
+
+    def poisoned(*a, **kw):
+        bundle = good_loader(*a, **kw)
+        # `input_revisions` MUST name a served assertion. The rights filter
+        # withholds a block whose inputs are not in the served set, so a block
+        # with no inputs never reaches the time gate at all — it would make
+        # this test pass on BOTH sides of the fix, proving nothing. (That is
+        # exactly what the first draft of this test did.)
+        served = bundle.assertions[0]["curation_revision"]
+        return dataclasses.replace(
+            bundle,
+            interpretation_blocks=(
+                {"interpretation_id": "unreadable_review",
+                 "reviewed_at": "", "input_revisions": (served,)},
+            ),
+        )
+
+    monkeypatch.setattr(theme_research, "load_authorized_owner_bundle", poisoned)
+
+    response = entitled_client.post(
+        "/api/themes/v1/research/query",
+        json=_valid_body(time_mode="system_replay",
+                         source_cutoff="2026-12-31",
+                         recorded_cutoff="2026-12-31"),
+    )
+    assert response.status_code == 200, response.text
+    _assert_private_headers(response)
+    payload = response.json()
+    # The block withheld itself; the rest of the response was still served.
+    assert all(
+        block.get("interpretation_id") != "unreadable_review"
+        for block in payload.get("interpretation_blocks", [])
+    )
+    # A withheld row the caller is never told about is a silent hole in the
+    # answer. Withholding is fail-closed and correct; staying SILENT about it
+    # is not, so the drop must be named with the same token the source_history
+    # branch already uses for a row it could not date.
+    assert "undatable_excluded" in payload["limitations"], payload["limitations"]

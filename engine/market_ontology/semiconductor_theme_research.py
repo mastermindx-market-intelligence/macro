@@ -58,6 +58,7 @@ from engine.theme_graph.curation_assertion import (
     source_ref_for,
     validate_assertion,
 )
+from engine.theme_graph.identity import theme_node_id
 
 #: Frozen response schema id.
 SCHEMA_ID = "semiconductor_theme_research.v1"
@@ -154,7 +155,29 @@ def _parse_day(value: str):
 def _le(value: str, cutoff: str) -> bool:
     """``value <= cutoff`` for date-or-datetime strings, WITHOUT synthesizing a
     time: when either side is date-only the comparison is on calendar days
-    (inclusive). Two instants compare as instants."""
+    (inclusive). Two instants compare as instants.
+
+    CONTRACT, for consumers reading a date-only cutoff (asked by the Energy
+    seat on #7870): the calendar day taken from an instant is the day in the
+    instant's OWN offset, so a date-only cutoff means "the source's local day",
+    not "the UTC day". Measured on this build::
+
+        _le("2026-12-31T23:00:00-05:00", "2026-12-31")  # True  (04:00Z on Jan 1)
+        _le("2027-01-01T01:00:00+08:00", "2026-12-31")  # False (17:00Z on Dec 31)
+
+    This is deliberate and follows from the no-synthesis rule above: converting
+    to UTC first and then taking the date would pick UTC midnight as the cutoff
+    instant -- a time the caller never supplied, in a zone the cutoff never
+    named. A caller that wants instant semantics states an instant cutoff, and
+    then no day is inferred on either side::
+
+        _le("2026-12-31T23:00:00-05:00", "2026-12-31T23:59:59+00:00")  # False
+
+    Grain mismatch in the other direction is not silently resolved either: a
+    date-only publication landing ON the cutoff instant's own day cannot be
+    placed before or after it, so the replay gate drops that row with a
+    ``same_day_grain_ambiguous`` limitation rather than guessing a side.
+    """
     if not _is_instant(value) and not _is_instant(cutoff):
         return _parse_day(value) <= _parse_day(cutoff)
     if not _is_instant(value):          # date vs instant: compare days
@@ -162,6 +185,40 @@ def _le(value: str, cutoff: str) -> bool:
     if not _is_instant(cutoff):         # instant vs date: compare days
         return _parse_clock(value).date() <= _parse_day(cutoff)
     return _parse_clock(value) <= _parse_clock(cutoff)
+
+
+def _within(value: Any, cutoff: Any) -> bool:
+    """:func:`_le` for an OWNER-SUPPLIED timestamp: a value this transport
+    cannot read is ``False`` — the row is WITHHELD, never fatal.
+
+    ``_le`` raises ``ValueError`` on a string it cannot parse and ``TypeError``
+    on a non-string. Reached from a time gate, that bare exception left the
+    route's catch-all to answer 503, so ONE unreadable timestamp from the owner
+    denied the caller every row it was entitled to. That is the same defect
+    ``app/theme_research.py`` already fixed for an unreadable ROW ("a row this
+    transport cannot read is WITHHELD, never fatal; withholding is the
+    fail-closed answer, 503 is not") — this is that law applied to the
+    timestamps inside the row. Reported by the Energy seat as base item 5
+    (#7870 issuecomment-5866433049), whose probe used an empty ``reviewed_at``.
+
+    Every caller reads this as "in range", so ``False`` withholds in both
+    polarities: an inclusion test does not include, an exclusion test excludes.
+    The parse is unchanged for every value ``_le`` could already read."""
+    try:
+        return _le(value, cutoff)
+    except (ValueError, TypeError):
+        return False
+
+
+def _readable(value: Any) -> bool:
+    """Whether :func:`_le` could compare this owner timestamp at all — the
+    distinction between "not datable" and "datable, and outside the cutoff",
+    which the caller needs to pick the right limitation."""
+    try:
+        _parse_day(value)
+    except (ValueError, TypeError):
+        return False
+    return True
 
 
 # ---------------------------------------------------------------------------
@@ -179,6 +236,32 @@ def _validate_query(query: ResearchQuery) -> None:
     if query.time_mode == "system_replay" and (
             query.source_cutoff is None or query.recorded_cutoff is None):
         raise ResearchRefusal("replay_cutoffs_required")
+    # A SUPPLIED cutoff must be readable, in EVERY mode. Until this ran, the
+    # first parse happened inside a time gate: `_le` raised a bare ValueError
+    # and the route's catch-all answered 503 `retry_later` (a transient code
+    # for a permanently malformed request), and where no gate read the cutoff
+    # the request answered a silent 200 that echoed the unreadable value back
+    # in `request.recorded_cutoff` with no limitation marking it. Both halves
+    # measured by the Energy seat over nuclear's route (#7870
+    # issuecomment-5868018569, corrected in 5869344590 and 5870740225).
+    #
+    # `_parse_day` is the parser deliberately: it accepts EXACTLY the values
+    # `_le` can go on to compare. `_parse_clock`/`fromisoformat` would admit
+    # `20261231` and `2026-W53-4`, which `_le` then raises on — the validator
+    # would hand those straight back to the 503 it exists to remove.
+    #
+    # FORMAT only. A well-formed cutoff is never refused for arriving in a
+    # mode this module does not read it in: a registered vertical may read one
+    # there on purpose (nuclear judges target windows from `source_cutoff` in
+    # `latest`), and refusing it would fail that vertical's existing pins.
+    for name in ("source_cutoff", "recorded_cutoff"):
+        raw = getattr(query, name)
+        if raw is None:
+            continue
+        try:
+            _parse_day(raw)
+        except (ValueError, TypeError):
+            raise ResearchRefusal("cutoff_unreadable") from None
 
 
 def _generation(query: ResearchQuery, bundle: OwnerBundle) -> str:
@@ -211,16 +294,20 @@ def _passes_time_mode(assertion: Mapping[str, Any], query: ResearchQuery,
     if query.time_mode == "source_history":
         if query.source_cutoff is None:
             return True  # no cutoff given: history is the whole selection
+        # ``comparable`` tracks whether a date was actually READ, not whether a
+        # field was present: an unreadable timestamp is undatable in the only
+        # sense this gate can act on, so it reuses the existing
+        # ``undatable_excluded`` token rather than vanishing silently.
         comparable = False
         published = source.get("published_at")
-        if published is not None:
+        if published is not None and _readable(published):
             comparable = True
-            if _le(published, query.source_cutoff):
+            if _within(published, query.source_cutoff):
                 return True
         available = source.get("available_at")
-        if isinstance(available, str) and available != "unknown":
+        if isinstance(available, str) and available != "unknown" and _readable(available):
             comparable = True
-            if _le(available, query.source_cutoff):
+            if _within(available, query.source_cutoff):
                 return True
         if not comparable:
             limitations.add("undatable_excluded")
@@ -228,12 +315,23 @@ def _passes_time_mode(assertion: Mapping[str, Any], query: ResearchQuery,
 
     # system_replay: known availability AND system recording, both inside cutoffs
     available = source.get("available_at")
-    if not isinstance(available, str) or available == "unknown":
+    # An availability this transport cannot READ is availability it does not
+    # know, so it joins the unknown case rather than raising out of the gate.
+    if not isinstance(available, str) or available == "unknown" or not _readable(available):
         limitations.add("availability_unknown_excluded")
         return False
-    if not _le(available, query.source_cutoff):
+    if not _within(available, query.source_cutoff):
         return False
-    if not _le(source["retained_at"], query.recorded_cutoff):
+    # Split "cannot be dated" from "dated, and outside the cutoff". Only the
+    # first is a LIMITATION: being outside the cutoff is the answer the caller
+    # asked for, while an undatable row is a row the caller never learns about
+    # unless it is named. This is the same token the source_history branch
+    # already emits, for the same reason.
+    retained = source.get("retained_at")
+    if not _readable(retained):
+        limitations.add("undatable_excluded")
+        return False
+    if not _within(retained, query.recorded_cutoff):
         return False
     published = source.get("published_at")
     if published is not None:
@@ -241,11 +339,14 @@ def _passes_time_mode(assertion: Mapping[str, Any], query: ResearchQuery,
         if grain == "date":
             # never synthesize midnight: a date-only publication on the cutoff
             # day cannot be placed before or after the cutoff instant
-            if _is_instant(query.source_cutoff) \
+            if _is_instant(query.source_cutoff) and _readable(published) \
                     and _parse_day(published) == _parse_clock(query.source_cutoff).date():
                 limitations.add("same_day_grain_ambiguous")
                 return False
-        if not _le(published, query.source_cutoff):
+        if not _readable(published):
+            limitations.add("undatable_excluded")
+            return False
+        if not _within(published, query.source_cutoff):
             return False
     return True
 
@@ -259,7 +360,45 @@ def _is_retrospective(assertion: Mapping[str, Any], query: ResearchQuery) -> boo
     published = source.get("published_at")
     if published is None:
         return False
-    return _parse_day(source["retained_at"]) > _parse_day(published)
+    retained = source.get("retained_at")
+    if not _readable(retained) or not _readable(published):
+        return False  # unreadable: never LABEL a row retrospective on a guess
+    return _parse_day(retained) > _parse_day(published)
+
+
+def _in_anchor_scope(assertion: Mapping[str, Any], anchor_theme_id: str) -> bool:
+    """Whether an assertion belongs to the anchor the query names.
+
+    TWO VOCABULARIES MEET HERE, and they are deliberately different. The
+    mount/API ``anchor_theme_id`` is the crosswalk SLUG (``ai_semiconductors``,
+    ``^[a-z0-9_]+$`` at the route). The assertion's ``scope.canonical_theme_id``
+    is the identity owner's NODE id, ``theme:<slug>`` — the canonical-id law
+    this carrier published at #7870 issuecomment-5812295091, which every later
+    vertical was told to mint through
+    :func:`engine.theme_graph.identity.theme_node_id`, and which this contract's
+    own schema gives as its example ("e.g. theme:semiconductors").
+
+    Comparing the two as raw strings — which is what this gate did until now —
+    admits ONLY the slug form. The semiconductor corpus happens to carry the
+    slug, so the shipping vertical worked and the defect stayed invisible; a
+    vertical that followed the published law instead matched nothing, and
+    because an out-of-scope row is deliberately silent (below) it got zero rows
+    and NO limitation naming why. Accepting both forms is what makes the
+    foundation's own law executable.
+
+    Resolution goes through the identity owner rather than a literal
+    ``"theme:" + anchor`` so the prefix has ONE definition. It also refuses
+    ``ltheme:`` structurally, with no blocklist: the owner declares that prefix
+    deliberately non-canonical, and ``theme_node_id`` can never produce it."""
+    scope_id = assertion.get("scope", {}).get("canonical_theme_id")
+    if not isinstance(scope_id, str) or not scope_id:
+        return False
+    if scope_id == anchor_theme_id:
+        return True
+    try:
+        return scope_id == theme_node_id(anchor_theme_id)
+    except ValueError:
+        return False  # an anchor the identity owner cannot form a node id for
 
 
 class _Selection:
@@ -277,7 +416,7 @@ class _Selection:
             except CurationAssertionError:
                 self.limitations.add(f"assertion_invalid:{index}")
                 continue
-            if assertion.get("scope", {}).get("canonical_theme_id") != query.anchor_theme_id:
+            if not _in_anchor_scope(assertion, query.anchor_theme_id):
                 continue  # out of scope: ignored, not counted, never fingerprint-relevant
             if not _passes_time_mode(assertion, query, self.limitations):
                 continue
@@ -294,13 +433,19 @@ class _Selection:
             lifecycle = workspace.get("lifecycle") or {}
             if self.query.time_mode == "system_replay":
                 available = lifecycle.get("source_available_at")
-                if not isinstance(available, str) or available == "unknown":
+                # parity with the source gate: an availability this transport
+                # cannot READ is availability it does not know
+                if not isinstance(available, str) or available == "unknown" \
+                        or not _readable(available):
                     self.limitations.add("availability_unknown_excluded")
                     continue
-                if not _le(available, self.query.source_cutoff):
+                if not _within(available, self.query.source_cutoff):
                     continue
                 recorded = lifecycle.get("recorded_at")
-                if not isinstance(recorded, str) or not _le(recorded, self.query.recorded_cutoff):
+                if not _readable(recorded):
+                    self.limitations.add("undatable_excluded")
+                    continue
+                if not _within(recorded, self.query.recorded_cutoff):
                     continue
             chosen.append(dict(workspace))
         chosen.sort(key=lambda w: w.get("event_id", ""))
@@ -311,7 +456,10 @@ class _Selection:
         for packet in self.bundle.financial_packets:
             if self.query.time_mode == "system_replay":
                 recorded = packet.get("recorded_at")
-                if not isinstance(recorded, str) or not _le(recorded, self.query.recorded_cutoff):
+                if not _readable(recorded):
+                    self.limitations.add("undatable_excluded")
+                    continue
+                if not _within(recorded, self.query.recorded_cutoff):
                     continue
             chosen.append(dict(packet))
         chosen.sort(key=lambda p: (p.get("recorded_at") or "", str(p.get("entity") or "")))
@@ -322,7 +470,10 @@ class _Selection:
         for block in self.bundle.interpretation_blocks:
             if self.query.time_mode == "system_replay":
                 reviewed = block.get("reviewed_at")
-                if not isinstance(reviewed, str) or not _le(reviewed, self.query.recorded_cutoff):
+                if not _readable(reviewed):
+                    self.limitations.add("undatable_excluded")
+                    continue
+                if not _within(reviewed, self.query.recorded_cutoff):
                     continue
             chosen.append(dict(block))
         chosen.sort(key=lambda b: b.get("interpretation_id", ""))
@@ -346,7 +497,7 @@ class _Selection:
                 self.query.time_mode == "system_replay"
                 and isinstance(learned, str)
                 and self.query.recorded_cutoff is not None
-                and not _le(learned, self.query.recorded_cutoff)
+                and not _within(learned, self.query.recorded_cutoff)
             )
             if not_yet:
                 state = {"company_node_id": None, "reason": "identity_not_yet_learned"}
