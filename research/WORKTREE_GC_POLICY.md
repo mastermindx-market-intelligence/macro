@@ -567,7 +567,7 @@ have destroyed live sessions' working state for zero yield. And `/private/tmp` i
 git checkouts although the house rule names `/private/tmp` as a place project work may never live —
 a placement question for the operator, never bytes a sweeper may take.
 
-**The largest clean reclaim candidate on the SSD is 7.2 GiB, and it still fails closed.** The shared
+**The largest UNPROVABLE reclaim candidate in the shared mint root is 7.2 GiB, and it fails closed.** (This sentence originally read "The largest clean reclaim candidate on the SSD is 7.2 GiB" and is **CORRECTED 2026-09-28, same day**, by the full-volume attribution below: the largest clean candidate on the SSD is **41.76 GiB** in `/Volumes/Mastermind/tmp`, and unlike this one it is fully PROVABLE.) The shared
 mint root's two already-orphaned registrations are both self-hosted runner workspaces whose gitdir
 target is gone: `sol-flow-velocity-recovery-proof-20260920` (**7.2 GiB**) and
 `prophet-b4-session-policy-repair-20260922-a11` (408 KiB). No store registers them, so no
@@ -576,6 +576,116 @@ registration is gone, `git` cannot run inside the tree at all, so landedness is 
 §9 fails it closed. Recorded rather than taken — clearing it is an operator judgement ("CI
 leftovers, re-derivable from `origin`"), which is precisely the class of call §9 reserves for a
 human.
+
+### Full-volume attribution 2026-09-28 — the first complete map, and two pool names that lie
+
+Every per-root figure above was a per-root figure. `du` over all 45 top-level entries of
+`/Volumes/Mastermind` finally accounts for the whole 2.9 TiB (**3,069 GiB measured**), and
+**58% of it was never in any census**:
+
+| GiB | entry | class |
+|---:|---|---|
+| 952.7 | `agent-workspaces` | fleet worktrees — the doc's 462 GiB was `…/claude` ALONE, not the root |
+| 725.4 | `worktrees` | the 12-store shared mint root (confirms the 726.4 GiB above) |
+| 415.2 | `Personal` | operator data — untouchable |
+| 233.0 | `transfers` | **not file transfers** — live agent review rounds |
+| 214.9 | `tmp` | PR proof/review clones (censused below) |
+| 190.7 | `Offloaded` | **not operator offload** — the fleet's own verified backup archive |
+| 98.8 / 67.0 / 58.3 / 47.9 / 40.9 | `Mastermind` `ops` `evidence` `repos` `agent-evidence` | repo + 829 dated proof receipts |
+| 6.0 / 4.7 / 3.7 / 8.5 | `reviews` `test-tmp` `temp` + 5 loose `sol-*` trees | small; the `sol-*` are HUMAN-class |
+
+**Two names mean the opposite of what they say, and both would mislead a sweeper written from
+the directory listing.** `transfers` (233.0 GiB) is not transferable files — it holds
+`r15green-*`, `r16red-*`, `r17-red-*`, `r18-astra-*`, `r19q-accepted` review-round scratch,
+**all written between 00:58 and 06:25 the same morning**: another lane's live workflow.
+`Offloaded` (190.7 GiB) is not the operator's offloaded data.
+
+### `Offloaded` is the fleet's verified backup archive — a FIFTH null result
+
+The hypothesis on opening it was that prior reclaim waves had *moved* bytes instead of
+freeing them, making it the largest reclaimable pool on the volume. **That is wrong, and the
+archives' own READMEs say why.** `m2-tmp-reap-20260918` bundled 14 scratch dirs' unreachable
+history, discovered `--all` had produced **270 GB of bundles** (37–47 GB each), proved 13 of
+the 14 redundant by fetching 31,315 refs into the main clone and `cat-file --batch-check`-ing
+all 23,665 bundle head objects — **exactly one** was missing — and kept the **2.2 GB thin
+equivalent** built with `--not --remotes=origin`. The wave *did* free the space; this is the
+irreducible residue, and every archive carries a documented `git fetch` restore path.
+
+Nothing here is reclaimable:
+
+- **`Sol-runs` 74.5 GiB** — HUMAN/Sol class, and **65 files were written in the last 7 days**:
+  the lane is live, not archived.
+- **~25 GiB of `.bundle` files** — they hold, by construction, "exactly the commits GitHub
+  does NOT have" (12,181 heads). That IS the unpushed backlog §9 already refuses.
+- **`m2-worktree-dirt-20260917` 8.7 GiB / 220 entries** — 220 trees' preserved uncommitted
+  dirt. The only copy.
+- **`M1-cleanup-20260911T0735Z` 1.35 GiB** — contains GoLogin 2022 items, under a standing
+  operator veto: never deletable.
+- The two entries with the largest ENTRY COUNTS (`temp-worktree-gc`, 1,102; `sparse-conversions`,
+  315) are ~1 KB JSON receipts — about 1 MB combined. **Directory entry-count reads as bulk and
+  is not bulk**; check bytes before believing a listing.
+
+**Incidental, and worth more than the bytes:** `storage-cleanup-20260913-wave2/report.md` had
+**already diagnosed the `contract-delta` base-tree leak** — naming
+`scripts/check_contract_delta.py`'s `materialize_base_tree()` and its
+`tempfile.mkdtemp(prefix="contract-delta-base-")` — on **2026-09-13/14, two weeks before the
+reaper shipped**. A verified root-cause analysis sat unread in a directory named `Offloaded`
+while the leak regenerated ~7 GiB/day. **Read `Offloaded/*/README*` and `*/report.md` before
+diagnosing a fleet storage problem**; prior waves left verified findings there.
+
+### The SSD `tmp` pool: 214.8 GiB of proof clones — a SIXTH null result, and the one PROVEN candidate
+
+`/Volumes/Mastermind/tmp` is **296 dirs / 214.8 GiB** of throwaway PR proof and review
+clones (`pr979-…`, `prophet-7457-release-snapshot`, `review-7535-…`), most made for PRs in the
+#7000s during 09-19→09-26. Censused read-only against `DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM`,
+byte-weighted (a dir-count table is not a reclaim figure):
+
+| GiB | dirs | verdict |
+|---:|---:|---|
+| 59.82 | 20 | clean but HEAD not in **that clone's** `origin/main` |
+| 43.77 | 21 | landedness undecidable there |
+| 33.14 | 11 | HUMAN-class name |
+| 20.19 | 203 | not a git clone — needs its own judgement |
+| 18.78 | 10 | git unreadable |
+| 38.2 | 30 | DIRTY (one tree carries **99,026** dirty paths) |
+| **0.55** | 1 | clean + landed |
+
+**The two biggest refusal buckets were instrument artifacts, not findings.** A proof clone
+never fetches after birth, so its `origin/main` is frozen at clone time and any HEAD that
+landed later reads as unlanded. Re-asked against a CURRENT `origin/main` in a live worktree —
+locally, `GIT_NO_LAZY_FETCH=1`, no network — 2 of those 41 dirs are **provably landed**:
+
+- **`pr979-macro-88804-proof` — 41.76 GiB**, origin `macro`, HEAD `88804ed70797`, which lands
+  on main as `perf(agentos): batch Git dates and accelerate YAML parsing` (2026-09-27).
+  **0 dirty paths, 0 open files.**
+- `prophet-7187-proof-clone-20260920` — 2.43 GiB, HEAD `80003197c05d`, likewise clean and
+  unattached.
+
+**44.19 GiB satisfying every substantive clause of §9 — landed, clean, nothing attached, not
+HUMAN-class — and it is still NOT taken**, because the final clause requires the tree to sit
+under a configured root and `/Volumes/Mastermind/tmp` is not one. Note the difference in KIND
+from the 7.2 GiB case above: that one fails because landedness is *unprovable*; this one is
+proven and lacks only authorization. It is the largest proven-reclaimable find on the volume.
+
+**A REACH correction on this census, for the same reason the roots table needed one.** 23 dirs
+answered "HEAD sha not present in this clone", first reported as "never landed, or unreachable
+history". Resolving each dir's `origin` remote: **17 are `Mastermind` clones and 1 has no
+origin** — a macro clone cannot answer for a Mastermind commit, so for 18 of 23 "not landed"
+was never an available answer, and abandonment was over-counted by 18. Only **5** are macro
+and genuinely carry history main lacks. A shared temp root looks like one population because
+it is one directory; its names come from **four repositories'** PR numbering and nothing in
+the path says so. **Partition any cross-tree census by `origin` before counting.** The same
+positional mistake sat in the census's own protective screen: the HUMAN-class test matched
+name PREFIXES (`sol-`), so `prophet-b4-owner-archeology-20260921-sol-001` — 6.03 GiB, Sol
+class by any reading — was admitted as reclaimable until the marker was matched anywhere.
+
+**Six independent pools have now been measured and five are null.** Shared mint root 726.4 GiB
+(58% unreachable), `/Volumes/Worktrees` 801 GiB (report-only forever), full clones 163.2 GiB,
+session scratchpads 216.6 GiB (0.00 GiB dead), `Offloaded` 190.7 GiB (verified backups), SSD
+`tmp` 214.8 GiB (0.55 GiB free-and-clear + 44.19 GiB proven-but-unauthorized). What bounds
+reclaim on this host is not the byte count and not the instruments — it is the judgment gate,
+exactly as §9 says.
+
 
 
 
