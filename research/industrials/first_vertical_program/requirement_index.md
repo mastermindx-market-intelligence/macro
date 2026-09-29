@@ -119,12 +119,12 @@ Requirement, owning task and planned exact test are verbatim from the plan.
 | IND-D03 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_d03` | NO_SOURCE |
 | IND-D22 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_d22` | NO_SOURCE |
 | IND-D23 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_d23` | RECOVERED_ORIGINAL |
-| IND-R201 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_r201` | NO_SOURCE |
+| IND-R201 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_r201` | RECOVERED_ORIGINAL |
 | IND-R213 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_r213` | NO_SOURCE |
 | IND-R214 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_r214` | RECOVERED_ORIGINAL |
 | IND-R215 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_r215` | RECOVERED_ORIGINAL |
-| IND-R218 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_r218` | NO_SOURCE |
-| IND-SF04 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_sf04` | NO_SOURCE |
+| IND-R218 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_r218` | RECOVERED_ORIGINAL |
+| IND-SF04 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_sf04` | RECOVERED_ORIGINAL |
 | IND-D25 | T07 | `tests/test_industrials_private_publication.py` | `test_ind_d25` | NO_SOURCE |
 | IND-D26 | T07 | `tests/test_industrials_private_publication.py` | `test_ind_d26` | NO_SOURCE |
 | IND-D27 | T07 | `tests/test_industrials_private_publication.py` | `test_ind_d27` | NO_SOURCE |

@@ -83,13 +83,24 @@ PLAN_REQUIREMENT_ANCHORS: Mapping[str, tuple[str, str]] = {
     "IND-D15": (_T04_SUITE, "test_ind_d15"),
     "IND-D16": (_T04_SUITE, "test_ind_d16"),
     "IND-R208": (_T04_SUITE, "test_ind_r208"),
-    # T06 — financial dossier.  ONE row: the only T06 obligation whose behaviour
-    # is reachable without the held seams, anchored on recovered ORIGINAL wording
-    # (r2 blob 9c98e106b954d0a48610afad418de2a9eeb1e58b) rather than on a ruling
-    # or on landed code.  The other eight T06 rows stay absent on purpose.
+    # T06 — financial dossier.  Six of the nine T06 obligations, each anchored on
+    # recovered ORIGINAL wording (r1 blob 40fd1e3783102c28fe748fe35b927484d4f3dddb,
+    # r2 blob 9c98e106b954d0a48610afad418de2a9eeb1e58b, W12 blob
+    # b343cbd7bc1f52cfc6fbb5e18ab8d9e9f9392f6c) rather than on a ruling or on landed
+    # code.  IND-D03, IND-D22 and IND-R213 stay absent on purpose: their seams are
+    # not merged.
+    #
+    # IND-D23 and IND-R215 anchor on the result-to-cash rows, where their
+    # compliant/violating pairs were first measured.  The dossier-level tests that
+    # also cover them carry their own names and claim no second anchor: a
+    # requirement has one anchor, and pointing it at the newer test would trade
+    # unit coverage for page coverage instead of adding it.
     "IND-D23": (_T06_SUITE, "test_ind_d23"),
+    "IND-R201": (_T06_SUITE, "test_ind_r201"),
     "IND-R214": (_T06_SUITE, "test_ind_r214"),
     "IND-R215": (_T06_SUITE, "test_ind_r215"),
+    "IND-R218": (_T06_SUITE, "test_ind_r218"),
+    "IND-SF04": (_T06_SUITE, "test_ind_sf04"),
 }
 _COMPARISON_PURPOSES = frozenset(
     {"same_period", "year_over_year", "final_vs_preview", "segment_bridge", "rollforward"}
