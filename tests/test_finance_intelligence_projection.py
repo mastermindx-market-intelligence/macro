@@ -1011,6 +1011,60 @@ def _dated_by_as_of(kind: str, when: str, inputs: FinanceOwnerInputs) -> dict[st
     return document
 
 
+def _operating_reading_with(field: str) -> Any:
+    """A function building card_networks' inputs with its operating
+    reading's ``field`` written as given."""
+
+    def build(value: str) -> FinanceOwnerInputs:
+        base = _extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+        packets = copy.deepcopy(dict(base.financial_packets))
+        (packet,) = packets.values()
+        (reading,) = packet["operating"]["observations"]
+        reading[field] = value
+        return dataclasses.replace(base, financial_packets=packets)
+
+    return build
+
+
+def _material_change_effective_at(value: str) -> FinanceOwnerInputs:
+    base = _extended_owner_inputs("PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN")
+    records = copy.deepcopy(list(base.source_records))
+    records[0]["material_change"]["effective_at"] = value
+    return dataclasses.replace(base, source_records=records)
+
+
+# The clocks a document publishes that are not an observation's date, each
+# with the inputs that write it and where the document publishes it.
+_PUBLISHED_CLOCKS = {
+    "operating published_at": (
+        _operating_reading_with("published_at"),
+        lambda document: _card_networks(document)["rerating"]["operating"]["clock"]["published_at"]),
+    "operating effective_at": (
+        _operating_reading_with("effective_at"),
+        lambda document: _card_networks(document)["rerating"]["operating"]["clock"]["effective_at"]),
+    "material change effective_at": (
+        _material_change_effective_at,
+        lambda document: document["material_changes"][0]["event_clock"]["effective_at"]),
+}
+
+
+@pytest.mark.parametrize("site", sorted(_PUBLISHED_CLOCKS))
+def test_a_published_clock_reads_a_timestamp_as_the_date_written_however_parted(site: str) -> None:
+    """A plane clock's published_at and effective_at, and a material
+    change's effective_at, written as a date, as a timestamp whose date and
+    time a T parts, or as one a space parts, compose the same document,
+    which publishes the date written. A timestamp parted by a space used to
+    publish null there, although the same timestamp parted by a T published
+    its date. (A source record's own clocks are copied as the owner wrote
+    them, so the contract refuses a timestamp there however it is parted.)"""
+    build, published = _PUBLISHED_CLOCKS[site]
+    day = "2026-09-20"
+    by_date = _without_digest(_composed(build(day)))
+    assert published(by_date) == day
+    for written in (f"{day}T07:00:00+08:00", f"{day} 07:00:00+08:00"):
+        assert _without_digest(_composed(build(written))) == by_date, written
+
+
 def test_a_valuation_observation_dated_after_the_knowledge_cutoff_never_anchors() -> None:
     """Nothing dated after the knowledge cutoff can be known at it. A
     valuation observation dated the day after the cutoff is passed over
