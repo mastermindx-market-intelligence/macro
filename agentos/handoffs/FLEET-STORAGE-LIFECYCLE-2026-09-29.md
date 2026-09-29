@@ -127,9 +127,17 @@ unresolved:
      `WS-FLEET-STORAGE-LIFECYCLE`, even though the record is what W12 minted. Its file lands with
      #8176, and `python3 scripts/agentos.py validate` emits `[dangling-ref] ... references unknown
      DSC:...` as an ERROR — so a citation may FOLLOW its file into main but never precede it. Add
-     both citations in the first commit whose base contains #8176. This also corrects CLAUDE.md
-     §Agent OS, which says 'schema is fail-closed; joins fail open': measured 2026-09-29, a
-     dangling DSC join is fail-CLOSED and turns the store's exit code non-zero."
+     both citations in the first commit whose base contains #8176."
+  - "CORRECTION to this handoff's own first draft, which said the line above 'corrects CLAUDE.md
+     §Agent OS'. It does not, and the superseded sentence was: 'This also corrects CLAUDE.md
+     §Agent OS, which says schema is fail-closed; joins fail open: measured 2026-09-29, a dangling
+     DSC join is fail-CLOSED and turns the store''s exit code non-zero.' Measured properly, ONE
+     rule serves two consumers with opposite dispositions — `compile-context` renders the record
+     and prints the dangling citation as a DEGRADED line at exit 0 (fail-OPEN, invariant I4),
+     while `validate` marks the identical Problem hard=True and exits non-zero (fail-CLOSED).
+     CLAUDE.md is describing the compilation target; what misleads is that it says so inside a
+     sentence about `validate`. `DSC:A-DANGLING-CITATION-IS-FAIL-OPEN-TO-THE-COMPILER-AND-FAIL-
+     CLOSED-TO-THE-VALIDATOR`. Do NOT edit the repo law on the strength of the first reading."
 next_actions:
   - "Put the four `needs_ceo` options to the operator. Re-ranked: the CI runner git stores (177.26 GiB, 87% `.git`) are the only pool with a real lever and the only fully reversible one; drained listener only, runner-2 first."
   - "Ask for Full Disk Access on the right principal. The grant is for `storage_floor_guard.py`, NOT the worktree GC, and it is worth 1.81 GiB — do not present it as 201."
@@ -154,6 +162,7 @@ prs: [8175, 8176]
 decisions: [DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM]
 discoveries:
   - DSC:TWO-INDEPENDENT-GATES-MAKE-A-REGRESSION-IN-EITHER-ONE-INVISIBLE
+  - DSC:A-DANGLING-CITATION-IS-FAIL-OPEN-TO-THE-COMPILER-AND-FAIL-CLOSED-TO-THE-VALIDATOR
   - DSC:A-HOST-CHECKOUT-BELT-MAKES-A-WIDER-ROOTS-LIST-INERT
 ---
 
