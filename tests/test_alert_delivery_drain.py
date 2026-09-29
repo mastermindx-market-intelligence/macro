@@ -1175,3 +1175,223 @@ def test_docstring_declares_trigger_cadence_and_latency_budget():
     assert "5 minutes" in doc
     assert "15 minutes" in doc
     assert "off the render path" in doc.lower() or "off-render" in doc.lower()
+
+
+class TestNewLongSendBoundary:
+    """Actual drain; fixture PostgREST, a recording sender, fictional rule grants."""
+    @staticmethod
+    def board():
+        return {"board_definition":"us_prophet_v3","as_of":"2026-09-28", "buy":[
+            {"ticker":"AAPL","prophet":{"score":99}},
+            {"ticker":"MSFT","prophet":{"score":90}}]}
+
+    @staticmethod
+    def rule(state="ACTIVE", names=None):
+        return {"policy_id":"fixture-risk-pause","rule_id":"fixture-no-new-long","rule_version":"1",
+                "authority_basis":"temporary_operator_safety","grant_ref":"fixture-only-not-live",
+                "action":"NO_NEW_LONG_RISK","state":state,"market":"US","board_definition":"us_prophet_v3",
+                "lifecycle":"NEW_LONG_RECOMMENDATION","tickers":names or ["*"],
+                "starts_at":"2026-09-29T14:00:00Z","expires_at":"2026-09-29T20:00:00Z",
+                "restore_condition":"Owning rule lifted; original entry still required."}
+
+    def bound(self, row, *, state="ACTIVE", names=None, available=True, records_missing=False,
+              until="2026-09-29T21:00:00Z"):
+        from engine import prophet_market_eligibility as m
+        board=self.board();rule=self.rule(state,names)
+        read=m.bind_new_long_restrictions(board,[] if records_missing else [rule],
+            expected_rule_hashes={rule["policy_id"]:m._digest(rule)},
+            observed_at="2026-09-29T14:30:00Z",valid_until=until,source_available=available)
+        candidate=next(x for x in board["buy"] if x["ticker"]==row["payload"]["ticker"])
+        return m.bind_new_long_alert(row,board=board,candidate=candidate,restrictions=read,
+            intent="NEW_LONG_RECOMMENDATION")
+
+    def execute(self, monkeypatch, *, row=None, rows=None, resolver=None, clock=None,
+                dry=False, users=None, sender_result="sent", email_log=None):
+        row=row or _row();fake=FakeTables(outbox=rows if rows is not None else [row],email_log=email_log)
+        _patch(monkeypatch,fake,users=users if users is not None else {"u1":OPTED_IN_USER})
+        sent=[]
+        def sender(**kwargs):sent.append(kwargs);return sender_result
+        result=drain.drain(send_fn=sender,now_utc=_now("2026-09-29T15:00:00+00:00"),dry_run=dry,
+             new_long_policy_resolver=resolver,
+             policy_clock=clock if clock is not None else (lambda:_now("2026-09-29T15:00:00+00:00")) if resolver else None)
+        return result,fake,sent
+
+    def test_default_route_still_sends(self,monkeypatch):
+        result,fake,sent=self.execute(monkeypatch)
+        assert len(sent)==1 and result.fired_n==1
+        assert result.policy_withheld_n==0
+
+    def test_new_pause_stops_already_queued_buy_without_rewriting_delivery(self,monkeypatch):
+        from copy import deepcopy
+        row=_row();original=deepcopy(row)
+        result,fake,sent=self.execute(monkeypatch,row=row,resolver=lambda row,now:self.bound(row))
+        assert sent==[] and fake.patches==[] and row==original
+        assert result.policy_withheld_n==1 and result.policy_unavailable_n==0
+        assert result.fired_n==0 and result.unevaluable_n==1
+
+    def test_missing_resolver_result_is_not_permission(self,monkeypatch):
+        result,fake,sent=self.execute(monkeypatch,resolver=lambda row,now:None)
+        assert sent==[] and fake.patches==[]
+        assert result.policy_withheld_n==result.policy_unavailable_n==1
+
+    def test_resolver_exception_withholds_without_changing_attempt(self,monkeypatch):
+        def unavailable(*args):raise OSError("private provider detail must not be forwarded")
+        row=_row(attempts=1,status="failed")
+        result,fake,sent=self.execute(monkeypatch,row=row,resolver=unavailable)
+        assert sent==[] and fake.patches==[] and row["attempts"]==1
+        assert result.policy_unavailable_n==1
+
+    def test_json_claim_or_boolean_cannot_clear_gate(self,monkeypatch):
+        for value in [True,False,{"state":"NO_POLICY_CONSTRAINT"},"NOT_APPLICABLE"]:
+            result,fake,sent=self.execute(monkeypatch,resolver=lambda row,now,v=value:v)
+            assert sent==[] and result.policy_unavailable_n==1
+
+    def test_owner_classified_other_alert_is_unchanged(self,monkeypatch):
+        result,fake,sent=self.execute(monkeypatch,resolver=lambda row,now:drain.NEW_LONG_NOT_APPLICABLE)
+        assert len(sent)==1 and result.fired_n==1 and result.policy_withheld_n==0
+
+    def test_scope_preserves_other_ticker(self,monkeypatch):
+        row=_row();row["payload"]["ticker"]="MSFT"
+        result,fake,sent=self.execute(monkeypatch,row=row,resolver=lambda row,now:self.bound(row,names=["AAPL"]))
+        assert len(sent)==1 and result.policy_withheld_n==0
+
+    def test_valid_restriction_survives_source_gap(self,monkeypatch):
+        result,fake,sent=self.execute(monkeypatch,resolver=lambda row,now:self.bound(row,available=False))
+        assert sent==[] and result.policy_withheld_n==1 and result.policy_unavailable_n==0
+
+    def test_missing_expected_record_is_unavailable(self,monkeypatch):
+        result,fake,sent=self.execute(monkeypatch,resolver=lambda row,now:self.bound(row,records_missing=True))
+        assert sent==[] and result.policy_unavailable_n==1
+
+    def test_each_message_gets_fresh_source_resolution(self,monkeypatch):
+        rows=[_row(fire_event_id="first"),_row(fire_event_id="second")];calls=[]
+        def resolver(row,now):
+            calls.append((row["fire_event_id"],now))
+            return self.bound(row,state="REVOKED" if row["fire_event_id"]=="first" else "ACTIVE")
+        result,fake,sent=self.execute(monkeypatch,rows=rows,resolver=resolver)
+        assert [x[0] for x in calls]==["first","second"]
+        assert [x["fire_event_id"] for x in sent]==["first"]
+        assert result.policy_withheld_n==1
+
+    def test_resolution_crossing_expiry_is_rechecked(self,monkeypatch):
+        times=iter([_now("2026-09-29T15:00:00+00:00"),_now("2026-09-29T15:01:00+00:00")])
+        result,fake,sent=self.execute(monkeypatch,
+            resolver=lambda row,now:self.bound(row,state="REVOKED",until="2026-09-29T15:01:00Z"),clock=lambda:next(times))
+        assert sent==[] and result.policy_unavailable_n==1
+
+    def test_current_policy_time_is_not_batch_time(self,monkeypatch):
+        result,fake,sent=self.execute(monkeypatch,resolver=lambda row,now:self.bound(row,state="REVOKED"),
+             clock=lambda:_now("2026-09-29T21:00:00+00:00"))
+        assert sent==[] and result.policy_unavailable_n==1
+
+    def test_naive_policy_time_is_not_accepted(self,monkeypatch):
+        result,fake,sent=self.execute(monkeypatch,resolver=lambda row,now:self.bound(row),clock=lambda:datetime(2026,9,29,15))
+        assert sent==[] and result.policy_unavailable_n==1
+
+    def test_other_event_bound_result_refused(self,monkeypatch):
+        wrong=self.bound(_row(fire_event_id="other"),state="REVOKED")
+        result,fake,sent=self.execute(monkeypatch,resolver=lambda row,now:wrong)
+        assert sent==[] and result.policy_unavailable_n==1
+
+    def test_changed_recipient_or_payload_refused(self,monkeypatch):
+        from copy import deepcopy
+        for key in ["user_id","payload"]:
+            row=_row();wrong=deepcopy(row)
+            if key=="user_id":wrong[key]="different-user"
+            else:wrong[key]["summary_plain"]="different recommendation"
+            binding=self.bound(wrong,state="REVOKED")
+            result,fake,sent=self.execute(monkeypatch,row=row,resolver=lambda row,now:binding)
+            assert sent==[] and result.policy_unavailable_n==1
+
+    def test_resolver_cannot_mutate_delivered_payload(self,monkeypatch):
+        def resolver(row,now):
+            result=self.bound(row,state="REVOKED");row["payload"]["summary_plain"]="injected";return result
+        result,fake,sent=self.execute(monkeypatch,resolver=resolver)
+        assert len(sent)==1 and sent[0]["payload"]["summary_plain"]=="x"
+
+    def test_dry_run_performs_no_send_or_write(self,monkeypatch):
+        result,fake,sent=self.execute(monkeypatch,dry=True,resolver=lambda row,now:self.bound(row))
+        assert sent==[] and fake.patches==[] and fake.runs=={}
+        assert result.policy_withheld_n==1
+
+    def test_existing_optout_is_not_overridden(self,monkeypatch):
+        def must_not_resolve(*args):raise AssertionError("opt-out is already terminal")
+        user={"email":"u@example.com","user_metadata":{"alert_email_optin":"false"}}
+        result,fake,sent=self.execute(monkeypatch,users={"u1":user},resolver=must_not_resolve)
+        assert sent==[] and result.suppressed_n==1 and result.policy_withheld_n==0
+
+    def test_existing_unknown_delivery_is_not_relabeled_as_policy_suppressed(self,monkeypatch):
+        row=_row(attempts=1)
+        ledger={"alert_fire:fe1:1":{"status":"queued","detail":"SMTP_ATTEMPTED@2026-09-29T14:00:00Z","created_at":"2026-09-29T13:59:59Z"}}
+        result,fake,sent=self.execute(monkeypatch,row=row,email_log=ledger,resolver=lambda row,now:self.bound(row))
+        assert sent==[] and fake.patches==[] and row["status"]=="pending" and row["attempts"]==1
+        assert ledger["alert_fire:fe1:1"]["status"]=="queued"
+        assert result.effect_unknown_n==0 and result.policy_withheld_n==1
+
+    def test_original_quarantine_still_operates_when_no_new_policy_applies(self,monkeypatch):
+        ledger={"alert_fire:fe1":{"status":"queued","detail":"SMTP_ATTEMPTED@2026-09-29T14:00:00Z","created_at":"2026-09-29T13:59:59Z"}}
+        result,fake,sent=self.execute(monkeypatch,email_log=ledger,sender_result="duplicate",
+             resolver=lambda row,now:self.bound(row,state="REVOKED"))
+        assert result.effect_unknown_n==1 and result.policy_withheld_n==0
+        assert fake.outbox[0]["last_error"]==drain.EFFECT_UNKNOWN_LAST_ERROR
+
+    def test_canary_mismatch_does_not_consult_policy(self,monkeypatch):
+        fake=FakeTables(outbox=[_row()]);_patch(monkeypatch,fake,users={"u1":OPTED_IN_USER})
+        calls=[]
+        result=drain.drain(send_fn=lambda **kw:calls.append("send"),fire_event_id="absent",new_long_policy_resolver=lambda *a:calls.append("policy"))
+        assert calls==[] and fake.runs=={} and fake.patches==[]
+        assert result.selector_state==drain.SELECTOR_NO_MATCH
+
+    def test_binder_cannot_repurpose_held_position_intent(self):
+        from engine import prophet_market_eligibility as m
+        row=_row();bound=self.bound(row)
+        with pytest.raises(m.MarketEligibilityError,match="INTENT_UNSUPPORTED"):
+            m.bind_new_long_alert(row,board=self.board(),candidate=self.board()["buy"][0],
+                restrictions=bound.restrictions,intent="HELD_POSITION_MANAGEMENT")
+
+
+    def test_script_caller_passes_check_into_actual_drain(self,monkeypatch,capsys):
+        from scripts import drain_alert_outbox as script
+        fake=FakeTables(outbox=[_row()]);_patch(monkeypatch,fake,users={"u1":OPTED_IN_USER})
+        monkeypatch.setenv("ALERT_DRAIN_ENABLE","1")
+        sent=[];monkeypatch.setattr(script.mailer,"send_alert",lambda **kw:sent.append(kw) or "sent")
+        code=script.main(["--now","2026-09-29T15:00:00Z"],
+             new_long_policy_resolver=lambda row,now:self.bound(row),
+             policy_clock=lambda:_now("2026-09-29T15:00:00+00:00"))
+        assert code==0 and sent==[] and fake.patches==[]
+        assert "new-long delivery attempts withheld=1 permission_unavailable=0" in capsys.readouterr().out
+
+    def test_dormant_script_keeps_zero_writes_even_with_policy(self,monkeypatch,capsys):
+        from scripts import drain_alert_outbox as script
+        fake=FakeTables(outbox=[_row()]);_patch(monkeypatch,fake,users={"u1":OPTED_IN_USER})
+        monkeypatch.delenv("ALERT_DRAIN_ENABLE",raising=False)
+        sent=[];monkeypatch.setattr(script.mailer,"send_alert",lambda **kw:sent.append(kw) or "sent")
+        assert script.main(["--now","2026-09-29T15:00:00Z"],new_long_policy_resolver=lambda row,now:self.bound(row),
+            policy_clock=lambda:_now("2026-09-29T15:00:00+00:00"))==0
+        assert sent==[] and fake.patches==[] and fake.runs=={}
+        assert "DORMANT" in capsys.readouterr().out
+
+    def test_script_does_not_accept_policy_or_grant_from_command_line(self,monkeypatch):
+        from scripts import drain_alert_outbox as script
+        with pytest.raises(SystemExit) as exc:
+            script.main(["--policy-grant","pretend-approved"])
+        assert exc.value.code==2
+
+    def test_overlap_keeps_other_restriction_after_one_revocation(self,monkeypatch):
+        from engine import prophet_market_eligibility as m
+        def resolve(row,now):
+            first=self.rule("REVOKED");second={**self.rule(),"policy_id":"fixture-second-rule","rule_id":"second"}
+            read=m.bind_new_long_restrictions(self.board(),[first,second],
+                expected_rule_hashes={r["policy_id"]:m._digest(r) for r in [first,second]},
+                observed_at="2026-09-29T14:30:00Z",valid_until="2026-09-29T21:00:00Z")
+            return m.bind_new_long_alert(row,board=self.board(),candidate=self.board()["buy"][0],restrictions=read,
+                intent="NEW_LONG_RECOMMENDATION")
+        result,fake,sent=self.execute(monkeypatch,resolver=resolve)
+        assert sent==[] and result.policy_withheld_n==1 and result.policy_unavailable_n==0
+
+    def test_current_rule_expiry_does_not_bypass_native_recipient_checks(self,monkeypatch):
+        row=_row()
+        user={"email":"u@example.com","user_metadata":{"alert_email_optin":"false"}}
+        result,fake,sent=self.execute(monkeypatch,row=row,users={"u1":user},
+             resolver=lambda row,now:self.bound(row,state="REVOKED"))
+        assert sent==[] and result.suppressed_n==1

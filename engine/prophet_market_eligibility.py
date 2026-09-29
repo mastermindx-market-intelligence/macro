@@ -619,3 +619,56 @@ def new_long_candidate_card_context(
         "not_buy_permission": True, **deepcopy(decision),
     }
     return out
+
+
+@dataclass(frozen=True)
+class NewLongAlertRead:
+    """An exact queued alert bound by the internal policy/source owner.
+
+    This is neither an authorization service nor delivery state. A resolver must
+    identify a prospective new-long recommendation from its real source, not guess
+    from a subject string, user-supplied category or a saved display verdict.
+    """
+    alert_digest: str
+    ticker: str
+    restrictions: NewLongRestrictionRead
+
+    def decision(self, row: Mapping[str, Any], *, read_at: str) -> dict[str, Any]:
+        if _new_long_alert_digest(row) != self.alert_digest:
+            raise MarketEligibilityError("POLICY_ALERT_BINDING_MISMATCH")
+        return self.restrictions.decision(self.ticker, read_at=read_at)
+
+
+def _new_long_alert_digest(row: Mapping[str, Any]) -> str:
+    if not isinstance(row, Mapping) or not isinstance(row.get("payload"), dict):
+        raise MarketEligibilityError("POLICY_ALERT_SHAPE_INVALID")
+    identity = {k: _text(row.get(k), "POLICY_ALERT_IDENTITY_INVALID")
+                for k in ("id", "user_id", "alert_id", "fire_event_id")}
+    return _digest({**identity, "payload": row["payload"]})
+
+
+def bind_new_long_alert(
+    row: Mapping[str, Any], *, board: Mapping[str, Any], candidate: Mapping[str, Any],
+    restrictions: NewLongRestrictionRead, intent: str,
+) -> NewLongAlertRead:
+    """Bind known new-long intent; holdings/change/research alerts are not guessed.
+
+    Only the existing internal source/grant resolver may call this for an accepted
+    new-long alert. A payload cannot self-assign this intent or authorize its own
+    policy hashes. Raw queue bytes, candidate, board and recipients stay unchanged.
+    """
+    if intent != "NEW_LONG_RECOMMENDATION":
+        raise MarketEligibilityError("POLICY_ALERT_INTENT_UNSUPPORTED")
+    if not isinstance(restrictions, NewLongRestrictionRead):
+        raise MarketEligibilityError("POLICY_READ_TYPE_INVALID")
+    restrictions.bind_board(board)
+    if not isinstance(candidate, Mapping):
+        raise MarketEligibilityError("POLICY_ALERT_CANDIDATE_INVALID")
+    fingerprint = _digest(candidate)
+    if not any(isinstance(c, Mapping) and _digest(c) == fingerprint for c in board.get("buy", [])):
+        raise MarketEligibilityError("POLICY_ALERT_CANDIDATE_UNBOUND")
+    ticker = _text(candidate.get("ticker"), "POLICY_ALERT_TICKER_INVALID").strip().upper()
+    digest = _new_long_alert_digest(row)
+    if str(row["payload"].get("ticker") or "").strip().upper() != ticker:
+        raise MarketEligibilityError("POLICY_ALERT_TICKER_MISMATCH")
+    return NewLongAlertRead(digest, ticker, restrictions)

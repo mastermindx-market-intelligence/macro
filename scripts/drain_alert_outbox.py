@@ -34,7 +34,7 @@ from app import mailer  # noqa: E402
 from engine import alert_delivery_drain as drain_mod  # noqa: E402
 
 
-def main(argv=None) -> int:
+def main(argv=None, *, new_long_policy_resolver=None, policy_clock=None) -> int:
     parser = argparse.ArgumentParser(description="Drain the fired-alert outbox (off-render).")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--limit", type=int, default=200)
@@ -60,9 +60,14 @@ def main(argv=None) -> int:
         if now_utc.tzinfo is None:
             now_utc = now_utc.replace(tzinfo=timezone.utc)
 
+    policy_args = {}
+    if new_long_policy_resolver is not None:
+        policy_args["new_long_policy_resolver"] = new_long_policy_resolver
+    if policy_clock is not None:
+        policy_args["policy_clock"] = policy_clock
     send_fn = None if dry_run else mailer.send_alert
     result = drain_mod.drain(send_fn=send_fn, now_utc=now_utc, limit=args.limit,
-                             dry_run=dry_run, fire_event_id=args.fire_event_id)
+                             dry_run=dry_run, fire_event_id=args.fire_event_id, **policy_args)
 
     selector_failed = args.fire_event_id is not None and (
         result.read_state == drain_mod.READ_UNAVAILABLE or result.selector_state is not None)
@@ -97,6 +102,10 @@ def main(argv=None) -> int:
               "%d alert row(s) quarantined with an undetermined delivery effect -- "
               "check the relay log before replaying any of them by hand"
               % result.effect_unknown_n, flush=True)
+    if result.policy_withheld_n:
+        print("alert-drain: new-long delivery attempts withheld=%d permission_unavailable=%d; "
+              "outbox statuses and prior delivery effects unchanged"
+              % (result.policy_withheld_n, result.policy_unavailable_n), flush=True)
     return 2 if selector_failed else 0
 
 
