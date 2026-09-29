@@ -124,9 +124,9 @@ waves:
     depends_on:
       - W3
   - id: W5
-    title: This workstream record and its handoff
+    title: This workstream record and its handoff, replayed after a sweeper race
     status: awaiting_ci
-    pr: null
+    pr: 8166
     depends_on:
       - W4
 next_action: >
