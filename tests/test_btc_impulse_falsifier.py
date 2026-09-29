@@ -766,3 +766,93 @@ def test_r7_frequency_control_is_a_diagnostic_not_free_extra_cash():
     adjusted,q=frequency_adjust(a,d)
     assert q==.25 and np.isclose(np.mean(adjusted),.025)
     assert np.allclose(frequency_adjust(np.zeros(4,bool),d)[0],0)
+
+
+# R8: earlier observable action and continuous marginal-value targets.
+def test_r8_early_features_do_not_consume_six_hour_future_information():
+    from research.crypto_science.r8_action_value_study import features_at, FIELDS
+    b=_r6_frame();a=b.index[800]
+    f=features_at(b,a,0,.6)
+    assert f['status']=='ok' and f['issue']==a+pd.Timedelta(hours=1)
+    assert f==features_at(b.loc[:a],a,0,.6)
+    changed=b.copy();changed.loc[a+pd.Timedelta(hours=1):,'close']=99999
+    assert features_at(changed,a,0,.6)==f
+    late=features_at(b,a,6,.6)
+    assert late==features_at(b.loc[:a+pd.Timedelta(hours=6)],a,6,.6)
+    assert np.isfinite([f[k] for k in FIELDS]).all()
+
+
+def test_r8_features_preserve_zero_exposure_and_withhold_unknown_inputs():
+    from research.crypto_science.r8_action_value_study import features_at
+    b=_r6_frame();a=b.index[800]
+    assert features_at(b,a,0,0.)['x_exposure']==0
+    assert features_at(b,a,0,np.nan)['status']=='exposure_unknown'
+    assert features_at(b.drop(a-pd.Timedelta(hours=100)),a,0,.6)['status']=='price_unknown'
+    assert features_at(b,b.index[40],0,.6)['status']=='price_unknown'
+
+
+def test_r8_trace_marks_prior_damage_before_new_trade_cost():
+    from research.crypto_science.r8_action_value_study import trace_account
+    out=trace_account([100.,80.,90.],[1.,0.],1.,1.,10,1)
+    assert np.isclose(out['pre_return'],-.2) and np.isclose(out['pre_drawdown'],-.2)
+    assert np.isclose(out['action_weight'],1.)
+    # The common account was already down20% before the cash switch.
+    assert out['max_drawdown']<-.2 and out['return']<-.2
+    zero=trace_account([100.,101.],[0.],0.,0.,10,0)
+    assert zero['pre_return']==0 and zero['pre_drawdown']==0 and zero['action_weight']==0
+
+
+def test_r8_trace_matches_incumbent_account_and_never_rewrites_targets():
+    from research.crypto_science.r8_action_value_study import trace_account
+    from research.crypto_science.r4_sequence_study import account_path
+    p=np.array([100.,90.,105.,101.]);t=np.array([.6,.3,.3]);original=t.copy()
+    got=trace_account(p,t,.6,.4,10,2);old=account_path(p,t,initial_weight=.6,terminal_weight=.4,cost_bps=10)
+    for key in ['return','max_drawdown','turnover']:assert np.isclose(got[key],old[key])
+    assert np.array_equal(t,original)
+
+
+def test_r8_ridge_is_regularized_multioutput_with_training_only_scalers():
+    from research.crypto_science.r8_action_value_study import fit_ridge, predict_value
+    x=np.c_[np.linspace(-2,2,100),np.ones(100)];y=np.c_[x[:,0]*.01,-x[:,0]*.003]
+    m=fit_ridge(x,y);p=predict_value(m,x)
+    assert m['status']=='ok' and m['scale'][1]==1.
+    assert np.allclose(m['mean'],x.mean(axis=0)) and m['normal_residual']<1e-10
+    assert p[0,0]<p[-1,0] and p[0,1]>p[-1,1]
+    assert np.allclose(p,predict_value(fit_ridge(x,y),x))
+    try:predict_value(m,[[np.nan,1.]])
+    except ValueError:pass
+    else:raise AssertionError('Missing feature must not silently predict value')
+
+
+def _r8_training():
+    from research.crypto_science.r8_action_value_study import FIELDS
+    n=130;i=np.arange(n);issue=pd.date_range('2019-01-01',periods=n,freq='2D')
+    f=pd.DataFrame({'issue':issue,'end':issue+pd.Timedelta(hours=24),
+                    'dr':np.where(i%2,.02,-.01),'dx':np.where(i%3,0.,.005)})
+    for j,k in enumerate(FIELDS):f[k]=np.sin(i/(j+2))
+    return f
+
+
+def test_r8_training_maturity_and_future_labels_cannot_change_fit():
+    from research.crypto_science.r8_action_value_study import value_snapshot
+    f=_r8_training();q=f.issue.iloc[100];m=value_snapshot(f,q)
+    assert m['status']=='ok' and m['n']==99 # equality at end+24h excluded
+    changed=f.copy();changed.loc[100:,'dr']=999;changed.loc[100:,'x_return1']=999
+    assert value_snapshot(changed,q)==m
+    assert value_snapshot(f.iloc[:50],q)['status']=='insufficient_training'
+    f['dr']=.01;assert value_snapshot(f,q)['status']=='insufficient_training'
+
+
+def test_r8_action_values_are_not_probabilities_and_have_fixed_sacrifice_floor():
+    from research.crypto_science.r8_action_value_study import action_from_value
+    assert action_from_value(-.001,.005,1)['action'] is True
+    assert action_from_value(-.003,.01,1)['action'] is False
+    assert action_from_value(-.001,.005,0)['action'] is False
+    assert action_from_value(0,0,1)['action'] is False
+    assert np.isclose(action_from_value(-.001,.005,1)['expected_u'],.004)
+
+
+def test_r8_oracle_is_only_a_fixed_time_hindsight_envelope():
+    from research.crypto_science.r8_action_value_study import hindsight_value
+    assert np.allclose(hindsight_value([.02,-.01,0.]),[.02,0.,0.])
+    assert np.isnan(hindsight_value([np.nan])[0])
