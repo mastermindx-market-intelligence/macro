@@ -120,13 +120,20 @@ unverified:
       The null-data half of the gate is now PROVEN against the ten real published artifacts (see verified above).
       The remaining half needs a real prior-vs-new pair where both carry a parseable session, which cannot exist
       until the repaired producer has published at least once. Downstream of install.
-  - claim: The host's mid-July gex_state asof reflects a genuine production staleness rather than stale local copies of a lane that publishes elsewhere.
-    what_would_verify: An owner read of where gex_state actually publishes from, and whether the served artifacts carry the same asof.
+  - claim: The SERVED gex_state carries the same current asof as the committed lane.
+    what_would_verify: >-
+      NARROWED 2026-09-29, and no longer a suspected production defect. gex_state publishes into site/ (static
+      site, VPS 3-min pull), NOT from the m1 flow-ops checkout, and this repo's 668 committed
+      site/options_structure/gex_state/*.json carry asof 2026-09-28T16:00:00-04:00 - current. The m1 host's
+      mid-July copies are therefore STALE LOCAL FILES of a lane that publishes elsewhere, not evidence of a
+      stale production surface. The remaining served half returns HTTP 401 to an anonymous GET of
+      www.mastermind-x.com/options_structure/gex_state/AAPL.json, so it needs an authenticated operator read;
+      that denial was recorded, not routed around. No action is implied for this PR.
 unresolved:
   - Sol's hold on #7861. The 02:41Z review explicitly grants no Ready/merge/deploy/source-writer authority. Merge authority is not this seat's.
   - "Normal merged-source publication, and real published-data proof over two natural qualifying sessions. Both remain downstream of the merge AND of the install prerequisite. What is NO LONGER unresolved is the reproduction and the baseline: the defect is confirmed live on all ten published roots and the repaired gate was proven against those real payloads."
   - Owner reconciliation of the +35 B publisher divergence on the source host. A rollback preimage cannot be trusted while the installed publisher matches no committed revision.
-  - The host's gex_state/*.json carry a mid-July asof. Different producer lane, possibly just stale local copies rather than the live publication. Flagged for an owner read, NOT claimed as a production defect.
+  - "RESOLVED as far as anonymous evidence allows: the m1 host's mid-July gex_state copies are stale local files, not a stale production surface - the committed lane carries asof 2026-09-28T16:00:00-04:00. The served surface is 401 to an anonymous GET and would need an authenticated operator read. Not a defect of this PR and no action implied."
 next_actions:
   - Await Sol's disposition of the hold on #7861. Do not arm merge-on-green, mark ready, or merge.
   - On release, install must carry lib/nyse_calendar.py (or move the whole checkout to merged main), not just the two repaired files, and must happen with the producer idle and after the publisher divergence is reconciled by its owner.
