@@ -7,7 +7,7 @@ import functools
 import hashlib
 import json
 import math
-from numbers import Real
+from numbers import Rational, Real
 import re
 from typing import Any, Mapping
 
@@ -520,6 +520,38 @@ def _verify_pg_replay(
         raise EconomicObservationError("replay_mismatch: the document carries conflicting statements of total volume growth")
 
 
+# R189: the validator prints and encodes what a workspace carries (str() of its fields, the fact identity's bytes,
+# the replay's event identity).  Three kinds of value a tampered workspace can carry make that raise instead of
+# refuse: a value nested deeper than the interpreter prints, an integer with more digits than it converts (never at
+# 640 or fewer, the least limit it can be set to), and text holding a lone surrogate, which no bytes decode to.
+# One walk at the entry refuses all three, and bounds its own work, so nothing after it meets them.
+_LONE_SURROGATE = re.compile("[\ud800-\udfff]")
+_PRINTABLE_DEPTH = 32
+_PRINTABLE_VALUES = 100_000
+_PRINTABLE_BOUND = 10**640
+
+
+def _unprintable(value: Any) -> bool:
+    stack = [(value, 1)]
+    visited = 0
+    while stack:
+        item, depth = stack.pop()
+        visited += 1
+        if depth > _PRINTABLE_DEPTH or visited > _PRINTABLE_VALUES:
+            return True
+        if isinstance(item, str):
+            if _LONE_SURROGATE.search(item):
+                return True
+        elif isinstance(item, Rational):
+            if abs(item.numerator) >= _PRINTABLE_BOUND or item.denominator >= _PRINTABLE_BOUND:
+                return True
+        elif isinstance(item, Mapping):
+            stack.extend((part, depth + 1) for entry in item.items() for part in entry)
+        elif isinstance(item, (list, tuple, set, frozenset)):
+            stack.extend((entry, depth + 1) for entry in item)
+    return False
+
+
 def validate_selected_facts(
     workspace: Mapping[str, Any],
     *,
@@ -530,8 +562,17 @@ def validate_selected_facts(
         raise EconomicObservationError("workspace must be a mapping")
     if not isinstance(source_texts, Mapping):
         raise EconomicObservationError("source_texts must be a mapping")
-    if any(not isinstance(key, str) or not isinstance(value, str) for key, value in source_texts.items()):
+    if any(
+        not isinstance(key, str) or not isinstance(value, str)
+        or _LONE_SURROGATE.search(key) or _LONE_SURROGATE.search(value)
+        for key, value in source_texts.items()
+    ):
         raise EconomicObservationError("source_texts must map document ids to text")
+    if _unprintable(workspace):
+        raise EconomicObservationError(
+            "workspace holds a value it cannot print: nested too deep, too many values, a number too long, "
+            "or text no bytes decode to"
+        )
     current_start, current_end, prior_start, prior_end = _fiscal_scope(fiscal_scope)
     fiscal_period = workspace.get("fiscal_period")
     if not isinstance(fiscal_period, Mapping):
