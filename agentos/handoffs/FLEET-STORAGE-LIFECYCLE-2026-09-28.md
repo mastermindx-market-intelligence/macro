@@ -224,6 +224,40 @@ verified_wave_6:
       `git fetch`, both blobs are equal at my commit, at the squash and at `origin/main`
       (`14a58cd095ad`, `3556e9757b09`), and main's bytes contain strings only my later commits
       introduced. Fixed in both law files as a fetch-first requirement.
+verified_wave_7:
+  - claim: >
+      The #8169 false alarm was NOT a missing fetch. The head branch is deleted on merge, so the
+      combined `fetch origin main <branch>` fatals and refreshes NOTHING — including main.
+    how: >
+      `git ls-remote --heads origin claude/documents-pool-sweeper-blind-20260928` -> empty (deleted
+      on merge). `git fetch origin main claude/documents-pool-sweeper-blind-20260928` -> `rc=128`,
+      `fatal: couldn't find remote ref …`. The watcher's helper returns `""` on any failure, so the
+      aborted fetch was invisible and the comparison ran on a pre-merge baseline. **The merge's own
+      success is what broke the check that verifies the merge**, and the false verdict's prescribed
+      remedy was to replay content that had already landed. Fixed in both law files and the landmine
+      DSC as three requirements, not one: fetch `main` alone, check the fetch's exit status, and
+      treat the branch's absence from the remote as the EXPECTED post-merge state.
+  - claim: "The fix was re-run against the exact input that broke the old version."
+    how: >
+      Gen 2 on the #8169 branch: fetch `rc=128`, baseline stale, 2 paths reported MISSING, exit 8.
+      Gen 3 on the same input: fetch `rc=0`, both blobs equal (`14a58cd095ad`, `3556e9757b09`),
+      exit 0. A fix not re-run against its own failing case is a hypothesis.
+  - claim: "#8171 is merged and all 6 paths are byte-identical in main."
+    how: >
+      Sweeper merged head `8d330725a5611f1343b9a66c33996fa91c05a021`; gen-3 verification returned
+      `0 of 6 path(s) not byte-identical`, plus a path-scoped grep finding a string only this
+      commit introduced in main's own `CLAUDE.md`.
+  - claim: "The sweeper examines 224 of 789 registered worktrees — 28.4% — and never said so."
+    how: >
+      `python3 scripts/worktree_gc.py --no-sizes --no-gh --no-fetch` (report-only) against the real
+      fleet, with the W9 patch: `reach: checked 224 of 789 registered worktrees · 565 outside
+      configured roots and never examined · plus 9 unregistered found by scan`. Before W9 no
+      human-readable output contained any number from which that could be derived — `in_scope` and
+      `registered_total` went only into the JSON payload. **No verdict it printed was ever wrong;
+      the report was simply unfalsifiable as a statement about the fleet.** Also: refusals were
+      handled by exactly `if apply_summary["errors"]: return 1` — counted into an exit code and
+      never printed, so `deleted=0 errors=688` with no messages was indistinguishable from a
+      healthy run with nothing to do. 21 tests pass (16 existing + 5 new).
 prs:
   - 8156
   - 8158
@@ -232,6 +266,8 @@ prs:
   - 8166
   - 8169
   - 8170
+  - 8171
+  - 8172
 decisions:
   - DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM
 discoveries:

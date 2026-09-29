@@ -110,7 +110,7 @@ obeying that instruction would have re-pushed content that had already landed.
 So the check is: **`git fetch origin` FIRST**, then `git log origin/main..origin/<branch>`, then the
 per-path blob comparison. On a MISSING verdict, re-fetch and re-run before believing it, and
 cross-check against main's own bytes for a string only your commit introduced
-(`git grep <needle> origin/main -- <path>`) — a positive hit there refutes a false alarm immediately.
+(`git grep <needle> origin/main -- <path>`; **the `-- <path>` is not optional here** — this clone is blobless, so an UNSCOPED `git grep <ref>` must fetch every blob in that tree over the network to search it, measured as an open-ended hang, while the scoped form returns in seconds) — a positive hit there refutes a false alarm immediately.
 
 **The general shape is worth more than the fix.** A verifier built to catch a silent loss will, if its
 baseline can go stale, convert every ordinary merge into a false loss report — and the two verdicts
