@@ -35,6 +35,16 @@ COVERAGE
   21. the report STATES its protection reach, says NONE CONFIGURED when the key is
       absent, and says so explicitly when a configured list matches nothing (an
       unmounted volume and a mis-spelled path are indistinguishable otherwise)
+  22. a config that OMITS `human_driven_roots` inherits the built-in floor rather than
+      an empty list -- load_config merges a file over the defaults, so a pre-existing
+      config supplies its own `armed: true` while an absent protective key falls back
+      to the defaults, resolving arming and protection from different schema eras
+  23. an EXPLICIT empty list still overrides that floor -- the default is a floor, not
+      a seizure of policy authority from an operator who deliberately emptied it
+  24. the report NAMES the config file its policy came from, and flags the implicit
+      primary-checkout path -- without it, "NONE configured" is unfalsifiable by its
+      reader: it reads as a fact about the fleet when it may be a fact about which
+      checkout supplied the config
 
   Reach (an instrument must state how much it looked at):
   15. the rendered report prints `reach: checked N of M registered worktrees`,
@@ -569,4 +579,78 @@ def test_main_actually_threads_the_deny_list_into_the_deletion_belt(repo, tmp_pa
     assert "protected" in seen, "main never passed protected= to the deletion belt"
     assert seen["protected"], "main passed an EMPTY protection to the belt"
     assert any("web-session" in str(p) for p in seen["protected"]), seen["protected"]
+
+
+# --- a protective key absent from an older config ---------------------------------------
+
+def test_an_absent_deny_list_key_inherits_the_floor_not_an_empty_list(tmp_path):
+    """The defect this wave exists for: absence resolved to the UNPROTECTED value.
+
+    `load_config` is dict(DEFAULT_CONFIG).update(<file>). A config written before this key
+    existed therefore contributes its own `armed: true` while the deny-list falls through to
+    the defaults -- arming and protection answered from different eras of the schema. That is
+    not hypothetical: measured 2026-09-29, the primary checkout's config (branch `feature`,
+    7,450 commits behind origin/main) loaded exactly this way, armed and unprotected.
+    """
+    p = tmp_path / "old.json"
+    p.write_text(json.dumps({"armed": True, "roots": [".claude/worktrees"]}))
+    cfg = wgc.load_config(tmp_path, str(p))
+    assert cfg["armed"] is True, "fixture must reproduce the armed half"
+    assert cfg["human_driven_roots"], (
+        "an absent protective key resolved to an EMPTY deny-list while arming came from the "
+        "file -- this is the armed-and-unprotected state")
+    assert wgc.human_driven_protection([tmp_path], cfg), "the floor must survive expansion"
+
+
+def test_an_explicit_empty_deny_list_still_overrides_the_floor(tmp_path):
+    """A floor, not a seizure of authority: an operator who writes [] means [].
+
+    Without this the fix would be unfalsifiable from the operator's side -- there would be no
+    way to express "no deny-list" at all, and a default that cannot be turned off is a policy
+    the config no longer owns.
+    """
+    p = tmp_path / "explicit.json"
+    p.write_text(json.dumps({"armed": True, "human_driven_roots": []}))
+    assert wgc.load_config(tmp_path, str(p))["human_driven_roots"] == []
+
+
+def test_the_floor_is_not_reachable_by_a_relative_path_trick(tmp_path):
+    """The floor entries are absolute, and expand_roots keeps absolutes verbatim.
+
+    Pinned because the sibling `roots` list is repo-RELATIVE and expanded under every host
+    checkout; if the floor were ever rewritten in that idiom it would silently expand to
+    per-host paths that match nothing.
+    """
+    cfg = dict(wgc.DEFAULT_CONFIG)
+    out = [str(x) for x in wgc.human_driven_protection([tmp_path], cfg)]
+    assert out == list(wgc.DEFAULT_CONFIG["human_driven_roots"]), out
+    assert all(x.startswith("/") for x in out), out
+
+
+# --- the report must name the file its policy came from -----------------------------------
+
+def test_policy_source_flags_the_implicit_primary_checkout_path():
+    line = wgc.policy_source_line(
+        {"config_path": "/some/primary/config/worktree_gc.json", "config_explicit": False})
+    assert "/some/primary/config/worktree_gc.json" in line
+    assert "fast-forward" in line, line
+
+
+def test_policy_source_marks_an_explicit_config_as_explicit():
+    line = wgc.policy_source_line({"config_path": "/tmp/x.json", "config_explicit": True})
+    assert "explicit" in line
+    assert "fast-forward" not in line, "an explicit --config carries no staleness caveat"
+
+
+def test_policy_source_omitted_not_invented_without_metadata():
+    assert wgc.policy_source_line({}) is None
+
+
+def test_the_rendered_report_names_its_policy_source(repo, tmp_path, monkeypatch, capsys):
+    """A verdict computed from an unnamed config cannot be checked by its reader."""
+    cfg = _write_config(tmp_path, human_driven_roots=[str(repo["root"] / "web-session")])
+    _run_main(repo, tmp_path, monkeypatch, cfg=cfg)
+    blob = capsys.readouterr().out
+    assert "policy source:" in blob
+    assert str(cfg) in blob, blob[:400]
 

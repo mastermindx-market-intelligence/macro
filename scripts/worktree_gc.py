@@ -104,9 +104,30 @@ DEFAULT_CONFIG = {
         "~/.codex/worktrees",
     ],
     # Subtrees whose checkouts belong to HUMAN-driven sessions. Never candidates, at any
-    # verdict, under any arming. Empty here on purpose: the built-in defaults are the
-    # disarmed fallback, and the real list lives in config/worktree_gc.json.
-    "human_driven_roots": [],
+    # verdict, under any arming.
+    #
+    # These are NOT empty, and the reasoning that once made them empty is the landmine.
+    # `load_config` does dict(DEFAULT_CONFIG).update(<file>), so a config that EXISTS but
+    # predates this key contributes its own `armed: true` while the deny-list falls back to
+    # this default -- arming and protection resolved from different eras of the schema. The old
+    # comment here ("the built-in defaults are the disarmed fallback") is only true when NO
+    # config file exists at all; it is false for every config written before the key existed,
+    # which is every config on a checkout that has not fast-forwarded.
+    #
+    # Measured 2026-09-29: `scripts/worktree_gc.py` invoked directly resolves its config from
+    # the PRIMARY checkout, which the workspace law keeps every session out of and which no one
+    # therefore fast-forwards -- found on branch `feature` at a 2026-09-04 commit, 7,450 behind
+    # origin/main. It loaded `armed: true` with `human_driven_roots: []`. The launchd wrapper is
+    # unaffected (it re-extracts both tool and config from origin/main and passes --config), so
+    # this is the DIRECT-invocation path only.
+    #
+    # A protective default is therefore a floor, not the policy: an explicit `[]` in a config
+    # still overrides it, because only an ABSENT key reads these.
+    "human_driven_roots": [
+        "/Volumes/Mastermind/worktrees",
+        "/Volumes/Mastermind/agent-workspaces/sol",
+        "/Volumes/Mastermind/agent-workspaces/review",
+    ],
 }
 
 KEEP_VERDICTS = {
@@ -878,6 +899,25 @@ def group_refusals(errors: list[str]) -> list[str]:
     return out
 
 
+def policy_source_line(meta: dict) -> str | None:
+    """Name the file the policy came from.
+
+    Every other number in this report is a verdict about worktrees; this one is a verdict about
+    the report itself. Without it, `human-driven protection: NONE configured` is unfalsifiable
+    by its reader -- it reads as a fact about the fleet when it may be a fact about which
+    checkout supplied the config. Measured 2026-09-29: it was the latter.
+    """
+    path = meta.get("config_path")
+    if not path:
+        return None
+    if meta.get("config_explicit"):
+        return f"policy source: `{path}` (explicit `--config`)."
+    return (f"policy source: `{path}` -- the primary checkout's own config, resolved implicitly. "
+            "No session fast-forwards that checkout, so this file can be arbitrarily far behind "
+            "`origin/main`; the launchd wrapper avoids it by extracting the config from "
+            "`origin/main` and passing `--config`.")
+
+
 def render_markdown(worktrees: list[Worktree], cfg: dict, meta: dict) -> str:
     by = summarize(worktrees)
     lines = [
@@ -887,6 +927,9 @@ def render_markdown(worktrees: list[Worktree], cfg: dict, meta: dict) -> str:
         f" · fetch_ok: {meta['fetch_ok']} · proc_scan: {meta['proc_scan']} · pr_states: {meta['pr_states']}",
         "",
     ]
+    src = policy_source_line(meta)
+    if src:
+        lines += [src, ""]
     reach = reach_line(meta)
     if reach:
         lines += [reach, ""]
@@ -927,9 +970,15 @@ def render_markdown(worktrees: list[Worktree], cfg: dict, meta: dict) -> str:
 
 # ── main ─────────────────────────────────────────────────────────────────────
 
+def config_path_for(primary: Path, override: str | None) -> Path:
+    """The file `load_config` will read. Exposed so the report can NAME its policy source:
+    a verdict computed from an unnamed config cannot be checked by its reader."""
+    return Path(override) if override else primary / DEFAULT_CONFIG_REL
+
+
 def load_config(primary: Path, override: str | None) -> dict:
     cfg = dict(DEFAULT_CONFIG)
-    path = Path(override) if override else primary / DEFAULT_CONFIG_REL
+    path = config_path_for(primary, override)
     try:
         cfg.update(json.loads(path.read_text(encoding="utf-8")))
     except FileNotFoundError:
@@ -962,6 +1011,7 @@ def main(argv: list[str] | None = None) -> int:
 
     primary = Path(args.repo_root).resolve() if args.repo_root else resolve_primary_root()
     cfg = load_config(primary, args.config)
+    cfg_path = config_path_for(primary, args.config)
     if args.min_age_days is not None:
         cfg["min_age_days"] = args.min_age_days
     if args.pr_limit is not None:
@@ -1019,6 +1069,8 @@ def main(argv: list[str] | None = None) -> int:
         "proc_scan": procs is not None,
         "pr_states": "file" if args.pr_states_file else ("none" if pr_states is None else f"gh:{len(pr_states)}"),
         "primary": str(primary),
+        "config_path": str(cfg_path),
+        "config_explicit": args.config is not None,
         "registered_total": len(registered),
         "in_scope": len(in_scope),
         "orphans": len(orphans),
