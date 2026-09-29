@@ -974,6 +974,56 @@ def test_candidate_visibility_untrusted_labels_are_escaped():
     assert '&lt;img' in html
 
 
+def _render_us_dashboard_with_plan_book(book, error=False):
+    vm = _base_vm()
+    vm["us_prophet_book"] = book
+    vm["us_prophet_book_error"] = error
+    return _env().get_template("dashboard.html.j2").render(**vm, mode="stocks")
+
+
+def test_us_plan_block_displays_source_owned_book_clock():
+    from bs4 import BeautifulSoup
+
+    html = _render_us_dashboard_with_plan_book({
+        "asof": "2026-09-25", "source_board_asof": "2026-09-24", "plans": []})
+    clock = BeautifulSoup(html, "html.parser").select_one("#us-plan-book-asof")
+    assert clock
+    assert clock["data-plan-book-asof"] == "2026-09-25"
+    assert clock["data-plan-book-source-asof"] == "2026-09-24"
+    text = clock.get_text(" ", strip=True)
+    assert "Plan records as of 2026-09-25" in text
+    assert "source board 2026-09-24" in text
+    assert "计划记录截至 2026-09-25" in text
+    assert "来源榜单 2026-09-24" in text
+
+
+@pytest.mark.parametrize("asof", ["2026-9-5", "yesterday", None])
+def test_us_plan_block_clock_is_unavailable_when_source_day_is_not_valid(asof):
+    from bs4 import BeautifulSoup
+
+    html = _render_us_dashboard_with_plan_book({"asof": asof, "plans": []})
+    clock = BeautifulSoup(html, "html.parser").select_one("#us-plan-book-asof")
+    assert clock
+    assert clock["data-plan-book-asof"] == ""
+    assert clock["data-plan-book-source-asof"] == ""
+    text = clock.get_text(" ", strip=True)
+    assert "Plan record date unavailable" in text
+    assert "计划记录日期不可用" in text
+
+
+def test_us_plan_block_clock_is_unavailable_on_book_error():
+    from bs4 import BeautifulSoup
+
+    html = _render_us_dashboard_with_plan_book(None, error=True)
+    clock = BeautifulSoup(html, "html.parser").select_one("#us-plan-book-asof")
+    assert clock
+    assert clock["data-plan-book-asof"] == ""
+    assert clock["data-plan-book-source-asof"] == ""
+    text = clock.get_text(" ", strip=True)
+    assert "Plan record date unavailable" in text
+    assert "计划记录日期不可用" in text
+
+
 def test_real_dashboard_consumes_candidate_projection():
     vm = _base_vm()
     vm.update(_candidate_visibility_vm())
