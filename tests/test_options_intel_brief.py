@@ -40,6 +40,7 @@ if str(REPO_ROOT) not in sys.path:
 
 from lib import nyse_calendar as nc  # noqa: E402
 from engine import options_intel_brief as brief  # noqa: E402
+from engine import thetadata_store  # noqa: E402 — AD-1T2b empty-store cases
 from scripts import build_options_intel_brief as producer  # noqa: E402
 
 CONFIG = brief.CONFIG
@@ -3911,3 +3912,121 @@ def test_ad1t2_require_store_treats_a_semantic_no_op_as_success(tmp_path, monkey
     rc = producer.main(["--out", str(out_path), "--require-store", "--ignore-staleness"])
     assert rc == 0, "a semantic no-op must stay a success under --require-store"
     assert out_path.read_bytes() == first_bytes, "a no-op must not churn the artifact"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# AD-1T2b — an EMPTY-but-structured store is infrastructure failure, not thinness.
+#
+# Observed on the store-bearing M1 (m1studio / admins-mini-652), 2026-09-29:
+#
+#     data/thetadata_eod/_manifest.json  -> {"status": "healthy",
+#                                            "complete_t1_roots": 372,
+#                                            "finished_at": "2026-09-25T21:30:18Z"}
+#     data/thetadata_eod/eod/            -> 0 entries
+#     data/thetadata_eod/oi/             -> 0 entries
+#     data/thetadata_eod/greeks/         -> 0 entries
+#     (control, same host/worktree/filesystem: data/yahoo/ -> 728 entries)
+#
+# `_has_store_content()` asks only whether a tier DIRECTORY exists, so this shape
+# RESOLVES. `build()` then takes the `anchor_str is None` branch, returns a real
+# payload rather than None, and `--require-store`'s readback compares the artifact
+# against the receipt_id this very run just wrote — which matches. Net effect:
+# exit 0, a green check, and a freshly-stamped EMPTY brief overwriting the last
+# honest one.
+#
+# That is the same false-green this whole repair exists to remove, relocated from
+# the runner to the store. The contract's "a thin but valid store is a legitimate
+# NO_SIGNAL" is about a store that HAS data and little signal — never about a
+# store with no data at all.
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def _write_empty_but_structured_store(tmp_path, monkeypatch) -> Path:
+    """Reproduce the M1's 2026-09-29 shape: tier dirs present, all EMPTY, manifest
+    claiming health. Deliberately does NOT monkeypatch ``resolve_thetadata_store``
+    — exercising the REAL resolver is the entire point of this case."""
+    store = tmp_path / "thetadata_eod"
+    for tier in ("eod", "oi", "greeks"):
+        (store / tier).mkdir(parents=True)
+    (store / "_manifest.json").write_text(
+        json.dumps({"status": "healthy", "complete_t1_roots": 372,
+                    "finished_at": "2026-09-25T21:30:18.953042+00:00"}))
+
+    prophet_dir = tmp_path / "site" / "prophet"
+    prophet_dir.mkdir(parents=True, exist_ok=True)
+    (tmp_path / "data" / "earnings").mkdir(parents=True, exist_ok=True)
+    (tmp_path / "data" / "options_flow").mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(producer, "_REPO_ROOT", tmp_path)
+    monkeypatch.setattr(producer, "EARNINGS_PATH", tmp_path / "data" / "earnings" / "earnings.parquet")
+    monkeypatch.setattr(producer, "PROPHET_INDEX_PATH", prophet_dir / "index.json")
+    monkeypatch.setattr(producer, "SIGNING_GATE_PATH",
+                        tmp_path / "data" / "options_flow" / "signing_gate.json")
+    monkeypatch.setattr(producer.options_universe, "gex_symbols", lambda: ["SYMA", "SYMB", "SYMC"])
+    monkeypatch.setattr(producer, "_gex_cfg", lambda: {"include_baskets": False})
+    monkeypatch.setenv("THETADATA_STORE", str(store))
+    return store
+
+
+def test_ad1t2b_a_drained_store_does_not_resolve(tmp_path, monkeypatch):
+    """The mechanism pin. The M1's 2026-09-29 shape — tier dirs present, zero roots
+    — must NOT satisfy the canonical content predicate, and ``required=True`` must
+    raise rather than hand back a store with nothing in it."""
+    store = _write_empty_but_structured_store(tmp_path, monkeypatch)
+    assert thetadata_store._has_store_content(store) is False, \
+        "tier dirs exist but hold no roots — a drained store is not a store"
+    assert thetadata_store._drained_store(store) is True
+    with pytest.raises(RuntimeError, match="drained"):
+        thetadata_store.resolve_thetadata_store(required=True, purpose="ad1t2b")
+
+
+def test_ad1t2b_a_thin_but_real_store_still_resolves(tmp_path, monkeypatch):
+    """The over-tightening guard, and the contract's own words: a store that HAS
+    data and little signal is legitimate thinness, not infrastructure failure. One
+    root under one tier is enough to resolve; a stray non-directory file is not."""
+    store = tmp_path / "thetadata_eod"
+    for tier in ("eod", "oi", "greeks"):
+        (store / tier).mkdir(parents=True)
+
+    (store / "eod" / ".DS_Store").write_text("")
+    (store / "_writer.lock").write_text("")
+    assert thetadata_store._has_store_content(store) is False, \
+        "a stray file is not a root — it must not revive the false positive"
+
+    (store / "eod" / "AAPL").mkdir()
+    (store / "eod" / "AAPL" / "2026.parquet").write_bytes(b"")
+    assert thetadata_store._has_store_content(store) is True, \
+        "one real root is thinness, which resolves and publishes honestly"
+    assert thetadata_store._drained_store(store) is False
+
+
+def test_ad1t2b_require_store_refuses_an_empty_store(tmp_path, monkeypatch, capsys):
+    """THE case. A store that resolves but carries no data in ANY tier is
+    infrastructure failure. The required lane must exit non-zero and leave the
+    last valid artifact byte-identical — never stamp a fresh empty brief over it."""
+    _write_empty_but_structured_store(tmp_path, monkeypatch)
+    out_path = tmp_path / "options_intel_brief.json"
+    out_path.write_text('{"receipt_id": "last-good", "as_of_session": "2026-08-19"}')
+    original_bytes = out_path.read_bytes()
+
+    rc = producer.main(["--out", str(out_path), "--require-store", "--ignore-staleness"])
+
+    assert rc != 0, (
+        "a REQUIRED lane resolving a store with zero roots in every tier must fail "
+        "loudly; exiting 0 republishes an empty brief behind a green check")
+    assert out_path.read_bytes() == original_bytes, \
+        "a refused build must leave the last good brief untouched"
+    captured = capsys.readouterr()
+    assert [ln for ln in captured.out.splitlines() if ln.startswith("::error")], \
+        "expected a line-start ::error naming the empty store"
+
+
+def test_ad1t2b_default_mode_still_exits_zero_on_an_empty_store(tmp_path, monkeypatch):
+    """The refusal is scoped to --require-store. Every other runner keeps the
+    documented non-crashing behaviour and the artifact is still preserved."""
+    _write_empty_but_structured_store(tmp_path, monkeypatch)
+    out_path = tmp_path / "options_intel_brief.json"
+    out_path.write_text('{"receipt_id": "last-good"}')
+    original_bytes = out_path.read_bytes()
+
+    assert producer.main(["--out", str(out_path), "--ignore-staleness"]) == 0
+    assert out_path.read_bytes() == original_bytes
