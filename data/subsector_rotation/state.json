@@ -11,7 +11,7 @@
     "name": "Crop Inputs",
     "quadrant": "lagging",
     "theme": "Agriculture & FoodTech",
-    "turn_state": "range"
+    "turn_state": "trending_down"
   },
   "agricultureindoorfarming": {
     "emerging": false,
@@ -130,7 +130,7 @@
     "name": "Automation",
     "quadrant": "improving",
     "theme": "Industrial Automation",
-    "turn_state": "bottoming"
+    "turn_state": "turn_up"
   },
   "automationdprinting": {
     "emerging": false,
@@ -403,7 +403,7 @@
     "name": "Biofuels",
     "quadrant": "weakening",
     "theme": "Commodities Agriculture",
-    "turn_state": "topping"
+    "turn_state": "turn_down"
   },
   "commagrifertilizers": {
     "emerging": false,
@@ -536,7 +536,7 @@
     "name": "Household",
     "quadrant": "improving",
     "theme": "Consumer Goods",
-    "turn_state": "range"
+    "turn_state": "bottoming"
   },
   "consumerluxury": {
     "emerging": false,
@@ -613,7 +613,7 @@
     "name": "Aviation",
     "quadrant": "improving",
     "theme": "Defense & Aerospace",
-    "turn_state": "range"
+    "turn_state": "trending_down"
   },
   "defensecyberdefense": {
     "emerging": false,
@@ -774,7 +774,7 @@
     "name": "Oil Refining",
     "quadrant": "weakening",
     "theme": "Energy Traditional",
-    "turn_state": "topping"
+    "turn_state": "turn_down"
   },
   "energybaseoilservices": {
     "emerging": false,
@@ -1152,7 +1152,7 @@
     "name": "Next-Gen",
     "quadrant": "weakening",
     "theme": "Healthcare & Biotech",
-    "turn_state": "range"
+    "turn_state": "trending_up"
   },
   "healthcareoncology": {
     "emerging": false,
@@ -1404,7 +1404,7 @@
     "name": "Tourism",
     "quadrant": "improving",
     "theme": "Real Estate & REITs",
-    "turn_state": "range"
+    "turn_state": "bottoming"
   },
   "realestatewarehousing": {
     "emerging": false,

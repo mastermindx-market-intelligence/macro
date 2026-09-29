@@ -8,12 +8,12 @@
   - New findings:
     - MINOR: `known_revisions` crosses the scope and time gate. This revises the reviewer's own round-5 (6b) "relay-only" agreement.
     - NIT: the lineage pointer after a served hop is not pinned (mutant `my_pointer_from_root` survived).
-    - NIT: a relay line number was wrong (:1300 should be :1298-1299).
+    - **[Withdrawn 2026-09-28 by the same reviewer (round-7 closure NIT-1): :1300 was correct; the `def` is at :1295, the docstring at :1297-1299, and `by_revision = {… bundle.assertions` at :1300-1301 (read at `a1c8968f8e2f`). See `OPUS-REVIEW-2026-09-28-w2-module-r7-closure.md`.]** NIT: a relay line number was wrong (:1300 should be :1298-1299).
   - GAP 3 ("`r9_evrefs_pre` was not re-run at this head") is answered by the seat's post-lane output, which the reviewer did not open: `r9_evrefs_pre  3 failed, 77 passed` at `e31e2db3702a` (`r6gate/postlane6.out`).
 - **Seat adjudication:** `../rulings/R-ENE-2026-09-28-w2-module-r7.md`.
   - R-ENE-31 fixes the MINOR inside Energy's own module, the reviewer's first option.
   - R-ENE-32 adds the pin.
-  - The line number is corrected at source.
+  - **[Seat annotation 2026-09-28 (round-8 closure NIT-C): that correction was itself withdrawn. The same reviewer retracted the line-number NIT in round-7 closure NIT-1, because :1300 was correct.]** The line number is corrected at source.
 
 ## Review text (verbatim)
 
@@ -53,7 +53,7 @@ ACCEPT_WITH_NITS for e31e2db3702a. R-ENE-30 is SOUND.
   - Mutant `my_pointer_from_root` (pointer revision taken from the served root instead of from `current`) SURVIVES: 80 passed.
   - The correct behaviour holds today. For A → B (accepted) → C (rejected), the lineage is `['bb9f7c','da8f69']`, i.e. [B, pointer to C]. The mutant would emit [B, B-pointer].
   - Suggested test: A → B(accepted) → C(rejected) gives `[ref(B), prefix/C.revision]`.
-- **NIT, relay line number**: 5832062081 says `by_revision` is at :1300; it is at :1298-1299. Every other Robotics citation checked is exact.
+- **[Seat annotation 2026-09-28: retracted by the same reviewer in round-7 closure NIT-1; :1300 was correct.]** **NIT, relay line number**: 5832062081 says `by_revision` is at :1300; it is at :1298-1299. Every other Robotics citation checked is exact.
 
 EVIDENCE:
 All paths are absolute. W=/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/energy-w2-review-28c2741ee34f22a6.
@@ -199,14 +199,14 @@ All paths are absolute. W=/Volumes/Mastermind/agent-workspaces/claude/14851c4656
   - `recorded after cutoff (replay) shown=[('00d899', True)] limits=['interpretation_stale', 'slice_scope_unowned']`
   - `nonexistent (replay) shown=[] limits=['interpretation_inputs_absent:1', 'slice_scope_unowned']`
 - The relay (comment 5832062081) is accurate about Robotics at a1c8968f8e2f (`git show a1c8968f8e2f:engine/market_ontology/robotics_theme_research.py`):
-  - `_correction_lineage` is at :1293-1318, with `by_revision` over `bundle.assertions` at :1298-1299;
+  - **[Seat annotation 2026-09-28 (round-7 closure NIT-1): the correct ranges are :1295-1320 for the function and :1300-1301 for the build.]** `_correction_lineage` is at :1293-1318, with `by_revision` over `bundle.assertions` at :1298-1299;
   - the gate at :372-396 covers validation, theme, facet, the slug-keyed drop and the time mode;
   - there is no in-composer rights gate: the only grep hits are the `rights_partial` omissions;
   - the pin at composition.py:408 `test_held_assertion_is_still_selectable_evidence` is correct;
   - robotics_theme_research.py:534 `test_rbv18_held_review_is_excluded_but_retained` is correct, with the "remains authorized evidence" assert at :545;
   - the RBV-17 lineage pins are at :358, :502 and temporal.py:156;
   - the :974-978 quote from RULING 11 matches.
-  - The only mismatch is the :1300 line number (NIT).
+  - **[Seat annotation 2026-09-28 (round-8 closure NIT-C): retracted by the same reviewer in round-7 closure NIT-1; :1300 was correct.]** The only mismatch is the :1300 line number (NIT).
 
 **(6) Scope and privacy**
 - `git diff --name-only b3ea8a19ea05 HEAD` lists exactly the two files.

@@ -7,14 +7,18 @@ is copied from the live research carrier or from the schema fixture.
 from __future__ import annotations
 
 import builtins
+import collections
 import copy
 import dataclasses
 import datetime as _dt
 import functools
 import hashlib
 import json
+import os
 import re
 import socket as _socket
+import subprocess
+import sys
 import time as _time
 from pathlib import Path
 from typing import Any
@@ -776,6 +780,289 @@ def test_on_one_date_the_slice_tagged_valuation_observation_anchors() -> None:
     for ordered in ((anchor, untagged), (untagged, anchor)):
         document = _with_valuation_observations(base, *ordered)
         assert _valuation_of(document, "card_networks")["primary_metric"]["value"] == 18.0, ordered[0] is anchor
+
+
+def _card_networks(document: dict[str, Any]) -> dict[str, Any]:
+    return next(sl for sl in document["slices"] if sl["slice_id"] == "card_networks")
+
+
+def _dated_by_observed_at(row: dict[str, Any]) -> dict[str, Any]:
+    """``row`` with its as_of date carried by observed_at: the same date,
+    the other clock."""
+    moved = {key: value for key, value in row.items() if key != "as_of"}
+    moved["observed_at"] = row["as_of"]
+    return moved
+
+
+def test_the_operating_plane_publishes_its_slices_freshest_dated_observation() -> None:
+    """card_networks' operating observation reads UP on 2026-09-20 and draws
+    the earnings-up / P/E-down conflict. Beside it, in either order, the
+    plane passes over an observation reading DOWN that carries no date, and
+    one dated earlier by observed_at alone: it publishes the dated, fresher
+    reading and its clock, and the conflict is still drawn. Dated later, by
+    observed_at or by a timestamp whose date and time a space parts, the
+    DOWN reading is the fresher, so it is published and the conflict is not
+    drawn. Alone, an undated observation is still published, without a
+    clock. The plane used to publish an undated observation over every
+    dated one, and to count one dated only by observed_at, or by a
+    timestamp written with a space, as undated, so any of them erased the
+    conflict."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    (ticker, packet), = base.financial_packets.items()
+    (reading,) = packet["operating"]["observations"]
+    conflict = "conflict-card_networks-earnings-up-pe-down"
+
+    def down(**dates: str) -> dict[str, Any]:
+        obs = {key: val for key, val in copy.deepcopy(reading).items() if key != "as_of"}
+        obs.update(dates, direction="DOWN")
+        obs["metric"] = dict(obs["metric"], value=7.0)
+        return obs
+
+    def published(*observations: dict[str, Any]) -> set[tuple[Any, Any, bool]]:
+        seen = set()
+        for ordered in (observations, observations[::-1]):
+            packets = {ticker: dict(packet, operating=dict(packet["operating"], observations=list(ordered)))}
+            card = _card_networks(_composed(dataclasses.replace(base, financial_packets=packets)))
+            operating = card["rerating"]["operating"]
+            clock = (operating["clock"] or {}).get("observed_at")
+            seen.add((operating["primary_metric"]["value"], clock, conflict in card["conflict_ids"]))
+        return seen
+
+    assert published(reading, down()) == {(5.0, "2026-09-20", True)}
+    assert published(reading, down(observed_at="2026-09-01")) == {(5.0, "2026-09-20", True)}
+    assert published(reading, down(observed_at="2026-09-22")) == {(7.0, "2026-09-22", False)}
+    assert published(reading, down(as_of="2026-09-22 10:00:00")) == {(7.0, "2026-09-22", False)}
+    assert published(down()) == {(7.0, None, False)}
+
+
+def test_on_one_date_the_slice_tagged_operating_observation_is_published() -> None:
+    """Two operating observations share a date: one the owner tags with
+    card_networks, reading UP, and one left untagged (company data), reading
+    DOWN. The slice's own filing is the more specific, so it is published
+    and the conflict is drawn, in either order, as the valuation anchor
+    already rules. The plane used to publish whichever came last."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    (ticker, packet), = base.financial_packets.items()
+    (tagged,) = packet["operating"]["observations"]
+    untagged = {key: val for key, val in copy.deepcopy(tagged).items() if key != "slice_id"}
+    untagged.update(direction="DOWN", metric=dict(untagged["metric"], value=7.0))
+    for ordered in ((tagged, untagged), (untagged, tagged)):
+        packets = {ticker: dict(packet, operating=dict(packet["operating"], observations=list(ordered)))}
+        card = _card_networks(_composed(dataclasses.replace(base, financial_packets=packets)))
+        assert card["rerating"]["operating"]["primary_metric"]["value"] == 5.0, ordered[0] is tagged
+        assert "conflict-card_networks-earnings-up-pe-down" in card["conflict_ids"], ordered[0] is tagged
+
+
+def test_a_fresher_untagged_operating_observation_outranks_an_older_tagged_one() -> None:
+    """The slice tag decides only between observations of one date. Beside
+    card_networks' own operating observation, reading UP on 2026-09-20, an
+    untagged one (company data) reading DOWN on 2026-09-22 is the fresher,
+    so it is published and the earnings-up / P/E-down conflict is not
+    drawn, in either order."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    (ticker, packet), = base.financial_packets.items()
+    (tagged,) = packet["operating"]["observations"]
+    assert (tagged["slice_id"], tagged["as_of"]) == ("card_networks", "2026-09-20"), tagged
+    untagged = {key: val for key, val in copy.deepcopy(tagged).items() if key != "slice_id"}
+    untagged.update(as_of="2026-09-22", direction="DOWN", metric=dict(untagged["metric"], value=7.0))
+    for ordered in ((tagged, untagged), (untagged, tagged)):
+        packets = {ticker: dict(packet, operating=dict(packet["operating"], observations=list(ordered)))}
+        card = _card_networks(_composed(dataclasses.replace(base, financial_packets=packets)))
+        assert card["rerating"]["operating"]["primary_metric"]["value"] == 7.0, ordered[0] is tagged
+        assert "conflict-card_networks-earnings-up-pe-down" not in card["conflict_ids"], ordered[0] is tagged
+
+
+def test_the_price_plane_dates_a_row_by_its_observed_at() -> None:
+    """A market row dated only by observed_at is a dated row: 2026-09-20 by
+    observed_at is fresher than 2026-09-01 by as_of, so the price plane
+    publishes it and its date, in either order. A row that carries no date
+    still counts as the oldest. The plane used to count a row dated only by
+    observed_at as undated, so it published the older row."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    (row,) = base.market_observations["card_networks"]
+    older = dict(row, as_of="2026-09-01", value=80.0)
+    newer = _dated_by_observed_at(dict(row, value=90.0))
+    undated = {key: val for key, val in row.items() if key != "as_of"} | {"value": 70.0}
+
+    def published(*rows: dict[str, Any]) -> set[tuple[Any, Any]]:
+        seen = set()
+        for ordered in (rows, rows[::-1]):
+            market = dict(base.market_observations, card_networks=list(ordered))
+            price = _card_networks(_composed(dataclasses.replace(base, market_observations=market)))["rerating"]["price"]
+            seen.add((price["primary_metric"]["value"], (price["clock"] or {}).get("observed_at")))
+        return seen
+
+    assert published(older, newer) == {(90.0, "2026-09-20")}
+    assert published(older, undated) == {(80.0, "2026-09-01")}
+
+
+def test_the_expectations_plane_dates_consensus_as_its_clock_does() -> None:
+    """Consensus rows dated only by observed_at, or by a timestamp, are
+    dated rows. Beside a row dated 2026-09-01 by as_of, one dated 2026-09-20
+    either way is the fresher, so the plane publishes it and its date, in
+    either order. The history carries both rows under the dates the clock
+    reads, and the contract accepts the document. The history used to copy
+    each row's as_of as the owner wrote it, so either row made the contract
+    refuse the whole document."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    consensus = {"source": "synthetic_consensus", "metric": "eps_next_fy", "unit": "USD"}
+    older = dict(consensus, as_of="2026-09-01", value=4.0)
+    for fresher in (dict(consensus, observed_at="2026-09-20", value=6.0),
+                    dict(consensus, as_of="2026-09-20T07:00:00Z", value=6.0)):
+        for ordered in ((older, fresher), (fresher, older)):
+            document = _composed(dataclasses.replace(base, expectation_observations={"card_networks": list(ordered)}))
+            expectations = _card_networks(document)["rerating"]["expectations"]
+            assert expectations["primary_metric"]["value"] == 6.0, ordered
+            assert expectations["clock"]["observed_at"] == "2026-09-20", ordered
+            assert [row["as_of"] for row in expectations["history"]["observations"]] == [
+                "2026-09-01" if row is older else "2026-09-20" for row in ordered
+            ], ordered
+
+
+@pytest.mark.parametrize("when", ["2026-09-24", "2026-09-02"])
+@pytest.mark.parametrize("kind", ["market", "consensus", "guidance", "operating", "valuation"])
+def test_a_row_dated_by_observed_at_reads_as_the_same_row_dated_by_as_of(kind: str, when: str) -> None:
+    """The composer reads one date from an observation: its as_of, else its
+    observed_at. So moving the date of a market, consensus, guidance,
+    operating or valuation row from as_of to observed_at changes nothing
+    but the input digest: not a plane's reading or clock, not the valuation
+    anchor, not the history, not the slice's freshness, and not
+    common_as_of. Each case first shows the date reaches the document. A
+    packet row's date is its plane's clock. Dated after every other input
+    (the knowledge cutoff's day), a market or expectations row is the
+    slice's latest evidence; dated before, it is the document's common
+    as-of. Freshness and common_as_of used to read as_of alone, so a row
+    dated by observed_at moved neither, and the expectations history
+    refused it."""
+    row, inputs_with = _one_row_of(kind)
+    dated = dict(row, as_of=when)
+    by_as_of = _dated_by_as_of(kind, when, inputs_with(dated))
+    assert _without_digest(_composed(inputs_with(_dated_by_observed_at(dated)))) == by_as_of
+
+
+# One row's date written three more ways, each read as that date alone as
+# its as_of: a timestamp whose date and time a space parts, a timestamp in
+# observed_at, and an as_of beside an earlier observed_at, which the as_of
+# outranks. The timestamps are written ahead of UTC, early enough that no
+# instant passes the knowledge cutoff, so the date read is the date written.
+_THE_SAME_DATE_WRITTEN = {
+    "space": lambda row, when: dict(row, as_of=f"{when} 07:00:00+08:00"),
+    "observed_at_timestamp": lambda row, when: _dated_by_observed_at(dict(row, as_of=f"{when}T07:00:00+08:00")),
+    "as_of_over_observed_at": lambda row, when: dict(row, as_of=when, observed_at="2026-09-01"),
+}
+
+
+@pytest.mark.parametrize("written", sorted(_THE_SAME_DATE_WRITTEN))
+@pytest.mark.parametrize("when", ["2026-09-24", "2026-09-02"])
+@pytest.mark.parametrize("kind", ["market", "consensus", "guidance", "operating", "valuation"])
+def test_a_row_reads_as_the_date_written_in_its_clock_however_written(kind: str, when: str, written: str) -> None:
+    """A market, consensus, guidance, operating or valuation row dated by a
+    timestamp whose date and time a space parts, by a timestamp in
+    observed_at, or by an as_of beside an earlier observed_at, reads as the
+    same row dated by that date as its as_of: nothing changes but the input
+    digest. The timestamps are written ahead of UTC, and the date read is
+    the one written, not the UTC date. A timestamp written with a space used
+    to leave its row undated, although the knowledge gate read its instant."""
+    row, inputs_with = _one_row_of(kind)
+    by_as_of = _dated_by_as_of(kind, when, inputs_with(dict(row, as_of=when)))
+    assert _without_digest(_composed(inputs_with(_THE_SAME_DATE_WRITTEN[written](row, when)))) == by_as_of
+
+
+def _one_row_of(kind: str) -> tuple[dict[str, Any], Any]:
+    """card_networks' one market, consensus, guidance, operating or
+    valuation row, and a function building the inputs that hold another row
+    in its place."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    if kind in ("operating", "valuation"):
+        (ticker, packet), = base.financial_packets.items()
+        (row,) = packet[kind]["observations"]
+
+        def inputs_with(row: dict[str, Any]) -> FinanceOwnerInputs:
+            block = dict(packet[kind], observations=[row])
+            return dataclasses.replace(base, financial_packets={ticker: dict(packet, **{kind: block})})
+
+        return row, inputs_with
+    owner = "market_observations" if kind == "market" else "expectation_observations"
+    if kind == "market":
+        (row,) = base.market_observations["card_networks"]
+    else:
+        metric = "guidance:eps_next_fy" if kind == "guidance" else "eps_next_fy"
+        row = {"source": "synthetic_consensus", "metric": metric, "value": 5.0, "unit": "USD"}
+
+    def inputs_with(row: dict[str, Any]) -> FinanceOwnerInputs:
+        return dataclasses.replace(base, **{owner: dict(getattr(base, owner), card_networks=[row])})
+
+    return row, inputs_with
+
+
+def _dated_by_as_of(kind: str, when: str, inputs: FinanceOwnerInputs) -> dict[str, Any]:
+    """The document composed from ``inputs``, without its input digest,
+    once the row's as_of date is shown to reach it: a packet row's date is
+    its plane's clock; dated on the knowledge cutoff's day, a market or
+    expectations row is the slice's latest evidence; dated before, it is
+    the document's common as-of."""
+    document = _without_digest(_composed(inputs))
+    if kind in ("operating", "valuation"):
+        assert _card_networks(document)["rerating"][kind]["clock"]["observed_at"] == when
+    elif when == "2026-09-24":
+        assert _card_networks(document)["freshness"]["evidence_latest_observed_at"] == when
+    else:
+        assert document["common_as_of"] == when
+    return document
+
+
+def _operating_reading_with(field: str) -> Any:
+    """A function building card_networks' inputs with its operating
+    reading's ``field`` written as given."""
+
+    def build(value: str) -> FinanceOwnerInputs:
+        base = _extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+        packets = copy.deepcopy(dict(base.financial_packets))
+        (packet,) = packets.values()
+        (reading,) = packet["operating"]["observations"]
+        reading[field] = value
+        return dataclasses.replace(base, financial_packets=packets)
+
+    return build
+
+
+def _material_change_effective_at(value: str) -> FinanceOwnerInputs:
+    base = _extended_owner_inputs("PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN")
+    records = copy.deepcopy(list(base.source_records))
+    records[0]["material_change"]["effective_at"] = value
+    return dataclasses.replace(base, source_records=records)
+
+
+# The clocks a document publishes that are not an observation's date, each
+# with the inputs that write it and where the document publishes it.
+_PUBLISHED_CLOCKS = {
+    "operating published_at": (
+        _operating_reading_with("published_at"),
+        lambda document: _card_networks(document)["rerating"]["operating"]["clock"]["published_at"]),
+    "operating effective_at": (
+        _operating_reading_with("effective_at"),
+        lambda document: _card_networks(document)["rerating"]["operating"]["clock"]["effective_at"]),
+    "material change effective_at": (
+        _material_change_effective_at,
+        lambda document: document["material_changes"][0]["event_clock"]["effective_at"]),
+}
+
+
+@pytest.mark.parametrize("site", sorted(_PUBLISHED_CLOCKS))
+def test_a_published_clock_reads_a_timestamp_as_the_date_written_however_parted(site: str) -> None:
+    """A plane clock's published_at and effective_at, and a material
+    change's effective_at, written as a date, as a timestamp whose date and
+    time a T parts, or as one a space parts, compose the same document,
+    which publishes the date written. A timestamp parted by a space used to
+    publish null there, although the same timestamp parted by a T published
+    its date. (A source record's own clocks are copied as the owner wrote
+    them, so the contract refuses a timestamp there however it is parted.)"""
+    build, published = _PUBLISHED_CLOCKS[site]
+    day = "2026-09-20"
+    by_date = _without_digest(_composed(build(day)))
+    assert published(by_date) == day
+    for written in (f"{day}T07:00:00+08:00", f"{day} 07:00:00+08:00"):
+        assert _without_digest(_composed(build(written))) == by_date, written
 
 
 def test_a_valuation_observation_dated_after_the_knowledge_cutoff_never_anchors() -> None:
@@ -2142,3 +2429,595 @@ def test_a_plane_publishes_a_reading_only_with_an_owner_ref() -> None:
     assert _withhold_unevidenced(backed, missing) is backed
     absent = dict(reading, state="MISSING", primary_metric=None, clock=None)
     assert _withhold_unevidenced(absent, missing) is absent
+
+
+# ---------------------------------------------------------------------------
+# Point in time: no owner row dated after the knowledge cutoff is read
+# ---------------------------------------------------------------------------
+
+# Keys that date the document itself, or when a row holds in the world. A
+# report period, an effective date or a business validity may fall after
+# the cutoff for a row known before it.
+_NOT_KNOWLEDGE_CLOCKS = frozenset({
+    "generated_at",
+    "knowledge_cutoff",
+    "effective_at",
+    "business_valid_from",
+    "business_valid_to",
+    "period_start",
+    "period_end",
+})
+# The owner clocks that say when a row became knowable.
+_OWNER_KNOWN_CLOCKS = frozenset({"as_of", "observed_at", "published_at", "retained_at", "evidence_date"})
+
+
+def _day(offset: int) -> str:
+    """The knowledge cutoff's date moved by ``offset`` days, as ISO text."""
+    return (_knowledge_cutoff().date() + _dt.timedelta(days=offset)).isoformat()
+
+
+def _dates_after_the_cutoff(node: object, key: str = "") -> list[tuple[str, str]]:
+    """Every (key, value) in ``node`` whose value is a date after the knowledge
+    cutoff, except under the keys that date the document or the world."""
+    if isinstance(node, dict):
+        return [hit for name, value in node.items() for hit in _dates_after_the_cutoff(value, str(name))]
+    if isinstance(node, (list, tuple)):
+        return [hit for value in node for hit in _dates_after_the_cutoff(value, key)]
+    if isinstance(node, str) and key not in _NOT_KNOWLEDGE_CLOCKS and re.match(r"\d{4}-\d{2}-\d{2}", node):
+        return [(key, node)] if node[:10] > _day(0) else []
+    return []
+
+
+def _with_every_known_clock(node: object, when: str) -> object:
+    """``node`` with every owner clock that says when a row became knowable set to ``when``."""
+    if isinstance(node, dict):
+        return {
+            name: when if name in _OWNER_KNOWN_CLOCKS and isinstance(value, str) else _with_every_known_clock(value, when)
+            for name, value in node.items()
+        }
+    if isinstance(node, list):
+        return [_with_every_known_clock(value, when) for value in node]
+    return node
+
+
+def _composed(inputs: FinanceOwnerInputs) -> dict[str, Any]:
+    document = compose_finance_projection(inputs, generated_at=_today(), knowledge_cutoff=_knowledge_cutoff())
+    validate_contract(CONTRACT_ID, document)
+    return document
+
+
+def _without_digest(document: dict[str, Any]) -> dict[str, Any]:
+    return dict(document, snapshot_identity=dict(document["snapshot_identity"], input_digest=None))
+
+
+@pytest.mark.parametrize("fixture", _FENCE_FIXTURES)
+def test_nothing_dated_past_the_knowledge_cutoff_reaches_the_document(fixture: str) -> None:
+    """Move every owner clock that says when a row became knowable to the
+    day after the knowledge cutoff. The document validates, and nothing in
+    it is dated after the cutoff. The walk finds the moved clocks in the
+    owner inputs, so it can see them. Only the valuation anchor used to
+    apply the cutoff: the other planes, the company cells, the source
+    records and freshness published the moved dates."""
+    base = _extended_owner_inputs(fixture)
+    late = dataclasses.replace(base, **{
+        field.name: _with_every_known_clock(getattr(base, field.name), _day(1))
+        for field in dataclasses.fields(base)
+    })
+    assert _dates_after_the_cutoff(dataclasses.asdict(late)), "the walk found no moved clock"
+    assert _dates_after_the_cutoff(_composed(late)) == []
+
+
+def _one_more_row(where: str, clock: str, when: str) -> tuple[FinanceOwnerInputs, FinanceOwnerInputs]:
+    """A fixture, and the same fixture with one more row at ``where``: a copy
+    of a row there, dated on the knowledge cutoff, with a value no other row
+    carries and ``clock`` set to ``when``. Theme evidence gets a curation
+    revision no other row carries, since the fixture's row has no clocks."""
+    on = _day(0)
+    if where in ("operating cell", "valuation cell"):
+        base = _extended_owner_inputs("default")
+        packets = copy.deepcopy(dict(base.financial_packets))
+        (cell,) = packets["SYN1"]["operating"]["cells"]
+        row = dict(cell, evidence_date=on, value=0.77)
+        row[clock] = when
+        plane = where.split()[0]
+        packets["SYN1"].setdefault(plane, {}).setdefault("cells", []).append(row)
+        return base, dataclasses.replace(base, financial_packets=packets)
+    base = _extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+    if where == "source record":
+        row = copy.deepcopy(dict(base.source_records[0]))
+        row.update(record_id="src-one-more-row", evidence_ref="src-one-more-row")
+        row["source"] = dict(row["source"], published_at=on, observed_at=on, retained_at=on)
+        row["source"][clock] = when
+        return base, dataclasses.replace(base, source_records=[*base.source_records, row])
+    if where == "theme evidence":
+        row = {"theme_id": "SYNTHETIC-theme", "curation_revision": "SYNTHETIC-revision-one-more-row",
+               "source": {"published_at": on, "observed_at": on, "retained_at": on}}
+        row["source"][clock] = when
+        return base, dataclasses.replace(base, theme_evidence=[*base.theme_evidence, row])
+    if where in ("market", "expectation"):
+        field = f"{where}_observations"
+        observations = copy.deepcopy(dict(getattr(base, field)))
+        row = dict(observations["card_networks"][0], as_of=on, value=77.0)
+        row[clock] = when
+        observations["card_networks"].append(row)
+        return base, dataclasses.replace(base, **{field: observations})
+    packets = copy.deepcopy(dict(base.financial_packets))
+    (packet,) = packets.values()
+    plane = where.split()[0]
+    (reading,) = packet[plane]["observations"]
+    row = dict(reading, as_of=on)
+    row["metric"] = dict(row["metric"], value=77.0)
+    row[clock] = when
+    packet[plane]["observations"].append(row)
+    return base, dataclasses.replace(base, financial_packets=packets)
+
+
+_ONE_MORE_ROW_CASES = [
+    *((where, clock) for where in ("operating observation", "valuation observation", "market", "expectation")
+      for clock in ("as_of", "observed_at", "published_at")),
+    *((where, clock) for where in ("operating cell", "valuation cell")
+      for clock in ("evidence_date", "as_of", "observed_at", "published_at")),
+    *((where, clock) for where in ("source record", "theme evidence")
+      for clock in ("published_at", "observed_at", "retained_at")),
+]
+
+
+@pytest.mark.parametrize(("where", "clock"), _ONE_MORE_ROW_CASES)
+def test_a_row_dated_past_the_knowledge_cutoff_changes_nothing_but_the_digest(where: str, clock: str) -> None:
+    """Add one row, dated on the knowledge cutoff but for ``clock``, which
+    falls the day after it. The document is the one composed without that
+    row, except the input digest, which still covers every row the owner
+    supplied. The same row with ``clock`` on the cutoff is read and changes
+    the document, so the row is one a reader publishes."""
+    base, late = _one_more_row(where, clock, _day(1))
+    _, on_cutoff = _one_more_row(where, clock, _day(0))
+    before = _composed(base)
+    after = _composed(late)
+    assert _without_digest(after) == _without_digest(before)
+    assert after["snapshot_identity"]["input_digest"] != before["snapshot_identity"]["input_digest"]
+    assert _without_digest(_composed(on_cutoff)) != _without_digest(before)
+
+
+def test_a_row_known_by_the_cutoff_is_read_however_far_ahead_it_holds() -> None:
+    """A row can be known before the time it holds for. An operating
+    observation known on the cutoff but effective a month after it is
+    published with that effective_at, and so is a material change. Only the
+    clocks that say when a row became knowable bind to the cutoff."""
+    ahead = _day(30)
+    base = _extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+    packets = copy.deepcopy(dict(base.financial_packets))
+    (packet,) = packets.values()
+    (reading,) = packet["operating"]["observations"]
+    reading["effective_at"] = ahead
+    document = _composed(dataclasses.replace(base, financial_packets=packets))
+    operating = next(s for s in document["slices"] if s["slice_id"] == "card_networks")["rerating"]["operating"]
+    assert operating["primary_metric"]["value"] == reading["metric"]["value"], operating
+    assert operating["clock"]["effective_at"] == ahead, operating
+
+    base = _extended_owner_inputs("PRICE_UP_CAUSAL_EVENT_EFFECT_UNPROVEN")
+    records = copy.deepcopy(list(base.source_records))
+    records[0]["material_change"]["effective_at"] = ahead
+    document = _composed(dataclasses.replace(base, source_records=records))
+    (change,) = document["material_changes"]
+    assert change["event_clock"]["effective_at"] == ahead, change
+
+
+# The knowledge cutoff as an instant late on its day, written in UTC and in a
+# zone whose calendar date is already the next day.
+_CUTOFF_INSTANT = _dt.datetime(2026, 9, 24, 20, 0, tzinfo=_dt.timezone.utc)
+_CUTOFF_WRITTEN = {
+    "utc": _CUTOFF_INSTANT,
+    "utc+8": _CUTOFF_INSTANT.astimezone(_dt.timezone(_dt.timedelta(hours=8))),
+}
+# A market row's as_of, and whether the row is read at that cutoff.
+_CLOCKS_AT_THE_CUTOFF_INSTANT = [
+    ("2026-09-24", True),                  # the start of the cutoff's day in UTC
+    ("2026-09-24T19:00:00Z", True),
+    ("2026-09-24T12:00:00-07:00", True),   # 19:00 UTC
+    ("2026-09-24T21:00:00Z", False),
+    ("2026-09-24T20:30:00-08:00", False),  # 04:30 UTC the next day, written on the cutoff's date
+    ("2026-09-25T01:00:00+08:00", False),  # 17:00 UTC, but published as the next day's date
+    ("2026-09-24 19:00:00", True),         # a space parts date and time: 19:00 UTC
+    ("2026-09-25 01:00:00+08:00", False),  # 17:00 UTC, written with a space on the next day's date
+    ("2026-09-25Tlate", False),            # no instant, and published as the next day's date
+]
+
+
+@pytest.mark.parametrize("written", sorted(_CUTOFF_WRITTEN))
+@pytest.mark.parametrize(("as_of", "read"), _CLOCKS_AT_THE_CUTOFF_INSTANT)
+def test_the_knowledge_cutoff_is_an_instant_no_published_date_passes(written: str, as_of: str, read: bool) -> None:
+    """The shared contracts read the published knowledge_cutoff as an
+    instant, and a published date as the start of its day in UTC. So a row
+    is read only when its clock's instant is not past the cutoff instant and
+    the date published for it is not past the cutoff's date in UTC. A time
+    written late on the cutoff's date in a zone behind UTC is withheld, and
+    so is a time written early on the next day in a zone ahead of it, whose
+    instant is before the cutoff. The outcome does not depend on the zone
+    the cutoff itself is written in."""
+    cutoff = _CUTOFF_WRITTEN[written]
+
+    def composed(inputs: FinanceOwnerInputs) -> dict[str, Any]:
+        document = compose_finance_projection(inputs, generated_at=cutoff, knowledge_cutoff=cutoff)
+        validate_contract(CONTRACT_ID, document)
+        return document
+
+    base, one_more = _one_more_row("market", "as_of", as_of)
+    before, after = composed(base), composed(one_more)
+    assert after["snapshot_identity"]["input_digest"] != before["snapshot_identity"]["input_digest"]
+    assert (_without_digest(after) != _without_digest(before)) is read
+
+
+def _no_dated_evidence() -> FinanceOwnerInputs:
+    return FinanceOwnerInputs(
+        sector_dossier=None,
+        theme_evidence=[],
+        financial_packets={},
+        expectation_observations={},
+        market_observations={},
+        basket_context={},
+        macro_context={},
+        identity_bindings={},
+        source_records=[],
+        regime_breaks=[],
+        slice_catalog=_base_slice_catalog(),
+        rights_snapshot={},
+    )
+
+
+@pytest.mark.parametrize("inputs", ["default", "no dated evidence"])
+def test_the_zone_a_knowledge_cutoff_is_written_in_changes_only_the_cutoff_published(inputs: str) -> None:
+    """The dates the document derives from the knowledge cutoff (staleness,
+    and the bound on common_as_of) are the cutoff's date in UTC, the date
+    the shared contracts read for it. The same cutoff instant, written in
+    UTC and in UTC+8, where its calendar date is already the next day, gives
+    documents that differ only in the knowledge_cutoff they publish. With no
+    dated evidence, common_as_of is the cutoff's date in UTC. It used to be
+    the next day's date, which the contracts read as the start of that day
+    in UTC, after the cutoff, and the contract accepted the document."""
+    owner_inputs = _no_dated_evidence() if inputs == "no dated evidence" else _default_8slice_inputs()
+    documents = {}
+    for written, cutoff in _CUTOFF_WRITTEN.items():
+        document = compose_finance_projection(owner_inputs, generated_at=_CUTOFF_INSTANT, knowledge_cutoff=cutoff)
+        validate_contract(CONTRACT_ID, document)
+        documents[written] = document
+    assert documents["utc+8"]["knowledge_cutoff"] != documents["utc"]["knowledge_cutoff"]
+    assert dict(documents["utc+8"], knowledge_cutoff=None) == dict(documents["utc"], knowledge_cutoff=None)
+    if inputs == "no dated evidence":
+        assert documents["utc+8"]["common_as_of"] == _CUTOFF_INSTANT.date().isoformat()
+
+
+# Cutoffs that name no instant: a time of day, and aware times whose instant
+# in UTC falls outside the range of a datetime.
+_CUTOFFS_WITHOUT_AN_INSTANT = {
+    "a time of day": _dt.time(20, 0),
+    "an offset past year 9999": _dt.datetime(9999, 12, 31, 23, 0, tzinfo=_dt.timezone(_dt.timedelta(hours=-5))),
+    "an offset before year one": _dt.datetime(1, 1, 1, 1, 0, tzinfo=_dt.timezone(_dt.timedelta(hours=5))),
+}
+
+
+@pytest.mark.parametrize("cutoff", sorted(_CUTOFFS_WITHOUT_AN_INSTANT))
+def test_a_knowledge_cutoff_that_names_no_instant_is_refused(cutoff: str) -> None:
+    """The shared contracts read the published knowledge_cutoff as an
+    instant. A cutoff that names none cannot say which rows were known, so
+    the composer refuses it with a ValueError that names it, never an error
+    from inside the gate, and never a document whose point in time the
+    contracts cannot read."""
+    with pytest.raises(ValueError, match="knowledge_cutoff names no instant"):
+        compose_finance_projection(
+            _default_8slice_inputs(), generated_at=_today(), knowledge_cutoff=_CUTOFFS_WITHOUT_AN_INSTANT[cutoff],
+        )
+
+
+# Clocks that name no instant: a time of day with no date, and offsets that
+# carry a time outside the range of a datetime. A market row's as_of, and
+# whether the date read from it places the row after the cutoff.
+_CLOCKS_WITHOUT_AN_INSTANT = {
+    "a time of day": (_dt.time(12, 0), False),
+    "an offset before year one": ("0001-01-01T00:00:00+05:00", False),
+    "an aware datetime before year one": (_dt.datetime(1, 1, 1, tzinfo=_dt.timezone(_dt.timedelta(hours=5))), False),
+    "an offset past year 9999": ("9999-12-31T23:59:59-05:00", True),
+}
+
+
+@pytest.mark.parametrize("clock", sorted(_CLOCKS_WITHOUT_AN_INSTANT))
+def test_a_clock_with_no_instant_never_stops_the_composer(clock: str) -> None:
+    """A clock the gate cannot turn into an instant is read by its date
+    alone, and the composer still returns a document the contract accepts.
+    A row whose date is after the cutoff is withheld: it changes nothing but
+    the digest. Any other row reaches the readers, whose rule for an undated
+    or an old row is unchanged."""
+    as_of, after_the_cutoff = _CLOCKS_WITHOUT_AN_INSTANT[clock]
+    base, one_more = _one_more_row("market", "as_of", as_of)
+    before, after = _composed(base), _composed(one_more)
+    assert after["snapshot_identity"]["input_digest"] != before["snapshot_identity"]["input_digest"]
+    if after_the_cutoff:
+        assert _without_digest(after) == _without_digest(before)
+
+
+def test_rows_in_any_sequence_are_held_to_the_knowledge_cutoff() -> None:
+    """The gate holds every sequence of rows a reader iterates to the
+    cutoff, not only a list or a tuple. With the expectation rows in a
+    deque, one more row dated the day after the cutoff changes nothing but
+    the digest, and the same row on the cutoff changes the document."""
+
+    def in_a_deque(inputs: FinanceOwnerInputs) -> FinanceOwnerInputs:
+        observations = {
+            slice_id: collections.deque(rows) for slice_id, rows in inputs.expectation_observations.items()
+        }
+        return dataclasses.replace(inputs, expectation_observations=observations)
+
+    base, late = _one_more_row("expectation", "as_of", _day(1))
+    _, on_cutoff = _one_more_row("expectation", "as_of", _day(0))
+    before = _composed(in_a_deque(base))
+    after = _composed(in_a_deque(late))
+    assert _without_digest(after) == _without_digest(before)
+    assert after["snapshot_identity"]["input_digest"] != before["snapshot_identity"]["input_digest"]
+    assert _without_digest(_composed(in_a_deque(on_cutoff))) != _without_digest(before)
+
+
+# The input receipt that answers for each owner input a reader can publish rows from.
+_RECEIPT_FOR_INPUT = {
+    "financial_packets": "financial_intelligence",
+    "expectation_observations": "expectations_revisions",
+    "market_observations": "market_data",
+    "theme_evidence": "theme_graph",
+    "source_records": "private_publication",
+}
+
+
+@pytest.mark.parametrize("field", sorted(_RECEIPT_FOR_INPUT))
+def test_an_input_the_knowledge_cutoff_withholds_is_received_as_degraded(field: str) -> None:
+    """An input receipt reads READ only while the document holds rows from
+    that input. Move every knowledge clock of one input a day past the
+    cutoff: that input's receipt turns from READ to DEGRADED, and no other
+    receipt changes. The gate keeps the keyed maps of packets, expectation
+    and market rows, so their receipts used to read READ over an input the
+    document held no row of."""
+    base = _extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+    # The fixture's theme evidence has no clocks; give it its source's.
+    base = dataclasses.replace(base, theme_evidence=[
+        dict(row, source={"retained_at": _day(0)}) for row in base.theme_evidence
+    ])
+    late = dataclasses.replace(base, **{field: _with_every_known_clock(getattr(base, field), _day(1))})
+
+    def receipts(inputs: FinanceOwnerInputs) -> dict[str, str]:
+        return {receipt["owner"]: receipt["state"] for receipt in _composed(inputs)["input_receipts"]}
+
+    before, after = receipts(base), receipts(late)
+    owner = _RECEIPT_FOR_INPUT[field]
+    assert before[owner] == "READ", before
+    assert after[owner] == "DEGRADED", after
+    assert {o: s for o, s in after.items() if o != owner} == {o: s for o, s in before.items() if o != owner}
+
+
+# ---------------------------------------------------------------------------
+# Every owner container is read by what it holds.
+# ---------------------------------------------------------------------------
+
+
+class _RowsWithNoLength:
+    """A sequence of rows that can be read again but has no length."""
+
+    def __init__(self, rows: Any) -> None:
+        self._rows = list(rows)
+
+    def __iter__(self) -> Any:
+        return iter(self._rows)
+
+
+_CONTAINERS = {
+    "a generator": lambda rows: (row for row in list(rows)),
+    "a deque": collections.deque,
+    "an iterable with no length": _RowsWithNoLength,
+}
+
+
+def _gated_rows_in(inputs: FinanceOwnerInputs, field: str, container: Any) -> FinanceOwnerInputs:
+    """``inputs`` with every sequence of rows of ``field`` the knowledge gate reads held by ``container``."""
+    value = getattr(inputs, field)
+    if field in ("theme_evidence", "source_records"):
+        return dataclasses.replace(inputs, **{field: container(value)})
+    if field in ("expectation_observations", "market_observations"):
+        return dataclasses.replace(inputs, **{field: {slice_id: container(rows) for slice_id, rows in value.items()}})
+    packets = copy.deepcopy(dict(value))
+    for packet in packets.values():
+        for plane in ("operating", "valuation"):
+            block = packet.get(plane)
+            for key in ("observations", "cells"):
+                if isinstance(block, dict) and key in block:
+                    block[key] = container(block[key])
+    return dataclasses.replace(inputs, financial_packets=packets)
+
+
+@pytest.mark.parametrize("container", sorted(_CONTAINERS))
+@pytest.mark.parametrize("field", sorted(_RECEIPT_FOR_INPUT))
+def test_an_input_whose_every_row_the_cutoff_withholds_is_degraded_whatever_holds_its_rows(field: str, container: str) -> None:
+    """The receipts answer from the rows the gate read and kept, so a
+    sequence of rows need not have a length. With the rows of one input in
+    a generator, a deque or an iterable with no length, moving every
+    knowledge clock of that input a day past the cutoff turns its receipt
+    from READ to DEGRADED, as it does for a list. The receipts used to count
+    rows with len(), so a generator whose every row the cutoff withheld was
+    received as READ."""
+    base = _extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+    # The fixture's theme evidence has no clocks; give it its source's.
+    base = dataclasses.replace(base, theme_evidence=[
+        dict(row, source={"retained_at": _day(0)}) for row in base.theme_evidence
+    ])
+    late = dataclasses.replace(base, **{field: _with_every_known_clock(getattr(base, field), _day(1))})
+
+    def receipt(inputs: FinanceOwnerInputs) -> str:
+        document = _composed(_gated_rows_in(inputs, field, _CONTAINERS[container]))
+        return next(r["state"] for r in document["input_receipts"] if r["owner"] == _RECEIPT_FOR_INPUT[field])
+
+    assert (receipt(base), receipt(late)) == ("READ", "DEGRADED")
+
+
+def _as_generators(node: object) -> object:
+    """``node`` with every list in it, however deep, a generator of the same items."""
+    if isinstance(node, dict):
+        return {name: _as_generators(value) for name, value in node.items()}
+    if isinstance(node, list):
+        return (_as_generators(value) for value in node)
+    return node
+
+
+@pytest.mark.parametrize("fixture", _FENCE_FIXTURES)
+def test_owner_inputs_in_generators_compose_the_document_their_lists_compose(fixture: str) -> None:
+    """A one-shot iterator is read once, where the owner inputs enter. With
+    every list in the owner inputs, however deep, turned into a generator of
+    the same items, the composer returns the same document, input digest
+    included. The knowledge gate used to read a generator before the
+    digest did: theme evidence in a generator had the digest of no theme
+    evidence, and a generator in a packet hashed by its address."""
+    base = _extended_owner_inputs(fixture)
+    generated = dataclasses.replace(base, **{
+        field.name: _as_generators(getattr(base, field.name)) for field in dataclasses.fields(base)
+    })
+    assert _composed(generated) == _composed(base)
+
+
+@pytest.mark.parametrize("field", ["expectation_observations", "financial_packets", "market_observations"])
+def test_a_keyed_input_whose_sequences_of_rows_are_empty_is_received_as_read(field: str) -> None:
+    """The gate withholds an input only when it read rows of it and kept
+    none. A keyed input whose every sequence of rows is empty holds no row
+    the cutoff could withhold: the owner answered with no rows, so its
+    receipt reads READ, as it did when the receipts counted rows with
+    len(). An empty keyed input is still received as DEGRADED."""
+    base = _extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+
+    def receipt(inputs: FinanceOwnerInputs) -> str:
+        document = _composed(inputs)
+        return next(r["state"] for r in document["input_receipts"] if r["owner"] == _RECEIPT_FOR_INPUT[field])
+
+    assert receipt(_gated_rows_in(base, field, lambda rows: [])) == "READ"
+    assert receipt(dataclasses.replace(base, **{field: {}})) == "DEGRADED"
+
+
+def _rows_in_tuples(inputs: FinanceOwnerInputs) -> FinanceOwnerInputs:
+    """``inputs`` with the rows of theme evidence, source records and each
+    slice's expectation and market observations held in a tuple, and every
+    list inside each row, however deep, a generator of the same items."""
+    listed = {field: tuple(_as_generators(row) for row in getattr(inputs, field))
+              for field in ("theme_evidence", "source_records")}
+    keyed = {field: {slice_id: tuple(_as_generators(row) for row in rows)
+                     for slice_id, rows in getattr(inputs, field).items()}
+             for field in ("expectation_observations", "market_observations")}
+    return dataclasses.replace(inputs, **listed, **keyed)
+
+
+@pytest.mark.parametrize("fixture", _FENCE_FIXTURES)
+def test_rows_held_in_tuples_compose_the_document_their_lists_compose(fixture: str) -> None:
+    """A one-shot iterator is read once wherever it sits, a tuple included.
+    With the rows of every owner list held in a tuple and every list inside
+    those rows a generator, the composer returns the same document, input
+    digest included."""
+    base = _extended_owner_inputs(fixture)
+    assert _composed(_rows_in_tuples(base)) == _composed(base)
+
+
+class _RefusesIteration:
+    """An owner value that declares iteration and refuses it, as a 0-d
+    array does."""
+
+    def __iter__(self) -> Any:
+        raise TypeError("SYNTHETIC: iteration refused")
+
+    def __str__(self) -> str:
+        return "SYNTHETIC-opaque"
+
+
+def test_a_row_value_that_refuses_iteration_is_hashed_as_its_text() -> None:
+    """The digest hashes a value it cannot walk as its str(). An owner row
+    holding a value that declares iteration and refuses it composes, and it
+    has the digest of the same row holding that value's text, as it did
+    before the digest walked containers."""
+    base = _extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+    first, *rest = base.theme_evidence
+
+    def digest(value: Any) -> str:
+        document = _composed(dataclasses.replace(base, theme_evidence=[dict(first, synthetic_value=value), *rest]))
+        return document["snapshot_identity"]["input_digest"]
+
+    assert digest(_RefusesIteration()) == digest("SYNTHETIC-opaque")
+
+
+class _MappingAndIterator(dict):
+    """A mapping that also declares itself an iterator."""
+
+    def __next__(self) -> Any:
+        raise StopIteration
+
+
+def test_an_owner_mapping_that_is_also_an_iterator_is_read_as_a_mapping() -> None:
+    """Draining reads a mapping as a mapping before it asks whether the
+    value is an iterator. Identity bindings held in a mapping that also
+    declares itself an iterator compose the document a plain mapping
+    composes."""
+    base = _extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+    assert base.identity_bindings
+    bindings = _MappingAndIterator(base.identity_bindings)
+    assert _composed(dataclasses.replace(base, identity_bindings=bindings)) == _composed(base)
+
+
+@pytest.mark.parametrize("fixture", _FENCE_FIXTURES)
+def test_rows_the_gate_reads_in_deques_compose_the_document_their_lists_compose(fixture: str) -> None:
+    """The input digest hashes what a container holds, never the container.
+    With every sequence of rows the knowledge gate reads held in a deque,
+    the composer returns the same document, input digest included. A deque
+    used to hash by its repr, so the same rows had one digest in a list and
+    another in a deque. (Only the gate reads any sequence of rows: a deque
+    of references elsewhere is read by its reader's own rule.)"""
+    base = _extended_owner_inputs(fixture)
+    in_deques = base
+    for field in _RECEIPT_FOR_INPUT:
+        in_deques = _gated_rows_in(in_deques, field, collections.deque)
+    assert _composed(in_deques) == _composed(base)
+
+
+_DIGEST_OF_A_ROW_HOLDING_A_SET = """
+import dataclasses
+import tests.test_finance_intelligence_projection as tp
+base = tp._extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+first, *rest = base.theme_evidence
+tagged = dict(first, synthetic_tags={f"SYNTHETIC-tag-{i}" for i in range(12)})
+document = tp._composed(dataclasses.replace(base, theme_evidence=[tagged, *rest]))
+print(document["snapshot_identity"]["input_digest"])
+"""
+
+
+def test_the_input_digest_of_a_set_does_not_depend_on_the_hash_seed() -> None:
+    """A set is hashed in the order of its members' JSON. Composed in three
+    processes with three hash seeds, an owner row that holds a set of text
+    has one input digest. A set used to hash in its iteration order, which
+    the hash seed changes, so one snapshot had a digest per process."""
+    digests = set()
+    for seed in ("1", "2", "3"):
+        result = subprocess.run(
+            [sys.executable, "-c", _DIGEST_OF_A_ROW_HOLDING_A_SET],
+            cwd=Path(__file__).resolve().parents[1],
+            env={**os.environ, "PYTHONHASHSEED": seed},
+            capture_output=True, text=True, check=False,
+        )
+        assert result.returncode == 0, result.stderr
+        digests.add(result.stdout.strip())
+    assert len(digests) == 1, digests
+
+
+def test_an_owner_mapping_with_keys_of_two_types_never_stops_the_composer() -> None:
+    """A mapping whose keys are not all text is hashed as its [key, value]
+    pairs, each key written as the JSON it is. An owner row holding one
+    composes a document the contract accepts, and its digest tells a key
+    that is a number from the same key written as text, whether the other
+    key is text or a number. The digest used to sort the keys before
+    writing them, and the sort raised TypeError."""
+    base = _extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+    first, *rest = base.theme_evidence
+
+    def digest(mapping: dict[Any, str]) -> str:
+        row = dict(first, synthetic_map=mapping)
+        document = _composed(dataclasses.replace(base, theme_evidence=[row, *rest]))
+        return document["snapshot_identity"]["input_digest"]
+
+    assert digest({1: "SYNTHETIC-a", "b": "SYNTHETIC-b"}) != digest({"1": "SYNTHETIC-a", "b": "SYNTHETIC-b"})
+    assert digest({1: "SYNTHETIC-a", 2: "SYNTHETIC-b"}) != digest({"1": "SYNTHETIC-a", 2: "SYNTHETIC-b"})

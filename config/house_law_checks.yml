@@ -1,5 +1,5 @@
 schema: house_law_checks.v1
-updated: "2026-08-16"
+updated: "2026-09-28"
 
 # Canonical registry of every house law and its enforcement status.
 # Maintained by scripts/check_house_law_registry.py (meta-guard).
@@ -895,7 +895,7 @@ checks:
     ci_wiring:
       - workflow: .github/workflows/ci.yml
         job: house-law-registry
-        lane: pr_ci
+        lane: scheduled
     selftest: false
     selftest_exempt_reason: >
       No selftest flag; deterministic scan over engine/*.py vs qual_ladder.yml.
@@ -906,9 +906,22 @@ checks:
       - 15 grandfathered DEBT entries (altdata.signal_score, policy.dir) are
         DISPLAY-state (gated); must be cleared once §3 gate passes.
       - ADVISORY unregistered fields (31+) are printed but do not fail the check.
+      - >
+        NOT A PULL-REQUEST GATE. `house-law-registry` is `gate: data` and ci.yml
+        plans `--gate code` only, so this lint runs in data-health.yml (nightly
+        workflow_run / 13:30 UTC schedule / manual dispatch) and cannot block a
+        merge. The lint itself is a pure static scan over engine/*.py and
+        config/qual_ladder.yml with no data dependency, so nothing about the LAW
+        requires the data gate — it is there because it was folded into a job
+        that has a data-reading sibling. Re-gating it onto the code gate is a
+        real improvement and a SEPARATE change from the 2026-09-28 census
+        backfill, which deliberately touched only its own law's wiring. The row
+        read `lane: pr_ci` until 2026-09-28; that claim was false.
     owner_program: qualitative-intelligence-masterplan
     notes: >
-      Wired into house-law-registry job (exit 0 confirmed 2026-07-06).
+      Wired into house-law-registry job (exit 0 confirmed 2026-07-06). Lane
+      corrected pr_ci -> scheduled 2026-09-28 — the job is `gate: data`, which
+      ci.yml never plans.
 
   # ── Contracts guards ───────────────────────────────────────────────────────
 
@@ -2122,8 +2135,11 @@ checks:
     check_script: scripts/check_house_law_registry.py
     ci_wiring:
       - workflow: .github/workflows/ci.yml
-        job: house-law-registry
+        job: house-law-registry-code
         lane: pr_ci
+      - workflow: .github/workflows/ci.yml
+        job: house-law-registry
+        lane: scheduled
     selftest: true
     allowlist: null
     ratchet: null
@@ -2133,8 +2149,31 @@ checks:
         entries; adding them is required but not mechanically enforced by census.
       - Wiring check is textual (job steps mention the script basename), not
         execution-order-aware.
+      - >
+        Pass C proves a named job INVOKES the script; it does not prove that job
+        runs in the lane the entry claims. `lane:` is prose — a `lane: pr_ci`
+        row on a `gate: data` job reads as PR-enforced while being dark on every
+        pull request, which is exactly how this census went blind. Measured
+        2026-09-28 by joining every `lane: pr_ci` row against the manifest's
+        `gate:` field, 27 further rows across 26 laws and 17 jobs make that
+        false claim; they are ratcheted by name in
+        tests/test_house_law_registry.py (TestLanePrCiIsNotSelfEvident) so the
+        population can only shrink, but they are NOT repaired — each belongs to
+        another owner program and for some the honest repair is a re-gating, not
+        a relabelling. No pass validates `lane:` itself.
+        See DSC:A-DATA-GATED-JOB-IS-DARK-ON-EVERY-PULL-REQUEST.
     owner_program: engine-fix-masterplan
-    notes: null
+    notes: >
+      TWO lanes on purpose. `house-law-registry-code` (`gate: code`) is the
+      MERGE gate — the census's own finding text says "before merging", and
+      ci.yml plans `--gate code` only, so without a code-gated home the census
+      cannot block anything. `house-law-registry` (`gate: data`) keeps the
+      nightly receipt via data-health.yml; its other steps read committed
+      data/reference parquet, which is why that job is data-gated and why this
+      is a second home rather than a move. Both run the same four pure-tree
+      steps. Measured 2026-09-28: before the code-gated job existed, ten
+      scripts/check_*.py sat unregistered on main and the meta-guard exited 1
+      against main's own bytes while main's ci.yml was green.
 
   - law_id: ci.vintage_pin_fence
     summary: >
@@ -2761,7 +2800,7 @@ checks:
     ci_wiring:
       - workflow: .github/workflows/ci.yml
         job: house-law-registry
-        lane: pr_ci
+        lane: scheduled
     selftest: false
     selftest_exempt_reason: >
       The direct CI lane runs the live guard and tests/test_ticker_alias_boundary.py;
@@ -2778,11 +2817,22 @@ checks:
         because closing them requires separate dated membership evidence.
       - Class-share spellings use the repository's bounded dot/dash/base-symbol
         tolerance and do not constitute a general company-identity mapper.
+      - >
+        NOT A PULL-REQUEST GATE. `house-law-registry` is `gate: data`, and
+        ci.yml plans `--gate code` only, so this guard runs in data-health.yml
+        (nightly workflow_run / 13:30 UTC schedule / manual dispatch) and cannot
+        block a merge. Unlike the meta-guard's own law, this one genuinely
+        belongs on the data gate — the check reads
+        data/qledger/retired_symbol_disclosures.json and the committed universe
+        snapshots — so the honest repair is the lane label, not a re-gating. The
+        row read `lane: pr_ci` until 2026-09-28; that claim was false.
     owner_program: stable-symbol-identity
     notes: >
       The only supported seam fetches under the current vendor symbol and stores
       under the permanent membership key. The guard must never mint a second
-      price store or reinterpret historical identity.
+      price store or reinterpret historical identity. Lane corrected
+      pr_ci -> scheduled 2026-09-28 — the job is `gate: data`, which ci.yml
+      never plans.
 
   - law_id: flow_continuity.statement_tape_schema
     summary: >
@@ -3716,3 +3766,441 @@ checks:
       Registered 2026-08-14 by the PR-1b fusion session healing the
       house-law-registry census red that #5574 left (checker shipped without an
       entry; every full-suite ci-pack run since was red on this job).
+
+  # ── Census backfill 2026-09-28 ──────────────────────────────────────────────
+  #
+  # Ten scripts/check_*.py shipped on main without a registry entry, so pass B
+  # (CENSUS) had been HARD-failing against main's own bytes while main's ci.yml
+  # was green. Both halves of that sentence are the point: the census cannot
+  # block what it never runs on, because `house-law-registry` is `gate: data`
+  # and ci.yml packs `--gate code` only (the 2026-08-19 merge-gate split — see
+  # .github/workflows/data-health.yml's header). The census now ALSO runs in
+  # `house-law-registry-code` (`gate: code`), whose declared scope carries the
+  # literal glob `scripts/check_*.py` so the next unregistered guard is caught
+  # on its own pull request instead of in a nightly report nobody is blocked by.
+  #
+  # Four of the ten are registered `manual` with EMPTY ci_wiring, which is the
+  # honest reading and not a downgrade of anything: no workflow job invokes
+  # those scripts at all. Their LAWS are covered in CI by pytest suites that
+  # import the guard module; the SCRIPT is what is unwired. Pass C is textual on
+  # `run:` bodies, so this cannot be papered over by naming a job that merely
+  # runs a neighbouring suite.
+
+  - law_id: identity.caddy_hub_boundary
+    summary: >
+      Production Caddy topology for `GET /api/hub/prophet`: every
+      `reverse_proxy ... 127.0.0.1:8000` block in app/deploy/Caddyfile must
+      either stamp `header_up X-MM-Peer {remote_host}` or rewrite the caller's
+      path to a fixed non-hub target. app/prophet_lab.py's
+      `_hub_prophet_authorized` denies the route unless the peer is loopback AND
+      no X-MM-Peer header is present, so a future Caddy block that reaches
+      uvicorn without stamping that header would hand an off-box caller a
+      request indistinguishable from a legitimate direct same-box call.
+    source_ref:
+      - scripts/check_caddy_hub_boundary.py
+      - app/deploy/Caddyfile
+      - app/prophet_lab.py
+      - tests/test_caddy_hub_boundary.py
+      - tests/test_caddy_hub_boundary_am_edition.py
+      - "DEC:B1-PROPHET-PUBLIC-SPLIT (Sol Day-6 AMENDMENT clause F)"
+    severity: manual
+    check_script: scripts/check_caddy_hub_boundary.py
+    ci_wiring: []
+    selftest: false
+    selftest_exempt_reason: >
+      No --selftest flag; the behavioural battery lives in
+      tests/test_caddy_hub_boundary.py (importorskip fastapi) and
+      tests/test_caddy_hub_boundary_am_edition.py (thin-venv sibling holding the
+      three B6 boundary assertions), both of which import
+      scripts.check_caddy_hub_boundary directly.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - The GUARD SCRIPT is invoked by no workflow job. `am-edition-producer`
+        declares scripts/check_caddy_hub_boundary.py in its `paths:` and runs
+        tests/test_caddy_hub_boundary_am_edition.py, so the LAW has a pr_ci lane
+        through that suite — but no `run:` body names the script, which is why
+        ci_wiring is empty rather than pointing at a job that would satisfy pass
+        C for the wrong reason.
+      - Static Caddyfile parsing cannot prove the deployed Caddy process is
+        running the committed config.
+    owner_program: prophet-public-split
+    notes: >
+      Registered 2026-09-28 by the census backfill. Operator CLI:
+      `python3 scripts/check_caddy_hub_boundary.py`. Promotion path is a
+      `run:` step in an existing `gate: code` job (am-edition-producer already
+      owns the path) plus severity hard — an UPGRADE, which needs no ruling.
+
+  - law_id: ci.contract_delta
+    summary: >
+      Differential PR-vs-base merge-train contract gate. A head may not grow a
+      curated `scope: exclusive` job's import closure, change the legacy
+      manifest's pack accounting, or alter a runner allocation without the
+      declaration that covers it moving in the same commit. Exists because
+      #5872 and #5932 each merged green after widening a closure whose own
+      covering test lives under tests/ — a directory neither PR touched — and
+      main's integration-baseline caught it 5+ hours later with 21 armed PRs
+      already blocked behind a red main.
+    source_ref:
+      - scripts/check_contract_delta.py
+      - .github/workflows/ci.yml
+      - research/CI_MERGE_GATE_RELIABILITY_ROOT_CAUSE_2026_08_19.md
+    severity: hard
+    check_script: scripts/check_contract_delta.py
+    ci_wiring:
+      - workflow: .github/workflows/ci.yml
+        job: contract-delta
+        lane: pr_ci
+    selftest: false
+    selftest_exempt_reason: >
+      No --selftest flag; the gate is differential by construction (it
+      materialises the base tree itself and diffs the two contract inventories),
+      so its proof is the real pair of trees rather than synthetic assertions.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - Differential by design — it answers "did THIS head change a contract
+        without its declaration", never "is the contract correct on main".
+      - The gate is its own ci.yml job rather than a packed legacy job, so it is
+        outside run_ci_pack's scope selection and outside the pack accounting.
+    owner_program: ci-merge-control-plane
+    notes: >
+      Registered 2026-09-28 by the census backfill. Runs as a first-class
+      ci.yml job (`contract-delta`), not a packed legacy job.
+
+  - law_id: govrev.fms_bundle
+    summary: >
+      FMS publication-bundle guards for the government-revenue live lane:
+      all-or-nothing tracked+present evidence bundles, source cleanliness, and
+      twin presence, asserted before the lane commits an evidence projection. A
+      wholly absent bundle is a lawful "not initialized yet"; a partial one is a
+      publication defect.
+    source_ref:
+      - scripts/check_fms_bundle.py
+      - .github/workflows/government-revenue-live.yml
+      - tests/test_public_render_fastlane.py
+    severity: hard
+    check_script: scripts/check_fms_bundle.py
+    ci_wiring:
+      - workflow: .github/workflows/government-revenue-live.yml
+        job: refresh
+        lane: scheduled
+    selftest: false
+    selftest_exempt_reason: >
+      No --selftest flag; the script is a byte-for-byte behavioural mirror of
+      three shell functions extracted from the workflow, so its proof is the
+      live lane's own assertions plus the 21,000-character workflow-expression
+      ceiling pinned by tests/test_public_render_fastlane.py.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - Scheduled lane only — no pull request runs it, so a head that breaks a
+        bundle invariant merges and the lane reds afterwards.
+      - Invoked through the `fq` shell wrapper under `set -euo pipefail`; a
+        future edit that moves an `fq` call into a conditional would silently
+        make these guards advisory.
+    owner_program: government-revenue-foresight
+    notes: >
+      Registered 2026-09-28 by the census backfill. Invoked as `fq p` / `fq t` /
+      `fq s` from the "commit complete evidence projection" step, which defines
+      `fq() { python scripts/check_fms_bundle.py "$1"; }`. Extracted from that
+      step's inline shell because the inline form measured 22,878 characters
+      against GitHub's 21,000-character single-expression hard limit.
+
+  - law_id: identity.macro_anon_dependency
+    summary: >
+      No anonymous canonical-Macro GitHub-distribution dependency may reappear
+      in executable or config code. raw.githubusercontent.com, the
+      <owner>.github.io Pages mirror, cdn.jsdelivr.net/gh, the
+      api.github.com/repos/.../contents read API, and unauthenticated
+      git clone/fetch/ls-remote against https://github.com/<owner>/macro all
+      404 (or serve stale public-fork history) now that the repository is
+      private. Keyed on the two canonical owners plus repo name `macro`, so a
+      third-party GitHub URL is untouched by construction.
+    source_ref:
+      - scripts/check_macro_anon_dependency.py
+      - tests/test_macro_anon_dependency_guard.py
+      - lib/project_runtime_state.py
+      - "DEC:B1-MACRO-PRIVATE-CUTOVER (Sol Day-6 AMENDMENT clause E)"
+    severity: manual
+    check_script: scripts/check_macro_anon_dependency.py
+    ci_wiring: []
+    selftest: false
+    selftest_exempt_reason: >
+      No --selftest flag — only --root. `find_anonymous_macro_dependencies`
+      does no file I/O and is safe on synthetic strings, which is how
+      tests/test_macro_anon_dependency_guard.py exercises every banned shape.
+      (That docstring sentence is also why pass D now matches the "--selftest"
+      FLAG rather than the bare word: the loose predicate read this prose as a
+      flag and made an honest `selftest: false` unfileable.)
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - The GUARD SCRIPT is invoked by no workflow job — clause E's "cannot end
+        as a one-time grep" is currently satisfied by
+        tests/test_macro_anon_dependency_guard.py, not by the fence running over
+        the tree in CI.
+      - Text + Python-AST shapes only; a banned URL assembled at runtime from
+        fragments is out of reach.
+    owner_program: macro-private-cutover
+    notes: >
+      Registered 2026-09-28 by the census backfill. Operator CLI:
+      `python3 scripts/check_macro_anon_dependency.py`. Promotion to hard needs
+      a `run:` step in a `gate: code` job; that is an UPGRADE and needs no
+      ruling.
+
+  - law_id: ui.macro_command_copy
+    summary: >
+      Macro Command (site/macro_monetary.html) copy law, frozen spec F01 §5/§9:
+      zero occurrences of the banned machine vocabulary — raw slugs, internal
+      state/study names, untranslated stat names — outside a
+      `<details class="mc-details">` subtree or a `class="mc-primer"` body, in
+      either theme or language (G2); and no bare YYYY-MM-DD / YYYY-MM-DDTHH:MM
+      in visible text without an immediately preceding plain word, so every
+      as-of reads "Data to 3 Sep 2026" / "数据截至 2026年9月3日" with the machine
+      value living only in `datetime=` (G2b).
+    source_ref:
+      - scripts/check_macro_command_copy.py
+      - tests/test_macro_command_copy_law.py
+      - "research/ F01 Macro Command frozen spec (2026-09-06) §5, §9"
+      - docs/DESIGN_DOCTRINE.md
+    severity: manual
+    check_script: scripts/check_macro_command_copy.py
+    ci_wiring: []
+    selftest: false
+    selftest_exempt_reason: >
+      No --selftest flag; tests/test_macro_command_copy_law.py drives the guard
+      over violating and clean fixtures, and four sibling suites
+      (test_macro_command_p4_copy, _shell, _read_strip, _panels) import it while
+      pinning the surfaces it judges.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - The GUARD SCRIPT is invoked by no workflow job. `unrun-market-plumbing`
+        declares scripts/check_macro_command_copy.py in its `paths:`, but no
+        `run:` body names it, so ci_wiring is empty rather than borrowing a
+        neighbouring suite's job.
+      - Source-level vocabulary counting cannot prove a banned term is visually
+        hidden, nor that a compliant plain word is the one a reader's eye lands
+        on first.
+    owner_program: macro-command-f01
+    notes: >
+      Registered 2026-09-28 by the census backfill. Shipped in P1 deliberately
+      ("a customer-visible page that is ungated against the FRONT-END CLARITY
+      LAW cannot lawfully be reviewed PASS") ahead of the P2-P5 packets that
+      populate the copy it keeps honest. Operator CLI:
+      `python3 scripts/check_macro_command_copy.py`.
+
+  - law_id: research.vault_source_freshness
+    summary: >
+      Research Vault source-content freshness: every catalogued source's clock
+      must resolve and sit inside its declared budget, and a source URL must
+      still serve the content the catalogue claims. Stdlib-only and stateless,
+      so the same guard answers identically on a PR, on the ingest lane, and
+      against the live VPS.
+    source_ref:
+      - scripts/check_research_vault_source_freshness.py
+      - engine/research_vault/catalog.py
+      - .github/workflows/research-ingest.yml
+      - .github/workflows/vps-live-heartbeat.yml
+    severity: hard
+    check_script: scripts/check_research_vault_source_freshness.py
+    ci_wiring:
+      - workflow: .github/workflows/vps-live-heartbeat.yml
+        job: research-vault-contract
+        lane: pr_ci
+      - workflow: .github/workflows/research-ingest.yml
+        job: ingest
+        lane: scheduled
+      - workflow: .github/workflows/vps-live-heartbeat.yml
+        job: research-vault-source-url
+        lane: scheduled
+    selftest: true
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - The pr_ci lane is vps-live-heartbeat.yml's own `pull_request` trigger
+        with a literal `paths:` filter, NOT run_ci_pack — a rename of the guard
+        or of engine/research_vault/catalog.py that misses that filter silently
+        drops the PR lane.
+      - The source-URL probe reaches the network, so a transient upstream
+        failure and a genuine content change are the same observation on any
+        single run.
+    owner_program: research-vault
+    notes: >
+      Registered 2026-09-28 by the census backfill. Three distinct lanes:
+      `--selftest` plus an in-process contract check on pull requests, the
+      ingest lane's budget assertion, and the scheduled live source-URL probe.
+
+  - law_id: ci.runner_queue_hostage
+    summary: >
+      Dead-man switch for the QUEUED-JOB HOSTAGE class — a job addressed to a
+      self-hosted label that no ONLINE runner carries. The queued job holds its
+      cron concurrency group until GitHub's 24h kill, so the lane stops
+      producing with no red anywhere: 2026-08-14→17 `theta-m1` died and
+      daily.yml's collect_tail froze every Prophet board for three days;
+      2026-09-23→25 `render-linux` lost its last carrier when pc-render-1's
+      custom labels were stripped while the runner stayed online and idle.
+    source_ref:
+      - scripts/check_runner_queue_hostage.py
+      - .github/runner-policy.yml
+      - .github/workflows/nightly-liveness.yml
+      - research/PROPHET_OUTAGE_2026_08_17_POSTMORTEM.md
+      - "DSC:QUEUED-JOB-HOSTAGE-HOLDS-THE-NIGHTLY-CRON-GROUP"
+    severity: hard
+    check_script: scripts/check_runner_queue_hostage.py
+    ci_wiring:
+      - workflow: .github/workflows/ci.yml
+        job: dag-conformance
+        lane: pr_ci
+      - workflow: .github/workflows/nightly-liveness.yml
+        job: queue-hostage
+        lane: scheduled
+    selftest: true
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - The pr_ci lane runs `--selftest` only — it PROVES THE WATCHDOG WORKS and
+        never judges live runner state, which a pull request cannot observe.
+      - The live lane needs the live runner inventory; without PyYAML it falls
+        back to hosted-label prefix families and annotates itself blind rather
+        than crying wolf.
+      - This watchdog is itself one of the lanes gh_quota_guard.py shape 6
+        refuses to let a session cancel — killing it removes the only
+        instrument that would have noticed.
+    owner_program: pipeline-reliability
+    notes: >
+      Registered 2026-09-28 by the census backfill. A cancel is invisible to
+      every staleness instrument we own, because a killed bake and a bake that
+      never fired leave the same trace — nothing. That is why this guard
+      observes the QUEUE rather than the artifact.
+
+  - law_id: site.sector_intelligence_freshness
+    summary: >
+      Fail-closed semantic freshness gate for US Sector Intelligence. A new
+      mtime or a successful render is not proof that the independently written
+      basket and action-board artifacts describe the same market session: the
+      validator binds their exact bytes to the rendered pair and checks the
+      shared date against the completed-session NYSE calendar.
+    source_ref:
+      - scripts/check_sector_intelligence_freshness.py
+      - scripts/build_sector_intelligence.py
+      - .github/workflows/sector-intelligence.yml
+    severity: hard
+    check_script: scripts/check_sector_intelligence_freshness.py
+    ci_wiring:
+      - workflow: .github/workflows/sector-intelligence.yml
+        job: rebuild
+        lane: scheduled
+    selftest: false
+    selftest_exempt_reason: >
+      No --selftest flag; the guard is a byte-binding validator over rendered
+      artifacts, so a synthetic assertion would prove the hashing and not the
+      coherence claim. The lane runs it twice — once as a skip signal, once as
+      the publication gate.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - The "scheduled semantic preflight" step CONSUMES the exit code as an
+        `if` condition to decide whether to skip a rebuild, so that invocation
+        is deliberately non-fatal; only the "revalidate before publication"
+        step is the gate. A future edit that removes the second step would
+        leave the guard present and advisory.
+      - Scheduled lane only — no pull request runs it.
+    owner_program: us-sector-intelligence
+    notes: >
+      Registered 2026-09-28 by the census backfill. Two invocations in one job,
+      with opposite contracts: `--quiet` as a coherence probe that lets an
+      already-fresh page skip its rebuild, and a bare run that refuses
+      publication.
+
+  - law_id: site.stock_dossier_integrity
+    summary: >
+      Deterministic post-render estate guard for the public US stock dossier
+      pages. A render lane that writes 1900+ pages and only checks aggregate
+      failure counts cannot see a per-page formatting defect: 69 of 2066 pages
+      under site/stocks/ published the literal `$nanM` / `$nan` because two
+      formatters treated a float NaN as a present value (NaN is truthy in
+      Python). This is the release-gate half — it scans the estate the render
+      lane just produced and fails the build if the sentinel class reappears
+      from any code path, present or future.
+    source_ref:
+      - scripts/check_stock_dossier_integrity.py
+      - scripts/build_ticker_pages.py
+      - lib/numeric.py
+      - tests/test_check_stock_dossier_integrity.py
+    severity: hard
+    check_script: scripts/check_stock_dossier_integrity.py
+    ci_wiring:
+      - workflow: .github/workflows/ci.yml
+        job: conviction-profile
+        lane: pr_ci
+      - workflow: .github/workflows/render.yml
+        job: render
+        lane: render
+      - workflow: .github/workflows/engine-render.yml
+        job: engine-render
+        lane: render
+    selftest: false
+    selftest_exempt_reason: >
+      No --selftest flag; tests/test_check_stock_dossier_integrity.py drives the
+      CHECKS registry over fixtures carrying the sentinel class, and the live
+      proof is the render lanes' scan of the estate they just wrote.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - The pr_ci lane satisfies pass C through the TEST filename
+        (tests/test_check_stock_dossier_integrity.py contains the guard's stem);
+        conviction-profile runs the guard's unit suite, NOT the estate scan. The
+        estate scan itself exists only on the render lanes, because site/stocks
+        is render output and is not committed.
+      - Sentinel-class detection is a registry of named checks over rendered
+        text; a numeric defect that renders as a plausible number is invisible
+        to it.
+    owner_program: per-ticker-stock-intelligence
+    notes: >
+      Registered 2026-09-28 by the census backfill. #6027 had already moved the
+      three dossier suites out of an `unrun-publish-ops` home that was
+      `gate: data` — "which ci.yml never plans, so they were wired and still
+      dark" — the same mechanism that kept this whole census dark.
+
+  - law_id: authority.tushare_compliance_resurrection
+    summary: >
+      No ACTIVE authority surface may re-require TuShare licensing documents.
+      DEC:CNLI-TUSHARE-COMPLIANCE-IS-CHAIRMAN-VERIFIED-PRIVATE settled the
+      question privately and put the evidence outside coding scope; the durable
+      risk is PROSE — a future session greps the repo, finds a row-level verdict
+      like "vendor letter before any commercial display" in a masterplan or
+      rights matrix, and reopens a closed question. Two tiers: the
+      license-document MECHANISM as a noun is excused by an ordinary
+      prohibition, while a DIRECTIVE to obtain vendor approval needs the strong
+      tombstone form (NULL / SUPERSEDED / CANCELLED / HISTORICAL / FORMERLY /
+      no longer / not required).
+    source_ref:
+      - scripts/check_tushare_compliance_resurrection.py
+      - tests/test_tushare_compliance_anti_resurrection.py
+      - collectors/china_tushare_spine.py
+      - "DEC:CNLI-TUSHARE-COMPLIANCE-IS-CHAIRMAN-VERIFIED-PRIVATE (Chairman override 2026-08-21)"
+    severity: manual
+    check_script: scripts/check_tushare_compliance_resurrection.py
+    ci_wiring: []
+    selftest: false
+    selftest_exempt_reason: >
+      No --selftest flag; tests/test_tushare_compliance_anti_resurrection.py
+      drives both tiers over tombstoned and un-tombstoned fixtures.
+    allowlist: null
+    ratchet: null
+    known_limits:
+      - The GUARD SCRIPT is invoked by no workflow job, and it has no test file
+        named after it either — the covering suite is
+        tests/test_tushare_compliance_anti_resurrection.py, whose name does not
+        contain the guard's stem, so no pass-C needle could ever match a job
+        that merely runs it.
+      - Bound to the explicit GUARDED_PATHS tuple, so a NEW authority surface is
+        outside the fence until it is added there.
+    owner_program: china-alpha-intelligence
+    notes: >
+      Registered 2026-09-28 by the census backfill. Operator CLI:
+      `python3 scripts/check_tushare_compliance_resurrection.py`. Promotion to
+      hard needs a `run:` step in a `gate: code` job — an UPGRADE, no ruling
+      required.

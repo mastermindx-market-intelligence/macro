@@ -2,7 +2,7 @@
   "schema": "marketing.cashtag_tiers/v1",
   "schema_version": 1,
   "produced_by": "engine/marketing/radar_internal.py",
-  "produced_at": "2026-09-27T09:33:53Z",
+  "produced_at": "2026-09-28T10:45:50Z",
   "tier": "display",
   "as_of": "2026-09-25",
   "universe_n": 2702,
@@ -13492,11 +13492,11 @@
       "reasons": [],
       "proxies": {
         "mcap_weight": null,
-        "pct_1d": 0.5636070853462183,
+        "pct_1d": null,
         "pct_1w": null,
         "earnings_in_days": 39,
         "dollar_vol_musd": 35.76094175,
-        "pct_1d_source": "hot_tape_pack",
+        "pct_1d_source": null,
         "dollar_vol_source": "hot_tape_adv20",
         "adv20_musd": 35.76094175,
         "in_index_universe": false

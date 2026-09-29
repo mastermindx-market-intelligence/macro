@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.daily_brief.v1",
-  "produced_at": "2026-09-27T22:32:31.918707+00:00",
+  "produced_at": "2026-09-29T00:12:23.181090+00:00",
   "as_of": "2026-09-25",
   "status": "degraded",
   "phase": "final",
@@ -11,15 +11,7 @@
     "context_stale": false,
     "summary": "cortex ran (11 tool calls); memo as_of 2026-09-27T22:26:40+00:00"
   },
-  "what_changed": [
-    {
-      "kind": "cortex_status_changed",
-      "id": "cortex",
-      "summary": "cortex status changed: degraded → fresh",
-      "severity": "info",
-      "evidence_path": "data/neuralweb/health.json"
-    }
-  ],
+  "what_changed": [],
   "what_contradicted": [
     {
       "id": "",
@@ -530,7 +522,7 @@
   },
   "causal_lab": {
     "available": true,
-    "asof": "2026-09-27T09:35:33Z",
+    "asof": "2026-09-28T10:19:33Z",
     "new_edges_this_week_by_verdict": {
       "insufficient_power": 22,
       "null": 11,

@@ -767,6 +767,54 @@ def _gib(kb: int | None) -> str:
     return f"{(kb or 0) / 1024 / 1024:.1f}"
 
 
+def reach_line(meta: dict) -> str | None:
+    """"checked N of M" -- the one number an instrument must never omit.
+
+    A report that lists per-worktree verdicts and never says how many worktrees it LOOKED at is
+    indistinguishable from one with full coverage. This sweeper's scope is a config list, so the
+    gap is not hypothetical: most of the fleet's registrations can sit outside ``roots`` while
+    every line of the report below reads as healthy.
+    """
+    total = meta.get("registered_total")
+    scope = meta.get("in_scope")
+    if total is None or scope is None:
+        return None
+    out = total - scope
+    parts = [f"**reach: checked {scope} of {total} registered worktrees**"]
+    if out > 0:
+        parts.append(f"{out} outside configured `roots` and never examined")
+    orph = meta.get("orphans")
+    if orph:
+        parts.append(f"plus {orph} unregistered found by scan")
+    return " · ".join(parts) + "."
+
+
+def group_refusals(errors: list[str]) -> list[str]:
+    """Collapse the apply summary's messages so they can actually be printed.
+
+    They were counted and never shown. Identical refusals repeat once per worktree, so a run that
+    refuses hundreds of host checkouts would bury its real errors -- group by reason, keep one
+    example, and list genuine errors individually.
+    """
+    groups: dict[str, list[str]] = {}
+    for msg in errors:
+        path, _, rest = msg.partition(": ")
+        reason = rest if rest.startswith("refused — ") else "error"
+        groups.setdefault(reason, []).append(path if reason != "error" else msg)
+    out = []
+    for reason in sorted(groups, key=lambda r: (r == "error", -len(groups[r]))):
+        items = groups[reason]
+        if reason == "error":
+            out.append(f"  error: {len(items)}")
+            for m in items[:10]:
+                out.append(f"    {m}")
+            if len(items) > 10:
+                out.append(f"    ... and {len(items) - 10} more")
+        else:
+            out.append(f"  {reason}: {len(items)} (e.g. {items[0]})")
+    return out
+
+
 def render_markdown(worktrees: list[Worktree], cfg: dict, meta: dict) -> str:
     by = summarize(worktrees)
     lines = [
@@ -775,6 +823,11 @@ def render_markdown(worktrees: list[Worktree], cfg: dict, meta: dict) -> str:
         f"mode: **{meta['mode']}** · armed: **{cfg.get('armed')}** · min_age_days: {cfg['min_age_days']}"
         f" · fetch_ok: {meta['fetch_ok']} · proc_scan: {meta['proc_scan']} · pr_states: {meta['pr_states']}",
         "",
+    ]
+    reach = reach_line(meta)
+    if reach:
+        lines += [reach, ""]
+    lines += [
         "| verdict | count | GiB |",
         "|---|---:|---:|",
     ]
@@ -946,8 +999,14 @@ def main(argv: list[str] | None = None) -> int:
     if apply_summary is not None:
         print(f"apply: deleted={len(apply_summary['deleted'])} "
               f"branches={len(apply_summary['branches_deleted'])} "
-              f"errors={len(apply_summary['errors'])} over_cap={apply_summary['skipped_cap']}")
+              f"errors={len(apply_summary['errors'])} over_cap={apply_summary['skipped_cap']} "
+              f"checked={meta.get('in_scope')}/{meta.get('registered_total')}")
         if apply_summary["errors"]:
+            # These were counted and discarded. `deleted=0 errors=688` with no messages is
+            # indistinguishable from a healthy run that had nothing to do.
+            print("apply refusals/errors:")
+            for row in group_refusals(apply_summary["errors"]):
+                print(row)
             return 1
     return 0
 

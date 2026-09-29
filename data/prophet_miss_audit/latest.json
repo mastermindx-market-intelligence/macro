@@ -143,7 +143,7 @@
  "themes": {
   "basis": "subsector_rotation.emerging_score",
   "days_since_top5_entry_basis": null,
-  "rotation_asof": "2026-09-25",
+  "rotation_asof": "2026-09-28",
   "standouts_asof": "2026-09-25",
   "available": true,
   "themes": [
@@ -1494,8 +1494,8 @@
     "pctile": 0.0179,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.031212,
-    "ew_10d": -0.057824
+    "ew_5d": -0.031577,
+    "ew_10d": -0.058179
    }
   ]
  },
