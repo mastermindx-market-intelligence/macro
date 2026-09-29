@@ -362,3 +362,68 @@ what the test IS.
 
 Both are worth shipping. The queued `IND-D23`/`IND-R215` increment is the second kind, and its
 5/5 mutant kills are the evidence that separates it from a guard that guards nothing.
+
+
+## Addendum, 2026-09-29 18:0x-18:4xZ — four merges verified, the commissioned capability landed
+
+Written after the body above, which recorded #8200 and #8204 as they were at the moment of
+writing rather than as merged. All four are now MERGED and verified in `origin/main`'s own
+bytes, read through `git show origin/main:<path>` and negative-controlled (the same checker
+scores **0/9** on pre-merge `d76792968484`; a checker that cannot fail cannot confirm):
+
+| PR | squash | merged | what |
+|---|---|---|---|
+| #8204 | `4df7c030006e` | 17:37:00Z | corrects `DSC:A-VENDORED-TRACEABILITY-MAP-…` at source |
+| #8200 | `d76792968484` | 17:40:30Z | `IND-R214`, a real cache-identity defect in merged T04 code |
+| #8208 | `c93b8e8c3776` | 18:05:35Z | `IND-D23`/`IND-R215` unit halves — GUARDS, not fixes |
+| #8206 | `f8e12189c64a` | 18:06:27Z | this handoff |
+| #8213 | `28a3ab1e7cb2` | 18:50:04Z | **the commissioned dossier capability** |
+
+**#8213 is Sol `5894912727`'s commission**: ONE user-facing capability across all five of
+`IND-D23`, `IND-R201`, `IND-R215`, `IND-R218`, `IND-SF04` — "not five isolated anchors" —
+as `assemble_evidence_view` in `engine/company_intelligence/financial_dossier.py`, a pure
+composition over already-derived result-to-cash values. It adds no schema, store, router,
+registry, evidence plane, rights plane or lifecycle plane, and originates no investment
+conclusion: it reports which conclusions are BARRED.
+
+Five changed paths, and **no `.github/ci/legacy-jobs.yml` change was needed** — a
+measurement, not an omission: `financial_dossier.py` and the T06 suite were already
+registered on the `industrials-result-cash` job, and the new import adds nothing to a
+closure that already reached that module. Gates at that head: 128 passed across the three
+Industrials suites (122 before); `tests/test_ci_pack.py -k
+test_curated_exclusive_scopes_cover_their_own_import_closure` 1 passed / 144 deselected /
+97.76 s; `run_ci_pack.py --validate-only` 238 jobs validated. Anchors 18 → 21
+(`IND-R201`, `IND-R218`, `IND-SF04`), basis `NO_SOURCE` → `RECOVERED_ORIGINAL` in the same
+change — three rows, three discriminating tests, which is the one-row-per-change rule and
+not the bulk rewrite Sol refused permission for.
+
+`IND-R218`'s withheld set is a deliberate **superset**: Sol names `valuation_gap`,
+`probability`, `rank`, `entry`, `size`, `trade`; the recovered r2 wording says `mispricing`.
+Both are withheld so the test asserts the obligation's own words. Stricter than either list.
+
+**`IND-D23` and `IND-R215` keep their result-to-cash anchors.** The dossier tests that also
+cover them carry their own names and claim no second anchor — re-pointing would trade unit
+coverage for page coverage rather than add it. Six of nine T06 rows are now covered;
+`IND-D03`, `IND-D22` and `IND-R213` stay absent because their seams are unmerged.
+
+### Two new records, and one danger area to add to the list above
+
+- `DSC:A-DISTINCTION-IN-AN-UNRENDERED-FIELD-IS-NOT-A-DISTINCTION` — two defects found in
+  this capability's own first draft, both caught by a side-by-side probe BEFORE any test
+  existed. Read it before writing any absence/refusal test.
+- `DSC:A-PR-ROLLUP-ANSWERS-WHAT-A-RUN-LISTING-CANNOT` — the merge daemon reported calm
+  `NO_RUNS_YET` for 8 polls on #8206 while the PR carried eleven concluded checks. Also
+  records why an `UNSTABLE` PR whose only red is `ci-authority/codex/merge-queue-pilot` is
+  mergeable without `--admin`.
+
+**Danger area:** *a carrier fence covers resuming WORK, not only posting.* Sol's CONTINUE
+ruling landed at 17:04:45Z while #8208 was being built; the branch was started without
+re-reading #7789, so the suite docstring and PR body shipped a withdrawal the ruling had
+already overruled. Caught and repaired at `54166002c9ad` plus PR comment `5895584441` before
+it reached `main` — but the general rule is that the read happens before the first edit of a
+resumed lane, not before the push.
+
+Carrier returns: `5895609916` (the four merges and the fence breach) and `5895990399` (this
+capability). Still **no `PRODUCTION_PROOF` and no `ACCEPTANCE`**: no accepted Exponent or
+Pentair dossier, no authenticated theme-to-company journey, no ordinary-refresh,
+correction-propagation or served-navigation proof.
