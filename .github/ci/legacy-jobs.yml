@@ -10945,6 +10945,8 @@ jobs:
       - "engine/pick_lab/**"
       - "engine/seasonality/**"
       - "lib/*"
+      # Data OS selected-price evidence is imported through engine.price_ladder.
+      - "lib/dataos/price.py"
       - "scripts/__init__.py"
       - "scripts/build_flow_leaders.py"
       - "scripts/build_market_structure.py"
@@ -13430,6 +13432,8 @@ jobs:
       - "engine/theme_graph/__init__.py"
       - "engine/theme_graph/identity.py"
       - "lib/dataos/identity.py"
+      # Price-ladder consumers now import the Data OS price vocabulary directly.
+      - "lib/dataos/price.py"
       - "app/__init__.py"
       - "app/mailer.py"
       - "collectors/*"
