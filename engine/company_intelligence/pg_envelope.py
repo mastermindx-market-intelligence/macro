@@ -4,7 +4,6 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from datetime import date
 import functools
-import html
 import math
 import re
 import unicodedata
@@ -14,7 +13,7 @@ if TYPE_CHECKING:
     from .pg_profile import PGDefinition
 
 from ..earnings_release.binding import BoundRelease
-from ..earnings_release.receipts import receipt_for_char_span
+from ..earnings_release.receipts import receipt_for_char_span, unescape as _unescape
 
 
 _TABLE_OPEN = re.compile(r"<table\b", re.I)
@@ -145,7 +144,7 @@ def _units(raw: str):
         if match.group(1) is not None or match.group(2) is not None:
             yield "markup", "", match.start(), match.end()
         elif match.group(3) is not None:
-            yield "reference", html.unescape(match.group(0)).replace("\xa0", " "), match.start(), match.end()
+            yield "reference", _unescape(match.group(0)).replace("\xa0", " "), match.start(), match.end()
         else:
             yield "text", match.group(0).replace("\xa0", " "), match.start(), match.end()
 
@@ -742,7 +741,7 @@ def _match_role(signature: frozenset[str]) -> str | None:
 
 
 def _unassigned_character(source: str) -> bool:
-    return any(unicodedata.ucd_3_2_0.category(character) == "Cn" for character in _NON_ASCII.findall(html.unescape(source)))
+    return any(unicodedata.ucd_3_2_0.category(character) == "Cn" for character in _NON_ASCII.findall(_unescape(source)))
 
 
 def admit(source: str, fiscal_scope: Sequence[str | date]) -> Admission:

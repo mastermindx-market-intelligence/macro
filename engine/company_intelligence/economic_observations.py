@@ -5,13 +5,13 @@ import bisect
 from datetime import date
 import functools
 import hashlib
-import html
 import json
 import math
 from numbers import Real
 import re
 from typing import Any, Mapping
 
+from ..earnings_release.receipts import unescape as _unescape
 from .documents import ABSENCE_SCHEMA, TypedAbsence
 from . import pg_envelope as _pg_envelope
 from .pg_profile import (
@@ -272,7 +272,7 @@ def _printed_units(source_bytes: bytes) -> tuple[tuple[tuple[int, int, str], ...
 
 def _drops_a_reference(fragment: bytes) -> bool:
     return any(
-        match.group(5) is not None and not html.unescape(match.group(5).decode("utf-8"))
+        match.group(5) is not None and not _unescape(match.group(5).decode("utf-8"))
         for match in _PRINT_UNIT.finditer(fragment)
     )
 
@@ -286,14 +286,14 @@ def _whole_printed_token(source_bytes: bytes, start: int, end: int) -> bool:
         return True
     outer = units[first][0], units[last][1]
     pieces = source_bytes[outer[0]:start], source_bytes[start:end], source_bytes[end:outer[1]]
-    whole = html.unescape(source_bytes[outer[0]:outer[1]].decode("utf-8"))
-    if "".join(html.unescape(piece.decode("utf-8")) for piece in pieces) != whole:
+    whole = _unescape(source_bytes[outer[0]:outer[1]].decode("utf-8"))
+    if "".join(_unescape(piece.decode("utf-8")) for piece in pieces) != whole:
         return False
     if kinds != {"text"} and not (first == last and next(iter(kinds)).startswith("raw:")):
         return False
 
     def separated(index: int, step: int, fragment: bytes, edge: Any) -> bool:
-        printed = html.unescape(fragment.decode("utf-8"))
+        printed = _unescape(fragment.decode("utf-8"))
         if fragment and units[index][2].startswith("raw:") and edge(fragment.decode("utf-8")) not in _LAYOUT_SPACE:
             return False
         while not printed:
@@ -303,7 +303,7 @@ def _whole_printed_token(source_bytes: bytes, start: int, end: int) -> bool:
             kind = units[index][2]
             if kind in ("comment", "markup") or kind in _UNPRINTED_RAW:
                 continue
-            printed = html.unescape(source_bytes[units[index][0]:units[index][1]].decode("utf-8"))
+            printed = _unescape(source_bytes[units[index][0]:units[index][1]].decode("utf-8"))
             if not printed or kind.startswith("raw:"):
                 return False
         return edge(printed) in _LAYOUT_SPACE
@@ -348,10 +348,10 @@ def _validate_envelope_span(row: Mapping[str, Any], *, source: str) -> None:
         gap_end = len(source_bytes)
     for gap in (source_bytes[gap_start:start], source_bytes[end:gap_end]):
         if _drops_a_reference(gap) or not all(
-            character in _LAYOUT_SPACE for character in html.unescape(gap.decode("utf-8"))
+            character in _LAYOUT_SPACE for character in _unescape(gap.decode("utf-8"))
         ):
             raise EconomicObservationError("present envelope observation span is not a whole literal")
-    unescaped = html.unescape(raw)
+    unescaped = _unescape(raw)
     if any(character.isspace() for character in unescaped):
         raise EconomicObservationError("present envelope observation decodes to whitespace")
     unit = row.get("unit")

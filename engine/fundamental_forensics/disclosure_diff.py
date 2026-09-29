@@ -1114,8 +1114,17 @@ def _plain_text_blocks(source: str, registry: DisclosureDiffRegistry, form: str 
     return tuple(sorted(output, key=lambda item: (item.start, item.end, item.kind.value, item.text)))
 
 
+# A decimal character reference longer than 640 digits: the least integer string-conversion limit an interpreter
+# may run with (``sys.int_info.str_digits_check_threshold``), so a shorter run converts under every limit.
+_LONG_DECIMAL_REFERENCE = re.compile(r"&#[0-9]{641}")
+
+
 def _raw_blocks(source: str, content_type: str, registry: DisclosureDiffRegistry, form: str | None) -> tuple[_RawBlock, ...]:
     if content_type == "html":
+        # A decimal reference past 640 digits is never parsed (R187): the stdlib parser unescapes attribute values
+        # itself, with an unbounded ``int()``.  A source holding one is read as no blocks, not as plain text.
+        if _LONG_DECIMAL_REFERENCE.search(source):
+            return ()
         parser = _HtmlBlockExtractor(source)
         parser.feed(source)
         blocks = parser.finish()
