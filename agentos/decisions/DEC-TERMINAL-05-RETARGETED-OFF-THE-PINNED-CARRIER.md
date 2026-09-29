@@ -69,14 +69,47 @@ transaction is correct *within* one run and has no notion of a second. This is n
 hypothetical: three sessions queued for this host on 2026-09-29 and serialised by hand over
 chat, which is the manual workaround for a missing lock.
 
-## Rollback anchor moves with every deploy
+## Rollback anchor moves with every deploy, and carries no identity
 
-Recorded because a session reported a stale rollback target on the strength of it. The prior
-build is retained whole at `/opt/terminal/terminal/.next.bak`, but the directory only ever
-holds ONE generation back and each deploy overwrites it. Worse, `deploy_generation_commit`
-purges `.deployment-id.bak` on success, so post-commit `deploy_generation_rollback` returns
-non-zero — the retained directory is not a complete generation restore, because the identity
-half is no longer recorded. The supported post-commit mechanism is the git-gated re-deploy
-to an explicit accepted SHA, which restores identity and build together:
+Recorded because a session reported a stale rollback target on the strength of it. Line
+numbers below are `ops/terminal-build.sh` at mastermind-terminal `origin/master`
+`d28449368`; the live readings are `ssh root@146.190.142.17` at 2026-09-29T20:46:21Z.
+
+The prior build is retained whole at `/opt/terminal/terminal/.next.bak`, but the directory
+only ever holds ONE generation back and each deploy overwrites it. The identity half is
+worse than stale — after a successful deploy it is **gone**. `deploy_generation_begin`
+(`:842`) records exactly one of two rollback facts: `.deployment-id.bak` when a marker
+existed (`:846`), or an empty `.deployment-id.absent` when none did (`:848`).
+`deploy_generation_rollback` (`:874`) consumes them in that order (`:889-890`, `:891-892`)
+and otherwise sets `rc=1   # no rollback record — the marker cannot be proven correct`
+(`:894`). On success `deploy_generation_commit` (`:855`) calls `deploy_generation_reset`,
+whose `rm -f` (`:838`) removes **both** records at once. So the absence of `.bak` alone
+would not prove anything — `.absent` is a valid second record — but commit clears the pair,
+which is what makes a post-commit rollback attempt a guaranteed `rc=1`.
+
+That is the live state now, one generation after this decision shipped:
+
+```
+ls -la /opt/terminal/terminal/ | grep -E 'deployment-id|\.next'
+-rw-r--r-- 1 root root   41 Sep 29 19:43 .deployment-id     -> d284493688...
+drwxr-xr-x 8 root root 4096 Sep 29 19:43 .next
+drwxr-xr-x 8 root root 4096 Sep 29 19:03 .next.bak
+                                          (no .deployment-id.bak, no .absent)
+```
+
+`.next.bak` is the build this decision's own deploy installed at 19:03 (`541330e4c`),
+displaced by the 19:43 deploy and now sitting under a marker that reads `d284493688`. Nothing on the host records
+that pairing: its mtime is the only thing linking the retained directory to a source SHA,
+and `.next/BUILD_ID` cannot help because `deploymentId` pins it to a constant literal. So
+`.next.bak` is not a degraded rollback anchor; it is not an anchor. It is a build with no
+name.
+
+The supported post-commit mechanism is therefore the git-gated re-deploy to an explicit
+accepted SHA, which restores identity and build together:
 `/opt/terminal/terminal-build.sh --target-sha <40-hex>`. Any rollback receipt naming
-`.next.bak` is naming a moving target.
+`.next.bak` is naming a moving, unnamed target.
+
+The live reading and the `:874`/`:889-890`/`:894` anchors were independently taken on the
+host by the concurrent TERMINAL-02 session and re-verified here before recording; the
+`:838` purge sits in `deploy_generation_reset`, one call below `deploy_generation_commit`,
+and the `.absent` second record is the leg that reading added.
