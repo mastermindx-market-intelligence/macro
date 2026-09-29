@@ -1253,7 +1253,7 @@ killed — and that sweep only sparsified, where this one removes.
 
 | # | gate | exact change | blast radius | unlocks |
 |---|---|---|---|---|
-| 1 | widen `roots` — **to subtrees, not volumes** | add `/Volumes/Mastermind/agent-workspaces/claude` (the policy-mandated seat root) and optionally `…/agent-workspaces/tmp`. **Do NOT add `/Volumes/Mastermind/worktrees`, `…/agent-workspaces` itself, `…/sol` or `…/review`.** | **REVISED 2026-09-28: smaller than stated — an absolute root cannot enter `rel_roots`, so every tree it reaches is classified a host checkout and refused by the belt. Measured: `in_scope` 225→721, belt-reachable 225→**226**. The subtree discipline is still correct, but it is now a REPORTING widening, and the web population's protection is the accidental naming heuristic, not this list** (`DSC:A-HOST-CHECKOUT-BELT-MAKES-A-WIDER-ROOTS-LIST-INERT`) | **~0 on its own** (1 tree, and only because it carries its own `.claude/worktrees` segment); it is the precondition for gate 2 but no longer sufficient — gate 2 now needs host detection to follow `roots` as well |
+| 1 | widen `roots` — **to subtrees, not volumes** | add `/Volumes/Mastermind/agent-workspaces/claude` (the policy-mandated seat root) and NOTHING ELSE. **NARROWED 2026-09-29: `…/agent-workspaces/tmp` is dropped from the ask** — it holds **0** registrations in this repo's worktree registry, and the only two git stores under it belong to a DIFFERENT repository (`Mastermind`: one a linked worktree of `/Volumes/Mastermind/repos/Mastermind-r7-836`, one a standalone clone), which `scripts/worktree_gc.py` running against the macro clone can neither see nor remove. `scan_orphans` also skips any root not under a host checkout. So the entry is inert — no yield and no risk — and a narrower ask is a cheaper ratification. **Do NOT add `/Volumes/Mastermind/worktrees`, `…/agent-workspaces` itself, `…/sol` or `…/review`.** | **REVISED 2026-09-28: smaller than stated — an absolute root cannot enter `rel_roots`, so every tree it reaches is classified a host checkout and refused by the belt. Measured: `in_scope` 225→721, belt-reachable 225→**226**. The subtree discipline is still correct, but it is now a REPORTING widening, and the web population's protection is the accidental naming heuristic, not this list** (`DSC:A-HOST-CHECKOUT-BELT-MAKES-A-WIDER-ROOTS-LIST-INERT`) | **~0 on its own** (1 tree, and only because it carries its own `.claude/worktrees` segment); it is the precondition for gate 2 but no longer sufficient — gate 2 now needs host detection to follow `roots` as well |
 | 2 | stop treating a content-free lock as operator intent | CODE in `scripts/worktree_gc.py`: a new opt-in config key (default = today's behaviour, honour every lock) exempting only the two provably content-free reasons, **plus** `git worktree unlock` before the `remove --force` at line ~706 | touches `scripts/**`, the CI-authority inventory — a merged head there triggers the authority freeze, clearable only by a green `ci.yml` on a main descendant | 41 trees / 26.6 GiB, all under `…/agent-workspaces/claude`, and it ends the permanent exemption of the whole external-SSD population |
 
 **Gate 2 carries essentially all of the safe yield, and gate 1 is its precondition** — the belt
@@ -1348,9 +1348,13 @@ act and none of them is taken here.
 | `…/agent-workspaces/sol` | ChatGPT-web review family |
 | `…/agent-workspaces/review` | same |
 
-`…/agent-workspaces` itself is deliberately **not** denied: `…/agent-workspaces/claude` and
-`…/agent-workspaces/tmp` are the two subtrees that are safe to sweep, and denying the parent
-would forfeit the only real yield §9 identified.
+`…/agent-workspaces` itself is deliberately **not** denied: `…/agent-workspaces/claude` is the
+subtree that is safe to sweep, and denying the parent would forfeit the only real yield §9
+identified. SUPERSEDED 2026-09-29, quoted so the earlier pairing is traceable: "`…/agent-workspaces/claude` and
+`…/agent-workspaces/tmp` are the two subtrees that are safe to sweep". `…/agent-workspaces/tmp` is
+still not DENIED — denying it would be as pointless as allowing it — but it is no longer part of
+the widening ask, because it is inert: 0 registrations in this repo's registry, and its only two
+git stores belong to the `Mastermind` repo, beyond this sweeper's reach by construction.
 
 **Stated rather than implied — the gap this does NOT close.** The loose `*-sol` trees planted
 directly at the top of `…/agent-workspaces` are identified by a NAME PATTERN, not by a subtree,
