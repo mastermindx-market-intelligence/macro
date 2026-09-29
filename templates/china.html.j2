@@ -1912,7 +1912,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         {% set _rr_sub_en = ('~%d%% chance of a ≥5%% pullback within a month'|format((_rr_p21*100)|round|int) ~ (' · %.1f× the usual odds'|format(_rr_lift) if _rr_lift else '')) if _rr_p21 is not none else (_rr_do_en or ms.posture_en or '') %}
         {% set _rr_sub_zh = ('未来一个月内出现≥5%%回撤的概率约%d%%'|format((_rr_p21*100)|round|int) ~ (' · 约为平时的%.1f倍'|format(_rr_lift) if _rr_lift else '')) if _rr_p21 is not none else (_rr_do_zh or ms.posture_zh or '') %}
         {% if _pbv %}
-        <button class="cnx-hbtn" data-pb-trigger data-pb-valid-until="{{ _pbv.observation.valid_until }}" aria-controls="cnx-pop-risk" onclick="cnxTogglePop('cnx-pop-risk',event)" style="border-color:color-mix(in srgb,var(--down) 50%,transparent)">
+        <button class="cnx-hbtn" data-pb-trigger data-pb-valid-until="{{ _pbv.observation.valid_until }}" aria-controls="cnx-pop-risk" onclick="cnxTogglePop('cnx-pop-risk',event)" style="border-color:var(--line)">
           {{ t(_pbv.headline_en, _pbv.headline_zh) }} <span class="n" data-pb-trigger-value style="color:var(--ink-down,var(--down))">{{ _pbv.value }}</span> ▾</button>
         {% else %}
         <button class="cnx-hbtn" onclick="cnxTogglePop('cnx-pop-risk',event)" style="border-color:color-mix(in srgb,var(--down) 50%,transparent)">⚠
@@ -4652,16 +4652,22 @@ window.__CHART_SWAP__ = {
 /* MX5 dialog / popover / heatmap helpers (macro mode only) */
 (function(){
   var _hmMounted=false;
+  var _riskReturnFocus=null;
   function cnxOpenDlg(id){
     var el=document.getElementById(id);
     if(!el)return;
+    if(id==='cnx-dlg-risk'&&!el.classList.contains('open'))_riskReturnFocus=document.activeElement;
     document.querySelectorAll('.cnx-dlg.open').forEach(function(d){d.classList.remove('open','cnx-in','cnx-closing');});
     el.classList.add('open');
     document.body.style.overflow='hidden';
     history.replaceState(null,'',location.pathname+'#'+id);
     /* Add .cnx-in on the next frame (after .open paints the start state) so the
        entrance transition — backdrop fade + panel rise/scale + body stagger — runs. */
-    requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.add('cnx-in');});});
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      if(!el.classList.contains('open')||el.classList.contains('cnx-closing'))return;
+      el.classList.add('cnx-in');
+      if(id==='cnx-dlg-risk'){var first=el.querySelector('.cnx-dlg-close');if(first)first.focus({preventScroll:true});}
+    });});
     /* Lazy-mount the China heatmap the first time the Markets dialog opens — the
        treemap needs a laid-out (visible) container, so we can't render it while hidden. */
     if(id==='cnx-dlg-markets'&&!_hmMounted){
@@ -4684,7 +4690,7 @@ window.__CHART_SWAP__ = {
       var panel=el.querySelector('.cnx-dlg-panel');
       el.classList.add('cnx-closing');el.classList.remove('cnx-in');
       var fired=false;
-      var done=function(){if(fired)return;fired=true;if(panel)panel.removeEventListener('transitionend',onEnd);el.classList.remove('open','cnx-closing');};
+      var done=function(){if(fired)return;fired=true;if(panel)panel.removeEventListener('transitionend',onEnd);el.classList.remove('open','cnx-closing');if(el.id==='cnx-dlg-risk'&&_riskReturnFocus&&_riskReturnFocus.isConnected){_riskReturnFocus.focus({preventScroll:true});_riskReturnFocus=null;}};
       var onEnd=function(e){if(e.target===panel)done();};
       if(panel)panel.addEventListener('transitionend',onEnd);
       setTimeout(done,360); /* fallback for reduced-motion / no transitionend */
@@ -4728,10 +4734,22 @@ window.__CHART_SWAP__ = {
   /* Escape: if the fullscreen heatmap overlay is open, let ITS own handler close it
      (don't also close the Markets dialog underneath). */
   document.addEventListener('keydown',function(e){
+    if(e.key==='Tab'&&!document.querySelector('.hm-ov')&&!(document.activeElement.closest&&document.activeElement.closest('.lens-pop.open'))){
+      var risk=document.querySelector('#cnx-dlg-risk.open:not(.cnx-closing)');
+      if(risk){
+        var focusable=Array.from(risk.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])')).filter(function(el){return el.tabIndex>=0&&!el.closest('[inert]')&&el.getClientRects().length>0;});
+        if(focusable.length){var first=focusable[0],last=focusable[focusable.length-1];
+          if(e.shiftKey&&(document.activeElement===first||!risk.contains(document.activeElement))){e.preventDefault();last.focus();}
+          else if(!e.shiftKey&&(document.activeElement===last||!risk.contains(document.activeElement))){e.preventDefault();first.focus();}
+        }
+      }
+      return;
+    }
     if(e.key!=='Escape')return;
     if(document.querySelector('.hm-ov'))return;
     if(document.querySelector('.lens-pop.open'))return;
     cnxCloseDlg();
+    cnxClosePops();
   });
   /* close China-local popovers on outside click; the shared Lens owns data-tip receipts. */
   document.addEventListener('click',function(){cnxClosePops();});
