@@ -6020,3 +6020,250 @@ def test_session_outcome_shared_reader_rejects_dangling_symlink(
         session_outcome_logical_bytes(base)
     with pytest.raises(episode_engine.ContractError, match=expected):
         episode_engine.load_session_outcomes(base)
+
+
+# ---------------------------------------------------------------------------
+# Real-size physical-rollover matrix.
+#
+# The toy-ceiling test above proves the rollover *logic*. It cannot prove the
+# arithmetic at the number that actually broke publication: the committed
+# `outcomes_session.jsonl` is 95.8 MiB, exactly 2.00x the 48 MiB part ceiling,
+# and the generation that grew it past GitHub's 100 MiB blob limit was rejected.
+# These cases drive the real constant against real committed bytes.
+# ---------------------------------------------------------------------------
+
+_REAL_SESSION_LEDGER = (
+    Path(__file__).resolve().parents[1]
+    / "data"
+    / "options_signal_episode"
+    / "outcomes_session.jsonl"
+)
+
+
+def _canonical_session_line(row: dict) -> bytes:
+    return (
+        json.dumps(
+            row, ensure_ascii=False, separators=(",", ":"), sort_keys=True,
+            allow_nan=False,
+        ).encode("utf-8")
+        + b"\n"
+    )
+
+
+def _fixture_session_rows() -> list[dict]:
+    """Five fresh rows whose identities cannot collide with production bytes."""
+    episode = _episode()
+    bars = _session_bars(episode, "10d")
+    return [
+        derive_session_outcome(
+            episode,
+            horizon,
+            bars,
+            computed_at=datetime(2026, 7, 20, 22, 0, tzinfo=timezone.utc),
+            price_source="fixture/TEST.parquet",
+            bar_seconds=1800,
+            price_delay_minutes=15,
+        )
+        for horizon in SESSION_HORIZONS
+    ]
+
+
+def _real_session_lines_within(budget: int) -> list[bytes]:
+    """Committed production rows, truncated at a row boundary under `budget`."""
+    lines: list[bytes] = []
+    total = 0
+    with _REAL_SESSION_LEDGER.open("rb") as handle:
+        for line in handle:
+            if total + len(line) > budget:
+                break
+            lines.append(line)
+            total += len(line)
+    assert lines, "expected committed production session-outcome rows"
+    return lines
+
+
+@pytest.mark.needs_full_checkout("data")
+def test_real_committed_session_base_rolls_over_at_the_true_48_mib_ceiling(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    import engine.options_signal_episode as episode_engine
+
+    ceiling = episode_engine.SESSION_OUTCOME_PART_MAX_BYTES
+    assert ceiling == 48 * 1024 * 1024
+
+    base = tmp_path / "outcomes_session.jsonl"
+    base.write_bytes(_REAL_SESSION_LEDGER.read_bytes())
+    frozen = base.read_bytes()
+    # The exact production shape: the base is already past the part ceiling, so
+    # no further byte may ever be appended to it.
+    assert len(frozen) > ceiling
+
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    before = episode_engine.load_session_outcomes(base)
+    rows = _fixture_session_rows()
+    assert append_session_outcomes(base, rows) == len(rows)
+
+    # The historical prefix is frozen byte-for-byte, so every receipt taken
+    # against it stays valid.
+    assert base.read_bytes() == frozen
+    parts_dir = base.parent / "outcomes_session_parts"
+    parts = sorted(parts_dir.glob("part-*.jsonl"))
+    assert [part.name for part in parts] == ["part-000001.jsonl"]
+    assert parts[0].stat().st_size <= ceiling
+
+    logical = episode_engine.session_outcome_logical_bytes(base)
+    assert logical == frozen + parts[0].read_bytes()
+    assert logical[: len(frozen)] == frozen
+    assert hashlib.sha256(logical[: len(frozen)]).hexdigest() == (
+        hashlib.sha256(frozen).hexdigest()
+    )
+
+    # Global 1-based row ordinals continue across the physical boundary.
+    after = episode_engine.load_session_outcomes(base)
+    assert after[: len(before)] == before
+    assert after[len(before):] == rows
+    assert len(after) == len(before) + len(rows)
+
+    # A rerun across the boundary appends nothing and rewrites nothing.
+    assert append_session_outcomes(base, rows) == 0
+    assert base.read_bytes() == frozen
+    assert episode_engine.session_outcome_logical_bytes(base) == logical
+
+
+@pytest.mark.needs_full_checkout("data")
+def test_real_size_part_ceiling_is_inclusive_and_rolls_only_on_overflow(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    import engine.options_signal_episode as episode_engine
+
+    ceiling = episode_engine.SESSION_OUTCOME_PART_MAX_BYTES
+    assert ceiling == 48 * 1024 * 1024
+    rows = _fixture_session_rows()
+    encoded = [_canonical_session_line(row) for row in rows]
+
+    # A real-byte base sized so that exactly one more row still fits under the
+    # true 48 MiB ceiling. Real committed rows, not toy files.
+    base = tmp_path / "outcomes_session.jsonl"
+    base.write_bytes(b"".join(_real_session_lines_within(ceiling - len(encoded[0]))))
+    parts_dir = base.parent / "outcomes_session_parts"
+    assert base.stat().st_size + len(encoded[0]) <= ceiling
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+
+    # Just under the ceiling: the base absorbs the row and no parts directory is
+    # created at all.
+    assert append_session_outcomes(base, [rows[0]]) == 1
+    assert not parts_dir.exists()
+    filled = base.read_bytes()
+
+    # Exactly at the ceiling: the bound is inclusive, so this still lands in the
+    # base and leaves it exactly full.
+    monkeypatch.setattr(
+        episode_engine,
+        "SESSION_OUTCOME_PART_MAX_BYTES",
+        len(filled) + len(encoded[1]),
+        raising=False,
+    )
+    assert append_session_outcomes(base, [rows[1]]) == 1
+    assert not parts_dir.exists()
+    assert base.stat().st_size == episode_engine.SESSION_OUTCOME_PART_MAX_BYTES
+    at_ceiling = base.read_bytes()
+
+    # One row over: rollover begins and the full base is frozen for good.
+    assert append_session_outcomes(base, [rows[2]]) == 1
+    assert base.read_bytes() == at_ceiling
+    parts = sorted(parts_dir.glob("part-*.jsonl"))
+    assert [part.name for part in parts] == ["part-000001.jsonl"]
+    assert episode_engine.session_outcome_logical_bytes(base) == at_ceiling + encoded[2]
+
+
+def test_interrupted_session_part_write_leaves_a_valid_strict_prefix(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    import engine.options_signal_episode as episode_engine
+
+    rows = _fixture_session_rows()
+    encoded = {id(row): _canonical_session_line(row) for row in rows}
+    # Real session rows differ in size by ~2x, so the ceiling is pinned to the
+    # largest part-bound row and that row is written first. Then part-000001 is
+    # exactly full and the next row can only land in part-000002.
+    ordered = sorted(rows, key=lambda row: len(encoded[id(row)]), reverse=True)
+    part_bound = ordered[:2]
+    base_bound = ordered[2:]
+    ceiling = len(encoded[id(part_bound[0])])
+    assert len(encoded[id(part_bound[1])]) <= ceiling
+
+    base = tmp_path / "outcomes_session.jsonl"
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    assert append_session_outcomes(base, base_bound) == len(base_bound)
+    frozen = base.read_bytes()
+    assert len(frozen) > ceiling
+
+    monkeypatch.setattr(
+        episode_engine, "SESSION_OUTCOME_PART_MAX_BYTES", ceiling, raising=False,
+    )
+
+    real_open = Path.open
+
+    def interrupt_second_part(self, *args, **kwargs):
+        if self.name == "part-000002.jsonl":
+            raise OSError(5, "injected interruption before the second part write")
+        return real_open(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", interrupt_second_part)
+    with pytest.raises(OSError, match="injected interruption"):
+        append_session_outcomes(base, part_bound)
+    monkeypatch.setattr(Path, "open", real_open)
+
+    # The interrupted generation is a VALID strict prefix: the first part is
+    # whole, the second never appeared, and no historical byte moved.
+    parts_dir = base.parent / "outcomes_session_parts"
+    assert [item.name for item in sorted(parts_dir.glob("part-*.jsonl"))] == [
+        "part-000001.jsonl"
+    ]
+    assert base.read_bytes() == frozen
+    partial = episode_engine.session_outcome_logical_bytes(base)
+    assert partial == frozen + encoded[id(part_bound[0])]
+    assert episode_engine.load_session_outcomes(base) == [*base_bound, part_bound[0]]
+
+    # Replay-safe re-entry completes the generation without duplicating a row.
+    assert append_session_outcomes(base, part_bound) == 1
+    complete = frozen + b"".join(encoded[id(row)] for row in part_bound)
+    assert episode_engine.session_outcome_logical_bytes(base) == complete
+    assert episode_engine.load_session_outcomes(base) == [*base_bound, *part_bound]
+    assert append_session_outcomes(base, rows) == 0
+    assert episode_engine.session_outcome_logical_bytes(base) == complete
+
+
+@pytest.mark.parametrize(
+    "topology,expected",
+    [
+        ("gap", "numbering is not contiguous from part-000001"),
+        ("unexpected_name", "unexpected session outcome part path"),
+        ("directory_alias", "session outcome part is not a regular file"),
+        ("part_symlink", "session outcome part is not a regular file"),
+    ],
+)
+def test_session_outcome_reader_rejects_broken_part_topology(
+    tmp_path: Path, topology: str, expected: str,
+) -> None:
+    from engine.options_signal_episode_contract import (
+        EpisodeSourceContractError,
+        session_outcome_logical_bytes,
+    )
+
+    base = tmp_path / "outcomes_session.jsonl"
+    base.write_bytes(b'{"row":1}\n')
+    parts = tmp_path / "outcomes_session_parts"
+    parts.mkdir()
+    (parts / "part-000001.jsonl").write_bytes(b'{"row":2}\n')
+    if topology == "gap":
+        (parts / "part-000003.jsonl").write_bytes(b'{"row":3}\n')
+    elif topology == "unexpected_name":
+        (parts / "part-2.jsonl").write_bytes(b'{"row":3}\n')
+    elif topology == "directory_alias":
+        (parts / "part-000002.jsonl").mkdir()
+    else:
+        (parts / "part-000002.jsonl").symlink_to(parts / "part-000001.jsonl")
+
+    with pytest.raises(EpisodeSourceContractError, match=expected):
+        session_outcome_logical_bytes(base)
