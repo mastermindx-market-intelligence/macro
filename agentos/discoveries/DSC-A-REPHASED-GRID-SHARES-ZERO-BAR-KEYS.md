@@ -121,5 +121,5 @@ Availability holds exactly: `known_ts` is a session inside the same bar and neve
 `ts`, on 81,503 of 81,503 sampled signals — no future look-ahead and no pre-knowledge.
 
 Related: DEC-BAR-PHASE-IS-PUBLISHED-BY-THE-PRODUCER,
-DSC-PUBLISHED-BAR-PHASE-IS-INERT-WITHOUT-THE-DEEP-STORE,
+DSC-PUBLISHED-BAR-PHASE-RESOLVES-TO-ZERO-IN-PRODUCTION,
 DSC-ACCEPTANCE-PROBE-CAN-FIRE-ON-THE-NEGATIVE-CASE.
