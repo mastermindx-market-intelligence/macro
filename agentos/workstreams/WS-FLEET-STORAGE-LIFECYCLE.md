@@ -51,6 +51,10 @@ discoveries:
   - DSC:A-GUARDS-CORRECT-TOLERANCE-FOR-AN-ABSENT-SUBJECT-STILL-LIES-IN-ITS-VERDICT
   - DSC:TWO-INDEPENDENT-GATES-MAKE-A-REGRESSION-IN-EITHER-ONE-INVISIBLE
   - DSC:A-DANGLING-CITATION-IS-FAIL-OPEN-TO-THE-COMPILER-AND-FAIL-CLOSED-TO-THE-VALIDATOR
+  - DSC:EDITING-A-PR-BODY-IS-A-CI-TRIGGER-THAT-CAN-CANCEL-ITS-OWN-PROOF
+  - DSC:THE-HUMAN-DRIVEN-POPULATION-IS-NOT-ROOT-CONTAINED
+  - DSC:GC-DISABLED-RUNNER-STORES-ACCUMULATE-EVERY-TRANSFER-PATHOLOGY-FOREVER
+  - DSC:THE-SWEEPERS-FOUR-DAY-NON-START-WAS-AN-UNLOADED-AGENT-NOT-A-CRASH
 landmines:
   - "`/Volumes/Worktrees/Documents/Photos Library.photoslibrary` (247 GB, the LIVE library) and
      `/Volumes/Mastermind/transfers/runner-fleet-resilience-worktrees-photoslib-20260924.tar`
@@ -80,6 +84,14 @@ landmines:
      only ever describe a run that STARTED. A healthy receipt is not evidence that the schedule
      fired — the four-day non-start window (09-18 → 09-21) is invisible to it. Detecting a
      never-started run needs an EXTERNAL age-based check that does not exist yet."
+  - "Do NOT 'fix' the runner git stores by restoring `filter: blob:none` to the pack checkout.
+     That filter was removed deliberately on 2026-09-23 (`DSC:CI-PROMISOR-OBJECT-FETCH-TRUNCATION`)
+     after three production runs died at 65-67 min (35876013221, 35885173966, 35886408213). The
+     storage cost is the ACCEPTED PRICE of a correctness fix; the defect is that `gc.auto = 0` plus
+     no maintenance lane charges that price on every checkout forever. The lever is CONSOLIDATION.
+     General form: a config difference that correlates perfectly with a cost difference is not
+     thereby a misconfiguration — here the cheap clones are cheap partly because they have served
+     fewer CORRECT checkouts."
   - "A PROTECTIVE config key inverts the wrapper's staleness argument. For `armed` and `roots`,
      older policy is narrower is safer; for `human_driven_roots`, older policy means LESS
      protection. Exposure is bounded because refs only advance, but the protective half of any
@@ -216,31 +228,60 @@ waves:
     title: >
       The second bound on the programme's yield — AVAILABILITY. The armed sweeper's launchd job
       crashed on 13 of 45 runs and never started on 4 further days; the timeouts were uncaught
-      and recorded nowhere
-    status: awaiting_ci
+      and recorded nowhere. DONE 2026-09-29, squash `a0a1c6fdabcf`; its 4-git-timeout claim was
+      re-verified independently against the live log on the same day
+    status: done
     pr: 8176
     depends_on:
       - W11
   - id: W13
     title: >
       This record and the handoff for W11/W12, deliberately held out of both of their PRs to
-      keep them off a shared file
-    status: awaiting_ci
+      keep them off a shared file. DONE 2026-09-29, squash `27623a56622a`
+    status: done
+    pr: 8177
     depends_on:
       - W12
+  - id: W14
+    title: >
+      The protective-key default and the policy-source line — a `human_driven_roots` absent from
+      an older config must deny, not permit, and the policy file must say where the runtime list
+      actually comes from. DONE 2026-09-29, squash `8e5529028f89`
+    status: done
+    pr: 8178
+    depends_on:
+      - W13
+  - id: W15
+    title: >
+      This record, the handoff and the §9 refinement for W12-W14, plus the four discovery records
+      the triage produced (the PR-body CI trigger, the root-containment correction, the runner
+      git stores, and the four-day non-start cause)
+    status: awaiting_ci
+    depends_on:
+      - W14
 next_action: >
-  Put the `needs_ceo` options to the operator, re-ranked by W6's measurement: the CI runner git
-  stores (177.26 GiB, 87% `.git`) are the largest real lever and the only fully reversible one, and
-  the Full Disk Access grant is worth asking for on the broken safety net rather than on bytes — it
-  frees 1.81 GiB, and the principal that needs it is `storage_floor_guard.py`, not this sweeper.
+  Put the `needs_ceo` options to the operator. SUPERSEDED TEXT, quoted so a reader who remembers it
+  can see what replaced it: "the CI runner git stores (177.26 GiB, 87% `.git`) are the largest real
+  lever and the only fully reversible one". 177.26 GiB is the WORKSPACE figure and the 87% was
+  measured on one checkout; measured 2026-09-29 across all four clones, the pack data is **141
+  GiB**, **130 GiB of it in two of the four**, and the remedy is CONSOLIDATION, not re-cloning —
+  re-cloning would restore a filter removed deliberately by `DSC:CI-PROMISOR-OBJECT-FETCH-TRUNCATION`
+  (`DSC:GC-DISABLED-RUNNER-STORES-ACCUMULATE-EVERY-TRANSFER-PATHOLOGY-FOREVER`). The Full Disk
+  Access grant is still worth asking for on the broken safety net rather than on bytes — it frees
+  1.81 GiB, and the principal that needs it is `storage_floor_guard.py`, not this sweeper.
   Gate (1) is closed: W11 landed `human_driven_roots`. The next ratification is (2) widening
-  `roots` by SUBTREE (`…/agent-workspaces/claude` and `…/agent-workspaces/tmp` ONLY), then (3) the
-  lock-stamp fix at `scripts/worktree_gc.py:501`, then gate 3 — which the deny-list now guards.
-  Also awaiting an explicit operator yes, and deliberately NOT done: running
-  `scripts/install_worktree_gc_launchd.sh`. Until it runs, W12's availability fix is in the repo
-  and not on the host, because the wrapper is the one file no merge reaches. W9 through W13 make
-  the programme's bounds legible and free zero bytes; legibility is a precondition for ratifying
-  the three acts, never a substitute for it.
+  `roots` by SUBTREE — `…/agent-workspaces/claude` ONLY; `…/agent-workspaces/tmp` is dropped from
+  the proposal because it holds 0 registrations and `scan_orphans` skips any root not under a host
+  checkout, so it is inert — then (3) the lock-stamp fix at `scripts/worktree_gc.py:501`, then
+  gate 3, which the deny-list now guards. Also awaiting an explicit operator yes, and deliberately
+  NOT done: running `scripts/install_worktree_gc_launchd.sh`. Until it runs, W12's availability fix
+  is in the repo and not on the host, because the wrapper is the one file no merge reaches —
+  measured 2026-09-29, the installed copy is 4,611 bytes dated 2026-08-12 against 10,957 on
+  `origin/main`. NEWLY OWED and not built: an EXTERNAL check comparing expected daily sweeper
+  starts against actual ones, because W14's census found the four-day gap was an UNLOADED AGENT
+  and no wrapper-side receipt can witness its own absence. W9 through W15 make the programme's
+  bounds legible and free zero bytes; legibility is a precondition for ratifying the acts above,
+  never a substitute for it.
 artifacts:
   - research/WORKTREE_GC_POLICY.md
   - scripts/worktree_gc.py
@@ -296,3 +337,47 @@ scratchpad pool turned out to be 64.8% live, and the one pool with a real lever 
 runner git stores — is the one nobody calls a worktree. Attribute the target volume, state the
 instrument's REACH, and report the reclaimable SHARE beside the pool size, before proposing any
 further storage work.
+
+## The one lever, re-measured — and why the obvious remedy was wrong
+
+W15 opened the runner stores instead of citing their size, and the number that had been carried
+since W4 moved. The **177.26 GiB** above is the WORKSPACE figure and the 87%-is-`.git` share was
+measured on a single checkout; across all four `actions-runner*/_work/macro/macro` clones the pack
+data is **141 GiB, 130 GiB of it in two of the four**, in two pathologies that share one cause and
+have nothing else to do with each other:
+
+| clone | `partialclonefilter` | packs | `.promisor` | pack bytes |
+|---|---|---:|---:|---:|
+| `actions-runner`   | `blob:none` | **36,271** | 36,271 | 5.3 GiB |
+| `actions-runner-2` | absent | 35 | 0 | **72 GiB** |
+| `actions-runner-3` | absent | 139 | 0 | **58 GiB** |
+| `actions-runner-4` | `blob:none` | 47 | 46 | 5.7 GiB |
+
+The filter column looks like the diagnosis and is not, and this is the part worth carrying forward.
+The two expensive clones lack `filter: blob:none` because it was **deliberately removed** on
+2026-09-23 after three production runs died at 65-67 minutes on an unretried promisor fetch
+(`DSC:CI-PROMISOR-OBJECT-FETCH-TRUNCATION`). Restoring it — the remedy the correlation invites, and
+the one this session drafted before reading `ci.yml`'s own comment block — would have reverted a
+correctness fix with three named failures behind it. A partial-clone filter also applies at
+clone/fetch time, never retroactively: runner-4 *has* the filter and still wrote 4.53 GiB in one
+burst, because an explicitly unfiltered fetch into a filter-configured workspace transfers
+everything. What actually separates the columns is how many unfiltered pack checkouts each has
+served. All four carry `gc.auto = 0` and **no workflow and no script in this repository performs
+any git maintenance on them**, so every era's transfer behaviour accumulates permanently. The lever
+is CONSOLIDATION of 35-139 near-identical whole-tree snapshots, not re-filtering, and it is an
+operator decision because it touches live CI machines.
+
+## The four-day gap had a second, quieter cause
+
+W12 shipped the timeout fix and this session closed the other half of the question. The window is
+**2026-09-18 → 09-21** and the cause is that the LaunchAgent was **not loaded** — not a crash, not
+a slow sweep, not a powered-off host. `launchctl` reports `runs = 7` against exactly 7 logged
+starts since 09-22; the counter resets on re-bootstrap, the plist's mtime is 2026-08-12 (so it was
+re-LOADED, not re-installed), and `last reboot` shows continuous uptime since 2026-08-29. Full
+census: **45 starts, 30 completions, 15 that started and never completed** — 13 of them uncaught
+`subprocess.TimeoutExpired`, 9 at `RUN_TIMEOUT_S` and 4 at `GIT_TIMEOUT_S` — **plus 4 days with no
+start at all.** #8176 addresses only the first mode, and structurally cannot address the second:
+every instrument this programme owns is written BY the wrapper, and the wrapper did not run. A
+deletion ledger cannot answer an availability question either — it records one row per deleted
+worktree, so its gaps cannot distinguish "did not run" from "ran and found nothing". Detecting a
+never-started run needs an EXTERNAL expectation, and that check does not exist yet.
