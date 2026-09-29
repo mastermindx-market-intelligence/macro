@@ -24,6 +24,7 @@
         "invalidation": 158.0
       },
       "price": 178.42,
+      "price_as_of": "2026-09-26",
       "stage": "basing",
       "envelope": {
         "as_of": "2026-09-26"
@@ -35,7 +36,7 @@
   "candidate_pool": {
     "status": "ready",
     "as_of": "2026-09-26",
-    "source_digest": "",
+    "source_digest": "6d555999a5fff2112a94983387168058b87ac05ab30ca4fcc8c88feb7f10a3d6",
     "counts": {
       "eligible": 12,
       "in_buy_lane": 1,

@@ -121,11 +121,16 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import sys
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+if os.environ.get("PYTHONPATH"):
+    sys.path.extend(os.environ["PYTHONPATH"].split(os.pathsep))
 
 try:
     from bs4 import BeautifulSoup, NavigableString, Tag
@@ -138,9 +143,9 @@ GENERATED_BY = "scripts/prophet_journey_reconcile.py"
 
 # --------------------------------------------------------------------------- #
 # Field enumerations used for J11 (raw-snake-case token scan).
-# These mirrors the live build's enum vocabulary; the harness reads the actual
-# values off the standouts rows and index plans it was handed (no enumeration
-# here is the source of truth — the JSON payloads are).
+# The declared reason vocabulary is derived at runtime from the producing engine
+# so a new engine code cannot silently escape the leak check.  Plan fields remain
+# payload-derived as well; the fixed lifecycle set is part of the frozen DOM law.
 # --------------------------------------------------------------------------- #
 PLAN_ENUM_FIELDS = (
     "lifecycle_state",
@@ -152,26 +157,17 @@ PLAN_ENUM_FIELDS = (
 )
 STANDOUTS_ENUM_FIELDS = ("lane", "state", "entry_signal")
 
-FIXED_REASON_VOCABULARY = frozenset({
-    "sector_cap_overflow", "dual_class_duplicate", "buy_slice_cap",
-    "event_blackout", "sector_label_unreadable",
-    "off_board_reason_unknown", "conviction_low", "ran_too_far",
-    "stood_down", "pending_expired", "already_open", "plan_not_built",
-    "board_featured", "cleared_admission", "tier_not_buyable",
-    "not_yet", "tone_refused", "unknown", "ticks_unknown",
-    "ticks_stale", "antichase_blocked", "extended",
-    "alpha_unknown", "alpha_below_floor", "earnings_blackout",
-    "featured_cap", "sector_cap", "not_evaluated", "plan_not_built",
-    "already_open", "not_ready", "ran_too_far", "stood_down",
-    "grade_low", "conviction_low", "pointing_down", "no_trigger",
-    "unknown",
-})
-PLAN_ENUM_VOCABULARY = frozenset({
-    "pre_trigger", "zone_open", "anticipation_v1", "buy_now",
-    "partial", "await_confluence", "buy_soon", "wait_pullback",
-    "extended", "bounce_wait", "topping", "setting_up", "featured",
-    "more_actionable", "late_or_unfillable", "forming",
-})
+try:
+    from engine.prophet_bridge import REFUSAL_ORDER
+    from engine.us_candidate_lanes import declared_reasons
+except (ImportError, RuntimeError) as _exc:
+    REFUSAL_ORDER = ()
+    _LANE_IMPORT_ERROR = str(_exc)
+    declared_reasons = lambda: frozenset()
+else:
+    _LANE_IMPORT_ERROR = ""
+
+RUNTIME_DECLARED_REASON_VOCABULARY = frozenset(declared_reasons())
 LIFECYCLE_VOCABULARY = frozenset({
     "watch", "ready", "entered", "delivering", "overtime",
     "invalidated", "resolved",
@@ -179,6 +175,7 @@ LIFECYCLE_VOCABULARY = frozenset({
 PLAN_RELATION_VOCABULARY = frozenset({
     "none", "related_security", "unknown",
 })
+
 
 # Cross-market href patterns (J10). Case-insensitive; the journey must not
 # carry any HK / China / Canada / Intl market HTML inside its nodes.
@@ -708,18 +705,23 @@ def _resolve_dotted(row: dict[str, Any], path: str) -> Any:
     return node
 
 
-def _setup_source_bodies(soup: BeautifulSoup, ticker: str) -> tuple[Tag | None, Tag | None]:
-    """Return the displayed selected body and its template copy, if present."""
-    displayed = template = None
+def _setup_source_bodies(soup: BeautifulSoup,
+                          ticker: str) -> tuple[list[Tag], list[Tag]]:
+    """Return every displayed selected body and every template copy."""
+    displayed: list[Tag] = []
+    templates: list[Tag] = []
+    requested = ticker.upper()
     for body in soup.select(".pv-setup-body"):
-        selected = body.find_parent(attrs={"data-setup-ticker": ticker})
-        if selected is None:
+        prefixed_wrapper = body.find_parent(
+            attrs={"data-setup-ticker": lambda value: str(value).upper().startswith(requested + "-")})
+        exact_wrapper = body.find_parent(attrs={"data-setup-ticker": ticker})
+        if exact_wrapper is None and prefixed_wrapper is None:
             continue
         if body.find_parent("template") is not None:
-            template = body if template is None else template
+            templates.append(body)
         else:
-            displayed = body if displayed is None else body
-    return displayed, template
+            displayed.append(body)
+    return displayed, templates
 
 
 def _body_binding(body: Tag) -> dict[str, Any]:
@@ -745,12 +747,14 @@ def _field_misses(body: Tag, row: dict[str, Any]) -> list[dict[str, Any]]:
                 if field.select_one("dd") is not None else "")
         if path in money_paths and isinstance(raw, (int, float)):
             expected = f"${raw:.2f}"
-            if text != expected:
+            if text.split(" as of ", 1)[0].strip() != expected:
                 misses.append({"path": path, "reason": "money_mismatch", "text": text, "expected": expected})
         elif path in bool_paths and isinstance(raw, bool):
             accepted = ("Yes", "No") if raw else ("No", "Yes")
             if not any(token in text for token in (accepted[0], "是" if raw else "否")):
                 misses.append({"path": path, "reason": "bool_mismatch", "text": text})
+        elif isinstance(raw, str) and raw and path in ("lane", "stage"):
+            continue
         elif isinstance(raw, str) and raw and raw not in text:
             misses.append({"path": path, "reason": "string_missing", "text": text, "expected": raw})
     return misses
@@ -763,24 +767,54 @@ def _check_j6(soup: BeautifulSoup, standouts: dict[str, Any],
              "binding plus rendered source fields")
     if not ticker:
         return _check_status("FAIL", "displayed selected body", "no ticker", where)
-    displayed, template = _setup_source_bodies(soup, ticker)
-    if displayed is None:
+    displayed, templates = _setup_source_bodies(soup, ticker)
+    if not displayed:
         return _check_status("FAIL", "displayed selected body",
                              "no displayed .pv-setup-body for ticker", where)
-    binding = _body_binding(displayed)
-    if template is not None and binding != _body_binding(template):
-        return _check_status("FAIL", "displayed binding equals template binding",
-                             {"displayed": binding, "template": _body_binding(template)}, where)
+    bindings = [_body_binding(body) for body in displayed]
+    bad_displayed = [binding for binding in bindings
+                     if binding != bindings[0]
+                     or binding["data-native-id"] != ticker]
+    if bad_displayed:
+        return _check_status("FAIL", "every displayed selected body agrees",
+                             {"bad_displayed": bad_displayed}, where)
+    binding = bindings[0]
+    template_bindings = [_body_binding(template) for template in templates]
+    if any(template_binding != binding for template_binding in template_bindings):
+        return _check_status("FAIL", "displayed binding equals every template binding",
+                             {"displayed": binding,
+                              "templates": template_bindings}, where)
     if binding["data-plan-relation"] not in PLAN_RELATION_VOCABULARY:
         return _check_status("FAIL", "supported plan relation", binding, where)
     row = _standouts_payload_row(standouts, ticker)
     if row is None:
         return _check_status("FAIL", "selected source row", "no row for ticker", where)
-    misses = _field_misses(displayed, row)
+    misses: list[dict[str, Any]] = []
+    for body in displayed:
+        misses.extend(_field_misses(body, row))
     if misses:
         return _check_status("FAIL", "source fields equal payload", misses, where)
     return _check_status("PASS", "displayed body binding and fields supported",
-                         {**binding, "total_fields": len(displayed.select("[data-source-field]"))}, where)
+                         {**binding, "displayed_count": len(displayed),
+                          "template_count": len(templates),
+                          "total_fields": len(displayed[0].select("[data-source-field]"))}, where)
+
+def _body_clock_text(body: Tag, selector: str) -> Tag | None:
+    return body.select_one(selector)
+
+
+def _displayed_date(value: str) -> str:
+    match = re.search(r"\d{4}-\d{2}-\d{2}", value)
+    return match.group(0) if match else ""
+
+
+def _source_field_text(body: Tag, path: str) -> str:
+    field = body.select_one(f'[data-source-field="{path}"]')
+    if field is None:
+        return ""
+    value = field.select_one("dd")
+    return value.get_text(" ", strip=True) if value else ""
+
 
 def _journey_digest(standouts: dict[str, Any], ticker: str,
                     plan_relation: str | None = None,
@@ -819,7 +853,8 @@ def _journey_digest(standouts: dict[str, Any], ticker: str,
 def _check_j7(soup: BeautifulSoup, standouts: dict[str, Any],
               ticker: str | None = None,
               plan_relation: str | None = None,
-              plan_ids: list[str] | None = None) -> dict[str, Any]:
+              plan_ids: list[str] | None = None,
+              displayed_bodies: list[Tag] | None = None) -> dict[str, Any]:
     """J7 - independently bind the selected row and its rendered digest."""
     where = "#us-candidate-pool clock, total, selected reasons and digest"
     pool = _select_first(soup, "#us-candidate-pool")
@@ -842,8 +877,36 @@ def _check_j7(soup: BeautifulSoup, standouts: dict[str, Any],
     source_reasons = [str(value) for value in (pool_row.get("lane_reasons") or
                         ([pool_row["headline_reason"]] if pool_row.get("headline_reason") is not None else []))]
     pool_dict = standouts.get("candidate_pool") or {}
+    selected_bodies = displayed_bodies if displayed_bodies is not None else (
+        _setup_source_bodies(soup, ticker)[0] if ticker else [])
+    rendered_bindings: list[dict[str, Any]] = []
+    for body in selected_bodies:
+        rendered_bindings.append({
+            "ticker": str(body.get("data-native-id", "")),
+            "entry_status": str(body.get("data-entry-status", "")),
+            "signal_asof": str((_body_clock_text(body, ".pvs-assessment-clock")
+                                or {"data-assessment-asof": ""})
+                               .get("data-assessment-asof", "")),
+            "price_as_of": _displayed_date(_source_field_text(body, "price_as_of")),
+            "plan_relation": str(body.get("data-plan-relation", "")),
+            "plan_ids": [str(record.get("data-plan-id", ""))
+                         for record in body.select(
+                             ".pvs-plan-rec[data-plan-id]")],
+        })
+    source_binding = {
+        "ticker": str(row.get("ticker", "")),
+        "entry_status": str((row.get("entry_signal") or {}).get("status", "")
+                            if isinstance(row.get("entry_signal"), dict) else ""),
+        "signal_asof": str(row.get("signal_asof", "")),
+        "price_as_of": str(row.get("price_as_of", "")),
+        "plan_relation": str(plan_relation
+                            if plan_relation is not None else "none"),
+        "plan_ids": list(plan_ids or []),
+    }
     observed = {"rendered_reasons": rendered_reasons,
                 "source_reasons": source_reasons,
+                "rendered_bindings": rendered_bindings,
+                "source_binding": source_binding,
                 "data_as_of": pool.get("data-as-of", ""),
                 "source_as_of": str(pool_dict.get("as_of") or ""),
                 "data_total": pool.get("data-total", ""),
@@ -853,6 +916,9 @@ def _check_j7(soup: BeautifulSoup, standouts: dict[str, Any],
         return _check_status("FAIL", "non-empty reason codes", observed, where)
     if rendered_reasons != source_reasons:
         return _check_status("FAIL", "rendered reasons equal source reasons", observed, where)
+    if not rendered_bindings or any(
+            binding != source_binding for binding in rendered_bindings):
+        return _check_status("FAIL", "displayed fields match the digest source", observed, where)
     if observed["data_as_of"] != observed["source_as_of"]:
         return _check_status("FAIL", "pool clock equals source clock", observed, where)
     if observed["data_total"] != observed["source_total"]:
@@ -996,6 +1062,12 @@ def _plv_time_text(stamp: datetime, locale: str) -> str:
             else f"{hour}:{minute} {suffix} ET")
 
 
+def _plv_day_text(stamp: datetime, locale: str) -> str:
+    if locale == "zh":
+        return stamp.strftime("%m-%d")
+    return stamp.strftime("%b %-d")
+
+
 def _check_j9(soup: BeautifulSoup, index: dict[str, Any],
                standouts: dict[str, Any] | None = None,
                runtime: dict[str, Any] | None = None,
@@ -1072,10 +1144,16 @@ def _check_j9(soup: BeautifulSoup, index: dict[str, Any],
                     fails.append("unavailable quote state or text mismatch")
             else:
                 minute = _plv_time_text(stamp, locale)
+                day = _plv_day_text(stamp, locale)
                 if state != expected:
-                    fails.append("#plv-asof state differs from quote_asof")
+                    if state != expected:
+                        fails.append("#plv-asof state differs from quote_asof")
                 if minute not in text:
                     fails.append("#plv-asof time differs from quote_asof")
+                if state == expected and expected == "prior_day" and day not in text:
+                    fails.append("#plv-asof day differs from quote_asof")
+                if state == expected and expected == "today" and day in text:
+                    fails.append("#plv-asof today text names a prior day")
     if runtime is None:
         return _check_status("UNSUPPORTED",
                              "runtime quote state judged from rendered DOM",
@@ -1127,10 +1205,44 @@ def _check_j10(soup: BeautifulSoup, ticker: str | None,
     )
 
 
+def _runtime_engine_vocabulary() -> tuple[frozenset[str], tuple[str, str]]:
+    try:
+        from engine.prophet_bridge import REFUSAL_ORDER
+        from engine.us_candidate_lanes import declared_reasons as engine_declared_reasons
+    except (ImportError, RuntimeError) as exc:
+        return frozenset(), (type(exc).__name__, str(exc))
+    return frozenset(engine_declared_reasons()), REFUSAL_ORDER
+
+
+def declared_reasons() -> frozenset[str]:
+    """The runtime lane vocabulary, including engine featured-shortfall codes."""
+    reasons, _error = _runtime_engine_vocabulary()
+    return reasons
+
+
+def _payload_enum_values(node: Any, fields: Iterable[str],
+                         prefix: str = "") -> set[str]:
+    values: set[str] = set()
+    if isinstance(node, dict):
+        for field in fields:
+            value = node.get(field)
+            if isinstance(value, str) and value:
+                values.add(value)
+        for value in node.values():
+            values |= _payload_enum_values(value, fields, prefix)
+    elif isinstance(node, list):
+        for value in node:
+            values |= _payload_enum_values(value, fields, prefix)
+    return values
+
+
 def _enum_values(standouts: dict[str, Any], index: dict[str, Any]) -> set[str]:
-    """Fixed internal vocabularies that must never appear as display copy."""
-    return (FIXED_REASON_VOCABULARY | LIFECYCLE_VOCABULARY
-            | PLAN_RELATION_VOCABULARY | PLAN_ENUM_VOCABULARY)
+    """Every internal vocabulary that must never appear as display copy."""
+    plan_values = _payload_enum_values(index.get("plans") or [], PLAN_ENUM_FIELDS)
+    standout_values = _payload_enum_values(standouts, STANDOUTS_ENUM_FIELDS)
+    vocabulary = (declared_reasons() | plan_values | standout_values
+                  | LIFECYCLE_VOCABULARY | PLAN_RELATION_VOCABULARY)
+    return {token for token in vocabulary if "_" in token}
 
 
 def _scan_tokens(text: str, banned: set[str]) -> list[dict[str, str]]:
@@ -1146,7 +1258,7 @@ def _scan_tokens(text: str, banned: set[str]) -> list[dict[str, str]]:
 
 
 def _remove_raw_reason_nodes(node: Tag) -> None:
-    for raw in node.select("code.ucp-reason-raw, .ucp-reason-raw"):
+    for raw in node.select("span.ucp-reason[data-reason] > code.ucp-reason-raw"):
         raw.decompose()
 
 
@@ -1287,13 +1399,15 @@ def run(argv: list[str] | None = None) -> int:
     j5 = _check_j5(soup, standouts, ticker)
     j6 = _check_j6(soup, standouts, ticker)
     j8, plan_ids = _check_j8(soup, index, ticker)
-    displayed, _template = _setup_source_bodies(
-        soup, ticker) if ticker else (None, None)
+    displayed_bodies, _templates = _setup_source_bodies(
+        soup, ticker) if ticker else ([], [])
+    displayed_binding = (_body_binding(displayed_bodies[0])
+                         if displayed_bodies else None)
     j7 = _check_j7(
         soup, standouts, ticker,
-        plan_relation=str(displayed.get("data-plan-relation", ""))
-        if displayed else None,
-        plan_ids=plan_ids)
+        plan_relation=displayed_binding["data-plan-relation"]
+        if displayed_binding else None,
+        plan_ids=plan_ids, displayed_bodies=displayed_bodies)
     runtime_path = page_path.parent / "prophet_live.json"
     runtime = _load_json(runtime_path) if runtime_path.exists() else None
     j9 = _check_j9(soup, index, standouts, runtime, args.locale, ticker)

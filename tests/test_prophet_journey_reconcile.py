@@ -45,6 +45,22 @@ sys.modules["pjr"] = _pjr
 _SPEC.loader.exec_module(_pjr)
 
 
+def _runtime_engine_vocabulary() -> tuple[frozenset[str], tuple[str, str]]:
+    try:
+        from engine.prophet_bridge import REFUSAL_ORDER
+        from engine.us_candidate_lanes import declared_reasons
+    except (ImportError, RuntimeError) as exc:
+        return frozenset(), (type(exc).__name__, str(exc))
+    return frozenset(declared_reasons()), REFUSAL_ORDER
+
+
+def _field_text(path: str, html: str) -> str:
+    field = BeautifulSoup(html, "lxml").select_one(
+        f'[data-source-field="{path}"]')
+    assert field is not None, path
+    return field.get_text(" ", strip=True)
+
+
 # =========================================================================== #
 # Fixture builders — synthetic HTML + synthetic payloads, in memory.
 # =========================================================================== #
@@ -68,6 +84,7 @@ def _full_page(*, ticker: str = "TEST1", with_plan: bool = True,
                detail_signal: dict | None = None,
                detail_hold: dict | None = None,
                detail_price: float = 178.42,
+               detail_price_as_of: str = "2026-09-26",
                detail_lane: str = "bottoming",
                detail_stage: str = "basing",
                plan_relation: str = "none",
@@ -202,7 +219,7 @@ def _full_page(*, ticker: str = "TEST1", with_plan: bool = True,
     <div class="pvs-field" data-source-field="price">
       <dt><span class="l-en">Snapshot price</span>
           <span class="l-zh">快照价格</span></dt>
-      <dd>${detail_price:.2f}</dd>
+      <dd>${detail_price:.2f} <span class="l-en">as of {detail_price_as_of}</span><span class="l-zh">截至 {detail_price_as_of}</span></dd>
     </div>
     <div class="pvs-field" data-source-field="entry_signal.buy_zone.low">
       <dt><span class="l-en">Entry zone · low</span>
@@ -246,15 +263,20 @@ def _full_page(*, ticker: str = "TEST1", with_plan: bool = True,
           <span class="l-zh">暂定观察</span></dt>
       <dd><span class="l-en">No</span><span class="l-zh">否</span></dd>
     </div>
+    <div class="pvs-field" data-source-field="price_as_of">
+     <dt><span class="l-en">Price as-of</span>
+         <span class="l-zh">价格日期</span></dt>
+     <dd>{detail_price_as_of}</dd>
+    </div>
     <div class="pvs-field" data-source-field="lane">
       <dt><span class="l-en">Source setup type</span>
           <span class="l-zh">来源形态类别</span></dt>
-      <dd>{detail_lane}</dd>
+      <dd><span class="l-en">A base is forming after a decline.</span><span class="l-zh">下跌后正在构筑底部。</span></dd>
     </div>
     <div class="pvs-field" data-source-field="stage">
       <dt><span class="l-en">Source stage</span>
           <span class="l-zh">来源阶段</span></dt>
-      <dd>{detail_stage}</dd>
+      <dd><span class="l-en">It is building a base.</span><span class="l-zh">正在构筑底部。</span></dd>
     </div>
   </dl>
   <div class="pvs-field" data-source-field="envelope.as_of">
@@ -289,6 +311,8 @@ def _standouts_payload(*, ticker: str = "TEST1", in_buy: bool = True,
                        pool_digest: str = "",
                        pool_as_of: str = "2026-09-26",
                        detail_price: float = 178.42,
+                       entry_status: str = "bounce_wait",
+                       price_as_of: str = "2026-09-26",
                        lane: str = "bottoming",
                        as_of: str = "2026-09-26") -> dict:
     """Synthetic standouts payload. Mirrors the live shape."""
@@ -299,7 +323,7 @@ def _standouts_payload(*, ticker: str = "TEST1", in_buy: bool = True,
             "ticker": ticker,
             "lane": lane,
             "state": "setting_up",
-            "entry_signal": {"status": "bounce_wait",
+            "entry_signal": {"status": entry_status,
                              "headline": "Wait for confirmation",
                              "buy_zone": {"low": 171.00, "high": 176.00},
                              "stop": 164.00,
@@ -308,6 +332,7 @@ def _standouts_payload(*, ticker: str = "TEST1", in_buy: bool = True,
                        "provisional": False},
             "hold": {"invalidation": 158.00},
             "price": detail_price,
+            "price_as_of": price_as_of,
             "stage": "basing",
             "envelope": {"as_of": as_of},
             "signal_asof": as_of,
@@ -554,7 +579,7 @@ def test_j6_pass_all_fields_preserved():
 def test_j6_fail_money_mismatch():
     """Drop the $-prefix from one field — the dollar amount check must FAIL."""
     html = _full_page(ticker="TEST1", detail_price=178.42).replace(
-        '<dd>$178.42</dd>', '<dd>178.42</dd>')
+        '<dd>$178.42', '<dd>178.42')
     soup = BeautifulSoup(html, "lxml")
     su = _standouts_payload(ticker="TEST1", detail_price=178.42)
     chk = _pjr._check_j6(soup, su, "TEST1")
@@ -748,6 +773,20 @@ def test_j6_fail_only_template_carries_corrected_body():
     assert chk["status"] == "FAIL", chk
 
 
+def test_j6_fail_second_displayed_body_with_foreign_native_id():
+    soup = BeautifulSoup(_corrected_html(), "lxml")
+    wrapper = soup.select_one('[data-setup-ticker="TEST1"]')
+    second_wrapper = BeautifulSoup(str(wrapper), "lxml").select_one(
+        '[data-setup-ticker="TEST1"]')
+    second_wrapper["data-setup-ticker"] = "TEST1-dialog"
+    body = second_wrapper.select_one(".pv-setup-body")
+    body["data-native-id"] = "OTHER"
+    wrapper.insert_after(second_wrapper)
+    chk = _pjr._check_j6(soup, _standouts_payload(), "TEST1")
+    assert chk["status"] == "FAIL", chk
+    assert chk["observed"]["bad_displayed"][0]["data-native-id"] == "OTHER"
+
+
 def test_j7_pass_recomputes_selected_row_digest():
     su = _standouts_payload(pool_digest="")
     soup = BeautifulSoup(_corrected_html(plan_relation="none"), "lxml")
@@ -790,6 +829,26 @@ def test_j7_fail_empty_reason_code():
     pool["data-source-digest"] = _pjr._journey_digest(
         su, "TEST1", "related_security", ["PLAN1"])
     chk = _pjr._check_j7(soup, su, "TEST1")
+    assert chk["status"] == "FAIL", chk
+
+
+def test_j7_fail_one_field_digest_mutation():
+    source = _standouts_payload()
+    rendered = _standouts_payload(entry_status="entered")
+    source_digest = _pjr._journey_digest(
+        source, "TEST1", "related_security", ["PLAN1"])
+    rendered_digest = _pjr._journey_digest(
+        rendered, "TEST1", "related_security", ["PLAN1"])
+    assert source_digest != rendered_digest
+    soup = BeautifulSoup(_corrected_html(), "lxml")
+    pool = soup.select_one("#us-candidate-pool")
+    pool["data-source-digest"] = source_digest
+    body = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
+    body["data-entry-status"] = "entered"
+    read = body.select_one("[data-entry-status]")
+    read["data-entry-status"] = "entered"
+    chk = _pjr._check_j7(soup, source, "TEST1",
+                         plan_relation="related_security", plan_ids=["PLAN1"])
     assert chk["status"] == "FAIL", chk
 
 
@@ -842,8 +901,9 @@ def test_j8_fail_target_exists_only_in_template():
 
 def test_j9_pass_prior_day_runtime_clock():
     chk = _pjr._check_j9(
-        BeautifulSoup(_corrected_html(), "lxml"), _index_payload(),
-        _standouts_payload(), ticker="TEST1",
+        BeautifulSoup(_corrected_html(
+            plv_text="last read Sep 25, 4:00 pm ET"), "lxml"),
+        _index_payload(), _standouts_payload(), ticker="TEST1",
         runtime=_runtime_payload(quote_asof="2026-09-25T20:00:00Z",
                                  pass_ts="2026-09-26T20:00:00Z"))
     assert chk["status"] == "PASS", chk
@@ -942,6 +1002,26 @@ def test_j9_pass_absent_signal_asof_renders_not_supplied():
     assert chk["status"] == "PASS", chk
 
 
+def test_j9_fail_prior_day_state_with_text_naming_a_different_prior_day():
+    soup = BeautifulSoup(_corrected_html(
+        plv_state="prior_day", plv_text="last read Sep 24, 4:00 pm ET"), "lxml")
+    chk = _pjr._check_j9(soup, _index_payload(), _standouts_payload(),
+                         _runtime_payload(quote_asof="2026-09-25T20:00:00Z"),
+                         ticker="TEST1")
+    assert chk["status"] == "FAIL", chk
+    assert "#plv-asof day differs from quote_asof" in chk["observed"]
+
+
+def test_j9_fail_today_state_with_prior_day_payload_stamp():
+    soup = BeautifulSoup(_corrected_html(
+        plv_state="today", plv_text="quotes as of 4:00 pm ET"), "lxml")
+    chk = _pjr._check_j9(soup, _index_payload(), _standouts_payload(),
+                         _runtime_payload(quote_asof="2026-09-25T20:00:00Z"),
+                         ticker="TEST1")
+    assert chk["status"] == "FAIL", chk
+    assert chk["observed"] == ["#plv-asof state differs from quote_asof"]
+
+
 def test_j10_pass_market_case_folding():
     html = _corrected_html().replace('data-mkt="US"', 'data-mkt="us"', 1)
     chk = _pjr._check_j10(BeautifulSoup(html, "lxml"), "TEST1", ["PLAN1"])
@@ -1014,6 +1094,34 @@ def test_j11_fail_human_reason_label_with_empty_binding():
     chk = _pjr._check_j11(soup, "en", _standouts_payload(), _index_payload(),
                           "TEST1", ["PLAN1"])
     assert chk["status"] == "FAIL", chk
+
+
+def test_j11_fail_raw_code_when_selector_is_not_code():
+    soup = BeautifulSoup(_corrected_html(), "lxml")
+    receipt = soup.select_one(".ucp-receipt")
+    reason = soup.new_tag(
+        "span", attrs={"class": "ucp-reason", "data-reason": "unmapped_new_code"})
+    reason.append(soup.new_tag("span", attrs={"class": "ucp-reason-raw"}))
+    reason.span.append("cleared_admission")
+    receipt.append(reason)
+    chk = _pjr._check_j11(soup, "en", _standouts_payload(), _index_payload(),
+                          "TEST1", ["PLAN1"])
+    assert chk["status"] == "FAIL", chk
+
+
+def test_j11_fail_declared_lane_family_codes_from_engine():
+    soup = BeautifulSoup(_corrected_html(), "lxml")
+    body = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
+    body.append(BeautifulSoup(
+        "<p>entry_status_bounce_wait stage_basing tier_T1</p>", "lxml").p)
+    chk = _pjr._check_j11(soup, "en", _standouts_payload(), _index_payload(),
+                          "TEST1", ["PLAN1"])
+    assert chk["status"] == "FAIL", chk
+    tokens = {hit["token"] for hit in chk["observed"]}
+    assert {"entry_status_bounce_wait", "stage_basing", "tier_T1"} <= tokens
+
+
+
 
 def test_j12_pass_alert_absent_with_sources():
     soup = BeautifulSoup(_full_page(ticker="TEST1"), "lxml")
@@ -1182,6 +1290,9 @@ def test_j5_against_committed_fixture():
                + '<details class="pv-setup-inline pv-setup-table" '
                  'data-setup-ticker="AMD" data-setup-asof="2026-09-27">'
                + raw[body_start:].replace(
+                   '<div class="pv-setup-body"',
+                   '<div class="pv-setup-body" data-plan-relation="none"', 1)
+               .replace(
                    '</div></dialog>', '</div></details></dialog>', 1))
     soup = BeautifulSoup(wrapped, "lxml")
     # Synthetic standouts matching the fixture's bound fields.
@@ -1203,8 +1314,7 @@ def test_j5_against_committed_fixture():
                         "provisional": False},
             "hold": {"invalidation": 158.00},
             "price": 178.42,
-            "signal_asof": "2026-09-27",
-        }],
+                    }],
         "watch": [],
         "candidate_pool": {"status": "ready", "as_of": "2026-09-27",
                            "source_digest": "", "rows": [],
@@ -1234,6 +1344,9 @@ def test_j6_against_committed_fixture():
                + '<details class="pv-setup-inline pv-setup-table" '
                  'data-setup-ticker="AMD" data-setup-asof="2026-09-27">'
                + raw[body_start:].replace(
+                   '<div class="pv-setup-body"',
+                   '<div class="pv-setup-body" data-plan-relation="none"', 1)
+               .replace(
                    '</div></dialog>', '</div></details></dialog>', 1))
     soup = BeautifulSoup(wrapped, "lxml")
     su = {
@@ -1253,8 +1366,7 @@ def test_j6_against_committed_fixture():
                         "provisional": False},
             "hold": {"invalidation": 158.00},
             "price": 178.42,
-            "signal_asof": "2026-09-27",
-            "envelope": {"as_of": "2026-09-27"},
+                        "envelope": {"as_of": "2026-09-27"},
             "price_as_of": "2026-09-27T09:30:00Z",
         }],
         "watch": [],
@@ -1293,8 +1405,7 @@ def test_cli_against_committed_fixture():
                        "provisional": False},
             "hold": {"invalidation": 158.00},
             "price": 178.42,
-            "signal_asof": "2026-09-27",
-            "envelope": {"as_of": "2026-09-27"},
+                        "envelope": {"as_of": "2026-09-27"},
             "price_as_of": "2026-09-27T09:30:00Z",
         }],
         "watch": [],
@@ -1312,6 +1423,9 @@ def test_cli_against_committed_fixture():
                + '<details class="pv-setup-inline pv-setup-table" '
                  'data-setup-ticker="AMD" data-setup-asof="2026-09-27">'
                + raw[body_start:].replace(
+                   '<div class="pv-setup-body"',
+                   '<div class="pv-setup-body" data-plan-relation="none"', 1)
+               .replace(
                    '</div></dialog>', '</div></details></dialog>', 1))
     wrapped_path = TMP_DIR / "fixture_wrapped.html"
     wrapped_path.write_text(wrapped, encoding="utf-8")
@@ -1320,9 +1434,13 @@ def test_cli_against_committed_fixture():
                    "--out", str(out)])
     assert rc in (0, 1, 2), f"unexpected exit={rc}"
     report = json.loads(out.read_text(encoding="utf-8"))
-    # Either PASS (if all checks resolved) or PARTIAL (J1/J2/J3/J4/J7
-    # land N/A because the fixture has no #us-standouts / #us-candidate-pool).
-    assert report["verdict"] in ("PASS", "PARTIAL"), report
+    # This frozen current-UI fixture is intentionally known-bad under J8 and
+    # has no runtime quote clock, so its terminal verdict is FAIL.
+    assert report["verdict"] == "FAIL", report
+    verdicts = {check["id"]: check["status"] for check in report["checks"]}
+    assert verdicts["J6"] == "PASS"
+    assert verdicts["J8"] == "FAIL"
+    assert verdicts["J9"] == "UNSUPPORTED"
     if report["verdict"] == "PARTIAL":
         na_ids = [c["id"] for c in report["checks"]
                   if c["status"] == "N/A"]
