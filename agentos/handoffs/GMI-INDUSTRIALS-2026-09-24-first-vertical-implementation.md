@@ -47,6 +47,14 @@ changed:
     what: "Rulings 1-3: coverage is reported as measured and never from the plan's assignment; the four cures land; adding an anchor-map row is a CLAIM that the named test discriminates compliance from violation. Also records the two trusted-not-derived follow-ons and three corrections this seat made to its own earlier statements."
   - path: agentos/discoveries/DSC-A-PLANS-TRACEABILITY-TABLE-IS-NOT-COVERAGE.md
     what: "New DSC: a frozen plan's requirement-to-test table is an assignment of intent, not evidence - 13 of 15 named anchors did not exist across two merged, green tasks."
+  - path: research/industrials/first_vertical_program/requirement_index.md
+    what: "IND-T04c (#8160): the frozen plan's 56 section-6 rows recovered from plan blob a5462dc7f36a into the repo VERBATIM, plus one added column anchor_basis in {RULING, LANDED_BEHAVIOUR, NO_SOURCE} - 4/11/41. The anchor map's only external authority; before it, a row naming an id the plan never assigned resolved as cleanly as a correct one."
+  - path: tests/test_industrials_dependency_binding.py
+    what: "IND-T04c: test_anchor_map_agrees_with_the_recovered_requirement_index - refuses an anchored id the plan never named, a wrong-task suite, an anchor on a NO_SOURCE row, an index row claiming a source nothing enforces, a dropped row, a missing index, and a RULING basis whose ruling is absent. 7 of 7 mutations caught."
+  - path: .github/ci/legacy-jobs.yml
+    what: "IND-T04c: the index and R-IND-2026-09-27-requirement-anchors.md added to industrials-result-cash paths:. Required, not optional - the suite READS both, so the curated-closure test refuses without them; an unregistered index is editable without the guard running on it."
+  - path: agentos/discoveries/DSC-A-VENDORED-TRACEABILITY-MAP-STILL-HAS-NO-REQUIREMENT-TEXT.md
+    what: "New DSC: vendoring the map makes a row gradeable, not honest - 41 of 56 requirements have no obligation text in this repo or on carrier #7789, so the binding blocker is the missing r1/r2/W12 corpus rather than #7870/#7905. Amends DSC:A-PLANS-TRACEABILITY-TABLE-IS-NOT-COVERAGE at source, whose so_what prescribed vendoring as the cure."
 verified:
   - claim: "Both gating PRs are still open drafts, and #7870's head has moved since this file pinned it — its current head DOES carry the route family the G1 row used to record as absent."
     command: "gh pr view 7870 --json state,isDraft,headRefOid; gh pr view 7905 --json state,isDraft,headRefOid; git fetch origin 'refs/pull/7870/head:refs/tmp/p7870' --force; git ls-tree --name-only refs/tmp/p7870 -- app/theme_research.py templates/_basket_intelligence_mounts.html.j2 engine/company_intelligence/issuer_profiles.py"
@@ -156,7 +164,7 @@ danger_areas:
   - "A reviewer commissioned by naming an artifact PATH spends its whole turn budget on discovery: three commissions on T04 produced one verdict, and that one overstated its headline finding (it claimed a blanket false certification of every comparability gate - a probe showed currency_mismatch refuses regardless, because that gate reads the operands). Commission judgment-only with the code excerpt and measured probe output inline, and expect the seat to run the decisive probes itself. Probe before ruling: a plausible mechanism sent to a repair lane unverified is a false finding."
   - "In a worktree-isolated session Bash refuses a runtime-computed cd, a heredoc nested in a cd, python3 $VAR/..., and any git-naming form it cannot verify - including a heredoc whose BODY contains git commands. Use literal absolute paths, the Write tool then a plain python3 <abs path>, and gh pr create/comment --body-file."
   - "GLM lanes (glm-codex/glm-5.3) collapsed twice on this program (word salad, rc=0); use minimax/MiniMax-M3 on m1/mb and treat the Opus READ_ONLY red-team as the real gate - MiniMax reviews against a stale base mint phantom blockers."
-prs: [7789, 7912, 7915, 7919, 7924, 8062, 8070, 8072, 8073, 8075, 8077, 8084, 8101, 8105, 8109]
+prs: [7789, 7912, 7915, 7919, 7924, 8062, 8070, 8072, 8073, 8075, 8077, 8084, 8101, 8105, 8109, 8120, 8160]
 decisions: []
 discoveries: ["DSC:A-LANE-SELF-VERDICT-IS-NOT-A-CLOSURE-GATE", "DSC:A-PATH-ONLY-REVIEW-COMMISSION-BUYS-DISCOVERY-NOT-JUDGMENT", "DSC:A-DANGLING-ARTIFACT-ENTRY-REDS-EVERY-STALE-MERGE-REF", "DSC:A-FROZEN-PLANS-EXAMPLE-TEST-CAN-BE-HALF-DEAD", "DSC:A-PLANS-TRACEABILITY-TABLE-IS-NOT-COVERAGE", "DSC:A-WATCHER-GRADING-CHECK-ROWS-REPORTS-A-FALSE-ALL-CLEAR", "DSC:CI-PLAN-PUBLISHES-THE-PACK-SET-SO-ZERO-PACKS-IS-NOT-PROOF"]
 ---
