@@ -1013,6 +1013,7 @@ def test_us_plan_block_clock_is_unavailable_when_source_day_is_not_valid(source_
     assert clock
     assert clock["data-plan-book-asof"] == ""
     assert clock["data-plan-book-source-asof"] == ""
+    assert clock["data-plan-book-published"] == ""
     text = clock.get_text(" ", strip=True)
     assert "Plan record date unavailable" in text
     assert "计划记录日期不可用" in text
