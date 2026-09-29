@@ -77,3 +77,15 @@ The earlier raw-store and board inspections were explicitly blocked by the platf
 One initial test-file write returned `Session terminated`. Same-carrier metadata reconciliation proved the file absent; one bounded technical recovery wrote and verified the smaller chunks. Later writes were acknowledged. No modifying effect remains unknown.
 
 **MISSION_COMPLETE: false.** This record is a cumulative source checkpoint, not a transfer of custody or a background execution claim.
+
+## Continuation: file-entry CI repair
+
+Current continuation authority is the Chairman's same-chat instruction to continue. Protected Mastermind pin is `0b3bdf78be9b86bc3672f224ddacf80854a4c3fb`; INDEX and the required active/reconciliation/closeout companions were re-read and are byte-identical to the prior loaded pin.
+
+Exact-head CI run `36563918232` concluded failure: eleven code packs passed, but `ci-pack-9` failed `tests/test_check_script_import_pinning.py::test_unpinned_entry_scripts_only_shrink` because the new CLI did not pin its repository before imports. This was a real R1 defect, not an inherited or waived check. Two additional real subprocess tests reproduced the defect before the repair: foreign-cwd/PYTHONPATH imported an unrelated `engine` package, and isolated Python file execution could not resolve `engine`.
+
+The CLI now pins its own checkout using the established `_ROOT` / `sys.path.insert` pattern before importing repository packages. No baseline, waiver, CI policy, provider, production configuration or collection behavior changed. The selected-set algorithm is unchanged; the earlier immutable selection receipt remains evidence of its exact recorded code version, not a claim that later script/test hashes are identical.
+
+Verification after repair: the expansion, options-surface, membership and complete import-pinning suites returned **98 passed** with exit 0. The CLI's two new subprocess cases cover ordinary and isolated Python startup from an unrelated working directory. The original CI failure remains preserved; fresh hosted proof and independent review are still required for the repaired head.
+
+The Executive read preflight succeeded but reports `mode=readonly`; it cannot originate a reviewer via this ingress. No dummy modifying call or duplicate review was submitted. The existing repository reviewer request remains unconsumed. Denied provider/store/board inspections remain excluded; no alternate carrier or actor was used to repeat them.

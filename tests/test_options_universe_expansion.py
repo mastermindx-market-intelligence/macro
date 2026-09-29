@@ -301,3 +301,30 @@ def test_conflicting_explicit_sessions_are_refused():
     cfg = settings(); cfg["as_of"] = "2026-09-25"
     with pytest.raises(ValueError, match="invalid_session"):
         plan(cfg)
+
+
+@pytest.mark.parametrize("isolated", [False, True])
+def test_preflight_file_entry_uses_own_repository_from_foreign_cwd(tmp_path, isolated):
+    """Removing the CLI's root pin must break actual file-path startup."""
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    script = Path(__file__).resolve().parents[1] / "scripts" / "plan_options_coverage.py"
+    # A sibling checkout/package must never supply this command's engine.
+    shadow = tmp_path / "engine"
+    shadow.mkdir()
+    (shadow / "__init__.py").write_text("raise RuntimeError('foreign engine imported')\n")
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(tmp_path)
+    argv = [sys.executable, "-B"]
+    if isolated:
+        argv.append("-I")
+    proc = subprocess.run(argv + [str(script), "--help"], cwd=tmp_path,
+                          env=env, capture_output=True, text=True, timeout=30)
+    assert proc.returncode == 0, proc.stderr
+    assert "--target-stocks" in proc.stdout
+    assert "--max-total-roots" in proc.stdout
+    assert "Traceback" not in proc.stderr
+    assert not (tmp_path / "data").exists()

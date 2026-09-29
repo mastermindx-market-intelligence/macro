@@ -11,7 +11,14 @@ from __future__ import annotations
 import argparse
 import copy
 import json
+import sys
 from collections.abc import Sequence
+from pathlib import Path
+
+# Pin this checkout before any repo import, including file-path invocation from
+# another directory where PYTHONPATH may name an unrelated engine package.
+_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(_ROOT))
 
 from engine.options_universe import (
     DEFAULT_ANCHORS,
