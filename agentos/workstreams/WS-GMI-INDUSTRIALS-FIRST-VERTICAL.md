@@ -7,7 +7,7 @@ objective: >
   Exponent and Pentair dossiers pass the T09 real-path proofs (two journeys, correction,
   revocation, ordinary refresh, non-interference) with every one of the 56 inherited
   requirements executed — never a merged slice alone.
-status: blocked
+status: active
 program: earnings-intelligence
 repos: [macro]
 owner: fable-meta-ceo
@@ -54,53 +54,59 @@ waves:
     depends_on: [IND-W4]
     next_action: "Wait for Semiconductor B's shared route family and aggregator on main; never build against #7870's branch."
 next_action: >
-  PAUSED BY DIRECTIVE 2026-09-29 - SPECIFICATION AUTHORITY IS SOL'S, AND A MERGE NO LONGER
-  RESUMES THIS PROGRAM. Read this clause before any sub-wave next_action below: several of
-  them still say T02 becomes dispatchable once #7905 or #7870 releases the seam. That is a
-  real LANDING gate and it is necessary, but it is NOT sufficient and never was the binding
-  blocker. 41 of the 56 obligations the frozen plan names have no obligation text anywhere
-  in this repository or on carrier #7789, so no seat can write an honest test for T02-T09
-  even with both PRs merged. Resume domain implementation ONLY when the relevant
-  requirements AND the actual shared dependencies are both available.
-  SOL OWNS RECOVERY of the r1/r2/W12 corpus from the original research history and
-  available archives. A targeted lookup that finds nothing is NOT proof the corpus was
-  deleted, and no seat may conclude deletion. If recovery fails, wait for an explicit
-  VERSIONED Sol-approved re-specification carrying an OLD-ID DISPOSITION MAP; a
-  re-specification is recorded as NEW AUTHORITY and is never presented as recovered
-  original text. Do not silently reduce the 56-obligation mission.
-  RECOVERY POINTERS (plan blob a5462dc7f36aea08c57ce43a8a230ef00ebae802, 50813 B, tracked at
-  NO path in origin/main; pinned host-locally as refs/salvage/ind-first-vertical-plan-a5462dc7).
-  Plan line 11 names the sources as exact paths: r1 =
-  docs/superpowers/specs/2026-09-23-industrials-result-cash-dossier-design.md, r2 = the same
-  path with the -r2 suffix, W12 =
-  research/industrials/INDUSTRIALS_WAVE12_SEMICONDUCTOR_FOUNDATION_ALIGNMENT_2026-09-24.md.
-  None of the three resolve at origin/main@16918f0cac8e and docs/superpowers/specs/ does not
-  exist at that ref at all (all 65 files under docs/superpowers/ are in plans/) - a path
-  lookup at ONE ref, with history, archives, the carrier's attachments and the Mastermind
-  research library NOT searched. Lines 11 and 350 cite TWO companions the plan never names
-  by path: a traceability companion holding the exact blobs, and a JSON companion that
-  "preserves their IDs and immutable source identities" while "the unchanged specifications
-  retain the exact input and expected-result wording" - THE JSON COMPANION IS THE CORPUS and
-  is the highest-value recovery target. Line 425 names the final Fable packet as a second
-  recovery surface.
-  THE ID SPACE IS PROVABLY WHOLE: IND-D01..D30 (30) and IND-R201..R218 (18) are contiguous
-  and are the plan's "48 original" (recover from r1/r2); IND-SF01..SF08 (8) is contiguous and
-  is its "eight cross-sector" (recover from W12). Coverage is 15 of 56 as MEASURED - T01's 3
-  and T04's 12 only, and of the eight cross-sector only SF01 and SF07, both by
-  LANDED_BEHAVIOUR rather than recovered text. The 41 unresolved by owning task: T02 D04 D05
-  R210; T03 D01 R203-R207; T05 D17-D21 D24 R209 SF02 SF03; T06 D03 D22 D23 R201 R213-R215
-  R218 SF04; T07 D25-D28 R211 R212 R216 R217 SF06; T08 R202 SF05; T09 D29 D30 SF08.
+  SPECIFICATION AUTHORITY RESOLVED 2026-09-29 - SOL RULING / CONTINUE (#7789 comment
+  5894127980), which consumes this seat's asks 5881951284 / 5882425483 / 5894142128.
+  RECOVERY SUCCEEDED AND NO RE-SPECIFICATION IS AUTHORIZED OR NEEDED. The original corpus was
+  never deleted; it is simply not vendored at any path on main. Read this clause before every
+  sub-wave next_action below: those entries were written when the binding blocker was believed
+  to be missing requirement text, and that belief is now closed.
+  THE RECOVERED ORIGINAL AUTHORITY, at commit 40d91e50a38c604e26255c1451eda5ddc95fb9cc on the
+  original #7789 source line sol/industrials-sector-research-20260923. All three blobs are
+  present in this host's object store and were read directly to verify the counts below:
+  r1 = docs/superpowers/specs/2026-09-23-industrials-result-cash-dossier-design.md,
+  blob 40fd1e3783102c28fe748fe35b927484d4f3dddb (28638 B), IND-D01..IND-D30 - VERIFIED 30
+  unique IND-D ids in the blob's own bytes.
+  r2 = the same path with the -r2 suffix, blob 9c98e106b954d0a48610afad418de2a9eeb1e58b
+  (20947 B), IND-R201..IND-R218 - VERIFIED 18 unique IND-R ids; it explicitly preserves r1.
+  W12 = research/industrials/INDUSTRIALS_WAVE12_SEMICONDUCTOR_FOUNDATION_ALIGNMENT_2026-09-24.md,
+  blob b343cbd7bc1f52cfc6fbb5e18ab8d9e9f9392f6c (21187 B), IND-SF01..IND-SF08 - VERIFIED 8
+  unique IND-SF ids; it preserves the prior D/R corpus.
+  30 + 18 + 8 = 56 with zero missing and zero extra against the frozen plan's table. The frozen
+  plan itself is docs/superpowers/plans/2026-09-24-industrials-shared-foundation-increment-implementation.md,
+  blob a5462dc7f36aea08c57ce43a8a230ef00ebae802, likewise tracked at no path on main and pinned
+  host-locally as refs/salvage/ind-first-vertical-plan-a5462dc7.
+  DISPOSITION PER THE RULING: no requirement id is retired, superseded, renumbered or reworded.
+  The earlier claim that 41 obligations have NO RETRIEVABLE AUTHORITY is SUPERSEDED - they are
+  not vendored on main, but their original wording is recoverable from the blobs above. The
+  #8160 anti-fabrication guard stays and stays fail-closed: when a substantive change first
+  touches one of those 41 ids, update that row's source basis to the exact recovered blob/path
+  IN THAT SAME CHANGE. Never silently reword recovered text, and never label a new
+  clarification as recovered original text; a genuinely new obligation needs an explicitly
+  versioned amendment plus an explicit disposition of the affected old id.
+  NEXT ACTION IS PRODUCT WORK, NOT BOOKKEEPING. Do NOT open another traceability-only
+  increment; a minimal source-reference correction is supporting work inside the first
+  substantive product build, never its outcome. Build and test PATH-DISJOINT product work now
+  toward the preserved vertical: theme/company entry -> economic change ->
+  earnings/cash/conditions -> exact evidence + falsifier -> correct company navigation/return,
+  for Exponent and Pentair, preserving publication/refresh/correction behaviour, access and
+  revocation behaviour, and legacy/cross-sector non-interference. Use the existing Company
+  Intelligence, Fundamental Forensics, Earnings, private-publication, route and shared-theme
+  owners; create no second schema, store, router, registry, traceability plane, rights plane,
+  lifecycle or authority plane.
+  THE RULING CLOSES ONLY THE CORPUS GAP. It does NOT release the independent holds or incumbent
+  ownership on #7870 or #7905, so T02 is still gated on #7905's profile_for_ticker signature
+  (R-IND-12) even though its three obligations IND-D04, IND-D05 and IND-R210 now have recovered
+  text. Where landing or real-path proof still depends on an incumbent seam, return THAT EXACT
+  GATE rather than waiting broadly or substituting more bookkeeping. #7780 is
+  research/specification/handoff evidence, never runtime source.
   UNCHANGED AND STILL BINDING: do not dispatch T05 (args_ind_t05_source_history.json stays
   PARKED; rulings_t05 R8 forbids it); tests/test_industrials_issuer_enrollment.py is not
-  created and no anchor-map row exists for a T02 requirement - both absences are the honest
-  signal that T02 is unstarted, and both are now ENFORCED by
-  test_anchor_map_agrees_with_the_recovered_requirement_index, which refuses to anchor any
-  row whose anchor_basis is NO_SOURCE. Do not fabricate text or tests for the 41, and do not
-  re-run the index/traceability audit - it is recorded in requirement_index.md and on #7789
-  as comments 5881951284, 5882425483 and 5894142128.
-  PRESERVED FIRST-VERTICAL OUTCOME (unchanged): Exponent and Pentair - existing theme entry
-  to economic change, earnings/cash/conditions, exact evidence/falsifier, correct company
-  return, with update/correction and access behaviour.
+  created and no anchor-map row exists for a T02 requirement while T02 is unstarted. Do not
+  re-run the index/traceability audit - it is recorded in requirement_index.md and on #7789.
+  Return with the exact candidate head, tests tied to the RECOVERED ORIGINAL WORDING, and the
+  strongest available Exponent/Pentair journey proof; claim no acceptance until the real user
+  path satisfies the whole outcome. Re-arm the approved exact-carrier wait/watch path after the
+  next nonterminal return, or report the exact WATCH_UNAVAILABLE condition.
 artifacts:
   - agentos/handoffs/GMI-INDUSTRIALS-2026-09-24-first-vertical-implementation.md
   - research/industrials/first_vertical_program/rulings/R-IND-2026-09-24-wave1.md
