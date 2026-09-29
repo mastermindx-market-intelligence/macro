@@ -2508,3 +2508,4 @@
 {"schema":"metabolism.key_ledger.v1","ts":"2026-09-28T07:18:01+00:00","key_id":"codex_account","cycle_id":"","stage":"master_brain","est_tokens":18237,"outcome":"ok"}
 {"schema":"metabolism.key_ledger.v1","ts":"2026-09-28T07:18:19+00:00","key_id":"codex_account","cycle_id":"","stage":"master_brain","est_tokens":18816,"outcome":"ok"}
 {"schema":"metabolism.key_ledger.v1","ts":"2026-09-29T04:37:57+00:00","key_id":"codex_account","cycle_id":"","stage":"altdata_brain","est_tokens":15820,"outcome":"ok"}
+{"schema":"metabolism.key_ledger.v1","ts":"2026-09-29T06:19:37+00:00","key_id":"codex_account","cycle_id":"","stage":"altdata_brain","est_tokens":15907,"outcome":"ok"}
