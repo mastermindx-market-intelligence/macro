@@ -74,14 +74,19 @@ pins the two against each other whenever both are present.
 """
 from __future__ import annotations
 
+import hashlib
+import io
 import os
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
+from pathlib import Path
 
 import pandas as pd
 
+from lib.dataos.price import AdjustmentBasis
+
 __all__ = [
     "ADJUSTED_SOURCES", "UNADJUSTED_SOURCES", "LADDER", "CACHE_GROUPS",
-    "Resolved", "resolve_close", "close_panel", "overlay_adjusted", "is_adjusted",
+    "PriceEvidence", "Resolved", "resolve_close", "close_panel", "overlay_adjusted", "is_adjusted",
     "default_data_dir", "make_books",
 ]
 
@@ -135,6 +140,31 @@ def is_adjusted(source: str | None) -> bool | None:
     return None
 
 
+@dataclass(frozen=True)
+class PriceEvidence:
+    """Evidence that travels with the exact selected price read.
+
+    This is deliberately narrower than a market-data entitlement or historical
+    observation claim.  File SHA/bytes bind the encoded object actually decoded;
+    they do not establish rights, a source publication clock, a corporate-action
+    vintage, RTH/auction semantics, or primary/consolidated venue identity.  Those
+    fields stay null until their native owners attest them.
+    """
+
+    ticker: str
+    source: str | None
+    source_path: str | None
+    column: str | None
+    basis: str | None
+    receipt_state: str
+    content_sha256: str | None = None
+    content_bytes: int | None = None
+    adjustment_asof: str | None = None
+    session: str | None = None
+    venue_scope: str | None = None
+    observed_at: str | None = None
+
+
 @dataclass
 class Resolved:
     """One name's close series plus the disclosed provenance of how it was found."""
@@ -145,32 +175,63 @@ class Resolved:
     adjusted: bool | None
     tried: list[str] = field(default_factory=list)
     reason: str | None = None
+    evidence: PriceEvidence | None = None
 
     @property
     def ok(self) -> bool:
         return self.series is not None and not self.series.empty
 
 
-def _read_file_close(path: str) -> pd.Series | None:
-    """Close column from a per-name parquet, or None when unusable.
+def _basis_for_selected(source: str | None, column: str | None) -> str | None:
+    """Exact basis supported by the existing ladder/source contract.
 
-    Never raises on a bad file: one corrupt parquet must not take down a whole panel,
-    and the caller records the rung as tried-and-failed either way.
+    The Yahoo ``close_price`` exception matters: unlike the other adjusted-rung
+    ``close`` series it is split-adjusted only.  Never reduce this to the legacy
+    boolean ``adjusted`` flag.
+    """
+    if source is None:
+        return None
+    if source == "closes_cache_UNADJUSTED":
+        return AdjustmentBasis.RAW.value
+    if source == "yahoo" and column == "close_price":
+        return AdjustmentBasis.SADJ.value
+    if source in ADJUSTED_SOURCES and (column == "close" or source == "baskets_extras"):
+        return AdjustmentBasis.TRADJ.value
+    return None
+
+
+def _read_file_close(path: str, *, capture_evidence: bool = False) -> tuple[pd.Series | None, dict | None]:
+    """Close column from one per-name parquet, optionally with SAME-read receipt.
+
+    In evidence mode the encoded object is read exactly once, hashed, and that same
+    byte string is decoded.  This avoids a later path re-read silently
+    authenticating different numbers.  Legacy mode keeps the original cheap path.
     """
     if not os.path.exists(path):
-        return None
+        return None, None
+    receipt = None
     try:
-        d = pd.read_parquet(path)
+        if capture_evidence:
+            raw = Path(path).read_bytes()
+            d = pd.read_parquet(io.BytesIO(raw))
+            receipt = {
+                "sha256": hashlib.sha256(raw).hexdigest(),
+                "bytes": len(raw),
+            }
+        else:
+            d = pd.read_parquet(path)
     except (OSError, ValueError, ImportError):
-        return None
+        return None, None
     col = next((c for c in _CLOSE_COLS if c in getattr(d, "columns", ())), None)
     if col is None:
-        return None
+        return None, None
     s = pd.to_numeric(d[col], errors="coerce").dropna()
     if s.empty:
-        return None
+        return None, None
     s.index = pd.to_datetime(s.index)
-    return s.sort_index()
+    if receipt is not None:
+        receipt["column"] = col
+    return s.sort_index(), receipt
 
 
 def _clip(s: pd.Series | None, asof, start) -> pd.Series | None:
@@ -184,70 +245,110 @@ def _clip(s: pd.Series | None, asof, start) -> pd.Series | None:
 
 
 class _WideBook:
-    """Lazily-loaded, memoized view over one or more wide [date x ticker] close frames.
-
-    These frames are ~700–1,500 columns; loading them per name would dominate a panel
-    build, and loading them at import time would make a run pay for a rung it never uses.
-    First frame carrying the ticker wins, in the order given.
-    """
+    """Lazily-loaded wide frames with optional exact encoded-object receipts."""
 
     def __init__(self, paths: tuple[str, ...],
-                 preloaded: "list[pd.DataFrame] | None" = None):
+                 preloaded: "list[pd.DataFrame] | None" = None, *,
+                 capture_evidence: bool = False):
         self._paths = paths
-        # A caller that already holds these frames (prophet_postmortem loads the caches
-        # for its own calendar) injects them rather than paying a second wide read — and,
-        # more importantly, so the ladder and the caller can never disagree about what
-        # "the cache" contains.
+        self._capture_evidence = bool(capture_evidence)
         self._frames: list[pd.DataFrame] | None = None
+        self._receipts: list[dict | None] | None = None
         if preloaded is not None:
             self._frames = [f for f in preloaded if f is not None and not f.empty]
+            # Caller-owned frames have no file/generation identity here.  Do not pair
+            # them positionally with configured paths and pretend provenance.
+            self._receipts = [None for _ in self._frames]
 
     def frames(self) -> list[pd.DataFrame]:
         if self._frames is None:
-            out = []
+            out: list[pd.DataFrame] = []
+            receipts: list[dict | None] = []
             for p in self._paths:
                 if not os.path.exists(p):
                     continue
                 try:
-                    c = pd.read_parquet(p)
+                    if self._capture_evidence:
+                        raw = Path(p).read_bytes()
+                        c = pd.read_parquet(io.BytesIO(raw))
+                        receipt = {
+                            "path": p,
+                            "sha256": hashlib.sha256(raw).hexdigest(),
+                            "bytes": len(raw),
+                        }
+                    else:
+                        c = pd.read_parquet(p)
+                        receipt = None
                 except (OSError, ValueError, ImportError):
                     continue
                 c.index = pd.to_datetime(c.index)
                 out.append(c.sort_index())
+                receipts.append(receipt)
             self._frames = out
+            self._receipts = receipts
         return self._frames
 
-    def get(self, ticker: str) -> pd.Series | None:
-        for c in self.frames():
+    def get_with_receipt(self, ticker: str) -> tuple[pd.Series | None, dict | None]:
+        frames = self.frames()
+        receipts = self._receipts or [None for _ in frames]
+        for idx, c in enumerate(frames):
             if ticker in c.columns:
                 s = pd.to_numeric(c[ticker], errors="coerce").dropna()
                 if not s.empty:
-                    return s
-        return None
+                    return s, receipts[idx] if idx < len(receipts) else None
+        return None, None
+
+    def get(self, ticker: str) -> pd.Series | None:
+        return self.get_with_receipt(ticker)[0]
 
 
 class _Books:
-    """The two wide-frame rungs a resolution may need, built lazily and shared across a
-    whole panel so the caches and the extras frame are each read at most once."""
+    """The two wide-frame rungs shared across a panel."""
 
     def __init__(self, data_dir: str, groups: tuple[str, ...],
-                 cache_frames: "list[pd.DataFrame] | None" = None):
-        self.extras = _WideBook((os.path.join(data_dir, "baskets", "extras.parquet"),))
+                 cache_frames: "list[pd.DataFrame] | None" = None, *,
+                 capture_evidence: bool = False):
+        self.extras = _WideBook(
+            (os.path.join(data_dir, "baskets", "extras.parquet"),),
+            capture_evidence=capture_evidence,
+        )
         self.cache = _WideBook(
             tuple(os.path.join(data_dir, g, "_closes_cache.parquet") for g in groups),
-            preloaded=cache_frames)
+            preloaded=cache_frames, capture_evidence=capture_evidence)
 
 
 def make_books(data_dir: str | None = None, *, groups: tuple[str, ...] = CACHE_GROUPS,
-               cache_frames: "list[pd.DataFrame] | None" = None) -> "_Books":
-    """Build a shared rung cache to hand to repeated ``resolve_close`` calls.
-
-    ``cache_frames`` injects an already-loaded breadth panel so a caller that needs the
-    caches for its own purposes does not read them twice — and so the ladder resolves the
-    SAME cache the caller is reasoning about.
-    """
+               cache_frames: "list[pd.DataFrame] | None" = None,
+               capture_evidence: bool = False) -> "_Books":
+    """Build a shared rung cache for repeated ``resolve_close`` calls."""
     dd = default_data_dir() if data_dir is None else data_dir
-    return _Books(dd, groups, cache_frames=cache_frames)
+    return _Books(dd, groups, cache_frames=cache_frames, capture_evidence=capture_evidence)
+
+
+def _relative_source_path(path: str | None, data_dir: str) -> str | None:
+    if path is None:
+        return None
+    try:
+        rel = os.path.relpath(path, data_dir)
+    except ValueError:
+        return None
+    return rel if rel != ".." and not rel.startswith("../") else None
+
+
+def _selected_evidence(ticker: str, source: str | None, data_dir: str,
+                       column: str | None, receipt: dict | None) -> PriceEvidence:
+    if source is None:
+        return PriceEvidence(ticker, None, None, None, None, "UNRESOLVED")
+    path = _relative_source_path(receipt.get("path") if receipt else None, data_dir)
+    state = "EXACT_ENCODED_OBJECT" if receipt and path else "SOURCE_OBJECT_UNATTESTED"
+    return PriceEvidence(
+        ticker=ticker, source=source, source_path=path, column=column,
+        basis=_basis_for_selected(source, column), receipt_state=state,
+        content_sha256=receipt.get("sha256") if receipt else None,
+        content_bytes=receipt.get("bytes") if receipt else None,
+        # These are intentionally typed unknowns. Source/provider tags do not prove them.
+        adjustment_asof=None, session=None, venue_scope=None, observed_at=None,
+    )
 
 
 def resolve_close(
@@ -259,6 +360,7 @@ def resolve_close(
     allow_unadjusted: bool = True,
     groups: tuple[str, ...] = CACHE_GROUPS,
     min_last: str | pd.Timestamp | None = None,
+    capture_evidence: bool = False,
     _book: "_Books | None" = None,
 ) -> Resolved:
     """Resolve one name's close series ADJUSTED-FIRST, with the ladder disclosed.
@@ -285,30 +387,40 @@ def resolve_close(
     dd = default_data_dir() if data_dir is None else data_dir
     t = str(ticker)
     tried: list[str] = []
-    books = _book if _book is not None else _Books(dd, groups)
+    books = _book if _book is not None else _Books(dd, groups, capture_evidence=capture_evidence)
     want = pd.Timestamp(min_last) if min_last is not None else None
     best: Resolved | None = None
 
-    def _consider(s: pd.Series | None, src: str) -> Resolved | None:
+    def _consider(s: pd.Series | None, src: str, column: str | None = None,
+                  receipt: dict | None = None) -> Resolved | None:
         """Return a Resolved to hand back now, or None to keep walking."""
         nonlocal best
         if s is None:
             return None
+        evidence = (
+            _selected_evidence(t, src, dd, column, receipt) if capture_evidence else None
+        )
         if want is None or s.index.max() >= want:
-            return Resolved(t, s, src, True, list(tried))
+            return Resolved(t, s, src, True, list(tried), evidence=evidence)
         if best is None or s.index.max() > best.series.index.max():
-            best = Resolved(t, s, src, True, list(tried))
+            best = Resolved(t, s, src, True, list(tried), evidence=evidence)
         return None
 
     for src, tmpl in _FILE_RUNGS:
         tried.append(src)
+        path = os.path.join(dd, tmpl.format(t=t))
+        file_series, receipt = _read_file_close(path, capture_evidence=capture_evidence)
+        if receipt is not None:
+            receipt["path"] = path
         hit = _consider(
-            _clip(_read_file_close(os.path.join(dd, tmpl.format(t=t))), asof, start), src)
+            _clip(file_series, asof, start), src,
+            receipt.get("column") if receipt else None, receipt)
         if hit is not None:
             return hit
 
     tried.append("baskets_extras")
-    hit = _consider(_clip(books.extras.get(t), asof, start), "baskets_extras")
+    extras_series, extras_receipt = books.extras.get_with_receipt(t)
+    hit = _consider(_clip(extras_series, asof, start), "baskets_extras", t, extras_receipt)
     if hit is not None:
         return hit
 
@@ -318,13 +430,16 @@ def resolve_close(
             best.reason = (f"every adjusted rung ends before {want.date()}; "
                            f"freshest is {best.series.index.max().date()}")
             return best
-        return Resolved(t, None, None, None, tried,
-                        reason=("absent from every ADJUSTED source "
-                                f"({', '.join(ADJUSTED_SOURCES)}) and "
-                                "allow_unadjusted=False"))
+        return Resolved(
+            t, None, None, None, tried,
+            reason=("absent from every ADJUSTED source "
+                    f"({', '.join(ADJUSTED_SOURCES)}) and allow_unadjusted=False"),
+            evidence=_selected_evidence(t, None, dd, None, None) if capture_evidence else None,
+        )
 
     tried.append("closes_cache_UNADJUSTED")
-    s = _clip(books.cache.get(t), asof, start)
+    cache_series, cache_receipt = books.cache.get_with_receipt(t)
+    s = _clip(cache_series, asof, start)
 
     # A stale adjusted rung is a MISS, not a winner. Returning a series that stops before
     # the caller's window LOSES REAL BARS to buy a basis guarantee that, for these names,
@@ -337,7 +452,13 @@ def resolve_close(
     # follows. The fallback is stamped `unadjusted` and its `reason` names the staleness,
     # so it is never silent.
     if s is not None and (want is None or best is None or s.index.max() >= want):
-        r = Resolved(t, s, "closes_cache_UNADJUSTED", False, tried)
+        r = Resolved(
+            t, s, "closes_cache_UNADJUSTED", False, tried,
+            evidence=(
+                _selected_evidence(t, "closes_cache_UNADJUSTED", dd, t, cache_receipt)
+                if capture_evidence else None
+            ),
+        )
         if best is not None:
             r.reason = (f"adjusted rungs all end before {want.date()} "
                         f"(freshest {best.price_source} @ "
@@ -353,10 +474,19 @@ def resolve_close(
         return best
 
     if s is not None:
-        return Resolved(t, s, "closes_cache_UNADJUSTED", False, tried)
+        return Resolved(
+            t, s, "closes_cache_UNADJUSTED", False, tried,
+            evidence=(
+                _selected_evidence(t, "closes_cache_UNADJUSTED", dd, t, cache_receipt)
+                if capture_evidence else None
+            ),
+        )
 
-    return Resolved(t, None, None, None, tried,
-                    reason=f"absent from every source on the ladder ({', '.join(LADDER)})")
+    return Resolved(
+        t, None, None, None, tried,
+        reason=f"absent from every source on the ladder ({', '.join(LADDER)})",
+        evidence=_selected_evidence(t, None, dd, None, None) if capture_evidence else None,
+    )
 
 
 def _provenance(stamp, counts, unadjusted, unresolved, *, asof, start, n_requested):
@@ -383,6 +513,7 @@ def close_panel(
     data_dir: str | None = None,
     allow_unadjusted: bool = True,
     groups: tuple[str, ...] = CACHE_GROUPS,
+    capture_evidence: bool = False,
 ) -> tuple[pd.DataFrame, dict]:
     """Wide close panel over ``tickers`` on the adjusted-first ladder.
 
@@ -392,19 +523,24 @@ def close_panel(
     result rests on a mixed basis.
     """
     dd = default_data_dir() if data_dir is None else data_dir
-    books = _Books(dd, groups)
+    books = _Books(dd, groups, capture_evidence=capture_evidence)
     cols: dict[str, pd.Series] = {}
     stamp: dict[str, str | None] = {}
     counts = {k: 0 for k in LADDER}
     counts["unresolved"] = 0
     unresolved: list[str] = []
     unadjusted: list[str] = []
+    evidence_stamp: dict[str, dict] = {}
 
     names = list(dict.fromkeys(map(str, tickers)))          # de-dupe, keep order
     for tk in names:
-        r = resolve_close(tk, asof=asof, start=start, data_dir=dd,
-                          allow_unadjusted=allow_unadjusted, groups=groups, _book=books)
+        r = resolve_close(
+            tk, asof=asof, start=start, data_dir=dd,
+            allow_unadjusted=allow_unadjusted, groups=groups,
+            capture_evidence=capture_evidence, _book=books)
         stamp[tk] = r.price_source
+        if capture_evidence and r.evidence is not None:
+            evidence_stamp[tk] = asdict(r.evidence)
         if not r.ok:
             counts["unresolved"] += 1
             unresolved.append(tk)
@@ -421,6 +557,8 @@ def close_panel(
     prov["panel_sessions"] = int(panel.shape[0]) if not panel.empty else 0
     if not panel.empty:
         prov["panel_range"] = [str(panel.index.min().date()), str(panel.index.max().date())]
+    if capture_evidence:
+        prov["price_evidence"] = evidence_stamp
     return panel, prov
 
 
