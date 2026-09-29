@@ -256,6 +256,22 @@ def test_plv_evidence_states_are_distinct_for_every_shell_cell():
     assert not duplicates, f"pixel-identical PLV state evidence: {', '.join(duplicates)}"
 
 
+def test_plv_unavailable_body_uses_distinct_locale_sentences():
+    source = (ROOT / "templates" / "dashboard.html.j2").read_text(encoding="utf-8")
+    render = source[source.index("function _plvRender"):source.index("function _plvFetch")]
+    expected = (
+        "Nothing crossed today — last check time unavailable.",
+        "今日没有出现上穿 — 最近一次检查时间不可用。",
+        "Nothing crossing yet — last check time unavailable.",
+        "尚无新的上穿 — 最近一次检查时间不可用。",
+    )
+    for sentence in expected:
+        assert sentence in render
+    assert render.count("last check time unavailable.") == 2
+    assert render.count("最近一次检查时间不可用。") == 2
+    assert "最近一次检查 美东 —。" not in render
+
+
 def test_plan_relation_preserves_existing_machine_attribute_sets():
     module = _detail()
     row = {"ticker": "LFUS", "entry_signal": {"status": "wait", "headline": "Wait"},

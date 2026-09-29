@@ -330,11 +330,12 @@ def capture() -> None:
             "window.fetch is monkey-patched for live/prophet_live.json so it returns the synthetic PLV payload for each state while other fetches use the native fetch function.",
         ],
         "provenance": {
-            "superseded_capture": "4a1e829ef70879d58e317c65065596bee15fc3d0",
-            "superseded_at": "2026-09-29T15:57Z",
+            "superseded_capture": "3b5bc6870011b966ec9cb7319914fdf8995c7d28",
+            "superseded_at": "2026-09-29T17:20Z",
             "superseded_reasons": [
-                "R4-1 changed the none-state plan-relation copy.",
-                "R4-3 used the wrong screenshot target for the PLV states.",
+                "R5-1 added the pairwise-distinct PLV capture guard.",
+                "R5-6 changed the unavailable PLV body copy.",
+                "R5-3 strengthened the PLV visibility assertion.",
             ],
         },
         "capture_head": head,
