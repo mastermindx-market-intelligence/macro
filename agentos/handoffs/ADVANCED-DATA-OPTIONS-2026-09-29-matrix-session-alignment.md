@@ -65,20 +65,38 @@ verified:
   - claim: The matrix publishes to R2, not to the source host filesystem.
     command: grep -n R2_PREFIX scripts/build_options_matrix.py; glob of the host's site/options_structure/
     result: R2_PREFIX = "options_structure/matrix/" at :59. The host's site/options_structure/ holds only examples/ and gex_state/, no matrix/. The outstanding two-session proof must come from R2 or the served endpoint.
+  - claim: CI concludes green on the delivered head 46cf6f83096f, and the two earlier cancelled runs were a stale-base infrastructure artifact, not a defect in this change.
+    command: gh run list --workflow ci.yml --branch claude/options-matrix-session-repair-20260924; gh run view 36604938778 --log-failed; gh run view 36627834814 --json jobs
+    result: >-
+      Runs 36601596875 (head a187c5d7a0ab) and 36604938778 (head 2e40c65abc6b) both concluded CANCELLED, never
+      failed. The first was superseded 60s after the next push. The second ran 185 minutes and self-cancelled at
+      20:31:44Z with ci-gate fail-closed on 267 passed / 46 unknown and ZERO pr_regression units; all 46 unknown
+      traced to ci-pack-5, which spent 73 minutes (19:18-20:31Z) repeating "ancestry fetch failed at depth 2048,
+      retrying legacy all-branches deepen" and was killed before it could write pack-5.json. Cause was base AGE,
+      not content - the branch sat 1043 commits behind main on a base predating the pack fetch repair. After
+      merging origin/main (no conflict; only .github/ci/legacy-jobs.yml overlapped and auto-merged; all three
+      adopted sha256 byte-identical before and after) run 36627834814 on 46cf6f83096f concluded SUCCESS with
+      "complete semantic proof is clear" and "contract-delta clear (result=success)", every job green. fences
+      36627834084 and ci-authority 36627830602 also success.
+  - claim: The one non-success check on #7861 is fleet-wide and environmental, not this PR's.
+    command: gh pr list --state open --limit 12 --json statusCheckRollup filtered to merge-queue-pilot; gh api repos/.../check-runs/109609347031
+    result: >-
+      ci-authority/codex/merge-queue-pilot is FAILURE on 12 of 12 open PRs across the claude/, sol/ and worktree-
+      branch families. Its own payload records allowed=true, reason=same_repo_admin_authority_change and
+      admin_verified=true for #7861; the failing part is strictly context_active=false with
+      context_reason=inactive_base_context for the codex/merge-queue-pilot base context, which this PR does not
+      target. Zero duration, started==completed at 20:39:15Z. Same class as the known-spurious Workers Builds X.
 unverified:
   - claim: The repair actually eliminates empty/mixed-session heatmaps in production.
     what_would_verify: A merged release installed on the source host with its lib/nyse_calendar.py dependency carried, then two natural untouched qualifying sessions whose published R2 matrix artifacts each carry a single coherent source session and a non-regressing session date.
   - claim: The repaired producer imports and runs cleanly under the source host's interpreter and .env binding.
     what_would_verify: An import smoke of engine.options_matrix under that host's interpreter AFTER the checkout carries a lib/nyse_calendar.py containing sessions_apart. Measured today it would raise ImportError, so this is currently known-false for the tree as it stands.
-  - claim: CI concludes green on head a187c5d7a0ab.
-    what_would_verify: Conclusion of run 36601596875. It was still in_progress when this record was written; no green is claimed.
   - claim: The anti-regression gate withholds correctly against a real previously-published R2 artifact.
     what_would_verify: Exercised in tests against fixtures only. A live run observing an actual prior R2 publication would close it.
   - claim: The host's mid-July gex_state asof reflects a genuine production staleness rather than stale local copies of a lane that publishes elsewhere.
     what_would_verify: An owner read of where gex_state actually publishes from, and whether the served artifacts carry the same asof.
 unresolved:
   - Sol's hold on #7861. The 02:41Z review explicitly grants no Ready/merge/deploy/source-writer authority. Merge authority is not this seat's.
-  - CI conclusion on head a187c5d7a0ab (run 36601596875) was still in_progress at this record's write.
   - Normal merged-source publication, and real published-data-to-Terminal proof over two natural qualifying sessions. Both are downstream of the merge AND of the install prerequisite above.
   - Owner reconciliation of the +35 B publisher divergence on the source host. A rollback preimage cannot be trusted while the installed publisher matches no committed revision.
   - The host's gex_state/*.json carry a mid-July asof. Different producer lane, possibly just stale local copies rather than the live publication. Flagged for an owner read, NOT claimed as a production defect.
@@ -98,6 +116,7 @@ danger_areas:
   - The source-host checkout is MIXED VINTAGE - producer exactly at main, lib/nyse_calendar.py many revisions behind, publisher locally diverged. Do not assume it is clean at any one commit.
   - A live producer (PID 97385) runs there. Any checkout move while it runs corrupts in-flight state.
   - "#7861 must stay DRAFT with autoMergeRequest null and no merge-on-green label while the Sol hold stands. DEC:SOL-HOLD-IS-A-MERGE-BARRIER binds every merge path including the sweeper."
+  - "A ci.yml CANCELLED conclusion here can be an INFRASTRUCTURE verdict, not a red to heal in the diff: a stale base starves a ci-pack ancestry fetch until it is killed, and ci-gate then blocks on unknown units with zero pr_regression. Remedy is a base update, not a rerun. See DSC:STALE-BASE-STARVES-CI-PACK-ANCESTRY-FETCH-INTO-CANCEL."
   - Do not push to #7861 while its ci.yml run is in flight unless the commit is needed; a push supersedes the run. Do not edit the PR body twice inside one ci-authority run's lifetime - the second edit cancels the first.
   - Licensed ThetaData-derived values were read during the host probe. They are retained privately and must not be reproduced in the public PR; publish only sizes, hashes and safe summaries.
 prs: [7861]
