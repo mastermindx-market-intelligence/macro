@@ -76,8 +76,8 @@ numbers below are `ops/terminal-build.sh` at mastermind-terminal `origin/master`
 `d28449368`; the live readings are `ssh root@146.190.142.17` at 2026-09-29T20:46:21Z.
 
 The prior build is retained whole at `/opt/terminal/terminal/.next.bak`, but the directory
-only ever holds ONE generation back and each deploy overwrites it. The identity half is
-worse than stale — after a successful deploy it is **gone**. `deploy_generation_begin`
+only ever holds ONE generation back and each deploy overwrites it. After a successful deploy
+the identity half is **gone by design**. `deploy_generation_begin`
 (`:842`) records exactly one of two rollback facts: `.deployment-id.bak` when a marker
 existed (`:846`), or an empty `.deployment-id.absent` when none did (`:848`).
 `deploy_generation_rollback` (`:874`) consumes them in that order (`:889-890`, `:891-892`)
@@ -87,7 +87,15 @@ whose `rm -f` (`:838`) removes **both** records at once. So the absence of `.bak
 would not prove anything — `.absent` is a valid second record — but commit clears the pair,
 which is what makes a post-commit rollback attempt a guaranteed `rc=1`.
 
-That is the live state now, one generation after this decision shipped:
+**That purge is correct, and the source says why.** `deploy_generation_commit` (`:855`) has
+no body but the reset call, so "commit" *means* "discard the rollback records", and the
+comment above `deploy_generation_reset` (`:834-836`) gives the reason: a stale `.bak` "would
+later restore a long-dead SHA". Keeping the pair past commit would let a rollback N deploys
+later resurrect an arbitrarily old generation. So post-commit in-place rollback being
+unavailable is the transaction working as designed, not a defect, and nobody should "fix"
+it by retaining the records.
+
+The hazard is what survives the purge — a full build directory with no name:
 
 ```
 ls -la /opt/terminal/terminal/ | grep -E 'deployment-id|\.next'
@@ -112,4 +120,7 @@ accepted SHA, which restores identity and build together:
 The live reading and the `:874`/`:889-890`/`:894` anchors were independently taken on the
 host by the concurrent TERMINAL-02 session and re-verified here before recording; the
 `:838` purge sits in `deploy_generation_reset`, one call below `deploy_generation_commit`,
-and the `.absent` second record is the leg that reading added.
+and the `.absent` second record is the leg that re-verification added. The TERMINAL-01
+session then re-took the same readings independently and supplied the correction above —
+that the purge is deliberate and documented — which this record had originally framed as
+degradation. Three sessions, same readings; the disagreement was never about the facts.
