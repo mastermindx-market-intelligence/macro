@@ -1197,3 +1197,64 @@ def test_the_creep_budget_is_pinned_below_the_raised_cap():
     assert 0.85 * float(toks[3]) <= 220.0, (
         f"creep budget {toks[3]}m puts the 85% line at {0.85 * float(toks[3]):.0f}m, above "
         "the 220.1m (2026-09-26) night this repair is meant to keep visible.")
+
+
+def test_a_failed_push_cannot_advance_the_served_source_receipt(collect_steps):
+    """`published` is the receipt a downstream job reads to decide the source
+    session advanced.  It must DEFAULT to false and flip to true only after the
+    push itself returned success — never on a path a failed, killed or skipped
+    push can reach.
+
+    2026-09-25 is what makes this load-bearing rather than tidy: that night's
+    collections WERE committed locally and the push was then killed inside the
+    job cap's grace, so the protected tree never moved.  A receipt written
+    before `push_do` returns would have reported that lost night as a published
+    source session, and the served page would have been called current while
+    serving the previous session.
+    """
+    push = collect_steps[_index_of(collect_steps, MARKET_PUSH_STEP)]
+    lines = str(push.get("run") or "").splitlines()
+
+    false_at = [i for i, l in enumerate(lines) if "published=false" in l]
+    true_at = [i for i, l in enumerate(lines) if "published=true" in l]
+    assert len(false_at) == 1, (
+        f"expected exactly one published=false default, found {len(false_at)}"
+    )
+    assert len(true_at) == 1, (
+        f"expected exactly one published=true, found {len(true_at)} — a second "
+        "way to advance the receipt is a second way to lie about the session"
+    )
+    assert false_at[0] < true_at[0], (
+        "published=false must be the DEFAULT, written before any push attempt"
+    )
+
+    def _indent(i: int) -> int:
+        return len(lines[i]) - len(lines[i].lstrip())
+
+    assert _indent(true_at[0]) > _indent(false_at[0]), (
+        "published=true must be nested inside the success branch, not at the "
+        f"step's top level (indent {_indent(true_at[0])} vs default "
+        f"{_indent(false_at[0])})"
+    )
+
+    # The discriminating assertion.  A receipt guarded only by the rebase, the
+    # append-only fence or the retry loop would advance on a night whose push
+    # never landed, so the nearest ENCLOSING conditional must be the push call
+    # itself.  One-liner `if ...; fi` guards are closed and never enclosing.
+    guards = [
+        l.strip()
+        for l in lines[: true_at[0]]
+        if l.strip().startswith("if ") and not l.strip().endswith("fi")
+    ]
+    assert guards, "published=true is not inside any conditional"
+    assert "push_do" in guards[-1], (
+        "the source receipt must advance only when the push itself succeeded; "
+        f"its nearest enclosing guard is {guards[-1]!r}"
+    )
+
+    # And the receipt has to still be worth pinning: something downstream reads it.
+    outputs = yaml.safe_load(DAILY.read_text())["jobs"]["collect"].get("outputs") or {}
+    assert any("pushdata.outputs.published" in str(v) for v in outputs.values()), (
+        "no collect job output reads the push receipt any more — if that is "
+        "deliberate, rewrite this pin against whatever consumes it now"
+    )
