@@ -1307,3 +1307,88 @@ configured roots (above). Reporting an idle age, a live cwd, or a
 reflog epoch stays useful — for a human reading a report, or to narrow an action the
 positive signal has already authorized. It is never the authorization.
 
+## §10. `human_driven_roots` — the protection is now DELIBERATE (R10, shipped 2026-09-29)
+
+§9 closes with a sentence this section discharges: the dangerous gate — making session-tree
+detection follow the configured `roots` — "must not be taken without the `human_driven_roots`
+deny-list in the same commit." That deny-list now exists, ahead of any such gate rather than
+alongside it, so the protective half can never be the thing that is forgotten under time
+pressure.
+
+**What was true before.** 527 human-driven SSD checkouts were protected from an ARMED deleter by
+exactly two accidents:
+
+1. the narrow `roots` list, which happens not to name their volumes; and
+2. `path_under_session_root`, which segment-matches `.claude/worktrees` and its six siblings
+   against repo-RELATIVE path segments — so every absolutely-named `/Volumes/Mastermind/…` tree
+   is classified a *host checkout* and refused at the belt (~688 refusals per run).
+
+Neither is a safeguard anyone chose, and the single repair that makes a wider `roots` list
+actually delete anything removes both at once. That is the whole hazard: the obvious improvement
+and the catastrophic regression are the same commit.
+
+**What ships.** `config/worktree_gc.json` gains `human_driven_roots`, honoured in two independent
+places:
+
+| place | behaviour |
+|---|---|
+| `classify()` | checked BEFORE any proof is computed — verdict `PROTECTED`, a KEEP verdict. A tree that is clean, old, in scope and a provable ancestor of `origin/main` still classifies `PROTECTED`, never `SAFE_*`. |
+| `apply_deletions()` | an independent belt, deliberately **not** a function of the verdict, so removing or reordering the gate above leaves this one standing. |
+| `render_markdown()` | prints the protection's own reach, and distinguishes *none configured* from *configured but matched nothing* — an unmounted volume and a mis-spelled path produce the same `0`. |
+
+It is purely protective: it only ever ADDS refusals. It arms nothing, widens no root, and cannot
+cause a deletion that would not otherwise happen. Ratifying gates 1–3 of §9 remains an operator
+act and none of them is taken here.
+
+**The entries, and why not more.**
+
+| entry | why |
+|---|---|
+| `/Volumes/Mastermind/worktrees` | entirely the web/Sol mint root — the population the 2026-09-26 sparse sweep killed |
+| `…/agent-workspaces/sol` | ChatGPT-web review family |
+| `…/agent-workspaces/review` | same |
+
+`…/agent-workspaces` itself is deliberately **not** denied: `…/agent-workspaces/claude` and
+`…/agent-workspaces/tmp` are the two subtrees that are safe to sweep, and denying the parent
+would forfeit the only real yield §9 identified.
+
+**Stated rather than implied — the gap this does NOT close.** The loose `*-sol` trees planted
+directly at the top of `…/agent-workspaces` are identified by a NAME PATTERN, not by a subtree,
+so a root deny-list cannot reach them. They remain protected only by accident (2) above. Closing
+that needs either a name-pattern deny rule or relocating those trees under `…/sol`; neither is
+taken here, and a reader must not infer from this section that every human-driven tree is now
+deliberately protected.
+
+**Why the report line is load-bearing.** A protection that fires silently cannot be audited, and
+`0 protected` has three indistinguishable producers: nothing matched, the volume is not mounted,
+or the key was renamed. That is the same defect as a guard printing a PASS having examined
+nothing (`DSC:A-GUARDS-CORRECT-TOLERANCE-FOR-AN-ABSENT-SUBJECT-STILL-LIES-IN-ITS-VERDICT`), one
+level up — so the sweeper says which case it is on every run.
+
+**Measured on the live registry 2026-09-29, and two caveats that matter more than the yield.**
+The three entries resolve, exist, and hold **781 real checkout directories** (347 + 293 + 141
+carrying a `.git`) — so the paths are right, which is the one thing a deny-list must get right and
+the one thing no unit test can tell you.
+
+1. **It changes ZERO behaviour today.** Every one of those 781 trees is already unreachable by the
+   sweeper — outside `roots`, and refused at the belt as a host checkout. That is not an argument
+   against landing it; it is the argument FOR landing it now. The value is entirely that the
+   protection becomes explicit *before* the gate that removes both accidents, so it can never be
+   the piece omitted from that commit. Claiming this PR "protects 781 trees" would be false: the
+   accidents do that today, and this is what keeps them protected once the accidents are gone.
+2. **The live sweeper reads the PRIMARY checkout's config, not yours.** `load_config` resolves
+   `<primary>/config/worktree_gc.json`, and launchd runs the sweeper from the primary. A
+   report-mode run from this worktree therefore printed `human-driven protection: NONE configured`
+   while the key sat in the worktree's own config — the instrument answered about a different
+   principal than the one under test. Consequence: **this deny-list is inert until the PR merges
+   AND the primary checkout fast-forwards.** That is the standing "a merged PR does not update any
+   folder until that folder fast-forwards" law applied to the config that governs an armed
+   deleter, and it means the ordering obligation is stricter than "same commit" — the primary must
+   have pulled the deny-list before any gate-3 change is armed there.
+
+**Verified:** `tests/test_worktree_gc.py` 29 passed — 8 new cases covering the proof-beats-nothing
+rule, an armed apply that deletes an ordinary SAFE tree in the SAME run while the protected one
+survives on disk and stays registered, the belt refusing a forced-`SAFE_MERGED` protected path,
+the three report states, and the wiring itself. 6/6 mutants caught; the mutant that removed
+`main`'s `protected=` argument survived the first design and was closed by the wiring test —
+both gates refusing independently means a regression in either one is invisible from the outcome.

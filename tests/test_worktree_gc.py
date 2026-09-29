@@ -25,6 +25,17 @@ COVERAGE
       local branch on the merged proof; DIRTY / UNPUSHED / LOCKED survive
   14. max_delete_per_run caps deletions
 
+  Human-driven protection (purely protective; adds refusals only):
+  18. a `human_driven_roots` entry beats a VALID landed proof — a tree that is clean,
+      old, in scope and an ancestor of origin/main classifies PROTECTED, never SAFE_*
+  19. an ARMED apply deletes an ordinary SAFE tree in the same run while the protected
+      one survives on disk AND stays registered
+  20. the deletion belt refuses a protected path even when a verdict says SAFE — the
+      two gates are independent, so removing either one leaves the other standing
+  21. the report STATES its protection reach, says NONE CONFIGURED when the key is
+      absent, and says so explicitly when a configured list matches nothing (an
+      unmounted volume and a mis-spelled path are indistinguishable otherwise)
+
   Reach (an instrument must state how much it looked at):
   15. the rendered report prints `reach: checked N of M registered worktrees`,
       and names how many sat outside `roots` and were never examined
@@ -443,3 +454,119 @@ def test_refusal_error_list_is_capped():
     assert rows[0].strip() == "error: 14"
     assert rows[-1].strip() == "... and 4 more"
     assert len(rows) == 12, rows
+
+
+# ── human-driven protection ──────────────────────────────────────────────────
+
+def test_human_driven_root_beats_a_valid_landed_proof(repo, tmp_path, monkeypatch):
+    """The proof says the WORK is safe; deleting a checkout destroys the SESSION.
+
+    A ChatGPT-web conversation has no process and no shell, so nothing this tool can probe
+    distinguishes "finished" from "its human is about to reply". Landed is therefore necessary
+    and not sufficient, and the deny-list has to outrank the proof rather than tie-break with it.
+    """
+    wt = _add_worktree(repo, "web-session", branch="sol/web-session")
+    _age(repo, wt)
+    cfg = _write_config(tmp_path, human_driven_roots=[str(repo["root"] / "web-session")])
+    rc, payload = _run_main(repo, tmp_path, monkeypatch, cfg=cfg)
+    assert rc == 0
+    v = _verdict(payload, "web-session")
+    assert v["verdict"] == "PROTECTED", v
+    assert v["verdict"] not in ("SAFE_MERGED", "SAFE_REMOTE")
+    assert any("human_driven_roots" in r for r in v["reasons"]), v["reasons"]
+
+
+def test_armed_apply_never_deletes_a_protected_tree(repo, tmp_path, monkeypatch):
+    """Same run, same proof, opposite outcomes — so the test cannot pass by doing nothing."""
+    protected = _add_worktree(repo, "web-session", branch="sol/web-session")
+    ordinary = _add_worktree(repo, "agent-lane", branch="claude/agent-lane")
+    for wt in (protected, ordinary):
+        _age(repo, wt)
+    cfg = _write_config(tmp_path, armed=True,
+                        human_driven_roots=[str(repo["root"] / "web-session")])
+    rc, payload = _run_main(repo, tmp_path, monkeypatch, cfg=cfg, apply=True)
+    assert rc == 0
+    assert _verdict(payload, "web-session")["verdict"] == "PROTECTED"
+    assert _verdict(payload, "agent-lane")["verdict"] in ("SAFE_MERGED", "SAFE_REMOTE")
+    # The control: the sweeper really was able to delete in this run.
+    assert not ordinary.exists(), "armed apply deleted nothing — the test proves nothing"
+    assert protected.exists(), "an armed apply deleted a human-driven checkout"
+    listing = _git(repo["primary"], "worktree", "list", "--porcelain")
+    assert "web-session" in listing, "protected tree was unregistered"
+    assert "agent-lane" not in listing, "the deleted tree is still registered"
+
+
+def test_the_deletion_belt_refuses_a_protected_path_even_if_a_verdict_says_safe(repo, tmp_path,
+                                                                               monkeypatch):
+    """Defense in depth, stated as a test: the belt is not a function of the verdict.
+
+    If the classify-side gate is ever removed, reordered, or bypassed by a new verdict, this is
+    what still stands between an armed sweeper and a human's working directory.
+    """
+    monkeypatch.setattr(wgc, "LEDGER_DIR", tmp_path / "ledger")
+    wt = _add_worktree(repo, "web-session", branch="sol/web-session")
+    w = wgc.Worktree(path=wt, branch="sol/web-session")
+    w.verdict = "SAFE_MERGED"          # forced: pretend the gate above never ran
+    w.proof = "forced for this test"
+    summary = wgc.apply_deletions(
+        repo["primary"], [w], {"armed": True, "max_delete_per_run": 200,
+                               "delete_local_branches": False},
+        [repo["root"]], protected=[repo["root"] / "web-session"])
+    assert summary["deleted"] == [], summary
+    assert any("human_driven_roots" in e for e in summary["errors"]), summary["errors"]
+    assert wt.exists()
+
+
+def test_the_report_states_its_protection_reach(repo, tmp_path, monkeypatch, capsys):
+    _add_worktree(repo, "web-session", branch="sol/web-session")
+    cfg = _write_config(tmp_path, human_driven_roots=[str(repo["root"] / "web-session")])
+    md = tmp_path / "report.md"
+    _run_main(repo, tmp_path, monkeypatch, cfg=cfg, extra=["--md-out", str(md)])
+    blob = md.read_text()
+    assert "human-driven protection: 1 registration(s) held by 1 `human_driven_roots` entry" in blob
+    assert "matched nothing" not in blob
+
+
+def test_an_unconfigured_deny_list_says_so_rather_than_implying_protection():
+    """Absent must not read like present. This is the whole finding of the previous wave."""
+    line = wgc.protection_line({"protected_roots": 0, "protected": 0})
+    assert "NONE configured" in line
+    assert "accidents" in line or "deliberate safeguard" in line
+
+
+def test_a_configured_deny_list_that_matches_nothing_says_zero():
+    """An unmounted volume and a mis-spelled path produce the same 0 — so name the ambiguity."""
+    line = wgc.protection_line({"protected_roots": 2, "protected": 0})
+    assert "0 registration(s)" in line
+    assert "matched nothing" in line
+    assert "entries" in line, line
+
+
+def test_protection_line_omitted_not_invented_without_metadata():
+    assert wgc.protection_line({}) is None
+
+
+def test_main_actually_threads_the_deny_list_into_the_deletion_belt(repo, tmp_path, monkeypatch):
+    """The belt is inert unless main passes it — and the classify gate HIDES that.
+
+    Both gates refusing independently is the design, which means a regression in either one is
+    invisible from the outcome. This asserts the wiring directly: computing a protection and
+    never handing it to the code that deletes is the same defect as computing a reach figure
+    and printing it nowhere.
+    """
+    _add_worktree(repo, "web-session", branch="sol/web-session")
+    cfg = _write_config(tmp_path, armed=True,
+                        human_driven_roots=[str(repo["root"] / "web-session")])
+    seen = {}
+    real = wgc.apply_deletions
+
+    def spy(*a, **kw):
+        seen.update(kw)
+        return real(*a, **kw)
+
+    monkeypatch.setattr(wgc, "apply_deletions", spy)
+    _run_main(repo, tmp_path, monkeypatch, cfg=cfg, apply=True)
+    assert "protected" in seen, "main never passed protected= to the deletion belt"
+    assert seen["protected"], "main passed an EMPTY protection to the belt"
+    assert any("web-session" in str(p) for p in seen["protected"]), seen["protected"]
+

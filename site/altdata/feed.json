@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-09-29T01:33:50.703393+00:00",
+  "generated_utc": "2026-09-29T03:13:11.889390+00:00",
   "as_of": "2026-09-29",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -27772,10 +27772,10 @@
         {
           "ticker": "UMC",
           "buy_usd": 0.0,
-          "sell_usd": 756863200.0,
-          "net_usd": -756863200.0,
+          "sell_usd": 755150200.0,
+          "net_usd": -755150200.0,
           "buyers": 0,
-          "sellers": 8
+          "sellers": 7
         },
         {
           "ticker": "ABNB",
@@ -28840,14 +28840,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "QQQ",
-        "mentions": 25,
-        "sentiment": 0.074
-      },
-      {
         "ticker": "MSFT",
         "mentions": 25,
         "sentiment": 0.015
+      },
+      {
+        "ticker": "QQQ",
+        "mentions": 25,
+        "sentiment": 0.074
       },
       {
         "ticker": "OKLO",
