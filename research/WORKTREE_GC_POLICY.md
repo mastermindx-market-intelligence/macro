@@ -1047,6 +1047,59 @@ they are correctly, and permanently, KEEP. `refs/salvage/*` (534 refs) still mat
 bucket — it decouples *preserving the commits* from *reclaiming the checkout* for ~40 bytes
 each — but it licenses nothing under an attached session.
 
+### The ELEVENTH pool — 201 GiB the sweeper is FORBIDDEN to read, and the only broken thing in §9
+
+**Measured 2026-09-28, prompted by a macOS notification the operator relayed, not by a census.**
+`/Users/chriswong/Documents` holds **457.9 GiB**, and inside it
+`Cluade/macro-main/.claude` is **201.13 GiB across 203 session worktrees** — larger than the
+CI runner stores (177.26 GiB) and larger than the scratchpad pool (160.43 GiB). `Macro Dashboard`
+is a further 81.22 GiB and `charting-app` 56.10.
+
+**This CORRECTS the section above.** That section says the internal disk's agent bytes were
+`/private/tmp/claude-501` plus `actions-runner*/_work`, "~337 GiB, neither named by any policy
+document". Both figures stand, but they were not the whole disk: a third pool, larger than either,
+sat in `~/Documents` and was never counted. The sentence to distrust is any reading of that section
+as an exhaustive attribution of the internal volume — it was an attribution of what the measuring
+session could **read**.
+
+**Why the sweeper never touched it — and why this is not the roots defect.** `.claude/worktrees`
+is already in `config/worktree_gc.json` `roots`; the config is `armed: true`; `macro-main` is a host
+checkout the GC expands its repo-relative roots under **by design**. Nothing about scope is wrong
+here. The blocker is macOS TCC: `~/Documents` is a protected location and the launchd job's
+interpreter — `/usr/bin/python3`, resolving to
+`/Applications/Xcode.app/Contents/Developer/usr/bin/python3` — holds no Full Disk Access grant.
+`storage_floor_guard.py` has logged `REMEDIATOR FAULT: sweeper BLIND: denied: PermissionError:
+[Errno 1] Operation not permitted: '/Users/chriswong/Documents'` **16 times since 2026-09-24
+05:49:53**, alongside **73 `ESCALATION` lines**; the single remediation that completed (09-26
+16:56) reclaimed **−0.1 GiB** and logged `automated reclaim is NOT keeping up`.
+
+**Of the three storage defects this program has found, this is the only one that is broken rather
+than undecided.** The roots list (§ above) and the host-checkout belt are scope questions awaiting
+operator ratification. This is a working, armed, correctly-scoped sweeper that cannot read its own
+target, and repairing it needs no code, no config and no ratification — only a Full Disk Access
+grant, **which is a security setting only the operator may make**. `TCC.db` is SIP-protected and no
+session may edit it. State the cost honestly when asking: all five storage jobs
+(`storage-floor-guard`, `storage-sweeper`, `worktree-gc`, `worktree-salvage`,
+`fleet-remote-sweeper`) share `/usr/bin/python3`, so one grant repairs all five and also extends
+full disk access to anything else that interpreter runs; a dedicated interpreter for these jobs,
+with the grant scoped to it, is the tighter alternative.
+
+**The generalisable failure is REACH, and it is the same one this section keeps recording — except
+this time the reach difference is WHICH PROCESS ASKS.** An interactive session inherits its
+terminal's TCC grant and reads `~/Documents` fine, which is why every hand census has seen this
+pool; `launchd`'s python cannot, which is why no automated sweep ever has. Both answers are correct
+about what their principal can see, and neither states its reach — so the hand census under-counted
+the internal disk by 201 GiB while the automated sweeper emitted a fault nobody read. **An
+automated remediator that cannot see its target fails exactly like one with nothing to do**: the
+floor guard prints `OK` between breaches, and the fault line only appears when a breach triggers
+remediation. Any reclaim lane must enumerate what it could not read and report that count beside
+its verdict, or its silence will be taken for success.
+
+**The floor is not currently breached** — internal free is 316.8 GiB against a floor of 260, last
+breach 2026-09-26. The broken thing is the safety net, not the disk, which is exactly how it stayed
+broken from 09-24 without being noticed. `DSC:THE-SWEEPER-IS-TCC-BLIND-TO-THE-LARGEST-INTERNAL-
+WORKTREE-POOL`.
+
 ### STOCK vs FLOW — measured 2026-09-27, and the reason neither reclaim gate is the answer
 
 Headroom at the time of measurement: `/Volumes/Mastermind` **792 GiB free of 3,725 (79% used)**,
