@@ -646,7 +646,7 @@ def test_every_plan_named_requirement_anchor_exists() -> None:
 
     # The map is a claim about coverage, so its own shape is asserted too: an
     # empty or silently-truncated map would pass every loop above.
-    assert len(PLAN_REQUIREMENT_ANCHORS) == 15, sorted(PLAN_REQUIREMENT_ANCHORS)
+    assert len(PLAN_REQUIREMENT_ANCHORS) == 16, sorted(PLAN_REQUIREMENT_ANCHORS)
     assert all(
         requirement.startswith("IND-") for requirement in PLAN_REQUIREMENT_ANCHORS
     ), sorted(PLAN_REQUIREMENT_ANCHORS)
@@ -690,10 +690,19 @@ def test_anchor_map_agrees_with_the_recovered_requirement_index() -> None:
     The missing authority is the obligation's text.  Measured 2026-09-29, of the
     56 ids the plan names, 41 appear NOWHERE in this tree -- no spec, no doc, no
     fixture, no test -- because the requirement texts are inherited "unchanged
-    from r1/r2/W12" and those specifications are absent.  The 15 that do appear
-    are exactly T01's and T04's, and only because landed code cites them.  So an
-    anchor for any of the other 41 could not be enforcing a requirement; it would
-    be inventing one, and nothing in CI would notice.
+    from r1/r2/W12" and those specifications are not vendored here.  The 15 that
+    did appear were exactly T01's and T04's, and only because landed code cites
+    them.  So an anchor for any of the other 41 could not be enforcing a
+    requirement; it would be inventing one, and nothing in CI would notice.
+
+    UPDATED 2026-09-29: "absent from this tree" turned out NOT to mean lost.  Sol's
+    CONTINUE ruling (#7789 comment 5894127980) recovered r1/r2/W12 from the original
+    branch history, so the obligation texts are readable at named blobs even though
+    they are still vendored at no path on ``main``.  That adds a fourth and stronger
+    basis, ``RECOVERED_ORIGINAL``, which quotes the obligation itself rather than
+    reconstructing it from a ruling or from landed code.  The barrier below is
+    UNCHANGED and still fail-closed: a row migrates off ``NO_SOURCE`` only in a
+    change that actually enforces it, one row at a time, never in a bulk edit.
 
     This binds the map to ``research/industrials/first_vertical_program/
     requirement_index.md``, which carries the plan's rows verbatim plus a declared
@@ -704,9 +713,14 @@ def test_anchor_map_agrees_with_the_recovered_requirement_index() -> None:
     index = _read_requirement_index()
     assert len(index) == 56, f"expected the plan's 56 rows, parsed {len(index)}"
 
-    assert {"RULING", "LANDED_BEHAVIOUR", "NO_SOURCE"} >= {
-        row[3] for row in index.values()
-    }, sorted({row[3] for row in index.values()})
+    assert {
+        "RULING",
+        "LANDED_BEHAVIOUR",
+        "RECOVERED_ORIGINAL",
+        "NO_SOURCE",
+    } >= {row[3] for row in index.values()}, sorted(
+        {row[3] for row in index.values()}
+    )
     sourced = {r for r, row in index.items() if row[3] != "NO_SOURCE"}
     unsourced = {r for r, row in index.items() if row[3] == "NO_SOURCE"}
     # Derived, not a second hard-coded constant: clause 4 below binds `sourced`

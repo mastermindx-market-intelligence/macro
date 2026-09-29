@@ -52,8 +52,10 @@ FIXTURE_NAMES = frozenset(path.stem for path in FIXTURE_DIR.glob("*.json"))
 # makes it gradeable: ``test_every_plan_named_requirement_anchor_exists`` in the
 # dependency-binding suite resolves every row by AST, so deleting or renaming an
 # anchor reds the exclusive ``industrials-result-cash`` CI job instead of
-# silently reducing coverage.  Both files named below are already in that job's
-# ``paths:`` and on its run line, so this needs no ``.github/ci/**`` edit.
+# silently reducing coverage.  All THREE files named below are in that job's
+# ``paths:`` and on its run line; ``test_industrials_financial_dossier.py`` was
+# added there in the same change that created it, because a suite a guard depends
+# on but CI never selects is a guard that cannot fail.
 #
 # ADDING A ROW IS A CLAIM.  A row asserts that the named test discriminates the
 # requirement's compliant case from its violating one -- not merely that some
@@ -61,6 +63,7 @@ FIXTURE_NAMES = frozenset(path.stem for path in FIXTURE_DIR.glob("*.json"))
 # not started yet do not belong here: their absence is the honest signal.
 _T01_SUITE = "tests/test_industrials_dependency_binding.py"
 _T04_SUITE = "tests/test_industrials_result_cash.py"
+_T06_SUITE = "tests/test_industrials_financial_dossier.py"
 
 PLAN_REQUIREMENT_ANCHORS: Mapping[str, tuple[str, str]] = {
     # T01 — synthetic corpus, helper harness, delivery-input validator.
@@ -80,6 +83,11 @@ PLAN_REQUIREMENT_ANCHORS: Mapping[str, tuple[str, str]] = {
     "IND-D15": (_T04_SUITE, "test_ind_d15"),
     "IND-D16": (_T04_SUITE, "test_ind_d16"),
     "IND-R208": (_T04_SUITE, "test_ind_r208"),
+    # T06 — financial dossier.  ONE row: the only T06 obligation whose behaviour
+    # is reachable without the held seams, anchored on recovered ORIGINAL wording
+    # (r2 blob 9c98e106b954d0a48610afad418de2a9eeb1e58b) rather than on a ruling
+    # or on landed code.  The other eight T06 rows stay absent on purpose.
+    "IND-R214": (_T06_SUITE, "test_ind_r214"),
 }
 _COMPARISON_PURPOSES = frozenset(
     {"same_period", "year_over_year", "final_vs_preview", "segment_bridge", "rollforward"}
