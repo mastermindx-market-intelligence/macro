@@ -1024,3 +1024,101 @@ jobs:
 
     with pytest.raises(AssertionError, match="exactly one producer seed"):
         test_daily_collector_keeps_us_panel_seed_cache_authority()
+
+
+# --------------------------------------------------------------------------
+# A JOB-LEVEL timeout schedules NOTHING — the claim the 2026-09-25 night killed.
+# --------------------------------------------------------------------------
+#
+# Authoritative run 36078806272 (collect job 107895940199, mac-builder-5,
+# schedule, source SHA 72038badf7e3):
+#
+#   00:43:08Z  job starts
+#   04:38:22Z  `run collectors` ends (~230.7m)
+#   04:43:31Z  `commit market data` starts   -> 04:45:40Z success (checkpoint EXISTS)
+#   04:45:40Z  `push market data` starts     -> completed_at NULL (hard-stopped)
+#   04:48:08Z  job terminalizes `cancelled`  = 245.0m = the 240m cap + ~5m grace
+#
+# In that job's steps[], EVERY step after the push — including the `if: cancelled()`
+# salvage push and the `if: always()` W2 finish — carries a NULL `started_at`.  They
+# were never scheduled.  `data/ops/nightly_timings/collect.jsonl` has no row for the
+# run at all, which is the same fact read from the ledger side: the telemetry that
+# was supposed to explain the death died with it.  Canada's source clock stayed on
+# 2026-09-23 while a complete, committed night sat on a runner that was about to be
+# wiped by the next job's checkout.
+#
+# `if: always()` / `if: cancelled()` steps DO run after an ordinary cancellation,
+# and they may run inside the grace window after a cap — `collect_tail` commits that
+# way most nights.  What they cannot do is outlive a hard job-level timeout that is
+# already burning the grace on a step that will not stop.  So the salvage push is a
+# CANCELLATION belt, never a job-cap rescue.
+#
+# That distinction is not cosmetic: while the source said the checkpoint "survives a
+# job-cap cancel", a 240m cap looked safe even as the W2 ledger printed 94.5%
+# (09-23), 94.3% (09-24) and 101.1% (09-17) of cap.  The false promise is what let
+# the margin be read as covered.  These tests keep the corrected reading in the
+# source so the next reader inherits the measurement instead of the reassurance.
+
+_JOB_CAP = re.compile(r"job[-\s]?(?:cap|timeout)|cap timeout", re.I)
+_SURVIVES = re.compile(r"surviv|last-ditch rescue|still (?:records|runs|reaches)", re.I)
+_SKIPPED = re.compile(r"skips? this step|does not (?:run|schedule)|schedules? nothing|"
+                      r"not a job-timeout rescue|only when GitHub still schedules", re.I)
+
+
+def _comment_block_above(needle: str) -> str:
+    """The contiguous `#` comment lines immediately above the step naming `needle`."""
+    lines = DAILY.read_text().splitlines()
+    for i, line in enumerate(lines):
+        if line.lstrip().startswith("- name:") and needle in line:
+            block: list[str] = []
+            j = i - 1
+            while j >= 0 and lines[j].lstrip().startswith("#"):
+                block.append(lines[j].lstrip().lstrip("#").strip())
+                j -= 1
+            return " ".join(reversed(block))
+    raise AssertionError(f"no step whose `- name:` contains {needle!r}")
+
+
+def test_no_collect_step_name_promises_it_survives_the_job_cap(collect_steps):
+    """The Actions UI shows step NAMES; a name must not sell a rescue that cannot run.
+
+    `push market data (survives a job-cap cancel; ...)` is the exact string that was
+    live on 2026-09-25 while the push was being hard-stopped by that same cap.
+    """
+    offenders = [
+        name for step in collect_steps
+        if (name := str(step.get("name") or ""))
+        and _JOB_CAP.search(name) and _SURVIVES.search(name)
+    ]
+    assert not offenders, (
+        "a collect step NAME claims it survives the job cap; run 36078806272 proved a "
+        f"hard job-level timeout schedules no later step: {offenders}"
+    )
+
+
+def test_the_salvage_push_is_documented_as_a_cancel_belt_not_a_cap_rescue():
+    """Positive pin: the correction must stay written down, not just applied once."""
+    block = _comment_block_above("salvage push")
+    assert _JOB_CAP.search(block), (
+        "the salvage push's comment no longer mentions the job cap/timeout at all — the "
+        "2026-09-25 finding has been deleted rather than kept; block was: " + block
+    )
+    assert _SKIPPED.search(block), (
+        "the salvage push's comment must say a hard job-level timeout SKIPS it "
+        "(run 36078806272, 2026-09-25); block was: " + block
+    )
+    assert not _SURVIVES.search(block), (
+        "the salvage push's comment promises survival again; it is a cancellation belt, "
+        "never a job-cap rescue. Block was: " + block
+    )
+
+
+def test_the_w2_finish_comment_does_not_promise_a_post_timeout_row():
+    """The ledger row that would have explained the death is the row a cap deletes."""
+    block = _comment_block_above("timings ledger + 85% budget tripwire")
+    if _JOB_CAP.search(block):
+        assert _SKIPPED.search(block), (
+            "the W2 finish comment mentions the job cap but still implies always() "
+            "records the night through it; run 36078806272 wrote NO collect.jsonl row. "
+            "Block was: " + block
+        )
