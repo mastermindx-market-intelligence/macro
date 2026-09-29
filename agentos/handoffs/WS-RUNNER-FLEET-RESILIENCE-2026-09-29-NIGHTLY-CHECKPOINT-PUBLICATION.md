@@ -168,9 +168,14 @@ unresolved:
       freshness than the cap exhaustion this PR repairs. A cap raise cannot help a job
       that is cancelled at 98.9m of 240m. Both are real; this PR fixes one.
   - >
-      #8008 is OPEN with no review decision recorded and no merge label armed. The
-      independent reviewer was sent back to verify the corrections on the exact head
-      d1e53a094592 and had not returned when this record was written.
+      #8008 is OPEN and awaiting its CI conclusion on head 732d3e8b55a1. The independent
+      opus reviewer APPROVED on d1e53a094592 (code identical to 732d3e8b55a1; the two
+      later commits are the agentos records and a comment rewrap), having replayed its
+      own round-1 evasions against the new pins rather than accepting the summary. Its
+      three residual nits were non-blocking; the cosmetic one is fixed. GitHub carries
+      no formal reviewDecision because the review is a session-internal opus lane, not
+      a GitHub reviewer - read `reviewDecision` before merging anyway, since a human or
+      another session may have added one.
   - >
       `ci-authority/codex/merge-queue-pilot` is red on this head and on independent
       siblings for a base-context reason. It is base-side, but nobody owns healing it.
@@ -178,10 +183,21 @@ unresolved:
       The structural fix - trimming the collector workload so the cap is not the
       binding constraint - is untouched. The creep budget is the instrument that will
       say when that becomes urgent, not a substitute for it.
+  - >
+      The `engine` job is the SAME failure mode one job over and is closer to its cap
+      than collect ever was: median 242.4m and max 289.6m against a 300m cap, with 7 of
+      the last 20 nights past the 255m tripwire. Its inline cap comment still asserts
+      "the honest warm floor is ~105m" and "the next cap move on a healthy fortnight is
+      DOWN, not up", which the ledger refutes. Deliberately NOT fixed here: daily.yml is
+      a serialized shared composition surface and MACRO-01's scope is the collect
+      publication path. It needs its own lane.
 next_actions:
   - >
-      Judge the reviewer's return on head d1e53a094592 by opening the diff, not by
-      reading its summary. A late finding outranks an early approval.
+      Open a lane for the `engine` cap comment and its creep. Verify first with
+      `python3 -c` over data/ops/nightly_timings/engine.jsonl - median 242.4m, max
+      289.6m, cap 300m - then decide whether engine wants the same creep budget or a
+      workload trim. The reviewer's read was that engine is already tripping its
+      tripwire, so a budget would add nothing and the trim is the real lever.
   - >
       Merge #8008 on CONCLUDED checks only - never mid-flight - excluding the known
       spurious "Workers Builds: macro" and the base-side
