@@ -239,6 +239,28 @@ unresolved:
       DOWN, not up", which the ledger refutes. Deliberately NOT fixed here: daily.yml is
       a serialized shared composition surface and MACRO-01's scope is the collect
       publication path. It needs its own lane.
+  - >
+      THIS PR'S OWN `ci-pack-11` RED WAS A DOWNSTREAM SYMPTOM OF THE SAME UNPUBLISHED
+      NIGHT, and it is healed here. The failing job is `market-os-macro-suite-pages`
+      (named by the check annotations, not the pack index) and it failed on exactly ONE
+      test: `tests/test_macro_command_p4_copy.py::test_credit_funding_e4_needs_the_capture_fixture_flag`
+      - `1 failed, 545 passed, 8 skipped`. That test fabricates a `capital_structure`
+      view to prove E4 is fixture-gated, but builds it from
+      `builder.read_workspace(DATA_ROOT, page)`; `capital_structure` currently reads
+      `STALE_SOURCE` BECAUSE the 2026-09-29 collection was cancelled and its step
+      skipped at 03:50:23Z, so E2 outranks E4 and the assertion graded the bake instead
+      of the gate. Healed with the idiom #7790 established for the two sibling tests it
+      missed: pin `availability.state = "CURRENT"` on the fabricated workspace. RED
+      controls both fire - flipping the pin to `STALE_SOURCE` fails, and dropping
+      `allow_empty_state_fixture=True` fails, so the pin is load-bearing and the E4 gate
+      is still genuinely asserted. GREEN: CI's exact step-4 command is `rc=0,
+      554 passed` locally, matching CI's own 545+1+8=554 total. The red was NOT
+      attributable by the standing sibling-head rule - see
+      `DSC:A-GLOBAL-INVALIDATOR-PR-CANNOT-USE-SIBLING-HEAD-EXONERATION` - because pack
+      membership is recomputed per head from its changed-file scope, so sibling #8205's
+      green `ci-pack-11` never contained the failing job at all. Reachability, not
+      similarity, settled it: importing the failing module loads 307 modules and NONE of
+      this PR's changed modules is among them.
 next_actions:
   - >
       Open a lane for the `engine` cap comment and its creep. Verify first with
