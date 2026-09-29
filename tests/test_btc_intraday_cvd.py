@@ -79,12 +79,13 @@ def test_engine_accruing_and_distribution_state():
     df = _hourly(n, buy, sell)
     orig = _store_patch({("okx", "taker_volume_hourly"): df})
     try:
-        o = CVD.compute()
+        o = CVD.compute(as_of=df.index[-1].tz_localize("UTC"))
     finally:
         CVD.store.read = orig
     assert o["ok"] and o["accruing"] is True
-    assert o["flow_state"] == "distribution"         # net aggressor selling
-    assert o["net_flow_24h_mn"] < 0
+    assert o["flow_state"] == "sell_dominant"         # net aggressor selling
+    assert o["net_flow_24h_native"] < 0
+    assert o["net_flow_24h_mn"] is None
     assert o["divergence"] is None                   # not enough history
 
 
@@ -100,13 +101,13 @@ def test_engine_divergence_when_history_sufficient():
     price = pd.DataFrame({"close": 60000 * np.cumprod(1 + rets)}, index=cvd_df.index)
     orig = _store_patch({("okx", "taker_volume_hourly"): cvd_df, ("coinbase", "btc_hourly"): price})
     try:
-        o = CVD.compute()
+        o = CVD.compute(as_of=cvd_df.index[-1].tz_localize("UTC"))
     finally:
         CVD.store.read = orig
     assert o["ok"] and o["accruing"] is False
     assert o["divergence"] is not None
     assert 0.0 <= o["divergence"]["pctile"] <= 1.0
-    assert o["divergence"]["state"] in ("hidden_distribution", "hidden_accumulation", "none")
+    assert o["divergence"]["state"] in ("price_flow_high", "price_flow_low", "none")
 
 
 def test_engine_stale_when_hourly_lags_reference():
@@ -155,3 +156,68 @@ if __name__ == "__main__":
     for fn in fns:
         fn(); print(f"  ok  {fn.__name__}")
     print(f"\n{len(fns)} tests passed")
+
+
+# R11: precise elapsed support and descriptive-only source semantics.
+def test_r11_short_gap_cannot_be_called_a_complete_24_hour_window(monkeypatch):
+    h=_hourly(25,np.ones(25),np.full(25,2.)).drop(pd.Timestamp('2026-01-01 20:00'))
+    monkeypatch.setattr(CVD.store,'read',lambda ns,nm:h if ns=='okx' else None)
+    out=CVD.compute(as_of='2026-01-02T02:00:00Z')
+    assert out['gap_detected'] and not out['ok'] and out['n_hours']==4
+    assert out['net_flow_24h_native'] is None and out['net_flow_72h_native'] is None
+    assert out['flow_state']=='unavailable'
+
+
+def test_r11_future_data_never_changes_a_historical_flow_view(monkeypatch):
+    h=_hourly(800,np.full(800,3.),np.ones(800));cut=h.index[-1]
+    monkeypatch.setattr(CVD.store,'read',lambda ns,nm:h if ns=='okx' else None)
+    a=CVD.compute(as_of=cut.tz_localize('UTC'))
+    extra=_hourly(20,np.full(20,1e15),np.ones(20),start=cut+pd.Timedelta(hours=1))
+    future=pd.concat([h,extra]);monkeypatch.setattr(CVD.store,'read',lambda ns,nm:future if ns=='okx' else None)
+    assert CVD.compute(as_of=cut.tz_localize('UTC'))==a
+
+
+def test_r11_zero_activity_and_balanced_activity_are_not_missing(monkeypatch):
+    zero=_hourly(800,np.zeros(800),np.zeros(800))
+    monkeypatch.setattr(CVD.store,'read',lambda ns,nm:zero if ns=='okx' else None)
+    out=CVD.compute(as_of=zero.index[-1].tz_localize('UTC'))
+    assert out['ok'] and out['net_flow_24h_native']==0 and out['buy_share_24h'] is None
+    assert out['flow_state']=='no_activity'
+    balanced=zero+2;monkeypatch.setattr(CVD.store,'read',lambda ns,nm:balanced if ns=='okx' else None)
+    out=CVD.compute(as_of=zero.index[-1].tz_localize('UTC'))
+    assert out['buy_share_24h']==.5 and out['flow_state']=='balanced'
+
+
+def test_r11_invalid_or_duplicate_flow_is_not_sanitized_to_neutral(monkeypatch):
+    h=_hourly(800,np.ones(800),np.ones(800));h.iloc[-1,0]=-1
+    monkeypatch.setattr(CVD.store,'read',lambda ns,nm:h if ns=='okx' else None)
+    out=CVD.compute(as_of=h.index[-1].tz_localize('UTC'))
+    assert not out['ok'] and out['net_flow_24h_native'] is None
+    dup=pd.concat([h,h.tail(1)]);monkeypatch.setattr(CVD.store,'read',lambda ns,nm:dup if ns=='okx' else None)
+    assert not CVD.compute(as_of=h.index[-1].tz_localize('UTC'))['ok']
+
+
+def test_r11_equal_old_sources_are_stale_against_wall_clock(monkeypatch):
+    h=_hourly(800,np.full(800,3.),np.ones(800));px=pd.DataFrame({'close':10.},index=h.index)
+    monkeypatch.setattr(CVD.store,'read',lambda ns,nm:h if ns=='okx' else px)
+    out=CVD.compute(as_of=(h.index[-1]+pd.Timedelta(days=4)).tz_localize('UTC'))
+    assert out['stale'] and out['hours_behind_ref']==0 and out['hours_behind_clock']==96
+    assert out['flow_state']=='unavailable'
+
+
+def test_r11_unknown_volume_units_never_turn_into_dollars(monkeypatch):
+    h=_hourly(800,np.full(800,1e9),np.full(800,2e9))
+    monkeypatch.setattr(CVD.store,'read',lambda ns,nm:h if ns=='okx' else None)
+    out=CVD.compute(as_of=h.index[-1].tz_localize('UTC'))
+    assert out['scope']=='OKX/BTC/CONTRACTS' and out['volume_unit'] is None
+    assert out['net_flow_24h_native']==-24e9 and out['net_flow_24h_mn'] is None and out['cvd_last_bn'] is None
+    assert out['display_only'] is True and out['causally_qualified'] is False
+    assert 'leading' not in out['note'].lower()
+
+
+def test_r11_missing_price_hour_blocks_divergence_instead_of_forward_fill(monkeypatch):
+    n=1600;rng=np.random.default_rng(4);h=_hourly(n,10+rng.random(n),10+rng.random(n))
+    px=pd.DataFrame({'close':60000*np.exp(np.cumsum(rng.normal(0,.003,n)))},index=h.index).drop(h.index[-10])
+    monkeypatch.setattr(CVD.store,'read',lambda ns,nm:h if ns=='okx' else px)
+    out=CVD.compute(as_of=h.index[-1].tz_localize('UTC'))
+    assert out['ok'] and out['divergence'] is None and out['price_alignment_complete'] is False

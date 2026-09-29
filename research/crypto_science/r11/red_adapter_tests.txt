@@ -1,0 +1,31 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+__________ test_r11_okx_same_requests_and_legacy_values_with_capture ___________
+tests/test_crypto_collectors.py:259: in test_r11_okx_same_requests_and_legacy_values_with_capture
+    assert len(f)==1 and len(o.load_asof('okx_taker','2026-01-03T00:00:00Z',root=tmp_path))==2
+E   assert (0 == 1)
+E    +  where 0 = len(Empty DataFrame\nColumns: [capture_id, schema, source_id, endpoint, params_json, payload_json, payload_sha256, body_sha... first_seen, fetched_at, http_status, row_count, provider_first_published_at, unit, timestamp_role, finality]\nIndex: [])
+____ test_r11_capture_failure_is_visible_without_hiding_independent_values _____
+tests/test_crypto_collectors.py:270: in test_r11_capture_failure_is_visible_without_hiding_independent_values
+    assert a.fetch_result_status(out)=='stale'
+E   AssertionError: assert None == 'stale'
+E    +  where None = fetch_result_status({'funding_rate':             funding_rate_okx\ndate                        \n2026-01-01            0.0002, 'taker_volume...                \n2026-01-01 00:00:00              3               2\n2026-01-01 01:00:00              4               3})
+E    +    where fetch_result_status = <collectors.okx.OkxAdapter object at 0x10d761d10>.fetch_result_status
+________ test_r11_bgeo_preserves_clock_delay_message_and_numeric_frame _________
+tests/test_crypto_collectors.py:286: in test_r11_bgeo_preserves_clock_delay_message_and_numeric_frame
+    assert len(f)==1 and '16:00:00Z' in f.iloc[0].payload_json
+E   assert (0 == 1)
+E    +  where 0 = len(Empty DataFrame\nColumns: [capture_id, schema, source_id, endpoint, params_json, payload_json, payload_sha256, body_sha... first_seen, fetched_at, http_status, row_count, provider_first_published_at, unit, timestamp_role, finality]\nIndex: [])
+________________ test_r11_fetch_exception_clears_capture_scope _________________
+tests/test_crypto_collectors.py:295: in test_r11_fetch_exception_clears_capture_scope
+    assert a._crypto_capture_active is False
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+E   AttributeError: 'OkxAdapter' object has no attribute '_crypto_capture_active'
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_crypto_collectors.py::test_r11_okx_same_requests_and_legacy_values_with_capture
+FAILED tests/test_crypto_collectors.py::test_r11_capture_failure_is_visible_without_hiding_independent_values
+FAILED tests/test_crypto_collectors.py::test_r11_bgeo_preserves_clock_delay_message_and_numeric_frame
+FAILED tests/test_crypto_collectors.py::test_r11_fetch_exception_clears_capture_scope
+4 failed, 15 deselected, 43 warnings in 3.47s

@@ -1,0 +1,61 @@
+FFFFFFFFFFF                                                              [100%]
+=================================== FAILURES ===================================
+_____ test_r11_capture_preserves_raw_funding_and_does_not_invent_interval ______
+tests/test_crypto_collectors.py:112: in test_r11_capture_preserves_raw_funding_and_does_not_invent_interval
+    from collectors import _crypto_observations as o
+E   ImportError: cannot import name '_crypto_observations' from 'collectors' (/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/collectors/__init__.py)
+________ test_r11_capture_dedup_revision_and_reversion_preserve_history ________
+tests/test_crypto_collectors.py:123: in test_r11_capture_dedup_revision_and_reversion_preserve_history
+    from collectors import _crypto_observations as o
+E   ImportError: cannot import name '_crypto_observations' from 'collectors' (/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/collectors/__init__.py)
+_____________ test_r11_capture_uses_allowlisted_scope_not_secrets ______________
+tests/test_crypto_collectors.py:139: in test_r11_capture_uses_allowlisted_scope_not_secrets
+    from collectors import _crypto_observations as o
+E   ImportError: cannot import name '_crypto_observations' from 'collectors' (/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/collectors/__init__.py)
+_____ test_r11_capture_corruption_and_failed_write_never_count_as_success ______
+tests/test_crypto_collectors.py:149: in test_r11_capture_corruption_and_failed_write_never_count_as_success
+    from collectors import _crypto_observations as o
+E   ImportError: cannot import name '_crypto_observations' from 'collectors' (/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/collectors/__init__.py)
+_________ test_r11_capture_lock_contention_does_not_overwrite_or_retry _________
+tests/test_crypto_collectors.py:161: in test_r11_capture_lock_contention_does_not_overwrite_or_retry
+    from collectors import _crypto_observations as o
+E   ImportError: cannot import name '_crypto_observations' from 'collectors' (/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/collectors/__init__.py)
+_________ test_r11_capture_rejects_naive_missing_or_tampered_receipts __________
+tests/test_crypto_collectors.py:171: in test_r11_capture_rejects_naive_missing_or_tampered_receipts
+    from collectors import _crypto_observations as o
+E   ImportError: cannot import name '_crypto_observations' from 'collectors' (/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/collectors/__init__.py)
+_________ test_r11_funding_unknown_actual_never_substitutes_predicted __________
+tests/test_crypto_collectors.py:180: in test_r11_funding_unknown_actual_never_substitutes_predicted
+    from collectors import _crypto_observations as o
+E   ImportError: cannot import name '_crypto_observations' from 'collectors' (/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/collectors/__init__.py)
+___ test_r11_settlement_after_receipt_cannot_be_reported_as_already_settled ____
+tests/test_crypto_collectors.py:188: in test_r11_settlement_after_receipt_cannot_be_reported_as_already_settled
+    from collectors import _crypto_observations as o
+E   ImportError: cannot import name '_crypto_observations' from 'collectors' (/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/collectors/__init__.py)
+____ test_r11_conflicting_simultaneous_captures_are_not_arbitrarily_ordered ____
+tests/test_crypto_collectors.py:195: in test_r11_conflicting_simultaneous_captures_are_not_arbitrarily_ordered
+    from collectors import _crypto_observations as o
+E   ImportError: cannot import name '_crypto_observations' from 'collectors' (/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/collectors/__init__.py)
+_ test_r11_flow_scope_and_bgeo_clock_fields_are_retained_without_certification _
+tests/test_crypto_collectors.py:203: in test_r11_flow_scope_and_bgeo_clock_fields_are_retained_without_certification
+    from collectors import _crypto_observations as o
+E   ImportError: cannot import name '_crypto_observations' from 'collectors' (/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/collectors/__init__.py)
+_____________ test_r11_private_parser_probe_cannot_write_evidence ______________
+tests/test_crypto_collectors.py:217: in test_r11_private_parser_probe_cannot_write_evidence
+    from collectors import _crypto_observations as o
+E   ImportError: cannot import name '_crypto_observations' from 'collectors' (/Volumes/Mastermind/worktrees/crypto-vector-r2-20260926-sol-001-sparse/collectors/__init__.py)
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, docs, finviz_themes, knowledge, ops, orch, properties, reports, requirements, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_crypto_collectors.py::test_r11_capture_preserves_raw_funding_and_does_not_invent_interval
+FAILED tests/test_crypto_collectors.py::test_r11_capture_dedup_revision_and_reversion_preserve_history
+FAILED tests/test_crypto_collectors.py::test_r11_capture_uses_allowlisted_scope_not_secrets
+FAILED tests/test_crypto_collectors.py::test_r11_capture_corruption_and_failed_write_never_count_as_success
+FAILED tests/test_crypto_collectors.py::test_r11_capture_lock_contention_does_not_overwrite_or_retry
+FAILED tests/test_crypto_collectors.py::test_r11_capture_rejects_naive_missing_or_tampered_receipts
+FAILED tests/test_crypto_collectors.py::test_r11_funding_unknown_actual_never_substitutes_predicted
+FAILED tests/test_crypto_collectors.py::test_r11_settlement_after_receipt_cannot_be_reported_as_already_settled
+FAILED tests/test_crypto_collectors.py::test_r11_conflicting_simultaneous_captures_are_not_arbitrarily_ordered
+FAILED tests/test_crypto_collectors.py::test_r11_flow_scope_and_bgeo_clock_fields_are_retained_without_certification
+FAILED tests/test_crypto_collectors.py::test_r11_private_parser_probe_cannot_write_evidence
+11 failed, 4 deselected, 43 warnings in 1.69s

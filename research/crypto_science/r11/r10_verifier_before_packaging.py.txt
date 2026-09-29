@@ -23,7 +23,7 @@ def main():
     for key in ['prior_evidence','inherited_sources','sources']:
         for p,h in r[key].items():assert sha(ROOT/p)==h,(key,p)
     assert sha(HERE/'initial/r10_source_qualification.py')==old['sources']['research/crypto_science/r10_source_qualification.py']
-    assert sha(HERE/'initial/test_btc_impulse_falsifier.py.txt')==old['sources']['tests/test_btc_impulse_falsifier.py']
+    assert sha(HERE/'initial/test_btc_impulse_falsifier.py')==old['sources']['tests/test_btc_impulse_falsifier.py']
     assert (ROOT/'tests/test_btc_impulse_falsifier.py').read_bytes().startswith(subprocess.check_output(['git','show',r['baseline']+':tests/test_btc_impulse_falsifier.py'],cwd=ROOT))
     for key in ['census','flow_grid','row_vs_elapsed','r9_coverage_scenarios','strict_qualification','current_display_snapshot','funding_field_overlap','synthetic_gap_probe','offline_collector_probe']:
         assert r[key]==old[key],('amendment changed real-data result',key)
