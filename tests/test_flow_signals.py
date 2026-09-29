@@ -1077,3 +1077,195 @@ class TestMeasuredMicrostructureLedgerColumns:
         assert row["vol_gt_oi_ratio"] is None
         # Finite siblings in the same block are unaffected.
         assert row["at_bid_share"] == pytest.approx(0.2)
+
+
+# Source clocks stay with the incumbent collector test/CI owner.
+from collectors import flow_signals as clock_owner
+from scripts.build_flow_signals import _write_gate
+
+_SOURCE_CLOCK_TEST_FIELDS = ("observed_at", "decision_at", "available_at", "published_at", "source_snapshot_asof")
+
+
+def _make_source_clock_event(event_id="clock-event", **changes):
+    row = {
+        "id": event_id, "root": "TEST", "ts": "2026-09-29T14:00:00Z",
+        "dte_bucket": "8_30d", "right": "C", "premium": 1000,
+        "observed_at": "2026-09-29T10:00:01.123456789-04:00",
+        "decision_at": "2026-09-29T14:00:02Z",
+        "available_at": "2026-09-29T14:00:03Z",
+        "published_at": "2026-09-29T14:00:04Z",
+        "source_snapshot_asof": "2026-09-29T14:00:05Z",
+    }
+    row.update(changes)
+    return row
+
+
+def _parse_source_clock_event(row):
+    return clock_owner._events_from_blob({
+        "schema": "live_flow.feed/v1", "session_date": "2026-09-29",
+        "asof": "2026-09-29T15:00:00Z", "events": [row],
+    })[0]
+
+
+class TestSourceClockPreservation:
+    @pytest.fixture(autouse=True)
+    def frozen_ingestion(self, monkeypatch):
+        class Clock(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                value = datetime(2026, 9, 29, 16, 0, tzinfo=timezone.utc)
+                return value.astimezone(tz) if tz else value.replace(tzinfo=None)
+        monkeypatch.setattr(clock_owner, "datetime", Clock)
+
+    def test_source_clock_precision_and_order_survive_normalization(self):
+        row = _parse_source_clock_event(_make_source_clock_event())
+        assert row.get("observed_at") == "2026-09-29T14:00:01.123456789+00:00"
+        assert row["available_at"] == "2026-09-29T14:00:03+00:00"
+        assert row["published_at"] == "2026-09-29T14:00:04+00:00"
+        assert row["source_snapshot_asof"] == "2026-09-29T14:00:05+00:00"
+        assert row["source_clock_status"] == "ordered"
+        assert row["available_at"] != row["ingested_at"]
+
+    def test_missing_clocks_never_borrow_event_wrapper_or_ingestion_time(self):
+        raw = _make_source_clock_event()
+        for key in _SOURCE_CLOCK_TEST_FIELDS:
+            raw.pop(key)
+        row = _parse_source_clock_event(raw)
+        assert row.get("source_clock_status") == "unavailable"
+        assert all(row.get(key) is None for key in _SOURCE_CLOCK_TEST_FIELDS)
+        assert row["ts"] and row["ingested_at"]
+
+    def test_partial_clock_chain_is_not_filled_or_called_ordered(self):
+        row = _parse_source_clock_event(_make_source_clock_event(observed_at=None, published_at=None))
+        assert row.get("source_clock_status") == "partial"
+        assert row["available_at"] == "2026-09-29T14:00:03+00:00"
+        assert row["observed_at"] is None
+
+    @pytest.mark.parametrize("bad", ["2026-09-29T14:00:03", "2026-09-29", "NaT", "tomorrow", True, 1790690403, "2026-02-31T14:00:03Z", "2026-09-29T14:00:03+01:99", "2026-09-29T14:00:03+01:60", "2026-09-29T14:00:03+24:00"])
+    def test_invalid_source_time_is_null_and_not_silently_utc(self, bad):
+        row = _parse_source_clock_event(_make_source_clock_event(available_at=bad))
+        assert row.get("source_clock_status") == "invalid"
+        assert row["available_at"] is None
+        assert row["decision_at"] == "2026-09-29T14:00:02+00:00"
+
+    @pytest.mark.parametrize("changes", [
+        {"ts": "2026-09-29T14:00:10Z"},
+        {"observed_at": "2026-09-29T14:00:03Z"},
+        {"decision_at": "2026-09-29T14:00:04Z"},
+        {"published_at": "2026-09-29T14:00:02Z"},
+        {"available_at": "2026-09-29T17:00:00Z", "published_at": None},
+        {"source_snapshot_asof": "2026-09-29T17:00:00Z"},
+        {"ts": "2026-09-29T14:00:00"},
+    ])
+    def test_reversed_future_or_unqualified_event_clocks_are_not_ordered(self, changes):
+        row = _parse_source_clock_event(_make_source_clock_event(**changes))
+        assert row.get("source_clock_status") == "invalid"
+
+    def test_submicrosecond_reversal_is_not_rounded_into_equality(self):
+        row = _parse_source_clock_event(_make_source_clock_event(observed_at="2026-09-29T14:00:02.000000002Z", decision_at="2026-09-29T14:00:02.000000001Z"))
+        assert row.get("source_clock_status") == "invalid"
+
+    def test_no_publication_time_remains_unpublished_not_fabricated(self):
+        row = _parse_source_clock_event(_make_source_clock_event(published_at=None))
+        assert row.get("source_clock_status") == "ordered"
+        assert row["published_at"] is None
+
+    def test_keep_first_cannot_backfill_missing_clocks(self, tmp_path):
+        path = tmp_path / "ledger.parquet"
+        raw = _make_source_clock_event()
+        for key in _SOURCE_CLOCK_TEST_FIELDS:
+            raw.pop(key)
+        clock_owner._append_rows(path, [_parse_source_clock_event(raw)])
+        clock_owner._append_rows(path, [_parse_source_clock_event(_make_source_clock_event())])
+        df = pd.read_parquet(path)
+        assert len(df) == 1
+        assert "available_at" in df.columns
+        assert pd.isna(df.iloc[0]["available_at"])
+        assert df.iloc[0]["source_clock_status"] == "unavailable"
+
+    def test_legacy_rows_remain_unknown_through_native_parquet_and_gate(self, tmp_path, monkeypatch):
+        path = tmp_path / "ledger.parquet"
+        old = _parse_source_clock_event(_make_source_clock_event("legacy"))
+        for key in (*_SOURCE_CLOCK_TEST_FIELDS, "source_clock_status"):
+            old.pop(key, None)
+        pd.DataFrame([old]).to_parquet(path, index=False)
+        clock_owner._append_rows(path, [_parse_source_clock_event(_make_source_clock_event("new")), _parse_source_clock_event(_make_source_clock_event("invalid", published_at="2026-09-29T14:00:02Z"))])
+        df = pd.read_parquet(path)
+        assert "available_at" in df.columns
+        legacy = df[df.event_id == "legacy"].iloc[0]
+        assert pd.isna(legacy["available_at"])
+        assert pd.isna(legacy["source_clock_status"])
+        monkeypatch.setattr(clock_owner, "_ledger_path", lambda: path)
+        stats = clock_owner.ledger_stats()
+        coverage = stats.get("source_clock_coverage")
+        assert coverage is not None
+        assert coverage["authority"] == "diagnostic_only"
+        assert coverage["rows_total"] == 3
+        assert coverage["status_counts"]["legacy_unknown"] == 1
+        assert coverage["status_counts"]["ordered"] == 1
+        assert coverage["status_counts"]["invalid"] == 1
+        assert coverage["field_non_null"]["available_at"] == 2
+        assert sum(coverage["status_counts"].values()) == 3
+        gate_path = tmp_path / "gate.json"
+        _write_gate(gate_path, stats, {}, 2, 0.1, "2026-09-29")
+        gate = json.loads(gate_path.read_text())
+        assert gate["ledger"]["source_clock_coverage"] == coverage
+        assert gate["scoring"]["enabled"] is False
+        assert gate["scored"] is False
+
+    def test_legacy_only_statistics_report_unknown_not_zero_rows(self, tmp_path, monkeypatch):
+        path = tmp_path / "ledger.parquet"
+        pd.DataFrame([{"event_id": "old", "session_date": "2026-09-25", "ts": "2026-09-25T15:00:00+00:00", "dte_bucket": "8_30d"}]).to_parquet(path,index=False)
+        monkeypatch.setattr(clock_owner, "_ledger_path", lambda: path)
+        stats = clock_owner.ledger_stats()
+        assert stats["n_rows"] == 1
+        assert stats.get("source_clock_coverage", {}).get("status_counts", {}).get("legacy_unknown") == 1
+
+    def test_rfc3339_unknown_local_offset_still_has_known_utc_instant(self):
+        # RFC 3339 §4.3: UTC is known; only the local offset is unknown. Do not
+        # confuse this valid instant with an unqualified/naive local timestamp.
+        row = _parse_source_clock_event(_make_source_clock_event(available_at="2026-09-29T14:00:03-00:00"))
+        assert row["source_clock_status"] == "ordered"
+        assert row["available_at"] == "2026-09-29T14:00:03+00:00"
+
+    def test_exact_equal_clock_boundaries_are_valid_without_inventing_publication(self):
+        value = "2026-09-29T14:00:00Z"
+        row = _parse_source_clock_event(_make_source_clock_event(observed_at=value, decision_at=value, available_at=value, published_at=None, source_snapshot_asof=None))
+        assert row["source_clock_status"] == "ordered"
+        assert row["published_at"] is None
+
+    def test_invalid_clock_does_not_erase_independently_valid_measurement(self):
+        raw = _make_source_clock_event(available_at=True)
+        raw["microstructure"] = {"schema": "options.trade_nbbo_microstructure/v1", "source_print_count": 2, "nbbo_valid_print_count": 1, "nbbo_premium_coverage": 0.5}
+        row = _parse_source_clock_event(raw)
+        assert row["source_clock_status"] == "invalid"
+        assert row["source_print_count"] == 2
+        assert row["nbbo_premium_coverage"] == 0.5
+
+    def test_unrecognized_persisted_clock_status_stays_diagnostic(self, tmp_path, monkeypatch):
+        path = tmp_path / "ledger.parquet"
+        row = _parse_source_clock_event(_make_source_clock_event())
+        row["source_clock_status"] = "eligible_to_trade"
+        pd.DataFrame([row]).to_parquet(path, index=False)
+        monkeypatch.setattr(clock_owner, "_ledger_path", lambda: path)
+        coverage = clock_owner.ledger_stats()["source_clock_coverage"]
+        assert coverage["status_counts"]["unrecognized"] == 1
+        assert coverage["status_counts"]["ordered"] == 0
+        assert coverage["authority"] == "diagnostic_only"
+
+    def test_additive_source_clocks_do_not_change_native_feature_matrix(self):
+        from lib.flow_score import build_interaction_features
+
+        raw = _parse_source_clock_event(_make_source_clock_event())
+        raw.update(dte=14, premium_z=2.5)
+        before = {key: value for key, value in raw.items()
+                  if key not in (*_SOURCE_CLOCK_TEST_FIELDS, "source_clock_status")}
+        columns = ["dte", "premium_z", "dte_X_premium_z", "missing_feature"]
+        expected = build_interaction_features(
+            pd.DataFrame([before]), columns, dte_interaction_enabled=True,
+        )
+        actual = build_interaction_features(
+            pd.DataFrame([raw]), columns, dte_interaction_enabled=True,
+        )
+        pd.testing.assert_frame_equal(actual, expected)
+        assert list(actual.columns) == columns

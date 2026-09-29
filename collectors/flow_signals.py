@@ -46,6 +46,7 @@ import argparse
 import json
 import logging
 import os
+import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -64,6 +65,18 @@ ARCHIVE_WINDOW_HOURS = 48
 # Detector version loaded from config/flow_detector.yml at module import.
 # Cached after first load; consumers see the same version for the process lifetime.
 _DETECTOR_VERSION: str | None = None
+
+# Producer clocks, not inferred trade/harvest/publication times. Older parquet
+# rows remain null when ordinary keep-first appends add these optional columns.
+_SOURCE_CLOCK_FIELDS = (
+    "observed_at", "decision_at", "available_at", "published_at", "source_snapshot_asof",
+)
+_SOURCE_CLOCK_STATES = ("ordered", "partial", "unavailable", "invalid")
+_SOURCE_TIME_RE = re.compile(
+    r"[0-9]{4}-[0-9]{2}-[0-9]{2}T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]"
+    r"(?:\.[0-9]{1,9})?(?:Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])"
+)
+
 
 # Full event schema columns (all fields from engine/live_flow.py event dict).
 # These are the ingest fields — never mutated after first write (keep-first law).
@@ -115,6 +128,10 @@ _EVENT_COLS = [
     "quote_age_max_ms",
     "bid_size_median",
     "ask_size_median",
+    # Additive decision-time source evidence; diagnostic status is NOT strategy,
+    # publication, or execution eligibility. Grader/model anchors are unchanged.
+    *_SOURCE_CLOCK_FIELDS,
+    "source_clock_status",
     # Collector-stamped metadata
     "detector_version",
     "source",         # 'live_feed'
@@ -259,6 +276,77 @@ def _normalize_ts(ts_val: Any) -> str:
     else:
         ts = ts.tz_convert("UTC")
     return ts.isoformat()  # includes +00:00 offset for aware timestamps
+
+
+def _strict_source_clock(value: Any) -> tuple[str | None, bool]:
+    """Return an explicit ISO/offset clock plus whether supplied input was invalid.
+
+    Unlike the legacy trade-time normalizer, this never assumes UTC for a naive
+    source clock or interprets a numeric value as a nanosecond epoch.
+    """
+    if value is None or (isinstance(value, str) and not value.strip()):
+        return None, False
+    if not isinstance(value, str) or not _SOURCE_TIME_RE.fullmatch(value.strip()):
+        return None, True
+    try:
+        stamp = pd.Timestamp(value.strip())
+        if pd.isna(stamp) or stamp.tzinfo is None:
+            return None, True
+        return stamp.tz_convert("UTC").isoformat(), False
+    except (ValueError, TypeError, OverflowError):
+        return None, True
+
+
+def _source_clock_cols(ev: dict, ingested_at: str) -> dict[str, Any]:
+    """Preserve source clocks and describe their structure, never manufacture PIT.
+
+    Valid fields survive another field's failure for diagnosis. Even 'ordered'
+    does not prove source authenticity, public delivery, rights, or a tradable
+    entry. No old event is restamped on re-harvest (the existing keep-first owner
+    continues to control persistence).
+    """
+    values: dict[str, Any] = {}
+    invalid = False
+    for key in _SOURCE_CLOCK_FIELDS:
+        values[key], bad = _strict_source_clock(ev.get(key))
+        invalid |= bad
+    if not invalid and not any(values.values()):
+        values["source_clock_status"] = "unavailable"
+        return values
+
+    trade, bad_trade = _strict_source_clock(ev.get("ts"))
+    invalid |= bad_trade
+    chain = [trade, *(values[k] for k in ("observed_at", "decision_at", "available_at", "published_at"))]
+    known = [pd.Timestamp(v) for v in chain if v is not None]
+    invalid |= any(a > b for a, b in zip(known, known[1:]))
+    ingested = pd.Timestamp(ingested_at)
+    invalid |= any(pd.Timestamp(v) > ingested for v in values.values() if v is not None)
+    required = (trade, values["observed_at"], values["decision_at"], values["available_at"])
+    values["source_clock_status"] = (
+        "invalid" if invalid else "ordered" if all(v is not None for v in required) else "partial"
+    )
+    return values
+
+
+def _source_clock_coverage(df: pd.DataFrame) -> dict[str, Any]:
+    """Diagnostic counts in the incumbent gate, not eligibility or score flags."""
+    counts = {key: 0 for key in (*_SOURCE_CLOCK_STATES, "legacy_unknown", "unrecognized")}
+    if "source_clock_status" not in df.columns:
+        counts["legacy_unknown"] = len(df)
+    else:
+        for status, count in df["source_clock_status"].value_counts(dropna=False).items():
+            key = "legacy_unknown" if pd.isna(status) else str(status)
+            counts[key if key in counts else "unrecognized"] += int(count)
+    return {
+        "schema": "flow_signals.clock_coverage/v1",
+        "authority": "diagnostic_only",
+        "rows_total": len(df),
+        "status_counts": counts,
+        "field_non_null": {
+            key: int(df[key].notna().sum()) if key in df.columns else 0
+            for key in _SOURCE_CLOCK_FIELDS
+        },
+    }
 
 
 def _infer_session_date_from_archive_key(key: str) -> str | None:
@@ -414,6 +502,7 @@ def _events_from_blob(blob: dict, session_date_hint: str | None = None) -> list[
             "signing_source":  str(ev.get("signing_source", "tape")),
             "swept":           _coerce_bool(ev.get("swept", False)),
             **_measured_microstructure_cols(ev),
+            **_source_clock_cols(ev, ingested_at),
             "detector_version": detector_version,
             "source":          "live_feed",
             "ingested_at":     ingested_at,
@@ -643,8 +732,14 @@ def ledger_stats() -> dict:
     if not ledger_path.exists():
         return {"n_rows": 0, "n_sessions": 0, "dte_bucket_counts": {}, "last_ts": None}
     try:
-        df = pd.read_parquet(ledger_path,
-                             columns=["event_id", "session_date", "dte_bucket", "ts"])
+        # Project only existing optional columns so pre-clock ledgers remain
+        # readable and their rows are counted as legacy_unknown, not zero rows.
+        import pyarrow.parquet as pq
+
+        names = set(pq.read_schema(ledger_path).names)
+        columns = ["event_id", "session_date", "dte_bucket", "ts"]
+        columns.extend(key for key in (*_SOURCE_CLOCK_FIELDS, "source_clock_status") if key in names)
+        df = pd.read_parquet(ledger_path, columns=columns)
         n_rows = len(df)
         n_sessions = df["session_date"].nunique()
         dte_counts = df["dte_bucket"].value_counts().to_dict()
@@ -660,6 +755,7 @@ def ledger_stats() -> dict:
 
         return {
             "n_rows": n_rows,
+            "source_clock_coverage": _source_clock_coverage(df),
             "n_sessions": n_sessions,
             "dte_bucket_counts": {str(k): int(v) for k, v in dte_counts.items()},
             "events_per_day":    {str(k): int(v) for k, v in events_per_day.items()},
