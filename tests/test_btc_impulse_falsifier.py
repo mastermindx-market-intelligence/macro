@@ -515,6 +515,77 @@ def test_r4_terminal_open_does_not_require_future_terminal_bar_extrema():
     assert barrier_label(bars, bars.index[0], hours=3, lower=-.05, upper=.03)['category']=='censored'
 
 
+def _r5_bars(n=300):
+    idx = pd.date_range('2020-01-01', periods=n, freq='h')
+    return pd.DataFrame({'open':100.,'high':101.,'low':99.,'close':100.,'volume':10.}, index=idx)
+
+
+def test_r5_landmark_uses_only_completed_followup_and_prior_volume():
+    from research.crypto_science.r5_participation_study import downside_observation
+    b = _r5_bars(); a = b.index[90]
+    b.loc[a,'volume'] = 99999.
+    for k in range(1,7):
+        b.loc[a+pd.Timedelta(hours=k),:] = [96-k,97-k,94-k,95-k,20.]
+    got = downside_observation(b,a)
+    assert got['state']=='persistent' and got['volume_ratio']==2.
+    assert got == downside_observation(b.loc[:a+pd.Timedelta(hours=6)],a)
+    changed=b.copy();changed.loc[a+pd.Timedelta(hours=7):,:] = [1000,1001,999,1000,99999]
+    assert got == downside_observation(changed,a)
+    assert got['issue']==a+pd.Timedelta(hours=7)
+    b.loc[a+pd.Timedelta(hours=6),['open','high','low','close']] = [100,103,99,102]
+    assert downside_observation(b,a)['state']=='reclaimed'
+
+
+def test_r5_volume_missing_is_not_a_negative_but_zero_is_observed():
+    from research.crypto_science.r5_participation_study import downside_observation
+    b=_r5_bars();a=b.index[90]
+    for k in range(1,7):b.loc[a+pd.Timedelta(hours=k),:] = [96-k,97-k,94-k,95-k,0.]
+    assert downside_observation(b,a)['volume_ratio']==0.
+    b.loc[a+pd.Timedelta(hours=3),'volume']=np.nan
+    got=downside_observation(b,a)
+    assert got['state']=='persistent' and got['volume_ratio'] is None
+    b.loc[a+pd.Timedelta(hours=3),'volume']=-1.
+    assert downside_observation(b,a)['volume_ratio'] is None
+    b.loc[:a-pd.Timedelta(hours=1),'volume']=0.
+    assert downside_observation(b,a)['volume_ratio'] is None
+    assert downside_observation(b.drop(a+pd.Timedelta(hours=2)),a)['state']=='unknown'
+
+
+def test_r5_reclaim_volume_gate_never_searches_a_later_prettier_entry():
+    from research.crypto_science.r5_participation_study import early_reclaim
+    b=_r5_bars();anchor=b.index[72];t=anchor+pd.Timedelta(hours=30)
+    b.loc[t,['open','high','low','close']]=[100,103,100,102]
+    b.loc[t-pd.Timedelta(hours=2):t,'volume']=5.
+    b.loc[t+pd.Timedelta(hours=1),:]=[102,110,101,109,10000]
+    got=early_reclaim(b,anchor)
+    assert got['price_status']=='confirmed' and got['signal_start']==t
+    assert got['volume_ratio']==.5 and got['volume_status']=='rejected'
+    assert got==early_reclaim(b.loc[:t],anchor)
+    b.loc[t-pd.Timedelta(hours=10),'volume']=np.nan
+    got=early_reclaim(b,anchor)
+    assert got['price_status']=='confirmed' and got['volume_status']=='unknown'
+
+
+def test_r5_no_entry_differs_from_missing_price_and_bad_index():
+    from research.crypto_science.r5_participation_study import early_reclaim, downside_observation
+    b=_r5_bars();anchor=b.index[72]
+    assert early_reclaim(b,anchor)['price_status']=='no_entry'
+    assert early_reclaim(b.drop(anchor+pd.Timedelta(hours=28)),anchor)['price_status']=='unknown'
+    for f in [b.iloc[::-1],pd.concat([b,b.iloc[-1:]])]:
+        try:downside_observation(f,b.index[90])
+        except ValueError:pass
+        else:raise AssertionError('Malformed chronology must not be silently repaired')
+
+
+def test_r5_cash_overlay_cannot_exit_before_the_landmark():
+    from research.crypto_science.r5_participation_study import cash_after
+    idx=pd.date_range('2020-01-01',periods=24,freq='h')
+    t=pd.Series(.6,index=idx)
+    out=cash_after(t,idx[6])
+    assert (out.iloc[:6]==.6).all() and (out.iloc[6:]==0).all()
+    assert (t==.6).all(), 'Do not mutate the incumbent target array'
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     for fn in fns:
