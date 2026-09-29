@@ -1247,3 +1247,18 @@ def test_archive_recovery_alone_refreshes_the_same_day_screen():
     fresh = pool.project_candidate_visibility(board, archive=pool.reconcile_candidate_archive(board, records))
     assert _actual_fresh_board_condition(board, board, prior_view=old, fresh_view=fresh)
     assert not _actual_fresh_board_condition(board, board, prior_view=fresh, fresh_view=fresh)
+
+
+def test_candidate_reason_wording_matches_refusal_shelf_for_shared_codes():
+    from engine.prophet_bridge import REFUSAL_COPY
+
+    template = (ROOT / "templates" / "_us_candidate_pool_rows.html.j2").read_text(encoding="utf-8")
+    block = template.split("_why = {", 1)[1].split("}", 1)[0]
+    why = {}
+    for key, english, chinese in re.findall(
+        r"'([^']+)':\s*\('([^']+)',\s*'([^']+)'\)", block
+    ):
+        why[key] = (english, chinese)
+    assert why
+    mismatches = {key: (why.get(key), copy) for key, copy in REFUSAL_COPY.items() if why.get(key) != copy}
+    assert not mismatches, f"shared decision codes differ from REFUSAL_COPY: {mismatches}"
