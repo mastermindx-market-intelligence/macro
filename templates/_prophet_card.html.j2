@@ -601,11 +601,19 @@ html.pv-setup-lock{overflow:hidden}.pv-setup-dialog{box-sizing:border-box;border
     caller retains its prior bytes and meaning. -#}
 {%- set _record_only = cx.get('record_only') is sameas true -%}
 {%- set _setup = cx.get('setup_detail') if cx.get('setup_detail') is string else none -%}
-{%- set _article = _record_only or _setup -%}
-{%- set _no_read = allow_no_read and (cx.verb not in _VEN) -%}
-{%- set _verb = 'wait' if _no_read else (cx.verb if cx.verb in _VEN else 'wait') -%}
+{# Named policy is supplied only by the bound candidate-view owner. Absent means
+   legacy, not permission. Existing holdings/history keep their separate contract. #}
+{%- set _policy_present = 'new_long_policy' in cx and not _record_only and not cx.get('lifecycle') and not cx.get('life') -%}
+{%- set _policy = cx.get('new_long_policy') if cx.get('new_long_policy') is mapping else {} -%}
+{%- set _policy_shape = _policy.get('schema') == 'prophet.new_long_card/v1' and _policy.get('market') == 'US' and _policy.get('lifecycle') == 'NEW_LONG_RECOMMENDATION' and _policy.get('ticker') == cx.tk and _policy.get('not_buy_permission') is sameas true -%}
+{%- set _policy_denied = _policy_present and _policy_shape and _policy.get('state') == 'DENY_NEW_LONG' -%}
+{%- set _policy_unavailable = _policy_present and (not _policy_shape or _policy.get('state') not in ('DENY_NEW_LONG', 'NO_POLICY_CONSTRAINT')) -%}
+{%- set _policy_withheld = _policy_denied or _policy_unavailable -%}
+{%- set _article = _record_only or _setup or _policy_withheld -%}
+{%- set _no_read = _policy_unavailable or (allow_no_read and (cx.verb not in _VEN)) -%}
+{%- set _verb = 'wait' if (_no_read or _policy_withheld) else (cx.verb if cx.verb in _VEN else 'wait') -%}
 {%- set _stage = cx.get('stage') or 0 -%}
-{% if _article %}<article{% else %}<a{% endif %} class="pvcard{% if _setup %} pv-has-setup{% endif %}{% if _record_only %} pv-noread pv-record{% elif _no_read %} pv-noread{% else %} pv-{{ _verb }}{% endif %}{% if not _record_only and cx.get('featured') %} pv-featured{% elif not _record_only and cx.get('triage') %} pv-triage{% endif %}"{% if not _article %} href="{{ cx.href|e }}"{% endif %}{% if _record_only %} data-record-only="1"{% endif %}{% if cx.get('id') %} id="pv-{{ cx.id|e }}"{% endif %} data-ticker="{{ cx.tk|e }}"{% if cx.get('life') %} data-life="{{ cx.life|e }}"{% endif %}{% if not _record_only and cx.get('stage_key') %} data-stage="{{ cx.stage_key|e }}"{% endif %}{% if cx.get('stance_basis') %} data-tip-en="{{ cx.get('stance_tip_en') or ('Stance source: ' ~ cx.stance_basis) }}" data-tip-zh="{{ cx.get('stance_tip_zh') or ('依据来源：' ~ cx.stance_basis) }}"{% endif %}>
+{% if _article %}<article{% else %}<a{% endif %} class="pvcard{% if _setup %} pv-has-setup{% endif %}{% if _record_only %} pv-noread pv-record{% elif _no_read %} pv-noread{% else %} pv-{{ _verb }}{% endif %}{% if not _record_only and not _policy_withheld and cx.get('featured') %} pv-featured{% elif not _record_only and not _policy_withheld and cx.get('triage') %} pv-triage{% endif %}"{% if not _article %} href="{{ cx.href|e }}"{% endif %}{% if _record_only %} data-record-only="1"{% endif %}{% if cx.get('id') %} id="pv-{{ cx.id|e }}"{% endif %} data-ticker="{{ cx.tk|e }}"{% if _policy_withheld %} data-new-long-policy="{{ 'DENY_NEW_LONG' if _policy_denied else 'UNAVAILABLE' }}"{% endif %}{% if cx.get('life') %} data-life="{{ cx.life|e }}"{% endif %}{% if not _record_only and cx.get('stage_key') %} data-stage="{{ cx.stage_key|e }}"{% endif %}{% if cx.get('stance_basis') %} data-tip-en="{{ cx.get('stance_tip_en') or ('Stance source: ' ~ cx.stance_basis) }}" data-tip-zh="{{ cx.get('stance_tip_zh') or ('依据来源：' ~ cx.stance_basis) }}"{% endif %}>
   {% if _record_only %}<a class="pv-record-link" href="{{ cx.href|e }}" aria-label="{{ cx.tk|e }}" style="position:absolute;inset:0;z-index:4;border-radius:var(--r-card,12px)"></a>{% endif %}{% if _setup and not _record_only %}<a class="pv-setup-stock-link" href="{{ cx.href|e }}" aria-label="{{ cx.tk|e }}"></a>{% endif %}<div class="pv-chart">
     {% if cx.get('spark') %}{{ cx.spark|safe }}{% else %}<div class="pv-nochart"{% if _record_only %} data-chart-state="unavailable" style="box-sizing:border-box;height:44px;display:flex;align-items:flex-end;justify-content:flex-end;padding:0 9px 7px;color:var(--muted);font-size:9.5px;font-weight:700;letter-spacing:.02em"{% endif %}>{% if _record_only %}<span class="l-en">Chart unavailable</span><span class="l-zh">图表暂缺</span>{% endif %}</div>{% endif %}
     <span class="pv-ov pv-ovl">
@@ -617,8 +625,8 @@ html.pv-setup-lock{overflow:hidden}.pv-setup-dialog{box-sizing:border-box;border
           still accepted by callers; they are simply not rendered. Same call for .pv-edge
           and the feat/new marks below. The ⚡ trigger tip and the ⚠N popover STAY: those
           carry facts that appear nowhere else on the card. -#}
-      <span class="pv-chip"{% if _no_read and not _record_only %} data-noread="1"{% endif %}>{% if _record_only %}{{ t('Tracking only', '仅作跟踪') }}{% elif _no_read %}{{ t('No read yet', '暂无读数') }}{% else %}{{ t(_VEN[_verb], _VZH[_verb]) }}{% endif %}</span>
-      {%- if not _record_only and cx.get('trigger') %}{% set _tg = cx.trigger %}
+      <span class="pv-chip"{% if _no_read and not _record_only %} data-noread="1"{% endif %}>{% if _record_only %}{{ t('Tracking only', '仅作跟踪') }}{% elif _policy_denied %}{{ t('Paused', '暂停新入场') }}{% elif _policy_unavailable %}{{ t('Permission unavailable', '入场许可暂缺') }}{% elif _no_read %}{{ t('No read yet', '暂无读数') }}{% else %}{{ t(_VEN[_verb], _VZH[_verb]) }}{% endif %}</span>
+      {%- if not _record_only and not _policy_withheld and cx.get('trigger') %}{% set _tg = cx.trigger %}
       <span class="pv-trg{% if _tg.kind == 'imminent' %} pv-trg-soon{% endif %}"{% if _tg.get('tip_en') %} data-tip-en="{{ _tg.tip_en|e }}" data-tip-zh="{{ (_tg.get('tip_zh') or _tg.tip_en)|e }}"{% endif %}>⚡ {% if _tg.kind == 'imminent' %}{{ t('Imminent','即将触发') }}{% else %}{{ t('Triggered','已触发') }}{% endif %}</span>
       {%- endif %}
       {#- PROPHET LIVE P1 (spec §5.2): reserved, always-present, EMPTY slot for the ◐ live
@@ -627,7 +635,7 @@ html.pv-setup-lock{overflow:hidden}.pv-setup-dialog{box-sizing:border-box;border
           .pvcard[data-ticker]. `hidden` + the .pv-live[hidden] rule in pv_css() means zero
           width and zero layout change when there is no live state, which is every card on
           every non-us_stocks board and most cards here. #}
-      {% if not _record_only %}<span class="pv-live" hidden></span>{% endif %}
+      {% if not _record_only and not _policy_withheld %}<span class="pv-live" hidden></span>{% endif %}
       {%- if not _record_only and cx.get('flags') %}
       <span class="pv-cau"><button class="pv-cau-btn" type="button" aria-label="Caution notes ({{ cx.flags|length }})" onclick="event.preventDefault();event.stopPropagation();this.focus()">⚠ {{ cx.flags|length }}</button><span class="pv-cau-pop" role="tooltip"><span class="pv-cau-hd">{{ t('Before you act','动手之前') }}</span>{% for _f in cx.flags %}<span class="pv-cau-row">{{ t(_f[0], _f[1]) }}</span>{% endfor %}</span></span>
       {%- endif %}
@@ -639,7 +647,23 @@ html.pv-setup-lock{overflow:hidden}.pv-setup-dialog{box-sizing:border-box;border
       <span class="pv-idw">{% if cx.get('flag') %}<span class="pv-flg">{{ cx.flag }}</span>{% endif %}<span class="pv-tk">{{ cx.tk }}</span>{% if cx.get('name') %}<span class="pv-nm">{{ t(cx.name, cx.get('name_zh') or cx.name) }}</span>{% endif %}</span>
       {% if not _record_only %}<span class="pv-edge"><span class="pv-edl">{{ t(cx.get('edge_label_en') or 'Edge', cx.get('edge_label_zh') or '优势') }}</span>{% if cx.get('edge') is not none %}<span class="pv-edn">{{ cx.edge }}</span>{% elif cx.get('edge_txt') %}<span class="pv-edn">{{ cx.edge_txt }}</span>{% else %}<span class="pv-edn pv-edna">—</span>{% endif %}</span>{% endif %}
     </div>
-    {% if cx.get('sec') %}<div class="pv-ind">{{ t(cx.sec, cx.get('sec_zh') or cx.sec) }}</div>{% endif %}
+    {% if cx.get('sec') %}<div class="pv-ind">{{ t(cx.sec, cx.get('sec_zh') or cx.sec) }}</div>{% endif %}{%- if _policy_withheld %}
+    <div class="pv-policy-note" style="margin-top:8px;line-height:1.45;font-size:11px;overflow-wrap:anywhere">
+      <strong>{{ t('No new long entry', '暂停新增长仓') if _policy_denied else t('New entry withheld', '暂不提供新入场') }}</strong>
+      <div style="color:var(--muted)">{{ t('Research and original ranking remain available. This does not instruct a sale of existing holdings.', '研究及原始排序保持可用。这并非要求卖出现有持仓。') }}</div>
+      <a href="{{ cx.href|e }}" style="position:relative;z-index:6;display:inline-flex;align-items:center;min-height:40px">{{ t('Open research →', '查看研究 →') }}</a>
+      {% if _policy_denied and _policy.get('rules') %}<details class="pv-policy-reasons" style="position:relative;z-index:6">
+        <summary style="cursor:pointer;min-height:40px;display:flex;align-items:center">{{ t('Why this is paused', '暂停原因') }}</summary>
+        {% for _rule in _policy.rules %}<div style="padding:6px 0;border-top:1px solid var(--line);overflow-wrap:anywhere">
+          <b>{{ _rule.get('rule_id', '')|e }} · {{ _rule.get('rule_version', '')|e }}</b>
+          <div>{{ t('Policy', '规则') }}: {{ _rule.get('policy_id', '')|e }}</div>
+          <div>{{ t('Expires', '到期') }}: <time>{{ _rule.get('expires_at', '')|e }}</time></div>
+          <div>{{ _rule.get('restore_condition', '')|e }}</div>
+        </div>{% endfor %}
+      </details>{% else %}<div style="color:var(--muted)">{{ t('Current market permission could not be verified. Do not treat the chart signal as entry approval.', '暂时无法核实当前市场入场许可，请勿将图表信号视为获准入场。') }}</div>{% endif %}
+      {% if _policy_shape %}<div style="color:var(--muted);font-size:10px">{{ t('Checked', '核对时间') }}: <time>{{ _policy.get('checked_at', '')|e }}</time> · {{ t('Not a live execution instruction', '并非实时交易指令') }}</div>{% endif %}
+    </div>
+    {%- endif %}
     {%- if not _record_only and cx.get('lane_mark') %}{% set _lm = cx.lane_mark %}<span class="pv-mark" tabindex="0" data-tip-en="{{ _lm.tip_en|e }}" data-tip-zh="{{ (_lm.get('tip_zh') or _lm.tip_en)|e }}">{{ t(_lm.en, _lm.get('zh') or _lm.en) }}</span>{% endif %}
     {%- if cx.get('marks') is not none %}
     {#- FEATURED and NEW carry no popover (operator 2026-08-05): both are badges whose
@@ -647,7 +671,7 @@ html.pv-setup-lock{overflow:hidden}.pv-setup-dialog{box-sizing:border-box;border
         on the board. Marks that genuinely name something the reader cannot infer (warm,
         theme, lane) keep theirs. -#}
     {%- set _MK_NOTIP = ('feat', 'new') -%}
-    <div class="pv-mk">{% for _mk in cx.marks if not _record_only or _mk.get('k') not in ('feat', 'new') %}{% set _mkk = _mk.get('k') or 'lane' %}<span class="pv-mk-i pv-mk-{{ _mkk }}"{% if _record_only %} style="white-space:normal;overflow:visible;text-overflow:clip"{% endif %}{% if _mk.get('tip_en') and _mkk not in _MK_NOTIP %} data-tip-en="{{ _mk.tip_en|e }}" data-tip-zh="{{ (_mk.get('tip_zh') or _mk.tip_en)|e }}"{% endif %}>{{ t(_mk.en, _mk.get('zh') or _mk.en) }}</span>{% endfor %}</div>
+    <div class="pv-mk">{% for _mk in cx.marks if (not _record_only and not _policy_withheld) or _mk.get('k') not in ('feat', 'new') %}{% set _mkk = _mk.get('k') or 'lane' %}<span class="pv-mk-i pv-mk-{{ _mkk }}"{% if _record_only %} style="white-space:normal;overflow:visible;text-overflow:clip"{% endif %}{% if _mk.get('tip_en') and _mkk not in _MK_NOTIP %} data-tip-en="{{ _mk.tip_en|e }}" data-tip-zh="{{ (_mk.get('tip_zh') or _mk.tip_en)|e }}"{% endif %}>{{ t(_mk.en, _mk.get('zh') or _mk.en) }}</span>{% endfor %}</div>
     {%- endif %}
     {#- P-MP1-SHELL §6 (ruling §10.1): on the lifecycle-sourced call path
         (cx.lifecycle present), the 4-dot Bottoming/Turning/Ready/Trend rail is
@@ -663,7 +687,7 @@ html.pv-setup-lock{overflow:hidden}.pv-setup-dialog{box-sizing:border-box;border
     <div class="pv-stp">{% for _i in [1,2,3,4] %}{% if _i > 1 %}<span class="pv-seg{% if _stage >= _i %} pa{% endif %}"></span>{% endif %}<span class="pv-dot{% if _stage == _i %} on{% elif _stage > _i %} pa{% endif %}"></span>{% endfor %}</div>
     <div class="pv-stl"><span{% if _stage == 1 %} class="on"{% endif %}>{{ t('Bottoming','筑底') }}</span><span{% if _stage == 2 %} class="on"{% endif %}>{{ t('Turning','转向') }}</span><span{% if _stage == 3 %} class="on"{% endif %}>{{ t('Ready','就绪') }}</span><span{% if _stage == 4 %} class="on"{% endif %}>{{ t('Trend','趋势') }}</span></div>
     {%- endif %}
-    {%- if _setup %}<details class="pv-setup-inline"><summary>{{ t('Setup detail','形态详情') }}</summary>{{ _setup }}</details>{% endif %}
+    {%- if _setup and not _policy_withheld %}<details class="pv-setup-inline"><summary>{{ t('Setup detail','形态详情') }}</summary>{{ _setup }}</details>{% endif %}
     {%- if _record_only and cx.get('record_detail') %}{% set _rd = cx.record_detail %}
     <details class="pv-record-detail" data-plan-id="{{ _rd.plan_id|e }}" style="position:relative;z-index:5;margin-top:7px;border-top:1px dashed var(--line);padding-top:6px">
       <summary style="cursor:pointer;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);min-height:24px;display:flex;align-items:center;gap:5px">{{ t('Plan details','计划详情') }}</summary>
@@ -694,6 +718,8 @@ html.pv-setup-lock{overflow:hidden}.pv-setup-dialog{box-sizing:border-box;border
     {%- if cx.get('zone_lo') and cx.get('zone_hi') -%}
     <span class="pv-znl">{{ t('Original zone','原始区间') }}</span><span class="pv-znm">{{ cx.zone_lo|e }}{% if cx.zone_hi != cx.zone_lo %}–{{ cx.zone_hi|e }}{% endif %}</span>
     {%- else -%}<span class="pv-znm">{{ t('Original zone unavailable','原始区间暂缺') }}</span>{%- endif -%}
+    {%- elif _policy_withheld -%}
+    <span class="pv-znl">{{ t('Reference levels','参考价位') }}</span><span class="pv-znm">{% if cx.get('zone_lo') %}{{ cx.zone_lo|e }}{% if cx.get('zone_hi') and cx.zone_hi != cx.zone_lo %}–{{ cx.zone_hi|e }}{% endif %}{% else %}—{% endif %}</span>
     {%- elif _zk == 'active' -%}
     <span class="pv-znl">{{ t('Zone','买区') }}</span><span class="pv-znr">{{ cx.zone_lo }}{% if cx.get('zone_hi') and cx.zone_hi != cx.zone_lo %}–{{ cx.zone_hi }}{% endif %}</span>
     {%- elif _zk == 'muted' -%}

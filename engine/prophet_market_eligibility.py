@@ -572,3 +572,50 @@ def project_new_long_intake(
             "not_buy_permission": True,
         },
     }
+
+
+def new_long_candidate_card_context(
+    card: Mapping[str, Any], candidate: Mapping[str, Any], board: Mapping[str, Any], *,
+    restrictions: NewLongRestrictionRead | None = None, read_at: str | None = None,
+) -> dict[str, Any]:
+    """Bind a prospective candidate's presentation to the existing policy read.
+
+    This is a read-side projection for the existing shared card, not an HTTP
+    endpoint, a fresh grant, an entry validator or an alert sender. Neither the
+    caller's original research row nor the card's technical fields are changed.
+    The policy owner must supply the trusted current read. No read means exact
+    legacy rendering; an explicitly supplied unusable read never means Buy.
+    Existing-position/lifecycle cards are a different intent and are refused here.
+    """
+    if not isinstance(card, Mapping):
+        raise MarketEligibilityError("POLICY_CARD_INVALID")
+    out = deepcopy(dict(card))
+    if restrictions is None:
+        if read_at is not None or "new_long_policy" in out:
+            raise MarketEligibilityError("POLICY_CARD_UNBOUND_INPUT")
+        return out
+    if not isinstance(restrictions, NewLongRestrictionRead):
+        raise MarketEligibilityError("POLICY_READ_TYPE_INVALID")
+    if (card.get("record_only") is True or card.get("lifecycle") or card.get("life")
+            or str(card.get("mkt") or "").lower() not in {"us", "usa"}):
+        raise MarketEligibilityError("POLICY_CARD_INTENT_MISMATCH")
+    restrictions.bind_board(board)
+    if not isinstance(candidate, Mapping):
+        raise MarketEligibilityError("POLICY_CARD_CANDIDATE_INVALID")
+    rows = board.get("buy")
+    fingerprint = _digest(candidate)
+    if (not isinstance(rows, list) or len(rows) > MAX_BOARD_ROWS
+            or not any(isinstance(row, Mapping) and _digest(row) == fingerprint for row in rows)):
+        raise MarketEligibilityError("POLICY_CARD_CANDIDATE_MISMATCH")
+    ticker = _text(candidate.get("ticker"), "POLICY_CARD_TICKER_INVALID").strip().upper()
+    if str(card.get("tk") or "").strip().upper() != ticker:
+        raise MarketEligibilityError("POLICY_CARD_TICKER_MISMATCH")
+    decision = restrictions.decision(ticker, read_at=read_at)
+    out["new_long_policy"] = {
+        "schema": "prophet.new_long_card/v1", "market": "US",
+        "lifecycle": "NEW_LONG_RECOMMENDATION", "ticker": ticker,
+        "board_digest": restrictions.board_digest, "candidate_digest": fingerprint,
+        "checked_at": read_at, "valid_until": restrictions.valid_until,
+        "not_buy_permission": True, **deepcopy(decision),
+    }
+    return out

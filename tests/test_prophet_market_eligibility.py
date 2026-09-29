@@ -832,3 +832,77 @@ class TestNamedPolicyPublication(unittest.TestCase):
         self.assertEqual(restricted["index"]["intake"]["duplicate_id_blocked"],2)
         self.assertEqual(restricted["index"]["intake"]["market_policy_suppressed"],0)
         self.assertEqual(restricted["index"]["intake"]["market_policy_dispositions"],[])
+
+
+# Native shared-card rendering; all policy inputs are fictional, not live grants.
+import copy
+from jinja2 import Environment, FileSystemLoader
+
+class TestBoundCandidateCard(unittest.TestCase):
+ def setUp(self):
+  self.now='2026-09-29T13:00:00Z'
+  self.candidate={'ticker':'AAA','prophet':{'score':99},'entry_signal':{'status':'buy_now','spot':100}}
+  self.board={'board_definition':'us_prophet_v3','buy':[self.candidate,{'ticker':'BBB','prophet':{'score':90}}]}
+  self.rule={'policy_id':'fixture-pause','rule_id':'fixture-no-new-long','rule_version':'1','authority_basis':'temporary_operator_safety','grant_ref':'fixture-not-a-production-grant','action':'NO_NEW_LONG_RISK','state':'ACTIVE','market':'US','board_definition':'us_prophet_v3','lifecycle':'NEW_LONG_RECOMMENDATION','tickers':['*'],'starts_at':'2026-09-29T12:00:00Z','expires_at':'2026-09-29T20:00:00Z','restore_condition':'Owning policy lifted or expired; fresh native entry still required.'}
+  self.card={'href':'/stocks/AAA.html','tk':'AAA','mkt':'us','verb':'buy','edge':99,'stage':3,'featured':True,'price_txt':'100.00','name':'Fixture Company','sec':'Semiconductors','zone_kind':'active','zone_lo':'99.00','zone_hi':'101.00','flags':[],'marks':[{'k':'feat','en':'Featured','zh':'精选'},{'k':'theme','en':'CPU research','zh':'CPU研究'}],'trigger':{'kind':'fired','tip_en':'Technical trigger','tip_zh':'技术触发'}}
+  self.template=Environment(loader=FileSystemLoader(str(ROOT/'templates')),autoescape=True).get_template('_prophet_card.html.j2')
+ def bind(self,rules=None,available=True,missing=False):
+  rules=[self.rule] if rules is None else rules
+  return m.bind_new_long_restrictions(self.board,[] if missing else rules,expected_rule_hashes={r['policy_id']:m._digest(r) for r in rules},observed_at=self.now,valid_until='2026-09-29T21:00:00Z',source_available=available)
+ def context(self,read=None,clock=None):
+  return m.new_long_candidate_card_context(self.card,self.candidate,self.board,restrictions=read or self.bind(),read_at=clock or self.now)
+ def render(self,cx):return str(self.template.module.pv_card(cx))
+ def test_named_pause_removes_buy_presentation(self):
+  out=self.render(self.context());self.assertIn('data-new-long-policy="DENY_NEW_LONG"',out)
+  self.assertIn('Paused',out);self.assertIn('No new long entry',out)
+  for fragment in ['pv-buy','pv-featured','class="pv-trg','class="pv-live','pv-mk-feat','<span class="l-en">Buy</span>']:self.assertNotIn(fragment,out)
+ def test_research_score_and_levels_remain(self):
+  out=self.render(self.context())
+  for fragment in ['/stocks/AAA.html','AAA','99','99.00','101.00','Reference levels','Open research','CPU research']:self.assertIn(fragment,out)
+  self.assertNotIn('<span class="l-en">Zone</span>',out)
+  self.assertIn('does not instruct a sale',out)
+ def test_rule_identity_expiry_and_repair_are_visible(self):
+  out=self.render(self.context())
+  for fragment in ['fixture-pause','fixture-no-new-long','2026-09-29T20:00:00Z','fresh native entry','2026-09-29T13:00:00Z']:self.assertIn(fragment,out)
+  self.assertNotIn('fixture-not-a-production-grant',out)
+ def test_unavailable_is_not_a_danger_claim(self):
+  out=self.render(self.context(self.bind(missing=True)))
+  self.assertIn('Permission unavailable',out);self.assertNotIn('>Paused<',out);self.assertNotIn('pv-buy',out)
+ def test_active_rule_survives_source_gap(self):
+  out=self.render(self.context(self.bind(available=False)));self.assertIn('Paused',out);self.assertNotIn('pv-buy',out)
+ def test_expired_read_withholds_instead_of_restoring_buy(self):
+  out=self.render(self.context(clock='2026-09-29T21:00:00Z'));self.assertIn('Permission unavailable',out);self.assertNotIn('pv-buy',out)
+ def test_scope_does_not_suppress_other_candidate(self):
+  self.rule['tickers']=['BBB'];out=self.render(self.context());self.assertIn('pv-buy',out);self.assertNotIn('data-new-long-policy',out)
+ def test_expired_rule_defers_to_native_card_not_new_permission(self):
+  self.rule['expires_at']='2026-09-29T12:59:59Z';cx=self.context();self.assertEqual(cx['new_long_policy']['state'],'NO_POLICY_CONSTRAINT');self.assertTrue(cx['new_long_policy']['not_buy_permission']);self.assertIn('pv-buy',self.render(cx))
+ def test_one_revocation_cannot_lift_other_rule(self):
+  second={**self.rule,'policy_id':'fixture-other','rule_id':'other-rule'};self.rule['state']='REVOKED'
+  out=self.render(self.context(self.bind([self.rule,second])));self.assertIn('other-rule',out);self.assertIn('Paused',out);self.assertNotIn('fixture-no-new-long',out)
+ def test_all_applicable_restrictions_remain(self):
+  second={**self.rule,'policy_id':'fixture-other','rule_id':'other-rule'}
+  out=self.render(self.context(self.bind([self.rule,second])));self.assertIn('other-rule',out);self.assertIn('fixture-no-new-long',out)
+ def test_foreign_candidate_cannot_be_attached(self):
+  self.candidate={**self.candidate,'prophet':{'score':98}}
+  with self.assertRaisesRegex(m.MarketEligibilityError,'CANDIDATE_MISMATCH'):self.context()
+ def test_wrong_display_ticker_is_refused(self):
+  self.card['tk']='BBB'
+  with self.assertRaisesRegex(m.MarketEligibilityError,'TICKER_MISMATCH'):self.context()
+ def test_holdings_and_other_markets_are_not_this_intent(self):
+  for change in [{'lifecycle':{'state':'entered'}},{'record_only':True},{'life':'ready'},{'mkt':'cn'}]:
+   with self.subTest(change=change):
+    original=copy.deepcopy(self.card);self.card.update(change)
+    with self.assertRaisesRegex(m.MarketEligibilityError,'INTENT_MISMATCH'):self.context()
+    self.card=original
+ def test_original_source_and_nested_values_remain_unchanged(self):
+  before=copy.deepcopy((self.card,self.candidate,self.board));cx=self.context();cx['marks'].clear();cx['new_long_policy']['rules'].clear();self.assertEqual((self.card,self.candidate,self.board),before)
+ def test_unbound_policy_context_is_refused(self):
+  self.card['new_long_policy']={'state':'NO_POLICY_CONSTRAINT'}
+  with self.assertRaisesRegex(m.MarketEligibilityError,'UNBOUND_INPUT'):m.new_long_candidate_card_context(self.card,self.candidate,self.board)
+ def test_json_transport_preserves_effective_state(self):
+  cx=json.loads(json.dumps(self.context()));self.assertIn('Paused',self.render(cx));self.assertEqual(cx['verb'],'buy');self.assertEqual(cx['edge'],99)
+ def test_rule_text_is_html_escaped(self):
+  self.rule['restore_condition']='<script>alert(1)</script>'
+  out=self.render(self.context());self.assertIn('&lt;script&gt;',out);self.assertNotIn('<script>alert(1)</script>',out)
+ def test_default_card_still_renders_native_information(self):
+  cx=m.new_long_candidate_card_context(self.card,self.candidate,self.board);self.assertEqual(cx,self.card);out=self.render(cx);self.assertIn('pv-buy',out);self.assertIn('pv-featured',out);self.assertNotIn('pv-policy-note',out)

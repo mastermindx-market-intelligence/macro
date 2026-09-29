@@ -5,56 +5,52 @@ model: sol
 prs:
 - 8141
 ended_because: ci_handoff
-mission: Connect named new-long restrictions through the native builder and published
-  dispositions. MISSION_COMPLETE:false; no live rule/adoption.
-state_before: R10 enforced the originator input, but main did not pass it and the
-  closed index whitelist dropped its accounting.
+mission: Bind named new-long restrictions into the native candidate-card presentation.
+  MISSION_COMPLETE:false; no production resolver, page-loop or delivery adoption.
+state_before: R11 published the dispositions but the shared card had no separate effective
+  restriction presentation.
 changed:
-- path: scripts/build_prophet.py
-  what: Explicit internal caller binding, closed-list propagation, and honest policy-free
-    Arena comparison.
 - path: engine/prophet_market_eligibility.py
-  what: Verify native count/row partition and same-read dispositions before publication.
+  what: Source-bound serializable card-context helper; no new endpoint or grant.
+- path: templates/_prophet_card.html.j2
+  what: Read the explicit context, replace Buy with paused/unavailable, retain research
+    and reference levels.
 - path: tests/test_prophet_market_eligibility.py
-  what: 17 actual-main/publication tests in the existing selected test file.
-- path: research/grey_deer/GD6A_NAMED_POLICY_PUBLICATION_2026-09-29.md
-  what: Executed proof, blocked independent-alarm extension and remaining real adoption
-    unit.
+  what: 18 native-template and bound-context cases in existing selected file.
+- path: research/grey_deer/GD6A_BOUND_CANDIDATE_CARD_2026-09-29.md
+  what: Actual consumer proof, precise refused lanes and remaining page/send integration.
 verified:
-- claim: Actual caller and index retain denial, unavailable and normal native paths
-    without changing research.
+- claim: Source-bound native rendering distinguishes paused from unavailable and retains
+    research context.
   command: python3.12 -m pytest tests/test_prophet_market_eligibility.py tests/test_prophet_market_eligibility_native.py
     tests/test_prophet_market_eligibility_publication.py tests/test_prophet_bridge.py
     -q
-  result: 248 passed/75 subtests; fictional receipts and synthetic prices, native
-    main/Arena; log SHA256 7bc74d75221b4701dcf983c8af4e67c5087fe4cf7e52e406721436badc3818f0.
-- claim: Existing position plan/state/ledger bytes remain under native management.
-  command: TestNamedPolicyPublication.test_existing_positions_remain_under_native_management
-  result: Paired seeded full-builder outputs byte-identical for those artifacts.
-- claim: Tests detect losing published dispositions or falsely comparing restricted
-    live IDs to original Arena.
-  command: python3 release-r11/check_publication_faults.py
-  result: Two intended assertion failures, original source restored.
+  result: 266 passed/79 subtests; 18 new card cases; no real grants or notifications.
+    log 5f9988af6c55efb413bcaf8a096455d752d071b7fd414b1cb5a3147c37ec14fa.
+- claim: The new shared-renderer connection is discriminating.
+  command: python3 release-r12/verify_render_connection.py
+  result: Disconnecting only policy consumption raises the intended assertion; source
+    restored.
 unverified:
-- claim: Production resolver, all-channel restriction and send-time permission.
-  what_would_verify: Actual accepted rule/grant input, effective API/UI and queued-buy
-    recheck, ordinary refresh.
-- claim: Source release and independent alarm extension.
-  what_would_verify: New-head/current-base CI and source acceptance; genuine recovery
-    of the blocked alarm action before independent coverage is claimed.
+- claim: Existing page/API/hydration/notification callers use the bound helper.
+  what_would_verify: Permitted native-source adoption plus current-board rendered/API
+    receipt and send-time permission proof.
+- claim: Current source release and arbitrary untrusted-template-context hardening.
+  what_would_verify: Exact new-head/current-base CI, genuine blocked-action recovery,
+    stronger validation where required and actual ordinary refresh.
 unresolved:
-- No active grant or production caller is installed; default CLI is unchanged.
-- Independent alarm extension and separate other-sentinel source read were blocked
-  before dispatch and not repeated.
-- Initial combined recovery read was blocked; same-pin already consumed source law
-  and previously acquired fixture bytes were retained, not reacquired.
-- No current served/API/alert proof or financial-performance claim.
+- The delivery-drain helper inspection and page-loop/render-helper inspection were
+  refused before dispatch; no split/retry/proxy.
+- The extra defensive-shape and old-render comparison operation was refused and not
+  applied; only native-helper-generated context is supported.
+- Production policy grant/source, caller adoption, independent alarm and live delivery
+  proof remain absent.
 next_actions:
-- Qualify this exact source and consume its hosted CI.
-- Bind actual policy/grant resolver, API/UI and send-time control as one adoption
-  unit without a new policy engine.
-- Retain independent-alarm action boundary; do not count local producer validation
-  as that separate proof.
+- Consume new-head CI and preserve the original carrier.
+- After genuine permission recovery, connect the actual page/API loop to the bound
+  view and prove current-board output.
+- Finish the existing delayed-buy sender permission check without changing effect-unknown
+  ownership.
 do_not_redo:
 - Do not recreate GD-6A or add a second risk policy, identity, registry, collector,
   ledger or publisher.
@@ -73,6 +69,6 @@ danger_areas:
   a proxy retry.
 ---
 
-# R11 native caller/publication checkpoint
+# R12 native card consumer
 
-MISSION_COMPLETE:false. No automatic wake, source lease transfer or live activation.
+MISSION_COMPLETE:false. Source only, not production activation or automatic continuation.
