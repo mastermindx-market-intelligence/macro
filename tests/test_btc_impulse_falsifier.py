@@ -586,6 +586,97 @@ def test_r5_cash_overlay_cannot_exit_before_the_landmark():
     assert (t==.6).all(), 'Do not mutate the incumbent target array'
 
 
+def _r6_frame(n=1000):
+    idx=pd.date_range('2020-01-01',periods=n,freq='h');k=np.arange(n)
+    c=100+0.01*k+np.sin(k/7);o=np.r_[c[0],c[:-1]]
+    return pd.DataFrame({'open':o,'high':np.maximum(o,c)+1,'low':np.minimum(o,c)-1,'close':c,'volume':10.},index=idx)
+
+
+def test_r6_features_are_prefix_stable_and_volume_zero_is_observed():
+    from research.crypto_science.r6_probability_study import continuous_features, PRICE
+    b=_r6_frame();a=b.index[800];got=continuous_features(b,a)
+    assert got['status']=='ok' and got['issue']==a+pd.Timedelta(hours=7)
+    assert all(np.isfinite(got[c]) for c in PRICE)
+    assert got==continuous_features(b.loc[:a+pd.Timedelta(hours=6)],a)
+    b.loc[a+pd.Timedelta(hours=7):,'close']=9999
+    assert got==continuous_features(b,a)
+    b.loc[a+pd.Timedelta(hours=1):a+pd.Timedelta(hours=6),'volume']=0
+    assert continuous_features(b,a)['x_volume']==0
+    b.loc[a+pd.Timedelta(hours=3),'volume']=np.nan
+    out=continuous_features(b,a);assert out['status']=='volume_unknown' and out['x_volume'] is None
+    assert all(np.isfinite(out[c]) for c in PRICE)
+
+
+def test_r6_features_reject_price_gaps_and_warmup():
+    from research.crypto_science.r6_probability_study import continuous_features
+    b=_r6_frame();a=b.index[800]
+    assert continuous_features(b.drop(a-pd.Timedelta(hours=100)),a)['status']=='price_unknown'
+    assert continuous_features(b,b.index[100])['status']=='price_unknown'
+    try:continuous_features(b.iloc[::-1],a)
+    except ValueError:pass
+    else:raise AssertionError('Must not silently reorder history')
+
+
+def _r6_training():
+    idx=pd.date_range('2019-01-01',periods=130,freq='2D')
+    return pd.DataFrame({'issue':idx,'end':idx+pd.Timedelta(hours=18),
+       'y':(np.arange(130)%3==0).astype(float),'a':np.sin(np.arange(130)),'b':np.arange(130)/100.,
+       'gain':np.where(np.arange(130)%3==0,.1,-.02)})
+
+
+def test_r6_training_uses_only_mature_embargoed_rows():
+    from research.crypto_science.r6_probability_study import training_rows
+    f=_r6_training();t=f.issue.iloc[100]
+    used=training_rows(f,t,['a','b'],24)
+    assert len(used)==100
+    assert (used.end+pd.Timedelta(hours=24)<t).all()
+    f.loc[99,'end']=t-pd.Timedelta(hours=24)
+    assert len(training_rows(f,t,['a','b'],24))==99
+    f.loc[1,'b']=np.nan;f.loc[2,'y']=np.nan
+    assert len(training_rows(f,t,['a','b'],24))==97
+
+
+def test_r6_fixed_logistic_has_training_only_scaler_and_repeatable_probabilities():
+    from research.crypto_science.r6_probability_study import fit_logistic, predict
+    x=np.c_[np.linspace(-2,2,120),np.ones(120)];y=(x[:,0]>0).astype(float)
+    m=fit_logistic(x,y);p=predict(m,x)
+    assert m['status']=='ok' and p[0]<.5<p[-1]
+    assert np.allclose(m['mean'],x.mean(axis=0)) and m['scale'][1]==1
+    assert np.isfinite(p).all() and ((p>0)&(p<1)).all()
+    q=predict(m,np.array([[10000.,1.]]));assert np.isfinite(q).all()
+    assert np.allclose(p,predict(fit_logistic(x,y),x),atol=1e-10)
+
+
+def test_r6_future_outcomes_do_not_change_fitted_snapshot():
+    from research.crypto_science.r6_probability_study import fit_snapshot
+    f=_r6_training();t=f.issue.iloc[100];m=fit_snapshot(f,t,['a','b'],24)
+    assert m['status']=='ok' and m['n']==100
+    changed=f.copy();changed.loc[100:,'y']=1.;changed.loc[100:,'a']=999999
+    n=fit_snapshot(changed,t,['a','b'],24)
+    assert m==n
+    assert fit_snapshot(f.iloc[:50],t,['a','b'],24)['status']=='insufficient_training'
+    single=f.copy();single['y']=0.
+    assert fit_snapshot(single,t,['a','b'],24)['status']=='insufficient_training'
+
+
+def test_r6_payoff_mapping_uses_declared_train_class_shrinkage():
+    from research.crypto_science.r6_probability_study import payoff_mapping
+    y=np.r_[np.zeros(80),np.ones(20)];d=np.r_[np.full(80,-.01),np.full(20,.1)]
+    m=payoff_mapping(y,d);mu=d.mean()
+    assert np.isclose(m['mu0'],(-.8+10*mu)/90)
+    assert np.isclose(m['mu1'],(2.+10*mu)/30)
+    assert payoff_mapping(y[:85],d[:85]) is None
+
+
+def test_r6_probability_metrics_are_proper_and_not_class_accuracy():
+    from research.crypto_science.r6_probability_study import probability_metrics
+    out=probability_metrics(np.array([0.,1.]),np.array([.25,.75]))
+    assert out['n']==2 and np.isclose(out['brier'],.0625)
+    assert np.isclose(out['log_loss'],-np.log(.75)) and out['auc']==1
+    assert sum(x['n'] for x in out['reliability'])==2
+    assert np.isfinite(probability_metrics(np.array([0.,1.]),np.array([1.,0.]))['log_loss'])
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     for fn in fns:
