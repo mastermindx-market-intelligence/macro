@@ -228,3 +228,56 @@ longer the reference.
 Falsifier: a ref where `_now_of_query` is absent from the Robotics composer, or where the
 `known_revisions` comprehension already references it. So-what: without this, an implementer
 rebuilds a mechanism the class already documents, which the Executive contract forbids.
+
+## Refinement 2026-09-29: the consequence-pin is verdict-identical, and this is the pin that discriminates
+
+The ruling in this record's first alternative stands unchanged: the `:302` pin "names what
+happens WHEN an input is unknown; it says nothing about which records make an input known."
+What follows is that argument's executable form, plus the fixture the suite does not contain.
+
+**The existing pin cannot move under the fix.** `test_interpretation_with_an_input_absent_from_the_bundle_is_withheld`
+(tests/test_robotics_research_temporal.py `:302-334`) builds its case by replacing
+`input_revisions` with `["gmirca_" + "0" * 32]` -- a fabricated revision. That ref is absent
+from `bundle.assertions` AND absent from `self.assertions`, so `_inputs_known` returns False
+under the current comprehension and under the corrected one alike. The test is
+VERDICT-IDENTICAL across the remedy: it cannot go red, and it cannot go green for the right
+reason. So 14b's coverage is not merely mis-scoped -- it is ZERO. A gate whose read set is
+disjoint from the change's write set returns the same verdict either way, and that law applies
+to tests exactly as it applies to CI jobs.
+
+**The fixture that discriminates.** The block's `input_revisions` must name a revision PRESENT
+in `bundle.assertions` but EXCLUDED from `self.assertions`. Four exclusion paths exist in
+`_Selection.__init__`, each independently sufficient -- locate by string, line numbers are
+revision-stamped hints:
+
+* `except CurationAssertionError` -> `assertion_invalid:<index>` (`:375-377`)
+* the scope gate: `theme != canonical_theme and theme != query.anchor_theme_id`, then
+  `scope.get("technology_facet") != query.slice_key` (`:382-386`)
+* the slug-keyed drop: `if theme == query.anchor_theme_id` -> `scope_slug_keyed:<n>` (`:387-392`)
+* the time gate: `if not _passes_time_mode(...)` (`:393-395`)
+
+Under the defect such a block is SERVED, because its input looks known -- the raw bundle
+carries the revision even though the composition dropped it. Under the fix it is WITHHELD and
+counted once. That red/green pair is what a pin means.
+
+Cheapest of the four is the slug-keyed path: the module already counts that drop, so the
+fixture needs no new limitation vocabulary, and the existing bundle cases already carry
+canonical-keyed rows to mutate. The new pin's name must state the INPUT SET rather than the
+consequence -- for instance `test_interpretation_input_present_in_bundle_but_dropped_by_scope_is_withheld`.
+The `:302` test keeps its name and its assertions: it is a valid 14a consequence pin and this
+record's "Do not 'fix' it" is unchanged.
+
+**Scoping note, so the remedy is not over-applied.** `interpretation_blocks()` at `:538-541`
+and `identity_state()` at `:564-566` compare against `self.query.recorded_cutoff` DIRECTLY,
+each inside an `if self.query.time_mode == "system_replay"` branch. In that mode the recorded
+cutoff is guaranteed present, so `_now_of_query()` resolves to the same value there: those two
+sites are NOT bypasses and need no change. The remedy's "resolve any time predicate through
+`_now_of_query()`" governs a predicate added to the `known_revisions` construction, which runs
+in ALL modes. The trap to avoid is hoisting either replay guard out of its `system_replay`
+branch while switching it to `_now_of_query()` -- that would begin filtering interpretation
+blocks by review stamp in non-replay modes, a behaviour change wearing a cleanup's clothes.
+
+Falsifier: any existing test whose interpretation input ref is present in `bundle.assertions`
+but dropped from `self.assertions`. So-what: without the discriminating fixture the fix lands
+under a green suite that never exercised it, which is ruling 7's "merge is not acceptance"
+reappearing one layer down, at the test.

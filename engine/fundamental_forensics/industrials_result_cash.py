@@ -127,7 +127,8 @@ def build_comparison_receipt(
 ) -> dict[str, Any]:
     """Build the production comparison receipt.
 
-    Closed shape — exactly the keys ``T01.comparison(...)`` documents:
+    Closed shape — the keys ``T01.comparison(...)`` documents, plus
+    ``formula_version``:
     ``receipt_id``, ``purpose``, ``operand_refs`` (in cell order),
     ``checked`` with ``basis``, ``currency``, ``scale``, ``duration``,
     ``perimeter``, ``definition``, ``source_mode`` booleans,
@@ -140,6 +141,11 @@ def build_comparison_receipt(
     says nothing about comparability has verified nothing, so every gate
     defaults False.  ``checked=None`` and ``checked={}`` are therefore the
     same receipt.
+
+    ``formula_version`` is both hashed into ``receipt_id`` and returned, so a
+    method change mints a new derived identity AND stays readable on the object
+    a consumer caches (IND-R214).  T01 parity is unaffected: the parity test
+    asserts a key SUPERSET, and every T01-documented key keeps its meaning.
     """
     if purpose not in _ALLOWED_PURPOSES:
         raise ValueError(f"unknown comparison purpose: {purpose}")
@@ -182,8 +188,17 @@ def build_comparison_receipt(
             raise ValueError("transformation lineage must be a string")
         transforms.append({"kind": kind, "factor": factor, "lineage": lineage})
 
+    # IND-R214 (r2 blob 9c98e106b954d0a48610afad418de2a9eeb1e58b, section 11):
+    # "Same operands with changed normalization/formula version | New derived
+    # identity and visible method; no stale cached summary."  Normalization was
+    # already covered, because a normalization step is a `transformations` entry
+    # and those are hashed below.  The formula VERSION was not, so changing the
+    # method left `receipt_id` byte-identical: one derived identity addressed two
+    # different computations, and a consumer cache keyed on it would answer a v2
+    # request with the v1 body.  The version therefore leads the digest.
     digest_input = (
-        purpose + "|"
+        FORMULA_VERSION + "|"
+        + purpose + "|"
         + "|".join(refs) + "|"
         + "|".join(f"{k}:{int(v)}" for k, v in sorted(checked_dict.items())) + "|"
         + "|".join(sorted(unknown_list)) + "|"
@@ -193,6 +208,7 @@ def build_comparison_receipt(
 
     return {
         "receipt_id": receipt_id,
+        "formula_version": FORMULA_VERSION,
         "purpose": purpose,
         "operand_refs": refs,
         "checked": checked_dict,
