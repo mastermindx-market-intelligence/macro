@@ -979,8 +979,9 @@ jobs:
       # W2: per-band timings row + >85% creep tripwire. always() reaches failed and
       # cancelled paths, including a job-cap night for as long as the ~5-minute grace
       # lasts (job 105033526139 recorded its row at 04:51:42Z, 2:47 past its cap). It
-      # is NOT reachable once that grace is spent: on 2026-09-25 it was never scheduled
-      # and that night has no row at all. So the cap above must keep the normal path
+      # is NOT reachable once that grace is spent: run 36078806272 never scheduled it,
+      # so that RUN has no row (2026-09-25's other run, 36133476434, did record one at
+      # 229.4m/240). So the cap above must keep the normal path
       # inside the measurable window rather than relying on post-timeout telemetry.
       # SECOND ARG = the creep budget, deliberately BELOW the cap. The cap is 300 so a
       # normal night clears the whole publish path, but the 85% alarm stays on the 240m

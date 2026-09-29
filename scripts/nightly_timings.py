@@ -459,8 +459,14 @@ def cmd_finish(cap_minutes: float, ledger_dir: Path, now: float | None = None,
     if summary:
         try:
             with open(summary, "a", encoding="utf-8") as fh:
+                tripped = warn_pct is not None and warn_pct > WARN_PCT
+                # The percentage above is CAP basis; the tripwire fires on the creep
+                # BUDGET. Print both or the line contradicts itself once they differ
+                # (300m cap / 240m budget, 229.4m night: "76%" next to a tripwire).
+                trip_txt = (f" · **>{WARN_PCT:g}% BUDGET TRIPWIRE** "
+                            f"({warn_pct:.0f}% of {warn_basis:g}m budget)") if tripped else ""
                 fh.write(f"- timings · **{job}**: {elapsed_min:.1f}m / {cap_minutes:g}m "
-                         f"cap ({pct:.0f}%){' · **>85% BUDGET TRIPWIRE**' if warn_pct > WARN_PCT else ''}\n")
+                         f"cap ({pct:.0f}%){trip_txt}\n")
                 for band in attribution.get("bands") or []:
                     fh.write(f"  - attribution · `{band['band']}` {band['band_sec'] / 60:.1f}m = "
                              f"{band['n_sources']} source(s) {band['attributed_sec'] / 60:.1f}m "

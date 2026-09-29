@@ -248,8 +248,12 @@ unresolved:
       view to prove E4 is fixture-gated, but builds it from
       `builder.read_workspace(DATA_ROOT, page)`; `capital_structure` currently reads
       `STALE_SOURCE` BECAUSE the 2026-09-29 collection was cancelled and its step
-      skipped at 03:50:23Z, so E2 outranks E4 and the assertion graded the bake instead
-      of the gate. Healed with the idiom #7790 established for the two sibling tests it
+      skipped at 03:50:23Z, so the test's NEGATIVE control (`empty is None` with the
+      fixture flag OFF) saw E2 rather than None and graded the bake instead of the gate.
+      CORRECTED by the exact-head review: E4 OUTRANKS E2, not the reverse -
+      `build_macro_suite_pages.py:1281` checks the withheld gate first and returns E4,
+      reaching the E2 path only in its `else`, so E4 fires even on a stale base. The fix
+      is unchanged and correct; only its stated rationale was inverted. Healed with the idiom #7790 established for the two sibling tests it
       missed: pin `availability.state = "CURRENT"` on the fabricated workspace. RED
       controls both fire - flipping the pin to `STALE_SOURCE` fails, and dropping
       `allow_empty_state_fixture=True` fails, so the pin is load-bearing and the E4 gate

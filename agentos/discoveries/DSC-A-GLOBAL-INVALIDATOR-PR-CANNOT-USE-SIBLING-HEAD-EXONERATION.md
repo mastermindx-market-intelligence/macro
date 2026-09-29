@@ -16,9 +16,14 @@ claim: >
   failing job are the global-invalidator heads themselves. Second measured trap in the
   same incident: the failing test was data-dependent. `tests/test_macro_command_p4_copy.py`
   builds its view from `builder.read_workspace(DATA_ROOT, page)`, so the base's redness is
-  a function of LAST NIGHT'S BAKE — `capital_structure` read `STALE_SOURCE`, E2 ("No
-  reading arrived today") outranks the E4 state under test, and the assertion graded the
-  bake instead of the gate. A local pack reproduction ALSO disagrees with CI on scope:
+  a function of LAST NIGHT'S BAKE — `capital_structure` read `STALE_SOURCE`, and the
+  test's NEGATIVE control (`empty is None` with the fixture flag OFF) then saw E2 ("No
+  reading arrived today") instead of None, so it graded the bake rather than the gate.
+  An earlier draft of this record said E2 outranks E4; that is REFUTED and the opposite
+  is true — `build_macro_suite_pages.py:1281` checks the withheld gate FIRST and returns
+  E4, reaching the E2 path only in its `else` branch, so with the flag ON, E4 fires even
+  on a stale base (measured: `no pin, allow=True -> e4`). The confound was only ever in
+  the negative control, which is what the pin removes. A local pack reproduction ALSO disagrees with CI on scope:
   `run_ci_pack.py --validate-only` off-CI reports `changed-file set unavailable` and
   balances a different assignment, so a locally computed pack index is not the pack index
   that ran.

@@ -173,6 +173,34 @@ def test_omitting_the_creep_budget_preserves_the_historical_behaviour(env, capsy
     assert len(warn) == 1 and "timeout-minutes" in warn[0] and "creep budget" not in warn[0]
 
 
+def test_the_step_summary_line_never_mixes_the_two_bases(env, monkeypatch, tmp_path):
+    """The summary percentage is CAP basis; the tripwire fires on the BUDGET.
+
+    Once the two differ, a line that prints one and flags on the other reads as a
+    self-contradiction in the Actions summary a human actually opens: 2026-09-25's
+    229.4m night under cap 300 / budget 240 is 76% of cap and 96% of budget, so the
+    pre-split format wrote "(76%) - >85% BUDGET TRIPWIRE" with no 96% anywhere. The
+    ::warning was taught both bases; this line was not. Nothing covered it, because
+    the `env` fixture deletes GITHUB_STEP_SUMMARY.
+    """
+    summary = tmp_path / "step_summary.md"
+    monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(summary))
+    now = _write_start(seconds_ago=229.4 * 60)
+    row = nt.cmd_finish(300.0, env / "ledger", now=now, warn_minutes=240.0)
+    assert row["pct_of_cap"] == pytest.approx(76.5, abs=0.2)
+    assert row["warn_pct"] == pytest.approx(95.6, abs=0.2)
+    line = [l for l in summary.read_text(encoding="utf-8").splitlines()
+            if l.startswith("- timings")]
+    assert len(line) == 1, f"expected one timings line, got {line!r}"
+    line = line[0]
+    # the cap basis it reports, and the budget basis it is actually alarming on
+    assert "300m cap (76%)" in line, line
+    assert "TRIPWIRE" in line, line
+    assert "96% of 240m budget" in line, (
+        "the tripwire flagged on the budget but the line named only the cap "
+        f"percentage - a reader cannot tell why 76% tripped an 85% alarm: {line!r}")
+
+
 def test_84_percent_run_does_not_warn(env, capsys):
     cap = 240.0
     now = _write_start(seconds_ago=0.84 * cap * 60)
