@@ -1,0 +1,3 @@
+R10_VERIFIED: 5 source frames; 5914 elapsed-window rows; 125488 clock-convention masks; funding projections and inherited-display arithmetic checked.
+R10_AMENDMENT: all real-data findings equal; three derived CSVs byte-identical. Impossible-receipt repair affects synthetic qualification only.
+R10_HASHES: 57 input identities; 18 gates; 137 prior evidence; inherited sources unchanged. Same-session arithmetic, not independent researcher approval.
