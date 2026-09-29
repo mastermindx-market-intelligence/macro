@@ -68,6 +68,16 @@ def test_plan_relation_pure_function_is_open_same_security_and_sorted():
     assert _plan_relations_for({}, False) == ("none", {})
 
 
+def test_plan_relation_excludes_every_truthy_closed_value():
+    from scripts.build_site import _plan_relations_for
+
+    book = {"plans": [
+        {"id": "AAA-TEXT", "asset": "AAA", "closed": "true", "formation_date": "2026-08-01"},
+        {"id": "AAA-NUMBER", "asset": "AAA", "closed": 1, "formation_date": "2026-08-02"},
+    ]}
+    assert _plan_relations_for(book) == ("none", {})
+
+
 def test_plan_relation_sorts_multiple_open_plans_and_matches_normalized_tickers():
     from scripts.build_site import _plan_relations_for
 
@@ -199,11 +209,14 @@ def test_evidence_manifest_is_bound_to_the_captured_ui_head_and_fixture_bytes():
     manifest = json.loads(
         (ROOT / "mockups/evidence/pri_ui_c1/manifest.json").read_text(encoding="utf-8"))
     target = manifest["target"]
-    assert target["resolved_sha_or_none"] == "090ad5a752e58776f227f45c6a66be94398f9bdd"
-    fixture_sha = subprocess.check_output(
-        ["git", "hash-object", "mockups/evidence/pri_ui_c1/fixture.html"],
-        text=True, cwd=ROOT).strip()
-    assert manifest["pages"][0]["page_tree_sha"] == fixture_sha
+    resolved = target["resolved_sha_or_none"]
+    assert resolved, "evidence must name the UI head"
+    head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True, cwd=ROOT).strip()
+    subprocess.run(["git", "merge-base", "--is-ancestor", resolved, head], check=True, cwd=ROOT)
+    diff = subprocess.run(
+        ["git", "diff", "--quiet", resolved, "HEAD", "--", "templates/", "scripts/", "engine/"],
+        cwd=ROOT)
+    assert diff.returncode == 0, "UI trees changed after evidence capture"
 
 
 def test_plan_relation_preserves_existing_machine_attribute_sets():

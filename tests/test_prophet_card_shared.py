@@ -30,6 +30,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 PARTIAL = ROOT / "templates" / "_prophet_card.html.j2"
 POOL_ROWS = ROOT / "templates" / "_us_candidate_pool_rows.html.j2"
@@ -593,14 +595,21 @@ def test_setup_detail_uses_native_lens_control_exception_and_source_events():
 # R19: the existing dense Table consumes the same entitled single-row presenter.
 def test_setup_table_same_row_body_and_clock_match_card_presenter():
     from bs4 import BeautifulSoup
+    from scripts.build_site import _plan_relation_for_row, _plan_relations_for
     row = {'ticker': 'SAME_SYMBOL', 'stage': 'setting_up', 'lane': 'bottoming',
            'price': 105., 'entry_signal': {'status': 'bounce_wait',
            'buy_zone': {'low': 100., 'high': 103.}, 'stop': 90., 'chase_above': 110.},
            'hold': {'invalidation': 85.}, 'signal': {'above200': False}}
     m = _r18_env().get_template('_prophet_setup_detail.html.j2').module
-    table = BeautifulSoup(str(m.table_action(row, '2026-09-24')), 'html5lib')
-    card = BeautifulSoup(str(m.body(row, 'board', '2026-09-24')), 'html5lib')
+    book = {'plans': [{'id': 'SAME-BULL-20260810', 'asset': 'same_symbol', 'closed': False,
+                       'lifecycle_state': 'entered', 'formation_date': '2026-08-10'}]}
+    relations = _plan_relations_for(book)
+    table = BeautifulSoup(str(m.table_action(
+        row, '2026-09-24', plan_rel=_plan_relation_for_row(relations, row))), 'html5lib')
+    card = BeautifulSoup(str(m.body(
+        row, 'board', '2026-09-24', plan_rel=_plan_relation_for_row(relations, row))), 'html5lib')
     assert str(table.select_one('.pv-setup-body')) == str(card.select_one('.pv-setup-body'))
+    assert str(table.select_one('.pvs-plan-relation')) == str(card.select_one('.pvs-plan-relation'))
     action = table.select_one('details.pv-setup-table')
     assert action['data-setup-ticker'] == 'SAME_SYMBOL'
     assert action['data-setup-asof'] == '2026-09-24'
@@ -626,6 +635,21 @@ def test_board_entry_read_shows_owner_clock_separate_from_quote_clock():
     assert '报价时间 来源未提供' in text
     assert "owner's assessment at that date" in soup.get_text(' ', strip=True)
     assert '之后报价处于区间内并不会更新该判读。' in soup.get_text(' ', strip=True)
+
+
+@pytest.mark.parametrize('signal_asof', [123, None, ''])
+def test_board_entry_clock_omits_non_string_asof(signal_asof):
+    from bs4 import BeautifulSoup
+    row = {'ticker': 'LFUS', 'signal_asof': signal_asof,
+           'entry_signal': {'status': 'buy_now', 'headline': 'Wait for the base'},
+           'signal': {}, 'hold': {}}
+    html = str(_r18_env().get_template('_prophet_setup_detail.html.j2').module.body(
+        row, 'board', '2026-09-24'))
+    clock = BeautifulSoup(html, 'html.parser').select_one('.pvs-assessment-clock')
+    assert clock['data-assessment-asof'] == ''
+    text = clock.get_text(' ', strip=True)
+    assert 'Entry read date not supplied' in text
+    assert '入场判读日期来源未提供' in text
 
 
 def test_pool_entry_read_has_no_assessment_clock():

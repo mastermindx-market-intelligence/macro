@@ -5405,7 +5405,7 @@ def _plan_relations_for(
         return "unknown", {}
     by_ticker: dict[str, list[dict]] = {}
     for plan in book.get("plans") or []:
-        if not isinstance(plan, dict) or plan.get("closed") is True:
+        if not isinstance(plan, dict) or plan.get("closed"):
             continue
         asset = plan.get("asset")
         if not isinstance(asset, str) or not asset.strip():

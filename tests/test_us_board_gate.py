@@ -480,9 +480,8 @@ def test_shipped_shell_leaks_no_locked_ticker():
     shell = SHELL.read_text(encoding="utf-8")
     locked_tickers = {r["ticker"] for r in payload.get("rows", []) if r.get("ticker")}
     assert locked_tickers, "a gated payload with no locked rows is a vacuous pass"
-    payload, cards, _table = _shell_board_blocks()
-    leaked = sorted(set(cards) & locked_tickers)
-    assert leaked == [], f"locked board cards reachable in the shipped shell: {leaked[:5]}"
+    leaked = sorted(tk for tk in locked_tickers if f'data-ticker="{tk}"' in shell)
+    assert leaked == [], f"locked tickers reachable in the shipped shell: {leaked[:5]}"
 
 
 def _shell_board_blocks():
@@ -987,23 +986,29 @@ def test_us_plan_block_displays_source_owned_book_clock():
     from bs4 import BeautifulSoup
 
     html = _render_us_dashboard_with_plan_book({
-        "asof": "2026-09-25", "source_board_asof": "2026-09-24", "plans": []})
+        "asof": "2026-09-26", "source_asof": "2026-09-25",
+        "source_board_asof": "2026-09-24", "plans": []})
     clock = BeautifulSoup(html, "html.parser").select_one("#us-plan-book-asof")
     assert clock
     assert clock["data-plan-book-asof"] == "2026-09-25"
+    assert clock["data-plan-book-published"] == "2026-09-26"
     assert clock["data-plan-book-source-asof"] == "2026-09-24"
     text = clock.get_text(" ", strip=True)
     assert "Plan records as of 2026-09-25" in text
+    assert "published 2026-09-26" in text
     assert "source board 2026-09-24" in text
+    assert "Plan records as of 2026-09-26" not in text
     assert "计划记录截至 2026-09-25" in text
+    assert "发布于 2026-09-26" in text
     assert "来源榜单 2026-09-24" in text
 
 
-@pytest.mark.parametrize("asof", ["2026-9-5", "yesterday", None])
-def test_us_plan_block_clock_is_unavailable_when_source_day_is_not_valid(asof):
+@pytest.mark.parametrize("source_asof", ["2026-9-5", "yesterday", None])
+def test_us_plan_block_clock_is_unavailable_when_source_day_is_not_valid(source_asof):
     from bs4 import BeautifulSoup
 
-    html = _render_us_dashboard_with_plan_book({"asof": asof, "plans": []})
+    html = _render_us_dashboard_with_plan_book({
+        "asof": "2026-09-26", "source_asof": source_asof, "plans": []})
     clock = BeautifulSoup(html, "html.parser").select_one("#us-plan-book-asof")
     assert clock
     assert clock["data-plan-book-asof"] == ""
@@ -1020,6 +1025,7 @@ def test_us_plan_block_clock_is_unavailable_on_book_error():
     clock = BeautifulSoup(html, "html.parser").select_one("#us-plan-book-asof")
     assert clock
     assert clock["data-plan-book-asof"] == ""
+    assert clock["data-plan-book-published"] == ""
     assert clock["data-plan-book-source-asof"] == ""
     text = clock.get_text(" ", strip=True)
     assert "Plan record date unavailable" in text
@@ -1043,6 +1049,7 @@ def test_candidate_hydration_is_not_a_new_data_or_permission_path():
     assert "candidate-pool-hydrated" in source and "candidate-pool-hydrated" in fragment
     hydration = fragment.split('<script>', 1)[1].split('</script>', 1)[0]
     context = fragment[fragment.index("var contextRequestSerial=0"):fragment.index("root.addEventListener('candidate-pool-hydrated'")]
+    # The one expected request is the pre-existing pool fetch at templates/_us_candidate_pool.html.j2:82.
     assert "fetch(" not in hydration[:hydration.index("var contextRequestSerial=0")]
     assert "fetch(" not in fragment[fragment.index("root.addEventListener('candidate-pool-hydrated'"):]
     assert context.count("fetch(") == 1
