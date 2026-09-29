@@ -1376,15 +1376,43 @@ the one thing no unit test can tell you.
    protection becomes explicit *before* the gate that removes both accidents, so it can never be
    the piece omitted from that commit. Claiming this PR "protects 781 trees" would be false: the
    accidents do that today, and this is what keeps them protected once the accidents are gone.
-2. **The live sweeper reads the PRIMARY checkout's config, not yours.** `load_config` resolves
-   `<primary>/config/worktree_gc.json`, and launchd runs the sweeper from the primary. A
-   report-mode run from this worktree therefore printed `human-driven protection: NONE configured`
-   while the key sat in the worktree's own config — the instrument answered about a different
-   principal than the one under test. Consequence: **this deny-list is inert until the PR merges
-   AND the primary checkout fast-forwards.** That is the standing "a merged PR does not update any
-   folder until that folder fast-forwards" law applied to the config that governs an armed
-   deleter, and it means the ordering obligation is stricter than "same commit" — the primary must
-   have pulled the deny-list before any gate-3 change is armed there.
+2. **A report-mode run from a worktree answers about a DIFFERENT config than the one you just
+   edited.** `load_config` resolves `<primary>/config/worktree_gc.json`, so a run from this
+   worktree printed `human-driven protection: NONE configured` while the key sat in the
+   worktree's own config — the instrument answered about a different principal than the one under
+   test. Pass `--config <abs path>` to interrogate your own edit. **This half stands.**
+
+   **CORRECTED 2026-09-29 (same day) — the consequence drawn from it was WRONG.** The superseded
+   sentence read:
+
+   > Consequence: **this deny-list is inert until the PR merges AND the primary checkout
+   > fast-forwards.** [...] the primary must have pulled the deny-list before any gate-3 change is
+   > armed there.
+
+   The launchd job does **not** run the repo's script against the primary's config. It runs
+   `~/Library/Application Support/macro-worktree-gc/worktree_gc_launchd.py`, a wrapper installed
+   outside every checkout, which **re-extracts BOTH `scripts/worktree_gc.py` AND
+   `config/worktree_gc.json` from `origin/main` on every run** (`git show origin/main:<path>` into
+   a temp dir). The primary serves only as the **git vantage point** — the place refs are fetched
+   and worktrees are registered — which is the one role it cannot be stale at. That wrapper exists
+   precisely because nothing ever updates the primary, so the assumption above is the exact one it
+   was built to defeat. I named the wrong principal twice in a row: first the worktree, then the
+   primary; the answer was `origin/main` all along.
+
+   Three consequences, and the third is the one to act on:
+
+   - **The deny-list is live on merge**, not on a fast-forward — as soon as the wrapper's next
+     `git fetch origin main` in the primary succeeds. Nobody has to touch the primary, and no
+     session should.
+   - **So is anything dangerous.** A §9 gate-3 change would also be live on merge, with no
+     fast-forward buffer to catch it. The ordering obligation is therefore about COMMIT ORDER on
+     main, which this wave satisfies: the deny-list landed first, in its own earlier commit.
+   - **A deny-list INVERTS the wrapper's staleness argument.** Its docstring claims all drift in
+     the extracted pair is conservative, and that was true while policy meant arming and roots,
+     where older is narrower is safer. A protective key reverses it: **older policy means LESS
+     protection.** The exposure is bounded — refs only advance, so once a successful fetch has seen
+     the deny-list no later staleness can lose it — but the window exists, and it is another reason
+     the protective half must never be the one that lands second.
 
 **Verified:** `tests/test_worktree_gc.py` 29 passed — 8 new cases covering the proof-beats-nothing
 rule, an armed apply that deletes an ordinary SAFE tree in the SAME run while the protected one
@@ -1392,3 +1420,81 @@ survives on disk and stays registered, the belt refusing a forced-`SAFE_MERGED` 
 the three report states, and the wiring itself. 6/6 mutants caught; the mutant that removed
 `main`'s `protected=` argument survived the first design and was closed by the wiring test —
 both gates refusing independently means a regression in either one is invisible from the outcome.
+
+## §11. The launchd job silently no-ops about one run in three (R11 — measured and fixed 2026-09-29)
+
+§9 explained why the armed sweeper freed 1.5 of 308 GiB by SCOPE: 72 % of trees sit outside
+`roots`. That is true and it is not the only bound. The job's own logs say the sweep frequently
+**did not run to completion at all**, and nothing anywhere said so.
+
+**Measured from `~/Library/Logs/macro_worktree_gc/` — 45 recorded runs, 2026-08-13 → 09-28:**
+
+| fact | value |
+|---|---|
+| runs reaching a `== worktree-gc done rc= ==` line | 30 |
+| runs that died mid-run, no completion line | **15 (33 %)** |
+| distinct exception classes in `launchd.err.log` | **1** — `subprocess.TimeoutExpired`, every time |
+| tracebacks at `RUN_TIMEOUT_S` (3000 s, the sweep) | **9** |
+| tracebacks at `GIT_TIMEOUT_S` (120 s, a read of the primary) | **4** |
+| dead runs with no traceback at all | 2 — unaccounted for |
+| days with no run header at all | 4 (09-18 → 09-21), also unexplained |
+| last successful sweep before this fix | 09-27: `deleted=9 branches=6 errors=0 over_cap=0`, rc=0 |
+
+Count the tracebacks by their terminal `subprocess.TimeoutExpired: Command ...` lines. Counting
+every occurrence of `timed out after 120 seconds` instead also matches the value echoed inside the
+exception's own command repr, which inflates the git class from 4 to 10 — and would have produced a
+table whose causes (10 + 9) exceed its own traceback count (13).
+
+**First, what is NOT wrong.** The job is not TCC-blind. It reads the primary fine and on 09-27 it
+deleted nine trees cleanly. The `sweeper BLIND: PermissionError [Errno 1] Operation not permitted:
+'/Users/chriswong/Documents'` notification belongs to a **different instrument** —
+`storage_floor_guard.py` — and conflating the two would aim the Full Disk Access ask at the wrong
+process while leaving this one unfixed. Same reach-failure family as everything else in this
+document: right question, wrong principal.
+
+**Defect A — the graceful handling was UNREACHABLE.** The wrapper's fetch fallback
+(`proceeding on last-known origin/main`) and its fail-closed refusal on an unreadable policy file
+were both written correctly, and neither could ever execute: `_git` let `subprocess.TimeoutExpired`
+propagate, so a 120 s timeout raised straight out of `main()` before any `returncode` was
+consulted. Code that reviews as careful degradation and is, in production, a traceback. The
+one-line repair is `except TimeoutExpired: return CompletedProcess(..., returncode=124)`, which
+makes three pre-existing error paths reachable at once without altering any of them.
+
+Why a git read here can take minutes at all: the clone is a `blob:none` promisor, so
+`git show origin/main:<path>` **fetches over the network** whenever the blob is cold — and the
+primary is the one checkout nothing ever warms. The wrapper's anti-staleness design is what puts a
+network round trip on a deleter's critical path.
+
+**Defect B — a failure was recorded nowhere a reader looks.** `last_run.json` is written by the
+tool and only when a sweep completes, so its name is a liar by omission: after a failed run it
+still describes the last SUCCESSFUL sweep, days earlier. `launchctl list` showed a bare `1`. The
+ledger gained no row. The only trace was a traceback in a log nobody reads. **The instrument that
+would tell you the deleter is dead is the same log that records its success.**
+
+**Fixed (this wave).** `_git` never raises; the sweep's own timeout is caught and returns a
+distinct `3`, so a cap cannot be mistaken for a refusal; every exit path — both refusals and a
+successful run — writes `last_attempt.json` carrying stage, status, elapsed and the caps it was
+judged against, and never touches `last_run.json`, whose meaning other tooling depends on; each
+refusal names the limit it hit. `tests/test_worktree_gc_launchd.py`, 14 cases, 10/10 mutants
+caught — including the mutant that reverts the one-line fix.
+
+**Deliberately NOT done: the caps are unchanged.** The sweep cap is the dominant failure (9 of 13)
+and is where a future measurement should be aimed, but a successful sweep finishes in ~9 minutes, so
+a run exceeding 50 is ~5× slower rather than marginally over and a bigger number would paper over
+whatever makes it slow. Whoever does raise one should have that measurement, and a test now requires
+them to edit the paragraph stating this reasoning in the same act.
+
+**The fix is not live until the wrapper is RE-INSTALLED, and that is a host act, not a merge.**
+`scripts/install_worktree_gc_launchd.sh` copies the repo's wrapper to
+`~/Library/Application Support/macro-worktree-gc/`. Unlike the config and the tool — both re-read
+from `origin/main` on every run — the **wrapper is the one file that is not**, because it is the one
+file that has to live somewhere stable. So it is the one file that drifts, and no merge can reach
+it. Repo and installed copies were byte-identical before this wave and diverge the moment it lands.
+That is the third principal in this document's reach ledger: *the component built to defeat
+staleness everywhere else is itself the stalest thing in the system.*
+
+**What this means for the storage numbers.** The measured reclaim is bounded from two independent
+directions that were being reported as one: scope (§9 — most trees are unreachable) and
+**availability** (this section — on roughly a third of days the reachable ones were not swept
+either). Neither is a failure of the tool's classification, and neither is fixed by widening
+`roots`.
