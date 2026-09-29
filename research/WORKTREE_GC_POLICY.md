@@ -1102,7 +1102,16 @@ directories + 4 already-gone checkouts) verdicts `DIRTY 68/95.43G`, `LOCKED 43/4
 `UNPUSHED 57/27.01G`, `RECENT 11/13.12G`, `OPEN_PR 15/8.48G`, `ORPHAN 5/7.72G`, `LIVE_PROC 1/7.05G`,
 `MISSING 4/0G` — and **`SAFE_MERGED` 3 trees / 1.81 GiB, 0.9 %**. Half the pool (103 trees /
 99.94 GiB) is HUMAN-class `sol*`/`review*` that `DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM` never
-auto-reclaims; 61 % is `DIRTY`+`UNPUSHED` unlanded work. **So do not sell the grant on bytes.** Sell
+auto-reclaims; 61 % is `DIRTY`+`UNPUSHED` — content not reproducible from `origin/main`, which is the
+accurate phrasing and not the same thing as "work that has not landed". **`DIRTY` was checked rather
+than assumed**, because the assumption is how 09-26 happened: `git status --porcelain` in all 68
+trees finds **54 trees / 76.95 GiB carrying real tracked modifications (81 % of the DIRTY bytes)**
+and 14 / 18.48 GiB untracked-only, of which 8 / 8.41 GiB are also landed. **Those 8 are still not
+collectable** — untracked files have no commit, no ref and no remote, so neither `refs/salvage/*` nor
+`origin/main` can reconstitute them, and the largest is 2.90 GiB of `mockups/evidence/…`, the exact
+class the 09-26 sparse sweep destroyed. A landed `HEAD` proves the commits are safe and says nothing
+about the working directory; "landed, therefore collectable" is the inference that caused the
+incident. **So do not sell the grant on bytes.** Sell
 it on the two things it actually buys: a floor guard whose remediation RUNS (today every breach ends
 in `REMEDIATOR FAULT`, so the net is absent, not slow), and reach for the reclaim-at-merge FLOW gate
 over the busiest pool in the fleet.

@@ -19,7 +19,8 @@ claim: >
   **The blindness is real; the reclaimable bytes are not.** Running the GC's own report over the
   pool by hand (207 registrations — the 203 directories plus 4 whose checkout is already gone)
   classifies **3 trees / 1.81 GiB as `SAFE_MERGED`, i.e. 0.9 % of the pool**. 122.45 GiB across 125
-  trees is `DIRTY` or `UNPUSHED` — unlanded work no reclaim law may touch — and 99.94 GiB across 103
+  trees is `DIRTY` or `UNPUSHED` — content not reproducible from `origin/main`, which no reclaim law
+  may touch — and 99.94 GiB across 103
   trees is HUMAN-class (`sol*`/`review*`), which standing law never auto-reclaims at all. So the
   grant repairs a broken safety net and buys **~1.8 GiB of stock today**, not 201.
 falsifier: >
@@ -124,7 +125,33 @@ This record pre-registered exactly this check as its own third falsifier, and th
 
 **0.9 % of the pool.** 50 % of it (103 trees / 99.94 GiB) is HUMAN-class `sol*`/`review*` — which
 `DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM` never auto-reclaims, because a web conversation's
-attachment is undetectable. 61 % is `DIRTY`+`UNPUSHED`, i.e. work that has not landed.
+attachment is undetectable. 61 % is `DIRTY`+`UNPUSHED` — content that is **not reproducible from
+`origin/main`**, which is the accurate phrasing and not the same as "work that has not landed".
+
+### What `DIRTY` actually means here, because the obvious reading is the 2026-09-26 incident
+
+`DIRTY` is `worktree_gc.py`'s verdict for "uncommitted changes **or** untracked files", and in this
+fleet untracked scratch output is everywhere — so it is worth knowing whether 95.43 GiB of `DIRTY` is
+real work or junk. Measured by `git status --porcelain` in all 68 (read-only):
+
+| dirt | trees | GiB |
+|---|---:|---:|
+| tracked modifications present | 54 | **76.95** |
+| untracked files only | 14 | 18.48 |
+| clean by now / unreadable | 0 | 0.00 |
+
+So **81 % of the `DIRTY` bytes are genuine tracked modifications** and the verdict is not an artifact.
+Of the 14 untracked-only trees, 8 (**8.41 GiB**) are additionally landed — 7 pushed to their own
+`origin/<branch>`, 1 an ancestor of `main`.
+
+**Those 8 are still not reclaimable, and the reason generalises.** Untracked files are the *least*
+recoverable content in git: no commit, no ref, no remote, so `refs/salvage/*` cannot preserve them
+and `origin/main` cannot reconstitute them. The largest is 2.90 GiB of `mockups/evidence/…` — exactly
+the class of artifact the 2026-09-26 sparse sweep destroyed. A landed `HEAD` says the *commits* are
+safe; it says nothing about the working directory, and `DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM`
+requires landed **and** nothing attached for precisely this reason. The `DIRTY` gate refusing these
+is the gate working correctly — and "landed, therefore collectable" is the inference that caused the
+incident. Recorded here so the composition table above cannot be mined for a sweep.
 
 So the honest case for the grant is not bytes. It is that **the remediator currently does not run at
 all** — every breach since 2026-09-24 ends in `REMEDIATOR FAULT` — and that the reclaim-at-merge flow
