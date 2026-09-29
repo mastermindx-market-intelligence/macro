@@ -6267,3 +6267,53 @@ def test_session_outcome_reader_rejects_broken_part_topology(
 
     with pytest.raises(EpisodeSourceContractError, match=expected):
         session_outcome_logical_bytes(base)
+
+
+@pytest.mark.parametrize(
+    ("damage", "expected"),
+    [
+        ("torn_part", r"torn final line"),
+        ("empty_part", r"session outcome part is empty"),
+        ("torn_base", r"torn final line"),
+    ],
+)
+def test_session_outcome_reader_fails_closed_on_a_torn_or_empty_part(
+    tmp_path: Path, damage: str, expected: str,
+) -> None:
+    """A partially written part wedges the reader; it never silently truncates.
+
+    Neither ``lock_fh.write`` nor ``part_fh.write`` is atomic across pages, so a
+    torn trailing line is reachable by a crash mid-write. What decides durability
+    is the consequence, and it is fail-closed at the reader: the logical ledger
+    refuses to answer at all rather than reporting a short row count, so no
+    consumer can mistake a truncated tail for the end of history. An empty part
+    -- the directory entry fsynced before any content landed -- is refused the
+    same way instead of reading as a zero-row generation.
+    """
+    from engine.options_signal_episode_contract import (
+        EpisodeSourceContractError,
+        session_outcome_logical_bytes,
+    )
+
+    base = tmp_path / "outcomes_session.jsonl"
+    base_bytes = b'{"row":1}\n{"row":2}\n'
+    base.write_bytes(base_bytes)
+    parts = tmp_path / "outcomes_session_parts"
+    parts.mkdir()
+    part = parts / "part-000001.jsonl"
+    if damage == "torn_part":
+        part.write_bytes(b'{"row":3}\n{"row":4}')
+    elif damage == "empty_part":
+        part.write_bytes(b"")
+    else:
+        part.write_bytes(b'{"row":3}\n')
+        base.write_bytes(base_bytes.rstrip(b"\n"))
+
+    with pytest.raises(EpisodeSourceContractError, match=expected) as excinfo:
+        session_outcome_logical_bytes(base)
+
+    offender = base if damage == "torn_base" else part
+    assert str(offender) in str(excinfo.value)
+    if damage != "torn_base":
+        # Refusing is read-only: it must not repair, truncate or rewrite history.
+        assert base.read_bytes() == base_bytes

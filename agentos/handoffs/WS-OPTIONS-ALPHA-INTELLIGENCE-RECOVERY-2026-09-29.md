@@ -46,7 +46,59 @@ verified:
       engine/options_signal_campaign.py scripts/ci/options_signal_nightly.sh
       scripts/build_options_signal_episode.py tests/test_options_signal_campaign.py; do
       test "$(git rev-parse HEAD:$f)" = "$(git rev-parse e562578d:$f)"; done
-    result: All seven carrier blobs IDENTICAL.
+    result: >
+      All SIX enumerated carrier blobs IDENTICAL. The seventh file on the PR
+      surface, tests/test_options_signal_episode.py, differs BY DESIGN
+      (593d658494aa -> the session head) and is the only session work; an
+      earlier draft of this row said "all seven", which overstated a check
+      whose own command lists six paths. Independently corroborated: git diff
+      --name-only e562578d d99070a2 -- 'engine/options_signal*'
+      'scripts/ci/options_signal*' 'tests/test_options_signal_campaign.py' is
+      EMPTY, so the carrier re-adopted no changed engine or publisher byte.
+  - claim: >
+      The real consumer path -- options_signal_campaign.load_ledger over the
+      logical ledger -- survives a genuine rollover of the real 100,471,221-byte
+      base with its historical prefix receipt UNCHANGED, which is the exact
+      equality whose failure raises CampaignContractError: ledger prefix changed.
+    command: >
+      A standalone harness on a temp copy of the real base (COLLECT_LANE=nightly,
+      data/ never written): load_ledger before, append_session_outcomes, load_ledger
+      after, then compare _receipt(after, before.count) to the before receipt.
+    result: >
+      ALL PASS, 10/10 properties. 30,327 -> 30,332 rows; base byte-identical after
+      the append and after a re-entry; only part-000001.jsonl created and within
+      the ceiling; logical bytes == frozen base + part; historical prefix receipt
+      and prefix rows unchanged; global 1-based ordinals continue 30328..30332 via
+      LedgerRow.ordinal; a re-append writes 0 rows (dedupe spans base AND parts).
+      The ordinal check matters because the size-boundary tests prove continuity
+      only as list order and never read LedgerRow.ordinal -- this closes that gap.
+  - claim: >
+      Independent adversarial review found no input, crash point or interleaving
+      that loses, reorders, truncates or rewrites a committed row, and judged all
+      four size-boundary tests discriminating rather than vacuous.
+    command: >
+      Read-only opus reviewer over the integrated tree; attacks attempted:
+      append-after-rollover to the frozen base, later-part-before-earlier-part,
+      lost directory entry, duplicate rows after rollover, planted part topology,
+      ceiling off-by-one, stale-candidate truncation of a published part via the
+      publisher replay, and working-tree clobber by exclude_broad.
+    result: >
+      MERGE_WITH_FOLLOWUP; every attack blocked, with the mechanism named for each.
+      Three claim overstatements were upheld and are corrected here and on the PR:
+      (a) the row above, (b) the commit message's bullet 2 -- the INCLUSIVITY case
+      runs under a monkeypatched constant within ~5 KB of 48 MiB, not under the
+      real one, so only the under-ceiling step uses the true constant (the commit
+      is pushed and no force-push is authorized, so this correction lives here and
+      on the PR rather than in rewritten history), and (c) the writer's own in-code
+      comment claiming a crash "can never expose a torn row", which is false
+      because neither lock_fh.write nor part_fh.write is atomic across pages. (c)
+      is in the incumbent owner's engine file and was NOT edited; instead
+      test_session_outcome_reader_fails_closed_on_a_torn_or_empty_part now pins the
+      consequence that actually governs durability -- the reader refuses the whole
+      logical ledger rather than reporting a short row count, so a torn tail can
+      never read as the end of history. Mutation-proved: dropping the torn-line
+      raise fails exactly the 2 torn params, dropping the empty-part raise fails
+      exactly the 1 empty param.
   - claim: >
       No append-only violation exists anywhere in the ledger history; every
       historical version of all three source files is an exact byte-prefix of
