@@ -1,8 +1,8 @@
 # MedTech Catalyst Intelligence R1 — regulatory authorization is not an investment thesis
 
-**Date:** 2026-09-29  
-**Operation:** `ci-w1-medtech-r1-20260929-sol-001`  
-**Program:** Catalyst Intelligence / Medical Devices and Diagnostics  
+**Date:** 2026-09-29
+**Operation:** `ci-w1-medtech-r1-20260929-sol-001`
+**Program:** Catalyst Intelligence / Medical Devices and Diagnostics
 **Readiness:** research contract and executable reference only; no forecast, recommendation, production, or Paper acceptance
 
 ## 1. Question resolved in this installment
