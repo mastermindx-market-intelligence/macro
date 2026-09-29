@@ -73,7 +73,9 @@ RECEIPT = Path.home() / "Library/Logs/macro_worktree_gc/last_attempt.json"
 def _git(*args: str) -> "subprocess.CompletedProcess[bytes]":
     """Never raise. A timeout comes back as rc=124 so the CALLERS' error paths run.
 
-    This is the defect that made this wrapper's graceful handling unreachable (measured
+    This is the defect that made this wrapper's graceful handling unreachable for a TIMEOUT
+    specifically -- the same handlers do fire on an ordinary non-zero exit, which is why the gap
+    survived review (measured
     2026-09-29). The fetch's "proceeding on last-known origin/main" fallback and the
     fail-closed refusal on an unreadable policy file were both written correctly, and
     NEITHER could ever execute: a 120 s timeout raised straight out of main() before any
@@ -103,11 +105,16 @@ def _receipt(stage: str, status: str, detail: str, started: dt.datetime) -> None
     `last_run.json` is written by the tool and only when a sweep completes, so its name is a
     liar by omission: after a failed run it still holds the last SUCCESSFUL sweep, and any
     monitor built on it reads an old success as today's health. Measured 2026-09-29: 15 of 45
-    recorded runs never reached a completion line, and the sole trace of any of them was a
-    traceback in launchd.err.log — no ledger row, no json, and `launchctl list` showing a
-    bare `1`. An armed deleter that no-ops one day in three has to say so where something
-    reads. This file is that place, and it never overwrites `last_run.json`, whose meaning
-    (last COMPLETED sweep) other tooling depends on.
+    recorded runs never reached a completion line — 13 crashed, leaving only a traceback in
+    launchd.err.log, and 2 refused cleanly, leaving only a line of stdout. No ledger row, no
+    json, and `launchctl list` showing a bare `1` for either. An armed deleter that no-ops
+    roughly one day in three has to say so where something reads. This file is that place, and
+    it never overwrites `last_run.json`, whose meaning (last COMPLETED sweep) other tooling
+    depends on.
+
+    It also ends an ambiguity that cost a measurement: with no receipt, a clean refusal and a
+    crash are both just "a run with no completion line", and counting by that absence
+    over-reports crashes by exactly the number of paths that exit quietly.
     """
     elapsed = (dt.datetime.now(dt.timezone.utc) - started).total_seconds()
     print(f"attempt: stage={stage} status={status} elapsed={elapsed:.1f}s {detail}", flush=True)

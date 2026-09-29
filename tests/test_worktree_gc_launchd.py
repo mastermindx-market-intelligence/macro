@@ -89,7 +89,11 @@ def _receipt(tmp_path):
 # ── 1. the fix itself ────────────────────────────────────────────────────────
 
 def test_a_git_timeout_returns_124_instead_of_raising(monkeypatch, tmp_path):
-    """The one-line root cause. `_git` raising is what made every downstream path dead code."""
+    """The one-line root cause: `_git` raising is what kept the timeout OUT of every downstream
+
+    error path. Those paths are not dead -- they answer an ordinary non-zero exit, and the logs
+    show them doing so -- which is precisely why nobody noticed the timeout could not reach them.
+    """
     def boom(args, kw):
         raise subprocess.TimeoutExpired(cmd=args, timeout=wrapper.GIT_TIMEOUT_S)
 
@@ -117,6 +121,27 @@ def test_a_fetch_timeout_no_longer_kills_the_run(monkeypatch, tmp_path, capsys):
     assert "proceeding on last-known" in capsys.readouterr().out
 
 
+def test_an_ordinary_nonzero_fetch_exit_still_reaches_the_fallback(monkeypatch, tmp_path, capsys):
+    """The positive control for the claim's SHAPE, not just its fix.
+
+    The defect is narrower than "the fallback is dead code", and getting that wrong once already
+    put an overstatement into a policy doc. A non-timeout failure -- no upstream, no network,
+    a rejected ref -- has always reached this branch, and the production log shows it doing so on
+    09-28. If this test ever fails, the claim in
+    DSC:A-RAISED-TIMEOUT-MAKES-THE-DEGRADATION-PATH-WRITTEN-FOR-IT-DEAD-CODE is wrong in the
+    other direction and the branch really is dead.
+    """
+    def git(args, kw):
+        if "fetch" in args:
+            return CP(args, 1, b"", b"fatal: unable to access 'https://github.com/...'")
+        return _git_ok(args, kw)
+
+    seen = _install(monkeypatch, tmp_path, git=git)
+    assert wrapper.main() == 0
+    assert _sweeps(seen), "an ordinary fetch failure has never been a reason to skip the sweep"
+    assert "proceeding on last-known" in capsys.readouterr().out
+
+
 # ── 2. every refusal is legible and receipted ────────────────────────────────
 
 def test_an_unreadable_primary_refuses_explains_tcc_and_files_a_receipt(monkeypatch, tmp_path):
@@ -129,6 +154,34 @@ def test_an_unreadable_primary_refuses_explains_tcc_and_files_a_receipt(monkeypa
     rec = _receipt(tmp_path)
     assert rec["stage"] == "read-primary" and rec["status"] == "refused"
     assert "not permitted" in rec["detail"].lower()
+
+
+def test_an_eintr_refusal_does_not_blame_tcc(monkeypatch, tmp_path, capsys):
+    """The production refusal (09-07, 09-16) and the wrong-principal trap it avoids.
+
+    Both real refusals carried `Unable to read current working directory: Interrupted system
+    call` -- EINTR, a transient, NOT the TCC wall. A refusal that volunteers "grant Full Disk
+    Access" here would send its reader to System Settings for a problem a retry would fix, and
+    that is the same mistake this wave's investigation made out loud before the logs corrected
+    it. The hint must be conditional on the evidence, and this pins that it is.
+    """
+    eintr = (b"fatal: Unable to read current working directory: Interrupted system call")
+
+    def git(args, kw):
+        return CP(args, 128, b"", eintr)
+
+    seen = _install(monkeypatch, tmp_path, git=git)
+    assert wrapper.main() == 1
+    assert not _sweeps(seen)
+    out = capsys.readouterr().out
+    assert "Interrupted system call" in out, "the refusal must carry the reason it was given"
+    assert "Full Disk Access" not in out and "TCC" not in out, (
+        "an EINTR refusal must not name a permissions remediation it has no evidence for")
+    rec = _receipt(tmp_path)
+    assert rec["stage"] == "read-primary" and rec["status"] == "refused"
+    # The receipt is also what ends the ambiguity that produced this test: before it existed, a
+    # clean refusal and a crash were both just "a run with no completion line".
+    assert "Interrupted system call" in rec["detail"]
 
 
 def test_a_primary_read_timeout_is_explained_rather_than_traced(monkeypatch, tmp_path, capsys):

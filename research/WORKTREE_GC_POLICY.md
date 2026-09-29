@@ -1421,7 +1421,7 @@ the three report states, and the wiring itself. 6/6 mutants caught; the mutant t
 `main`'s `protected=` argument survived the first design and was closed by the wiring test —
 both gates refusing independently means a regression in either one is invisible from the outcome.
 
-## §11. The launchd job silently no-ops about one run in three (R11 — measured and fixed 2026-09-29)
+## §11. The launchd job crashes about one run in three and records it nowhere (R11 — measured and fixed 2026-09-29)
 
 §9 explained why the armed sweeper freed 1.5 of 308 GiB by SCOPE: 72 % of trees sit outside
 `roots`. That is true and it is not the only bound. The job's own logs say the sweep frequently
@@ -1432,18 +1432,38 @@ both gates refusing independently means a regression in either one is invisible 
 | fact | value |
 |---|---|
 | runs reaching a `== worktree-gc done rc= ==` line | 30 |
-| runs that died mid-run, no completion line | **15 (33 %)** |
+| runs with no completion line | 15 |
+| …of those, **crashed** on an uncaught exception | **13 (29 % of all runs)** |
+| …of those, refused CLEANLY and said why (09-07, 09-16) | 2 — the fail-closed path working |
 | distinct exception classes in `launchd.err.log` | **1** — `subprocess.TimeoutExpired`, every time |
 | tracebacks at `RUN_TIMEOUT_S` (3000 s, the sweep) | **9** |
 | tracebacks at `GIT_TIMEOUT_S` (120 s, a read of the primary) | **4** |
-| dead runs with no traceback at all | 2 — unaccounted for |
-| days with no run header at all | 4 (09-18 → 09-21), also unexplained |
+| days with no run header at all — the job never started | 4 (09-18 → 09-21); host proven UP, cause not established |
 | last successful sweep before this fix | 09-27: `deleted=9 branches=6 errors=0 over_cap=0`, rc=0 |
 
-Count the tracebacks by their terminal `subprocess.TimeoutExpired: Command ...` lines. Counting
-every occurrence of `timed out after 120 seconds` instead also matches the value echoed inside the
-exception's own command repr, which inflates the git class from 4 to 10 — and would have produced a
-table whose causes (10 + 9) exceed its own traceback count (13).
+**Two counting traps, both of which I fell into first and both of which inflate the defect.**
+
+*The tracebacks.* Count them by their terminal `subprocess.TimeoutExpired: Command ...` lines.
+Counting every occurrence of `timed out after 120 seconds` instead also matches the value echoed
+inside the exception's own command repr, which inflates the git class from 4 to 10 — and would have
+produced a table whose causes (10 + 9) exceed its own traceback count (13).
+
+*The dead runs.* **"No `done rc=` line" is not "crashed", and the first version of this table said
+it was.** The wrapper's read-primary refusal does `return 1` without printing a completion line, so
+a clean refusal is indistinguishable from a crash **by that predicate** — but not by the log, which
+carries the reason:
+
+```
+cannot read the primary checkout ('fatal: Unable to read current working directory:
+Interrupted system call ...')
+```
+
+That is EINTR, not TCC — and the wrapper's TCC hint correctly did not print, which is itself a
+positive control on that branch. So 2 of the 15 were the fail-closed path doing its job out loud.
+The superseded row read `dead runs with no traceback at all | 2 — unaccounted for`; they are
+accounted for, and they are not a defect. **An absence-shaped predicate over-counts by exactly the
+number of paths that exit quietly** — so count a failure by what it SAID, never by what it failed
+to say.
 
 **First, what is NOT wrong.** The job is not TCC-blind. It reads the primary fine and on 09-27 it
 deleted nine trees cleanly. The `sweeper BLIND: PermissionError [Errno 1] Operation not permitted:
@@ -1452,13 +1472,23 @@ deleted nine trees cleanly. The `sweeper BLIND: PermissionError [Errno 1] Operat
 process while leaving this one unfixed. Same reach-failure family as everything else in this
 document: right question, wrong principal.
 
-**Defect A — the graceful handling was UNREACHABLE.** The wrapper's fetch fallback
-(`proceeding on last-known origin/main`) and its fail-closed refusal on an unreadable policy file
-were both written correctly, and neither could ever execute: `_git` let `subprocess.TimeoutExpired`
-propagate, so a 120 s timeout raised straight out of `main()` before any `returncode` was
-consulted. Code that reviews as careful degradation and is, in production, a traceback. The
-one-line repair is `except TimeoutExpired: return CompletedProcess(..., returncode=124)`, which
-makes three pre-existing error paths reachable at once without altering any of them.
+**Defect A — the graceful handling was unreachable FOR THE ONE CAUSE THAT DOMINATES.** The
+wrapper's fetch fallback (`proceeding on last-known origin/main`) and its fail-closed refusals are
+written correctly and are genuinely reachable: the 09-28 run printed the fetch fallback before
+dying later at the sweep cap, and 09-07/09-16 printed the read-primary refusal. What they cannot
+survive is a **timeout**, because `_git` let `subprocess.TimeoutExpired` propagate and a 120 s
+timeout raised straight out of `main()` before any `returncode` was consulted. So the handlers
+answer every rare cause and are absent for the common one — **13 of the 15 non-completions took the
+path with no handler, 2 took a path whose handler ran and reported.** That distribution is the
+defect, and it is worse than a plainly dead branch would be: the branch's occasional live firing is
+exactly what makes it review as working.
+
+An earlier draft of this section called them "dead code" and said "neither could ever execute".
+That was too strong, and it was falsified by the same log that motivated the fix — a reminder that
+*reachable* is a question about a specific cause, never about a line.
+
+The one-line repair is `except TimeoutExpired: return CompletedProcess(..., returncode=124)`, which
+brings the timeout cause into the handlers that already existed, without altering any of them.
 
 Why a git read here can take minutes at all: the clone is a `blob:none` promisor, so
 `git show origin/main:<path>` **fetches over the network** whenever the blob is cold — and the
@@ -1493,8 +1523,35 @@ it. Repo and installed copies were byte-identical before this wave and diverge t
 That is the third principal in this document's reach ledger: *the component built to defeat
 staleness everywhere else is itself the stalest thing in the system.*
 
+**Defect C — and this one my fix does NOT reach: four days when the job never started.** No run
+header exists for 09-18 → 09-21. That is not downtime. `last reboot` shows no restart since
+2026-08-29, and the host was heavily in use on all four days (158 / 320 / 1183 / 274 session
+transcript writes per day under `~/.claude/projects`). Nor is it deferred-then-caught-up scheduling:
+of 45 recorded runs, 43 fired within 10 s of 12:17:00 UTC and the only two off-schedule ones are the
+install-day kickstarts, so **no catch-up-after-wake run has ever been observed here** — which cuts
+both ways, since it also means that mechanism is untested on this host. The live launchd record reads
+`runs = 7`, exactly the firings 09-22 → 09-28 inclusive, consistent with the job's launchd record
+having been re-created between the 09-21 and 09-22 scheduled times; the plist and the installed
+wrapper have both been untouched since 2026-08-12 21:41, so no re-install did it. **Cause not
+established**, and stated as such.
+
+The unified log cannot settle it either, and the reason is worth recording because it is the same
+discipline this document keeps arriving at: `log show` returns **zero** rows for
+`com.macro.worktree-gc` in a 4-minute window around the scheduled minute on every day tested —
+including 09-17, 09-22 and 09-23, days the job demonstrably DID run. The instrument carries no
+signal for this label at all, so its silence across the gap is not evidence. A positive control is
+what turned that from a finding into a non-finding.
+
+**The load-bearing consequence is about the receipt this wave adds.** `last_attempt.json` is written
+by the wrapper, so it can only ever describe a run that STARTED. A run that never starts writes
+nothing — which is the same structural blind spot as `last_run.json`, moved one level out. The fix
+in this wave converts a crash into a record; it cannot convert an absence into one. The only
+instrument that can is EXTERNAL and age-based: something that reads the receipt's `started` and
+alarms when it is older than the schedule. That is not built, and this section is where that debt is
+recorded rather than implied.
+
 **What this means for the storage numbers.** The measured reclaim is bounded from two independent
 directions that were being reported as one: scope (§9 — most trees are unreachable) and
-**availability** (this section — on roughly a third of days the reachable ones were not swept
-either). Neither is a failure of the tool's classification, and neither is fixed by widening
-`roots`.
+**availability** (this section — 13 crashes plus 4 non-starts across 45 scheduled days, so on
+roughly a third of days the reachable trees were not swept either). Neither is a failure of the
+tool's classification, and neither is fixed by widening `roots`.
