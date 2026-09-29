@@ -1,6 +1,6 @@
 {
-  "generated_utc": "2026-09-28T10:12:15.342802+00:00",
-  "as_of": "2026-09-28",
+  "generated_utc": "2026-09-29T00:35:43.681339+00:00",
+  "as_of": "2026-09-29",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
   "note": "Deterministic alt-data signals + normalized event feed for the reasoning brain. Display/context-only \u2014 not a scored axis.",
@@ -27106,7 +27106,7 @@
     "clinical": [
       {
         "ticker": "AZN",
-        "phase3_starts": 40,
+        "phase3_starts": 37,
         "halts": 1,
         "hot": true,
         "sample": "Torvutatug Samrotecan With or Without Bevacizumab as Maintenance Treatment of Platinum-sensitive Relapsed Epithelial Ovarian Cancer"
@@ -27372,13 +27372,6 @@
         "top_issue": "Aviation/Airlines/Airports"
       },
       {
-        "ticker": "ENVX",
-        "spend_usd": 0.0,
-        "filings": 1,
-        "spike_x": null,
-        "top_issue": "Budget/Appropriations"
-      },
-      {
         "ticker": "HDRN",
         "spend_usd": 0.0,
         "filings": 1,
@@ -27433,6 +27426,13 @@
         "filings": 1,
         "spike_x": null,
         "top_issue": "Budget/Appropriations"
+      },
+      {
+        "ticker": "WAT",
+        "spend_usd": 0.0,
+        "filings": 1,
+        "spike_x": null,
+        "top_issue": "Trade (domestic/foreign)"
       }
     ],
     "offexchange": [
@@ -27624,19 +27624,19 @@
           "sellers": 0
         },
         {
-          "ticker": "COE",
-          "buy_usd": 137507024.0,
-          "sell_usd": 0.0,
-          "net_usd": 137507024.0,
-          "buyers": 53,
-          "sellers": 0
-        },
-        {
           "ticker": "LEN",
           "buy_usd": 136382789.0,
           "sell_usd": 0.0,
           "net_usd": 136382789.0,
           "buyers": 9,
+          "sellers": 0
+        },
+        {
+          "ticker": "COE",
+          "buy_usd": 124668668.0,
+          "sell_usd": 0.0,
+          "net_usd": 124668668.0,
+          "buyers": 41,
           "sellers": 0
         },
         {
@@ -27716,10 +27716,10 @@
         {
           "ticker": "DELL",
           "buy_usd": 0.0,
-          "sell_usd": 1327095735.0,
-          "net_usd": -1327095735.0,
+          "sell_usd": 1320484610.0,
+          "net_usd": -1320484610.0,
           "buyers": 0,
-          "sellers": 1255
+          "sellers": 1241
         },
         {
           "ticker": "CRWV",
@@ -27780,10 +27780,10 @@
         {
           "ticker": "ABNB",
           "buy_usd": 0.0,
-          "sell_usd": 746910013.0,
-          "net_usd": -746910013.0,
+          "sell_usd": 742365881.0,
+          "net_usd": -742365881.0,
           "buyers": 0,
-          "sellers": 121
+          "sellers": 118
         }
       ]
     },
@@ -28840,14 +28840,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "MSFT",
-        "mentions": 25,
-        "sentiment": 0.015
-      },
-      {
         "ticker": "QQQ",
         "mentions": 25,
         "sentiment": 0.074
+      },
+      {
+        "ticker": "MSFT",
+        "mentions": 25,
+        "sentiment": 0.015
       },
       {
         "ticker": "OKLO",
@@ -30509,221 +30509,319 @@
     ],
     "earnings": [
       {
-        "ticker": "JEF",
-        "next_date": "2026-09-28",
-        "days_to": 0,
-        "eps_forecast": 1.04,
-        "last_surprise_pct": -5.5
-      },
-      {
         "ticker": "MU",
         "next_date": "2026-09-30",
-        "days_to": 2,
+        "days_to": 1,
         "eps_forecast": 31.24,
         "last_surprise_pct": 18.6
       },
       {
         "ticker": "ACN",
         "next_date": "2026-10-01",
-        "days_to": 3,
+        "days_to": 2,
         "eps_forecast": 3.19,
         "last_surprise_pct": 2.7
       },
       {
         "ticker": "NKE",
         "next_date": "2026-10-01",
-        "days_to": 3,
+        "days_to": 2,
         "eps_forecast": 0.44,
         "last_surprise_pct": 81.8
       },
       {
         "ticker": "PENG",
         "next_date": "2026-10-06",
-        "days_to": 8,
+        "days_to": 7,
         "eps_forecast": 0.61,
         "last_surprise_pct": 44.9
       },
       {
         "ticker": "RPM",
         "next_date": "2026-10-06",
-        "days_to": 8,
+        "days_to": 7,
         "eps_forecast": 1.95,
         "last_surprise_pct": 2.7
       },
       {
         "ticker": "PEP",
         "next_date": "2026-10-08",
-        "days_to": 10,
+        "days_to": 9,
         "eps_forecast": 2.3,
         "last_surprise_pct": 0.5
       },
       {
         "ticker": "DAL",
         "next_date": "2026-10-09",
-        "days_to": 11,
+        "days_to": 10,
         "eps_forecast": 2.03,
         "last_surprise_pct": 3.3
       },
       {
         "ticker": "BLK",
         "next_date": "2026-10-13",
-        "days_to": 15,
+        "days_to": 14,
         "eps_forecast": 14.24,
         "last_surprise_pct": 9.8
       },
       {
         "ticker": "C",
         "next_date": "2026-10-13",
-        "days_to": 15,
+        "days_to": 14,
         "eps_forecast": 2.67,
         "last_surprise_pct": 15.8
       },
       {
         "ticker": "GS",
         "next_date": "2026-10-13",
-        "days_to": 15,
+        "days_to": 14,
         "eps_forecast": 15.18,
         "last_surprise_pct": 45.0
       },
       {
         "ticker": "JNJ",
         "next_date": "2026-10-13",
-        "days_to": 15,
+        "days_to": 14,
         "eps_forecast": 2.96,
         "last_surprise_pct": 2.1
       },
       {
         "ticker": "JPM",
         "next_date": "2026-10-13",
-        "days_to": 15,
+        "days_to": 14,
         "eps_forecast": 5.84,
         "last_surprise_pct": 9.8
       },
       {
         "ticker": "UNH",
         "next_date": "2026-10-13",
-        "days_to": 15,
+        "days_to": 14,
         "eps_forecast": 4.12,
         "last_surprise_pct": 29.1
       },
       {
         "ticker": "BAC",
         "next_date": "2026-10-14",
-        "days_to": 16,
+        "days_to": 15,
         "eps_forecast": 1.16,
         "last_surprise_pct": 7.1
       },
       {
         "ticker": "MS",
         "next_date": "2026-10-14",
-        "days_to": 16,
+        "days_to": 15,
         "eps_forecast": 3.06,
         "last_surprise_pct": 19.7
       },
       {
         "ticker": "STT",
         "next_date": "2026-10-14",
-        "days_to": 16,
+        "days_to": 15,
         "eps_forecast": 3.6,
         "last_surprise_pct": 10.6
       },
       {
         "ticker": "WFC",
         "next_date": "2026-10-14",
-        "days_to": 16,
+        "days_to": 15,
         "eps_forecast": 1.84,
         "last_surprise_pct": 13.3
       },
       {
         "ticker": "MMC",
         "next_date": "2026-10-15",
-        "days_to": 17,
+        "days_to": 16,
         "eps_forecast": 1.96,
         "last_surprise_pct": 2.8
       },
       {
         "ticker": "OZK",
         "next_date": "2026-10-15",
-        "days_to": 17,
+        "days_to": 16,
         "eps_forecast": 1.44,
         "last_surprise_pct": 2.0
       },
       {
         "ticker": "SCHW",
         "next_date": "2026-10-15",
-        "days_to": 17,
+        "days_to": 16,
         "eps_forecast": 1.67,
         "last_surprise_pct": 5.9
       },
       {
         "ticker": "TSM",
         "next_date": "2026-10-15",
-        "days_to": 17,
+        "days_to": 16,
         "eps_forecast": 4.45,
         "last_surprise_pct": 11.4
       },
       {
         "ticker": "USB",
         "next_date": "2026-10-15",
-        "days_to": 17,
+        "days_to": 16,
         "eps_forecast": 1.32,
         "last_surprise_pct": 5.5
       },
       {
         "ticker": "IBN",
         "next_date": "2026-10-16",
-        "days_to": 18,
+        "days_to": 17,
         "eps_forecast": 0.4,
         "last_surprise_pct": 7.5
       },
       {
         "ticker": "SLB",
         "next_date": "2026-10-16",
-        "days_to": 18,
+        "days_to": 17,
         "eps_forecast": 0.62,
         "last_surprise_pct": 7.8
       },
       {
         "ticker": "TFC",
         "next_date": "2026-10-16",
-        "days_to": 18,
+        "days_to": 17,
         "eps_forecast": 1.11,
         "last_surprise_pct": 13.9
       },
       {
         "ticker": "TRV",
         "next_date": "2026-10-16",
-        "days_to": 18,
+        "days_to": 17,
         "eps_forecast": 6.77,
         "last_surprise_pct": 89.1
       },
       {
         "ticker": "CCK",
         "next_date": "2026-10-19",
-        "days_to": 21,
+        "days_to": 20,
         "eps_forecast": 2.25,
         "last_surprise_pct": 15.8
       },
       {
         "ticker": "FITB",
         "next_date": "2026-10-19",
-        "days_to": 21,
+        "days_to": 20,
         "eps_forecast": 1.08,
         "last_surprise_pct": 4.1
       },
       {
         "ticker": "RLI",
         "next_date": "2026-10-19",
-        "days_to": 21,
+        "days_to": 20,
         "eps_forecast": 0.54,
         "last_surprise_pct": 16.9
       },
       {
         "ticker": "WTFC",
         "next_date": "2026-10-19",
-        "days_to": 21,
+        "days_to": 20,
         "eps_forecast": 3.26,
         "last_surprise_pct": 4.8
+      },
+      {
+        "ticker": "CB",
+        "next_date": "2026-10-20",
+        "days_to": 21,
+        "eps_forecast": 6.22,
+        "last_surprise_pct": 9.5
+      },
+      {
+        "ticker": "COF",
+        "next_date": "2026-10-20",
+        "days_to": 21,
+        "eps_forecast": 5.4,
+        "last_surprise_pct": 19.8
+      },
+      {
+        "ticker": "GE",
+        "next_date": "2026-10-20",
+        "days_to": 21,
+        "eps_forecast": 2.01,
+        "last_surprise_pct": 8.6
+      },
+      {
+        "ticker": "GM",
+        "next_date": "2026-10-20",
+        "days_to": 21,
+        "eps_forecast": 3.37,
+        "last_surprise_pct": 14.1
+      },
+      {
+        "ticker": "ISRG",
+        "next_date": "2026-10-20",
+        "days_to": 21,
+        "eps_forecast": 2.13,
+        "last_surprise_pct": 17.3
+      },
+      {
+        "ticker": "KO",
+        "next_date": "2026-10-20",
+        "days_to": 21,
+        "eps_forecast": 0.87,
+        "last_surprise_pct": 5.4
+      },
+      {
+        "ticker": "LMT",
+        "next_date": "2026-10-20",
+        "days_to": 21,
+        "eps_forecast": 7.25,
+        "last_surprise_pct": 10.0
+      },
+      {
+        "ticker": "MMM",
+        "next_date": "2026-10-20",
+        "days_to": 21,
+        "eps_forecast": 2.4,
+        "last_surprise_pct": 5.7
+      },
+      {
+        "ticker": "NFLX",
+        "next_date": "2026-10-20",
+        "days_to": 21,
+        "eps_forecast": 0.82,
+        "last_surprise_pct": 1.3
+      },
+      {
+        "ticker": "NOC",
+        "next_date": "2026-10-20",
+        "days_to": 21,
+        "eps_forecast": 7.26,
+        "last_surprise_pct": 12.3
+      },
+      {
+        "ticker": "PEGA",
+        "next_date": "2026-10-20",
+        "days_to": 21,
+        "eps_forecast": 0.3,
+        "last_surprise_pct": -21.7
+      },
+      {
+        "ticker": "PM",
+        "next_date": "2026-10-20",
+        "days_to": 21,
+        "eps_forecast": 2.33,
+        "last_surprise_pct": 7.8
+      },
+      {
+        "ticker": "PNR",
+        "next_date": "2026-10-20",
+        "days_to": 21,
+        "eps_forecast": 1.08,
+        "last_surprise_pct": 1.8
+      },
+      {
+        "ticker": "RTX",
+        "next_date": "2026-10-20",
+        "days_to": 21,
+        "eps_forecast": 1.75,
+        "last_surprise_pct": 13.9
+      },
+      {
+        "ticker": "TXN",
+        "next_date": "2026-10-20",
+        "days_to": 21,
+        "eps_forecast": 2.39,
+        "last_surprise_pct": 12.0
       }
     ],
     "retail": [
@@ -31021,7 +31119,7 @@
           "fda_label_expansion",
           "special_situation"
         ],
-        "why": "clinical_phase3_start: 40 new Phase-3, 1 halt(s) \u00b7 fda_label_expansion: TRUQAP \u00b7 special_situation: Acquisitions"
+        "why": "clinical_phase3_start: 37 new Phase-3, 1 halt(s) \u00b7 fda_label_expansion: TRUQAP \u00b7 special_situation: Acquisitions"
       },
       {
         "ticker": "HPE",
