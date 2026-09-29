@@ -8765,7 +8765,7 @@ jobs:
       - name: install deps
         run: pip install pytest pandas numpy pyarrow pyyaml
       - name: W2 SURFACE engine unit tests
-        run: python -m pytest tests/test_options_surface.py -v
+        run: python -m pytest tests/test_options_surface.py tests/test_options_universe_expansion.py -v
 
   collect-identity:
     if: ${{ false }}
