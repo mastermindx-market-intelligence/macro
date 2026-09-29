@@ -46,6 +46,8 @@ def exposure(event_data=None, rights="owned", materiality="core"):
     return {
         "issuer_id": "ISS:US-XNAS-TMDX",
         "security_id": "SEC:US-XNAS-TMDX",
+        "relationship_issuer_id": "ISS:US-XNAS-TMDX",
+        "relationship_security_id": "SEC:US-XNAS-TMDX",
         "rights_state": rights,
         "materiality_state": materiality,
         "relationship_id": "REL:TMDX:OCS-HEART:P180051-S001:US",
@@ -129,6 +131,7 @@ def test_future_publication_is_refused_and_decision_facts_are_redacted():
     assert result["event"]["positive_decision"] is None
     assert result["event"]["public_at"] is None
     assert result["event"]["source_id"] is None
+    assert result["exposure"]["relationship"]["bound_case"]["regulatory_source_id"] is None
 
 
 def test_unresolved_rights_withhold_the_security_join():
@@ -313,6 +316,8 @@ def test_future_commercial_and_options_payloads_are_redacted():
         ("indication_id", "OTHER-INDICATION", "RELATIONSHIP_INDICATION_MISMATCH"),
         ("territory", "EU", "RELATIONSHIP_TERRITORY_MISMATCH"),
         ("regulatory_source_id", "FDA:OTHER", "RELATIONSHIP_REGULATORY_SOURCE_MISMATCH"),
+        ("relationship_issuer_id", "ISS:US-XNYS-OTHER", "RELATIONSHIP_ISSUER_MISMATCH"),
+        ("relationship_security_id", "SEC:US-XNYS-OTHER", "RELATIONSHIP_SECURITY_MISMATCH"),
     ],
 )
 def test_relationship_mismatch_cannot_validate_rights_or_materiality(field, replacement, reason):
@@ -324,6 +329,26 @@ def test_relationship_mismatch_cannot_validate_rights_or_materiality(field, repl
     assert result["exposure"]["materiality_state"] == "unknown"
     assert result["exposure"]["relationship"]["state"] == "UNRESOLVED"
     assert reason in result["reasons"]
+
+
+def test_unrelated_top_level_listing_cannot_inherit_bound_device_rights():
+    payload = exposure()
+    payload["issuer_id"] = "ISS:US-XNYS-UNRELATED"
+    payload["security_id"] = "SEC:US-XNYS-UNRELATED"
+    result = qualify(exposure=payload)
+    assert result["disposition"] == "WITHHELD_IDENTITY_RIGHTS"
+    assert result["exposure"]["rights_state"] == "unresolved"
+    assert result["exposure"]["materiality_state"] == "unknown"
+    assert "RELATIONSHIP_ISSUER_MISMATCH" in result["reasons"]
+    assert "RELATIONSHIP_SECURITY_MISMATCH" in result["reasons"]
+
+
+def test_relationship_security_identity_is_required_as_evidence():
+    payload = exposure()
+    del payload["relationship_security_id"]
+    result = qualify(exposure=payload)
+    assert result["disposition"] == "WITHHELD_IDENTITY_RIGHTS"
+    assert "RELATIONSHIP_SECURITY_MISSING" in result["reasons"]
 
 
 def test_claimed_owned_core_without_relationship_provenance_fails_closed():

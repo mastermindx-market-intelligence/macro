@@ -55,13 +55,13 @@ A marketing decision can precede manufacturing scale, launch readiness, reimburs
 
 Decision date, database refresh, advisory-panel scheduling, rights evidence, materiality evidence, commercial evidence and market observation are distinct clocks. Historical analysis uses only facts with a timezone-qualified public or observation timestamp no later than the case cutoff. Later regulatory, rights, materiality, commercial or options facts cannot be backfilled into an earlier case.
 
-**Ruling:** the event, rights relationship, materiality evidence and commercial evidence each require their own qualified clock; a supplied options layer requires a qualified observation clock. Missing or timezone-naive clocks are refused. Any layer later than the analysis cutoff makes the case `WITHHELD_TEMPORAL`. A future event also redacts decision state, marketing status, positive-decision flag, event timestamp and event source rather than returning the withheld outcome in another field.
+**Ruling:** the event, rights relationship, materiality evidence and commercial evidence each require their own qualified clock; a supplied options layer requires a qualified observation clock. Missing or timezone-naive clocks are refused. Any layer later than the analysis cutoff makes the case `WITHHELD_TEMPORAL`. A future event also redacts decision state, marketing status, positive-decision flag, event timestamp and event source—including any nested relationship projection of that source—rather than returning the withheld outcome through another field.
 
 ### 2.5 Listed-security exposure must be case-bound and evidence-backed
 
-A nonempty ticker, issuer id or `owned`/`licensed` enum does not prove that the listed security retains economics from a specific device decision. The relationship must bind the exact device, applicant, submission, indication, territory and regulatory source to a security, and it must carry a stable relationship id plus source provenance. Licensed rights also require a specific license-term identity. Materiality requires its own source, clock and basis rather than inheriting from the rights assertion.
+A nonempty ticker, issuer id or `owned`/`licensed` enum does not prove that the listed security retains economics from a specific device decision. The relationship must bind evidence-side issuer and security identifiers to the top-level listing and bind the exact device, applicant, submission, indication, territory and regulatory source to that listing. It must carry a stable relationship id plus source provenance. Licensed rights also require a specific license-term identity. Materiality requires its own source, clock and basis rather than inheriting from the rights assertion.
 
-**Ruling:** any missing or mismatched relationship field makes rights `unresolved` and materiality `unknown`; the case becomes `WITHHELD_IDENTITY_RIGHTS`. Missing or inconsistent materiality provenance makes materiality `unknown` and the case `REVIEW_MATERIALITY`. Claimed rights and materiality are never accepted from enums alone.
+**Ruling:** any missing or mismatched relationship field—including issuer or security identity—makes rights `unresolved` and materiality `unknown`; the case becomes `WITHHELD_IDENTITY_RIGHTS`. Missing or inconsistent materiality provenance makes materiality `unknown` and the case `REVIEW_MATERIALITY`. Claimed rights and materiality are never accepted from enums or an unbound listing id alone.
 
 ### 2.6 Options and positioning are expectations evidence, not native regulatory evidence
 
@@ -107,20 +107,22 @@ The pure reference:
 
 Verification in a clean scratch root:
 
-- `python3 -m pytest -q test_medtech_catalyst_reference_r1.py` → **32 passed**;
-- discriminating cases cover six harmful families:
+- `python3 -m pytest -q test_medtech_catalyst_reference_r1.py` → **36 passed**;
+- discriminating cases cover eight harmful families:
   1. accepting `approved` as a 510(k) state;
   2. returning future decision fields despite a withheld disposition;
-  3. admitting future rights, materiality, commercial or options evidence;
-  4. accepting claimed rights/materiality without exact case relationship and provenance;
-  5. allowing options context to change native event probability;
-  6. treating every authorization as commercially ready.
+  3. leaking a future event source through a nested relationship projection;
+  4. admitting future rights, materiality, commercial or options evidence;
+  5. accepting claimed rights/materiality without exact regulatory-case relationship and provenance;
+  6. letting an unrelated issuer or security inherit another listing's device rights;
+  7. allowing options context to change native event probability;
+  8. treating every authorization as commercially ready.
 
 These tests establish contract behavior only. They are not independent review, source coverage, historical calibration or investment performance.
 
 ## 5. R1 architecture decisions
 
-1. **Case identity:** device + exact regulatory submission/decision + indication/version + applicant + territory + retained-rights relationship + listed security. The relationship has its own id, source, clock and, for licensed rights, license-term identity. Applicant or ticker text alone is not security identity.
+1. **Case identity:** device + exact regulatory submission/decision + indication/version + applicant + territory + retained-rights relationship + listed issuer/security. The relationship has its own evidence-side issuer/security identifiers, id, source, clock and, for licensed rights, license-term identity. Applicant or ticker text alone is not security identity.
 2. **Knowledge clocks:** event, rights, materiality, commercial and supplied options evidence are separately timestamped and cutoff-checked. Future evidence is redacted, not merely labeled withheld.
 3. **Native targets:** regulatory outcome, time-to-decision, launch readiness, commercial adoption and persistent rerating remain separate.
 4. **Commercial bridge:** procedure/patient volume × realized price × recurring consumables/service, less launch/manufacturing/service costs, reimbursement friction and dilution. Installed base is not revenue without utilization.
@@ -135,7 +137,7 @@ R2 should build the first reconstructable cohort and denominator:
 
 1. choose one material family—recommended: PMA originals plus panel-track supplements for listed issuers;
 2. freeze separate event, rights, materiality, commercial and market-observation clocks and define how withdrawals, denials, pending cases and missing public submissions are represented;
-3. bind exact device/applicant/submission/indication/territory/rights/security identities with source provenance and license-term identity where applicable;
+3. bind exact device/applicant/submission/indication/territory/rights/issuer/security identities, including evidence-side listing identifiers, source provenance and license-term identity where applicable;
 4. construct positive, adverse, delayed, commercially weak and immaterial diversified-company cases;
 5. measure anticipation, announcement reaction and durable 3/6/12-month excess returns separately;
 6. build a deterministic revenue/materiality bridge and an explicit abstention policy;

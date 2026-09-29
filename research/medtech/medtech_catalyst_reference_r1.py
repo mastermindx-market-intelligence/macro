@@ -122,6 +122,8 @@ def _relationship_reasons(event: Mapping[str, Any], exposure: Mapping[str, Any])
     required = {
         "relationship_id": "RELATIONSHIP_ID_MISSING",
         "rights_source_id": "RIGHTS_SOURCE_MISSING",
+        "relationship_issuer_id": "RELATIONSHIP_ISSUER_MISSING",
+        "relationship_security_id": "RELATIONSHIP_SECURITY_MISSING",
         "device_id": "RELATIONSHIP_DEVICE_MISSING",
         "applicant": "RELATIONSHIP_APPLICANT_MISSING",
         "submission_id": "RELATIONSHIP_SUBMISSION_MISSING",
@@ -132,6 +134,15 @@ def _relationship_reasons(event: Mapping[str, Any], exposure: Mapping[str, Any])
     }
     for field, reason in required.items():
         if exposure.get(field) in (None, ""):
+            reasons.append(reason)
+
+    security_comparisons = (
+        ("relationship_issuer_id", "issuer_id", "RELATIONSHIP_ISSUER_MISMATCH"),
+        ("relationship_security_id", "security_id", "RELATIONSHIP_SECURITY_MISMATCH"),
+    )
+    for relationship_field, exposure_field, reason in security_comparisons:
+        value = exposure.get(relationship_field)
+        if value not in (None, "") and value != exposure.get(exposure_field):
             reasons.append(reason)
 
     comparisons = (
@@ -390,11 +401,13 @@ def qualify_case(
             "license_term_id": exposure.get("license_term_id"),
             "territory": exposure["territory"],
             "bound_case": {
+                "issuer_id": exposure["relationship_issuer_id"],
+                "security_id": exposure["relationship_security_id"],
                 "device_id": exposure["device_id"],
                 "applicant": exposure["applicant"],
                 "submission_id": exposure["submission_id"],
                 "indication_id": exposure["indication_id"],
-                "regulatory_source_id": exposure["regulatory_source_id"],
+                "regulatory_source_id": None if event_future else exposure["regulatory_source_id"],
             },
         }
     else:
