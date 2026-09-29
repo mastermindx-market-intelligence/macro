@@ -97,6 +97,43 @@ commit that arrived afterwards.
 Only the **branch ref** disagreed — it is the one surviving record of what the PR was carrying
 — and only because it was checked.
 
+## The discriminator's own failure mode: a STALE baseline, measured 2026-09-29
+
+This record prescribed the branch-ref check and omitted one word, and the omission fails toward a
+**destructive** remedy. `origin/main` is a **local ref**. The armed watcher for #8169 ran the
+per-path comparison without re-fetching, so it compared the branch against a pre-merge `origin/main`,
+found both paths absent, and exited `MERGED BUT NOT LANDED — replay the missing paths onto fresh
+main`. Both files were byte-identical in `origin/main` the entire time (`14a58cd095ad`,
+`3556e9757b09`, equal at my commit, at the squash `c4c1b09cbe4d`, and at `origin/main`). A session
+obeying that instruction would have re-pushed content that had already landed.
+
+So the check is: **`git fetch origin` FIRST**, then `git log origin/main..origin/<branch>`, then the
+per-path blob comparison. On a MISSING verdict, re-fetch and re-run before believing it, and
+cross-check against main's own bytes for a string only your commit introduced
+(`git grep <needle> origin/main -- <path>`; **the `-- <path>` is not optional here** — this clone is blobless, so an UNSCOPED `git grep <ref>` must fetch every blob in that tree over the network to search it, measured as an open-ended hang, while the scoped form returns in seconds) — a positive hit there refutes a false alarm immediately.
+
+**The general shape is worth more than the fix.** A verifier built to catch a silent loss will, if its
+baseline can go stale, convert every ordinary merge into a false loss report — and the two verdicts
+are indistinguishable from inside the verifier. Both of this program's verifier failures now share one
+root: the comparison was right and the thing compared against was wrong (the first compared the merged
+head with itself via `--json files`; this one compared against a stale ref). **Pin what a verifier
+compares against, and make it prove that baseline is current before it reports.**
+
+**The mechanism is worse than a forgotten fetch, and the sufficient fix is narrower than "fetch
+first".** The watcher DID fetch — `git fetch origin main <branch>` — and that command **fatals**,
+because GitHub **deletes the head branch on merge**: `fatal: couldn't find remote ref
+claude/documents-pool-sweeper-blind-20260928`, confirmed by an empty `git ls-remote --heads origin
+<branch>`. A fetch that aborts updates nothing, so `origin/main` stayed pre-merge; meanwhile the
+stale local `origin/<branch>` still resolved, so every blob lookup succeeded and the comparison
+looked healthy while running entirely on pre-merge data. **The merge's own success — deleting the
+branch — is what broke the check that verifies the merge.** The helper swallowed the non-zero exit
+(it returns `""` on any failure), so nothing surfaced.
+
+Three requirements, not one: fetch `main` **alone** (bare `git fetch origin`, never bundled with the
+branch ref); **check the fetch's exit status** instead of swallowing it; and treat the branch's
+absence from the remote as the **expected** post-merge state — only `origin/main` has to be current,
+since the branch side is read from the local ref you already have.
+
 ## Why the replay was cheap
 
 The late commit existed to fix an earlier sequencing error: the workstream record's `DSC:` citations

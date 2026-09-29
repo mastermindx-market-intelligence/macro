@@ -176,12 +176,98 @@ danger_areas:
      `git show --stat <squash>`, never `headRefOid`."
   - "`du` over-counts APFS clones and hard links: the sum over `/` was 1917.93 GiB against `df`'s
      1501 used. Treat any `du` total as an upper bound and a ranking, never an attribution."
+verified_wave_6:
+  - claim: "Granting Full Disk Access would free 1.81 GiB of the 201.13 GiB pool, not 201."
+    how: >
+      `worktree_gc.py --report` over the pool as a principal that can read `~/Documents`, then
+      aggregated on the report's REAL size key `size_kb` (my first pass guessed `size_gib`/`gib` and
+      printed every size as 0.00). 207 registrations = 203 directories + 4 already-gone checkouts.
+      `DIRTY 68/95.43G · LOCKED 43/40.49G · UNPUSHED 57/27.01G · RECENT 11/13.12G · OPEN_PR 15/8.48G
+      · ORPHAN 5/7.72G · LIVE_PROC 1/7.05G · SAFE_MERGED 3/1.81G · MISSING 4/0G`. This fired the
+      third clause of `DSC:THE-SWEEPER-IS-TCC-BLIND-TO-THE-LARGEST-INTERNAL-WORKTREE-POOL`'s own
+      pre-registered falsifier.
+  - claim: "`DIRTY` here is genuine tracked work, not untracked junk — but the 8 landed ones are still not collectable."
+    how: >
+      `git status --porcelain` in all 68 DIRTY trees: 54 trees / 76.95 GiB carry tracked
+      modifications (81% of the DIRTY bytes), 14 / 18.48 GiB are untracked-only, of which 8 /
+      8.41 GiB are also landed. Those 8 remain uncollectable because untracked files have no commit,
+      no ref and no remote, so neither `refs/salvage/*` nor `origin/main` can reconstitute them; the
+      largest is 2.90 GiB of `mockups/evidence/…`, the class the 09-26 sweep destroyed. My probe's
+      own verdict line claimed this refuted the program — it had tested LANDEDNESS and inferred
+      RECLAIMABILITY, which is the inference that caused that incident.
+  - claim: "All 43 LOCKED trees in this pool carry real seat text, so the :501 lock fix is worth far less here."
+    how: >
+      Lock reasons read from the report: zero matches for the SSD helper's content-free
+      `mastermind-external-storage` / `initializing` stamps, against 282 of 285 on the SSD pool.
+      Ceiling if `worktree_gc.py:501` is fixed: 17.01 GiB across 15 non-human locked trees, and only
+      the subset that then proves landed-and-unoccupied would qualify.
+  - claim: "The pool is large by COUNT, not fatness, so a population cap is its matching lever."
+    how: >
+      Size buckets over the 207: 181 trees under 1 GiB (already sparse) totalling 88.99 GiB, 6 at
+      1–3 GiB / 13.73 GiB, and 16 FULL trees at ≥3 GiB holding 98.41 GiB (49%). Retrofit-to-sparse
+      cannot reach the 181 that are already thin.
+  - claim: "The floor guard monitors two volumes by construction and the fullest is neither."
+    how: >
+      `grep -c Worktrees` over the guard's whole log = 0; `main()` calls
+      `free_gib(\"/System/Volumes/Data\")` on a literal then reads `pol[\"mount_point\"]`, with no
+      iteration over mounts; `storage-floor.json` can express only `internal_floor_gib`. `df -k`:
+      `/Volumes/Worktrees` 87% used / 130.3 GiB free, versus internal 83% and Mastermind 80%.
+      Recorded as a third reach failure ON the existing
+      `DSC:A-SECOND-EXTERNAL-VOLUME-HOSTS-FLEET-WORKTREES-UNGOVERNED` rather than as a new record —
+      that DSC already carried the volume's census and the same 46.43 GiB HUMAN-class figure, so a
+      new one would have duplicated it.
+  - claim: "#8166, #8169 and #8170 are merged AND byte-identical in main; the exit-8 alarm on #8169 was false."
+    how: >
+      Branch-ref discriminator per PR. #8166: 3/3 paths identical, squash `37a8d10e6762`. #8170: 2/2,
+      squash `8ca1ecf7c61e`. #8169: squash `c4c1b09cbe4d`, and its armed watcher exited 8
+      (`MERGED BUT NOT LANDED`) — **a stale-baseline false alarm**, because it never re-fetched. After
+      `git fetch`, both blobs are equal at my commit, at the squash and at `origin/main`
+      (`14a58cd095ad`, `3556e9757b09`), and main's bytes contain strings only my later commits
+      introduced. Fixed in both law files as a fetch-first requirement.
+verified_wave_7:
+  - claim: >
+      The #8169 false alarm was NOT a missing fetch. The head branch is deleted on merge, so the
+      combined `fetch origin main <branch>` fatals and refreshes NOTHING — including main.
+    how: >
+      `git ls-remote --heads origin claude/documents-pool-sweeper-blind-20260928` -> empty (deleted
+      on merge). `git fetch origin main claude/documents-pool-sweeper-blind-20260928` -> `rc=128`,
+      `fatal: couldn't find remote ref …`. The watcher's helper returns `""` on any failure, so the
+      aborted fetch was invisible and the comparison ran on a pre-merge baseline. **The merge's own
+      success is what broke the check that verifies the merge**, and the false verdict's prescribed
+      remedy was to replay content that had already landed. Fixed in both law files and the landmine
+      DSC as three requirements, not one: fetch `main` alone, check the fetch's exit status, and
+      treat the branch's absence from the remote as the EXPECTED post-merge state.
+  - claim: "The fix was re-run against the exact input that broke the old version."
+    how: >
+      Gen 2 on the #8169 branch: fetch `rc=128`, baseline stale, 2 paths reported MISSING, exit 8.
+      Gen 3 on the same input: fetch `rc=0`, both blobs equal (`14a58cd095ad`, `3556e9757b09`),
+      exit 0. A fix not re-run against its own failing case is a hypothesis.
+  - claim: "#8171 is merged and all 6 paths are byte-identical in main."
+    how: >
+      Sweeper merged head `8d330725a5611f1343b9a66c33996fa91c05a021`; gen-3 verification returned
+      `0 of 6 path(s) not byte-identical`, plus a path-scoped grep finding a string only this
+      commit introduced in main's own `CLAUDE.md`.
+  - claim: "The sweeper examines 224 of 789 registered worktrees — 28.4% — and never said so."
+    how: >
+      `python3 scripts/worktree_gc.py --no-sizes --no-gh --no-fetch` (report-only) against the real
+      fleet, with the W9 patch: `reach: checked 224 of 789 registered worktrees · 565 outside
+      configured roots and never examined · plus 9 unregistered found by scan`. Before W9 no
+      human-readable output contained any number from which that could be derived — `in_scope` and
+      `registered_total` went only into the JSON payload. **No verdict it printed was ever wrong;
+      the report was simply unfalsifiable as a statement about the fleet.** Also: refusals were
+      handled by exactly `if apply_summary["errors"]: return 1` — counted into an exit code and
+      never printed, so `deleted=0 errors=688` with no messages was indistinguishable from a
+      healthy run with nothing to do. 21 tests pass (16 existing + 5 new).
 prs:
   - 8156
   - 8158
   - 8162
   - 8163
   - 8166
+  - 8169
+  - 8170
+  - 8171
+  - 8172
 decisions:
   - DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM
 discoveries:
@@ -209,3 +295,20 @@ anywhere), `is_git` (a `.git` child, not "is this a git store"), landedness (anc
 merged PR), the pool census (`is_dir()`, which hid a 195 GiB FILE that was 84% of its pool), the
 absence search (two locations reported as "nowhere on this machine"), and scratchpad liveness (the
 keyed path, which is inverted). None of them errored. That is the failure mode to expect.
+
+**Wave 6 added two more, and both are about the ASKER rather than the question.** The eighth: the
+fleet GC's `roots` were right and its config was `armed`, but the launchd principal running it cannot
+READ `~/Documents` (TCC), so every hand census saw the 201 GiB pool and every automated sweep did not
+— 16 remediator faults and 73 escalations, unread. The ninth: `storage_floor_guard.py` asks each
+volume it knows whether it is above its floor, correctly, but it has exactly two hardcoded subject
+slots and the fleet has three volumes — the fullest being the one absent. Both print a clean number.
+**Neither states its reach, and that is now the single most repeated defect in this program: an
+instrument that reports per-subject health while never reporting its subject COUNT is
+indistinguishable from one with full coverage.** Print `checked N of M` beside every verdict.
+
+**Wave 6 also failed in the other direction, which is worth as much.** The landed-bytes verifier this
+program wrote to catch a silent loss raised a *false* loss on #8169, because it compared against a
+local `origin/main` it had not refreshed — and its prescribed remedy was "replay the missing paths",
+i.e. duplicate work that had already landed. Both of this program's verifier defects share one root:
+the comparison was correct and the thing compared against was wrong. **Pin what a verifier compares
+against, and make it prove that baseline is current before it reports.**

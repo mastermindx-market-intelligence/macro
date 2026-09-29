@@ -125,14 +125,48 @@ waves:
       - W3
   - id: W5
     title: This workstream record and its handoff, replayed after a sweeper race
-    status: awaiting_ci
+    status: done
     pr: 8166
     depends_on:
       - W4
+  - id: W6
+    title: >
+      The eleventh pool (TCC-blind sweeper), and the measurement that corrected its own payoff
+      claim from 201 GiB to 1.81
+    status: done
+    pr: 8169
+    depends_on:
+      - W4
+  - id: W7
+    title: >
+      Arm-LAST fleet law, then the fetch-first fix its own verifier proved it needed
+    status: done
+    pr: 8170
+    depends_on:
+      - W5
+  - id: W8
+    title: >
+      The verifier's real failure mechanism — the merge's own success (deleting the head branch)
+      is what breaks the check that verifies the merge
+    status: done
+    pr: 8171
+    depends_on:
+      - W7
+  - id: W9
+    title: >
+      The sweeper states its REACH and prints its refusals — measured 224 of 789, 28.4%
+    status: awaiting_ci
+    pr: 8172
+    depends_on:
+      - W4
 next_action: >
-  Put the four `needs_ceo` options to the operator and ratify the `human_driven_roots` deny-list
-  first — it is purely protective, can delete nothing, and every other gate is unsafe until it
-  exists.
+  Put the `needs_ceo` options to the operator, re-ranked by W6's measurement: the CI runner git
+  stores (177.26 GiB, 87% `.git`) are now clearly the largest real lever, and the Full Disk Access
+  grant is worth asking for on the broken safety net rather than on bytes — it frees 1.81 GiB.
+  Ratify the `human_driven_roots` deny-list first regardless; it is purely protective and can delete
+  nothing. W9 makes the scope gap legible (the report now prints `checked 224 of 789`) but closes
+  none of it — that is still the three unratified acts, and legibility is a precondition for
+  ratifying them, never a substitute.
 artifacts:
   - research/WORKTREE_GC_POLICY.md
   - scripts/worktree_gc.py
@@ -149,7 +183,13 @@ same pools keep being re-measured and why `do_not_redo` above is the most valuab
 
 ## The standing lesson of ten pools
 
-**The bytes were never where the program was looking.** The ENOSPC remediation aimed at agent
+**The bytes were never where the program was looking, and the pools are not full of garbage.**
+Wave 6 measured the largest of them: of 201.13 GiB across 207 registrations, **3 trees / 1.81 GiB
+classify reclaimable** — 0.9%. 61% is content not reproducible from `origin/main` and 50% is
+HUMAN-class. So a reach repair is worth making for the sake of a working safety net, not for a
+payoff; say which of the two you are claiming.
+
+ The ENOSPC remediation aimed at agent
 working trees; the operator-data volumes turned out to be operator data (93.5% and 84%), the
 scratchpad pool turned out to be 64.8% live, and the one pool with a real lever — 177.26 GiB of CI
 runner git stores — is the one nobody calls a worktree. Attribute the target volume, state the
