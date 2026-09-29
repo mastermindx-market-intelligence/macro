@@ -1,3 +1,30 @@
+# Current native Paper milestone — 2026-09-29
+
+MISSION_COMPLETE:false; ACTIVE_PHASE:native Paper design implementation; continuing in-turn.
+Procedural source: Mastermind 860f5d65db6e5c0c8098c766bda39aacad232960; INDEX and required skills loaded from that pin, compatible 1.0.1/bootstrap1.
+
+The previous human file-selection gate below is SUPERSEDED. The connected Mastermind Paper MCP now provides explicit target binding: paper_prepare returned PAPER_READY, target_addressable:true, target_active:false, open_attempted:false. No physical app interaction or raw open workaround was needed.
+
+File: 01M38EVF74SJWG1GANN5VP380Z — Mastermind · Market Dashboard Popups · Redesign.
+New page: p-4-0 — Events & News · R2 · Briefing to Evidence · 2026-09-29.
+URL: https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-4-0
+
+Native created and screenshot-reviewed:
+- 1X5-0: 10 · Briefing · Desktop · Dark EN; native text-binding and release-rail spacing repaired.
+- 20B-0: 11 · Briefing · Desktop · Light EN; separately styled white/cool-gray surface, deep amber ink, shadow rather than glow.
+- 231-0: 20 · Regime Change · Evidence · Dark EN; known state vs missing driver evidence, original-alert entry, review rather than trade instruction.
+
+All modifying effects returned APPLIED_RESPONSE_OBSERVED; no EFFECT_UNKNOWN. Only new p-4-0 artboards touched. Added missing canonical theme tokens without altering existing values. The original China page remains outside this assignment.
+
+Native group cloning works. Each text node needs an explicit color binding: inherited color produced black text on a dark surface; repaired and screenshot verified before reuse. Native schematic/action states are not proof of working click navigation. The observed catalog has no prototype-action setter. Do not claim native interaction wiring or working production features.
+
+Exact next action: native release guide, then reaction/impact, story/source/correction, Following and mobile EN/ZH counterparts; add source/interaction map beside designs. Continue using Mastermind_Paper, same file/page, fresh target snapshot as necessary. Finish only the owned artboard working indicators at final boundary.
+
+Production dashboard.html.j2 integration remains separately held after the prior platform refusal. Do not retry or bypass it. Local prototype tests below remain local-only, not native/browser production proof. PR8186 stays DRAFT/HOLD.
+
+---
+## Earlier preparation checkpoint — native gate superseded above
+
 # Events & News R2 — native Paper gate and prepared design
 
 MISSION_COMPLETE: false
