@@ -418,7 +418,7 @@ def _corrected_html(**overrides: object) -> str:
     book_clock = soup.select_one("#us-plan-book-asof")
     if book_clock is not None:
         book_clock["data-plan-book-source-asof"] = "2026-09-26"
-        book_clock["data-plan-book-published"] = ""
+        book_clock["data-plan-book-published"] = "2026-09-26"
     displayed = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
     template = soup.new_tag("template", attrs={"class": "pvs-body-source"})
     template.append(BeautifulSoup(str(displayed), _pjr.HTML_PARSER).select_one(
@@ -701,6 +701,7 @@ def test_j9_clocks_still_reconcile_source_dates():
     today = date.today().isoformat()
     soup = BeautifulSoup(_corrected_html(
         plv_state="today", plv_text="quotes as of 4:00 pm ET"), _pjr.HTML_PARSER)
+    soup.select_one("#us-plan-book-asof")["data-plan-book-published"] = "2026-09-27"
     ix = _index_payload(as_of="2026-09-27", source_board_asof="2026-09-26",
                         source_asof="2026-09-26")
     su = _standouts_payload(as_of="2026-09-26")
@@ -1016,6 +1017,7 @@ def test_j9_fail_plan_book_non_iso_day():
     chk = _pjr._check_j9(BeautifulSoup(html, _pjr.HTML_PARSER), _index_payload(),
                          _standouts_payload(), _runtime_payload(), ticker="TEST1")
     assert chk["status"] == "FAIL", chk
+    assert "plan book attribute is not YYYY-MM-DD" in chk["observed"], chk
 
 
 def test_j9_fail_assessment_clock_differs_from_signal_asof():
@@ -1098,6 +1100,46 @@ def test_j9_pass_all_three_plan_book_clock_attributes():
     assert chk["status"] == "PASS", chk
 
 
+def test_j9_fail_missing_or_empty_source_board_attribute_for_valid_day():
+    index = _index_payload(as_of="2026-09-27", source_board_asof="2026-09-26",
+                           source_asof="2026-09-26")
+    for mutation in ("missing", "empty"):
+        soup = BeautifulSoup(_corrected_html(
+            plan_book_asof="2026-09-26", plv_state="prior_day",
+            plv_text="last read Sep 26, 4:00 pm ET"), _pjr.HTML_PARSER)
+        clock = soup.select_one("#us-plan-book-asof")
+        if mutation == "missing":
+            del clock["data-plan-book-source-asof"]
+        else:
+            clock["data-plan-book-source-asof"] = ""
+        chk = _pjr._check_j9(
+            soup, index, _standouts_payload(as_of="2026-09-26"),
+            _runtime_payload(quote_asof="2026-09-26T20:00:00Z"), ticker="TEST1")
+        assert chk["status"] == "FAIL", (mutation, chk)
+        assert ("plan book source-board attribute missing for valid "
+                "index.source_board_asof" in chk["observed"]), (mutation, chk)
+
+
+def test_j9_fail_missing_or_empty_published_attribute_for_valid_day():
+    index = _index_payload(as_of="2026-09-27", source_board_asof="2026-09-26",
+                           source_asof="2026-09-26")
+    for mutation in ("missing", "empty"):
+        soup = BeautifulSoup(_corrected_html(
+            plan_book_asof="2026-09-26", plv_state="prior_day",
+            plv_text="last read Sep 26, 4:00 pm ET"), _pjr.HTML_PARSER)
+        clock = soup.select_one("#us-plan-book-asof")
+        if mutation == "missing":
+            del clock["data-plan-book-published"]
+        else:
+            clock["data-plan-book-published"] = ""
+        chk = _pjr._check_j9(
+            soup, index, _standouts_payload(as_of="2026-09-26"),
+            _runtime_payload(quote_asof="2026-09-26T20:00:00Z"), ticker="TEST1")
+        assert chk["status"] == "FAIL", (mutation, chk)
+        assert ("plan book published attribute missing for valid index.asof"
+                in chk["observed"]), (mutation, chk)
+
+
 def test_j9_pass_absent_source_asof_with_unavailable_text_and_empty_attributes():
     index = _index_payload(as_of="2026-09-27", source_board_asof="2026-09-26",
                            source_asof="")
@@ -1113,6 +1155,25 @@ def test_j9_pass_absent_source_asof_with_unavailable_text_and_empty_attributes()
                          _runtime_payload(quote_asof="2026-09-26T20:00:00Z"),
                          ticker="TEST1")
     assert chk["status"] == "PASS", chk
+
+
+def test_j9_fail_unavailable_plan_book_with_nonempty_auxiliary_clocks():
+    index = _index_payload(as_of="2026-09-27", source_board_asof="2026-09-26",
+                           source_asof="")
+    for attribute in ("data-plan-book-source-asof", "data-plan-book-published"):
+        soup = BeautifulSoup(_corrected_html(
+            plan_book_asof="", plv_state="prior_day",
+            plv_text="last read Sep 26, 4:00 pm ET"), _pjr.HTML_PARSER)
+        clock = soup.select_one("#us-plan-book-asof")
+        clock[attribute] = "2026-09-26"
+        clock.select_one(".l-en").string = "Plan record date unavailable"
+        clock.select_one(".l-zh").string = "计划记录日期不可用"
+        chk = _pjr._check_j9(
+            soup, index, _standouts_payload(as_of="2026-09-26"),
+            _runtime_payload(quote_asof="2026-09-26T20:00:00Z"), ticker="TEST1")
+        assert chk["status"] == "FAIL", (attribute, chk)
+        assert ("plan book unavailable state has non-empty clock attributes"
+                in chk["observed"]), (attribute, chk)
 
 
 def test_j9_fail_absent_source_asof_with_dated_attribute():

@@ -156,6 +156,7 @@ PLAN_ENUM_FIELDS = (
     "admission_class",
 )
 STANDOUTS_ENUM_FIELDS = ("lane", "state", "entry_signal")
+_ISO_DAY = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")
 
 try:
     from engine.prophet_bridge import REFUSAL_ORDER
@@ -1083,7 +1084,7 @@ def _check_j8(soup: BeautifulSoup, index: dict[str, Any],
 
 
 def _iso_date(value: Any) -> datetime | None:
-    if not isinstance(value, str):
+    if not isinstance(value, str) or not _ISO_DAY.fullmatch(value):
         return None
     try:
         return datetime.strptime(value, "%Y-%m-%d")
@@ -1168,22 +1169,37 @@ def _check_j9(soup: BeautifulSoup, index: dict[str, Any],
                 fails.append("plan book empty attribute with non-unavailable text")
 
         rendered_source_board = str(book.get("data-plan-book-source-asof", ""))
-        source_board = index.get("source_board_asof")
-        if rendered_source_board:
-            if _iso_date(source_board) is None:
+        rendered_published = str(book.get("data-plan-book-published", ""))
+        if source_asof_date is None:
+            if rendered_source_board or rendered_published:
+                fails.append("plan book unavailable state has non-empty "
+                             "clock attributes")
+        else:
+            source_board = index.get("source_board_asof")
+            if _iso_date(source_board) is not None:
+                if not rendered_source_board:
+                    fails.append("plan book source-board attribute missing for "
+                                 "valid index.source_board_asof")
+                elif (_iso_date(rendered_source_board) is None
+                      or rendered_source_board != str(source_board)):
+                    fails.append("plan book source-board attribute differs from "
+                                 "index.source_board_asof")
+            elif rendered_source_board:
                 fails.append("plan book source-board attribute dated without "
                              "valid index.source_board_asof")
-            elif rendered_source_board != str(source_board):
-                fails.append("plan book source-board attribute differs from "
-                             "index.source_board_asof")
 
-        rendered_published = str(book.get("data-plan-book-published", ""))
-        publication = index.get("asof") or index.get("as_of")
-        if rendered_published:
-            if _iso_date(rendered_published) is None:
-                fails.append("plan book published attribute is not YYYY-MM-DD")
-            elif rendered_published != str(publication):
-                fails.append("plan book published attribute differs from index.asof")
+            publication = index.get("asof") or index.get("as_of")
+            if _iso_date(publication) is not None:
+                if not rendered_published:
+                    fails.append("plan book published attribute missing for "
+                                 "valid index.asof")
+                elif (_iso_date(rendered_published) is None
+                      or rendered_published != str(publication)):
+                    fails.append("plan book published attribute differs from "
+                                 "index.asof")
+            elif rendered_published:
+                fails.append("plan book published attribute dated without valid "
+                             "index.asof")
     idx_asof = index.get("asof") or index.get("as_of")
     idx_source = index.get("source_board_asof")
     su_asof = (standouts or {}).get("as_of")
