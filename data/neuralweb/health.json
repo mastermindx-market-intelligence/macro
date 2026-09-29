@@ -1,6 +1,6 @@
 {
   "schema": "neuralweb.health.v1",
-  "produced_at": "2026-09-29T06:24:40.281749+00:00",
+  "produced_at": "2026-09-29T06:35:38.335124+00:00",
   "as_of": "2026-09-25",
   "overall_status": "degraded",
   "lobes": [
@@ -3820,21 +3820,21 @@
     }
   ],
   "cortex": {
-    "cortex_source": "previous_run",
-    "memo_as_of": "2026-09-27T22:26:40+00:00",
+    "cortex_source": "current_run",
+    "memo_as_of": "2026-09-29T06:31:10+00:00",
     "run_status": {
-      "status": "ok",
-      "degraded": false,
-      "degradation_reason": null,
-      "model_used": "claude-opus-4-8",
+      "status": "degraded",
+      "degraded": true,
+      "degradation_reason": "model_unavailable",
+      "model_used": "claude-sonnet-4-6",
       "provider_attempts": [
         {
           "provider": "oauth",
           "model": "claude-opus-4-8",
           "attempted": true,
           "ok": false,
-          "error_type": "rate_limit",
-          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfUjLwu95byNqY51g4hbx'}"
+          "error_type": "auth",
+          "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': None}"
         },
         {
           "provider": "oauth",
@@ -3842,7 +3842,7 @@
           "attempted": true,
           "ok": false,
           "error_type": "rate_limit",
-          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfUjNEQMEcUodzdmJDQLm'}"
+          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfXG6kXFnrvk9N4ygSkbY'}"
         },
         {
           "provider": "oauth",
@@ -3850,7 +3850,7 @@
           "attempted": true,
           "ok": false,
           "error_type": "rate_limit",
-          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfUjTMF1CQAPZsP3Ssfwn'}"
+          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfXG827ed4hsgLjj4qUPv'}"
         },
         {
           "provider": "oauth",
@@ -3858,61 +3858,37 @@
           "attempted": true,
           "ok": false,
           "error_type": "rate_limit",
-          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfUjgzE6aXbqnvGV87f6g'}"
+          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfXGCcCs9sgqXYD2oNJ9m'}"
         },
         {
-          "provider": "codex",
-          "model": "gpt-5.6-sol",
+          "provider": "oauth",
+          "model": "claude-opus-4-8",
           "attempted": true,
-          "ok": true,
-          "error_type": null,
-          "error_message": null
+          "ok": false,
+          "error_type": "rate_limit",
+          "error_message": "Error code: 429 - {'type': 'error', 'error': {'type': 'rate_limit_error', 'message': 'Error'}, 'request_id': 'req_011CfXGS4yYhr2zvSdgzRaEk'}"
         },
         {
-          "provider": "codex",
-          "model": "gpt-5.6-sol",
+          "provider": "oauth",
+          "model": "claude-sonnet-4-6",
           "attempted": true,
-          "ok": true,
-          "error_type": null,
-          "error_message": null
-        },
-        {
-          "provider": "codex",
-          "model": "gpt-5.6-sol",
-          "attempted": true,
-          "ok": true,
-          "error_type": null,
-          "error_message": null
-        },
-        {
-          "provider": "codex",
-          "model": "gpt-5.6-sol",
-          "attempted": true,
-          "ok": true,
-          "error_type": null,
-          "error_message": null
-        },
-        {
-          "provider": "codex",
-          "model": "gpt-5.6-sol",
-          "attempted": true,
-          "ok": true,
-          "error_type": null,
-          "error_message": null
+          "ok": false,
+          "error_type": "auth",
+          "error_message": "Error code: 401 - {'type': 'error', 'error': {'type': 'authentication_error', 'message': 'OAuth access token has been revoked.'}, 'request_id': None}"
         }
       ],
-      "tool_call_batches": 4,
-      "individual_tool_calls": 11,
+      "tool_call_batches": 0,
+      "individual_tool_calls": 0,
       "expected_min_tool_calls": 1,
       "context_stale": false,
-      "context_as_of": "2026-09-27T08:49:20Z"
+      "context_as_of": "2026-09-29T06:21:12Z"
     },
     "probation": {
       "granted": false,
       "n": 8,
       "min_n": 30
     },
-    "status": "fresh"
+    "status": "degraded"
   },
   "workflow_conformance_misses": [
     {
@@ -3990,7 +3966,7 @@
     "degraded": 2,
     "not_locally_verifiable": 1,
     "unknown": 0,
-    "cortex_status": "fresh"
+    "cortex_status": "degraded"
   },
   "context_accrual": {
     "personality_forward_ledger": {
