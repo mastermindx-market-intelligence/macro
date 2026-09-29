@@ -1,0 +1,71 @@
+{
+  "pre_repair_head": "d1172fc522837e7e9571e181c5214315aeea5506",
+  "runtime_sha256": "71768173e399be22f5bb13b8797209552ada7c4f485bcaf6ac5dea4aab7fa0e8",
+  "method": "Actual clicks, typing, Tab/Shift+Tab, Escape, slash and resize against the patched generated site; no internal runtime helpers invoked. Public snapshot only; no membership simulation.",
+  "results": [
+    {
+      "cell": "desktop-en-dark",
+      "status": 200,
+      "rows": 500,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "desktop-en-light",
+      "status": 200,
+      "rows": 500,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "desktop-zh-dark",
+      "status": 200,
+      "rows": 500,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "desktop-zh-light",
+      "status": 200,
+      "rows": 500,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "mobile-en-dark",
+      "status": 200,
+      "rows": 500,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "mobile-en-light",
+      "status": 200,
+      "rows": 500,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "mobile-zh-dark",
+      "status": 200,
+      "rows": 500,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    },
+    {
+      "cell": "mobile-zh-light",
+      "status": 200,
+      "rows": 500,
+      "overflow": 0,
+      "page_errors": [],
+      "passed": true
+    }
+  ]
+}

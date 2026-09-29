@@ -46,7 +46,9 @@ def _env() -> jinja2.Environment:
     # a render exercising us_prophet_book.plans does not crash on an undefined
     # global the real build always provides.
     from scripts.build_site import us_stance_projection  # noqa: PLC0415
+    from engine.macro_news import CHANNEL_LABEL  # noqa: PLC0415
     env.globals["us_stance_projection"] = us_stance_projection
+    env.globals["CHANNEL_LABEL"] = CHANNEL_LABEL
     return env
 
 
@@ -308,6 +310,126 @@ def test_stocks_mode_renders_without_exception():
     assert len(html) > 50_000
 
 
+# --------------------------------------------------------------------------- #
+# UD-B1 primary-route override (2026-09-20): keep the candidate component in
+# source, but do not stack it above the established macro decision surface.
+# --------------------------------------------------------------------------- #
+
+def test_macro_mode_keeps_unified_dashboard_candidate_off_primary_route():
+    """The primary macro route must open on the established regime radar."""
+    html = _render("macro")
+    assert 'id="ud-hero"' not in html, (
+        "macro mode must not stack the held UD-B1 candidate above the current dashboard"
+    )
+    assert 'id="regime-radar"' in html, (
+        "macro mode must retain the established #regime-radar decision surface"
+    )
+
+
+def test_stocks_mode_excludes_unified_dashboard_candidate():
+    """The held UD-B1 candidate is not part of the stocks route either."""
+    html = _render("stocks")
+    assert 'id="ud-hero"' not in html
+
+
+def _health_panel(html: str) -> str:
+    match = re.search(r'<details class="[^"]*health-strip[^"]*" id="health".*?</details>', html, re.S)
+    assert match, "macro render must contain the data-health panel"
+    return match.group(0)
+
+
+def test_macro_health_empty_is_unknown_not_green():
+    panel = _health_panel(_render("macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-unknown" in opening
+    assert "health-ok" not in opening
+    assert "health unavailable" in panel
+    assert "健康状态不可用" in panel
+    assert "Source health data is unavailable for this build." in panel
+    assert "all observed sources OK" not in panel
+
+
+def test_macro_health_nonempty_all_ok_is_observed_healthy():
+    vm = _base_vm()
+    vm["health"] = [{
+        "name": "Primary feed", "status": "ok", "rows": 12,
+        "last_date": "2026-07-04", "error": None,
+    }]
+    panel = _health_panel(_env().get_template("dashboard.html.j2").render(**vm, mode="macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-ok" in opening
+    assert "health-unknown" not in opening
+    assert "health-neutral" not in opening
+    assert "all observed sources OK" in panel
+    assert "已观测数据源全部正常" in panel
+
+
+def test_macro_health_blocked_only_is_neutral_not_observed_healthy():
+    vm = _base_vm()
+    vm["health"] = [{
+        "name": "Known limitation", "status": "blocked", "rows": 0,
+        "last_date": None, "error": "expected limitation",
+    }]
+    panel = _health_panel(_env().get_template("dashboard.html.j2").render(**vm, mode="macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-neutral" in opening
+    assert "health-ok" not in opening
+    assert "health-warn" not in opening
+    assert "no active failures" in panel
+    assert "无活动故障" in panel
+    assert "all observed sources OK" not in panel
+
+
+def test_macro_health_ok_plus_blocked_is_neutral_not_observed_healthy():
+    vm = _base_vm()
+    vm["health"] = [
+        {"name": "Primary feed", "status": "ok", "rows": 12,
+         "last_date": "2026-07-04", "error": None},
+        {"name": "Known limitation", "status": "blocked", "rows": 0,
+         "last_date": None, "error": "expected limitation"},
+    ]
+    panel = _health_panel(_env().get_template("dashboard.html.j2").render(**vm, mode="macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-neutral" in opening
+    assert "health-ok" not in opening
+    assert "health-warn" not in opening
+    assert "no active failures" in panel
+    assert "all observed sources OK" not in panel
+
+
+def test_committed_macro_health_projection_carries_truth_state_contract():
+    page = ROOT / "site" / "macro.html"
+    html = page.read_text(encoding="utf-8")
+    linked_css = []
+    for href in re.findall(r'<link[^>]+href="([^"]+\.css(?:\?[^"#]*)?)"', html):
+        rel = href.split("?", 1)[0]
+        if rel.startswith(("/", "http://", "https://")):
+            continue
+        css_path = page.parent / rel
+        if css_path.is_file():
+            linked_css.append(css_path.read_text(encoding="utf-8"))
+    projection = html + "\n" + "\n".join(linked_css)
+    assert "health-unknown" in projection
+    assert "health-neutral" in projection
+    assert "Observed health entries for data sources this dashboard depends on." in html
+    assert "No entries means health is unavailable, not healthy." in html
+    assert "Every data source this dashboard depends on. OK = fresh." not in html
+
+
+def test_macro_health_degraded_source_remains_attention_state():
+    vm = _base_vm()
+    vm["health"] = [{
+        "name": "Primary feed", "status": "stale", "rows": 12,
+        "last_date": "2026-07-03", "error": "late",
+    }]
+    panel = _health_panel(_env().get_template("dashboard.html.j2").render(**vm, mode="macro"))
+    opening = panel.split(">", 1)[0]
+    assert "health-warn" in opening
+    assert "health-ok" not in opening
+    assert "1" in panel and "need attention" in panel
+    assert "需关注" in panel
+
+
 def test_us_track_record_filter_bar_stays_in_document_flow():
     """The dense US ledger filters must scroll away instead of covering rows."""
     vm = _base_vm()
@@ -348,15 +470,16 @@ def test_stocks_mode_renders_standout_card_body():
 
 def test_stocks_mode_keeps_existing_action_board_and_prophet_scorecards():
     """The declutter pass must preserve the two established decision surfaces.
-    They stay in the default document flow; only lower-priority research boards
-    are hidden from the landing scan."""
+    S2's surviving L1 panels stay in flow; only leftover research boards
+    that are not in the frozen 7-panel list stay hidden."""
     html = _render("stocks")
     assert 'id="action-board"' in html
     assert 'class="panel span12 notable" id="us-standouts"' in html
     assert 'id="stocks-command"' not in html
     assert 'id="all-prophet-signals"' not in html
-    assert "body.page-stocks #equity-scoreboard," in html
-    assert "body.page-stocks #holdings{display:none!important}" in html
+    assert "body.page-stocks #cross-asset-macro{display:none!important}" in html
+    assert "body.page-stocks #holdings{display:none!important}" not in html
+    assert "body.page-stocks #equity-scoreboard," not in html
 
 
 def test_stocks_mode_dossier_block_intentionally_absent():
@@ -530,10 +653,12 @@ def test_macro_strip_has_six_tape_tiles_in_order():
     # Each price tile exists with the live-patch contract intact.
     positions = []
     for sym in _TAPE_SYMS:
-        needle = f'<div class="mx5-mkt-price nb-px" data-sym="{sym}" data-mkt="us"'
-        idx = html.find(needle)
-        assert idx != -1, f"tape price tile for {sym} missing from the strip"
-        positions.append(idx)
+        m = re.search(
+            rf'<div class="mx5-mkt-price nb-px[^"]*" data-sym="{re.escape(sym)}" data-mkt="us"',
+            html,
+        )
+        assert m, f"tape price tile for {sym} missing from the strip"
+        positions.append(m.start())
     # Strictly increasing => the six render in the specified order.
     assert positions == sorted(positions), f"tape tiles out of order: {positions}"
 
@@ -542,8 +667,8 @@ def test_macro_strip_tnx_display_transform_wired():
     """^TNX price AND delta carry data-fmt="tnx" so live.js divides the yield×10
     quote by 10 (%) and renders the delta in bps. Both nodes must be tagged."""
     html = _render("macro")
-    assert '<div class="mx5-mkt-price nb-px" data-sym="^TNX" data-mkt="us" data-fmt="tnx"' in html
-    assert 'nb-chg" data-sym="^TNX" data-mkt="us" data-fmt="tnx"' in html
+    assert re.search(r'<div class="mx5-mkt-price nb-px[^"]*" data-sym="\^TNX" data-mkt="us" data-fmt="tnx"', html)
+    assert re.search(r'nb-chg[^"]*" data-sym="\^TNX" data-mkt="us" data-fmt="tnx"', html)
 
 
 def test_macro_strip_labels_bilingual():

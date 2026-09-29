@@ -2,99 +2,154 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
-      "as_of": "2026-09-17",
+      "as_of": "2026-09-29",
       "tickers": [
-        "ASO",
-        "COO",
-        "ELV",
-        "EZPW",
-        "LRCX",
-        "PCG",
-        "URBN",
-        "UTL"
-      ]
-    },
-    {
-      "as_of": "2026-09-16",
-      "tickers": [
-        "AGNT",
-        "EZPW",
-        "MSFT",
-        "MU",
-        "PMTS",
-        "UTL",
-        "WING"
-      ]
-    },
-    {
-      "as_of": "2026-09-15",
-      "tickers": [
+        "AAP",
+        "AEIS",
+        "AIZ",
         "ALGT",
-        "DLTR",
-        "ECL",
-        "GMED",
+        "BKR",
+        "CLH",
+        "CNM",
+        "COHU",
+        "ELF",
+        "GAP",
         "IPGP",
-        "LUMN",
-        "PWR",
+        "PDFS",
+        "PG",
+        "REX",
+        "TNDM",
+        "WABC",
+        "WHR",
         "WING"
       ]
     },
     {
-      "as_of": "2026-09-14",
+      "as_of": "2026-09-28",
       "tickers": [
-        "BOC",
-        "CHRW",
-        "ETN",
-        "FWONK",
-        "GMED",
-        "GPI",
-        "HUBG",
+        "ATO",
+        "BKR",
+        "CARR",
+        "CLH",
+        "CNM",
+        "COHU",
+        "DAL",
+        "ELF",
+        "GAP",
         "IPGP",
-        "NABL",
-        "NOVT",
-        "OKE",
-        "RBLX",
-        "VTR"
-      ]
-    },
-    {
-      "as_of": "2026-09-12",
-      "tickers": [
-        "CAVA",
-        "CWST",
-        "EZPW",
-        "GMED",
-        "RHP",
-        "SEDG"
-      ]
-    },
-    {
-      "as_of": "2026-09-11",
-      "tickers": [
-        "ALGM",
-        "ASTE",
-        "CHTR",
-        "MPT",
-        "PCG",
-        "POST",
-        "SIG",
-        "VTR",
-        "WMB"
-      ]
-    },
-    {
-      "as_of": "2026-09-10",
-      "tickers": [
-        "ADM",
-        "ALV",
-        "BABA",
-        "DYN",
-        "EZPW",
-        "FN",
+        "JOBY",
         "KMT",
-        "LAUR",
-        "LILA",
-        "SEI"
+        "LITE",
+        "OTTR",
+        "REX",
+        "REXR",
+        "RPM",
+        "SHO",
+        "STRL",
+        "TNDM",
+        "WABC",
+        "WHR"
+      ]
+    },
+    {
+      "as_of": "2026-09-27",
+      "tickers": [
+        "AEIS",
+        "AMKR",
+        "CNM",
+        "COHU",
+        "KLAC",
+        "MOG-A",
+        "PDFS",
+        "QDEL",
+        "REXR",
+        "SHO",
+        "SIG",
+        "STRL",
+        "VTRS",
+        "WABC",
+        "XRAY"
+      ]
+    },
+    {
+      "as_of": "2026-09-26",
+      "tickers": [
+        "AAPL",
+        "AEP",
+        "ANIP",
+        "BKR",
+        "CDNS",
+        "CHRW",
+        "CMS",
+        "COHU",
+        "DAL",
+        "EBAY",
+        "EGBN",
+        "ELF",
+        "ETRA",
+        "GAP",
+        "ITW",
+        "KLAC",
+        "KMT",
+        "LMAT",
+        "MAR",
+        "NCT",
+        "PBH",
+        "POST",
+        "RBLX",
+        "REX",
+        "TBBK",
+        "TLN",
+        "TTD",
+        "VTRS",
+        "WBD",
+        "WING",
+        "WMT",
+        "WS"
+      ]
+    },
+    {
+      "as_of": "2026-09-25",
+      "tickers": [
+        "CLH",
+        "GATX",
+        "GLW",
+        "IPGP",
+        "ITW",
+        "PPG",
+        "QCOM",
+        "WBD",
+        "WFC"
+      ]
+    },
+    {
+      "as_of": "2026-09-24",
+      "tickers": [
+        "ALHC",
+        "AMKR",
+        "APOG",
+        "CLH",
+        "EBAY",
+        "HAFC",
+        "KRMN",
+        "MATW",
+        "REX",
+        "ROL"
+      ]
+    },
+    {
+      "as_of": "2026-09-23",
+      "tickers": [
+        "AAPL",
+        "ABBV",
+        "ADEA",
+        "CMI",
+        "COHU",
+        "CTRI",
+        "GOOGL",
+        "IPGP",
+        "NCLH",
+        "WING"
       ]
     }
   ]

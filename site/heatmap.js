@@ -26,27 +26,236 @@
   'use strict';
 
   var JSON_URL = 'marketdata/sp500_heatmap.json';
-  var _dataPromises = {};               // url -> promise (one map per source)
+  var _dataPromises = {};               // url -> promise (existing snapshot owner)
+
+  // China-only coherence guard. Other market/live/theme contracts stay unchanged.
+  function isChinaHeatmapUrl(url) {
+    return /(^|\/)china_heatmap\.json$/.test(String(url).split(/[?#]/)[0]);
+  }
+  function chinaDay(value) {
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    var stamp = new Date(value + 'T00:00:00Z');
+    return !isNaN(stamp.getTime()) && stamp.toISOString().slice(0, 10) === value;
+  }
+  function chinaGeneration(value) {
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(value)) return NaN;
+    if (!chinaDay(value.slice(0, 10))) return NaN;
+    var h = Number(value.slice(11, 13)), m = Number(value.slice(14, 16));
+    if (h > 23 || m > 59) return NaN;
+    return Date.parse(value.replace(' ', 'T') + ':00Z');
+  }
+  function chinaRecord(value) {
+    return value !== null && typeof value === 'object' && !Array.isArray(value);
+  }
+  function chinaNumber(value) { return typeof value === 'number' && isFinite(value); }
+  function chinaCount(value) { return chinaNumber(value) && value >= 0 && Math.floor(value) === value; }
+  function validateChinaObservations(data) {
+    var enhanced = data.observation_coverage != null || data.tiles.some(function (t) { return t.observation != null; });
+    if (!enhanced) return;
+    var coverage = data.observation_coverage;
+    if (!chinaRecord(coverage) || coverage.basis !== 'current_membership' || coverage.membership_count !== data.n_tiles ||
+        !chinaRecord(coverage.timeframes)) throw new Error('China observation coverage invalid');
+    var windows = ['1D', '1W', 'MTD', '1M', '3M', '6M', 'YTD', '1Y'];
+    var counts = Object.create(null), references = Object.create(null), currentCount = 0;
+    windows.forEach(function (tf) { counts[tf] = 0; });
+    data.tiles.forEach(function (tile) {
+      var obs = tile.observation;
+      if (!chinaRecord(obs) || obs.schema !== 'china_heatmap_observations.v1' || obs.observation_session !== data.asof ||
+          !chinaRecord(obs.timeframes) || ['VALID', 'MISSING', 'INVALID'].indexOf(obs.current_status) === -1) {
+        throw new Error('China observation contract mismatch');
+      }
+      var last = obs.last_observed_session, price = obs.last_observed_close;
+      if (last === null ? price !== null : (!chinaDay(last) || last > data.asof || !chinaNumber(price) || price <= 0)) {
+        throw new Error('China last-observation evidence invalid');
+      }
+      if (obs.current_status === 'VALID') {
+        if (last !== data.asof) throw new Error('China current observation date mismatch');
+        currentCount++;
+      } else if (last === data.asof) throw new Error('Unavailable China observation cannot supply a current price');
+      windows.forEach(function (tf) {
+        var frame = obs.timeframes[tf], value = tile.perf[tf];
+        if (!chinaRecord(frame) || frame.observation_session !== data.asof || !chinaDay(frame.reference_session) ||
+            frame.reference_session >= data.asof || (references[tf] && references[tf] !== frame.reference_session)) {
+          throw new Error('China return interval mismatch');
+        }
+        references[tf] = frame.reference_session;
+        if (obs.current_status !== 'VALID') {
+          if (frame.status !== 'CURRENT_' + obs.current_status) {
+            throw new Error('China unavailable-observation status mismatch');
+          }
+        } else if (frame.status === 'CURRENT_MISSING' || frame.status === 'CURRENT_INVALID') {
+          throw new Error('China valid current observation cannot claim an unavailable current endpoint');
+        }
+        if (frame.status === 'VALID') {
+          if (!chinaNumber(value)) throw new Error('Valid China return must be numeric');
+          counts[tf]++;
+        } else if (['CURRENT_MISSING', 'CURRENT_INVALID', 'REFERENCE_MISSING', 'REFERENCE_INVALID', 'RETURN_INVALID'].indexOf(frame.status) < 0 || value !== null) {
+          throw new Error('Unavailable China return must remain null');
+        }
+      });
+    });
+    if (coverage.current_observation_count !== currentCount) throw new Error('China current-observation count mismatch');
+    windows.forEach(function (tf) {
+      var c = coverage.timeframes[tf];
+      if (!chinaRecord(c) || c.denominator !== data.n_tiles || c.valid_count !== counts[tf] ||
+          c.missing_count !== data.n_tiles - counts[tf] || !chinaNumber(c.fraction) ||
+          Math.abs(c.fraction - counts[tf] / data.n_tiles) > 1e-12) {
+        throw new Error('China coverage does not account for its tiles');
+      }
+    });
+  }
+  function validateChinaSnapshot(data) {
+    if (!chinaRecord(data) || data.market !== 'china' || data.map_type !== 'stocks' || data.source !== 'daily-close') {
+      throw new Error('China heatmap identity mismatch');
+    }
+    if (!chinaDay(data.asof) || !isFinite(chinaGeneration(data.generated_utc)) || data.generated_utc.slice(0, 10) < data.asof) {
+      throw new Error('China heatmap has invalid date labels');
+    }
+    if (Object.keys(data).some(function (k) { return k.charAt(0) === '_'; })) {
+      throw new Error('China payload cannot supply client state');
+    }
+    if (!Array.isArray(data.tiles) || !data.tiles.length || !chinaCount(data.n_tiles) || data.n_tiles !== data.tiles.length) {
+      throw new Error('China heatmap tile accounting mismatch');
+    }
+    if (!Array.isArray(data.timeframes) || !data.timeframes.length || !Array.isArray(data.sectors)) {
+      throw new Error('China renderer catalogs must be arrays');
+    }
+    var frames = Object.create(null), sectors = Object.create(null);
+    data.timeframes.forEach(function (tf) {
+      if (!chinaRecord(tf) || typeof tf.key !== 'string' || !tf.key || tf.key.trim() !== tf.key ||
+          frames[tf.key] || typeof tf.available !== 'boolean') throw new Error('China timeframe catalog invalid');
+      frames[tf.key] = true;
+    });
+    if (typeof data.default_tf !== 'string' || !frames[data.default_tf]) throw new Error('China default timeframe invalid');
+    data.sectors.forEach(function (sector) {
+      if (!chinaRecord(sector) || typeof sector.key !== 'string' || !sector.key.trim() || sectors[sector.key]) {
+        throw new Error('China sector catalog invalid');
+      }
+      sectors[sector.key] = true;
+    });
+    var names = Object.create(null);
+    data.tiles.forEach(function (tile) {
+      if (!chinaRecord(tile) || typeof tile.t !== 'string' || !tile.t || tile.t.trim() !== tile.t || names[tile.t]) {
+        throw new Error('China heatmap ticker identity invalid');
+      }
+      names[tile.t] = true;
+      if (typeof tile.sector !== 'string' || !tile.sector.trim() || !chinaNumber(tile.size) || tile.size <= 0 || !chinaRecord(tile.perf)) {
+        throw new Error('China heatmap tile shape invalid');
+      }
+      Object.keys(tile.perf).forEach(function (tf) {
+        if (tile.perf[tf] !== null && !chinaNumber(tile.perf[tf])) throw new Error('China return must be finite numeric or null');
+      });
+    });
+    var b = data.board_breadth;
+    if (b != null && (!chinaRecord(b) || !chinaCount(b.n) || !b.n || !chinaCount(b.adv) || !chinaCount(b.dec) ||
+        !chinaCount(b.flat) || b.adv + b.dec + b.flat !== b.n || !chinaNumber(b.pct_up) || b.pct_up < 0 || b.pct_up > 100)) {
+      throw new Error('China whole-board accounting invalid');
+    }
+    validateChinaObservations(data);
+    // Reject unsafe/non-JSON fields before any shared object is mutated.
+    chinaContentKey(data);
+    return data;
+  }
+  function chinaContentKey(data) {
+    // Equality of normalized content is not an authority or a total revision order.
+    // A minute-granularity generation stamp alone cannot identify corrections.
+    function stable(value, root) {
+      if (value === null || typeof value === 'string' || typeof value === 'boolean') return JSON.stringify(value);
+      if (chinaNumber(value)) return JSON.stringify(value);
+      if (Array.isArray(value)) return '[' + value.map(function (v) { return stable(v, false); }).join(',') + ']';
+      if (!chinaRecord(value)) throw new Error('China snapshot contains non-JSON data');
+      return '{' + Object.keys(value).sort().filter(function (key) {
+        if (key === '__proto__' || key === 'constructor' || key === 'prototype') throw new Error('Unsafe snapshot key');
+        return !(root && (key === 'generated_utc' || key === '_url' || key === '_tf'));
+      }).map(function (key) { return JSON.stringify(key) + ':' + stable(value[key], false); }).join(',') + '}';
+    }
+    return stable(data, true);
+  }
+  function fetchChinaSnapshot(url) {
+    // Bound the entire fetch + JSON read. A hung request cannot occupy the
+    // existing refresh owner forever; late resolution cannot commit anything.
+    var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    return new Promise(function (resolve, reject) {
+      var finished = false;
+      function finish(error, data) {
+        if (finished) return;
+        finished = true;
+        clearTimeout(timer);
+        if (error) reject(error); else resolve(data);
+      }
+      var timer = setTimeout(function () {
+        finish(new Error('China heatmap request timed out'));
+        if (controller) { try { controller.abort(); } catch (e) { /* already complete */ } }
+      }, 20000);
+      var options = { cache: 'no-cache' };
+      if (controller) options.signal = controller.signal;
+      Promise.resolve().then(function () { return fetch(url, options); })
+        .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+        .then(validateChinaSnapshot)
+        .then(function (data) { finish(null, data); }, function (error) { finish(error); });
+    });
+  }
+  function commitChinaSnapshot(current, fresh, url) {
+    // Validation and comparison complete before synchronous replacement. Retain
+    // the root reference held by existing mounts, never obsolete server fields.
+    if (fresh.asof < current.asof) return false;
+    // An older publisher must not silently remove already-adopted observation
+    // truth, even when it stamps a later generation or session.
+    if (current.observation_coverage && !fresh.observation_coverage) return false;
+    if (fresh.asof === current.asof && chinaGeneration(fresh.generated_utc) < chinaGeneration(current.generated_utc)) return false;
+    var changed = chinaContentKey(current) !== chinaContentKey(fresh);
+    if (!changed) {
+      if (chinaGeneration(fresh.generated_utc) > chinaGeneration(current.generated_utc)) current.generated_utc = fresh.generated_utc;
+      return false;
+    }
+    Object.keys(current).forEach(function (key) {
+      if (key !== '_tf' && key !== '_url') delete current[key];
+    });
+    Object.keys(fresh).forEach(function (key) { current[key] = fresh[key]; });
+    current._url = url;
+    return true;
+  }
   function loadData(url) {
     url = url || JSON_URL;
     if (!_dataPromises[url]) {
-      _dataPromises[url] = fetch(url, { cache: 'no-cache' })
-        .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
-        .then(function (d) { d._url = url; return d; });
+      if (isChinaHeatmapUrl(url)) {
+        var pending = fetchChinaSnapshot(url).then(function (d) { d._url = url; return d; });
+        _dataPromises[url] = pending;
+        pending.catch(function () { if (_dataPromises[url] === pending) delete _dataPromises[url]; });
+      } else {
+        _dataPromises[url] = fetch(url, { cache: 'no-cache' })
+          .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
+          .then(function (d) { d._url = url; return d; });
+      }
     }
     return _dataPromises[url];
   }
-  // In-page freshness: the intraday lane recommits the feed every ~30 min during
-  // US market hours, so an open dashboard re-pulls its map every 10 min (visible
-  // tabs only) and repaints in place when generated_utc advances. The shared
-  // data object is mutated so every mounted view of that url sees the update.
+  // One existing owner per URL, same ten-minute visible-tab cadence. China
+  // serializes requests and atomically accepts content corrections; legacy
+  // market/live/theme refresh semantics are deliberately unchanged.
   var REFRESH_MS = 10 * 60 * 1000;
   var _refreshers = {};                 // url -> interval id
   function startAutoRefresh(url) {
     url = url || JSON_URL;
     if (_refreshers[url]) return;
+    var inFlight = false;
     _refreshers[url] = setInterval(function () {
       if (document.hidden) return;
+      if (isChinaHeatmapUrl(url)) {
+        if (inFlight) return;
+        inFlight = true;
+        loadData(url).then(function (cur) {
+          return fetchChinaSnapshot(url).then(function (fresh) {
+            if (commitChinaSnapshot(cur, fresh, url)) {
+              try { document.dispatchEvent(new CustomEvent('hm-refresh', { detail: { url: url } })); } catch (e) { /* no-op */ }
+            }
+          });
+        }).then(function () { inFlight = false; }, function () {
+          // Keep the last accepted data AND its dates. Failure is not freshness.
+          inFlight = false;
+        });
+        return;
+      }
       fetch(url, { cache: 'no-cache' })
         .then(function (r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
         .then(function (fresh) {
@@ -472,6 +681,75 @@
   // this one function serves both the base card and the enriched one so the two
   // can never print different meta. `tech` is the per-ticker fallback for maps
   // whose tiles do not carry the facts (the US map).
+  // BEGIN CN_OBSERVATION_TRUTH
+  // Observation disclosure for the China payload's exact-session contract.
+  // This fragment lives inside the existing heatmap.js closure and reuses esc/L.
+  function observationDate(value) {
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+    var d = new Date(value + 'T00:00:00Z');
+    return !isNaN(d.getTime()) && d.toISOString().slice(0, 10) === value ? value : null;
+  }
+  function observationHtml(data, tile) {
+    if (data.market !== 'china' || !tile.observation) return '';
+    var obs = tile.observation;
+    var tf = data._tf || data.default_tf || '1D';
+    var frame = obs.timeframes && obs.timeframes[tf];
+    var current = frame && observationDate(frame.observation_session);
+    var reference = frame && observationDate(frame.reference_session);
+    var last = observationDate(obs.last_observed_session);
+    var payloadSession = data.asof == null ? current : observationDate(data.asof);
+    var declaredSession = obs.observation_session == null ? current : observationDate(obs.observation_session);
+    if (obs.schema !== 'china_heatmap_observations.v1' || !frame || !current || !reference
+        || reference >= current || payloadSession !== current || declaredSession !== current
+        || (obs.last_observed_session != null && !last) || (last && last > current)) {
+      return '<div class="hm-c-meta hm-observation" role="note">'
+        + L('Observation metadata unavailable.', '观测日期信息不可用。') + '</div>';
+    }
+    var value = tile.perf && tile.perf[tf];
+    var valid = frame.status === 'VALID' && typeof value === 'number' && isFinite(value);
+    var en, zh;
+    if (valid) {
+      en = 'Observed return: ' + reference + ' → ' + current + '.';
+      zh = '已观测区间涨跌：' + reference + ' → ' + current + '。';
+    } else if (frame.status === 'REFERENCE_MISSING') {
+      en = 'Reference-session quote unavailable (' + reference + '); return unavailable.';
+      zh = '基准交易日行情缺失（' + reference + '），区间涨跌不可用。';
+    } else if (frame.status === 'REFERENCE_INVALID') {
+      en = 'Reference-session quote unusable (' + reference + '); return unavailable.';
+      zh = '基准交易日行情无效（' + reference + '），区间涨跌不可用。';
+    } else if (frame.status === 'CURRENT_INVALID') {
+      en = 'Current-session quote unusable (' + current + '); return unavailable.';
+      zh = '当日行情无效（' + current + '），区间涨跌不可用。';
+    } else if (frame.status === 'CURRENT_MISSING') {
+      en = 'Current-session return unavailable (' + current + ').';
+      zh = '当日涨跌不可用（' + current + '）。';
+    } else {
+      en = 'Return unavailable; observation metadata cannot establish this interval.';
+      zh = '区间涨跌不可用，观测信息不足以确认该区间。';
+    }
+    en += last ? ' Last observation: ' + last + '.' : ' No valid observation in supplied history.';
+    zh += last ? ' 最近有效观测：' + last + '。' : ' 所提供历史中暂无有效观测。';
+    return '<div class="hm-c-meta hm-observation" role="note">' + L(esc(en), esc(zh)) + '</div>';
+  }
+  function observationCoverageHtml(data, tf) {
+    if (data.market !== 'china' || !data.observation_coverage) return '';
+    var coverage = data.observation_coverage;
+    var c = coverage.timeframes && coverage.timeframes[tf];
+    var valid = coverage.basis === 'current_membership' && c
+      && Number.isSafeInteger(c.denominator) && c.denominator > 0
+      && Number.isSafeInteger(c.valid_count) && c.valid_count >= 0
+      && Number.isSafeInteger(c.missing_count) && c.missing_count >= 0
+      && c.denominator === coverage.membership_count
+      && c.valid_count + c.missing_count === c.denominator;
+    var text = valid
+      ? L(c.valid_count + ' / ' + c.denominator + ' names have observed endpoint pairs · '
+          + c.missing_count + ' unavailable.',
+          c.valid_count + ' / ' + c.denominator + ' 个标的具备有效区间行情 · '
+          + c.missing_count + ' 个不可用。')
+      : L('Observation coverage unavailable.', '观测覆盖率不可用。');
+    return '<div class="hx-bscope hm-observation-coverage" role="status">' + text + '</div>';
+  }
+  // END CN_OBSERVATION_TRUTH
   function metaHtml(data, t, tech) {
     tech = tech || {};
     var meta = '';
@@ -480,13 +758,13 @@
     var szLab = data.size_basis === 'equal' ? '' : lz(data.size_label_en, data.size_label_zh);
     var szVal = realSize(data) ? fmtCap(t.size, data.currency) : '';
     if (szLab && szVal) meta += '<span class="hm-c-tag">' + esc(szLab) + ' <b>' + szVal + '</b></span>';
-    var p2 = t.p200 != null ? t.p200 : tech.pct_vs_200dma;
+    var p2 = t.p200 != null ? t.p200 : ((data.market === "china" && t.observation) ? null : tech.pct_vs_200dma);
     if (p2 != null) {
       p2 = +p2;
       meta += '<span class="hm-c-tag">' + L('vs 200d', '相对200日') + ' '
         + '<b class="' + (p2 >= 0 ? 'up' : 'dn') + '">' + (p2 > 0 ? '+' : '') + p2.toFixed(0) + '%</b></span>';
     }
-    return meta ? '<div class="hm-c-meta">' + meta + '</div>' : '';
+    return (meta ? '<div class="hm-c-meta">' + meta + '</div>' : '') + observationHtml(data, t);
   }
   function cardBaseHtml(data, t) {
     var labs = sectorLabels(data);
@@ -510,7 +788,7 @@
       + '<div class="hm-c-hd">'
       +   '<div class="hm-c-id"><div class="hm-c-sym">' + esc(dispT(t.t)) + '</div>'
       +     '<div class="hm-c-nm">' + esc(nm) + ' · ' + L(lab.en, lab.zh) + '</div></div>'
-      +   '<div class="hm-c-px"><div class="hm-c-pxv" data-px>' + (px || cap || '—') + '</div>'
+      +   '<div class="hm-c-px"><div class="hm-c-pxv" data-px>' + (px || (!(data.market === "china" && t.observation) && cap) || '—') + '</div>'
       +     '<div class="hm-c-chg ' + cls + '">' + fmtPc(cur) + '</div></div>'
       + '</div>'
       + '<div class="hm-c-body" data-body><div class="hm-c-load"><span></span><span></span><span></span></div></div>'
@@ -552,7 +830,7 @@
     // (size, vs 200d). Everything else lives one click away in the analyzer —
     // a hover card that needs reading isn't a hover card.
     var tech = rec.tech || {}, conv = rec.conviction || {};
-    if (pxEl && t.px == null && tech.price != null) {
+    if (pxEl && t.px == null && !(data.market === "china" && t.observation) && tech.price != null) {
       var pxSym = CUR_SYM[data.currency] || '$';
       pxEl.textContent = pxSym + (tech.price >= 100 ? Math.round(tech.price).toLocaleString()
         : (+tech.price).toFixed(2));
@@ -1502,12 +1780,13 @@
     // read as the market's.
     function scopeOf(sm) {
       if (!HAS_SAMPLE_SCOPE) return '';
+      var observationCoverage = observationCoverageHtml(data, data._tf || data.default_tf || '1D');
       if (sm.scope && sm.scope.whole) {
         return L(esc(sm.scope.en) + ' · ' + fmtInt(sm.scope.n) + ' traded',
-                 esc(sm.scope.zh) + ' · ' + fmtInt(sm.scope.n) + ' 只交易');
+                 esc(sm.scope.zh) + ' · ' + fmtInt(sm.scope.n) + ' 只交易') + observationCoverage;
       }
       return L('Map sample · ' + fmtInt(sm.n) + ' names',
-               '本图样本 · ' + fmtInt(sm.n) + ' 只');
+               '本图样本 · ' + fmtInt(sm.n) + ' 只') + observationCoverage;
     }
     // Deterministic market-state read (breadth + leadership) — a plain-word
     // description of the tape, never an LLM-originated or trade signal.

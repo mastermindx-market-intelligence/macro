@@ -34,7 +34,7 @@
 })();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
-<title>AI Daily Brief — 2026-09-17 09:37 UTC</title>
+<title>AI Daily Brief — 2026-09-29 09:07 UTC</title>
 
 <meta name="description" content="The market day in plain words — an AI-drafted, engine-grounded daily brief covering regimes, movers and what changed.">
 <link rel="canonical" href="https://www.mastermind-x.com/aibrief.html">
@@ -51,10 +51,309 @@
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="stylesheet" href="theme.css?v=63df1679">
-<link rel="stylesheet" href="assets/css/37002319.css?v=37002319">
-<link rel="preload" as="style" href="product-nav-icons.css?v=093ad1ea">
-<link rel="preload" as="style" href="navigation-refresh.css?v=c299c324">
+<link rel="stylesheet" href="theme.css">
+<style>
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font:14px/1.5 -apple-system,
+         "Segoe UI",Roboto,Helvetica,sans-serif; margin:0; padding:18px; }
+  @media (min-width:1100px){ body{ padding:26px max(40px,calc((100vw - 1100px)/2)); } }
+  a { text-decoration:none; }
+  h1 { font-size:20px; margin:0; }
+  h2 { font-size:15px; margin:0 0 6px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:10px;
+           padding:14px 16px; margin-bottom:14px; }
+  .muted { color:var(--muted); }
+  .sm { font-size:13px; }
+  .help { display:inline-flex; align-items:center; justify-content:center; width:15px;
+          height:15px; border-radius:50%; border:1px solid var(--muted); color:var(--muted);
+          font-size:10px; font-weight:600; cursor:help; position:relative;
+          vertical-align:middle; margin-left:5px; }
+  .help .tip { display:none; position:absolute; top:140%; left:50%;
+               transform:translateX(-50%); width:330px; max-width:78vw; background:var(--panel);
+               border:1px solid var(--line); padding:9px 11px; border-radius:8px; z-index:60;
+               font-size:12px; line-height:1.45; color:var(--text); font-weight:400;
+               box-shadow:var(--popover-shadow); pointer-events:auto; cursor:auto;
+               max-height:min(60vh,420px); overflow-y:auto; overscroll-behavior:contain; }
+  .help:hover::before { content:''; position:absolute; top:100%; left:-30px; right:-30px; height:10px; }
+  .help:hover .tip { display:block; }
+  /* market toggle tabs */
+  .brief-tabs { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 14px; }
+  .brief-tab-btn { background:var(--panel); border:1px solid var(--line); color:var(--muted);
+                   border-radius:999px; padding:7px 16px; font:600 13px/1 inherit; cursor:pointer;
+                   font-family:inherit; transition:background .15s,color .15s,border-color .15s; }
+  .brief-tab-btn:hover { color:var(--text); border-color:var(--muted); }
+  .brief-tab-btn.active { background:var(--link); border-color:var(--link); color:#fff; }
+  .brief-tab { display:none; }
+  .brief-tab.active { display:block; }
+  /* AI-brief bodies are server-rendered by the shared macro (.aib2-*); the page's
+     .panel gives them their frame. The macro tab keeps the green brief accent; the
+     other tabs inherit the ZH-safe blue default. The literal #38c472 (== macro's
+     --isle-brief) is a FIXED hex so the brand accent never red-flips in ZH — --up
+     swaps to red under html[data-lang="zh"], so it must NOT back the accent. */
+  .panel.ai-brief[data-lens="macro"] .aib2 { --aib2-acc: #38c472; }
+  .panel.ai-brief { padding-top: 12px; }
+  /* .mb-deg retained — the cortex panel (aibrief.js) still emits it */
+  .mb-deg { color:var(--muted); font-size:12px; font-style:italic; margin:4px 0; }
+  /* ── Panel A: context strip ────────────────────────────────────────────────── */
+  .ctx-strip { display:flex; flex-wrap:wrap; gap:10px 20px; align-items:flex-start; }
+  .ctx-chip { display:inline-flex; align-items:center; gap:5px; background:var(--panel);
+              border:1px solid var(--line); border-radius:6px; padding:5px 10px;
+              font-size:13px; font-weight:600; }
+  .ctx-chip.regime { border-color:var(--link); color:var(--ink-link, var(--link)); }
+  .ctx-chip.cortex-ok { border-color:#22c55e; color:#22c55e; }
+  .ctx-chip.cortex-deg { border-color:var(--muted); color:var(--muted); }
+  .ctx-row { display:flex; align-items:center; gap:6px; font-size:13px; line-height:1.4; }
+  .ctx-label { color:var(--muted); font-size:11px; font-weight:600; text-transform:uppercase;
+               letter-spacing:.05em; white-space:nowrap; }
+  /* ── Panel B: What's ahead ─────────────────────────────────────────────────── */
+  .fwd-list { list-style:none; margin:8px 0 0; padding:0; }
+  .fwd-list li { display:flex; align-items:baseline; gap:8px; padding:5px 0;
+                 border-bottom:1px solid var(--line); font-size:13px; }
+  .fwd-list li:last-child { border-bottom:none; }
+  .fwd-date { color:var(--muted); font-size:12px; white-space:nowrap; min-width:70px; }
+  /* ── Panel C: Brief's own record ───────────────────────────────────────────── */
+  .record-cal { color:var(--muted); font-size:12px; margin:4px 0 10px; font-style:italic; }
+  .open-lean { padding:6px 0; border-bottom:1px solid var(--line); font-size:13px; }
+  .open-lean:last-child { border-bottom:none; }
+  /* ── Panel D: Cortex deliberation (client-side) ─────────────────────────────── */
+  #cortex-panel { display:none; }
+  .cortex-label { display:inline-block; background:var(--panel); border:1px solid var(--line);
+                  border-radius:4px; font-size:11px; font-weight:600; color:var(--muted);
+                  padding:1px 6px; margin-bottom:6px; letter-spacing:.04em; }
+  .cortex-section { margin:8px 0; }
+  .cortex-h { font-weight:600; color:var(--ink-link, var(--link)); margin:0 0 3px; font-size:13px; }
+  .cortex-list { margin:3px 0 0 16px; padding:0; font-size:13px; }
+  .cortex-list li { margin:2px 0; }
+
+/* ── AI BRIEF v2 (aib2-*) — shared token spine ──────────────────────────────── */
+.aib2{
+  /* accent defaults to a stable Western blue (never red-flips in ZH); macro
+     overrides to its green brief accent on its own dialog root. */
+  --aib2-acc:var(--info,#3b82f6);
+  --aib2-mut:var(--muted,rgba(255,255,255,.55));
+  --aib2-surf:rgba(255,255,255,.035);
+  --aib2-hair:rgba(255,255,255,.09);
+  --aib2-track:rgba(255,255,255,.12);
+  /* tone palette — engine-computed key_facts + stance tints. These are SEMANTIC
+     quality tints (good/warn/bad), NOT price direction, so they use FIXED hexes and
+     must NOT bind to --up/--down (which swap red<->green under html[data-lang="zh"]).
+     This matches the sibling china chip idiom (.cnx-chip.turn = fixed green,
+     .cnx-chip.hot = fixed red) — a "good" reading stays green in EN and ZH alike. */
+  /* Bound to the HEALTH tokens rather than fixed hexes: --ok/--act encode safety,
+     never direction, so they already do not flip under 红涨绿跌 — which is exactly
+     the property this block was hand-rolling. Binding also earns the light twins
+     and the --ink-* text grades for free (the fixed pair measured 2.7:1 and 3.5:1
+     on a white panel). Same intent, one source of truth. */
+  --aib2-good:var(--ok,#45b873);
+  --aib2-bad:var(--act,#e06464);
+  --aib2-warn:var(--warn,#f59e0b);  /* amber — does not flip in ZH */
+  --aib2-info:var(--info,#5b9bf0);  /* blue  — does not flip in ZH */
+  color:var(--text);
+}
+[data-theme="light"] .aib2{
+  --aib2-surf:rgba(0,0,0,.028);--aib2-hair:rgba(0,0,0,.09);--aib2-track:rgba(0,0,0,.12);
+  --aib2-good:#1f9a55;--aib2-bad:#cf4040;  /* light-theme fixed variants (match theme.css) */
+}
+
+/* ── 1 · header strip ───────────────────────────────────────────────────────── */
+.aib2-hdr{display:flex;align-items:flex-start;gap:14px;margin-bottom:18px;padding-bottom:15px;
+  border-bottom:1px solid color-mix(in srgb,var(--aib2-acc) 16%,var(--aib2-hair));}
+.aib2-icon{width:38px;height:38px;flex-shrink:0;border-radius:11px;
+  background:linear-gradient(150deg,color-mix(in srgb,var(--aib2-acc) 22%,transparent),color-mix(in srgb,var(--aib2-acc) 8%,transparent));
+  border:1px solid color-mix(in srgb,var(--aib2-acc) 30%,transparent);
+  color:var(--aib2-acc);font-size:13px;font-weight:800;letter-spacing:.02em;
+  display:flex;align-items:center;justify-content:center;}
+.aib2-hdr-meta{flex:1;min-width:0;}
+.aib2-hdr-title{font-size:15px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:4px;}
+.aib2-hdr-sub{display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+.aib2-hdr-date{font-size:12px;color:var(--aib2-mut);font-variant-numeric:tabular-nums;letter-spacing:.02em;}
+.aib2-cadence{font-size:10.5px;font-weight:650;letter-spacing:.02em;
+  padding:2px 9px;border-radius:999px;
+  background:color-mix(in srgb,var(--aib2-acc) 11%,transparent);
+  border:1px solid color-mix(in srgb,var(--aib2-acc) 24%,transparent);
+  color:color-mix(in srgb,var(--aib2-acc) 82%,var(--text));}
+.aib2-badge{margin-left:auto;align-self:center;font-size:10.5px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--aib2-acc);opacity:.85;text-align:right;line-height:1.45;
+  white-space:normal;max-width:210px;flex-shrink:0;}
+[data-theme="light"] .aib2-badge{opacity:.95;}
+
+/* ── section spine — a labelled hairline naming each movement ────────────────── */
+.aib2-sec{display:flex;align-items:center;gap:10px;margin:20px 0 11px;}
+.aib2-sec:first-child{margin-top:4px;}
+.aib2-sec::after{content:"";flex:1;height:1px;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--aib2-acc) 26%,var(--aib2-hair)),transparent);}
+.aib2-sec-label{font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--aib2-mut);display:inline-flex;align-items:center;gap:7px;}
+.aib2-sec-label::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--aib2-acc);}
+
+/* ── 2 · the gist (glance tick-list) ────────────────────────────────────────── */
+.aib2-gist{margin-bottom:16px;}
+.aib2-gist-list{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-direction:column;gap:9px;}
+.aib2-gist-list li{position:relative;padding-left:20px;
+  font-size:14.5px;line-height:1.55;color:var(--text);font-weight:500;}
+.aib2-gist-list li::before{content:"";position:absolute;left:2px;top:.58em;
+  width:7px;height:7px;border-radius:2px;transform:rotate(45deg);
+  background:color-mix(in srgb,var(--aib2-acc) 62%,transparent);}
+.aib2-gist-list li b{font-weight:750;color:var(--text);}
+/* first gist item = the most important thing today — a touch louder */
+.aib2-gist-list li:first-child{font-size:15px;font-weight:600;}
+
+/* STANCE PILL — the signature. Accent-tinted directive; the stance verb is bold. */
+.aib2-stance{display:flex;align-items:flex-start;gap:11px;
+  padding:13px 16px;border-radius:13px;
+  background:color-mix(in srgb,var(--aib2-acc) 12%,transparent);
+  border:1px solid color-mix(in srgb,var(--aib2-acc) 30%,transparent);
+  border-left:4px solid color-mix(in srgb,var(--aib2-acc) 72%,transparent);
+  box-shadow:0 1px 0 color-mix(in srgb,var(--aib2-acc) 8%,transparent);}
+[data-theme="light"] .aib2-stance{background:color-mix(in srgb,var(--aib2-acc) 9%,#fff);}
+.aib2-stance-mark{color:var(--aib2-acc);font-size:15px;line-height:1.4;flex-shrink:0;margin-top:1px;}
+.aib2-stance-body{font-size:15px;line-height:1.5;color:var(--text);font-weight:600;}
+.aib2-stance-body b{font-weight:800;
+  /* the stance verb gets the accent so the eye lands on the directive first */
+  color:color-mix(in srgb,var(--aib2-acc) 55%,var(--text));}
+/* tone variants — protect/stand-aside lean amber; act leans green; ignore muted */
+.aib2-stance--warn{--aib2-acc:var(--aib2-warn);}
+.aib2-stance--go{--aib2-acc:var(--aib2-good);}
+.aib2-stance--muted{--aib2-acc:var(--aib2-mut);}
+.aib2-stance--muted .aib2-stance-body b{color:var(--text);}
+
+/* v1 lead card (summary fallback when tldr absent) */
+.aib2-lead{font-size:16.5px;font-weight:600;line-height:1.62;color:var(--text);
+  padding:16px 18px;border-radius:13px;margin-bottom:16px;
+  background:color-mix(in srgb,var(--aib2-acc) 7%,transparent);
+  border:1px solid color-mix(in srgb,var(--aib2-acc) 18%,transparent);
+  border-left:3px solid color-mix(in srgb,var(--aib2-acc) 60%,transparent);}
+[data-theme="light"] .aib2-lead{background:color-mix(in srgb,var(--aib2-acc) 6%,#fff);}
+
+/* ── 3 · key readings (key_facts chip rail) ─────────────────────────────────── */
+.aib2-kf-rail{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.aib2-kf{display:inline-flex;align-items:baseline;gap:7px;
+  padding:6px 12px;border-radius:999px;font-size:12.5px;line-height:1.3;
+  background:var(--aib2-surf);border:1px solid var(--aib2-hair);max-width:100%;}
+.aib2-kf-k{color:var(--aib2-mut);font-weight:600;white-space:nowrap;}
+.aib2-kf-v{color:var(--text);font-weight:700;min-width:0;}
+/* tone tints — the value carries the read; the chip border/wash confirms it */
+.aib2-kf--good{background:color-mix(in srgb,var(--aib2-good) 10%,var(--aib2-surf));
+  border-color:color-mix(in srgb,var(--aib2-good) 34%,transparent);}
+.aib2-kf--good .aib2-kf-v{color:color-mix(in srgb,var(--aib2-good) 72%,var(--text));}
+.aib2-kf--warn{background:color-mix(in srgb,var(--aib2-warn) 10%,var(--aib2-surf));
+  border-color:color-mix(in srgb,var(--aib2-warn) 34%,transparent);}
+.aib2-kf--warn .aib2-kf-v{color:color-mix(in srgb,var(--aib2-warn) 74%,var(--text));}
+.aib2-kf--bad{background:color-mix(in srgb,var(--aib2-bad) 11%,var(--aib2-surf));
+  border-color:color-mix(in srgb,var(--aib2-bad) 36%,transparent);}
+.aib2-kf--bad .aib2-kf-v{color:color-mix(in srgb,var(--aib2-bad) 74%,var(--text));}
+.aib2-kf--info{background:color-mix(in srgb,var(--aib2-info) 10%,var(--aib2-surf));
+  border-color:color-mix(in srgb,var(--aib2-info) 32%,transparent);}
+.aib2-kf--info .aib2-kf-v{color:color-mix(in srgb,var(--aib2-info) 78%,var(--text));}
+.aib2-kf--neutral{/* uses base surf/hair; value stays --text */}
+
+/* ── 4 · confidence meter ────────────────────────────────────────────────────── */
+.aib2-conf{display:flex;align-items:center;gap:13px;margin-bottom:4px;
+  padding:11px 14px;background:var(--aib2-surf);border:1px solid var(--aib2-hair);border-radius:11px;}
+.aib2-conf-bar{display:flex;gap:4px;align-items:center;padding:4px;border-radius:7px;background:var(--aib2-track);cursor:help;}
+.aib2-conf-seg{width:26px;height:6px;border-radius:3px;
+  background:transparent;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--text) 8%,transparent);transition:background .2s;}
+.aib2-conf-seg.on{background:var(--aib2-acc);box-shadow:none;}
+.aib2-conf-label{font-size:12.5px;font-weight:650;color:var(--text);}
+.aib2-conf-asof{font-size:11.5px;color:var(--aib2-mut);margin-left:auto;font-variant-numeric:tabular-nums;}
+
+/* ── 5 · the full read (regime prose) ───────────────────────────────────────── */
+.aib2-regime{font-size:14px;color:var(--text);line-height:1.72;margin-bottom:16px;opacity:.94;}
+
+/* ── 6/7/8/9 · cards + grid ─────────────────────────────────────────────────── */
+.aib2-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:13px;margin-bottom:12px;}
+@media(max-width:560px){.aib2-grid{grid-template-columns:1fr;}}
+.aib2-card{padding:14px 16px 15px;border-radius:12px;background:var(--aib2-surf);border:1px solid var(--aib2-hair);}
+.aib2-card--full{margin-bottom:12px;}
+.aib2-card--conflicts{border-left:3px solid var(--aib2-warn);}
+.aib2-card--tx{border-left:3px solid var(--aib2-info);}
+.aib2-card--playbook{border-left:3px solid var(--aib2-acc);}
+.aib2-eyebrow{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--aib2-mut);margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+.aib2-card--conflicts .aib2-eyebrow{color:color-mix(in srgb,var(--aib2-warn) 78%,var(--aib2-mut));}
+.aib2-card--tx .aib2-eyebrow{color:color-mix(in srgb,var(--aib2-info) 74%,var(--aib2-mut));}
+.aib2-card--playbook .aib2-eyebrow{color:color-mix(in srgb,var(--aib2-acc) 74%,var(--aib2-mut));}
+.aib2-items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;}
+.aib2-items li{position:relative;padding-left:14px;font-size:13px;color:var(--text);line-height:1.6;}
+.aib2-items li::before{content:"";position:absolute;left:0;top:.62em;width:5px;height:5px;border-radius:50%;
+  background:color-mix(in srgb,currentColor 32%,transparent);}
+.aib2-card--conflicts .aib2-items li::before{background:color-mix(in srgb,var(--aib2-warn) 55%,transparent);}
+.aib2-card--tx .aib2-items li::before{background:color-mix(in srgb,var(--aib2-info) 55%,transparent);}
+.aib2-items li b,.aib2-prose b,.aib2-watch-body b{font-weight:700;color:var(--text);}
+.aib2-prose{font-size:13.5px;color:var(--text);line-height:1.72;}
+
+/* what to watch */
+.aib2-watch{list-style:none;margin:0;padding:0;}
+.aib2-watch-row{display:flex;align-items:flex-start;gap:9px;font-size:13.5px;color:var(--text);line-height:1.6;padding:5px 0;}
+.aib2-watch-row + .aib2-watch-row{border-top:1px solid var(--aib2-hair);}
+.aib2-watch-mark{color:var(--aib2-acc);flex-shrink:0;margin-top:1px;font-size:13px;line-height:1.5;}
+
+/* upcoming catalysts */
+.aib2-cat-rail{display:flex;flex-wrap:wrap;gap:8px;}
+.aib2-cat{display:inline-flex;align-items:baseline;gap:6px;padding:5px 12px;border-radius:999px;
+  font-size:12.5px;font-weight:600;background:var(--aib2-surf);border:1px solid var(--aib2-hair);color:var(--text);}
+.aib2-cat-d{color:var(--aib2-mut);font-variant-numeric:tabular-nums;font-weight:700;}
+.aib2-cat-read{font-size:12.5px;color:var(--aib2-mut);line-height:1.55;margin-top:11px;}
+
+/* ── 10 · degraded notice ────────────────────────────────────────────────────── */
+.aib2-degraded{font-size:12px;color:var(--aib2-mut);margin:8px 0 4px;padding:9px 13px;border-radius:9px;
+  background:color-mix(in srgb,var(--aib2-warn) 9%,transparent);
+  border:1px solid color-mix(in srgb,var(--aib2-warn) 22%,transparent);
+  border-left:3px solid var(--aib2-warn);}
+
+/* ── responsive — 390px bleed guard ─────────────────────────────────────────── */
+@media(max-width:560px){
+  .aib2-hdr{flex-wrap:wrap;}
+  /* the house-law badge takes its own wrapped row (aligned under the title,
+     past the 38px icon + 14px gap) — without a flex-basis it stays on row 1
+     and clips at the panel edge on narrow phones */
+  .aib2-badge{flex-basis:calc(100% - 52px);margin-left:52px;text-align:left;max-width:none;align-self:flex-start;}
+  .aib2-conf{flex-wrap:wrap;gap:9px;}
+  .aib2-conf-asof{margin-left:0;width:100%;}
+  .aib2-kf{width:100%;justify-content:space-between;}
+}
+/* MOR-2b Lane C — Morning Orientation surface: block header, state-chip slot,
+   the three block row idioms and the aibrief band. Included inside the <style>
+   of BOTH templates/am_edition.html.j2 and templates/aibrief.html.j2, so no page
+   depends on rules another page defines. Chips are the seat-pinned .dtp-chip
+   primitives from templates/theme.css; this file only scopes their art
+   direction inside the MOR-2b headers:
+     DARK  — tinted text on a transparent fill, hairline --line border; the
+             .dtp-dot pulse exists only on --live (the template emits the dot
+             only for CURRENT / OPEN);
+     LIGHT — a soft tint of the chip's own state colour (a currentColor
+             pseudo-element at 10 % opacity — the design checker forbids colour
+             functions, so the pinned "currentColor 10 %" is built from geometry
+             and opacity, not color-mix), no pulse, .eyebrow in --muted; depth is
+             the white --panel on the cool canvas plus 1 px --line hairlines,
+             never a shadow.
+   Token form only — no colour or radius literals, no var() fallback literals. */
+.mx-block-header { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px; }
+.mx-block-header h2 { margin:0; font-size:var(--fs-md); font-weight:600; }
+.mx-block-header .eyebrow { color:var(--muted); }
+.mx-block-header .dtp-asof { margin-left:auto; }
+.mx-chip-slot { display:inline-flex; align-items:center; gap:6px; }
+.mx-block-header .dtp-chip { background:transparent; position:relative; isolation:isolate; }
+html[data-theme="light"] .mx-block-header .dtp-chip::before { content:""; position:absolute; inset:0; border-radius:inherit; background:currentColor; opacity:.1; pointer-events:none; z-index:-1; }
+html[data-theme="light"] .mx-block-header .dtp-dot { animation:none; }
+.mx-stale-why { font-size:var(--fs-sm); color:var(--muted); margin:0 0 6px; }
+
+.mx-cp-row, .mx-rw-row, .mx-ol-row { padding:12px 0; border-top:1px solid var(--line); }
+.mx-block-header + .mx-cp-row, .mx-block-header + .mx-rw-row, .mx-block-header + .mx-ol-row,
+.mx-stale-why + .mx-cp-row, .mx-stale-why + .mx-rw-row, .mx-stale-why + .mx-ol-row { border-top:none; padding-top:0; }
+.mx-cp-row { display:flex; flex-direction:column; gap:2px; }
+.mx-cp-row .mx-cp-read { font-size:var(--fs-body); line-height:1.5; }
+.mx-cp-row .mx-cp-meta, .mx-rw-row .mx-rw-meta { font-size:var(--fs-sm); color:var(--muted); }
+.mx-rw-row { display:flex; flex-direction:column; gap:4px; }
+.mx-rw-row .mx-rw-text { font-size:var(--fs-body); line-height:1.5; }
+.mx-ol-row { display:flex; align-items:center; flex-wrap:wrap; gap:8px 16px; }
+.mx-ol-row .mx-ol-label { font-size:var(--fs-label); color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.06em; }
+
+/* aibrief band — one .panel directly under the brief's h1. */
+.mx-band { display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px; }
+.mx-band .mx-band-lead { flex:1 1 auto; min-width:0; font-size:var(--fs-body); line-height:1.5; }
+.mx-band .brief-link { color:var(--ink-link, var(--link)); font-weight:600; }
+</style>
 </head>
 <body>
 
@@ -64,7 +363,7 @@
 
 
 
-    <link rel="stylesheet" href="navigation-refresh.css?v=c299c324">
+    <link rel="stylesheet" href="navigation-refresh.css">
     <div class="nav-links">
     
     <a class="nav-brand" href="start.html" aria-label="MASTERMINDX — Home">
@@ -223,6 +522,8 @@
               <a class="mega-item nm-feat" href="neural_web.html"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 24h36M24 6v36"/><circle class="soft-fill" cx="24" cy="24" r="5"/><circle cx="11" cy="12" r="3"/><circle cx="37" cy="12" r="3"/><circle cx="9" cy="34" r="3"/><circle cx="39" cy="34" r="3"/><path class="accent" d="M20 21 13 14M28 21l7-7M20 27l-8 5M28 27l8 5M14 12h20M11 15l-2 16M37 15l2 16M12 34h24"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Neural Web</span><span class="l-zh">智脑</span></span><span class="item-desc d"><span class="l-en">See how every signal votes</span><span class="l-zh">查看每个信号如何投票</span></span></span></a>
               <a class="mega-item nm-feat" href="market_memory.html"><span class="icon-drawing nm-ic violet" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M8 10h32v28H8z"/><path d="M7 8h14c5 0 8 3 8 8v24c0-5-3-8-8-8H7zM41 8H27v32c0-5 3-8 8-8h6z"/><path class="accent" d="M13 16h9M13 21h7M33 15h4M33 20h4"/><circle class="soft-fill" cx="27" cy="29" r="4"/><path d="M24 29h6"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Market Memory</span><span class="l-zh">市场记忆</span></span><span class="item-desc d"><span class="l-en">Put today beside comparable episodes</span><span class="l-zh">将今天与可比历史片段并排</span></span></span></a>
               <a class="mega-item nm-feat" href="reference.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M10 14h28v26H10z"/><path d="M7 12h28a3 3 0 0 1 3 3v21a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3Z"/><path class="accent" d="M16 12V8h12v4"/><path d="M11 22h18M11 28h13"/><circle class="soft-fill" cx="33" cy="28" r="3"/><path class="accent" d="M11 34h9"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Market Reference</span><span class="l-zh">市场参考</span></span><span class="item-desc d"><span class="l-en">Look up any indicator or term</span><span class="l-zh">查询任意指标与术语</span></span></span></a>
+              
+              <a class="mega-item nm-feat" href="am_edition.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><path class="ghost" d="M6 32h36M9 26h30"/><path class="accent" d="M24 22V8M24 8l-7 7M24 8l7 7"/><circle class="soft-fill" cx="24" cy="28" r="6"/><path d="M14 32v3M34 32v3M9 35v3M39 35v3"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Morning Edition</span><span class="l-zh">早间版</span></span><span class="item-desc d"><span class="l-en">Tape, session clock, regime and watch — before the open</span><span class="l-zh">开盘前 — 盘面、交易时段、周期与观察</span></span></span></a>
             </div>
           </section>
           <section class="mega-section nav-mega-section">
@@ -242,6 +543,7 @@
               <a class="mega-item nav-mega-item" href="etfs.html"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="m8 14 16-8 16 8-16 8Z"/><path d="m8 22 16 8 16-8M8 30l16 8 16-8"/><path class="accent" d="M14 18v12c0 5 4 9 10 9s10-4 10-9V18"/><path class="ghost" d="M24 22v15"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Fund Flows</span><span class="l-zh">基金流向</span></span><span class="item-desc d"><span class="l-en">Where institutional capital is moving</span><span class="l-zh">机构资金流向</span></span></span></a>
               <a class="mega-item nav-mega-item" href="cycle.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="17"/><circle class="ghost" cx="24" cy="24" r="11"/><path d="M24 7v6M41 24h-6M24 41v-6M7 24h6"/><path class="accent" d="M24 24 34 14M34 10v4h4"/><circle class="soft-fill" cx="24" cy="24" r="3"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Cycle Intelligence</span><span class="l-zh">周期情报</span></span><span class="item-desc d"><span class="l-en">Where the economy is heading</span><span class="l-zh">经济周期的下一站</span></span></span></a>
               <a class="mega-item nav-mega-item" href="macro_context.html"><span class="icon-drawing nm-ic cyan" aria-hidden="true"><svg viewBox="0 0 48 48"><circle class="soft-fill" cx="31" cy="14" r="7"/><path class="accent" d="M31 3v4M31 21v4M20 14h4M38 14h4M23 6l3 3M36 19l3 3"/><path d="M11 34c-4 0-6-3-6-6s2-6 6-6c2-6 11-7 15-2 5-1 9 2 9 7 0 4-3 7-8 7Z"/><path d="m13 42 5-5 4 3 6-5 6 2"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">Macro Weather</span><span class="l-zh">宏观气象</span></span><span class="item-desc d"><span class="l-en">Growth, inflation and liquidity now</span><span class="l-zh">当前增长、通胀与流动性</span></span></span></a>
+              <a class="mega-item nav-mega-item" href="ontology.html"><span class="icon-drawing nm-ic" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="10" cy="37" r="4"/><circle cx="24" cy="23" r="4"/><circle cx="38" cy="9" r="4"/><path d="m13 34 8-8M27 20l8-8"/><path class="ghost" d="M10 9v20M38 17v20"/><circle class="soft-fill" cx="24" cy="23" r="7"/><path class="accent" d="M24 30v9M19 39h10"/></svg></span><span class="nm-tx"><span class="item-title nm-t"><span class="l-en">WTI Live Path</span><span class="l-zh">WTI 实时路径</span></span><span class="item-desc d"><span class="l-en">Which step of the oil-to-rates path is live now</span><span class="l-zh">油价到利率的传导此刻走到哪一步</span></span></span></a>
             </div>
           </section>
         </div>
@@ -278,10 +580,10 @@
     </div>
   </div>
   
-  <script src="logo_config.js?v=b37d33d3" defer></script>
-  <script src="stock-logos.js?v=cc29be53" defer></script>
-  <script src="live_config.js?v=52943e92" defer></script>
-  <script src="live.js?v=3cb38601" defer></script>
+  <script src="logo_config.js"></script>
+  <script src="stock-logos.js"></script>
+  <script src="live_config.js"></script>
+  <script src="live.js"></script>
   <div class="nav-search">
     <span class="mag" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8.7" cy="8.7" r="5.6"></circle><path d="m12.9 12.9 4 4"></path></svg></span>
     <input type="text" autocomplete="off" aria-label="Search stocks"
@@ -313,11 +615,39 @@
 
 
 
+
+
+<div class="panel">
+  <div class="mx-block-header">
+    <span class="eyebrow"><span class="l-en">Morning Orientation</span><span class="l-zh">盘前导读</span></span>
+    <h2><span class="l-en">Before the US open — one read</span><span class="l-zh">美股开盘前 — 一览</span></h2>
+    <span class="mx-chip-slot">
+      <span class="dtp-chip dtp-chip--pre">
+        
+        <span class="l-en">Not yet open</span><span class="l-zh">尚未开盘</span>
+      </span>
+    </span>
+    
+    <span class="dtp-asof"><span class="l-en">Built at</span><span class="l-zh">构建时间</span> 2026-09-28T05:46</span>
+    
+  </div>
+  
+  <div class="mx-band">
+    
+    <span class="mx-band-lead"><span class="l-en">The morning orientation page has built.</span><span class="l-zh">今晨导读页面已生成。</span></span>
+    
+    <a class="brief-link" href="am_edition.html"><span class="l-en">Open the morning orientation page →</span><span class="l-zh">打开今晨导读页面 →</span></a>
+  </div>
+  
+</div>
+
+
+
 <div class="panel" style="padding:10px 16px">
   <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
     <h2 style="margin:0"><span class="l-en">Right now</span><span class="l-zh">当前状态</span></h2>
     
-    <span class="muted" style="font-size:11px"><span class="l-en">as of</span><span class="l-zh">数据截至</span> 2026-09-15</span>
+    <span class="muted" style="font-size:11px"><span class="l-en">as of</span><span class="l-zh">数据截至</span> 2026-09-25</span>
     
     <span class="help">?<span class="tip"><span class="l-en">Snapshot of the deterministic dashboards at build time — regime, any signals pointing in different directions, and what liquidity is doing. Research context only.</span><span class="l-zh">构建时的确定性看板快照 — 周期状态、有无方向分歧信号，以及流动性动向。仅供研究参考。</span></span></span>
   </div>
@@ -326,15 +656,15 @@
     <div class="ctx-row">
       <span class="ctx-label"><span class="l-en">Regime</span><span class="l-zh">市场格局</span></span>
       <span class="ctx-chip regime">
-        <span class="l-en">Risk-on</span>
-        <span class="l-zh">风险偏好</span>
+        <span class="l-en">Mixed</span>
+        <span class="l-zh">混合</span>
       </span>
     </div>
     
     
     <div class="ctx-row">
       <span class="ctx-label"><span class="l-en">Signals</span><span class="l-zh">信号</span></span>
-      <span data-tip-en="Note: 2 signal divergence(s) detected. By severity — tension: 2, note: 0." data-tip-zh="提示：检测到 2 处信号分歧。按严重程度 — 矛盾：2，提示：0。">
+      <span data-tip-en="Note: 4 signal divergence(s) detected. By severity — tension: 2, note: 2." data-tip-zh="提示：检测到 4 处信号分歧。按严重程度 — 矛盾：2，提示：2。">
         <span class="l-en">One tension worth knowing: bonds and stocks are telling different stories.</span>
         <span class="l-zh">值得关注的一处矛盾：债券与股票传递出不同信号。</span>
       </span>
@@ -344,17 +674,17 @@
     <div class="ctx-row">
       <span class="ctx-label"><span class="l-en">Money</span><span class="l-zh">流动性</span></span>
       <span>
-        <span class="l-en">Liquidity is roughly neutral</span>
-        <span class="l-zh">流动性大体中性</span>
+        <span class="l-en">Money is technically expanding but conditions are stressed — treat cautiously</span>
+        <span class="l-zh">流动性技术上扩张但压力较大，谨慎对待</span>
       </span>
     </div>
     
     
     <div class="ctx-row">
       <span class="ctx-label"><span class="l-en">AI review</span><span class="l-zh">AI复盘</span></span>
-      <span class="ctx-chip cortex-deg">
-        <span class="l-en">Rate-limited overnight — ran on dashboards alone</span>
-        <span class="l-zh">隔夜遭速率限制，仅依靠看板运行</span>
+      <span class="ctx-chip cortex-ok">
+        <span class="l-en">Ran successfully</span>
+        <span class="l-zh">已成功运行</span>
       </span>
     </div>
     
@@ -369,6 +699,11 @@
     <h2 style="margin:0"><span class="l-en">What's ahead</span><span class="l-zh">近期日程</span></h2>
     <span class="help">?<span class="tip"><span class="l-en">Scheduled macro events and data releases in the next two weeks. Dates are deterministic — no forecasts on the visible tier. Hover any row for model leans and market-implied reads; all annotated with no accuracy record yet while the scoreboard is empty.</span><span class="l-zh">未来两周的宏观事件与数据发布。日期为确定性信息，可见层不含预测。悬停行可查看模型倾向与市场隐含读数，评分板为空时注明尚无记录。</span></span></span>
   </div>
+  
+  <p class="muted sm" style="margin:6px 0 8px">
+    <span class="l-en">Quarter-end is 1 trading day away — watch for rebalancing flows.</span>
+    <span class="l-zh">距季末还有 1 个交易日，关注再平衡资金流。</span>
+  </p>
   
   
   <ul class="fwd-list">
@@ -391,7 +726,7 @@
     
     <li>
       <span class="fwd-date">2026-09-30</span>
-      <span data-tip-en="In 14 day(s). No accuracy record yet. model leans hot." data-tip-zh="距今 14 天。No accuracy record yet。 模型偏向高于预期。">
+      <span data-tip-en="In 3 day(s). No accuracy record yet. model leans hot." data-tip-zh="距今 3 天。No accuracy record yet。 模型偏向高于预期。">
         <span class="l-en">PCE</span>
         <span class="l-zh">PCE</span>
       </span>
@@ -399,7 +734,15 @@
     
     <li>
       <span class="fwd-date">2026-10-02</span>
-      <span data-tip-en="In 16 day(s). No accuracy record yet." data-tip-zh="距今 16 天。No accuracy record yet。">
+      <span data-tip-en="Time: 08:30 ET · Source: static" data-tip-zh="时间：08:30 东部时间">
+        <span class="l-en">Jobs report (nonfarm payrolls)</span>
+        <span class="l-zh">非农就业报告</span>
+      </span>
+    </li>
+    
+    <li>
+      <span class="fwd-date">2026-10-02</span>
+      <span data-tip-en="In 5 day(s). No accuracy record yet." data-tip-zh="距今 5 天。No accuracy record yet。">
         <span class="l-en">NFP</span>
         <span class="l-zh">NFP</span>
       </span>
@@ -407,7 +750,7 @@
     
     <li>
       <span class="fwd-date">2026-10-14</span>
-      <span data-tip-en="In 28 day(s). No accuracy record yet. model leans cool." data-tip-zh="距今 28 天。No accuracy record yet。 模型偏向低于预期。">
+      <span data-tip-en="In 17 day(s). No accuracy record yet. model leans in-line." data-tip-zh="距今 17 天。No accuracy record yet。 模型偏向符合预期。">
         <span class="l-en">CPI</span>
         <span class="l-zh">CPI</span>
       </span>
@@ -438,22 +781,22 @@
     <div class="aib2-icon" aria-hidden="true">AI</div>
     <div class="aib2-hdr-meta">
       <div class="aib2-hdr-title"><span class="l-en">AI Daily Brief · cross-asset synthesis</span><span class="l-zh">AI 每日简报 · 跨资产综合</span></div>
-      <div class="aib2-hdr-sub"><span class="aib2-hdr-date num">2026-09-16</span>
+      <div class="aib2-hdr-sub"><span class="aib2-hdr-date num">2026-09-28</span>
         <span class="aib2-cadence"><span class="l-en">Updated daily</span><span class="l-zh">每日更新</span></span></div>
     </div><span class="aib2-badge"><span class="l-en">A read-through of existing signals — not a signal source</span><span class="l-zh">仅为现有信号的汇总解读 — 非独立信号源</span></span>
   </div><div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">The gist</span><span class="l-zh">要点</span></span></div>
   <div class="aib2-gist">
-    <ul class="aib2-gist-list"><li><span class="l-en"><b>Hawkish Fed repricing</b>: the market is pricing out rate cuts, and the front end is rising.</span><span class="l-zh"><b>美联储鹰派重新定价</b>：市场正在削减降息预期，短端利率上升</span></li><li><span class="l-en"><b>Regime in flux</b>: still Stagflation on the map, but growth has cooled — drifting toward Reflation.</span><span class="l-zh"><b>格局变动中</b>：地图上仍为滞胀，但增长已降温——正向通货再膨胀漂移</span></li><li><span class="l-en"><b>Bonds diverge</b>: the rates desk is worried about a dollar squeeze the stock tape doesn't show yet.</span><span class="l-zh"><b>债券出现分化</b>：利率交易台担心美元流动性紧张，而股市行情尚未显示出来。</span></li></ul><div class="aib2-stance aib2-stance--accent">
+    <ul class="aib2-gist-list"><li><span class="l-en"><b>Rates bite</b>: Rising real yields pressure stocks, bonds, gold, and Bitcoin.</span><span class="l-zh"><b>利率冲击显现</b>：实际收益率上升令股票、债券、黄金和比特币承压。</span></li><li><span class="l-en"><b>Reflation fragile</b>: Inflation is warming while recent growth has cooled.</span><span class="l-zh"><b>再通胀态势脆弱</b>：通胀正在升温，而近期经济增长有所降温。</span></li><li><span class="l-en"><b>Credit caution</b>: Credit is widening despite calm markets and healthy bonds.</span><span class="l-zh"><b>信用风险需警惕</b>：尽管市场平静、债券表现稳健，信用利差仍在扩大。</span></li></ul><div class="aib2-stance aib2-stance--accent">
       <span class="aib2-stance-mark" aria-hidden="true">&#x25B8;</span>
       <span class="aib2-stance-body">
         <span class="l-en"><b>What to do</b>: Watch — don't chase</span>
-        <span class="l-zh"><b>怎么做</b>：观望——不要追涨</span>
+        <span class="l-zh"><b>应对策略</b>：保持观望，切勿追涨</span>
       </span>
     </div>
   </div>
   <div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">Key readings</span><span class="l-zh">关键读数</span></span></div>
   <div class="aib2-kf-rail"><span class="aib2-kf aib2-kf--warn">
-      <span class="aib2-kf-k"><span class="l-en">Regime</span><span class="l-zh">市场格局</span></span><span class="aib2-kf-v"><span class="l-en">Stagflation · shifting</span><span class="l-zh">滞胀 · 转换中</span></span>
+      <span class="aib2-kf-k"><span class="l-en">Regime</span><span class="l-zh">市场格局</span></span><span class="aib2-kf-v"><span class="l-en">Reflation · shifting</span><span class="l-zh">再通胀 · 转换中</span></span>
     </span><span class="aib2-kf aib2-kf--good">
       <span class="aib2-kf-k"><span class="l-en">Market risk</span><span class="l-zh">市场风险</span></span><span class="aib2-kf-v"><span class="l-en">Low</span><span class="l-zh">低</span></span>
     </span><span class="aib2-kf aib2-kf--good">
@@ -463,65 +806,65 @@
     </span><span class="aib2-kf aib2-kf--warn">
       <span class="aib2-kf-k"><span class="l-en">Credit</span><span class="l-zh">信用</span></span><span class="aib2-kf-v"><span class="l-en">Tight, but widening</span><span class="l-zh">偏紧但在走宽</span></span>
     </span><span class="aib2-kf aib2-kf--info">
-      <span class="aib2-kf-k"><span class="l-en">What's moving markets</span><span class="l-zh">当前主导</span></span><span class="aib2-kf-v"><span class="l-en">Fed repricing</span><span class="l-zh">Fed repricing</span></span>
+      <span class="aib2-kf-k"><span class="l-en">What's moving markets</span><span class="l-zh">当前主导</span></span><span class="aib2-kf-v"><span class="l-en">Real-rate shock</span><span class="l-zh">Real-rate shock</span></span>
     </span></div><div class="aib2-conf">
     <div class="aib2-conf-bar" role="img"
-         data-tip-en="Confidence Medium — how firmly the read holds, from the AI synthesis."
-         data-tip-zh="置信度 中 — 该解读的把握程度，来自 AI 综合。">
-      <span class="aib2-conf-seg on"></span>
+         data-tip-en="Confidence Low — how firmly the read holds, from the AI synthesis."
+         data-tip-zh="置信度 低 — 该解读的把握程度，来自 AI 综合。">
       <span class="aib2-conf-seg on"></span>
       <span class="aib2-conf-seg"></span>
+      <span class="aib2-conf-seg"></span>
     </div>
-    <span class="aib2-conf-label"><span class="l-en">Confidence: Medium</span><span class="l-zh">置信度：中</span></span><span class="aib2-conf-asof"><span class="l-en">as of</span><span class="l-zh">数据截至</span> 2026-09-16</span></div>
+    <span class="aib2-conf-label"><span class="l-en">Confidence: Low</span><span class="l-zh">置信度：低</span></span><span class="aib2-conf-asof"><span class="l-en">as of</span><span class="l-zh">数据截至</span> 2026-09-28</span></div>
   <div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">The full read</span><span class="l-zh">完整解读</span></span></div>
   <div class="aib2-regime">
-    <span class="l-en">We are in Stagflation on the map, but the growth score has cooled sharply over the past five days and the regime is officially transitioning. The map says the drift is toward Reflation — the odds are shifting that way, not deeper into Stagflation. Today's dominant driver is the Fed repricing: the market has priced rate cuts out, and short-term rates are up sharply.
+    <span class="l-en">The US remains on the Reflation part of the map, and momentum still favors Reflation. Yet confidence is low: recent growth cooled while inflation warmed.
 
-That driver is doing two things at once. It is cooling growth — which is why the map is drifting — and it is making the dollar strong, which leans on everything from gold to emerging-market stocks. The bond desk reads this as a late-cycle, healthy-but-tight credit picture, and it is flagging a dollar squeeze that the stock gauges have not yet reflected.</span>
-    <span class="l-zh">我们在地图上处于滞胀状态，但过去五天增长评分急剧降温，体制正在正式过渡。地图显示漂移方向是再通胀——概率正在向那个方向转移，而不是进一步陷入滞胀。今天的主导驱动因素是美联储重新定价：市场已把降息排除在定价之外，短期利率大幅上升。
+The main driver is rising real yields. The Fed’s tightening stance supports that pressure, although a softer dollar and expanding US liquidity partly cushion risk assets.</span>
+    <span class="l-zh">美国仍处于再通胀区间，动能也继续利好再通胀。但信心不足：近期增长降温，而通胀升温。
 
-这一驱动因素同时在做两件事。它在给增长降温——这就是地图漂移的原因——同时使美元走强，对从黄金到新兴市场股票的一切形成压力。债券部门将此解读为周期后期的信贷状况，紧张但健康，并正在标记一个股票指标尚未反映的美元紧缩。</span>
+主要驱动因素是实际收益率上升。美联储的紧缩立场加剧了这一压力，不过美元走软和美国流动性扩张在一定程度上为风险资产提供缓冲。</span>
   </div>
   <div class="aib2-grid"><div class="aib2-card aib2-card--conflicts">
       <div class="aib2-eyebrow"><span class="l-en">&#x2696;&#xFE0E; Where signals disagree</span><span class="l-zh">&#x2696;&#xFE0E; 信号分歧</span></div>
-      <ul class="aib2-items"><li><span class="l-en"><b>Dollar squeeze</b>: the currency desk sees a triple-red dollar squeeze, but the stock tape is still risk-on — that gap is the caution flag.</span><span class="l-zh"><b>美元紧缩</b>：外汇部门看到三重红色美元紧缩信号，但股票行情仍是风险偏好——这一差距就是警示旗。</span></li><li><span class="l-en"><b>Bond health</b>: the bond desk says credit is tight but healthy, while the equity read is cooling — bonds are not confirming the equity softness yet.</span><span class="l-zh"><b>债券健康状况</b>：债券部门表示信贷紧张但健康，而股票读数正在降温——债券尚未确认股票的疲软。</span></li></ul>
+      <ul class="aib2-items"><li><span class="l-en"><b>Risk split</b>: Stocks and currencies look risk-on, but credit is widening — calm conditions deserve less confidence.</span><span class="l-zh"><b>风险分化</b>：股票和货币呈现风险偏好，但信用利差正在走阔——对平静市况应降低信心。</span></li><li><span class="l-en"><b>Regional split</b>: US liquidity is expanding, but China and Hong Kong liquidity is contracting — global support is uneven.</span><span class="l-zh"><b>区域分化</b>：美国流动性正在扩张，但中国内地和香港的流动性正在收缩——全球支撑并不均衡。</span></li><li><span class="l-en"><b>Bond mismatch</b>: Bond health is strong, but bonds no longer cushion stock losses — portfolio protection is weaker.</span><span class="l-zh"><b>债券错配</b>：债券健康状况良好，但已无法缓冲股票亏损——投资组合的保护作用减弱。</span></li></ul>
     </div><div class="aib2-card aib2-card--tx">
       <div class="aib2-eyebrow"><span class="l-en">&#x26D3;&#xFE0E; Chain reactions</span><span class="l-zh">&#x26D3;&#xFE0E; 连锁反应</span></div>
-      <ul class="aib2-items"><li><span class="l-en">If the Fed repricing keeps up → growth assets like chips and software keep feeling pressure.</span><span class="l-zh">如果美联储重新定价持续 → 芯片和软件等成长资产将继续承压。</span></li><li><span class="l-en">If the dollar keeps firming → gold, copper, and emerging-market stocks stay headwind-bound.</span><span class="l-zh">如果美元继续走强 → 黄金、铜和新兴市场股票将继续面临逆风。</span></li></ul>
+      <ul class="aib2-items"><li><span class="l-en">If real yields keep rising → growth stocks, long bonds, gold, and Bitcoin face more pressure</span><span class="l-zh">若实际收益率持续上升 → 成长股、长期债券、黄金和 Bitcoin 将面临更大压力</span></li><li><span class="l-en">If credit keeps widening → the stock market’s calm mood becomes harder to trust</span><span class="l-zh">如果信用利差继续扩大 → 股市的平静氛围将愈发难以信赖</span></li></ul>
     </div></div><div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">What to watch</span><span class="l-zh">关注事项</span></span></div>
   <div class="aib2-card aib2-card--full">
     <ul class="aib2-watch"><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>2-year yield reversal</b>: hawkish driver fades if it drops</span>
-          <span class="l-zh"><b>2年期收益率反转</b>：若下行，鹰派驱动力消退</span>
+          <span class="l-en"><b>Real yields reverse</b>: pressure on long-duration assets starts to ease</span>
+          <span class="l-zh"><b>实际收益率反转</b>：长久期资产的压力开始缓解</span>
         </span>
       </li><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>Growth axis flip</b>: one more soft month tips the map to Reflation</span>
-          <span class="l-zh"><b>增长轴翻转</b>：再来一个月疲软数据，格局将转向通货再膨胀</span>
+          <span class="l-en"><b>Credit stops widening</b>: bond-market caution fades</span>
+          <span class="l-zh"><b>信用利差停止扩大</b>：债券市场的谨慎情绪消退</span>
         </span>
       </li><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>Jobless claims today</b>: labor softness could reopen the easing path</span>
-          <span class="l-zh"><b>今日初请失业金人数</b>：劳动力市场走软可能重启宽松路径</span>
+          <span class="l-en"><b>Inflation release runs hot</b>: restrictive-rate pressure gains support</span>
+          <span class="l-zh"><b>通胀数据偏热</b>：限制性利率压力获得支撑</span>
         </span>
       </li><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>PCE on Sept 30</b>: hot print would confirm the hawkish stance</span>
-          <span class="l-zh"><b>9月30日PCE数据</b>：若数据火热将确认鹰派立场</span>
+          <span class="l-en"><b>Jobs weaken sharply</b>: the growth side of Reflation loses support</span>
+          <span class="l-zh"><b>就业显著走弱</b>：再通胀交易的增长逻辑失去支撑</span>
         </span>
       </li></ul>
   </div>
   <div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">Upcoming catalysts</span><span class="l-zh">即将到来的催化剂</span></span></div>
   <div class="aib2-card aib2-card--full">
-    <div class="aib2-cat-rail"><span class="aib2-cat"><span class="aib2-cat-d num">09-17</span> claims</span><span class="aib2-cat"><span class="aib2-cat-d num">09-30</span> PCE / personal income (BEA)</span><span class="aib2-cat"><span class="aib2-cat-d num">09-30</span> GDP (BEA estimate)</span></div>
+    <div class="aib2-cat-rail"><span class="aib2-cat"><span class="aib2-cat-d num">09-30</span> GDP (BEA estimate)</span><span class="aib2-cat"><span class="aib2-cat-d num">09-30</span> PCE / personal income (BEA)</span><span class="aib2-cat"><span class="aib2-cat-d num">10-02</span> Jobs report (nonfarm payrolls)</span></div>
     <div class="aib2-cat-read">
-      <span class="l-en">The next two weeks center on one day: September 30, when both the GDP estimate and the PCE inflation report land together. The inflation model leans hot — 65% odds of a warm number — which would reinforce the hawkish repricing. Before that, today's jobless claims are due, and the benchmark number is there, but it is a naive baseline, not a forecast.</span>
-      <span class="l-zh">The next two weeks center on one day: September 30, when both the GDP estimate and the PCE inflation report land together. The inflation model leans hot — 65% odds of a warm number — which would reinforce the hawkish repricing. Before that, today's jobless claims are due, and the benchmark number is there, but it is a naive baseline, not a forecast.</span>
+      <span class="l-en">Growth and inflation arrive together, followed by jobs. Those releases can clarify whether Reflation holds or the current tension deepens.</span>
+      <span class="l-zh">Growth and inflation arrive together, followed by jobs. Those releases can clarify whether Reflation holds or the current tension deepens.</span>
     </div></div>
 </div>
 
@@ -537,16 +880,16 @@ That driver is doing two things at once. It is cooling growth — which is why t
     <div class="aib2-icon" aria-hidden="true">AI</div>
     <div class="aib2-hdr-meta">
       <div class="aib2-hdr-title"><span class="l-en">AI Daily Brief · China &amp; HK synthesis</span><span class="l-zh">AI 每日简报 · 中港综合</span></div>
-      <div class="aib2-hdr-sub"><span class="aib2-hdr-date num">2026-09-16</span>
+      <div class="aib2-hdr-sub"><span class="aib2-hdr-date num">2026-09-24</span>
         <span class="aib2-cadence"><span class="l-en">Updated daily</span><span class="l-zh">每日更新</span></span></div>
     </div><span class="aib2-badge"><span class="l-en">A read-through of existing signals — not a signal source</span><span class="l-zh">仅为现有信号的汇总解读 — 非独立信号源</span></span>
   </div><div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">The gist</span><span class="l-zh">要点</span></span></div>
   <div class="aib2-gist">
-    <ul class="aib2-gist-list"><li><span class="l-en"><b>Head</b>: Growth scare deepens. Both mainland and Hong Kong sit in the slowdown corner of the map.</span><span class="l-zh"><b>标题</b>：增长恐慌加深。内地和香港均处于地图上的放缓角落。</span></li><li><span class="l-en"><b>Head</b>: Easing is stuck in the pipes. Rate cuts are delivered, but money is not yet reaching the system.</span><span class="l-zh"><b>标题</b>：宽松政策仍在管道中受阻。降息已实施，但资金尚未到达系统。</span></li><li><span class="l-en"><b>Head</b>: Leaders look stretched. Coal and banks have run far; the crowd is already in them.</span><span class="l-zh"><b>标题</b>：领涨板块显得拉伸过度。煤炭和银行已大幅上涨；人群已涌入其中。</span></li><li><span class="l-en"><b>Head</b>: Hong Kong is split. Global risk-off is pulling it down more than the mainland.</span><span class="l-zh"><b>标题</b>：香港走势分化。全球避险情绪对香港的拖累大于内地。</span></li></ul><div class="aib2-stance aib2-stance--accent">
+    <ul class="aib2-gist-list"><li><span class="l-en"><b>Mainland strain</b>: Growth is cooling while easing has not reached system liquidity.</span><span class="l-zh"><b>中国内地压力加剧</b>：经济增长正在降温，而宽松政策尚未传导至体系流动性</span></li><li><span class="l-en"><b>Leaders stretched</b>: Banks and coal look extended; better groups may reward pullbacks.</span><span class="l-zh"><b>领涨板块涨幅过大</b>：银行和煤炭板块看起来已超涨；较优板块回调时或有机会。</span></li><li><span class="l-en"><b>HK squeeze</b>: Higher US rates and peg outflows offset neutral global risk.</span><span class="l-zh"><b>香港市场承压</b>：美国利率上升及联系汇率制度下的资金外流，抵消了中性的全球风险情绪。</span></li></ul><div class="aib2-stance aib2-stance--accent">
       <span class="aib2-stance-mark" aria-hidden="true">&#x25B8;</span>
       <span class="aib2-stance-body">
-        <span class="l-en"><b>What to do</b>: Watch — don't chase.</span>
-        <span class="l-zh"><b>操作策略</b>：观望——不要追高。</span>
+        <span class="l-en"><b>What to do</b>: Get ready</span>
+        <span class="l-zh"><b>应对策略</b>：做好准备</span>
       </span>
     </div>
   </div>
@@ -571,54 +914,47 @@ That driver is doing two things at once. It is cooling growth — which is why t
       <span class="aib2-conf-seg on"></span>
       <span class="aib2-conf-seg"></span>
     </div>
-    <span class="aib2-conf-label"><span class="l-en">Confidence: Medium</span><span class="l-zh">置信度：中</span></span><span class="aib2-conf-asof"><span class="l-en">as of</span><span class="l-zh">数据截至</span> 2026-09-16</span></div>
+    <span class="aib2-conf-label"><span class="l-en">Confidence: Medium</span><span class="l-zh">置信度：中</span></span><span class="aib2-conf-asof"><span class="l-en">as of</span><span class="l-zh">数据截至</span> 2026-09-24</span></div>
   <div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">The full read</span><span class="l-zh">完整解读</span></span></div>
   <div class="aib2-regime">
-    <span class="l-en">We are in the growth-scare corner on both sides of the border. Growth has cooled over the past few weeks, and inflation is still falling. The main drift is that growth is weakening again after a brief pickup — we are drifting deeper into the slowdown corner, not out of it.
+    <span class="l-en">Mainland sits in growth-scare territory, with growth cooling and price pressure still weak. The next border is unclear because the transition-direction read is missing. Domestic liquidity is contracting even after earlier easing.
 
-The central bank has already cut rates and freed up bank reserves. But that easing has not yet turned into a stronger stance in the official classifier, and credit is still shrinking. The easing is happening, but it is stuck in the pipes.</span>
-    <span class="l-zh">我们在边境两侧都处于增长恐慌象限。过去几周增长已降温，通胀仍在下降。主要趋势是增长在短暂回升后再次走弱——我们正在向放缓象限的更深处漂移，而不是走出放缓象限。
+Hong Kong also sits in growth-scare territory, but less firmly. Neutral global appetite helps little while higher US rates and weak-side peg pressure import tighter money.</span>
+    <span class="l-zh">内地处于增长担忧区间，经济增长降温，价格压力仍然偏弱。由于缺少转向方向信号，下一道边界尚不明确。即使此前已实施宽松，国内流动性仍在收缩。
 
-央行已经降息并释放了银行准备金。但这一宽松尚未转化为官方分类器中更强的立场，信贷仍在收缩。宽松正在发生，但卡在了管道中。</span>
+香港也处于增长担忧区间，但程度较轻。全球风险偏好中性，助力有限；美息上升及联系汇率弱方压力则输入更紧的货币环境。</span>
   </div>
   <div class="aib2-grid"><div class="aib2-card aib2-card--conflicts">
       <div class="aib2-eyebrow"><span class="l-en">&#x2696;&#xFE0E; Where signals disagree</span><span class="l-zh">&#x2696;&#xFE0E; 信号分歧</span></div>
-      <ul class="aib2-items"><li><span class="l-en"><b>Head</b>: Policy says easing, system says neutral. Rate cuts are done, but the stance classifier still reads 'on hold' — money has not confirmed the easing.</span><span class="l-zh"><b>标题</b>：政策说宽松，系统说中性。降息已经完成，但立场分类器仍显示"按兵不动"——资金尚未确认宽松。</span></li><li><span class="l-en"><b>Head</b>: Money is flowing into new-energy vehicles while the sector still lags badly. Smart money is accumulating a group that has been one of the worst performers — a classic contrarian setup, but unproven.</span><span class="l-zh"><b>标题</b>：资金正在流入新能源汽车，而该板块仍严重落后。聪明钱正在积累一个表现最差的板块之一——典型的逆向布局，但尚未得到验证。</span></li><li><span class="l-en"><b>Head</b>: Banks lead the market but smart money is leaving them. The crowd is chasing banks while insiders are distributing — leadership may be built on sand.</span><span class="l-zh"><b>标题</b>：银行领涨市场，但聪明钱正在撤离。散户在追逐银行板块，而内部人士正在派发——领涨地位可能建立在沙子上。</span></li></ul>
+      <ul class="aib2-items"><li><span class="l-en"><b>Policy clash</b>: Past cuts say easing, the China liquidity read says contraction — support remains stuck in the pipes.</span><span class="l-zh"><b>政策冲突</b>：此前降息指向宽松，但中国流动性指标显示收缩——政策支持仍滞留在传导管道中。</span></li><li><span class="l-en"><b>Bank warning</b>: Price leadership says strength, the credit read says fading support — the rally looks stretched.</span><span class="l-zh"><b>银行业预警</b>：价格领涨显示强势，但信贷指标显示支持减弱——这轮涨势似乎已透支。</span></li><li><span class="l-en"><b>HK split</b>: A softer dollar says relief, the peg desk says outflow pressure — Hong Kong stays globally exposed.</span><span class="l-zh"><b>香港信号分化</b>：美元走软带来缓解，但联系汇率交易台显示外流压力——香港仍高度受全球环境影响。</span></li></ul>
     </div><div class="aib2-card aib2-card--tx">
       <div class="aib2-eyebrow"><span class="l-en">&#x26D3;&#xFE0E; Chain reactions</span><span class="l-zh">&#x26D3;&#xFE0E; 连锁反应</span></div>
-      <ul class="aib2-items"><li><span class="l-en">If credit impulse keeps shrinking → banks' recent strength is likely to fade.</span><span class="l-zh">如果信贷脉冲持续收缩，银行近期的强势可能会消退。</span></li><li><span class="l-en">If the easing path stays stuck in neutral → rate-sensitive brokers and property will not get their turn to lead.</span><span class="l-zh">如果宽松路径仍停留在中性，利率敏感的券商和地产将无法轮到领涨。</span></li></ul>
-    </div></div>
-  <div class="aib2-card aib2-card--full aib2-card--playbook">
-    <div class="aib2-eyebrow"><span class="l-en">&#x267B;&#xFE0E; Playbook check</span><span class="l-zh">&#x267B;&#xFE0E; 剧本对照</span></div>
-    <div class="aib2-prose">
-      <span class="l-en">Today shows the playbook's legs: A-share leaders are stretched, and smart money is rotating into beaten-down groups like new-energy vehicles — a reversal, not a chase.</span>
-      <span class="l-zh">今天展示了策略手册的威力：A股龙头已经超买，聪明钱正在轮动进入新能源汽车等被打压的板块——这是反转，不是追高。</span>
-    </div>
-  </div><div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">What to watch</span><span class="l-zh">关注事项</span></span></div>
+      <ul class="aib2-items"><li><span class="l-en">If system liquidity keeps contracting → mainland easing will struggle to lift brokers, property and market breadth</span><span class="l-zh">若体系流动性持续收缩 → 内地宽松将难以提振券商、地产和市场广度</span></li><li><span class="l-en">If US rates keep rising through the peg → Hong Kong property and technology stay under pressure</span><span class="l-zh">若美国利率在联系汇率制度下持续上升，香港房地产和科技板块将继续承压</span></li></ul>
+    </div></div><div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">What to watch</span><span class="l-zh">关注事项</span></span></div>
   <div class="aib2-card aib2-card--full">
     <ul class="aib2-watch"><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>Monthly loan prime rate fix on Sep 21</b>: does the policy easing step up a notch, or stay on hold?</span>
-          <span class="l-zh"><b>9月21日贷款市场报价利率（LPR）报价</b>：政策宽松是否会加码，还是按兵不动？</span>
+          <span class="l-en"><b>September 30 activity surveys</b>: another soft reading confirms cooling; improvement challenges the growth scare.</span>
+          <span class="l-zh"><b>9月30日经济活动调查</b>：再次疲软将确认经济降温；若有所改善，则会削弱增长担忧</span>
         </span>
       </li><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>NBS PMI on Sep 30</b>: does growth confirm the scare, or bounce back?</span>
-          <span class="l-zh"><b>9月30日统计局PMI</b>：增长会证实恐慌，还是会反弹？</span>
+          <span class="l-en"><b>China liquidity turns up</b>: earlier cuts are finally reaching markets.</span>
+          <span class="l-zh"><b>中国流动性回升</b>：此前的降息终于开始传导至市场</span>
         </span>
       </li><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>Smart-money flow into new-energy vehicles</b>: does the laggard start to catch up?</span>
-          <span class="l-zh"><b>聪明钱流入新能源汽车板块</b>：落后的板块是否开始追赶？</span>
+          <span class="l-en"><b>Weak-side peg pressure eases</b>: removes a key Hong Kong tightening force.</span>
+          <span class="l-zh"><b>弱方兑换保证压力缓解</b>：消除香港收紧流动性的一项关键因素</span>
         </span>
       </li><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>Banks' credit data</b>: does the deteriorating credit impulse finally break their run?</span>
-          <span class="l-zh"><b>银行信贷数据</b>：持续恶化的信贷脉冲最终会终结银行股的涨势吗？</span>
+          <span class="l-en"><b>Bank leadership fades</b>: weak credit is catching up with stretched prices.</span>
+          <span class="l-zh"><b>银行板块领涨势头消退</b>：信贷疲软正开始拖累高企的估值</span>
         </span>
       </li></ul>
   </div>
@@ -636,16 +972,16 @@ The central bank has already cut rates and freed up bank reserves. But that easi
     <div class="aib2-icon" aria-hidden="true">AI</div>
     <div class="aib2-hdr-meta">
       <div class="aib2-hdr-title"><span class="l-en">AI Daily Brief · Bitcoin synthesis</span><span class="l-zh">AI 每日简报 · 比特币综合</span></div>
-      <div class="aib2-hdr-sub"><span class="aib2-hdr-date num">2026-09-17</span>
+      <div class="aib2-hdr-sub"><span class="aib2-hdr-date num">2026-09-26</span>
         <span class="aib2-cadence"><span class="l-en">Updated every 3 days</span><span class="l-zh">每3天更新</span></span></div>
     </div><span class="aib2-badge"><span class="l-en">A read-through of existing signals — not a signal source</span><span class="l-zh">仅为现有信号的汇总解读 — 非独立信号源</span></span>
   </div><div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">The gist</span><span class="l-zh">要点</span></span></div>
   <div class="aib2-gist">
-    <ul class="aib2-gist-list"><li><span class="l-en"><b>System</b>: Risk-on, low-risk map</span><span class="l-zh"><b>系统</b>：风险偏好，低风险图谱</span></li><li><span class="l-en"><b>Price</b>: $63,481 with momentum up</span><span class="l-zh"><b>价格</b>：63，481美元，动能向上</span></li><li><span class="l-en"><b>Cycle</b>: Late, markdown watch ahead</span><span class="l-zh"><b>周期</b>：晚期，留意后市下调</span></li><li><span class="l-en"><b>Liquidity</b>: Flows support, macro mixed</span><span class="l-zh"><b>流动性</b>：资金流提供支撑，宏观信号不一</span></li></ul><div class="aib2-stance aib2-stance--accent">
+    <ul class="aib2-gist-list"><li><span class="l-en"><b>Risk stays low</b>: Bitcoin’s trend and market structure remain healthy.</span><span class="l-zh"><b>风险仍低</b>：Bitcoin 的趋势和市场结构依然健康。</span></li><li><span class="l-en"><b>Flows support</b>: ETF buying continues while leverage remains normal.</span><span class="l-zh"><b>资金流支撑</b>：ETF买盘持续，杠杆仍处于正常水平。</span></li><li><span class="l-en"><b>Cycle caution</b>: Fair value meets a late-cycle markdown phase.</span><span class="l-zh"><b>周期警示</b>：公允价值遭遇周期后段的估值下调阶段。</span></li></ul><div class="aib2-stance aib2-stance--go">
       <span class="aib2-stance-mark" aria-hidden="true">&#x25B8;</span>
       <span class="aib2-stance-body">
-        <span class="l-en"><b>What to do</b>: Watch — don't chase</span>
-        <span class="l-zh"><b>操作建议</b>：观望——不要追高</span>
+        <span class="l-en"><b>What to do</b>: Act</span>
+        <span class="l-zh"><b>应对措施</b>：行动</span>
       </span>
     </div>
   </div>
@@ -653,13 +989,13 @@ The central bank has already cut rates and freed up bank reserves. But that easi
   <div class="aib2-kf-rail"><span class="aib2-kf aib2-kf--neutral">
       <span class="aib2-kf-k"><span class="l-en">System stance</span><span class="l-zh">系统姿态</span></span><span class="aib2-kf-v"><span class="l-en">Risk-On</span><span class="l-zh">Risk-On</span></span>
     </span><span class="aib2-kf aib2-kf--warn">
-      <span class="aib2-kf-k"><span class="l-en">Cycle clock</span><span class="l-zh">周期时钟</span></span><span class="aib2-kf-v"><span class="l-en">Late decline · ~95% through</span><span class="l-zh">下行后段 · 约95%进度</span></span>
+      <span class="aib2-kf-k"><span class="l-en">Cycle clock</span><span class="l-zh">周期时钟</span></span><span class="aib2-kf-v"><span class="l-en">Late decline · ~98% through</span><span class="l-zh">下行后段 · 约98%进度</span></span>
     </span><span class="aib2-kf aib2-kf--neutral">
       <span class="aib2-kf-k"><span class="l-en">On-chain value</span><span class="l-zh">链上估值</span></span><span class="aib2-kf-v"><span class="l-en">Fair</span><span class="l-zh">中性</span></span>
     </span><span class="aib2-kf aib2-kf--neutral">
       <span class="aib2-kf-k"><span class="l-en">Leverage</span><span class="l-zh">杠杆</span></span><span class="aib2-kf-v"><span class="l-en">Normal</span><span class="l-zh">正常</span></span>
-    </span><span class="aib2-kf aib2-kf--neutral">
-      <span class="aib2-kf-k"><span class="l-en">ETF flows</span><span class="l-zh">ETF资金</span></span><span class="aib2-kf-v"><span class="l-en">Flat</span><span class="l-zh">持平</span></span>
+    </span><span class="aib2-kf aib2-kf--good">
+      <span class="aib2-kf-k"><span class="l-en">ETF flows</span><span class="l-zh">ETF资金</span></span><span class="aib2-kf-v"><span class="l-en">Money coming in</span><span class="l-zh">资金流入</span></span>
     </span><span class="aib2-kf aib2-kf--good">
       <span class="aib2-kf-k"><span class="l-en">Global money</span><span class="l-zh">全球流动性</span></span><span class="aib2-kf-v"><span class="l-en">Expanding</span><span class="l-zh">扩张</span></span>
     </span></div><div class="aib2-conf">
@@ -670,43 +1006,47 @@ The central bank has already cut rates and freed up bank reserves. But that easi
       <span class="aib2-conf-seg on"></span>
       <span class="aib2-conf-seg"></span>
     </div>
-    <span class="aib2-conf-label"><span class="l-en">Confidence: Medium</span><span class="l-zh">置信度：中</span></span><span class="aib2-conf-asof"><span class="l-en">as of</span><span class="l-zh">数据截至</span> 2026-09-17</span></div>
+    <span class="aib2-conf-label"><span class="l-en">Confidence: Medium</span><span class="l-zh">置信度：中</span></span><span class="aib2-conf-asof"><span class="l-en">as of</span><span class="l-zh">数据截至</span> 2026-09-26</span></div>
   <div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">The full read</span><span class="l-zh">完整解读</span></span></div>
   <div class="aib2-regime">
-    <span class="l-en">The map still says risk-on, with the system's risk dial low and momentum positive. Structure is constructive, which means the trend is intact. But the cycle clock sits deep in the late markdown phase — around three weeks from its next turn date — and the impulse reading has turned negative. That combination of a healthy trend and a tired cycle is the tension to watch. The dominant driver today is liquidity; global money supply is expanding and the bond desk reads conditions as healthy, which is a tailwind for Bitcoin. The US macro picture is more mixed, with slow growth and sticky inflation.</span>
-    <span class="l-zh">地图仍显示风险偏好，系统风险偏度低且动能为正。结构具有建设性，意味着趋势完好。但周期钟深处于后期派发阶段——距下一个转折日约三周——且动能读数已转为负值。健康趋势与疲惫周期的组合正是需要关注的紧张点。今天的主导驱动因素是流动性；全球货币供应正在扩张，债券部门认为状况健康，这对比特币是顺风。美国宏观图景则更为复杂，增长缓慢且通胀粘滞。</span>
+    <span class="l-en">The macro map sits in Reflation, with global liquidity still expanding. The next transition direction is unclear because the required signal is missing.
+
+Bitcoin remains risk-on with constructive structure and low risk. ETF demand is the main support, while shrinking near-term liquidity and high real yields limit comfort.</span>
+    <span class="l-zh">宏观图景处于再通胀阶段，全球流动性仍在扩张。由于缺少必要信号，下一步转向尚不明确。
+
+Bitcoin仍处于风险偏好状态，结构向好且风险较低。ETF需求是主要支撑，而近期流动性收缩和实际收益率高企限制了乐观空间。</span>
   </div>
   <div class="aib2-grid"><div class="aib2-card aib2-card--conflicts">
       <div class="aib2-eyebrow"><span class="l-en">&#x2696;&#xFE0E; Where signals disagree</span><span class="l-zh">&#x2696;&#xFE0E; 信号分歧</span></div>
-      <ul class="aib2-items"><li><span class="l-en"><b>Momentum</b>: Trend is up and structure says constructive, but the cycle clock is late-stage markdown — strength may be tired.</span><span class="l-zh"><b>动能</b>：趋势向上且结构具建设性，但周期钟处于后期派发——强势可能已显疲态。</span></li><li><span class="l-en"><b>Liquidity</b>: Global money is expanding while the macro map prints stagflation — stimulus against slow growth.</span><span class="l-zh"><b>流动性</b>：全球货币正在扩张，而宏观地图显示滞胀——刺激与增长缓慢并存。</span></li><li><span class="l-en"><b>ETF tracker</b>: Flows are neutral and volume quiet, yet stablecoins are rising — new money may arrive through other doors.</span><span class="l-zh"><b>ETF追踪</b>：资金流中性且成交量清淡，但稳定币在上升——新资金可能通过其他渠道进入。</span></li></ul>
+      <ul class="aib2-items"><li><span class="l-en"><b>Liquidity split</b>: Global money is expanding, but near-term net liquidity is shrinking — the tailwind is real but uneven.</span><span class="l-zh"><b>流动性分化</b>：全球货币供应正在扩张，但近期净流动性正在收缩——利好确实存在，但并不均衡。</span></li><li><span class="l-en"><b>Demand split</b>: ETF buying is strong, but the Coinbase price discount shows softer direct US demand — support is not broad.</span><span class="l-zh"><b>需求分化</b>：ETF买盘强劲，但Coinbase价格折价显示美国直接需求较弱——支撑并不广泛。</span></li><li><span class="l-en"><b>Cycle split</b>: Price structure is constructive, but the markdown phase is nearly complete — trend strength faces a timing test.</span><span class="l-zh"><b>周期分化</b>：价格结构向好，但下跌阶段已接近尾声——趋势强度正面临时点考验。</span></li></ul>
     </div><div class="aib2-card aib2-card--tx">
       <div class="aib2-eyebrow"><span class="l-en">&#x26D3;&#xFE0E; Chain reactions</span><span class="l-zh">&#x26D3;&#xFE0E; 连锁反应</span></div>
-      <ul class="aib2-items"><li><span class="l-en">If stablecoin growth keeps rising → sidelined cash is moving toward crypto.</span><span class="l-zh">如果稳定币增长持续上升 → 观望资金正在流向加密资产。</span></li><li><span class="l-en">If impulse stays negative while price rises → the rally may be running on thinner support.</span><span class="l-zh">如果冲量保持为负而价格上升 → 涨势可能是在较弱支撑下运行。</span></li></ul>
+      <ul class="aib2-items"><li><span class="l-en">If ETF accumulation keeps up → steady spot demand can support the constructive trend.</span><span class="l-zh">如果ETF持续增持 → 稳定的现货需求可支撑向好趋势。</span></li><li><span class="l-en">If near-term liquidity keeps shrinking → Bitcoin may struggle despite the broader global expansion.</span><span class="l-zh">若短期流动性持续收缩，即使全球整体扩张，Bitcoin 仍可能承压。</span></li></ul>
     </div></div><div class="aib2-sec"><span class="aib2-sec-label"><span class="l-en">What to watch</span><span class="l-zh">关注事项</span></span></div>
   <div class="aib2-card aib2-card--full">
     <ul class="aib2-watch"><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>Next cycle turn in about three weeks</b>: signals whether markdown resumes</span>
-          <span class="l-zh"><b>下一个周期拐点约在三周后</b>：信号将表明降价是否恢复</span>
+          <span class="l-en"><b>October 5 pivot</b>: A clean hold would strengthen the constructive trend.</span>
+          <span class="l-zh"><b>10月5日转折点</b>：若能稳稳守住，将强化积极趋势。</span>
         </span>
       </li><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>Momentum staying positive</b>: confirms trend continuation</span>
-          <span class="l-zh"><b>动量保持为正</b>：确认趋势延续</span>
+          <span class="l-en"><b>ETF reversal</b>: Falling flows would remove the clearest demand support.</span>
+          <span class="l-zh"><b>ETF逆转</b>：资金流入下降将削弱最明确的需求支撑。</span>
         </span>
       </li><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>ETF flows turning positive</b>: would confirm new demand</span>
-          <span class="l-zh"><b>ETF资金流转正</b>：将确认新需求</span>
+          <span class="l-en"><b>Credit widening</b>: Continued deterioration would raise broader risk pressure.</span>
+          <span class="l-zh"><b>信用利差走阔</b>：持续恶化将加大全市场风险压力。</span>
         </span>
       </li><li class="aib2-watch-row">
         <span class="aib2-watch-mark" aria-hidden="true">&#x25B9;</span>
         <span class="aib2-watch-body">
-          <span class="l-en"><b>Bond health staying strong</b>: keeps the liquidity door open</span>
-          <span class="l-zh"><b>债券健康状况保持强劲</b>：保持流动性大门敞开</span>
+          <span class="l-en"><b>Leverage jump</b>: Crowding would make any pullback more violent.</span>
+          <span class="l-zh"><b>杠杆跃升</b>：交易拥挤将使任何回调更加剧烈。</span>
         </span>
       </li></ul>
   </div>
@@ -728,7 +1068,7 @@ The central bank has already cut rates and freed up bank reserves. But that easi
     <span class="l-en">Too few graded calls yet to judge — this is a public track record, not a proven edge.</span>
     <span class="l-zh">已评分的判断还太少，暂无法评价——这是公开的判断记录，不是已证明的优势。</span>
     
-    <span class="help">?<span class="tip"><span class="l-en">12 leans scored, hit-rate 0.833 (directional accuracy 0.583). Chance alone would land a hit-rate near 0.8289 (directional accuracy near 0.4729) on these exact conditions — judge the numbers above against that bar, not one-half.</span><span class="l-zh">已评分 12 条，命中率 0.833（方向准确率 0.583）。同样条件下，无技能判断凭机会即可达到约 0.8289 的命中率（方向准确率约 0.4729）——上述数字应与该基线比较，而非 0.5。</span></span></span>
+    <span class="help">?<span class="tip"><span class="l-en">12 leans scored, hit-rate 0.833 (directional accuracy 0.583). Chance alone would land a hit-rate near 0.8288 (directional accuracy near 0.4726) on these exact conditions — judge the numbers above against that bar, not one-half.</span><span class="l-zh">已评分 12 条，命中率 0.833（方向准确率 0.583）。同样条件下，无技能判断凭机会即可达到约 0.8288 的命中率（方向准确率约 0.4726）——上述数字应与该基线比较，而非 0.5。</span></span></span>
     
   </p>
   
@@ -803,11 +1143,11 @@ The central bank has already cut rates and freed up bank reserves. But that easi
 
 <div class="panel">
   <p class="muted" style="font-size:12px;margin:0"><span class="l-en">AI research context, not investment advice — generated by an LLM from the day's free public data and the dashboards' own outputs.</span><span class="l-zh">AI 研究背景，非投资建议 — 由大模型根据当日免费公开数据及各看板自身输出生成。</span>
-     · <span class="l-en">Page built</span><span class="l-zh">页面生成于</span> 2026-09-17 09:37 UTC</p>
+     · <span class="l-en">Page built</span><span class="l-zh">页面生成于</span> 2026-09-29 09:07 UTC</p>
 </div>
 
-<script src="theme.js?v=53939d13" defer></script>
-<script src="aibrief.js?v=97303e2d" defer></script>
+<script src="theme.js"></script>
+<script src="aibrief.js"></script>
 <script>
 /* Market toggle — flips which .ai-brief panel is visible. */
 (function () {
@@ -834,6 +1174,5 @@ The central bank has already cut rates and freed up bank reserves. But that easi
 <footer class="site-footer">
   <span class="made">© 2026 Mastermind Inc</span>
 </footer>
-<script defer data-whb data-root="" src="wh_banner.js?v=4a53a176"></script>
 </body>
 </html>

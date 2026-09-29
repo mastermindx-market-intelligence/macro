@@ -1067,6 +1067,174 @@ def _load_cli():
     return module
 
 
+# -------------------------------------------------- bounded uncommitted visibility
+
+
+def test_status_worktree_scan_checks_small_sets_without_degradation(monkeypatch):
+    """A one-worktree nightly must not publish an avoidable 'scan skipped' gap."""
+    agentos = _load_cli()
+    from scripts import audit_stranded_work as stranded
+
+    monkeypatch.setattr(stranded, "worktree_branches", lambda: {"main": "/tmp/wt-main"})
+    calls = []
+
+    def dirty(path, *, timeout=None):
+        calls.append((path, timeout))
+        return ["engine/manual_fix.py"]
+
+    monkeypatch.setattr(stranded, "dirty_source_paths", dirty)
+    degraded = agentos.Degraded()
+    result = agentos.scan_worktrees(degraded, auto_small=True)
+
+    assert result["uncommitted"] == [{"branch": "main", "source_files": 1}]
+    assert degraded.items == []
+    assert calls == [("/tmp/wt-main", agentos.UNCOMMITTED_STATUS_TIMEOUT_SECONDS)]
+
+
+def test_status_worktree_auto_scan_stays_bounded_on_large_hosts(monkeypatch):
+    """The 276-worktree host failure mode stays opt-in rather than slowing every brief."""
+    agentos = _load_cli()
+    from scripts import audit_stranded_work as stranded
+
+    count = agentos.STATUS_AUTO_UNCOMMITTED_WORKTREE_LIMIT + 1
+    branches = {f"branch-{i}": f"/tmp/wt-{i}" for i in range(count)}
+    monkeypatch.setattr(stranded, "worktree_branches", lambda: branches)
+
+    def must_not_run(*_args, **_kwargs):
+        raise AssertionError("large default scan must not call git status")
+
+    monkeypatch.setattr(stranded, "dirty_source_paths", must_not_run)
+    degraded = agentos.Degraded()
+    result = agentos.scan_worktrees(degraded, auto_small=True)
+
+    assert result["uncommitted"] == []
+    assert any(f"skipped over {count} worktrees" in item for item in degraded.items)
+
+
+def test_brief_style_default_does_not_auto_scan_even_one_worktree(monkeypatch):
+    """Executive/CEO brief keeps its cheap default and frozen read budget."""
+    agentos = _load_cli()
+    from scripts import audit_stranded_work as stranded
+
+    monkeypatch.setattr(stranded, "worktree_branches", lambda: {"main": "/tmp/wt-main"})
+
+    def must_not_run(*_args, **_kwargs):
+        raise AssertionError("brief-style default must not call git status")
+
+    monkeypatch.setattr(stranded, "dirty_source_paths", must_not_run)
+    degraded = agentos.Degraded()
+    result = agentos.scan_worktrees(degraded)
+
+    assert result["uncommitted"] == []
+    assert any("skipped over 1 worktrees" in item for item in degraded.items)
+
+
+def test_scan_uncommitted_force_flag_still_scans_large_hosts(monkeypatch):
+    agentos = _load_cli()
+    from scripts import audit_stranded_work as stranded
+
+    count = agentos.STATUS_AUTO_UNCOMMITTED_WORKTREE_LIMIT + 1
+    branches = {f"branch-{i}": f"/tmp/wt-{i}" for i in range(count)}
+    monkeypatch.setattr(stranded, "worktree_branches", lambda: branches)
+    calls = []
+
+    def clean(path, *, timeout=None):
+        calls.append((path, timeout))
+        return []
+
+    monkeypatch.setattr(stranded, "dirty_source_paths", clean)
+    degraded = agentos.Degraded()
+    result = agentos.scan_worktrees(degraded, deep=True)
+
+    assert result["uncommitted"] == []
+    assert len(calls) == count
+    assert {timeout for _path, timeout in calls} == {agentos.UNCOMMITTED_STATUS_TIMEOUT_SECONDS}
+    assert degraded.items == []
+
+
+def test_worktree_scan_failure_is_degraded_not_silently_clean(monkeypatch):
+    """A failed git status cannot be indistinguishable from a clean worktree."""
+    agentos = _load_cli()
+    from scripts import audit_stranded_work as stranded
+
+    monkeypatch.setattr(stranded, "worktree_branches", lambda: {"main": "/tmp/wt-main"})
+
+    def timeout(_path, *, timeout=None):
+        raise subprocess.TimeoutExpired(["git", "status"], timeout or 0)
+
+    monkeypatch.setattr(stranded, "dirty_source_paths", timeout)
+    degraded = agentos.Degraded()
+    result = agentos.scan_worktrees(degraded, auto_small=True)
+
+    assert result["uncommitted"] == []
+    assert any(
+        "uncommitted-work scan failed for 'main'" in item and "TimeoutExpired" in item
+        for item in degraded.items
+    )
+
+
+def test_stranded_work_dirty_status_accepts_a_caller_timeout(monkeypatch):
+    """Agent OS may bound git status without changing the standalone audit defaults."""
+    from scripts import audit_stranded_work as stranded
+
+    calls = []
+
+    def fake_git(*args, cwd=stranded.REPO, timeout=None):
+        calls.append((args, str(cwd), timeout))
+        return subprocess.CompletedProcess(["git", *args], 0, stdout=" M engine/fix.py\n", stderr="")
+
+    monkeypatch.setattr(stranded, "git", fake_git)
+    assert stranded.dirty_source_paths("/tmp/wt-main", timeout=2.5) == ["engine/fix.py"]
+    assert calls == [(('status', '--porcelain'), '/tmp/wt-main', 2.5)]
+
+
+def test_stranded_work_dirty_status_rejects_nonzero_git(monkeypatch):
+    from scripts import audit_stranded_work as stranded
+
+    monkeypatch.setattr(
+        stranded,
+        "git",
+        lambda *args, **kwargs: subprocess.CompletedProcess(
+            ["git", *args], 128, stdout="", stderr="fatal: status unavailable"
+        ),
+    )
+    with pytest.raises(RuntimeError, match="git status failed"):
+        stranded.dirty_source_paths("/tmp/wt-main")
+
+
+def test_stranded_work_worktree_list_rejects_nonzero_git(monkeypatch):
+    from scripts import audit_stranded_work as stranded
+
+    monkeypatch.setattr(
+        stranded,
+        "git",
+        lambda *args, **kwargs: subprocess.CompletedProcess(
+            ["git", *args], 128, stdout="", stderr="fatal: worktree list unavailable"
+        ),
+    )
+    with pytest.raises(RuntimeError, match="git worktree list failed"):
+        stranded.worktree_branches()
+
+
+def test_stranded_work_filters_generated_governance_views(monkeypatch):
+    """Nightly-generated advisory docs must not report themselves as stranded hand-work."""
+    from scripts import audit_stranded_work as stranded
+
+    status = """ M docs/ACTIVE_BUILD_MAP.md
+ M docs/AGENT_OS_STATE.md
+ M docs/PROJECT_ACTIVE_BUILD_MAP.md
+ M engine/manual_fix.py
+"""
+    monkeypatch.setattr(
+        stranded,
+        "git",
+        lambda *args, **kwargs: subprocess.CompletedProcess(
+            ["git", *args], 0, stdout=status, stderr=""
+        ),
+    )
+    assert stranded.dirty_source_paths("/tmp/wt-main") == ["engine/manual_fix.py"]
+
+
 def test_recommendation_never_marks_an_option_it_rejects() -> None:
     """The arrow is what the CEO acts on, so a wrong arrow is worse than none.
 
@@ -1132,112 +1300,125 @@ def batch_reader():
     return reader
 
 
-def test_parallel_dates_are_bounded_and_preserve_input_order(monkeypatch):
+def _history_payload(rows):
+    return "".join(
+        f"\x1e{date}\0\n{rel}\0"
+        for date, rel in rows
+    )
+
+
+def test_batched_dates_use_two_history_walks_and_preserve_input_order(monkeypatch):
     reader = batch_reader()
-    paths = [Path(f"WS-{i:02}.md") for i in range(12)]
-    barrier = threading.Barrier(4)
-    lock = threading.Lock()
-    active = peak = 0
-    seen = []
+    paths = [
+        agentos._ROOT / "agentos" / "workstreams" / name
+        for name in ("WS-ZETA.md", "WS-ALPHA.md", "WS-BETA.md")
+    ]
+    rels = [path.relative_to(agentos._ROOT).as_posix() for path in paths]
+    calls = []
 
-    def dates(path):
-        nonlocal active, peak
-        with lock:
-            active += 1
-            peak = max(peak, active)
-            seen.append(path)
-        try:
-            barrier.wait(timeout=5)
-            return ("2026-01-01", str(path))
-        finally:
-            with lock:
-                active -= 1
+    def git(*args, **_kwargs):
+        calls.append(args)
+        assert args[-4] == "--"
+        requested = list(args[-3:])
+        assert requested == rels
+        if "--diff-filter=A" in args:
+            return _history_payload([
+                ("2026-03-03", rels[0]),
+                ("2026-02-02", rels[1]),
+                ("2026-01-01", rels[0]),
+            ])
+        return _history_payload([
+            ("2026-04-04", rels[1]),
+            ("2026-03-03", rels[0]),
+            ("2026-02-02", rels[2]),
+            ("2026-01-01", rels[0]),
+        ])
 
-    monkeypatch.setattr(agentos, "git_dates", dates)
+    monkeypatch.setattr(agentos, "_git", git)
     result = reader(paths)
+
     assert list(result) == paths
-    assert result == {path: ("2026-01-01", str(path)) for path in paths}
-    assert sorted(seen) == paths
-    assert peak == 4 and active == 0
+    assert result[paths[0]] == ("2026-01-01", "2026-03-03")
+    assert result[paths[1]] == ("2026-02-02", "2026-04-04")
+    assert result[paths[2]] == (None, "2026-02-02")
+    assert len(calls) == 2
 
 
-def test_submission_does_not_eagerly_queue_the_whole_store(monkeypatch):
+def test_submission_consumes_inputs_in_bounded_path_batches(monkeypatch):
     reader = batch_reader()
-    release = threading.Event()
-    first_batch_started = threading.Event()
-    lock = threading.Lock()
+    monkeypatch.setattr(agentos, "_GIT_DATE_PATH_BATCH_SIZE", 4)
     yielded = []
-    calls = 0
-    output = []
-    errors = []
+    calls = []
 
     def paths():
-        for i in range(40):
-            yielded.append(Path(f"WS-{i}.md"))
-            yield yielded[-1]
+        for i in range(10):
+            path = agentos._ROOT / "agentos" / "workstreams" / f"WS-{i}.md"
+            yielded.append(path)
+            yield path
 
-    def dates(path):
-        nonlocal calls
-        with lock:
-            calls += 1
-            if calls == 4:
-                first_batch_started.set()
-        assert release.wait(timeout=5)
-        return None, None
+    def git(*args, **_kwargs):
+        calls.append(args)
+        if len(calls) == 1:
+            assert len(yielded) == 4
+        requested = list(args[args.index("--") + 1:])
+        return _history_payload([
+            ("2026-01-01", rel)
+            for rel in requested
+        ])
 
-    def collect():
-        try:
-            output.append(reader(paths()))
-        except BaseException as exc:
-            errors.append(exc)
+    monkeypatch.setattr(agentos, "_git", git)
+    result = reader(paths())
 
-    monkeypatch.setattr(agentos, "git_dates", dates)
-    thread = threading.Thread(target=collect)
-    thread.start()
-    try:
-        assert first_batch_started.wait(timeout=5)
-        assert len(yielded) == 4
-    finally:
-        release.set()
-        thread.join(timeout=5)
-    assert not thread.is_alive() and not errors
-    assert len(output[0]) == 40 and calls == 40
+    assert len(result) == 10
+    assert len(calls) == 6  # two Git walks for each of three bounded path batches
 
 
-def test_empty_input_does_not_construct_an_executor(monkeypatch):
+def test_empty_input_does_not_invoke_git(monkeypatch):
     reader = batch_reader()
-    def forbidden(*args, **kwargs):
-        raise AssertionError("empty store must not create worker threads")
-    monkeypatch.setattr(agentos, "ThreadPoolExecutor", forbidden)
+
+    def forbidden(*_args, **_kwargs):
+        raise AssertionError("empty store must not invoke Git")
+
+    monkeypatch.setattr(agentos, "_git", forbidden)
     assert reader([]) == {}
 
 
 def test_repeat_read_observes_new_dates_without_a_persistent_cache(monkeypatch):
     reader = batch_reader()
-    path = Path("WS-ONE.md")
-    answer = [(None, None)]
-    monkeypatch.setattr(agentos, "git_dates", lambda _: answer[0])
-    assert reader([path]) == {path: (None, None)}
-    answer[0] = ("2026-01-01", "2026-02-02")
+    path = agentos._ROOT / "agentos" / "workstreams" / "WS-ONE.md"
+    rel = path.relative_to(agentos._ROOT).as_posix()
+    answer = [("2026-01-01", "2026-02-02")]
+
+    def git(*args, **_kwargs):
+        created, updated = answer[0]
+        date = created if "--diff-filter=A" in args else updated
+        return _history_payload([(date, rel)]) if date else ""
+
+    monkeypatch.setattr(agentos, "_git", git)
+    assert reader([path]) == {path: answer[0]}
+    answer[0] = ("2026-03-03", "2026-04-04")
     assert reader([path]) == {path: answer[0]}
 
 
-def test_unexpected_failure_is_propagated_after_other_calls_finish(monkeypatch):
+def test_batched_git_failure_falls_back_to_existing_per_path_oracle(monkeypatch):
     reader = batch_reader()
-    barrier = threading.Barrier(4)
-    finished = []
+    paths = [
+        agentos._ROOT / "agentos" / "workstreams" / f"WS-{i}.md"
+        for i in range(3)
+    ]
+    monkeypatch.setattr(agentos, "_git", lambda *_args, **_kwargs: None)
+    calls = []
+
     def dates(path):
-        barrier.wait(timeout=5)
-        try:
-            if path.name == "bad":
-                raise ValueError("fixture failure")
-            return None, None
-        finally:
-            finished.append(path.name)
+        calls.append(path)
+        return "2026-01-01", "2026-02-02"
+
     monkeypatch.setattr(agentos, "git_dates", dates)
-    with pytest.raises(ValueError, match="fixture failure"):
-        reader([Path(name) for name in ("bad", "b", "c", "d")])
-    assert sorted(finished) == ["b", "bad", "c", "d"]
+    assert reader(paths) == {
+        path: ("2026-01-01", "2026-02-02")
+        for path in paths
+    }
+    assert calls == paths
 
 
 def test_build_records_uses_one_batch_and_keeps_sorted_workstream_output(tmp_path, monkeypatch):
@@ -1249,17 +1430,27 @@ def test_build_records_uses_one_batch_and_keeps_sorted_workstream_output(tmp_pat
         }
         store.paths[f"WS/{key}"] = tmp_path / f"WS-{key}.md"
     calls = []
+
     def batch(paths):
         paths = list(paths)
         calls.append(paths)
         return {path: ("2026-01-01", "2026-02-02") for path in paths}
+
     monkeypatch.setattr(agentos, "git_dates_batch", batch)
-    rows, _ = agentos.build_records(store, now=dt.datetime(2026, 9, 7, tzinfo=dt.timezone.utc),
-        builds=None, p0_status=None, worktrees={"branches": []})
+    rows, _ = agentos.build_records(
+        store,
+        now=dt.datetime(2026, 9, 7, tzinfo=dt.timezone.utc),
+        builds=None,
+        p0_status=None,
+        worktrees={"branches": []},
+    )
     assert len(calls) == 1
     assert calls[0] == [store.paths["WS/ALPHA"], store.paths["WS/ZETA"]]
     assert [row["key"] for row in rows] == ["ALPHA", "ZETA"]
-    assert all(row["created"] == "2026-01-01" and row["updated"] == "2026-02-02" for row in rows)
+    assert all(
+        row["created"] == "2026-01-01" and row["updated"] == "2026-02-02"
+        for row in rows
+    )
 
 
 @pytest.fixture

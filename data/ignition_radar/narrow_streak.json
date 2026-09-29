@@ -30,14 +30,14 @@
     "score": 0.9727
   },
   "XLK": {
-    "streak": 3,
-    "last_date": "2026-08-28",
-    "score": 0.9452
+    "streak": 6,
+    "last_date": "2026-09-24",
+    "score": 0.8836
   },
   "memory_storage": {
-    "streak": 2,
-    "last_date": "2026-08-18",
-    "score": 0.6997
+    "streak": 4,
+    "last_date": "2026-09-24",
+    "score": 0.955
   },
   "XLV": {
     "streak": 1,
@@ -55,9 +55,9 @@
     "score": 0.68
   },
   "SMH": {
-    "streak": 3,
-    "last_date": "2026-09-09",
-    "score": 0.9779
+    "streak": 6,
+    "last_date": "2026-09-25",
+    "score": 0.8533
   },
   "non_ai_tech": {
     "streak": 1,
@@ -68,5 +68,10 @@
     "streak": 2,
     "last_date": "2026-09-08",
     "score": 0.9906
+  },
+  "reshoring": {
+    "streak": 1,
+    "last_date": "2026-09-28",
+    "score": 0.8001
   }
 }

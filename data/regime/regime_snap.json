@@ -1,19 +1,17 @@
 {
   "snap": false,
   "relief_magnitude": null,
-  "roro": 0.269,
+  "roro": 0.365,
   "cap_recent": false,
   "fear_built": 0.335,
-  "roro_velocity": -0.106,
-  "vel_pctile": 0.266,
-  "legs_up": 1,
+  "roro_velocity": -0.054,
+  "vel_pctile": 0.357,
+  "legs_up": 0,
   "legs_total": 7,
-  "flipped_legs": [
-    "skew"
-  ],
-  "days_since_last_snap": 68,
+  "flipped_legs": [],
+  "days_since_last_snap": 76,
   "fear_rebuilding": true,
-  "vix_term": 0.898,
+  "vix_term": 0.882,
   "status": "dormant",
   "gates": {
     "velocity": false,
@@ -22,12 +20,6 @@
     "washout": false
   },
   "min_legs": 4,
-  "flipped_legs_named": [
-    {
-      "key": "skew",
-      "en": "SKEW (tail pricing)",
-      "zh": "SKEW \u5c3e\u90e8\u5b9a\u4ef7"
-    }
-  ],
+  "flipped_legs_named": [],
   "magnitude_band": null
 }

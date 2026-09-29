@@ -35,6 +35,16 @@ def _rung(n: int) -> int:
 UNKNOWN_RUNG = "x"
 NOT_NAMED_RUNG = 0
 
+# Frozen geo join for the public-news layer (W7-2 / MO-PAID-008).
+# UK is the only jurisdiction that maps onto an existing ISO3 path.
+# EU / EA / EFTA have no single ISO3 — they stay a dated list.
+_NEWS_ISO3_BY_JURISDICTION = {"UK": "GBR"}
+_PUBLISHER_ZH = {
+    "European Commission": "欧盟委员会",
+    "Bank of England": "英格兰银行",
+    "European Central Bank": "欧洲中央银行",
+}
+
 
 def split_program_field(raw: str) -> list[str]:
     """OFAC's 'program' field packs multiple codes as ``[A] [B]`` — split on
@@ -148,6 +158,79 @@ def _load_meta(meta_file: Path = META_FILE) -> dict:
         return {}
 
 
+def _cell(value: Any) -> str:
+    if value is None:
+        return ""
+    text = str(value).strip()
+    if not text or text.lower() in {"nan", "none", "nat", "<na>"}:
+        return ""
+    return text
+
+
+def _iso3_for_jurisdiction(jurisdiction: str) -> str | None:
+    """UK → GBR on the existing worldmap path. No invented ISO3 for EU/EA/EFTA."""
+    return _NEWS_ISO3_BY_JURISDICTION.get(str(jurisdiction or "").strip() or "")
+
+
+def _publisher_labels() -> dict[str, tuple[str, str]]:
+    out: dict[str, tuple[str, str]] = {}
+    try:
+        from engine.europe_news_intel import sources
+        for spec in sources() or []:
+            key = _cell(spec.get("key"))
+            en = _cell(spec.get("publisher"))
+            if key and en:
+                out[key] = (en, _PUBLISHER_ZH.get(en, en))
+    except Exception:
+        return out
+    return out
+
+
+def _public_news() -> list[dict[str, Any]]:
+    """Today's official-press rows from europe_news_intel.read_events. Never raises."""
+    try:
+        from engine.europe_news_intel import read_events
+        df = read_events()
+        if df is None or len(df) == 0:
+            return []
+        asofs = [_cell(v)[:10] for v in df["asof"].tolist()] if "asof" in df.columns else []
+        asofs = [a for a in asofs if a]
+        day = df
+        if asofs and "asof" in df.columns:
+            latest = max(asofs)
+            day = df[df["asof"].astype(str).str.slice(0, 10) == latest]
+        labels = _publisher_labels()
+        out: list[dict[str, Any]] = []
+        for rec in day.to_dict(orient="records"):
+            title = _cell(rec.get("title"))
+            if not title:
+                continue
+            source_key = _cell(rec.get("source"))
+            en, zh = labels.get(source_key, ("", ""))
+            juris = _cell(rec.get("jurisdiction"))
+            asof = _cell(rec.get("asof"))[:10]
+            seendate = _cell(rec.get("seendate"))[:10]
+            out.append(
+                {
+                    "title": title,
+                    "url": _cell(rec.get("url")),
+                    "source": en,
+                    "source_zh": zh,
+                    "jurisdiction": juris,
+                    "iso3": _iso3_for_jurisdiction(juris),
+                    "asof": asof,
+                    "seendate": seendate,
+                }
+            )
+        out.sort(
+            key=lambda row: (row.get("seendate") or row.get("asof") or "", row.get("title") or ""),
+            reverse=True,
+        )
+        return out
+    except Exception:
+        return []
+
+
 def _as_of_from_meta(meta: dict) -> str | None:
     """Prefer OFAC list_published_date; fall back to the fetch date so the
     page never claims 'unknown' when we have a verified snapshot timestamp."""
@@ -173,6 +256,8 @@ def build(
     except Exception:
         code_counts, meta, config_rows, thematic_codes = {}, {}, [], set()
 
+    news = _public_news()
+
     if not code_counts:
         return {
             "as_of": _as_of_from_meta(meta),
@@ -184,6 +269,7 @@ def build(
             "unresolved": [],
             "thematic": [],
             "coverage": None,
+            "public_news": news,
         }
 
     by_code = {row["code"]: row for row in config_rows if row.get("code")}
@@ -254,6 +340,7 @@ def build(
             "unresolved": unresolved_count,
             "thematic": thematic_count,
         },
+        "public_news": news,
     }
 
 

@@ -1685,9 +1685,10 @@ html[data-lang="zh"] .nav-market-heading { letter-spacing: .02em; }
 
   .site-nav.has-nav-toggle .nav-ctrls .terminal-link,
   .topbar.has-nav-toggle .nav-ctrls .terminal-link {
-    min-height: 34px;
+    min-height: 40px;
     padding: 7px 11px;
     font-size: 11.5px;
+    touch-action: manipulation;
   }
 
   .fan-grid { grid-template-columns: 1fr; }
@@ -2367,7 +2368,7 @@ html:not([data-theme="light"]) .nav-dd-menu.mega-menu .menu-count {
   z-index: 110;
   width: 128px;
   max-width: none;
-  height: 38px;
+  height: 40px;
   flex: none;
   overflow: visible;
   transition: width .2s cubic-bezier(.2, .82, .2, 1);
@@ -2409,13 +2410,25 @@ html:not([data-theme="light"]) .nav-dd-menu.mega-menu .menu-count {
   overflow: hidden;
   transform: scaleX(.58);
   transform-origin: right center;
-  transition: opacity .12s ease, transform .2s cubic-bezier(.2, .82, .2, 1), border-color .14s ease, visibility .12s;
+  /* Keep the closing plate present through its fade, but never delay the
+     opening visibility edge: openSearch() moves keyboard focus on the first
+     animation frame, and a still-hidden descendant cannot accept focus. */
+  transition:
+    opacity .12s ease,
+    transform .2s cubic-bezier(.2, .82, .2, 1),
+    border-color .14s ease,
+    visibility 0s linear .2s;
   will-change: opacity, transform;
 }
 
 .ticker-search.open .search-expanded {
   border-color: #bfc9da;
   transform: scaleX(1);
+  transition:
+    opacity .12s ease,
+    transform .2s cubic-bezier(.2, .82, .2, 1),
+    border-color .14s ease,
+    visibility 0s linear 0s;
 }
 
 .ticker-search .search-glyph { width: 15px; height: 15px; }
@@ -2598,7 +2611,12 @@ html:not([data-theme="light"]) .result-row { background: var(--mock-surface-soft
   .site-nav.has-nav-toggle .nav-search.ticker-search,
   .topbar.has-nav-toggle .nav-search.ticker-search {
     width: 100%;
-    height: 38px;
+    height: 40px;
+  }
+  .site-nav.has-nav-toggle .nav-ctrls .terminal-link,
+  .topbar.has-nav-toggle .nav-ctrls .terminal-link {
+    min-height: 40px;
+    touch-action: manipulation;
   }
   .ticker-search .search-trigger { justify-content: flex-start; padding-left: 16px; }
   .ticker-search .idle-ticker { min-width: 0; }
@@ -2960,5 +2978,119 @@ html:not([data-theme="light"]) .result-row { background: var(--mock-surface-soft
 @media (prefers-reduced-motion: reduce) {
   .has-nav-toggle .nav-links .nav-market-drill.is-open > .nav-dd-menu.nav-market-drill-panel {
     animation: none;
+  }
+}
+
+/* =========================================================================
+   PREMIUM INTERACTION PARITY — keyboard + touch feedback
+   -------------------------------------------------------------------------
+   The menu links already inherit theme.css's global focus ring, but the newer
+   button-based navigation controls do not. Keep mouse, keyboard and touch on
+   one interaction grammar: visible keyboard focus, an immediate press state,
+   and no undersized paginator/back targets. The selectors stay nav-local so
+   page controls keep their own component contracts.
+   ========================================================================= */
+:where(
+  .nav-drill-trigger,
+  .nav-drill-back,
+  .nav-ctrls .terminal-link,
+  .ticker-search .search-trigger,
+  .ticker-search .search-esc,
+  .fan-card,
+  .result-row,
+  .search-pagination button
+) {
+  touch-action: manipulation;
+}
+
+:where(
+  .nav-drill-trigger,
+  .nav-drill-back,
+  .nav-ctrls .terminal-link,
+  .ticker-search .search-trigger,
+  .ticker-search .search-esc,
+  .fan-card,
+  .result-row,
+  .search-pagination button
+):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--link, #5b79ff) 70%, transparent);
+  outline-offset: 2px;
+  z-index: 4;
+}
+
+.nav-drill-back,
+.ticker-search .search-esc,
+.search-pagination button {
+  transition:
+    color .16s ease,
+    background-color .16s ease,
+    border-color .16s ease,
+    box-shadow .16s ease,
+    transform .16s ease;
+}
+
+.nav-drill-back {
+  min-height: 40px;
+}
+
+.search-pagination button {
+  min-width: 40px;
+  height: 40px;
+}
+
+.nav-mega.nav-mega .nm-feat:active,
+.nav-mega.nav-mega .nav-mega-item:active,
+.nav-drill-trigger:active,
+.nav-drill-back:active,
+.ticker-search .search-trigger:active,
+.fan-card:active,
+.result-row:active {
+  transform: translateY(0) scale(.985);
+  transition-duration: .06s;
+}
+
+.ticker-search .search-esc:active,
+.search-pagination button:active {
+  border-color: color-mix(in srgb, var(--link, #5b79ff) 42%, var(--nr-line));
+  color: var(--text, var(--ink));
+  background: color-mix(in srgb, var(--link, #5b79ff) 9%, var(--nr-soft));
+  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--text, var(--ink)) 10%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The approved mockup port lives after the older generic reduced-motion
+     block, so repeat the component-level kill here at the true cascade tail. */
+  .nav-search.ticker-search,
+  .ticker-search .search-trigger,
+  .ticker-search .search-expanded,
+  .ticker-dropdown,
+  .nav-drill-panel,
+  .fan-card,
+  .result-row,
+  .nav-drill-back,
+  .ticker-search .search-esc,
+  .search-pagination button {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .fan-card,
+  .result-row {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ticker-search .idle-ticker::after {
+    animation: none;
+  }
+
+  .nav-mega.nav-mega .nm-feat:active,
+  .nav-mega.nav-mega .nav-mega-item:active,
+  .nav-drill-trigger:active,
+  .nav-drill-back:active,
+  .ticker-search .search-trigger:active,
+  .fan-card:active,
+  .result-row:active {
+    transform: none;
   }
 }

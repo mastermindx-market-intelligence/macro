@@ -696,6 +696,30 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
 @media (prefers-reduced-motion:reduce){
   .ric-fbtn,.ric-more>summary::before{transition:none}
 }
+.ric-prereg{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+  font-size:.72rem;line-height:1;padding:4px 9px;border-radius:var(--r-pill,999px);
+  border:1px solid var(--border);color:var(--muted)}
+.ric-prereg-d{flex:none;width:5px;height:5px;border-radius:var(--r-pill,999px);background:var(--blue-ink)}
+.ric-prereg.is-absent .ric-prereg-d{background:transparent;border:1px solid var(--muted)}
+html[data-theme="dark"] .ric-prereg{background:color-mix(in srgb,var(--text) 6%,transparent)}
+html[data-theme="dark"] .ric-prereg:not(.is-absent) .ric-prereg-d{
+  box-shadow:0 0 6px 0 color-mix(in srgb,var(--blue) 70%,transparent)}
+html[data-theme="light"] .ric-prereg{background:var(--panel);
+  border-color:color-mix(in srgb,var(--text) 22%,transparent);box-shadow:var(--card-shadow)}
+html[data-theme="light"] .ric-prereg:not(.is-absent) .ric-prereg-d{box-shadow:none}
+.ric-prereg-why{margin:-8px 0 16px;max-width:70ch;font-size:.74rem;line-height:1.6;color:var(--muted)}
+.ric-stance{margin:16px 0 0;padding-top:13px;border-top:1px solid var(--line);
+  font-size:1rem;line-height:1.5;font-weight:600;color:var(--text)}
+.ric-copy{margin:0;max-width:70ch;font-size:1rem;line-height:1.5;font-weight:600;color:var(--text)}
+html[data-theme="dark"] .ric-stance{box-shadow:none}
+html[data-theme="light"] .ric-stance{border-top-color:var(--line)}
+.ric-nulls{margin:0 0 16px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-card,12px);
+  background:color-mix(in srgb,var(--text) 4%,transparent)}
+.ric-nulls-t{margin:0 0 8px;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.ric-nulls ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.ric-nulls li{font-size:.78rem;line-height:1.55;color:var(--text)}
+html[data-theme="light"] .ric-nulls{background:var(--panel);box-shadow:var(--card-shadow)}
+.ric-filter-count{margin:-12px 0 18px;font-size:.74rem;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -2113,21 +2137,78 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
     {%- endif -%}
   {%- endmacro -%}
 
+  {%- macro ric_method_receipt(f) -%}
+    {%- if f == 'synthetic_control' -%}<span class="l-en">Method: synthetic control</span><span class="l-zh">方法：合成对照</span>
+    {%- elif f == 'event_study' -%}<span class="l-en">Method: event study</span><span class="l-zh">方法：事件研究</span>
+    {%- else -%}<span class="l-en">Method: {{ f|replace('_', ' ') }}</span><span class="l-zh">方法：{{ f|replace('_', ' ') }}</span>
+    {%- endif -%}
+  {%- endmacro -%}
+
+  {%- macro ric_tier_receipt(t) -%}
+    {%- if t == 'DIAGNOSTIC' -%}<span class="l-en">Evidence tier: diagnostic — not used for decisions</span><span class="l-zh">证据层级：诊断——不用于决策</span>
+    {%- else -%}<span class="l-en">Evidence tier: {{ t|replace('_', ' ')|lower }}</span><span class="l-zh">证据层级：{{ t|replace('_', ' ')|lower }}</span>
+    {%- endif -%}
+  {%- endmacro -%}
+
+  {%- macro ric_authority_receipt(card) -%}
+    {%- set ns = namespace(names_en=[], names_zh=[]) -%}
+    {%- set gloss = {
+      'forecast_authority': ('forecast', '预测'),
+      'gating_authority': ('gating', '门控'),
+      'ranking_authority': ('ranking', '排序'),
+      'sizing_authority': ('sizing', '仓位'),
+      'trading_authority': ('trading', '交易'),
+    } -%}
+    {%- for k, v in (card.authority or {})|dictsort -%}
+      {%- if v -%}
+        {%- set pair = gloss.get(k, (k|replace('_', ' '), k|replace('_', ' '))) -%}
+        {%- set ns.names_en = ns.names_en + [pair[0]] -%}
+        {%- set ns.names_zh = ns.names_zh + [pair[1]] -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- if ns.names_en -%}
+      <span class="l-en">Authority: {{ ns.names_en|join(', ') }}</span><span class="l-zh">权限：{{ ns.names_zh|join('、') }}</span>
+    {%- else -%}
+      <span class="l-en">Authority: none — exploratory, not gated</span><span class="l-zh">权限：无——探索性，未经门控</span>
+    {%- endif -%}
+  {%- endmacro -%}
+
   {%- macro ric_value(item) -%}
     {%- set v = item.get('value') -%}
     {%- set u = item.get('unit') -%}
     {%- if v is none -%}<span class="ric-null">—</span>
     {%- elif u == 'boolean' -%}<span class="l-en">{{ 'Yes' if v else 'No' }}</span><span class="l-zh">{{ '是' if v else '否' }}</span>
+    {%- elif v is sameas true or v is sameas false -%}<span class="l-en">{{ 'Yes' if v else 'No' }}</span><span class="l-zh">{{ '是' if v else '否' }}</span>
     {%- elif u == 'return_fraction_interval' and v is sequence and v is not string and v|length == 3 -%}
       {{ '%.2f'|format(v[0] * 100) }}% … {{ '%.2f'|format(v[2] * 100) }}%
       <span class="ric-fig-sub"><span class="l-en">bootstrap median</span><span class="l-zh">自助法中位数</span> {{ '%.2f'|format(v[1] * 100) }}%</span>
     {%- elif u == 'return_fraction' or u == 'fraction' -%}{{ '%.3f'|format(v * 100) }}%
-    {%- elif u in ('months', 'events', 'episodes', 'draws', 'tickers') -%}{{ v }}{{ ric_unit(u) }}
-    {%- elif u == 'probability' and v is number -%}
-      {%- if v < 0.0001 -%}<span class="l-en">below 0.0001</span><span class="l-zh">小于 0.0001</span>{{ ric_unit(u) }}
-      {%- elif v > 0.9999 -%}<span class="l-en">above 0.9999</span><span class="l-zh">大于 0.9999</span>{{ ric_unit(u) }}
-      {%- else -%}{{ '%.4f'|format(v) }}{{ ric_unit(u) }}
+    {%- elif u == 'probability' and v is number and v is not sameas true and v is not sameas false -%}
+      {%- set floor = item.get('display_floor') -%}
+      {%- set draws = item.get('draws') -%}
+      {%- if floor is number and floor is not sameas true and floor is not sameas false and v < floor -%}
+        {%- if floor < 0.0001 -%}
+        <span class="l-en">below 0.0001</span><span class="l-zh">小于 0.0001</span>{{ ric_unit(u) }}
+        {%- else -%}
+        &lt; {{ '%.4f'|format(floor) }}{{ ric_unit(u) }}
+        {%- endif -%}
+        <span class="ric-fig-sub"><span class="l-en">owner-supplied display floor</span><span class="l-zh">所有者给出的显示下限</span></span>
+      {%- elif draws is number and draws is not sameas true and draws is not sameas false and draws > 0 and v == 0 -%}
+        {%- set resample_floor = 1 / (draws + 1) -%}
+        {%- if resample_floor < 0.0001 -%}
+        <span class="l-en">below 0.0001</span><span class="l-zh">小于 0.0001</span>{{ ric_unit(u) }}
+        {%- else -%}
+        &lt; {{ '%.4f'|format(resample_floor) }}{{ ric_unit(u) }}
+        {%- endif -%}
+        <span class="ric-fig-sub"><span class="l-en">resampling floor 1/(draws+1)</span><span class="l-zh">重抽样下限 1/(次数+1)</span></span>
+      {%- elif v < 0.0001 -%}
+        <span class="l-en">below 0.0001</span><span class="l-zh">小于 0.0001</span>{{ ric_unit(u) }}
+      {%- elif v > 0.9999 -%}
+        <span class="l-en">above 0.9999</span><span class="l-zh">大于 0.9999</span>{{ ric_unit(u) }}
+      {%- else -%}
+        {{ '%.4f'|format(v) }}{{ ric_unit(u) }}
       {%- endif -%}
+    {%- elif u in ('months', 'events', 'episodes', 'draws', 'tickers') -%}{{ v }}{{ ric_unit(u) }}
     {%- elif v is number -%}{{ '%.4f'|format(v) }}{{ ric_unit(u) }}
     {%- else -%}{{ v|e }}
     {%- endif -%}
@@ -2156,7 +2237,7 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
     'DIAGNOSTIC': ('Diagnostic only', '仅诊断'),
   } %}
   {% set ric_path_status_gloss = {
-    'EXPLORATORY_NON_GATED': ('Exploratory — not gated', '探索性 — 未门控'),
+    'EXPLORATORY_NON_GATED': ('Exploratory — not gated', '探索性 —— 未设门槛'),
   } %}
   {% set ric_en_months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] %}
   {% set ric_n = ric_cards|length %}
@@ -2218,7 +2299,7 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
         <span class="l-en">All</span><span class="l-zh">全部</span></button>
       {% for fam in ric_cards|map(attribute='method_family')|unique|list %}
       <button type="button" class="ric-fbtn" data-ric-f="fam:{{ fam }}" aria-pressed="false">
-        <span class="l-en">{{ fam|replace('_', ' ')|title }}</span><span class="l-zh">{{ '合成控制' if fam == 'synthetic_control' else ('事件研究' if fam == 'event_study' else fam) }}</span></button>
+        <span class="l-en">{{ fam|replace('_', ' ')|title }}</span><span class="l-zh">{{ '合成对照' if fam == 'synthetic_control' else ('事件研究' if fam == 'event_study' else fam) }}</span></button>
       {% endfor %}
       {% set ns = namespace(other_emitted=false) %}
       {% for q in ric_cards|map(attribute='quality')|unique|list %}
@@ -2238,6 +2319,7 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
       {% endif %}
       {% endfor %}
     </fieldset>
+    <p class="ric-filter-count" id="ric-filter-count" hidden></p>
 
     <div class="ric-cards" id="ric-cards">
       {% for card in ric_cards %}
@@ -2258,6 +2340,16 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
               <span class="l-en">{% if q == 'STALE' %}Out of date — receipt older than its window{% elif q in ric_quality_gloss %}{{ ric_quality_gloss[q][0] }}{% else %}State not recognised{% endif %}</span>
               <span class="l-zh">{% if q == 'STALE' %}已过期——回执早于其窗口{% elif q in ric_quality_gloss %}{{ ric_quality_gloss[q][1] }}{% else %}状态未识别{% endif %}</span>
             </span>
+            {%- set ric_prereg = card.source_artifacts|selectattr('role', 'equalto', 'preregistration')|list -%}
+            <span class="ric-prereg{{ '' if ric_prereg else ' is-absent' }}"
+                  data-ric-prereg="{{ 'on-file' if ric_prereg else 'absent' }}">
+              <span class="ric-prereg-d" aria-hidden="true"></span>
+              {%- if ric_prereg %}
+              <span class="l-en">Plan written first</span><span class="l-zh">计划先行写定</span>
+              {%- else %}
+              <span class="l-en">No plan on file</span><span class="l-zh">无计划存档</span>
+              {%- endif %}
+            </span>
           </div>
 
           {%- set qen = card.question.en -%}
@@ -2274,6 +2366,15 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
             <span class="l-en">{{ card.estimand.en|e }}</span>
             <span class="l-zh">{{ (card.estimand.zh or card.estimand.en)|e }}</span>
           </p>
+          <p class="ric-prereg-why">
+            {%- if ric_prereg %}
+            <span class="l-en">The questions and cut-offs were written down before this run. The plan file and its digest are under Receipts.</span>
+            <span class="l-zh">本次运行之前已写定问题与截止条件。计划文件及其摘要见"凭证"。</span>
+            {%- else %}
+            <span class="l-en">Nothing was written down before this run, so read the result as exploratory — the questions could have been chosen after the data was seen.</span>
+            <span class="l-zh">本次运行之前没有写定任何内容，因此该结果应按探索性阅读 —— 问题可能是在看到数据之后才选定的。</span>
+            {%- endif %}
+          </p>
 
           <div class="ric-figs">
             {% for out in card.outputs %}
@@ -2286,15 +2387,12 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
               <span class="ric-fig-l"><span class="l-en">Sample size</span><span class="l-zh">样本量</span></span>
               <span class="ric-fig-v">{% if card.sample_n is none %}<span class="ric-null">—</span>{% else %}{{ card.sample_n }}{% endif %}</span>
             </div>
+            {% if card.effective_n is not none %}
             <div class="ric-fig" data-ric-code="effective_n">
               <span class="ric-fig-l"><span class="l-en">Effective sample size</span><span class="l-zh">有效样本量</span></span>
-              <span class="ric-fig-v">{% if card.effective_n is none %}<span class="ric-null">—</span>{% else %}{{ card.effective_n }}{% endif %}</span>
-              {% if card.effective_n is none %}
-              {% for nr in card.null_reasons if nr.code == 'effective_n' %}
-              <span class="ric-why"><span class="l-en">{{ nr.detail.en|e }}</span><span class="l-zh">{{ (nr.detail.zh or nr.detail.en)|e }}</span></span>
-              {% endfor %}
-              {% endif %}
+              <span class="ric-fig-v">{{ card.effective_n }}</span>
             </div>
+            {% endif %}
             <div class="ric-fig" data-ric-code="cutoff">
               <span class="ric-fig-l"><span class="l-en">Data through</span><span class="l-zh">数据截至</span></span>
               <span class="ric-fig-v">
@@ -2311,6 +2409,32 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
               </span>
             </div>
           </div>
+
+          {# Every typed null is printed once — this panel is the only home. #}
+          {% if card.null_reasons %}
+          <div class="ric-nulls" data-ric-nulls>
+            <div class="ric-nulls-t"><span class="l-en">Not available yet</span><span class="l-zh">暂不可用</span></div>
+            <ul>
+              {% for nr in card.null_reasons %}
+              <li data-ric-null-code="{{ nr.code }}">
+                {%- if nr.code == 'uncertainty_interval' -%}
+                <span class="l-en">Confidence interval — {{ nr.detail.en|e }}</span>
+                <span class="l-zh">置信区间 — {{ (nr.detail.zh or nr.detail.en)|e }}</span>
+                {%- elif nr.code == 'effective_n' -%}
+                <span class="l-en">Effective sample size — {{ nr.detail.en|e }}</span>
+                <span class="l-zh">有效样本量 — {{ (nr.detail.zh or nr.detail.en)|e }}</span>
+                {%- elif nr.code == 'ticker_cluster_t' -%}
+                <span class="l-en">Ticker-clustered t statistic — Not recorded in the source study.</span>
+                <span class="l-zh">按标的聚类的 t 统计量 — 来源研究未记录。</span>
+                {%- else -%}
+                <span class="l-en">Not recorded in the source study.</span>
+                <span class="l-zh">来源研究未记录。</span>
+                {%- endif -%}
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+          {% endif %}
 
           {# Ordered effect path — drawn ONLY when the owner marked the horizons
              ordered. Drawing one for a card without `owner_supplied` would be an
@@ -2434,19 +2558,32 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
           </details>
 {% endif %}
 
-          <details class="ric-more">
+          <details class="ric-more ric-receipts">
             <summary><span class="l-en">Receipts</span><span class="l-zh">凭证</span></summary>
             <div class="ric-more-b">
               <dl class="ric-rc">
                 <dt><span class="l-en">Card</span><span class="l-zh">卡片</span></dt><dd>{{ card.card_id }}</dd>
-                <dt><span class="l-en">State code</span><span class="l-zh">状态代码</span></dt><dd>{{ q }}</dd>
-                <dt><span class="l-en">Evidence tier</span><span class="l-zh">证据层级代码</span></dt><dd>{{ card.evidence_tier }}</dd>
-                <dt><span class="l-en">Method family</span><span class="l-zh">方法族</span></dt><dd>{{ card.method_family }}</dd>
+                <dt><span class="l-en">State</span><span class="l-zh">状态</span></dt>
+                <dd>
+                  <span class="l-en">{{ ric_quality_gloss[q][0] if q in ric_quality_gloss else 'State reported by the owner' }}</span>
+                  <span class="l-zh">{{ ric_quality_gloss[q][1] if q in ric_quality_gloss else '所有者报告的状态' }}</span>
+                  <code>{{ q }}</code>
+                </dd>
+                <dt><span class="l-en">Method</span><span class="l-zh">方法</span></dt>
+                <dd>{{ ric_method_receipt(card.method_family) }} <code>{{ card.method_family }}</code></dd>
+                <dt><span class="l-en">Evidence tier</span><span class="l-zh">证据层级</span></dt>
+                <dd>{{ ric_tier_receipt(card.evidence_tier) }} <code>{{ card.evidence_tier }}</code></dd>
+                <dt><span class="l-en">Authority</span><span class="l-zh">权限</span></dt>
+                <dd>{{ ric_authority_receipt(card) }}</dd>
                 {% if card.ordered_effect_path and card.ordered_effect_path.evidence_status %}
-                <dt><span class="l-en">Path status</span><span class="l-zh">路径状态代码</span></dt><dd>{{ card.ordered_effect_path.evidence_status }}</dd>
+                {%- set es = card.ordered_effect_path.evidence_status -%}
+                <dt><span class="l-en">Path status</span><span class="l-zh">路径状态</span></dt>
+                <dd>
+                  <span class="l-en">{{ ric_path_status_gloss[es][0] if es in ric_path_status_gloss else es|replace('_', ' ') }}</span>
+                  <span class="l-zh">{{ ric_path_status_gloss[es][1] if es in ric_path_status_gloss else es|replace('_', ' ') }}</span>
+                  <code>{{ es }}</code>
+                </dd>
                 {% endif %}
-                <dt><span class="l-en">Authority flags</span><span class="l-zh">授权标记</span></dt>
-                <dd>{% for k, v in card.authority|dictsort %}{{ k }}={{ 'true' if v else 'false' }}{% if not loop.last %} {% endif %}{% endfor %}</dd>
                 {% for g in gates %}
                 {%- set gid = (g.code.split('_')|first) if g.code else '' -%}
                 <dt><span class="l-en">Gate {{ gid }}</span><span class="l-zh">门槛 {{ gid }}</span></dt>
@@ -2457,7 +2594,7 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
                 <dt><span class="l-en">Adapter</span><span class="l-zh">适配器</span></dt><dd>{{ card.adapter_version }}</dd>
                 <dt><span class="l-en">Owner question</span><span class="l-zh">所有者问题</span></dt>
                 <dd><span class="l-en">{{ card.question.en|e }}</span> / <span class="l-zh">{{ (card.question.zh or card.question.en)|e }}</span></dd>
-                <dt><span class="l-en">Method</span><span class="l-zh">方法版本</span></dt><dd>{{ card.method_revision }}</dd>
+                <dt><span class="l-en">Method revision</span><span class="l-zh">方法版本</span></dt><dd>{{ card.method_revision }}</dd>
                 {% for a in card.source_artifacts + card.code_identity %}
                 <dt>
                   <span class="l-en">{{ {'result':'Result artifact','report':'Research report','event_roster':'Event roster','benchmark':'Benchmark series','preregistration':'Preregistration','generator':'Generator','estimator':'Estimator'}.get(a.role, a.role|replace('_', ' ')|title) }}</span>
@@ -2475,6 +2612,12 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
           <div class="ric-auth">
             <span class="l-en">This card carries no authority. It cannot forecast, rank, gate, size or trade, and nothing downstream reads it as permission.</span>
             <span class="l-zh">本卡片不具备任何授权：不可用于预测、排序、门控、仓位或交易，下游系统亦不会将其视为许可。</span>
+          </div>
+          <div class="ric-stance">
+            <p class="ric-copy">
+              <span class="l-en">Watch — do not trade off this card.</span>
+              <span class="l-zh">观望 — 不要据此交易。</span>
+            </p>
           </div>
 
         </div>
@@ -2595,25 +2738,48 @@ html[data-theme="light"] .ric-path{background:var(--panel)}
   // contract's order is fixed and non-ranking, so a sort would be a claim.
   var bar = document.getElementById('ric-filter');
   var wrap = document.getElementById('ric-cards');
+  var countEl = document.getElementById('ric-filter-count');
   if(!bar || !wrap) return;
   var btns = bar.querySelectorAll('.ric-fbtn');
   var cards = wrap.querySelectorAll('.ric-card');
+  var total = cards.length;
   function apply(sel){
-    cards.forEach(function(card){
+    var shown = 0;
+    for (var i = 0; i < cards.length; i++) {
+      var card = cards[i];
       var show = sel === 'all'
         || (sel.indexOf('fam:') === 0 && card.getAttribute('data-ric-family') === sel.slice(4))
         || (sel === 'q:other' && card.getAttribute('data-ric-unglossed') === '1')
         || (sel.indexOf('q:') === 0 && sel !== 'q:other' && card.getAttribute('data-ric-quality') === sel.slice(2))
         || (sel.indexOf('tier:') === 0 && card.getAttribute('data-ric-tier') === sel.slice(5));
       card.hidden = !show;
-    });
-    btns.forEach(function(b){
-      b.setAttribute('aria-pressed', String(b.getAttribute('data-ric-f') === sel));
-    });
+      if (show) shown += 1;
+    }
+    for (var j = 0; j < btns.length; j++) {
+      btns[j].setAttribute('aria-pressed', String(btns[j].getAttribute('data-ric-f') === sel));
+    }
+    if (countEl) {
+      if (sel === 'all' || shown === total) {
+        countEl.hidden = true;
+        countEl.textContent = '';
+      } else if (shown === 0) {
+        countEl.hidden = false;
+        countEl.innerHTML =
+          '<span class="l-en">No cards match this filter</span>' +
+          '<span class="l-zh">没有符合此筛选的卡片</span>';
+      } else {
+        countEl.hidden = false;
+        countEl.innerHTML =
+          '<span class="l-en">Showing ' + shown + ' of ' + total + ' cards</span>' +
+          '<span class="l-zh">显示 ' + shown + ' / ' + total + ' 张卡片</span>';
+      }
+    }
   }
-  btns.forEach(function(b){
-    b.addEventListener('click', function(){ apply(b.getAttribute('data-ric-f')); });
-  });
+  for (var k = 0; k < btns.length; k++) {
+    (function(b){
+      b.addEventListener('click', function(){ apply(b.getAttribute('data-ric-f')); });
+    })(btns[k]);
+  }
 })();
 </script>
 <script src="theme.js"></script>

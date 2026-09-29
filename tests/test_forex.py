@@ -424,6 +424,101 @@ def test_transmission_flipping_flag():
     assert out["rows"][0]["stability"] == "flipping" and "US equities" in out["unstable"]
 
 
+def _tx_signed_pair(direction: str) -> dict:
+    """Synthetic transmission with one headwind asset (SPY, inverse of USD) and
+    one tailwind asset (GC=F, same-sign as USD). ``direction`` is the USD
+    63d move: strengthening | weakening. Lists stay signed vs a strengthening
+    dollar; only the read copy is direction-aware."""
+    idx = _idx(400)
+    rng = np.random.default_rng(7)
+    uret = pd.Series(rng.normal(0, 0.004, 400), index=idx)
+    drift = 0.003 if direction == "strengthening" else -0.003
+    uret.iloc[-63:] = uret.iloc[-63:] + drift
+    broad = np.exp(uret.cumsum()) * 100
+    spy = np.exp((-uret).cumsum()) * 100
+    gold = np.exp(uret.cumsum()) * 100
+    out = FT.transmission(broad, {"SPY": spy, "GC=F": gold}, None, None, CFG["transmission"])
+    assert out, f"transmission returned empty for {direction}"
+    return out
+
+
+def _en_role(read: str, name: str) -> str:
+    """Semantic role of ``name`` in the EN read: lean | lift | absent."""
+    import re
+    if name not in read:
+        return "absent"
+    chunks = re.split(r";| and a ", read)
+    hit = [c for c in chunks if name in c]
+    assert hit, (name, read)
+    blob = " ".join(hit).lower()
+    lean = "headwind" in blob or "lean" in blob
+    lift = "tailwind" in blob or "lift" in blob
+    if lean and not lift:
+        return "lean"
+    if lift and not lean:
+        return "lift"
+    raise AssertionError(f"ambiguous EN framing for {name!r} in {read!r} chunks={hit}")
+
+
+def _zh_role(read_zh: str, name_zh: str) -> str:
+    """Semantic role of ``name_zh`` in the ZH read: lean | lift | absent."""
+    import re
+    if name_zh not in read_zh:
+        return "absent"
+    chunks = re.split(r"[；，。]", read_zh)
+    hit = [c for c in chunks if name_zh in c]
+    assert hit, (name_zh, read_zh)
+    blob = "".join(hit)
+    lean = "逆风" in blob or "压制" in blob
+    lift = "顺风" in blob or "提振" in blob
+    if lean and not lift:
+        return "lean"
+    if lift and not lean:
+        return "lift"
+    raise AssertionError(f"ambiguous ZH framing for {name_zh!r} in {read_zh!r} chunks={hit}")
+
+
+def test_transmission_read_four_cells_en_zh():
+    """W4: all four (direction × list) cells, EN and ZH, at the engine.
+
+    Truth table (lists signed vs strengthening dollar; correlation is symmetric):
+      strengthening + headwind_for → LEANED ON
+      strengthening + tailwind_for → LIFTED
+      weakening     + headwind_for → LIFTED
+      weakening     + tailwind_for → LEANED ON
+    Pins semantic verbs, not byte-exact prose.
+    """
+    firm = _tx_signed_pair("strengthening")
+    soft = _tx_signed_pair("weakening")
+    assert firm["usd_dir"] == "strengthening", firm["usd_dir"]
+    assert soft["usd_dir"] == "weakening", soft["usd_dir"]
+    # Public list contract: signed vs strengthening dollar, independent of usd_dir.
+    for out in (firm, soft):
+        assert "US equities" in out["headwind_for"], out
+        assert "Gold" in out["tailwind_for"], out
+        assert out["rows"][0]["key"] in ("SPY", "GC=F")
+
+    hw_en, tw_en = "US equities", "Gold"
+    hw_zh, tw_zh = "美国股票", "黄金"
+
+    # strengthening / firm
+    assert _en_role(firm["read"], hw_en) == "lean", firm["read"]
+    assert _en_role(firm["read"], tw_en) == "lift", firm["read"]
+    assert _zh_role(firm["read_zh"], hw_zh) == "lean", firm["read_zh"]
+    assert _zh_role(firm["read_zh"], tw_zh) == "lift", firm["read_zh"]
+
+    # weakening / soft — the inverted branch. Pre-fix counterexample was
+    # "a weaker dollar is a tailwind for Gold" (wrong list, wrong verb) and
+    # ZH named neither list.
+    assert _en_role(soft["read"], hw_en) == "lift", soft["read"]
+    assert _en_role(soft["read"], tw_en) == "lean", soft["read"]
+    assert _zh_role(soft["read_zh"], hw_zh) == "lift", soft["read_zh"]
+    assert _zh_role(soft["read_zh"], tw_zh) == "lean", soft["read_zh"]
+    # The pre-fix inversion: Gold presented as a weakening-dollar tailwind.
+    assert _en_role(soft["read"], tw_en) != "lift"
+    assert "a tailwind for Gold" not in soft["read"]
+
+
 def test_scorecards_finite_and_maxdd_nonpositive():
     idx = _idx(1500)
     rng = np.random.default_rng(4)
@@ -1059,7 +1154,8 @@ if __name__ == "__main__":
                test_real_rate_regime_quadrants, test_fed_path_tightening_sign,
                test_dollar_positioning_crowded, test_trend_stack_all_up,
                test_strength_meter_zero_sum_and_usd, test_transmission_known_inverse,
-               test_transmission_flipping_flag, test_scorecards_finite_and_maxdd_nonpositive,
+               test_transmission_flipping_flag, test_transmission_read_four_cells_en_zh,
+               test_scorecards_finite_and_maxdd_nonpositive,
                test_dollar_desk_assembles_gracefully, test_haven_basket_is_carry_mirror,
                test_calibrate_dollar_reer_leg, test_forex_link_reads_and_degrades,
                test_regime_z_causal_excludes_t, test_regime_forward_label_leak_free,

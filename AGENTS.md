@@ -148,6 +148,98 @@ only — a human/Opus reviewer owns visual taste.
   sweeper honors `git worktree lock`, live process cwds, uncommitted/unpushed
   work, open PRs, and <7-day activity. To park a checkout long-term, lock it:
   `git worktree lock --reason "<why>" <path>`.
+- **Only a POSITIVE completion signal authorizes reclaim** (`DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM`;
+  incident 2026-09-26). Absence of a signal — an idle window, no process holding the cwd, a
+  stale reflog — may NEVER authorize deleting, sparsifying, or otherwise destructively
+  altering a shared worktree. Only a positive completion signal may: the commits landed, so
+  the checkout is reproducible cache and removing it cannot lose the WORK — **but it does
+  destroy the working directory of any session still attached, so landed is never on its own
+  a licence to delete** (see the WORK-not-SESSION rule below).
+  **CORRECTED 2026-09-27 — the signal is the MERGED PR, not `HEAD ⊆ origin/main`.** This repo
+  squash-merges and a squash REWRITES the commit, so a cleanly merged branch's tip is NOT an
+  ancestor of main (measured, PR #8086: squash `f9425697` is an ancestor, tip `0a47bc1f` is
+  not); an ancestry-only gate fires for almost nothing but trees that never committed. The
+  proof is any ONE of — the order `scripts/worktree_gc.py` already applies, and it was right
+  before this prose existed — (1) `HEAD` ancestor of `origin/main`, (2) **a MERGED PR whose
+  `headRefOid` equals this tree's HEAD** (the load-bearing case, originally omitted), (3)
+  `HEAD` contained in `refs/remotes/origin/<branch>` with no open PR. Unknown PR state fails
+  CLOSED. **A DETACHED HEAD satisfies none of them and this law structurally cannot reach
+  it** — 318 such trees, 150 being `mo-ext-*` orchestrator labour lanes whose output ships
+  from the SEAT's carrier branch; they need a lane-exit receipt, not a merge.
+  **Idleness means two incompatible things** — a Claude
+  Code/Codex session's shell exits between tool calls, so 24 h of silence means dead; a
+  **ChatGPT web conversation has no shell and resumes the instant its human replies, so
+  silence of any length means nothing.** Measured cost of ignoring this: an "idle ≥ 24 h"
+  sparse sweep stripped `data/`, `site/`, `mockups/`, `verify_shots/` from 59 worktrees at
+  05:31 — 34 of them `sol-*`/`review-*` web-review trees — and essentially every ChatGPT
+  session died unrecoverably, because a web session hits a suddenly-absent path, wedges, and
+  the errors cascade. No commits were lost (omitted paths stay tracked in the index), but
+  sessions are the costlier asset. "Use 72 h instead" is the wrong fix: the defect is the
+  CLASS of signal, not its threshold. The positive signal is also cheaper — free on
+  squash-merge, no TTL/polling/`du`/process scan, and **no `refs/salvage/*` ref needed**
+  because `origin/main` already references the commits. Manage storage at three points, none
+  of which asks whether anyone is there: **cheap at birth** (93% of the 380 trees born in 7
+  days are already sparse, ~0.45 GiB vs ~7.5 GiB), **reclaim at merge** (any one of the three
+  proofs above, `git status --porcelain` empty, nothing attached, **and the tree under a
+  configured root** — 580 of 807 trees are not, which is why an armed correct sweeper freed
+  1.5 of 308 GiB; `/Volumes/Mastermind/agent-workspaces` alone holds 354 trees / 462 GiB and
+  is *mandated* by the SSD placement policy, and widening `roots` is its own operator
+  ratification act — a nearly INERT one, see the 2026-09-28 correction below), and **a hard per-root population cap**
+  evicting landed-and-clean trees oldest-first — the org-enforced-retention pattern, because
+  per-user cleanup discipline does not hold at fleet scale (54 trees minted/day, ~0
+  removed). Retrofit-to-sparse is a one-time backlog drain, NOT an ongoing lever: correctly
+  gated it yields 0.0 GiB across the 27 remaining FULL trees. Idle ages and live cwds may be
+  REPORTED for a human, or narrow an action the positive signal already authorized — never
+  authorize one. **And the signal protects the WORK, not the SESSION:** deleting a checkout
+  destroys the working directory of anything attached exactly as thinning it did, so reclaim
+  requires landed AND nothing attached, and because a resumable web conversation is
+  undetectable by construction (no process, no shell, no reflog — it lives in a browser tab),
+  **roots hosting web sessions are never auto-reclaimed at all.** **Pool RE-DERIVED 2026-09-27
+  over 807 trees — the 09-26 figure quoted here was wrong.** It read "only 48 / 73.2 GiB are
+  landed-and-clean while 638 are UNLANDED, so the bloat is unmerged WORK, not uncollected
+  garbage, and no completion-signal sweeper can reach most of it"; that came from the
+  ancestry-only gate, which a squash-merge breaks. Under PR state: **real abandonment is 8–14%,
+  not 79%**, the fleet ships ~61 PRs/day against ~54 trees/day minted, and this IS uncollected
+  garbage — so a completion-signal sweeper is the right instrument. **What limited it was SCOPE,
+  not judgment:** 580 of 807 trees (72%) sit outside `config/worktree_gc.json` `roots`
+  (`/Volumes/Mastermind/agent-workspaces`, 354 trees, `…/claude` alone 462 GiB and **mandated**
+  by the SSD placement policy; `/Volumes/Mastermind/worktrees`, 142), and a further 285 trees /
+  221.6 GiB are verdicted `LOCKED` on nothing but the SSD helper's content-free
+  `removable volume protection` stamp, which short-circuits landedness entirely. Widening
+  either is its own **operator ratification act**, exactly as flipping `armed` was.
+  **Widen `roots` by SUBTREE, never by volume.** `…/agent-workspaces` holds both the
+  agent-driven Claude seat lanes (`claude/<seat>/…`) and the ChatGPT-web family (`sol/`,
+  `review/`, loose `*-sol` trees); `/Volumes/Mastermind/worktrees` is entirely the web/Sol mint
+  root whose trees died on 09-26. Measured: **49.6 GiB across 31 of the 41 trees the report
+  verdicted SAFE is HUMAN-class**, and a valid landed proof there is NOT permission — reclaim
+  needs landed AND nothing attached, and a web conversation's attachment is undetectable.
+  Safe to arm: `…/agent-workspaces/claude`, `…/agent-workspaces/tmp`. **Never**
+  `/Volumes/Mastermind/worktrees`, `…/agent-workspaces` itself, `…/sol`, `…/review`.
+  **CORRECTED 2026-09-28 — widening `roots` arms almost nothing, and the reason matters more
+  than the number** (`DSC:A-HOST-CHECKOUT-BELT-MAKES-A-WIDER-ROOTS-LIST-INERT`). This file said
+  from 09-27 that widening "widens an armed deleter from 227 to 807 trees". Measured over the
+  live 804-registration registry: `in_scope` moves 225 → 721 but the belt-reachable population
+  moves 225 → **226**. `worktree_gc.py` never decides "session tree vs host checkout" from
+  `roots` — `rel_roots` (~line 861) drops every absolute and `~`-prefixed entry, and
+  `path_under_session_root` (line 165) segment-matches only `.claude/worktrees` and its six
+  siblings, so every `/Volumes/Mastermind/…` path (nameable only absolutely) is classified a
+  **host checkout** and refused by the belt at ~line 688 (`refused — host checkout`). Widening
+  therefore buys +496 trees of REPORTING and +1 of deletion, and is inert without a companion
+  CODE change making session-tree detection follow the configured roots. **The corollary is the
+  danger and it runs opposite to the relief:** the 527 human-driven SSD checkouts — `sol/`,
+  `review/`, the whole of `/Volumes/Mastermind/worktrees` — are protected today by that naming
+  heuristic ALONE, not by any decision, so the obvious repair that makes widening work is the
+  same commit that silently deletes them. A `human_driven_roots` deny-list honoured ahead of
+  every verdict is therefore the FIRST thing to ratify, not the last: it is purely protective
+  and can delete nothing. Two further facts for anyone touching this code: an absolute-only
+  `roots` list empties `rel_roots` and disables deletion ENTIRELY (fails closed, but silently —
+  the refusals go to `summary["errors"]`, which line 949 counts and never prints, so
+  `deleted=0 errors=N` with no messages is this); and `expand_roots` is ALREADY at 4,047 sweep
+  roots (7 relative × 578 hosts + 1), a pre-existing cost that widening raises by 2, not 4,000.
+  The genuinely unreachable remainder is DIRTY + UNPUSHED (~308 GiB of real work, whose commits
+  `refs/salvage/*` preserves for ~40 bytes each) and the 318 detached lanes, which need a
+  lane-exit receipt rather than a merge. The durable fix is still upstream of storage: how many
+  lanes get opened that never merge. See `research/WORKTREE_GC_POLICY.md` §9.
 - **A session worktree is planted under the checkout the SESSION was launched in**
   (2026-08-20). `.claude/hooks/worktree_create_sparse.py` used to derive its
   destination from `git rev-parse --git-common-dir`, which answers with the MAIN
@@ -400,6 +492,105 @@ Do NOT save tokens by reducing reasoning effort — output is only 17% of burn, 
 cutting thinking degrades quality for at most a sixth of the cost. The savings
 are in where work happens and how large the context is.
 
+## Execution continuation law
+
+A blocked lane is not a finished mission. This section governs when a session may
+STOP; the "Definition of done" section below governs what the ship chain owes once a
+session produces a commit. This law does not weaken the ordinary ship chain: both bind,
+and neither releases the other. A blocked lane is a reason to keep working other lanes,
+never a reason to leave an unmerged pull request.
+
+### Authority model — restated here, duplicated nowhere
+
+Chairman Chris is final authority. **Sol is the default AI CEO / system owner.**
+Ordinary Claude and Codex sessions remain **bounded workers**. **Fable is scarce
+principal capacity by default.** The governing authority map stays in Mastermind
+(`config/authority_map.yml` + `control_plane/packet_gate.py`); the "Required context"
+section above already forbids a second copy in this repository, and this section
+creates none, dispatches nothing, and grants no one a permission they did not have.
+
+What it adds is the scope rule the defaults were missing. **An explicit Chairman
+delegation overrides those defaults inside its stated scope, and a default role
+assumption never overrides it back.** A seat holding a Chairman-delegated program
+decides in-scope matters itself and does not re-ask Sol for what it was already
+delegated — the standing example is Meta-CEO Fable B owning the Agent Fabric program,
+which repeatedly stalled waiting for a Sol authorization it did not need. The converse
+binds just as hard: **delegated authority never leaks outside its stated scope**,
+exactly as conditional merge authority granted for one pull request never transfers to
+another (`DEC:SOL-HOLD-IS-A-MERGE-BARRIER`). This law promotes no worker to principal, widens no
+credential, and changes no provider permission.
+
+### The six execution invariants
+
+`BLOCKER -> freeze the affected lane -> check independent useful lanes -> continue`.
+One blocked review, tool, provider or CI lane freezes that lane, never the mission.
+Before any stop, enumerate the other authorized lanes and continue on them.
+`ALL_SCOPED_LANES_BLOCKED` may describe the current lane census, but it is a
+**nonterminal diagnostic**, not a principal/seat stopping state. For each internal
+project blocker, the next act is to resolve it, route it to the canonical owner, or
+prove that an already-running durable owner has a return path. "Another owner" or
+"not my lane" can prevent direct mutation; neither makes the mission terminal.
+
+`NO WORKER STARTED + lawful principal tools/custody + no conflict/EFFECT_UNKNOWN ->
+direct bounded execution may continue`. A delegation surface being unavailable — the
+Fabric down, a pool exhausted, a spawn refused — is not evidence that execution is
+impossible. If no worker actually started, the principal still holds lawful tools and
+custody, no other owner is working the same artifact, and no act sits in an
+`EFFECT_UNKNOWN` state, the principal executes the bounded work itself. When any of
+those four is false, do not create a second worker. Name the blocked lane and convert
+it into an owned next action: route/reconcile through the canonical owner, or, if the
+only remaining boundary is genuinely outside the project's controllable graph,
+classify it exactly as `EXACT_HUMAN_GATE`, `PLATFORM_FAILURE`, or `EFFECT_UNKNOWN`.
+A bounded worker may return `STATUS: BLOCKED` to its parent; that worker return does
+not terminally classify the parent mission.
+
+`WAITING EXTERNAL -> durable watcher/owner; do useful parallel principal work; do not
+burn principal capacity polling`. Hand the wait to a durable watcher, a cron, or the
+merge sweeper, then work an independent lane. A Stop-hook block during a wait is
+satisfied by a one-line hold note, never by a fresh poll.
+
+`2 equivalent no-delta cycles -> change tactic/lane/owner`. Two attempts that changed
+nothing observable ban a third identical one. The Stop guard now names the cycle count
+in its own block text rather than repeating one unchanging instruction.
+
+`accepted work -> DO_NOT_REDO unless materially invalidated`. Accepted, merged or
+ratified work reopens only on a material invalidator: new contradicting evidence, a
+changed contract, or an explicit authority reversal. A fresh session, a lost
+transcript, and an absent memory are none of those. Check the `agentos/`
+`do_not_redo` entries and `research/DO_NOT_REBUILD.md` before re-opening anything.
+
+`EFFECT_UNKNOWN -> same-carrier reconciliation; never blind retry/failover`. An act
+whose effect cannot be observed — a timed-out post, an ambiguous dispatch, a dropped
+tool call — is reconciled on the same carrier that performed it. A blind retry or a
+failover to another provider is how one irreversible act becomes two.
+
+### The delivery ladder
+
+`ACK -> QUEUED -> START -> RUNNING -> DELIVERED -> CI -> MERGED -> PRODUCTION_PROOF ->
+ACCEPTANCE` are nine distinct facts and none implies the next. An acknowledgement is
+not a queue entry; a queue entry is not a started worker; a returned packet is not a
+green check; a merge is not production proof; production proof is not acceptance by
+the commissioning authority. Report the rung the evidence reaches and no higher. A
+checkpoint, a status note, or a continuation record describes work; it is never the
+outcome it describes.
+
+### Session end classification
+
+Every substantial session states one line before it ends: `SESSION END: <STATE>`,
+where STATE is exactly one of `PROVEN_OUTCOME`, `EXACT_HUMAN_GATE`, `EFFECT_UNKNOWN`,
+`PLATFORM_FAILURE`, `ALL_SCOPED_LANES_BLOCKED`, `DURABLE_EXECUTION_RUNNING`, or
+`MORE_WORK_EXISTS`. The set is closed on purpose. **`MORE_WORK_EXISTS` and
+`ALL_SCOPED_LANES_BLOCKED` are never valid stopping states**; the latter is a
+diagnostic that forces blocker demolition/routing rather than bureaucratic exit.
+The Stop guard refuses either self-declaration, with the ordinary any-code ladder
+preserved as the unsatisfiable-gate escape.
+
+The converse binds equally. Reaching the actual outcome or the exact human gate early
+is a complete session however short or expensive it was: never pad a session to look
+substantial, and never stop while authorized work remains. Context compaction,
+rotation, or a `/clear` is a harness event and not an outcome — the guard's block
+ledger deliberately survives `resume` and `compact`.
+
 ## Definition of done
 
 DONE for ordinary substantive, verified work is the full delivery chain, which is
@@ -515,6 +706,40 @@ deliberate freeze must ship a DEC record plus an expiry plan
 
 **ARM `merge-on-green`, THEN STAY.** After opening an ordinary pull request, run
 `gh pr edit <n> --add-label merge-on-green`.
+**Arm LAST — never push into an already-armed pull request (measured #8163, 2026-09-29).**
+The window between the sweeper deciding to merge and the merge completing is invisible from a
+session, so a commit pushed onto an armed PR can land on the far side of it. Measured: the
+sweeper merged head `2ff0f92f` at 02:09:24Z while the follow-up commit carries committer time
+02:09:24Z, so the push completed at or after the merge. GitHub accepted it with `rc=0`, did not
+reopen or amend the PR, and raised nothing — and every field a session can read was identical
+to success: `state=MERGED`, a true `mergedAt`, the right `mergeCommit`, and `headRefOid`
+reading the merged head, which is also the correct value on a healthy merge. `--json files` is
+a second false friend: it reports the MERGED paths, so the obvious check "do the PR's files
+appear in the squash?" compares the merged head with itself and passes on a PR that provably
+lost two files. No read of a pull request can see a commit that arrived after its merge; only
+the branch ref can — **`git fetch origin` FIRST**, then
+`git log origin/main..origin/<branch> --name-only`, then a per-path blob comparison against
+`origin/main`, which is squash-tolerant because a squash preserves the tree even though it
+rewrites the commit. **The fetch is not hygiene, it is the whole test: `origin/main` is a LOCAL
+ref**, so a stale one makes every path report missing and this check then tells you to replay
+work that already landed — duplicating it. Measured 2026-09-29: the #8169 watcher compared
+without fetching, exited `MERGED BUT NOT LANDED`, and both files were byte-identical in main the
+entire time. A verifier that cries wolf on every merge is as useless as one that never fires,
+and this one fails toward a destructive remedy — so on a MISSING verdict, re-fetch and re-run
+before believing it, and cross-check by grepping main's own bytes for a string only your commit
+introduced (`git grep <needle> origin/main -- <path>`). **And fetch `main` on its OWN — never
+bundled with the branch ref.** The measured mechanism is nastier than a forgotten fetch: GitHub
+**deletes the head branch on merge**, so the natural one-liner `git fetch origin main <branch>`
+fatals with `couldn't find remote ref <branch>` and, because it aborts, leaves `origin/main`
+un-updated — while the stale local `origin/<branch>` survives and keeps the comparison looking
+perfectly functional. **The merge's own success is what breaks the check that verifies the
+merge.** So: bare `git fetch origin` (or `git fetch origin main` alone), check its exit status
+rather than swallowing it, and treat the branch's absence from the remote as the EXPECTED
+post-merge state — you are comparing your local `origin/<branch>` against a freshly updated
+`origin/main`, and only the latter has to be current. Push every commit the PR needs, THEN add the label; if a
+late push is genuinely required, disarm, push, re-arm under the disarming rule below; and treat
+`MERGED` as a fact about a pull request, never about your bytes.
+`DSC:A-PUSH-TO-AN-ARMED-PR-CAN-LAND-AFTER-ITS-MERGE-AND-NOTHING-ERRORS`.
 **Current topology (2026-08-21): `.github/workflows/merge-on-green.yml` still runs on
 `[self-hosted, macOS, ARM64, merge-control]` on the M2; it is NOT yet GitHub-hosted.**
 W1-A's read-only hosted canary is merged, but production authority stays on the M2 until

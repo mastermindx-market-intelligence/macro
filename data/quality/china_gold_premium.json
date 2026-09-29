@@ -1,0 +1,89 @@
+{
+  "schema": "commodity.china_gold_premium_quality.v1",
+  "checked_at": "2026-09-29T06:25:53+00:00",
+  "status": "render_mismatch",
+  "render_consistent": true,
+  "machine_projection_consistent": false,
+  "available": false,
+  "headline_method": null,
+  "headline_state": "unavailable",
+  "premium_pct": null,
+  "expected_display_source": null,
+  "rendered_display_source": "canonical",
+  "expected_currency": null,
+  "rendered_currency": "USD",
+  "rendered_state": "unavailable",
+  "rendered_source_asof": "",
+  "rendered_premium_pct": null,
+  "source_fresh": false,
+  "source_asof": null,
+  "sources": [],
+  "reason_code": "stale_observation",
+  "official_canonical_available": false,
+  "methods": {
+    "canonical": {
+      "available": false,
+      "fresh": false,
+      "asof": null
+    },
+    "intraday": {
+      "available": false,
+      "fresh": false,
+      "asof": null
+    },
+    "close_proxy": {
+      "available": true,
+      "fresh": false,
+      "asof": "2026-09-24T07:30:00+00:00"
+    }
+  },
+  "history_points": 0,
+  "stats_5_ready": false,
+  "stats_30_ready": false,
+  "violations": [
+    "machine.available: expected False, rendered True",
+    "machine.method: expected None, rendered close_proxy",
+    "machine.state: expected unavailable, rendered premium",
+    "machine.source_asof: expected None, rendered 2026-09-24T07:30:00+00:00",
+    "machine.source_fresh: expected False, rendered True",
+    "machine.premium_pct: expected None, rendered 0.16216220051121777"
+  ],
+  "source_artifacts": [
+    {
+      "role": "sge",
+      "dataset_id": "commodity.gold.sge_au9999.close",
+      "registry_status": "PRODUCED",
+      "group": "gold_china_basis",
+      "name": "sge_au9999",
+      "column": "rmb_per_g",
+      "path": "data/gold_china_basis/sge_au9999.parquet",
+      "exists": true,
+      "rows": 250,
+      "sha256": "4c9ddf1424cc536991ad1ce8fde3591ad4ccc6073619bd7422d46a7733d27a58",
+      "asof": "2026-09-24T07:30:00+00:00",
+      "selected_asof_present": true
+    },
+    {
+      "role": "global",
+      "dataset_id": "commodity.gold.xaucny.close_ref",
+      "registry_status": "PRODUCED",
+      "group": "gold_china_basis",
+      "name": "xaucny_spot",
+      "column": "cny_per_oz",
+      "path": "data/gold_china_basis/xaucny_spot.parquet",
+      "exists": true,
+      "rows": 262,
+      "sha256": "2bafce6db59b973a726bdaaa393e88d7a718091dc059c3b8db59c8a40cb5cce0",
+      "asof": "2026-09-25T07:30:00+00:00",
+      "selected_asof_present": true
+    }
+  ],
+  "close_proxy_dataos_promotion_ready": false,
+  "close_proxy_dataos_promotion_blockers": [
+    "status is render_mismatch, not available_fresh",
+    "5-session average is not ready",
+    "30-session range is not ready",
+    "machine projection was not proven consistent",
+    "headline method is none, required close_proxy"
+  ]
+}

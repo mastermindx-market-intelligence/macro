@@ -110,6 +110,35 @@ def test_breaker_views_single_stays_singular() -> None:
     assert views[0]["plain_en"] == "A data source went dark"
 
 
+def test_gex_detail_is_packet_verbatim() -> None:
+    """W9 r1 frozen face clause for gex_flip_cross — packet-verbatim, both languages."""
+    from engine.alerts import ALERT_DETAIL, alert_view
+    d = ALERT_DETAIL["gex_flip_cross"]
+    assert d["detail_en"] == (
+        "Options hedging just flipped from damping moves to amplifying them — "
+        "expect bigger swings both ways.")
+    assert d["detail_zh"] == "期权对冲由抑制波动转为放大波动——双向波动可能加大。"
+    v = alert_view("gex_flip_cross", "warn",
+                   "GEX: spot crossed the gamma flip (net -31bn, spot vs flip -0.4%)")
+    assert v["detail_en"] == d["detail_en"]
+    assert v["detail_zh"] == d["detail_zh"]
+    assert v["message"].startswith("GEX:")  # receipt stays machine prose
+
+
+def test_every_fired_rule_has_detail_copy() -> None:
+    """Every rule that can reach the Alerts Centre face carries detail_en/detail_zh
+    so the glance line is never the machine `message` (W9 r1 / C3)."""
+    import re as _re
+    from engine import alerts as A
+    src = Path(A.__file__).read_text()
+    fired = set(_re.findall(r"Alert\(\s*[\"']([a-z0-9_]+)[\"']", src))
+    fired |= {"event_risk", "growth_confidence_floor", "inflation_confidence_floor"}
+    missing = sorted(r for r in fired if r not in A.ALERT_DETAIL
+                     or not A.ALERT_DETAIL[r].get("detail_en")
+                     or not A.ALERT_DETAIL[r].get("detail_zh"))
+    assert not missing, f"rules without detail_en/detail_zh: {missing}"
+
+
 def test_every_fired_rule_has_plain_copy() -> None:
     """No rule that can reach the macro alerts VM may fall back to the generic
     default headline (the "Macro signal fired" class, design review 2026-07-13).

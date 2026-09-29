@@ -17,7 +17,7 @@ the Terminal UI with a 30s TTL cache.
 | `live_flow/meta.json` | `live_flow.meta/v2` | Source age, poll floor, observed cycle spacing, fetch/build clocks, root coverage |
 | `live_flow/tide_current.json` | `live_flow.tide/v1` | Market tide (NCP/NPP minutes + sectors) |
 | `live_flow/dte_tide_current.json` | `live_flow.dte_tide/v1` | DTE-bucket tide |
-| `live_flow/tickers/{ROOT}.json` | `live_flow.ticker/v1` | Per-root drill (top ~40 roots) |
+| `live_flow/tickers/{ROOT}.json` | `live_flow.ticker/v1` | Per-root drill for every current-cycle root with complete source success, merged engine state, and real accumulated minute/strike data |
 | `live_flow/tide/{DATE}.json` | `live_flow.tide/v1` | Dated archive of tide_current (same bytes) |
 | `live_flow/dte_tide/{DATE}.json` | `live_flow.dte_tide/v1` | Dated archive of dte_tide_current |
 | `live_flow/tide/dates.json` | `live_flow.archive_dates/v1` | Sessions index for the tide archive |

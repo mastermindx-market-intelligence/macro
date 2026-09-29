@@ -1,0 +1,97 @@
+{# Display-only detail for one already-authorized source row. No cross-row lookup,
+   gate, source request, strategy assignment, target calculation or plan creation. #}
+{% macro t(en, zh) -%}<span class="l-en">{{ en|e }}</span><span class="l-zh">{{ zh|e }}</span>{%- endmacro %}
+{% macro value(v, money=false, boolean=false) -%}
+{%- if boolean and v is sameas true -%}{{ t('Yes','是') }}
+{%- elif boolean and v is sameas false -%}{{ t('No','否') }}
+{%- elif money and v is number and v is not boolean and v == v and (v-v) == 0 -%}${{ '%.2f'|format(v) }}
+{%- elif not money and v is string and v|trim -%}{{ v|e }}
+{%- else -%}{{ t('Not supplied','来源未提供') }}{%- endif -%}
+{%- endmacro %}
+{% macro field(en, zh, v, path, money=false, boolean=false) -%}
+<div class="pvs-field" data-source-field="{{ path|e }}"><dt>{{ t(en,zh) }}</dt><dd>{{ value(v,money,boolean) }}</dd></div>
+{%- endmacro %}
+{% macro original(v) -%}
+{%- if v is string and v|trim -%}<span class="pvs-original-source">{{ t('Original source','来源原文') }} · {{ v|e }}</span>
+{%- else -%}{{ value(v) }}{%- endif -%}
+{%- endmacro %}
+{% macro status_name(v, names) -%}
+{%- if v is string and v|trim -%}{{ t(names[v][0],names[v][1]) if v in names else t('Unmapped status','状态未映射') }}
+{%- else -%}{{ value(none) }}{%- endif -%}
+{%- endmacro %}
+{% macro body(row, kind, as_of=none) -%}
+{% set es = row.get('entry_signal') if kind == 'board' and row.get('entry_signal') is mapping else {} %}
+{% set sig = row.get('signal') if kind == 'board' and row.get('signal') is mapping else {} %}
+{% set hold = row.get('hold') if kind == 'board' and row.get('hold') is mapping else {} %}
+{% set zone = es.get('buy_zone') if es.get('buy_zone') is mapping else {} %}
+<div class="pv-setup-body" data-setup-kind="{{ kind|e }}" data-native-id="{{ row.ticker|e }}">
+  <p class="pvs-note pvs-summary-clock">{{ t("Source as-of","来源日期") }} {{ value(as_of) }}{% if kind == "board" %} · {{ t("Quote time","报价时间") }} {{ value(row.get("price_as_of")) }}{% endif %}</p>
+  <div class="pvs-grid">
+    <div>
+      <section class="pvs-section">
+        <h3>{{ t('Entry conditions','入场条件') if kind == 'board' else t('Research candidate','研究候选') }}</h3>
+        {% if kind == 'board' %}
+        <p class="pvs-read" data-entry-status="{{ (es.get('status') or '')|e }}"><span class="l-en">{{ es.get('headline')|e if es.get('headline') is string and es.get('headline')|trim else 'Entry read not supplied' }}</span><span class="l-zh">{% if es.get('headline_zh') is string and es.get('headline_zh')|trim %}{{ es.get('headline_zh')|e }}{% elif es.get('headline') is string and es.get('headline')|trim %}来源原文 · {{ es.get('headline')|e }}{% else %}未提供入场读数{% endif %}</span></p>
+        <div class="pvs-chart-slot" data-pvs-chart><p>{{ t('Chart available on the setup card.','可在形态卡片上查看图表。') }}</p></div>
+        {% else %}
+        <p class="pvs-read">{{ t('Research only · entry details unavailable','仅供研究 · 入场详情暂缺') }}</p>
+        {% endif %}
+      </section>
+      {% if kind == 'board' %}
+      <section class="pvs-section"><h3>{{ t('Price levels','关键价位') }}</h3>
+      <dl class="pvs-levels">
+        {{ field('Snapshot price','快照价格',row.get('price'),'price',true) }}
+        {{ field('Entry zone · low','入场区间下沿',zone.get('low'),'entry_signal.buy_zone.low',true) }}
+        {{ field('Entry zone · high','入场区间上沿',zone.get('high'),'entry_signal.buy_zone.high',true) }}
+        {{ field('Entry-method stop','入场方法止损位',es.get('stop'),'entry_signal.stop',true) }}
+        {{ field('Base invalidation','筑底失效位',hold.get('invalidation'),'hold.invalidation',true) }}
+        {{ field('Chase boundary','追高边界',es.get('chase_above'),'entry_signal.chase_above',true) }}
+      </dl><p class="pvs-note">{{ t('Entry stop and base invalidation are different. Chase boundary is not a target.','入场止损与筑底失效不同；追高边界不是目标价。') }}</p></section>
+      {% endif %}
+    </div>
+    <div>
+      <section class="pvs-section"><h3>{{ t('Why it is here','入选理由') }}</h3>
+        <p>{{ original(sig.get('reason') if kind == 'board' else row.get('headline_reason')) }}</p>
+      </section>
+      {% if kind == 'board' %}
+      <section class="pvs-section"><h3>{{ t('Technical context','技术背景') }}</h3><dl class="pvs-facts">
+        {{ field('Above 200-day trend','高于 200 日趋势',sig.get('above200'),'signal.above200',boolean=true) }}
+        {{ field('Weekly confirmation','周线确认',sig.get('weekly_bull'),'signal.weekly_bull',boolean=true) }}
+        {{ field('Provisional observation','暂定观察',sig.get('provisional'),'signal.provisional',boolean=true) }}
+      </dl></section>{% endif %}
+      <p class="pvs-availability">{{ t('Target and holding period unavailable in this view. Reward/risk and win probability are not calculated.','此视图暂无目标价与持有周期，不计算收益风险比或成功概率。') }}</p>
+      <details class="pvs-audit"><summary>{{ t('Evidence & source details','证据与来源详情') }}</summary>
+        <section class="pvs-section"><h3>{{ t('Setup information','形态信息') }}</h3>
+        <p class="pvs-status-read">{{ status_name(row.get('stage'), {'setting_up': ('Developing','形态形成中')}) }} · {{ status_name(row.get('lane') if kind == 'board' else none, {'bottoming': ('Base formation','筑底')}) }}</p>
+        <dl class="pvs-facts">
+          {{ field('Source setup type','来源形态类别',row.get('lane') if kind == 'board' else none,'lane') }}
+          {{ field('Source stage','来源阶段',row.get('stage'),'stage') }}
+          {{ field('Strategy sleeve','策略分组',none,'canonical strategy binding not supplied') }}
+          {{ field('Holding horizon','持有周期',none,'holding duration not supplied') }}
+        </dl><p class="pvs-note">{{ t('Selection is not entry permission. Setup type is not an assigned strategy.','精选不等于入场许可，形态类别不是已分配的策略。') }}</p></section>
+        <section class="pvs-section"><h3>{{ t('Plan connection','计划关联') }}</h3><p class="pvs-note">{{ t('No model-plan link is available for this candidate. No plan or position is created here.','此候选暂无模型计划关联，不在此创建计划或持仓。') }}</p></section>
+        <section class="pvs-section"><h3>{{ t('Source dates','来源时间') }}</h3><dl class="pvs-facts">
+          {{ field('Source as-of','来源日期',as_of,'envelope.as_of') }}
+          {{ field('Signal as-of','信号日期',row.get('signal_asof') if kind == 'board' else none,'signal_asof') }}
+          {{ field('Observed date','观察日期',sig.get('tier_observed_date'),'signal.tier_observed_date') }}
+          {{ field('Quote timestamp','报价时间',row.get('price_as_of') if kind == 'board' else none,'price_as_of') }}
+        </dl><p class="pvs-note">{{ t('Source date is not a quote timestamp. Missing clocks remain missing.','来源日期不是报价时间，缺失时间保持缺失。') }}</p></section>
+      </details>
+    </div>
+  </div>
+</div>
+{%- endmacro %}
+{% macro action(content) -%}
+<details class="pv-setup-inline"><summary>{{ t('Setup detail','形态详情') }}</summary>{{ content }}</details>
+{%- endmacro %}
+
+{# Same one-row presenter, serialized only with an already-entitled table row.
+   Chart text remains inert until the bounded display guard validates its geometry. #}
+{% macro table_action(row, as_of=none) -%}
+<details class="pv-setup-inline pv-setup-table" data-setup-ticker="{{ row.ticker|e }}" data-setup-asof="{{ as_of|e if as_of else '' }}">
+<summary>{{ t('Setup detail','形态详情') }}</summary>
+<template class="pvs-body-source">{{ body(row, 'board', as_of) }}</template>
+<p class="pvs-fallback-note">{{ t('If detail is unavailable, use the stock link in this row.','若详情不可用，请使用本行的个股链接。') }}</p>
+<template class="pvs-chart-source">{{ row.get('spark_svg')|e if row.get('spark_svg') is string else '' }}</template>
+</details>
+{%- endmacro %}

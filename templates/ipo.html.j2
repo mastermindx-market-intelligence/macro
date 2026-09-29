@@ -182,6 +182,15 @@ html[data-theme="dark"] .theme-switch .knob::before{content:"🌙"}
 .cw-rail.is-null{background:var(--card);box-shadow:inset 0 0 0 1px var(--grid);opacity:.55}
 .cw-scale{display:flex;justify-content:space-between;font-size:10.5px;font-weight:700;
   letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
+/* Capture-time force-state hook for the not_evaluable rail variant. The capture
+   script sets [data-credit="null"] on <body>; the rules below swap only the rail
+   and scale. They do not change .tc-state or any data-derived text. The hidden
+   fallback nodes are capture-only until a product caller sets data-credit;
+   no production caller currently sets it. */
+.cw-rail-fb,.cw-scale-fb{display:none}
+[data-credit="null"] .cw-rail-data,[data-credit="null"] .cw-scale-data{display:none}
+[data-credit="null"] .cw-rail-fb{display:block}
+[data-credit="null"] .cw-scale-fb{display:flex}
 
 .cw-inputs{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
 .cw-in{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-size:12.5px;
@@ -438,15 +447,21 @@ html[data-theme="light"] .cw-change{background:color-mix(in srgb,var(--tcc) 6%,v
       {# SIGNATURE — where today's spread sits inside its own past year. Decorative:
          the same reading is printed as bilingual text in .cw-inputs below. #}
       {% if seg.rail %}
-      <div class="cw-rail" aria-hidden="true">
+      <div class="cw-rail cw-rail-data" aria-hidden="true">
         <span class="cw-band" style="width:{{ seg.rail.easy_pct }}%"></span>
         <span class="cw-mark" style="left:{{ seg.rail.pos_pct }}%"></span>
       </div>
-      <div class="cw-scale"><span>{{ t('tight end of the past year','近一年最窄') }}</span><span>{{ t('wide end','最宽') }}</span></div>
+      <div class="cw-scale cw-scale-data"><span>{{ t('tight end of the past year','近一年最窄') }}</span><span>{{ t('wide end','最宽') }}</span></div>
       {% else %}
       <div class="cw-rail is-null" aria-hidden="true"></div>
-      <div class="cw-scale"><span>{{ t('range not evaluable','区间无法评估') }}</span><span></span></div>
+      <div class="cw-scale"><span>{{ t('range can’t be read yet','区间暂无读数') }}</span><span></span></div>
       {% endif %}
+      {# Capture-only fallback rail and scale, emitted for both data states and
+         hidden until scripts/capture_page_evidence.py sets [data-credit="null"]
+         on <body>. They remain capture-only until a product caller sets the
+         attribute. The hook changes only rail/scale visibility, never .tc-state. #}
+      <div class="cw-rail is-null cw-rail-fb" aria-hidden="true"></div>
+      <div class="cw-scale cw-scale-fb"><span>{{ t('range can’t be read yet','区间暂无读数') }}</span><span></span></div>
 
       <ul class="cw-inputs">
         {% for inp in seg.inputs %}

@@ -221,6 +221,50 @@ def _build_engine_js(
     return n_matched
 
 
+def _persisted_ms_view(market_key: str) -> dict | None:
+    """Read one persisted market-state snapshot into the macro vm shape.
+
+    Same reader and view shape as the nested ``_persisted_ms_view`` in
+    ``scripts/build_site.py`` (the helper ``test_persisted_ms_view_helper_matches_build_site_contract``
+    names). This calls ``engine.market_state.load_persisted`` — it does not open
+    the JSON itself. A missing or unreadable feed returns None so the strip
+    prints the designed-null row and the build does not crash.
+    """
+    try:
+        from engine.market_state import load_persisted as _lp  # noqa: PLC0415
+
+        _snap = _lp(market_key=market_key)
+        if not _snap:
+            return None
+        _view = {
+            "score": _snap.get("score"),
+            "raw_score": _snap.get("raw_score"),
+            "verdict": _snap.get("verdict"),
+            "label_en": _snap.get("label_en"),
+            "label_zh": _snap.get("label_zh"),
+            "asof": _snap.get("asof"),
+            "caveat_en": _snap.get("caveat_en") or "",
+            "caveat_zh": _snap.get("caveat_zh") or "",
+            "display_only": True,
+            "market": market_key,
+            "ms_history": [],
+        }
+        # Directory rule copied from the build_site helper: cn → china_market_state,
+        # anything else → <key>_market_state. US history is not required here;
+        # load_persisted("us") still reads data/market_state/latest.json.
+        _log_dir = "china_market_state" if market_key == "cn" else f"{market_key}_market_state"
+        _sl_path = config.data_dir() / _log_dir / "score_log.parquet"
+        if _sl_path.exists():
+            import pandas as pd  # noqa: PLC0415
+
+            _all = pd.read_parquet(_sl_path).sort_values("date")
+            _view["ms_history"] = _all.tail(60).to_dict(orient="records")
+        return _view
+    except Exception as exc:  # noqa: BLE001 — missing feed degrades to a null row
+        log.warning("%s_market_state ingest failed (%s); degrading to None", market_key, exc)
+        return None
+
+
 def main() -> int:
     root = config.ROOT
     cfg = config.load()
@@ -228,12 +272,19 @@ def main() -> int:
     site.mkdir(parents=True, exist_ok=True)
 
     # ---- 0. Emit the shared regime prior artifact (W4.5 — additive, cheap, never fatal) ----
+    # Snapshot first. The emit rewrites regime_prior.js from live data, and this
+    # page does not ship that rewrite. The bytes go back before the stamp below
+    # so markets.html's ?v= names the file that remains.
+    _prior_path = site / "regimedata" / "regime_prior.js"
+    _prior_kept = _prior_path.read_bytes() if _prior_path.is_file() else None
     try:
         from scripts.build_regime_prior import emit as _emit_prior
         from lib import config as _cfg
         _emit_prior(data_dir=_cfg.data_dir(), site_dir=site)
     except Exception as _rp_exc:  # noqa: BLE001
         log.warning("build_markets: regime_prior emit failed (non-fatal): %s", _rp_exc)
+    if _prior_kept is not None:
+        _prior_path.write_bytes(_prior_kept)
 
     # ---- 1. Load country_cycles engine data ----
     country_sectors = _load_country_cycles(site)
@@ -267,7 +318,31 @@ def main() -> int:
         env.globals.update(td=i18n.td, tr=i18n.tr, t=i18n.t)
     except Exception:  # noqa: BLE001 — degrade to English-only rather than crash the build
         env.globals.update(td=lambda en: en, tr=lambda en: en, t=lambda en, zh="": en)
-    html = env.get_template("markets.html.j2").render()
+    # UD-B2-W4B-1: three persisted reads for the risk-regime strip.
+    # None (missing / unreadable) renders the designed-null row. Never a crash.
+    market_state = _persisted_ms_view("us")
+    hk_market_state = _persisted_ms_view("hk")
+    cn_market_state = _persisted_ms_view("cn")
+    log.info(
+        "market regime strip: us=%s hk=%s cn=%s",
+        (market_state or {}).get("verdict"),
+        (hk_market_state or {}).get("verdict"),
+        (cn_market_state or {}).get("verdict"),
+    )
+    html = env.get_template("markets.html.j2").render(
+        market_state=market_state,
+        hk_market_state=hk_market_state,
+        cn_market_state=cn_market_state,
+    )
+    # Stamp ?v= and defer before the page is committed. build_markets is the
+    # writer for site/markets.html and this packet commits that file directly;
+    # write_page alone would strip the stamps the render lane had already applied
+    # (same regression build_whitehouse stamps around). Degrade-never-raise.
+    try:
+        from scripts.optimize_assets import make_optimizer
+        html = make_optimizer(site)(html, site)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("build_markets: asset stamp failed (%s); page left unstamped", exc)
     write_page(site / "markets.html", html, encoding="utf-8")
 
     # ---- 5. Copy committed page assets ----

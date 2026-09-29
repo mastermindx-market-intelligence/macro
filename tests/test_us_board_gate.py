@@ -33,6 +33,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+from html.parser import HTMLParser
 from pathlib import Path
 
 import pytest
@@ -71,12 +72,64 @@ def _keys(html: str) -> list[str]:
     return [" ".join(m.group(0).split()) for m in CARD_ROW.finditer(_strip_scripts(html))]
 
 
+def _candidate_card_surface(html: str) -> str:
+    """A full dashboard has separate plan and candidate cards; snippets have only rows.
+
+    Preserve the real two-population fixture. Scope membership assertions to the
+    candidate grid, while _keys remains whole-document for paid-row leak controls.
+    """
+    clean = _strip_scripts(html)
+    if "<html" not in clean.lower():
+        return clean
+
+    class CandidateGrid(HTMLParser):
+        def __init__(self):
+            super().__init__(convert_charrefs=False)
+            self.depth = 0
+            self.parts = []
+
+        def handle_starttag(self, tag, attrs):
+            if tag == "div":
+                if self.depth:
+                    self.depth += 1
+                elif dict(attrs).get("id") == "us-cand-grid":
+                    self.depth = 1
+            if self.depth:
+                self.parts.append(self.get_starttag_text())
+
+        def handle_endtag(self, tag):
+            if self.depth:
+                self.parts.append("</" + tag + ">")
+                if tag == "div":
+                    self.depth -= 1
+
+        def handle_data(self, data):
+            if self.depth:
+                self.parts.append(data)
+
+        def handle_startendtag(self, tag, attrs):
+            if self.depth:
+                self.parts.append(self.get_starttag_text())
+
+        def handle_entityref(self, name):
+            if self.depth:
+                self.parts.append("&" + name + ";")
+
+        def handle_charref(self, name):
+            if self.depth:
+                self.parts.append("&#" + name + ";")
+
+    parser = CandidateGrid()
+    parser.feed(clean)
+    return "".join(parser.parts)
+
+
 def _tickers_in(html: str) -> set[str]:
     """Tickers carried by actual server-rendered CARDS only — not any bare
     `data-ticker="…"` substring, which also appears inside inlined JS source
     (see _strip_scripts)."""
     out = set()
-    for card in CARD_ROW.finditer(_strip_scripts(html)):
+    for card in CARD_ROW.finditer(_candidate_card_surface(html)):
         m = TICKER_ATTR.search(card.group(0))
         if m:
             out.add(m.group(1))
@@ -299,101 +352,74 @@ def test_the_leak_check_can_actually_see_a_duplicated_row():
 # ── honest totals ───────────────────────────────────────────────────────────
 
 def test_honest_totals_survive_the_gate():
-    """docs/TIER_PREVIEW_PATTERN.md: "state and totals are free, names are
-    paid." The shown-count line and every bucket heading must report the TRUE
-    full-board count, never the preview count."""
+    """The Candidates census, not the retired dot-legend count, owns this total."""
     pytest.importorskip("pandas")
     pytest.importorskip("plotly")
     from scripts.build_site import _split_us_board
-
     rows = _rows(7)
     shell_su, gate, locked = _split_us_board({"buy": rows, "eligible": 7}, 3, gated=True)
     html = _render_shell(shell_su, gate)
-
-    assert '<span class="muted" id="us-board-sub"' in html
-    m = re.search(r'id="us-board-sub"[^>]*>\s*(\d+)\s', html)
-    assert m, "shown-count line not found"
-    assert int(m.group(1)) == 7, (
-        f"shown-count must report the TRUE total (7), not the preview slice: {m.group(1)}")
-    assert ">3<" not in html.split('id="us-board-sub"')[1][:40]
-
-    # every rendered lane heading must carry the TRUE bucket count, not the
-    # number of preview cards that happen to sit under it
-    for lane, true_count in (("bottoming", 2), ("continuation", 1), ("trend", 1),
-                             ("recovery", 1), ("watch", 1)):
-        m = re.search(r'<div class="nb-lane-hd" data-lane="\w+">\s*<span class="l-en">'
-                      + re.escape(lane.title() if lane != "watch" else "Watch")
-                      + r" · (\d+)</span>", html)
-        if m:  # heading only renders when at least one PREVIEW row is in that bucket
-            assert int(m.group(1)) == true_count, (
-                f"{lane} heading shows {m.group(1)}, true full-board count is {true_count}")
+    candidate = html.split('id="us-candidates"', 1)[1]
+    m = re.search(r'class="mx-sec-total"[^>]*>\s*<span class="l-en"><b>(\d+)</b>', candidate)
+    assert m and int(m.group(1)) == 7
+    assert "first 3 of 7 screened candidates" in candidate
+    assert "当前显示本次筛出的 7 只候选中的前 3 只" in candidate
+    for lane, true_count in (("bottoming", 2), ("continuation", 1), ("trend", 1)):
+        m = re.search(r'<div class="nb-lane-hd" data-lane="' + lane
+                      + r'"[^>]*>\s*<span class="l-en">[^<]* · (\d+)</span>', candidate)
+        assert m and int(m.group(1)) == true_count
 
 
 def test_ungated_shell_shows_the_same_true_total_the_gated_shell_does():
-    """Sanity: the honest-total fix must not change the ungated number."""
     rows = _rows(7)
     html = _render_shell({"buy": rows, "eligible": 7}, None)
-    m = re.search(r'id="us-board-sub"[^>]*>\s*(\d+)\s', html)
+    candidate = html.split('id="us-candidates"', 1)[1]
+    m = re.search(r'class="mx-sec-total"[^>]*>\s*<span class="l-en"><b>(\d+)</b>', candidate)
     assert m and int(m.group(1)) == 7
+    assert 'id="us-gate-note"' not in candidate
 
 
 # ── controls stay inert while gated ─────────────────────────────────────────
 
-def test_stage_filter_bar_is_baked_full_and_marked_inert_while_gated():
-    """#us-stage-filter only exists on the priority (`stage`) path — rows must
-    carry `stage` to exercise it, unlike the honest-totals tests above which
-    use the legacy lane fixture."""
+def test_candidate_stage_shelves_report_full_counts_while_gated():
+    """Retired stage buttons became non-interactive aggregate shelves; retain all counts."""
     rows = _rows_with_stage(7)
     pytest.importorskip("pandas")
     pytest.importorskip("plotly")
     from scripts.build_site import _split_us_board
-
     shell_su, gate, locked = _split_us_board({"buy": rows, "eligible": 7}, 3, gated=True)
     gated_html = _render_shell(shell_su, gate)
     ungated_html = _render_shell({"buy": rows, "eligible": 7}, None)
-
-    assert 'id="us-stage-filter"' in gated_html and 'id="us-stage-filter"' in ungated_html, (
-        "controls must be baked on BOTH builds, never omitted for the gated one")
-    assert 'class="pbf-bar gated"' in gated_html
-    assert 'class="pbf-bar gated"' not in ungated_html
+    pattern = r'<span class="cand-shelf"><b class="fig">(\d+)</b><span><span class="l-en">([^<]+)</span>'
+    expected = [("2", "Live now"), ("2", "Setting up"), ("1", "Ran — don’t chase"),
+                ("1", "Basing"), ("1", "Blocked")]
+    assert re.findall(pattern, gated_html) == re.findall(pattern, ungated_html) == expected
+    assert sum(int(n) for n, _ in expected) == gate["total"]
     assert 'id="us-gate-note"' in gated_html and 'id="us-gate-note"' not in ungated_html
+    # No obsolete clickable control should advertise access to withheld cards.
+    assert 'id="us-stage-filter"' not in gated_html
 
 
-def test_stages_missing_from_the_preview_still_bake_a_hidden_chip():
-    """A stage the preview slice happens not to contain still exists on the
-    withheld board. Omitting its chip (the pre-fix behaviour, `{% if _sc[_sk] %}`
-    over the SLICED board) leaves a hydrated paid viewer holding cards no control
-    can filter to — measured on the real 69-row board, `setting_up` alone was 31
-    of them. Bake it hidden and let the hydrate recount reveal it."""
+def test_stages_missing_from_preview_keep_counts_and_protected_headings():
+    """A withheld-only stage stays in the full census and in its proper payload group."""
     rows = _rows_with_stage(7)
     pytest.importorskip("pandas")
     pytest.importorskip("plotly")
-    from scripts.build_site import _split_us_board
-
+    from scripts.build_site import _split_us_board, _us_board_group_items
     shell_su, gate, locked = _split_us_board({"buy": rows, "eligible": 7}, 3, gated=True)
     html = _render_shell(shell_su, gate)
-
-    preview_stages = {r["stage"] for r in shell_su["buy"]}
-    locked_only = {r["stage"] for r in locked} - preview_stages
-    assert locked_only, "fixture must leave at least one stage entirely withheld"
-
-    for stage in locked_only:
-        chip = re.search(
-            r'<button type="button" data-stagepick="%s"(?P<hidden>\s+hidden)?' % re.escape(stage),
-            html)
-        assert chip, (
-            f"stage {stage!r} exists on the withheld board but bakes no chip — a "
-            "hydrated paid viewer could never filter to those cards")
-        assert chip.group("hidden"), (
-            f"stage {stage!r} has no preview rows, so its chip must ship hidden — "
-            "a visible chip reading 0 would filter the board to nothing")
-
-    # and the counting law still holds for what IS shown
-    for stage in preview_stages:
-        chip = re.search(
-            r'data-stagepick="%s"(?P<hidden>\s+hidden)?' % re.escape(stage), html)
-        assert chip and not chip.group("hidden"), (
-            f"stage {stage!r} has preview rows on screen, so its chip must be visible")
+    missing = {r["stage"] for r in locked} - {r["stage"] for r in shell_su["buy"]}
+    assert missing == {"basing", "blocked"}
+    payload = _env().get_template("_us_board_cards.html.j2").render(
+        items=_us_board_group_items(locked, True, gate["stage_counts"]), sg_any=True,
+        bs_adj=False, xu_allfeat=False, trg_map={}, rw_en="", rw_zh="")
+    for stage in missing:
+        label = {"basing": "Basing", "blocked": "Blocked"}[stage]
+        assert '<b class="fig">1</b><span><span class="l-en">' + label in html
+        assert 'data-stage="' + stage + '"' in payload
+    for row in locked:
+        assert row["ticker"] not in html
+        assert 'data-ticker="' + row["ticker"] + '"' in payload
 
 
 def test_hydrate_recounts_the_stage_chips():
@@ -668,7 +694,7 @@ def test_the_panel_leak_check_can_actually_see_a_leak():
                 + [r["ticker"] for r in locked["leaders"]]
                 + [r["ticker"] for r in locked["ran"]]
                 + [r["ticker"] for L in locked["actnow"] for r in L["rows"]]
-                + ["ZMSFTZ", "QQAX"])
+)
     assert sorted({t for t in withheld if t in ungated}) == sorted(set(withheld)), (
         "the ungated shell must carry every row the gated one withholds — "
         "otherwise the leak assertion is testing nothing")
@@ -731,7 +757,11 @@ def test_panel_headings_and_counts_stay_honest():
     # Act-Now lane heading count = the whole lane.
     assert f'<span class="acth-count">{len(vm["action_board"]["buy_now"])}</span>' in html
     # The tape keeps every count on its ladder — the panel's whole argument.
-    assert 'class="tt-quiet">50/60<' in html
+    assert 'id="theme-tape"' not in html
+    # The surviving tape partial still preserves its full count at its actual owner.
+    tape = _env().get_template("_theme_tape.html.j2").render(
+        theme_tape=vm["theme_tape"], tt_collapse_names=True)
+    assert 'class="tt-quiet">50/60<' in tape
     # Each gated panel says how many names it is holding back, in both languages.
     for n in (pgate["setups"]["locked"], pgate["leaders"]["locked"], pgate["ran"]["locked"]):
         assert f'{n} more names here' in html
@@ -864,3 +894,300 @@ def test_tier_preview_leaves_a_server_collapsed_tape_list_alone():
         # ...and it has to come BEFORE the stash, or the restore path still fires.
         assert fn.index('if (!list.querySelector(".tt-n")) return;') < \
                fn.index('list.setAttribute("data-mx-old-html"'), path
+
+
+# Lossless candidate visibility must use the existing protected payload boundary.
+def _candidate_visibility_vm():
+    from tests.test_us_candidate_lanes import _visibility_board
+    from engine.us_candidate_lanes import project_candidate_visibility
+    return {"us_candidate_visibility": project_candidate_visibility(_visibility_board())}
+
+
+def test_candidate_pool_split_keeps_withheld_identity_out_of_shell():
+    from copy import deepcopy
+    from scripts import build_site as bs
+    vm = _candidate_visibility_vm()
+    before = deepcopy(vm)
+    overrides, gate, locked = bs._split_us_panels(vm, 1, gated=True)
+    html = _env().get_template("_us_candidate_pool.html.j2").render(
+        us_candidate_visibility=overrides["us_candidate_visibility"], pgate=gate)
+    payload = bs._render_us_panel_payload(_env(), gate, locked, vm)
+    assert vm == before
+    assert 'data-ticker="AAA"' in html
+    assert 'data-ticker="AMD"' not in html
+    assert "Advanced Micro Devices" not in html
+    assert 'data-ticker="AMD"' in payload["candidate_pool_html"]
+    assert "Sector display limit reached" in payload["candidate_pool_html"]
+    assert "Not scored" in payload["candidate_pool_html"]
+    assert gate["candidate_pool"] == {"preview": 1, "locked": 1, "total": 2}
+
+
+def test_candidate_pool_payload_writer_uses_same_auth_contract(tmp_path):
+    from scripts import build_site as bs
+    vm = _candidate_visibility_vm()
+    _, gate, locked = bs._split_us_panels(vm, 1, gated=True)
+    blocks = bs._render_us_panel_payload(_env(), gate, locked, vm)
+    bs._write_us_payload(_env(), tmp_path, None, locked_rows=[], us_standouts=None,
+                         top_setups=None, built="2026-09-18", pgate=gate, panel_blocks=blocks)
+    data = json.loads((tmp_path / bs.US_PAYLOAD_DIR / bs.US_PAYLOAD_NAME).read_text())
+    assert data["schema"] == "tier_payload.v1"
+    assert data["panels"]["candidate_pool"]["locked"] == 1
+    assert 'data-ticker="AMD"' in data["candidate_pool_html"]
+
+
+def test_candidate_visibility_empty_and_unavailable_are_distinct():
+    from engine.us_candidate_lanes import project_candidate_visibility
+    env = _env()
+    absent = env.get_template("_us_candidate_pool.html.j2").render(
+        us_candidate_visibility=project_candidate_visibility(None), pgate=None)
+    assert "coverage cannot be verified" in absent
+    assert "No eligible candidates in this snapshot" not in absent
+    board = {"as_of": "2026-09-18", "candidate_pool": {
+        "pool_definition": "us_candidate_pool_v1", "as_of": "2026-09-18", "eligible": 0, "rows": []}}
+    empty = env.get_template("_us_candidate_pool.html.j2").render(
+        us_candidate_visibility=project_candidate_visibility(board), pgate=None)
+    assert "No eligible candidates in this snapshot" in empty
+
+
+def test_candidate_visibility_full_render_equals_split_plus_tail():
+    from scripts import build_site as bs
+    vm = _candidate_visibility_vm()
+    overrides, gate, locked = bs._split_us_panels(vm, 1, gated=True)
+    env = _env()
+    template = env.get_template("_us_candidate_pool_rows.html.j2")
+    full = template.render(rows=vm["us_candidate_visibility"]["rows"])
+    shell = template.render(rows=overrides["us_candidate_visibility"]["rows"])
+    tail = bs._render_us_panel_payload(env, gate, locked, vm)["candidate_pool_html"]
+    pattern = r'<div class="ucp-row".*?(?=<div class="ucp-row"|\Z)'
+    normalize = lambda text: [" ".join(x.split()) for x in re.findall(pattern, text, re.S)]
+    assert normalize(full) == normalize(shell) + normalize(tail)
+
+
+def test_candidate_visibility_untrusted_labels_are_escaped():
+    vm = _candidate_visibility_vm()
+    row = vm["us_candidate_visibility"]["rows"][1]
+    row["name"] = '<img src=x onerror="alert(1)">'
+    row["ticker"] = '\"><script>alert(2)</script>'
+    html = _env().get_template("_us_candidate_pool_rows.html.j2").render(rows=[row])
+    assert '<img src=x' not in html
+    assert '<script>alert(2)' not in html
+    assert '&lt;img' in html
+
+
+def test_real_dashboard_consumes_candidate_projection():
+    vm = _base_vm()
+    vm.update(_candidate_visibility_vm())
+    vm["pgate"] = None
+    html = _env().get_template("dashboard.html.j2").render(**vm, mode="stocks")
+    assert 'id="us-candidate-pool"' in html
+    assert 'data-ticker="AMD"' in html
+
+
+def test_candidate_hydration_is_not_a_new_data_or_permission_path():
+    source = (ROOT / "templates" / "dashboard.html.j2").read_text()
+    fragment = (ROOT / "templates" / "_us_candidate_pool.html.j2").read_text()
+    assert "hydrateCandidatePool(payload.candidate_pool_html, payload.candidate_pool_source)" in source
+    assert "root.dataset.poolHydrated === 'true'" in source
+    assert "candidate-pool-hydrated" in source and "candidate-pool-hydrated" in fragment
+    assert "fetch(" not in fragment
+    assert "candidate_pool" not in fragment.split('<script>', 1)[1].split('</script>', 1)[0]
+
+
+def test_candidate_visibility_follows_the_fresh_board_rerender():
+    import ast
+    from scripts import build_site as bs
+    from engine.us_candidate_lanes import project_candidate_visibility
+    from tests.test_us_candidate_lanes import _visibility_board
+    old = _visibility_board()
+    fresh = _visibility_board()
+    fresh["as_of"] = fresh["candidate_pool"]["as_of"] = "2026-09-21"
+    vm = {"us_standouts": old, "us_candidate_visibility": project_candidate_visibility(old)}
+    module = ast.parse((ROOT / "scripts/build_site.py").read_text())
+    main = next(n for n in module.body if isinstance(n, ast.FunctionDef) and n.name == "main")
+    updates = [n for n in ast.walk(main) if isinstance(n, ast.Assign)
+               and any(isinstance(t, ast.Subscript) and isinstance(t.value, ast.Name)
+                       and t.value.id == "vm" and isinstance(t.slice, ast.Constant)
+                       and t.slice.value == "us_candidate_visibility" for t in n.targets)]
+    assert len(updates) == 1, "fresh-board rerender must refresh the pool view exactly once"
+    namespace = {"vm": vm, "_fresh_su": fresh,
+                 "project_candidate_visibility": project_candidate_visibility,
+                 "_fresh_candidate_visibility": project_candidate_visibility(fresh)}
+    exec(compile(ast.Module(body=updates, type_ignores=[]), "<actual-rerender-assignment>", "exec"), namespace)
+    override, gate, locked = bs._split_us_panels(vm, 1, gated=True)
+    blocks = bs._render_us_panel_payload(_env(), gate, locked, vm)
+    assert override["us_candidate_visibility"]["as_of"] == "2026-09-21"
+    assert blocks["candidate_pool_source"]["as_of"] == "2026-09-21"
+    assert blocks["candidate_pool_source"]["digest"] == vm["us_candidate_visibility"]["source_digest"]
+
+
+def test_candidate_membership_detector_preserves_real_plan_population():
+    """The fix is structural scoping, not deleting the distinct plan fixture."""
+    html = _render_shell({"buy": _rows(3), "eligible": 3}, None)
+    assert _tickers_in(html) == {"TIC0", "TIC1", "TIC2"}
+    all_cards = "\n".join(CARD_ROW.findall(_strip_scripts(html)))
+    assert 'data-ticker="ACME"' in all_cards and 'data-ticker="ZEUS"' in all_cards
+    assert set(TICKER_ATTR.findall(_candidate_card_surface(html))) == {"TIC0", "TIC1", "TIC2"}
+
+
+def _actual_fresh_board_condition(prior, fresh, *, prior_view=None, fresh_view=None):
+    """Execute the production rerender predicate, not a test-owned approximation."""
+    import ast
+    from engine.us_candidate_lanes import project_candidate_visibility
+    module = ast.parse((ROOT / "scripts/build_site.py").read_text())
+    main = next(n for n in module.body if isinstance(n, ast.FunctionDef) and n.name == "main")
+    guards = []
+    for node in ast.walk(main):
+        if not isinstance(node, ast.If):
+            continue
+        for statement in node.body:
+            if (isinstance(statement, ast.Assign)
+                    and isinstance(statement.value, ast.Name) and statement.value.id == "_fresh_su"
+                    and any(isinstance(t, ast.Subscript) and isinstance(t.value, ast.Name)
+                            and t.value.id == "vm" and isinstance(t.slice, ast.Constant)
+                            and t.slice.value == "us_standouts" for t in statement.targets)):
+                guards.append(node)
+    assert len(guards) == 1
+    namespace = {
+        "_fresh_su": fresh,
+        "_prior_as_of": prior.get("as_of"),
+        "_prior_stale": prior.get("staleness") or {},
+        "_fresh_candidate_visibility": fresh_view if fresh_view is not None else project_candidate_visibility(fresh),
+        "vm": {"us_standouts": prior,
+               "us_candidate_visibility": prior_view if prior_view is not None else project_candidate_visibility(prior)},
+    }
+    return bool(eval(compile(ast.Expression(guards[0].test), "<actual-rerender-predicate>", "eval"), namespace))
+
+
+@pytest.mark.parametrize("change", ["reason", "membership", "unavailable"])
+def test_same_session_candidate_correction_triggers_real_rerender(change):
+    """A rebuilt pool can change on the SAME date with unchanged freshness metadata."""
+    from copy import deepcopy
+    from tests.test_us_candidate_lanes import _visibility_board
+    prior = _visibility_board()
+    fresh = deepcopy(prior)
+    if change == "reason":
+        fresh["candidate_pool"]["rows"][-1]["headline_reason"] = "event_blackout"
+        fresh["candidate_pool"]["rows"][-1]["lane_reasons"] = ["event_blackout"]
+    elif change == "membership":
+        fresh["candidate_pool"]["rows"][-1]["ticker"] = "NEWCO"
+    else:
+        fresh.pop("candidate_pool")
+    assert prior["as_of"] == fresh["as_of"]
+    assert (prior.get("staleness") or {}) == (fresh.get("staleness") or {})
+    assert _actual_fresh_board_condition(prior, fresh)
+
+
+def test_identical_same_session_candidate_pool_does_not_force_rerender():
+    from copy import deepcopy
+    from tests.test_us_candidate_lanes import _visibility_board
+    prior = _visibility_board()
+    assert not _actual_fresh_board_condition(prior, deepcopy(prior))
+
+
+def test_same_session_correction_reaches_both_preview_and_protected_payload():
+    import ast
+    from copy import deepcopy
+    from scripts import build_site as bs
+    from engine.us_candidate_lanes import project_candidate_visibility
+    from tests.test_us_candidate_lanes import _visibility_board
+    prior = _visibility_board()
+    original = deepcopy(prior)
+    fresh = deepcopy(prior)
+    fresh["candidate_pool"]["rows"][-1]["name"] = "Corrected same-session company"
+    assert _actual_fresh_board_condition(prior, fresh)
+    view = project_candidate_visibility(fresh)
+    vm = {"us_standouts": prior, "us_candidate_visibility": project_candidate_visibility(prior)}
+    module = ast.parse((ROOT / "scripts/build_site.py").read_text())
+    main = next(n for n in module.body if isinstance(n, ast.FunctionDef) and n.name == "main")
+    updates = [node for node in ast.walk(main) if isinstance(node, ast.Assign)
+               and any(isinstance(t, ast.Subscript) and isinstance(t.value, ast.Name)
+                       and t.value.id == "vm" and isinstance(t.slice, ast.Constant)
+                       and t.slice.value in ("us_standouts", "us_candidate_visibility")
+                       for t in node.targets)]
+    assert len(updates) == 2
+    namespace = {"vm": vm, "_fresh_su": fresh, "_fresh_candidate_visibility": view}
+    exec(compile(ast.Module(body=updates, type_ignores=[]), "<actual-refresh-assignments>", "exec"), namespace)
+    override, gate, locked = bs._split_us_panels(vm, 1, gated=True)
+    blocks = bs._render_us_panel_payload(_env(), gate, locked, vm)
+    shell = _env().get_template("_us_candidate_pool.html.j2").render(
+        us_candidate_visibility=override["us_candidate_visibility"], pgate=gate)
+    assert "Corrected same-session company" not in shell
+    assert "Corrected same-session company" in blocks["candidate_pool_html"]
+    assert blocks["candidate_pool_source"]["digest"] == view["source_digest"]
+    assert override["us_candidate_visibility"]["source_digest"] == view["source_digest"]
+    assert view["source_digest"] != project_candidate_visibility(prior)["source_digest"]
+    assert prior == original  # neither a correction nor display changes historical input
+
+
+def test_archive_history_summary_and_diagnostics_respect_preview_boundary():
+    from copy import deepcopy
+    from engine import us_candidate_lanes as pool
+    from scripts import build_site as bs
+    from tests.test_us_candidate_lanes import _archive_fixture
+    board, records = _archive_fixture()
+    before = deepcopy(board)
+    view = pool.project_candidate_visibility(
+        board, archive=pool.reconcile_candidate_archive(board, records[:1]))
+    vm = {"us_standouts": board, "us_candidate_visibility": view}
+    override, gate, locked = bs._split_us_panels(vm, 1, gated=True)
+    html = _env().get_template("_us_candidate_pool.html.j2").render(
+        us_candidate_visibility=override["us_candidate_visibility"], pgate=gate)
+    assert 'data-archive-status="incomplete"' in html
+    assert '1/2' in html and 'Saved history' in html and '历史记录' in html
+    assert 'AMD' not in html
+    blocks = bs._render_us_panel_payload(_env(), gate, locked, vm)
+    assert 'AMD' in blocks['candidate_pool_html']
+    assert 'No matching saved candidate record.' in blocks['candidate_pool_html']
+    assert blocks['candidate_pool_source']['digest'] == view['source_digest']
+    assert board == before
+
+
+def test_both_real_builder_reads_use_the_canonical_archive_reader():
+    import ast
+    from scripts import build_site as bs
+    from engine.us_candidate_lanes import project_candidate_visibility
+    from tests.test_us_candidate_lanes import _archive_fixture
+    board, _ = _archive_fixture()
+    tree = ast.parse((ROOT / "scripts/build_site.py").read_text())
+    wanted = {"us_candidate_visibility", "_fresh_candidate_visibility"}
+    assignments = [node for node in ast.walk(tree) if isinstance(node, ast.Assign)
+                   and any(isinstance(target, ast.Name) and target.id in wanted
+                           for target in node.targets)]
+    assert len(assignments) == 2
+    calls = []
+    def archive_read(actual):
+        calls.append(actual)
+        return {"as_of": board['as_of'], "board_definition": board['board_definition'],
+                "status": "incomplete", "counts": {"expected": 2, "matched": 0,
+                "missing": 2, "mismatched": 0, "extra_pool_rows": 0, "duplicate_tickers": 0},
+                "by_ticker": {row['ticker']: 'missing' for row in board['candidate_pool']['rows']}}
+    scope = {"us_standouts": board, "_fresh_su": board,
+             "project_candidate_visibility": project_candidate_visibility,
+             "load_candidate_archive_status": archive_read}
+    exec(compile(ast.Module(body=assignments, type_ignores=[]), "<production-archive-reads>", "exec"), scope)
+    assert calls == [board, board]
+    assert scope['us_candidate_visibility'] == scope['_fresh_candidate_visibility']
+    assert scope['us_candidate_visibility']['archive']['counts']['matched'] == 0
+
+
+def test_archive_unavailable_is_visible_without_hiding_candidates():
+    from engine import us_candidate_lanes as pool
+    from tests.test_us_candidate_lanes import _archive_fixture
+    board, _ = _archive_fixture()
+    view = pool.project_candidate_visibility(board, archive=pool.reconcile_candidate_archive(board, None))
+    html = _env().get_template("_us_candidate_pool.html.j2").render(
+        us_candidate_visibility=view, pgate=None)
+    assert 'data-archive-status="unavailable"' in html
+    assert 'AMD' in html
+    assert 'Historical comparisons are not established.' in html
+    assert 'candidate records match' not in html
+
+
+def test_archive_recovery_alone_refreshes_the_same_day_screen():
+    from engine import us_candidate_lanes as pool
+    from tests.test_us_candidate_lanes import _archive_fixture
+    board, records = _archive_fixture()
+    old = pool.project_candidate_visibility(board, archive=pool.reconcile_candidate_archive(board, records[:1]))
+    fresh = pool.project_candidate_visibility(board, archive=pool.reconcile_candidate_archive(board, records))
+    assert _actual_fresh_board_condition(board, board, prior_view=old, fresh_view=fresh)
+    assert not _actual_fresh_board_condition(board, board, prior_view=fresh, fresh_view=fresh)
