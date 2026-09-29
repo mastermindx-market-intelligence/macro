@@ -58,6 +58,7 @@
    --up/--down under html[data-lang="zh"], Asia convention).
    ============================================================================ #}
 {% import "_risk_radar_card.html.j2" as rrc %}
+{% import "_pullback_observation.html.j2" as pbo %}
 
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
@@ -99,6 +100,12 @@
       <button class="{{ _dcl }}-close" type="button" onclick="{{ _dcx }}" aria-label="Close">&#xd7;</button>
     </div>
     <div class="{{ _dcl }}-body rrd">
+
+      {% if mkt == 'cn' and c.get('pullback_view') %}
+      {{ pbo.detail(c.pullback_view) }}
+      <div class="rrd-section">{{ t('Forward risk', '前瞻风险') }}</div>
+      <p class="pbx-note" style="margin-bottom:16px">{{ t('The forecast below concerns a future fall from its reference close—not the decline already measured above.', '以下预测衡量从参考收盘价起的未来下跌，并非上方已经发生的跌幅。') }}</p>
+      {% endif %}
 
       {# ── 1. Headline: what is loudest, how loud, what to do about it ─────── #}
       <div class="rrd-hd tone-{{ _tone }}">

@@ -1,7 +1,9 @@
 {% import "_prophet_card.html.j2" as pv %}
 {% import "_decision_card.html.j2" as dc %}
 {% import "_lens.html.j2" as lens %}
-{% import "_risk_radar_dlg.html.j2" as rrd %}{# shared country Risk Radar dialog (CN/HK/CA) #}
+{% import "_risk_radar_dlg.html.j2" as rrd %}
+{% import "_pullback_observation.html.j2" as pbo %}
+{% set _pbv = pullback_view|default(none) %}{# shared country Risk Radar dialog (CN/HK/CA) #}
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
 {%- endmacro %}
@@ -1568,6 +1570,7 @@ html[data-theme="light"] :is(
 html[data-lang="zh"][data-theme="light"] body.page-china .ms-green .cnx-big-score { text-shadow:none; }
 html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score { text-shadow:none; }
 </style>
+<style>{% include "_pullback_observation.css.j2" %}</style>
 </head>
 <body class="{{ 'page-china-stocks' if mode == 'stocks' else 'page-china mx4-grid' }}">
 {{ lens.lens_css() }}
@@ -1908,8 +1911,13 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         {% set _rr_do_zh = (_rr.get('do_zh') or '') if _rr else '' %}
         {% set _rr_sub_en = ('~%d%% chance of a ≥5%% pullback within a month'|format((_rr_p21*100)|round|int) ~ (' · %.1f× the usual odds'|format(_rr_lift) if _rr_lift else '')) if _rr_p21 is not none else (_rr_do_en or ms.posture_en or '') %}
         {% set _rr_sub_zh = ('未来一个月内出现≥5%%回撤的概率约%d%%'|format((_rr_p21*100)|round|int) ~ (' · 约为平时的%.1f倍'|format(_rr_lift) if _rr_lift else '')) if _rr_p21 is not none else (_rr_do_zh or ms.posture_zh or '') %}
+        {% if _pbv %}
+        <button class="cnx-hbtn" data-pb-trigger data-pb-valid-until="{{ _pbv.observation.valid_until }}" aria-controls="cnx-pop-risk" onclick="cnxTogglePop('cnx-pop-risk',event)" style="border-color:color-mix(in srgb,var(--down) 50%,transparent)">
+          {{ t(_pbv.headline_en, _pbv.headline_zh) }} <span class="n" data-pb-trigger-value style="color:var(--ink-down,var(--down))">{{ _pbv.value }}</span> ▾</button>
+        {% else %}
         <button class="cnx-hbtn" onclick="cnxTogglePop('cnx-pop-risk',event)" style="border-color:color-mix(in srgb,var(--down) 50%,transparent)">⚠
           <span class="l-en">Pullback risk</span><span class="l-zh">回撤风险</span>{% if _rr_score is not none %} · <span class="n" style="color:var(--ink-down, var(--down))">{{ _rr_score }}</span>{% endif %} ▾</button>
+        {% endif %}
 
         <!-- popover: factor breakdown -->
         <div class="cnx-pop" id="cnx-pop-signals">
@@ -1928,7 +1936,12 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
 
         <!-- popover: risk radar -->
         <div class="cnx-pop" id="cnx-pop-risk" style="left:auto">
-          <div class="cnx-pop-h">{{ t('Pullback risk radar', '回撤风险雷达') }}</div>
+          {% if _pbv %}{{ pbo.compact(_pbv) }}{% endif %}
+          <div class="cnx-pop-h">{{ t('Forward risk', '前瞻风险') if _pbv else t('Pullback risk radar', '回撤风险雷达') }}</div>
+          {% if _pbv and _rr_p21 is not none %}
+          {% set _rr_sub_en = '~%d%% estimated chance of a future ≥5%% fall within 21 sessions, measured from the forecast reference close.'|format((_rr_p21*100)|round|int) %}
+          {% set _rr_sub_zh = '从预测参考收盘价起，未来21个交易日下跌≥5%%的估计概率约%d%%。'|format((_rr_p21*100)|round|int) %}
+          {% endif %}
           {% if _rr_score is not none %}
           <div class="cnx-pop-big"><span class="n">{{ _rr_score }}</span><span class="t">{{ t(_rr.label_en or '', _rr.label_zh or '') }}</span></div>
           <div class="cnx-pop-sub">{{ t(_rr_sub_en, _rr_sub_zh) }}</div>
@@ -2195,8 +2208,11 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
   <div class="cnx-rack3">
     {# Pullback Risk vs Top Stocks conditional #}
     {% set _risk_state = (latest.risk_radar.state if latest.risk_radar else 'calm') %}
-    {% set _show_risk = _risk_state in ('caution', 'elevated', 'risk-off') %}
+    {% set _show_risk = _pbv.show_card if _pbv else _risk_state in ('caution', 'elevated', 'risk-off') %}
     {% if _show_risk %}
+    {% if _pbv %}
+    {{ pbo.card(_pbv) }}
+    {% else %}
     {# Pullback Risk card. NOTE (2026-07-21): china INTENTIONALLY hand-rolled its pullback
        surfaces (this card + hero popover + cnx-dlg-risk) in the bespoke cnx-* design rather
        than the shared .rrx card (_risk_radar_card.html.j2, used by macro / HK / Canada):
@@ -2234,6 +2250,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         <span class="v"><span style="font-weight:700;color:{{ 'var(--down)' if (_rr_rec_sc or 0) >= 60 else ('var(--warn)' if (_rr_rec_sc or 0) >= 40 else 'var(--up)') }}">{{ t('High','高危') if (_rr_rec_sc or 0) >= 60 else (t('Elevated','偏高') if (_rr_rec_sc or 0) >= 40 else t('Calm','平静')) }}</span></span></div>
       <div class="cnx-foot">{{ t(_rr_do_en or 'High pullback risk — size down, watch alerts.', _rr_do_zh or '回撤风险高 — 缩仓，关注警报。') }}</div>
     </div>
+    {% endif %}
     {% else %}
     {# Top Stocks card — when radar is quiet #}
     <div class="cnx-card">
@@ -4824,6 +4841,7 @@ window.__CHART_SWAP__ = {
 {%- endif %}
 <script src="theme.js"></script>
 <script src="china_risk_state_live.js"></script>
+{% if _pbv %}<script>{% include "_pullback_observation.js.j2" %}</script>{% endif %}
 {% if mode == 'stocks' %}<script src="cn_prophet_live.js"></script>{% endif %}
 <script defer src="illus.js"></script>
 <script src="chart_i18n.js"></script>

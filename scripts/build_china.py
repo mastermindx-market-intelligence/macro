@@ -1338,6 +1338,11 @@ def _radar_dlg_vm(vm: dict, latest: dict) -> dict:
     except Exception:  # noqa: BLE001
         pass
 
+    if vm.get("pullback_view"):
+        ctx["pullback_view"] = vm["pullback_view"]
+        ctx["title_en"] = "China Risk Radar"
+        ctx["title_zh"] = "中国风险雷达"
+
     return ctx
 
 
@@ -1604,6 +1609,18 @@ def main() -> int:
                 pass
             vm["market_state"] = _ms.market_state_snapshot(
                 latest, _f, latest.get("alerts") or [], profile=CN_PROFILE)
+            # Raw settled-price observation is additive and has no forecast or
+            # capital-policy authority. Attach it BEFORE the single canonical
+            # persist; HTML and machine consumers receive the same observation.
+            try:
+                from lib import china_pullback_view as _cpv  # noqa: PLC0415
+                if vm.get("market_state"):
+                    _pb_observation = _cpv.snapshot()
+                    vm["market_state"]["pullback_observation"] = _pb_observation
+                    vm["pullback_view"] = _cpv.present(
+                        _pb_observation, vm["market_state"].get("radar"))
+            except Exception as _pb_error:  # noqa: BLE001 — never erase Market State
+                log.warning("China pullback observation unavailable (%s)", _pb_error)
             # Persist the CN_PROFILE snapshot to its OWN file
             # (data/china_market_state/latest.json) so the macro spine can ingest it as
             # a ratified 0-100 source without ever overwriting the US latest.json.

@@ -1,0 +1,48 @@
+/* Presentation expiry only. No fetch, polling feed or trading decision. */
+(function () {
+  'use strict';
+  var timer;
+  function language() {
+    var zh = document.documentElement.getAttribute('data-lang') === 'zh';
+    document.querySelectorAll('.pbx-chart .ilx[role="img"]').forEach(function (figure) {
+      if (!figure.dataset.pbOriginalLabel) figure.dataset.pbOriginalLabel = figure.getAttribute('aria-label') || '';
+      figure.setAttribute('aria-label', zh ? '上证综指收盘回撤；参考高点与日期标于图表上方。' : figure.dataset.pbOriginalLabel);
+    });
+  }
+  function expire() {
+    window.clearTimeout(timer);
+    var now = Date.now(), next = Infinity;
+    document.querySelectorAll('[data-pb-valid-until]').forEach(function (root) {
+      var end = Date.parse(root.getAttribute('data-pb-valid-until') || '');
+      if (!Number.isFinite(end) || now >= end) {
+        root.classList.add('pb-expired');
+        root.setAttribute('data-pb-phase', 'unavailable');
+        var heading = root.querySelector('.pbx-heading h2, .pbx-heading h3');
+        if (heading) {
+          var en = heading.querySelector('.l-en'), zh = heading.querySelector('.l-zh');
+          if (en) en.textContent = 'Price update needed';
+          if (zh) zh.textContent = '价格数据待更新';
+        }
+        if (root.hasAttribute('data-pb-trigger')) {
+          var en = root.querySelector('.l-en'), zh = root.querySelector('.l-zh');
+          if (en) en.textContent = 'Price update needed';
+          if (zh) zh.textContent = '价格数据待更新';
+          var value = root.querySelector('[data-pb-trigger-value]');
+          if (value) value.hidden = true;
+        }
+      } else {
+        next = Math.min(next, end);
+      }
+    });
+    // One-shot at the producer-owned deadline; visibility restores delayed tabs.
+    if (Number.isFinite(next)) timer = window.setTimeout(expire, Math.min(2147483647, Math.max(1, next - now + 10)));
+    language();
+  }
+  function start() {
+    expire();
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) expire(); });
+    document.addEventListener('langchange', language);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+  else start();
+})();
