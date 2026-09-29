@@ -3075,11 +3075,11 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         <div class="cnx-cols2">
           <div>
             <div class="cnx-eyebrow">{{ t('Framework-preferred (macro quad)','框架偏好（宏观象限）') }}</div>
-            {% for x in pb_obj.preferred %}<div class="cnx-kv"><span class="k">{{ td(x.name) }}</span><span class="v cnx-tt-up">{{ '#' ~ x.rank if x.rank else '' }}</span></div>{% else %}<p class="cnx-foot">—</p>{% endfor %}
+            {% for x in pb_obj.preferred %}<div class="cnx-kv"><span class="k">{% if x.ticker %}<a class="cnx-sector-link" href="sectors/{{ x.ticker }}.html">{{ td(x.name) }}</a>{% else %}{{ td(x.name) }}{% endif %}</span><span class="v cnx-tt-up">{{ '#' ~ x.rank if x.rank else '' }}</span></div>{% else %}<p class="cnx-foot">—</p>{% endfor %}
           </div>
           <div>
             <div class="cnx-eyebrow">{{ t('Avoid right now','现在回避') }}</div>
-            {% for x in pb_obj.avoid %}<div class="cnx-kv"><span class="k">{{ td(x.name) }}</span><span class="v cnx-tt-dn">{{ td(x.state) }}</span></div>{% else %}<p class="cnx-foot">{{ t('Nothing to avoid.','无回避标的。') }}</p>{% endfor %}
+            {% for x in pb_obj.avoid %}<div class="cnx-kv"><span class="k">{% if x.ticker %}<a class="cnx-sector-link" href="sectors/{{ x.ticker }}.html">{{ td(x.name) }}</a>{% else %}{{ td(x.name) }}{% endif %}</span><span class="v cnx-tt-dn">{{ td(x.state) }}</span></div>{% else %}<p class="cnx-foot">{{ t('Nothing to avoid.','无回避标的。') }}</p>{% endfor %}
           </div>
         </div>
         {# Life-bar #}
