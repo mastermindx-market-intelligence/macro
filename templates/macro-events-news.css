@@ -247,3 +247,6 @@ html[data-theme="light"] #dlg-news .nd-tag-review{color:var(--ink-link,var(--lin
  #dlg-news.nd-enhanced .nd-tools{display:grid;grid-template-columns:minmax(330px,1.2fr) minmax(220px,1fr);gap:0 12px}
  #dlg-news.nd-enhanced .nd-filter-row{padding:0}
 }
+/* Detail counts describe the originating list, not the selected record. */
+#dlg-news.nd-reading-detail .nd-result-count{display:none}
+#dlg-news .nd-detail .nd-detail-selected{border-bottom:1px solid var(--line)}
