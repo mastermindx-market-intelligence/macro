@@ -38,8 +38,27 @@ from engine import thetadata_store as tds  # noqa: E402
 # helpers                                                                       #
 # --------------------------------------------------------------------------- #
 
-def _mk_store(p: Path, tiers=("eod",)) -> Path:
-    """Create a directory that passes the content check (>=1 tier subdir)."""
+def _mk_store(p: Path, tiers=("eod",), roots=("AAPL",)) -> Path:
+    """Create a store that passes the content check — the REAL layout,
+    ``{store}/{tier}/{ROOT}/{YEAR}.parquet``.
+
+    AD-1T2b: this helper used to create bare tier DIRECTORIES only, which modelled
+    a store shape that cannot exist in production with data in it, and which the
+    resolver now correctly refuses (a drained store is not a store). Building one
+    real root keeps every precedence assertion below testing precedence — against
+    a store that could actually exist — instead of testing the old hole.
+    """
+    for t in tiers:
+        for r in roots:
+            d = p / t / r
+            d.mkdir(parents=True, exist_ok=True)
+            (d / "2026.parquet").write_bytes(b"")
+    return p
+
+
+def _mk_drained_store(p: Path, tiers=("eod", "oi", "greeks")) -> Path:
+    """The AD-1T2b shape observed on the store-bearing M1 on 2026-09-29: every
+    tier directory present, not one root inside any of them."""
     for t in tiers:
         (p / t).mkdir(parents=True, exist_ok=True)
     return p
@@ -233,3 +252,56 @@ class TestWitnessIncidentRegression:
             "store-absent build must NOT clobber a fresh real NW artifact"
         assert site_out.read_text() == before_site, \
             "store-absent build must NOT clobber a fresh real site artifact"
+
+
+class TestDrainedStoreIsNotAStore:
+    """AD-1T2b — a store whose tier directories are all present but hold zero roots
+    resolves to NOTHING. Observed live on the M1 (m1studio) 2026-09-29 beside a
+    _manifest.json still reading `"status": "healthy", "complete_t1_roots": 372`.
+
+    The old predicate admitted it, and the options-intel producer then published a
+    blank DEGRADED/MIXED_VINTAGE brief over the last good one and exited 0.
+    """
+
+    def test_drained_store_does_not_resolve(self, tmp_path, monkeypatch, isolated_chain):
+        drained = _mk_drained_store(tmp_path / "drained")
+        monkeypatch.setenv("THETADATA_STORE", str(drained))
+        assert tds._has_store_content(drained) is False
+        assert tds._drained_store(drained) is True
+        assert tds.resolve_thetadata_store() is None
+
+    def test_drained_store_raises_under_required(self, tmp_path, monkeypatch,
+                                                 isolated_chain):
+        drained = _mk_drained_store(tmp_path / "drained")
+        monkeypatch.setenv("THETADATA_STORE", str(drained))
+        with pytest.raises(RuntimeError, match="drained"):
+            tds.resolve_thetadata_store(required=True, purpose="ad1t2b")
+
+    def test_a_drained_candidate_falls_through_to_a_real_one(self, tmp_path,
+                                                             monkeypatch,
+                                                             isolated_chain):
+        """Precedence is by CONTENT, not position: a drained higher-priority
+        candidate must not shadow a real store further down the chain."""
+        drained = _mk_drained_store(tmp_path / "drained_env")
+        real = _mk_store(tmp_path / "real_ops_wt")
+        monkeypatch.setenv("THETADATA_STORE", str(drained))
+        monkeypatch.setattr(tds, "_OPS_WT_STORE", real)
+        assert tds.resolve_thetadata_store(purpose="ad1t2b") == real
+
+    def test_one_real_root_is_thinness_and_still_resolves(self, tmp_path,
+                                                         monkeypatch,
+                                                         isolated_chain):
+        """The over-tightening guard: thin-but-real data is a legitimate
+        NO_SIGNAL/INSUFFICIENT_COVERAGE publish, never infrastructure failure."""
+        thin = _mk_store(tmp_path / "thin", tiers=("eod",), roots=("AAPL",))
+        monkeypatch.setenv("THETADATA_STORE", str(thin))
+        assert tds.resolve_thetadata_store(purpose="ad1t2b") == thin
+
+    def test_a_stray_file_in_a_tier_is_not_a_root(self, tmp_path, monkeypatch,
+                                                  isolated_chain):
+        """`.DS_Store` / lock files must not revive the false positive."""
+        d = _mk_drained_store(tmp_path / "stray")
+        (d / "eod" / ".DS_Store").write_text("")
+        (d / "_writer.lock").write_text("")
+        monkeypatch.setenv("THETADATA_STORE", str(d))
+        assert tds.resolve_thetadata_store() is None
