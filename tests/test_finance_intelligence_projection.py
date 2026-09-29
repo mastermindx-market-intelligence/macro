@@ -799,12 +799,14 @@ def test_the_operating_plane_publishes_its_slices_freshest_dated_observation() -
     the earnings-up / P/E-down conflict. Beside it, in either order, the
     plane passes over an observation reading DOWN that carries no date, and
     one dated earlier by observed_at alone: it publishes the dated, fresher
-    reading and its clock, and the conflict is still drawn. Dated later by
-    observed_at, the DOWN reading is the fresher, so it is published and the
-    conflict is not drawn. Alone, an undated observation is still published,
-    without a clock. The plane used to publish an undated observation over
-    every dated one, and to count one dated only by observed_at as undated,
-    so either one erased the conflict."""
+    reading and its clock, and the conflict is still drawn. Dated later, by
+    observed_at or by a timestamp whose date and time a space parts, the
+    DOWN reading is the fresher, so it is published and the conflict is not
+    drawn. Alone, an undated observation is still published, without a
+    clock. The plane used to publish an undated observation over every
+    dated one, and to count one dated only by observed_at, or by a
+    timestamp written with a space, as undated, so any of them erased the
+    conflict."""
     base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
     (ticker, packet), = base.financial_packets.items()
     (reading,) = packet["operating"]["observations"]
@@ -829,6 +831,7 @@ def test_the_operating_plane_publishes_its_slices_freshest_dated_observation() -
     assert published(reading, down()) == {(5.0, "2026-09-20", True)}
     assert published(reading, down(observed_at="2026-09-01")) == {(5.0, "2026-09-20", True)}
     assert published(reading, down(observed_at="2026-09-22")) == {(7.0, "2026-09-22", False)}
+    assert published(reading, down(as_of="2026-09-22 10:00:00")) == {(7.0, "2026-09-22", False)}
     assert published(down()) == {(7.0, None, False)}
 
 
@@ -848,6 +851,25 @@ def test_on_one_date_the_slice_tagged_operating_observation_is_published() -> No
         card = _card_networks(_composed(dataclasses.replace(base, financial_packets=packets)))
         assert card["rerating"]["operating"]["primary_metric"]["value"] == 5.0, ordered[0] is tagged
         assert "conflict-card_networks-earnings-up-pe-down" in card["conflict_ids"], ordered[0] is tagged
+
+
+def test_a_fresher_untagged_operating_observation_outranks_an_older_tagged_one() -> None:
+    """The slice tag decides only between observations of one date. Beside
+    card_networks' own operating observation, reading UP on 2026-09-20, an
+    untagged one (company data) reading DOWN on 2026-09-22 is the fresher,
+    so it is published and the earnings-up / P/E-down conflict is not
+    drawn, in either order."""
+    base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
+    (ticker, packet), = base.financial_packets.items()
+    (tagged,) = packet["operating"]["observations"]
+    assert (tagged["slice_id"], tagged["as_of"]) == ("card_networks", "2026-09-20"), tagged
+    untagged = {key: val for key, val in copy.deepcopy(tagged).items() if key != "slice_id"}
+    untagged.update(as_of="2026-09-22", direction="DOWN", metric=dict(untagged["metric"], value=7.0))
+    for ordered in ((tagged, untagged), (untagged, tagged)):
+        packets = {ticker: dict(packet, operating=dict(packet["operating"], observations=list(ordered)))}
+        card = _card_networks(_composed(dataclasses.replace(base, financial_packets=packets)))
+        assert card["rerating"]["operating"]["primary_metric"]["value"] == 7.0, ordered[0] is tagged
+        assert "conflict-card_networks-earnings-up-pe-down" not in card["conflict_ids"], ordered[0] is tagged
 
 
 def test_the_price_plane_dates_a_row_by_its_observed_at() -> None:
@@ -912,6 +934,44 @@ def test_a_row_dated_by_observed_at_reads_as_the_same_row_dated_by_as_of(kind: s
     as-of. Freshness and common_as_of used to read as_of alone, so a row
     dated by observed_at moved neither, and the expectations history
     refused it."""
+    row, inputs_with = _one_row_of(kind)
+    dated = dict(row, as_of=when)
+    by_as_of = _dated_by_as_of(kind, when, inputs_with(dated))
+    assert _without_digest(_composed(inputs_with(_dated_by_observed_at(dated)))) == by_as_of
+
+
+# One row's date written three more ways, each read as that date alone as
+# its as_of: a timestamp whose date and time a space parts, a timestamp in
+# observed_at, and an as_of beside an earlier observed_at, which the as_of
+# outranks. The timestamps are written ahead of UTC, early enough that no
+# instant passes the knowledge cutoff, so the date read is the date written.
+_THE_SAME_DATE_WRITTEN = {
+    "space": lambda row, when: dict(row, as_of=f"{when} 07:00:00+08:00"),
+    "observed_at_timestamp": lambda row, when: _dated_by_observed_at(dict(row, as_of=f"{when}T07:00:00+08:00")),
+    "as_of_over_observed_at": lambda row, when: dict(row, as_of=when, observed_at="2026-09-01"),
+}
+
+
+@pytest.mark.parametrize("written", sorted(_THE_SAME_DATE_WRITTEN))
+@pytest.mark.parametrize("when", ["2026-09-24", "2026-09-02"])
+@pytest.mark.parametrize("kind", ["market", "consensus", "guidance", "operating", "valuation"])
+def test_a_row_reads_as_the_date_written_in_its_clock_however_written(kind: str, when: str, written: str) -> None:
+    """A market, consensus, guidance, operating or valuation row dated by a
+    timestamp whose date and time a space parts, by a timestamp in
+    observed_at, or by an as_of beside an earlier observed_at, reads as the
+    same row dated by that date as its as_of: nothing changes but the input
+    digest. The timestamps are written ahead of UTC, and the date read is
+    the one written, not the UTC date. A timestamp written with a space used
+    to leave its row undated, although the knowledge gate read its instant."""
+    row, inputs_with = _one_row_of(kind)
+    by_as_of = _dated_by_as_of(kind, when, inputs_with(dict(row, as_of=when)))
+    assert _without_digest(_composed(inputs_with(_THE_SAME_DATE_WRITTEN[written](row, when)))) == by_as_of
+
+
+def _one_row_of(kind: str) -> tuple[dict[str, Any], Any]:
+    """card_networks' one market, consensus, guidance, operating or
+    valuation row, and a function building the inputs that hold another row
+    in its place."""
     base = _conflict_inputs_for("EARNINGS_UP_P_E_DOWN")
     if kind in ("operating", "valuation"):
         (ticker, packet), = base.financial_packets.items()
@@ -920,26 +980,35 @@ def test_a_row_dated_by_observed_at_reads_as_the_same_row_dated_by_as_of(kind: s
         def inputs_with(row: dict[str, Any]) -> FinanceOwnerInputs:
             block = dict(packet[kind], observations=[row])
             return dataclasses.replace(base, financial_packets={ticker: dict(packet, **{kind: block})})
+
+        return row, inputs_with
+    owner = "market_observations" if kind == "market" else "expectation_observations"
+    if kind == "market":
+        (row,) = base.market_observations["card_networks"]
     else:
-        owner = "market_observations" if kind == "market" else "expectation_observations"
-        if kind == "market":
-            (row,) = base.market_observations["card_networks"]
-        else:
-            metric = "guidance:eps_next_fy" if kind == "guidance" else "eps_next_fy"
-            row = {"source": "synthetic_consensus", "metric": metric, "value": 5.0, "unit": "USD"}
+        metric = "guidance:eps_next_fy" if kind == "guidance" else "eps_next_fy"
+        row = {"source": "synthetic_consensus", "metric": metric, "value": 5.0, "unit": "USD"}
 
-        def inputs_with(row: dict[str, Any]) -> FinanceOwnerInputs:
-            return dataclasses.replace(base, **{owner: dict(getattr(base, owner), card_networks=[row])})
+    def inputs_with(row: dict[str, Any]) -> FinanceOwnerInputs:
+        return dataclasses.replace(base, **{owner: dict(getattr(base, owner), card_networks=[row])})
 
-    dated = dict(row, as_of=when)
-    by_as_of = _without_digest(_composed(inputs_with(dated)))
+    return row, inputs_with
+
+
+def _dated_by_as_of(kind: str, when: str, inputs: FinanceOwnerInputs) -> dict[str, Any]:
+    """The document composed from ``inputs``, without its input digest,
+    once the row's as_of date is shown to reach it: a packet row's date is
+    its plane's clock; dated on the knowledge cutoff's day, a market or
+    expectations row is the slice's latest evidence; dated before, it is
+    the document's common as-of."""
+    document = _without_digest(_composed(inputs))
     if kind in ("operating", "valuation"):
-        assert _card_networks(by_as_of)["rerating"][kind]["clock"]["observed_at"] == when
+        assert _card_networks(document)["rerating"][kind]["clock"]["observed_at"] == when
     elif when == "2026-09-24":
-        assert _card_networks(by_as_of)["freshness"]["evidence_latest_observed_at"] == when
+        assert _card_networks(document)["freshness"]["evidence_latest_observed_at"] == when
     else:
-        assert by_as_of["common_as_of"] == when
-    assert _without_digest(_composed(inputs_with(_dated_by_observed_at(dated)))) == by_as_of
+        assert document["common_as_of"] == when
+    return document
 
 
 def test_a_valuation_observation_dated_after_the_knowledge_cutoff_never_anchors() -> None:
@@ -2494,6 +2563,8 @@ _CLOCKS_AT_THE_CUTOFF_INSTANT = [
     ("2026-09-24T21:00:00Z", False),
     ("2026-09-24T20:30:00-08:00", False),  # 04:30 UTC the next day, written on the cutoff's date
     ("2026-09-25T01:00:00+08:00", False),  # 17:00 UTC, but published as the next day's date
+    ("2026-09-24 19:00:00", True),         # a space parts date and time: 19:00 UTC
+    ("2026-09-25 01:00:00+08:00", False),  # 17:00 UTC, written with a space on the next day's date
     ("2026-09-25Tlate", False),            # no instant, and published as the next day's date
 ]
 

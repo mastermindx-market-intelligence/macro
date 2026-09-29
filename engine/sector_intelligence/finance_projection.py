@@ -422,6 +422,13 @@ def _parse_iso_date(value: str | date | None) -> date | None:
     try:
         return date.fromisoformat(text)
     except ValueError:
+        pass
+    # A timestamp that parts its date and time with a space, not a T,
+    # names an instant to _contract_instant, so it dates its row here too:
+    # the date it was written in, which an offset does not move into UTC.
+    try:
+        return datetime.fromisoformat(text[:-1] + "+00:00" if text.endswith("Z") else text).date()
+    except ValueError:
         return None
 
 
@@ -1191,14 +1198,15 @@ def _operating_reading(
     It is the freshest operating observation filed under the slice that
     carries an explicit ``direction``, dated by _observation_date. An
     undated one counts as the oldest, as on the price plane, so it is
-    published only when no dated one is filed under the slice. On one date,
-    an observation the owner tags with this slice outranks an untagged one,
-    as it does for the valuation anchor; two filed the same way on one date
-    keep the owner's order. (An undated observation used to outrank every
-    dated one, and one dated only by observed_at counted as undated, so the
-    plane could publish a reading older than one it passed over.) Source
-    records are display-tier (schema-strict) and never carry direction. The
-    conflict grammar reads this same observation.
+    published only when no dated observation with a direction is filed
+    under the slice. The date decides first: on one date, an observation
+    the owner tags with this slice outranks an untagged one, as it does
+    for the valuation anchor, and two filed the same way keep the owner's
+    order. (An undated observation used to outrank every dated one, and
+    one dated only by observed_at counted as undated, so the plane could
+    publish a reading older than one it passed over.) Source records are
+    display-tier (schema-strict) and never carry direction. The conflict
+    grammar reads this same observation.
     """
     candidates: list[tuple[tuple[date, bool], Mapping[str, Any]]] = []
     for packet in financial_packets.values():
