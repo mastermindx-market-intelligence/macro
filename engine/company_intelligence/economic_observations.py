@@ -240,7 +240,12 @@ _PRINT_UNIT = re.compile(
     rb"|(&(?:#[0-9]+;?|#[xX][0-9a-fA-F]+;?|[^\t\n\f <&#;]{1,32};?))|[^<&]+|[<&]",
     re.S,
 )
+# R190: a tag sets a token off only where an HTML5 tree builder acts on it whatever else is open.  Each start tag
+# here opens an element (admission refuses the table tags a builder would ignore), but an end tag with no such
+# element open is ignored, and the text on either side of it is one run.  Only </p> (an empty paragraph when none
+# is open) and </br> (read as <br>) act without one, so an end tag counts only if it is one of those two.
 _SEPARATING = frozenset({b"td", b"th", b"tr", b"table", b"p", b"div", b"br"})
+_SEPARATING_END = frozenset({b"p", b"br"})
 _RAW_NAMES = frozenset(name.encode() for name in _pg_envelope._RAW_TEXT_CLOSE)
 _UNPRINTED_RAW = frozenset({"raw:script", "raw:style"})
 _LAYOUT_SPACE = frozenset(" \t\n\r\f\xa0")
@@ -262,8 +267,9 @@ def _printed_units(source_bytes: bytes) -> tuple[tuple[tuple[int, int, str], ...
             units.append((start, end, "markup"))
         elif match.group(2) is not None:
             name = match.group(3).lower()
-            units.append((start, end, "separator" if name in _SEPARATING else "markup"))
-            if not match.group(0).startswith(b"</") and name in _RAW_NAMES:
+            end_tag = match.group(0).startswith(b"</")
+            units.append((start, end, "separator" if name in (_SEPARATING_END if end_tag else _SEPARATING) else "markup"))
+            if not end_tag and name in _RAW_NAMES:
                 raw_name = name
         else:
             units.append((start, end, "text"))
