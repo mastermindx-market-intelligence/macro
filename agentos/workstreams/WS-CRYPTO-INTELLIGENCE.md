@@ -274,3 +274,13 @@ Neither rule earns promotion. Shock filtering increases the descriptive downside
 R4 retains2,378 scenario-event and6,738 account rows, not that many independent trades. Every summary and2,308 mature first-passage/6,738 account paths were independently arithmetically checked by the same session; no external-review claim. Combined regression pack256passed,25warnings; source/static/hash checks pass. All initial CSVs remain byte-identical after the disclosed terminal-open qualification repair. Result SHA256 b93f7b0408f59f2e688ccf043ce2c1600d9b02321b080e8af80e6ef6443ed636.
 
 Next science dependency is a separately frozen incremental absorption/spot-participation or properly qualified genuine-flow test with unchanged comparable action/endpoints/cost accounting, not a retuning of R4 until it wins. Independent review, historical publication qualification, source funding semantics, PR conflict reconciliation and live/forward proof remain open. Parent mission incomplete; no live policy, trade, subscription, worker or automatic continuation was started.
+
+## 2026-09-28 R5 participation experiment
+
+R5 completes the frozen same-parent participation comparison under PR8050. Protocol3cc4e46d2b7827ba5fce746d5b4bcd1875fb80c6; research implementation065f29376d82db77342a634496ccd2f4d97d0ab0; all647R4 parent episodes retained across1,294 event and3,882account scenarios. No engine/config/live-policy change.
+
+Downside volume filters only7of171persistent candidates and retains the same30downside-first outcomes; incremental mean -0.00178pp versus price-only at1h/10bp. Recovery volume increment+0.72003pp on53paired parents has wide uncertainty, period dependence and becomes nearly zero when2020 is removed. It leaves31parents in cash; zero all-parent median drawdown is not precise bottom timing. No candidate is promoted.
+
+261combined tests passed with27warnings; independent arithmetic checks647observations,1,279barrier paths,3,843accounts and all48summary cells/intervals. Prior inputs/gates/artifacts unchanged. Complete source/results and scope limits: research/CRYPTO_SCIENCE_R5_PARTICIPATION_RESULTS_2026-09-28.md and the current R5 frontier in DEC-CRYPTO-VECTOR-R2-20260926.md.
+
+Next: qualified signed-flow/venue/time information and a frozen continuous-probability/utility experiment versus R4/R5, with chronological selection and eventual issued-forward evidence. Coinbase unsigned spot and OKX CONTRACTS flow remain different measurements. Independent review, publication-time qualification, funding equivalence and production acceptance remain open. Mission incomplete; no worker, alert, trade, collector, automatic wake or deployment was started.
