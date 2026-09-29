@@ -378,7 +378,8 @@ def append_row(ledger_dir: Path, row: dict) -> Path:
 
 
 def cmd_finish(cap_minutes: float, ledger_dir: Path, now: float | None = None,
-               run_status_path: Path | None = None) -> dict:
+               run_status_path: Path | None = None,
+               warn_minutes: float | None = None) -> dict:
     now = time.time() if now is None else now
     run_status_path = DEFAULT_RUN_STATUS if run_status_path is None else run_status_path
     job = _job()
@@ -386,6 +387,15 @@ def cmd_finish(cap_minutes: float, ledger_dir: Path, now: float | None = None,
     job_start = _read_start()
     if job_start is None and marks:
         job_start = marks[0]["t"]
+
+    # The tripwire's basis is deliberately SEPARATE from the survival cap. A cap
+    # raise exists to stop a night dying mid-publish; it must not also move the
+    # creep alarm out from under the workload that forced the raise. Without this
+    # split, taking `collect` 240 -> 300 would slide the 85% line 204m -> 255m and
+    # silence the very nights that justified the change (09-17 242.5m, 09-23 226.7m,
+    # 09-24 226.3m, 09-25 229.4m all stop warning). Jobs that pass no budget keep the
+    # historical behaviour exactly: basis == cap.
+    warn_basis = float(warn_minutes) if warn_minutes else cap_minutes
 
     row: dict = {
         "date": datetime.fromtimestamp(now, tz=timezone.utc).strftime("%Y-%m-%d"),
@@ -395,6 +405,7 @@ def cmd_finish(cap_minutes: float, ledger_dir: Path, now: float | None = None,
         "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT", "1"),
         "runner": os.environ.get("RUNNER_NAME", ""),
         "cap_minutes": cap_minutes,
+        "warn_minutes": warn_basis,
         "end": _iso(now),
     }
 
@@ -403,7 +414,7 @@ def cmd_finish(cap_minutes: float, ledger_dir: Path, now: float | None = None,
         # is the exact failure mode W2 exists to end (the 40m tech_lab cap
         # cancelled its own ::warning step for 8 straight nights).
         row.update({"start": None, "elapsed_minutes": None, "pct_of_cap": None,
-                    "bands": [], "telemetry": "dark"})
+                    "warn_pct": None, "bands": [], "telemetry": "dark"})
         print(f"::warning title=nightly timings dark::{job}: no job-start stamp or band "
               "marks found in RUNNER_TEMP — the timings row for this night has no elapsed "
               "time and the 85% budget tripwire CANNOT fire. Check the job's "
@@ -413,6 +424,7 @@ def cmd_finish(cap_minutes: float, ledger_dir: Path, now: float | None = None,
 
     elapsed_min = (now - job_start) / 60.0
     pct = 100.0 * elapsed_min / cap_minutes if cap_minutes else None
+    warn_pct = 100.0 * elapsed_min / warn_basis if warn_basis else None
     windows = band_windows(job_start, marks, now)
     bands = compute_bands(job_start, marks, now)
 
@@ -431,6 +443,7 @@ def cmd_finish(cap_minutes: float, ledger_dir: Path, now: float | None = None,
         "start": _iso(job_start),
         "elapsed_minutes": round(elapsed_min, 1),
         "pct_of_cap": round(pct, 1) if pct is not None else None,
+        "warn_pct": round(warn_pct, 1) if warn_pct is not None else None,
         "bands": bands,
         "source_attribution": attribution,
     })
@@ -447,7 +460,7 @@ def cmd_finish(cap_minutes: float, ledger_dir: Path, now: float | None = None,
         try:
             with open(summary, "a", encoding="utf-8") as fh:
                 fh.write(f"- timings · **{job}**: {elapsed_min:.1f}m / {cap_minutes:g}m "
-                         f"cap ({pct:.0f}%){' · **>85% BUDGET TRIPWIRE**' if pct > WARN_PCT else ''}\n")
+                         f"cap ({pct:.0f}%){' · **>85% BUDGET TRIPWIRE**' if warn_pct > WARN_PCT else ''}\n")
                 for band in attribution.get("bands") or []:
                     fh.write(f"  - attribution · `{band['band']}` {band['band_sec'] / 60:.1f}m = "
                              f"{band['n_sources']} source(s) {band['attributed_sec'] / 60:.1f}m "
@@ -457,12 +470,14 @@ def cmd_finish(cap_minutes: float, ledger_dir: Path, now: float | None = None,
         except OSError:
             pass
 
-    if pct is not None and pct > WARN_PCT:
+    if warn_pct is not None and warn_pct > WARN_PCT:
         # The W2 tripwire. Every cap raise in daily.yml's history happened AFTER
         # a kill night; this line is the BEFORE. Bare print at line start —
         # never a logger (tests/test_gh_annotation_line_start.py).
-        print(f"::warning title=nightly budget 85% tripwire::{job} used {pct:.0f}% of its "
-              f"{cap_minutes:g}m timeout-minutes ({elapsed_min:.1f}m). Caps in this file "
+        basis_txt = (f"{warn_basis:g}m creep budget (cap {cap_minutes:g}m)"
+                     if warn_basis != cap_minutes else f"{cap_minutes:g}m timeout-minutes")
+        print(f"::warning title=nightly budget 85% tripwire::{job} used {warn_pct:.0f}% of its "
+              f"{basis_txt} ({elapsed_min:.1f}m). Caps in this file "
               "have only ever been raised AFTER nights died at them (engine 200→240 cost "
               "6 stale-board days, 2026-08-05/06) — re-budget or trim the workload NOW, "
               "before a kill night. Trend: python3 scripts/nightly_timings_report.py "
@@ -536,6 +551,10 @@ def main(argv: list[str] | None = None) -> int:
 
     f = sub.add_parser("finish", help="append the ledger row + 85% budget tripwire")
     f.add_argument("--cap-minutes", type=float, required=True)
+    f.add_argument("--warn-minutes", type=float, default=None,
+                   help="creep-alarm basis in minutes; defaults to --cap-minutes. "
+                        "Set it BELOW the cap when a cap is raised for survival "
+                        "headroom, so the 85%% tripwire stays on the old workload.")
     f.add_argument("--ledger-dir", type=Path, default=DEFAULT_LEDGER_DIR)
     f.add_argument("--run-status", type=Path, default=DEFAULT_RUN_STATUS,
                    help="read-only source of per-adapter elapsed_sec (W-L1 attribution)")
@@ -549,7 +568,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "mark":
         cmd_mark(args.band)
     elif args.cmd == "finish":
-        cmd_finish(args.cap_minutes, args.ledger_dir, run_status_path=args.run_status)
+        cmd_finish(args.cap_minutes, args.ledger_dir, run_status_path=args.run_status,
+                   warn_minutes=args.warn_minutes)
     else:
         cmd_backfill(args.jobs_json, args.workflow, args.ledger_dir)
     return 0

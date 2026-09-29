@@ -1047,11 +1047,16 @@ jobs:
 # 2026-09-23 while a complete, committed night sat on a runner that was about to be
 # wiped by the next job's checkout.
 #
-# `if: always()` / `if: cancelled()` steps DO run after an ordinary cancellation,
-# and they may run inside the grace window after a cap — `collect_tail` commits that
-# way most nights.  What they cannot do is outlive a hard job-level timeout that is
-# already burning the grace on a step that will not stop.  So the salvage push is a
-# CANCELLATION belt, never a job-cap rescue.
+# `if: always()` / `if: cancelled()` steps DO run after an ordinary cancellation, AND
+# they run after a hard job-level timeout for as long as the bounded ~5-minute grace
+# lasts.  That is measured both ways on the SAME 240m cap: job 105033526139 (run
+# 35168062576, 2026-09-17) had its cap fire at 04:48:55Z and still ran `push market
+# data` to success at 04:50:53Z, `salvage push` at 04:50:57Z and the W2 finish at
+# 04:51:42Z; job 107895940199 (run 36078806272, 2026-09-25) fired at 04:43:08Z, spent
+# the grace on a push that only started at cap+2:32, and was killed at cap+5:00 with
+# every later step carrying a null `started_at`.  So the belt is REAL but BOUNDED —
+# it is not a budget to plan against, and the market-commit-push band (9.6m/10.7m on
+# 09-23/09-24) is already about twice the grace.
 #
 # That distinction is not cosmetic: while the source said the checkpoint "survives a
 # job-cap cancel", a 240m cap looked safe even as the W2 ledger printed 94.5%
@@ -1059,66 +1064,136 @@ jobs:
 # the margin be read as covered.  These tests keep the corrected reading in the
 # source so the next reader inherits the measurement instead of the reassurance.
 
-_JOB_CAP = re.compile(r"job[-\s]?(?:cap|timeout)|cap timeout", re.I)
-_SURVIVES = re.compile(r"surviv|last-ditch rescue|still (?:records|runs|reaches)", re.I)
-_SKIPPED = re.compile(r"skips? this step|does not (?:run|schedule)|schedules? nothing|"
-                      r"not a job-timeout rescue|only when GitHub still schedules", re.I)
+_JOB_CAP = re.compile(r"job[-\s]?(?:cap|timeout|level timeout)|cap timeout|at the cap", re.I)
+#: Any verb that turns the bounded grace into a guarantee.  Deliberately wide: the
+#: first version of these tests keyed on "surviv" alone and a one-word rewrite to
+#: "outlives" walked straight through it.
+_SURVIVES = re.compile(
+    r"surviv|outliv|outlast|outrun|withstand|immune|unaffected|proof against|"
+    r"guarantee|always (?:runs|records|rescue|publish)|never (?:lost|missed)|"
+    r"has rescued|cannot be lost|comfortable", re.I)
+#: The bounded half.  A comment may only discuss the cap if it also says the grace
+#: runs out — otherwise it is selling the belt as a budget again.
+_BOUNDED = re.compile(
+    r"exhaust|bounded|ceiling|runs? out|ran out|never scheduled|null `?started_at`?|"
+    r"not a budget|can be exhausted", re.I)
+#: The two measurements this repair is built on.  Pinning both job ids keeps the
+#: refuting case in the source: a future reader who sees only 107895940199 will
+#: re-derive "the tail never runs after a cap", which is false.
+_SURVIVED_JOB = "105033526139"
+_EXHAUSTED_JOB = "107895940199"
+
+
+def _collect_region() -> str:
+    """Just the `collect:` job's block, so a same-named step in another job cannot
+    silently become what these pins are reading."""
+    text = DAILY.read_text()
+    start = text.index("\n  collect:\n")
+    nxt = re.compile(r"\n  [A-Za-z_][A-Za-z0-9_-]*:\n")
+    m = nxt.search(text, start + 1)
+    return text[start:m.start() if m else len(text)]
 
 
 def _comment_block_above(needle: str) -> str:
-    """The contiguous `#` comment lines immediately above the step naming `needle`."""
-    lines = DAILY.read_text().splitlines()
+    """The `#` comment lines immediately above the collect step naming `needle`.
+
+    Blank lines are walked THROUGH rather than treated as the top of the block: the
+    first version stopped at one, so inserting a single blank line above the step
+    reported the postmortem as deleted and failed an innocent formatting edit.
+    """
+    lines = _collect_region().splitlines()
     for i, line in enumerate(lines):
         if line.lstrip().startswith("- name:") and needle in line:
             block: list[str] = []
             j = i - 1
-            while j >= 0 and lines[j].lstrip().startswith("#"):
-                block.append(lines[j].lstrip().lstrip("#").strip())
+            while j >= 0:
+                stripped = lines[j].strip()
+                if stripped.startswith("#"):
+                    block.append(stripped.lstrip("#").strip())
+                elif stripped:
+                    break
                 j -= 1
             return " ".join(reversed(block))
-    raise AssertionError(f"no step whose `- name:` contains {needle!r}")
+    raise AssertionError(f"no collect step whose `- name:` contains {needle!r}")
 
 
 def test_no_collect_step_name_promises_it_survives_the_job_cap(collect_steps):
-    """The Actions UI shows step NAMES; a name must not sell a rescue that cannot run.
-
-    `push market data (survives a job-cap cancel; ...)` is the exact string that was
-    live on 2026-09-25 while the push was being hard-stopped by that same cap.
-    """
+    """A step NAME is the one piece of the workflow that shows up in the Actions UI
+    next to its own cancellation, so a survival promise there is read as a receipt."""
     offenders = [
         name for step in collect_steps
         if (name := str(step.get("name") or ""))
         and _JOB_CAP.search(name) and _SURVIVES.search(name)
     ]
     assert not offenders, (
-        "a collect step NAME claims it survives the job cap; run 36078806272 proved a "
-        f"hard job-level timeout schedules no later step: {offenders}"
+        "a collect step name promises it survives the job cap: "
+        f"{offenders}. The grace is ~5 minutes and can be exhausted before the step is "
+        f"ever scheduled (job {_EXHAUSTED_JOB}, 2026-09-25). Name what the step does, "
+        "not what it withstands."
     )
 
 
-def test_the_salvage_push_is_documented_as_a_cancel_belt_not_a_cap_rescue():
-    """Positive pin: the correction must stay written down, not just applied once."""
+def test_the_salvage_push_is_documented_as_a_bounded_belt_with_both_measurements():
+    """POSITIVE pin, not just an absence check.
+
+    The salvage push is reachable after a cap (job 105033526139 ran it to success 2:02
+    past its cap) and unreachable once the grace is spent (job 107895940199). Both
+    facts must stay in the source: drop the first and the next reader writes the step
+    off as dead; drop the second and the cap looks covered again.
+    """
     block = _comment_block_above("salvage push")
     assert _JOB_CAP.search(block), (
-        "the salvage push's comment no longer mentions the job cap/timeout at all — the "
-        "2026-09-25 finding has been deleted rather than kept; block was: " + block
-    )
-    assert _SKIPPED.search(block), (
-        "the salvage push's comment must say a hard job-level timeout SKIPS it "
-        "(run 36078806272, 2026-09-25); block was: " + block
-    )
+        "the salvage push comment no longer relates the step to the job cap at all — "
+        "the 2026-09-25 finding has been deleted rather than kept. Block was:\n" + block)
+    assert _BOUNDED.search(block), (
+        "the salvage push comment describes the grace window without saying it is "
+        "bounded/exhaustible, which is how it gets budgeted against again. Block was:\n"
+        + block)
     assert not _SURVIVES.search(block), (
-        "the salvage push's comment promises survival again; it is a cancellation belt, "
-        "never a job-cap rescue. Block was: " + block
-    )
+        "the salvage push comment promises the step survives or always rescues a capped "
+        "night. It is a belt with a hard ceiling. Block was:\n" + block)
+    for job in (_SURVIVED_JOB, _EXHAUSTED_JOB):
+        assert job in block, (
+            f"the salvage push comment no longer cites job {job}. Both measurements are "
+            "load-bearing: one proves the step runs past a cap, the other proves the "
+            f"grace can run out first. Block was:\n{block}")
 
 
-def test_the_w2_finish_comment_does_not_promise_a_post_timeout_row():
-    """The ledger row that would have explained the death is the row a cap deletes."""
+def test_the_w2_finish_comment_keeps_the_exhausted_grace_case():
+    """Unconditional. The first version wrapped its assertions in
+    `if _JOB_CAP.search(block):`, so deleting the cap vocabulary made the test assert
+    nothing while still reporting green — the evasion is cheaper than the compliance.
+    """
     block = _comment_block_above("timings ledger + 85% budget tripwire")
-    if _JOB_CAP.search(block):
-        assert _SKIPPED.search(block), (
-            "the W2 finish comment mentions the job cap but still implies always() "
-            "records the night through it; run 36078806272 wrote NO collect.jsonl row. "
-            "Block was: " + block
-        )
+    assert _JOB_CAP.search(block), (
+        "the W2 finish comment no longer says how it behaves at the job cap. Without "
+        "that, `always()` reads as unconditional. Block was:\n" + block)
+    assert _BOUNDED.search(block), (
+        "the W2 finish comment must keep the exhausted-grace case: on 2026-09-25 this "
+        "step was never scheduled and that night has NO ledger row, which is why the "
+        "cap cannot be sized on post-timeout telemetry. Block was:\n" + block)
+    assert not _SURVIVES.search(block), (
+        "the W2 finish comment promises a row is always recorded. Block was:\n" + block)
+
+
+def test_the_creep_budget_is_pinned_below_the_raised_cap():
+    """The cap raise must not disarm the alarm that justified it.
+
+    `WARN_PCT` is applied to the finish step's budget argument, so with a single
+    number the 240 -> 300 raise would move the 85% line from 204m to 255m and silence
+    every night this repair cites (242.5m, 226.7m, 226.3m, 229.4m, 220.1m).
+    """
+    steps = yaml.safe_load(DAILY.read_text())["jobs"]["collect"]["steps"]
+    finish = [s for s in steps if "nightly_timings_finish.sh" in str(s.get("run") or "")]
+    assert len(finish) == 1, f"expected exactly one W2 finish step, found {len(finish)}"
+    toks = str(finish[0]["run"]).strip().split()
+    cap = yaml.safe_load(DAILY.read_text())["jobs"]["collect"]["timeout-minutes"]
+    assert toks[2] == str(cap), f"finish cap arg {toks[2]} != timeout-minutes {cap}"
+    assert len(toks) == 4, (
+        f"the collect finish step passes only a cap ({toks[2]}m), so the 85% tripwire "
+        f"rescales to {0.85 * float(cap):.0f}m and stops firing on the ~226m nights that "
+        "forced this cap raise. Pass an explicit creep budget as the second argument.")
+    assert float(toks[3]) <= float(cap), "creep budget must not exceed the cap"
+    assert 0.85 * float(toks[3]) <= 220.0, (
+        f"creep budget {toks[3]}m puts the 85% line at {0.85 * float(toks[3]):.0f}m, above "
+        "the 220.1m (2026-09-26) night this repair is meant to keep visible.")
