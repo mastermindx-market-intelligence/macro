@@ -1081,6 +1081,9 @@
   body.page-china .cnx-chip{font-size:11px;border-radius:999px;padding:3px 10px;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.04)}
   body.page-china .cnx-chip.hot{background:rgba(224,100,100,.13);border-color:rgba(224,100,100,.4);color:#eda8a8}
   body.page-china .cnx-chip.turn{background:rgba(69,184,115,.12);border-color:rgba(69,184,115,.4);color:#8fd7ae}
+  body.page-china .cnx-sector-link{color:inherit;text-decoration:none}
+  body.page-china .cnx-sector-link:hover{text-decoration:underline;text-underline-offset:2px}
+  body.page-china .cnx-sector-link:focus-visible{outline:1px solid var(--link);outline-offset:2px;border-radius:4px}
   body.page-china .cnx-lbl{font-size:9.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:8px 0 4px}
   body.page-china .cnx-foot{font-size:10.5px;color:var(--muted);margin-top:10px;border-top:1px solid rgba(255,255,255,.05);padding-top:8px}
   body.page-china .cnx-bignum{font-size:30px;font-weight:750;line-height:1.05}
@@ -2330,14 +2333,14 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
       {% if pb_obj and pb_obj.leaders %}
       <div class="cnx-lbl">{{ t('Hot','热门') }}</div>
       <div class="cnx-chips">
-        {% for x in pb_obj.leaders[:3] %}<span class="cnx-chip hot">{{ td(x.name) }}</span>{% endfor %}
+        {% for x in pb_obj.leaders[:3] %}{% if x.ticker %}<a class="cnx-chip hot cnx-sector-link" href="sectors/{{ x.ticker }}.html" onclick="event.stopPropagation()">{{ td(x.name) }}</a>{% else %}<span class="cnx-chip hot">{{ td(x.name) }}</span>{% endif %}{% endfor %}
       </div>
       {% endif %}
       {% set _buy_chips = ((actions.buy_now if actions and actions.buy_now else []) + (actions.buy_soon if actions and actions.buy_soon else []))[:3] %}
       {% if _buy_chips %}
       <div class="cnx-lbl">{{ t('Turning up — buy zone','回升中 — 买入区') }}</div>
       <div class="cnx-chips">
-        {% for x in _buy_chips %}<span class="cnx-chip turn">{{ td(x.name) }}</span>{% endfor %}
+        {% for x in _buy_chips %}{% if x.ticker %}<a class="cnx-chip turn cnx-sector-link" href="sectors/{{ x.ticker }}.html" onclick="event.stopPropagation()">{{ td(x.name) }}</a>{% else %}<span class="cnx-chip turn">{{ td(x.name) }}</span>{% endif %}{% endfor %}
       </div>
       {% endif %}
       <div class="cnx-lbl">{{ t('Sector heat','板块热度') }}</div>
@@ -2647,7 +2650,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
                The Python-side score_and_rank() already sorted the list; we just slice here.
                Do NOT re-sort with |sort — that would contradict the Rotation table. #}
             {% for s in sectors[:4] %}
-            <div class="cnx-ledd"><span class="cnx-tt-up">▲ {{ td(s.name) }}</span><span class="rk">#{{ loop.index }}</span></div>
+            <div class="cnx-ledd"><a class="cnx-sector-link cnx-tt-up" href="sectors/{{ s.ticker }}.html">▲ {{ td(s.name) }}</a><span class="rk">#{{ loop.index }}</span></div>
             {% endfor %}
           </div>
           <div>
@@ -2655,7 +2658,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
             {# Lagging = last 4 sectors in rotation order — worst rotation rank first. #}
             {% if sectors %}
             {% for s in sectors[-4:] | reverse %}
-            <div class="cnx-ledd"><span class="cnx-tt-dn">▽ {{ td(s.name) }}</span><span class="rk">#{{ sectors | length - loop.index0 }}</span></div>
+            <div class="cnx-ledd"><a class="cnx-sector-link cnx-tt-dn" href="sectors/{{ s.ticker }}.html">▽ {{ td(s.name) }}</a><span class="rk">#{{ sectors | length - loop.index0 }}</span></div>
             {% endfor %}
             {% endif %}
           </div>
@@ -2765,18 +2768,18 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
         {% set _dlg_buy = ((actions.buy_now if actions and actions.buy_now else []) + (actions.buy_soon if actions and actions.buy_soon else [])) %}
         {% if _dlg_buy %}
         <div class="cnx-lbl" style="margin-top:2px">{{ t('Buy zone','买入区') }}</div>
-        <div class="cnx-chips">{% for x in _dlg_buy %}{%- set _sc = (sectors_by_ticker.get(x.ticker) if sectors_by_ticker is defined else none) -%}<span class="cnx-chip turn">{{ td(x.name) }}{% if _sc and _sc.rank %} · <span style="opacity:.6">#{{ _sc.rank }}</span>{% endif %}</span>{% endfor %}</div>
+        <div class="cnx-chips">{% for x in _dlg_buy %}{%- set _sc = (sectors_by_ticker.get(x.ticker) if sectors_by_ticker is defined else none) -%}{% if x.ticker %}<a class="cnx-chip turn cnx-sector-link" href="sectors/{{ x.ticker }}.html">{{ td(x.name) }}{% if _sc and _sc.rank %} · <span style="opacity:.6">#{{ _sc.rank }}</span>{% endif %}</a>{% else %}<span class="cnx-chip turn">{{ td(x.name) }}{% if _sc and _sc.rank %} · <span style="opacity:.6">#{{ _sc.rank }}</span>{% endif %}</span>{% endif %}{% endfor %}</div>
         {% endif %}
         {# AVOID: action-board avoid list #}
         {% set _dlg_avoid = (actions.avoid if actions and actions.avoid else []) %}
         {% if _dlg_avoid %}
         <div class="cnx-lbl">{{ t('Avoid','回避') }}</div>
-        <div class="cnx-chips">{% for x in _dlg_avoid %}{%- set _sc = (sectors_by_ticker.get(x.ticker) if sectors_by_ticker is defined else none) -%}<span class="cnx-chip">{{ td(x.name) }}{% if _sc and _sc.rank %} · <span style="opacity:.6">#{{ _sc.rank }}</span>{% endif %}</span>{% endfor %}</div>
+        <div class="cnx-chips">{% for x in _dlg_avoid %}{%- set _sc = (sectors_by_ticker.get(x.ticker) if sectors_by_ticker is defined else none) -%}{% if x.ticker %}<a class="cnx-chip cnx-sector-link" href="sectors/{{ x.ticker }}.html">{{ td(x.name) }}{% if _sc and _sc.rank %} · <span style="opacity:.6">#{{ _sc.rank }}</span>{% endif %}</a>{% else %}<span class="cnx-chip">{{ td(x.name) }}{% if _sc and _sc.rank %} · <span style="opacity:.6">#{{ _sc.rank }}</span>{% endif %}</span>{% endif %}{% endfor %}</div>
         {% endif %}
         {# Leaders — hot names already in uptrend, don't chase #}
         {% if pb_obj.leaders %}
         <div class="cnx-lbl">{{ t('Leaders','领先') }}</div>
-        <div class="cnx-chips">{% for x in pb_obj.leaders %}<span class="cnx-chip hot">{{ td(x.name) }}</span>{% endfor %}</div>
+        <div class="cnx-chips">{% for x in pb_obj.leaders %}{% if x.ticker %}<a class="cnx-chip hot cnx-sector-link" href="sectors/{{ x.ticker }}.html">{{ td(x.name) }}</a>{% else %}<span class="cnx-chip hot">{{ td(x.name) }}</span>{% endif %}{% endfor %}</div>
         {% endif %}
         {% endif %}
         <div class="cnx-sep"></div>
@@ -2789,7 +2792,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
           {# color on s.dir (up/down/caution) which is always populated and maps to real states #}
           {% set _row_class = 'cnx-tt-dn' if s.dir == 'down' else ('cnx-tt-fl' if s.dir == 'caution' else ('cnx-tt-up' if s.dir == 'up' else '')) %}
           <tr>
-            <td>{{ td(s.name) }}</td>
+            <td><a class="cnx-sector-link" href="sectors/{{ s.ticker }}.html">{{ td(s.name) }}</a></td>
             <td class="r">{{ loop.index }}</td>
             <td class="r {{ 'cnx-tt-up' if (s.mom5 or 0) > 0 else ('cnx-tt-dn' if (s.mom5 or 0) < 0 else '') }}">{{ '%+.1f'|format(s.mom5) if s.mom5 is not none else '—' }}%</td>
             <td class="r {{ 'cnx-tt-up' if (s.mom20 or 0) >= 0 else 'cnx-tt-dn' }}">{{ '%+.1f'|format(s.mom20) if s.mom20 is not none else '—' }}%</td>
