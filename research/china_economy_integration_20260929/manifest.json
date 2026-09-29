@@ -1,0 +1,9 @@
+{
+  "installed-collector-qualification.json": "c75c0a83a7fe5c3af534fa72140c40e4cfefd096b139ae5eb4f1be90e8d43445",
+  "test-results.json": "26aff23a4e1851ed1d3e835c741f1611db5e06a07036fa19cee1a2f268be9c82",
+  "preexisting-regression-proof.json": "db974f6978c957ab9faf6a2cdee44bf7123d814b43745fb3cbb04ef0297e5646",
+  "actual-build-readback.json": "427d4e34ae7d3d5826b351151d808fae8d9831941112cb95edb23af3c4555086",
+  "applied-receipt.json": "5e43d59f16b63e18946445797780fb8eaf4ebcb94c7a4659fc27c74c5984ba1a",
+  "page-size-compact.json": "965172a536be956d40b7138d61db381cc949e55648108dbceebf4ee71ea5eb96",
+  "page-size.json": "5c15179f78d09913a08f9645f87320f4d0dd5064e83544b07fd97ccbe5cdb796"
+}

@@ -199,7 +199,9 @@ class ChinaPropertyAdapter(Adapter):
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
         frames: dict[str, pd.DataFrame] = {}
         errors: list[str] = []
+        from collectors.china_property_activity import fetch_activity
         jobs = [("home_price", lambda: self._home_price(full_history)),
+                ("activity", lambda: fetch_activity(self.http_get, full_history=full_history)),
                 ("climate", self._climate),
                 ("cgb", lambda: self._cgb(full_history))]
         jobs += [(name, lambda s=sym: self._futures(s)) for name, sym in _FUT.items()]

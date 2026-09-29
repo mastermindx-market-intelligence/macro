@@ -39,8 +39,10 @@ DATACENTER = {
                                                      "m1_yoy": "CURRENCY_SAME", "m0_yoy": "FREE_CASH_SAME"}),
     "indpro":       ("RPT_ECONOMY_INDUS_GROW",     {"indpro_yoy": "BASE_SAME"}),
     # GDP (quarterly): SUM_SAME = headline YoY % — the growth-context leg in
-    # china_conditions. (The level field is cumulative-YTD, not a clean denominator, so omitted.)
-    "gdp":          ("RPT_ECONOMY_GDP",            {"gdp_yoy": "SUM_SAME"}),
+    # china_conditions. Nominal GDP is cumulative calendar-YTD, in CNY100m.
+    # Only the new display evidence engine de-accumulates it into quarters.
+    "gdp":          ("RPT_ECONOMY_GDP", {"gdp_yoy": "SUM_SAME",
+                                          "nominal_gdp_ytd_cny100m": "DOMESTICL_PRODUCT_BASE"}),
     # -- credit + macro-tape monthlies (verified 2026-06-13, same datacenter host) --
     # new bank credit: the credit-cycle proxy (TSF/社融 itself is mofcom-only/legacy-SSL,
     # so we lead the credit read with new RMB loans + the M1-M2 scissors derived downstream)
@@ -141,6 +143,7 @@ class ChinaMacroAdapter(Adapter):
         return out
 
     def fetch(self, full_history: bool = False) -> dict[str, pd.DataFrame]:
+        self._economy_batch = None  # no previous-run success/status reuse
         page = self.cfg["page_size"] if not full_history else max(self.cfg["page_size"], 2000)
         frames: dict[str, pd.DataFrame] = {}
         errors: list[str] = []
@@ -169,4 +172,16 @@ class ChinaMacroAdapter(Adapter):
         if errors:
             log.info("china_macro: %d/%d series ok (skipped: %s)",
                      len(frames), len(frames) + len(errors), "; ".join(errors))
+        # Optional economy receipts extend this existing adapter; no new writer.
+        from collectors.china_economy_adapter import enrich_existing_frames
+        from lib import store as _economy_store
+        frames, self._economy_batch = enrich_existing_frames(self, frames, _economy_store.read)
+        if self._economy_batch is not None and self._economy_batch.status == "blocked":
+            log.warning("china_macro economy evidence held: %d source failures, %d value conflicts",
+                        len(self._economy_batch.failures), len(self._economy_batch.conflicts))
         return frames
+
+    def fetch_result_status(self, frames):
+        """Existing runner's optional status protocol; legacy frames still publish."""
+        batch = getattr(self, "_economy_batch", None)
+        return "blocked" if batch is not None and batch.status == "blocked" else None

@@ -1,0 +1,72 @@
+{
+  "scope": "owned-worktree real China builder readback; not browser/auth/production proof",
+  "build_exit": "0",
+  "authority": "display_only",
+  "counts": {
+    "catalog": 128,
+    "valid_current": 53,
+    "diagnostics": 11
+  },
+  "breadth": {
+    "universe": 6,
+    "covered": 2,
+    "counts": {
+      "improving": 1,
+      "fading": 0,
+      "steady": 0,
+      "mixed": 1,
+      "unknown": 4
+    },
+    "eligible": false,
+    "minimum_coverage": 4,
+    "improvement_lower_bound_pct": 16.7,
+    "improvement_upper_bound_pct": 83.3,
+    "bounds_type": "missing-domain bounds, NOT statistical confidence intervals",
+    "headline_en": "Economic direction needs more evidence.",
+    "headline_zh": "经济方向仍需更多证据。",
+    "is_gdp_nowcast": false,
+    "is_probability": false,
+    "not_trade_authority": true,
+    "method_en": "One diagnostic vote per six fixed growth domains; conflicting evidence stays mixed. No weight is reassigned when a domain is unavailable. This is not a GDP-weighted economy score.",
+    "method_zh": "六个固定增长领域各一票；冲突保留为分化。缺失时不转移权重；这不是GDP加权经济评分。"
+  },
+  "files": {
+    "china.html": {
+      "bytes": 1305600,
+      "gzip_bytes": 209114,
+      "sha256": "3402a71c8f59e679e735d5f0c8ac34fb4247a60279e72bfa267a2f45dd1fd8bb",
+      "duplicate_ids": [],
+      "h1_count": 0,
+      "client_projection_complete_value_parity": true,
+      "client_payload_bytes": 22250,
+      "download_href": "china_macro_evidence.json"
+    },
+    "china_stocks.html": {
+      "bytes": 1117109,
+      "gzip_bytes": 154851,
+      "sha256": "cb28effec3603b4827ca51fbea3c5166e49d84c221ba721415e66dd9043d22f7",
+      "duplicate_ids": [],
+      "h1_count": 1
+    },
+    "china_macro_evidence.json": {
+      "bytes": 1001773,
+      "sha256": "24e1380c54a4b99b33af45ab9560ed4c3264400102ccb3f1e6b513f4aadc015d"
+    },
+    "china-economy.js": {
+      "bytes": 5349,
+      "sha256": "1c0ccca90ee295980322aafaae72024c0e909ef21ccf2714d977d4578e6119c6"
+    },
+    "china-economy.css": {
+      "bytes": 15259,
+      "sha256": "c4803ff2b87f0bde6389412515a2c57011f8cd3864a28fb58c045ec73ef740ef"
+    },
+    "china-macro-evidence.js": {
+      "bytes": 10384,
+      "sha256": "9ca83421e4051c78e72695f951fde343200820a438051aa5ae0f4d5efaeb88ee"
+    },
+    "china-macro-evidence.css": {
+      "bytes": 13479,
+      "sha256": "459def5357d0cc3a8e96674e34f627b466077b7cf19181cc8a2007e40ad14b16"
+    }
+  }
+}

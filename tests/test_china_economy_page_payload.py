@@ -1,0 +1,37 @@
+"""Production must not inline the entire canonical publication twice."""
+from copy import deepcopy
+import json
+from pathlib import Path
+from engine.china_economy_view import client_publication
+
+def sample():
+    return {'schema':'macro.v1','panels':{'large':'x'*20000},'economy':{
+        'schema':'economy.v1','input_class':'collected','reference_period':'2026-08',
+        'authority':'display_only','groups':[{'id':'industry','label_en':'Industry'}],
+        'metrics':{'industrial_sa':{'chart':{'dates':['2026-07','2026-08'],'vals':[None,.54]},
+                     'unit':'%','definition_id':'nbs-sa.v1','method':'y'*20000}}}}
+
+def test_projection_preserves_every_chart_point_and_csv_unit():
+    original=sample();before=deepcopy(original);small=client_publication(original)
+    assert original==before
+    for ident,metric in small['economy']['metrics'].items():
+        for key,value in metric.items():assert value==original['economy']['metrics'][ident][key]
+    assert small['download_href']=='china_macro_evidence.json'
+    assert 'panels' not in small and len(json.dumps(small))<len(json.dumps(original))*.05
+
+def test_projection_cannot_mutate_machine_contract():
+    original=sample();small=client_publication(original)
+    small['economy']['metrics']['industrial_sa']['chart']['vals'][1]=9
+    assert original['economy']['metrics']['industrial_sa']['chart']['vals'][1]==.54
+
+def test_missing_optional_lens_does_not_crash_projection():
+    assert client_publication({'panels':{}})['economy'] is None
+
+def test_page_uses_projection_and_json_button_uses_exact_canonical_relative_url():
+    root=Path(__file__).resolve().parents[1]
+    html=(root/'templates/china.html.j2').read_text()
+    js=(root/'templates/china-economy.js').read_text()
+    assert 'economy_client_publication|default(economy_publication)|tojson' in html
+    assert "publication.download_href === 'china_macro_evidence.json'" in js
+    assert "a.download='china-macro-evidence.json'" in js
+    assert "JSON.stringify(publication,null,2)" in js # offline review still works

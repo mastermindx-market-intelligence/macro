@@ -1,0 +1,11 @@
+{
+  "comparison": "same real builder view-model, original versus integrated template",
+  "original": {
+    "bytes": 445156,
+    "gzip": 100289
+  },
+  "integrated": {
+    "bytes": 1807252,
+    "gzip": 277890
+  }
+}

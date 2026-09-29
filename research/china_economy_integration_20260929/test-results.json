@@ -1,0 +1,98 @@
+{
+  "source-final": {
+    "suites": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "358",
+        "time": "13.177",
+        "timestamp": "2026-09-29T07:47:41.845949-07:00",
+        "hostname": "m2studio"
+      }
+    ],
+    "failed_cases": [],
+    "full_xml_sha256": "cacdcc70c12c5aea3abe6dbb6f52f1b0b952f99584282940ca8da7c38db8dc30"
+  },
+  "china-all": {
+    "suites": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "3",
+        "skipped": "0",
+        "tests": "3454",
+        "time": "352.175",
+        "timestamp": "2026-09-29T07:35:00.337672-07:00",
+        "hostname": "m2studio"
+      }
+    ],
+    "failed_cases": [
+      {
+        "test": "tests.test_china_archetype_d_s1::test_deep_dashboard_cards_are_present_at_l1",
+        "kind": "failure",
+        "message": "assert \"{{ t('Policy Monitor','\u653f\u7b56\u76d1\u63a7') }}\" in '{% import \"_prophet_card.html.j2\" as pv %}\\n{% import \"_decision_card.html.j2\" as dc %}\\n{% import \"_lens.html.j2\" as...pt src=\"china-macro-evidence.js\" defer></script>\\n  <script src=\"china-economy.js\" defer></script>\\n</body>\\n</html>\\n'",
+        "excerpt": "def test_deep_dashboard_cards_are_present_at_l1() -> None:\n        for marker in (\n            \"{{ t('Market Sentiment','\u5e02\u573a\u60c5\u7eea') }}\",\n            \"{{ t('Policy Monitor','\u653f\u7b56\u76d1\u63a7') }}\",\n            \"{{ t('Connect Flows','\u4e92\u8054\u901a\u8d44\u91d1') }}\",\n            \"{{ t('Macro News','\u5b8f\u89c2\u65b0\u95fb') }}\",\n        ):\n>           assert marker in TPL\nE           assert \"{{ t('Policy Monitor','\u653f\u7b56\u76d1\u63a7') }}\" in '{% import \"_prophet_card.html.j2\" as pv %}\\n{% import \"_decision_card.html.j2\" as dc %}\\n{% import \"_lens.html.j2\" as...pt src=\"china-macro-evidence.js\" defer></script>\\n  <script src=\"china-economy.js\" defer></script>\\n</body>\\n</html>\\n'\n\ntests/test_china_archetype_d_s1.py:33: AssertionError"
+      },
+      {
+        "test": "tests.test_china_archetype_d_s1::test_no_network_render_never_calls_eastmoney_leaderboard",
+        "kind": "failure",
+        "message": "AssertionError: assert {'date': None, 'northbound_date': None, 'southbound_date': None, 'northbound_turnover': [], ...} is None\n +  where {'date': None, 'northbound_date': None, 'southbound_date': None, 'northbound_turnover': [], ...} = <function _leaderboard at 0x1406be480>()\n +    where <function _leaderboard at 0x1406be480> = <module 'scripts.build_china' from '/Users/chriswong/Documents/GitHub/macro/.claude/worktrees/china-macro-evidence-20260929-sol-001/scripts/build_china.py'>._leaderboard",
+        "excerpt": "monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x36ea58380>\n\n    def test_no_network_render_never_calls_eastmoney_leaderboard(monkeypatch) -> None:\n        import sys\n    \n        from scripts import build_china\n    \n        class _NetworkForbidden:\n            def __getattr__(self, name):\n                raise AssertionError(f\"render lane attempted requests.{name}\")\n    \n        monkeypatch.setenv(\"CHINA_FAST_RENDER\", \"1\")\n        monkeypatch.setitem(sys.modules, \"requests\", _NetworkForbidden())\n>       assert build_china._leaderboard() is None\nE       AssertionError: assert {'date': None, 'northbound_date': None, 'southbound_date': None, 'northbound_turnover': [], ...} is None\nE        +  where {'date': None, 'northbound_date': None, 'southbound_date': None, 'northbound_turnover': [], ...} = <function _leaderboard at 0x1406be480>()\nE        +    where <function _leaderboard at 0x1406be480> = <module 'scripts.build_china' from '/Users/chriswong/Documents/GitHub/macro/.claude/worktrees/china-macro-evidence-20260929-sol-001/scripts/build_china.py'>._leaderboard\n\ntests/test_china_archetype_d_s1.py:256: AssertionError"
+      },
+      {
+        "test": "tests.test_china_sector_intelligence_page::test_stub_ships_no_page_machinery[baskets_china-#si-explore]",
+        "kind": "failure",
+        "message": "AssertionError: rendered baskets_china.html.j2 is 4774 chars \u2014 not a stub\nassert 4774 < 4000\n +  where 4774 = len('<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width,...=\"sector_central_china.html#si-explore\">Open China Sector Intelligence \u00b7 \u6253\u5f00\u4e2d\u56fd\u884c\u4e1a\u60c5\u62a5 \u2192</a></p>\\n</main>\\n</body>\\n</html>')",
+        "excerpt": "name = 'baskets_china.html.j2', anchor = '#si-explore'\n\n    @pytest.mark.parametrize(\"name,anchor\", STUBS, ids=lambda v: str(v).split(\".\")[0])\n    def test_stub_ships_no_page_machinery(name: str, anchor: str) -> None:\n        \"\"\"The rendered stub carries no payload, no desk boot and no rotation config.\"\"\"\n        html = _render(name)\n        for tok in (\"BASKETS\", \"SR_CFG\", \"openTheme\", \"openBasket\",\n                    \"baskets_desk.js\", \"subsector_rotation.js\"):\n            assert tok not in html, f\"{name} still ships {tok} \u2014 not a stub\"\n>       assert len(html) < 4000, f\"rendered {name} is {len(html)} chars \u2014 not a stub\"\nE       AssertionError: rendered baskets_china.html.j2 is 4774 chars \u2014 not a stub\nE       assert 4774 < 4000\nE        +  where 4774 = len('<!DOCTYPE html>\\n<html lang=\"en\">\\n<head>\\n<meta charset=\"utf-8\">\\n<meta name=\"viewport\" content=\"width=device-width,...=\"sector_central_china.html#si-explore\">Open China Sector Intelligence \u00b7 \u6253\u5f00\u4e2d\u56fd\u884c\u4e1a\u60c5\u62a5 \u2192</a></p>\\n</main>\\n</body>\\n</html>')\n\ntests/test_china_sector_intelligence_page.py:89: AssertionError"
+      }
+    ],
+    "full_xml_sha256": "cc9fe832962821128519cae9d7d2b2cd214088b104539c61270f2dcb0687dd37"
+  },
+  "full-suite": {
+    "suites": [
+      {
+        "name": "pytest",
+        "errors": "2",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "2",
+        "time": "152.502",
+        "timestamp": "2026-09-29T07:31:02.111520-07:00",
+        "hostname": "m2studio"
+      }
+    ],
+    "failed_cases": [
+      {
+        "test": "::tests.test_options_market_memory_local_receipts",
+        "kind": "error",
+        "message": "collection failure",
+        "excerpt": "tests/test_options_market_memory_local_receipts.py:18: in <module>\n    from engine import options_sparse_selector\nengine/options_sparse_selector.py:612: in <module>\n    _verify_frozen_producer_contract()\nengine/options_sparse_selector.py:548: in _verify_frozen_producer_contract\n    _fail(f\"selector frozen {field.replace('_', ' ')} receipt drifted\")\nengine/options_sparse_selector.py:349: in _fail\n    raise SparseSelectorError(message)\nE   engine.options_sparse_selector.SparseSelectorError: selector frozen lifecycle builder receipt drifted"
+      },
+      {
+        "test": "::tests.test_options_sparse_selector_runtime",
+        "kind": "error",
+        "message": "collection failure",
+        "excerpt": "tests/test_options_sparse_selector_runtime.py:23: in <module>\n    from engine import options_sparse_selector as selector\nengine/options_sparse_selector.py:612: in <module>\n    _verify_frozen_producer_contract()\nengine/options_sparse_selector.py:548: in _verify_frozen_producer_contract\n    _fail(f\"selector frozen {field.replace('_', ' ')} receipt drifted\")\nengine/options_sparse_selector.py:349: in _fail\n    raise SparseSelectorError(message)\nE   engine.options_sparse_selector.SparseSelectorError: selector frozen lifecycle builder receipt drifted"
+      }
+    ],
+    "full_xml_sha256": "9d6da676f96930bbda26ec21404c11cd7da00b776e60e3d78bd6b2dc6ba13dc5"
+  },
+  "targeted-r2": {
+    "suites": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "328",
+        "time": "13.109",
+        "timestamp": "2026-09-29T07:28:50.973479-07:00",
+        "hostname": "m2studio"
+      }
+    ],
+    "failed_cases": [],
+    "full_xml_sha256": "06f61217bba05ae858e9f36f419a26c5ba24b03e6495729318534b7ad2584850"
+  }
+}

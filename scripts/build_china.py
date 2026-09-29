@@ -54,6 +54,7 @@ ASSETS = ("theme.css", "product-nav-icons.css", "dashboard-icons.css",
           "mtf.js", "chart_i18n.js", "timemachine.js",
           "charts.js", "tablesort.js", "aibrief.js", "stockview.js",
           "illus.css", "illus.js")
+ASSETS = list(ASSETS) + ["china-macro-evidence.css", "china-macro-evidence.js", "china-economy.css", "china-economy.js"]
 
 
 def _range_selector() -> dict:
@@ -506,57 +507,10 @@ def _property_vm() -> dict | None:
     return v
 
 
-def _leaderboard() -> dict | None:
-    """Stock-Connect 'smart money' leaderboard — today's most-active A-shares by foreign
-    (northbound) turnover + the HK names mainland (southbound) money net-bought/sold.
-    A build-time fetch (ephemeral top-N, no history needed); fully best-effort."""
-    if _no_network_render():
-        log.info("china leaderboard: no-network rerender; skipping ephemeral fetch")
-        return None
-
-    import requests
-    UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
-          "(KHTML, like Gecko) Chrome/124.0 Safari/537.36")
-    DC = "https://datacenter-web.eastmoney.com/api/data/v1/get"
-    H = {"User-Agent": UA, "Referer": "https://data.eastmoney.com/"}
-
-    def fetch(mt: str) -> list:
-        p = {"reportName": "RPT_MUTUAL_TOP10DEAL", "columns": "ALL", "pageSize": 10,
-             "sortColumns": "TRADE_DATE", "sortTypes": -1, "pageNumber": 1,
-             "filter": f'(MUTUAL_TYPE="{mt}")'}
-        r = requests.get(DC, params=p, headers=H, timeout=20)
-        return (r.json().get("result") or {}).get("data") or []
-
-    try:
-        nb = fetch("001") + fetch("003")    # northbound (foreign -> A-shares)
-        sb = fetch("002") + fetch("004")    # southbound (mainland -> HK)
-    except Exception as e:  # noqa: BLE001
-        log.warning("china leaderboard fetch failed: %s", e)
-        return None
-    if not nb and not sb:
-        return None
-
-    def latest(rows: list) -> list:
-        if not rows:
-            return []
-        d = max(x["TRADE_DATE"] for x in rows)
-        return [x for x in rows if x["TRADE_DATE"] == d]
-
-    def row(x: dict, field: str, val_key: str) -> dict:
-        name = x.get("SECURITY_NAME")  # Eastmoney has no separate EN name; name_zh==name
-        return {"ticker": x.get("SECURITY_CODE"), "name": name, "name_zh": name,
-                "chg": round(float(x.get("CHANGE_RATE") or 0), 2),
-                val_key: round(float(x.get(field) or 0) / 1e8, 2)}   # 亿
-
-    nb, sb = latest(nb), latest(sb)
-    date = (nb or sb)[0]["TRADE_DATE"][:10] if (nb or sb) else None
-    nb.sort(key=lambda x: -(x.get("DEAL_AMT") or 0))                 # foreign turnover
-    sb.sort(key=lambda x: -(x.get("NET_BUY_AMT") or 0))             # mainland net
-    return {"date": date,
-            "northbound_turnover": [row(x, "DEAL_AMT", "turnover") for x in nb[:8]],
-            "southbound_buy": [row(x, "NET_BUY_AMT", "net") for x in sb[:6]],
-            "southbound_sell": [row(x, "NET_BUY_AMT", "net") for x in
-                        sorted(sb, key=lambda x: (x.get("NET_BUY_AMT") or 0))[:4]]}
+def _leaderboard() -> dict:
+    """Archived, venue-specific most-active disclosures; no render-time network."""
+    from engine.china_connect_leaderboard import build_leaderboard
+    return build_leaderboard()
 
 
 def _drilldown_closes() -> tuple[pd.DataFrame, str | None]:
@@ -2111,6 +2065,41 @@ def main() -> int:
         # A-share Stock Dashboard — the same china.html.j2 is rendered twice with
         # a `mode` flag (macro / stocks) that selects which sections show. No data
         # is recomputed and the heavy page CSS lives in exactly one template.
+        # One source-attributed contract for the four dialogs and machine export.
+        # This display projection never changes any recommendation/entry authority.
+        from engine.china_macro_evidence import build_snapshot as build_macro_evidence
+        from engine.china_macro_evidence_view import prepare_view as macro_evidence_view
+        _macro_evidence = build_macro_evidence()
+        # Existing collector-owned stores only. No review fixtures or build-time HTTP.
+        # A schema/configuration failure affects this optional lens, not the page.
+        vm["economy_lens"] = None
+        vm["economy_error"] = False
+        try:
+            from engine.china_economy_store import build_from_store as build_economy_lens
+            from engine.china_economy import extend_snapshot as extend_macro_snapshot
+            from engine.china_economy_view import prepare_economy_view
+            _economy = build_economy_lens()
+            _economy_view = prepare_economy_view(_economy)
+            _macro_evidence = extend_macro_snapshot(_macro_evidence, _economy)
+            vm["economy_lens"] = _economy_view
+        except Exception as _economy_exc:  # additive display failure, not success
+            vm["economy_error"] = True
+            _macro_evidence["economy"] = {
+                "schema": "mastermind.china_economy_lens.v1",
+                "status": "unavailable",
+                "error_class": type(_economy_exc).__name__,
+                "authority": "display_only",
+            }
+            log.error("China economy lens unavailable (%s)", type(_economy_exc).__name__)
+        vm["economy_publication"] = _macro_evidence
+        from engine.china_economy_view import client_publication
+        vm["economy_client_publication"] = client_publication(_macro_evidence)
+        vm["macro_evidence"] = macro_evidence_view(_macro_evidence)
+        import json as _macro_json
+        (site / "china_macro_evidence.json").write_text(
+            _macro_json.dumps(_macro_evidence, ensure_ascii=False, allow_nan=False, indent=2),
+            encoding="utf-8",
+        )
         tmpl = env.get_template("china.html.j2")
         # DEV-ONLY: dump the fully-built view-model so scripts/render_china_fast.py can
         # re-render china.html / china_stocks.html in ~1s without re-running collectors +

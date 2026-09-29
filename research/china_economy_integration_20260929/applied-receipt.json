@@ -1,0 +1,151 @@
+{
+  "head": "650e2ebbe08046bedf10e7eec39def3f62073103",
+  "branch": "worktree-china-macro-evidence-20260929-sol-001",
+  "patch_sha256": "2b8775c99d059ed54141a2f3c7fb9060af65f28d5272458e03268f09c6c40f5e",
+  "files": {
+    "templates/china.html.j2": {
+      "before": "12e2a3e024cef24788504421e111476a72a73c253e89fffe18f730841a24be4a",
+      "after": "28ccedf0882ae45b3c2103462decb4c12b94282f8be46014d9c11d1548cf25f6"
+    },
+    "scripts/build_china.py": {
+      "before": "3ea9083ec6cce3d3715c692cba8197a2b38ed744e67980435d4144002eb7364f",
+      "after": "f13d847c0b31a59bdca2e50a7a7f616916b936ebf2690921c65dd132e4544537"
+    },
+    "collectors/china_macro.py": {
+      "before": "79a3f017ee570d4e673b561e6aa155dba5e600ff306020844ab94759d5937d49",
+      "after": "0b317f19010240d222eebfd866ff824c255835c25b9c02da831526504693f193"
+    },
+    "collectors/china_property.py": {
+      "before": "2cfb23e878c8e5ec6f664f3004e743341e1307de431eec8644eeafef15584096",
+      "after": "8efcdd038179d7cf780bfd5ac7631d585ebf6d230e5e92a7e7d9faf5a026263e"
+    },
+    "collectors/china_connect.py": {
+      "before": "86306c6bf5d653438f9f8c5129b8a0d0efd21efec7380832829b2d33f75a480c",
+      "after": "b0c6523e392e38da85c135bdc628c1f92c7218b232fe75e22e782d0e9fe86380"
+    },
+    "collectors/china_connect_top_active.py": {
+      "before": null,
+      "after": "d511c4c3002d60c42ca651ffd085fc1ed5ff6a00d820b3bdc6f1a81988080166"
+    },
+    "collectors/china_economy_acquisition.py": {
+      "before": null,
+      "after": "38aef260500fd5fd919b98a0578911340de5a9c10e530faf31611d7dac50c5f8"
+    },
+    "collectors/china_economy_adapter.py": {
+      "before": null,
+      "after": "af4d15c664a31deed7a053ad9d0ef81d2c1a780077809a037112f24cbde399b3"
+    },
+    "collectors/china_economy_release_parser.py": {
+      "before": null,
+      "after": "c61416bb7ce2c8f3a790144b8aacda8d0679155480d50cc33513599e5c973808"
+    },
+    "collectors/china_property_activity.py": {
+      "before": "e82634bd6e18f9798b91b9b01a43c886b6613c020d2430eb1baad9f1c2322f0c",
+      "after": "aaf3c13d159ac5e6fd8a3d8af3eafb8d01b53e3e46c947eeeda602c96ac9201e"
+    },
+    "config/china_economy_acquisition_example.json": {
+      "before": null,
+      "after": "ac666a715acc2c17edb30464dd4ac1c9401146872c60b5c63928f899eca1034d"
+    },
+    "config/china_economy_catalog.json": {
+      "before": null,
+      "after": "0318f51dbfb1be21580f81850d639a6988279a4e9ad02db69c6270aa6c28a6ee"
+    },
+    "engine/china_connect_leaderboard.py": {
+      "before": null,
+      "after": "37e72cf4be1dcd437f3597a056055788ae8f060540b3e53674e6eca5afd63324"
+    },
+    "engine/china_economy.py": {
+      "before": null,
+      "after": "b94cb8bc1cb4e93bfe6eb59c469152f43d7a0449b2da04c3391cfbd1417a7abf"
+    },
+    "engine/china_economy_store.py": {
+      "before": null,
+      "after": "9803d42a0219ac4999ae880f337595b88485ca5f422952a037039505b6d6678d"
+    },
+    "engine/china_economy_view.py": {
+      "before": null,
+      "after": "d4cf564b24359d6b519800a18b794d6bdc98bbb7c7114f26d91fbea36e28b75d"
+    },
+    "engine/china_macro_evidence.py": {
+      "before": "ccae2d98fbdeae8d6fb7e3f93947a517d49fbb1386693c49a4596e2abab1ebea",
+      "after": "c6ccdd7293908985cda08e501554404ac307cbebeb50a48df2fbbf7f4c71ff37"
+    },
+    "engine/china_macro_evidence_view.py": {
+      "before": null,
+      "after": "0a4822969a54b5fc0b7825d9836353a17dd2fa89b234e005bea77dc659f148b4"
+    },
+    "scripts/preview_china_economy.py": {
+      "before": null,
+      "after": "14285cb2b4e01651ae52ac732160edee008e6b35c3357d39030659179fee5e8f"
+    },
+    "scripts/preview_china_macro_evidence.py": {
+      "before": null,
+      "after": "4a0d340ad43febc972610f072c6443e33fbf26d095e6a9e1b64f3e79a68818d4"
+    },
+    "templates/_china_economy_lens.html.j2": {
+      "before": null,
+      "after": "61b0994745237c6ad3d00dc4dbbd538e2365665a75fd56afa42cabc1b051b0c6"
+    },
+    "templates/_china_macro_evidence.html.j2": {
+      "before": null,
+      "after": "e70762db89aeaddc784b07fbf7065b76beecc5f9f0ecd917d437a02d651bd314"
+    },
+    "templates/china-economy.css": {
+      "before": null,
+      "after": "c4803ff2b87f0bde6389412515a2c57011f8cd3864a28fb58c045ec73ef740ef"
+    },
+    "templates/china-economy.js": {
+      "before": null,
+      "after": "0dc3ca26b72ebfa77091b6bca64e3bf038c7e728426c803fea76795c5949da87"
+    },
+    "templates/china-macro-evidence.css": {
+      "before": null,
+      "after": "459def5357d0cc3a8e96674e34f627b466077b7cf19181cc8a2007e40ad14b16"
+    },
+    "templates/china-macro-evidence.js": {
+      "before": null,
+      "after": "9ca83421e4051c78e72695f951fde343200820a438051aa5ae0f4d5efaeb88ee"
+    },
+    "tests/fixtures/china_economy_review.json": {
+      "before": null,
+      "after": "c24271333f476f3596fbe4b119c6a10ce060754aaffa22a02853f4f5f0661a2f"
+    },
+    "tests/test_china_connect_evidence.py": {
+      "before": null,
+      "after": "565fb4354e9f4a66b5e628185956d04f43e66091f2b851134da1a8b695232117"
+    },
+    "tests/test_china_economy.py": {
+      "before": null,
+      "after": "e390922b64ca74da0e9c5e4f8190c1beb386a1dcd4ef83f7afdcbe3a3f5897cf"
+    },
+    "tests/test_china_economy_acquisition.py": {
+      "before": null,
+      "after": "db39a4e71a5eca3f43a62b8a373e1f97858db69c9547c57762868c36b782064b"
+    },
+    "tests/test_china_economy_additional_parsers.py": {
+      "before": null,
+      "after": "45036fd0a1577ffb3fbc3a8ca407c3f8c20b8705481bf427d80b7446171ebe76"
+    },
+    "tests/test_china_economy_parser.py": {
+      "before": null,
+      "after": "6a24ca0cec3982404d0a36e813fe32e1661d84f1f5d14b87e8fd158194123335"
+    },
+    "tests/test_china_economy_store.py": {
+      "before": null,
+      "after": "16333f62c5c37f2a856f82919e38ea1c30eea3315f434e261459f6e119a3398c"
+    },
+    "tests/test_china_economy_view.py": {
+      "before": null,
+      "after": "3d2abe97c69905597bd59d0c6dc69cc04b54db253d0ad063d4141d3df3ca9474"
+    },
+    "tests/test_china_macro_activity.py": {
+      "before": null,
+      "after": "5df07bead93600796863635e2af599a4613b183198cfb68851c3180d9727d567"
+    },
+    "tests/test_china_macro_evidence_view.py": {
+      "before": null,
+      "after": "75579d65a1e100c216238da7cbed2def62db270e9d265d9eba6aeeb6c9ff567c"
+    }
+  }
+}

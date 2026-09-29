@@ -26,11 +26,16 @@ def test_deep_dashboard_rows_are_the_published_macro_composition() -> None:
 def test_deep_dashboard_cards_are_present_at_l1() -> None:
     for marker in (
         "{{ t('Market Sentiment','市场情绪') }}",
-        "{{ t('Policy Monitor','政策监控') }}",
-        "{{ t('Connect Flows','互联通资金') }}",
         "{{ t('Macro News','宏观新闻') }}",
     ):
         assert marker in TPL
+
+    # Delegated cards remain on this page. Their rows and titles come from the
+    # same source contract as the dialogs, not separate duplicated copy.
+    for key in ('policy', 'flows', 'property'):
+        assert 'cnm.glance(macro_evidence|default(none), "' + key + '"' in TPL
+    for key in ('policy', 'flows', 'property', 'sentiment'):
+        assert 'cnm.panel(macro_evidence|default(none), "' + key + '"' in TPL
 
 
 def test_deep_dashboard_keeps_major_clickthrough_dialogs() -> None:
@@ -253,7 +258,11 @@ def test_no_network_render_never_calls_eastmoney_leaderboard(monkeypatch) -> Non
 
     monkeypatch.setenv("CHINA_FAST_RENDER", "1")
     monkeypatch.setitem(sys.modules, "requests", _NetworkForbidden())
-    assert build_china._leaderboard() is None
+    monkeypatch.setattr(build_china.store, 'read', lambda group, name: None)
+    lb = build_china._leaderboard()
+    assert lb['status'] == 'unavailable'
+    assert lb['transport'] == 'canonical_store_no_render_network'
+    assert lb['northbound_turnover'] == [] and lb['southbound_buy'] == []
 
 
 def test_no_network_render_skips_stock_library_drips(monkeypatch) -> None:

@@ -1,137 +1,87 @@
-"""Regression test for the Stock-Connect leaderboard: scripts/build_china.py's
-_leaderboard() must produce the exact keys/fields templates/china.html.j2's Connect
-Flows card + cnx-dlg-flows popup read off ``leaderboard``.
+"""Original Connect renderer regressions, migrated to actual archived-source wiring.
 
-The bug this guards: _leaderboard() returned {"nb": ..., "sb_buy": ..., "sb_sell": ...}
-with row fields {code, name, chg, val}, while the template reads
-leaderboard.northbound_turnover / leaderboard.southbound_buy with row fields
-{name_zh, ticker, turnover|net, chg}. Jinja treats an unmatched attribute as falsy
-rather than erroring, so every {% if leaderboard.X %} silently skipped — the popup's
-eyebrow header rendered but the tables never did, and the summary card's "Top buys"
-line never did either. Nothing caught it: the fetch is wrapped in a catch-all
-try/except (best-effort by design) and no test exercised the shape.
-
-ZERO NETWORK: requests.get is monkeypatched (FakeResponse pattern from
-tests/test_china_cb_collector.py). The render half reuses the REAL template source via
-the DictLoader snippet-extraction pattern from tests/test_china_fx_context_render.py,
-so a future rename on either side (builder or template) fails this test instead of
-silently going dark again.
+The builder must produce the keys/rows consumed by the REAL page+partial. Source
+failures are explicit empty states, not network requests during render. Preserve
+northbound turnover and both southbound signs; no cross-venue flow fabrication.
 """
 from __future__ import annotations
-
-import sys
+from datetime import datetime, timezone, timedelta
+import json
 from pathlib import Path
+import pandas as pd
+import pytest
+from jinja2 import ChoiceLoader, DictLoader, Environment, FileSystemLoader
+from scripts.build_china import _leaderboard
+from engine.china_macro_evidence import build_snapshot
+from engine.china_macro_evidence_view import prepare_view
 
-from jinja2 import DictLoader, Environment
-
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
-from scripts.build_china import _leaderboard  # noqa: E402
-
-ROOT = Path(__file__).resolve().parent.parent
-
-
-class FakeResponse:
-    """Minimal requests.Response stand-in (.json())."""
-
-    def __init__(self, payload: dict) -> None:
-        self._payload = payload
-
-    def json(self) -> dict:
-        return self._payload
-
-
-def _row(mt: str, code: str, name: str, chg: float, deal_amt: float, net_buy: float) -> dict:
-    return {"TRADE_DATE": "2026-08-11", "MUTUAL_TYPE": mt, "SECURITY_CODE": code,
-            "SECURITY_NAME": name, "CHANGE_RATE": chg, "DEAL_AMT": deal_amt,
-            "NET_BUY_AMT": net_buy}
-
-
-# northbound legs (foreign -> A-shares), ranked by DEAL_AMT
-_BY_LEG = {
-    "001": [_row("001", "600519", "贵州茅台", 1.2, 50.0e8, 0)],
-    "003": [_row("003", "300750", "宁德时代", -0.5, 30.0e8, 0)],
-    # southbound legs (mainland -> HK): one net buyer, one net seller
-    "002": [_row("002", "00700", "腾讯控股", -2.2, 0, 5.5e8)],
-    "004": [_row("004", "09988", "阿里巴巴-W", 0.3, 0, -3.1e8)],
+ROOT = Path(__file__).resolve().parents[1]
+DAY = (datetime.now(timezone.utc).date()-timedelta(days=1)).isoformat()
+def row(mt, code, name, chg, turnover, net, day=DAY):
+    return dict(TRADE_DATE=day,MUTUAL_TYPE=mt,SECURITY_CODE=code,
+                SECURITY_NAME=name,CHANGE_RATE=chg,DEAL_AMT=turnover,NET_BUY_AMT=net)
+BY_LEG = {
+    '001':[row('001','600519','贵州茅台',1.2,50e8,None)],
+    '003':[row('003','300750','宁德时代',-.5,30e8,None)],
+    '002':[row('002','00700','腾讯控股',-2.2,9e8,5.5e8)],
+    '004':[row('004','09988','阿里巴巴-W',.3,8e8,-3.1e8)],
 }
-
-
-def _fake_get(url, params=None, headers=None, timeout=None):
-    mt = params["filter"].split('"')[1]
-    return FakeResponse({"result": {"data": _BY_LEG[mt]}})
-
-
-def _mock_fetch(monkeypatch) -> None:
+@pytest.fixture
+def archived(monkeypatch):
     import requests
-    monkeypatch.setattr(requests, "get", _fake_get)
+    from lib import store
+    def deny(*args,**kwargs):raise AssertionError('render issued a network request')
+    monkeypatch.setattr(requests,'get',deny)
+    def read(group,name):
+        assert group=='china_connect'
+        rows=BY_LEG.get(name.removeprefix('top_active_'),[])
+        return pd.DataFrame({'rows_json':[json.dumps(rows)]},index=pd.to_datetime([DAY]))
+    monkeypatch.setattr(store,'read',read)
+    return _leaderboard()
 
+def render_snippet(start,end,lb):
+    src=(ROOT/'templates/china.html.j2').read_text()
+    piece=src[src.index(start):src.index(end,src.index(start))]
+    pre='{% macro t(en,zh="") %}{{ en }}{% endmacro %}{% import "_china_macro_evidence.html.j2" as cnm with context %}'
+    env=Environment(loader=ChoiceLoader([DictLoader({'test':pre+piece}),FileSystemLoader(ROOT/'templates')]))
+    return env.get_template('test').render(leaderboard=lb,
+        macro_evidence=prepare_view(build_snapshot(lambda g,n:None)),latest={'date':DAY},I={})
 
-# ---------------------------------------------------------------------------
-# builder contract: the shape the template actually consumes
-# ---------------------------------------------------------------------------
+def test_leaderboard_shape_matches_template_contract(archived):
+    lb=archived
+    assert lb.keys()>={'date','northbound_turnover','southbound_buy','southbound_sell'}
+    n=lb['northbound_turnover'][0]
+    assert {'name_zh','name','ticker','turnover','chg'}<=n.keys()
+    assert n['ticker']=='600519' and n['turnover']==50
+    assert lb['southbound_buy'][0]['net']==5.5
+    assert lb['southbound_sell'][0]['net']==-3.1
+    assert lb['transport']=='canonical_store_no_render_network'
 
-def test_leaderboard_shape_matches_template_contract(monkeypatch):
-    _mock_fetch(monkeypatch)
-    lb = _leaderboard()
-    assert lb is not None
-    assert lb.keys() >= {"date", "northbound_turnover", "southbound_buy", "southbound_sell"}
+def test_popup_dialog_renders_real_rows_from_the_real_leaderboard_output(archived):
+    html=render_snippet('<!-- Connect Flows dialog -->','<!-- Property dialog -->',archived)
+    assert '<table' in html
+    for token in ['贵州茅台','600519','腾讯控股','阿里巴巴-W','HKD','CNY',DAY]:assert token in html
+    assert 'Northbound turnover only' in html
 
-    nb_row = lb["northbound_turnover"][0]
-    assert {"name_zh", "name", "ticker", "turnover", "chg"} <= nb_row.keys()
-    assert nb_row["ticker"] == "600519", "northbound_turnover must sort by DEAL_AMT desc"
+def test_summary_card_top_buys_line_renders_from_the_real_leaderboard_output(archived):
+    html=render_snippet('{# Connect Flows card #}','{# What Changed:',archived)
+    assert '腾讯控股' in html and 'Disclosed buys' in html
 
-    sb_row = lb["southbound_buy"][0]
-    assert {"name_zh", "name", "net", "chg"} <= sb_row.keys()
-    assert sb_row["net"] > 0, "southbound_buy's top row must be a net BUYER"
+def test_popup_dialog_is_explicit_and_error_free_when_leaderboard_is_none():
+    html=render_snippet('<!-- Connect Flows dialog -->','<!-- Property dialog -->',None)
+    assert 'unavailable' in html.lower() and '腾讯控股' not in html
 
-    sell_row = lb["southbound_sell"][0]
-    assert sell_row["net"] < 0, "southbound_sell's top row must be a net SELLER"
+@pytest.mark.parametrize('age',[8,365])
+def test_summary_never_projects_aged_buyers_as_current(archived,age):
+    archived['southbound_buy'][0]['age_days']=age
+    assert '腾讯控股' not in render_snippet('{# Connect Flows card #}','{# What Changed:',archived)
 
-
-# ---------------------------------------------------------------------------
-# render half: the REAL template snippet, fed the REAL builder output
-# ---------------------------------------------------------------------------
-
-_T_MACRO = '{%- macro t(en, zh="") -%}{{ en }}{%- endmacro -%}\n'
-
-
-def _snippet(start_marker: str, end_marker: str) -> str:
-    src = (ROOT / "templates" / "china.html.j2").read_text()
-    start = src.index(start_marker)
-    end = src.index(end_marker, start)
-    return _T_MACRO + src[start:end]
-
-
-def _render(key: str, snippet: str, **ctx) -> str:
-    env = Environment(loader=DictLoader({key: snippet}), autoescape=False)
-    return env.get_template(key).render(**ctx)
-
-
-def test_popup_dialog_renders_real_rows_from_the_real_leaderboard_output(monkeypatch):
-    _mock_fetch(monkeypatch)
-    lb = _leaderboard()
-    snippet = _snippet("<!-- Connect Flows dialog -->", "<!-- Property dialog -->")
-    html = _render("dlg", snippet, leaderboard=lb, latest={"date": lb["date"]},
-                    I={"southbound": None})
-
-    assert "<table" in html, "the leaderboard tables must actually render"
-    assert "贵州茅台" in html and "600519" in html, "top northbound row must render"
-    assert "腾讯控股" in html, "top southbound-buy row must render"
-
-
-def test_summary_card_top_buys_line_renders_from_the_real_leaderboard_output(monkeypatch):
-    _mock_fetch(monkeypatch)
-    lb = _leaderboard()
-    snippet = _snippet("{# Connect Flows card #}", "{# Macro News card #}")
-    html = _render("card", snippet, leaderboard=lb, I={"southbound": None})
-
-    assert "腾讯控股" in html, "the 'Top buys' teaser needs r.name_zh populated"
-
-
-def test_popup_dialog_is_silent_but_error_free_when_leaderboard_is_none():
-    """The best-effort fetch degrades to None on failure; the popup must not crash."""
-    snippet = _snippet("<!-- Connect Flows dialog -->", "<!-- Property dialog -->")
-    html = _render("dlg", snippet, leaderboard=None, latest={"date": "2026-08-11"},
-                    I={"southbound": None})
-    assert "<table" not in html
+def test_builder_preserves_independent_venue_on_cache_failure(monkeypatch):
+    from lib import store
+    def read(group,name):
+        if name!='top_active_002':raise OSError('unreadable cache')
+        return pd.DataFrame({'rows_json':[json.dumps(BY_LEG['002'])]},index=pd.to_datetime([DAY]))
+    monkeypatch.setattr(store,'read',read)
+    lb=_leaderboard()
+    assert len(lb['cache_errors'])==3 and lb['southbound_buy'][0]['ticker']=='00700'
+    assert lb['northbound_turnover']==[] and lb['status']=='partial'
