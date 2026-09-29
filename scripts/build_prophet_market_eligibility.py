@@ -241,6 +241,113 @@ def read_publication_shadow(
         raise MarketEligibilityError("PUBLICATION_SOURCE_UNREADABLE") from exc
 
 
+class RegisteredNewLongPolicySource:
+    """Read explicitly selected approval bindings from the EXISTING Reflex registry.
+
+    Root and selected acceptance references belong to a trusted composition root,
+    never an HTTP payload, the alert text or a displayed risk score. Entries are
+    enrolled under `new_long_policy` only after their existing owner accepts the
+    exact rule. This reader registers nothing and changes no grants or firings.
+    No default source is installed or discovered from ambient request data.
+    """
+    __slots__ = ("_root", "_selection")
+
+    def __init__(self, *, root: Path, selected: Mapping[str, str]):
+        from engine.prophet_market_eligibility import _text
+        if not isinstance(selected, Mapping) or not selected or len(selected) > 128:
+            raise MarketEligibilityError("POLICY_REGISTRY_SELECTION_REQUIRED")
+        self._selection = tuple(sorted(
+            (_text(name, "POLICY_REFLEX_NAME_INVALID"), _text(ref, "POLICY_ACCEPTANCE_REF_INVALID"))
+            for name, ref in selected.items()))
+        self._root = Path(root).resolve()
+
+    def resolve(self, board: Mapping[str, Any], *, observed_at: str,
+                valid_until: str):
+        """One current registry read, one immutable decision snapshot.
+
+        force=True is the existing reader's freshness mechanism. An unavailable
+        selected binding withholds new risk; an unrelated registry entry is not
+        an implicit policy. Valid independently accepted rules remain restrictive
+        when another selected record is absent or malformed.
+        """
+        from copy import deepcopy
+        from engine.neuralweb.reflexes import load_registry
+        from engine.prophet_market_eligibility import (
+            NewLongRestrictionRead, SUPPORTED_BOARD_DEFINITIONS,
+            _digest, _text, bind_new_long_restrictions,
+        )
+        if not isinstance(board, Mapping) or board.get("board_definition") not in SUPPORTED_BOARD_DEFINITIONS:
+            raise MarketEligibilityError("POLICY_BOARD_DEFINITION_UNSUPPORTED")
+        start = _utc(observed_at, "POLICY_OBSERVATION_INVALID")
+        stop = _utc(valid_until, "POLICY_VALIDITY_INVALID")
+        if stop <= start:
+            raise MarketEligibilityError("POLICY_WINDOW_INVALID")
+        errors = []
+        records = []
+        expected = {}
+        try:
+            # Keep the native parser/path/family validation. No new parser/cache,
+            # dynamic collector or file watcher; force loads this named root now.
+            registry = deepcopy(load_registry(root=self._root, force=True))
+        except Exception:
+            registry = {}
+            errors.append("POLICY_REGISTRY_UNAVAILABLE")
+        for name, accepted_ref in self._selection:
+            try:
+                entry = registry.get(name)
+                binding = entry.get("new_long_policy") if isinstance(entry, dict) else None
+                fields = {"schema", "record", "record_sha256", "acceptance_ref",
+                          "source_expert_ref", "source_episode_ref", "evidence_refs"}
+                if not isinstance(binding, dict) or set(binding) != fields:
+                    raise MarketEligibilityError("POLICY_REGISTRY_BINDING_MISSING_OR_INVALID")
+                if binding["schema"] != "prophet.registry_policy_binding/v1":
+                    raise MarketEligibilityError("POLICY_REGISTRY_BINDING_SCHEMA")
+                if binding["acceptance_ref"] != accepted_ref:
+                    raise MarketEligibilityError("POLICY_REGISTRY_ACCEPTANCE_MISMATCH")
+                for key in ("acceptance_ref", "source_expert_ref", "source_episode_ref"):
+                    _text(binding[key], "POLICY_REGISTRY_REFERENCE_INVALID")
+                evidence = binding["evidence_refs"]
+                if (not isinstance(evidence, list) or not evidence or len(evidence) > 128
+                        or any(not isinstance(ref, str) for ref in evidence)
+                        or evidence != sorted(set(evidence))):
+                    raise MarketEligibilityError("POLICY_REGISTRY_EVIDENCE_INVALID")
+                for ref in evidence:
+                    _text(ref, "POLICY_REGISTRY_EVIDENCE_INVALID")
+                record = binding["record"]
+                if not isinstance(record, dict):
+                    raise MarketEligibilityError("POLICY_RECORD_SHAPE_INVALID")
+                pid = _text(record.get("policy_id"), "POLICY_ID_INVALID")
+                digest = _hash(binding["record_sha256"], "POLICY_REGISTRY_DIGEST_INVALID")
+                if digest != _digest(record):
+                    raise MarketEligibilityError("POLICY_REGISTRY_RECORD_CHANGED")
+                if pid in expected:
+                    raise MarketEligibilityError("POLICY_REGISTRY_DUPLICATE_POLICY")
+                # The existing owner validates meaning for each selected record;
+                # one malformed sibling must not erase another accepted refusal.
+                verified = bind_new_long_restrictions(
+                    board, [record], expected_rule_hashes={pid: digest},
+                    observed_at=observed_at, valid_until=valid_until)
+                if verified.errors or len(verified.records) != 1:
+                    raise MarketEligibilityError("POLICY_REGISTRY_RECORD_INVALID")
+                expected[pid] = digest
+                records.append(deepcopy(record))
+            except (MarketEligibilityError, TypeError, ValueError):
+                errors.append("POLICY_REGISTRY_SELECTED_BINDING_UNAVAILABLE")
+        if expected:
+            bound = bind_new_long_restrictions(
+                board, records, expected_rule_hashes=expected,
+                observed_at=observed_at, valid_until=valid_until,
+                source_available=not errors,
+            )
+            return NewLongRestrictionRead(bound.board_digest, bound.records,
+                bound.observed_at, bound.valid_until,
+                tuple(sorted(set(bound.errors) | set(errors))))
+        # No invented policy ID/hash: this is unknown permission, not a refusal
+        # attributed to a nonexistent rule and never an all-clear.
+        return NewLongRestrictionRead(_digest(board), (), observed_at, valid_until,
+            tuple(sorted(set(errors or ["POLICY_REGISTRY_NO_ACCEPTED_BINDING"]))))
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--board", required=True, type=Path)

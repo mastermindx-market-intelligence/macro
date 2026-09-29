@@ -5,52 +5,63 @@ model: sol
 prs:
 - 8141
 ended_because: ci_handoff
-mission: Bind named new-long restrictions into the native candidate-card presentation.
-  MISSION_COMPLETE:false; no production resolver, page-loop or delivery adoption.
-state_before: R11 published the dispositions but the shared card had no separate effective
-  restriction presentation.
+mission: Connect the concrete existing registry source through native new-long consumers
+  and repair actual CI coverage/dependency failures. MISSION_COMPLETE:false; not activated.
+state_before: Consumers accepted internal reads, but no concrete registry reader supplied
+  them; hosted CI exposed five declared coverage gaps, missing Jinja2 and missing
+  mobile receipts.
 changed:
-- path: engine/prophet_market_eligibility.py
-  what: Source-bound serializable card-context helper; no new endpoint or grant.
-- path: templates/_prophet_card.html.j2
-  what: Read the explicit context, replace Buy with paused/unavailable, retain research
-    and reference levels.
+- path: scripts/build_prophet_market_eligibility.py
+  what: Opt-in current canonical registry source with explicit accepted-ref selection
+    and conservative missing-record behavior.
+- path: scripts/build_prophet.py
+  what: Pass a concrete selected registry source through exact-board origination and
+    existing published accounting.
 - path: tests/test_prophet_market_eligibility.py
-  what: 18 native-template and bound-context cases in existing selected file.
-- path: research/grey_deer/GD6A_BOUND_CANDIDATE_CARD_2026-09-29.md
-  what: Actual consumer proof, precise refused lanes and remaining page/send integration.
+  what: 21 actual registry/builder/card tests.
+- path: tests/test_alert_delivery_drain.py
+  what: 4 canonical registry-to-native-drain tests, no live send.
+- path: .github/ci/legacy-jobs.yml
+  what: Five exact scope widenings plus Jinja2 in existing selected job; all other
+    parsed values retained.
+- path: research/grey_deer/GD6A_REGISTERED_POLICY_SOURCE_2026-09-29.md
+  what: Current exact source proof, nonactivation and native mobile-receipt blocker.
 verified:
-- claim: Source-bound native rendering distinguishes paused from unavailable and retains
-    research context.
+- claim: Concrete registry source reaches native main/publication/card/drain without
+    changing the unadopted path.
   command: python3.12 -m pytest tests/test_prophet_market_eligibility.py tests/test_prophet_market_eligibility_native.py
     tests/test_prophet_market_eligibility_publication.py tests/test_prophet_bridge.py
+    tests/test_alert_delivery_drain.py tests/test_alert_delivery_effect_boundary.py
     -q
-  result: 266 passed/79 subtests; 18 new card cases; no real grants or notifications.
-    log 5f9988af6c55efb413bcaf8a096455d752d071b7fd414b1cb5a3147c37ec14fa.
-- claim: The new shared-renderer connection is discriminating.
-  command: python3 release-r12/verify_render_connection.py
-  result: Disconnecting only policy consumption raises the intended assertion; source
-    restored.
+  result: 424passed/88subtests; 25new cases, isolated inputs; logSHA256 8c048da0cea7d87a9c7a19b42b3336068dd95884e9616a8943ea1547b3d170c8.
+- claim: Source tests distinguish stale registry reuse and disconnected native caller.
+  command: python3 release-r14/qualify_registry_source.py
+  result: Two intended assertion failures; original source restored and full suite
+    passed.
+- claim: Existing committed registry has no enrolled new-long policy.
+  command: Native load_registry(force=True) on exact committed bytes in isolated root.
+  result: 19 entries; zero new_long_policy bindings; no production source changed.
 unverified:
-- claim: Existing page/API/hydration/notification callers use the bound helper.
-  what_would_verify: Permitted native-source adoption plus current-board rendered/API
-    receipt and send-time permission proof.
-- claim: Current source release and arbitrary untrusted-template-context hardening.
-  what_would_verify: Exact new-head/current-base CI, genuine blocked-action recovery,
-    stronger validation where required and actual ordinary refresh.
+- claim: Hosted new-head acceptance and native mobile proof.
+  what_would_verify: Concluded required new-head checks plus genuine two-receipt p0b
+    regeneration after allowed render/browser action recovery.
+- claim: Production approved policy and ordinary API/page/send integration.
+  what_would_verify: Owner acceptance/enrollment and actual composition-root wiring,
+    entitled serving and normal refresh; no fixture can substitute.
 unresolved:
-- The delivery-drain helper inspection and page-loop/render-helper inspection were
-  refused before dispatch; no split/retry/proxy.
-- The extra defensive-shape and old-render comparison operation was refused and not
-  applied; only native-helper-generated context is supported.
-- Production policy grant/source, caller adoption, independent alarm and live delivery
-  proof remain absent.
+- Native mobile receipts remain absent for the shared-card change; guard not bypassed.
+- Combined native renderer dependency/browser inspection refused before dispatch,
+  no retry/split/proxy.
+- No enrolled policy grant, default CLI activation or ordinary page/hydration call
+  installed.
+- Previous page-loop/independent-alarm limitations remain; no source custody was delegated
+  to an unknown owner.
 next_actions:
-- Consume new-head CI and preserve the original carrier.
-- After genuine permission recovery, connect the actual page/API loop to the bound
-  view and prove current-board output.
-- Finish the existing delayed-buy sender permission check without changing effect-unknown
-  ownership.
+- Complete exact native mobile-proof generation only after legitimate action recovery,
+  then consume new-head CI.
+- Complete approved policy source selection and normal page/API composition with served-product
+  and refresh proof.
+- Keep current branch/semantic work; no ancestry-only update or repeated generic cleanup.
 do_not_redo:
 - Do not recreate GD-6A or add a second risk policy, identity, registry, collector,
   ledger or publisher.
@@ -69,6 +80,6 @@ danger_areas:
   a proxy retry.
 ---
 
-# R12 native card consumer
+# R14 connected-source continuation
 
-MISSION_COMPLETE:false. Source only, not production activation or automatic continuation.
+MISSION_COMPLETE:false. Primary lead remains responsible. Source qualification is not deployment, authority, independent review or automatic continuation.

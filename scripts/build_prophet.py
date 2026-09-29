@@ -1936,7 +1936,8 @@ def _load_futures_chg(asof: str) -> dict | None:
 # Main
 # ---------------------------------------------------------------------------
 
-def main(*, new_long_restrictions: Any = None, policy_read_at: str | None = None) -> None:
+def main(*, new_long_restrictions: Any = None, policy_read_at: str | None = None,
+         new_long_policy_source: Any = None) -> None:
     """Build native artifacts; an explicit internal policy read is opt-in only.
 
     No CLI argument accepts a rule, hash allowlist or approval. The registered
@@ -1979,12 +1980,20 @@ def main(*, new_long_restrictions: Any = None, policy_read_at: str | None = None
             "checkpoint and conditional workflow publisher"
         )
 
-    if args.showcase_only and (new_long_restrictions is not None or policy_read_at is not None):
+    if args.showcase_only and (new_long_restrictions is not None or policy_read_at is not None or new_long_policy_source is not None):
         from engine.prophet_market_eligibility import MarketEligibilityError
         raise MarketEligibilityError("POLICY_SHOWCASE_ONLY_UNSUPPORTED")
     if args.showcase_only:
         write_showcase()
         return None
+
+    if new_long_policy_source is not None:
+        from scripts.build_prophet_market_eligibility import RegisteredNewLongPolicySource
+        from engine.prophet_market_eligibility import MarketEligibilityError
+        if not isinstance(new_long_policy_source, RegisteredNewLongPolicySource):
+            raise MarketEligibilityError("POLICY_REGISTRY_SOURCE_TYPE_INVALID")
+        if new_long_restrictions is not None:
+            raise MarketEligibilityError("POLICY_MULTIPLE_SOURCES")
 
     policy_kwargs: dict[str, Any] = {}
     if new_long_restrictions is not None:
@@ -1998,7 +2007,7 @@ def main(*, new_long_restrictions: Any = None, policy_read_at: str | None = None
             policy_read_at = _pd.now(_ptz.utc).isoformat(timespec="microseconds").replace("+00:00", "Z")
         _utc(policy_read_at, "POLICY_READ_CLOCK_INVALID")
         policy_kwargs = {"new_long_restrictions": new_long_restrictions, "policy_read_at": policy_read_at}
-    elif policy_read_at is not None:
+    elif policy_read_at is not None and new_long_policy_source is None:
         from engine.prophet_market_eligibility import MarketEligibilityError
         raise MarketEligibilityError("POLICY_CLOCK_WITHOUT_READ")
 
@@ -2032,6 +2041,19 @@ def main(*, new_long_restrictions: Any = None, policy_read_at: str | None = None
     source_mixed_vintage = bool(
         _source_panel.get("mixed_vintage")
     )
+
+    if new_long_policy_source is not None:
+        from datetime import datetime as _rpd, timezone as _rptz
+        from scripts.build_prophet_market_eligibility import _publication_window
+        from engine.prophet_market_eligibility import _utc
+        if policy_read_at is None:
+            policy_read_at = _rpd.now(_rptz.utc).isoformat(timespec="microseconds").replace("+00:00", "Z")
+        action_now = _utc(policy_read_at, "POLICY_READ_CLOCK_INVALID")
+        _, _, cutoff = _publication_window(action_now)
+        new_long_restrictions = new_long_policy_source.resolve(
+            _standouts_doc, observed_at=policy_read_at,
+            valid_until=cutoff.isoformat(timespec="seconds").replace("+00:00", "Z"))
+        policy_kwargs = {"new_long_restrictions": new_long_restrictions, "policy_read_at": policy_read_at}
 
     if new_long_restrictions is not None:
         # Verify the one frozen board before initializing/advancing native ledgers.

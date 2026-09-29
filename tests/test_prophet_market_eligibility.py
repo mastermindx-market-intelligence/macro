@@ -649,7 +649,7 @@ class TestNamedPolicyPublication(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.sequence = 0
 
-    def build(self, context=None, *, clock=None, alter_stats=None, legacy_clock=False, seed_root=None):
+    def build(self, context=None, *, clock=None, alter_stats=None, legacy_clock=False, seed_root=None, registry_source=None):
         from contextlib import ExitStack
         from datetime import datetime, timezone
         from unittest.mock import patch
@@ -700,7 +700,9 @@ class TestNamedPolicyPublication(unittest.TestCase):
             st.enter_context(patch.object(bp,"write_showcase",side_effect=lambda:showcase_real(out_path=root/"site/prophet/showcase.json")))
             st.enter_context(patch("engine.thetadata_store.resolve_thetadata_store",return_value=None))
             st.enter_context(patch.object(sys,"argv",["build_prophet","--date","2026-09-28"]))
-            if context is None and not legacy_clock:
+            if registry_source is not None:
+                bp.main(new_long_policy_source=registry_source,new_long_restrictions=context,policy_read_at=clock or self.fixture.now)
+            elif context is None and not legacy_clock:
                 bp.main()
             else:
                 bp.main(new_long_restrictions=context,policy_read_at=clock or self.fixture.now)
@@ -906,3 +908,170 @@ class TestBoundCandidateCard(unittest.TestCase):
   out=self.render(self.context());self.assertIn('&lt;script&gt;',out);self.assertNotIn('<script>alert(1)</script>',out)
  def test_default_card_still_renders_native_information(self):
   cx=m.new_long_candidate_card_context(self.card,self.candidate,self.board);self.assertEqual(cx,self.card);out=self.render(cx);self.assertIn('pv-buy',out);self.assertIn('pv-featured',out);self.assertNotIn('pv-policy-note',out)
+
+
+class TestRegisteredNewLongPolicySource(unittest.TestCase):
+    """Native registry and builder with explicitly fictional local approvals."""
+    def setUp(self):
+        from scripts.build_prophet_market_eligibility import RegisteredNewLongPolicySource
+        from engine.neuralweb import reflexes
+        self.h = TestNamedPolicyPublication()
+        self.h.setUp()
+        self.addCleanup(self.h.doCleanups)
+        self.f = self.h.fixture
+        self.root = self.h.root / "registry"
+        self.file = self.root / "config/reflexes.yml"
+        self.file.parent.mkdir(parents=True)
+        self.old_cache = reflexes._REGISTRY_CACHE
+        self.addCleanup(setattr, reflexes, "_REGISTRY_CACHE", self.old_cache)
+        self.selected = {"fixture_pause":"fixture-acceptance-not-live"}
+        self.source = RegisteredNewLongPolicySource(root=self.root,selected=self.selected)
+        self.write()
+
+    def binding(self, record=None):
+        from copy import deepcopy
+        r = deepcopy(self.f.rule if record is None else record)
+        return {"schema":"prophet.registry_policy_binding/v1","record":r,
+                "record_sha256":m._digest(r),"acceptance_ref":"fixture-acceptance-not-live",
+                "source_expert_ref":"fixture-expert","source_episode_ref":"fixture-episode",
+                "evidence_refs":["fixture-evidence"]}
+
+    def write(self, binding=None, *, entries=None):
+        import yaml
+        if entries is None:
+            entries={"fixture_pause":{"claim_family":"reflex.fixture_pause",
+                    "new_long_policy":self.binding() if binding is None else binding}}
+        self.file.write_text(yaml.safe_dump({"reflexes":entries},sort_keys=False))
+
+    def resolve(self):
+        return self.source.resolve(self.f.board,observed_at=self.f.now,valid_until="2026-09-28T21:00:00Z")
+
+    def test_native_registry_reaches_actual_builder_and_index(self):
+        result=self.h.build(registry_source=self.source)
+        self.assertEqual(result["plans"],{})
+        intake=result["index"]["intake"]
+        self.assertEqual(intake["market_policy_denied"],2)
+        self.assertEqual(intake["market_policy_unavailable"],0)
+        self.assertEqual(intake["market_policy_dispositions"][0]["policy_ids"],[self.f.rule["policy_id"]])
+
+    def test_default_native_builder_never_reads_unselected_registry(self):
+        from engine.neuralweb import reflexes
+        with patch.object(reflexes,"load_registry",side_effect=AssertionError("no opt-in")):
+            result=self.h.build()
+        self.assertEqual(len(result["plans"]),2)
+
+    def test_existing_canonical_loader_forced_on_each_read(self):
+        from engine.neuralweb import reflexes
+        real=reflexes.load_registry
+        with patch.object(reflexes,"load_registry",wraps=real) as loader:
+            self.resolve();self.resolve()
+        self.assertEqual(loader.call_count,2)
+        self.assertTrue(all(call.kwargs["force"] is True for call in loader.call_args_list))
+
+    def test_same_path_revocation_is_seen_without_restarting(self):
+        original=self.resolve()
+        binding=self.binding();binding["record"]["state"]="REVOKED"
+        binding["record_sha256"]=m._digest(binding["record"]);self.write(binding)
+        current=self.resolve()
+        self.assertEqual(original.decision("AAA",read_at=self.f.now)["state"],"DENY_NEW_LONG")
+        self.assertEqual(current.decision("AAA",read_at=self.f.now)["state"],"NO_POLICY_CONSTRAINT")
+
+    def test_root_switch_cannot_borrow_other_registry_cache(self):
+        from engine.neuralweb import reflexes
+        import yaml
+        other=self.h.root/"other/config/reflexes.yml";other.parent.mkdir(parents=True)
+        other.write_text(yaml.safe_dump({"reflexes":{"unrelated":{}}}))
+        reflexes.load_registry(root=other.parents[1],force=True)
+        self.assertEqual(self.resolve().decision("AAA",read_at=self.f.now)["state"],"DENY_NEW_LONG")
+
+    def test_deleted_registry_withholds_not_uses_cached_allow(self):
+        binding=self.binding();binding["record"]["state"]="REVOKED";binding["record_sha256"]=m._digest(binding["record"]);self.write(binding)
+        self.assertEqual(self.resolve().decision("AAA",read_at=self.f.now)["state"],"NO_POLICY_CONSTRAINT")
+        self.file.unlink()
+        self.assertEqual(self.resolve().decision("AAA",read_at=self.f.now)["state"],"UNAVAILABLE")
+
+    def test_missing_selected_rule_is_unavailable_in_published_index(self):
+        self.write(entries={})
+        result=self.h.build(registry_source=self.source)
+        self.assertEqual(result["index"]["intake"]["market_policy_unavailable"],2)
+        self.assertEqual(result["index"]["intake"]["market_policy_denied"],0)
+        self.assertEqual(result["plans"],{})
+
+    def test_legacy_display_only_entry_is_not_promoted(self):
+        self.write(entries={"fixture_pause":{"tier":"shadow","push_tier":False,"graded":False}})
+        decision=self.resolve().decision("AAA",read_at=self.f.now)
+        self.assertEqual(decision["state"],"UNAVAILABLE")
+        self.assertEqual(decision["rules"],[])
+
+    def test_record_digest_mismatch_is_unavailable(self):
+        b=self.binding();b["record"]["state"]="REVOKED";self.write(b)
+        self.assertEqual(self.resolve().decision("AAA",read_at=self.f.now)["state"],"UNAVAILABLE")
+
+    def test_wrong_acceptance_reference_is_not_adopted(self):
+        b=self.binding();b["acceptance_ref"]="different-approval";self.write(b)
+        self.assertEqual(self.resolve().decision("AAA",read_at=self.f.now)["state"],"UNAVAILABLE")
+
+    def test_missing_episode_or_evidence_withholds(self):
+        for key,value in [("source_episode_ref",""),("source_expert_ref",""),("evidence_refs",[]),
+                          ("schema","unrecognized"),("evidence_refs",["z","a"])]:
+            with self.subTest(key=key,value=value):
+                b=self.binding();b[key]=value;self.write(b)
+                self.assertEqual(self.resolve().decision("AAA",read_at=self.f.now)["state"],"UNAVAILABLE")
+
+    def test_corrupt_registry_is_safe_unavailable(self):
+        self.file.write_text("reflexes: [invalid yaml")
+        self.assertEqual(self.resolve().decision("AAA",read_at=self.f.now)["state"],"UNAVAILABLE")
+
+    def test_selected_map_is_snapshotted(self):
+        self.selected.clear()
+        self.assertEqual(self.resolve().decision("AAA",read_at=self.f.now)["state"],"DENY_NEW_LONG")
+
+    def test_registry_and_board_are_not_mutated_by_resolve(self):
+        from copy import deepcopy
+        raw=self.file.read_bytes();board=deepcopy(self.f.board);self.resolve()
+        self.assertEqual(self.file.read_bytes(),raw);self.assertEqual(self.f.board,board)
+
+    def test_one_absent_selected_rule_cannot_lift_other(self):
+        from scripts.build_prophet_market_eligibility import RegisteredNewLongPolicySource
+        self.source=RegisteredNewLongPolicySource(root=self.root,selected={**self.selected,"missing":"other-approved-ref"})
+        d=self.resolve().decision("AAA",read_at=self.f.now)
+        self.assertEqual(d["state"],"DENY_NEW_LONG")
+        self.assertEqual(d["policy_ids"],[self.f.rule["policy_id"]])
+        self.assertTrue(d["errors"])
+
+    def test_wrong_board_scope_does_not_make_a_rule_applicable(self):
+        b=self.binding();b["record"]["board_definition"]="us_prophet_v2_fallback"
+        b["record_sha256"]=m._digest(b["record"]);self.write(b)
+        self.assertEqual(self.resolve().decision("AAA",read_at=self.f.now)["state"],"UNAVAILABLE")
+
+    def test_two_internal_sources_cannot_silently_override(self):
+        with self.assertRaisesRegex(m.MarketEligibilityError,"POLICY_MULTIPLE_SOURCES"):
+            self.h.build(self.f.bind(),registry_source=self.source)
+
+    def test_wrong_internal_source_type_refused(self):
+        with self.assertRaisesRegex(m.MarketEligibilityError,"POLICY_REGISTRY_SOURCE_TYPE_INVALID"):
+            self.h.build(registry_source={"rules":[]})
+
+    def test_no_selection_refuses_at_composition_time(self):
+        from scripts.build_prophet_market_eligibility import RegisteredNewLongPolicySource
+        with self.assertRaises(m.MarketEligibilityError):
+            RegisteredNewLongPolicySource(root=self.root,selected={})
+
+    def test_registered_pause_reaches_actual_native_card(self):
+        import jinja2
+        read=self.resolve();candidate=self.f.board["buy"][0]
+        card={"tk":"AAA","mkt":"US","verb":"buy","name":"Fixture","href":"stocks/AAA.html",
+              "stage":3,"edge":99,"zone_kind":"active","zone_lo":"99","zone_hi":"101"}
+        out=m.new_long_candidate_card_context(card,board=self.f.board,candidate=candidate,
+             restrictions=read,read_at=self.f.now)
+        env=jinja2.Environment(loader=jinja2.FileSystemLoader(ROOT/"templates"),autoescape=True)
+        html=str(env.get_template("_prophet_card.html.j2").module.pv_card(out))
+        self.assertIn("Paused",html);self.assertNotIn('pv-buy',html)
+        self.assertIn("AAA",html);self.assertIn("99",html)
+
+
+    def test_malformed_rule_fields_return_unavailable_without_crashing(self):
+        for key,value in [("authority_basis",[]),("action",{}),("state",["ACTIVE"]),("action","AUTO_EXIT")]:
+            with self.subTest(key=key,value=value):
+                b=self.binding();b["record"][key]=value;b["record_sha256"]=m._digest(b["record"]);self.write(b)
+                self.assertEqual(self.resolve().decision("AAA",read_at=self.f.now)["state"],"UNAVAILABLE")

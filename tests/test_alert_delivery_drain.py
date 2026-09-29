@@ -1395,3 +1395,69 @@ class TestNewLongSendBoundary:
         result,fake,sent=self.execute(monkeypatch,row=row,users={"u1":user},
              resolver=lambda row,now:self.bound(row,state="REVOKED"))
         assert sent==[] and result.suppressed_n==1
+
+
+class TestRegisteredPolicyDelivery:
+    """Real canonical registry reads through the existing drain; no live messages."""
+    def prepare(self,tmp_path,monkeypatch):
+        import yaml
+        from engine import prophet_market_eligibility as m
+        from engine.neuralweb import reflexes
+        from scripts.build_prophet_market_eligibility import RegisteredNewLongPolicySource
+        helper=TestNewLongSendBoundary();board=helper.board()
+        path=tmp_path/"config/reflexes.yml";path.parent.mkdir(parents=True)
+        monkeypatch.setattr(reflexes,"_REGISTRY_CACHE",None)
+        source=RegisteredNewLongPolicySource(root=tmp_path,selected={"fixture_pause":"fixture-accepted"})
+        def write(state):
+            record=helper.rule(state)
+            binding={"schema":"prophet.registry_policy_binding/v1","record":record,
+                "record_sha256":m._digest(record),"acceptance_ref":"fixture-accepted",
+                "source_expert_ref":"fixture-expert","source_episode_ref":"fixture-episode",
+                "evidence_refs":["fixture-evidence"]}
+            path.write_text(yaml.safe_dump({"reflexes":{"fixture_pause":{
+                "claim_family":"reflex.fixture_pause","new_long_policy":binding}}}))
+        def resolver(row,now):
+            stamp=now  # existing drain passes its freshly sampled UTC ISO string
+            read=source.resolve(board,observed_at=stamp,valid_until="2026-09-29T21:00:00Z")
+            candidate=next(c for c in board["buy"] if c["ticker"]==row["payload"]["ticker"])
+            return m.bind_new_long_alert(row,board=board,candidate=candidate,
+                restrictions=read,intent="NEW_LONG_RECOMMENDATION")
+        return helper,path,write,resolver
+
+    def test_same_queued_alert_rechecks_registry_after_revocation(self,tmp_path,monkeypatch):
+        helper,path,write,resolver=self.prepare(tmp_path,monkeypatch)
+        write("ACTIVE");row=_row()
+        result,fake,sent=helper.execute(monkeypatch,row=row,resolver=resolver)
+        assert not sent and fake.patches==[] and result.policy_withheld_n==1 and result.policy_unavailable_n==0
+        write("REVOKED")
+        result,fake,sent=helper.execute(monkeypatch,row=row,resolver=resolver)
+        assert len(sent)==1 and result.fired_n==1 and result.policy_withheld_n==0
+
+    def test_new_rule_is_seen_between_two_messages_in_one_batch(self,tmp_path,monkeypatch):
+        helper,path,write,resolver=self.prepare(tmp_path,monkeypatch)
+        write("REVOKED");calls=[]
+        def changing(row,now):
+            if calls:write("ACTIVE")
+            calls.append(row["fire_event_id"])
+            return resolver(row,now)
+        rows=[_row(fire_event_id="fixture-first"),_row(fire_event_id="fixture-second")]
+        result,fake,sent=helper.execute(monkeypatch,rows=rows,resolver=changing)
+        assert len(sent)==1 and sent[0]["fire_event_id"]=="fixture-first"
+        assert calls==["fixture-first","fixture-second"]
+        assert result.policy_withheld_n==1 and result.policy_unavailable_n==0
+        assert len(fake.patches)==1
+
+    def test_deleted_registry_cannot_reuse_prior_permission(self,tmp_path,monkeypatch):
+        helper,path,write,resolver=self.prepare(tmp_path,monkeypatch)
+        write("REVOKED")
+        resolver(_row(),"2026-09-29T15:00:00Z");path.unlink()
+        result,fake,sent=helper.execute(monkeypatch,resolver=resolver)
+        assert not sent and not fake.patches
+        assert result.policy_withheld_n==result.policy_unavailable_n==1
+
+    def test_registry_backed_dry_run_does_not_write_or_send(self,tmp_path,monkeypatch):
+        helper,path,write,resolver=self.prepare(tmp_path,monkeypatch)
+        write("ACTIVE");before=path.read_bytes()
+        result,fake,sent=helper.execute(monkeypatch,resolver=resolver,dry=True)
+        assert not sent and not fake.patches and not fake.runs
+        assert result.policy_withheld_n==1 and path.read_bytes()==before
