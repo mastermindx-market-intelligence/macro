@@ -140,16 +140,33 @@ waves:
   - id: W7
     title: >
       Arm-LAST fleet law, then the fetch-first fix its own verifier proved it needed
-    status: awaiting_ci
+    status: done
     pr: 8170
     depends_on:
       - W5
+  - id: W8
+    title: >
+      The verifier's real failure mechanism — the merge's own success (deleting the head branch)
+      is what breaks the check that verifies the merge
+    status: done
+    pr: 8171
+    depends_on:
+      - W7
+  - id: W9
+    title: >
+      The sweeper states its REACH and prints its refusals — measured 224 of 789, 28.4%
+    status: awaiting_ci
+    pr: 8172
+    depends_on:
+      - W4
 next_action: >
   Put the `needs_ceo` options to the operator, re-ranked by W6's measurement: the CI runner git
   stores (177.26 GiB, 87% `.git`) are now clearly the largest real lever, and the Full Disk Access
   grant is worth asking for on the broken safety net rather than on bytes — it frees 1.81 GiB.
   Ratify the `human_driven_roots` deny-list first regardless; it is purely protective and can delete
-  nothing.
+  nothing. W9 makes the scope gap legible (the report now prints `checked 224 of 789`) but closes
+  none of it — that is still the three unratified acts, and legibility is a precondition for
+  ratifying them, never a substitute.
 artifacts:
   - research/WORKTREE_GC_POLICY.md
   - scripts/worktree_gc.py
