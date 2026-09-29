@@ -53,6 +53,9 @@ from jsonschema import Draft202012Validator, FormatChecker
 from engine.ledger_lane import nightly_advance_enabled
 from engine.options_signal_episode_contract import (
     EpisodeSourceContractError,
+    SESSION_OUTCOME_PARTS_DIRNAME,
+    session_outcome_logical_bytes as _contract_session_outcome_logical_bytes,
+    session_outcome_part_paths as _contract_session_outcome_part_paths,
     validate_episode_pit,
     validate_h60_outcome_join,
     validate_session_outcome_join,
@@ -79,6 +82,8 @@ TIMESTAMP_BASIS = "aggregate_window_start_utc"
 EPISODE_REL = Path("options_signal_episode") / "episodes.jsonl"
 OUTCOME_REL = Path("options_signal_episode") / "outcomes_h60.jsonl"
 SESSION_OUTCOME_REL = Path("options_signal_episode") / "outcomes_session.jsonl"
+SESSION_OUTCOME_PART_MAX_BYTES = 48 * 1024 * 1024
+_SESSION_OUTCOME_PART_RE = re.compile(r"^part-(\d{6})\.jsonl$")
 CAMPAIGN_REL = Path("options_signal_episode") / "campaigns.jsonl"
 
 CAMPAIGN_RULE_ID = "exact_contract_first_threshold_prefix/v1"
@@ -2693,6 +2698,25 @@ def load_jsonl(path: str | Path) -> list[dict[str, Any]]:
     return _decode_jsonl(raw, p)
 
 
+def _session_outcome_part_paths(path: Path) -> list[Path]:
+    try:
+        return _contract_session_outcome_part_paths(path)
+    except EpisodeSourceContractError as exc:
+        raise ContractError(str(exc)) from exc
+
+
+def session_outcome_logical_bytes(path: str | Path) -> bytes:
+    try:
+        return _contract_session_outcome_logical_bytes(Path(path))
+    except EpisodeSourceContractError as exc:
+        raise ContractError(str(exc)) from exc
+
+
+def load_session_outcomes(path: str | Path) -> list[dict[str, Any]]:
+    base = Path(path)
+    return _decode_jsonl(session_outcome_logical_bytes(base), base)
+
+
 def _decode_jsonl(raw: bytes, path: Path) -> list[dict[str, Any]]:
     if not raw:
         return []
@@ -2831,13 +2855,136 @@ def append_outcomes(path: Path, rows: Iterable[dict[str, Any]]) -> int:
 
 
 def append_session_outcomes(path: Path, rows: Iterable[dict[str, Any]]) -> int:
-    return _append_validated(
-        path,
-        rows,
-        id_field="outcome_id",
-        semantic_key=lambda row: (row.get("episode_id"), row.get("horizon")),
-        validator=validate_session_outcome,
-    )
+    """Append to one logical ledger while keeping each new Git blob bounded.
+
+    The historical ``outcomes_session.jsonl`` bytes are the immutable prefix.
+    Once that prefix reaches the physical part ceiling, future canonical rows are
+    appended to contiguous ``outcomes_session_parts/part-NNNNNN.jsonl`` files.
+    Readers concatenate those bytes under the original logical path/ordinal
+    contract, so this changes storage shape only — never identity or semantics.
+    """
+    if not nightly_advance_enabled():
+        return -1
+    candidates = list(rows)
+    for row in candidates:
+        validate_session_outcome(row)
+    parts_dir = path.parent / SESSION_OUTCOME_PARTS_DIRNAME
+    if not path.exists() and parts_dir.exists():
+        # Do not create a fresh base in front of orphaned physical extensions.
+        # The shared reader owns the exact topology error text and validation.
+        session_outcome_logical_bytes(path)
+    if not candidates and not path.exists():
+        return 0
+    _ensure_directory_durable(path.parent)
+
+    # The canonical base inode remains the one writer lock even after rollover.
+    # This preserves the existing single-writer serialization point.
+    with path.open("a+b") as lock_fh:
+        fcntl.flock(lock_fh.fileno(), fcntl.LOCK_EX)
+        try:
+            lock_fh.flush()
+            os.fsync(lock_fh.fileno())
+            _fsync_directory(path.parent)
+            existing_rows = load_session_outcomes(path)
+            by_id: dict[object, bytes] = {}
+            by_semantic: dict[object, bytes] = {}
+            for existing in existing_rows:
+                validate_session_outcome(existing)
+                canonical = _canonical_bytes(existing)
+                identity = existing.get("outcome_id")
+                semantic = (existing.get("episode_id"), existing.get("horizon"))
+                if identity in by_id and by_id[identity] != canonical:
+                    raise ContractError(
+                        f"conflicting existing payload for outcome_id={identity!r}"
+                    )
+                if semantic in by_semantic and by_semantic[semantic] != canonical:
+                    raise ContractError(
+                        f"conflicting existing payload for semantic key={semantic!r}"
+                    )
+                by_id[identity] = canonical
+                by_semantic[semantic] = canonical
+
+            fresh_lines: list[bytes] = []
+            for row in candidates:
+                canonical = _canonical_bytes(row)
+                identity = row.get("outcome_id")
+                semantic = (row.get("episode_id"), row.get("horizon"))
+                prior_id = by_id.get(identity)
+                prior_semantic = by_semantic.get(semantic)
+                if prior_id is not None or prior_semantic is not None:
+                    if ((prior_id is None or prior_id == canonical)
+                            and (prior_semantic is None or prior_semantic == canonical)):
+                        continue
+                    raise ContractError(
+                        f"conflicting append payload for outcome_id={identity!r}, "
+                        f"semantic key={semantic!r}"
+                    )
+                by_id[identity] = canonical
+                by_semantic[semantic] = canonical
+                line = canonical + b"\n"
+                if len(line) > SESSION_OUTCOME_PART_MAX_BYTES:
+                    raise ContractError("one session outcome row exceeds the physical part ceiling")
+                fresh_lines.append(line)
+            if not fresh_lines:
+                return 0
+
+            parts = _session_outcome_part_paths(path)
+            parts_dir = path.parent / SESSION_OUTCOME_PARTS_DIRNAME
+            base_size = path.stat().st_size
+            active_part = parts[-1] if parts else None
+            active_part_size = active_part.stat().st_size if active_part is not None else 0
+            if active_part_size > SESSION_OUTCOME_PART_MAX_BYTES:
+                raise ContractError("existing session outcome part exceeds the physical ceiling")
+
+            # Plan row-boundary rollover first, then write/fsync once per physical
+            # file.  A crash may expose a valid strict prefix, which the next
+            # checkpoint-last retry accepts idempotently; it can never expose a
+            # torn row or a rewritten historical byte.
+            base_batch = bytearray()
+            part_batches: dict[Path, bytearray] = {}
+            for line in fresh_lines:
+                if (
+                    active_part is None
+                    and base_size <= SESSION_OUTCOME_PART_MAX_BYTES
+                    and base_size + len(line) <= SESSION_OUTCOME_PART_MAX_BYTES
+                ):
+                    base_batch.extend(line)
+                    base_size += len(line)
+                    continue
+
+                if active_part is None:
+                    _ensure_directory_durable(parts_dir)
+                    active_part = parts_dir / "part-000001.jsonl"
+                    active_part_size = 0
+                elif active_part_size + len(line) > SESSION_OUTCOME_PART_MAX_BYTES:
+                    match = _SESSION_OUTCOME_PART_RE.fullmatch(active_part.name)
+                    if match is None:
+                        raise ContractError("active session outcome part name is invalid")
+                    active_part = parts_dir / f"part-{int(match.group(1)) + 1:06d}.jsonl"
+                    active_part_size = 0
+                part_batches.setdefault(active_part, bytearray()).extend(line)
+                active_part_size += len(line)
+
+            if base_batch:
+                lock_fh.seek(0, os.SEEK_END)
+                lock_fh.write(base_batch)
+                lock_fh.flush()
+                os.fsync(lock_fh.fileno())
+
+            for part, payload in part_batches.items():
+                existed = part.exists()
+                with part.open("a+b") as part_fh:
+                    part_fh.seek(0, os.SEEK_END)
+                    if part_fh.tell() + len(payload) > SESSION_OUTCOME_PART_MAX_BYTES:
+                        raise ContractError("session outcome part would exceed the physical ceiling")
+                    part_fh.write(payload)
+                    part_fh.flush()
+                    os.fsync(part_fh.fileno())
+                if not existed:
+                    _fsync_directory(parts_dir)
+            return len(fresh_lines)
+        finally:
+            fcntl.flock(lock_fh.fileno(), fcntl.LOCK_UN)
 
 
 def append_campaigns(path: Path, rows: Iterable[dict[str, Any]]) -> int:
