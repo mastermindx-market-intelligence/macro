@@ -853,6 +853,64 @@ remaining headroom for a photo library that is still growing — whose only othe
 fleet should plant worktrees on this volume at all is an operator question, and it is a better one
 than any reclaim gate.
 
+### The INTERNAL disk — where the agent bytes actually were, and the only real lever in §9
+
+Seven of the eight pools above are on the two external volumes, and seven of them are null. The
+internal data volume — the tighter one, **the volume that actually hit ENOSPC twice** — had never
+been censused at all. `du -sxk /` (one filesystem): `/Users` 1089.56 GiB, **`/private` 652.90**,
+`/Library` 95.38, `/Applications` 68.27, `/opt` 10.83. That total, 1917.93 GiB, exceeds `df`'s 1501
+GiB used because `du` double-counts APFS clones and hard links, so **treat it as an upper bound and
+a ranking, never an attribution.** Inside it, two agent/CI pools no policy document mentions:
+
+**Ninth pool — `/private/tmp/claude-501`, 160.43 GiB, of which 0.02 GiB is provably dead.** The
+session scratchpad root, 473 keys, and the next entry in all of `/private/tmp` is 0.68 GiB. Each key
+is named after the checkout its sessions started in, and **that name is an inverted liveness
+signal**: the largest key (81.24 GiB) names a checkout that no longer exists while its one session
+— the active FINANCE INTELLIGENCE seat — had written 4 minutes before measurement, because a session
+keeps its original key for life. Classified by the signal §0 already calls STRONG, the session
+transcript mtime under `~/.claude/projects/<the same key>/<uuid>.jsonl`:
+
+| class | keys | GiB | share |
+|---|---:|---:|---:|
+| **LIVE <2h** | 6 | **103.91** | **64.8%** |
+| RECENT <24h | 7 | 0.17 | 0.1% |
+| IDLE 1–7d | 60 | 22.21 | 13.8% |
+| **COLD ≥7d** | 48 | **0.02** | **0.0%** |
+| NO TRANSCRIPT — undecidable | 61 | 28.39 | 17.7% |
+| no project key (mostly the shared `bash-edit-diff` cache) | 291 | 5.73 | 3.6% |
+
+**The bytes are in live sessions and the dead keys are empty**, so an age-gated sweep here frees
+0.02 GiB and any widening that frees real space walks into a live seat — the 2026-09-26 incident
+class again, now against a target with no lock, no registry entry and no `git status` to refuse on.
+That 81.24 GiB is **nine `.git`-less 8.63 GiB full repo trees** (77.7 GiB), the never-measured cost
+of this repo's own "prove it in main's bytes" discipline; with no HEAD,
+`DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM` cannot reach them at all, exactly like the 318 detached
+trees. The cheap fix is a session convention — one reusable comparison tree, removed when the claim
+is filed — not a sweeper.
+`DSC:A-SCRATCHPADS-KEYED-CHECKOUT-CAN-BE-GONE-WHILE-ITS-SESSION-IS-LIVE`.
+
+**Tenth pool — the CI runners' own stores, 177.26 GiB, and 87% of a checkout is `.git`.**
+`actions-runner-2` 85.10 GiB, `-3` 68.18, `-4` 15.84, the original 8.14 — more than **3× the entire
+fleet worktree footprint on `/Volumes/Worktrees`**. On the idle runner-3: checkout 66.34 GiB, `.git`
+**57.70**, working tree 8.6; **136 packs / 57.20 GiB** against 0.47 GiB loose. `actions-runner-2`
+holds **two** base-size packs, 31.63 + 28.61 GiB — two copies of the same history in one store.
+`_temp` is 0.00 GiB, so the runners already clean the thing everyone assumes is the problem.
+
+**This is where R8's own ratio reverses.** Sparseness omits `data`/`site`/`mockups`/`verify_shots`,
+which are 87% of an agent WORKING TREE — and on a runner those same four are 8.02 GiB of 66.34,
+**12%**, because there the 87% is the store. So the lever is repack/re-clone, not sparseness, and
+**it is an operator act**: a `Runner.Worker` was live during measurement, a mid-job repack can break
+the job, and an aggressive repack on a 4-core box contends directly with the nightly's ~67-minute
+render budget. Nothing is at risk either way — a runner store is 100% re-fetchable from `origin` —
+which is precisely why it is the one bounded, reversible reclaim in this whole triage.
+`DSC:A-RUNNER-CHECKOUT-IS-87-PERCENT-GIT-STORE-SO-SPARSENESS-CANNOT-REACH-IT`.
+
+**The standing lesson of ten pools: the bytes were never where the program was looking.** The
+ENOSPC remediation aimed at agent worktrees; the agent-attributable bytes on the volume that
+crashed are ~337 GiB in two places §9 never named, and the only one with a lever is the one nobody
+calls a worktree. Attribute the target volume, and check whether its bytes are tree or store,
+before proposing any further storage work here.
+
 
 
 
