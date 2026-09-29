@@ -159,19 +159,20 @@ STANDOUTS_ENUM_FIELDS = ("lane", "state", "entry_signal")
 
 try:
     from engine.prophet_bridge import REFUSAL_ORDER
+    from engine.prophet_bridge import REFUSAL_COPY
     from engine.us_candidate_lanes import declared_reasons
-except (ImportError, RuntimeError) as _exc:
+    from scripts.build_prophet import LIFECYCLE_CELLS
+except (ImportError, RuntimeError, TypeError, ValueError) as _exc:
     REFUSAL_ORDER = ()
+    REFUSAL_COPY = {}
     _LANE_IMPORT_ERROR = str(_exc)
     declared_reasons = lambda: frozenset()
+    LIFECYCLE_CELLS = ()
 else:
     _LANE_IMPORT_ERROR = ""
 
 RUNTIME_DECLARED_REASON_VOCABULARY = frozenset(declared_reasons())
-LIFECYCLE_VOCABULARY = frozenset({
-    "watch", "ready", "entered", "delivering", "overtime",
-    "invalidated", "resolved",
-})
+LIFECYCLE_VOCABULARY = frozenset(LIFECYCLE_CELLS)
 PLAN_RELATION_VOCABULARY = frozenset({
     "none", "related_security", "unknown",
 })
@@ -1129,7 +1130,9 @@ def _check_j9(soup: BeautifulSoup, index: dict[str, Any],
         fails.append("#plv-asof missing")
     else:
         state = str(plv.get("data-plv-asof-state", ""))
-        text = plv.get_text(" ", strip=True)
+        locale_node = plv.select_one(
+            ".l-zh" if locale == "zh" else ".l-en")
+        text = (locale_node or plv).get_text(" ", strip=True)
         if state not in ("today", "prior_day", "unavailable"):
             fails.append("#plv-asof state missing or unsupported")
         if runtime is None:
@@ -1262,6 +1265,24 @@ def _remove_raw_reason_nodes(node: Tag) -> None:
         raw.decompose()
 
 
+def _selected_reason_codes(standouts: dict[str, Any],
+                           ticker: str | None) -> list[str]:
+    if not ticker:
+        return []
+    pool_rows = ((standouts.get("candidate_pool") or {}).get("rows") or [])
+    row = next((candidate for candidate in pool_rows
+                if str(candidate.get("ticker", "")).upper() == ticker.upper()), None)
+    reasons = ((row or {}).get("lane_reasons")
+               or ([row.get("headline_reason")] if row and row.get("headline_reason") is not None else []))
+    return [str(reason) for reason in reasons if reason is not None]
+
+
+def _reason_label(reason: Tag, locale: str) -> str:
+    selector = ".l-en" if locale.lower().startswith("en") else ".l-zh"
+    label = reason.select_one(selector)
+    return label.get_text(" ", strip=True) if label else ""
+
+
 def _check_j11(soup: BeautifulSoup, locale: str,
                standouts: dict[str, Any], index: dict[str, Any],
                ticker: str | None,
@@ -1290,6 +1311,30 @@ def _check_j11(soup: BeautifulSoup, locale: str,
                     for reason in node.select(".ucp-reason")):
                 return _check_status("FAIL", "reason bindings non-empty",
                                      "a displayed reason has an empty data-reason", where)
+    source_reasons = _selected_reason_codes(standouts, ticker)
+    for node in soup.select(".ucp-receipt"):
+        if node.find_parent("template") is not None:
+            continue
+        rendered_reasons = [str(reason.get("data-reason", ""))
+                            for reason in node.select(".ucp-reason[data-reason]")]
+        if node.select_one(".ucp-row[data-ticker]") is not None:
+            continue
+        if rendered_reasons != source_reasons:
+            return _check_status("FAIL", "rendered reasons equal selected source reasons",
+                                 {"rendered_reasons": rendered_reasons,
+                                  "source_reasons": source_reasons}, where)
+        for reason in node.select(".ucp-reason[data-reason]"):
+            code = str(reason.get("data-reason"))
+            expected_label = REFUSAL_COPY.get(code, (None, None))[
+                0 if locale.lower().startswith("en") else 1]
+            if expected_label is None:
+                continue
+            observed_label = _reason_label(reason, locale)
+            if observed_label != expected_label:
+                return _check_status(
+                    "FAIL", "reason codes bind to their canonical labels",
+                    {"code": code, "observed": observed_label,
+                     "expected": expected_label}, where)
     banned = _enum_values(standouts, index)
     hits: list[dict[str, Any]] = []
     for node in scopes:

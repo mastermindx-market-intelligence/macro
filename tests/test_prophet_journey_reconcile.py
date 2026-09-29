@@ -54,6 +54,11 @@ def _runtime_engine_vocabulary() -> tuple[frozenset[str], tuple[str, str]]:
     return frozenset(declared_reasons()), REFUSAL_ORDER
 
 
+def _runtime_lifecycle_cells() -> tuple[str, ...]:
+    from scripts.build_prophet import LIFECYCLE_CELLS
+    return LIFECYCLE_CELLS
+
+
 def _field_text(path: str, html: str) -> str:
     field = BeautifulSoup(html, "lxml").select_one(
         f'[data-source-field="{path}"]')
@@ -92,7 +97,8 @@ def _full_page(*, ticker: str = "TEST1", with_plan: bool = True,
                plan_book_asof: str = "2026-09-26",
                assessment_asof: str = "2026-09-26",
                plv_state: str = "today",
-               plv_text: str = "quotes as of 4:00 pm ET") -> str:
+               plv_text: str = "quotes as of 4:00 pm ET",
+               plv_text_zh: str = "报价截至 美东 16:00") -> str:
     """Build a synthetic full-page HTML matching the live contract.
 
     All ``detail_*`` overrides land in the ``[data-setup-ticker=T]``
@@ -299,7 +305,7 @@ def _full_page(*, ticker: str = "TEST1", with_plan: bool = True,
  </p>
  <span class="plv-asof" id="plv-asof" data-plv-asof-state="{plv_state}">
   <span class="l-en">{plv_text}</span>
-  <span class="l-zh">报价截至 美东 16:00</span>
+  <span class="l-zh">{plv_text_zh}</span>
  </span>
 </section>
 """)
@@ -909,6 +915,16 @@ def test_j9_pass_prior_day_runtime_clock():
     assert chk["status"] == "PASS", chk
 
 
+def test_j9_pass_prior_day_runtime_clock_in_chinese():
+    chk = _pjr._check_j9(
+        BeautifulSoup(_corrected_html(
+            plv_text_zh="上次判读 09-25 美东 4:00"), "lxml"),
+        _index_payload(), _standouts_payload(), locale="zh", ticker="TEST1",
+        runtime=_runtime_payload(quote_asof="2026-09-25T20:00:00Z",
+                                 pass_ts="2026-09-26T20:00:00Z"))
+    assert chk["status"] == "PASS", chk
+
+
 def test_j9_pass_today_runtime_clock():
     from datetime import date, timedelta
     today = date.today().isoformat()
@@ -1072,6 +1088,9 @@ def test_j11_fail_fixed_refusal_vocabulary_even_when_payload_omits_it():
 def test_j11_pass_raw_code_only_inside_declared_raw_element():
     soup = BeautifulSoup(_corrected_html(), "lxml")
     receipt = soup.select_one(".ucp-receipt")
+    standouts = _standouts_payload()
+    standouts["candidate_pool"]["rows"][0]["lane_reasons"] = [
+        "cleared_admission", "unmapped_new_code"]
     reason = soup.new_tag(
         "span", attrs={"class": "ucp-reason", "data-reason": "unmapped_new_code"})
     reason.append(soup.new_tag("span", attrs={"class": "l-en"}))
@@ -1079,7 +1098,7 @@ def test_j11_pass_raw_code_only_inside_declared_raw_element():
     reason.append(soup.new_tag("code", attrs={"class": "ucp-reason-raw"}))
     reason.code.append("unmapped_new_code")
     receipt.append(reason)
-    chk = _pjr._check_j11(soup, "en", _standouts_payload(), _index_payload(),
+    chk = _pjr._check_j11(soup, "en", standouts, _index_payload(),
                           "TEST1", ["PLAN1"])
     assert chk["status"] == "PASS", chk
 
@@ -1096,6 +1115,42 @@ def test_j11_fail_human_reason_label_with_empty_binding():
     assert chk["status"] == "FAIL", chk
 
 
+def test_j11_fail_reason_code_bound_to_wrong_human_label():
+    soup = BeautifulSoup(_corrected_html(), "lxml")
+    receipt = soup.select_one(".ucp-receipt")
+    standouts = _standouts_payload()
+    standouts["candidate_pool"]["rows"][0]["lane_reasons"] = [
+        "cleared_admission", "pointing_down"]
+    reason = soup.new_tag(
+        "span", attrs={"class": "ucp-reason", "data-reason": "pointing_down"})
+    reason.append(soup.new_tag("span", attrs={"class": "l-en"}))
+    reason.span.append("Admission checks passed")
+    reason.append(soup.new_tag("span", attrs={"class": "l-zh"}))
+    reason.select_one(".l-zh").append("已通过准入检查")
+    receipt.append(reason)
+    chk = _pjr._check_j11(soup, "en", standouts, _index_payload(),
+                          "TEST1", ["PLAN1"])
+    assert chk["status"] == "FAIL", chk
+    assert chk["expected"] == "reason codes bind to their canonical labels"
+
+
+def test_j11_fail_forged_reason_absent_from_selected_source_row():
+    standouts = _standouts_payload()
+    standouts["candidate_pool"]["rows"][0]["lane_reasons"] = ["cleared_admission"]
+    soup = BeautifulSoup(_corrected_html(), "lxml")
+    receipt = soup.select_one(".ucp-receipt")
+    reason = soup.new_tag(
+        "span", attrs={"class": "ucp-reason", "data-reason": "pointing_down"})
+    reason.append(soup.new_tag("span", attrs={"class": "l-en"}))
+    reason.span.append("Still heading down")
+    reason.append(soup.new_tag("span", attrs={"class": "l-zh"}))
+    reason.select_one(".l-zh").append("方向仍朝下")
+    receipt.append(reason)
+    chk = _pjr._check_j11(soup, "en", standouts, _index_payload(),
+                          "TEST1", ["PLAN1"])
+    assert chk["status"] == "FAIL", chk
+
+
 def test_j11_fail_raw_code_when_selector_is_not_code():
     soup = BeautifulSoup(
         _corrected_html(detail_lane="quiet", detail_stage="quiet"), "lxml")
@@ -1105,6 +1160,27 @@ def test_j11_fail_raw_code_when_selector_is_not_code():
     reason.append(soup.new_tag("span", attrs={"class": "ucp-reason-raw"}))
     reason.span.append("cleared_admission")
     receipt.append(reason)
+    chk = _pjr._check_j11(soup, "en", _standouts_payload(), _index_payload(),
+                          "TEST1", ["PLAN1"])
+    assert chk["status"] == "FAIL", chk
+
+
+def test_j11_fail_raw_code_duplicated_outside_declared_raw_element():
+    soup = BeautifulSoup(_corrected_html(), "lxml")
+    receipt = soup.select_one(".ucp-receipt")
+    reason = soup.new_tag(
+        "span", attrs={"class": "ucp-reason", "data-reason": "unmapped_new_code"})
+    reason.append(soup.new_tag("span", attrs={"class": "l-en"}))
+    reason.span.append("Cleared for admission")
+    reason.append(soup.new_tag("span", attrs={"class": "l-zh"}))
+    reason.select_one(".l-zh").append("已通过准入")
+    raw = soup.new_tag("code", attrs={"class": "ucp-reason-raw"})
+    raw.append("unmapped_new_code")
+    reason.append(raw)
+    duplicate = soup.new_tag("span")
+    duplicate.append("unmapped_new_code")
+    receipt.append(reason)
+    receipt.insert_after(duplicate)
     chk = _pjr._check_j11(soup, "en", _standouts_payload(), _index_payload(),
                           "TEST1", ["PLAN1"])
     assert chk["status"] == "FAIL", chk
@@ -1127,9 +1203,7 @@ def test_declared_reason_vocabulary_superset_engine_runtime_union():
     assert engine_reasons
     assert _pjr.RUNTIME_DECLARED_REASON_VOCABULARY == engine_reasons
     assert set(_pjr.REFUSAL_ORDER) == set(refusal_order)
-    assert _pjr.LIFECYCLE_VOCABULARY == {
-        "watch", "ready", "entered", "delivering", "overtime",
-        "invalidated", "resolved"}
+    assert _pjr.LIFECYCLE_VOCABULARY == frozenset(_runtime_lifecycle_cells())
 
 
 def test_j12_pass_alert_absent_with_sources():
