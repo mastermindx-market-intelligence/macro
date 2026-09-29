@@ -14,8 +14,11 @@ import datetime as _dt
 import functools
 import hashlib
 import json
+import os
 import re
 import socket as _socket
+import subprocess
+import sys
 import time as _time
 from pathlib import Path
 from typing import Any
@@ -2500,3 +2503,153 @@ def test_an_input_the_knowledge_cutoff_withholds_is_received_as_degraded(field: 
     assert before[owner] == "READ", before
     assert after[owner] == "DEGRADED", after
     assert {o: s for o, s in after.items() if o != owner} == {o: s for o, s in before.items() if o != owner}
+
+
+# ---------------------------------------------------------------------------
+# Every owner container is read by what it holds.
+# ---------------------------------------------------------------------------
+
+
+class _RowsWithNoLength:
+    """A sequence of rows that can be read again but has no length."""
+
+    def __init__(self, rows: Any) -> None:
+        self._rows = list(rows)
+
+    def __iter__(self) -> Any:
+        return iter(self._rows)
+
+
+_CONTAINERS = {
+    "a generator": lambda rows: (row for row in list(rows)),
+    "a deque": collections.deque,
+    "an iterable with no length": _RowsWithNoLength,
+}
+
+
+def _gated_rows_in(inputs: FinanceOwnerInputs, field: str, container: Any) -> FinanceOwnerInputs:
+    """``inputs`` with every sequence of rows of ``field`` the knowledge gate reads held by ``container``."""
+    value = getattr(inputs, field)
+    if field in ("theme_evidence", "source_records"):
+        return dataclasses.replace(inputs, **{field: container(value)})
+    if field in ("expectation_observations", "market_observations"):
+        return dataclasses.replace(inputs, **{field: {slice_id: container(rows) for slice_id, rows in value.items()}})
+    packets = copy.deepcopy(dict(value))
+    for packet in packets.values():
+        for plane in ("operating", "valuation"):
+            block = packet.get(plane)
+            for key in ("observations", "cells"):
+                if isinstance(block, dict) and key in block:
+                    block[key] = container(block[key])
+    return dataclasses.replace(inputs, financial_packets=packets)
+
+
+@pytest.mark.parametrize("container", sorted(_CONTAINERS))
+@pytest.mark.parametrize("field", sorted(_RECEIPT_FOR_INPUT))
+def test_an_input_whose_every_row_the_cutoff_withholds_is_degraded_whatever_holds_its_rows(field: str, container: str) -> None:
+    """The receipts answer from the rows the gate read and kept, so a
+    sequence of rows need not have a length. With the rows of one input in
+    a generator, a deque or an iterable with no length, moving every
+    knowledge clock of that input a day past the cutoff turns its receipt
+    from READ to DEGRADED, as it does for a list. The receipts used to count
+    rows with len(), so a generator whose every row the cutoff withheld was
+    received as READ."""
+    base = _extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+    # The fixture's theme evidence has no clocks; give it its source's.
+    base = dataclasses.replace(base, theme_evidence=[
+        dict(row, source={"retained_at": _day(0)}) for row in base.theme_evidence
+    ])
+    late = dataclasses.replace(base, **{field: _with_every_known_clock(getattr(base, field), _day(1))})
+
+    def receipt(inputs: FinanceOwnerInputs) -> str:
+        document = _composed(_gated_rows_in(inputs, field, _CONTAINERS[container]))
+        return next(r["state"] for r in document["input_receipts"] if r["owner"] == _RECEIPT_FOR_INPUT[field])
+
+    assert (receipt(base), receipt(late)) == ("READ", "DEGRADED")
+
+
+def _as_generators(node: object) -> object:
+    """``node`` with every list in it, however deep, a generator of the same items."""
+    if isinstance(node, dict):
+        return {name: _as_generators(value) for name, value in node.items()}
+    if isinstance(node, list):
+        return (_as_generators(value) for value in node)
+    return node
+
+
+@pytest.mark.parametrize("fixture", _FENCE_FIXTURES)
+def test_owner_inputs_in_generators_compose_the_document_their_lists_compose(fixture: str) -> None:
+    """A one-shot iterator is read once, where the owner inputs enter. With
+    every list in the owner inputs, however deep, turned into a generator of
+    the same items, the composer returns the same document, input digest
+    included. The knowledge gate used to read a generator before the
+    digest did: theme evidence in a generator had the digest of no theme
+    evidence, and a generator in a packet hashed by its address."""
+    base = _extended_owner_inputs(fixture)
+    generated = dataclasses.replace(base, **{
+        field.name: _as_generators(getattr(base, field.name)) for field in dataclasses.fields(base)
+    })
+    assert _composed(generated) == _composed(base)
+
+
+@pytest.mark.parametrize("fixture", _FENCE_FIXTURES)
+def test_rows_the_gate_reads_in_deques_compose_the_document_their_lists_compose(fixture: str) -> None:
+    """The input digest hashes what a container holds, never the container.
+    With every sequence of rows the knowledge gate reads held in a deque,
+    the composer returns the same document, input digest included. A deque
+    used to hash by its repr, so the same rows had one digest in a list and
+    another in a deque. (Only the gate reads any sequence of rows: a deque
+    of references elsewhere is read by its reader's own rule.)"""
+    base = _extended_owner_inputs(fixture)
+    in_deques = base
+    for field in _RECEIPT_FOR_INPUT:
+        in_deques = _gated_rows_in(in_deques, field, collections.deque)
+    assert _composed(in_deques) == _composed(base)
+
+
+_DIGEST_OF_A_ROW_HOLDING_A_SET = """
+import dataclasses
+import tests.test_finance_intelligence_projection as tp
+base = tp._extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+first, *rest = base.theme_evidence
+tagged = dict(first, synthetic_tags={f"SYNTHETIC-tag-{i}" for i in range(12)})
+document = tp._composed(dataclasses.replace(base, theme_evidence=[tagged, *rest]))
+print(document["snapshot_identity"]["input_digest"])
+"""
+
+
+def test_the_input_digest_of_a_set_does_not_depend_on_the_hash_seed() -> None:
+    """A set is hashed in the order of its members' JSON. Composed in three
+    processes with three hash seeds, an owner row that holds a set of text
+    has one input digest. A set used to hash in its iteration order, which
+    the hash seed changes, so one snapshot had a digest per process."""
+    digests = set()
+    for seed in ("1", "2", "3"):
+        result = subprocess.run(
+            [sys.executable, "-c", _DIGEST_OF_A_ROW_HOLDING_A_SET],
+            cwd=Path(__file__).resolve().parents[1],
+            env={**os.environ, "PYTHONHASHSEED": seed},
+            capture_output=True, text=True, check=False,
+        )
+        assert result.returncode == 0, result.stderr
+        digests.add(result.stdout.strip())
+    assert len(digests) == 1, digests
+
+
+def test_an_owner_mapping_with_keys_of_two_types_never_stops_the_composer() -> None:
+    """A mapping whose keys are not all text is hashed as its [key, value]
+    pairs, each key written as the JSON it is. An owner row holding one
+    composes a document the contract accepts, and its digest tells a key
+    that is a number from the same key written as text, whether the other
+    key is text or a number. The digest used to sort the keys before
+    writing them, and the sort raised TypeError."""
+    base = _extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+    first, *rest = base.theme_evidence
+
+    def digest(mapping: dict[Any, str]) -> str:
+        row = dict(first, synthetic_map=mapping)
+        document = _composed(dataclasses.replace(base, theme_evidence=[row, *rest]))
+        return document["snapshot_identity"]["input_digest"]
+
+    assert digest({1: "SYNTHETIC-a", "b": "SYNTHETIC-b"}) != digest({"1": "SYNTHETIC-a", "b": "SYNTHETIC-b"})
+    assert digest({1: "SYNTHETIC-a", 2: "SYNTHETIC-b"}) != digest({"1": "SYNTHETIC-a", 2: "SYNTHETIC-b"})
