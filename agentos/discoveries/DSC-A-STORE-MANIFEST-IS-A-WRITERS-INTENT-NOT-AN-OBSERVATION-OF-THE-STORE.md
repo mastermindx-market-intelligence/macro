@@ -40,6 +40,22 @@ directory on the same host, `data/yahoo`, which returned 728 entries in the same
 returned 0/0/0 for the store tiers. Without it, "the store looks empty" is indistinguishable from
 a glob that did not expand, a permissions denial, or a sparse checkout.
 
+## Which manifest — there are two, and only one of them lies
+
+Do not "fix" the wrong file. The repo tracks `data/thetadata_eod/_manifest.json`, and it is
+HONEST: `{"store":"thetadata_eod","n_roots":0,"per_root":{},"updated_at":null}` — an empty
+placeholder, on a different schema, that accurately reports zero roots. The manifest this record
+is about is the one inside the ops-host worktree store (`_OPS_WT_STORE`), which carries
+`status` / `complete_t1_roots` / `finished_at` and advertised `healthy` / `372` / `2026-09-25`
+over zero roots. Verified by `git ls-tree -r --name-only origin/main -- data/thetadata_eod/`,
+which returns exactly those two JSON files and no tier directories at all.
+
+That absence is separately load-bearing: because no `eod/` `oi/` `greeks/` tree is tracked, a
+fresh runner checkout has no tier directories, so the drained-store predicate change in
+[[A-DRAINED-STORE-PASSES-A-SHAPE-CHECK-AND-PUBLISHES-A-BLANK-BOARD]] is a strict no-op on the M2
+nightly path — both the old and the new predicate return False there, and `_drained_store` also
+returns False, so even the log is unchanged.
+
 ## What this does not claim
 
 It does not claim the data is lost — only that the manifest is not evidence either way. Recovering
