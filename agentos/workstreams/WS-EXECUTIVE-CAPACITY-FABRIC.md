@@ -243,6 +243,7 @@ waves:
       effect-unknown reconciliation, local-only provider credentials and zero remote queue/scheduler.
 decisions:
   - DEC:EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT
+  - DEC:FIRST-WEB-CEO-ROOT-BINDS-THE-ARMED-OPERATOR-HARNESS
   - DEC:AUTONOMY-V1-DISPATCH-DIALOGUE-RUNTIME-SEPARATION
   - DEC:LAUNCHER-RELOCATION-IS-A-CAPABILITY-GRANT
 discoveries:
@@ -251,6 +252,8 @@ discoveries:
   - DSC:PF1-CLAUDE-WORK-LEG-BOUNDARY
 artifacts:
   - agentos/decisions/DEC-EXECUTIVE-CAPACITY-FABRIC-OWNERSHIP-AND-CONTRACT.md
+  - agentos/decisions/DEC-FIRST-WEB-CEO-ROOT-BINDS-THE-ARMED-OPERATOR-HARNESS.md
+  - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-29.md
   - agentos/discoveries/DSC-PF1-CLAUDE-WORK-LEG-BOUNDARY.md
   - agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-17.md
   - agentos/decisions/DEC-AUTONOMY-V1-DISPATCH-DIALOGUE-RUNTIME-SEPARATION.md
@@ -331,6 +334,23 @@ do_not_redo:
   - "Do NOT re-verify packet05 #699 with the unprotected candidate verifier, and do not treat REMOTE_PROOF_CHANGED as source divergence or as permission to rerun (Sol ruling, root ts 1789597068.473939). The single authorized invocation is SPENT. A fresh evidence-only remote-complete grant becomes possible only AFTER #707 is independently accepted and protected."
   - "Never re-run the packet05 verifier without a NEW material source-continuity edge. The packet05 grant (Sol edge 1789565866, Mastermind #699) is SPENT and its ONE granted run returned `VERDICT: REFUSAL REMOTE_PROOF_CHANGED`, a repo-wide quiescence guard over every open PR and NOT a verdict on packet05's source; the seat-owned p05-verify-… worktree stays INERT/UNCHANGED — do not remove it without Sol. CORRECTED 2026-09-16: `OUT_OF_SCOPE_DIRT` and grant edge 1789588151 belong to the separate Mastermind #677 one-shot, not to packet05."
 next_action: >
+  HEADLESS-DELIVERY CLOSER 2026-09-29 (Fable successor session 7712b0f4, account Claude8, continuing
+  Fable 3f381a7c on operation agent-fabric-end-to-end-fable-integration-20260913-sol-001; parent
+  Mastermind #600, dialogue #703): protected Mastermind master is 939f1d00 (#1067) and the installed
+  Executive release is c7407c6c77ef82cc6590401e80cc8f1868dc9085 (#1063, installed 2026-09-29T10:35Z,
+  Control pid 33988, all three autonomy/operator-harness flags false, worker.codex service missing).
+  Provider readiness v2 is FAILED, not expired: identity probe PASS (device-auth, plan
+  self_serve_business_prolite, binding company-workspace-admin-attested) and inference canary
+  canary-2b17d25f6393 exit 1 provider_turn_failed with closed terms [credits, workspace] at 09:50:33Z;
+  credential and readiness expire 2026-09-30T06:00:25Z, before the 2026-10-01 travel. The root
+  exec-os-web-ceo-01a0e296-r1 is NOT_DISPATCHED. EXACT_HUMAN_GATE: the Chairman as workspace
+  administrator resolves Codex credits / included usage / spend controls on the attested ChatGPT
+  Business workspace; then Product runs ONE canary on the exact codex 0.147.0 pair, publishes the
+  Gate-B receipt, arms via autonomy_control.py, and the native parent submits r1 — never while
+  unarmed and never on split flags (DEC:FIRST-WEB-CEO-ROOT-BINDS-THE-ARMED-OPERATOR-HARNESS). Read
+  agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-29.md before acting. Everything below is the
+  state this record inherited and is historical where it conflicts.
+
   VPS economical-provider track (seat Claude6 5fae71cf, Fable; Sol root
   C0BSBM78V1N/1789324397.992989, ruled at edges 1789694411.329219 + 1789694989.668909): TWO verticals
   sit DRAFT and HELD and may not be readied, merged or auto-merged without an explicit Sol acceptance
