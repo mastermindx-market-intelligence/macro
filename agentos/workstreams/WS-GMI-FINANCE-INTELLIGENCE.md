@@ -48,9 +48,11 @@ decisions:
   - DEC:FINANCE-ZH-MARKS-UNTRANSLATED-SOURCE-PROSE-NEVER-MACHINE-TRANSLATES
   - DEC:FINANCE-REGISTRATION-OMISSIONS-ARE-A-CLOSED-VOCABULARY-AND-EVIDENCE-EMBEDS-THE-VALIDATORS-COPY
   - DEC:FINANCE-COMPOSER-NEVER-MINTS-AN-EVIDENCE-REF
+  - DEC:FINANCE-AN-OBSERVATION-HAS-ONE-DATE
 artifacts:
   - agentos/handoffs/GMI-FINANCE-INTELLIGENCE-2026-09-24.md
   - agentos/handoffs/GMI-FINANCE-INTELLIGENCE-2026-09-27.md
+  - agentos/handoffs/GMI-FINANCE-INTELLIGENCE-2026-09-28.md
 landmines:
   - "#7786 (sol/finance-sector-research-20260923, head 615f1050) is records-only: 26k files behind main; never rebase it in, never merge it to reach the research — read by exact path/SHA."
   - "The shared curation assertion (#7870) requires scope.canonical_theme_id + subject.company_node_id; Finance has no canonical theme and unvalidated witness identities — consume by reference, request the R11 §14.1 extension sections on #7870, never fork."
@@ -86,50 +88,31 @@ waves:
     title: "Degraded/accessibility/privacy qualification, independent review, real browser proof, production acceptance (Tasks 14–16)"
     status: todo
 next_action: >
-  2026-09-27 wave closed (handoff GMI-FINANCE-INTELLIGENCE-2026-09-27). Before it: T1-T3 contract,
-  composer and overlap merged; T8 shell + hydration and four live-proof fixes merged and
-  production-proven at 1440/390 x dark/light x EN/ZH with keyboard; T9 Theme Tracker entry live.
-  This wave, each through independent Opus review and a seat red-proof: the seat's T10 lane
-  #8006 (registration adapter onto the shared research shell) MERGED 977dca13
-  (DEC:FINANCE-REGISTRATION-OMISSIONS-ARE-A-CLOSED-VOCABULARY-AND-EVIDENCE-EMBEDS-THE-VALIDATORS-COPY);
-  the seat's T11 lane #8009 (connected-state conformance on a contract-valid read model) MERGED
-  c58fdc16 (DEC:FINANCE-DOSSIER-SPEC-T11-ERRATA, DSC:FINANCE-QUALITATIVE-CLASS-DOES-NOT-MEAN-NO-NUMBER,
-  DSC:FINANCE-A-LABEL-MAP-ENTRY-IS-NOT-A-PAINTED-WORD); and #8113, the inbound fail-open fix
-  (an unknown freshness publishes NO_EVIDENCE, never FRESH), MERGED 74055425; and #8121, a
-  latent owner-key leak through primary_metric closed by a closed metric vocabulary plus the
-  forbidden-key guard actually running at emit, MERGED 808432ec
-  (DSC:A-LEAK-TEST-OVER-A-CLEAN-FIXTURE-CANNOT-FAIL-PLANT-THE-OWNER-KEYS). Four composer
-  follow-ups then closed what those reviews left open: #8130, a malformed owner value is refused
-  by the contract, never by a crash (an in-suite positive control, no independent review), MERGED
-  f6dae649; #8134, the composer never mints an evidence ref and a slice no owner ref backs
-  publishes no reading and no date, MERGED 88ca79a3 (DEC:FINANCE-COMPOSER-NEVER-MINTS-AN-EVIDENCE-REF);
-  and #8135, a slice publishes only its own valuation anchor and constraints and a conflict reads
-  the reading its plane publishes, MERGED 2a937915
-  (DSC:A-SLICE-WIDE-REF-LIST-VOUCHES-FOR-A-VALUE-BORROWED-FROM-ANOTHER-SLICE); and #8138, the
-  knowledge cutoff binds every reader: one gate where the inputs enter reads each knowledge clock
-  as the instant the contracts read and as the date the composer publishes, the registration
-  adapter names and selects theme evidence through the same gate, a receipt reads DEGRADED when
-  the cutoff withheld every row of its input, and a cutoff that names no instant is refused,
-  MERGED fbd78d12 after three review rounds
-  (DSC:A-KNOWLEDGE-CUTOFF-BINDS-ONLY-THE-READERS-THAT-APPLY-IT). The page stays
-  NOT CONNECTED by design (FI_READ_URL = "") and T4/T5/T6/T7 stay HELD
-  (DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE). The seat's T10/T11 lane ids are
-  not the waves list's original "Tasks 10-11" breadth verticals, which remain todo in W4.
+  2026-09-28 wave closed (handoff GMI-FINANCE-INTELLIGENCE-2026-09-28; the one before it,
+  GMI-FINANCE-INTELLIGENCE-2026-09-27, carries the history of T1-T3, T8-T11 and the composer
+  follow-ups #8113 to #8138). This wave closed every composer item the 09-27 handoff left open:
+  #8146 (the registration limitations read theme evidence through the composer's own gate) MERGED
+  3b9a451f; #8159 (an owner input reads the same whatever container holds its rows) MERGED
+  a4236bb0, with its independent review answered in #8165 MERGED e2fb0a01; and #8167 (an
+  observation has one date, which every reader reads through one helper, and a timestamp parted
+  by a space dates its row and its published clocks) MERGED 867b6b87
+  (DEC:FINANCE-AN-OBSERVATION-HAS-ONE-DATE). The page stays NOT CONNECTED by design
+  (FI_READ_URL = "") and T4/T5/T6/T7 stay HELD
+  (DEC:FINANCE-INTEGRATES-INTO-SHARED-FOUNDATION-NEVER-REBUILDS-BASE). The seat's T10/T11 lane ids
+  are not the waves list's original "Tasks 10-11" breadth verticals, which remain todo in W4.
   Next, all gated on other owners: (1) when #7870 (the Semiconductors shared base) merges, open
   the integration wave: the adapter onto source_record.v1 / evidence_claim.v1 /
   sector_intelligence_packet.v1, then the serving route once accepted, then set FI_READ_URL
   (DSC:FINANCE-PAGE-READS-THE-BARE-READ-MODEL-NOT-THE-RESEARCH-ENVELOPE: the page accepts only the
   bare read model), then a connected browser proof on live data. The T6 publish step MUST run
   validate_contract on the composed document before serving: the composer does not, and the
-  sealed contract is the only complete key check. (2) Wire the Financials launch
-  include when #7669 merges; (3) carry the deferred review MINORs and the T10 gaps (the #7870
-  owner-bundle wire grammar is not adopted; the round trip is a strict xfail until §8
-  sector_profile is adjudicated) into the integration wave; (4) optional before that wave: give
-  the operating plane the valuation anchor's undated and tie rules, and the price plane a stated
-  undated rule. The cutoff itself is one gate since #8138. (5) Two #8138 follow-ups: the
-  registration limitations name owner_input_absent:theme_evidence when the cutoff withholds every
-  assertion, and a container-totality lane derives receipts from the rows the gate kept and
-  canonicalizes one-shot containers before the digest (the 09-27 handoff's next_actions).
+  sealed contract is the only complete key check. The adapter also owns two input duties the
+  composer does not: refuse a malformed owner container per record, as a named omission (the
+  composer crashes, closed, on 70 of 184 malformed container shapes on the default fixture), and
+  write a source record's own clocks as dates (the contract refuses a timestamp there). (2) Wire
+  the Financials launch include when #7669 merges. (3) Carry the deferred review MINORs and the
+  T10 gaps (the #7870 owner-bundle wire grammar is not adopted; the round trip is a strict xfail
+  until §8 sector_profile is adjudicated) into the integration wave.
 ---
 
 # Finance Intelligence workstream
