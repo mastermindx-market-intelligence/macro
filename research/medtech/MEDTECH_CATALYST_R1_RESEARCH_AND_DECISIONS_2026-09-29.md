@@ -53,15 +53,21 @@ A marketing decision can precede manufacturing scale, launch readiness, reimburs
 
 ### 2.4 Public knowledge time is its own clock
 
-Decision date, database refresh, advisory-panel scheduling, company publication and market observation are distinct clocks. Historical analysis uses the earliest qualified public timestamp actually available to investors. Later regulatory or commercial facts cannot be backfilled into an earlier case.
+Decision date, database refresh, advisory-panel scheduling, rights evidence, materiality evidence, commercial evidence and market observation are distinct clocks. Historical analysis uses only facts with a timezone-qualified public or observation timestamp no later than the case cutoff. Later regulatory, rights, materiality, commercial or options facts cannot be backfilled into an earlier case.
 
-**Ruling:** every event requires a timezone-qualified `public_at`. An event after the analysis cutoff is `WITHHELD_TEMPORAL`, even if the ultimate decision is positive.
+**Ruling:** the event, rights relationship, materiality evidence and commercial evidence each require their own qualified clock; a supplied options layer requires a qualified observation clock. Missing or timezone-naive clocks are refused. Any layer later than the analysis cutoff makes the case `WITHHELD_TEMPORAL`. A future event also redacts decision state, marketing status, positive-decision flag, event timestamp and event source rather than returning the withheld outcome in another field.
 
-### 2.5 Options and positioning are expectations evidence, not native regulatory evidence
+### 2.5 Listed-security exposure must be case-bound and evidence-backed
+
+A nonempty ticker, issuer id or `owned`/`licensed` enum does not prove that the listed security retains economics from a specific device decision. The relationship must bind the exact device, applicant, submission, indication, territory and regulatory source to a security, and it must carry a stable relationship id plus source provenance. Licensed rights also require a specific license-term identity. Materiality requires its own source, clock and basis rather than inheriting from the rights assertion.
+
+**Ruling:** any missing or mismatched relationship field makes rights `unresolved` and materiality `unknown`; the case becomes `WITHHELD_IDENTITY_RIGHTS`. Missing or inconsistent materiality provenance makes materiality `unknown` and the case `REVIEW_MATERIALITY`. Claimed rights and materiality are never accepted from enums alone.
+
+### 2.6 Options and positioning are expectations evidence, not native regulatory evidence
 
 Observed event-expiry alignment, implied-volatility term structure, skew, open/close classifications and other qualified market evidence may help measure expectations, reaction amplification or timing. They do not become clinical/regulatory evidence and cannot directly rewrite the native event probability.
 
-**Ruling:** qualified options input is labeled `expectations_reaction_and_timing_only`; the executable reference hard-codes `can_change_native_event_probability=false`. Estimated, incomplete or latency-unknown inputs are not silently used.
+**Ruling:** qualified options input is labeled `expectations_reaction_and_timing_only`; the executable reference hard-codes `can_change_native_event_probability=false`. A supplied options layer must carry a complete timezone-qualified observation clock and provenance, must be no later than the case cutoff, and is redacted when temporally withheld. Estimated observations remain context-unqualified rather than silently used.
 
 ## 3. Worked historical mechanism — TransMedics OCS Heart
 
@@ -89,42 +95,47 @@ Files:
 The pure reference:
 
 - enforces pathway-native decision vocabulary;
-- rejects future knowledge;
-- fails closed on unresolved issuer rights;
+- applies the case cutoff independently to event, rights, materiality, commercial and supplied options evidence;
+- redacts future decision-derived and future layer-derived fields rather than returning them beside a withheld disposition;
+- requires an evidence-backed relationship binding device, applicant, submission, indication, territory, regulatory source and listed security;
+- requires separate rights and materiality provenance, including a bound license term for licensed rights;
 - keeps issuer materiality separate from authorization;
 - keeps manufacturing, launch, coverage and adoption separate;
 - refuses to turn options context into native regulatory probability;
-- permits market-price revisions without rewriting regulatory/commercial evidence;
+- permits market-price revisions without rewriting regulatory, rights, materiality or commercial evidence;
 - never emits a probability, conditional equity value or recommendation.
 
 Verification in a clean scratch root:
 
-- `python3 -m pytest -q test_medtech_catalyst_reference_r1.py` → **12 passed**;
-- four harmful variants were detected:
+- `python3 -m pytest -q test_medtech_catalyst_reference_r1.py` → **32 passed**;
+- discriminating cases cover six harmful families:
   1. accepting `approved` as a 510(k) state;
-  2. disabling the future-knowledge fence;
-  3. allowing options context to change native event probability;
-  4. treating every authorization as commercially ready.
+  2. returning future decision fields despite a withheld disposition;
+  3. admitting future rights, materiality, commercial or options evidence;
+  4. accepting claimed rights/materiality without exact case relationship and provenance;
+  5. allowing options context to change native event probability;
+  6. treating every authorization as commercially ready.
 
 These tests establish contract behavior only. They are not independent review, source coverage, historical calibration or investment performance.
 
 ## 5. R1 architecture decisions
 
-1. **Case identity:** device + exact regulatory submission/decision + indication/version + applicant + retained rights + listed security. Applicant name alone is not security identity.
-2. **Native targets:** regulatory outcome, time-to-decision, launch readiness, commercial adoption and persistent rerating remain separate.
-3. **Commercial bridge:** procedure/patient volume × realized price × recurring consumables/service, less launch/manufacturing/service costs, reimbursement friction and dilution. Installed base is not revenue without utilization.
-4. **Materiality:** focused/core, material, immaterial and unknown are explicit states. Unknown never becomes zero or “small.”
-5. **Market layer:** expectations and price reaction are overlays. A price-only update does not revise regulatory evidence.
-6. **Recommendation layer:** admission requires later calibrated probabilities, conditional diluted-equity values, priced-in comparison, costs/liquidity and accepted policy. R1 always returns `recommendation_eligible=false`.
-7. **No new platform:** use incumbent identity, event, financial, options, recommendation, evaluation and publication owners. This reference is not a production kernel.
+1. **Case identity:** device + exact regulatory submission/decision + indication/version + applicant + territory + retained-rights relationship + listed security. The relationship has its own id, source, clock and, for licensed rights, license-term identity. Applicant or ticker text alone is not security identity.
+2. **Knowledge clocks:** event, rights, materiality, commercial and supplied options evidence are separately timestamped and cutoff-checked. Future evidence is redacted, not merely labeled withheld.
+3. **Native targets:** regulatory outcome, time-to-decision, launch readiness, commercial adoption and persistent rerating remain separate.
+4. **Commercial bridge:** procedure/patient volume × realized price × recurring consumables/service, less launch/manufacturing/service costs, reimbursement friction and dilution. Installed base is not revenue without utilization.
+5. **Materiality:** focused/core, material, immaterial and unknown are explicit states backed by separate source/clock/basis evidence. Unknown never becomes zero or “small.”
+6. **Market layer:** expectations and price reaction are overlays. A price-only update does not revise regulatory, rights, materiality or commercial evidence.
+7. **Recommendation layer:** admission requires later calibrated probabilities, conditional diluted-equity values, priced-in comparison, costs/liquidity and accepted policy. R1 always returns `recommendation_eligible=false`.
+8. **No new platform:** use incumbent identity, event, financial, options, recommendation, evaluation and publication owners. This reference is not a production kernel.
 
 ## 6. Next research unit
 
 R2 should build the first reconstructable cohort and denominator:
 
 1. choose one material family—recommended: PMA originals plus panel-track supplements for listed issuers;
-2. freeze source/publication clocks and define how withdrawals, denials, pending cases and missing public submissions are represented;
-3. bind exact device/applicant/rights/security identities;
+2. freeze separate event, rights, materiality, commercial and market-observation clocks and define how withdrawals, denials, pending cases and missing public submissions are represented;
+3. bind exact device/applicant/submission/indication/territory/rights/security identities with source provenance and license-term identity where applicable;
 4. construct positive, adverse, delayed, commercially weak and immaterial diversified-company cases;
 5. measure anticipation, announcement reaction and durable 3/6/12-month excess returns separately;
 6. build a deterministic revenue/materiality bridge and an explicit abstention policy;
