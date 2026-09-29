@@ -20,16 +20,27 @@ a future change from collapsing the distinctions.
 
 The remaining six T06 rows are deliberately absent, and their absence is the honest
 signal rather than an oversight.  ``IND-D03`` needs the private content-role owner
-and ``IND-D22``/``IND-R213`` need native correction lineage.  The other three were
-each measured and ruled out for a stated reason: ``IND-R201``'s "optional graph
-extension" is the theme graph, which another owner holds; ``IND-R218`` forbids a
-mispricing/probability/trade conclusion, and no such vocabulary exists anywhere in
-this package, so a test would guard nothing; ``IND-SF04``'s prohibition half (no
-forced BOM, wafer measure or fake stage) is assertable but its positive half -- a
-coherent financial/service view -- needs a service-business fixture path this
-module does not own, and half an obligation is not an anchor.  An anchor row is a
-claim that a test separates the compliant case from the violating one, so a row is
-added only when that claim is true.
+and ``IND-D22``/``IND-R213`` need native correction lineage.
+
+``IND-R201``, ``IND-R218`` and ``IND-SF04`` are absent HERE for a different and
+narrower reason, and it is worth stating precisely because an earlier reading of it
+was wrong.  Measured against THIS module, none of the three separates a compliant
+case from a violating one: ``IND-R201``'s "optional graph extension" is the theme
+graph, which another owner holds; ``IND-R218``'s mispricing/probability/trade
+vocabulary occurs nowhere in this package; ``IND-SF04``'s BOM/wafer/stage vocabulary
+likewise.  Those measurements stand.  The inference drawn from them -- that the three
+obligations are not testable at all -- does NOT: Sol's CONTINUE ruling on carrier
+#7789 (comment ``5894912727``) scopes all five required-versus-optional rows,
+including ``IND-D23`` and ``IND-R215`` below, to ONE user-facing capability at the
+``financial_dossier.py`` surface over this result-to-cash owner and a thin
+shared-theme adapter.  A withheld conclusion is withheld where conclusions are
+PUBLISHED, and that is not this module.  So the three belong to the dossier slice,
+not to a list of things ruled out, and this suite covers the two halves whose
+discrimination lives in the cash derivation itself.
+
+An anchor row is a claim that a test separates the compliant case from the violating
+one, so a row is added only when that claim is true -- and, as the three above show,
+"true of this module" is not the same claim as "true of the capability".
 
 Every fixture is synthetic: invented issuers, ``example.invalid`` sources, no real
 Exponent or Pentair figure.
