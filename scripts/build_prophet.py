@@ -1936,7 +1936,13 @@ def _load_futures_chg(asof: str) -> dict | None:
 # Main
 # ---------------------------------------------------------------------------
 
-def main() -> None:
+def main(*, new_long_restrictions: Any = None, policy_read_at: str | None = None) -> None:
+    """Build native artifacts; an explicit internal policy read is opt-in only.
+
+    No CLI argument accepts a rule, hash allowlist or approval. The registered
+    owner must supply the already-bound read; ordinary nightly invocation remains
+    unchanged until an explicit native owner/adoption edge is installed.
+    """
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
@@ -1973,9 +1979,28 @@ def main() -> None:
             "checkpoint and conditional workflow publisher"
         )
 
+    if args.showcase_only and (new_long_restrictions is not None or policy_read_at is not None):
+        from engine.prophet_market_eligibility import MarketEligibilityError
+        raise MarketEligibilityError("POLICY_SHOWCASE_ONLY_UNSUPPORTED")
     if args.showcase_only:
         write_showcase()
         return None
+
+    policy_kwargs: dict[str, Any] = {}
+    if new_long_restrictions is not None:
+        from engine.prophet_market_eligibility import NewLongRestrictionRead, MarketEligibilityError, _utc
+        if not isinstance(new_long_restrictions, NewLongRestrictionRead):
+            raise MarketEligibilityError("POLICY_READ_TYPE_INVALID")
+        if args.showcase_only:
+            raise MarketEligibilityError("POLICY_SHOWCASE_ONLY_UNSUPPORTED")
+        if policy_read_at is None:
+            from datetime import datetime as _pd, timezone as _ptz
+            policy_read_at = _pd.now(_ptz.utc).isoformat(timespec="microseconds").replace("+00:00", "Z")
+        _utc(policy_read_at, "POLICY_READ_CLOCK_INVALID")
+        policy_kwargs = {"new_long_restrictions": new_long_restrictions, "policy_read_at": policy_read_at}
+    elif policy_read_at is not None:
+        from engine.prophet_market_eligibility import MarketEligibilityError
+        raise MarketEligibilityError("POLICY_CLOCK_WITHOUT_READ")
 
     asof: str = args.date
     log.info("build_prophet: starting — asof=%s publish=%s", asof, args.publish)
@@ -2007,6 +2032,10 @@ def main() -> None:
     source_mixed_vintage = bool(
         _source_panel.get("mixed_vintage")
     )
+
+    if new_long_restrictions is not None:
+        # Verify the one frozen board before initializing/advancing native ledgers.
+        new_long_restrictions.bind_board(_standouts_doc)
 
     # ── 0. Initialize ledger ──────────────────────────────────────────────────
     _initialize_ledger()
@@ -2069,7 +2098,12 @@ def main() -> None:
         thetadata_store=thetadata_store,
         active_keys=active_keys,
         intake_stats=intake_stats,
+        **policy_kwargs,
     )
+    policy_projection: dict[str, Any] = {}
+    if new_long_restrictions is not None:
+        from engine.prophet_market_eligibility import project_new_long_intake
+        policy_projection = project_new_long_intake(intake_stats, new_long_restrictions, read_at=policy_read_at)
     log.info(
         "build_prophet: %d new plans originated (%d candidate(s) blocked by an open "
         "same-ticker plan: %s)",
@@ -2106,7 +2140,9 @@ def main() -> None:
             asof=asof,
             existing_ids=set(existing_plans.keys()),
             active_keys=active_keys,
-            live_plan_ids={p["id"] for p in new_plans},
+            # C0 remains the original policy-free counterfactual. A restricted
+            # live set is not a like-for-like mirror target; do not forge parity.
+            live_plan_ids=({p["id"] for p in new_plans} if not policy_kwargs else None),
             repo_root=_REPO,
         )
         log.info(
@@ -2878,6 +2914,15 @@ def main() -> None:
         print(f"::warning title=prophet board read::join failed ({type(e).__name__}) —"
               " index.json ships without the board-read block", flush=True)
     # Additive GD-6A receipt; no sidecar row is fed into admission or management.
+    if policy_projection:
+        # Preserve the explicit mode even when its count is zero; absence retains
+        # its legacy meaning. No field is defaulted or projected from risk color.
+        index["intake"].update(policy_projection)
+        index["market_policy_counterfactual"] = {
+            "basis": "ORIGINAL_POLICY_FREE_ARENA",
+            "live_id_comparison": "NOT_COMPARABLE_UNDER_NAMED_POLICY",
+            "market_policy_changes_research": False,
+        }
     index["market_eligibility_shadow"] = _write_market_eligibility_shadow(index)
     _write_json(INDEX_PATH, index)
     log.info("build_prophet: wrote index.json (%d active plans)", len(active_entries))

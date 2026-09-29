@@ -5,52 +5,56 @@ model: sol
 prs:
 - 8141
 ended_because: ci_handoff
-mission: Implement explicit named new-long restriction in native Prophet origination;
-  preserve research and existing-position semantics. MISSION_COMPLETE:false; no production
-  activation.
-state_before: Zero-policy shadow was connected, but native origination had no explicit
-  parameter for a named authorized market restriction.
+mission: Connect named new-long restrictions through the native builder and published
+  dispositions. MISSION_COMPLETE:false; no live rule/adoption.
+state_before: R10 enforced the originator input, but main did not pass it and the
+  closed index whitelist dropped its accounting.
 changed:
+- path: scripts/build_prophet.py
+  what: Explicit internal caller binding, closed-list propagation, and honest policy-free
+    Arena comparison.
 - path: engine/prophet_market_eligibility.py
-  what: Immutable internal individually pinned rule read; no grants or production
-    config.
-- path: engine/prophet_bridge.py
-  what: Enforce named deny/unavailable disposition after admission/duplicates and
-    before plan construction; disclose suppression count and reasons.
+  what: Verify native count/row partition and same-read dispositions before publication.
 - path: tests/test_prophet_market_eligibility.py
-  what: 19 named-policy and actual-native-origination tests in the already registered
-    suite.
-- path: research/grey_deer/GD6A_NAMED_POLICY_CONSUMPTION_2026-09-29.md
-  what: Proof, trusted-source prerequisites, explicit nonactivation and remaining
-    builder/alert contract.
+  what: 17 actual-main/publication tests in the existing selected test file.
+- path: research/grey_deer/GD6A_NAMED_POLICY_PUBLICATION_2026-09-29.md
+  what: Executed proof, blocked independent-alarm extension and remaining real adoption
+    unit.
 verified:
-- claim: Actual native origination enforces broad/scoped restrictions without changing
-    the source board.
+- claim: Actual caller and index retain denial, unavailable and normal native paths
+    without changing research.
   command: python3.12 -m pytest tests/test_prophet_market_eligibility.py tests/test_prophet_market_eligibility_native.py
+    tests/test_prophet_market_eligibility_publication.py tests/test_prophet_bridge.py
     -q
-  result: 88passed/61subtests; two control plans become zero under named broad restriction;
-    scoped control plan unchanged. Pass log b9600fa81e6bc60d83cbb1971930fc74b5e603383cbd0b3c53f0f607e2db2b3a.
-- claim: The native enforcement test catches removal of the deny condition.
-  command: python3 release-r10/qualify_policy_seam.py
-  result: Intentional assertion failure, then original restored; no production action.
+  result: 248 passed/75 subtests; fictional receipts and synthetic prices, native
+    main/Arena; log SHA256 7bc74d75221b4701dcf983c8af4e67c5087fe4cf7e52e406721436badc3818f0.
+- claim: Existing position plan/state/ledger bytes remain under native management.
+  command: TestNamedPolicyPublication.test_existing_positions_remain_under_native_management
+  result: Paired seeded full-builder outputs byte-identical for those artifacts.
+- claim: Tests detect losing published dispositions or falsely comparing restricted
+    live IDs to original Arena.
+  command: python3 release-r11/check_publication_faults.py
+  result: Two intended assertion failures, original source restored.
 unverified:
-- claim: Production caller and all-channel adoption.
-  what_would_verify: Accepted rule/grant source; builder/index/alarm balance update;
-    actual API/UI/buy-send enforcement; preserved research and ordinary refresh.
-- claim: New source release.
-  what_would_verify: Concluded applicable new-head CI, permitted current-base qualification
-    and explicit release acceptance.
+- claim: Production resolver, all-channel restriction and send-time permission.
+  what_would_verify: Actual accepted rule/grant input, effective API/UI and queued-buy
+    recheck, ordinary refresh.
+- claim: Source release and independent alarm extension.
+  what_would_verify: New-head/current-base CI and source acceptance; genuine recovery
+    of the blocked alarm action before independent coverage is claimed.
 unresolved:
-- Ordinary builder does not supply the new arguments; no live policy was installed.
-- The new suppression category must be propagated before adoption; no legacy-balance
-  bypass.
-- Current-base comparison and separate builder/test-helper reads were refused; no
-  repeat or proxy.
+- No active grant or production caller is installed; default CLI is unchanged.
+- Independent alarm extension and separate other-sentinel source read were blocked
+  before dispatch and not repeated.
+- Initial combined recovery read was blocked; same-pin already consumed source law
+  and previously acquired fixture bytes were retained, not reacquired.
+- No current served/API/alert proof or financial-performance claim.
 next_actions:
-- Qualify this changed head, then complete existing builder/index/notification adoption
-  under actual accepted rule/grant source.
-- Retain zero live-policy claims until actual channel and ordinary-refresh proof.
-- Do not expand into further adjacent integrity cleanup.
+- Qualify this exact source and consume its hosted CI.
+- Bind actual policy/grant resolver, API/UI and send-time control as one adoption
+  unit without a new policy engine.
+- Retain independent-alarm action boundary; do not count local producer validation
+  as that separate proof.
 do_not_redo:
 - Do not recreate GD-6A or add a second risk policy, identity, registry, collector,
   ledger or publisher.
@@ -69,6 +73,6 @@ danger_areas:
   a proxy retry.
 ---
 
-# R10 native enforcement seam
+# R11 native caller/publication checkpoint
 
-Source implementation only; MISSION_COMPLETE:false. No new registry, grant, worker or trade.
+MISSION_COMPLETE:false. No automatic wake, source lease transfer or live activation.

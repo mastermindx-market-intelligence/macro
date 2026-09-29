@@ -637,3 +637,198 @@ class TestNamedPolicyOrigination(unittest.TestCase):
         decision=ctx.decision("AAA",read_at=self.now)
         self.assertEqual(decision["policy_ids"],["fixture-risk-pause"])
         self.assertIn("POLICY_ID_DUPLICATE",decision["errors"])
+
+
+class TestNamedPolicyPublication(unittest.TestCase):
+    """Actual main and Arena, isolated roots/prices, fictional already-bound rules."""
+    def setUp(self):
+        self.fixture = TestNamedPolicyOrigination()
+        self.fixture.setUp()
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.sequence = 0
+
+    def build(self, context=None, *, clock=None, alter_stats=None, legacy_clock=False, seed_root=None):
+        from contextlib import ExitStack
+        from datetime import datetime, timezone
+        from unittest.mock import patch
+        import pandas as pd
+        from engine import prophet_bridge as bridge
+        from engine import prophet_arena as arena
+        from lib import config
+        from scripts import build_prophet as bp
+        self.sequence += 1
+        root = self.root / str(self.sequence)
+        if seed_root is not None:
+            import shutil
+            shutil.copytree(seed_root,root)
+        board_path = root / "site/factordata/us_standouts.json"
+        board_path.parent.mkdir(parents=True,exist_ok=True)
+        board_raw = json.dumps(self.fixture.board).encode()
+        board_path.write_bytes(board_raw)
+        prices = pd.DataFrame({"open":100.0,"high":102.0,"low":98.0,"close":100.0,"volume":1000000},
+            index=pd.bdate_range(end="2026-09-25",periods=40))
+        arena_real = arena.run_arena
+        calls = []
+        def scoped_arena(*args, **kwargs):
+            calls.append(kwargs.get("live_plan_ids"))
+            return arena_real(*args, **{**kwargs, "repo_root": root, "tilt_inputs": None})
+        original_originator = bp.originate_plans
+        def observed_originator(*args, **kwargs):
+            result = original_originator(*args, **kwargs)
+            if alter_stats is not None:
+                alter_stats(kwargs["intake_stats"])
+            return result
+        shadow_real = bp._write_market_eligibility_shadow
+        showcase_real = bp.write_showcase
+        with ExitStack() as st:
+            for key, value in {
+                "STANDOUTS_PATH":board_path,"PLANS_DIR":root/"site/prophet/plans",
+                "STATES_DIR":root/"site/prophet/states","INDEX_PATH":root/"site/prophet/index.json",
+                "LEDGER_DIR":root/"data/prophet","LEDGER_PATH":root/"data/prophet/ledger.jsonl",
+                "STOCKDATA_DIR":root/"site/stockdata","_REPO":root,
+            }.items():
+                st.enter_context(patch.object(bp,key,value))
+            st.enter_context(patch.object(config,"ROOT",root))
+            st.enter_context(patch.object(arena,"run_arena",side_effect=scoped_arena))
+            st.enter_context(patch.object(bridge,"_load_price_history",return_value=prices))
+            st.enter_context(patch.object(bp,"_load_price_history_for_management",return_value=prices))
+            st.enter_context(patch.object(bp,"originate_plans",side_effect=observed_originator))
+            st.enter_context(patch.object(bp,"_write_market_eligibility_shadow",
+                side_effect=lambda index: shadow_real(index,datetime(2026,9,28,13,tzinfo=timezone.utc))))
+            st.enter_context(patch.object(bp,"write_showcase",side_effect=lambda:showcase_real(out_path=root/"site/prophet/showcase.json")))
+            st.enter_context(patch("engine.thetadata_store.resolve_thetadata_store",return_value=None))
+            st.enter_context(patch.object(sys,"argv",["build_prophet","--date","2026-09-28"]))
+            if context is None and not legacy_clock:
+                bp.main()
+            else:
+                bp.main(new_long_restrictions=context,policy_read_at=clock or self.fixture.now)
+            index = json.loads(bp.INDEX_PATH.read_text())
+            plans = {x.name:x.read_bytes() for x in bp.PLANS_DIR.glob("*.json")}
+            self.assertEqual(board_path.read_bytes(),board_raw)
+        return {"index":index,"plans":plans,"arena_calls":calls,"root":root,
+                "states":{x.name:x.read_bytes() for x in (root/"site/prophet/states").glob("*.json")},
+                "ledger":(root/"data/prophet/ledger.jsonl").read_bytes()}
+
+    def test_broad_pause_reaches_published_counts_and_named_reasons(self):
+        result=self.build(self.fixture.bind());intake=result["index"]["intake"]
+        for key in ("market_policy_suppressed", "market_policy_denied", "market_policy_unavailable",
+                    "market_policy_dispositions", "market_policy_read", "market_policy_mode"):
+            self.assertIn(key,intake)
+        self.assertEqual(result["plans"],{})
+        self.assertEqual(intake["admitted"],2)
+        self.assertEqual(intake["originated"],0)
+        self.assertEqual(intake["market_policy_suppressed"],2)
+        self.assertEqual(intake["market_policy_denied"],2)
+        self.assertEqual(intake["market_policy_unavailable"],0)
+        self.assertEqual(intake["validation_failed"],0)
+        self.assertEqual(intake["unaccounted"],0)
+        self.assertTrue(intake["lossless"])
+        self.assertEqual([x["ticker"] for x in intake["market_policy_dispositions"]],["AAA","BBB"])
+        self.assertEqual(intake["market_policy_dispositions"][0]["rules"][0]["grant_ref"],self.fixture.rule["grant_ref"])
+        self.assertTrue(intake["market_policy_read"]["not_buy_permission"])
+
+    def test_legacy_builder_omits_new_control_fields(self):
+        result=self.build();self.assertEqual(len(result["plans"]),2)
+        self.assertFalse(any(k.startswith("market_policy_") for k in result["index"]["intake"]))
+        self.assertNotIn("market_policy_counterfactual",result["index"])
+        self.assertEqual(len(result["arena_calls"][0]),2)
+
+    def test_ticker_scope_preserves_other_plan_bytes(self):
+        control=self.build();self.fixture.rule["tickers"]=["AAA"]
+        result=self.build(self.fixture.bind())
+        self.assertEqual(list(result["plans"]),["BBB-BULL-20260925.json"])
+        self.assertEqual(result["plans"]["BBB-BULL-20260925.json"],control["plans"]["BBB-BULL-20260925.json"])
+        self.assertEqual(result["index"]["intake"]["market_policy_denied"],1)
+
+    def test_expired_rule_preserves_all_native_plan_bytes(self):
+        control=self.build();self.fixture.rule["expires_at"]="2026-09-28T12:59:59Z"
+        result=self.build(self.fixture.bind())
+        self.assertEqual(result["plans"],control["plans"])
+        self.assertEqual(result["index"]["intake"]["market_policy_suppressed"],0)
+        self.assertIn("market_policy_mode",result["index"]["intake"])
+
+    def test_missing_expected_evidence_is_not_a_market_denial(self):
+        context=self.fixture.bind([],expected={self.fixture.rule["policy_id"]:m._digest(self.fixture.rule)})
+        result=self.build(context);intake=result["index"]["intake"]
+        self.assertEqual(intake["market_policy_suppressed"],2)
+        self.assertEqual(intake["market_policy_denied"],0)
+        self.assertEqual(intake["market_policy_unavailable"],2)
+        self.assertTrue(all(d["state"]=="UNAVAILABLE" for d in intake["market_policy_dispositions"]))
+
+    def test_valid_active_rule_survives_evidence_gap_in_publication(self):
+        result=self.build(self.fixture.bind(available=False));intake=result["index"]["intake"]
+        self.assertEqual(intake["market_policy_denied"],2)
+        self.assertEqual(intake["market_policy_unavailable"],0)
+        self.assertIn("POLICY_SOURCE_UNAVAILABLE",intake["market_policy_dispositions"][0]["errors"])
+
+    def test_expired_read_is_explicitly_unavailable(self):
+        result=self.build(self.fixture.bind(),clock="2026-09-28T21:00:00Z")
+        self.assertEqual(result["index"]["intake"]["market_policy_unavailable"],2)
+        self.assertEqual(result["plans"],{})
+
+    def test_controlled_build_does_not_fake_arena_live_mirror_parity(self):
+        result=self.build(self.fixture.bind())
+        self.assertEqual(result["arena_calls"],[None])
+        self.assertEqual(result["index"]["market_policy_counterfactual"]["live_id_comparison"],"NOT_COMPARABLE_UNDER_NAMED_POLICY")
+        self.assertFalse(result["index"]["market_policy_counterfactual"]["market_policy_changes_research"])
+        self.assertTrue((result["root"]/"data/prophet_arena/scoreboard.json").is_file())
+
+    def test_board_mismatch_fails_before_native_ledger_initialization(self):
+        context=self.fixture.bind();self.fixture.board["buy"][0]["prophet"]["score"]=80
+        with self.assertRaisesRegex(m.MarketEligibilityError,"BOARD_BINDING_MISMATCH"):
+            self.build(context)
+        self.assertFalse(any(self.root.rglob("ledger.jsonl")))
+        self.assertFalse(any(self.root.rglob("index.json")))
+
+    def test_wrong_internal_type_cannot_reach_builder(self):
+        with self.assertRaisesRegex(m.MarketEligibilityError,"POLICY_READ_TYPE_INVALID"):
+            self.build({"state":"DENY_NEW_LONG"})
+        self.assertFalse(any(self.root.rglob("ledger.jsonl")))
+
+    def test_clock_alone_cannot_silently_opt_in(self):
+        with self.assertRaisesRegex(m.MarketEligibilityError,"POLICY_CLOCK_WITHOUT_READ"):
+            self.build(legacy_clock=True)
+        self.assertFalse(any(self.root.rglob("ledger.jsonl")))
+
+    def test_inconsistent_count_blocks_new_published_index(self):
+        with self.assertRaisesRegex(m.MarketEligibilityError,"POLICY_INTAKE_BALANCE_INVALID"):
+            self.build(self.fixture.bind(),alter_stats=lambda s:s.update(market_policy_suppressed=1))
+        self.assertFalse(any(self.root.rglob("index.json")))
+
+    def test_dropped_disposition_is_not_accepted_as_lossless(self):
+        with self.assertRaisesRegex(m.MarketEligibilityError,"POLICY_INTAKE_POPULATION_MISMATCH"):
+            self.build(self.fixture.bind(),alter_stats=lambda s:s["market_policy_dispositions"].pop())
+        self.assertFalse(any(self.root.rglob("index.json")))
+
+    def test_altered_reason_cannot_reach_published_index(self):
+        def change(s):s["market_policy_dispositions"][0]["rules"][0]["grant_ref"]="invented"
+        with self.assertRaisesRegex(m.MarketEligibilityError,"POLICY_INTAKE_DISPOSITION_MISMATCH"):
+            self.build(self.fixture.bind(),alter_stats=change)
+        self.assertFalse(any(self.root.rglob("index.json")))
+
+    def test_original_acceptance_alarm_accepts_honest_full_pause(self):
+        from scripts.prophet_board_acceptance import check
+        from datetime import datetime,timezone
+        result=self.build(self.fixture.bind())
+        self.assertEqual(check(result["root"],"fixture-run",datetime(2026,9,28,13,tzinfo=timezone.utc)),[])
+
+    def test_projection_is_an_independent_copy(self):
+        context=self.fixture.bind();_,stats=self.fixture.invoke(context)
+        projected=m.project_new_long_intake(stats,context,read_at=self.fixture.now)
+        stats["market_policy_dispositions"][0]["rules"][0]["grant_ref"]="changed after projection"
+        self.assertEqual(projected["market_policy_dispositions"][0]["rules"][0]["grant_ref"],self.fixture.rule["grant_ref"])
+
+
+    def test_existing_positions_remain_under_native_management(self):
+        seed=self.build()
+        control=self.build(seed_root=seed["root"])
+        restricted=self.build(self.fixture.bind(),seed_root=seed["root"])
+        self.assertEqual(restricted["plans"],control["plans"])
+        self.assertEqual(restricted["states"],control["states"])
+        self.assertEqual(restricted["ledger"],control["ledger"])
+        self.assertEqual(len(restricted["plans"]),2)
+        self.assertEqual(restricted["index"]["intake"]["duplicate_id_blocked"],2)
+        self.assertEqual(restricted["index"]["intake"]["market_policy_suppressed"],0)
+        self.assertEqual(restricted["index"]["intake"]["market_policy_dispositions"],[])

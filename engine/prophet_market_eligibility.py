@@ -502,3 +502,73 @@ def bind_new_long_restrictions(
         board_digest=_digest(board), records=tuple(accepted), observed_at=observed_at,
         valid_until=valid_until, errors=tuple(sorted(set(errors))),
     )
+
+
+def project_new_long_intake(
+    intake: Mapping[str, Any], restrictions: NewLongRestrictionRead, *, read_at: str,
+) -> dict[str, Any]:
+    """Publish the native disposition, never reclassify a missing row as a bad chart.
+
+    Called only by the explicitly adopted internal builder. Recompute each policy
+    disposition from the same immutable read before exposing its accounting. This
+    proves composition with an already accepted source, not a grant or live policy.
+    """
+    if not isinstance(restrictions, NewLongRestrictionRead):
+        raise MarketEligibilityError("POLICY_READ_TYPE_INVALID")
+    if not isinstance(intake, Mapping) or intake.get("market_policy_mode") != "EXPLICIT_INTERNAL_ADOPTION":
+        raise MarketEligibilityError("POLICY_INTAKE_MODE_INVALID")
+    counts = {}
+    for key in ("admitted", "duplicate_id_blocked", "reorigination_blocked",
+                "market_policy_suppressed", "eligible_after_skips", "validation_failed",
+                "originated", "unaccounted"):
+        n = intake.get(key)
+        if not isinstance(n, int) or isinstance(n, bool) or n < 0:
+            raise MarketEligibilityError("POLICY_INTAKE_COUNT_INVALID")
+        counts[key] = n
+    if (counts["unaccounted"] != 0 or intake.get("lossless") is not True
+            or counts["admitted"] != sum(counts[k] for k in (
+                "duplicate_id_blocked", "reorigination_blocked", "market_policy_suppressed",
+                "validation_failed", "originated"))
+            or counts["eligible_after_skips"] != counts["validation_failed"] + counts["originated"]):
+        raise MarketEligibilityError("POLICY_INTAKE_BALANCE_INVALID")
+    rows = intake.get("market_policy_dispositions")
+    failures = intake.get("validation_failures")
+    if (not isinstance(rows, list) or len(rows) > MAX_BOARD_ROWS
+            or not isinstance(failures, list) or len(failures) != counts["validation_failed"]
+            or any(not isinstance(f, dict) for f in failures)):
+        raise MarketEligibilityError("POLICY_INTAKE_ROWS_INVALID")
+    identity_failures = sum(f.get("stage") == "candidate_identity" for f in failures)
+    if len(rows) != counts["admitted"] - counts["duplicate_id_blocked"] - counts["reorigination_blocked"] - identity_failures:
+        raise MarketEligibilityError("POLICY_INTAKE_POPULATION_MISMATCH")
+    denied = unavailable = 0
+    seen = set()
+    for row in rows:
+        if not isinstance(row, dict):
+            raise MarketEligibilityError("POLICY_INTAKE_ROW_INVALID")
+        pid = _text(row.get("id"), "POLICY_PLAN_ID_INVALID")
+        ticker = _text(row.get("ticker"), "POLICY_TICKER_INVALID")
+        if pid in seen:
+            raise MarketEligibilityError("POLICY_INTAKE_DUPLICATE")
+        seen.add(pid)
+        expected = {"ticker": ticker, "id": pid, **restrictions.decision(ticker, read_at=read_at)}
+        if not _exact(row, expected):
+            raise MarketEligibilityError("POLICY_INTAKE_DISPOSITION_MISMATCH")
+        denied += row["state"] == "DENY_NEW_LONG"
+        unavailable += row["state"] == "UNAVAILABLE"
+    if denied + unavailable != counts["market_policy_suppressed"]:
+        raise MarketEligibilityError("POLICY_INTAKE_SUPPRESSION_MISMATCH")
+    return {
+        "market_policy_mode": "EXPLICIT_INTERNAL_ADOPTION",
+        "market_policy_suppressed": denied + unavailable,
+        "market_policy_denied": denied,
+        "market_policy_unavailable": unavailable,
+        "market_policy_dispositions": deepcopy(rows),
+        "market_policy_read": {
+            "board_digest": restrictions.board_digest,
+            "observed_at": restrictions.observed_at,
+            "valid_until": restrictions.valid_until,
+            "read_at": read_at,
+            "capability": "SUBTRACT_ONLY_NEW_LONG_RECOMMENDATION",
+            "not_buy_permission": True,
+        },
+    }
