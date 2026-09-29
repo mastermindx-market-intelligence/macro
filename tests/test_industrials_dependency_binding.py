@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
@@ -649,3 +650,112 @@ def test_every_plan_named_requirement_anchor_exists() -> None:
     assert all(
         requirement.startswith("IND-") for requirement in PLAN_REQUIREMENT_ANCHORS
     ), sorted(PLAN_REQUIREMENT_ANCHORS)
+
+
+_REQUIREMENT_INDEX = "research/industrials/first_vertical_program/requirement_index.md"
+_INDEX_ROW = re.compile(
+    r"^\|\s*(IND-[A-Z]+\d+)\s*\|\s*(T\d\d)\s*\|\s*`([^`]+)`\s*\|\s*`([^`]+)`\s*"
+    r"\|\s*([A-Z_]+)\s*\|$"
+)
+
+
+def _read_requirement_index() -> dict[str, tuple[str, str, str, str]]:
+    """Return ``{requirement: (task, test_file, test_name, anchor_basis)}``."""
+    repo_root = Path(__file__).resolve().parent.parent
+    path = repo_root / _REQUIREMENT_INDEX
+    assert path.is_file(), (
+        f"{_REQUIREMENT_INDEX} is missing. The anchor map's only external "
+        f"authority is that file; without it a row asserts nothing but itself."
+    )
+    rows: dict[str, tuple[str, str, str, str]] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        match = _INDEX_ROW.match(line.strip())
+        if match is None:
+            continue
+        requirement, task, test_file, test_name, basis = match.groups()
+        assert requirement not in rows, f"{requirement}: duplicated index row"
+        rows[requirement] = (task, test_file, test_name, basis)
+    return rows
+
+
+def test_anchor_map_agrees_with_the_recovered_requirement_index() -> None:
+    """An anchor row may not invent the requirement it claims to enforce.
+
+    ``test_every_plan_named_requirement_anchor_exists`` above proves each row
+    points at a test that EXISTS.  It cannot prove the row is honest, because
+    the frozen plan's traceability table is not in this repository: a row naming
+    an id the plan never assigned, or pointing at the suite of a different task,
+    resolves exactly as cleanly as a correct one.
+
+    The missing authority is the obligation's text.  Measured 2026-09-29, of the
+    56 ids the plan names, 41 appear NOWHERE in this tree -- no spec, no doc, no
+    fixture, no test -- because the requirement texts are inherited "unchanged
+    from r1/r2/W12" and those specifications are absent.  The 15 that do appear
+    are exactly T01's and T04's, and only because landed code cites them.  So an
+    anchor for any of the other 41 could not be enforcing a requirement; it would
+    be inventing one, and nothing in CI would notice.
+
+    This binds the map to ``research/industrials/first_vertical_program/
+    requirement_index.md``, which carries the plan's rows verbatim plus a declared
+    ``anchor_basis`` per requirement.  A ``NO_SOURCE`` requirement may not be
+    anchored, so extending coverage requires naming a real source in the same
+    change instead of adding one line to a dict.
+    """
+    index = _read_requirement_index()
+    assert len(index) == 56, f"expected the plan's 56 rows, parsed {len(index)}"
+
+    assert {"RULING", "LANDED_BEHAVIOUR", "NO_SOURCE"} >= {
+        row[3] for row in index.values()
+    }, sorted({row[3] for row in index.values()})
+    sourced = {r for r, row in index.items() if row[3] != "NO_SOURCE"}
+    unsourced = {r for r, row in index.items() if row[3] == "NO_SOURCE"}
+    # Derived, not a second hard-coded constant: clause 4 below binds `sourced`
+    # to the anchor map, whose own size the sibling test asserts, so the count of
+    # unsourced requirements follows from the plan's 56 rows.
+    assert len(sourced) + len(unsourced) == 56, (sorted(sourced), sorted(unsourced))
+
+    # 1. Every anchored requirement is one the plan actually named.
+    for requirement in sorted(PLAN_REQUIREMENT_ANCHORS):
+        assert requirement in index, (
+            f"{requirement} is anchored but the plan's table never names it; "
+            f"an anchor for an id outside the frozen scope is not coverage."
+        )
+
+    # 2. The anchor's suite and test name are the plan's own, not a paraphrase.
+    for requirement, (relative_path, test_name) in sorted(
+        PLAN_REQUIREMENT_ANCHORS.items()
+    ):
+        _task, planned_file, planned_test, _basis = index[requirement]
+        assert relative_path == planned_file, (
+            f"{requirement}: anchored to {relative_path}, plan assigns {planned_file}"
+        )
+        assert test_name == planned_test, (
+            f"{requirement}: anchored to {test_name}, plan assigns {planned_test}"
+        )
+
+    # 3. The barrier this test exists for: no requirement whose obligation text
+    #    nobody holds may be claimed as covered.
+    invented = sorted(set(PLAN_REQUIREMENT_ANCHORS) & unsourced)
+    assert not invented, (
+        f"anchored with anchor_basis=NO_SOURCE: {invented}. The obligation's text "
+        f"is not reachable from this repository, so the row would assert a "
+        f"requirement rather than enforce one. Supply a source in "
+        f"{_REQUIREMENT_INDEX} in the same change, or leave it unanchored."
+    )
+
+    # 4. The converse, so the index cannot claim a source that nothing enforces.
+    assert sourced == set(PLAN_REQUIREMENT_ANCHORS), (
+        f"index/anchor disagreement: sourced-but-unanchored="
+        f"{sorted(sourced - set(PLAN_REQUIREMENT_ANCHORS))}, "
+        f"anchored-but-unsourced={sorted(set(PLAN_REQUIREMENT_ANCHORS) - sourced)}"
+    )
+
+    # 5. A RULING basis names a ruling that has to exist.
+    repo_root = Path(__file__).resolve().parent.parent
+    ruling = repo_root / (
+        "research/industrials/first_vertical_program/rulings/"
+        "R-IND-2026-09-27-requirement-anchors.md"
+    )
+    by_ruling = sorted(r for r, row in index.items() if row[3] == "RULING")
+    assert by_ruling == ["IND-D08", "IND-D09", "IND-D10", "IND-R208"], by_ruling
+    assert ruling.is_file(), f"anchor_basis=RULING for {by_ruling} but {ruling} is absent"
