@@ -94,3 +94,39 @@ scope:
   - research/WORKTREE_GC_POLICY.md
 confidence: verified
 ---
+
+## A THIRD reach failure on this volume, found 2026-09-29: nothing MONITORS it
+
+The record above establishes that no sweeper can *reclaim* here (no root covers the volume, and the
+host-checkout belt refuses the path anyway). The monitor is a separate instrument and it is blind too,
+for a third independent reason.
+
+`storage_floor_guard.py` (launchd, every 1800 s) checks exactly **two** targets, and there is no
+volume list anywhere in it: a hardcoded `/System/Volumes/Data`, plus the single `mount_point` read
+from `~/.config/mastermind/worktree-storage.json` — which is `/Volumes/Mastermind`. So this volume is
+invisible **by construction, not by a config omission**: `~/.config/mastermind/storage-floor.json`
+can carry `internal_floor_gib` and nothing else, so no floor value could be added for it without a
+code change. `grep -c Worktrees` over the guard's entire log is **0**; the only row shapes it has ever
+emitted are `internal /System/Volumes/Data free …` and `policy  /Volumes/Mastermind free …`.
+
+| volume | used | free | floor-guard monitored | in GC `roots` |
+|---|---:|---:|---|---|
+| `/System/Volumes/Data` | 83 % | 317.1 GiB | yes (hardcoded) | yes, but TCC-blind — `DSC:THE-SWEEPER-IS-TCC-BLIND-TO-THE-LARGEST-INTERNAL-WORKTREE-POOL` |
+| `/Volumes/Mastermind` | 80 % | 756.1 GiB | yes (policy `mount_point`) | no |
+| **`/Volumes/Worktrees`** | **87 %** | **130.3 GiB** | **no — not expressible in its config** | **no** |
+
+**The fullest volume in the fleet is the unmonitored one**, and the ordering is not a coincidence: a
+volume nothing watches is a volume nothing drains. Two `OK` rows every 30 minutes read as "storage is
+fine" when there are three volumes — **an instrument that reports per-subject health and never reports
+its subject COUNT cannot be distinguished from one with full coverage.** The repair is the one this
+program keeps arriving at from different directions: print `checked N of M` beside the verdict, with M
+derived from enumerating mounts rather than from the config.
+
+**This changes no size claim in this record.** The amended attribution above stands: ~5.4 GiB is the
+most that is agent-reclaimable here, 89 % of the volume is the operator's own `Documents`, and the
+HUMAN-class 46.43 GiB is never auto-reclaimed. The gap is monitoring, not bytes — which is precisely
+why it survived two censuses that were both looking for bytes.
+
+**Practical warning for the next session that measures this volume:** it is exFAT, and `git status`
+over the 28.14 GiB tree did not complete in **10 minutes**. Size any probe to the filesystem, and
+never put a `status` sweep of this volume on a timed or hook path.
