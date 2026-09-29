@@ -1,0 +1,272 @@
+{
+  "schema": "prophet.q06.sec_comparable_revenue_source_contract.v0.2",
+  "operation_key": "prophet-economic-evidence-research-20260926-sol-001",
+  "supersedes": [
+    "prophet.economic_evidence_capture_candidate.v0.1",
+    "prophet.q06.aapl_revision_chain_receipt.v1 terminology that called distinct supplied envelope hashes source-body revisions"
+  ],
+  "state": "GATE_S_REPAIRED_PENDING_PARENT_ACCEPTANCE",
+  "authority": {
+    "rank": false,
+    "gate": false,
+    "signal": false,
+    "size": false,
+    "entry": false,
+    "execution": false,
+    "trade": false
+  },
+  "source_review": {
+    "review_id": "q06-8069-source-method-review-glm-20260927-001",
+    "review_head": "a3bee6f04a26caac30af4d49452690cd2d8a5dea",
+    "original_disposition": "FIX_REQUIRED",
+    "findings": {
+      "blockers": 0,
+      "majors": 3,
+      "minors": 3
+    }
+  },
+  "economic_identity": {
+    "economic_id": "econ:50d783276670de14acd15a92317b93649d877c01f7d48961d1c56e5e7c87a656",
+    "issuer": "Apple Inc.",
+    "cik": "0000320193",
+    "fiscal_period": "FY2026 Q3",
+    "metric": "total_net_sales",
+    "current": {
+      "period": "three_months_ended_2026-06-27",
+      "value": 109417,
+      "unit": "usd_millions",
+      "currency": "USD",
+      "basis": "GAAP"
+    },
+    "prior": {
+      "period": "three_months_ended_2025-06-28",
+      "value": 94036,
+      "unit": "usd_millions",
+      "currency": "USD",
+      "basis": "GAAP"
+    },
+    "formula": "(current/prior-1)*100",
+    "value_pct": 16.356501765281383
+  },
+  "field_provenance": {
+    "field_provenance_id": "fpv:36091b7aff3681e59ab527eb3ebeac61a20324195a9f43f4478c4ccbcff1566a",
+    "source_document": {
+      "object_id": "sec:0000320193:0000320193-26-000018:EX-99.1",
+      "cik": "0000320193",
+      "accession": "0000320193-26-000018",
+      "form": "8-K",
+      "exhibit": "EX-99.1",
+      "source_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000018/a8-kex991q3202606272026.htm",
+      "frozen_envelope_sha256": "070abd6a9cdb7070e546d24ffcbc41c65450d939c6f88f189cb18ec711cf5fdb",
+      "normalized_body_sha256": "070abd6a9cdb7070e546d24ffcbc41c65450d939c6f88f189cb18ec711cf5fdb",
+      "normalization_rule": "sec_suffix_delivery_script_v1"
+    },
+    "table": {
+      "title": "CONDENSED CONSOLIDATED STATEMENTS OF OPERATIONS (Unaudited)",
+      "column_role": "Three Months Ended",
+      "basis_mapping": "GAAP reported financial-statement table; mapped by source-method contract, not by manifest token alone"
+    },
+    "current_span": {
+      "encoding": "utf-8",
+      "coordinate_space": "normalized_exhibit_body_bytes",
+      "start": 19519,
+      "end": 19526,
+      "text_sha256": "4a745d359dd176f4216117d625d1a5b92600458fe8e374d71ee3878b379f82c7"
+    },
+    "prior_span": {
+      "encoding": "utf-8",
+      "coordinate_space": "normalized_exhibit_body_bytes",
+      "start": 20003,
+      "end": 20009,
+      "text_sha256": "2606ce5cfae97e1126fb0267bc90724fe830c01af1dc59e3d9dde6c1acea746c"
+    },
+    "rights": {
+      "path": "research/licenses/PROPHET_US_SOURCE_RIGHTS_REGISTER_2026-09-23.md",
+      "blob": "a9ee6f288bfb2716facd88dcf2c5135ca8125303",
+      "state": "ALLOWED_WITH_RECORDED_LIMITS"
+    },
+    "admissibility": {
+      "state": "SOURCE_FIELD_CANDIDATE",
+      "decision_basis": "same-table quarter current/prior pair; exact spans; source clock and rights bound"
+    },
+    "clocks": {
+      "source_available_at": "2026-07-30T20:30:28Z",
+      "fixture_clock_disposition": "2026-07-30T16:30:00Z is malformed timezone/truncation metadata and is not decision authority"
+    }
+  },
+  "normalization": {
+    "rule_id": "sec_suffix_delivery_script_v1",
+    "scope": "Q06 Apple FY2026 Q3 Exhibit 99.1 only; not a generic SEC sanitizer",
+    "rule": "remove at most one terminal SEC delivery-wrapper script immediately before </body> only when it matches <script type=\"text/javascript\"  src=\"/_[A-Za-z0-9/_-]+\"></script>; preserve both raw envelope hash and normalized-body hash; otherwise do not normalize",
+    "current_recheck_2026_09_29": {
+      "raw_envelope_bytes": 173602,
+      "raw_envelope_sha256": "be6971e00004345bacedaccd598f89e76e7f6480707ecab88c64a5c4ae31d257",
+      "wrapper_bytes": 118,
+      "wrapper_sha256": "21b6e01b8d5e0b138e3f0e46762ca1d0407b7b428237a3fa4a1972ee8a9ed1",
+      "wrapper_text": "<script type=\"text/javascript\"  src=\"/_wPxOk28cEV9nzCHB4rN9sbjkGs/ENfEmwfpt48hfXG5/GzM7GGwHGgM/ES/JHClNELCo\"></script>",
+      "insertion_offset": 173450,
+      "normalized_bytes": 173484,
+      "normalized_sha256": "070abd6a9cdb7070e546d24ffcbc41c65450d939c6f88f189cb18ec711cf5fdb",
+      "selected_current_span_after_normalization": 19519,
+      "selected_prior_span_after_normalization": 20003,
+      "removes_wrapper_and_restores_frozen_fixture_exactly": true
+    },
+    "independent_review_2026_09_27_witness": {
+      "raw_envelope_bytes": 173604,
+      "raw_envelope_sha256": "6595b2425e503a5cf2f6c2b74506954784e4f7834d6682501265324d7fb657cb",
+      "reported_wrapper_bytes": 120,
+      "normalized_sha256": "070abd6a9cdb7070e546d24ffcbc41c65450d939c6f88f189cb18ec711cf5fdb"
+    },
+    "unknown_envelope_policy": "UNEXPLAINED_ENVELOPE_CHANGE until exact raw bytes are normalized and compared; never infer issuer-authored economic revision from envelope hash alone"
+  },
+  "historical_envelope_identities": {
+    "manifest_hops_verified": 186,
+    "event_generations_seen": 186,
+    "source_objects_oldest_first": [
+      {
+        "generation_id": "0da3b64d4d9c843f004cd558",
+        "fetched_envelope_sha256": "070abd6a9cdb7070e546d24ffcbc41c65450d939c6f88f189cb18ec711cf5fdb",
+        "observed_at": "2026-07-30T20:30:28Z",
+        "source_available_at": "2026-07-30T20:30:28Z",
+        "revenue_value_usd_millions": 109417,
+        "revenue_text_sha256": "4a745d359dd176f4216117d625d1a5b92600458fe8e374d71ee3878b379f82c7",
+        "classification": "BASELINE_ENVELOPE_EQUALS_FROZEN_NORMALIZED_BODY",
+        "issuer_body_revision_claim": false
+      },
+      {
+        "generation_id": "35658c6894d3f5d2b1cf34b7",
+        "fetched_envelope_sha256": "465c59491a060ff7557593003bd63764f918c744c9cb4ed3f1e6979cca2902eb",
+        "observed_at": "2026-09-18T20:56:33Z",
+        "source_available_at": "2026-07-30T20:30:28Z",
+        "revenue_value_usd_millions": 109417,
+        "revenue_text_sha256": "4a745d359dd176f4216117d625d1a5b92600458fe8e374d71ee3878b379f82c7",
+        "classification": "UNEXPLAINED_SUPPLIED_ENVELOPE_IDENTITY",
+        "issuer_body_revision_claim": false
+      },
+      {
+        "generation_id": "28fd09b9e05e598559b1f324",
+        "fetched_envelope_sha256": "df4de3d8c993b900c4406a0edc4b0f0875ec439f6be675970570a2b900aa9f6f",
+        "observed_at": "2026-09-19T04:41:41Z",
+        "source_available_at": "2026-07-30T20:30:28Z",
+        "revenue_value_usd_millions": 109417,
+        "revenue_text_sha256": "4a745d359dd176f4216117d625d1a5b92600458fe8e374d71ee3878b379f82c7",
+        "classification": "UNEXPLAINED_SUPPLIED_ENVELOPE_IDENTITY",
+        "issuer_body_revision_claim": false
+      },
+      {
+        "generation_id": "be4a94fc35acf16cc9f5a9ba",
+        "fetched_envelope_sha256": "2424049a17320b3f84d3fda54cc623651e865357f76767644889591eeecb5cd5",
+        "observed_at": "2026-09-20T04:58:16Z",
+        "source_available_at": "2026-07-30T20:30:28Z",
+        "revenue_value_usd_millions": 109417,
+        "revenue_text_sha256": "4a745d359dd176f4216117d625d1a5b92600458fe8e374d71ee3878b379f82c7",
+        "classification": "UNEXPLAINED_SUPPLIED_ENVELOPE_IDENTITY",
+        "issuer_body_revision_claim": false
+      },
+      {
+        "generation_id": "9763140890e595f540a24ffc",
+        "fetched_envelope_sha256": "7f1ece28e748571eecaa61ceadbe697cc6691340a7f26953eac23e89b542318d",
+        "observed_at": "2026-09-21T05:00:45Z",
+        "source_available_at": "2026-07-30T20:30:28Z",
+        "revenue_value_usd_millions": 109417,
+        "revenue_text_sha256": "4a745d359dd176f4216117d625d1a5b92600458fe8e374d71ee3878b379f82c7",
+        "classification": "UNEXPLAINED_SUPPLIED_ENVELOPE_IDENTITY",
+        "issuer_body_revision_claim": false
+      },
+      {
+        "generation_id": "9625ce019794b64fe120114b",
+        "fetched_envelope_sha256": "d83e68e26f5a8112e5c9f21bdb037044dae0ae4655ef34d5356642c4deac7bcc",
+        "observed_at": "2026-09-22T00:13:07Z",
+        "source_available_at": "2026-07-30T20:30:28Z",
+        "revenue_value_usd_millions": 109417,
+        "revenue_text_sha256": "4a745d359dd176f4216117d625d1a5b92600458fe8e374d71ee3878b379f82c7",
+        "classification": "UNEXPLAINED_SUPPLIED_ENVELOPE_IDENTITY",
+        "issuer_body_revision_claim": false
+      },
+      {
+        "generation_id": "100b0de63bed855a8fc3fdaf",
+        "fetched_envelope_sha256": "1052accebd324cb33199f28f0ae79fbe458f3e2262e6c96cf82b9ad7eea3a13f",
+        "observed_at": "2026-09-23T04:49:39Z",
+        "source_available_at": "2026-07-30T20:30:28Z",
+        "revenue_value_usd_millions": 109417,
+        "revenue_text_sha256": "4a745d359dd176f4216117d625d1a5b92600458fe8e374d71ee3878b379f82c7",
+        "classification": "UNEXPLAINED_SUPPLIED_ENVELOPE_IDENTITY",
+        "issuer_body_revision_claim": false
+      },
+      {
+        "generation_id": "3be5e93e4bc42804dc816973",
+        "fetched_envelope_sha256": "031a40d2acc89ef3663785d676c370fc85aa3bba19e66719210643e6bca8f349",
+        "observed_at": "2026-09-24T04:54:17Z",
+        "source_available_at": "2026-07-30T20:30:28Z",
+        "revenue_value_usd_millions": 109417,
+        "revenue_text_sha256": "4a745d359dd176f4216117d625d1a5b92600458fe8e374d71ee3878b379f82c7",
+        "classification": "UNEXPLAINED_SUPPLIED_ENVELOPE_IDENTITY",
+        "issuer_body_revision_claim": false
+      },
+      {
+        "generation_id": "e834bcdfc322f8bf3f6cf440",
+        "fetched_envelope_sha256": "dd669a17e2b6e9e4547954f993f61e1c901c26b7f0f10907d80bac5c13b6c1f8",
+        "observed_at": "2026-09-25T05:02:53Z",
+        "source_available_at": "2026-07-30T20:30:28Z",
+        "revenue_value_usd_millions": 109417,
+        "revenue_text_sha256": "4a745d359dd176f4216117d625d1a5b92600458fe8e374d71ee3878b379f82c7",
+        "classification": "UNEXPLAINED_SUPPLIED_ENVELOPE_IDENTITY",
+        "issuer_body_revision_claim": false
+      },
+      {
+        "generation_id": "2db5fb7235184c40ba2e201c",
+        "fetched_envelope_sha256": "5cab65a7cba3d7f81dba0c6ac16687a13157678f9b78d4cc5ec64d44a698d5ad",
+        "observed_at": "2026-09-26T05:02:59Z",
+        "source_available_at": "2026-07-30T20:30:28Z",
+        "revenue_value_usd_millions": 109417,
+        "revenue_text_sha256": "4a745d359dd176f4216117d625d1a5b92600458fe8e374d71ee3878b379f82c7",
+        "classification": "UNEXPLAINED_SUPPLIED_ENVELOPE_IDENTITY",
+        "issuer_body_revision_claim": false
+      }
+    ]
+  },
+  "correction_semantics": {
+    "economic_change": "change economic_identity only when comparable identity/period/metric/value/unit/currency/basis changes or a field disappears",
+    "provenance_change": "change field_provenance identity whenever source/document/span/encoding/normalization/admissibility/rights identity changes even if economic value is stable",
+    "clock_only_change": "record separately; does not rewrite economic identity",
+    "broken_or_unverified_lineage": "UNESTIMABLE; no current-body fallback"
+  },
+  "gate_s": {
+    "state": "REPAIRED_PENDING_PARENT_ACCEPTANCE",
+    "blockers": [],
+    "review_findings": {
+      "M1": "REPAIRED_BY_ENVELOPE_VS_NORMALIZED_BODY_SEPARATION",
+      "M2": "REPAIRED_BY_SEPARATE_FIELD_PROVENANCE_IDENTITY",
+      "M3": "REMOVED_FROM_GATE_S_AND_DOWNGRADED_TO_PREPARATORY_GATE_E",
+      "m1": "REPAIRED_FIXTURE_CLOCK_CLASSIFIED_MALFORMED",
+      "m2": "REPAIRED_EXACT_STATEMENT_TITLE_BOUND",
+      "m3": "REPAIRED_BY_COMMITTED_VERIFIER"
+    }
+  },
+  "gate_e": {
+    "state": "NOT_REGISTERED_PREPARATORY_ONLY",
+    "protected_outcome_read": false,
+    "numerical_result": "UNCOMPUTED",
+    "trial_may_start": false,
+    "required_before_registration": [
+      "exact directional estimand",
+      "complete denominator states including delisting/FPI/duplicate issuer-date",
+      "fixed comparator arms",
+      "entry and endpoint mark conventions",
+      "chronological partitions and label support exclusion",
+      "benchmark and sector construction",
+      "cost model",
+      "multiplicity owner and trial budget",
+      "numeric worthwhile-gain and harm criteria",
+      "fixed look and maturity rule",
+      "accepted Data OS outcome-price basis"
+    ]
+  },
+  "downstream": {
+    "d5_adapter_edit_authorized": false,
+    "packet3_trial_authorized": false,
+    "rank_change_authorized": false,
+    "user_entry_authorized": false
+  },
+  "next_action": "Parent reviews Gate S v0.2. If accepted, incumbent Earnings/D5 owner may materialize the exact factual comparable-revenue field under its existing contract; Evaluation separately completes Gate E before any outcome access."
+}
