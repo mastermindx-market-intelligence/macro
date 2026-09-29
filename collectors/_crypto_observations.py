@@ -189,7 +189,15 @@ def funding_asof(captures: pd.DataFrame, as_of: Any, *, inst_id: str = 'BTC-USDT
         if str(payload.get('code'))!='0':continue
         for row in payload['data']:
             if row.get('instId')!=inst_id:continue
-            try:t=pd.to_datetime(int(row['fundingTime']),unit='ms',utc=True)
+            raw_time = row.get('fundingTime')
+            if isinstance(raw_time, bool):continue
+            if isinstance(raw_time, str):
+                if not raw_time.isascii() or not raw_time.isdecimal():continue
+            elif not isinstance(raw_time, int):continue
+            try:
+                millis = int(raw_time)
+                if millis < 0:continue
+                t=pd.to_datetime(millis,unit='ms',utc=True)
             except (ValueError,TypeError,KeyError,OverflowError):continue
             if pd.isna(t):continue
             key=(inst_id,t.isoformat());fingerprint=canonical(row);old=events.get(key)
@@ -226,8 +234,11 @@ def record_response(adapter, source_id, params, response, payload, received_at, 
             base = parsed._replace(query='', fragment='').geturl()
             if parsed.username or parsed.password or base != expected:
                 raise ValueError('Response endpoint does not match request evidence')
+        status = getattr(response, 'status_code', None)
+        if isinstance(status, bool) or not isinstance(status, int) or not 100 <= status <= 599:
+            raise ValueError('Observed HTTP status required for a response receipt')
         capture=build_capture(source_id,params,payload,received_at,
-                              body=getattr(response,'content',None),http_status=getattr(response,'status_code',200))
+                              body=getattr(response,'content',None),http_status=status)
         result=persist_capture(capture)
     except Exception as exc:result={'status':'unavailable','error_type':type(exc).__name__}
     adapter.source_capture_status.append(dict(result,source_id=source_id))

@@ -394,3 +394,23 @@ def test_r11_later_missing_actual_is_not_repaired_with_an_old_value(tmp_path):
     assert o.funding_asof(rows,'2026-01-01T01:30:00Z')[0]['settled_rate']==.00021
     assert o.funding_asof(rows,'2026-01-01T02:30:00Z')[0]['settled_rate'] is None
     assert len(rows)==2
+
+
+def test_r11_projection_rejects_noninteger_or_boolean_settlement_timestamps():
+    from collectors import _crypto_observations as o
+    for raw in [True,False,1767283200000.5,'1767283200000.5','-1',None]:
+        p=_capture_payload();p['data'][0]['fundingTime']=raw
+        c=o.build_capture('okx_funding',{'instId':'BTC-USDT-SWAP'},p,'2026-01-09T01:00:00Z')
+        assert o.funding_asof(pd.DataFrame([c]),'2026-01-10T00:00:00Z')==[],raw
+
+
+def test_r11_missing_http_status_is_not_recorded_as_observed_success(tmp_path,monkeypatch):
+    from types import SimpleNamespace
+    from collectors import _crypto_observations as o
+    monkeypatch.setattr(o.config,'data_dir',lambda:tmp_path)
+    a=SimpleNamespace(_crypto_capture_active=True,source_capture_status=[])
+    response=SimpleNamespace(content=b'{}')
+    result=o.record_response(a,'okx_funding',{'instId':'BTC-USDT-SWAP'},response,_capture_payload(),
+                             '2026-01-01T01:00:00Z',endpoint=o.SOURCES['okx_funding'][1])
+    assert result['status']=='unavailable'
+    assert not o.capture_path('okx_funding').exists()
