@@ -94,7 +94,8 @@ import pandas as pd
 # Ensure repo root on path when run as a script
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from engine.thetadata_store import resolve_thetadata_store  # noqa: E402
+from engine.thetadata_store import (drained_store_candidates,  # noqa: E402
+                                    resolve_thetadata_store)
 
 log = logging.getLogger("backfill_thetadata_eod")
 
@@ -581,7 +582,6 @@ def main() -> int:
         # fresh-install exception below would let this process mint a SECOND store
         # beside it — the exact hazard this block exists to prevent, now reachable
         # through the path that used to be safe. A drained store is a store.
-        from engine.thetadata_store import drained_store_candidates  # noqa: PLC0415
         elsewhere = [d for d in drained_store_candidates()
                      if Path(d).resolve() != Path(own_store).resolve()]
         if elsewhere:

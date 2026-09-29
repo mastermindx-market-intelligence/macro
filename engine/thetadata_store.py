@@ -106,7 +106,23 @@ _STORE_TIERS = ("eod", "oi", "greeks")
 # of the only thing protecting against it, in the one function every consumer
 # calls. Hence: bounded, and three-valued so ambiguity is never mistaken for
 # emptiness.
-_STORE_PROBE_S: float = float(os.environ.get("THETADATA_STORE_PROBE_S", "10"))
+def _probe_budget() -> float:
+    """The probe budget, read defensively — a bad value must never break imports.
+
+    This is module scope in THE resolver every consumer imports, so a ValueError
+    here takes down the whole build. The realistic shape is a workflow `env:` key
+    declared with no value (""), not a typo. NaN gets its own branch because it
+    passes every `<= 0` comparison and then makes `Thread.join(nan)` raise.
+    """
+    raw = os.environ.get("THETADATA_STORE_PROBE_S", "10")
+    try:
+        v = float(raw)
+    except (TypeError, ValueError):
+        return 10.0
+    return 10.0 if v != v else v      # v != v is True only for NaN
+
+
+_STORE_PROBE_S: float = _probe_budget()
 
 _HAS_ROOT = "has_root"   # a tier provably holds at least one root directory
 _DRAINED = "drained"     # tier dirs exist and provably hold no roots
@@ -156,8 +172,20 @@ def _classify_store(p: Path) -> str:
     if _STORE_PROBE_S <= 0:      # probe disabled — never claim emptiness
         return _UNKNOWN
     th = threading.Thread(target=_probe, name="thetadata-store-probe", daemon=True)
-    th.start()
-    th.join(_STORE_PROBE_S)
+    try:
+        th.start()
+        th.join(_STORE_PROBE_S)
+    except (RuntimeError, ValueError) as e:
+        # Thread.start() raises RuntimeError when the process cannot create one
+        # more thread. Before this check existed the resolver could not raise at
+        # all, and callers document that (engine/options_skew.py load_chain).
+        # Refusing to resolve because we could not START the probe would be the
+        # same false-RED the probe exists to avoid.
+        log.warning(
+            "thetadata_store: could not run the bounded probe on %s (%s). "
+            "Emptiness is NOT established, so the store is treated as PRESENT.",
+            p, e)
+        return _UNKNOWN
     if th.is_alive():
         log.warning(
             "thetadata_store: listing the tier dirs under %s did not return "
@@ -289,6 +317,19 @@ def resolve_thetadata_store(required: bool = False,
     for source, path in candidates:
         verdict = _classify_store(path)
         if verdict in _RESOLVABLE:
+            if verdict == _UNKNOWN:
+                # Fail-open is correct, but SILENT fail-open is exactly how the
+                # blank-board incident repeats: if the M1's tier dirs cannot be
+                # listed under launchd this is the branch that runs, the drained
+                # store resolves, and a blank brief publishes with exit 0. This
+                # annotation is the only thing that makes that visible. Bare
+                # print at line start + flush: a logger prefixes the line and
+                # GitHub silently drops the annotation (tests/test_gh_annotation_line_start.py).
+                print(f"::warning title=thetadata-store-unverified::"
+                      f"resolved {path} (source={source}, purpose={purpose or '-'}) "
+                      f"WITHOUT verifying its tier dirs are readable. If this store "
+                      f"is drained, the artifact built from it will be blank.",
+                      flush=True)
             log.info("thetadata_store: resolved store=%s source=%s purpose=%s%s",
                      path, source, purpose or "-",
                      " (readability unverified — see the warning above)"
