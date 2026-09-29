@@ -974,10 +974,29 @@ def _observation_value(obs: Mapping[str, Any]) -> Any:
     return None
 
 
+def _observation_date(obs: Mapping[str, Any]) -> date | None:
+    """The date an owner observation carries: its ``as_of``, else its
+    ``observed_at``, each read as _coerce_date reads it.
+
+    The plane clock publishes it, and so every reader dates an observation
+    by it: the planes rank their readings by it, and the expectations
+    history, the slice's freshness and common_as_of read it. (Only the clock
+    and the valuation anchor used to read ``observed_at``. Everything else
+    read ``as_of`` alone, so an observation dated only by ``observed_at``
+    was dated in its clock and undated everywhere else.)"""
+    return _coerce_date(obs.get("as_of")) or _coerce_date(obs.get("observed_at"))
+
+
+def _observation_day(obs: Mapping[str, Any]) -> str | None:
+    """_observation_date as the contract writes a date, or None."""
+    observed = _observation_date(obs)
+    return observed.isoformat() if observed is not None else None
+
+
 def _plane_clock(obs: Mapping[str, Any] | None) -> dict[str, Any] | None:
     if obs is None:
         return None
-    observed = _coerce_date(obs.get("as_of")) or _coerce_date(obs.get("observed_at"))
+    observed = _observation_date(obs)
     if observed is None:
         return None
     published = _coerce_date(obs.get("published_at"))
@@ -1170,11 +1189,18 @@ def _operating_reading(
     """The operating observation the slice publishes, or None.
 
     It is the freshest operating observation filed under the slice that
-    carries an explicit ``direction``. Source records are display-tier
-    (schema-strict) and never carry direction. The conflict grammar reads
-    this same observation.
+    carries an explicit ``direction``, dated by _observation_date. An
+    undated one counts as the oldest, as on the price plane, so it is
+    published only when no dated one is filed under the slice. On one date,
+    an observation the owner tags with this slice outranks an untagged one,
+    as it does for the valuation anchor; two filed the same way on one date
+    keep the owner's order. (An undated observation used to outrank every
+    dated one, and one dated only by observed_at counted as undated, so the
+    plane could publish a reading older than one it passed over.) Source
+    records are display-tier (schema-strict) and never carry direction. The
+    conflict grammar reads this same observation.
     """
-    candidates: list[tuple[date | None, Mapping[str, Any]]] = []
+    candidates: list[tuple[tuple[date, bool], Mapping[str, Any]]] = []
     for packet in financial_packets.values():
         if not isinstance(packet, Mapping):
             continue
@@ -1182,10 +1208,11 @@ def _operating_reading(
         if isinstance(operating, Mapping):
             for obs in operating.get("observations") or ():
                 if isinstance(obs, Mapping) and _direction(obs) is not None and _filed_under(obs, slice_id):
-                    candidates.append((_coerce_date(obs.get("as_of")), obs))
+                    observed = _observation_date(obs) or date.min
+                    candidates.append(((observed, obs.get("slice_id") == slice_id), obs))
     if not candidates:
         return None
-    candidates.sort(key=lambda c: (c[0] or date.max))
+    candidates.sort(key=lambda c: c[0])
     return candidates[-1][1]
 
 
@@ -1250,7 +1277,7 @@ def _expectations_plane(
         history_state = "DATED_CONSENSUS_AVAILABLE"
         history_obs = [
             {
-                "as_of": row.get("as_of"),
+                "as_of": _observation_day(row),
                 "source": row.get("source"),
                 "metric": row.get("metric"),
                 "value": row.get("value"),
@@ -1258,7 +1285,7 @@ def _expectations_plane(
             }
             for row in dated
         ]
-        freshest = max(dated, key=lambda r: _coerce_date(r.get("as_of")) or date.min)
+        freshest = max(dated, key=lambda r: _observation_date(r) or date.min)
         primary = _build_primary_metric(freshest)
         clock = _plane_clock(freshest)
         state = "MISSING" if _plane_is_regime_break(regime_breaks, slice_id, "expectations") else "OBSERVED"
@@ -1280,7 +1307,7 @@ def _expectations_plane(
     if guidance_rows:
         history_obs = [
             {
-                "as_of": row.get("as_of"),
+                "as_of": _observation_day(row),
                 "source": row.get("source"),
                 "metric": row.get("metric"),
                 "value": row.get("value"),
@@ -1348,7 +1375,7 @@ def _valuation_anchor(
             for obs in valuation.get("observations") or ():
                 if not isinstance(obs, Mapping) or not _filed_under(obs, slice_id):
                     continue
-                observed = _coerce_date(obs.get("as_of")) or _coerce_date(obs.get("observed_at"))
+                observed = _observation_date(obs)
                 if observed is not None:
                     candidates.append(((observed, obs.get("slice_id") == slice_id), obs))
     if not candidates:
@@ -1440,9 +1467,9 @@ def _valuation_plane(
 def _price_reading(market_obs: Sequence[Mapping[str, Any]]) -> Mapping[str, Any] | None:
     """The market observation the slice's price plane publishes, or None.
 
-    It is the freshest observation on a qualified price basis; an undated
-    one counts as the oldest. The conflict grammar reads this same
-    observation.
+    It is the freshest observation on a qualified price basis, dated by
+    _observation_date; an undated one counts as the oldest. The conflict
+    grammar reads this same observation.
     """
     qualified = [
         o
@@ -1451,7 +1478,7 @@ def _price_reading(market_obs: Sequence[Mapping[str, Any]]) -> Mapping[str, Any]
     ]
     if not qualified:
         return None
-    return max(qualified, key=lambda o: _coerce_date(o.get("as_of")) or date.min)
+    return max(qualified, key=lambda o: _observation_date(o) or date.min)
 
 
 def _price_plane(
@@ -1600,12 +1627,12 @@ def _slice_freshness(
                 observed_dates.append(d)
     for obs in expectation_obs:
         if isinstance(obs, Mapping):
-            d = _coerce_date(obs.get("as_of"))
+            d = _observation_date(obs)
             if d is not None:
                 observed_dates.append(d)
     for obs in market_obs:
         if isinstance(obs, Mapping):
-            d = _coerce_date(obs.get("as_of"))
+            d = _observation_date(obs)
             if d is not None:
                 observed_dates.append(d)
     if not observed_dates:
@@ -2706,7 +2733,7 @@ def compose_finance_projection(
             as_of_candidates.append(d)
     for row in used_observations:
         if isinstance(row, Mapping):
-            d = _coerce_date(row.get("as_of"))
+            d = _observation_date(row)
             if d is not None:
                 as_of_candidates.append(d)
     as_of_candidates.append(knowledge_cutoff_date)
