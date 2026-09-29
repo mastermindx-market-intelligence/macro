@@ -90,7 +90,8 @@
           {% elif _plan_state == 'unknown' %}
           <h3>{{ t('Plan connection','计划关联') }}</h3><p class="pvs-note">{{ t('Plan records could not be read for this candidate.','无法读取此候选的计划记录。') }}</p>
           {% else %}
-          <h3>{{ t('Plan connection','计划关联') }}</h3><p class="pvs-note">{{ t('No model plan is linked to this candidate. No plan or position is created here.','此候选暂无关联的模型计划，不在此创建计划或持仓。') }}</p>
+          <h3>{{ t('Plan connection','计划关联') }}</h3><p class="pvs-note">{{ t('No open same-security model record found. No plan or position is created here.','未找到同一证券的未平仓模型记录，不在此创建计划或持仓。') }}</p>
+          <p class="pvs-note">{{ t('Exact plan relation: not available from the source.','精确计划关联：来源未提供。') }}</p>
           {% endif %}
         </section>
         <section class="pvs-section"><h3>{{ t('Source dates','来源时间') }}</h3><dl class="pvs-facts">

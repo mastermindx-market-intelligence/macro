@@ -463,7 +463,7 @@ def test_setup_detail_research_never_borrows_board_levels_or_strategy():
     assert 'UNBOUND_POLICY' not in html
     assert 'buy_now' not in html
     assert not soup.select('.pvs-levels')
-    assert 'No model plan is linked to this candidate.' in soup.get_text()
+    assert 'No open same-security model record found.' in soup.get_text()
 
 
 def test_candidate_decision_record_reasons_are_readable_and_machine_values_stable():
@@ -806,7 +806,7 @@ def test_setup_detail_progressive_disclosure_keeps_facts_and_missing_terms():
         assert field.find_parent("details") is None and field.select_one("dd").get_text(strip=True) == val
     for path in ["canonical strategy binding not supplied", "holding duration not supplied", "envelope.as_of", "price_as_of"]:
         assert extra.select_one('[data-source-field="' + path + '"]')
-    assert "No model plan is linked to this candidate." in extra.get_text()
+    assert "No open same-security model record found." in extra.get_text()
 
 
 def test_setup_detail_styles_are_explicit_opt_in_after_acceptance_repair():

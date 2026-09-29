@@ -154,8 +154,11 @@ def test_setup_detail_renders_none_wrong_ticker_and_unknown_states():
     none = BeautifulSoup(str(module.body({"ticker": "AAA"}, "board", None, _relation(other_only))),
                          "html.parser").select_one(".pvs-plan-relation")
     assert none["data-plan-relation"] == "none"
-    assert "No model plan is linked to this candidate." in none.get_text(" ", strip=True)
-    assert "此候选暂无关联的模型计划，不在此创建计划或持仓。" in none.get_text(" ", strip=True)
+    notes = " ".join(node.get_text(" ", strip=True) for node in none.select("p.pvs-note"))
+    assert "No open same-security model record found. No plan or position is created here." in notes
+    assert "未找到同一证券的未平仓模型记录，不在此创建计划或持仓。" in notes
+    assert "Exact plan relation: not available from the source." in notes
+    assert "精确计划关联：来源未提供。" in notes
     assert not none.select(".pvs-plan-rec")
 
     unknown = BeautifulSoup(str(module.body({"ticker": "AAA"}, "board", None, _relation(None, True))),
@@ -217,6 +220,35 @@ def test_evidence_manifest_is_bound_to_the_captured_ui_head_and_fixture_bytes():
         ["git", "diff", "--quiet", resolved, "HEAD", "--", "templates/", "scripts/", "engine/"],
         cwd=ROOT)
     assert diff.returncode == 0, "UI trees changed after evidence capture"
+
+
+def test_plv_evidence_states_are_distinct_for_every_shell_cell():
+    import json
+    import itertools
+
+    manifest = json.loads(
+        (ROOT / "mockups/evidence/pri_ui_c1/manifest.json").read_text(encoding="utf-8"))
+    by_cell = {}
+    for page in manifest["pages"]:
+        if not page["page_id"].startswith("fixture_plv_"):
+            continue
+        state_name = page["page_id"][len("fixture_plv_"):-len(".html")].replace("prior", "prior_day")
+        for state in page["states"]:
+            cell = (state["theme"], state["locale"], state["viewport"])
+            by_cell.setdefault(cell, {})[state_name] = state["sha256"]
+    assert set(by_cell) == {
+        (theme, locale, viewport)
+        for theme in ("dark", "light")
+        for locale in ("en", "zh")
+        for viewport in ("desktop", "mobile")
+    }
+    duplicates = []
+    for cell, hashes in by_cell.items():
+        assert set(hashes) == {"today", "prior_day", "unavailable"}, cell
+        for left, right in itertools.combinations(sorted(hashes), 2):
+            if hashes[left] == hashes[right]:
+                duplicates.append(f"{cell}:{left}={right}")
+    assert not duplicates, f"pixel-identical PLV state evidence: {', '.join(duplicates)}"
 
 
 def test_plan_relation_preserves_existing_machine_attribute_sets():
