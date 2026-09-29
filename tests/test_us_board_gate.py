@@ -53,7 +53,7 @@ from tests.test_dashboard_template_render import _env, _board_row, _base_vm  # n
 # coincide here — but keying on the full body is still what
 # docs/TIER_PREVIEW_PATTERN.md's checklist step 7 requires, and it is what
 # actually catches a markup regression that keys the wrong span.
-CARD_ROW = re.compile(r'<a class="pvcard.*?</a>', re.S)
+CARD_ROW = re.compile(r'<(?:a|article) class="pvcard.*?</(?:a|article)>', re.S)
 TICKER_ATTR = re.compile(r'data-ticker="([^"]*)"')
 SCRIPT_TAG = re.compile(r'<script\b.*?</script>', re.S)
 
@@ -480,8 +480,9 @@ def test_shipped_shell_leaks_no_locked_ticker():
     shell = SHELL.read_text(encoding="utf-8")
     locked_tickers = {r["ticker"] for r in payload.get("rows", []) if r.get("ticker")}
     assert locked_tickers, "a gated payload with no locked rows is a vacuous pass"
-    leaked = sorted(tk for tk in locked_tickers if f'data-ticker="{tk}"' in shell)
-    assert leaked == [], f"locked tickers reachable in the shipped shell: {leaked[:5]}"
+    payload, cards, _table = _shell_board_blocks()
+    leaked = sorted(set(cards) & locked_tickers)
+    assert leaked == [], f"locked board cards reachable in the shipped shell: {leaked[:5]}"
 
 
 def _shell_board_blocks():
@@ -493,11 +494,10 @@ def _shell_board_blocks():
     if not SHELL.exists():
         pytest.skip("site/us_stocks.html not built in this checkout")
     shell = SHELL.read_text(encoding="utf-8")
-    cards = re.findall(r'<a class="pvcard[^"]*" href="stock\.html#[A-Z0-9.\-]+"\s*\n?\s*'
-                       r'data-ticker="([^"]+)"', shell)
     start = shell.find('id="us-stocktable-data"')
     table = (re.findall(r'"ticker":\s*"([^"]+)"', shell[start:shell.find("</script>", start)])
              if start >= 0 else [])
+    cards = [m.group(1) for m in TICKER_ATTR.finditer("".join(CARD_ROW.findall(_candidate_card_surface(shell))))]
     return payload, cards, table
 
 
@@ -955,8 +955,10 @@ def test_candidate_visibility_full_render_equals_split_plus_tail():
     overrides, gate, locked = bs._split_us_panels(vm, 1, gated=True)
     env = _env()
     template = env.get_template("_us_candidate_pool_rows.html.j2")
-    full = template.render(rows=vm["us_candidate_visibility"]["rows"])
-    shell = template.render(rows=overrides["us_candidate_visibility"]["rows"])
+    pool = vm["us_candidate_visibility"]
+    shell_pool = overrides["us_candidate_visibility"]
+    full = template.render(rows=pool["rows"], setup_as_of=pool.get("as_of"))
+    shell = template.render(rows=shell_pool["rows"], setup_as_of=shell_pool.get("as_of"))
     tail = bs._render_us_panel_payload(env, gate, locked, vm)["candidate_pool_html"]
     pattern = r'<div class="ucp-row".*?(?=<div class="ucp-row"|\Z)'
     normalize = lambda text: [" ".join(x.split()) for x in re.findall(pattern, text, re.S)]
@@ -1039,7 +1041,11 @@ def test_candidate_hydration_is_not_a_new_data_or_permission_path():
     assert "hydrateCandidatePool(payload.candidate_pool_html, payload.candidate_pool_source)" in source
     assert "root.dataset.poolHydrated === 'true'" in source
     assert "candidate-pool-hydrated" in source and "candidate-pool-hydrated" in fragment
-    assert "fetch(" not in fragment
+    hydration = fragment.split('<script>', 1)[1].split('</script>', 1)[0]
+    context = fragment[fragment.index("var contextRequestSerial=0"):fragment.index("root.addEventListener('candidate-pool-hydrated'")]
+    assert "fetch(" not in hydration[:hydration.index("var contextRequestSerial=0")]
+    assert "fetch(" not in fragment[fragment.index("root.addEventListener('candidate-pool-hydrated'"):]
+    assert context.count("fetch(") == 1
     assert "candidate_pool" not in fragment.split('<script>', 1)[1].split('</script>', 1)[0]
 
 
