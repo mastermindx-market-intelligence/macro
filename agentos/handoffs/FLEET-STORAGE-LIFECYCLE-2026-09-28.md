@@ -258,6 +258,48 @@ verified_wave_7:
       handled by exactly `if apply_summary["errors"]: return 1` — counted into an exit code and
       never printed, so `deleted=0 errors=688` with no messages was indistinguishable from a
       healthy run with nothing to do. 21 tests pass (16 existing + 5 new).
+verified_wave_10:
+  - claim: >
+      Two CI guards printed a PASS having examined zero subjects; one of them asserted that an
+      absent file passed all 5 of its invariants.
+    how: >
+      This worktree is sparse, so `site/` is genuinely absent — a live positive control. All 27
+      guards that read that tree were run against it: nine already refused correctly via
+      `scripts/sparse_guard.py` (whose docstring names the SEVEN measured 2026-08-13), and three
+      exited 0. `check_inline_js` printed "OK — inline scripts and on*= handlers under site parse
+      cleanly" over an empty walk. `check_board_contradictions` printed
+      "site/factordata/us_standouts.json passes all 5 board invariants" about a file that does
+      not exist. The third (`check_conflict_markers`) scans the whole repo, not a sparse tree,
+      and its zero was honest. `DSC:A-GUARDS-CORRECT-TOLERANCE-FOR-AN-ABSENT-SUBJECT-STILL-LIES-
+      IN-ITS-VERDICT`.
+  - claim: >
+      The board guard's tolerance for an absent artifact was CORRECT; only its verdict lied. So
+      the repair is two-part, and only one part is the shared helper's.
+    how: >
+      `_check()` returns `[]` for an absent artifact on purpose ("first run or not yet emitted")
+      and still does. `main()` treated an empty violation list as compliance. Now: sparse +
+      zero -> `refuse_if_vacuous` (rc=1); honest zero -> `SKIPPED — checked 0 of 1 artifact(s)
+      … this is not a pass` (rc=0, tolerance preserved); clean -> `checked 1 of 1`.
+  - claim: "Neither guard was ever vacuous in CI — the trap was latent, not live."
+    how: >
+      `git ls-files --error-unmatch site/factordata/us_standouts.json` resolves, so the artifact
+      is TRACKED and a full CI checkout always has it. The exposure was every sparse fleet
+      worktree (a session running the guard locally got a false green) plus the latent case: a
+      rename or relocation of that path degrades the guard from validating to asserting, with
+      green CI and no test noticing.
+  - claim: "The tests were mutation-proven, and the first round was NOT sufficient."
+    how: >
+      Five mutants: each refusal removed, each reach count dropped from its OK line, and the
+      absent-artifact pass-claim restored. The first round caught 4 of 5 — the survivor was the
+      restored false claim, green across all five parametrized sparse-refusal cases because that
+      suite asserts exit codes and never asserts what the guard SAID. Two tests were added to
+      pin the sentence; 5/5 caught after. 205 passed / 1 skipped across the affected suites.
+  - claim: "#8172 and #8173 are both merged and byte-identical in main."
+    how: >
+      #8172 squash `4cbaf7ed4bd239ea5e8dbca0447f07f134501958`, 2 paths, `0 not byte-identical`;
+      #8173 squash `bce6763053e67f561c38ac331a06a1de784f6f11`, 3 paths, `0 not byte-identical`.
+      Both verified by the gen-3 watcher (fetch `main` ALONE, fetch failure fatal as exit 9,
+      branch side read from whichever local ref survives the post-merge branch deletion).
 prs:
   - 8156
   - 8158

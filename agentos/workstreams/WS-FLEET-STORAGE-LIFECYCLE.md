@@ -45,6 +45,7 @@ discoveries:
   - DSC:A-RUNNER-CHECKOUT-IS-87-PERCENT-GIT-STORE-SO-SPARSENESS-CANNOT-REACH-IT
   - DSC:A-HOST-CHECKOUT-BELT-MAKES-A-WIDER-ROOTS-LIST-INERT
   - DSC:A-PUSH-TO-AN-ARMED-PR-CAN-LAND-AFTER-ITS-MERGE-AND-NOTHING-ERRORS
+  - DSC:A-GUARDS-CORRECT-TOLERANCE-FOR-AN-ABSENT-SUBJECT-STILL-LIES-IN-ITS-VERDICT
 landmines:
   - "`/Volumes/Worktrees/Documents/Photos Library.photoslibrary` (247 GB, the LIVE library) and
      `/Volumes/Mastermind/transfers/runner-fleet-resilience-worktrees-photoslib-20260924.tar`
@@ -155,10 +156,17 @@ waves:
   - id: W9
     title: >
       The sweeper states its REACH and prints its refusals — measured 224 of 789, 28.4%
-    status: awaiting_ci
+    status: done
     pr: 8172
     depends_on:
       - W4
+  - id: W10
+    title: >
+      The same reach law in the CI guards — two that printed a PASS having examined zero
+      subjects, one of them asserting that an absent file passed 5 invariants
+    status: awaiting_ci
+    depends_on:
+      - W9
 next_action: >
   Put the `needs_ceo` options to the operator, re-ranked by W6's measurement: the CI runner git
   stores (177.26 GiB, 87% `.git`) are now clearly the largest real lever, and the Full Disk Access
@@ -166,7 +174,9 @@ next_action: >
   Ratify the `human_driven_roots` deny-list first regardless; it is purely protective and can delete
   nothing. W9 makes the scope gap legible (the report now prints `checked 224 of 789`) but closes
   none of it — that is still the three unratified acts, and legibility is a precondition for
-  ratifying them, never a substitute.
+  ratifying them, never a substitute. W10 spent a CI-blocked interval on the one lane the W9
+  law pointed at ("wherever a reach figure is computed for a machine consumer and never shown
+  to a human") and closed two CI guards; it frees no bytes and changes no storage decision.
 artifacts:
   - research/WORKTREE_GC_POLICY.md
   - scripts/worktree_gc.py
@@ -188,6 +198,15 @@ Wave 6 measured the largest of them: of 201.13 GiB across 207 registrations, **3
 classify reclaimable** — 0.9%. 61% is content not reproducible from `origin/main` and 50% is
 HUMAN-class. So a reach repair is worth making for the sake of a working safety net, not for a
 payoff; say which of the two you are claiming.
+
+**And the law generalizes past storage.** W10 applied it to the CI guards and found the
+eleventh instance in `check_board_contradictions.py`, which printed that an ABSENT file "passes
+all 5 board invariants" — a case where the tolerant predicate was correct and the reporter was
+not. Two rules came out of it that the storage work had not yet articulated: an exit-code test
+cannot pin a verdict SENTENCE (the mutation restoring that false claim left every parametrized
+refusal case green), and a lexical scan cannot answer a semantic question (three regex passes
+returned 177, then 57, then a set including guards that already print their count — the cheap
+discriminator was a positive control, running each instrument against an empty subject set).
 
  The ENOSPC remediation aimed at agent
 working trees; the operator-data volumes turned out to be operator data (93.5% and 84%), the
