@@ -8,6 +8,7 @@ Prepared 2026-09-25 by the Energy seat (session 8955bbc3), operation `gmi-energy
 - The copy decisions below are recorded as seat ruling R-ENE-23. They land with the round-3 records.
 - **Re-verified 2026-09-28** at #7870 head `a0d7b054ff23` and #8002 head `3c775ea592a6` (§1b). Two carrier obligations were added (§3b). The status is unchanged: PREPARED, not dispatched.
 - **Dry-run 2026-09-28** (§1c). The packet was applied in a scratch tree at #7870 `a0d7b054ff23` plus #8002 `3c775ea592a6`, and every gate it names passed. The dry-run corrected two facts in this packet: the definition-version import in §3, and the curated block count in §3b.2 (seven, not six). The registration needs nothing from #7870 except RULING 8's widening (§4.6).
+- **The ENERGY directive, 2026-09-29** (`rulings/R-ENE-2026-09-29-energy-directive.md`, R-ENE-41 to R-ENE-43). The carrier opens only after #7870 is released and source custody permits, and ONE writer executes it. §5b adds R-ENE-42 (the cutoff readers), the `$defs/when` alignment and two proofs. The status is unchanged: PREPARED, not dispatched.
 
 ## 1. Facts this packet rests on
 
@@ -255,3 +256,13 @@ def test_4_5_registry_import_does_not_import_the_owner_bundle_with_positive_cont
 - The carrier's own Opus READ_ONLY review returns PASS before the PR leaves DRAFT.
 - **Plain language.** The shell's Limitations line prints wire tokens verbatim in EN and ZH. For nuclear it reads, for example, `milestone_predicate_unavailable · slice_scope_unowned · target_windows_judged_at:2026-09-20 · witness_cohort_excluded:2`. That is the shell's reviewed design (T10 BLOCKING-2), and semiconductor tokens render the same way. Energy asked the owner whether a token-to-plain-words map is planned (#7870 comment 5866433049, item 6) and offered a bilingual table for its own 20 tokens. Until the owner answers, the carrier does not edit `theme-research.js`, and the PR body names the raw tokens as a known gap next to the browser crops.
 - The live rung stays behind the VPS pull-cron hold (`# MMX-DISK-TRIAGE-HOLD`, #6902). That hold is an EXACT_HUMAN_GATE and the seat never lifts it.
+
+## 5b. Added by the ENERGY directive, 2026-09-29 (R-ENE-41 to R-ENE-43)
+
+The same one writer carries these in the same carrier, after the reconciliation onto #7870's accepted base.
+- **R-ENE-42, the cutoff readers.** Nuclear uses `recorded_cutoff` as a clock only in `system_replay`, and `source_cutoff` only in `source_history` and `system_replay`. Outside those modes the clocks stay data-derived, as with no cutoff. Every supplied cutoff is still validated in every mode. The six test obligations are in `rulings/R-ENE-2026-09-29-energy-directive.md`. They include P3's rows and R-ENE-43's rows, and they keep R-ENE-40's replay test and malformed-cutoff test unchanged.
+- **The response-date grammar.** Nuclear's `$defs/when` matches the grammar the accepted base admits, the same grammar the validation uses. The alignment test is named in the same ruling.
+- **Two further proofs**, besides §5:
+  - *Unavailable and revoked.* The nuclear query and evidence routes answer the shell's typed unavailable and revoked states, never false, zero, stale or partial research. They carry the same private headers as §5's served proof, and the receipt is raw.
+  - *Update and restart propagation.* After an update, the served route runs the new nuclear bytes. This is proven by a response that only the new bytes produce, not by the `MUST_RESTART` row alone. The live rung of this proof waits on the #6902 hold, like every live rung here.
+- The production credential boundary (Task 10) and Power-Demand (R-ENE-16) stay outside this carrier. A green on this carrier is not nuclear acceptance.
