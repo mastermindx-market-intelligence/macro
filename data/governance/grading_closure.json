@@ -1,6 +1,6 @@
 {
   "schema": "grading_closure.v1",
-  "generated_at": "2026-09-28T13:45:58.038764+00:00",
+  "generated_at": "2026-09-29T03:36:18.831642+00:00",
   "n_ledgers": 34,
   "n_closed": 26,
   "n_grader_starved": 8,
@@ -14,7 +14,7 @@
       "graders": [
         "scripts/grade_qledger.py"
       ],
-      "n_logged": 113900,
+      "n_logged": 113906,
       "n_graded": 168294,
       "last_graded_at": "2026-09-28T13:41:40.130707+00:00",
       "tune_step": "N",

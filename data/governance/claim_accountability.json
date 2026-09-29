@@ -1,11 +1,11 @@
 {
   "schema": "claim_accountability.v1",
-  "generated_at": "2026-09-28T13:46:00.476349+00:00",
+  "generated_at": "2026-09-29T03:36:21.330933+00:00",
   "global": {
-    "n_claims": 113900,
+    "n_claims": 113906,
     "n_grades": 168294,
     "n_with_falsifier": 1067,
-    "falsifier_coverage": 0.009368,
+    "falsifier_coverage": 0.009367,
     "falsifier_coverage_note": "~146/9069 = 1.6% global as of 2026-07-06; falsifier-starvation is a structural property of importance-signal and china_news desks, not a grader failure"
   },
   "by_desk": {
@@ -474,15 +474,15 @@
       }
     },
     "whitehouse": {
-      "n_claims": 214,
+      "n_claims": 220,
       "falsifier_coverage": 0.0,
       "n_with_falsifier": 0,
       "hit_gradeable_share": 1.0,
-      "n_hit_gradeable": 214,
+      "n_hit_gradeable": 220,
       "hit_gradeable_note": "direction=0 claims are not hit-gradeable (graded on excess only); this does not contradict the R2 audit CLOSED verdict",
       "maturity_mix": {
         "graded_5d_count": 143,
-        "graded_5d_share": 0.668224,
+        "graded_5d_share": 0.65,
         "matured_21d_count": 0,
         "matured_63d_count": 0,
         "note": "21d/63d matured counts are 0 today \u2014 calendar-gated, not build-gated; earliest useful read ~2026-10-01"
@@ -498,7 +498,7 @@
         "channels_fill_rate": 0.0,
         "n_channels": 0,
         "source_id_fill_rate": 1.0,
-        "n_source_id": 214,
+        "n_source_id": 220,
         "note": "near-zero fill across most desks; per-source reliability curve unbuildable from current data (QI masterplan: >=500 graded labels gate)"
       }
     }
@@ -1114,15 +1114,15 @@
       }
     },
     "whitehouse": {
-      "n_claims": 214,
+      "n_claims": 220,
       "falsifier_coverage": 0.0,
       "n_with_falsifier": 0,
       "hit_gradeable_share": 1.0,
-      "n_hit_gradeable": 214,
+      "n_hit_gradeable": 220,
       "hit_gradeable_note": "direction=0 claims are not hit-gradeable (graded on excess only); this does not contradict the R2 audit CLOSED verdict",
       "maturity_mix": {
         "graded_5d_count": 143,
-        "graded_5d_share": 0.668224,
+        "graded_5d_share": 0.65,
         "matured_21d_count": 0,
         "matured_63d_count": 0,
         "note": "21d/63d matured counts are 0 today \u2014 calendar-gated, not build-gated; earliest useful read ~2026-10-01"
@@ -1138,13 +1138,13 @@
         "channels_fill_rate": 0.0,
         "n_channels": 0,
         "source_id_fill_rate": 1.0,
-        "n_source_id": 214,
+        "n_source_id": 220,
         "note": "near-zero fill across most desks; per-source reliability curve unbuildable from current data (QI masterplan: >=500 graded labels gate)"
       }
     }
   },
   "track_record_ref": {
-    "generated_at": "2026-09-28T13:41:48.233730+00:00",
+    "generated_at": "2026-09-29T03:31:51.790899+00:00",
     "grade_horizons": [
       5,
       21,
