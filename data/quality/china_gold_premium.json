@@ -1,27 +1,24 @@
 {
   "schema": "commodity.china_gold_premium_quality.v1",
-  "checked_at": "2026-09-28T09:13:09+00:00",
-  "status": "available_fresh",
+  "checked_at": "2026-09-29T06:25:53+00:00",
+  "status": "render_mismatch",
   "render_consistent": true,
-  "machine_projection_consistent": true,
-  "available": true,
-  "headline_method": "close_proxy",
-  "headline_state": "premium",
-  "premium_pct": 0.16216220051121777,
-  "expected_display_source": "proxy",
-  "rendered_display_source": "proxy",
-  "expected_currency": "CNY",
-  "rendered_currency": "CNY",
-  "rendered_state": "premium",
-  "rendered_source_asof": "2026-09-24T07:30:00+00:00",
-  "rendered_premium_pct": 0.162162,
-  "source_fresh": true,
-  "source_asof": "2026-09-24T07:30:00+00:00",
-  "sources": [
-    "Shanghai Gold Exchange Au99.99",
-    "Global XAU/CNY spot"
-  ],
-  "reason_code": null,
+  "machine_projection_consistent": false,
+  "available": false,
+  "headline_method": null,
+  "headline_state": "unavailable",
+  "premium_pct": null,
+  "expected_display_source": null,
+  "rendered_display_source": "canonical",
+  "expected_currency": null,
+  "rendered_currency": "USD",
+  "rendered_state": "unavailable",
+  "rendered_source_asof": "",
+  "rendered_premium_pct": null,
+  "source_fresh": false,
+  "source_asof": null,
+  "sources": [],
+  "reason_code": "stale_observation",
   "official_canonical_available": false,
   "methods": {
     "canonical": {
@@ -36,14 +33,21 @@
     },
     "close_proxy": {
       "available": true,
-      "fresh": true,
+      "fresh": false,
       "asof": "2026-09-24T07:30:00+00:00"
     }
   },
-  "history_points": 243,
-  "stats_5_ready": true,
-  "stats_30_ready": true,
-  "violations": [],
+  "history_points": 0,
+  "stats_5_ready": false,
+  "stats_30_ready": false,
+  "violations": [
+    "machine.available: expected False, rendered True",
+    "machine.method: expected None, rendered close_proxy",
+    "machine.state: expected unavailable, rendered premium",
+    "machine.source_asof: expected None, rendered 2026-09-24T07:30:00+00:00",
+    "machine.source_fresh: expected False, rendered True",
+    "machine.premium_pct: expected None, rendered 0.16216220051121777"
+  ],
   "source_artifacts": [
     {
       "role": "sge",
@@ -74,6 +78,12 @@
       "selected_asof_present": true
     }
   ],
-  "close_proxy_dataos_promotion_ready": true,
-  "close_proxy_dataos_promotion_blockers": []
+  "close_proxy_dataos_promotion_ready": false,
+  "close_proxy_dataos_promotion_blockers": [
+    "status is render_mismatch, not available_fresh",
+    "5-session average is not ready",
+    "30-session range is not ready",
+    "machine projection was not proven consistent",
+    "headline method is none, required close_proxy"
+  ]
 }

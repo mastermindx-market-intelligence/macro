@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.causal_feature_inventory.v1",
   "artifact_id": "causal-feature-inventory",
-  "asof": "2026-09-28T10:19:32.373947+00:00",
+  "asof": "2026-09-29T06:30:25.213780+00:00",
   "authority": {
     "tier": "infrastructure",
     "display_only": true,

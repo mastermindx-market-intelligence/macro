@@ -433,7 +433,7 @@
         <div><dt><span class="l-en">Calculation as-of</span><span class="l-zh">计算截止</span></dt>
              <dd><time>2026-09-24</time></dd></div>
         <div class="mq-nonclock"><dt><span class="l-en">Page built</span><span class="l-zh">页面生成</span></dt>
-             <dd><time>2026-09-29T05:02:33Z</time></dd></div>
+             <dd><time>2026-09-29T06:10:35Z</time></dd></div>
       </dl>
 
   </div>
@@ -490,8 +490,8 @@
         </tr>
         <tr>
           <th scope="row"><span class="l-en">Bond-desk health/cycle-phase state</span><span class="l-zh">债券台面健康/周期阶段状态</span></th>
-          <td><span class="mq-chip mq-tone-ok"><span class="l-en">Present</span><span class="l-zh">已具备</span></span></td>
-          <td><span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span></td>
+          <td><span class="mq-chip mq-tone-warn"><span class="l-en">Partial</span><span class="l-zh">部分具备</span></span></td>
+          <td><span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span></td>
           <td><time>2026-09-25</time></td>
         </tr>
       </tbody>
@@ -681,6 +681,10 @@
 </details>
   </div>
   <ul class="mq-diag-list">
+    <li class="mq-diag mq-tone-warn">
+      <strong><span class="l-en">Required source not current</span><span class="l-zh">必需数据源并非最新</span></strong>
+      <span><span class="l-en">Degraded required components: Bond-desk health/cycle-phase state.</span><span class="l-zh">降级的必需分项：债券台面健康/周期阶段状态。</span></span>
+    </li>
     <li class="mq-diag mq-tone-neutral">
       <strong><span class="l-en">Component histories not published</span><span class="l-zh">未发布分项历史序列</span></strong>
       <span><span class="l-en">Insufficient history</span><span class="l-zh">历史数据不足</span></span>
@@ -1856,7 +1860,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">How healthy the government-bond desk is</span><span class="l-zh">国债交易台健康程度</span></span>
-        <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">84.00</span><span class="l-zh">84.00</span><span class="mq-metric-unit"><span class="l-en">Score 0 100</span><span class="l-zh">评分（0–100）</span></span></strong>
       <p class="mq-metric-direction"><span class="l-en">Higher more healthy</span><span class="l-zh">数值越高＝越健康</span></p>
@@ -1911,7 +1915,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Bond desk health label</span><span class="l-zh">债市交易台健康标签</span></span>
-        <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">Healthy</span><span class="l-zh">健康</span></strong>
       <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">不适用</span></p>
@@ -1966,7 +1970,7 @@
     <article class="mq-metric">
       <header>
         <span class="mq-metric-name"><span class="l-en">Bond desk cycle phase</span><span class="l-zh">债市交易台周期阶段</span></span>
-        <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
+        <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
       </header>
       <strong class="mq-metric-value"><span class="l-en">Late</span><span class="l-zh">后期</span></strong>
       <p class="mq-metric-direction"><span class="l-en">N/a</span><span class="l-zh">不适用</span></p>
@@ -3141,7 +3145,7 @@
       <article class="mq-source">
         <header>
           <strong><span class="l-en">Bond-desk health/cycle-phase state</span><span class="l-zh">债券台面健康/周期阶段状态</span></strong>
-          <span class="mq-chip mq-tone-ok"><span class="l-en">Current</span><span class="l-zh">当前有效</span></span>
+          <span class="mq-chip mq-tone-warn"><span class="l-en">Late, within tolerance</span><span class="l-zh">延迟但在容忍范围内</span></span>
         </header>
         <dl class="mq-method-grid">
           <div><dt><span class="l-en">Provider</span><span class="l-zh">提供方</span></dt><dd>Mastermind Bond Desk</dd></div>
@@ -3191,11 +3195,11 @@
       <dl class="mq-clocks">
         <div class="mq-clock">
           <dt><span class="mq-clock-name"><span class="l-en">Build stamp</span><span class="l-zh">生成时间</span></span><span class="mq-clock-meaning"><span class="l-en">Producer generation time. Not an economic clock.</span><span class="l-zh">生产端生成时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-09-28T05:29:00Z</time></dd>
+          <dd><time>2026-09-29T04:46:52Z</time></dd>
         </div>
         <div class="mq-clock">
           <dt><span class="mq-clock-name"><span class="l-en">Page refreshed</span><span class="l-zh">页面更新于</span></span><span class="mq-clock-meaning"><span class="l-en">Static page render time. Not an economic clock.</span><span class="l-zh">静态页面渲染时间，并非经济时钟。</span></span></dt>
-          <dd><time>2026-09-29T05:02:33Z</time></dd>
+          <dd><time>2026-09-29T06:10:35Z</time></dd>
         </div>
       </dl>
     </section>
@@ -3205,11 +3209,11 @@
       <dl class="mq-method-grid">
         <div><dt><span class="l-en">Artifact path</span><span class="l-zh">产物路径</span></dt><dd><code>macrodata/workspaces/national_debt_liabilities/US/latest.json</code></dd></div>
         <div><dt><span class="l-en">Manifest path</span><span class="l-zh">清单路径</span></dt><dd><code>macrodata/workspaces/manifest.json</code></dd></div>
-        <div><dt><span class="l-en">Content hash</span><span class="l-zh">内容哈希</span></dt><dd><code class="mq-hash">651defb8258928dc5c4e73910a7424fd2d6c449cd741dd6b2039dedf8c499632</code></dd></div>
-        <div><dt><span class="l-en">Bytes</span><span class="l-zh">字节数</span></dt><dd>140531</dd></div>
-        <div><dt><span class="l-en">Generation id</span><span class="l-zh">产物代号</span></dt><dd><code>national_debt_liabilities-US-651defb8258928dc</code></dd></div>
+        <div><dt><span class="l-en">Content hash</span><span class="l-zh">内容哈希</span></dt><dd><code class="mq-hash">aadc505c3207c7005b1f8051bb879c0db50ee456ad0f78c7fd2d64918d567252</code></dd></div>
+        <div><dt><span class="l-en">Bytes</span><span class="l-zh">字节数</span></dt><dd>140601</dd></div>
+        <div><dt><span class="l-en">Generation id</span><span class="l-zh">产物代号</span></dt><dd><code>national_debt_liabilities-US-aadc505c3207c700</code></dd></div>
         <div><dt><span class="l-en">Producer</span><span class="l-zh">生产者</span></dt><dd><code>engine.market_os.macro_workspaces.national_debt</code></dd></div>
-        <div><dt><span class="l-en">Producer code version</span><span class="l-zh">生产端代码版本</span></dt><dd><code>85a15b95e36d652364185a1c5775f6995f1c02a9</code></dd></div>
+        <div><dt><span class="l-en">Producer code version</span><span class="l-zh">生产端代码版本</span></dt><dd><code>764daf3fff2cfc8d9deb9e2b947db3738b3909f2</code></dd></div>
         <div><dt><span class="l-en">Client contract</span><span class="l-zh">客户端契约</span></dt><dd><code>mastermind.macro_workspace_snapshot.v1@1.0.0</code></dd></div>
       </dl>
       <p class="mq-lineage-note"><span class="l-en">The page checked this artifact against the closed schema and recomputed its content hash before rendering. A mismatch renders a refusal page instead of a state.</span><span class="l-zh">本页在渲染前已按封闭 schema 校验该产物并重新计算其内容哈希。若不匹配，将呈现拒绝页面而非任何状态读数。</span></p>
