@@ -10,12 +10,7 @@
       "lag_days": 3,
       "state": "slow"
     },
-    "KWEB": {
-      "asof": "2026-09-25",
-      "lag_days": 3,
-      "state": "slow"
-    },
-    "JD": {
+    "TCOM": {
       "asof": "2026-09-25",
       "lag_days": 3,
       "state": "slow"
@@ -25,12 +20,17 @@
       "lag_days": 3,
       "state": "slow"
     },
-    "TCOM": {
+    "JD": {
       "asof": "2026-09-25",
       "lag_days": 3,
       "state": "slow"
     },
     "FXI": {
+      "asof": "2026-09-25",
+      "lag_days": 3,
+      "state": "slow"
+    },
+    "KWEB": {
       "asof": "2026-09-25",
       "lag_days": 3,
       "state": "slow"

@@ -1,7 +1,7 @@
 {
   "schema": "theme_options_witness.v1",
-  "as_of": "2026-09-28",
-  "generated_at": "2026-09-28T04:30:13.686324+00:00",
+  "as_of": "2026-09-29",
+  "generated_at": "2026-09-29T03:56:20.491174+00:00",
   "authority": {
     "may_rank": false,
     "may_gate": false,
@@ -21,7 +21,7 @@
     "n_themes_suppressed": 3,
     "store_present": false,
     "store_path": null,
-    "as_of": "2026-09-28"
+    "as_of": "2026-09-29"
   },
   "themes": {
     "ai_semiconductors": {

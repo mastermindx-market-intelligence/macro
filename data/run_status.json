@@ -3326,8 +3326,8 @@
       "series": "CNH=F",
       "last_obs": "2026-09-11",
       "cadence_days": 5,
-      "age_days": 16,
-      "detected_at": "2026-09-27T00:55:40.302158+00:00"
+      "age_days": 18,
+      "detected_at": "2026-09-29T04:32:37.169187+00:00"
     },
     {
       "group": "china",

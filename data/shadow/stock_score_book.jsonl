@@ -6430,3 +6430,4 @@
 {"date": "2026-09-25", "ticker": "MCD", "score": 0.0, "percentile": 0.13953488372093023, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-09-25", "ticker": "BXMT", "score": 0.0, "percentile": 0.13953488372093023, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
 {"date": "2026-09-25", "ticker": "VRRM", "score": 0.0, "percentile": 0.13953488372093023, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
+{"date": "2026-09-25", "ticker": "TEM", "score": 4.0, "percentile": 0.2713178294573643, "regime": "calm", "horizons": [21, 63, 126], "pct_basis": "xs_rank"}
