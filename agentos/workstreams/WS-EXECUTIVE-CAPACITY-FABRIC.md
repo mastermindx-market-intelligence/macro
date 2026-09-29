@@ -334,6 +334,19 @@ do_not_redo:
   - "Do NOT re-verify packet05 #699 with the unprotected candidate verifier, and do not treat REMOTE_PROOF_CHANGED as source divergence or as permission to rerun (Sol ruling, root ts 1789597068.473939). The single authorized invocation is SPENT. A fresh evidence-only remote-complete grant becomes possible only AFTER #707 is independently accepted and protected."
   - "Never re-run the packet05 verifier without a NEW material source-continuity edge. The packet05 grant (Sol edge 1789565866, Mastermind #699) is SPENT and its ONE granted run returned `VERDICT: REFUSAL REMOTE_PROOF_CHANGED`, a repo-wide quiescence guard over every open PR and NOT a verdict on packet05's source; the seat-owned p05-verify-… worktree stays INERT/UNCHANGED — do not remove it without Sol. CORRECTED 2026-09-16: `OUT_OF_SCOPE_DIRT` and grant edge 1789588151 belong to the separate Mastermind #677 one-shot, not to packet05."
 next_action: >
+  CORRECTION 2026-09-29T12:40Z (native parent frontier #703/5868465578; Fable closer retraction #600/5890603792):
+  the "Chairman checks Codex credits / spend controls in the admin console" control named below is RETRACTED.
+  The canary's closed terms [credits, workspace] are lossy labels (inert_untrusted_workspace is a constant
+  probe-boundary label in provider_inference_canary.py / provider_readiness.py), and the admin read
+  receiver-01a0e296/PROVIDER_ADMIN_READ_20260929.json (sha d070567b…, 12:30–12:36Z, no mutation) shows the
+  MastermindX Business workspace with Codex weekly allowance 99% remaining, credits 0, auto-reload off — no
+  billing cause is established and no purchase/reset/setting change should be made. The remaining non-secret
+  human input is an administrator attestation of which workspace seat the installed device-auth credential is
+  enrolled as (no receipt returns an account/workspace UUID by design); Product owns that reconciliation, then
+  its credential lifecycle (disarm/quiesce -> reviewed service-account enrollment or company-device
+  reauthorization with replace-existing -> exactly one new readiness request). Expiry 2026-09-30T06:00:25Z
+  stands. Protected Mastermind master is 860f5d65 (#1069); sole C1 source is Draft #1070 (parent-owned).
+
   HEADLESS-DELIVERY CLOSER 2026-09-29 (Fable successor session 7712b0f4, account Claude8, continuing
   Fable 3f381a7c on operation agent-fabric-end-to-end-fable-integration-20260913-sol-001; parent
   Mastermind #600, dialogue #703): protected Mastermind master is 939f1d00 (#1067) and the installed
