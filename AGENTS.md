@@ -524,9 +524,12 @@ credential, and changes no provider permission.
 
 `BLOCKER -> freeze the affected lane -> check independent useful lanes -> continue`.
 One blocked review, tool, provider or CI lane freezes that lane, never the mission.
-Before any stop, enumerate the other authorized lanes and continue on them. Only when
-every scoped lane is genuinely blocked is `ALL_SCOPED_LANES_BLOCKED` the honest state,
-and that classification must name the lanes it checked.
+Before any stop, enumerate the other authorized lanes and continue on them.
+`ALL_SCOPED_LANES_BLOCKED` may describe the current lane census, but it is a
+**nonterminal diagnostic**, not a principal/seat stopping state. For each internal
+project blocker, the next act is to resolve it, route it to the canonical owner, or
+prove that an already-running durable owner has a return path. "Another owner" or
+"not my lane" can prevent direct mutation; neither makes the mission terminal.
 
 `NO WORKER STARTED + lawful principal tools/custody + no conflict/EFFECT_UNKNOWN ->
 direct bounded execution may continue`. A delegation surface being unavailable — the
@@ -534,9 +537,12 @@ Fabric down, a pool exhausted, a spawn refused — is not evidence that executio
 impossible. If no worker actually started, the principal still holds lawful tools and
 custody, no other owner is working the same artifact, and no act sits in an
 `EFFECT_UNKNOWN` state, the principal executes the bounded work itself. When any of
-those four is false the lawful outcome is `ALL_SCOPED_LANES_BLOCKED` or
-`EXACT_HUMAN_GATE` naming the exact missing thing — never a silent stop, and never a
-second worker on a contested artifact.
+those four is false, do not create a second worker. Name the blocked lane and convert
+it into an owned next action: route/reconcile through the canonical owner, or, if the
+only remaining boundary is genuinely outside the project's controllable graph,
+classify it exactly as `EXACT_HUMAN_GATE`, `PLATFORM_FAILURE`, or `EFFECT_UNKNOWN`.
+A bounded worker may return `STATUS: BLOCKED` to its parent; that worker return does
+not terminally classify the parent mission.
 
 `WAITING EXTERNAL -> durable watcher/owner; do useful parallel principal work; do not
 burn principal capacity polling`. Hand the wait to a durable watcher, a cron, or the
@@ -572,10 +578,12 @@ outcome it describes.
 
 Every substantial session states one line before it ends: `SESSION END: <STATE>`,
 where STATE is exactly one of `PROVEN_OUTCOME`, `EXACT_HUMAN_GATE`, `EFFECT_UNKNOWN`,
-`ALL_SCOPED_LANES_BLOCKED`, `DURABLE_EXECUTION_RUNNING`, or `MORE_WORK_EXISTS`. The
-set is closed on purpose. **`MORE_WORK_EXISTS` is never a valid stopping state**, and
-the Stop guard refuses it under the code `more_work_exists`, escapable only through
-the ordinary any-code ladder.
+`PLATFORM_FAILURE`, `ALL_SCOPED_LANES_BLOCKED`, `DURABLE_EXECUTION_RUNNING`, or
+`MORE_WORK_EXISTS`. The set is closed on purpose. **`MORE_WORK_EXISTS` and
+`ALL_SCOPED_LANES_BLOCKED` are never valid stopping states**; the latter is a
+diagnostic that forces blocker demolition/routing rather than bureaucratic exit.
+The Stop guard refuses either self-declaration, with the ordinary any-code ladder
+preserved as the unsatisfiable-gate escape.
 
 The converse binds equally. Reaching the actual outcome or the exact human gate early
 is a complete session however short or expensive it was: never pad a session to look
