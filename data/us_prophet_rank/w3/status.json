@@ -42,6 +42,10 @@
     {
       "reason": "fallback/degraded/unpaired session excluded from the paired race; not a zero and not a tie",
       "stamp_date": "2026-09-18"
+    },
+    {
+      "reason": "fallback/degraded/unpaired session excluded from the paired race; not a zero and not a tie",
+      "stamp_date": "2026-09-28"
     }
   ],
   "first_eligible_paired_stamp": "2026-08-17",
@@ -284,17 +288,17 @@
       "identical": 23,
       "matured": 0,
       "refused": 0,
-      "written": 0
+      "written": 1
     }
   },
   "latest_session": {
-    "liveness": "unmatured",
-    "reason": "paired observation accrued; H=10 outcome pending (not zero)",
-    "stamp_date": "2026-09-25"
+    "liveness": "degraded_or_unpaired",
+    "reason": "fallback/degraded/unpaired session excluded from the paired race; not a zero and not a tie",
+    "stamp_date": "2026-09-28"
   },
   "matured_h10_sessions": 1,
   "missing_sessions": [],
-  "n_degraded_or_unpaired": 10,
+  "n_degraded_or_unpaired": 11,
   "n_missing": 0,
   "paired_sessions_accrued": 23,
   "same_stamp_revisions_refused": [
@@ -5248,6 +5252,186 @@
       "existing_fingerprint": "938203d99a15210003d6874eb1ed8a817de296b2160373f33530d56d36ea0d5f",
       "grain": "family",
       "incoming_fingerprint": "e9e6758741183817399238f719db8b2e0a7fc0a16655a0a09344e9a4cf380887",
+      "key": [
+        "2026-09-25",
+        "F8_ATTENTION_CROWDING"
+      ],
+      "stamp_date": "2026-09-25"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 4.6086956522,
+          "field": "mean_abs_rank_delta",
+          "incoming": 5.1304347826
+        },
+        {
+          "existing": 15,
+          "field": "max_abs_rank_delta",
+          "incoming": 17
+        },
+        {
+          "existing": 47,
+          "field": "rows_moved",
+          "incoming": 50
+        },
+        {
+          "existing": 12,
+          "field": "top30_churn",
+          "incoming": 10
+        }
+      ],
+      "existing_fingerprint": "966130a867ebf658c41092aa5b24c8d6774a05b0acbcbe9194f28ff841fcde76",
+      "grain": "family",
+      "incoming_fingerprint": "7403f3d8bc390cc0c782fcef0399ea67a3393a44327ebb20a60fd70971b05fdf",
+      "key": [
+        "2026-09-25",
+        "F1_TECHNICAL_CONFLUENCE"
+      ],
+      "stamp_date": "2026-09-25"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 56,
+          "field": "distinct_values",
+          "incoming": 57
+        },
+        {
+          "existing": 0.0579710145,
+          "field": "modal_share",
+          "incoming": 0.0434782609
+        },
+        {
+          "existing": 0.2183658057,
+          "field": "dispersion",
+          "incoming": 0.2193446514
+        },
+        {
+          "existing": 4.8695652174,
+          "field": "mean_abs_rank_delta",
+          "incoming": 5.8550724638
+        },
+        {
+          "existing": 29,
+          "field": "max_abs_rank_delta",
+          "incoming": 31
+        },
+        {
+          "existing": 64,
+          "field": "rows_moved",
+          "incoming": 63
+        },
+        {
+          "existing": 10,
+          "field": "top30_churn",
+          "incoming": 12
+        }
+      ],
+      "existing_fingerprint": "cfd0bef7cc9b670a37fc1eabc152954267a26996f2674a66d28326a673898cfe",
+      "grain": "family",
+      "incoming_fingerprint": "48cfbc7aced8764098219e1433a10f7dae8fabc23ed2ba4a46b0fd2b3532d5ff",
+      "key": [
+        "2026-09-25",
+        "F2_MOMENTUM_EXTENSION"
+      ],
+      "stamp_date": "2026-09-25"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 2.9565217391,
+          "field": "mean_abs_rank_delta",
+          "incoming": 3.1014492754
+        },
+        {
+          "existing": 25,
+          "field": "max_abs_rank_delta",
+          "incoming": 26
+        },
+        {
+          "existing": 44,
+          "field": "rows_moved",
+          "incoming": 49
+        }
+      ],
+      "existing_fingerprint": "c51aac8a57da2eb0069e9d708ab1faf81595373f9146145599fa693ae08f4cba",
+      "grain": "family",
+      "incoming_fingerprint": "d9bebbb48a1d9ea1923b989a65c1af010bc037e26b1207d545363b85fda3011e",
+      "key": [
+        "2026-09-25",
+        "F4_CATALYST_EVENT"
+      ],
+      "stamp_date": "2026-09-25"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 1.7391304348,
+          "field": "mean_abs_rank_delta",
+          "incoming": 1.8260869565
+        },
+        {
+          "existing": 12,
+          "field": "max_abs_rank_delta",
+          "incoming": 15
+        },
+        {
+          "existing": 2,
+          "field": "top30_churn",
+          "incoming": 4
+        }
+      ],
+      "existing_fingerprint": "38b62ad4fc7a6e63ee1c7e159fe8394dea11b1c550caafb6803c71d67430390c",
+      "grain": "family",
+      "incoming_fingerprint": "91ac152fc4cc9886d0b238b93242c3321f15d816de801efb2e87cd1641530b2d",
+      "key": [
+        "2026-09-25",
+        "F5_FLOW_POSITIONING"
+      ],
+      "stamp_date": "2026-09-25"
+    },
+    {
+      "changed_fields": [
+        {
+          "existing": 0.4855072464,
+          "field": "modal_value",
+          "incoming": 0.5
+        },
+        {
+          "existing": 0.9565217391,
+          "field": "modal_share",
+          "incoming": 0.9855072464
+        },
+        {
+          "existing": 0.10196556,
+          "field": "dispersion",
+          "incoming": 0.059755154
+        },
+        {
+          "existing": 1.0144927536,
+          "field": "mean_abs_rank_delta",
+          "incoming": 0.231884058
+        },
+        {
+          "existing": 29,
+          "field": "max_abs_rank_delta",
+          "incoming": 2
+        },
+        {
+          "existing": 35,
+          "field": "rows_moved",
+          "incoming": 15
+        },
+        {
+          "existing": 2,
+          "field": "top30_churn",
+          "incoming": 0
+        }
+      ],
+      "existing_fingerprint": "938203d99a15210003d6874eb1ed8a817de296b2160373f33530d56d36ea0d5f",
+      "grain": "family",
+      "incoming_fingerprint": "1f544bc68dae0928d34736c6ee92c69accc4fdc5b1a250c87580fbd26855f95d",
       "key": [
         "2026-09-25",
         "F8_ATTENTION_CROWDING"
