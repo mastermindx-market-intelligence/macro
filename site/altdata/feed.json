@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-09-29T14:02:04.563875+00:00",
+  "generated_utc": "2026-09-29T17:43:46.895337+00:00",
   "as_of": "2026-09-29",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -26327,7 +26327,7 @@
         "ticker": "OKTA",
         "net_up_30d": 33,
         "breadth": 0.81,
-        "est_chg_30d": 2.17,
+        "est_chg_30d": 0.01,
         "n_analysts": 41,
         "bull_ratio": 0.9,
         "rising": true,
@@ -26412,17 +26412,6 @@
         "hot": true
       },
       {
-        "ticker": "PLTR",
-        "net_up_30d": 26,
-        "breadth": 1.0,
-        "est_chg_30d": 0.54,
-        "n_analysts": 26,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 26,
-        "hot": true
-      },
-      {
         "ticker": "ANET",
         "net_up_30d": 26,
         "breadth": 1.0,
@@ -26438,6 +26427,17 @@
         "net_up_30d": 26,
         "breadth": 1.0,
         "est_chg_30d": 0.67,
+        "n_analysts": 26,
+        "bull_ratio": 1.0,
+        "rising": true,
+        "revision_delta": 26,
+        "hot": true
+      },
+      {
+        "ticker": "PLTR",
+        "net_up_30d": 26,
+        "breadth": 1.0,
+        "est_chg_30d": 0.54,
         "n_analysts": 26,
         "bull_ratio": 1.0,
         "rising": true,
@@ -26467,10 +26467,10 @@
         "hot": true
       },
       {
-        "ticker": "PWR",
+        "ticker": "TRV",
         "net_up_30d": 24,
         "breadth": 1.0,
-        "est_chg_30d": 1.23,
+        "est_chg_30d": 0.22,
         "n_analysts": 24,
         "bull_ratio": 1.0,
         "rising": true,
@@ -26478,10 +26478,10 @@
         "hot": true
       },
       {
-        "ticker": "TRV",
+        "ticker": "PWR",
         "net_up_30d": 24,
         "breadth": 1.0,
-        "est_chg_30d": 0.22,
+        "est_chg_30d": 0.68,
         "n_analysts": 24,
         "bull_ratio": 1.0,
         "rising": true,
@@ -26511,17 +26511,6 @@
         "hot": true
       },
       {
-        "ticker": "RTX",
-        "net_up_30d": 23,
-        "breadth": 1.0,
-        "est_chg_30d": -0.06,
-        "n_analysts": 23,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 23,
-        "hot": true
-      },
-      {
         "ticker": "ADI",
         "net_up_30d": 23,
         "breadth": 1.0,
@@ -26548,6 +26537,17 @@
         "net_up_30d": 23,
         "breadth": 1.0,
         "est_chg_30d": 2.22,
+        "n_analysts": 23,
+        "bull_ratio": 1.0,
+        "rising": true,
+        "revision_delta": 23,
+        "hot": true
+      },
+      {
+        "ticker": "FIVE",
+        "net_up_30d": 23,
+        "breadth": 1.0,
+        "est_chg_30d": 11.39,
         "n_analysts": 23,
         "bull_ratio": 1.0,
         "rising": true,
@@ -28840,14 +28840,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "QQQ",
-        "mentions": 25,
-        "sentiment": 0.074
-      },
-      {
         "ticker": "MSFT",
         "mentions": 25,
         "sentiment": 0.015
+      },
+      {
+        "ticker": "QQQ",
+        "mentions": 25,
+        "sentiment": 0.074
       },
       {
         "ticker": "OKLO",
@@ -30512,7 +30512,7 @@
         "ticker": "MU",
         "next_date": "2026-09-30",
         "days_to": 1,
-        "eps_forecast": 31.24,
+        "eps_forecast": 31.35,
         "last_surprise_pct": 18.6
       },
       {
@@ -30554,21 +30554,21 @@
         "ticker": "DAL",
         "next_date": "2026-10-09",
         "days_to": 10,
-        "eps_forecast": 2.03,
+        "eps_forecast": 1.96,
         "last_surprise_pct": 3.3
       },
       {
         "ticker": "BLK",
         "next_date": "2026-10-13",
         "days_to": 14,
-        "eps_forecast": 14.24,
+        "eps_forecast": 14.19,
         "last_surprise_pct": 9.8
       },
       {
         "ticker": "C",
         "next_date": "2026-10-13",
         "days_to": 14,
-        "eps_forecast": 2.67,
+        "eps_forecast": 2.7,
         "last_surprise_pct": 15.8
       },
       {
@@ -30603,7 +30603,7 @@
         "ticker": "BAC",
         "next_date": "2026-10-14",
         "days_to": 15,
-        "eps_forecast": 1.16,
+        "eps_forecast": 1.17,
         "last_surprise_pct": 7.1
       },
       {
@@ -30638,7 +30638,7 @@
         "ticker": "OZK",
         "next_date": "2026-10-15",
         "days_to": 16,
-        "eps_forecast": 1.44,
+        "eps_forecast": 1.45,
         "last_surprise_pct": 2.0
       },
       {
@@ -30659,7 +30659,7 @@
         "ticker": "USB",
         "next_date": "2026-10-15",
         "days_to": 16,
-        "eps_forecast": 1.32,
+        "eps_forecast": 1.33,
         "last_surprise_pct": 5.5
       },
       {
@@ -31185,14 +31185,15 @@
         "why": "material_8k: 3 material 8-Ks (items 1.01, 2.03, 7.01, 8.01) \u00b7 trump: CLEANSPARK INC"
       },
       {
-        "ticker": "RTX",
-        "score": 2,
-        "weighted_score": 1.0,
+        "ticker": "GOOGL",
+        "score": 3,
+        "weighted_score": 0.95,
         "channel_list": [
-          "analyst_upgrade_cluster",
-          "unusual_options"
+          "app_demand",
+          "cnbc_pick",
+          "github_momentum"
         ],
-        "why": "analyst_upgrade_cluster: net upgrades +23 revision delta \u00b7 unusual_options: 4.28\u00d7 vol/OI, call-skew"
+        "why": "app_demand: 4.7\u2605 \u00d7 26,641,118 reviews \u00b7 cnbc_pick: Guy Adami \u00b7 github_momentum: +0.18% stars"
       }
     ]
   }

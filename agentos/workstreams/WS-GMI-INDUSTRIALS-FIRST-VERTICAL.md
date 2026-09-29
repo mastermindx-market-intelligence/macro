@@ -45,9 +45,9 @@ waves:
     next_action: "Sequence is T03 then T05, not T03 || T05: the frozen plan lists T03 event/document refs among T05's consumed inputs, and T05's C0 gate also demands T02's industrials_profiles.py on main. A T05 lane dispatched early invents the document-reference shape rather than returning BLOCKED. The pre-built T05 payload stays parked."
   - id: IND-W4
     title: "T06 closed financial dossier contract and thin shared adapter"
-    status: todo
+    status: in_progress
     depends_on: [IND-W3]
-    next_action: "T06 consumes T04 per rulings_t06.md R7-R8: quote T04's value or report T04's refusal, never re-derive; pin no receipt_id literal or golden receipt."
+    next_action: "SIX of the nine T06 obligations are covered as of #8213 (squash 28a3ab1e7cb2): IND-D23, IND-R201, IND-R215, IND-R218 and IND-SF04 by assemble_evidence_view in engine/company_intelligence/financial_dossier.py, plus the all-present control. This wave opened AHEAD of its depends_on IND-W3 because Sol commissioned the capability directly (#7789 comment 5894912727) as ONE user-facing behaviour rather than five isolated anchors - W3 was not skipped silently and T03/T05 sequencing is unchanged. R7-R8 still bind and are honoured: the view QUOTES already-derived result-to-cash values or reports their refusal, re-derives nothing, and pins no receipt_id literal or golden receipt. IND-D03, IND-D22 and IND-R213 remain UNCOVERED because their seams are unmerged - do not author tests for them against a branch. Do not re-point IND-D23 or IND-R215 at the dossier tests: they keep their result-to-cash anchors, and re-pointing would trade unit coverage for page coverage rather than add it."
   - id: IND-W5
     title: "T07 private role, T08 typed view on the shared aggregator, T09 real-path proofs"
     status: todo
