@@ -1413,6 +1413,7 @@ def test_matrix_auto_uses_complete_same_session_not_newer_oi(tmp_path):
     doc = build_matrix("SPY", store)
     assert doc["cells"], doc.get("_no_data_reason")
     assert doc["spot"] == 100.0
+    assert doc["session"] == "2026-09-22"
     assert doc["_build_meta"]["asof_date"] == "2026-09-22"
     assert doc["_build_meta"]["source_dates"] == {
         "eod": "2026-09-22", "greeks": "2026-09-22", "oi_publication": "2026-09-22",
@@ -1460,6 +1461,42 @@ def test_matrix_common_source_search_crosses_year_boundary(tmp_path):
     assert doc["spot"] == 100.0
 
 
+
+def test_matrix_auto_refuses_common_session_beyond_five_nyse_sessions(tmp_path):
+    from engine.thetadata_store import clear_parquet_cache
+    clear_parquet_cache()
+    store = _session_repair_store(
+        tmp_path,
+        oi_dates=("2026-08-21", "2026-09-23"),
+        eod_dates=("2026-08-21",),
+        greek_dates=("2026-08-21",),
+    )
+    doc = build_matrix("SPY", store)
+    assert doc["cells"] == []
+    assert doc["session"] is None
+    assert "within 5 NYSE sessions" in doc["_no_data_reason"]
+    assert "2026-09-23" in doc["_no_data_reason"]
+
+
+def test_matrix_auto_loads_each_candidate_greeks_year_once(tmp_path, monkeypatch):
+    import engine.options_matrix as matrix
+    from engine.thetadata_store import clear_parquet_cache
+    clear_parquet_cache()
+    store = _session_repair_store(tmp_path)
+    calls = []
+    original = matrix._load_parquets
+
+    def observed(tier, root, years, source):
+        if tier == "greeks":
+            calls.append(tuple(years or ()))
+        return original(tier, root, years, source)
+
+    monkeypatch.setattr(matrix, "_load_parquets", observed)
+    doc = matrix.build_matrix("SPY", store)
+    assert doc["cells"]
+    assert calls == [(2026,)]
+
+
 @pytest.mark.parametrize("values", [[], [None], [float("nan")], [float("inf")],
                                     [float("-inf")], [0.0], [-1.0], ["bad"]])
 def test_option_premiums_never_substitute_for_underlying(values):
@@ -1491,6 +1528,52 @@ def test_matrix_publisher_preserves_dated_artifact_on_missing_source(tmp_path, m
     assert (output / "SPY.json").read_bytes() == original
 
 
+
+def test_matrix_publisher_never_regresses_a_newer_usable_session(tmp_path, monkeypatch):
+    import scripts.build_options_matrix as builder
+    import engine.thetadata_store as td
+    output = tmp_path / "out"
+    output.mkdir()
+    existing = {
+        "root": "SPY", "session": "2026-09-23", "spot": 100.0,
+        "cells": [{"strike": 100.0, "gex": 42}],
+    }
+    existing_bytes = json.dumps(existing).encode()
+    (output / "SPY.json").write_bytes(existing_bytes)
+    candidate = {
+        "root": "SPY", "session": "2026-09-22", "spot": 99.0,
+        "cells": [{"strike": 100.0, "gex": 99}],
+        "_build_meta": {"asof_date": "2026-09-22"},
+    }
+    monkeypatch.setattr(td, "resolve_thetadata_store", lambda **kwargs: tmp_path)
+    monkeypatch.setattr(builder, "build_matrix", lambda *args, **kwargs: candidate)
+    monkeypatch.setattr(sys, "argv", ["builder", "--roots", "SPY", "--out", str(output)])
+    with pytest.raises(SystemExit) as error:
+        builder.main()
+    assert error.value.code == 1
+    assert (output / "SPY.json").read_bytes() == existing_bytes
+
+
+def test_matrix_publisher_replaces_legacy_empty_artifact_with_usable_session(tmp_path, monkeypatch):
+    import scripts.build_options_matrix as builder
+    import engine.thetadata_store as td
+    output = tmp_path / "out"
+    output.mkdir()
+    (output / "SPY.json").write_text(
+        json.dumps({"root": "SPY", "spot": None, "cells": [], "_no_data_reason": "old null"})
+    )
+    candidate = {
+        "root": "SPY", "session": "2026-09-22", "spot": 100.0,
+        "cells": [{"strike": 100.0, "gex": 5}],
+        "_build_meta": {"asof_date": "2026-09-22"},
+    }
+    monkeypatch.setattr(td, "resolve_thetadata_store", lambda **kwargs: tmp_path)
+    monkeypatch.setattr(builder, "build_matrix", lambda *args, **kwargs: candidate)
+    monkeypatch.setattr(sys, "argv", ["builder", "--roots", "SPY", "--out", str(output)])
+    assert builder.main() is None
+    assert json.loads((output / "SPY.json").read_text()) == candidate
+
+
 def test_matrix_publisher_missing_credentials_is_not_success(tmp_path, monkeypatch):
     import scripts.build_options_matrix as builder
     import engine.thetadata_store as td
@@ -1503,13 +1586,13 @@ def test_matrix_publisher_missing_credentials_is_not_success(tmp_path, monkeypat
 
 
 @pytest.mark.parametrize("upload_ok", [True, False])
-def test_matrix_publisher_finishes_healthy_root_but_reports_partial_failure(tmp_path, monkeypatch, upload_ok):
+def test_matrix_publisher_finishes_healthy_root_but_reports_partial_failure(tmp_path, monkeypatch, capsys, upload_ok):
     import scripts.build_options_matrix as builder
     import engine.thetadata_store as td
     monkeypatch.setattr(td, "resolve_thetadata_store", lambda **kwargs: tmp_path)
     monkeypatch.setattr(builder, "_r2_client", lambda: object())
     monkeypatch.setenv("R2_BUCKET", "fixture-bucket")
-    good = {"root": "MU", "spot": 100.0, "cells": [{"strike": 100, "gex": 5}]}
+    good = {"root": "MU", "session": "2026-09-22", "spot": 100.0, "cells": [{"strike": 100, "gex": 5}]}
     monkeypatch.setattr(builder, "build_matrix", lambda root, **kwargs:
                         good if root == "MU" else _null_payload(root, "2026-09-24", "source missing"))
     uploads = []
@@ -1522,6 +1605,8 @@ def test_matrix_publisher_finishes_healthy_root_but_reports_partial_failure(tmp_
     assert not (tmp_path / "SPY.json").exists()
     assert json.loads((tmp_path / "MU.json").read_text()) == good
     assert uploads == ["options_structure/matrix/MU.json"]
+    expected_health = "DEGRADED" if upload_ok else "FAILED"
+    assert f"health={expected_health}" in capsys.readouterr().out
 
 
 def test_matrix_default_publisher_covers_the_motivating_mu_symbol():
@@ -1537,7 +1622,7 @@ def test_matrix_publisher_all_healthy_roots_distinguishes_delivery_success(tmp_p
     monkeypatch.setattr(td, "resolve_thetadata_store", lambda **kwargs: tmp_path)
     monkeypatch.setattr(builder, "_r2_client", lambda: object())
     monkeypatch.setenv("R2_BUCKET", "fixture-bucket")
-    doc = {"root": "MU", "spot": 100.0, "cells": [{"strike": 100, "gex": 5}]}
+    doc = {"root": "MU", "session": "2026-09-22", "spot": 100.0, "cells": [{"strike": 100, "gex": 5}]}
     monkeypatch.setattr(builder, "build_matrix", lambda root, **kwargs: doc)
     uploads = []
     def deliver(client, bucket, path, key):
