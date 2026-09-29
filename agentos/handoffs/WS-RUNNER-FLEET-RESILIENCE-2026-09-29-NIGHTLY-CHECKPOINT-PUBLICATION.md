@@ -188,11 +188,25 @@ unverified:
 unresolved:
   - >
       The 2026-09-29 mass cancellation (#8164) is currently a LARGER constraint on
-      freshness than the cap exhaustion this PR repairs, for Canada as well as US. A
-      cap raise cannot help a job cancelled at 98.9m of 240m. Both are real; this PR
-      fixes one. MERGING THIS PR CANNOT BY ITSELF MAKE CANADA CURRENT - do not report
-      it as though it does. Acceptance requires the next natural nightly to complete
-      publication inside the raised budget AND not be cancelled.
+      freshness than the cap exhaustion this PR repairs, for Canada as well as US.
+      MECHANISM NOW ESTABLISHED at step level, run 36511549800: `run collectors` was
+      CANCELLED 02:16:29Z->03:47:56Z (91.45m) and `commit market data` was SKIPPED, so
+      the 2026-09-28 session was lost at COLLECTION, entirely upstream of the
+      checkpoint. The publication path this PR repairs was never reached and is NOT
+      implicated - the commit gate refusing a partial collection, `published` staying
+      unset, and `government_revenue_projection` + `capital_structure` skipping at
+      exactly 03:50:23Z is the designed behaviour working. The three cancelled jobs are
+      the three longest (97.2m/240, 96.3m/200, 118.8m/300 = 40-59% of cap) across TWO
+      runners, while 14 jobs succeeded including `tech_lab_offrender` at 74.8m on the
+      same mac-builder-5 AFTER both its cancels; the W2 rows read 40.3% and 41.1% with
+      `bands:2` vs a healthy `bands:4`. Concurrency supersession and step-level timeout
+      are both eliminated by config. A cap raise therefore cannot help this night, and
+      the agent of the cancel is NOT established. See
+      `DSC:THE-W2-LEDGER-DISCRIMINATES-A-CAP-KILL-FROM-A-FOREIGN-CANCEL`. Both failure
+      modes are real; this PR fixes one. MERGING THIS PR CANNOT BY ITSELF MAKE CANADA
+      CURRENT - do not report it as though it does. Acceptance requires the next
+      natural nightly to complete publication inside the raised budget AND not be
+      cancelled.
   - >
       Canada has no surface in `scripts/freshness_sentinel.py`, so a lost Canada
       checkpoint is reported as nothing at all. That is the detection half of the
@@ -201,9 +215,10 @@ unresolved:
       repo has no TSX holiday table - sessions derive from yfinance price data), and
       deserves its own owner. Spawned as its own lane.
   - >
-      #8008 is OPEN and awaiting its CI conclusion on head 732d3e8b55a1. The independent
+      #8008 is OPEN and awaiting its CI conclusion on head 17edf671b485. The independent
       opus reviewer APPROVED on d1e53a094592 (code identical to 732d3e8b55a1; the two
-      later commits are the agentos records and a comment rewrap), having replayed its
+      later commits are the agentos records, a comment rewrap, the failed-push pin and
+      the source/detection records), having replayed its
       own round-1 evasions against the new pins rather than accepting the summary. Its
       three residual nits were non-blocking; the cosmetic one is fixed. GitHub carries
       no formal reviewDecision because the review is a session-internal opus lane, not
