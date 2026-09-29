@@ -1050,7 +1050,7 @@ def test_candidate_hydration_is_not_a_new_data_or_permission_path():
     assert "candidate-pool-hydrated" in source and "candidate-pool-hydrated" in fragment
     hydration = fragment.split('<script>', 1)[1].split('</script>', 1)[0]
     context = fragment[fragment.index("var contextRequestSerial=0"):fragment.index("root.addEventListener('candidate-pool-hydrated'")]
-    # The one expected request is the pre-existing pool fetch at templates/_us_candidate_pool.html.j2:82.
+    # The one expected request is the pre-existing pool fetch at templates/_us_candidate_pool.html.j2:141.
     assert "fetch(" not in hydration[:hydration.index("var contextRequestSerial=0")]
     assert "fetch(" not in fragment[fragment.index("root.addEventListener('candidate-pool-hydrated'"):]
     assert context.count("fetch(") == 1
