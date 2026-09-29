@@ -856,3 +856,101 @@ def test_r8_oracle_is_only_a_fixed_time_hindsight_envelope():
     from research.crypto_science.r8_action_value_study import hindsight_value
     assert np.allclose(hindsight_value([.02,-.01,0.]),[.02,0.,0.])
     assert np.isnan(hindsight_value([np.nan])[0])
+
+
+# R9: fixed-clock population includes quiet/non-event observations.
+def test_r9_clocks_are_fixed_and_quiet_history_is_not_reselected():
+    from research.crypto_science.r9_prebreak_study import clock_features
+    b=_r6_frame();x=pd.Series(.6,index=b.index+pd.Timedelta(hours=1))
+    f=clock_features(b,x)
+    assert len(f)==sum((b.index+pd.Timedelta(hours=1)).hour%6==0)
+    assert (f.issue.dt.hour%6==0).all() and f.issue.is_unique
+    assert (f.watch_status=='prebreak').any()
+    assert (f.feature_status=='price_unknown').any()
+
+
+def test_r9_vector_features_match_old_engine_and_ignore_future_prices():
+    from research.crypto_science.r9_prebreak_study import clock_features
+    from research.crypto_science.r8_action_value_study import features_at,FIELDS
+    b=_r6_frame();x=pd.Series(.6,index=b.index+pd.Timedelta(hours=1))
+    full=clock_features(b,x);row=full.loc[full.feature_status=='ok'].iloc[-12];a=row.issue-pd.Timedelta(hours=1)
+    old=features_at(b,a,0,.6)
+    assert np.allclose(row[FIELDS].to_numpy(float),[old[k] for k in FIELDS])
+    cut=clock_features(b.loc[:a],x.loc[:row.issue]).iloc[-1]
+    assert row.watch_status==cut.watch_status and np.allclose(row[FIELDS].to_numpy(float),cut[FIELDS].to_numpy(float))
+
+
+def test_r9_missing_prior_hour_is_unknown_not_a_clean_prebreak():
+    from research.crypto_science.r9_prebreak_study import clock_features
+    b=_r6_frame();x=pd.Series(.0,index=b.index+pd.Timedelta(hours=1));a=b.index[839]
+    full=clock_features(b,x);row=full.loc[full.issue==a+pd.Timedelta(hours=1)].iloc[0]
+    assert row.x_exposure==0
+    cut=clock_features(b.drop(a-pd.Timedelta(hours=10)),x)
+    r=cut.loc[cut.issue==row.issue].iloc[0]
+    assert r.watch_status=='history_unknown' and r.feature_status=='price_unknown'
+
+
+def _r9_training():
+    from research.crypto_science.r8_action_value_study import FIELDS
+    n=1300;i=np.arange(n);t=pd.date_range('2016-01-01',periods=n,freq='6h')
+    f=pd.DataFrame({'issue':t,'end':t+pd.Timedelta(hours=25),'watch_status':'prebreak','feature_status':'ok','y':(i%10==0).astype(float)})
+    for j,k in enumerate(FIELDS):f[k]=np.sin(i/(j+2))
+    return f
+
+
+def test_r9_fit_obeys_minimums_and_strict_full_label_embargo():
+    from research.crypto_science.r9_prebreak_study import fit_watch
+    f=_r9_training();q=f.issue.iloc[1200];m=fit_watch(f,q)
+    assert m['status']=='ok' and m['n']==1192
+    assert (f.loc[m['train_indices'],'end']+pd.Timedelta(hours=24)<q).all()
+    changed=f.copy();changed.loc[1200:,'y']=1;changed.loc[1200:,'x_return1']=999
+    assert fit_watch(changed,q)==m
+    assert fit_watch(f.iloc[:500],q)['status']=='insufficient_training'
+    f.y=0.;assert fit_watch(f,q)['status']=='insufficient_training'
+
+
+def test_r9_warning_cooldown_does_not_use_outcomes_or_extend_itself():
+    from research.crypto_science.r9_prebreak_study import emit_warnings
+    t=pd.date_range('2026-01-01',periods=12,freq='6h')
+    f=pd.DataFrame({'issue':t,'entry':t+pd.Timedelta(hours=1),'end':t+pd.Timedelta(hours=25),'forecast_status':'ok','price':.2,'y':np.nan})
+    w=emit_warnings(f,'price')
+    assert w==[0,5,10]
+    f.y=0.;assert emit_warnings(f,'price')==w
+    f.loc[3,'forecast_status']='price_unknown';assert emit_warnings(f,'price')==w
+
+
+def test_r9_strictly_early_event_matching_is_one_to_one():
+    from research.crypto_science.r9_prebreak_study import match_events
+    t=pd.Timestamp('2026-01-01')
+    w=pd.DataFrame({'issue':[t,t+pd.Timedelta(hours=30)],'entry':[t+pd.Timedelta(hours=1),t+pd.Timedelta(hours=31)],'end':[t+pd.Timedelta(hours=25),t+pd.Timedelta(hours=55)]})
+    e=pd.DataFrame({'event_id':['a','b','c'],'break_issue':[t+pd.Timedelta(hours=1),t+pd.Timedelta(hours=6),t+pd.Timedelta(hours=8)],'confirm':[t+pd.Timedelta(hours=5),t+pd.Timedelta(hours=10),t+pd.Timedelta(hours=12)]})
+    m=match_events(w,e)
+    assert len(m)==1 and m[0]['event_id']=='b' and m[0]['lead_issue_h']==6 and m[0]['lead_action_h']==5
+
+
+def test_r9_unknown_and_ambiguous_targets_never_become_false_alarms():
+    from research.crypto_science.r9_prebreak_study import outcome, alarm_counts
+    b=_r4_bars(40);a=b.index[0]
+    b.loc[a,['high','low']]=[110.,90.]
+    y=outcome(b,a)
+    assert y['category']=='ambiguous' and y['y'] is None
+    f=pd.DataFrame({'y':[1.,0.,np.nan]});d=alarm_counts(f,120)
+    assert d['issued']==3 and d['scored']==2 and d['false_window']==1 and d['precision']==.5
+    assert alarm_counts(f.iloc[:0],120)['precision'] is None
+
+
+def test_r9_warning_account_charges_both_sides_without_predicted_profits():
+    from research.crypto_science.r9_prebreak_study import warning_account
+    b=_r4_bars(40);b.loc[:,['open','high','low','close']]=100.
+    t=pd.Series(.6,index=b.index)
+    d=warning_account(b,t,b.index[0],10)
+    assert d['status']=='ok' and d['cash_r']<0 and d['inc_r']==0
+    assert np.isclose(d['cash_turnover'],1.2)
+    assert d['cash_dd']<0 and d['initial_exposure']==.6
+
+
+def test_r9_average_precision_handles_ties_without_optimistic_interpolation():
+    from research.crypto_science.r9_prebreak_study import average_precision
+    assert np.isclose(average_precision([0,0,1,1],[.1,.4,.35,.8]),5/6)
+    assert np.isclose(average_precision([0,1,1],[.5,.5,.5]),2/3)
+    assert average_precision([0,0],[.1,.2]) is None
