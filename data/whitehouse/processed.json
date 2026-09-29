@@ -1439,6 +1439,12 @@
       "at": "2026-09-29T15:51:20.720990+00:00",
       "activated": false,
       "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=51602": {
+      "id": "wh-2026-09-29-first-lady-melania-trump-announces-2026-fall-garden-tours",
+      "at": "2026-09-29T20:46:46.007610+00:00",
+      "activated": false,
+      "importance": 0
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."
