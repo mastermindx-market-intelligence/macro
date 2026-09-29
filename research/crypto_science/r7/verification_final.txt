@@ -1,0 +1,18 @@
+CHECK /opt/homebrew/opt/python@3.14/bin/python3.14 -m pytest tests/test_btc_decision.py tests/test_vector_catalyst.py tests/test_vector_forward_risk.py tests/test_vector_kelly.py tests/test_vector_timeline_gated.py tests/test_hub_alerts_explanation.py tests/test_hub_market_card_labels.py tests/test_hub_glance_copy.py tests/test_vector_wave1.py tests/test_vector_r2_data_boundary.py tests/test_vector_r2_frontdoor.py tests/test_btc_signals.py tests/test_btc_impulse_falsifier.py tests/test_btc_impulse_radar.py tests/test_btc_impulse_alerts.py tests/test_crypto_cockpit_contract.py tests/test_crypto_collectors.py tests/test_crypto_data_models.py tests/test_crypto_house_style.py tests/test_crypto_wave2.py tests/test_crypto_wave3.py -q --tb=short --disable-warnings
+........................................................................ [ 26%]
+........................................................................ [ 52%]
+........................................................................ [ 78%]
+............................................................             [100%]
+276 passed, 27 warnings in 13.63s
+
+EXIT 0
+CHECK /opt/homebrew/opt/python@3.14/bin/python3.14 -m py_compile research/crypto_science/r7_calibration_study.py research/crypto_science/r7/verify_evidence.py tests/test_btc_impulse_falsifier.py
+
+EXIT 0
+CHECK /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/check_validated_claims.py --scope source
+check_validated_claims: OK [scope=source: engine/, lib/, scripts/build_*.py, scripts/render_*.py, templates/] — every affirmative 'validated' claim is backed.
+
+EXIT 0
+CHECK git diff --check
+
+EXIT 0
