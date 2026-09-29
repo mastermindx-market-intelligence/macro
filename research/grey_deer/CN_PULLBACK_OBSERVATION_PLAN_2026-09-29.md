@@ -40,3 +40,10 @@ Glance tier stays compact: one dominant read, one plain meaning, one action/obse
 CURRENT_CRITICAL_DEPENDENCY: implement and verify the raw-close observation contract.
 ACTIVE_PHASE: observation and visual build. MISSION_COMPLETE: false.
 LAST_DURABLE_EFFECT: registered isolated workspace; plan source written. No runtime dispatch, forecast change, policy change or production change.
+
+## Observation checkpoint — implementation evidence
+- `python3 -m pytest tests/test_pullback_observation.py -q --tb=short`: 29 passed (2.80 s; process 91694, exit 0). The 43 warnings were pre-existing pytest temporary-browser cleanup warnings, not feature failures; subsequent tests use an operation-owned temporary root.
+- A first real-input probe found eight archival calendar disagreements for Shanghai/Shenzhen and one for the ETF, most recently 2014-01-30. The house calendar describes itself as approximate. The implementation therefore preserves raw history and reports all disagreements; any disagreement inside the selected chart/reference evidence window blocks the state. It does not silently remove a real source price or let an old conflicted peak escape by aging off the chart. Both directions are tested.
+- After explicit trend repair, the next reference starts at the repair close. Otherwise the un-reclaimed old peak would immediately mint a false second pullback during a continuing rally. This is a resolution/re-arm invariant, not a probability or threshold retune.
+- Full stored-input replay at the frozen source: Shanghai UNDERWAY, -10.0276% from the frozen 2026-05-13 episode high, versus -5.6013% from the recent 63-close high. CSI 300 ETF proxy -12.1985% from its frozen high; Shenzhen -20.0733%. These distinct references must not be mixed in UI labels. Source processing for all three, including Git reads, took 1.761 s. This remains build evidence, not served-production proof.
+- Completed batch: pure observer and 29 contract cases. Next bounded phase: canonical China adapter, measured illustrations and template/real-page proof. Forecast/score/policy producers and all ledgers remain untouched. MISSION_COMPLETE: false.
