@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-09-28",
+  "as_of": "2026-09-29",
   "state": "lean_out",
   "dispersion_pctile": 0.3,
   "avg_corr": 0.06,
@@ -396,6 +396,12 @@
     },
     {
       "as_of": "2026-09-28",
+      "state": "lean_out",
+      "dispersion_pctile": 0.3,
+      "avg_corr": 0.06
+    },
+    {
+      "as_of": "2026-09-29",
       "state": "lean_out",
       "dispersion_pctile": 0.3,
       "avg_corr": 0.06

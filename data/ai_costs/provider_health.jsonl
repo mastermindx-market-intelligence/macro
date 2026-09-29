@@ -28579,3 +28579,7 @@
 {"ts":"2026-09-29T09:07:51Z","event":"attempt","lane":"master-brain","context":"master_brain","rung":"codex","cap_id":"codex_account","model":"gpt-5.6-sol","ok":true,"error_class":"","latency_ms":6196}
 {"ts":"2026-09-29T09:07:51Z","event":"waterfall","lane":"master-brain","context":"macro-zh","n_rungs":1,"rungs":[{"rung":"codex","cap_id":"codex_account","model":"gpt-5.6-sol"}]}
 {"ts":"2026-09-29T09:07:57Z","event":"attempt","lane":"master-brain","context":"master_brain","rung":"codex","cap_id":"codex_account","model":"gpt-5.6-sol","ok":true,"error_class":"","latency_ms":5673}
+{"ts":"2026-09-29T14:00:44Z","event":"waterfall","lane":"unknown","context":"","n_rungs":2,"rungs":[{"rung":"codex","cap_id":"codex_account","model":"gpt-5.6-sol"},{"rung":"deepseek","cap_id":"deepseek_api_key","model":"deepseek-v4-pro"}]}
+{"ts":"2026-09-29T14:00:57Z","event":"attempt","lane":"unknown","context":"altdata_brain","rung":"codex","cap_id":"codex_account","model":"gpt-5.6-sol","ok":true,"error_class":"","latency_ms":13357}
+{"ts":"2026-09-29T15:36:35Z","event":"waterfall","lane":"unknown","context":"","n_rungs":2,"rungs":[{"rung":"codex","cap_id":"codex_account","model":"gpt-5.6-sol"},{"rung":"deepseek","cap_id":"deepseek_api_key","model":"deepseek-v4-pro"}]}
+{"ts":"2026-09-29T15:36:52Z","event":"attempt","lane":"unknown","context":"altdata_brain","rung":"codex","cap_id":"codex_account","model":"gpt-5.6-sol","ok":true,"error_class":"","latency_ms":17086}
