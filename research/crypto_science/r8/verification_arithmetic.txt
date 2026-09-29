@@ -1,0 +1,5 @@
+R8 independent features/accounts 1998 14076
+R8 training identities/augmented least-squares 420 396
+R8 predictions/actions verified 6072 30204
+R8_VERIFIED 1998 independent features; 14076 inventory paths; 420 training snapshots; 6072 prediction rows; 30204 policy rows; 288 utility summaries; 144 paired method contrasts.
+R8_HASHES 55 inputs; 18 gates; 100 prior artifacts unchanged. Arithmetic is SAME-session, not independent review.
