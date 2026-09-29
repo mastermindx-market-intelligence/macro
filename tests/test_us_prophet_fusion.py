@@ -22,6 +22,7 @@ from pathlib import Path
 
 import pytest
 
+from engine import sue as sue_engine
 from engine import us_board_rank as ubr
 from engine import us_prophet_fusion as fus
 
@@ -844,3 +845,306 @@ class TestVersionedEarningsSemantics:
             pytest.skip(f"grader unavailable: {exc}")
         with pytest.raises(ValueError, match="unknown earnings semantics"):
             grade_us_board._row_features(_row("X"), earnings_semantics="unknown")
+
+
+# --------------------------------------------------------------------------- #
+# Earnings / Expectation Revision factual evidence — non-authoritative
+# --------------------------------------------------------------------------- #
+
+class TestEarningsEvidenceEngine:
+    """Factual earnings semantics for the new sleeve; no rank/entry promotion."""
+
+    @staticmethod
+    def _basis(metric="revenue", *, fiscal_period="FY2026 Q3",
+               start="2026-03-29", end="2026-06-27",
+               currency="USD", unit="USD_millions",
+               accounting="GAAP", share_basis="NOT_APPLICABLE"):
+        return sue_engine.MetricBasis(
+            issuer_id="cik:0000320193",
+            issuer_name="Apple Inc.",
+            metric=metric,
+            fiscal_period=fiscal_period,
+            period_role="QUARTER",
+            period_start=start,
+            period_end=end,
+            currency=currency,
+            unit=unit,
+            accounting_basis=accounting,
+            share_basis=share_basis,
+        )
+
+    @classmethod
+    def _actual(cls, value=109417.0, *, basis=None,
+                public_at="2026-07-30T20:30:28Z",
+                available_at="2026-07-30T20:30:28Z",
+                event_id="evt_cik0000320193_2026q3_results",
+                source_ref="sec:0000320193:0000320193-26-000018:EX-99.1"):
+        return sue_engine.Actual(
+            basis=basis or cls._basis(),
+            value=value,
+            public_at=public_at,
+            available_at=available_at,
+            source_ref=source_ref,
+            event_id=event_id,
+        )
+
+    @classmethod
+    def _expectation(cls, value=100000.0, *, basis=None,
+                     kind="ANALYST_CONSENSUS",
+                     forecast_at="2026-07-29T18:00:00Z",
+                     available_at="2026-07-29T18:01:00Z"):
+        return sue_engine.Expectation(
+            basis=basis or cls._basis(),
+            value=value,
+            forecast_at=forecast_at,
+            available_at=available_at,
+            source_ref="licensed:consensus:snapshot",
+            kind=kind,
+        )
+
+    @classmethod
+    def _forecast(cls, contributor, value, forecast_at, revision_id, *,
+                  basis=None, state="ACTIVE", valid_until=None):
+        return sue_engine.Forecast(
+            basis=basis or cls._basis(),
+            contributor=contributor,
+            value=value,
+            forecast_at=forecast_at,
+            available_at=forecast_at,
+            revision_id=revision_id,
+            source_ref=f"licensed:{revision_id}",
+            state=state,
+            valid_until=valid_until,
+        )
+
+    @pytest.mark.parametrize("row,state,positive", [
+        ({"sue_z": 2.0, "sue_fresh_days": 0}, "FRESH_REPORTED_RELATIVE_VALUE", True),
+        ({"sue_z": -2.0, "sue_fresh_days": 1}, "FRESH_REPORTED_RELATIVE_VALUE", False),
+        ({"sue_z": 2.0, "sue_fresh_days": 60}, "FRESH_REPORTED_RELATIVE_VALUE", True),
+        ({"sue_z": 2.0, "sue_fresh_days": 61}, "STALE", False),
+        ({"sue_z": None, "sue_fresh_days": 1}, "UNAVAILABLE", None),
+        ({"sue_z": 2.0, "sue_fresh_days": -1}, "UNAVAILABLE", None),
+    ])
+    def test_structured_sue_semantics(self, row, state, positive):
+        out = sue_engine.legacy_sue_evidence(row)
+        assert out["state"] == state
+        assert out["fresh_positive_relative"] is positive
+        assert out["analyst_consensus_beat"] is None
+        assert out["raw_seasonal_surprise_direction"] is None
+        assert out["rank_authority"] is False
+        assert out["entry_authority"] is False
+
+    def test_accepted_q06_revenue_change_reproduces_exact_field(self):
+        current = self._actual()
+        prior = self._actual(
+            94036,
+            basis=self._basis(
+                fiscal_period="FY2025 Q3",
+                start="2025-03-30",
+                end="2025-06-28",
+            ),
+            public_at="2025-07-31T20:30:00Z",
+            available_at="2025-07-31T20:30:00Z",
+            event_id="evt_cik0000320193_2025q3_results",
+            source_ref="sec:aapl:fy2025q3:ex99.1",
+        )
+        out = sue_engine.reported_change(
+            current, prior, decision_at="2026-07-30T20:31:00Z")
+        assert out["change_pct"] == pytest.approx(16.356501765281383)
+        assert out["rank_authority"] is False
+        assert out["entry_authority"] is False
+
+    @pytest.mark.parametrize("basis", [
+        _basis.__func__(currency="EUR"),
+        _basis.__func__(unit="USD"),
+        _basis.__func__(accounting="ADJUSTED"),
+        sue_engine.MetricBasis(
+            issuer_id="cik:other", issuer_name="Other", metric="revenue",
+            fiscal_period="FY2025 Q3", period_role="QUARTER",
+            period_start="2025-03-30", period_end="2025-06-28",
+            currency="USD", unit="USD_millions", accounting_basis="GAAP"),
+        sue_engine.MetricBasis(
+            issuer_id="cik:0000320193", issuer_name="Apple Inc.", metric="revenue",
+            fiscal_period="FY2025 9M", period_role="NINE_MONTHS",
+            period_start="2024-09-29", period_end="2025-06-28",
+            currency="USD", unit="USD_millions", accounting_basis="GAAP"),
+    ])
+    def test_reported_change_rejects_incomparable_basis(self, basis):
+        prior = self._actual(
+            94036, basis=basis,
+            public_at="2025-07-31T20:30:00Z",
+            available_at="2025-07-31T20:30:00Z", event_id="prior")
+        with pytest.raises(sue_engine.EvidenceError, match="basis mismatch"):
+            sue_engine.reported_change(
+                self._actual(), prior, decision_at="2026-07-30T20:31:00Z")
+
+    def test_consensus_surprise_is_distinct_from_seasonal_sue(self):
+        out = sue_engine.surprise(
+            self._actual(), self._expectation(),
+            decision_at="2026-07-30T20:31:00Z")
+        assert out["status"] == "COMPARABLE"
+        assert out["signed_difference"] == 9417.0
+        assert out["analyst_consensus_beat"] is True
+        assert out["standardized"] is None
+        assert out["rank_authority"] is False
+
+    def test_missing_consensus_is_not_manufactured_from_prior_year(self):
+        out = sue_engine.surprise(
+            self._actual(), None, decision_at="2026-07-30T20:31:00Z")
+        assert out["status"] == "EXPECTATION_UNAVAILABLE"
+        assert out["analyst_consensus_beat"] is None
+        assert out["signed_difference"] is None
+
+    @pytest.mark.parametrize("forecast_at,available_at", [
+        ("2026-07-30T20:30:28Z", "2026-07-30T20:30:28Z"),
+        ("2026-07-30T20:29:00Z", "2026-07-30T20:30:28Z"),
+        ("2026-07-30T20:31:00Z", "2026-07-30T20:31:00Z"),
+    ])
+    def test_expectation_at_or_after_release_cannot_be_backdated(
+        self, forecast_at, available_at
+    ):
+        with pytest.raises(sue_engine.EvidenceError, match="expectation"):
+            sue_engine.surprise(
+                self._actual(),
+                self._expectation(
+                    forecast_at=forecast_at, available_at=available_at),
+                decision_at="2026-07-30T21:00:00Z",
+            )
+
+    def test_scaling_is_past_only_and_method_matched(self):
+        rows = [
+            sue_engine.HistoricalForecastError(
+                2, "2025-01-01T00:00:00Z", "e1", "s1", "rev-q",
+                "ANALYST_CONSENSUS"),
+            sue_engine.HistoricalForecastError(
+                -1, "2025-04-01T00:00:00Z", "e2", "s2", "rev-q",
+                "ANALYST_CONSENSUS"),
+            sue_engine.HistoricalForecastError(
+                3, "2025-07-01T00:00:00Z", "e3", "s3", "rev-q",
+                "ANALYST_CONSENSUS"),
+            sue_engine.HistoricalForecastError(
+                0, "2025-10-01T00:00:00Z", "e4", "s4", "rev-q",
+                "ANALYST_CONSENSUS"),
+            sue_engine.HistoricalForecastError(
+                999, "2026-08-01T00:00:00Z", "future", "sf", "rev-q",
+                "ANALYST_CONSENSUS"),
+            sue_engine.HistoricalForecastError(
+                999, "2025-11-01T00:00:00Z", "wrong", "sw", "rev-q",
+                "SEASONAL_MODEL"),
+        ]
+        out = sue_engine.surprise(
+            self._actual(), self._expectation(),
+            decision_at="2026-07-30T20:31:00Z",
+            calibration=rows, calibration_key="rev-q", min_history=4)
+        assert out["calibration_event_ids"] == ["e1", "e2", "e3", "e4"]
+        assert out["standardized"] is not None
+        assert {x["event_id"]: x["reason"]
+                for x in out["excluded_calibration"]} == {
+                    "future": "unavailable_before_event",
+                    "wrong": "expectation_method_mismatch",
+                }
+
+    def test_matched_revisions_do_not_confuse_new_analyst_with_upgrade(self):
+        rows = [
+            self._forecast("A", 100, "2026-07-01T00:00:00Z", "a0"),
+            self._forecast("B", 100, "2026-07-01T00:00:00Z", "b0"),
+            self._forecast("A", 100, "2026-07-15T00:00:00Z", "a1"),
+            self._forecast("B", 100, "2026-07-15T00:00:00Z", "b1"),
+            self._forecast("C", 102, "2026-07-15T00:00:00Z", "c1"),
+        ]
+        out = sue_engine.matched_revisions(
+            rows, basis=self._basis(),
+            before="2026-07-02T00:00:00Z",
+            after="2026-07-16T00:00:00Z")
+        assert out["matched_count"] == 2
+        assert out["matched_mean_change"] == 0
+        assert out["entered"] == ["C"]
+        assert out["naive_changing_roster_mean_change"] == pytest.approx(2 / 3)
+        assert out["roster_difference_residual"] == pytest.approx(2 / 3)
+
+    def test_withdrawal_does_not_fall_back_to_older_forecast(self):
+        rows = [
+            self._forecast("A", 100, "2026-07-01T00:00:00Z", "a0"),
+            self._forecast(
+                "A", None, "2026-07-10T00:00:00Z", "a1",
+                state="WITHDRAWN"),
+        ]
+        out = sue_engine.matched_revisions(
+            rows, basis=self._basis(),
+            before="2026-07-02T00:00:00Z",
+            after="2026-07-11T00:00:00Z")
+        assert out["before_count"] == 1
+        assert out["after_count"] == 0
+        assert out["exited"] == ["A"]
+
+    def test_dilution_can_reverse_income_growth_on_a_per_share_basis(self):
+        out = sue_engine.per_share_bridge(
+            old_income=100, new_income=120,
+            old_shares=100, new_shares=150)
+        assert out["income_grew"] is True
+        assert out["old_eps"] == 1
+        assert out["new_eps"] == pytest.approx(0.8)
+        assert out["eps_grew"] is False
+        assert out["share_count_effect_at_new_income"] == pytest.approx(-0.4)
+
+    @pytest.mark.parametrize("price,probability", [(100, 0.275), (108, 0.775)])
+    def test_entry_economics_change_with_price(self, price, probability):
+        out = sue_engine.entry_economics(
+            price=price, target=112, stop=96,
+            win_cost=0.4, loss_cost=0.4, required_reward_risk=2)
+        assert out["break_even_target_probability"] == pytest.approx(probability)
+        assert out["estimated_win_probability"] is None
+        assert out["entry_permission"] is False
+
+    def test_two_to_one_net_price_ceiling_is_explicit(self):
+        out = sue_engine.entry_economics(
+            price=100, target=112, stop=96,
+            win_cost=0.4, loss_cost=0.4, required_reward_risk=2)
+        assert out["price_ceiling_for_required_reward_risk"] == pytest.approx(
+            100.9333333333)
+        assert out["within_scenario_ceiling"] is True
+
+    def test_joint_eps_and_revenue_agreement_needs_same_event_and_method(self):
+        eps_basis = self._basis(
+            metric="EPS", unit="USD_per_share", share_basis="DILUTED")
+        eps = sue_engine.surprise(
+            self._actual(2, basis=eps_basis),
+            self._expectation(1.8, basis=eps_basis),
+            decision_at="2026-07-30T20:31:00Z")
+        rev = sue_engine.surprise(
+            self._actual(),
+            self._expectation(),
+            decision_at="2026-07-30T20:31:00Z")
+        state = sue_engine.joint_earnings_state(eps, rev)
+        assert state["state"] == "EPS_ABOVE_REVENUE_ABOVE"
+        assert state["both_positive"] is True
+        assert state["rank_authority"] is False
+
+    def test_dossier_preserves_q06_source_and_all_authority_false(self):
+        current = self._actual()
+        prior = self._actual(
+            94036,
+            basis=self._basis(
+                fiscal_period="FY2025 Q3",
+                start="2025-03-30", end="2025-06-28"),
+            public_at="2025-07-31T20:30:00Z",
+            available_at="2025-07-31T20:30:00Z",
+            event_id="prior")
+        change = sue_engine.reported_change(
+            current, prior, decision_at="2026-07-30T20:31:00Z")
+        dossier = sue_engine.factual_dossier(
+            event_id=current.event_id,
+            issuer_id=current.basis.issuer_id,
+            decision_at="2026-07-30T20:31:00Z",
+            reported_changes=[change],
+            source_contract_refs=[
+                "macro#8069@ae9409bca5d81dbf7438ff0037a976b324853bdd:"
+                "q06_source_contract_v0.2"
+            ],
+        )
+        assert dossier["reported_changes"][0]["change_pct"] == pytest.approx(
+            16.356501765281383)
+        assert all(value is False for value in dossier["authority"].values())
+        assert "no qualified pre-release expectation surprise" in dossier[
+            "limitations"
+        ]

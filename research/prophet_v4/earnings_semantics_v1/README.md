@@ -69,3 +69,69 @@ Under the existing Earnings/D5 and Evaluation owners, bind one exact earnings re
 - present entry geometry and market permission.
 
 Only after that factual input is source-qualified should B10/B15 test incremental selection value against the existing price/sector baseline. The comparison must use the same eligible population and information clocks; it must not relabel this source repair as alpha.
+
+## R2 extension — source-backed Earnings / Expectation Revision evidence
+
+This same carrier now contains a factual Earnings-domain engine in the existing
+`engine/sue.py` owner. It consumes already-qualified facts; it does not introduce
+another event store, earnings collector, ranker, policy plane or grading system.
+
+### Accepted factual input
+
+Parent Sol independently reproduced the repaired Gate-S contract on current
+Macro PR #8069 head `ae9409bca5d81dbf7438ff0037a976b324853bdd` and accepted that
+**factual source field only** in #8069 comment `5894923827`.
+
+Accepted example:
+
+- Apple FY2026 Q3 / 8-K EX-99.1;
+- total net sales `109417` versus same-quarter prior `94036` USD millions, GAAP;
+- deterministic comparable change `16.356501765281383%`;
+- economic identity `econ:50d783276670de14acd15a92317b93649d877c01f7d48961d1c56e5e7c87a656`;
+- field-provenance identity `fpv:36091b7aff3681e59ab527eb3ebeac61a20324195a9f43f4478c4ccbcff1566a`.
+
+Gate E remains `NOT_REGISTERED_PREPARATORY_ONLY`, `protected_outcome_read=false`,
+and `trial_may_start=false`. The factual acceptance therefore grants no return claim,
+ranking points, B4 permission, entry, sizing, execution or user recommendation.
+
+### New pure evidence functions
+
+`engine/sue.py` now also supplies non-authoritative primitives for:
+
+- comparable reported changes with issuer/period/currency/unit/accounting-basis checks;
+- true expectation surprise using a genuinely pre-release expectation;
+- optional surprise scaling using only past, same-method, same-scope forecast errors;
+- fixed-contributor/fixed-period analyst revisions with entry/exit/withdrawal disclosed;
+- per-share income/share-count transmission so dilution cannot disappear;
+- current-price scenario economics: net payoff, break-even target probability and
+  reward/risk price ceiling, explicitly not a model win probability;
+- EPS/revenue agreement without turning corroboration into an automatic confidence bonus;
+- a factual dossier that preserves source-contract references and stamps all financial
+  authority false.
+
+This deliberately keeps three facts distinct:
+
+1. the legacy seasonal EPS-momentum/SUE observation;
+2. a qualified analyst-consensus surprise, where lawful source rights exist;
+3. later matched forecast revisions.
+
+A missing consensus is not reconstructed from prior-year earnings. A new analyst
+joining the panel is not silently treated as an upgrade by existing analysts. A
+profit increase accompanied by enough dilution can still reduce EPS.
+
+### Verification
+
+The existing `tests/test_us_prophet_fusion.py` remains the CI-owned test surface.
+It now includes the factual Earnings evidence cases rather than introducing an
+unregistered new pytest file.
+
+Local exact-head verification after this extension:
+
+- `TestEarningsEvidenceEngine`: **26 passed**;
+- complete `tests/test_us_prophet_fusion.py`: **103 passed / 9 skipped**;
+- the skips are the suite's existing optional/full-checkout boundaries, not failed
+  earnings cases.
+
+The new facts remain research/explanation inputs. A separate B10/B15 empirical
+comparison must establish incremental selection value on a common eligible population
+before any live score, forecast, entry, holding or portfolio authority changes.
