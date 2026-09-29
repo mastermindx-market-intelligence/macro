@@ -55,6 +55,7 @@ discoveries:
   - DSC:THE-HUMAN-DRIVEN-POPULATION-IS-NOT-ROOT-CONTAINED
   - DSC:GC-DISABLED-RUNNER-STORES-ACCUMULATE-EVERY-TRANSFER-PATHOLOGY-FOREVER
   - DSC:THE-SWEEPERS-FOUR-DAY-NON-START-WAS-AN-UNLOADED-AGENT-NOT-A-CRASH
+  - DSC:THE-SSD-TMP-POOLS-PROVEN-RECLAIM-IS-UNREACHABLE-BY-THIS-SWEEPER
 landmines:
   - "`/Volumes/Worktrees/Documents/Photos Library.photoslibrary` (247 GB, the LIVE library) and
      `/Volumes/Mastermind/transfers/runner-fleet-resilience-worktrees-photoslib-20260924.tar`
@@ -111,6 +112,13 @@ do_not_redo:
      8–14%, not the 79% the ancestry census reported."
   - "Do NOT re-litigate whether a wider `roots` alone frees space. Measured: +496 trees of
      REPORTING, +1 of deletion. The host-checkout belt is the binding constraint."
+  - "Do NOT propose `/Volumes/Mastermind/tmp` as a roots widening to capture the 44.19 GiB §9
+     proved landed+clean+unattached there. It frees zero bytes for two independent reasons:
+     both proven candidates are STANDALONE CLONES (`.git` is a directory, so they are in no
+     `git worktree list` and `scan_orphans` skips the root at `worktree_gc.py:682`), and all 17
+     registrations under it (~41 GiB) are DETACHED HEAD, which satisfies none of
+     `DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM`'s three proofs. Reclaiming those two clones is a
+     DIFFERENT act needing a different tool and its own operator decision."
   - "Do NOT re-ratify gate (1). The `human_driven_roots` deny-list landed in #8175 and is live."
   - "Do NOT re-measure the launchd run history. 45 runs 2026-08-13 → 09-28: 30 completions, 13
      crashes (9 at the 3000 s sweep cap, 4 at the 120 s git cap, one exception class), 2 clean
@@ -255,10 +263,20 @@ waves:
     title: >
       This record, the handoff and the §9 refinement for W12-W14, plus the four discovery records
       the triage produced (the PR-body CI trigger, the root-containment correction, the runner
-      git stores, and the four-day non-start cause)
-    status: awaiting_ci
+      git stores, and the four-day non-start cause). DONE 2026-09-29, squash `aeb754133a52`
+    status: done
+    pr: 8179
     depends_on:
       - W14
+  - id: W16
+    title: >
+      The SSD `tmp` pool's reach correction — §9 said the 44.19 GiB proven reclaim "lacks only
+      authorization", which named a roots widening as the remedy; measured, that widening frees
+      zero bytes because the two candidates are standalone clones the registry cannot see and all
+      17 registrations there are detached. Withdraws a ratification ask before it is made
+    status: awaiting_ci
+    depends_on:
+      - W15
 next_action: >
   Put the `needs_ceo` options to the operator. SUPERSEDED TEXT, quoted so a reader who remembers it
   can see what replaced it: "the CI runner git stores (177.26 GiB, 87% `.git`) are the largest real
@@ -273,7 +291,10 @@ next_action: >
   `roots` by SUBTREE — `…/agent-workspaces/claude` ONLY; `…/agent-workspaces/tmp` is dropped from
   the proposal because it holds 0 registrations and `scan_orphans` skips any root not under a host
   checkout, so it is inert — then (3) the lock-stamp fix at `scripts/worktree_gc.py:501`, then
-  gate 3, which the deny-list now guards. Also awaiting an explicit operator yes, and deliberately
+  gate 3, which the deny-list now guards. A THIRD widening candidate is withdrawn by W16 rather
+  than put to the operator: `/Volumes/Mastermind/tmp` holds the only proven reclaim on the volume
+  and a roots entry reaches none of it, because `roots` governs which paths the sweeper may ACT
+  on and never which objects it can SEE. Also awaiting an explicit operator yes, and deliberately
   NOT done: running `scripts/install_worktree_gc_launchd.sh`. Until it runs, W12's availability fix
   is in the repo and not on the host, because the wrapper is the one file no merge reaches —
   measured 2026-09-29, the installed copy is 4,611 bytes dated 2026-08-12 against 10,957 on
@@ -381,3 +402,39 @@ every instrument this programme owns is written BY the wrapper, and the wrapper 
 deletion ledger cannot answer an availability question either — it records one row per deleted
 worktree, so its gaps cannot distinguish "did not run" from "ran and found nothing". Detecting a
 never-started run needs an EXTERNAL expectation, and that check does not exist yet.
+
+## Scope is not sight — a second ratification ask withdrawn before it was made
+
+W11 withdrew one operator ask (`…/agent-workspaces/tmp`, 0 registrations). W16 withdraws another,
+and this one is more expensive to get wrong because it sits on the largest **proven** reclaim any
+census in this programme has produced: 44.19 GiB in `/Volumes/Mastermind/tmp`, landed, clean, and
+with nothing attached. §9 explained its non-reclaim as a missing configured root, which reads as
+an invitation to widen `roots` — so the obvious next ask would have spent an operator decision on
+a change measured to free **zero bytes**.
+
+Two independent refusals, neither about permission:
+
+| candidate | bytes | why the sweeper cannot take it |
+|---|---:|---|
+| `pr979-macro-88804-proof` | 41.76 GiB | standalone clone (`.git` is a directory) — in no `git worktree list`; `scan_orphans` skips the root at `worktree_gc.py:682` |
+| `prophet-7187-proof-clone-20260920` | 2.43 GiB | same |
+| the 17 registrations there | ~41 GiB | all DETACHED HEAD — no proof shape in `DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM` a detached HEAD can satisfy |
+
+The reusable sentence is one level out from `DSC:A-HOST-CHECKOUT-BELT-MAKES-A-WIDER-ROOTS-LIST-INERT`:
+**`roots` governs which paths a sweeper may ACT on, never which objects it can SEE.** A registry-based
+tool has no handle on a standalone clone at any configuration, and the completion-signal law has
+nothing to say about a detached HEAD however reachable it is. Before asking for a scope ratification,
+ask what the tool's subject set actually contains. Reclaiming those two clones remains available to
+the operator — as a DIFFERENT act, with a different tool and its own decision.
+
+## Fleet census at the close of this wave
+
+Registrations **789** (804/807 on 09-27/28): 292 `…/agent-workspaces/claude`, 232
+`/Users/chriswong/Documents/Cluade`, 140 `/Volumes/Mastermind/worktrees`, 29 `…/sol`, 17
+`/Volumes/Mastermind/tmp`, 16 `…/review`. The fleet is not growing right now.
+
+Internal `/System/Volumes/Data` moved from 312 GiB free @83% to **360 GiB @81%** across this
+session. **That was not this programme.** No wave here has deleted anything — every candidate sits
+behind a standing decline or an unratified gate — so something else on the host released it, and
+recording it as progress would attribute a reclaim to work that freed nothing. W9 through W16 buy
+legibility, which is a precondition for ratifying the acts in `needs_ceo`, never a substitute.

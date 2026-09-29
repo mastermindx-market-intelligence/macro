@@ -662,10 +662,35 @@ locally, `GIT_NO_LAZY_FETCH=1`, no network — 2 of those 41 dirs are **provably
   unattached.
 
 **44.19 GiB satisfying every substantive clause of §9 — landed, clean, nothing attached, not
-HUMAN-class — and it is still NOT taken**, because the final clause requires the tree to sit
-under a configured root and `/Volumes/Mastermind/tmp` is not one. Note the difference in KIND
-from the 7.2 GiB case above: that one fails because landedness is *unprovable*; this one is
-proven and lacks only authorization. It is the largest proven-reclaimable find on the volume.
+HUMAN-class — and it is still NOT taken.** Note the difference in KIND from the 7.2 GiB case
+above: that one fails because landedness is *unprovable*; this one is proven. It is the largest
+proven-reclaimable find on the volume.
+
+**CORRECTED 2026-09-29 — the missing root is NOT what stops it, and the distinction matters
+because the superseded wording named a remedy that frees nothing.** That paragraph read:
+
+> "and it is still NOT taken, because the final clause requires the tree to sit under a
+> configured root and `/Volumes/Mastermind/tmp` is not one … this one is proven and lacks only
+> authorization."
+
+Measured: **adding `/Volumes/Mastermind/tmp` to `roots` would free zero bytes.** Both proven
+candidates are **standalone clones** — `test -d <path>/.git` succeeds on each, so each `.git`
+is a directory and not a gitfile — which means they appear in no `git worktree list` output and
+`worktree_gc.py`, which is built entirely on the worktree registry, has no handle on them at any
+configuration. Its only route to an unregistered directory is `scan_orphans`, and
+`scripts/worktree_gc.py:682` skips any root not under a host checkout. Separately, every
+directory under that root that IS a registration of this clone — **17 trees / ~41 GiB**, the
+largest `prophet-b4-owner-archeology-20260921-sol-001` at 7 GiB — is on a **DETACHED HEAD**, and
+a detached HEAD satisfies none of `DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM`'s three proofs, so
+each fails closed regardless of which root it sits under. At least five of the 17 (~11 GiB) also
+carry a `sol`/`review` marker, so the `human_driven_roots` deny-list would need a NAME rule to
+cover them — the same gap this section already states for the loose `*-sol` trees.
+
+**`roots` governs which paths a sweeper may ACT on, never which objects it can SEE.** Reclaiming
+those two clones is therefore a DIFFERENT act — a different tool, and its own operator decision —
+and it must be put to the operator that way rather than smuggled in as a roots entry. Do not
+propose `/Volumes/Mastermind/tmp` as a roots widening.
+`DSC:THE-SSD-TMP-POOLS-PROVEN-RECLAIM-IS-UNREACHABLE-BY-THIS-SWEEPER`.
 
 **A REACH correction on this census, for the same reason the roots table needed one.** 23 dirs
 answered "HEAD sha not present in this clone", first reported as "never landed, or unreachable
@@ -682,7 +707,9 @@ class by any reading — was admitted as reclaimable until the marker was matche
 **SEVEN independent pools have now been measured and SIX are null.** Shared mint root 726.4 GiB
 (58% unreachable), `/Volumes/Worktrees` 801 GiB (report-only forever), full clones 163.2 GiB,
 session scratchpads 216.6 GiB (0.00 GiB dead), `Offloaded` 190.7 GiB (verified backups), SSD
-`tmp` 214.8 GiB (0.55 GiB free-and-clear + 44.19 GiB proven-but-unauthorized), and
+`tmp` 214.8 GiB (0.55 GiB free-and-clear + 44.19 GiB proven-but-unreachable-by-this-sweeper —
+this rollup read "proven-but-unauthorized" until the 2026-09-29 correction above; authorization
+was never the binding constraint), and
 `transfers` 233.2 GiB (**zero reclaimable**, and holding 195.28 GiB of operator photo data
 that no automated path may touch — see below). (This sentence read "Six independent pools … and five are null" with
 no `transfers` row, and is **CORRECTED 2026-09-28, same day**: the seventh pool was measured

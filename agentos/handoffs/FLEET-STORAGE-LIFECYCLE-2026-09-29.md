@@ -1,6 +1,6 @@
 ---
 workstream: WS:FLEET-STORAGE-LIFECYCLE
-session: claude/fleet-storage-records-wave14-20260929 (W15, which amends this file in place; the day's earlier waves shipped on claude/human-driven-roots-denylist-20260929 (W11), claude/gc-wrapper-timeouts-fail-silently-20260929 (W12) and claude/gc-protective-key-defaults-unprotected-20260929 (W14))
+session: claude/fleet-storage-tmp-pool-reach-20260929 (W16, which amends this file in place, as W15 did before it on claude/fleet-storage-records-wave14-20260929; the day's earlier waves shipped on claude/human-driven-roots-denylist-20260929 (W11), claude/gc-wrapper-timeouts-fail-silently-20260929 (W12) and claude/gc-protective-key-defaults-unprotected-20260929 (W14))
 model: opus
 ended_because: blocked
 mission: >
@@ -146,6 +146,26 @@ verified:
       386 records (385 .md + 1 .json data artifact, no malformed record); all cited keys resolve.
       `DSC-A-ONE-MINT-ROOT-IS-SHARED-BY-TWELVE-GIT-STORES` was DROPPED from this wave's shipping
       list — verified already present in origin/main.
+  - claim: "Adding `/Volumes/Mastermind/tmp` to `roots` would free ZERO bytes. Both proven candidates are standalone clones the worktree registry cannot see, and all 17 registrations there are detached."
+    command: "git worktree list --porcelain | grep -c '^worktree /Volumes/Mastermind/tmp' ; same stream grepped for 'pr979-macro-88804-proof' ; test -d /Volumes/Mastermind/tmp/pr979-macro-88804-proof/.git ; test -d /Volumes/Mastermind/tmp/prophet-7187-proof-clone-20260920/.git ; per-tree detached/locked state from the same porcelain stream ; du -sg over the 17 registered paths ; sed -n '672,696p' scripts/worktree_gc.py"
+    result: >
+      17 registrations under that root, 0 of them either proven candidate. `test -d …/.git`
+      succeeds on BOTH candidates, so each `.git` is a directory — a standalone clone, present in
+      no `git worktree list` output at any configuration. All 17 registrations print `detached`
+      and none prints `locked`; `du -sg` totals ~41 GiB, largest
+      `prophet-b4-owner-archeology-20260921-sol-001` at 7 GiB, ≥5 (~11 GiB) carrying a
+      `sol`/`review` marker. `scan_orphans` at `scripts/worktree_gc.py:682` skips any root not
+      under a host checkout, which is the sweeper's only route to an unregistered directory.
+      Shipped as `DSC:THE-SSD-TMP-POOLS-PROVEN-RECLAIM-IS-UNREACHABLE-BY-THIS-SWEEPER`; §9's
+      "lacks only authorization" sentence is superseded in place.
+  - claim: "Registrations are 789 and the fleet is not growing; the internal disk's improvement was NOT this programme."
+    command: "git worktree list --porcelain | grep -c '^worktree ' ; the same stream bucketed by mint root ; df -g /System/Volumes/Data"
+    result: >
+      789 registrations (804/807 on 09-27/28): 292 `…/agent-workspaces/claude`, 232
+      `/Users/chriswong/Documents/Cluade`, 140 `/Volumes/Mastermind/worktrees`, 29 `…/sol`, 17
+      `/Volumes/Mastermind/tmp`, 16 `…/review`. `/System/Volumes/Data` moved 312 GiB free @83% →
+      360 GiB @81% during this session, which deleted nothing — recorded explicitly so no later
+      reader attributes that reclaim to this programme.
 unverified:
   - claim: "WHY the job's launchd record was re-created between the 09-21 and 09-22 firings. THAT it
      was re-created is now verified above; the cause of the re-creation is not."
@@ -216,6 +236,7 @@ do_not_redo:
   - "Do NOT re-verify #8176's 4-GIT-timeout claim. It was independently re-verified on 2026-09-29 against the live log and is CORRECT: 13 `^subprocess.TimeoutExpired:` lines = 9 RUN + 4 GIT. A substring `grep -o` says 22 because it counts message OCCURRENCES inside traceback bodies, not events."
   - "Do NOT propose restoring `filter: blob:none` to the pack checkout to shrink the runner stores. Drafted and withdrawn 2026-09-29: it would revert `DSC:CI-PROMISOR-OBJECT-FETCH-TRUNCATION`, which has three named production failures behind it."
   - "Do NOT ask for `…/agent-workspaces/tmp` in the roots widening. 0 registrations and `scan_orphans` skips non-host roots — inert."
+  - "Do NOT ask for `/Volumes/Mastermind/tmp` in the roots widening either, however tempting the 44.19 GiB §9 proved reclaimable there. Both candidates are standalone clones (`.git` is a directory) that no `git worktree list` reports, and all 17 registrations under that root are DETACHED HEAD. Zero bytes. `roots` governs which paths a sweeper may ACT on, never which objects it can SEE."
   - "Do NOT use `ls <dir>/*.pack | wc -l` on a runner pack directory. 36,271 paths overflow ARG_MAX, the glob fails and it prints 0 — 'none' and 'too many to count' are the same reading. Use `find … | wc -l`."
   - "Do NOT use `pgrep -c -f X 2>/dev/null || echo 0` to ask whether a runner is busy. `-c` is not a count flag on macOS, the `2>/dev/null` swallows the usage error and the fallback literal fabricates a 0 while workers run."
 danger_areas:
@@ -224,7 +245,7 @@ danger_areas:
   - "A PROTECTIVE config key inverts the wrapper's staleness argument: for arming and roots, older policy is narrower is safer, but for a deny-list older policy means LESS protection. Bounded because refs only advance — once one successful fetch has seen an entry, no later staleness drops it — but the protective half must always land in the EARLIER commit."
   - "The deny-list went live ON MERGE, and so would anything dangerous. There is no fast-forward buffer, so commit ORDER on main is the real safeguard for gate 3."
   - "The caps are deliberately unchanged and a test guards the reasoning. Raising one without a measurement would convert a legible timeout back into a silent slow no-op."
-prs: [8175, 8176, 8177, 8178]
+prs: [8175, 8176, 8177, 8178, 8179]
 decisions: [DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM]
 discoveries:
   - DSC:TWO-INDEPENDENT-GATES-MAKE-A-REGRESSION-IN-EITHER-ONE-INVISIBLE
@@ -235,6 +256,7 @@ discoveries:
   - DSC:THE-HUMAN-DRIVEN-POPULATION-IS-NOT-ROOT-CONTAINED
   - DSC:GC-DISABLED-RUNNER-STORES-ACCUMULATE-EVERY-TRANSFER-PATHOLOGY-FOREVER
   - DSC:THE-SWEEPERS-FOUR-DAY-NON-START-WAS-AN-UNLOADED-AGENT-NOT-A-CRASH
+  - DSC:THE-SSD-TMP-POOLS-PROVEN-RECLAIM-IS-UNREACHABLE-BY-THIS-SWEEPER
 ---
 
 ## The one thing a cold stranger must take from this handoff
@@ -308,3 +330,40 @@ difference is not thereby a misconfiguration — the cheap side may be the broke
 **Nothing in this wave reclaimed a byte, deliberately.** Every remaining candidate sits behind a
 standing operator decline or an unratified gate. That is the correct outcome of a triage whose
 subject is an armed deleter, and it is reported as such rather than padded.
+
+## W16 amendment — the ask that was withdrawn before it was made
+
+W15 closed by naming the remaining ratifications. W16 removes one of them from that list, and it
+is the one a cold stranger would have reached for first, because §9 attached it to the largest
+**proven** reclaim this programme has found: 44.19 GiB under `/Volumes/Mastermind/tmp`, landed,
+clean, nothing attached. The superseded sentence read that it "is still NOT taken, because the
+final clause requires the tree to sit under a configured root and `/Volumes/Mastermind/tmp` is not
+one … this one is proven and lacks only authorization."
+
+Measured, the widening frees **zero bytes**, and the two reasons are independent so neither can be
+patched around. The 41.76 GiB and 2.43 GiB candidates are **standalone clones** — `test -d
+<path>/.git` succeeds on each — so no `git worktree list` reports them and a tool built on the
+worktree registry has no handle on them however it is configured; `scan_orphans`, its only route
+to an unregistered directory, skips the root at `worktree_gc.py:682` because it is not under a
+host checkout. And every directory there that IS a registration — 17 trees, ~41 GiB — is on a
+DETACHED HEAD, which satisfies none of `DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM`'s three proofs.
+
+**`roots` governs which paths a sweeper may ACT on, never which objects it can SEE.** That is the
+same lesson as `DSC:A-HOST-CHECKOUT-BELT-MAKES-A-WIDER-ROOTS-LIST-INERT`, one level out: there a
+permission widening was inert because a naming belt refused the trees; here it is inert because
+the subject set never contained them. Before asking for a scope ratification, ask what the tool
+can see. The 44.19 GiB is still reclaimable by hand — that is a DIFFERENT act, with a different
+tool and its own operator decision, and it should be put that way.
+
+**A watcher-comment correction from the same wave, worth carrying because nothing malfunctioned.**
+The floor for #8179's watcher was derived from one check-registration rollup read ~60 s after the
+PR opened, and written down as "this is a DOCS PR: no `ci-pack-*` lane registers at all." Minutes
+later `ci-pack-0` and `ci-pack-1` were running. The read was correct; the question was not. It
+answered *what has registered so far* and was recorded as *what will ever register* — and check
+registration is spread over minutes, so **any single rollup read is a position in a sequence,
+never the sequence.** The watcher itself stayed correct, because a REQUIRED floor is a
+registration minimum (when is the rollup mature enough to believe) and completeness is decided
+separately by the pending count reaching zero: a floor naming FEWER rows than actually register is
+harmless, a floor naming a row that never arrives waits forever. So the repair was to the false
+sentence, not the code — derive a floor from an early read only downward, and never tighten one
+later because more rows showed up.
