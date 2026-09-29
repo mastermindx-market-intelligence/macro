@@ -17761,6 +17761,14 @@ jobs:
       - "tests/test_industrials_dependency_binding.py"
       - "tests/industrials_result_cash_helpers.py"
       - "tests/fixtures/industrials_result_cash/**"
+      # IND-T04c: the recovered requirement index is the anchor map's only external
+      # authority, and the ruling is the obligation source an `anchor_basis: RULING`
+      # row names. Both are READ by the suite, so the closure test requires them
+      # here — and it is load-bearing rather than bookkeeping: without these two
+      # entries, editing the index alone would not schedule this job and the guard
+      # that refuses a fabricated anchor would not run on the very file it reads.
+      - "research/industrials/first_vertical_program/requirement_index.md"
+      - "research/industrials/first_vertical_program/rulings/R-IND-2026-09-27-requirement-anchors.md"
       - "config/earnings_story_promotion.yml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "engine/company_intelligence/__init__.py"
