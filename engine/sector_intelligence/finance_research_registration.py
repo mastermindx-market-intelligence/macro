@@ -532,11 +532,15 @@ def _owner_inputs_from_bundle(bundle: Any) -> tuple[Any, datetime, datetime]:
 # ---------------------------------------------------------------------------
 
 
-def _build_limitations(inputs: Any, bundle: Any) -> list[str]:
+def _build_limitations(inputs: Any, bundle: Any, known_assertions: tuple[Any, ...]) -> list[str]:
     """Build the limitations list. Three sources of truth:
 
     * Each :class:`FinanceOwnerInputs` field that is empty / None after
       fixture mapping gets an ``owner_input_absent:<field>`` marker.
+      ``theme_evidence`` is read as the dossier read it: the assertions the
+      run's knowledge cutoff does not withhold (``known_assertions``, from
+      :func:`_known_assertions`). A bundle whose every assertion the cutoff
+      withholds gave the dossier no theme evidence, so it is marked absent.
     * Each owner-bundle field this adapter explicitly does NOT map, when
       present in the bundle, gets an ``owner_field_unmapped:<field>`` marker
       (once per field per compose). ``native_refs`` is special — see
@@ -559,7 +563,10 @@ def _build_limitations(inputs: Any, bundle: Any) -> list[str]:
     """
     limitations: set[str] = set()
     for field_name in _OWNER_INPUT_FIELDS:
-        value = getattr(inputs, field_name, None)
+        if field_name == "theme_evidence":
+            value = known_assertions
+        else:
+            value = getattr(inputs, field_name, None)
         if not value:
             limitations.add(f"owner_input_absent:{field_name}")
     bundle_value = getattr(bundle, "omissions", ()) or ()
@@ -758,10 +765,9 @@ def compose(query: Any, bundle: Any) -> dict[str, Any]:
     dossier = _dossier(inputs, generated_at, knowledge_cutoff)
     resolver = _import_resolver()
     consumed = _consumed_revision_set(dossier)
-    assertion_refs = _compose_assertion_refs(
-        resolver, _known_assertions(bundle, knowledge_cutoff), consumed
-    )
-    limitations = _build_limitations(inputs, bundle)
+    known = _known_assertions(bundle, knowledge_cutoff)
+    assertion_refs = _compose_assertion_refs(resolver, known, consumed)
+    limitations = _build_limitations(inputs, bundle, known)
 
     envelope = {
         "contract_id": SCHEMA_ID,
@@ -915,7 +921,7 @@ def select_evidence(query: Any, bundle: Any, assertion_ref: str) -> dict[str, An
         _refuse("not_available")
 
     source_records = _collect_source_records(dossier, matched["curation_revision"])
-    limitations = _build_limitations(inputs, bundle)
+    limitations = _build_limitations(inputs, bundle, assertions)
     return _evidence_envelope(
         request, gen, assertion_ref, validated, source_records, limitations
     )

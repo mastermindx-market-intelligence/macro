@@ -1281,6 +1281,30 @@ def test_a_withheld_assertion_sharing_a_consumed_revision_is_never_named_or_sele
         {"theme_known": "theme_known", "theme_other": "theme_other"})
 
 
+def test_theme_evidence_the_cutoff_withholds_entirely_is_marked_absent(monkeypatch):
+    """The limitations read theme evidence as the dossier read it. When the
+    run's knowledge cutoff withholds every assertion, the dossier read no
+    theme evidence, and the envelope says so with
+    ``owner_input_absent:theme_evidence``. Retained on the cutoff, the same
+    assertion is read and named, and the marker is gone."""
+    reg = _import_reg()
+    revision = "gmirca_" + ("a" * 32)
+    theme_id = "synthetic_theme"
+    _install_resolver_double(monkeypatch, reg,
+                             lambda p: _ref_for(theme_id, p.get("curation_revision")))
+    query = _Query(profile_id=reg.PROFILE_ID, sector_ref=reg.SECTOR_REF)
+
+    def absent_and_named(retained_at: str) -> tuple[bool, list[str]]:
+        assertion = _assertion(revision=revision, theme_id=theme_id)
+        assertion["source"]["retained_at"] = retained_at
+        envelope = reg.compose(query, _bundle_with_run_context(assertions=(assertion,)))
+        named = [entry["curation_revision"] for entry in envelope["assertion_refs"]]
+        return "owner_input_absent:theme_evidence" in envelope["limitations"], named
+
+    assert absent_and_named("2026-09-25T07:49:00Z") == (True, [])
+    assert absent_and_named("2026-09-25T07:48:00Z") == (False, [revision])
+
+
 def test_evidence_envelope_assertion_is_deep_copied_and_mutable(monkeypatch):
     """B4: the evidence envelope's ``assertion`` is a deep copy — mutating
     the envelope MUST NOT reach back into the source assertion."""
