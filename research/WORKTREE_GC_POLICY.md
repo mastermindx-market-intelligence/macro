@@ -567,7 +567,7 @@ have destroyed live sessions' working state for zero yield. And `/private/tmp` i
 git checkouts although the house rule names `/private/tmp` as a place project work may never live —
 a placement question for the operator, never bytes a sweeper may take.
 
-**The largest clean reclaim candidate on the SSD is 7.2 GiB, and it still fails closed.** The shared
+**The largest UNPROVABLE reclaim candidate in the shared mint root is 7.2 GiB, and it fails closed.** (This sentence originally read "The largest clean reclaim candidate on the SSD is 7.2 GiB" and is **CORRECTED 2026-09-28, same day**, by the full-volume attribution below: the largest clean candidate on the SSD is **41.76 GiB** in `/Volumes/Mastermind/tmp`, and unlike this one it is fully PROVABLE.) The shared
 mint root's two already-orphaned registrations are both self-hosted runner workspaces whose gitdir
 target is gone: `sol-flow-velocity-recovery-proof-20260920` (**7.2 GiB**) and
 `prophet-b4-session-policy-repair-20260922-a11` (408 KiB). No store registers them, so no
@@ -576,6 +576,341 @@ registration is gone, `git` cannot run inside the tree at all, so landedness is 
 §9 fails it closed. Recorded rather than taken — clearing it is an operator judgement ("CI
 leftovers, re-derivable from `origin`"), which is precisely the class of call §9 reserves for a
 human.
+
+### Full-volume attribution 2026-09-28 — the first complete map, and two pool names that lie
+
+Every per-root figure above was a per-root figure. `du` over all 45 top-level entries of
+`/Volumes/Mastermind` finally accounts for the whole 2.9 TiB (**3,069 GiB measured**), and
+**58% of it was never in any census**:
+
+| GiB | entry | class |
+|---:|---|---|
+| 952.7 | `agent-workspaces` | fleet worktrees — the doc's 462 GiB was `…/claude` ALONE, not the root |
+| 725.4 | `worktrees` | the 12-store shared mint root (confirms the 726.4 GiB above) |
+| 415.2 | `Personal` | operator data — untouchable |
+| 233.0 | `transfers` | **not file transfers** — live agent review rounds |
+| 214.9 | `tmp` | PR proof/review clones (censused below) |
+| 190.7 | `Offloaded` | **not operator offload** — the fleet's own verified backup archive |
+| 98.8 / 67.0 / 58.3 / 47.9 / 40.9 | `Mastermind` `ops` `evidence` `repos` `agent-evidence` | repo + 829 dated proof receipts |
+| 6.0 / 4.7 / 3.7 / 8.5 | `reviews` `test-tmp` `temp` + 5 loose `sol-*` trees | small; the `sol-*` are HUMAN-class |
+
+**Two names mean the opposite of what they say, and both would mislead a sweeper written from
+the directory listing.** `transfers` (233.0 GiB) is not transferable files — it holds
+`r15green-*`, `r16red-*`, `r17-red-*`, `r18-astra-*`, `r19q-accepted` review-round scratch,
+**all written between 00:58 and 06:25 the same morning**: another lane's live workflow.
+`Offloaded` (190.7 GiB) is not the operator's offloaded data.
+
+### `Offloaded` is the fleet's verified backup archive — a FIFTH null result
+
+The hypothesis on opening it was that prior reclaim waves had *moved* bytes instead of
+freeing them, making it the largest reclaimable pool on the volume. **That is wrong, and the
+archives' own READMEs say why.** `m2-tmp-reap-20260918` bundled 14 scratch dirs' unreachable
+history, discovered `--all` had produced **270 GB of bundles** (37–47 GB each), proved 13 of
+the 14 redundant by fetching 31,315 refs into the main clone and `cat-file --batch-check`-ing
+all 23,665 bundle head objects — **exactly one** was missing — and kept the **2.2 GB thin
+equivalent** built with `--not --remotes=origin`. The wave *did* free the space; this is the
+irreducible residue, and every archive carries a documented `git fetch` restore path.
+
+Nothing here is reclaimable:
+
+- **`Sol-runs` 74.5 GiB** — HUMAN/Sol class, and **65 files were written in the last 7 days**:
+  the lane is live, not archived.
+- **~25 GiB of `.bundle` files** — they hold, by construction, "exactly the commits GitHub
+  does NOT have" (12,181 heads). That IS the unpushed backlog §9 already refuses.
+- **`m2-worktree-dirt-20260917` 8.7 GiB / 220 entries** — 220 trees' preserved uncommitted
+  dirt. The only copy.
+- **`M1-cleanup-20260911T0735Z` 1.35 GiB** — contains GoLogin 2022 items, under a standing
+  operator veto: never deletable.
+- The two entries with the largest ENTRY COUNTS (`temp-worktree-gc`, 1,102; `sparse-conversions`,
+  315) are ~1 KB JSON receipts — about 1 MB combined. **Directory entry-count reads as bulk and
+  is not bulk**; check bytes before believing a listing.
+
+**Incidental, and worth more than the bytes:** `storage-cleanup-20260913-wave2/report.md` had
+**already diagnosed the `contract-delta` base-tree leak** — naming
+`scripts/check_contract_delta.py`'s `materialize_base_tree()` and its
+`tempfile.mkdtemp(prefix="contract-delta-base-")` — on **2026-09-13/14, two weeks before the
+reaper shipped**. A verified root-cause analysis sat unread in a directory named `Offloaded`
+while the leak regenerated ~7 GiB/day. **Read `Offloaded/*/README*` and `*/report.md` before
+diagnosing a fleet storage problem**; prior waves left verified findings there.
+
+### The SSD `tmp` pool: 214.8 GiB of proof clones — a SIXTH null result, and the one PROVEN candidate
+
+`/Volumes/Mastermind/tmp` is **296 dirs / 214.8 GiB** of throwaway PR proof and review
+clones (`pr979-…`, `prophet-7457-release-snapshot`, `review-7535-…`), most made for PRs in the
+#7000s during 09-19→09-26. Censused read-only against `DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM`,
+byte-weighted (a dir-count table is not a reclaim figure):
+
+| GiB | dirs | verdict |
+|---:|---:|---|
+| 59.82 | 20 | clean but HEAD not in **that clone's** `origin/main` |
+| 43.77 | 21 | landedness undecidable there |
+| 33.14 | 11 | HUMAN-class name |
+| 20.19 | 203 | not a git clone — needs its own judgement |
+| 18.78 | 10 | git unreadable |
+| 38.2 | 30 | DIRTY (one tree carries **99,026** dirty paths) |
+| **0.55** | 1 | clean + landed |
+
+**The two biggest refusal buckets were instrument artifacts, not findings.** A proof clone
+never fetches after birth, so its `origin/main` is frozen at clone time and any HEAD that
+landed later reads as unlanded. Re-asked against a CURRENT `origin/main` in a live worktree —
+locally, `GIT_NO_LAZY_FETCH=1`, no network — 2 of those 41 dirs are **provably landed**:
+
+- **`pr979-macro-88804-proof` — 41.76 GiB**, origin `macro`, HEAD `88804ed70797`, which lands
+  on main as `perf(agentos): batch Git dates and accelerate YAML parsing` (2026-09-27).
+  **0 dirty paths, 0 open files.**
+- `prophet-7187-proof-clone-20260920` — 2.43 GiB, HEAD `80003197c05d`, likewise clean and
+  unattached.
+
+**44.19 GiB satisfying every substantive clause of §9 — landed, clean, nothing attached, not
+HUMAN-class — and it is still NOT taken**, because the final clause requires the tree to sit
+under a configured root and `/Volumes/Mastermind/tmp` is not one. Note the difference in KIND
+from the 7.2 GiB case above: that one fails because landedness is *unprovable*; this one is
+proven and lacks only authorization. It is the largest proven-reclaimable find on the volume.
+
+**A REACH correction on this census, for the same reason the roots table needed one.** 23 dirs
+answered "HEAD sha not present in this clone", first reported as "never landed, or unreachable
+history". Resolving each dir's `origin` remote: **17 are `Mastermind` clones and 1 has no
+origin** — a macro clone cannot answer for a Mastermind commit, so for 18 of 23 "not landed"
+was never an available answer, and abandonment was over-counted by 18. Only **5** are macro
+and genuinely carry history main lacks. A shared temp root looks like one population because
+it is one directory; its names come from **four repositories'** PR numbering and nothing in
+the path says so. **Partition any cross-tree census by `origin` before counting.** The same
+positional mistake sat in the census's own protective screen: the HUMAN-class test matched
+name PREFIXES (`sol-`), so `prophet-b4-owner-archeology-20260921-sol-001` — 6.03 GiB, Sol
+class by any reading — was admitted as reclaimable until the marker was matched anywhere.
+
+**SEVEN independent pools have now been measured and SIX are null.** Shared mint root 726.4 GiB
+(58% unreachable), `/Volumes/Worktrees` 801 GiB (report-only forever), full clones 163.2 GiB,
+session scratchpads 216.6 GiB (0.00 GiB dead), `Offloaded` 190.7 GiB (verified backups), SSD
+`tmp` 214.8 GiB (0.55 GiB free-and-clear + 44.19 GiB proven-but-unauthorized), and
+`transfers` 233.2 GiB (**zero reclaimable**, and holding 195.28 GiB of operator photo data
+that no automated path may touch — see below). (This sentence read "Six independent pools … and five are null" with
+no `transfers` row, and is **CORRECTED 2026-09-28, same day**: the seventh pool was measured
+hours later by a census that then had to be corrected itself.) What bounds
+reclaim on this host is not the byte count and not the instruments — it is the judgment gate,
+exactly as §9 says.
+
+### The non-git bucket: 20.19 GiB with no landedness question to ask
+
+The 203 non-git dirs in `/Volumes/Mastermind/tmp` are the one bucket
+`DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM` structurally cannot reach. That law decides on
+landedness; a directory with no repository has no HEAD, so there is nothing that could be an
+ancestor of anything. The threshold is not the problem — the QUESTION is. For a dir with no
+git identity the only honest questions are what it is, whether anything is still writing to
+it, and whether its content is **regenerable from something that outlives it**. Profiled
+read-only (extension histogram, file count, newest mtime, top-level shape):
+
+| GiB | dirs | class | the question that applies |
+|---:|---:|---|---|
+| 10.38 | 138 | no git identity of any kind | unprovable → **REFUSED** |
+| 7.41 | 25 | HUMAN/Sol marker in the name | never auto-reclaimed → **REFUSED** |
+| 1.90 | 6 | virtualenv (`pyvenv.cfg`) | **regenerable by construction** |
+| 0.32 | 1 | a **bare** git store (`macro-reconcile.git`) | judge as a git store, not as files |
+| 0.18 | 16 | written inside 2 days | live → leave |
+| 0.00 | 17 | empty (0 files) | nothing to reclaim |
+
+**Virtualenvs are the one class here where "no git identity" is not a blocker.** A venv is pip
+output: nothing authored lives in it, and the thing that outlives it — the requirements file in
+some repo — regenerates it. All 6 carry `pyvenv.cfg` and **none has an open file** (`lsof +D`).
+That is 1.90 GiB whose refusal would be superstition rather than caution. It is also
+**1.9 GiB against a 731 GiB free volume**, which is the honest reason not to spend a
+ratification act on it: the class is defensible, the amount is not worth the paperwork. Recorded
+so the next census does not re-derive it.
+
+**The 10.38 GiB refusal is the real content of this bucket, and its largest member is a single
+7.23 GiB tree**, `prophet-7457-release-snapshot` — 60,618 files, idle 8 days, no `.git`, no
+`HEAD`, no `COMMIT_EDITMSG`, no manifest of any kind. It is *probably* a checkout of some
+release candidate. "Probably" is exactly what §9 refuses: with no commit to name, no proof
+exists that its content is anywhere else, and the same reasoning that protects the 7.2 GiB
+`sol-flow-velocity-recovery-proof-20260920` protects this.
+
+**One number moved when the protective screen was repaired, and the direction matters.** Before
+the HUMAN-class test matched its marker anywhere in the name, this bucket's unprovable class was
+**14.46 GiB** — two 7.23 GiB snapshots. The second, `prophet-7526-current-main-review`, is
+HUMAN-class on `review`, so it moved to a different refusal. The verdict on it did not change;
+only the REASON did. That is worth stating because a ratification act operates on reasons: an
+operator deciding "clear the unprovable snapshots" would have been handed a Sol review tree in
+the same list.
+
+### `transfers` — the seventh pool, zero reclaimable, and a census that could not see 84% of it
+
+`/Volumes/Mastermind/transfers` is **71 entries / 233.2 GiB**. Its name says the files are in
+transit; its contents are live agent review rounds (`executive-os-convergence-20260918`
+28.54 GiB, `mastermind-os-orchestrator-launchpad-20260926-sol-001` 4.70 GiB,
+`pr870-task2-prepared-*`, `current-turn-r2-observer-cut-*`) plus checkpoint and handoff scratch.
+Nothing in it is reclaimable: the large dirs are HUMAN/Sol-marked or days old, and the rest is
+rounding error.
+
+**It is recorded here for the defect, not the bytes.** The census that measured it ran every
+instrument this document had already repaired — bare-store detection, marker-anywhere HUMAN
+screen, origin-partitioned landedness — and still reported **37.97 GiB for a 233.25 GiB pool**,
+because it iterated `x.is_dir()`:
+
+| entries | GiB | share | seen by the census |
+|---:|---:|---:|---|
+| 57 dirs | 37.97 | 16.3% | yes |
+| **14 files** | **195.28** | **83.7%** | **no** |
+| 71 total | 233.25 | 100% | — |
+
+**A single file was 84% of the pool** and the instrument's shape made it unobservable — not
+misjudged, not refused, absent. It was found by `find -maxdepth 1 -type f`, which is the whole
+fix. This is the fifth instance in this document of the same failure mode: an instrument asking
+a POSITIONAL question (*what sits at a directory position?*) in place of a semantic one (*what
+occupies this pool?*), and returning a clean, plausible, wrong number with no error.
+
+**What that file is, and the sixth instance of this document's own failure mode.**
+`runner-fleet-resilience-worktrees-photoslib-20260924.tar` is 195.28 GiB and contains
+`Photos Library.photoslibrary/` with `originals/`, `database/`, `resources/` and `scopes/` — the
+operator's personal photo library, sitting in a directory whose other 70 entries are agent
+scratch, under a name whose first three words are fleet-infrastructure vocabulary. It is
+untouched, it must never be deleted, moved or truncated, and `/Volumes/Mastermind/transfers`
+joins `/Volumes/Worktrees` as **REPORT-ONLY for every automated path**. Any sweeper deleting
+"stale transfer artifacts older than 7 days" would destroy it.
+
+**It is a BACKUP, not the only copy — and getting that wrong was my own reach failure, made
+while writing this section.** This paragraph first read:
+
+> There is no `.photoslibrary` in `~/Pictures` and none anywhere on this volume at depth ≤ 3,
+> so **this tar appears to be the only copy on the machine.**
+
+Both facts in that sentence are true and the conclusion does not follow, because the search
+enumerated two locations and the claim was about a machine. **CORRECTED 2026-09-28, same day:**
+the live library is `/Volumes/Worktrees/Documents/Photos Library.photoslibrary` — **247 GB**,
+with `database/`, `external/`, `internal/`, `originals/`, `private/`, `resources/`, `scopes/`
+all present — and `PREFLIGHT.txt` for the very operation the tar is named after lists it as
+`protected=`, i.e. deliberately excluded from that move alongside `Pictures` and `WeChat`; the
+operation's actual candidates were `Courses`, `Documents New` and `Jewelry`, two of which halted
+`HELD_SOURCE_RACE` with `no_source_removal`. The tar is therefore a 2026-09-24 point-in-time
+copy of a library that is still in place and has since grown.
+
+The omitted volume is the one this document had **already classified two sections earlier** as
+holding the operator's `Backups`/`Companies`/`Documents` — so the gap was not ignorance of the
+volume, it was a search whose scope was never restated as a REACH claim. What survives
+unchanged: the file is operator data in the wrong place, it is never deletable, and the pool is
+report-only. What changes is urgency and framing — relocating a redundant 195 GiB backup is
+housekeeping, whereas relocating an irreplaceable original is an emergency, and reporting the
+second when the first is true spends operator attention that the real gaps need. Full record:
+`DSC:TRANSFERS-HOLDS-A-195-GIB-OPERATOR-PHOTO-BACKUP-NOT-THE-ONLY-COPY`.
+
+**The genuine hazard the correction exposes is larger than the one it retracts.** Both copies of
+the operator's photo data — the 247 GB live library and its 195.28 GiB tar — sit on volumes the
+fleet writes to and sweeps: the live one on `/Volumes/Worktrees` (87% full, exFAT, also holding
+9 fleet worktrees and the AdsPower payload), the tar on `/Volumes/Mastermind` among PR proof
+clones. Neither is on a backup device. That is a real finding, and it is the one to hand an
+operator.
+
+Two rules follow, and neither is about this file:
+
+1. **Census files as well as directories, at every level.** A pool measured by directory
+   iteration has an unstated precondition — that nothing large is stored as a file — and this
+   volume violated it by 195 GiB.
+2. **When the largest object in a pool carries an infrastructure name, open it before
+   classifying it.** The name described the operation that moved the object, never the object.
+   Every neighbour of this tar genuinely is machine residue, which is precisely what made the
+   name plausible.
+3. **A search reports its REACH, never a machine-wide absence.** "No `.photoslibrary` in
+   `~/Pictures` or on `/Volumes/Mastermind` at depth ≤ 3" is a finding; "the only copy on the
+   machine" is a claim about three mounted volumes, and the one omitted was already documented
+   in this file as holding the operator's `Documents`. Before any absence claim, enumerate the
+   mounted volumes (`mount`, `df`) and say which were searched — the same discipline §"A second
+   external volume" already imposes on storage totals, applied to existence questions.
+4. **The pre-transfer receipts are the authority on what a past operation touched.** `PREFLIGHT.txt`
+   in a reclaim directory names `source_volume`, `target_volume`, every `protected=` path, each
+   `candidate=`, and a `candidate_status=` per candidate including halts. Reading it costs one
+   `cat` and answers questions a `du` census cannot: two of that operation's three candidates
+   halted `HELD_SOURCE_RACE|no_source_removal`, so source data it was meant to remove is still
+   in place. Read the receipts before inferring intent from a directory name.
+
+### `/Volumes/Worktrees` by BYTES — an eighth pool, and the fleet is 6.5% of it
+
+The volume §"A second external volume" found ungoverned was never size-attributed, so
+"9 ungoverned fleet worktrees" silently became "this is where the bloat is". Top-level `du -sxk`
+over all 34 entries, files as well as directories:
+
+| share | GiB | entry |
+|---:|---:|---|
+| **89.0%** | 712.72 | `Documents` — operator personal data |
+| 4.5% | 36.08 | `Backups` — operator |
+| 6.5% | 51.85 | **all 6 sized fleet/Sol trees combined** |
+
+**Operator data is 93.5% of this volume and the whole fleet is 6.5%** — and 46.43 of those 51.85
+GiB are `sol-*` HUMAN-class, which `DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM` never
+auto-reclaims. **Agent-reclaimable on this entire 931 GiB volume is at most ~5.4 GiB.** Inside
+`Documents`, the three largest categories are the live photo library (246.65 GiB), a separate
+pictures tree (147.02 GiB) and a messaging archive (133.23 GiB); the operator's per-folder
+structure is deliberately not enumerated here, for the same reason the pre-transfer manifests'
+filenames are not. `.ADSPOWER_GLOBAL` measures **0.00 GiB** — a marker, not a payload; the
+operator veto on it stands regardless of size.
+
+**So the 87% fill on this volume is not a fleet problem, and nothing in §9 can touch it.** Not a
+roots widening, not arming the sweeper, not the lock-stamp repair, not a population cap — there is
+almost nothing there to reclaim. That is the eighth pool measured and the seventh null, and it is
+the clearest case yet of the pattern §9 keeps running into: **the measurable thing and the
+actionable thing are different, and a governance gap is not a byte attribution.** The genuine
+risk inverts: ~130 GiB free, and every worktree the fleet plants here consumes the operator's
+remaining headroom for a photo library that is still growing — whose only other copy is the
+195.28 GiB tar on `/Volumes/Mastermind`, so **neither copy is on a backup device.** Whether the
+fleet should plant worktrees on this volume at all is an operator question, and it is a better one
+than any reclaim gate.
+
+### The INTERNAL disk — where the agent bytes actually were, and the only real lever in §9
+
+Seven of the eight pools above are on the two external volumes, and seven of them are null. The
+internal data volume — the tighter one, **the volume that actually hit ENOSPC twice** — had never
+been censused at all. `du -sxk /` (one filesystem): `/Users` 1089.56 GiB, **`/private` 652.90**,
+`/Library` 95.38, `/Applications` 68.27, `/opt` 10.83. That total, 1917.93 GiB, exceeds `df`'s 1501
+GiB used because `du` double-counts APFS clones and hard links, so **treat it as an upper bound and
+a ranking, never an attribution.** Inside it, two agent/CI pools no policy document mentions:
+
+**Ninth pool — `/private/tmp/claude-501`, 160.43 GiB, of which 0.02 GiB is provably dead.** The
+session scratchpad root, 473 keys, and the next entry in all of `/private/tmp` is 0.68 GiB. Each key
+is named after the checkout its sessions started in, and **that name is an inverted liveness
+signal**: the largest key (81.24 GiB) names a checkout that no longer exists while its one session
+— the active FINANCE INTELLIGENCE seat — had written 4 minutes before measurement, because a session
+keeps its original key for life. Classified by the signal §0 already calls STRONG, the session
+transcript mtime under `~/.claude/projects/<the same key>/<uuid>.jsonl`:
+
+| class | keys | GiB | share |
+|---|---:|---:|---:|
+| **LIVE <2h** | 6 | **103.91** | **64.8%** |
+| RECENT <24h | 7 | 0.17 | 0.1% |
+| IDLE 1–7d | 60 | 22.21 | 13.8% |
+| **COLD ≥7d** | 48 | **0.02** | **0.0%** |
+| NO TRANSCRIPT — undecidable | 61 | 28.39 | 17.7% |
+| no project key (mostly the shared `bash-edit-diff` cache) | 291 | 5.73 | 3.6% |
+
+**The bytes are in live sessions and the dead keys are empty**, so an age-gated sweep here frees
+0.02 GiB and any widening that frees real space walks into a live seat — the 2026-09-26 incident
+class again, now against a target with no lock, no registry entry and no `git status` to refuse on.
+That 81.24 GiB is **nine `.git`-less 8.63 GiB full repo trees** (77.7 GiB), the never-measured cost
+of this repo's own "prove it in main's bytes" discipline; with no HEAD,
+`DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM` cannot reach them at all, exactly like the 318 detached
+trees. The cheap fix is a session convention — one reusable comparison tree, removed when the claim
+is filed — not a sweeper.
+`DSC:A-SCRATCHPADS-KEYED-CHECKOUT-CAN-BE-GONE-WHILE-ITS-SESSION-IS-LIVE`.
+
+**Tenth pool — the CI runners' own stores, 177.26 GiB, and 87% of a checkout is `.git`.**
+`actions-runner-2` 85.10 GiB, `-3` 68.18, `-4` 15.84, the original 8.14 — more than **3× the entire
+fleet worktree footprint on `/Volumes/Worktrees`**. On the idle runner-3: checkout 66.34 GiB, `.git`
+**57.70**, working tree 8.6; **136 packs / 57.20 GiB** against 0.47 GiB loose. `actions-runner-2`
+holds **two** base-size packs, 31.63 + 28.61 GiB — two copies of the same history in one store.
+`_temp` is 0.00 GiB, so the runners already clean the thing everyone assumes is the problem.
+
+**This is where R8's own ratio reverses.** Sparseness omits `data`/`site`/`mockups`/`verify_shots`,
+which are 87% of an agent WORKING TREE — and on a runner those same four are 8.02 GiB of 66.34,
+**12%**, because there the 87% is the store. So the lever is repack/re-clone, not sparseness, and
+**it is an operator act**: a `Runner.Worker` was live during measurement, a mid-job repack can break
+the job, and an aggressive repack on a 4-core box contends directly with the nightly's ~67-minute
+render budget. Nothing is at risk either way — a runner store is 100% re-fetchable from `origin` —
+which is precisely why it is the one bounded, reversible reclaim in this whole triage.
+`DSC:A-RUNNER-CHECKOUT-IS-87-PERCENT-GIT-STORE-SO-SPARSENESS-CANNOT-REACH-IT`.
+
+**The standing lesson of ten pools: the bytes were never where the program was looking.** The
+ENOSPC remediation aimed at agent worktrees; the agent-attributable bytes on the volume that
+crashed are ~337 GiB in two places §9 never named, and the only one with a lever is the one nobody
+calls a worktree. Attribute the target volume, and check whether its bytes are tree or store,
+before proposing any further storage work here.
+
 
 
 
@@ -711,6 +1046,89 @@ leak that grows with orchestration volume. They need a **lane-exit receipt** (a 
 they are correctly, and permanently, KEEP. `refs/salvage/*` (534 refs) still matters for this
 bucket — it decouples *preserving the commits* from *reclaiming the checkout* for ~40 bytes
 each — but it licenses nothing under an attached session.
+
+### The ELEVENTH pool — 201 GiB the sweeper is FORBIDDEN to read, and the only broken thing in §9
+
+**Measured 2026-09-28, prompted by a macOS notification the operator relayed, not by a census.**
+`/Users/chriswong/Documents` holds **457.9 GiB**, and inside it
+`Cluade/macro-main/.claude` is **201.13 GiB across 203 session worktrees** — larger than the
+CI runner stores (177.26 GiB) and larger than the scratchpad pool (160.43 GiB). `Macro Dashboard`
+is a further 81.22 GiB and `charting-app` 56.10.
+
+**This CORRECTS the section above.** That section says the internal disk's agent bytes were
+`/private/tmp/claude-501` plus `actions-runner*/_work`, "~337 GiB, neither named by any policy
+document". Both figures stand, but they were not the whole disk: a third pool, larger than either,
+sat in `~/Documents` and was never counted. The sentence to distrust is any reading of that section
+as an exhaustive attribution of the internal volume — it was an attribution of what the measuring
+session could **read**.
+
+**Why the sweeper never touched it — and why this is not the roots defect.** `.claude/worktrees`
+is already in `config/worktree_gc.json` `roots`; the config is `armed: true`; `macro-main` is a host
+checkout the GC expands its repo-relative roots under **by design**. Nothing about scope is wrong
+here. The blocker is macOS TCC: `~/Documents` is a protected location and the launchd job's
+interpreter — `/usr/bin/python3`, resolving to
+`/Applications/Xcode.app/Contents/Developer/usr/bin/python3` — holds no Full Disk Access grant.
+`storage_floor_guard.py` has logged `REMEDIATOR FAULT: sweeper BLIND: denied: PermissionError:
+[Errno 1] Operation not permitted: '/Users/chriswong/Documents'` **16 times since 2026-09-24
+05:49:53**, alongside **73 `ESCALATION` lines**; the single remediation that completed (09-26
+16:56) reclaimed **−0.1 GiB** and logged `automated reclaim is NOT keeping up`.
+
+**Of the three storage defects this program has found, this is the only one that is broken rather
+than undecided.** The roots list (§ above) and the host-checkout belt are scope questions awaiting
+operator ratification. This is a working, armed, correctly-scoped sweeper that cannot read its own
+target, and repairing it needs no code, no config and no ratification — only a Full Disk Access
+grant, **which is a security setting only the operator may make**. `TCC.db` is SIP-protected and no
+session may edit it. State the cost honestly when asking: all five storage jobs
+(`storage-floor-guard`, `storage-sweeper`, `worktree-gc`, `worktree-salvage`,
+`fleet-remote-sweeper`) share `/usr/bin/python3`, so one grant repairs all five and also extends
+full disk access to anything else that interpreter runs; a dedicated interpreter for these jobs,
+with the grant scoped to it, is the tighter alternative.
+
+**The generalisable failure is REACH, and it is the same one this section keeps recording — except
+this time the reach difference is WHICH PROCESS ASKS.** An interactive session inherits its
+terminal's TCC grant and reads `~/Documents` fine, which is why every hand census has seen this
+pool; `launchd`'s python cannot, which is why no automated sweep ever has. Both answers are correct
+about what their principal can see, and neither states its reach — so the hand census under-counted
+the internal disk by 201 GiB while the automated sweeper emitted a fault nobody read. **An
+automated remediator that cannot see its target fails exactly like one with nothing to do**: the
+floor guard prints `OK` between breaches, and the fault line only appears when a breach triggers
+remediation. Any reclaim lane must enumerate what it could not read and report that count beside
+its verdict, or its silence will be taken for success.
+
+**How much the grant would actually free: 1.81 GiB of 201.13, measured — and that is the whole
+honest case.** The `DSC` pre-registered this as its own falsifier and it FIRED. Running the GC's
+report over the pool as a principal that can read `~/Documents` (207 registrations = the 203
+directories + 4 already-gone checkouts) verdicts `DIRTY 68/95.43G`, `LOCKED 43/40.49G`,
+`UNPUSHED 57/27.01G`, `RECENT 11/13.12G`, `OPEN_PR 15/8.48G`, `ORPHAN 5/7.72G`, `LIVE_PROC 1/7.05G`,
+`MISSING 4/0G` — and **`SAFE_MERGED` 3 trees / 1.81 GiB, 0.9 %**. Half the pool (103 trees /
+99.94 GiB) is HUMAN-class `sol*`/`review*` that `DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM` never
+auto-reclaims; 61 % is `DIRTY`+`UNPUSHED` — content not reproducible from `origin/main`, which is the
+accurate phrasing and not the same thing as "work that has not landed". **`DIRTY` was checked rather
+than assumed**, because the assumption is how 09-26 happened: `git status --porcelain` in all 68
+trees finds **54 trees / 76.95 GiB carrying real tracked modifications (81 % of the DIRTY bytes)**
+and 14 / 18.48 GiB untracked-only, of which 8 / 8.41 GiB are also landed. **Those 8 are still not
+collectable** — untracked files have no commit, no ref and no remote, so neither `refs/salvage/*` nor
+`origin/main` can reconstitute them, and the largest is 2.90 GiB of `mockups/evidence/…`, the exact
+class the 09-26 sparse sweep destroyed. A landed `HEAD` proves the commits are safe and says nothing
+about the working directory; "landed, therefore collectable" is the inference that caused the
+incident. **So do not sell the grant on bytes.** Sell
+it on the two things it actually buys: a floor guard whose remediation RUNS (today every breach ends
+in `REMEDIATOR FAULT`, so the net is absent, not slow), and reach for the reclaim-at-merge FLOW gate
+over the busiest pool in the fleet.
+
+Two follow-on levers die here on measurement, and both die the way §9 keeps predicting — the pool's
+composition, not its size, decides. The `worktree_gc.py:501` lock short-circuit is worth 41 trees /
+26.6 GiB on the SSD pool because 282 of 285 locks there are the helper's content-free stamp; in THIS
+pool **zero of 43 locks is a stamp** — every one carries real seat text — so its ceiling is 17.01 GiB
+across 15 non-human locked trees and realistically less. And retrofit-to-sparse is not the lever:
+**181 of 207 trees are already sparse (<1 GiB) and still total 88.99 GiB**, while 16 un-sparsified
+FULL trees hold 98.41 GiB. This pool is large by COUNT, so the matching lever is the per-root
+population cap below, not a thinner tree.
+
+**The floor is not currently breached** — internal free is 316.8 GiB against a floor of 260, last
+breach 2026-09-26. The broken thing is the safety net, not the disk, which is exactly how it stayed
+broken from 09-24 without being noticed. `DSC:THE-SWEEPER-IS-TCC-BLIND-TO-THE-LARGEST-INTERNAL-
+WORKTREE-POOL`.
 
 ### STOCK vs FLOW — measured 2026-09-27, and the reason neither reclaim gate is the answer
 

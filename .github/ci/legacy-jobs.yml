@@ -14310,6 +14310,7 @@ jobs:
       - "tests/test_fda_supply_probes_t02r3.py"
       - "tests/test_fda_supply_probes_final.py"
       - "tests/test_fda_supply_probes_mixed.py"
+      - "tests/test_fda_sweep_duplicate_key_completeness.py"
       - "collectors/fda_shortages.py"
       - "engine/fda_scarcity.py"
       - "engine/foresight_cascade.py"
@@ -14349,6 +14350,8 @@ jobs:
         run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py -q
       - name: FDA supply acceptance probes
         run: python -m pytest tests/test_fda_supply_probes.py tests/test_fda_supply_probes_t02r.py tests/test_fda_supply_probes_t02r2.py tests/test_fda_supply_probes_t01r.py tests/test_fda_supply_probes_t02r3.py tests/test_fda_supply_probes_final.py tests/test_fda_supply_probes_mixed.py -q
+      - name: FDA sweep completeness regression probes (duplicate dedupe keys)
+        run: python -m pytest tests/test_fda_sweep_duplicate_key_completeness.py -q
 
   prophet-us-context-and-grades:
     # PROPHET US §W7 — the full-population candidate record: the PIT context store that
@@ -17761,6 +17764,14 @@ jobs:
       - "tests/test_industrials_dependency_binding.py"
       - "tests/industrials_result_cash_helpers.py"
       - "tests/fixtures/industrials_result_cash/**"
+      # IND-T04c: the recovered requirement index is the anchor map's only external
+      # authority, and the ruling is the obligation source an `anchor_basis: RULING`
+      # row names. Both are READ by the suite, so the closure test requires them
+      # here — and it is load-bearing rather than bookkeeping: without these two
+      # entries, editing the index alone would not schedule this job and the guard
+      # that refuses a fabricated anchor would not run on the very file it reads.
+      - "research/industrials/first_vertical_program/requirement_index.md"
+      - "research/industrials/first_vertical_program/rulings/R-IND-2026-09-27-requirement-anchors.md"
       - "config/earnings_story_promotion.yml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "engine/company_intelligence/__init__.py"
@@ -17818,3 +17829,73 @@ jobs:
         run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
         run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py -q
+
+  house-law-registry-code:
+    if: ${{ false }}
+    gate: code
+    # WHY THIS EXISTS, and why it is a SECOND home rather than a move.
+    #
+    # The house-law census — "every scripts/check_*.py is registered" — is a
+    # MERGE gate by design: its finding text says "add an entry in
+    # config/house_law_checks.yml before merging". It lived only in
+    # `house-law-registry`, which is `gate: data` because ONE of its steps
+    # (tests/test_dataos_security_master.py) reads committed data/reference
+    # parquet. ci.yml plans `--gate code` only (the 2026-08-19 merge-gate split;
+    # see .github/workflows/data-health.yml's header), so the census was
+    # filtered out of the manifest before any scope decision and ran only in
+    # data-health.yml — nightly workflow_run / 13:30 UTC schedule / manual
+    # dispatch, none of which blocks a merge. Measured 2026-09-28: ten
+    # scripts/check_*.py sat unregistered on main, the meta-guard exited 1
+    # against main's own bytes, and main's ci.yml was green the whole time.
+    #
+    # This is the third recorded instance of the same mechanism, not the first:
+    # scripts/check_contract_delta.py's docstring ("the workflow-yaml legacy job
+    # that owns it is `gate: data`, off the merge gate — a suite can ship wired
+    # to nothing and nobody finds out until the next audit run") and the
+    # conviction-profile comment about #6023's `unrun-publish-ops` home ("which
+    # ci.yml never plans, so they were wired and still dark") describe it
+    # exactly. What was missing was a code-gated home for the census itself.
+    #
+    # A SECOND home, not a move, because `house-law-registry`'s step ORDER is
+    # load-bearing (run_ci_pack returns on the first non-zero step, so the
+    # census must not sit behind a guard's own proof) and its data-gated
+    # siblings must keep their nightly receipt. The four steps below are pure
+    # functions of the PR's tree — no data/, no site/, no network — so running
+    # them on both gates costs one pip install and duplicates no judgement.
+    #
+    # NOTE FOR A FUTURE EDIT: the `scripts/check_*.py` glob is the load-bearing
+    # path row. The census discovers its population by globbing that pattern AT
+    # RUNTIME; `_glob_to_regex` gives a single `*` non-crossing-`/` semantics,
+    # so the declared row mirrors the runtime population exactly. Today
+    # inference ALSO widens this job to `scripts/**` through an opaque-traversal
+    # fallback, but that is accidental coverage that a future narrowing (or a
+    # `scope: exclusive` curation) would silently remove. Keep the explicit row.
+    # tests/test_house_law_registry.py pins it.
+    paths:
+      - config/house_law_checks.yml
+      - docs/HOUSE_LAW_CI_GUARD_SUITE.md
+      - "scripts/check_*.py"
+      - scripts/check_house_law_registry.py
+      - scripts/workflow_run_source.py
+      - tests/test_house_law_registry.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # pyyaml only: the meta-guard reads YAML and walks the repo with pathlib.
+      # No pandas/pyarrow here on purpose — this job must stay runnable on the
+      # thinnest venv so a census red is never confused with an install red.
+      - name: install minimal deps
+        run: pip install pytest pyyaml
+      - name: meta-guard selftest (synthetic assertions — gate fires on violations)
+        run: python3 scripts/check_house_law_registry.py --selftest
+      - name: meta-guard live check (census + wiring + selftest truth + ratchets)
+        run: python3 scripts/check_house_law_registry.py
+      - name: docs-drift check (committed docs must match regen output byte-for-byte)
+        run: |
+          python3 scripts/check_house_law_registry.py --emit-docs
+          git diff --exit-code docs/HOUSE_LAW_CI_GUARD_SUITE.md
+      - name: house-law registry tests (idempotency + integration)
+        run: python -m pytest tests/test_house_law_registry.py -q

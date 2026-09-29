@@ -524,9 +524,12 @@ credential, and changes no provider permission.
 
 `BLOCKER -> freeze the affected lane -> check independent useful lanes -> continue`.
 One blocked review, tool, provider or CI lane freezes that lane, never the mission.
-Before any stop, enumerate the other authorized lanes and continue on them. Only when
-every scoped lane is genuinely blocked is `ALL_SCOPED_LANES_BLOCKED` the honest state,
-and that classification must name the lanes it checked.
+Before any stop, enumerate the other authorized lanes and continue on them.
+`ALL_SCOPED_LANES_BLOCKED` may describe the current lane census, but it is a
+**nonterminal diagnostic**, not a principal/seat stopping state. For each internal
+project blocker, the next act is to resolve it, route it to the canonical owner, or
+prove that an already-running durable owner has a return path. "Another owner" or
+"not my lane" can prevent direct mutation; neither makes the mission terminal.
 
 `NO WORKER STARTED + lawful principal tools/custody + no conflict/EFFECT_UNKNOWN ->
 direct bounded execution may continue`. A delegation surface being unavailable — the
@@ -534,9 +537,12 @@ Fabric down, a pool exhausted, a spawn refused — is not evidence that executio
 impossible. If no worker actually started, the principal still holds lawful tools and
 custody, no other owner is working the same artifact, and no act sits in an
 `EFFECT_UNKNOWN` state, the principal executes the bounded work itself. When any of
-those four is false the lawful outcome is `ALL_SCOPED_LANES_BLOCKED` or
-`EXACT_HUMAN_GATE` naming the exact missing thing — never a silent stop, and never a
-second worker on a contested artifact.
+those four is false, do not create a second worker. Name the blocked lane and convert
+it into an owned next action: route/reconcile through the canonical owner, or, if the
+only remaining boundary is genuinely outside the project's controllable graph,
+classify it exactly as `EXACT_HUMAN_GATE`, `PLATFORM_FAILURE`, or `EFFECT_UNKNOWN`.
+A bounded worker may return `STATUS: BLOCKED` to its parent; that worker return does
+not terminally classify the parent mission.
 
 `WAITING EXTERNAL -> durable watcher/owner; do useful parallel principal work; do not
 burn principal capacity polling`. Hand the wait to a durable watcher, a cron, or the
@@ -572,10 +578,12 @@ outcome it describes.
 
 Every substantial session states one line before it ends: `SESSION END: <STATE>`,
 where STATE is exactly one of `PROVEN_OUTCOME`, `EXACT_HUMAN_GATE`, `EFFECT_UNKNOWN`,
-`ALL_SCOPED_LANES_BLOCKED`, `DURABLE_EXECUTION_RUNNING`, or `MORE_WORK_EXISTS`. The
-set is closed on purpose. **`MORE_WORK_EXISTS` is never a valid stopping state**, and
-the Stop guard refuses it under the code `more_work_exists`, escapable only through
-the ordinary any-code ladder.
+`PLATFORM_FAILURE`, `ALL_SCOPED_LANES_BLOCKED`, `DURABLE_EXECUTION_RUNNING`, or
+`MORE_WORK_EXISTS`. The set is closed on purpose. **`MORE_WORK_EXISTS` and
+`ALL_SCOPED_LANES_BLOCKED` are never valid stopping states**; the latter is a
+diagnostic that forces blocker demolition/routing rather than bureaucratic exit.
+The Stop guard refuses either self-declaration, with the ordinary any-code ladder
+preserved as the unsatisfiable-gate escape.
 
 The converse binds equally. Reaching the actual outcome or the exact human gate early
 is a complete session however short or expensive it was: never pad a session to look
@@ -698,6 +706,40 @@ deliberate freeze must ship a DEC record plus an expiry plan
 
 **ARM `merge-on-green`, THEN STAY.** After opening an ordinary pull request, run
 `gh pr edit <n> --add-label merge-on-green`.
+**Arm LAST — never push into an already-armed pull request (measured #8163, 2026-09-29).**
+The window between the sweeper deciding to merge and the merge completing is invisible from a
+session, so a commit pushed onto an armed PR can land on the far side of it. Measured: the
+sweeper merged head `2ff0f92f` at 02:09:24Z while the follow-up commit carries committer time
+02:09:24Z, so the push completed at or after the merge. GitHub accepted it with `rc=0`, did not
+reopen or amend the PR, and raised nothing — and every field a session can read was identical
+to success: `state=MERGED`, a true `mergedAt`, the right `mergeCommit`, and `headRefOid`
+reading the merged head, which is also the correct value on a healthy merge. `--json files` is
+a second false friend: it reports the MERGED paths, so the obvious check "do the PR's files
+appear in the squash?" compares the merged head with itself and passes on a PR that provably
+lost two files. No read of a pull request can see a commit that arrived after its merge; only
+the branch ref can — **`git fetch origin` FIRST**, then
+`git log origin/main..origin/<branch> --name-only`, then a per-path blob comparison against
+`origin/main`, which is squash-tolerant because a squash preserves the tree even though it
+rewrites the commit. **The fetch is not hygiene, it is the whole test: `origin/main` is a LOCAL
+ref**, so a stale one makes every path report missing and this check then tells you to replay
+work that already landed — duplicating it. Measured 2026-09-29: the #8169 watcher compared
+without fetching, exited `MERGED BUT NOT LANDED`, and both files were byte-identical in main the
+entire time. A verifier that cries wolf on every merge is as useless as one that never fires,
+and this one fails toward a destructive remedy — so on a MISSING verdict, re-fetch and re-run
+before believing it, and cross-check by grepping main's own bytes for a string only your commit
+introduced (`git grep <needle> origin/main -- <path>`). **And fetch `main` on its OWN — never
+bundled with the branch ref.** The measured mechanism is nastier than a forgotten fetch: GitHub
+**deletes the head branch on merge**, so the natural one-liner `git fetch origin main <branch>`
+fatals with `couldn't find remote ref <branch>` and, because it aborts, leaves `origin/main`
+un-updated — while the stale local `origin/<branch>` survives and keeps the comparison looking
+perfectly functional. **The merge's own success is what breaks the check that verifies the
+merge.** So: bare `git fetch origin` (or `git fetch origin main` alone), check its exit status
+rather than swallowing it, and treat the branch's absence from the remote as the EXPECTED
+post-merge state — you are comparing your local `origin/<branch>` against a freshly updated
+`origin/main`, and only the latter has to be current. Push every commit the PR needs, THEN add the label; if a
+late push is genuinely required, disarm, push, re-arm under the disarming rule below; and treat
+`MERGED` as a fact about a pull request, never about your bytes.
+`DSC:A-PUSH-TO-AN-ARMED-PR-CAN-LAND-AFTER-ITS-MERGE-AND-NOTHING-ERRORS`.
 **Current topology (2026-08-21): `.github/workflows/merge-on-green.yml` still runs on
 `[self-hosted, macOS, ARM64, merge-control]` on the M2; it is NOT yet GitHub-hosted.**
 W1-A's read-only hosted canary is merged, but production authority stays on the M2 until

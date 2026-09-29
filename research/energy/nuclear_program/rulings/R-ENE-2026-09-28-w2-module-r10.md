@@ -23,7 +23,7 @@
 | **O1.** #8148 is already merged. | Noted. The corrections ride this records PR. |
 | **O2.** The r9 ruling cites the handoff at its parent's line numbers. | Corrected at source: the citation now names both places by string. |
 | **O3.** The relay's `source_history` 503 row stands. | Noted. No change. |
-| **O4.** Two more silent 200s: `source_history` and `latest` with a malformed `recorded_cutoff`. | Base-owned, and refined by the seat's own finding (below): both answer 503 once an assertion carries a `review_due_at`. The corrected relay names it. |
+| **O4.** Two more silent 200s: `source_history` and `latest` with a malformed `recorded_cutoff`. | Base-owned, and refined by the seat's own finding (below): both answer 503 once an assertion carries a `review_due_at`. The corrected relay names it. **[Corrected 2026-09-28 (round-10 closure): once a *selected* assertion carries a `review_due_at`; the gate reads only the selection. See `R-ENE-2026-09-28-w2-module-r11.md`.]** |
 | **O5.** The six persistent survivors are the recorded equivalents. | Noted. Nothing needs reclassifying. |
 
 ## R-ENE-37 — the guard's docstring says what the engine does (round-9 closure NIT-1)
@@ -107,9 +107,9 @@ The `20260920` kill needs Python 3.11 or later, because older `fromisoformat` re
 
 **Finding (seat, 2026-09-28).** While drafting the relay correction, the seat read nuclear's other reader of `recorded_cutoff`.
 - `_now_of_query` returns a supplied `recorded_cutoff` as the query's "now" in every mode. Only when none is supplied does it fall back to the latest `reviewed_at`.
-- `_review_excluded` compares that now with the `review_due_at` of every assertion that is not held or rejected: `_le(due, now)`.
+- `_review_excluded` compares that now with the `review_due_at` of every assertion that is not held or rejected: `_le(due, now)`. **[Corrected 2026-09-28 (round-10 closure): of every *selected* assertion that is not held or rejected; the gate runs over the selection only (seat reproduction `r11gate/probe_selection.py`). In a replay the base time gate reads a malformed `recorded_cutoff` first (`r11gate/probe_replay.py`), so the gate's 503 arises only outside a replay. Corrected on #7870 in addendum 5870740225.]**
 - Probe (`r10gate/probe_now_of_query.py`, at the engine): in `latest` and in `source_history`, a malformed `recorded_cutoff` with an assertion that carries a `review_due_at` raises a bare `ValueError`. The route's catch-all answers that as 503. Without a `review_due_at`, the same query succeeds.
-- So O4's two silent 200s hold only for bundles whose assertions carry no `review_due_at`. The corrected relay names this reader.
+- So O4's two silent 200s hold only for bundles whose assertions carry no `review_due_at`. The corrected relay names this reader. **[Corrected 2026-09-28 (round-10 closure): for bundles whose *selected* assertions carry no `review_due_at`.]**
 
 **The 117-test suite does not observe it.** The seat built three mutants (`r10x/mk.py`, `r10x/mk_now.py`), and all three pass all 117 tests on the seat tree, under Python 3.12.13:
 
@@ -146,7 +146,7 @@ It carries:
 - item 7's fix shape: validate with `_parse_day`, the parser `_le` uses, not `fromisoformat`, which accepts `20261231` and `2026-W53-4`;
 - the correction to 5868018569:
   - the 400 claim holds within the 32-character bound only;
-  - nuclear's replay review guard and its review-expiry gate are two more readers;
+  - nuclear's replay review guard and its review-expiry gate are two more readers; **[Corrected 2026-09-28 (round-10 closure): there is a third, nuclear's target-window judgement, which reads `source_cutoff` in every mode. Corrected on #7870 in addendum 5870740225.]**
   - the 200 differs from the control at `.generation` and echoes the value at `.request.recorded_cutoff`;
   - the corrected sentence, and the consequence that a replay-only validator leaves the expiry gate's 503 in `latest` and `source_history`;
 - Energy's constraint on the v1.1 `object.subject_role` request:

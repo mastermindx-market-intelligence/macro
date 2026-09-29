@@ -20,16 +20,18 @@ claim: >-
   read model.
 falsifier: >-
   `python3 -m pytest tests/test_finance_intelligence_projection.py -q -k "knowledge_cutoff or however_far_ahead"`
-  passes (59). Swap in engine/sector_intelligence/finance_projection.py from 2a93791563bb
-  (#8135's squash) and 49 must fail: 46 on an assertion after validate_contract accepted
+  passes (63). Swap in engine/sector_intelligence/finance_projection.py from 2a93791563bb
+  (#8135's squash) and 51 must fail: 48 on an assertion after validate_contract accepted
   the document, and the 3 cutoffs that name no instant, none of which that composer refuses:
   it composes the two whose offset carries them outside a datetime's range, which the contract
   then refuses (schema.invalid_in_memory_document), and a time of day stops it with
   AttributeError.
-  The 10 that still pass are the valuation-observation as_of case, the world-valid test,
-  the anchor's own cutoff test, the six instant cases whose row is read, and the zone case
-  whose evidence dates are all before the cutoff's date. If the swap passes, the readers
-  already applied the cutoff and this record is wrong.
+  The 12 that still pass are the valuation-observation as_of case, the world-valid test,
+  the anchor's own cutoff test, the six instant cases whose row is read, the zone case
+  whose evidence dates are all before the cutoff's date, and the two cases of a next-day
+  time written with a space, which that composer reads as no date, so the row it reads
+  changes nothing. If the swap passes, the readers already applied the cutoff and this
+  record is wrong.
 so_what: >-
   (1) Apply a knowledge cutoff once, at the input boundary, before any reader runs. The
   composer now reads its inputs through _known_at_cutoff, so a reader added later inherits
@@ -80,7 +82,7 @@ so_what: >-
   a contract change and is not made here.
 kind: landmine
 verified_at: 2026-09-28
-verified_by: "tests/test_finance_intelligence_projection.py: ::test_nothing_dated_past_the_knowledge_cutoff_reaches_the_document (6 fixtures), ::test_a_row_dated_past_the_knowledge_cutoff_changes_nothing_but_the_digest (26 row and clock cases), ::test_a_row_known_by_the_cutoff_is_read_however_far_ahead_it_holds, ::test_the_knowledge_cutoff_is_an_instant_no_published_date_passes (7 clocks x 2 ways of writing the cutoff), ::test_rows_in_any_sequence_are_held_to_the_knowledge_cutoff and ::test_an_input_the_knowledge_cutoff_withholds_is_received_as_degraded (5 inputs) and ::test_a_clock_with_no_instant_never_stops_the_composer (4 clocks), ::test_the_zone_a_knowledge_cutoff_is_written_in_changes_only_the_cutoff_published (2 inputs) and ::test_a_knowledge_cutoff_that_names_no_instant_is_refused (3 cutoffs); tests/test_finance_research_registration.py::test_an_assertion_retained_past_the_knowledge_cutoff_is_not_consumed, ::test_a_withheld_assertion_sharing_a_consumed_revision_is_never_named_or_selected and ::test_compose_run_context_with_no_instant_is_sealed_input_unavailable (2 clocks). With engine/sector_intelligence/finance_projection.py from 2a93791563bb, 49 of the 59 projection tests in the falsifier's selection fail; with that file and engine/sector_intelligence/finance_research_registration.py from 2a93791563bb, so do the three registration tests, in all four of their cases."
+verified_by: "tests/test_finance_intelligence_projection.py: ::test_nothing_dated_past_the_knowledge_cutoff_reaches_the_document (6 fixtures), ::test_a_row_dated_past_the_knowledge_cutoff_changes_nothing_but_the_digest (26 row and clock cases), ::test_a_row_known_by_the_cutoff_is_read_however_far_ahead_it_holds, ::test_the_knowledge_cutoff_is_an_instant_no_published_date_passes (9 clocks x 2 ways of writing the cutoff), ::test_rows_in_any_sequence_are_held_to_the_knowledge_cutoff and ::test_an_input_the_knowledge_cutoff_withholds_is_received_as_degraded (5 inputs) and ::test_a_clock_with_no_instant_never_stops_the_composer (4 clocks), ::test_the_zone_a_knowledge_cutoff_is_written_in_changes_only_the_cutoff_published (2 inputs) and ::test_a_knowledge_cutoff_that_names_no_instant_is_refused (3 cutoffs); tests/test_finance_research_registration.py::test_an_assertion_retained_past_the_knowledge_cutoff_is_not_consumed, ::test_a_withheld_assertion_sharing_a_consumed_revision_is_never_named_or_selected and ::test_compose_run_context_with_no_instant_is_sealed_input_unavailable (2 clocks). With engine/sector_intelligence/finance_projection.py from 2a93791563bb, 51 of the 63 projection tests in the falsifier's selection fail; with that file and engine/sector_intelligence/finance_research_registration.py from 2a93791563bb, so do the three registration tests, in all four of their cases."
 scope:
   - macro
   - engine/sector_intelligence/finance_projection.py

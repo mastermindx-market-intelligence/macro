@@ -26,6 +26,19 @@ claim: >
   symlink in all 6 trees that carry it; and both owning stores set `core.filemode = false`, so
   even a mode-losing filesystem would produce no git dirt. There is no correctness defect on
   this volume — only a governance/reach one.
+  **AMENDED 2026-09-28 — this record's own EMPHASIS was wrong, measured by bytes.** Top-level
+  `du -sxk` over all 34 entries (files as well as directories) attributes the volume as
+  `Documents` **712.72 GiB = 89.0%** and `Backups` 36.08 GiB = 4.5% — both operator personal data
+  — against a total fleet footprint of **51.85 GiB = 6.5%** across 6 sized trees, of which
+  `sol-macro-hottest-desk-strength-entry-20260923` (28.14), its sparse sibling (14.45) and
+  `sol-consumer-cyclical-7804` (3.84) are **46.43 GiB of HUMAN-class that is never
+  auto-reclaimed**. Agent-reclaimable on this entire 931 GiB volume is therefore at most
+  **~5.4 GiB**. Inside `Documents` the three largest categories are the live photo library
+  (246.65 GiB), a separate pictures tree (147.02 GiB) and a messaging archive (133.23 GiB);
+  the operator's per-folder structure is deliberately not enumerated. `.ADSPOWER_GLOBAL` measures
+  **0.00 GiB** — a marker, not a payload, and the operator veto on it stands regardless of size.
+  So the governance gap named above is real and the SIZE framing it invites is not: the 87% fill
+  is not a fleet problem.
 falsifier: >
   `mount | grep /Volumes/Worktrees` prints `exfat ... noowners ... fskit`; `diskutil info`
   confirms `File System Personality: ExFAT`. `os.listdir` + per-entry `.git` gitdir resolution
@@ -38,7 +51,18 @@ falsifier: >
   Disproved by a legacy kernel-driver exFAT mount (no `fskit`) where those probes fail, by
   `core.filemode` becoming true, or by a root being added that covers the volume.
 so_what: >
-  Three things change. (1) **Governance reach is bounded by VOLUME discovery, not by the roots
+  Four things change. (0) **Do not propose fleet-GC work as a remedy for this volume — it
+  cannot help.** The byte attribution at the end of the claim puts operator data at 93.5% and the
+  whole fleet at 6.5%, ~90% of that HUMAN-class, so no roots widening, sweeper arming, lock-stamp
+  repair or population cap can move its 87% fill — there is almost nothing there to reclaim. The
+  risk runs the OTHER direction: only ~130 GiB is free, and every fleet worktree planted here
+  consumes the operator's remaining headroom for a photo library that is still growing. The
+  operator questions are whether the fleet should plant worktrees on this volume at all, and that
+  **neither copy of the photo data is on a backup device**
+  (`DSC:TRANSFERS-HOLDS-A-195-GIB-OPERATOR-PHOTO-BACKUP-NOT-THE-ONLY-COPY`). Attribute a volume's
+  bytes before characterizing what fills it, and report the fleet's SHARE, not merely its
+  presence — an entry count and a governance gap are not a byte attribution.
+  (1) **Governance reach is bounded by VOLUME discovery, not by the roots
   list.** A volume literally named `Worktrees` held 9 fleet trees that no root, no census and no
   sweeper had ever seen, and 6 of them were sitting in a registry we read all day — so
   registry-visible is not the same as governable, and a fleet-wide storage figure is incomplete
@@ -59,7 +83,10 @@ verified_by: >
   `git worktree list --porcelain` (6 present in this clone's registry); direct ln -s + chmod
   probe in a temp dir on the volume (symlink and exec bit both honoured, probe removed);
   `git ls-files -s` (1 tracked symlink, 72 exec-bit files) and `core.filemode = false` in both
-  `Macro Dashboard/.git/config` and this store
+  `Macro Dashboard/.git/config` and this store; and for the 2026-09-28 amendment, top-level
+  `du -sxk` over all 34 entries of /Volumes/Worktrees plus one level of Documents (712.72 GiB /
+  89.0%; fleet 51.85 GiB / 6.5%; .ADSPOWER_GLOBAL 0.00 GiB) -- re-derive with
+  `du -sxk /Volumes/Worktrees/* /Volumes/Worktrees/.[!.]*`, not from a session receipt path
 scope:
   - macro
   - scripts/worktree_gc.py
@@ -67,3 +94,39 @@ scope:
   - research/WORKTREE_GC_POLICY.md
 confidence: verified
 ---
+
+## A THIRD reach failure on this volume, found 2026-09-29: nothing MONITORS it
+
+The record above establishes that no sweeper can *reclaim* here (no root covers the volume, and the
+host-checkout belt refuses the path anyway). The monitor is a separate instrument and it is blind too,
+for a third independent reason.
+
+`storage_floor_guard.py` (launchd, every 1800 s) checks exactly **two** targets, and there is no
+volume list anywhere in it: a hardcoded `/System/Volumes/Data`, plus the single `mount_point` read
+from `~/.config/mastermind/worktree-storage.json` — which is `/Volumes/Mastermind`. So this volume is
+invisible **by construction, not by a config omission**: `~/.config/mastermind/storage-floor.json`
+can carry `internal_floor_gib` and nothing else, so no floor value could be added for it without a
+code change. `grep -c Worktrees` over the guard's entire log is **0**; the only row shapes it has ever
+emitted are `internal /System/Volumes/Data free …` and `policy  /Volumes/Mastermind free …`.
+
+| volume | used | free | floor-guard monitored | in GC `roots` |
+|---|---:|---:|---|---|
+| `/System/Volumes/Data` | 83 % | 317.1 GiB | yes (hardcoded) | yes, but TCC-blind — `DSC:THE-SWEEPER-IS-TCC-BLIND-TO-THE-LARGEST-INTERNAL-WORKTREE-POOL` |
+| `/Volumes/Mastermind` | 80 % | 756.1 GiB | yes (policy `mount_point`) | no |
+| **`/Volumes/Worktrees`** | **87 %** | **130.3 GiB** | **no — not expressible in its config** | **no** |
+
+**The fullest volume in the fleet is the unmonitored one**, and the ordering is not a coincidence: a
+volume nothing watches is a volume nothing drains. Two `OK` rows every 30 minutes read as "storage is
+fine" when there are three volumes — **an instrument that reports per-subject health and never reports
+its subject COUNT cannot be distinguished from one with full coverage.** The repair is the one this
+program keeps arriving at from different directions: print `checked N of M` beside the verdict, with M
+derived from enumerating mounts rather than from the config.
+
+**This changes no size claim in this record.** The amended attribution above stands: ~5.4 GiB is the
+most that is agent-reclaimable here, 89 % of the volume is the operator's own `Documents`, and the
+HUMAN-class 46.43 GiB is never auto-reclaimed. The gap is monitoring, not bytes — which is precisely
+why it survived two censuses that were both looking for bytes.
+
+**Practical warning for the next session that measures this volume:** it is exFAT, and `git status`
+over the 28.14 GiB tree did not complete in **10 minutes**. Size any probe to the filesystem, and
+never put a `status` sweep of this volume on a timed or hook path.
