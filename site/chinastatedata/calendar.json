@@ -1,33 +1,9 @@
 {
   "schema": "china_calendar.v1",
-  "asof": "2026-09-24",
-  "generated_at_utc": "2026-09-27T13:00:54.046047+00:00",
+  "asof": "2026-09-29",
+  "generated_at_utc": "2026-09-29T04:14:24.066117+00:00",
   "horizon_days": 45,
   "entries": [
-    {
-      "date": "2026-09-24",
-      "window_end": null,
-      "etype": "omo_mlf_tender",
-      "label_en": "PBoC MLF tender — 1年期, RMB 800bn",
-      "label_zh": "央行中期借贷便利（MLF）操作：1年期，8,000亿元",
-      "region": "cn",
-      "impact": "high",
-      "source_class": "feed",
-      "source": "china_omo.operations",
-      "approx": false
-    },
-    {
-      "date": "2026-09-25",
-      "window_end": null,
-      "etype": "HK_TRADE",
-      "label_en": "HK external trade",
-      "label_zh": "香港对外商品贸易",
-      "region": "hk",
-      "impact": "medium",
-      "source_class": "static",
-      "source": "engine.hk_event_calendar",
-      "approx": true
-    },
     {
       "date": "2026-09-30",
       "window_end": null,
@@ -363,9 +339,94 @@
       "source_class": "rule",
       "source": "engine.hk_event_calendar",
       "approx": false
+    },
+    {
+      "date": "2026-11-09",
+      "window_end": null,
+      "etype": "FXRES",
+      "label_en": "FX reserves (SAFE)",
+      "label_zh": "外汇储备（外管局）",
+      "region": "cn",
+      "impact": "medium",
+      "source_class": "rule",
+      "source": "engine.china_event_calendar",
+      "approx": true
+    },
+    {
+      "date": "2026-11-09",
+      "window_end": null,
+      "etype": "TRADE",
+      "label_en": "Customs trade (exports/imports)",
+      "label_zh": "海关进出口数据",
+      "region": "cn",
+      "impact": "high",
+      "source_class": "rule",
+      "source": "engine.china_event_calendar",
+      "approx": true
+    },
+    {
+      "date": "2026-11-10",
+      "window_end": null,
+      "etype": "CPI",
+      "label_en": "CPI (consumer prices)",
+      "label_zh": "CPI（居民消费价格）",
+      "region": "cn",
+      "impact": "high",
+      "source_class": "static",
+      "source": "engine.china_event_calendar",
+      "approx": false
+    },
+    {
+      "date": "2026-11-10",
+      "window_end": null,
+      "etype": "CREDIT",
+      "label_en": "Money supply, RMB loans & TSF",
+      "label_zh": "货币供应、人民币贷款与社融",
+      "region": "cn",
+      "impact": "high",
+      "source_class": "rule",
+      "source": "engine.china_event_calendar",
+      "approx": true
+    },
+    {
+      "date": "2026-11-10",
+      "window_end": null,
+      "etype": "PPI",
+      "label_en": "PPI (producer prices)",
+      "label_zh": "PPI（工业生产者价格）",
+      "region": "cn",
+      "impact": "high",
+      "source_class": "static",
+      "source": "engine.china_event_calendar",
+      "approx": false
+    },
+    {
+      "date": "2026-11-12",
+      "window_end": null,
+      "etype": "US_CPI",
+      "label_en": "US CPI",
+      "label_zh": "美国 CPI",
+      "region": "hk",
+      "impact": "high",
+      "source_class": "static",
+      "source": "engine.hk_event_calendar",
+      "approx": false
+    },
+    {
+      "date": "2026-11-13",
+      "window_end": null,
+      "etype": "HK_GDP",
+      "label_en": "HK GDP",
+      "label_zh": "香港 GDP",
+      "region": "hk",
+      "impact": "high",
+      "source_class": "static",
+      "source": "engine.hk_event_calendar",
+      "approx": false
     }
   ],
   "data_gaps": [
+    "china_omo store holds no announced operation inside the horizon (the tape is present; the PBoC simply has nothing pending)",
     "china_earnings store holds no reporting month inside the horizon"
   ],
   "authority": {
