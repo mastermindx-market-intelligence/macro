@@ -222,6 +222,13 @@ def accrue(today=None) -> tuple[int, str]:
 def emit(today=None, accrual_state: str = "ledger_only") -> dict:
     """Write site/options_skew/latest.json from the ledger. No chain provider.
 
+    The payload carries the A-F03-W2-4c additive keys `source_windows`,
+    `source_break`, and `source_break_date` (round-5 coverage-span model
+    — one span per source present on the ledger, plus the first session
+    date strictly after the older source's last_date).  Schema string
+    (`options_skew.v1`) is unchanged; downstream consumers that pre-date
+    the additive keys stay silent on the source_break gate.
+
     `accrual_state` accepts the builder's internal vocabulary
     (`accrued_today` | `caught_up` | `ledger_only`); `caught_up` is mapped
     to `ledger_only` here because the engine contract is the legacy two-way
@@ -277,8 +284,12 @@ def main(argv: list[str] | None = None) -> int:
             return ACCRUE_NOOP_EXIT
         payload = emit(accrual_state=accrual_state) if do_emit else None
         if payload is not None:
-            log.info("options_skew: accrued %d rows, emitted %d names (scored=%s, %s)",
-                     added, payload["n"], payload["scored"], payload["gate_status"])
+            # A-F03-W2-4c · the source_windows count surfaces the source break
+            # in the lane's summary log so an operator skimming build_options_skew
+            # output can tell at a glance whether this run mixed vendors.
+            log.info("options_skew: accrued %d rows, emitted %d names (scored=%s, %s, windows=%d)",
+                     added, payload["n"], payload["scored"], payload["gate_status"],
+                     len(payload.get("source_windows") or []))
         elif do_accrue:
             log.info("options_skew: accrued %d rows (emit skipped)", added)
         return 0

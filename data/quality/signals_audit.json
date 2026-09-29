@@ -1,13 +1,13 @@
 {
- "asof": "2026-09-17",
+ "asof": "2026-09-25",
  "files_checked": 250,
- "n_markers": 58264,
+ "n_markers": 58298,
  "errors": [
   "site/signals/AMZN.json: markers[175]: `reasons[0]` is 'veto: bearish divergence' but `reason` is 'failed next-bar hold' \u2014 the exhaustive account must open on the first-match label it accompanies",
   "site/signals/EQIX.json: markers[149]: `reasons[0]` is 'veto: bearish divergence' but `reason` is 'failed next-bar hold' \u2014 the exhaustive account must open on the first-match label it accompanies",
   "site/signals/GOOGL.json: markers[132]: `reasons[0]` is 'veto: bearish divergence' but `reason` is 'failed next-bar hold' \u2014 the exhaustive account must open on the first-match label it accompanies",
   "site/signals/KMI.json: markers[107]: `reasons[0]` is 'veto: bearish divergence' but `reason` is 'held confirmation' \u2014 the exhaustive account must open on the first-match label it accompanies",
-  "site/signals/MU.json: markers[265]: `reasons[0]` is 'veto: bearish divergence' but `reason` is 'pending confirmation' \u2014 the exhaustive account must open on the first-match label it accompanies",
-  "data/signal_archive/mtf_signals_latest.json: signal MU.last: markers[0]: `reasons[0]` is 'veto: bearish divergence' but `reason` is 'pending confirmation' \u2014 the exhaustive account must open on the first-match label it accompanies"
+  "site/signals/MU.json: markers[265]: `reasons[0]` is 'veto: bearish divergence' but `reason` is 'held confirmation' \u2014 the exhaustive account must open on the first-match label it accompanies",
+  "data/signal_archive/mtf_signals_latest.json: signal MU.last: markers[0]: `reasons[0]` is 'veto: bearish divergence' but `reason` is 'held confirmation' \u2014 the exhaustive account must open on the first-match label it accompanies"
  ]
 }

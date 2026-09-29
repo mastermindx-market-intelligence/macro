@@ -36,6 +36,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
+from urllib.parse import urlsplit
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
@@ -1398,6 +1399,23 @@ def _macro_command_sections(entries: Sequence[Mapping[str, Any]], *,
     return populated
 
 
+def _fragment_context(value: Any) -> Any:
+    """Copy hub presentation data, rebasing only fragment-local navigation."""
+    if isinstance(value, Mapping):
+        result = {}
+        for key, item in value.items():
+            if (key in {"href", "deep_href"} and isinstance(item, str)
+                    and item and not item.startswith(("#", "?", "/"))
+                    and not urlsplit(item).scheme):
+                result[key] = "../../" + item
+            else:
+                result[key] = _fragment_context(item)
+        return result
+    if isinstance(value, (list, tuple)):
+        return [_fragment_context(item) for item in value]
+    return value
+
+
 def write_fragments(env: Environment, sections: Sequence[Mapping[str, Any]],
                     out_dir: Path) -> list[Path]:
     """Emit `site/macro/fragments/<id>.html` — the inner HTML of `[data-mc-figure]`."""
@@ -1409,7 +1427,9 @@ def write_fragments(env: Environment, sections: Sequence[Mapping[str, Any]],
     for section in sections:
         if section.get("first"):
             continue
-        html = tmpl.render(s=section)
+        # The same sections also render the site-level hub and timeout fallback.
+        # Only this detached copy uses the nested fragment's document base.
+        html = tmpl.render(s=_fragment_context(section))
         html = "\n".join(line.rstrip() for line in html.splitlines()) + "\n"
         path = dest / f"{section['id']}.html"
         temp = _temp_sibling(path)

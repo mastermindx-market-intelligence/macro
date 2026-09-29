@@ -74,6 +74,23 @@ def _fixture_view_model() -> dict:
         data,
         now=datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc),
     )
+    # MOR-2b Lane C: the scratch tree carries no owner artifacts for the three
+    # new blocks, so the producer types them UNAVAILABLE. The evidence matrix
+    # must DEPICT the rows (§0.4 rendered falsifiers, §5 design matrix), so the
+    # three blocks are replaced by the same fixture blocks the page tests
+    # render — context_planes CURRENT, research_watch CURRENT and owner_links
+    # STALE_WITH_LAST_KNOWN (last-known links + dated reason) — an honest
+    # fixture view-model, labelled as such in the manifest note.
+    from tests.test_am_edition_page import _make_fresh_blocks
+
+    fixture_blocks = {b["key"]: b for b in _make_fresh_blocks(scratch, session_date="2026-09-08")}
+    fixture_blocks["owner_links"]["state"] = "STALE_WITH_LAST_KNOWN"
+    fixture_blocks["owner_links"]["state_reason_en"] = "Owner registry has not refreshed since 02:00 UTC."
+    fixture_blocks["owner_links"]["state_reason_zh"] = "主理页面注册表自UTC 02:00起未刷新。"
+    payload["blocks"] = [fixture_blocks.get(b.get("key"), b) for b in payload.get("blocks", [])]
+    for key in ("context_planes", "research_watch", "owner_links"):
+        if not any(b.get("key") == key for b in payload["blocks"]):
+            payload["blocks"].append(fixture_blocks[key])
     payload["morning_source_feasibility"] = "DEGRADED"
     payload["morning_source_feasibility_cause_en"] = (
         "The morning source is degraded, so the page shows its latest known readings."
