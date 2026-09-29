@@ -167,9 +167,9 @@ jobs:
     # the cap must clear the whole collector + local checkpoint + bounded-push path
     # instead of relying on the grace. 300m is ~1.24x the worst COMPLETE observed path
     # (242.5m on 09-17; the 245m figure is a kill point, not a finish) and matches the
-    # existing engine cap. This is
-    # containment while collector creep receives structural follow-up, not permission
-    # for unbounded nightly growth. The job still exits as soon as its work finishes.
+    # existing engine cap. This is containment while collector creep receives its
+    # structural follow-up, not permission for unbounded nightly growth. The job still
+    # exits as soon as its work finishes.
     timeout-minutes: 300
     outputs:
       government_revenue_projection_needed: ${{ steps.pushdata.outputs.published }}
@@ -746,9 +746,9 @@ jobs:
       # run 35168062576 (2026-09-17) finished this very push 1:58 PAST its cap, while
       # run 36078806272 (2026-09-25) entered the grace with the push still to do and
       # lost it at cap+5:00. The grace is a belt, not a budget — which is why the job
-      # cap above must cover this bounded network-publish window. Every git network op is alarm-bounded (macOS
-      # runners have no GNU timeout; perl alarm survives execve — SIGALRM kills a hung
-      # op, the loop retries).
+      # cap above must cover this bounded network-publish window. Every git network op
+      # is alarm-bounded (macOS runners have no GNU timeout; perl alarm survives execve
+      # — SIGALRM kills a hung op, the loop retries).
       - name: push market data (commit already local; alarm-bounded git ops)
         id: pushdata
         if: always() && steps.commitdata.outputs.committed == 'true'
