@@ -6,10 +6,8 @@ ended_because: ci_handoff
 prs: [8160, 8197, 8200, 8204]
 discoveries:
   - "DSC:A-VENDORED-TRACEABILITY-MAP-STILL-HAS-NO-REQUIREMENT-TEXT"
-  # DSC:A-PATH-LOOKUP-IS-NOT-AN-OBJECT-LOOKUP and
-  # DSC:VOCABULARY-PRESENCE-IS-NOT-DISCRIMINATION are minted by PR #8204, which is armed
-  # and unmerged; naming them here from this base is a dangling ref and validate is
-  # fail-closed on it. Both are cited in the body and re-joined by a next_action.
+  - "DSC:A-PATH-LOOKUP-IS-NOT-AN-OBJECT-LOOKUP"
+  - "DSC:VOCABULARY-PRESENCE-IS-NOT-DISCRIMINATION"
 mission: >
   Resolve the Industrials specification-authority blocker and resume product work on the
   frozen nine-task plan. The blocker was believed to be missing requirement text for 41 of
@@ -135,6 +133,15 @@ verified:
       total, refusal going anonymous, mandatory absence downgraded to limited, optional
       absence escalated to refused); 122 passed with the increment applied, up from 120, with
       the #8160 anchor guard accepting 18 anchors and two RECOVERED_ORIGINAL rows.
+  - claim: "PR #8204 is merged and its three records are in origin/main's own bytes."
+    command: >
+      git show origin/main:agentos/discoveries/<each file> | wc -c, and
+      grep -c 'AMENDED 2026-09-29' on the amended record
+    result: >
+      squash 4df7c030006ec at 2026-09-29T17:37:00Z. DSC-A-PATH-LOOKUP-IS-NOT-AN-OBJECT-LOOKUP.md
+      6282 B, DSC-VOCABULARY-PRESENCE-IS-NOT-DISCRIMINATION.md 7472 B, and the amended
+      DSC-A-VENDORED-TRACEABILITY-MAP record carries 'AMENDED 2026-09-29' 3 times (claim,
+      falsifier/so_what, appended section). Read from origin/main, not from the worktree.
   - claim: "The agentos plane is clean with the three record changes."
     command: >
       python3 scripts/agentos.py validate; python3 -m pytest tests/test_agentos_schema.py
@@ -151,11 +158,6 @@ unverified:
       engine/fundamental_forensics/industrials_result_cash.py and IND-R214 carrying basis
       RECOVERED_ORIGINAL in the requirement index. A merged PR updates no folder until that
       folder fast-forwards.
-  - claim: "PR #8204 is merged."
-    what_would_verify: >
-      ARMED with contract-delta and ci-plan running when this was written (head 1dd69cbd4079).
-      Verify with git show origin/main:agentos/discoveries/DSC-A-PATH-LOOKUP-IS-NOT-AN-OBJECT-LOOKUP.md
-      and python3 scripts/agentos.py validate on a fast-forwarded checkout.
   - claim: "Any part of the 56-obligation outcome is ACCEPTED."
     what_would_verify: >
       Nothing here reaches acceptance and no Exponent/Pentair journey proof exists. Acceptance
@@ -183,12 +185,6 @@ unresolved:
     1386 records; reported in #8204 rather than silently widened, because a glob would make
     every program's records PR schedule that job.
 next_actions:
-  - >
-    Once PR #8204 is merged, add DSC:A-PATH-LOOKUP-IS-NOT-AN-OBJECT-LOOKUP and
-    DSC:VOCABULARY-PRESENCE-IS-NOT-DISCRIMINATION to this handoff's `discoveries:` list.
-    They are deliberately absent, not forgotten: they do not exist on this branch's base,
-    and `scripts/agentos.py validate` is fail-closed on a dangling ref. Verify with
-    `python3 scripts/agentos.py validate` exiting 0 afterwards.
   - >
     Verify #8200 in origin/main's own bytes (git show origin/main:<path>, never the worktree)
     and post the merge receipt plus that verification to carrier #7789 - promised in comment
@@ -277,9 +273,8 @@ danger_areas:
 Three, all in PR #8204 (records only, no engine/test/CI change):
 `DSC:A-VENDORED-TRACEABILITY-MAP-STILL-HAS-NO-REQUIREMENT-TEXT` amended at source,
 `DSC:A-PATH-LOOKUP-IS-NOT-AN-OBJECT-LOOKUP` new, and
-`DSC:VOCABULARY-PRESENCE-IS-NOT-DISCRIMINATION` new. The latter two are cited here in prose
-rather than in `discoveries:` only because they do not exist on this branch's base yet — see
-the first `next_action`.
+`DSC:VOCABULARY-PRESENCE-IS-NOT-DISCRIMINATION` new. #8204 merged as `4df7c030006e`, verified
+in `main`'s own bytes, so all three are joined in `discoveries:` above.
 
 ## The corrected reachability table, because the over-count is the thing to inherit
 
