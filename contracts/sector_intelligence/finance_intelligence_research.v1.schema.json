@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mastermind-x.com/contracts/sector_intelligence/finance_intelligence_research.v1.schema.json",
+  "title": "Finance Intelligence Research v1 (envelope)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_id",
+    "schema",
+    "definition_version",
+    "generation",
+    "request",
+    "dossier",
+    "assertion_refs",
+    "limitations",
+    "authority"
+  ],
+  "properties": {
+    "contract_id": {
+      "const": "finance_intelligence_research.v1"
+    },
+    "schema": {
+      "const": "finance_intelligence_research.v1"
+    },
+    "definition_version": {
+      "const": "2026-09-25.1"
+    },
+    "generation": {
+      "type": "string",
+      "pattern": "^gen_[0-9a-f]{32}$"
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_id",
+        "sector_ref",
+        "view",
+        "time_mode"
+      ],
+      "properties": {
+        "profile_id": {
+          "const": "finance_intelligence_research.v1"
+        },
+        "sector_ref": {
+          "const": "sector:financials"
+        },
+        "view": {
+          "type": "string",
+          "enum": [
+            "dossier"
+          ]
+        },
+        "time_mode": {
+          "type": "string",
+          "enum": [
+            "latest"
+          ]
+        }
+      }
+    },
+    "dossier": {
+      "$ref": "https://mastermind-x.com/contracts/sector_intelligence/finance_intelligence_read_model.v1.schema.json"
+    },
+    "assertion_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "curation_revision",
+          "assertion_ref"
+        ],
+        "properties": {
+          "curation_revision": {
+            "type": "string",
+            "pattern": "^gmirca_[0-9a-f]{32}$"
+          },
+          "assertion_ref": {
+            "type": "string",
+            "pattern": "^gmi-curation://[a-z0-9_]+/gmirca_[0-9a-f]{32}$"
+          }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rank",
+        "gate",
+        "size",
+        "trade",
+        "create_theme",
+        "change_membership",
+        "write_graph",
+        "admit_source"
+      ],
+      "properties": {
+        "rank": {
+          "const": false
+        },
+        "gate": {
+          "const": false
+        },
+        "size": {
+          "const": false
+        },
+        "trade": {
+          "const": false
+        },
+        "create_theme": {
+          "const": false
+        },
+        "change_membership": {
+          "const": false
+        },
+        "write_graph": {
+          "const": false
+        },
+        "admit_source": {
+          "const": false
+        }
+      }
+    }
+  }
+}

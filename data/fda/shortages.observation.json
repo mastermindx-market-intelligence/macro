@@ -1,0 +1,17 @@
+{
+  "history_coverage": {},
+  "last_refresh": {
+    "attempted_at": "2026-09-29T06:14:10.755657+00:00",
+    "failure_code": "PAGE_FAILED",
+    "partial_rows_observed": 0,
+    "qualified": false
+  },
+  "parquet_sha256": null,
+  "predecessor": "4c3abf937a66e74d0cdfdf935194c8a980f207a863557b79406ec8b43e8445af",
+  "retention": {
+    "absent_generations_kept": 90,
+    "dropped_absent_rows": 0
+  },
+  "schema": "fda_shortages_observation.v1",
+  "selected_capture": null
+}

@@ -86,6 +86,7 @@ while IFS=$'\t' read -r rel before_sha after_sha; do
     data/prophet/ledger.jsonl|data/prophet/ledger_quarantine.json|\
     data/prophet_arena/scoreboard.json|\
     data/prophet/origination_receipts/*.json|\
+    data/prophet/origination_sources/*.json.gz|\
     data/prophet/legacy_shadow/*/*.parquet|\
     data/prophet_arena/price_basis_trigger_v2/C0_champion_mirror.jsonl|\
     data/prophet_arena/price_basis_trigger_v2/C1_buy_soon_first.jsonl|\
