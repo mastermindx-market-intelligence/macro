@@ -125,8 +125,18 @@ waves:
       every tier while its manifest advertises healthy/372/2026-09-25. So
       re-placing the job does not produce a brief — this is not only a
       placement fault. #8203 makes the drained store refuse to resolve instead
-      of publishing a blank board; refilling it is owned by the store's writer.
-      See DSC:A-DRAINED-STORE-PASSES-A-SHAPE-CHECK-AND-PUBLISHES-A-BLANK-BOARD
+      of publishing a blank board, and is MERGED — squash
+      54f62e4d4b25c4e475ece482aff856d052e42e67, 2026-09-29, all nine paths
+      verified blob-identical in origin/main. Refilling the store is owned by
+      the store's writer, not by this workstream. Rollback of #8203 is a config
+      flip (`THETADATA_STORE_PROBE_S=0`), measured against a hanging readdir —
+      no revert, no deploy. The producer-level AD-1T2b drained-store tests are
+      PARKED at origin/claude/ad1t2b-producer-tests-parked (64ed54bf4c5e): they
+      need `--require-store`, which is absent from main and lives only in
+      #7889's held branch, so they land WITH #7889 when W4 admits it.
+      See DSC:A-DRAINED-STORE-PASSES-A-SHAPE-CHECK-AND-PUBLISHES-A-BLANK-BOARD,
+      DSC:A-SILENT-FAIL-OPEN-REPRODUCES-THE-INCIDENT-IT-PREVENTS,
+      DSC:HARDENING-A-UNIVERSAL-RESOLVER-AT-MODULE-SCOPE-CAN-BREAK-EVERY-IMPORT
       and agentos/handoffs/ADVANCED-DATA-OPTIONS-2026-09-29-drained-store-false-green.md.
   - id: AD-2
     title: Evidence Receipts, Nulls, Lifecycle, Corrections
