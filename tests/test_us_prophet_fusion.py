@@ -817,6 +817,23 @@ class TestVersionedEarningsSemantics:
             ).get("earnings_evidence_v2"):
                 assert earnings == fus.earnings_evidence_v2(row)
 
+    def test_default_committed_board_preserves_legacy_sue_flag(self, committed_board):
+        for row in committed_board.get("buy", []):
+            expected = bool(
+                row.get("sue_z")
+                and (row.get("sue_fresh_days") or 999) <= 60
+            )
+            assert fus.extract_members(row)["sue_fresh"] is expected
+
+    def test_explicit_version_changes_only_the_earnings_member(self, committed_board):
+        version = fus.EARNINGS_EVIDENCE_VERSION
+        for row in committed_board.get("buy", []):
+            legacy = fus.extract_members(row)
+            revised = fus.extract_members(row, earnings_semantics=version)
+            assert set(legacy) == set(revised)
+            for key in set(legacy) - {"sue_fresh"}:
+                assert revised[key] == legacy[key], (row.get("ticker"), key)
+
     def test_unknown_version_refuses_in_serving_and_evaluation(self):
         with pytest.raises(ValueError, match="unknown earnings semantics"):
             fus.extract_members(_row("X"), earnings_semantics="unknown")
