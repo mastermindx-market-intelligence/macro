@@ -1,6 +1,6 @@
 {
   "schema": "desk_weights.shadow.v1",
-  "as_of": "2026-09-27",
+  "as_of": "2026-09-29",
   "armed": false,
   "arming": {
     "armed": false,

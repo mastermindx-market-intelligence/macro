@@ -68,5 +68,10 @@
     "streak": 2,
     "last_date": "2026-09-08",
     "score": 0.9906
+  },
+  "reshoring": {
+    "streak": 1,
+    "last_date": "2026-09-28",
+    "score": 0.8001
   }
 }

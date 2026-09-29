@@ -1274,3 +1274,547 @@ def test_receipt_purpose_round_trips_from_the_caller() -> None:
     cells = [cell("1", owner_ref="synthetic:cell:a")]
     for purpose in ("same_period", "year_over_year", "final_vs_preview", "segment_bridge", "rollforward"):
         assert build_comparison_receipt(purpose, cells)["purpose"] == purpose
+
+# ---------------------------------------------------------------------------
+# Plan-named requirement anchors (IND-D07..D16, IND-R208)
+#
+# The frozen plan's traceability table assigns one owning test per requirement
+# and names it `tests/test_industrials_result_cash.py::test_ind_<requirement>`.
+# Measured 2026-09-27: of the 15 anchors that table named for T01 and T04, only
+# the 2 whose BODY the plan also froze verbatim existed -- the other 13 were
+# never written, and no `IND-*` id appeared anywhere in either landed suite.  A
+# suite run names FILES, so a missing test is not a failing test: the table was
+# an assignment of intent that nothing in the repository could ever resolve.
+# See `DSC:A-PLANS-TRACEABILITY-TABLE-IS-NOT-COVERAGE` and
+# `R-IND-2026-09-27-requirement-anchors`.
+#
+# Each anchor below is discriminating in BOTH directions: it names the situation
+# the requirement forbids and asserts the refusal, and it asserts the adjacent
+# permitted situation so a guard that simply always refuses fails too.
+# `PLAN_REQUIREMENT_ANCHORS` in the helpers module vendors the table into the
+# repository, and `test_every_plan_named_requirement_anchor_exists` in the
+# dependency-binding suite fails when a named anchor stops resolving.
+#
+# Receipt idiom, from `test_qualify_operands_refuses_duration_mismatch`: the
+# helper `comparison()` declares EVERY comparability flag True, so a probe built
+# on it legitimately excuses every mismatch.  Build the receipt, then set the
+# one flag under test False.  `_unchecked` below is that move, named.
+# ---------------------------------------------------------------------------
+
+
+_HALF_YEAR = {
+    "start": "2026-01-03", "end": "2026-07-03",
+    "fiscal_label": "FY2026 H1", "duration": "half_year",
+}
+_PRIOR_QUARTER = {
+    "start": "2025-04-03", "end": "2025-07-03",
+    "fiscal_label": "FY2025 Q2", "duration": "quarter",
+}
+
+
+def _unchecked(receipt: Mapping[str, object], *names: str) -> dict[str, object]:
+    """Return ``receipt`` with the named ``checked`` flags set False.
+
+    The landed refusal idiom.  Without it a probe cannot reach any comparability
+    refusal at all, because the synthetic receipt constructor declares every
+    flag checked and the module -- correctly -- honours that declaration.
+    """
+    flags = dict(receipt["checked"])  # type: ignore[arg-type]
+    for name in names:
+        flags[name] = False
+    return {**receipt, "checked": flags}
+
+
+def _with_transformations(
+    receipt: Mapping[str, object], *entries: Mapping[str, object]
+) -> dict[str, object]:
+    """Return ``receipt`` carrying the supplied conversion entries."""
+    return {**receipt, "transformations": list(entries)}
+
+
+def _defined(value: str, definition: str, **overrides: object):
+    """A cell whose ``quality.definition`` names the MEASURE, not the period role.
+
+    ``metric`` encodes the period ROLE in this corpus (``revenue_current`` /
+    ``revenue_prior``), so two legitimate year-over-year operands carry two
+    different ``metric`` strings; the measure semantics live in
+    ``quality.definition``.  Conflating the two is how a first attempt at the
+    IND-D09 guard broke eight landed tests.
+    """
+    quality = {
+        "rights_profile": "rp_public_primary_v1",
+        "rights_state": "public_primary",
+        "definition": definition,
+    }
+    return cell(value, quality=quality, **overrides)
+
+
+def test_ind_d07() -> None:
+    """IND-D07 — quarterly against half-year operands: refuse growth arithmetic.
+
+    The refusal reads the receipt's declaration, not the calendar: a
+    half-year current against a year-ago QUARTER refuses with
+    ``duration_mismatch`` while the receipt leaves ``duration`` undeclared, and
+    proceeds once the receipt declares the durations comparable.  Both halves
+    are asserted because a module that refused unconditionally would satisfy the
+    first and violate IND-R208's "different dates allowed under a declared
+    comparable-duration purpose", and one that never checked would satisfy
+    neither.  Where that declaration is TRUSTED rather than re-derived is
+    recorded as a named follow-on in `R-IND-2026-09-27-requirement-anchors`.
+    """
+    cells = [
+        cell("130", owner_ref="synthetic:cell:half", period=_HALF_YEAR),
+        cell("100", owner_ref="synthetic:cell:prior", period=_PRIOR_QUARTER),
+    ]
+    receipt = comparison("year_over_year", cells)
+
+    refused = derive_result_cash(
+        "growth_pct", cells,
+        comparison_receipt=_unchecked(receipt, "duration"),
+    )
+    assert refused["status"] == "refused", refused
+    assert "duration_mismatch" in refused["limitations"], refused
+    assert refused["value"] is None, refused
+
+    declared = derive_result_cash("growth_pct", cells, comparison_receipt=receipt)
+    assert declared["status"] == "ready", declared
+    assert declared["value"] == "30", declared
+
+
+def test_ind_d08() -> None:
+    """IND-D08 — USD thousands against USD millions: require an explicit unit
+    conversion receipt, never compare raw magnitudes.
+
+    The trap this anchor exists to hold open: T01's ``cell()`` fixes ``scale``
+    at 1 and lets ``unit`` carry the reporting magnitude, so
+    ``_scales_compatible`` only ever sees ``{1}`` and the very situation the
+    requirement names was invisible to the scale check.  The measured proof is
+    the third assertion -- the refusal is ``unit_mismatch`` and
+    ``scale_mismatch`` is NOT raised, because on this corpus it never could be.
+
+    Declaring the magnitude checked is not a conversion: the permission is the
+    conjunction of the declaration and a transformation entry that carries the
+    factor, exactly as scale and currency already required.
+    """
+    cells = [
+        cell("130", owner_ref="synthetic:cell:thousands", unit="USD_thousands"),
+        cell("100", owner_ref="synthetic:cell:millions", unit="USD_millions",
+             period=_PRIOR_QUARTER),
+    ]
+    # `comparison()` already declares scale checked — and that alone must not buy
+    # the comparison.
+    declared_only = comparison("year_over_year", cells)
+    refused = derive_result_cash("growth_pct", cells, comparison_receipt=declared_only)
+    assert refused["status"] == "refused", refused
+    assert "unit_mismatch" in refused["limitations"], refused
+    assert "scale_mismatch" not in refused["limitations"], refused
+    assert refused["value"] is None, refused
+
+    converted = derive_result_cash(
+        "growth_pct", cells,
+        comparison_receipt=_with_transformations(
+            declared_only,
+            {"kind": "unit_conversion", "factor": "0.001",
+             "from": "USD_thousands", "to": "USD_millions"},
+        ),
+    )
+    assert converted["status"] == "ready", converted
+
+
+def test_ind_d08_conversion_receipt_is_trusted_not_applied() -> None:
+    """Named limit of IND-D08's cure: the conversion is TRUSTED, not performed.
+
+    With a declared factor of 0.001 the honest year-over-year figure for 130
+    thousands against 100 millions is about -99.87 percent; the module returns
+    "30", i.e. it compares the raw decimal text and takes the receipt's word
+    that the magnitudes were reconciled upstream.  That is a deliberate scope
+    line -- this module is the arithmetic surface and does not own unit algebra
+    -- and it is asserted here rather than only described in prose so the
+    behaviour cannot drift unnoticed and so implementing the conversion FAILS
+    this test and forces the anchor to be updated on purpose.
+    Follow-on recorded in `R-IND-2026-09-27-requirement-anchors`.
+    """
+    cells = [
+        cell("130", owner_ref="synthetic:cell:thousands", unit="USD_thousands"),
+        cell("100", owner_ref="synthetic:cell:millions", unit="USD_millions",
+             period=_PRIOR_QUARTER),
+    ]
+    result = derive_result_cash(
+        "growth_pct", cells,
+        comparison_receipt=_with_transformations(
+            comparison("year_over_year", cells),
+            {"kind": "unit_conversion", "factor": "0.001",
+             "from": "USD_thousands", "to": "USD_millions"},
+        ),
+    )
+    assert result["status"] == "ready", result
+    assert result["value"] == "30", result  # raw-magnitude growth, NOT -99.87
+    assert result["unit"] == "USD_thousands", result
+
+
+def test_ind_d09() -> None:
+    """IND-D09 — a total-revenue operand against a net-of-reimbursement operand:
+    separate denominators, and never label total growth as net service growth.
+
+    ``growth_pct`` selects POSITIONALLY, so nothing about the call distinguishes
+    the two measures; the discriminator is ``quality.definition``, which the
+    module previously only checked was PRESENT and never checked AGREED.
+    Measured before the cure: a total-revenue prior divided into a
+    net-reimbursement current returned ``ready``, ``value="10"``,
+    ``label="reported"``, with an empty limitations list -- the relabelling the
+    requirement forbids, emitted as a clean reported figure.
+
+    The refusal is unconditional, like ``final_vs_preview``'s metric gate: a
+    receipt may declare the definition checked -- ``comparison()`` here does --
+    and still not declare two different measures into one growth number.
+    """
+    mixed = [
+        _defined("110", "revenue_total",
+                 owner_ref="synthetic:cell:current", metric="revenue_current"),
+        _defined("100", "revenue_net_reimbursement",
+                 owner_ref="synthetic:cell:prior", metric="revenue_prior"),
+    ]
+    receipt = comparison("year_over_year", mixed)
+    assert receipt["checked"]["definition"] is True, receipt  # declared, and still refused
+
+    refused = derive_result_cash("growth_pct", mixed, comparison_receipt=receipt)
+    assert refused["status"] == "refused", refused
+    assert "definition_mismatch" in refused["limitations"], refused
+    assert refused["value"] is None, refused
+
+    same_measure = [
+        _defined("110", "revenue_total",
+                 owner_ref="synthetic:cell:current", metric="revenue_current"),
+        _defined("100", "revenue_total",
+                 owner_ref="synthetic:cell:prior", metric="revenue_prior"),
+    ]
+    ready = derive_result_cash(
+        "growth_pct", same_measure,
+        comparison_receipt=comparison("year_over_year", same_measure),
+    )
+    assert ready["status"] == "ready", ready
+    assert ready["value"] == "10", ready
+
+
+def test_ind_d10() -> None:
+    """IND-D10 — a matched deferred-comp expense and gain: remove both or
+    neither, and preserve pretax.
+
+    Two failures are possible and the module must refuse both.  Dropping a leg
+    is refused by absence (``operand_missing:matched_gain``).  Supplying two
+    legs of DIFFERENT size is the subtler one: a matched remeasurement is one
+    movement seen from two sides, so unequal legs are not a pairing at all.
+    Measured before the cure: legs of 5 and 7 returned ``ready`` with
+    ``label="company_adjusted"`` and ``pretax_after_pairing="92"`` against the
+    matched pair's "90", carrying no limitation -- a pairing the module invented
+    and then attributed to the issuer.
+    """
+    matched = [
+        cell("100", owner_ref="synthetic:cell:op", metric="operating_profit"),
+        cell("5", owner_ref="synthetic:cell:exp", metric="matched_expense"),
+        cell("20", owner_ref="synthetic:cell:oi", metric="other_income"),
+        cell("5", owner_ref="synthetic:cell:gain", metric="matched_gain"),
+    ]
+    ready = derive_result_cash(
+        "paired_remeasurement", matched,
+        comparison_receipt=comparison("same_period", matched),
+    )
+    assert ready["status"] == "ready", ready
+    assert ready["pretax_after_pairing"] == "90", ready
+
+    unequal = matched[:3] + [
+        cell("7", owner_ref="synthetic:cell:gain", metric="matched_gain"),
+    ]
+    refused = derive_result_cash(
+        "paired_remeasurement", unequal,
+        comparison_receipt=comparison("same_period", unequal),
+    )
+    assert refused["status"] == "refused", refused
+    assert "matched_pair_unequal" in refused["limitations"], refused
+    assert refused["value"] is None, refused
+    # The refused pairing must not leak the pretax it would have computed.
+    assert "pretax_after_pairing" not in refused, refused
+
+    one_leg = matched[:3]
+    half_removed = derive_result_cash(
+        "paired_remeasurement", one_leg,
+        comparison_receipt=comparison("same_period", one_leg),
+    )
+    assert half_removed["status"] == "refused", half_removed
+    assert "operand_missing:matched_gain" in half_removed["limitations"], half_removed
+
+
+def test_ind_d11() -> None:
+    """IND-D11 — a researcher normalization must label its METHOD and its
+    OPERANDS.
+
+    Same two cells and the same arithmetic both times: only the receipt differs.
+    Without an issuer definition the result is labelled ``researcher_proxy``;
+    carrying the issuer's own definition as a transformation makes it
+    ``company_adjusted``.  The label is therefore a fact about provenance rather
+    than about the number, and the operands are named in ``operand_refs`` with
+    revision and digest -- so a reader can reconstruct which cells the method
+    consumed without trusting the label alone.
+    """
+    cells = [
+        cell("100", owner_ref="synthetic:cell:ocf", metric="operating_cash"),
+        cell("40", owner_ref="synthetic:cell:pay", metric="cash_capital_payments"),
+    ]
+    receipt = comparison("same_period", cells)
+
+    proxy = derive_result_cash(
+        "cash_after_capital_payments", cells, comparison_receipt=receipt)
+    assert proxy["status"] == "ready", proxy
+    assert proxy["value"] == "60", proxy
+    assert proxy["label"] == "researcher_proxy", proxy
+    assert [ref["owner_ref"] for ref in proxy["operand_refs"]] == [
+        "synthetic:cell:ocf", "synthetic:cell:pay",
+    ], proxy
+    assert all(ref["digest"] and ref["revision"] for ref in proxy["operand_refs"]), proxy
+
+    company = derive_result_cash(
+        "cash_after_capital_payments", cells,
+        comparison_receipt=_with_transformations(
+            receipt,
+            {"kind": "issuer_fcf_definition", "source": "example.invalid/definitions"},
+        ),
+    )
+    assert company["status"] == "ready", company
+    assert company["value"] == proxy["value"], (company, proxy)
+    assert company["label"] == "company_adjusted", company
+
+
+def test_ind_d12() -> None:
+    """IND-D12 — operating cash against a segment capital ADDITION: keep the two
+    distinct, and let the cash proxy use only the cash statement's payments.
+
+    A segment capital addition is an accrual disclosure, not a cash outflow, so
+    offering one where ``cash_capital_payments`` belongs must not silently
+    satisfy the proxy.  The module selects that operand BY METRIC and refuses
+    when it is absent, which is what keeps an accrual number out of a cash
+    figure: the same value of 40 produces a refusal under the segment metric and
+    a proxy of 60 under the cash-statement metric.
+    """
+    accrual = [
+        cell("100", owner_ref="synthetic:cell:ocf", metric="operating_cash"),
+        cell("40", owner_ref="synthetic:cell:seg", metric="segment_capital_additions"),
+    ]
+    refused = derive_result_cash(
+        "cash_after_capital_payments", accrual,
+        comparison_receipt=comparison("same_period", accrual),
+    )
+    assert refused["status"] == "refused", refused
+    assert "operand_missing:cash_capital_payments" in refused["limitations"], refused
+    assert refused["value"] is None, refused
+
+    cash = [
+        cell("100", owner_ref="synthetic:cell:ocf", metric="operating_cash"),
+        cell("40", owner_ref="synthetic:cell:pay", metric="cash_capital_payments"),
+    ]
+    ready = derive_result_cash(
+        "cash_after_capital_payments", cash,
+        comparison_receipt=comparison("same_period", cash),
+    )
+    assert ready["status"] == "ready", ready
+    assert ready["value"] == "60", ready
+
+
+def test_ind_d13() -> None:
+    """IND-D13 — with operating, investing, financing and exchange movements
+    stated, the closing balance must reconcile.
+
+    The load-bearing assertion is which number survives disagreement.  Given a
+    stated closing of 999 against movements that compute to 115, the module
+    reports the COMPUTED total and discloses the residual; it does not adopt the
+    issuer's unreconciled closing, and it does not silently absorb the gap into
+    a movement.  ``status`` degrades to ``limited`` rather than ``ready``, so a
+    caller cannot read an unreconciled rollforward as clean.
+    """
+    movements = [
+        cell("100", owner_ref="synthetic:cell:open", metric="opening_cash"),
+        cell("50", owner_ref="synthetic:cell:oper", metric="operating_movement"),
+        cell("-20", owner_ref="synthetic:cell:inv", metric="investing_movement"),
+        cell("-10", owner_ref="synthetic:cell:fin", metric="financing_movement"),
+        cell("-5", owner_ref="synthetic:cell:fx", metric="exchange_movement"),
+    ]
+    reconciling = movements + [
+        cell("115", owner_ref="synthetic:cell:close", metric="closing_cash"),
+    ]
+    ready = derive_result_cash(
+        "cash_rollforward", reconciling,
+        comparison_receipt=comparison("rollforward", reconciling),
+    )
+    assert ready["status"] == "ready", ready
+    assert ready["value"] == "115", ready
+    assert ready["computed_total"] == "115", ready
+    assert ready["residual"] == "0", ready
+    assert ready["limitations"] == [], ready
+
+    contradicted = movements + [
+        cell("999", owner_ref="synthetic:cell:close", metric="closing_cash"),
+    ]
+    limited = derive_result_cash(
+        "cash_rollforward", contradicted,
+        comparison_receipt=comparison("rollforward", contradicted),
+    )
+    assert limited["status"] == "limited", limited
+    assert limited["value"] == "115", limited          # computed, never the stated 999
+    assert limited["computed_total"] == "115", limited
+    assert limited["residual"] == "884", limited
+    assert "rollforward_residual" in limited["limitations"], limited
+
+
+def test_ind_d14() -> None:
+    """IND-D14 — segments plus a corporate line: reconcile the scope, retain the
+    corporate contribution, and allocate nothing that was not disclosed.
+
+    "Retain" is asserted causally rather than by inspecting a label: the only
+    difference between the two bridges below is the corporate operand, and the
+    total moves by exactly its amount.  A bridge that dropped the corporate line
+    as unallocatable would return the same total twice; one that spread it
+    across the segments would still reconcile but would have invented an
+    allocation, which IND-D16 pins from the other side.
+    """
+    segments = [
+        cell("3", owner_ref="synthetic:cell:alpha", metric="segment_alpha_change"),
+        cell("-1", owner_ref="synthetic:cell:beta", metric="segment_beta_change"),
+        cell("-2", owner_ref="synthetic:cell:elim", metric="eliminations"),
+    ]
+    without_corporate = segments + [
+        cell("0", owner_ref="synthetic:cell:corp", metric="corporate_change"),
+    ]
+    base = derive_result_cash(
+        "segment_change_bridge", without_corporate,
+        comparison_receipt=comparison("segment_bridge", without_corporate),
+    )
+    assert base["status"] == "ready", base
+    assert base["value"] == "0", base
+    assert base["residual"] == "0", base
+
+    with_corporate = segments + [
+        cell("4", owner_ref="synthetic:cell:corp", metric="corporate_change"),
+    ]
+    retained = derive_result_cash(
+        "segment_change_bridge", with_corporate,
+        comparison_receipt=comparison("segment_bridge", with_corporate),
+    )
+    assert retained["status"] == "ready", retained
+    assert retained["value"] == "4", retained          # the corporate contribution survives
+    assert retained["residual"] == "0", retained       # and the scope still reconciles
+    assert retained["limitations"] == [], retained
+
+
+def test_ind_d15() -> None:
+    """IND-D15 — reorganized comparative segments: retain the effective
+    perimeter and the recast basis.
+
+    A prior-period operand whose ``business_dimensions`` name a reorganized
+    perimeter is not comparable to an as-reported current one, and the module
+    refuses with ``perimeter_mismatch`` until the receipt declares a basis for
+    that mismatch.  Retention is asserted on the operand side: the recast basis
+    travels with the cell rather than being normalized away, so the SAME cells
+    that refuse under an undeclared perimeter proceed under a declared one
+    without either side being rewritten.
+    """
+    cells = [
+        cell("130", owner_ref="synthetic:cell:current"),
+        cell("100", owner_ref="synthetic:cell:prior", period=_PRIOR_QUARTER,
+             business_dimensions={"segment": "testing", "recast": "reorganized"},
+             basis={"accounting": "GAAP", "recast": "restated"}),
+    ]
+    receipt = comparison("year_over_year", cells)
+
+    refused = derive_result_cash(
+        "growth_pct", cells,
+        comparison_receipt=_unchecked(receipt, "perimeter"),
+    )
+    assert refused["status"] == "refused", refused
+    assert "perimeter_mismatch" in refused["limitations"], refused
+
+    declared = derive_result_cash("growth_pct", cells, comparison_receipt=receipt)
+    assert declared["status"] == "ready", declared
+    assert declared["value"] == "30", declared
+    # The recast basis and reorganized perimeter were never normalized out of the
+    # operands the caller supplied.
+    assert cells[1]["basis"]["recast"] == "restated", cells[1]
+    assert cells[1]["business_dimensions"]["recast"] == "reorganized", cells[1]
+
+
+def test_ind_d16() -> None:
+    """IND-D16 — a refund with no segment allocation: disclose the limit, refuse
+    an invented normalization.
+
+    The residual is asserted CAUSALLY: adding the unallocated refund moves both
+    the total and the residual by exactly its amount, so the disclosed residual
+    IS the refund rather than a number that happens to match.  Because the
+    refund stays in the residual, none of it was pushed into a segment -- which
+    is the normalization the requirement forbids and the reason the result
+    carries ``bridge_residual_disclosed`` instead of a clean bridge.
+    """
+    bridge = [
+        cell("3", owner_ref="synthetic:cell:alpha", metric="segment_alpha_change"),
+        cell("-1", owner_ref="synthetic:cell:beta", metric="segment_beta_change"),
+        cell("4", owner_ref="synthetic:cell:corp", metric="corporate_change"),
+        cell("-2", owner_ref="synthetic:cell:elim", metric="eliminations"),
+    ]
+    allocated = derive_result_cash(
+        "segment_change_bridge", bridge,
+        comparison_receipt=comparison("segment_bridge", bridge),
+    )
+    assert allocated["residual"] == "0", allocated
+    assert "bridge_residual_disclosed" not in allocated["limitations"], allocated
+
+    with_refund = bridge + [
+        cell("1", owner_ref="synthetic:cell:refund", metric="unallocated_refund"),
+    ]
+    disclosed = derive_result_cash(
+        "segment_change_bridge", with_refund,
+        comparison_receipt=comparison("segment_bridge", with_refund),
+    )
+    assert disclosed["status"] == "ready", disclosed
+    assert disclosed["residual"] == "1", disclosed
+    assert disclosed["value"] == "5", disclosed
+    assert "bridge_residual_disclosed" in disclosed["limitations"], disclosed
+    # Causal: the residual moved by exactly the refund, so the refund is what is
+    # being disclosed -- and it was not spread across the segment legs.
+    assert (
+        Decimal(disclosed["residual"]) - Decimal(allocated["residual"]) == Decimal("1")
+    ), (disclosed, allocated)
+    assert (
+        Decimal(disclosed["value"]) - Decimal(allocated["value"]) == Decimal("1")
+    ), (disclosed, allocated)
+
+
+def test_ind_r208() -> None:
+    """IND-R208 — a year-over-year flow comparison may use different dates ONLY
+    under a declared comparable-duration purpose.
+
+    The receipt has always CARRIED a declared purpose and the module never
+    compared it with the purpose being qualified, so a receipt declaring
+    ``same_period`` was accepted for a year-over-year derivation and the
+    requirement was nominal.  Measured before the cure: the mismatched receipt
+    returned ``ready``, ``value="10"``, no limitation.  The two calls below
+    differ in nothing but the receipt's declared purpose.
+    """
+    cells = [
+        cell("110", owner_ref="synthetic:cell:current", metric="revenue_current"),
+        cell("100", owner_ref="synthetic:cell:prior", metric="revenue_prior",
+             period=_PRIOR_QUARTER),
+    ]
+
+    wrong_purpose = comparison("same_period", cells)
+    assert wrong_purpose["purpose"] == "same_period", wrong_purpose
+    refused = derive_result_cash("growth_pct", cells, comparison_receipt=wrong_purpose)
+    assert refused["status"] == "refused", refused
+    assert "purpose_mismatch" in refused["limitations"], refused
+    assert refused["value"] is None, refused
+
+    declared = comparison("year_over_year", cells)
+    ready = derive_result_cash("growth_pct", cells, comparison_receipt=declared)
+    assert ready["status"] == "ready", ready
+    assert ready["value"] == "10", ready
+
+    # The qualification surface refuses on its own, not only through dispatch.
+    q = qualify_operands("year_over_year", cells, comparison_receipt=wrong_purpose)
+    assert q["status"] == "refused", q
+    assert "purpose_mismatch" in q["limitations"], q

@@ -1029,7 +1029,7 @@ def evaluate(root: Path, registry_path: Path, workflows_dir: Path) -> list[Findi
             and ci_pack.get("needs") == ["ci-plan", "trusted-ci"]
             and ci_pack.get("if")
             == (
-                "always() && needs.ci-plan.result == 'success' && "
+                "!cancelled() && needs.ci-plan.result == 'success' && "
                 "needs.ci-plan.outputs.has_work == 'true' && "
                 f"({FORK_PR} || {HOSTED_ROUTE} || needs.trusted-ci.result == 'success')"
             )

@@ -2743,6 +2743,12 @@ jobs:
       - "tests/test_topup_thetadata_legacy.py"
       - "tests/test_topup_thetadata_daily.py"
       - "tests/test_topup_thetadata_scheduler.py"
+      # sparse-guard closure widening 2026-09-29 (contract-delta): the two entry guards
+      # this job's closure reaches now pin `scripts/sparse_guard.py`, which imports
+      # `scripts/worktree_sparse.py`. `scope: exclusive` means this list REPLACES
+      # inference, so an undeclared dependency stops selecting the job when it changes.
+      - "scripts/sparse_guard.py"
+      - "scripts/worktree_sparse.py"
     # Flow-Surface store: scripts/build_flow_surface materializes per-strike net-premium
     # grids + (Lane G) intraday dealer-exposure greek grids (gex/dex/vanna/charm) +
     # walls/coverage (grids[metric][levelIdx][timeIdx]) into the R2 snapshot store the
@@ -4607,6 +4613,11 @@ jobs:
       - "tests/test_check_intelligence_registry.py"
       - "tests/test_intelligence_registry.py"
       - "tests/test_output_health.py"
+      # sparse-guard closure widening 2026-09-29 (contract-delta): the two entry guards
+      # this job's closure reaches now pin `scripts/sparse_guard.py`, which imports
+      # `scripts/worktree_sparse.py`. `scope: exclusive` means this list REPLACES
+      # inference, so an undeclared dependency stops selecting the job when it changes.
+      - "scripts/sparse_guard.py"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -4818,8 +4829,11 @@ jobs:
     # every job and suite through the planner, and no exclusive list can name
     # every suite. So a PR that moves one of those verdicts without touching a
     # path below merges without running this job. Each such shape has another
-    # owner. contract-delta (ci.yml, every PR) re-runs the unrun census and the
-    # curated-closure check differentially. integration-baseline.yml runs
+    # owner. contract-delta (ci.yml, every PR) re-runs the unrun census, the
+    # curated-closure check, the packing probes and the skip-only and
+    # trigger-closure censuses differentially (probes and both censuses since
+    # 2026-09-27), so a PR that breaches a probe ceiling, adds a skip-only gate or
+    # opens a trigger gap reds on its own head. integration-baseline.yml runs
     # test_ci_pack.py and the skip-only census on every source push to main and
     # every 4 hours, and merge-on-green pauses ordinary merges while it is red.
     # Every ci.yml run on main runs this whole job; the merge sweeper dispatches
@@ -5449,6 +5463,13 @@ jobs:
         run: python -m pytest tests/test_transmission_chains.py -q
       - name: transmission chains — W4 distribution (publish subset + Cascade Monitor + NW lobes)
         run: python -m pytest tests/test_transmission_publish.py tests/test_transmission_cascade_monitor.py tests/test_transmission_chains_nw.py -q
+      # MO-J1A (PR #8052): the affected-company continuation — identity round-trip
+      # (VendorAliasTable.resolve → vendor_symbol_for at chain_state.asof) + per-channel
+      # projection. Pure unit (in-memory alias table, no data/). Lives beside the
+      # Cascade Monitor suite because the page it feeds is this job's subject; the
+      # matching ci.yml paths entry lists the engine + test file (#3357 both-halves rule).
+      - name: transmission chains — MO-J1A affected-company continuation (identity law + projection)
+        run: python -m pytest tests/test_transmission_company_continuation.py -q
       - name: transmission calibration — miner + regime split + merge + null honesty
         run: python -m pytest tests/test_transmission_calibration.py -q
       - name: transmission proposals — W5 Loop-C (pack + ingest + gate + Article 1/2)
@@ -5823,7 +5844,12 @@ jobs:
       - "tests/test_finance_overlap.py"
       - "engine/sector_intelligence/contracts.py"
       - "engine/sector_intelligence/finance_projection.py"
+      # FIN-T10 registration adapter — fixture-only, §8 sector_profile pending.
+      # Once §8 is adjudicated the same factory pattern (technology @ #7891)
+      # will be applied here.
+      - "engine/sector_intelligence/finance_research_registration.py"
       - "tests/test_finance_intelligence_projection.py"
+      - "tests/test_finance_research_registration.py"
       # FIN-T9 entry points — sector deep-dive card on the Theme Tracker
       # + Financials launch module (skip-mode while PR #7669 is OPEN).
       - "templates/_finance_sector_deep_dive.html.j2"
@@ -5896,7 +5922,7 @@ jobs:
       - name: finance intelligence page + hydration tests
         run: python -m pytest tests/test_finance_intelligence_page.py tests/test_finance_intelligence_hydration.py -q
       - name: finance intelligence contract tests
-        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py -q
+        run: python -m pytest tests/test_finance_intelligence_contract.py tests/test_finance_overlap.py tests/test_finance_intelligence_projection.py tests/test_finance_entry_points.py tests/test_finance_research_registration.py -q
 
 
   consumer-cyclical-economic-change:
@@ -6962,12 +6988,16 @@ jobs:
           # paths as a downloaded JSON handle. Prefer that authoritative input:
           # re-fetching the moving base here cost the R25 candidate the entire
           # 10-minute job budget before the gate itself could execute.
+          # A main proof or base replay publishes the planner null token (full
+          # suite, no list). The event tells the checker that null is
+          # legitimate there and still a refusal on a pull_request. Keep
+          # apostrophes out of this block: one blinds the closure inference.
           if [ -n "${CI_CHANGED_FILES_FILE:-}" ]; then
             if [ ! -r "$CI_CHANGED_FILES_FILE" ]; then
               echo "::error title=p0b-receipt-closure::configured CI_CHANGED_FILES_FILE is unreadable; refusing rather than falling back to a different comparison question."
               exit 2
             fi
-            python3 scripts/check_p0b_receipt_closure.py --diff-file "$CI_CHANGED_FILES_FILE"
+            python3 scripts/check_p0b_receipt_closure.py --diff-file "$CI_CHANGED_FILES_FILE" --event "${GITHUB_EVENT_NAME:-}"
           else
             if ! git fetch origin ${{ github.base_ref || 'main' }}; then
               echo "::error title=p0b-receipt-closure::could not fetch origin/${{ github.base_ref || 'main' }}; the p0b receipt-closure gate has NO canonical comparison base and cannot run. Failing closed — an unresolvable base is an absent gate, not a degraded pass."
@@ -7223,6 +7253,22 @@ jobs:
       - scripts/ci_semantic_proof.py
       - scripts/check_self_mod_fence.py
       - scripts/worktree_gc.py
+      # The launchd wrapper is the process that actually performs the sweep, and its
+      # own failures were invisible for a month. Its suite reads the wrapper's SOURCE as
+      # well as importing it, so inference cannot reach this pair — the same reason
+      # .claude/hooks/** is declared above. closure widening 2026-09-29.
+      #
+      # CORRECTED 2026-09-29 (W17): this comment said "15 of 45 runs died mid-run with only
+      # a traceback in a log". 15 of 45 wrote no completion marker, but only 13 CRASHED —
+      # the other 2 are the fail-closed refusal path returning without printing one, which
+      # is the guard working. Counting an absent marker as a death over-counts by exactly
+      # the number of code paths that exit quietly.
+      - scripts/worktree_gc_launchd.py
+      # The external liveness check (W17). It is report-only and imports nothing from the
+      # sweeper, but its suite imports IT, so the job that owns the subject must re-run when
+      # either moves. A new pytest suite named by no `run:` step is exactly what
+      # contract-delta refuses, and it refused this one.
+      - scripts/worktree_gc_liveness.py
       - tests/test_agent_worktree_roots.py
       - tests/test_agentos_compile.py
       - tests/test_agentos_schema.py
@@ -7276,6 +7322,8 @@ jobs:
       - tests/test_sparse_worktree_profile.py
       - tests/test_warp_session_start_sparse.py
       - tests/test_worktree_gc.py
+      - tests/test_worktree_gc_launchd.py
+      - tests/test_worktree_gc_liveness.py
       - tests/test_worktree_placement.py
       - tests/test_worktree_sparse.py
     # F2 (Metabolism Phase 0 / R-AUT-5): self-modification fence.
@@ -7312,7 +7360,7 @@ jobs:
         # host that has hit runner ENOSPC twice. tests/test_worktree_gc.py ran in NO
         # workflow before this line; it is grandfathered-dark rather than waived, so
         # contract-delta never asked for it.
-        run: python -m pytest tests/test_ship_loop_guard.py tests/test_ship_loop_semantic.py tests/test_execution_continuation_law.py tests/test_agent_worktree_roots.py tests/test_sparse_worktree_profile.py tests/test_warp_session_start_sparse.py tests/test_worktree_gc.py tests/test_worktree_placement.py tests/test_worktree_sparse.py -q
+        run: python -m pytest tests/test_ship_loop_guard.py tests/test_ship_loop_semantic.py tests/test_execution_continuation_law.py tests/test_agent_worktree_roots.py tests/test_sparse_worktree_profile.py tests/test_warp_session_start_sparse.py tests/test_worktree_gc.py tests/test_worktree_gc_launchd.py tests/test_worktree_gc_liveness.py tests/test_worktree_placement.py tests/test_worktree_sparse.py -q
       - name: self-mod-fence live check (loop PR + immutable → BLOCKED)
         run: |
           # CI_HEAD_REF is the validated API identity published by the upgraded
@@ -7320,7 +7368,20 @@ jobs:
           # retained solely for the one-head bootstrap where the PR must still be
           # proven by the pre-upgrade executor loaded from main.
           BRANCH="${CI_HEAD_REF:-${GITHUB_HEAD_REF:-}}"
-          TRAILERS=""
+          # Both populations this fence classifies are unbounded, so only FILE
+          # HANDLES cross argv (DSC:CI-SELF-MOD-FENCE-ARGV-BYPASSES-BOUNDED-TRANSPORT).
+          # #6223 moved the two fences.yml copies of this check onto handles and
+          # missed this packed copy: run 36360866211 (PR #8006, 2026-09-28) died
+          # here with exit 126, "Argument list too long", before Python started.
+          # run_ci_pack had deepened the tested merge to depth 32 to reach a merge
+          # base, and origin/main..HEAD then walked ~117 commits (~372 KB of
+          # squash-merge PR bodies) into ONE argv string, past the 131,072-byte
+          # Linux MAX_ARG_STRLEN. Shell variables below never meet execve: printf
+          # is a builtin, and every external command reads a population on stdin.
+          SELF_MOD_INPUT_DIR=$(mktemp -d "${RUNNER_TEMP:-${TMPDIR:-/tmp}}/self-mod-fence.XXXXXX")
+          trap 'rm -rf "$SELF_MOD_INPUT_DIR"' EXIT
+          FILES_FILE="$SELF_MOD_INPUT_DIR/changed-files.json"
+          TRAILERS_FILE="$SELF_MOD_INPUT_DIR/commit-messages.txt"
           FILES=""
           PARSE_RC=0
           FILES=$(python3 scripts/check_self_mod_fence.py --print-planner-files) || PARSE_RC=$?
@@ -7335,11 +7396,15 @@ jobs:
               echo "self-mod-fence: ci-plan reported no changed files — zero changes to classify (pass)"
               exit 0
             fi
+            # --print-planner-files frames the list one path per line, the same
+            # framing the retired unquoted expansion split on. NUL-frame it into
+            # the canonical changed-files JSON handle.
+            printf '%s\n' "$FILES" | tr '\n' '\0' |
+              python3 scripts/check_self_mod_fence.py --write-files-file-from-nul "$FILES_FILE"
           else
             # Unset env (local / pre-#5564): fall back to git. Fail-closed only when
             # that fallback cannot determine files either.
             git fetch origin ${{ github.base_ref || 'main' }}
-            TRAILERS=$(git log --format="%B" origin/${{ github.base_ref || 'main' }}..HEAD 2>/dev/null || echo "")
             FILES=$(git diff --name-only origin/${{ github.base_ref || 'main' }}...HEAD 2>/dev/null || echo "")
             if [ -z "$FILES" ]; then
               if [ "${GITHUB_EVENT_NAME:-}" = "workflow_dispatch" ] && \
@@ -7363,12 +7428,18 @@ jobs:
               echo "Possible causes: CI_CHANGED_FILES_FILE/CI_CHANGED_FILES_JSON unset/malformed, git diff error, or base_ref resolution failure." >&2
               exit 1
             fi
+            # -z: raw pathnames, with no core.quotePath escaping and no shell split.
+            git diff --name-only -z origin/${{ github.base_ref || 'main' }}...HEAD |
+              python3 scripts/check_self_mod_fence.py --write-files-file-from-nul "$FILES_FILE"
           fi
-          TRAILERS=$(git log --format="%B" origin/${{ github.base_ref || 'main' }}..HEAD 2>/dev/null || echo "")
+          # Same range and same failure semantics as the retired argv form (a git
+          # log error still reads as no commit messages); only the transport moved.
+          # The fence fails closed on a handle it cannot read.
+          { git log --format="%B" origin/${{ github.base_ref || 'main' }}..HEAD 2>/dev/null || echo ""; } > "$TRAILERS_FILE"
           python3 scripts/check_self_mod_fence.py \
             --branch "$BRANCH" \
-            --files $FILES \
-            --trailers "$TRAILERS"
+            --files-file "$FILES_FILE" \
+            --trailers-file "$TRAILERS_FILE"
       - name: self-mod-fence test suite
         run: python -m pytest tests/test_self_mod_fence.py tests/test_ci_authority.py -q
       - name: agent-os record contract (schema fail-closed, join fail-open)
@@ -9370,6 +9441,12 @@ jobs:
       - "templates/biocatalyst.html.j2"
       - "templates/biocatalyst.css"
       - "site/biocatalyst.css"
+      # sparse-guard closure widening 2026-09-29 (contract-delta): the two entry guards
+      # this job's closure reaches now pin `scripts/sparse_guard.py`, which imports
+      # `scripts/worktree_sparse.py`. `scope: exclusive` means this list REPLACES
+      # inference, so an undeclared dependency stops selecting the job when it changes.
+      - "scripts/sparse_guard.py"
+      - "scripts/worktree_sparse.py"
     # BioCatalyst's authenticated workbench and deployment-isolation boundary.
     # This is an intentionally bounded command, not part of a single aggregate
     # B1/B1b/B2 command: the legacy pack runner applies timeout-minutes per
@@ -9837,6 +9914,12 @@ jobs:
       - "tests/test_biocatalyst_endpoint_alignment.py"
       - "tests/test_biocatalyst_history.py"
       - "tests/test_clinicaltrials_history.py"
+      # sparse-guard closure widening 2026-09-29 (contract-delta): the two entry guards
+      # this job's closure reaches now pin `scripts/sparse_guard.py`, which imports
+      # `scripts/worktree_sparse.py`. `scope: exclusive` means this list REPLACES
+      # inference, so an undeclared dependency stops selecting the job when it changes.
+      - "scripts/sparse_guard.py"
+      - "scripts/worktree_sparse.py"
     # B1b/B2 Record History retrieval, exact-diff replay and public-safe model
     # projection.  This is deliberately independently bounded because its
     # repeated source-evidence verification is the heaviest validation family.
@@ -11664,6 +11747,12 @@ jobs:
       - "templates/measurement.html.j2"
       - "templates/methodology.html.j2"
       - "templates/support.html.j2"
+      # sparse-guard closure widening 2026-09-29 (contract-delta): the two entry guards
+      # this job's closure reaches now pin `scripts/sparse_guard.py`, which imports
+      # `scripts/worktree_sparse.py`. `scope: exclusive` means this list REPLACES
+      # inference, so an undeclared dependency stops selecting the job when it changes.
+      - "scripts/sparse_guard.py"
+      - "scripts/worktree_sparse.py"
     # Install-dominated like its former host; the two batteries themselves
     # are ~30s.
     timeout-minutes: 8
@@ -12296,6 +12385,12 @@ jobs:
       - "tests/test_government_revenue_candidates.py"
       - "tests/__init__.py"
       - "tests/test_government_revenue_candidate_fixture.py"
+      # sparse-guard closure widening 2026-09-29 (contract-delta): the two entry guards
+      # this job's closure reaches now pin `scripts/sparse_guard.py`, which imports
+      # `scripts/worktree_sparse.py`. `scope: exclusive` means this list REPLACES
+      # inference, so an undeclared dependency stops selecting the job when it changes.
+      - "scripts/sparse_guard.py"
+      - "scripts/worktree_sparse.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -14112,6 +14207,12 @@ jobs:
       - "tests/test_us_context_vector.py"
       - "tests/test_us_context_vector_accrual.py"
       - "tests/test_weinstein_stage.py"
+      # sparse-guard closure widening 2026-09-29 (contract-delta): the two entry guards
+      # this job's closure reaches now pin `scripts/sparse_guard.py`, which imports
+      # `scripts/worktree_sparse.py`. `scope: exclusive` means this list REPLACES
+      # inference, so an undeclared dependency stops selecting the job when it changes.
+      - "scripts/sparse_guard.py"
+      - "scripts/worktree_sparse.py"
     # 2026-08-15 pack-9 / run 31881072256 on PR #5750: the first semantic step
     # (1253 tests) took 223.76s; the fusion step was SIGKILL'd when this
     # 5-minute logical-job deadline expired at 300s, and the post-kill
@@ -14268,6 +14369,7 @@ jobs:
       - "tests/test_fda_supply_probes_t02r3.py"
       - "tests/test_fda_supply_probes_final.py"
       - "tests/test_fda_supply_probes_mixed.py"
+      - "tests/test_fda_sweep_duplicate_key_completeness.py"
       - "collectors/fda_shortages.py"
       - "engine/fda_scarcity.py"
       - "engine/foresight_cascade.py"
@@ -14307,6 +14409,8 @@ jobs:
         run: python -m pytest tests/test_foresight_cascade.py tests/test_fda_shortages_generation.py -q
       - name: FDA supply acceptance probes
         run: python -m pytest tests/test_fda_supply_probes.py tests/test_fda_supply_probes_t02r.py tests/test_fda_supply_probes_t02r2.py tests/test_fda_supply_probes_t01r.py tests/test_fda_supply_probes_t02r3.py tests/test_fda_supply_probes_final.py tests/test_fda_supply_probes_mixed.py -q
+      - name: FDA sweep completeness regression probes (duplicate dedupe keys)
+        run: python -m pytest tests/test_fda_sweep_duplicate_key_completeness.py -q
 
   prophet-us-context-and-grades:
     # PROPHET US §W7 — the full-population candidate record: the PIT context store that
@@ -15862,6 +15966,12 @@ jobs:
       - "tests/test_government_revenue_candidate_grader.py"
       - "tests/test_government_revenue_candidate_projection.py"
       - "tests/test_government_revenue_candidates.py"
+      # sparse-guard closure widening 2026-09-29 (contract-delta): the two entry guards
+      # this job's closure reaches now pin `scripts/sparse_guard.py`, which imports
+      # `scripts/worktree_sparse.py`. `scope: exclusive` means this list REPLACES
+      # inference, so an undeclared dependency stops selecting the job when it changes.
+      - "scripts/sparse_guard.py"
+      - "scripts/worktree_sparse.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -17389,6 +17499,12 @@ jobs:
       - "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md"
       - "research/STOCK_PERSONALITY_MASTERPLAN_BY_FABLE.md"
       - "research/US_BOARD_MEASUREMENT.md"
+      # sparse-guard closure widening 2026-09-29 (contract-delta): the two entry guards
+      # this job's closure reaches now pin `scripts/sparse_guard.py`, which imports
+      # `scripts/worktree_sparse.py`. `scope: exclusive` means this list REPLACES
+      # inference, so an undeclared dependency stops selecting the job when it changes.
+      - "scripts/sparse_guard.py"
+      - "scripts/worktree_sparse.py"
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
@@ -17719,6 +17835,14 @@ jobs:
       - "tests/test_industrials_dependency_binding.py"
       - "tests/industrials_result_cash_helpers.py"
       - "tests/fixtures/industrials_result_cash/**"
+      # IND-T04c: the recovered requirement index is the anchor map's only external
+      # authority, and the ruling is the obligation source an `anchor_basis: RULING`
+      # row names. Both are READ by the suite, so the closure test requires them
+      # here — and it is load-bearing rather than bookkeeping: without these two
+      # entries, editing the index alone would not schedule this job and the guard
+      # that refuses a fabricated anchor would not run on the very file it reads.
+      - "research/industrials/first_vertical_program/requirement_index.md"
+      - "research/industrials/first_vertical_program/rulings/R-IND-2026-09-27-requirement-anchors.md"
       - "config/earnings_story_promotion.yml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "engine/company_intelligence/__init__.py"
@@ -17776,3 +17900,73 @@ jobs:
         run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
         run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py -q
+
+  house-law-registry-code:
+    if: ${{ false }}
+    gate: code
+    # WHY THIS EXISTS, and why it is a SECOND home rather than a move.
+    #
+    # The house-law census — "every scripts/check_*.py is registered" — is a
+    # MERGE gate by design: its finding text says "add an entry in
+    # config/house_law_checks.yml before merging". It lived only in
+    # `house-law-registry`, which is `gate: data` because ONE of its steps
+    # (tests/test_dataos_security_master.py) reads committed data/reference
+    # parquet. ci.yml plans `--gate code` only (the 2026-08-19 merge-gate split;
+    # see .github/workflows/data-health.yml's header), so the census was
+    # filtered out of the manifest before any scope decision and ran only in
+    # data-health.yml — nightly workflow_run / 13:30 UTC schedule / manual
+    # dispatch, none of which blocks a merge. Measured 2026-09-28: ten
+    # scripts/check_*.py sat unregistered on main, the meta-guard exited 1
+    # against main's own bytes, and main's ci.yml was green the whole time.
+    #
+    # This is the third recorded instance of the same mechanism, not the first:
+    # scripts/check_contract_delta.py's docstring ("the workflow-yaml legacy job
+    # that owns it is `gate: data`, off the merge gate — a suite can ship wired
+    # to nothing and nobody finds out until the next audit run") and the
+    # conviction-profile comment about #6023's `unrun-publish-ops` home ("which
+    # ci.yml never plans, so they were wired and still dark") describe it
+    # exactly. What was missing was a code-gated home for the census itself.
+    #
+    # A SECOND home, not a move, because `house-law-registry`'s step ORDER is
+    # load-bearing (run_ci_pack returns on the first non-zero step, so the
+    # census must not sit behind a guard's own proof) and its data-gated
+    # siblings must keep their nightly receipt. The four steps below are pure
+    # functions of the PR's tree — no data/, no site/, no network — so running
+    # them on both gates costs one pip install and duplicates no judgement.
+    #
+    # NOTE FOR A FUTURE EDIT: the `scripts/check_*.py` glob is the load-bearing
+    # path row. The census discovers its population by globbing that pattern AT
+    # RUNTIME; `_glob_to_regex` gives a single `*` non-crossing-`/` semantics,
+    # so the declared row mirrors the runtime population exactly. Today
+    # inference ALSO widens this job to `scripts/**` through an opaque-traversal
+    # fallback, but that is accidental coverage that a future narrowing (or a
+    # `scope: exclusive` curation) would silently remove. Keep the explicit row.
+    # tests/test_house_law_registry.py pins it.
+    paths:
+      - config/house_law_checks.yml
+      - docs/HOUSE_LAW_CI_GUARD_SUITE.md
+      - "scripts/check_*.py"
+      - scripts/check_house_law_registry.py
+      - scripts/workflow_run_source.py
+      - tests/test_house_law_registry.py
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # pyyaml only: the meta-guard reads YAML and walks the repo with pathlib.
+      # No pandas/pyarrow here on purpose — this job must stay runnable on the
+      # thinnest venv so a census red is never confused with an install red.
+      - name: install minimal deps
+        run: pip install pytest pyyaml
+      - name: meta-guard selftest (synthetic assertions — gate fires on violations)
+        run: python3 scripts/check_house_law_registry.py --selftest
+      - name: meta-guard live check (census + wiring + selftest truth + ratchets)
+        run: python3 scripts/check_house_law_registry.py
+      - name: docs-drift check (committed docs must match regen output byte-for-byte)
+        run: |
+          python3 scripts/check_house_law_registry.py --emit-docs
+          git diff --exit-code docs/HOUSE_LAW_CI_GUARD_SUITE.md
+      - name: house-law registry tests (idempotency + integration)
+        run: python -m pytest tests/test_house_law_registry.py -q

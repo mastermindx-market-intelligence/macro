@@ -450,8 +450,23 @@ def qualify_operands(
     transforms = list(comparison_receipt.get("transformations") or [])
     if parsed and not _scales_compatible(parsed) and not (scale_checked and transforms):
         limitations.append("scale_mismatch")
+    # Unit — IND-D08.  Same conjunction as scale and currency: a magnitude
+    # mismatch is permitted only when the receipt BOTH declares the magnitude
+    # checked and carries the conversion that makes it exact.  Declaring it
+    # alone is not a conversion receipt, and comparing the raw decimal text
+    # across thousands and millions is the error the requirement names.
+    if parsed and not _units_compatible(parsed) and not (scale_checked and transforms):
+        limitations.append("unit_mismatch")
     if parsed and not _currencies_compatible(parsed) and not (currency_checked and transforms):
         limitations.append("currency_mismatch")
+    # Purpose — IND-R208.  The receipt CARRIES a declared purpose; until now it
+    # was never compared with the purpose the caller is qualifying for, so a
+    # receipt declaring `same_period` was accepted for a year-over-year
+    # comparison and "different dates only under a declared comparable-duration
+    # purpose" was nominal.  A receipt that declares nothing is unchanged.
+    declared_purpose = comparison_receipt.get("purpose")
+    if declared_purpose is not None and declared_purpose != purpose:
+        limitations.append("purpose_mismatch")
 
     if limitations:
         return {
@@ -524,6 +539,17 @@ def _durations_compatible(operands: Sequence[_Operand]) -> bool:
 
 def _scales_compatible(operands: Sequence[_Operand]) -> bool:
     return len({op.scale for op in operands}) <= 1
+
+
+def _units_compatible(operands: Sequence[_Operand]) -> bool:
+    """``unit`` is the authoritative magnitude carrier in this corpus.
+
+    T01's ``cell()`` fixes ``scale`` at 1 and lets ``unit`` name the reporting
+    magnitude (``USD_thousands`` vs ``USD_millions``), so the very situation
+    IND-D08 names -- thousands compared against millions -- is invisible to
+    ``_scales_compatible``, which only ever sees ``{1}``.
+    """
+    return len({op.unit for op in operands}) <= 1
 
 
 def _currencies_compatible(operands: Sequence[_Operand]) -> bool:
@@ -791,6 +817,26 @@ def _derive_growth_pct(
             limitations=["operand_missing"],
             operand_refs=[_operand_ref_payload(op) for op in cells],
         )
+    # IND-D09 — growth_pct picks its operands POSITIONALLY and `metric` names the
+    # period ROLE in this corpus (`revenue_current` / `revenue_prior`), so metric
+    # equality is the wrong instrument: a legitimate year-over-year pair has two
+    # different metric strings.  The MEASURE lives in `quality.definition`, and
+    # `_all_definition_present` only ever checked that one was present -- never
+    # that the two agreed.  So a total-revenue prior could be divided into a
+    # net-reimbursement current and returned as `ready`, `label="reported"`, with
+    # no limitation: exactly the relabelling the requirement forbids.  Refused
+    # unconditionally, like `final_vs_preview`'s metric gate -- a receipt cannot
+    # declare two different measures into one growth number.
+    current_definition = (current.quality or {}).get("definition")
+    prior_definition = (prior.quality or {}).get("definition")
+    if current_definition != prior_definition:
+        return _refusal_result(
+            formula="growth_pct",
+            cells=cells,
+            receipt=receipt,
+            limitations=["definition_mismatch"],
+            operand_refs=[_operand_ref_payload(op) for op in cells],
+        )
     current_dec = _decimal_from_operand(current)
     prior_dec = _decimal_from_operand(prior)
     abs_change = current_dec - prior_dec
@@ -873,6 +919,26 @@ def _derive_paired_remeasurement(
             cells=cells,
             receipt=receipt,
             limitations=missing,
+            operand_refs=[_operand_ref_payload(op) for op in cells],
+        )
+    # IND-D10 — "remove both or neither, preserve pretax".  The absence check
+    # above enforces both-or-neither on PRESENCE; it never compared the two
+    # legs' AMOUNTS.  A matched deferred-comp remeasurement is one movement seen
+    # from two sides, so its expense and gain legs are the same number by
+    # construction: adding back an expense of 5 while removing a gain of 7
+    # removes more than was ever added, and moves pretax by the difference —
+    # precisely the pretax the requirement says must be preserved.  Measured
+    # before this guard: legs 5 / 7 returned ``ready`` with
+    # ``label="company_adjusted"`` and ``pretax_after_pairing="92"`` against the
+    # matched pair's "90", carrying no limitation at all — an invented pairing
+    # presented as the issuer's own adjustment.  Unequal legs are not a pairing
+    # this module may complete, so it refuses rather than choosing a leg.
+    if _decimal_from_operand(expense) != _decimal_from_operand(matched_gain):
+        return _refusal_result(
+            formula="paired_remeasurement",
+            cells=cells,
+            receipt=receipt,
+            limitations=["matched_pair_unequal"],
             operand_refs=[_operand_ref_payload(op) for op in cells],
         )
     op_with_expense = _decimal_from_operand(operating) + _decimal_from_operand(expense)

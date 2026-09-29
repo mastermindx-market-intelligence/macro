@@ -2,6 +2,56 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-09-29",
+      "tickers": [
+        "AAP",
+        "AEIS",
+        "AIZ",
+        "ALGT",
+        "BKR",
+        "CLH",
+        "CNM",
+        "COHU",
+        "ELF",
+        "GAP",
+        "IPGP",
+        "PDFS",
+        "PG",
+        "REX",
+        "TNDM",
+        "WABC",
+        "WHR",
+        "WING"
+      ]
+    },
+    {
+      "as_of": "2026-09-28",
+      "tickers": [
+        "ATO",
+        "BKR",
+        "CARR",
+        "CLH",
+        "CNM",
+        "COHU",
+        "DAL",
+        "ELF",
+        "GAP",
+        "IPGP",
+        "JOBY",
+        "KMT",
+        "LITE",
+        "OTTR",
+        "REX",
+        "REXR",
+        "RPM",
+        "SHO",
+        "STRL",
+        "TNDM",
+        "WABC",
+        "WHR"
+      ]
+    },
+    {
       "as_of": "2026-09-27",
       "tickers": [
         "AEIS",
@@ -100,59 +150,6 @@
         "IPGP",
         "NCLH",
         "WING"
-      ]
-    },
-    {
-      "as_of": "2026-09-22",
-      "tickers": [
-        "ACM",
-        "ASTH",
-        "ATR",
-        "BBD",
-        "CMCSA",
-        "COHU",
-        "CYBN",
-        "EBAY",
-        "FIX",
-        "GRAB",
-        "GSAT",
-        "HOOD",
-        "JAAA",
-        "MIR",
-        "MUSA",
-        "PRVA",
-        "QCOM",
-        "REXR",
-        "ROIV",
-        "SIG",
-        "TTMI",
-        "WULF"
-      ]
-    },
-    {
-      "as_of": "2026-09-21",
-      "tickers": [
-        "ACHC",
-        "AMKR",
-        "ATR",
-        "CLH",
-        "CMS",
-        "COHU",
-        "EBAY",
-        "FIX",
-        "HAFC",
-        "IPGP",
-        "MPT",
-        "MUSA",
-        "NABL",
-        "PPL",
-        "REX",
-        "REXR",
-        "SOUN",
-        "STRL",
-        "UPWK",
-        "WHR",
-        "XRAY"
       ]
     }
   ]

@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import ast
+from copy import deepcopy
 import errno
 import importlib.util
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -25,6 +27,8 @@ from scripts.ci_scope_dependencies import suite_dependency_closure
 from scripts.run_ci_pack import (
     curated_exclusive_closure_findings,
     inferred_as_if_not_exclusive,
+    packing_probe_breaches,
+    packing_probe_measurements,
 )
 import yaml
 
@@ -73,6 +77,109 @@ def _closure_of(source: str) -> SimpleNamespace:
         ROOT / "engine" / "_ci_scope_probe.py", ast.parse(source)
     )
     return SimpleNamespace(ambiguities=tuple(sorted(findings)))
+
+
+def _manifest_scope_reader(manifest: Path):
+    """Lazily snapshot one immutable test manifest; never share mutable results.
+
+    This is test setup only, scoped to one reader in one pytest process. The
+    production planner and synthetic/mutating planner tests keep recomputing.
+    A new reader (including a new pytest invocation) reads the source afresh.
+    Exceptions propagate; a failed derivation never becomes an empty snapshot.
+    """
+    snapshot = None
+
+    def read():
+        nonlocal snapshot
+        if snapshot is None:
+            snapshot = PACK.infer_job_scopes(PACK.load_legacy_jobs(manifest))
+        return deepcopy(snapshot)
+
+    return read
+
+
+@pytest.fixture(scope="module")
+def _real_manifest_scope_reader():
+    # Construction is deliberately lazy: function-level environment isolation
+    # must run before the first real derivation, not after a module fixture.
+    return _manifest_scope_reader(MANIFEST)
+
+
+@pytest.fixture
+def real_manifest_scopes(_real_manifest_scope_reader, _isolate_pack_runner_planner_env):
+    # Every opted-in assertion receives its own list, LegacyJobs and nested
+    # definition dictionaries. It cannot poison another test's scope snapshot.
+    return _real_manifest_scope_reader()
+
+
+def _scope_reader_probe_manifest(tmp_path: Path, job_id: str) -> Path:
+    manifest = tmp_path / "scope-reader.yml"
+    manifest.write_text(yaml.safe_dump({"jobs": {job_id: {
+        "if": PACK.DISABLED_IF,
+        "runs-on": "ubuntu-latest",
+        "steps": [{"name": "scope reader fixture", "run": "echo fixture"}],
+    }}}), encoding="utf-8")
+    return manifest
+
+
+def test_manifest_scope_reader_is_lazy_and_derives_once(tmp_path, monkeypatch):
+    monkeypatch.setattr(AUDIT, "ROOT", tmp_path)
+    monkeypatch.setattr(DEPS, "ROOT", tmp_path)
+    manifest = _scope_reader_probe_manifest(tmp_path, "fixture")
+    actual_inference = PACK.infer_job_scopes
+    calls = []
+
+    def measured(jobs):
+        result = actual_inference(jobs)
+        calls.append(result)
+        return result
+
+    monkeypatch.setattr(PACK, "infer_job_scopes", measured)
+    reader = _manifest_scope_reader(manifest)
+    assert calls == [], "module fixture construction must not infer before env isolation"
+    first, second = reader(), reader()
+    assert len(calls) == 1
+    assert first == second
+    assert [job.job_id for job in first[0]] == ["fixture"]
+
+
+def test_manifest_scope_reader_returns_deeply_isolated_jobs(tmp_path, monkeypatch):
+    monkeypatch.setattr(AUDIT, "ROOT", tmp_path)
+    monkeypatch.setattr(DEPS, "ROOT", tmp_path)
+    reader = _manifest_scope_reader(_scope_reader_probe_manifest(tmp_path, "fixture"))
+    first, second = reader(), reader()
+    assert first == second
+    assert first[0] is not second[0]
+    assert first[0][0] is not second[0][0]
+    assert first[0][0].definition is not second[0][0].definition
+    first[0][0].definition["steps"][0]["run"] = "echo poisoned"
+    first[0].clear()
+    assert reader() == second
+    assert second[0][0].definition["steps"][0]["run"] == "echo fixture"
+
+
+def test_new_manifest_scope_reader_reads_changed_source(tmp_path, monkeypatch):
+    monkeypatch.setattr(AUDIT, "ROOT", tmp_path)
+    monkeypatch.setattr(DEPS, "ROOT", tmp_path)
+    manifest = _scope_reader_probe_manifest(tmp_path, "before")
+    original = _manifest_scope_reader(manifest)
+    assert original()[0][0].job_id == "before"
+    _scope_reader_probe_manifest(tmp_path, "after")
+    fresh = _manifest_scope_reader(manifest)
+    assert fresh()[0][0].job_id == "after"
+    assert original()[0][0].job_id == "before"
+
+
+def test_manifest_scope_reader_propagates_invalid_source(tmp_path, monkeypatch):
+    monkeypatch.setattr(AUDIT, "ROOT", tmp_path)
+    monkeypatch.setattr(DEPS, "ROOT", tmp_path)
+    manifest = _scope_reader_probe_manifest(tmp_path, "fixture")
+    manifest.write_text("jobs: [broken", encoding="utf-8")
+    reader = _manifest_scope_reader(manifest)
+    with pytest.raises(PACK.ManifestError):
+        reader()
+    _scope_reader_probe_manifest(tmp_path, "repaired")
+    assert reader()[0][0].job_id == "repaired"
 
 
 def test_all_legacy_jobs_are_disabled_and_packable() -> None:
@@ -729,7 +836,7 @@ def test_safe_manifest_job_delta_reads_the_exact_base_commit(
     ) is None
 
 
-def test_selection_fails_safe_toward_running_everything() -> None:
+def test_selection_fails_safe_toward_running_everything(real_manifest_scopes) -> None:
     """Unknown changed-sets and global invalidators still widen; unowned paths do not.
 
     A wasted runner-minute is cheap; a false green on a control-plane file is
@@ -737,7 +844,7 @@ def test_selection_fails_safe_toward_running_everything() -> None:
     rather than merely unowned. An unowned path used to be a third widener and
     that was the speed hole: one hook file ran all 185 jobs (PR #5488).
     """
-    jobs, summary = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, summary = real_manifest_scopes
     scoped = [job for job in jobs if job.paths]
     assert len(scoped) >= 25, summary
 
@@ -799,9 +906,9 @@ def test_every_declared_scope_in_the_real_manifest_is_covered() -> None:
     PACK.load_legacy_jobs(MANIFEST)  # raises ManifestError on any gap
 
 
-def test_real_manifest_has_non_vacuous_derived_scopes() -> None:
+def test_real_manifest_has_non_vacuous_derived_scopes(real_manifest_scopes) -> None:
     """The mechanism shipped with 0/179 owners; the 180-job manifest must stay live."""
-    jobs, summary = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, summary = real_manifest_scopes
     scoped = {job.job_id: set(job.paths) for job in jobs if job.paths}
     assert len(scoped) >= 25, summary
     assert "unrun-government-revenue-candidate-projection" in scoped
@@ -849,7 +956,7 @@ def _declared_scan_dirs(rel: str) -> tuple[str, ...]:
     raise AssertionError(f"{rel} no longer declares SCAN_DIRS at module level")
 
 
-def test_whole_tree_glob_job_owns_every_scanned_code_root() -> None:
+def test_whole_tree_glob_job_owns_every_scanned_code_root(real_manifest_scopes) -> None:
     """A tree scan cannot be narrowed to the scanner suite's import closure.
 
     `all-exports-resolve` AST-walks every `*.py` under eight directories, so a
@@ -870,7 +977,7 @@ def test_whole_tree_glob_job_owns_every_scanned_code_root() -> None:
     """
     scan_dirs = _declared_scan_dirs("tests/test_all_exports_resolve.py")
     assert len(scan_dirs) >= 8, scan_dirs
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     export_guard = next(job for job in jobs if job.job_id == "all-exports-resolve")
     surface = export_guard.paths + export_guard.fallback_paths
     missing = [f"{root}/**" for root in scan_dirs if f"{root}/**" not in surface]
@@ -975,6 +1082,27 @@ def test_resolve_changed_files_prefers_planner_json(
     monkeypatch.setattr(PACK, "changed_files", lambda base: ["from-git.py"])
     assert PACK.resolve_changed_files("abc123") == ["from-git.py"]
     assert PACK.resolve_changed_files(None) is None
+
+
+def test_p0b_closure_accepts_null_on_exactly_the_events_that_publish_it() -> None:
+    """The p0b closure gate's `null` allow-list is the planner's own table.
+
+    Every main proof publishes `null` (a full-suite plan has no list), and so
+    does the base replay for its base-as-main child. #7237 refused `null`
+    outright, which redded every main ci.yml proof. The fix accepts it on
+    those events and nowhere else. If the planner gains a main-role event,
+    this fails until the gate's set follows.
+    """
+    from scripts import check_p0b_receipt_closure as P0B
+
+    main_role_events = {
+        event for role, event in PACK.SUPPORTED_PLAN_ROLE_EVENTS if role == "main"
+    }
+    source = Path(PACK.__file__).read_text(encoding="utf-8")
+    assert '"GITHUB_EVENT_NAME": "base_replay"' in source
+    assert 'base_changed_files.write_text("null\\n"' in source
+    assert P0B.NO_DIFF_SUBJECT_EVENTS == main_role_events | {"base_replay"}
+    assert "pull_request" not in P0B.NO_DIFF_SUBJECT_EVENTS
 
 
 # ─── The 2026-08-14 E2BIG transport regression (run 31775693780) ──────────────
@@ -1293,7 +1421,7 @@ def test_a_code_suffix_must_end_a_filename_not_merely_appear_in_one() -> None:
     assert any("code traversal" in item for item in code.ambiguities)
 
 
-def test_derived_scopes_are_startable_by_the_ci_workflow() -> None:
+def test_derived_scopes_are_startable_by_the_ci_workflow(real_manifest_scopes) -> None:
     """A job owner is useless when its dependency edit cannot start ci.yml.
 
     BOTH tiers are audited. #5586 split the PROVENANCE of a claim out of
@@ -1307,7 +1435,7 @@ def test_derived_scopes_are_startable_by_the_ci_workflow() -> None:
     dropping `ops/**` from ci.yml's triggers opens 448 gaps that the
     `paths`-only form still reports as zero.
     """
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     on = _yaml(WORKFLOW).get("on") or _yaml(WORKFLOW).get(True)
     triggers = tuple(on["pull_request"]["paths"])
     gaps: list[tuple[str, str]] = []
@@ -1365,9 +1493,9 @@ def test_startability_accepts_only_provable_narrowings_of_a_trigger() -> None:
         assert not PACK.scope_pattern_is_startable(uncovered, triggers), uncovered
 
 
-def test_representative_narrow_diffs_skip_at_least_one_quarter_of_jobs() -> None:
+def test_representative_narrow_diffs_skip_at_least_one_quarter_of_jobs(real_manifest_scopes) -> None:
     """The conservative first tranche must still deliver material speed."""
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     cases = {
         "govrev": [
             "research/GOVERNMENT_REVENUE_FORESIGHT_HANDOFF_2026-08-09.md",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
@@ -1392,14 +1520,14 @@ def test_representative_narrow_diffs_skip_at_least_one_quarter_of_jobs() -> None
     assert any(job.job_id == "free-content-estate" for job in content)
 
 
-def test_a_named_suite_edit_does_not_select_peer_pytest_jobs() -> None:
+def test_a_named_suite_edit_does_not_select_peer_pytest_jobs(real_manifest_scopes) -> None:
     """PR #5550 shape: one prophet test file used to mint 133/187 jobs and 12 packs.
 
     unrun-market-plumbing names tests/test_prophet_w1_intake_repair.py. marketing-engine
     and engine-render-guards do not. After exclude_peer_test_ownership they must not
     run for this diff, and the matrix must not be the full twelve.
     """
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     changed = ["tests/test_prophet_w1_intake_repair.py"]
     selected, reason = PACK.select_jobs(jobs, changed)
     ids = {job.job_id for job in selected}
@@ -1413,7 +1541,7 @@ def test_a_named_suite_edit_does_not_select_peer_pytest_jobs() -> None:
     assert len(nonempty) < 12, nonempty
 
 
-def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate() -> None:
+def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
     """D5's hermetic real-reader chain suite must run before a PR can merge.
 
     A path-only owner is insufficient: the selected ``gate: code`` job must
@@ -1433,14 +1561,14 @@ def test_company_intelligence_workspace_chain_is_executed_by_pr_code_gate() -> N
         "Python 3.12 job; keep those dependencies on this owning job's install line"
     )
 
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     code_jobs = [job for job in jobs if job.gate == "code"]
     selected, reason = PACK.select_jobs(code_jobs, [suite])
     assert "prophet-lab" in {job.job_id for job in selected}, reason
     assert "unowned path" not in reason, reason
 
 
-def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> None:
+def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
     """P0B's hermetic first-frame contract must run in the merge gate.
 
     The generated-page population receipt remains data-dependent and belongs
@@ -1495,7 +1623,7 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> N
     assert data_suite in data_runs
     assert code_suite not in data_runs
 
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     code_jobs = [job for job in jobs if job.gate == "code"]
     for changed in (
         [code_suite],
@@ -1512,7 +1640,7 @@ def test_stock_dashboard_first_frame_contract_is_executed_by_pr_code_gate() -> N
         assert "unowned path" not in reason, reason
 
 
-def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
+def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate(real_manifest_scopes) -> None:
     """BC-2 ran only on the data gate, so nothing graded a claim before merge.
 
     Every job that executed the checker was ``gate: data``, and ci.yml packs only
@@ -1553,7 +1681,7 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
     assert f"python3 {checker}" in data_runs, "the data gate keeps the full scan"
     assert not any("--scope" in run for run in data_runs)
 
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     code_jobs = [job for job in jobs if job.gate == "code"]
     for changed, owners in (
         (["templates/dashboard.html.j2"], {"validated-claims-source"}),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
@@ -1578,7 +1706,7 @@ def test_bc2_validated_claims_source_half_is_executed_by_pr_code_gate() -> None:
             changed, reason)
 
 
-def test_unscoped_hook_diff_does_not_pull_the_full_suite() -> None:
+def test_unscoped_hook_diff_does_not_pull_the_full_suite(real_manifest_scopes) -> None:
     """PR #5488 shape: `.claude/hooks/gh_quota_guard.py` used to mint 187/187 jobs.
 
     CI_SCOPE_MODE is already active in ci.yml unless the repo var is exactly
@@ -1586,7 +1714,7 @@ def test_unscoped_hook_diff_does_not_pull_the_full_suite() -> None:
     full-suite invalidator. After this PR the hook is owned by unrun-dark-guards
     and an unowned sibling still does not widen.
     """
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    jobs, _ = real_manifest_scopes
     selected, reason = PACK.select_jobs(
         jobs, [".claude/hooks/gh_quota_guard.py"]  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
     )
@@ -1602,15 +1730,15 @@ def test_unscoped_hook_diff_does_not_pull_the_full_suite() -> None:
 
 
 @pytest.mark.parametrize("graph", ["config/dag.yml", "config/synapse.yml"])  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-def test_graph_metadata_is_a_global_invalidator(graph: str) -> None:
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+def test_graph_metadata_is_a_global_invalidator(graph: str, real_manifest_scopes) -> None:
+    jobs, _ = real_manifest_scopes
     selected, reason = PACK.select_jobs(jobs, [graph])
     assert len(selected) == len(jobs)
     assert "global invalidator" in reason
 
 
-def test_passive_markdown_stays_scoped_and_unknown_root_does_not_widen() -> None:
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+def test_passive_markdown_stays_scoped_and_unknown_root_does_not_widen(real_manifest_scopes) -> None:
+    jobs, _ = real_manifest_scopes
     docs, _ = PACK.select_jobs(jobs, ["research/UNOWNED_HANDOFF.md"])
     code, reason = PACK.select_jobs(jobs, ["brand_new_root/unowned_runtime.xyz"])
     assert len(docs) < len(jobs)
@@ -1841,6 +1969,124 @@ def test_inventory_preserves_omitted_tracked_existence_but_never_fakes_content(
         )
         with pytest.raises(DEPS.ScopeMaterializationError, match="omitted.py"):
             DEPS.suite_dependency_closure("site/omitted.py")
+
+
+# A legacy-jobs `run:` block whose full-line comment holds ONE apostrophe, beside
+# the same block with that comment line removed. The apostrophe used to be an
+# unclosed quote to shlex, so the whole block was "unparseable" and the job lost
+# its inferred closure (DSC:CI-RUN-BLOCK-COMMENT-QUOTE-BLINDS-CLOSURE-INFERENCE).
+# Exactly one per block: a second apostrophe pairs with the first into a valid
+# shlex quote and the case then proves nothing, which the positive control in
+# the test below refuses.
+_COMMENT_QUOTE_RUN_BLOCKS = (
+    pytest.param(
+        "# the planner's token names the tested tree\n"
+        "python3 -m pytest {target}\n",
+        "python3 -m pytest {target}\n",
+        id="top-level-comment",
+    ),
+    pytest.param(
+        "if true; then\n"
+        "  # it's indented, and still a full-line comment\n"
+        "  python3 -m pytest {target}\n"
+        "fi\n",
+        "if true; then\n  python3 -m pytest {target}\nfi\n",
+        id="indented-comment",
+    ),
+)
+_UNPARSEABLE_RUN_BLOCK = ("unparseable pytest invocation: No closing quotation",)
+
+
+def _single_run_step_job(run: str) -> object:
+    return PACK.LegacyJob(
+        job_id="run-block-comment-quote",
+        definition={"runs-on": "ubuntu-latest", "steps": [{"run": run}]},
+        ordinal=0,
+        weight=1,
+    )
+
+
+@pytest.mark.parametrize(("commented", "comment_free"), _COMMENT_QUOTE_RUN_BLOCKS)
+def test_full_line_comment_apostrophe_resolves_the_comment_free_targets(
+    commented: str, comment_free: str
+) -> None:
+    suite = "tests/test_ci_trigger_closure.py"
+    # Positive control: the fixture must still break a whole-block shlex, or
+    # it no longer reproduces the defect and pins nothing.
+    with pytest.raises(ValueError, match="No closing quotation"):
+        shlex.split(commented.format(target=suite), comments=False, posix=True)
+
+    for target, expected in (
+        (suite, ()),
+        ("tests", ("directory pytest target 'tests'",)),
+    ):
+        assert DEPS.pytest_invocation_ambiguities(commented.format(target=target)) == expected
+        assert DEPS.pytest_invocation_ambiguities(comment_free.format(target=target)) == expected
+
+    # The loss was the job's whole inferred closure, so pin that too: the
+    # commented job must derive exactly the comment-free job's scope.
+    [commented_job], _ = PACK.infer_job_scopes(
+        [_single_run_step_job(commented.format(target=suite))]
+    )
+    [comment_free_job], _ = PACK.infer_job_scopes(
+        [_single_run_step_job(comment_free.format(target=suite))]
+    )
+    assert suite in comment_free_job.paths, "the control job must derive a closure"
+    assert (commented_job.paths, commented_job.fallback_paths) == (
+        comment_free_job.paths,
+        comment_free_job.fallback_paths,
+    )
+
+
+def test_run_block_quote_outside_a_full_line_comment_still_fails_closed() -> None:
+    # On a command line an apostrophe is a real shell quote.
+    assert (
+        DEPS.pytest_invocation_ambiguities(
+            "echo it's done\npython3 -m pytest tests/test_ci_trigger_closure.py"
+        )
+        == _UNPARSEABLE_RUN_BLOCK
+    )
+    # A trailing inline comment is deliberately left in place: only a line whose
+    # first non-blank character is `#` is dropped, so this stays ambiguous.
+    assert (
+        DEPS.pytest_invocation_ambiguities(
+            "python3 -m pytest tests/test_ci_trigger_closure.py  # the planner's token"
+        )
+        == _UNPARSEABLE_RUN_BLOCK
+    )
+
+
+def test_a_comment_that_names_pytest_is_not_the_invocation() -> None:
+    """The first ``pytest`` word used to be taken from prose.
+
+    self-mod-fence's agent-os step opens with a comment saying the pytest suite
+    skips itself "when agentos/ is outside a sparse cone". Read as argv, that
+    made ``agentos/`` a directory target, so the job stayed unscoped.
+    """
+    run = (
+        "# the pytest suite skips itself\n"
+        "# when agentos/ is outside a sparse cone\n"
+        "python3 -m pytest tests/test_ci_trigger_closure.py\n"
+    )
+    # Positive control: whole-block tokens meet the comment's `pytest` first.
+    tokens = shlex.split(run, comments=False, posix=True)
+    assert tokens.index("pytest") < tokens.index("agentos/")
+    assert DEPS.pytest_invocation_ambiguities(run) == ()
+
+
+def test_comment_stripping_keeps_a_mid_word_hash_expansion_whole() -> None:
+    """``${VAR#pattern}`` is one bash word, never the start of a comment.
+
+    ``shlex.split(..., comments=True)`` would cut it to ``${PYTEST_TARGET`` and
+    drop the rest of the line, hiding the ``tests`` directory target after it.
+    """
+    assert DEPS.pytest_invocation_ambiguities(
+        "# strip the planner's ./ prefix\n"
+        "python3 -m pytest ${PYTEST_TARGET#./} tests"
+    ) == (
+        "directory pytest target 'tests'",
+        "dynamic pytest target '${PYTEST_TARGET#./}'",
+    )
 
 
 def test_invalid_inventory_enters_the_existing_full_suite_planner_fallback(
@@ -3578,7 +3824,7 @@ def test_ci_pack_uses_twelve_balanced_hosted_anchors_or_fork_packs() -> None:
         "ceiling is account-wide and this key cannot raise it"
     )
     assert pack["if"] == (
-        "always() && needs.ci-plan.result == 'success' && "
+        "!cancelled() && needs.ci-plan.result == 'success' && "
         "needs.ci-plan.outputs.has_work == 'true' && "
         "(github.event.pull_request.head.repo.full_name != github.repository || "
         "vars.CI_EXECUTION_ROUTE != 'pc' || needs.trusted-ci.result == 'success')"
@@ -4491,6 +4737,19 @@ def test_curated_exclusivity_drops_only_the_opaque_fallback_tier() -> None:
     assert not owned_losses, owned_losses
 
 
+# The packing probes and their ceilings: (changed path, max selected jobs, max
+# selected weight-seconds), plus one pack ceiling for every probe. The history of
+# each number is the docstring of the test below. scripts/check_contract_delta.py
+# reads both names with ast.literal_eval, so keep them plain module-level literals.
+PACKING_PROBES = (
+    ("templates/index.html", 134, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("scripts/build_free_content.py", 132, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
+    ("engine/prophet/plan_book.py", 127, 5_600),
+)
+# Twelve packs per shape was the pre-curation measurement.
+PACKING_PROBE_MAX_PACKS = 10
+
+
 def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     """The measured before/after this wave exists to produce.
 
@@ -5023,25 +5282,33 @@ def test_exclusive_curation_narrows_ordinary_code_prs() -> None:
     the drift surfaces after merge, on integration-baseline.yml. That lane
     runs this file on every source push to main and every 4 hours, and
     merge-on-green pauses ordinary merges while it is red.
+
+    2026-09-27: that drift now reds its own PR. The measurement and the
+    verdict moved to scripts/run_ci_pack.py (packing_probe_measurements,
+    packing_probe_breaches) and the ceilings to PACKING_PROBES above, so
+    this test and ci.yml's contract-delta job share one copy. contract-delta
+    runs on every PR, whatever it touches. It measures the probes on the
+    PR's tested merge and on that merge's base, and reds when the PR takes
+    a probe over its ceiling, or further over a ceiling the base already
+    breaches. The case the #8033 review measured is now caught before
+    merge: a suite edited to read templates/index.html puts a job on this
+    probe (134 -> 135) without selecting ci-control-plane-contracts.
+    Nothing was re-measured and no ceiling moved. integration-baseline.yml
+    still runs this file on main.
     """
-    jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
-    for probe, max_jobs, max_weight in (
-        ("templates/index.html", 134, 5_800),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-        ("scripts/build_free_content.py", 132, 5_600),  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test (note at the top)
-        ("engine/prophet/plan_book.py", 127, 5_600),
-    ):
-        selected, reason = PACK.select_jobs(jobs, [probe])
-        weight = sum(job.weight for job in selected)
-        assert len(selected) <= max_jobs, (probe, len(selected), reason)
-        assert weight <= max_weight, (probe, weight, reason)
-        # Runners are what the incident actually spends: build_plan derives the
-        # pack count from the SELECTED weight, so the weight cut above is a
-        # runner cut. Twelve packs per shape was the pre-curation measurement.
-        packs = max(1, min(12, -(-weight // PACK.PACK_TARGET_SECONDS)))
-        assert packs <= 10, (probe, packs, weight, reason)
+    rows = packing_probe_measurements(
+        MANIFEST, PACKING_PROBES, max_packs=PACKING_PROBE_MAX_PACKS
+    )
+    breaches = packing_probe_breaches(rows)
+    assert not breaches, [
+        (breach, row["reason"])
+        for breach in breaches
+        for row in rows
+        if row["probe"] == breach[0]
+    ]
 
 
-def test_deliberately_unscoped_gates_stay_always_on() -> None:
+def test_deliberately_unscoped_gates_stay_always_on(real_manifest_scopes) -> None:
     """The wave-8 entrants are always-on BY DESIGN — pin both directions.
 
     Each of these gates carries a header comment documenting deliberate
@@ -5054,7 +5321,7 @@ def test_deliberately_unscoped_gates_stay_always_on() -> None:
     on an ordinary user-facing PR. Both now red here, with the probe named.
     """
     jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
-    scoped_jobs, _ = PACK.infer_job_scopes(PACK.load_legacy_jobs(MANIFEST))
+    scoped_jobs, _ = real_manifest_scopes
     # Measured membership at wave 8 (main a8075391fa89): each gate pinned on
     # the probes that are its SUBJECT. design-governance is a user-facing
     # diff ratchet, so it rides the template and site-builder probes but has

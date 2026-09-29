@@ -143,7 +143,7 @@
  "themes": {
   "basis": "subsector_rotation.emerging_score",
   "days_since_top5_entry_basis": null,
-  "rotation_asof": "2026-09-25",
+  "rotation_asof": "2026-09-28",
   "standouts_asof": "2026-09-25",
   "available": true,
   "themes": [
@@ -284,7 +284,7 @@
   "n_scored": 49,
   "n_misses": 0,
   "n_top_decile": 1,
-  "n_unrepresented": 11,
+  "n_unrepresented": 10,
   "misses": [],
   "baskets": [
    {
@@ -565,13 +565,16 @@
     "n_members": 12,
     "n_members_live": 7,
     "n_members_read": 12,
-    "n_members_on_board": 0,
-    "members_on_board": [],
+    "n_members_on_board": 2,
+    "members_on_board": [
+     "CLSK",
+     "MARA"
+    ],
     "present_counts": {
      "buy": 0,
      "watch": 0,
      "leaders": 0,
-     "ran": 0
+     "ran": 2
     },
     "pctile": 0.6647,
     "pctile_n": 252,
@@ -612,7 +615,7 @@
     "n_members": 74,
     "n_members_live": 74,
     "n_members_read": 74,
-    "n_members_on_board": 11,
+    "n_members_on_board": 12,
     "members_on_board": [
      "AMAT",
      "APH",
@@ -624,13 +627,14 @@
      "NTAP",
      "NVDA",
      "PLTR",
+     "TEL",
      "WDC"
     ],
     "present_counts": {
      "buy": 5,
      "watch": 5,
      "leaders": 1,
-     "ran": 0
+     "ran": 1
     },
     "pctile": 0.6091,
     "pctile_n": 252,
@@ -972,15 +976,16 @@
     "n_members": 14,
     "n_members_live": 13,
     "n_members_read": 14,
-    "n_members_on_board": 1,
+    "n_members_on_board": 2,
     "members_on_board": [
-     "APH"
+     "APH",
+     "TEL"
     ],
     "present_counts": {
      "buy": 0,
      "watch": 1,
      "leaders": 0,
-     "ran": 0
+     "ran": 1
     },
     "pctile": 0.3671,
     "pctile_n": 252,
@@ -1494,8 +1499,8 @@
     "pctile": 0.0179,
     "pctile_n": 252,
     "miss": false,
-    "ew_5d": -0.031212,
-    "ew_10d": -0.057824
+    "ew_5d": -0.031577,
+    "ew_10d": -0.058179
    }
   ]
  },
@@ -1507,7 +1512,7 @@
   "graded_by": "engine.grading.grade_next_bar_return (next-bar fill, survivorship-aware) via engine.name_score_grader's own forward-store ladder",
   "scored_field": "score — name_score.potential_score, the number the US board displays as conviction.score (scripts/build_stock_library.py overwrites c['score'] with the potential score for backward compatibility)",
   "available": true,
-  "n_calls": 162319,
+  "n_calls": 162320,
   "n_frozen_echoes_excluded": 232,
   "n_stamp_dates": 67,
   "stamp_dates": {
