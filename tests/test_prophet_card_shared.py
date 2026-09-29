@@ -503,7 +503,6 @@ def test_candidate_decision_reason_vocabulary_is_complete():
     import ast
     from engine.prophet_bridge import REFUSAL_ORDER
     from engine.us_candidate_lanes import (
-        FEATURED_SHORTFALL_CODES,
         FEATURED_SHORTFALL_FAMILY_VALUES,
         declared_reasons,
     )
@@ -511,11 +510,11 @@ def test_candidate_decision_reason_vocabulary_is_complete():
     source = POOL_ROWS.read_text(encoding='utf-8')
     match = re.search(r'\{% set _why = (.*?) %\}', source, re.S)
     assert match, 'the existing _why map must remain'
-    literal = '{' + match.group(1).rstrip().rstrip(',') + '}'
+    literal = match.group(1).rstrip().rstrip(',')
     why = ast.literal_eval(literal)
     codes = set(declared_reasons()) | set(REFUSAL_ORDER)
-    for values in FEATURED_SHORTFALL_FAMILY_VALUES.values():
-        codes.update(values)
+    for family, values in FEATURED_SHORTFALL_FAMILY_VALUES.items():
+        codes.update(f'{family}_{value}' for value in values)
     missing = sorted(codes - set(why))
     assert not missing, f'unlabelled production decision codes: {missing}'
 

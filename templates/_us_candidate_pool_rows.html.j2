@@ -16,9 +16,49 @@
   'plan_not_built': ('No new plan was built', '尚未生成新计划'),
   'board_featured': ('Featured on the main list', '主榜重点展示'),
   'cleared_admission': ('Admission checks passed', '已通过准入检查'),
+  'ticks_unknown': ('Price ticks are unavailable', '价格数据不可用'),
+  'ticks_stale': ('Price ticks are stale', '价格数据过期'),
+  'provisional': ('Observation is still provisional', '观察仍为暂定'),
+  'antichase_blocked': ('Anti-chase protection blocked entry', '防追高保护阻止入场'),
+  'extended': ('Price has extended', '价格已延伸'),
+  'alpha_unknown': ('Alpha is unavailable', '阿尔法数据不可用'),
+  'alpha_below_floor': ('Alpha is below the required floor', '阿尔法低于要求下限'),
+  'earnings_blackout': ('Earnings blackout', '财报禁入期'),
+  'featured_cap': ('Main-list display limit reached', '达到主榜展示上限'),
+  'sector_cap': ('Sector display limit reached', '达到板块展示上限'),
+  'not_evaluated': ('Not evaluated for the main list', '未评估主榜资格'),
+  'entry_status_buy_now': ('Entry is ready now', '现在符合入场条件'),
+  'entry_status_partial': ('Entry is partially ready', '入场条件部分就绪'),
+  'entry_status_await_confluence': ('Waiting for signals to align', '等待信号共振'),
+  'entry_status_buy_soon': ('Entry may be near', '入场可能临近'),
+  'entry_status_watch': ('Watch only for now', '暂仅观察'),
+  'entry_status_wait_pullback': ('Wait for a pullback', '等待回调'),
+  'entry_status_hold': ('Hold the existing position', '持有现有仓位'),
+  'entry_status_extended': ('Price has extended', '价格已延伸'),
+  'entry_status_bounce_wait': ('Wait for a bounce', '等待反弹'),
+  'entry_status_topping': ('Price is topping', '价格见顶'),
+  'entry_status_exit': ('Exit conditions are active', '退出条件生效'),
+  'entry_status_avoid': ('Avoid this security', '回避此证券'),
+  'entry_status_blocked': ('Entry is blocked', '入场受阻'),
+  'entry_status_later': ('Entry is not due yet', '入场时机未到'),
+  'entry_status_await': ('Waiting for confirmation', '等待确认'),
+  'entry_status_unknown': ('Entry status is unavailable', '入场状态不可用'),
+  'stage_live': ('Setup is live', '形态已生效'),
+  'stage_setting_up': ('Setup is forming', '形态正在形成'),
+  'stage_ran': ('Setup has run', '形态已走完'),
+  'stage_basing': ('Setup is building a base', '形态正在筑底'),
+  'stage_blocked': ('Setup is blocked', '形态受阻'),
+  'tier_T1': ('Tier T1', 'T1 等级'),
+  'tier_T2': ('Tier T2', 'T2 等级'),
+  'tier_T3': ('Tier T3', 'T3 等级'),
+  'tier_T4': ('Tier T4', 'T4 等级'),
+  'tier_unknown': ('Tier is unavailable', '等级不可用'),
   'tier_not_buyable': ('Signal tier is not actionable', '信号等级暂不可操作'),
   'not_yet': ('Entry conditions pending', '入场条件待确认'),
-  'tone_refused': ('Entry direction not accepted', '入场方向未获准'),
+  'not_ready': ('Entry is not ready yet', '入场尚未就绪'),
+  'grade_low': ('Signal grade is too low', '信号等级过低'),
+  'pointing_down': ('Entry direction is not accepted', '入场方向未获准'),
+  'no_trigger': ('No entry trigger is supplied', '来源未提供入场触发'),
   'unknown': ('Decision detail unavailable', '决策详情暂不可用')
 } %}
 {% for row in (rows or []) %}
@@ -39,7 +79,7 @@
       <span class="l-en">Screen position</span><span class="l-zh">筛选位置</span> {{ row.get('pool_rank') if row.get('pool_rank') is not none else '—' }}
       {% if row.get('tier_cascade') %} · <span class="l-en">Signal</span><span class="l-zh">信号</span> {{ row.tier_cascade }}{% endif %}
       <div class="muted"><span class="l-en">Screen order is not final rank. Eligibility is not entry permission.</span><span class="l-zh">筛选顺序并非最终排名。候选资格不等于入场许可。</span></div>
-      {% for reason in (row.get('lane_reasons') or [_reason]) %}<code>{{ reason }}</code>{% endfor %}
+      {% for reason in (row.get('lane_reasons') or [_reason]) %}{% set _reason_copy = _why.get(reason) %}<span class="ucp-reason" data-reason="{{ reason|e }}">{% if _reason_copy %}<span class="l-en">{{ _reason_copy[0] }}</span><span class="l-zh">{{ _reason_copy[1] }}</span>{% else %}<span class="l-en">Unlabelled decision code</span><span class="l-zh">未标注的决策代码</span> <code class="ucp-reason-raw">{{ reason|e }}</code>{% endif %}</span>{% endfor %}
       {% if row.get('archive_state') %}
       <div class="ucp-archive-row" data-archive-state="{{ row.archive_state|e }}">
         {% if row.archive_state == 'matched_fields' %}<span class="l-en">Saved candidate fields match.</span><span class="l-zh">已保存候选字段匹配。</span>
