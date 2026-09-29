@@ -67,7 +67,7 @@ def _sha256(value: str) -> str:
 
 
 def _fiscal_scope(value: Any) -> tuple[date, date, date, date]:
-    if not isinstance(value, tuple) or len(value) != 4:
+    if type(value) is not tuple or len(value) != 4 or any(type(item) is not str for item in value):
         raise EconomicObservationError("fiscal_scope must contain four ISO dates")
     try:
         current_start, current_end, prior_start, prior_end = (
@@ -551,11 +551,15 @@ def _verify_pg_replay(
 # JSON document parses to (dict, list, str, int, float, bool, None), a tuple, which serialises as the list it
 # replays to (R136), and a Fraction, which the value checks read as a real number (R134).  R189's walk descended a
 # list of containers and passed what it did not list, so a range, a deque, a path or a Decimal went unvisited.
+# R195: the walk admits an int or a Fraction only in the form Python builds one: exact int parts, a positive
+# denominator, lowest terms.  A Fraction's two slots can be assigned anything, and the checks after the walk
+# divide, print and compare what they hold.  The walk and the entry decide by identity alone, type(value) is T,
+# so no argument runs code of its own: an isinstance test or a set lookup asks the value's class for its
+# __class__, __hash__ or __eq__, and a metaclass can define each.
 _LONE_SURROGATE = re.compile("[\ud800-\udfff]")
 _PRINTABLE_DEPTH = 32
 _PRINTABLE_VALUES = 100_000
 _PRINTABLE_BOUND = 10**640
-_PRINTABLE_LEAVES = frozenset({float, bool, type(None)})
 
 
 def _unprintable(value: Any) -> bool:
@@ -571,13 +575,20 @@ def _unprintable(value: Any) -> bool:
             if _LONE_SURROGATE.search(item):
                 return True
         elif kind is int or kind is Fraction:
-            if abs(item.numerator) >= _PRINTABLE_BOUND or item.denominator >= _PRINTABLE_BOUND:
+            numerator, denominator = item.numerator, item.denominator
+            if (
+                type(numerator) is not int
+                or type(denominator) is not int
+                or not 0 < denominator < _PRINTABLE_BOUND
+                or abs(numerator) >= _PRINTABLE_BOUND
+                or math.gcd(numerator, denominator) != 1
+            ):
                 return True
         elif kind is dict:
             stack.extend((part, depth + 1) for entry in item.items() for part in entry)
         elif kind is list or kind is tuple:
             stack.extend((entry, depth + 1) for entry in item)
-        elif kind not in _PRINTABLE_LEAVES:
+        elif kind is not float and kind is not bool and item is not None:
             return True
     return False
 
@@ -588,10 +599,8 @@ def validate_selected_facts(
     source_texts: Mapping[str, str],
     fiscal_scope: tuple[str, str, str, str],
 ) -> list[dict[str, Any]]:
-    if not isinstance(workspace, Mapping):
+    if type(workspace) is not dict and not _unprintable(workspace):
         raise EconomicObservationError("workspace must be a mapping")
-    if not isinstance(source_texts, Mapping):
-        raise EconomicObservationError("source_texts must be a mapping")
     if type(source_texts) is not dict or any(
         type(key) is not str or type(value) is not str
         or _LONE_SURROGATE.search(key) or _LONE_SURROGATE.search(value)
