@@ -1,148 +1,148 @@
-# Current native Paper milestone — 2026-09-29
+# Events & News R2 — native Paper continuation
 
-MISSION_COMPLETE:false; ACTIVE_PHASE:native Paper design implementation; continuing in-turn.
-Procedural source: Mastermind 860f5d65db6e5c0c8098c766bda39aacad232960; INDEX and required skills loaded from that pin, compatible 1.0.1/bootstrap1.
+MISSION_COMPLETE:false
+ACTIVE_PHASE:native Paper design implementation; continuing in-turn.
+CURRENT_CRITICAL_DEPENDENCY:journey directory and component-linked implementation contract, then owned-canvas organization and native readback.
+DONE_WHEN:remaining native design references are saved and reviewed; all owned boards are organized; exact next delivery gate and evidence are recorded.
+Owner:Sol, current Chairman continuation of the Events & News Paper assignment.
+Carrier:macro PR #8186, sol/macro-events-news-desk-20260929-sol-001.
+PR remains DRAFT/HOLD. This is design evidence, not production acceptance.
 
-The previous human file-selection gate below is SUPERSEDED. The connected Mastermind Paper MCP now provides explicit target binding: paper_prepare returned PAPER_READY, target_addressable:true, target_active:false, open_attempted:false. No physical app interaction or raw open workaround was needed.
+## Procedural grounding
 
-File: 01M38EVF74SJWG1GANN5VP380Z — Mastermind · Market Dashboard Popups · Redesign.
-New page: p-4-0 — Events & News · R2 · Briefing to Evidence · 2026-09-29.
-URL: https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-4-0
+Protected Mastermind master read this turn: 9f2b2d6d064af371933f88b7864e35fe74be88e5.
+INDEX blob:94d1af402598894372858793a5b1931019c5fa77.
+Skillpack:mastermind.sol_skillpack.v1 / 1.0.1 / bootstrap major 1, compatible.
+Loaded from that same commit: COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION,
+CLOSEOUT, skills/paper-design-workflow/SKILL.md and its connection reference.
+No procedure or authority is inferred from remembered pins or UI effort selection.
+Direct native design work retains principal judgment and the incumbent design carrier;
+no worker, watcher, subscription, job or autonomous continuation was created.
 
-Native created and screenshot-reviewed:
-- 1X5-0: 10 · Briefing · Desktop · Dark EN; native text-binding and release-rail spacing repaired.
-- 20B-0: 11 · Briefing · Desktop · Light EN; separately styled white/cool-gray surface, deep amber ink, shadow rather than glow.
-- 231-0: 20 · Regime Change · Evidence · Dark EN; known state vs missing driver evidence, original-alert entry, review rather than trade instruction.
+## Exact native target and effect boundary
 
-All modifying effects returned APPLIED_RESPONSE_OBSERVED; no EFFECT_UNKNOWN. Only new p-4-0 artboards touched. Added missing canonical theme tokens without altering existing values. The original China page remains outside this assignment.
+File:01M38EVF74SJWG1GANN5VP380Z — Mastermind · Market Dashboard Popups · Redesign.
+Page:p-4-0 — Events & News · R2 · Briefing to Evidence · 2026-09-29.
+URL:https://app.paper.design/file/01M38EVF74SJWG1GANN5VP380Z/p-4-0
+Only this page's owned artboards/nodes are the design modifying surface.
+The China page p-3-0 and all other files remain outside this assignment.
 
-Native group cloning works. Each text node needs an explicit color binding: inherited color produced black text on a dark surface; repaired and screenshot verified before reuse. Native schematic/action states are not proof of working click navigation. The observed catalog has no prototype-action setter. Do not claim native interaction wiring or working production features.
+Mastermind_Paper is the incumbent modifying carrier. The observed Studio Direct
+catalog did not expose a Paper action family. Paper bridge:paper-desktop 0.5.12.
+Catalog SHA256:8cd27488a3adfc19c6c36d4349b75feebc71c159253c47f8a0f8d50c27043deb.
+Accepted_for_write and write_qualified were true.
+paper_prepare operation events-news-r2-continuation-20260929-target returned
+PAPER_READY / EXPLICIT_FILE_BINDING / target_addressable:true /
+target_active:false / open_attempted:false. No physical app use was needed.
+An unrelated foreground file does not change the explicit fileId of our operations.
 
-Additional native screenshot-reviewed boards (all 1440x900, editable):
-- 24X-0: 30 Release Guide Light EN; same-window GDP/PCE, source availability and exploration rows. Readiness padding/gap repaired after screenshot.
-- 29V-0: 31 Conditional Impact Map Dark EN; two labelled mechanism paths, selected connection inspector, no causal strength/probability. Final fit screenshot clean.
-- 2C0-0: 32 Release Reaction Dark EN; explicitly synthetic shared-baseline/time/scale two-series illustration; actual/consensus example separate from observations and qualified historical evidence.
-- 2ED-0: 40 NVDA Story Dark EN; authorization/purchases/net shares separated, missing execution data explicit.
-- 2GD-0: 41 Source Trail Light EN; original disclosure missing, reporting vs commentary vs repeated coverage, separate clocks.
-- 2IS-0: 42 Correction Impact Light EN; hypothetical before/after claim, consequences for brief/source/following; right-column spacing repaired.
-- 2LO-0: 43 Ownership Dark EN; +46% ABNB and -23% P examples use prior-position denominator and same 0-50 magnitude scale; missing absolute holdings/weights remain visible.
+Observed target snapshot guard:de9b580d2129b19685c4264c122ea78a38380b9114921e3c2431a83ac9d5e38b.
+This guard describes the file's active-page summary, not a content revision or lease.
+Targeted native screenshots/trees and returned node IDs reconcile actual edits.
+All modifying Paper effects returned APPLIED_RESPONSE_OBSERVED. EFFECT_UNKNOWN:none.
+Open comment threads on p-4-0 at this turn's review:0.
 
-Further native screenshot-reviewed boards:
-- 2NU-0: 50 Follow Subject Choices Light EN. Exact subject, material facts/corrections selected, every mention off, email off, no save yet.
-- 2Q2-0: 51 Follow Review Light EN. Review before save; saved preference is not monitoring.
-- 2RX-0: 52 Save Feedback. Pending, saved, failed/draft-kept variants; ambiguous effects reconcile before retry.
-- 2SY-0: 60 Briefing Mobile Dark EN, 390x844. Official mobile status bar; first-read/action/release cue; gap repaired for footer.
-- 2US-0: 61 Briefing Mobile Light EN, screenshot clean.
-- 2WC-0: 62 Briefing Mobile Dark ZH; translated native text, PingFang SC, screenshot clean.
-- 2XW-0: 63 Briefing Mobile Light ZH; translated native text, screenshot clean.
-- 2ZG-0: 64 Release Guide Mobile Light EN, fit-content study height. Inflation disclosure open, other investigation entries, follow/source/return paths specified; screenshot clean.
+## Native inventory — 22 editable, screenshot-reviewed artboards
 
-18 owned artboards now saved. No unresolved Paper effects. Native actions remain design states, not wired navigation or real subscriptions.
+Desktop boards are 1440x900 unless noted. All sample market/account data is illustrative.
 
-Exact next action: resilient source/loading/search/history states, native implementation and journey directory; organize owned artboards and verify native JSX/readback before design review boundary. Continue using Mastermind_Paper, same file/page, fresh target snapshot as necessary. Finish only the owned artboard working indicators at final boundary.
+| Board | Native ID | Design and evidence boundary |
+|---|---|---|
+| 10 Briefing Dark EN | 1X5-0 | Lead change, concise stories, next release; explicit native text colors repaired. |
+| 11 Briefing Light EN | 20B-0 | Separate white/cool-gray theme with legible amber ink and restrained shadow. |
+| 12 Releases Light EN | 32J-0 | Calendar task; a passed scheduled time is not publication proof. |
+| 13 Stories Light EN | 36F-0 | Source-aware story reading; native screenshot reviewed this turn; leftover calendar labels corrected. |
+| 14 Following | 38E-0 | New this turn: correction review, saved subjects and separate save/monitoring/delivery evidence. |
+| 20 Regime Change | 231-0 | Observed state versus missing driver evidence; review, not trade instruction. |
+| 30 Release Guide | 24X-0 | Shared GDP/PCE example window, readiness and exploration; spacing repaired. |
+| 31 Conditional Impact | 29V-0 | Labeled conditional mechanisms and selected connection; no invented probability/strength. |
+| 32 Release Reaction | 2C0-0 | Synthetic time-aligned comparison, common baseline/time/scale; not qualified history. |
+| 40 Story Detail | 2ED-0 | Authorization, executed purchases and net shares separated; missing execution evidence visible. |
+| 41 Source Trail | 2GD-0 | Disclosure/report/commentary distinguished; repeated coverage is not independent confirmation. |
+| 42 Correction Impact | 2IS-0 | Hypothetical before/after claim and consequences for dependent brief/source/following. |
+| 43 Ownership | 2LO-0 | +46% ABNB / -23% P examples use prior-position denominator and same magnitude scale. |
+| 50 Follow Choices | 2NU-0 | Exact subject, material facts/corrections; every mention and email off. |
+| 51 Follow Review | 2Q2-0 | Review before save; saved preference does not establish active monitoring. |
+| 52 Save Feedback | 2RX-0 | Pending/saved/failed states; uncertain writes reconcile before any retry. |
+| 60 Mobile Dark EN | 2SY-0 | 390x844; official mobile status bar; first-read and footer spacing reviewed. |
+| 61 Mobile Light EN | 2US-0 | 390x844, screenshot reviewed. |
+| 62 Mobile Dark ZH | 2WC-0 | 390x844; native translated text, PingFang SC. |
+| 63 Mobile Light ZH | 2XW-0 | 390x844; separately screenshot reviewed. |
+| 64 Mobile Release Guide | 2ZG-0 | 390px wide fit-content; disclosure, impact/reaction/source/follow entries. |
+| 70 Resilient States | 30X-0 | 1440x1100; loading/empty/unavailable/stale/no-match/unqualified-history. |
 
-Production dashboard.html.j2 integration remains separately held after the prior platform refusal. Do not retry or bypass it. Local prototype tests below remain local-only, not native/browser production proof. PR8186 stays DRAFT/HOLD.
+### Latest material native result
 
----
-## Earlier preparation checkpoint — native gate superseded above
+Board 38E-0 is complete and screenshot-reviewed after a targeted action-width repair.
+Main native modules:3AD-0 Following body; 3AO-0 correction lead; 3AX-0 saved subjects;
+3BH-0 delivery explanation; 3BK-0 receipt/status rows; 3BZ-0 Alert Center return.
+Subject rows:3B0-0 NVDA, 3B9-0 GDP+PCE. Edit choices:3B7-0 and 3BA-0,
+128px action lanes after the native screenshot exposed wrapped arrows.
+Monitoring/delivery/email rows:3BQ-0,3BT-0,3BW-0. Both saved subjects explicitly
+show monitoring unconfirmed. A loaded source correction is not a subscription receipt.
+Operation prefix:events-news-r2-cont-14-*; final correction operation:
+events-news-r2-cont-14-action-lane-fit. Native screenshot readback was clean.
 
-# Events & News R2 — native Paper gate and prepared design
+## Design contract retained
 
-MISSION_COMPLETE: false
-Capability: LOCAL_DESIGN_PREPARED; NOT_APPLIED_TO_PAPER; NOT_LIVE.
-Owner: Sol, current Chairman assignment to create substantially better Paper designs.
-Source carrier: macro PR #8186 / sol/macro-events-news-desk-20260929-sol-001.
-Previous source head: b6c686c43e36f939ff53786e0b0250c0efe19f10.
-Current procedural pin: Mastermind c7407c6c77ef82cc6590401e80cc8f1868dc9085.
-Macro design-source observation: d5e20a62b5da656f62b3cc06a7c7675c43f0de1a.
-
-## Native gate — exact target, no wrong-file edit
-
-Intended file: Mastermind · Market Dashboard Popups · Redesign.
-Paper file ID: 01M38EVF74SJWG1GANN5VP380Z.
-The existing China R2 page and its artboards are not our modifying surface.
-No Events & News page or node has been created yet.
-
-Mastermind_Paper.paper_prepare returned DESKTOP_BUSY: another bridge call owned
-this desktop, no call was sent, retry_allowed:false. It was not replayed and no
-raw open/host automation/alternate Paper carrier was used. Later read-only
-selection checks showed Terminal (01M3NSZGE8JWN2EZCSF0DT05RM), not the target.
-Initially selected MASTERMIND PAGES warned further edits could cause data loss;
-that file was left untouched. There is no unresolved modifying Paper effect.
-
-Exact human action: select the existing popup file in Paper. Then Sol re-inspects
-through the same Mastermind Paper app, recovers fresh target custody/snapshot,
-and creates Events & News · R2 · Briefing to Evidence · 2026-09-29 if absent.
-The prior platform-blocked dashboard.html.j2 integration remains separately held;
-this Paper assignment does not retry or bypass it.
-
-## Material design decisions
-
-One lead change, two short stories and the next release window form the first
-read. Four parallel tasks: Briefing / Releases / Stories / Following. Detail
-replaces the dialog body and must preserve origin, subject, filters and scroll.
-Use the established market profile, not an unrequested NOIR OS restyle: Inter,
-graphite/blue dark treatment and separately reviewed white/cool-gray light.
-The canonical library explicitly limits its NOIR direction to Mastermind OS.
-
-Prepared exploration: before/after regime change; release calendar and clock;
-conditional impact map; fact/interpretation/missing-evidence story anatomy;
-source chronology and correction consequences; denominator-aware fund changes;
-illustrative time-aligned reaction chart; honest unavailable historical sample;
-subject-specific follow draft, review, saved-state demonstration and save failure.
-
+One lead change, two short stories and the next release window form the first read.
+Parallel tasks:Briefing / Releases / Stories / Following. Detail replaces the dialog
+body and must preserve origin, subject, filters, query, scroll and focus return.
+Use the established market profile:Inter, graphite/blue dark and separately reviewed
+white/cool-gray light. The NOIR OS direction does not override this market profile.
 No new scoring, trade authority, alert lifecycle, persistence owner or polling.
-A scheduled release is not a trade instruction. A warning is not an underway
-pullback. Missing drivers, consensus and historical samples are not invented.
-A reported authorization is not executed buying; syndication is not independent
-corroboration. Corrections must affect dependent summaries, not only source text.
-Following in the prototype is in-memory demonstration, not an actual subscription.
+A warning is not an underway pullback. Missing drivers/consensus/history stay missing.
+An authorization is not executed buying. Corrections affect dependent summaries.
 
-## Actual local validation and artifact identities
+Native controls are authored visual states, not wired prototype navigation. The
+observed catalog contains no prototype-action setter. Do not claim click-through
+behavior, full accessibility, actual subscriptions or working production features.
+Native JSX extraction remains owed after the remaining design references are completed.
 
-20 named interactive design views. 70 local interaction assertions passed.
-400 local geometry/action/hit-region cases passed: 20 views x 2 themes x 2 languages
-x 5 sizes (1440x900, 768x1024, 390x844, 320x740, 844x390). No browser page errors.
-23 final screenshots. This is authored HTML in Chromium, not Paper, live data,
-full accessibility certification, production mx5 behavior or source integration.
+## Scoped restrictions and deferred findings
 
-22 native artboard variants / 214 individual editable HTML groups are PREPARED,
-not applied. Their fixed-position layer translation needs actual Paper inspection
-and screenshot repair before acceptance; use incremental group writes, never one
-whole-screen HTML dump. Include the official mobile status bar from Paper's guide.
+Production dashboard.html.j2 integration remains held after the prior platform refusal.
+No retry, bypass, merge or deployment is authorized by this Paper continuation.
+Existing source component files in PR8186 remain UNWIRED; macro.html is unchanged.
 
-The portable artifact returned to the Chairman is:
-Mastermind_Events_News_R2_Paper_Preparation.zip
-SHA256 c4ef1630f966ea31483832e0df7f8507b25af9143c9c9ee7a8cefdd8ab05b320
-It contains source generator, self-contained prototype, 23 screenshots, executable
-local checks, complete design/source contract and the native group candidates.
-The portable artifact is not stored as binary data in this repository checkpoint.
+A new Studio_Direct.start_process read-only local worktree verification request was
+blocked by OpenAI's safety checks this turn; no PID or dispatched effect was returned.
+That local-verification lane was not retried, rephrased or moved to another carrier.
+Independent native Paper work continued. This documentation-only GitHub update records
+the actual design effects; it does not perform the denied local inspection or production edit.
+Local workspace freshness therefore remains unverified this turn. Do not infer local
+HEAD/worktree state from the remote checkpoint commit.
 
-Design contract SHA256:
-8a7a19678e1e594bc2ce57d0b2802620ec53fbaf24664eb059864fb949305e7e
-Self-contained prototype SHA256:
-634b8f91aebe82f112fda3162f124e113c265276e361fd8b083627d25a1848e4
-Native group manifest SHA256:
-f8ab31de6ead3e949049a6912da0fb1ed3e4f5c855b84fe58863e36904a2b738
+Separate prior Macro #8057 correction candidate is not accepted through this assignment.
+Original China/MarketOntology/Terminal boards and shared tokens are not changed this turn.
 
-## Source reuse and deferred issues
+## Historical preparation — preserved, do not redo
 
-Verified relevant owners at the Macro observation: engine/alerts.py,
-engine/alert_triage.py, engine/event_calendar.py, engine/macro_news.py,
-engine/release_actuals.py, engine/release_market_context.py,
-engine/news_event_ledger.py. tests/test_alert_prefs.py imports app.account_prefs
-and lib.user_prefs; this does NOT prove subject-follow support is integrated.
-Macro #8057 remains a separate OPEN/DRAFT correction-related candidate at
-98f5cfaec04f9b0dc39a240d5a6a7879cbc5d586; do not duplicate or treat it as accepted.
-The retained canonical Paper Sector Breadth dark reference rendered with missing
-visual token bindings; deferred, not repaired or used as appearance precedent.
+The previous full preparation checkpoint remains in Git history at
+macro de2ebe213213f455593194601e21b274819d6aaf, this same path.
+Its obsolete physical file-selection gate is superseded by explicit target binding.
+Its accepted preparation evidence is not production/native behavioral proof:
+20 authored HTML views; 70 local interaction assertions; 400 local geometry/hit-region
+cases (20 views x 2 themes x 2 languages x 5 sizes); 23 final local screenshots.
+Earlier 22-variant/214-group native preparation was a candidate set, not the count
+of the native boards now saved. No local validation was rerun this turn.
 
-## Continuation
+Portable preparation ZIP SHA256:c4ef1630f966ea31483832e0df7f8507b25af9143c9c9ee7a8cefdd8ab05b320.
+Design contract SHA256:8a7a19678e1e594bc2ce57d0b2802620ec53fbaf24664eb059864fb949305e7e.
+Local prototype SHA256:634b8f91aebe82f112fda3162f124e113c265276e361fd8b083627d25a1848e4.
+Native preparation manifest SHA256:f8ab31de6ead3e949049a6912da0fb1ed3e4f5c855b84fe58863e36904a2b738.
+Prior source observation:d5e20a62b5da656f62b3cc06a7c7675c43f0de1a.
+Relevant existing owners:engine/alerts.py, engine/alert_triage.py,
+engine/event_calendar.py, engine/macro_news.py, engine/release_actuals.py,
+engine/release_market_context.py, engine/news_event_ledger.py.
+Tests importing app.account_prefs and lib.user_prefs do not prove subject-follow integration.
 
-Resume in this chat with the same Paper app after the human selects the target.
-First bounded act: fresh inspect, then the dedicated page and first dark briefing
-artboard; screenshot, repair and add the light counterpart before expanding.
-After native boards, add the granular contracts beside them and recover native
-node IDs, screenshot and JSX receipts; finish_working_on_nodes on owned IDs only.
-Do not redo the prepared feature synthesis. Do not claim saved native boards,
-working production features or an automated wake. This source PR stays DRAFT/HOLD.
+## Exact next action / resume
+
+Continue in this same chat through Mastermind_Paper, explicit fileId/pageId above.
+Create the in-file 00 journey directory and 90 component-linked implementation contract
+beside the native designs, with exact screen/module IDs, origin-to-return behavior,
+source-owner reuse and clearly held production/proof gates. Then organize owned artboards
+into a compact journey grid, verify targeted native screenshots and JSX, and finish only
+the owned artboard working indicators. No worker/daemon/wake is running.
+This is an in-turn milestone, not a stop or a claim that the mission is complete.
