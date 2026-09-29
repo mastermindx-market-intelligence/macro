@@ -388,10 +388,17 @@ def _digest_form(value: Any) -> Any:
     pairs, so a key of another type neither stops the sort nor collides
     with its own text. A set is a list in the order of its members' JSON,
     which the hash seed does not change. Any other iterable (a list, a
-    tuple, a deque, an iterator) is a list. Anything else is its str(), as
-    the digest has always hashed a date. So an input a JSON adapter can
-    produce hashes exactly as it did before: only a container JSON cannot
-    hold used to hash by its repr, its address, or not at all."""
+    tuple, a deque, an iterator) is a list. Anything else, and an iterable
+    that refuses to iterate, is its str(), as the digest has always hashed
+    a date. So an input a JSON adapter can produce hashes exactly as it did
+    before: only a container JSON cannot hold used to hash by its repr, its
+    address, or not at all. Such a container now hashes as the JSON of what
+    it holds, so it hashes as that JSON does: a set as the sorted list of
+    its members, and a mapping keyed by numbers as the list of its pairs.
+
+    The walk recurses, so a structure nested deeper than the interpreter's
+    recursion limit (about a thousand levels) raises RecursionError, as a
+    cyclic one does. json.dumps alone used to write one that deep."""
     if value is None or isinstance(value, (str, int, float)):
         return value
     if isinstance(value, Mapping):
@@ -401,7 +408,11 @@ def _digest_form(value: Any) -> Any:
     if isinstance(value, (set, frozenset)):
         return sorted((_digest_form(item) for item in value), key=_json_text)
     if isinstance(value, Iterable) and not isinstance(value, (bytes, bytearray)):
-        return [_digest_form(item) for item in value]
+        try:
+            items = iter(value)
+        except TypeError:
+            return str(value)
+        return [_digest_form(item) for item in items]
     return str(value)
 
 
@@ -770,9 +781,12 @@ def _drained(value: Any) -> Any:
     different rows from it: the digest of a generator the gate had read
     was the digest of no rows. Read once where the inputs enter, it is one
     list they all read. A mapping, list or tuple is rebuilt only when it
-    held an iterator, and anything else passes unchanged."""
-    if isinstance(value, Iterator):
-        return [_drained(item) for item in value]
+    held an iterator, and anything else passes unchanged. A mapping is read
+    as a mapping even when it is also an iterator.
+
+    Only an Iterator is drained. An object whose __iter__ hands out one
+    stored iterator also yields its rows to its first reader only, and it
+    is not detected; nor is an iterator held in a deque or a set."""
     if isinstance(value, Mapping):
         mapping: dict[Any, Any] = {}
         changed = False
@@ -780,6 +794,8 @@ def _drained(value: Any) -> Any:
             mapping[key] = drained = _drained(item)
             changed = changed or drained is not item
         return mapping if changed else value
+    if isinstance(value, Iterator):
+        return [_drained(item) for item in value]
     if isinstance(value, (list, tuple)):
         items = [_drained(item) for item in value]
         if any(drained is not item for drained, item in zip(items, value)):
