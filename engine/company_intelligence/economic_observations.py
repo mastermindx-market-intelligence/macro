@@ -9,7 +9,7 @@ import json
 import math
 from numbers import Rational, Real
 import re
-from typing import Any, Mapping
+from typing import Any, Iterator, Mapping
 
 from ..earnings_release.receipts import unescape as _unescape
 from .documents import ABSENCE_SCHEMA, TypedAbsence
@@ -235,31 +235,46 @@ def _source_only_accession(source: str) -> str:
     return f"{digits[:10]}-{digits[10:12]}-{digits[12:]}"
 
 
+# R192: the span check reads characters, as the reader does, and reports each unit at its bytes.  A byte pattern
+# counted a reference's 32-character name in bytes, so it could end inside a character.
 _PRINT_UNIT = re.compile(
-    rb"(<!--.*?-->)|(</?([A-Za-z][A-Za-z0-9]*)[^>]*>)|(<[^>]*>)"
-    rb"|(&(?:#[0-9]+;?|#[xX][0-9a-fA-F]+;?|[^\t\n\f <&#;]{1,32};?))|[^<&]+|[<&]",
+    r"(<!--.*?-->)|(</?([A-Za-z][A-Za-z0-9]*)[^>]*>)|(<[^>]*>)"
+    r"|(&(?:#[0-9]+;?|#[xX][0-9a-fA-F]+;?|[^\t\n\f <&#;]{1,32};?))|[^<&]+|[<&]",
     re.S,
 )
 # R190: a tag sets a token off only where an HTML5 tree builder acts on it whatever else is open.  Each start tag
 # here opens an element (admission refuses the table tags a builder would ignore), but an end tag with no such
 # element open is ignored, and the text on either side of it is one run.  Only </p> (an empty paragraph when none
 # is open) and </br> (read as <br>) act without one, so an end tag counts only if it is one of those two.
-_SEPARATING = frozenset({b"td", b"th", b"tr", b"table", b"p", b"div", b"br"})
-_SEPARATING_END = frozenset({b"p", b"br"})
-_RAW_NAMES = frozenset(name.encode() for name in _pg_envelope._RAW_TEXT_CLOSE)
+_SEPARATING = frozenset({"td", "th", "tr", "table", "p", "div", "br"})
+_SEPARATING_END = frozenset({"p", "br"})
+_RAW_NAMES = frozenset(_pg_envelope._RAW_TEXT_CLOSE)
 _UNPRINTED_RAW = frozenset({"raw:script", "raw:style"})
 _LAYOUT_SPACE = frozenset(" \t\n\r\f\xa0")
+
+
+def _print_matches(fragment: bytes) -> Iterator[tuple[int, int, re.Match[str]]]:
+    try:
+        text = fragment.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise EconomicObservationError("present envelope observation text is not UTF-8 aligned") from exc
+    char_position = byte_position = 0
+    for match in _PRINT_UNIT.finditer(text):
+        start, end = match.span()
+        byte_start = byte_position + len(text[char_position:start].encode("utf-8"))
+        byte_end = byte_start + len(match.group(0).encode("utf-8"))
+        yield byte_start, byte_end, match
+        char_position, byte_position = end, byte_end
 
 
 @functools.lru_cache(maxsize=4)
 def _printed_units(source_bytes: bytes) -> tuple[tuple[tuple[int, int, str], ...], tuple[int, ...]]:
     units: list[tuple[int, int, str]] = []
-    raw_name: bytes | None = None
-    for match in _PRINT_UNIT.finditer(source_bytes):
-        start, end = match.span()
+    raw_name: str | None = None
+    for start, end, match in _print_matches(source_bytes):
         if raw_name is not None:
-            closing = match.group(2) is not None and match.group(0).startswith(b"</") and match.group(3).lower() == raw_name
-            units.append((start, end, "markup" if closing else "raw:" + raw_name.decode()))
+            closing = match.group(2) is not None and match.group(0).startswith("</") and match.group(3).lower() == raw_name
+            units.append((start, end, "markup" if closing else "raw:" + raw_name))
             raw_name = None if closing else raw_name
         elif match.group(1) is not None:
             units.append((start, end, "comment"))
@@ -267,7 +282,7 @@ def _printed_units(source_bytes: bytes) -> tuple[tuple[tuple[int, int, str], ...
             units.append((start, end, "markup"))
         elif match.group(2) is not None:
             name = match.group(3).lower()
-            end_tag = match.group(0).startswith(b"</")
+            end_tag = match.group(0).startswith("</")
             units.append((start, end, "separator" if name in (_SEPARATING_END if end_tag else _SEPARATING) else "markup"))
             if not end_tag and name in _RAW_NAMES:
                 raw_name = name
@@ -278,8 +293,8 @@ def _printed_units(source_bytes: bytes) -> tuple[tuple[tuple[int, int, str], ...
 
 def _drops_a_reference(fragment: bytes) -> bool:
     return any(
-        match.group(5) is not None and not _unescape(match.group(5).decode("utf-8"))
-        for match in _PRINT_UNIT.finditer(fragment)
+        match.group(5) is not None and not _unescape(match.group(5))
+        for _start, _end, match in _print_matches(fragment)
     )
 
 
