@@ -1,0 +1,146 @@
+# MedTech Catalyst Intelligence R1 — regulatory authorization is not an investment thesis
+
+**Date:** 2026-09-29  
+**Operation:** `ci-w1-medtech-r1-20260929-sol-001`  
+**Program:** Catalyst Intelligence / Medical Devices and Diagnostics  
+**Readiness:** research contract and executable reference only; no forecast, recommendation, production, or Paper acceptance
+
+## 1. Question resolved in this installment
+
+How should Catalyst Intelligence represent a medical-device regulatory event without collapsing:
+
+1. FDA pathway and decision;
+2. public knowledge time;
+3. device/applicant/rights-to-listed-issuer identity;
+4. issuer materiality;
+5. manufacturing, launch, reimbursement and adoption readiness;
+6. market expectations and price reaction; and
+7. investment recommendation admission?
+
+R1 resolves the minimum contract and supplies a tested reference. It does **not** estimate a probability of approval, conditional equity values or a stock recommendation.
+
+## 2. Primary-source distinctions that must survive implementation
+
+### 2.1 Approval, clearance, De Novo and registration are different facts
+
+FDA describes PMA as its most stringent premarket review and bases approval on sufficient valid scientific evidence of safety and effectiveness for Class III devices. A 510(k) instead asks whether a device is substantially equivalent to a legally marketed predicate. De Novo classifies a novel low- to moderate-risk device. Establishment registration or device listing is not approval, clearance or authorization.
+
+Primary anchors:
+
+- FDA PMA: https://www.fda.gov/medical-devices/premarket-submissions-selecting-and-preparing-correct-submission/premarket-approval-pma
+- FDA 510(k): https://www.fda.gov/medical-devices/device-approvals-and-clearances/510k-clearances
+- FDA approvals/clearances databases: https://www.fda.gov/medical-devices/products-and-medical-procedures/device-approvals-and-clearances
+- FDA explanation of registration versus approval/clearance: https://www.fda.gov/medical-devices/consumers-medical-devices/are-there-fda-registered-or-fda-certified-medical-devices-how-do-i-know-what-fda-approved
+
+**Ruling:** production vocabulary must preserve the pathway-native verb. A 510(k) is `cleared`, not `approved`; a De Novo request is `granted`; PMA/HDE decisions may be `approved`. An invalid pathway/decision pairing is refused rather than normalized into a generic positive event.
+
+### 2.2 Original PMAs and supplements are not interchangeable
+
+FDA's PMA database distinguishes original applications and supplements, and lists supplement type/reason. A supplement can expand an indication or change a device/manufacturing process, but its economic significance depends on the exact change and the issuer's existing base.
+
+Primary anchors:
+
+- FDA PMA approvals/database fields: https://www.fda.gov/medical-devices/device-approvals-and-clearances/pma-approvals
+- FDA PMA supplements and amendments: https://www.fda.gov/medical-devices/premarket-approval-pma/pma-supplements-and-amendments
+
+**Ruling:** `PMA_ORIGINAL`, `PMA_PANEL_TRACK_SUPPLEMENT` and `PMA_OTHER_SUPPLEMENT` are separate pathway values. The system cannot infer “new platform launch” from the word `approval` alone.
+
+### 2.3 Regulatory success does not establish commercialization or equity materiality
+
+A marketing decision can precede manufacturing scale, launch readiness, reimbursement/coverage, physician training, hospital budget approval, procedure growth, installed-base conversion and consumables pull-through. The same regulatory event can be company-defining for a focused small issuer and immaterial for a diversified company.
+
+**Ruling:** the case contract carries regulatory state, commercial readiness and issuer materiality separately. Positive authorization with unresolved commercial evidence is `AUTHORIZED_AWAITING_COMMERCIAL_PROOF`; unresolved issuer materiality is `REVIEW_MATERIALITY`; an immaterial event is `CONTEXT_ONLY_IMMATERIAL`.
+
+### 2.4 Public knowledge time is its own clock
+
+Decision date, database refresh, advisory-panel scheduling, company publication and market observation are distinct clocks. Historical analysis uses the earliest qualified public timestamp actually available to investors. Later regulatory or commercial facts cannot be backfilled into an earlier case.
+
+**Ruling:** every event requires a timezone-qualified `public_at`. An event after the analysis cutoff is `WITHHELD_TEMPORAL`, even if the ultimate decision is positive.
+
+### 2.5 Options and positioning are expectations evidence, not native regulatory evidence
+
+Observed event-expiry alignment, implied-volatility term structure, skew, open/close classifications and other qualified market evidence may help measure expectations, reaction amplification or timing. They do not become clinical/regulatory evidence and cannot directly rewrite the native event probability.
+
+**Ruling:** qualified options input is labeled `expectations_reaction_and_timing_only`; the executable reference hard-codes `can_change_native_event_probability=false`. Estimated, incomplete or latency-unknown inputs are not silently used.
+
+## 3. Worked historical mechanism — TransMedics OCS Heart
+
+The existing repository autopsy `research/winners/cases/TMDX_2021.md` is a useful positive-and-adverse mechanism, not a model-training label by itself.
+
+- FDA scheduled the OCS Heart advisory panel for 2021-04-06, creating a clean expectation catalyst.
+- The panel vote was favorable but not uniformly strong, including a 9-7 safety vote.
+- Heart and Liver approvals ultimately arrived, but approval-related gaps did not hold over ten sessions in the repository's measured tape.
+- Revenue and commercialization timing lagged the regulatory de-risking; the 2021 market had capitalized part of a later revenue curve too early.
+
+Primary FDA anchors:
+
+- Advisory-panel meeting: https://www.fda.gov/advisory-committees/advisory-committee-calendar/april-6-2021-circulatory-system-devices-panel-medical-devices-advisory-committee-meeting
+- OCS Heart PMA information: https://www.fda.gov/medical-devices/recently-approved-devices/organ-care-system-ocs-heart-system-p180051s001
+
+**Mechanism learned:** the investable target is not “FDA positive.” It is the joint path from regulatory de-risking through launch timing, transplant-center adoption, procedure utilization, disposable/service economics, gross margin and the valuation already embedded in the share price. Anticipation, announcement reaction, commercialization and durable rerating require separate labels.
+
+## 4. Executable R1 reference
+
+Files:
+
+- `research/medtech/medtech_catalyst_reference_r1.py`
+- `research/medtech/test_medtech_catalyst_reference_r1.py`
+
+The pure reference:
+
+- enforces pathway-native decision vocabulary;
+- rejects future knowledge;
+- fails closed on unresolved issuer rights;
+- keeps issuer materiality separate from authorization;
+- keeps manufacturing, launch, coverage and adoption separate;
+- refuses to turn options context into native regulatory probability;
+- permits market-price revisions without rewriting regulatory/commercial evidence;
+- never emits a probability, conditional equity value or recommendation.
+
+Verification in a clean scratch root:
+
+- `python3 -m pytest -q test_medtech_catalyst_reference_r1.py` → **12 passed**;
+- four harmful variants were detected:
+  1. accepting `approved` as a 510(k) state;
+  2. disabling the future-knowledge fence;
+  3. allowing options context to change native event probability;
+  4. treating every authorization as commercially ready.
+
+These tests establish contract behavior only. They are not independent review, source coverage, historical calibration or investment performance.
+
+## 5. R1 architecture decisions
+
+1. **Case identity:** device + exact regulatory submission/decision + indication/version + applicant + retained rights + listed security. Applicant name alone is not security identity.
+2. **Native targets:** regulatory outcome, time-to-decision, launch readiness, commercial adoption and persistent rerating remain separate.
+3. **Commercial bridge:** procedure/patient volume × realized price × recurring consumables/service, less launch/manufacturing/service costs, reimbursement friction and dilution. Installed base is not revenue without utilization.
+4. **Materiality:** focused/core, material, immaterial and unknown are explicit states. Unknown never becomes zero or “small.”
+5. **Market layer:** expectations and price reaction are overlays. A price-only update does not revise regulatory evidence.
+6. **Recommendation layer:** admission requires later calibrated probabilities, conditional diluted-equity values, priced-in comparison, costs/liquidity and accepted policy. R1 always returns `recommendation_eligible=false`.
+7. **No new platform:** use incumbent identity, event, financial, options, recommendation, evaluation and publication owners. This reference is not a production kernel.
+
+## 6. Next research unit
+
+R2 should build the first reconstructable cohort and denominator:
+
+1. choose one material family—recommended: PMA originals plus panel-track supplements for listed issuers;
+2. freeze source/publication clocks and define how withdrawals, denials, pending cases and missing public submissions are represented;
+3. bind exact device/applicant/rights/security identities;
+4. construct positive, adverse, delayed, commercially weak and immaterial diversified-company cases;
+5. measure anticipation, announcement reaction and durable 3/6/12-month excess returns separately;
+6. build a deterministic revenue/materiality bridge and an explicit abstention policy;
+7. produce the first native MedTech detail/timeline/scenario/revision design on an admitted Paper window.
+
+A 510(k)-wide scraper should not be the first vertical: high event volume, predicate heterogeneity and issuer immateriality can create a large but low-value dataset before the identity/materiality contract is proven.
+
+## 7. Readiness and limits
+
+- Research decisions: **R1 PARTIAL / usable contract**
+- Source denominator: **NOT QUALIFIED**
+- Forecast calibration: **NOT STARTED**
+- Recommendation promotion: **NOT QUALIFIED**
+- Native Paper: **NOT APPLIED**
+- Production integration: **NOT BUILT**
+- Trade authority: **NONE**
+- `EFFECT_UNKNOWN`: **none in the local reference build**
+
+This R1 advances the missing MedTech lane without claiming that the earlier absent Web CEO completed its assignment. It is a bounded first installment under the already-approved Wave 1 MedTech commission; the full multi-turn research, design and Codex return remain owed.
