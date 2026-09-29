@@ -413,7 +413,13 @@ def _corrected_html(**overrides: object) -> str:
         "plv_text": "last read Sep 26, 4:00 pm ET",
     }
     values.update(overrides)
-    return _full_page(**values)
+    soup = BeautifulSoup(_full_page(**values), _pjr.HTML_PARSER)
+    displayed = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
+    template = soup.new_tag("template", attrs={"class": "pvs-body-source"})
+    template.append(BeautifulSoup(str(displayed), _pjr.HTML_PARSER).select_one(
+        ".pv-setup-body"))
+    displayed.insert_before(template)
+    return str(soup)
 
 
 def _runtime_payload(*, quote_asof: str = "2026-09-26T20:00:00Z",
@@ -576,7 +582,7 @@ def test_j5_fail_asof_mismatch():
 
 
 def test_j6_pass_all_fields_preserved():
-    soup = BeautifulSoup(_full_page(ticker="TEST1"), _pjr.HTML_PARSER)
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1")
     chk = _pjr._check_j6(soup, su, "TEST1")
     assert chk["status"] == "PASS", chk
@@ -606,7 +612,7 @@ def test_j5_fail_entry_status_mismatch():
 def test_j6_fail_signal_asof_string_mismatch():
     """A string mismatch must gate J6 even when numeric fields reconcile."""
     soup = BeautifulSoup(
-        _full_page(detail_signal_asof="2099-01-01"), _pjr.HTML_PARSER)
+        _corrected_html(detail_signal_asof="2099-01-01"), _pjr.HTML_PARSER)
     chk = _pjr._check_j6(soup, _standouts_payload(), "TEST1")
     assert chk["status"] == "FAIL", chk
     assert chk["status"] == "FAIL", chk
@@ -830,6 +836,7 @@ def test_j6_fail_second_displayed_body_with_foreign_native_id():
     second_wrapper = BeautifulSoup(str(wrapper), _pjr.HTML_PARSER).select_one(
         '[data-setup-ticker="TEST1"]')
     second_wrapper["data-setup-ticker"] = "TEST1-dialog"
+    second_wrapper.select_one("template.pvs-body-source").decompose()
     body = second_wrapper.select_one(".pv-setup-body")
     body["data-native-id"] = "OTHER"
     wrapper.insert_after(second_wrapper)
@@ -1119,6 +1126,26 @@ def test_j11_fail_lifecycle_and_relation_words_visible():
     chk = _pjr._check_j11(soup, "en", _standouts_payload(),
                           _index_payload(with_plan=False), "TEST1", [])
     assert chk["status"] == "FAIL", chk
+
+
+def test_j11_fail_every_underscore_free_lifecycle_word_visible():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    body = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
+    states = ("watch", "ready", "entered", "delivering",
+              "overtime", "invalidated", "resolved")
+    body.append(BeautifulSoup(
+        "<p>" + " ".join(states) + "</p>", _pjr.HTML_PARSER).p)
+    chk = _pjr._check_j11(soup, "en", _standouts_payload(),
+                          _index_payload(with_plan=False), "TEST1", [])
+    assert chk["status"] == "FAIL", chk
+    assert {hit["token"] for hit in chk["observed"]} == set(states)
+
+
+def test_j6_fail_when_no_template_source_body_exists():
+    soup = BeautifulSoup(_full_page(), _pjr.HTML_PARSER)
+    chk = _pjr._check_j6(soup, _standouts_payload(), "TEST1")
+    assert chk["status"] == "FAIL", chk
+    assert chk["observed"] == "no template .pvs-body-source for ticker"
 
 
 def test_j11_fail_fixed_refusal_vocabulary_even_when_payload_omits_it():

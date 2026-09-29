@@ -182,10 +182,8 @@ _CROSSMARKET_HREF_RE = re.compile(
     r"^(hk|china|canada|intl)[_a-z]*\.html", re.IGNORECASE
 )
 
-# Tokens flagged as "raw internal enums" by J11: strings that contain ``_``
-# AND match one of the enum values present in the supplied standouts/index
-# payloads. Plain words (without underscores) are NEVER flagged — they are
-# language copy, not enum leakage.
+# Tokens flagged as "raw internal enums" by J11 include the frozen lifecycle
+# words as well as snake-case codes from the runtime vocabularies and payloads.
 _SNAKE_RE = re.compile(r"^[a-z][a-z0-9]*(?:_[a-z0-9]+)+$")
 
 # Stale/empty sentinel strings the detail template prints when a field is
@@ -808,6 +806,10 @@ def _check_j6(soup: BeautifulSoup, standouts: dict[str, Any],
     if not displayed:
         return _check_status("FAIL", "displayed selected body",
                              "no displayed .pv-setup-body for ticker", where)
+    if not templates:
+        return _check_status(
+            "FAIL", "template source body present",
+            "no template .pvs-body-source for ticker", where)
     bindings = [_body_binding(body) for body in displayed]
     bad_displayed = [binding for binding in bindings
                      if binding != bindings[0]
@@ -1304,7 +1306,8 @@ def _enum_values(standouts: dict[str, Any], index: dict[str, Any]) -> set[str]:
     standout_values = _payload_enum_values(standouts, STANDOUTS_ENUM_FIELDS)
     vocabulary = (declared_reasons() | plan_values | standout_values
                   | LIFECYCLE_VOCABULARY | PLAN_RELATION_VOCABULARY)
-    return {token for token in vocabulary if "_" in token}
+    return {token for token in vocabulary
+            if "_" in token or token in LIFECYCLE_VOCABULARY}
 
 
 def _scan_tokens(text: str, banned: set[str]) -> list[dict[str, str]]:
