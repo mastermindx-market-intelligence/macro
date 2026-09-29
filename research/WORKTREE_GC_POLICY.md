@@ -821,6 +821,38 @@ Two rules follow, and neither is about this file:
    halted `HELD_SOURCE_RACE|no_source_removal`, so source data it was meant to remove is still
    in place. Read the receipts before inferring intent from a directory name.
 
+### `/Volumes/Worktrees` by BYTES — an eighth pool, and the fleet is 6.5% of it
+
+The volume §"A second external volume" found ungoverned was never size-attributed, so
+"9 ungoverned fleet worktrees" silently became "this is where the bloat is". Top-level `du -sxk`
+over all 34 entries, files as well as directories:
+
+| share | GiB | entry |
+|---:|---:|---|
+| **89.0%** | 712.72 | `Documents` — operator personal data |
+| 4.5% | 36.08 | `Backups` — operator |
+| 6.5% | 51.85 | **all 6 sized fleet/Sol trees combined** |
+
+**Operator data is 93.5% of this volume and the whole fleet is 6.5%** — and 46.43 of those 51.85
+GiB are `sol-*` HUMAN-class, which `DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM` never
+auto-reclaims. **Agent-reclaimable on this entire 931 GiB volume is at most ~5.4 GiB.** Inside
+`Documents`, the three largest categories are the live photo library (246.65 GiB), a separate
+pictures tree (147.02 GiB) and a messaging archive (133.23 GiB); the operator's per-folder
+structure is deliberately not enumerated here, for the same reason the pre-transfer manifests'
+filenames are not. `.ADSPOWER_GLOBAL` measures **0.00 GiB** — a marker, not a payload; the
+operator veto on it stands regardless of size.
+
+**So the 87% fill on this volume is not a fleet problem, and nothing in §9 can touch it.** Not a
+roots widening, not arming the sweeper, not the lock-stamp repair, not a population cap — there is
+almost nothing there to reclaim. That is the eighth pool measured and the seventh null, and it is
+the clearest case yet of the pattern §9 keeps running into: **the measurable thing and the
+actionable thing are different, and a governance gap is not a byte attribution.** The genuine
+risk inverts: ~130 GiB free, and every worktree the fleet plants here consumes the operator's
+remaining headroom for a photo library that is still growing — whose only other copy is the
+195.28 GiB tar on `/Volumes/Mastermind`, so **neither copy is on a backup device.** Whether the
+fleet should plant worktrees on this volume at all is an operator question, and it is a better one
+than any reclaim gate.
+
 
 
 
