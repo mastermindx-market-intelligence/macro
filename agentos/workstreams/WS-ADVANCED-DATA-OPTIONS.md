@@ -104,13 +104,30 @@ waves:
       remains BUILT_NOT_PROVEN (consumer path is AD-1T2's to prove).
       Next: Sol commissioning of AD-1T2. AD-2 stays CLOSED.
   - id: AD-1T2
-    title: Restore store-bearing M1 to the theta-m1 product workflow; commission AD-1 end to end
-    status: todo
+    title: Restore the store-bearing M1 to the `m1-theta` product workflow; commission AD-1 end to end
+    status: in_progress
     depends_on: [AD-1T1]
+    pr: [7889, 8203]
     next_action: >
-      NOT STARTED. Opens only after AD-1T1 is Sol-accepted and the T1 cadence
-      is production-proven (two consecutive normal scheduled sessions). Broken
-      R2 sync is not a prerequisite unless new evidence proves it necessary.
+      LABEL CORRECTION (2026-09-29): this item previously read `theta-m1`, which
+      is the REVERSED label — it is carried by mac-builder-3, an M2 with no
+      store. The store-bearing host's label is `m1-theta`. Targeting the
+      reversed one yields a store-less producer that looks correctly placed;
+      #7889 documents the same trap and gets the label right.
+      Blocked on TWO independent external boundaries, either sufficient alone.
+      (1) HOST: the M1 is wedged — ping 0% loss and Tailscale up, SSH
+      authenticates, but every command dies `exec request failed on channel 0`
+      (cannot fork), after 96% disk / pressure=emergency on 2026-09-17 drove
+      its runner out of the registry. `m1-theta` has no carrier, so
+      runner-policy.yml's `orphaned` record is CORRECT and R6 blocks correctly
+      — do not drive a W4 admission on #7889's original premise, which has
+      inverted. (2) DATA: the canonical store on that host holds ZERO roots in
+      every tier while its manifest advertises healthy/372/2026-09-25. So
+      re-placing the job does not produce a brief — this is not only a
+      placement fault. #8203 makes the drained store refuse to resolve instead
+      of publishing a blank board; refilling it is owned by the store's writer.
+      See DSC:A-DRAINED-STORE-PASSES-A-SHAPE-CHECK-AND-PUBLISHES-A-BLANK-BOARD
+      and agentos/handoffs/ADVANCED-DATA-OPTIONS-2026-09-29-drained-store-false-green.md.
   - id: AD-2
     title: Evidence Receipts, Nulls, Lifecycle, Corrections
     status: todo
