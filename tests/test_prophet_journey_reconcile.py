@@ -383,6 +383,7 @@ def _standouts_payload(*, ticker: str = "TEST1", in_buy: bool = True,
 def _index_payload(*, with_plan: bool = True, ticker: str = "TEST1",
                    as_of: str = "2026-09-26",
                    source_board_asof: str = "2026-09-26",
+                   source_asof: str = "2026-09-26",
                    plan_closed: bool = False,
                    plan_ticker: str | None = None) -> dict:
     plans = []
@@ -400,7 +401,7 @@ def _index_payload(*, with_plan: bool = True, ticker: str = "TEST1",
     if plan_closed:
         plans[0]["closed"] = True
     return {"as_of": as_of, "source_board_asof": source_board_asof,
-            "plans": plans}
+            "source_asof": source_asof, "plans": plans}
 
 
 def _corrected_html(**overrides: object) -> str:
@@ -414,6 +415,10 @@ def _corrected_html(**overrides: object) -> str:
     }
     values.update(overrides)
     soup = BeautifulSoup(_full_page(**values), _pjr.HTML_PARSER)
+    book_clock = soup.select_one("#us-plan-book-asof")
+    if book_clock is not None:
+        book_clock["data-plan-book-source-asof"] = "2026-09-26"
+        book_clock["data-plan-book-published"] = ""
     displayed = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
     template = soup.new_tag("template", attrs={"class": "pvs-body-source"})
     template.append(BeautifulSoup(str(displayed), _pjr.HTML_PARSER).select_one(
@@ -696,8 +701,9 @@ def test_j9_clocks_still_reconcile_source_dates():
     today = date.today().isoformat()
     soup = BeautifulSoup(_corrected_html(
         plv_state="today", plv_text="quotes as of 4:00 pm ET"), _pjr.HTML_PARSER)
-    ix = _index_payload()
-    su = _standouts_payload()
+    ix = _index_payload(as_of="2026-09-27", source_board_asof="2026-09-26",
+                        source_asof="2026-09-26")
+    su = _standouts_payload(as_of="2026-09-26")
     runtime = _runtime_payload(quote_asof=f"{today}T20:00:00Z",
                                pass_ts=f"{today}T20:00:00Z")
     assert _pjr._check_j9(soup, ix, su, runtime, ticker="TEST1")["status"] == "PASS"
@@ -1055,6 +1061,69 @@ def test_j9_fail_valid_plan_book_attribute_with_unrelated_sentence():
     clock.select_one(".l-zh").decompose()
     chk = _pjr._check_j9(soup, _index_payload(), _standouts_payload(),
                          _runtime_payload(), ticker="TEST1")
+    assert chk["status"] == "FAIL", chk
+
+
+def test_j9_fail_plan_book_attribute_shows_publication_clock():
+    index = _index_payload(as_of="2026-09-27", source_board_asof="2026-09-26",
+                           source_asof="2026-09-26")
+    chk = _pjr._check_j9(
+        BeautifulSoup(_corrected_html(
+            plan_book_asof="2026-09-27", plv_state="prior_day",
+            plv_text="last read Sep 26, 4:00 pm ET"), _pjr.HTML_PARSER),
+        index, _standouts_payload(as_of="2026-09-26"),
+        _runtime_payload(quote_asof="2026-09-26T20:00:00Z"), ticker="TEST1")
+    assert chk["status"] == "FAIL", chk
+    assert ("plan book attribute shows the publication clock, not source_asof"
+            in chk["observed"]), chk
+
+
+def test_j9_pass_all_three_plan_book_clock_attributes():
+    index = _index_payload(as_of="2026-09-27", source_board_asof="2026-09-26",
+                           source_asof="2026-09-26")
+    soup = BeautifulSoup(_corrected_html(
+        plan_book_asof="2026-09-26", plv_state="prior_day",
+        plv_text="last read Sep 26, 4:00 pm ET"), _pjr.HTML_PARSER)
+    clock = soup.select_one("#us-plan-book-asof")
+    clock["data-plan-book-source-asof"] = "2026-09-26"
+    clock["data-plan-book-published"] = "2026-09-27"
+    clock.select_one(".l-en").string = (
+        "Plan records as of 2026-09-26 · source board 2026-09-26 "
+        "· published 2026-09-27")
+    clock.select_one(".l-zh").string = (
+        "计划记录截至 2026-09-26 · 来源榜单 2026-09-26 · 发布于 2026-09-27")
+    chk = _pjr._check_j9(soup, index, _standouts_payload(as_of="2026-09-26"),
+                         _runtime_payload(quote_asof="2026-09-26T20:00:00Z"),
+                         ticker="TEST1")
+    assert chk["status"] == "PASS", chk
+
+
+def test_j9_pass_absent_source_asof_with_unavailable_text_and_empty_attributes():
+    index = _index_payload(as_of="2026-09-27", source_board_asof="2026-09-26",
+                           source_asof="")
+    soup = BeautifulSoup(_corrected_html(
+        plan_book_asof="", plv_state="prior_day",
+        plv_text="last read Sep 26, 4:00 pm ET"), _pjr.HTML_PARSER)
+    clock = soup.select_one("#us-plan-book-asof")
+    clock["data-plan-book-source-asof"] = ""
+    clock["data-plan-book-published"] = ""
+    clock.select_one(".l-en").string = "Plan record date unavailable"
+    clock.select_one(".l-zh").string = "计划记录日期不可用"
+    chk = _pjr._check_j9(soup, index, _standouts_payload(as_of="2026-09-26"),
+                         _runtime_payload(quote_asof="2026-09-26T20:00:00Z"),
+                         ticker="TEST1")
+    assert chk["status"] == "PASS", chk
+
+
+def test_j9_fail_absent_source_asof_with_dated_attribute():
+    index = _index_payload(as_of="2026-09-27", source_board_asof="2026-09-26",
+                           source_asof="")
+    chk = _pjr._check_j9(
+        BeautifulSoup(_corrected_html(
+            plan_book_asof="2026-09-27", plv_state="prior_day",
+            plv_text="last read Sep 26, 4:00 pm ET"), _pjr.HTML_PARSER),
+        index, _standouts_payload(as_of="2026-09-26"),
+        _runtime_payload(quote_asof="2026-09-26T20:00:00Z"), ticker="TEST1")
     assert chk["status"] == "FAIL", chk
 
 

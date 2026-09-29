@@ -12957,6 +12957,8 @@ jobs:
         run: python -m pytest tests/test_prophet_card_shared.py -q
       - name: Prophet Today and Company context - owner selection and typed responses
         run: python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "today or company_context"
+      - name: Prophet journey reconciliation harness (PR-time gated journey)
+        run: python -m pytest tests/test_prophet_journey_reconcile.py -q
       - name: stock-brief context health (R2 context must yield a nonempty batch)
         run: >-
           python -m pytest tests/test_catalyst_stock.py -q -k "build_stock_briefs_all_no_context_is_failure or build_stock_briefs_empty_result_is_failure"

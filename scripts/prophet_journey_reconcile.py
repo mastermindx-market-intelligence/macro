@@ -1136,28 +1136,54 @@ def _check_j9(soup: BeautifulSoup, index: dict[str, Any],
                locale: str = "en", ticker: str | None = None) -> dict[str, Any]:
     """J9 — bind plan-book, assessment and quote clocks to their sources."""
     where = ("#us-plan-book-asof, .pvs-assessment-clock and #plv-asof "
-             "against index.asof, signal_asof and runtime meta quote_asof")
+             "against index.source_asof, index.asof, signal_asof and runtime "
+             "meta quote_asof")
     fails: list[str] = []
     book = _select_first(soup, "#us-plan-book-asof")
     if book is None:
         fails.append("plan book clock missing")
     else:
-        raw_asof = index.get("asof") or index.get("as_of")
+        raw_source_asof = index.get("source_asof")
         rendered = str(book.get("data-plan-book-asof", ""))
         text = book.get_text(" ", strip=True)
         parsed_book = _iso_date(rendered)
-        raw_asof_date = _iso_date(raw_asof)
-        if rendered == "":
-            if raw_asof_date is not None or "Plan record date unavailable" not in text:
-                fails.append("plan book empty attribute with non-unavailable text")
-        elif parsed_book is None:
+        source_asof_date = _iso_date(raw_source_asof)
+        if rendered and parsed_book is None:
             fails.append("plan book attribute is not YYYY-MM-DD")
-        elif str(raw_asof) != rendered:
-            fails.append("plan book attribute differs from index.asof")
-        elif raw_asof_date is None or not text:
+        elif rendered and source_asof_date is not None and rendered != raw_source_asof:
+            if (_iso_date(index.get("asof") or index.get("as_of")) is not None
+                    and rendered == str(index.get("asof") or index.get("as_of"))):
+                fails.append("plan book attribute shows the publication clock, "
+                             "not source_asof")
+            else:
+                fails.append("plan book attribute differs from index.source_asof")
+        elif rendered and source_asof_date is None:
+            fails.append("plan book attribute dated without valid source_asof")
+        elif rendered and (not text or rendered not in text):
             fails.append("plan book dated text mismatch")
-        elif rendered not in text:
-            fails.append("plan book dated text mismatch")
+        elif not rendered:
+            if source_asof_date is not None or (
+                    "Plan record date unavailable" not in text
+                    and "计划记录日期不可用" not in text):
+                fails.append("plan book empty attribute with non-unavailable text")
+
+        rendered_source_board = str(book.get("data-plan-book-source-asof", ""))
+        source_board = index.get("source_board_asof")
+        if rendered_source_board:
+            if _iso_date(source_board) is None:
+                fails.append("plan book source-board attribute dated without "
+                             "valid index.source_board_asof")
+            elif rendered_source_board != str(source_board):
+                fails.append("plan book source-board attribute differs from "
+                             "index.source_board_asof")
+
+        rendered_published = str(book.get("data-plan-book-published", ""))
+        publication = index.get("asof") or index.get("as_of")
+        if rendered_published:
+            if _iso_date(rendered_published) is None:
+                fails.append("plan book published attribute is not YYYY-MM-DD")
+            elif rendered_published != str(publication):
+                fails.append("plan book published attribute differs from index.asof")
     idx_asof = index.get("asof") or index.get("as_of")
     idx_source = index.get("source_board_asof")
     su_asof = (standouts or {}).get("as_of")
