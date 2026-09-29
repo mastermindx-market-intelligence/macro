@@ -51,10 +51,19 @@ _UNREAD_ELEMENTS = frozenset({
 _TABLE_NAMES = frozenset({"table", "tr", "td", "th"})
 _SPAN_LIMITS = {"colspan": 1000, "rowspan": 65534}
 _READABLE = frozenset(map(chr, range(0x20, 0x7F))) | {_DASH}
-_YEAR = re.compile(r"(?<![0-9])20[0-9]{2}(?![0-9])")
 _FOOTNOTE_MARKER = re.compile(r"\([0-9]\)")
-_YEAR_BEFORE = re.compile(r"(?:\A *|[A-Za-z0-9] *|[A-Za-z]\. *|[A-Za-z0-9] *[,/] *|[A-Za-z0-9]-|[A-Za-z0-9] +- +)\Z")
-_YEAR_AFTER = re.compile(r" *\Z| *[A-Za-z0-9]|[,/-][A-Za-z0-9]| *[,/] *(?:\Z|[A-Za-z0-9])| +- +[A-Za-z0-9]")
+# R188: a header value is read as words.  A 20dd names a year only as a whole word ("2025", "FY2025", "CY2025",
+# "2025E") that stands alone, or after a word that names a period (a month, "Fiscal", "Year"), or joined to such a
+# year by ",", "/", "-" or "and".  A letter glued to it ("2025x", "2025M", "x2025"), or any other word or mark beside
+# it, leaves it a figure.
+_YEAR_TOKEN = re.compile(r"[A-Za-z0-9]+\.?|[^ A-Za-z0-9]")
+_YEAR_RUN = re.compile(r"(?:FY|CY)?(20[0-9]{2})E?")
+_MONTHS = (
+    "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "sept", "oct", "nov", "dec",
+    "january", "february", "march", "april", "june", "july", "august", "september", "october", "november", "december",
+)
+_YEAR_WORDS = frozenset({"fiscal", "year", "calendar", "fy", "cy", *_MONTHS, *(month + "." for month in _MONTHS)})
+_YEAR_LINKS = frozenset({",", "/", "-", "and"})
 _FIGURE = re.compile(r"\(?\$?[0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?\)?%?")
 _ODD_CHARACTER = re.compile(r"[^\S \t\n\r\f\xa0]|[\x00-\x08\x0b\x0e-\x1f\x7f-\x9f]")
 _UNPRINTED_RAW_TEXT = frozenset({"script", "style"})
@@ -934,15 +943,31 @@ def _header_years(rows: Sequence[Sequence[Cell]], cell: Cell) -> set[int] | None
 
 
 def _named_years(value: str) -> tuple[list[int], str]:
+    """The years a header value names (R188), and the value with their digits removed.  One pass: each word is read
+    once, and a run of years joined by links is read as a whole."""
     text = _FOOTNOTE_MARKER.sub(" ", value)
+    tokens = list(_YEAR_TOKEN.finditer(text))
+    keys = [token.group().lower() if token.group().isascii() else token.group() for token in tokens]
+    runs = [_YEAR_RUN.fullmatch(token.group()) for token in tokens]
     named: list[int] = []
     rest: list[str] = []
-    start = 0
-    for match in _YEAR.finditer(text):
-        if _YEAR_BEFORE.search(text, 0, match.start()) and _YEAR_AFTER.match(text, match.end()):
-            named.append(int(match.group()))
-            rest.append(text[start : match.start()])
-            start = match.end()
+    start = index = 0
+    while index < len(tokens):
+        if runs[index] is None:
+            index += 1
+            continue
+        last = index
+        while last + 2 < len(tokens) and keys[last + 1] in _YEAR_LINKS and runs[last + 2] is not None:
+            last += 2
+        worded = index > 0 and keys[index - 1] in _YEAR_WORDS
+        # A word may follow the run only where a period word precedes it ("Fiscal 2025 Results"), never glued to it.
+        after = last + 1 == len(tokens) or (worded and tokens[last + 1].start() > tokens[last].end())
+        if (index == 0 or worded) and after:
+            for run, token in zip(runs[index : last + 1 : 2], tokens[index : last + 1 : 2]):
+                named.append(int(run.group(1)))
+                rest.append(text[start : token.start() + run.start(1)])
+                start = token.start() + run.end(1)
+        index = last + 1
     rest.append(text[start:])
     return named, " ".join(rest)
 
