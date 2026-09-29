@@ -22,6 +22,7 @@ import json
 import os
 import subprocess
 from datetime import date
+from importlib.util import find_spec
 import sys
 from pathlib import Path
 
@@ -60,7 +61,7 @@ def _runtime_lifecycle_cells() -> tuple[str, ...]:
 
 
 def _field_text(path: str, html: str) -> str:
-    field = BeautifulSoup(html, "lxml").select_one(
+    field = BeautifulSoup(html, _pjr.HTML_PARSER).select_one(
         f'[data-source-field="{path}"]')
     assert field is not None, path
     return field.get_text(" ", strip=True)
@@ -438,7 +439,7 @@ def _write_io(html: str, standouts: dict, index: dict,
 # =========================================================================== #
 def test_j1_pass_card_present():
     """Production cards carry the ticker on the card and market on .nb-px."""
-    soup = BeautifulSoup(_full_page(ticker="TEST1"), "lxml")
+    soup = BeautifulSoup(_full_page(ticker="TEST1"), _pjr.HTML_PARSER)
     chk = _pjr._check_j1(soup, "TEST1")
     assert chk["status"] == "PASS", chk
 
@@ -451,7 +452,7 @@ def test_j1_pass_production_lowercase_nested_market():
         'data-stage="setting_up"><span class="nb-px pv-px" '
         'data-sym="TEST1" data-mkt="us">$178.42</span></article>'
         '</section>')
-    chk = _pjr._check_j1(BeautifulSoup(html, "lxml"), "TEST1")
+    chk = _pjr._check_j1(BeautifulSoup(html, _pjr.HTML_PARSER), "TEST1")
     assert chk["status"] == "PASS", chk
 
 
@@ -462,25 +463,25 @@ def test_j1_pass_record_only_card_without_price_market():
         '<a class="pvcard" data-ticker="TEST1" data-life="live" '
         'data-stage="setting_up" data-record-only="1">TEST1</a>'
         '</section>')
-    chk = _pjr._check_j1(BeautifulSoup(html, "lxml"), "TEST1")
+    chk = _pjr._check_j1(BeautifulSoup(html, _pjr.HTML_PARSER), "TEST1")
     assert chk["status"] == "PASS", chk
 
 
 def test_j1_na_container_absent():
     """A missing board container is N/A, not a candidate failure."""
     html = _wrap("<p>Dialog-only snapshot.</p>")
-    chk = _pjr._check_j1(BeautifulSoup(html, "lxml"), "TEST1")
+    chk = _pjr._check_j1(BeautifulSoup(html, _pjr.HTML_PARSER), "TEST1")
     assert chk["status"] == "N/A", chk
 
 
 def test_j1_fail_card_missing():
-    soup = BeautifulSoup(_full_page(ticker="TEST1"), "lxml")
+    soup = BeautifulSoup(_full_page(ticker="TEST1"), _pjr.HTML_PARSER)
     chk = _pjr._check_j1(soup, "ZZZZ")
     assert chk["status"] == "FAIL", chk
 
 
 def test_j2_pass_table_row_in_buy():
-    soup = BeautifulSoup(_full_page(ticker="TEST1", in_buy=True), "lxml")
+    soup = BeautifulSoup(_full_page(ticker="TEST1", in_buy=True), _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1", in_buy=True)
     chk = _pjr._check_j2(soup, "TEST1", su)
     assert chk["status"] == "PASS", chk
@@ -490,7 +491,7 @@ def test_j2_fail_off_board_wrong():
     """Flip data-off-board to a wrong value — the check must FAIL."""
     html = _full_page(ticker="TEST1", in_buy=True).replace(
         'data-off-board="false"', 'data-off-board="true"')
-    soup = BeautifulSoup(html, "lxml")
+    soup = BeautifulSoup(html, _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1", in_buy=True)
     chk = _pjr._check_j2(soup, "TEST1", su)
     assert chk["status"] == "FAIL", chk
@@ -500,7 +501,7 @@ def test_j3_pass_grid_row_in_buy():
     """The grid view is the same DOM — flip data-view and the row still matches."""
     html = _full_page(ticker="TEST1", in_buy=True).replace(
         'data-view="table"', 'data-view="grid"')
-    soup = BeautifulSoup(html, "lxml")
+    soup = BeautifulSoup(html, _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1", in_buy=True)
     chk = _pjr._check_j3(soup, "TEST1", su)
     assert chk["status"] == "PASS", chk
@@ -510,7 +511,7 @@ def test_j3_fail_off_board_wrong():
     html = (_full_page(ticker="TEST1", in_buy=False)
             .replace('data-view="table"', 'data-view="grid"')
             .replace('data-off-board="true"', 'data-off-board="false"'))
-    soup = BeautifulSoup(html, "lxml")
+    soup = BeautifulSoup(html, _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1", in_buy=False)
     chk = _pjr._check_j3(soup, "TEST1", su)
     assert chk["status"] == "FAIL", chk
@@ -550,7 +551,7 @@ def test_j4_fail_absent_from_all():
 
 
 def test_j5_pass_native_id_and_asof():
-    soup = BeautifulSoup(_full_page(ticker="TEST1"), "lxml")
+    soup = BeautifulSoup(_full_page(ticker="TEST1"), _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1")
     chk = _pjr._check_j5(soup, su, "TEST1")
     assert chk["status"] == "PASS", chk
@@ -559,7 +560,7 @@ def test_j5_pass_native_id_and_asof():
 def test_j5_fail_native_id_mismatch():
     html = _full_page(ticker="TEST1").replace(
         'data-native-id="TEST1"', 'data-native-id="OTHER"')
-    soup = BeautifulSoup(html, "lxml")
+    soup = BeautifulSoup(html, _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1")
     chk = _pjr._check_j5(soup, su, "TEST1")
     assert chk["status"] == "FAIL", chk
@@ -568,14 +569,14 @@ def test_j5_fail_native_id_mismatch():
 def test_j5_fail_asof_mismatch():
     html = _full_page(ticker="TEST1").replace(
         'data-setup-asof="2026-09-26"', 'data-setup-asof="2099-01-01"')
-    soup = BeautifulSoup(html, "lxml")
+    soup = BeautifulSoup(html, _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1")
     chk = _pjr._check_j5(soup, su, "TEST1")
     assert chk["status"] == "FAIL", chk
 
 
 def test_j6_pass_all_fields_preserved():
-    soup = BeautifulSoup(_full_page(ticker="TEST1"), "lxml")
+    soup = BeautifulSoup(_full_page(ticker="TEST1"), _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1")
     chk = _pjr._check_j6(soup, su, "TEST1")
     assert chk["status"] == "PASS", chk
@@ -586,7 +587,7 @@ def test_j6_fail_money_mismatch():
     """Drop the $-prefix from one field — the dollar amount check must FAIL."""
     html = _full_page(ticker="TEST1", detail_price=178.42).replace(
         '<dd>$178.42', '<dd>178.42')
-    soup = BeautifulSoup(html, "lxml")
+    soup = BeautifulSoup(html, _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1", detail_price=178.42)
     chk = _pjr._check_j6(soup, su, "TEST1")
     assert chk["status"] == "FAIL", chk
@@ -595,7 +596,7 @@ def test_j6_fail_money_mismatch():
 def test_j5_fail_entry_status_mismatch():
     """A DOM entry status that disagrees with the payload must fail."""
     soup = BeautifulSoup(
-        _full_page(detail_entry_status="wrong_status"), "lxml")
+        _full_page(detail_entry_status="wrong_status"), _pjr.HTML_PARSER)
     chk = _pjr._check_j5(soup, _standouts_payload(), "TEST1")
     assert chk["status"] == "FAIL", chk
     assert chk["observed"]["data_entry_status"] == "wrong_status", chk
@@ -605,7 +606,7 @@ def test_j5_fail_entry_status_mismatch():
 def test_j6_fail_signal_asof_string_mismatch():
     """A string mismatch must gate J6 even when numeric fields reconcile."""
     soup = BeautifulSoup(
-        _full_page(detail_signal_asof="2099-01-01"), "lxml")
+        _full_page(detail_signal_asof="2099-01-01"), _pjr.HTML_PARSER)
     chk = _pjr._check_j6(soup, _standouts_payload(), "TEST1")
     assert chk["status"] == "FAIL", chk
     assert chk["status"] == "FAIL", chk
@@ -616,7 +617,7 @@ def test_j6_fail_bool_mismatch():
     html = _full_page(ticker="TEST1").replace(
         '<span class="l-en">Yes</span><span class="l-zh">是</span>',
         '<span class="l-en">Maybe</span><span class="l-zh">或许</span>')
-    soup = BeautifulSoup(html, "lxml")
+    soup = BeautifulSoup(html, _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1")
     chk = _pjr._check_j6(soup, su, "TEST1")
     assert chk["status"] == "FAIL", chk
@@ -624,7 +625,7 @@ def test_j6_fail_bool_mismatch():
 
 def test_j7_pass_pool_clocks_match():
     soup = BeautifulSoup(_full_page(ticker="TEST1",
-                                    pool_digest=""), "lxml")
+                                    pool_digest=""), _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1", pool_as_of="2026-09-26",
                             pool_total=12, pool_digest="")
     soup.select_one("#us-candidate-pool")["data-source-digest"] = (
@@ -635,21 +636,21 @@ def test_j7_pass_pool_clocks_match():
 
 def test_j7_fail_pool_total_mismatch():
     """Set pool_total=99 in payload; page data-total stays 12 → FAIL."""
-    soup = BeautifulSoup(_full_page(ticker="TEST1", pool_total=12), "lxml")
+    soup = BeautifulSoup(_full_page(ticker="TEST1", pool_total=12), _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1", pool_total=99)
     chk = _pjr._check_j7(soup, su, "TEST1")
     assert chk["status"] == "FAIL", chk
 
 
 def test_j7_fail_pool_as_of_mismatch():
-    soup = BeautifulSoup(_full_page(ticker="TEST1"), "lxml")
+    soup = BeautifulSoup(_full_page(ticker="TEST1"), _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1", as_of="2099-12-31")
     chk = _pjr._check_j7(soup, su, "TEST1")
     assert chk["status"] == "FAIL", chk
 
 
 def test_j8_pass_with_plan_linked():
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     ix = _index_payload(with_plan=True)
     chk, plan_ids = _pjr._check_j8(soup, ix, "TEST1")
     assert chk["status"] == "PASS", chk
@@ -658,7 +659,7 @@ def test_j8_pass_with_plan_linked():
 
 def test_j8_fail_missing_plan_node():
     """Page has no plan card → J8 fails when plans are populated."""
-    soup = BeautifulSoup(_full_page(ticker="TEST1", with_plan=False), "lxml")
+    soup = BeautifulSoup(_full_page(ticker="TEST1", with_plan=False), _pjr.HTML_PARSER)
     ix = _index_payload(with_plan=True)
     chk, _ = _pjr._check_j8(soup, ix, "TEST1")
     assert chk["status"] == "FAIL", chk
@@ -666,7 +667,7 @@ def test_j8_fail_missing_plan_node():
 
 def test_j8_pass_no_plan_no_fabrication():
     """No plans + no #pv-* links on the journey → PASS."""
-    soup = BeautifulSoup(_full_page(ticker="TEST1", with_plan=False), "lxml")
+    soup = BeautifulSoup(_full_page(ticker="TEST1", with_plan=False), _pjr.HTML_PARSER)
     ix = _index_payload(with_plan=False)
     chk, plan_ids = _pjr._check_j8(soup, ix, "TEST1")
     assert chk["status"] == "PASS", chk
@@ -675,10 +676,10 @@ def test_j8_pass_no_plan_no_fabrication():
 
 def test_j8_fail_fabricated_link():
     """A link in the selected body without a plan-book record fails."""
-    soup = BeautifulSoup(_full_page(ticker="TEST1", with_plan=False), "lxml")
+    soup = BeautifulSoup(_full_page(ticker="TEST1", with_plan=False), _pjr.HTML_PARSER)
     soup.select_one(".pvs-plan-relation").append(
         BeautifulSoup('<button class="pvs-plan-link" '
-                      'data-pvs-plan-target="pv-NOTREAL">x</button>', "lxml").button)
+                      'data-pvs-plan-target="pv-NOTREAL">x</button>', _pjr.HTML_PARSER).button)
     soup.select_one(".pvs-plan-relation")["data-plan-relation"] = "related_security"
     chk, _ = _pjr._check_j8(soup, _index_payload(with_plan=False), "TEST1")
     assert chk["status"] == "FAIL", chk
@@ -688,7 +689,7 @@ def test_j9_clocks_still_reconcile_source_dates():
     """The source publication clocks remain part of J9."""
     today = date.today().isoformat()
     soup = BeautifulSoup(_corrected_html(
-        plv_state="today", plv_text="quotes as of 4:00 pm ET"), "lxml")
+        plv_state="today", plv_text="quotes as of 4:00 pm ET"), _pjr.HTML_PARSER)
     ix = _index_payload()
     su = _standouts_payload()
     runtime = _runtime_payload(quote_asof=f"{today}T20:00:00Z",
@@ -707,16 +708,16 @@ def test_j9_clocks_still_reconcile_source_dates():
 def test_j9_fail_empty_or_missing_clocks():
     """Empty quote text or a missing node cannot pass."""
     empty = BeautifulSoup(
-        '<span id="plv-asof"></span>', "lxml")
+        '<span id="plv-asof"></span>', _pjr.HTML_PARSER)
     assert _pjr._check_j9(empty, _index_payload(), _standouts_payload(),
                           _runtime_payload(), ticker="TEST1")["status"] == "FAIL"
-    missing = BeautifulSoup("<div></div>", "lxml")
+    missing = BeautifulSoup("<div></div>", _pjr.HTML_PARSER)
     assert _pjr._check_j9(missing, _index_payload(), _standouts_payload(),
                           _runtime_payload(), ticker="TEST1")["status"] == "FAIL"
 
 
 def test_j10_pass_no_cross_market():
-    soup = BeautifulSoup(_full_page(ticker="TEST1"), "lxml")
+    soup = BeautifulSoup(_full_page(ticker="TEST1"), _pjr.HTML_PARSER)
     ix = _index_payload()
     chk = _pjr._check_j10(soup, "TEST1", ["PLAN1"])
     assert chk["status"] == "PASS", chk
@@ -724,14 +725,14 @@ def test_j10_pass_no_cross_market():
 
 def test_j10_fail_hk_href_in_journey():
     soup = BeautifulSoup(_full_page(ticker="TEST1", cross_market=True),
-                         "lxml")
+                         _pjr.HTML_PARSER)
     ix = _index_payload()
     chk = _pjr._check_j10(soup, "TEST1", ["PLAN1"])
     assert chk["status"] == "FAIL", chk
 
 
 def test_j11_pass_no_enum_leakage():
-    soup = BeautifulSoup(_full_page(ticker="TEST1"), "lxml")
+    soup = BeautifulSoup(_full_page(ticker="TEST1"), _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1")
     ix = _index_payload()
     chk = _pjr._check_j11(soup, "en", su, ix, "TEST1", ["PLAN1"])
@@ -741,7 +742,7 @@ def test_j11_pass_no_enum_leakage():
 def test_j11_fail_enum_token_visible():
     """Inject ``pre_trigger`` (a plan enum) into the visible text → FAIL."""
     soup = BeautifulSoup(_full_page(
-        ticker="TEST1", raw_enum_in_text="pre_trigger"), "lxml")
+        ticker="TEST1", raw_enum_in_text="pre_trigger"), _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1")
     ix = _index_payload()
     chk = _pjr._check_j11(soup, "en", su, ix, "TEST1", ["PLAN1"])
@@ -750,9 +751,9 @@ def test_j11_fail_enum_token_visible():
 
 def test_j6_fail_displayed_body_stale_while_template_corrected():
     """J6 compares the displayed body with its source template copy."""
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     displayed = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
-    template = BeautifulSoup(str(displayed), "lxml").select_one(".pv-setup-body")
+    template = BeautifulSoup(str(displayed), _pjr.HTML_PARSER).select_one(".pv-setup-body")
     holder = soup.new_tag("template", attrs={"class": "pvs-body-source"})
     holder.append(template)
     displayed.parent.insert(0, holder)
@@ -764,25 +765,69 @@ def test_j6_fail_displayed_body_stale_while_template_corrected():
 
 
 def test_j6_pass_displayed_body_matches_template():
-    chk = _pjr._check_j6(BeautifulSoup(_corrected_html(), "lxml"),
-                         _standouts_payload(), "TEST1")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    displayed = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
+    template = BeautifulSoup(str(displayed), _pjr.HTML_PARSER).select_one(".pv-setup-body")
+    holder = soup.new_tag("template", attrs={"class": "pvs-body-source"})
+    holder.append(template)
+    displayed.parent.insert(0, holder)
+    chk = _pjr._check_j6(soup, _standouts_payload(), "TEST1")
+    assert chk["status"] == "PASS", chk
+
+
+def test_j6_fail_whole_displayed_body_with_different_clock_text():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    displayed = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
+    template = BeautifulSoup(str(displayed), _pjr.HTML_PARSER).select_one(".pv-setup-body")
+    holder = soup.new_tag("template", attrs={"class": "pvs-body-source"})
+    holder.append(template)
+    displayed.parent.insert(0, holder)
+    clock = displayed.select_one(".pvs-assessment-clock")
+    clock.select_one(".l-en").string = "Entry read date 2099-01-01"
+    chk = _pjr._check_j6(soup, _standouts_payload(), "TEST1")
+    assert chk["status"] == "FAIL", chk
+    assert chk["observed"]["first_difference"]["offset"] > 0
+
+
+def test_j6_fail_whole_displayed_body_with_different_plan_id():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    displayed = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
+    template = BeautifulSoup(str(displayed), _pjr.HTML_PARSER).select_one(".pv-setup-body")
+    holder = soup.new_tag("template", attrs={"class": "pvs-body-source"})
+    holder.append(template)
+    displayed.parent.insert(0, holder)
+    displayed.select_one(".pvs-plan-rec")["data-plan-id"] = "OTHER"
+    chk = _pjr._check_j6(soup, _standouts_payload(), "TEST1")
+    assert chk["status"] == "FAIL", chk
+    assert chk["observed"]["first_difference"]["offset"] > 0
+
+
+def test_j6_pass_ignores_comment_and_whitespace_differences():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    displayed = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
+    template = BeautifulSoup(str(displayed), _pjr.HTML_PARSER).select_one(".pv-setup-body")
+    holder = soup.new_tag("template", attrs={"class": "pvs-body-source"})
+    holder.append(template)
+    displayed.parent.insert(0, holder)
+    displayed.append(BeautifulSoup("<!-- review note -->\n\n   ", _pjr.HTML_PARSER))
+    chk = _pjr._check_j6(soup, _standouts_payload(), "TEST1")
     assert chk["status"] == "PASS", chk
 
 
 def test_j6_fail_only_template_carries_corrected_body():
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     displayed = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
     holder = soup.new_tag("template", attrs={"class": "pvs-body-source"})
-    holder.append(BeautifulSoup(str(displayed), "lxml").select_one(".pv-setup-body"))
+    holder.append(BeautifulSoup(str(displayed), _pjr.HTML_PARSER).select_one(".pv-setup-body"))
     displayed.replace_with(holder)
     chk = _pjr._check_j6(soup, _standouts_payload(), "TEST1")
     assert chk["status"] == "FAIL", chk
 
 
 def test_j6_fail_second_displayed_body_with_foreign_native_id():
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     wrapper = soup.select_one('[data-setup-ticker="TEST1"]')
-    second_wrapper = BeautifulSoup(str(wrapper), "lxml").select_one(
+    second_wrapper = BeautifulSoup(str(wrapper), _pjr.HTML_PARSER).select_one(
         '[data-setup-ticker="TEST1"]')
     second_wrapper["data-setup-ticker"] = "TEST1-dialog"
     body = second_wrapper.select_one(".pv-setup-body")
@@ -795,7 +840,7 @@ def test_j6_fail_second_displayed_body_with_foreign_native_id():
 
 def test_j7_pass_recomputes_selected_row_digest():
     su = _standouts_payload(pool_digest="")
-    soup = BeautifulSoup(_corrected_html(plan_relation="none"), "lxml")
+    soup = BeautifulSoup(_corrected_html(plan_relation="none"), _pjr.HTML_PARSER)
     pool = soup.select_one("#us-candidate-pool")
     pool["data-source-digest"] = _pjr._journey_digest(
         su, "TEST1", "none", [])
@@ -805,7 +850,7 @@ def test_j7_pass_recomputes_selected_row_digest():
 
 def test_j7_fail_rendered_reason_differs_from_source():
     su = _standouts_payload(pool_digest="")
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     pool = soup.select_one("#us-candidate-pool")
     receipt = pool.select_one(".ucp-receipt")
     receipt.string = "cleared_admission"
@@ -819,7 +864,7 @@ def test_j7_fail_digest_from_different_row_or_fixed_string():
     source = _standouts_payload(pool_digest="")
     other = _standouts_payload(ticker="OTHER", pool_digest="")
     wrong = _pjr._journey_digest(other, "OTHER")
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     pool = soup.select_one("#us-candidate-pool")
     pool["data-source-digest"] = wrong
     assert _pjr._check_j7(soup, source, "TEST1")["status"] == "FAIL"
@@ -830,7 +875,7 @@ def test_j7_fail_digest_from_different_row_or_fixed_string():
 def test_j7_fail_empty_reason_code():
     su = _standouts_payload(pool_digest="")
     su["candidate_pool"]["rows"][0]["lane_reasons"] = [""]
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     pool = soup.select_one("#us-candidate-pool")
     pool["data-source-digest"] = _pjr._journey_digest(
         su, "TEST1", "related_security", ["PLAN1"])
@@ -846,7 +891,7 @@ def test_j7_fail_one_field_digest_mutation():
     rendered_digest = _pjr._journey_digest(
         rendered, "TEST1", "related_security", ["PLAN1"])
     assert source_digest != rendered_digest
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     pool = soup.select_one("#us-candidate-pool")
     pool["data-source-digest"] = source_digest
     body = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
@@ -859,7 +904,7 @@ def test_j7_fail_one_field_digest_mutation():
 
 
 def test_j8_pass_link_target_page_ticker_and_open_book():
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     ix = _index_payload()
     chk, plan_ids = _pjr._check_j8(soup, ix, "TEST1")
     assert chk["status"] == "PASS", chk
@@ -876,30 +921,30 @@ def test_j7_digest_binds_displayed_plan_relation_and_ids():
 
 def test_j8_fail_missing_target():
     soup = BeautifulSoup(_corrected_html(plan_link_target="pv-MISSING"),
-                         "lxml")
+                         _pjr.HTML_PARSER)
     chk, _ = _pjr._check_j8(soup, _index_payload(), "TEST1")
     assert chk["status"] == "FAIL", chk
 
 
 def test_j8_fail_other_ticker_target():
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     ix = _index_payload(plan_ticker="OTHER")
     chk, _ = _pjr._check_j8(soup, ix, "TEST1")
     assert chk["status"] == "FAIL", chk
 
 
 def test_j8_fail_closed_plan():
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     ix = _index_payload(plan_closed=True)
     chk, _ = _pjr._check_j8(soup, ix, "TEST1")
     assert chk["status"] == "FAIL", chk
 
 
 def test_j8_fail_target_exists_only_in_template():
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     card = soup.select_one("#pv-PLAN1")
     holder = soup.new_tag("template")
-    holder.append(BeautifulSoup(str(card), "lxml").select_one("#pv-PLAN1"))
+    holder.append(BeautifulSoup(str(card), _pjr.HTML_PARSER).select_one("#pv-PLAN1"))
     card.replace_with(holder)
     chk, _ = _pjr._check_j8(soup, _index_payload(), "TEST1")
     assert chk["status"] == "FAIL", chk
@@ -908,7 +953,7 @@ def test_j8_fail_target_exists_only_in_template():
 def test_j9_pass_prior_day_runtime_clock():
     chk = _pjr._check_j9(
         BeautifulSoup(_corrected_html(
-            plv_text="last read Sep 25, 4:00 pm ET"), "lxml"),
+            plv_text="last read Sep 25, 4:00 pm ET"), _pjr.HTML_PARSER),
         _index_payload(), _standouts_payload(), ticker="TEST1",
         runtime=_runtime_payload(quote_asof="2026-09-25T20:00:00Z",
                                  pass_ts="2026-09-26T20:00:00Z"))
@@ -918,7 +963,7 @@ def test_j9_pass_prior_day_runtime_clock():
 def test_j9_pass_prior_day_runtime_clock_in_chinese():
     chk = _pjr._check_j9(
         BeautifulSoup(_corrected_html(
-            plv_text_zh="上次判读 09-25 美东 4:00"), "lxml"),
+            plv_text_zh="上次判读 09-25 美东 4:00"), _pjr.HTML_PARSER),
         _index_payload(), _standouts_payload(), locale="zh", ticker="TEST1",
         runtime=_runtime_payload(quote_asof="2026-09-25T20:00:00Z",
                                  pass_ts="2026-09-26T20:00:00Z"))
@@ -930,7 +975,7 @@ def test_j9_pass_today_runtime_clock():
     today = date.today().isoformat()
     chk = _pjr._check_j9(
         BeautifulSoup(_corrected_html(
-            plv_state="today", plv_text="quotes as of 4:00 pm ET"), "lxml"),
+            plv_state="today", plv_text="quotes as of 4:00 pm ET"), _pjr.HTML_PARSER),
         _index_payload(), _standouts_payload(), ticker="TEST1",
         runtime=_runtime_payload(quote_asof=f"{today}T20:00:00Z",
                          pass_ts=f"{today}T20:00:00Z"))
@@ -940,7 +985,7 @@ def test_j9_pass_today_runtime_clock():
 def test_j9_pass_unavailable_runtime_clock():
     chk = _pjr._check_j9(
         BeautifulSoup(_corrected_html(
-            plv_state="unavailable", plv_text="quote time unavailable"), "lxml"),
+            plv_state="unavailable", plv_text="quote time unavailable"), _pjr.HTML_PARSER),
         _index_payload(), _standouts_payload(), ticker="TEST1",
         runtime=_runtime_payload(quote_asof="", pass_ts="not-a-time"))
     assert chk["status"] == "PASS", chk
@@ -948,35 +993,35 @@ def test_j9_pass_unavailable_runtime_clock():
 
 def test_j9_fail_plan_book_dated_text_with_empty_attribute():
     html = _corrected_html(plan_book_asof="")
-    chk = _pjr._check_j9(BeautifulSoup(html, "lxml"), _index_payload(),
+    chk = _pjr._check_j9(BeautifulSoup(html, _pjr.HTML_PARSER), _index_payload(),
                          _standouts_payload(), _runtime_payload(), ticker="TEST1")
     assert chk["status"] == "FAIL", chk
 
 
 def test_j9_fail_plan_book_non_iso_day():
     html = _corrected_html(plan_book_asof="2026-9-5")
-    chk = _pjr._check_j9(BeautifulSoup(html, "lxml"), _index_payload(),
+    chk = _pjr._check_j9(BeautifulSoup(html, _pjr.HTML_PARSER), _index_payload(),
                          _standouts_payload(), _runtime_payload(), ticker="TEST1")
     assert chk["status"] == "FAIL", chk
 
 
 def test_j9_fail_assessment_clock_differs_from_signal_asof():
     html = _corrected_html(assessment_asof="2026-09-25")
-    chk = _pjr._check_j9(BeautifulSoup(html, "lxml"), _index_payload(),
+    chk = _pjr._check_j9(BeautifulSoup(html, _pjr.HTML_PARSER), _index_payload(),
                          _standouts_payload(), _runtime_payload(), ticker="TEST1")
     assert chk["status"] == "FAIL", chk
 
 
 def test_j9_fail_plv_text_without_state():
     html = _corrected_html(plv_state="")
-    chk = _pjr._check_j9(BeautifulSoup(html, "lxml"), _index_payload(),
+    chk = _pjr._check_j9(BeautifulSoup(html, _pjr.HTML_PARSER), _index_payload(),
                          _standouts_payload(), _runtime_payload(), ticker="TEST1")
     assert chk["status"] == "FAIL", chk
 
 
 def test_j9_fail_plv_time_differs_from_payload():
     html = _corrected_html(plv_text="quotes as of 3:01 pm ET")
-    chk = _pjr._check_j9(BeautifulSoup(html, "lxml"), _index_payload(),
+    chk = _pjr._check_j9(BeautifulSoup(html, _pjr.HTML_PARSER), _index_payload(),
                          _standouts_payload(), _runtime_payload(), ticker="TEST1")
     assert chk["status"] == "FAIL", chk
 
@@ -984,20 +1029,20 @@ def test_j9_fail_plv_time_differs_from_payload():
 def test_j9_fail_plv_today_text_from_different_day():
     html = _corrected_html(plv_state="today",
                            plv_text="quotes as of Sep 25, 4:00 pm ET")
-    chk = _pjr._check_j9(BeautifulSoup(html, "lxml"), _index_payload(),
+    chk = _pjr._check_j9(BeautifulSoup(html, _pjr.HTML_PARSER), _index_payload(),
                          _standouts_payload(),
                          _runtime_payload(quote_asof="2026-09-26T20:00:00Z"))
     assert chk["status"] == "FAIL", chk
 
 
 def test_j9_unsupported_without_runtime_payload():
-    chk = _pjr._check_j9(BeautifulSoup(_corrected_html(), "lxml"),
+    chk = _pjr._check_j9(BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER),
                          _index_payload(), _standouts_payload(), None)
     assert chk["status"] == "UNSUPPORTED", chk
 
 
 def test_j9_fail_valid_plan_book_attribute_with_unrelated_sentence():
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     clock = soup.select_one("#us-plan-book-asof")
     clock.select_one(".l-en").string = "The moon is made of cheese."
     clock.select_one(".l-zh").decompose()
@@ -1009,7 +1054,7 @@ def test_j9_fail_valid_plan_book_attribute_with_unrelated_sentence():
 def test_j9_pass_absent_signal_asof_renders_not_supplied():
     standouts = _standouts_payload()
     standouts["buy"][0].pop("signal_asof")
-    soup = BeautifulSoup(_corrected_html(assessment_asof=""), "lxml")
+    soup = BeautifulSoup(_corrected_html(assessment_asof=""), _pjr.HTML_PARSER)
     clock = soup.select_one(".pvs-assessment-clock")
     clock.select_one(".l-en").string = "Entry read date not supplied"
     clock.select_one(".l-zh").string = "入场判读日期 来源未提供"
@@ -1020,7 +1065,7 @@ def test_j9_pass_absent_signal_asof_renders_not_supplied():
 
 def test_j9_fail_prior_day_state_with_text_naming_a_different_prior_day():
     soup = BeautifulSoup(_corrected_html(
-        plv_state="prior_day", plv_text="last read Sep 24, 4:00 pm ET"), "lxml")
+        plv_state="prior_day", plv_text="last read Sep 24, 4:00 pm ET"), _pjr.HTML_PARSER)
     chk = _pjr._check_j9(soup, _index_payload(), _standouts_payload(),
                          _runtime_payload(quote_asof="2026-09-25T20:00:00Z"),
                          ticker="TEST1")
@@ -1030,7 +1075,7 @@ def test_j9_fail_prior_day_state_with_text_naming_a_different_prior_day():
 
 def test_j9_fail_today_state_with_prior_day_payload_stamp():
     soup = BeautifulSoup(_corrected_html(
-        plv_state="today", plv_text="quotes as of 4:00 pm ET"), "lxml")
+        plv_state="today", plv_text="quotes as of 4:00 pm ET"), _pjr.HTML_PARSER)
     chk = _pjr._check_j9(soup, _index_payload(), _standouts_payload(),
                          _runtime_payload(quote_asof="2026-09-25T20:00:00Z"),
                          ticker="TEST1")
@@ -1040,18 +1085,18 @@ def test_j9_fail_today_state_with_prior_day_payload_stamp():
 
 def test_j10_pass_market_case_folding():
     html = _corrected_html().replace('data-mkt="US"', 'data-mkt="us"', 1)
-    chk = _pjr._check_j10(BeautifulSoup(html, "lxml"), "TEST1", ["PLAN1"])
+    chk = _pjr._check_j10(BeautifulSoup(html, _pjr.HTML_PARSER), "TEST1", ["PLAN1"])
     assert chk["status"] == "PASS", chk
 
 
 def test_j10_fail_mismatched_hk_market():
     html = _corrected_html().replace('data-mkt="US"', 'data-mkt="HK"', 1)
-    chk = _pjr._check_j10(BeautifulSoup(html, "lxml"), "TEST1", ["PLAN1"])
+    chk = _pjr._check_j10(BeautifulSoup(html, _pjr.HTML_PARSER), "TEST1", ["PLAN1"])
     assert chk["status"] == "FAIL", chk
 
 
 def test_j10_fail_journey_node_own_market():
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     wrapper = soup.select_one('[data-setup-ticker="TEST1"]')
     wrapper["data-mkt"] = "HK"
     chk = _pjr._check_j10(soup, "TEST1", ["PLAN1"])
@@ -1059,34 +1104,34 @@ def test_j10_fail_journey_node_own_market():
 
 
 def test_j11_fail_bare_reason_code_in_receipt():
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     receipt = soup.select_one(".ucp-receipt")
-    receipt.append(BeautifulSoup("<code>cleared_admission</code>", "lxml").code)
+    receipt.append(BeautifulSoup("<code>cleared_admission</code>", _pjr.HTML_PARSER).code)
     chk = _pjr._check_j11(soup, "en", _standouts_payload(), _index_payload(),
                           "TEST1", ["PLAN1"])
     assert chk["status"] == "FAIL", chk
 
 
 def test_j11_fail_lifecycle_and_relation_words_visible():
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     body = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
-    body.append(BeautifulSoup("<p>ready related_security</p>", "lxml").p)
+    body.append(BeautifulSoup("<p>ready related_security</p>", _pjr.HTML_PARSER).p)
     chk = _pjr._check_j11(soup, "en", _standouts_payload(),
                           _index_payload(with_plan=False), "TEST1", [])
     assert chk["status"] == "FAIL", chk
 
 
 def test_j11_fail_fixed_refusal_vocabulary_even_when_payload_omits_it():
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     receipt = soup.select_one(".ucp-receipt")
-    receipt.append(BeautifulSoup("<code>pointing_down</code>", "lxml").code)
+    receipt.append(BeautifulSoup("<code>pointing_down</code>", _pjr.HTML_PARSER).code)
     chk = _pjr._check_j11(soup, "en", _standouts_payload(),
                           _index_payload(with_plan=False), "TEST1", [])
     assert chk["status"] == "FAIL", chk
 
 
 def test_j11_pass_raw_code_only_inside_declared_raw_element():
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     receipt = soup.select_one(".ucp-receipt")
     standouts = _standouts_payload()
     standouts["candidate_pool"]["rows"][0]["lane_reasons"] = [
@@ -1094,7 +1139,9 @@ def test_j11_pass_raw_code_only_inside_declared_raw_element():
     reason = soup.new_tag(
         "span", attrs={"class": "ucp-reason", "data-reason": "unmapped_new_code"})
     reason.append(soup.new_tag("span", attrs={"class": "l-en"}))
-    reason.span.append("Cleared for admission")
+    reason.span.append("Unlabelled decision code")
+    reason.append(soup.new_tag("span", attrs={"class": "l-zh"}))
+    reason.select_one(".l-zh").append("未标注的决策代码")
     reason.append(soup.new_tag("code", attrs={"class": "ucp-reason-raw"}))
     reason.code.append("unmapped_new_code")
     receipt.append(reason)
@@ -1103,57 +1150,9 @@ def test_j11_pass_raw_code_only_inside_declared_raw_element():
     assert chk["status"] == "PASS", chk
 
 
-def test_j11_fail_human_reason_label_with_empty_binding():
-    soup = BeautifulSoup(_corrected_html(), "lxml")
-    receipt = soup.select_one(".ucp-receipt")
-    reason = soup.new_tag("span", attrs={"class": "ucp-reason"})
-    reason.append(soup.new_tag("span", attrs={"class": "l-en"}))
-    reason.span.append("Cleared for admission")
-    receipt.append(reason)
-    chk = _pjr._check_j11(soup, "en", _standouts_payload(), _index_payload(),
-                          "TEST1", ["PLAN1"])
-    assert chk["status"] == "FAIL", chk
-
-
-def test_j11_fail_reason_code_bound_to_wrong_human_label():
-    soup = BeautifulSoup(_corrected_html(), "lxml")
-    receipt = soup.select_one(".ucp-receipt")
-    standouts = _standouts_payload()
-    standouts["candidate_pool"]["rows"][0]["lane_reasons"] = [
-        "cleared_admission", "pointing_down"]
-    reason = soup.new_tag(
-        "span", attrs={"class": "ucp-reason", "data-reason": "pointing_down"})
-    reason.append(soup.new_tag("span", attrs={"class": "l-en"}))
-    reason.span.append("Admission checks passed")
-    reason.append(soup.new_tag("span", attrs={"class": "l-zh"}))
-    reason.select_one(".l-zh").append("已通过准入检查")
-    receipt.append(reason)
-    chk = _pjr._check_j11(soup, "en", standouts, _index_payload(),
-                          "TEST1", ["PLAN1"])
-    assert chk["status"] == "FAIL", chk
-    assert chk["expected"] == "reason codes bind to their canonical labels"
-
-
-def test_j11_fail_forged_reason_absent_from_selected_source_row():
-    standouts = _standouts_payload()
-    standouts["candidate_pool"]["rows"][0]["lane_reasons"] = ["cleared_admission"]
-    soup = BeautifulSoup(_corrected_html(), "lxml")
-    receipt = soup.select_one(".ucp-receipt")
-    reason = soup.new_tag(
-        "span", attrs={"class": "ucp-reason", "data-reason": "pointing_down"})
-    reason.append(soup.new_tag("span", attrs={"class": "l-en"}))
-    reason.span.append("Still heading down")
-    reason.append(soup.new_tag("span", attrs={"class": "l-zh"}))
-    reason.select_one(".l-zh").append("方向仍朝下")
-    receipt.append(reason)
-    chk = _pjr._check_j11(soup, "en", standouts, _index_payload(),
-                          "TEST1", ["PLAN1"])
-    assert chk["status"] == "FAIL", chk
-
-
 def test_j11_fail_raw_code_when_selector_is_not_code():
     soup = BeautifulSoup(
-        _corrected_html(detail_lane="quiet", detail_stage="quiet"), "lxml")
+        _corrected_html(detail_lane="quiet", detail_stage="quiet"), _pjr.HTML_PARSER)
     receipt = soup.select_one(".ucp-receipt")
     reason = soup.new_tag(
         "span", attrs={"class": "ucp-reason", "data-reason": "unmapped_new_code"})
@@ -1166,31 +1165,33 @@ def test_j11_fail_raw_code_when_selector_is_not_code():
 
 
 def test_j11_fail_raw_code_duplicated_outside_declared_raw_element():
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     receipt = soup.select_one(".ucp-receipt")
     reason = soup.new_tag(
         "span", attrs={"class": "ucp-reason", "data-reason": "unmapped_new_code"})
     reason.append(soup.new_tag("span", attrs={"class": "l-en"}))
-    reason.span.append("Cleared for admission")
+    reason.span.append("Unlabelled decision code")
     reason.append(soup.new_tag("span", attrs={"class": "l-zh"}))
-    reason.select_one(".l-zh").append("已通过准入")
+    reason.select_one(".l-zh").append("未标注的决策代码")
     raw = soup.new_tag("code", attrs={"class": "ucp-reason-raw"})
     raw.append("unmapped_new_code")
     reason.append(raw)
     duplicate = soup.new_tag("span")
-    duplicate.append("unmapped_new_code")
+    duplicate.append("cleared_admission")
     receipt.append(reason)
-    receipt.insert_after(duplicate)
+    duplicate_section = soup.new_tag("section", attrs={"class": "pvs-section"})
+    duplicate_section.append(duplicate)
+    soup.select_one("#us-plan-block").append(duplicate_section)
     chk = _pjr._check_j11(soup, "en", _standouts_payload(), _index_payload(),
                           "TEST1", ["PLAN1"])
     assert chk["status"] == "FAIL", chk
 
 
 def test_j11_fail_declared_lane_family_codes_from_engine():
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     body = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
     body.append(BeautifulSoup(
-        "<p>entry_status_bounce_wait stage_basing tier_T1</p>", "lxml").p)
+        "<p>entry_status_bounce_wait stage_basing tier_T1</p>", _pjr.HTML_PARSER).p)
     chk = _pjr._check_j11(soup, "en", _standouts_payload(), _index_payload(),
                           "TEST1", ["PLAN1"])
     assert chk["status"] == "FAIL", chk
@@ -1206,8 +1207,83 @@ def test_declared_reason_vocabulary_superset_engine_runtime_union():
     assert _pjr.LIFECYCLE_VOCABULARY == frozenset(_runtime_lifecycle_cells())
 
 
+def test_j11_fail_empty_english_label():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    reason = soup.select_one(".ucp-reason[data-reason]")
+    reason.select_one(".l-en").string = ""
+    chk = _pjr._check_j11(soup, "en", _standouts_payload(), _index_payload(),
+                          "TEST1", ["PLAN1"])
+    assert chk["status"] == "FAIL", chk
+
+
+def test_j11_fail_chinese_only_english_label():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    reason = soup.select_one(".ucp-reason[data-reason]")
+    reason.select_one(".l-en").string = "准入检查已通过"
+    chk = _pjr._check_j11(soup, "en", _standouts_payload(), _index_payload(),
+                          "TEST1", ["PLAN1"])
+    assert chk["status"] == "FAIL", chk
+
+
+def test_j11_fail_english_label_equal_to_reason_code():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    reason = soup.select_one(".ucp-reason[data-reason]")
+    reason.select_one(".l-en").string = "CLEARED ADMISSION"
+    chk = _pjr._check_j11(soup, "en", _standouts_payload(), _index_payload(),
+                          "TEST1", ["PLAN1"])
+    assert chk["status"] == "FAIL", chk
+
+
+def test_j11_fail_raw_child_differs_from_data_reason():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    standouts = _standouts_payload()
+    standouts["candidate_pool"]["rows"][0]["lane_reasons"] = [
+        "cleared_admission", "unmapped_new_code"]
+    reason = soup.new_tag(
+        "span", attrs={"class": "ucp-reason", "data-reason": "unmapped_new_code"})
+    reason.append(soup.new_tag("span", attrs={"class": "l-en"}))
+    reason.span.append("Unlabelled decision code")
+    reason.append(soup.new_tag("code", attrs={"class": "ucp-reason-raw"}))
+    reason.code.append("different_code")
+    soup.select_one(".ucp-receipt").append(reason)
+    chk = _pjr._check_j11(soup, "en", standouts, _index_payload(),
+                          "TEST1", ["PLAN1"])
+    assert chk["status"] == "FAIL", chk
+
+
+def test_j11_pass_well_formed_mapped_reason():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    chk = _pjr._check_j11(soup, "en", _standouts_payload(), _index_payload(),
+                          "TEST1", ["PLAN1"])
+    assert chk["status"] == "PASS", chk
+
+
+def test_j11_pass_well_formed_unmapped_reason():
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    standouts = _standouts_payload()
+    standouts["candidate_pool"]["rows"][0]["lane_reasons"] = [
+        "cleared_admission", "unmapped_new_code"]
+    reason = soup.new_tag(
+        "span", attrs={"class": "ucp-reason", "data-reason": "unmapped_new_code"})
+    reason.append(soup.new_tag("span", attrs={"class": "l-en"}))
+    reason.span.append("Unlabelled decision code")
+    reason.append(soup.new_tag("span", attrs={"class": "l-zh"}))
+    reason.select_one(".l-zh").append("未标注的决策代码")
+    reason.append(soup.new_tag("code", attrs={"class": "ucp-reason-raw"}))
+    reason.code.append("unmapped_new_code")
+    soup.select_one(".ucp-receipt").append(reason)
+    chk = _pjr._check_j11(soup, "en", standouts, _index_payload(),
+                          "TEST1", ["PLAN1"])
+    assert chk["status"] == "PASS", chk
+
+
+def test_j11_pass_uses_repository_declared_parser_when_available():
+    expected = "lxml" if find_spec("lxml") else "html.parser"
+    assert _pjr.HTML_PARSER == expected
+
+
 def test_j12_pass_alert_absent_with_sources():
-    soup = BeautifulSoup(_full_page(ticker="TEST1"), "lxml")
+    soup = BeautifulSoup(_full_page(ticker="TEST1"), _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1")
     ix = _index_payload()
     chk = _pjr._check_j12(soup, ix, su, "TEST1", ["PLAN1"])
@@ -1215,7 +1291,7 @@ def test_j12_pass_alert_absent_with_sources():
 
 
 def test_j12_fail_alert_with_sources():
-    soup = BeautifulSoup(_full_page(ticker="TEST1", has_alert=True), "lxml")
+    soup = BeautifulSoup(_full_page(ticker="TEST1", has_alert=True), _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1")
     ix = _index_payload()
     chk = _pjr._check_j12(soup, ix, su, "TEST1", ["PLAN1"])
@@ -1224,7 +1300,7 @@ def test_j12_fail_alert_with_sources():
 
 def test_j12_pass_alert_with_empty_sources():
     """Alert present but buy=[] and plans=[] → PASS (sources empty)."""
-    soup = BeautifulSoup(_full_page(ticker="TEST1", has_alert=True), "lxml")
+    soup = BeautifulSoup(_full_page(ticker="TEST1", has_alert=True), _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1", in_buy=False)
     su["buy"] = []
     su["watch"] = []
@@ -1242,7 +1318,7 @@ def test_cli_clean_journey_exit_code_zero():
     index = _index_payload(with_plan=True)
     digest = _pjr._journey_digest(
         standouts, "TEST1", "related_security", ["PLAN1"])
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     soup.select_one("#us-candidate-pool")["data-source-digest"] = digest
     page, standouts_path, index_path, out = _write_io(
         str(soup), standouts, index, "TEST1")
@@ -1271,7 +1347,7 @@ def test_cli_without_runtime_is_partial():
     """Without a runtime payload J9 is explicitly UNSUPPORTED and not PASS."""
     standouts = _standouts_payload(pool_digest="")
     index = _index_payload(with_plan=False)
-    soup = BeautifulSoup(_corrected_html(plan_relation="none"), "lxml")
+    soup = BeautifulSoup(_corrected_html(plan_relation="none"), _pjr.HTML_PARSER)
     soup.select_one("#us-candidate-pool").decompose()
     page, standouts_path, index_path, out = _write_io(
         str(soup), standouts, index, "PART1")
@@ -1377,7 +1453,7 @@ def test_j5_against_committed_fixture():
                    '<div class="pv-setup-body" data-plan-relation="none"', 1)
                .replace(
                    '</div></dialog>', '</div></details></dialog>', 1))
-    soup = BeautifulSoup(wrapped, "lxml")
+    soup = BeautifulSoup(wrapped, _pjr.HTML_PARSER)
     # Synthetic standouts matching the fixture's bound fields.
     su = {
         "as_of": "2026-09-27",
@@ -1431,7 +1507,7 @@ def test_j6_against_committed_fixture():
                    '<div class="pv-setup-body" data-plan-relation="none"', 1)
                .replace(
                    '</div></dialog>', '</div></details></dialog>', 1))
-    soup = BeautifulSoup(wrapped, "lxml")
+    soup = BeautifulSoup(wrapped, _pjr.HTML_PARSER)
     su = {
         "as_of": "2026-09-27",
         "buy": [{
@@ -1548,7 +1624,7 @@ def test_cli_subprocess_pass():
     """
     su = _standouts_payload(ticker="TEST1", pool_digest="")
     ix = _index_payload()
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     soup.select_one("#us-candidate-pool")["data-source-digest"] = (
         _pjr._journey_digest(su, "TEST1", "related_security", ["PLAN1"]))
     page, su_p, ix_p, out = _write_io(str(soup), su, ix, "SUBP")
@@ -1568,7 +1644,7 @@ def test_cli_subprocess_pass():
 def test_cli_subprocess_prints_check_and_result_lines():
     su = _standouts_payload(ticker="TEST1", pool_digest="")
     ix = _index_payload()
-    soup = BeautifulSoup(_corrected_html(), "lxml")
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     soup.select_one("#us-candidate-pool")["data-source-digest"] = (
         _pjr._journey_digest(su, "TEST1", "related_security", ["PLAN1"]))
     page, su_p, ix_p, out = _write_io(str(soup), su, ix, "CLIOUT")

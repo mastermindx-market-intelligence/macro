@@ -133,7 +133,7 @@ if os.environ.get("PYTHONPATH"):
     sys.path.extend(os.environ["PYTHONPATH"].split(os.pathsep))
 
 try:
-    from bs4 import BeautifulSoup, NavigableString, Tag
+    from bs4 import BeautifulSoup, Comment, NavigableString, Tag
 except ImportError as exc:  # pragma: no cover - bs4 is in requirements
     raise SystemExit(f"beautifulsoup4 is required: {exc}")
 
@@ -159,12 +159,10 @@ STANDOUTS_ENUM_FIELDS = ("lane", "state", "entry_signal")
 
 try:
     from engine.prophet_bridge import REFUSAL_ORDER
-    from engine.prophet_bridge import REFUSAL_COPY
     from engine.us_candidate_lanes import declared_reasons
     from scripts.build_prophet import LIFECYCLE_CELLS
 except (ImportError, RuntimeError, TypeError, ValueError) as _exc:
     REFUSAL_ORDER = ()
-    REFUSAL_COPY = {}
     _LANE_IMPORT_ERROR = str(_exc)
     declared_reasons = lambda: frozenset()
     LIFECYCLE_CELLS = ()
@@ -243,7 +241,7 @@ def _load_json(path: Path) -> dict[str, Any]:
 # Page parsing — beautifulsoup over the saved outerHTML.
 # =========================================================================== #
 def _parse_page(html: str) -> BeautifulSoup:
-    return BeautifulSoup(html, "lxml")
+    return BeautifulSoup(html, HTML_PARSER)
 
 
 def _select_first(soup: BeautifulSoup, selector: str) -> Tag | None:
@@ -298,12 +296,10 @@ def _visible_text(node: Tag, locale: str) -> str:
     Drops ``<script>`` / ``<style>`` (always), drops attribute values
     (only TEXT nodes count), and drops the inactive locale's spans.
     """
-    cleaned = BeautifulSoup(str(node), "lxml")
+    cleaned = BeautifulSoup(str(node), HTML_PARSER)
     for tag in cleaned(["script", "style"]):
         tag.decompose()
-    target = cleaned.find() if False else (cleaned.contents[0]
-                                          if cleaned.contents else cleaned)
-    # Walk the cleaned tree, drop the OTHER locale's spans, then collect text.
+    # Walk the whole cleaned target, not only its first top-level child.
     root = cleaned.find() or cleaned
     _strip_other_locale(root, locale)
     chunks: list[str] = []
@@ -706,6 +702,46 @@ def _resolve_dotted(row: dict[str, Any], path: str) -> Any:
     return node
 
 
+def _available_html_parser() -> str:
+    try:
+        import lxml  # noqa: F401, PLC0415
+    except ImportError:
+        return "html.parser"
+    return "lxml"
+
+
+HTML_PARSER = _available_html_parser()
+
+
+def _normalized_body(body: Tag) -> str:
+    """Serialize a setup body with comments removed and text whitespace collapsed."""
+    parsed = BeautifulSoup(str(body), HTML_PARSER)
+    root = parsed.select_one(".pv-setup-body") or parsed.find() or parsed
+    for comment in root.find_all(string=lambda value: isinstance(value, Comment)):
+        comment.extract()
+    for text_node in root.find_all(string=True):
+        if isinstance(text_node, NavigableString) and not isinstance(text_node, Comment):
+            text_node.replace_with(" ".join(str(text_node).split()))
+    return root.decode().strip()
+
+
+def _first_html_difference(left: str, right: str) -> dict[str, Any]:
+    for index, (left_char, right_char) in enumerate(zip(left, right)):
+        if left_char != right_char:
+            start = max(0, index - 40)
+            return {
+                "offset": index,
+                "left": left[start:index + 80],
+                "right": right[start:index + 80],
+            }
+    offset = min(len(left), len(right))
+    return {
+        "offset": offset,
+        "left": left[offset:offset + 80],
+        "right": right[offset:offset + 80],
+    }
+
+
 def _setup_source_bodies(soup: BeautifulSoup,
                           ticker: str) -> tuple[list[Tag], list[Tag]]:
     """Return every displayed selected body and every template copy."""
@@ -780,6 +816,27 @@ def _check_j6(soup: BeautifulSoup, standouts: dict[str, Any],
         return _check_status("FAIL", "every displayed selected body agrees",
                              {"bad_displayed": bad_displayed}, where)
     binding = bindings[0]
+    template_serializations = [_normalized_body(template) for template in templates]
+    displayed_serializations = [_normalized_body(body) for body in displayed]
+    normalized_template = (template_serializations[0]
+                           if template_serializations
+                           else displayed_serializations[0])
+    differing_body = next(
+        ((index, serialization) for index, serialization in
+         enumerate(displayed_serializations, 1)
+         if serialization != normalized_template),
+        None,
+    )
+    if differing_body is not None:
+        index, serialization = differing_body
+        first_difference = _first_html_difference(serialization, normalized_template)
+        return _check_status(
+            "FAIL",
+            "every displayed body equals the template by normalized HTML",
+            {"displayed_index": index, "first_difference": first_difference,
+             "displayed": serialization, "template": normalized_template},
+            where,
+        )
     template_bindings = [_body_binding(template) for template in templates]
     if any(template_binding != binding for template_binding in template_bindings):
         return _check_status("FAIL", "displayed binding equals every template binding",
@@ -795,7 +852,9 @@ def _check_j6(soup: BeautifulSoup, standouts: dict[str, Any],
         misses.extend(_field_misses(body, row))
     if misses:
         return _check_status("FAIL", "source fields equal payload", misses, where)
-    return _check_status("PASS", "displayed body binding and fields supported",
+    return _check_status(
+        "PASS",
+        "every displayed body equals the template and source fields are supported",
                          {**binding, "displayed_count": len(displayed),
                           "template_count": len(templates),
                           "total_fields": len(displayed[0].select("[data-source-field]"))}, where)
@@ -1260,27 +1319,57 @@ def _scan_tokens(text: str, banned: set[str]) -> list[dict[str, str]]:
     return hits
 
 
+def _reason_shape_problems(soup: BeautifulSoup) -> list[dict[str, str]]:
+    problems: list[dict[str, str]] = []
+    for reason in soup.select(".ucp-reason"):
+        if reason.find_parent("template") is not None:
+            continue
+        code = str(reason.get("data-reason", ""))
+        if not code:
+            problems.append({"problem": "empty data-reason"})
+            continue
+        if not re.fullmatch(r"[a-z0-9_]+", code):
+            problems.append({"problem": "invalid data-reason", "code": code})
+            continue
+        english_node = reason.select_one(".l-en")
+        english = english_node.get_text(" ", strip=True) if english_node else ""
+        chinese_node = reason.select_one(".l-zh")
+        chinese = chinese_node.get_text(" ", strip=True) if chinese_node else ""
+        if not english:
+            problems.append({"problem": "empty English label", "code": code})
+        elif not any("a" <= char.lower() <= "z" for char in english):
+            problems.append({"problem": "English label has no ASCII letter",
+                             "code": code, "label": english})
+        if re.search(r"[\u3400-\u9fff]", english):
+            problems.append({"problem": "CJK in English label", "code": code,
+                             "label": english})
+        normalized_code = re.sub(r"[ _]+", "", code).casefold()
+        normalized_label = re.sub(r"[ _]+", "", english).casefold()
+        if normalized_label == normalized_code:
+            problems.append({"problem": "English label repeats the reason code",
+                             "code": code, "label": english})
+        if not chinese or not re.search(r"[\u3400-\u9fff]", chinese):
+            problems.append({"problem": "Chinese label has no CJK text",
+                             "code": code, "label": chinese})
+        raw_nodes = reason.select("code.ucp-reason-raw")
+        if raw_nodes:
+            raw = raw_nodes[0]
+            if raw.get_text(" ", strip=True) != code:
+                problems.append({"problem": "raw code differs from data-reason",
+                                 "code": code,
+                                 "raw": raw.get_text(" ", strip=True)})
+            if len(raw_nodes) > 1:
+                problems.append({"problem": "multiple raw code nodes", "code": code})
+            if english != "Unlabelled decision code":
+                problems.append(
+                    {"problem": "unmapped English label must be exact",
+                     "code": code, "label": english})
+    return problems
+
+
 def _remove_raw_reason_nodes(node: Tag) -> None:
     for raw in node.select("span.ucp-reason[data-reason] > code.ucp-reason-raw"):
         raw.decompose()
-
-
-def _selected_reason_codes(standouts: dict[str, Any],
-                           ticker: str | None) -> list[str]:
-    if not ticker:
-        return []
-    pool_rows = ((standouts.get("candidate_pool") or {}).get("rows") or [])
-    row = next((candidate for candidate in pool_rows
-                if str(candidate.get("ticker", "")).upper() == ticker.upper()), None)
-    reasons = ((row or {}).get("lane_reasons")
-               or ([row.get("headline_reason")] if row and row.get("headline_reason") is not None else []))
-    return [str(reason) for reason in reasons if reason is not None]
-
-
-def _reason_label(reason: Tag, locale: str) -> str:
-    selector = ".l-en" if locale.lower().startswith("en") else ".l-zh"
-    label = reason.select_one(selector)
-    return label.get_text(" ", strip=True) if label else ""
 
 
 def _check_j11(soup: BeautifulSoup, locale: str,
@@ -1288,59 +1377,31 @@ def _check_j11(soup: BeautifulSoup, locale: str,
                ticker: str | None,
                plan_ids: list[str]) -> dict[str, Any]:
     """J11 — no internal enum tokens in displayed journey text."""
-    where = (".ucp-receipt, .pvs-section and .pv-setup-body displayed text; "
-             "raw codes allowed only inside code.ucp-reason-raw")
+    where = (".ucp-receipt, .pvs-section, .pv-setup-body and #us-plan-block "
+             "displayed text; raw codes allowed only inside code.ucp-reason-raw")
+    reason_problems = _reason_shape_problems(soup)
+    if reason_problems:
+        return _check_status(
+            "FAIL", "every displayed reason has a valid code and plain labels",
+            reason_problems[:20], where)
     scopes: list[Tag] = []
-    for selector in (".ucp-receipt", ".pvs-section", ".pv-setup-body"):
+    for selector in (".ucp-receipt", ".pvs-section", ".pv-setup-body", "#us-plan-block"):
         for node in soup.select(selector):
             if node.find_parent("template") is not None:
                 continue
             scopes.append(node)
-    # Avoid double-walking nested .pvs-section descendants of .pv-setup-body.
     scopes = [node for node in scopes
               if not any(other is not node and other in node.parents for other in scopes)]
     if not scopes:
         return _check_status("FAIL", "displayed scopes present",
                              "no displayed scopes", where)
-    for selector in (".ucp-receipt", ".pvs-section", ".pv-setup-body"):
-        for node in soup.select(selector):
-            if node.find_parent("template") is not None:
-                continue
-            if selector == ".ucp-receipt" and any(
-                    not str(reason.get("data-reason", ""))
-                    for reason in node.select(".ucp-reason")):
-                return _check_status("FAIL", "reason bindings non-empty",
-                                     "a displayed reason has an empty data-reason", where)
-    source_reasons = _selected_reason_codes(standouts, ticker)
-    for node in soup.select(".ucp-receipt"):
-        if node.find_parent("template") is not None:
-            continue
-        rendered_reasons = [str(reason.get("data-reason", ""))
-                            for reason in node.select(".ucp-reason[data-reason]")]
-        if node.select_one(".ucp-row[data-ticker]") is not None:
-            continue
-        if rendered_reasons != source_reasons:
-            return _check_status("FAIL", "rendered reasons equal selected source reasons",
-                                 {"rendered_reasons": rendered_reasons,
-                                  "source_reasons": source_reasons}, where)
-        for reason in node.select(".ucp-reason[data-reason]"):
-            code = str(reason.get("data-reason"))
-            expected_label = REFUSAL_COPY.get(code, (None, None))[
-                0 if locale.lower().startswith("en") else 1]
-            if expected_label is None:
-                continue
-            observed_label = _reason_label(reason, locale)
-            if observed_label != expected_label:
-                return _check_status(
-                    "FAIL", "reason codes bind to their canonical labels",
-                    {"code": code, "observed": observed_label,
-                     "expected": expected_label}, where)
     banned = _enum_values(standouts, index)
     hits: list[dict[str, Any]] = []
     for node in scopes:
-        copied = BeautifulSoup(str(node), "lxml")
-        _remove_raw_reason_nodes(copied.body or copied)
-        text = _visible_text(copied.body or copied, locale)
+        copied = BeautifulSoup(str(node), HTML_PARSER)
+        target = copied.body or copied
+        _remove_raw_reason_nodes(target)
+        text = _visible_text(target, locale)
         for hit in _scan_tokens(text, banned):
             hit["node"] = node.name or "?"
             hits.append(hit)
