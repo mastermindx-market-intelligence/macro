@@ -1,0 +1,169 @@
+{# Events & News is a presentation of the dashboard's existing producers.
+   Calendar context never becomes an actionable signal. Keep data-al-row one
+   per source alert, including the legacy dislocation row. No new score/store. #}
+{% autoescape true %}
+{% macro nd_bi(en, zh='') -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh or en }}</span>{%- endmacro %}
+{% macro nd_date(value, kind='date') -%}
+  {% if value %}<time class="nd-date" data-nd-date="{{ value }}" data-nd-date-kind="{{ kind }}">{{ value }}</time>{% else %}{{ nd_bi('Date unavailable', '日期未提供') }}{% endif %}
+{%- endmacro %}
+{% macro nd_arrow() -%}<svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true"><path d="M4 10h11m-4-4 4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>{%- endmacro %}
+{% set nd = namespace(review=[], calendar_alerts=[], context=[], stories=[], seen=[], omitted=0) %}
+{% set nd_alert_rows = alerts if alerts is defined and alerts is sequence and alerts is not string and alerts is not mapping else [] %}
+{% for a in nd_alert_rows %}
+  {% if a is mapping %}
+    {% if a.get('rule') == 'event_risk' %}{% set nd.calendar_alerts = nd.calendar_alerts + [a] %}
+    {% elif a.get('tier', 'watch') in ('act', 'watch') %}{% set nd.review = nd.review + [a] %}
+    {% else %}{% set nd.context = nd.context + [a] %}{% endif %}
+  {% endif %}
+{% endfor %}
+{% set nd_news = macro_news if macro_news is defined and macro_news is mapping else none %}
+{% set nd_raw_news = nd_news.get('headlines', []) if nd_news else [] %}
+{% if nd_raw_news is not sequence or nd_raw_news is string or nd_raw_news is mapping %}{% set nd_raw_news = [] %}{% set nd_news = none %}{% endif %}
+{% for h in nd_raw_news or [] %}
+  {% if h is mapping and h.get('title') %}
+    {# Only exact URL+title repeats are omitted. Similar stories and different
+       publishers stay distinct; this is not a narrative clustering engine. #}
+    {% set key = (h.get('url') or '') ~ '|' ~ h.title %}
+    {% if key not in nd.seen %}{% set nd.seen = nd.seen + [key] %}{% set nd.stories = nd.stories + [h] %}
+    {% else %}{% set nd.omitted = nd.omitted + 1 %}{% endif %}
+  {% endif %}
+{% endfor %}
+{% set nd_events_known = macro_catalysts is defined and macro_catalysts is sequence and macro_catalysts is not string and macro_catalysts is not mapping %}
+{% set nd_events = (macro_catalysts|select('mapping')|list) if nd_events_known else [] %}
+{% if nd_events_known and macro_catalysts and not nd_events %}{% set nd_events_known = false %}{% endif %}
+{% set nd_dislo = latest.dislocation if latest is defined and latest and latest.dislocation and latest.dislocation.dislocation_active else none %}
+{% set nd_themes = {'monetary':['Fed','美联储'], 'inflation':['Inflation','通胀'], 'labor':['Jobs','就业'], 'growth':['Growth','增长'], 'credit':['Rates','利率'], 'fiscal':['Fiscal policy','财政政策'], 'earnings':['Earnings','业绩'], 'guidance':['Guidance','业绩指引'], 'analyst':['Analyst views','分析师观点'], 'deals':['Deals','并购'], 'capital_return':['Buybacks & dividends','回购与分红'], 'stocks':['Companies','公司'], 'macro':['Macro','宏观']} %}
+{% macro nd_alert(a, kind) %}
+  {% set heading = a.get('plain_en') or a.get('detail_en') or 'Market update' %}
+  {% set heading_zh = a.get('plain_zh') or a.get('detail_zh') or heading %}
+  {% if kind == 'context' and a.get('message') %}{% set heading = a.message %}{% set heading_zh = a.get('message_zh') or a.message %}{% endif %}
+  {% if a.get('rule') == 'transition_state_change' %}{% set heading = 'Regime footing changed' %}{% set heading_zh = '周期状态发生变化' %}{% endif %}
+  <article class="nd-alert nd-item" data-al-row data-nd-item="{{ kind }}">
+    <div class="nd-item-meta">
+      <span class="nd-tag{% if kind == 'review' %} nd-tag-review{% endif %}">{{ nd_bi('Review' if kind == 'review' else ('Calendar context' if kind == 'calendar' else 'For awareness'), '待核查' if kind == 'review' else ('日历背景' if kind == 'calendar' else '背景观察')) }}</span>
+      {% if a.get('date') or a.get('ts') %}<span class="nd-item-clock">{{ nd_date(a.get('date') or a.get('ts')) }}</span>{% endif %}
+    </div>
+    <h3 class="nd-item-title">{{ nd_bi(heading, heading_zh) }}</h3>
+    {% if a.get('message') and kind != 'context' %}<p class="nd-change">{{ nd_bi(a.message, a.get('message_zh')) }}</p>{% endif %}
+    <details class="nd-evidence">
+      <summary>{{ nd_bi('Why it matters & evidence', '影响与依据') }}<span class="nd-disclosure" aria-hidden="true">+</span></summary>
+      <div class="nd-evidence-body">
+        {% if a.get('detail_en') %}<p class="nd-interpretation">{{ nd_bi(a.detail_en, a.get('detail_zh')) }}</p>{% endif %}
+        {% if a.get('what_en') and a.get('what_en') != a.get('detail_en') %}<p>{{ nd_bi(a.what_en, a.get('what_zh')) }}</p>{% endif %}
+        <p class="nd-limit">{{ nd_bi('An observation to review, not a standalone instruction to trade.', '这是待核查的观察，并非独立交易指令。') }}</p>
+        {% if not a.get('date') and not a.get('ts') %}<p class="nd-source-note">{{ nd_bi('Alert observation time was not supplied by the source.', '数据源未提供警报观察时间。') }}</p>{% endif %}
+      </div>
+    </details>
+  </article>
+{% endmacro %}
+<div class="mx5-dlg nd-desk" id="dlg-news" role="dialog" aria-modal="true" aria-labelledby="nd-title" tabindex="-1">
+  <div class="mx5-dlg-backdrop" onclick="mx5CloseDlg()"></div>
+  <div class="mx5-dlg-panel nd-panel">
+    <header class="nd-header">
+      <div class="nd-heading">
+        <div class="nd-eyebrow"><span class="nd-status-dot" aria-hidden="true"></span>{{ nd_bi('US MACRO · DAILY DESK', '美国宏观 · 每日工作台') }}</div>
+        <h2 id="nd-title" tabindex="-1">{{ nd_bi('Events & news', '事件与新闻') }}</h2>
+        <p class="nd-subtitle">{{ nd_bi('What changed. What is scheduled. What deserves a closer look.', '发生了什么、接下来有什么、哪些值得深入查看。') }}</p>
+      </div>
+      <button class="mx5-dlg-close nd-close" type="button" onclick="mx5CloseDlg()" aria-label="Close / 关闭"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+    </header>
+    <div class="nd-tools" hidden>
+      <div class="nd-tabs" role="group" aria-label="View / 视图">
+        <button type="button" class="nd-tab is-selected" data-nd-mode="briefing" aria-pressed="true">{{ nd_bi('Briefing', '简报') }}</button>
+        <button type="button" class="nd-tab" data-nd-mode="review" aria-pressed="false">{{ nd_bi('Review', '核查') }}<span>{{ nd.review|length + (1 if nd_dislo else 0) }}</span></button>
+        <button type="button" class="nd-tab" data-nd-mode="calendar" aria-pressed="false">{{ nd_bi('Calendar', '日历') }}<span>{{ nd_events|length if nd_events_known else '—' }}</span></button>
+        <button type="button" class="nd-tab" data-nd-mode="news" aria-pressed="false">{{ nd_bi('News', '新闻') }}<span>{{ nd.stories[:24]|length }}</span></button>
+        <button type="button" class="nd-tab" data-nd-mode="context" aria-pressed="false">{{ nd_bi('Context', '背景') }}<span>{{ nd.context|length }}</span></button>
+      </div>
+      <div class="nd-search-row">
+        <label class="nd-search"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="m13 13 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span class="nd-sr-only">{{ nd_bi('Search this view', '搜索当前视图') }}</span><input type="search" id="nd-search" placeholder="Search headlines, events, tickers…" data-placeholder-en="Search headlines, events, tickers…" data-placeholder-zh="搜索新闻、事件、股票…" autocomplete="off" spellcheck="false"></label>
+        <button type="button" class="nd-reset" data-nd-reset>{{ nd_bi('Reset', '重置') }}</button>
+        <p class="nd-result-count" role="status" aria-live="polite" aria-atomic="true"><span class="l-en"><span data-nd-shown>0</span> of <span data-nd-total>0</span> shown</span><span class="l-zh">显示 <span data-nd-shown>0</span> / <span data-nd-total>0</span> 条</span></p>
+      </div>
+    </div>
+    <div class="mx5-dlg-body nd-body">
+      <div class="nd-snapshot">
+        <span>{{ nd_bi('Dashboard snapshot', '仪表盘快照') }}{% if generated_utc is defined and generated_utc %} · {{ nd_date(generated_utc, 'utc') }} <span>UTC</span>{% else %} · {{ nd_bi('Build time unavailable', '生成时间未提供') }}{% endif %}</span>
+        <span class="nd-snapshot-note">{{ nd_bi('Source dates are shown on each item.', '各条目保留各自数据日期。') }}</span>
+      </div>
+      <div class="nd-snapshot-warning" hidden data-nd-stale>{{ nd_bi('This snapshot is more than two days old. Check the dated sources before acting; scheduled dates may have passed.', '此快照已超过两天。采取行动前请核查数据日期；日程日期可能已过。') }}</div>
+      <div class="nd-empty nd-no-results" hidden data-nd-no-results>
+        <svg viewBox="0 0 48 48" width="48" height="48" fill="none" aria-hidden="true"><circle cx="21" cy="21" r="12" stroke="currentColor" stroke-width="1.5"/><path d="m30 30 10 10M15 21h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <h3>{{ nd_bi('No matching items', '没有匹配条目') }}</h3>
+        <p>{{ nd_bi('Try another phrase, or reset to the full briefing.', '请尝试其他关键词，或重置为完整简报。') }}</p>
+        <button type="button" class="nd-button" data-nd-reset>{{ nd_bi('Reset search & view', '重置搜索与视图') }}</button>
+      </div>
+      <div class="nd-grid">
+        <section class="nd-section nd-review-section" data-nd-section="review" aria-labelledby="nd-review-title">
+          <div class="nd-section-heading"><div><div class="nd-kicker">{{ nd_bi('01 / WHAT CHANGED', '01 / 最新变化') }}</div><h3 id="nd-review-title">{{ nd_bi('Worth your attention', '值得优先核查') }}</h3></div><a class="nd-text-link" href="alerts.html">{{ nd_bi('Alert Center', '警报中心') }}{{ nd_arrow() }}</a></div>
+          <div class="nd-items">
+            {% if nd_dislo %}
+              {% set unknown = (nd_dislo.put_state is defined and nd_dislo.put_state == 'unknown') or (nd_dislo.put_state_reliable is defined and not nd_dislo.put_state_reliable) or (nd_dislo.fed_put is defined and nd_dislo.fed_put is none) %}
+              {% set dissent = (nd_dislo.geo_reversibility and nd_dislo.geo_reversibility.agreement != 'corroborates') or (nd_dislo.catalyst_narrative and nd_dislo.catalyst_narrative.agreement != 'corroborates') %}
+              <article class="nd-alert nd-item" data-al-row data-nd-item="review">
+                <div class="nd-item-meta"><span class="nd-tag nd-tag-review">{{ nd_bi('Market stress', '市场压力') }}</span></div>
+                <h3 class="nd-item-title">{{ nd_bi('Selling has turned stressed', '抛售已转为压力状态') }}</h3>
+                <p class="nd-change">{% if unknown %}{{ nd_bi('The policy-backstop reading is unavailable. No call is made; do not treat this as a buying signal.', '政策托底读数不可用。暂不作判断，不应将其视为买入信号。') }}{% elif nd_dislo.verdict == 'stand_aside' %}{{ nd_bi('The stress assessment says stand aside. Review the risk evidence before adding exposure.', '压力评估建议观望。增加风险敞口前，请先核查风险依据。') }}{% else %}{{ nd_bi('Wait for the market to steady. Stress alone does not confirm a turning point.', '等待市场企稳。压力本身并不确认拐点。') }}{% endif %}</p>
+                {% if dissent %}<p class="nd-limit">{{ nd_bi('The supporting evidence does not fully agree.', '支持证据尚未完全一致。') }}</p>{% endif %}
+                <a class="nd-text-link" href="macro_signals.html">{{ nd_bi('Review the signal evidence', '核查信号依据') }}{{ nd_arrow() }}</a>
+              </article>
+            {% endif %}
+            {% for a in nd.review %}{{ nd_alert(a, 'review') }}{% endfor %}
+          </div>
+          {% if not nd.review and not nd_dislo %}<div class="nd-quiet"><span class="nd-quiet-mark" aria-hidden="true">—</span><div><h4>{{ nd_bi('No priority changes in this snapshot', '此快照暂无优先变化') }}</h4><p>{{ nd_bi('That is not an all-clear on market risk. The calendar and news remain below.', '这并不代表市场没有风险。下方仍可查看日历与新闻。') }}</p></div></div>{% endif %}
+          <button type="button" class="nd-more" data-nd-more="review" hidden>{{ nd_bi('See all changes', '查看全部变化') }}{{ nd_arrow() }}</button>
+        </section>
+        <section class="nd-section nd-calendar-section" data-nd-section="calendar" aria-labelledby="nd-calendar-title">
+          <div class="nd-section-heading"><div><div class="nd-kicker">{{ nd_bi('02 / ON THE CALENDAR', '02 / 经济日历') }}</div><h3 id="nd-calendar-title">{{ nd_bi('Scheduled catalysts', '已排期事件') }}</h3></div><span class="nd-tag nd-tag-neutral">ET</span></div>
+          <p class="nd-section-note">{{ nd_bi('New York time · Schedule context, not a directional call.', '纽约时间 · 日程背景不代表方向判断。') }}</p>
+          <div class="nd-items nd-event-list">
+            {% for e in nd_events %}
+              <article class="nd-event nd-item" data-nd-item="calendar">
+                <div class="nd-event-date"{% if e.get('date') %} data-nd-calendar-date="{{ e.date }}"{% endif %}><span data-nd-month>{{ ((e.get('date') or '—')|string)[:7] }}</span><strong data-nd-day>{{ ((e.get('date') or '—')|string)[8:10] or '—' }}</strong></div>
+                <div class="nd-event-content">
+                  <div class="nd-item-meta">{% if e.get('time_et') %}<span class="nd-event-time">{{ e.time_et }} ET</span>{% else %}<span>{{ nd_bi('Time unconfirmed', '时间待确认') }}</span>{% endif %}{% if e.get('impact') == 'high' %}<span class="nd-tag nd-tag-calendar">{{ nd_bi('Major', '重要') }}</span>{% endif %}</div>
+                  <h4>{{ nd_bi(e.get('label') or 'Scheduled event', e.get('label_zh') or e.get('label') or '已排期事件') }}</h4>
+                  <div class="nd-event-full-date">{{ nd_date(e.get('date')) }}<span class="nd-past-date" hidden>{{ nd_bi('Date passed', '日期已过') }}</span></div>
+                  {% if e.get('note') %}<p>{{ nd_bi(e.note, e.get('note_zh')) }}</p>{% endif %}
+                </div>
+              </article>
+            {% endfor %}
+            {% for a in nd.calendar_alerts %}{{ nd_alert(a, 'calendar') }}{% endfor %}
+          </div>
+          {% if not nd_events_known %}<div class="nd-empty nd-source-unavailable"><h4>{{ nd_bi('Calendar unavailable', '日历暂不可用') }}</h4><p>{{ nd_bi('The schedule was not supplied. This does not mean there are no events.', '未获取到日程，不代表没有已排期事件。') }}</p></div>{% elif not nd_events %}<div class="nd-empty"><h4>{{ nd_bi('No scheduled events in this snapshot', '此快照未列出已排期事件') }}</h4><p>{{ nd_bi('Unscheduled news can still move markets.', '突发新闻仍可能影响市场。') }}</p></div>{% endif %}
+          <button type="button" class="nd-more" data-nd-more="calendar" hidden>{{ nd_bi('See the full schedule', '查看完整日程') }}{{ nd_arrow() }}</button>
+          <button type="button" class="nd-text-link nd-calendar-link" data-nd-open="dlg-events" onclick="if(window.mx5OpenDlg) window.mx5OpenDlg('dlg-events')">{{ nd_bi('Open event analysis', '打开事件分析') }}{{ nd_arrow() }}</button>
+        </section>
+        <section class="nd-section nd-news-section" data-nd-section="news" aria-labelledby="nd-news-title">
+          <div class="nd-section-heading"><div><div class="nd-kicker">{{ nd_bi('03 / THE NEWS FLOW', '03 / 新闻动态') }}</div><h3 id="nd-news-title">{{ nd_bi('Market headlines', '市场新闻') }}</h3></div><a class="nd-text-link" href="news.html">{{ nd_bi('Full news feed', '完整新闻流') }}{{ nd_arrow() }}</a></div>
+          <div class="nd-items">
+            {% for h in nd.stories[:24] %}
+              {% set theme = nd_themes.get(h.get('theme'), ['News','新闻']) %}
+              {% set url = (h.get('url') or '')|string %}
+              {% set safe_url = url if url.startswith('https://') or url.startswith('http://') else '' %}
+              <article class="nd-story nd-item" data-nd-item="news">
+                <div class="nd-item-meta"><span class="nd-news-theme">{{ nd_bi(theme[0], theme[1]) }}</span>{% if h.get('importance') == 'high' %}<span class="nd-tag nd-tag-news">{{ nd_bi('High impact', '高影响') }}</span>{% endif %}{% set tickers = h.get('tickers') or [] %}{% if tickers is string %}{% set tickers = [tickers] %}{% elif tickers is not sequence %}{% set tickers = [] %}{% endif %}{% for ticker in tickers[:3] %}<span class="nd-ticker">{{ ticker }}</span>{% endfor %}</div>
+                <h4>{% if safe_url %}<a href="{{ safe_url }}" target="_blank" rel="noopener noreferrer">{{ nd_bi(h.title, h.get('title_zh')) }}<span class="nd-external" aria-hidden="true">↗</span><span class="nd-sr-only">{{ nd_bi('(opens in a new tab)', '（在新标签页打开）') }}</span></a>{% else %}{{ nd_bi(h.title, h.get('title_zh')) }}{% endif %}</h4>
+                <div class="nd-story-meta"><span class="nd-publisher">{{ h.get('source_name') or h.get('domain') or nd_bi('Publisher unavailable', '发布者未提供') }}</span><span class="nd-meta-dot" aria-hidden="true">·</span><span>{% if h.get('pub_date') %}{{ nd_bi('Published', '发布') }} {{ nd_date(h.pub_date) }}{% elif h.get('seendate') %}{{ nd_bi('Seen', '采集于') }} {{ nd_date(h.seendate) }}{% else %}{{ nd_bi('Date unavailable', '日期未提供') }}{% endif %}</span></div>
+                {% if h.get('summary') %}<details class="nd-evidence nd-story-detail"><summary>{{ nd_bi('Source summary', '来源摘要') }}<span class="nd-disclosure" aria-hidden="true">+</span></summary><div class="nd-evidence-body"><p>{{ nd_bi(h.summary, h.get('summary_zh')) }}</p></div></details>{% endif %}
+                {% if not safe_url %}<p class="nd-source-note">{{ nd_bi('Source link unavailable.', '来源链接未提供。') }}</p>{% endif %}
+              </article>
+            {% endfor %}
+          </div>
+          {% if not nd_news %}<div class="nd-empty nd-source-unavailable"><h4>{{ nd_bi('News feed unavailable', '新闻流暂不可用') }}</h4><p>{{ nd_bi('No news payload was supplied. Other sections remain available.', '未获取到新闻数据，其他栏目仍可使用。') }}</p></div>{% elif not nd.stories %}<div class="nd-empty"><h4>{{ nd_bi('No headlines in this snapshot', '此快照暂无新闻') }}</h4><p>{{ nd_bi('Check the full feed for a broader view.', '可前往完整新闻流查看更广范围的报道。') }}</p></div>{% endif %}
+          <button type="button" class="nd-more" data-nd-more="news" hidden>{{ nd_bi('See all headlines', '查看全部新闻') }}{{ nd_arrow() }}</button>
+          {% if nd.stories|length > 24 %}<p class="nd-source-note">{{ nd_bi('Showing the first 24 headlines in source order. More are available in the full feed.', '按数据源顺序展示前 24 条新闻，更多报道可在完整新闻流查看。') }}</p>{% endif %}
+          {% if nd.omitted %}<p class="nd-source-note">{{ nd.omitted }} {{ nd_bi('exact duplicate item(s) omitted; distinct reporting is retained.', '条完全重复内容已省略，不同报道予以保留。') }}</p>{% endif %}
+        </section>
+        <section class="nd-section nd-context-section" data-nd-section="context" aria-labelledby="nd-context-title">
+          <div class="nd-section-heading"><div><div class="nd-kicker">{{ nd_bi('04 / THE WIDER PICTURE', '04 / 更多背景') }}</div><h3 id="nd-context-title">{{ nd_bi('For awareness', '背景观察') }}</h3></div><span class="nd-tag nd-tag-neutral">{{ nd_bi('Not a trade signal', '非交易信号') }}</span></div>
+          <div class="nd-items">{% for a in nd.context %}{{ nd_alert(a, 'context') }}{% endfor %}</div>
+          {% if not nd.context %}<div class="nd-empty"><p>{{ nd_bi('No additional context alerts in this snapshot.', '此快照暂无其他背景警报。') }}</p></div>{% endif %}
+          <button type="button" class="nd-more" data-nd-more="context" hidden>{{ nd_bi('See all context', '查看全部背景') }}{{ nd_arrow() }}</button>
+        </section>
+      </div>
+      <footer class="nd-footer"><span>{{ nd_bi('Calendar ≠ forecast. News ≠ a validated signal.', '日程不等于预测，新闻不等于已验证信号。') }}</span><a class="nd-text-link" href="news.html">{{ nd_bi('Continue researching', '继续研究') }}{{ nd_arrow() }}</a></footer>
+    </div>
+  </div>
+</div>
+{% endautoescape %}
