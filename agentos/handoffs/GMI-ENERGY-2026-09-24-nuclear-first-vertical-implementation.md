@@ -85,6 +85,12 @@ changed:
     what: "Corrected at source by the round-10 closure: the O4 row, the seat finding and its consequence say selected assertions, and the post summary names the third reader."
   - path: agentos/handoffs/GMI-ENERGY-2026-09-24-nuclear-first-vertical-implementation.md
     what: "Section 18: round 10 closed, round 11 (R-ENE-40) delivered by script and gated, addendum 5870740225, the #8002 body refreshed. Corrected at source: the relay and expiry-gate claims, both unresolved cutoff items, the malformed-probe danger, and sections 16 and 17."
+  - path: research/energy/nuclear_program/rulings/R-ENE-2026-09-29-energy-directive.md
+    what: "Created. It quotes the ENERGY directive of 2026-09-29 verbatim and issues three rulings. R-ENE-41 pauses module audits while nuclear's engine and #7870 are unchanged. R-ENE-42 is the owner decision on the cutoff readers for the integration: recorded_cutoff is a clock only in system_replay and source_cutoff only in source_history and system_replay, every supplied cutoff is validated in every mode, replay semantics are unchanged, and six tests are owed. R-ENE-43 reports the target-window rewind in latest, with its probe and output verbatim."
+  - path: research/energy/nuclear_program/REG-PACKET-2026-09-25-nuclear_power.md
+    what: "Section 5b added under the ENERGY directive. The one writer also carries R-ENE-42 with its tests and the $defs/when alignment, and proves unavailable and revoked behaviour and update and restart propagation. The status list names the directive."
+  - path: agentos/handoffs/GMI-ENERGY-2026-09-24-nuclear-first-vertical-implementation.md
+    what: "Section 19: the ENERGY directive and R-ENE-41 to R-ENE-43. In the frontmatter, both temporal unresolved items are ruled and an R-ENE-43 item is added. next_actions follows the directive's sequence. do_not_redo adds the audit pause, #8002's preservation and the rewind probe record, and the unpinned-clock item is superseded. verified gains 4 entries, and prs gains 8155."
 verified:
   - claim: "Current protected procedure is compatible and loaded from one pin."
     command: "cd Mastermind && git fetch origin master && git rev-parse origin/master; git show <sha>:docs/sol_skills/INDEX.md plus COLD_START, ACTIVE_EXECUTION, WEB_CEO_DELEGATION, RECONCILE_STATE, CLOSEOUT, COMMISSION_WAVE, WORKER_AVENUE_ROUTING, WATCHER_ACTION_LOOP, REVIEW_RETURN, docs/AGENT_DIALOGUE_SESSION_CLOSE_LAW.md, docs/EXECUTIVE_WORKER_ROUTING_CHAIRMAN_ADDENDUM.md at that sha"
@@ -170,6 +176,18 @@ verified:
   - claim: "The #8002 body after the round-11 refresh equals the seat's file, which names the three survivors by the reviewer's classes."
     command: "gh pr view 8002 --json body --jq .body | python3 -c \"import sys; a=sys.stdin.read().rstrip(); b=open('<seat scratch>/body8002_r11b.md').read().rstrip(); print(a == b, len(a))\""
     result: "True 13082."
+  - claim: "The ENERGY directive reached this session at 2026-09-29T16:09:43Z."
+    command: "python3 scan of ~/.claude/projects/-Users-chriswong-Documents-Cluade-macro-main/8955bbc3-eb16-43cb-b087-bf5cacf2ffcf.jsonl for the first type=user line containing 'pause additional module audits'"
+    result: "2026-09-29T16:09:43.330Z, uuid 9a47bb6d. The only other hit (16:12:24Z) is the session's own compaction summary."
+  - claim: "No carrier moved between 2026-09-28T13:40Z and 2026-09-29T16:10:52Z."
+    command: "slack_read_thread C0BSBM78V1N 1790224206.039539 oldest=1790582400.000000; gh pr view 8002 --json isDraft,headRefOid,labels,autoMergeRequest,updatedAt,comments,reviews; gh pr view 7870 --json state,isDraft,headRefOid,mergedAt,updatedAt; gh api 'repos/mastermindx-market-intelligence/macro/issues/7870/comments?since=2026-09-28T13:23:02Z'"
+    result: "No thread reply. #8002 is DRAFT at 508d8c206357, labels [], auto-merge null, updated 2026-09-28T13:40:40Z, 0 comments and 0 reviews. #7870 is OPEN and DRAFT at a0d7b054ff23, updated 2026-09-28T13:23:01Z, 0 comments since."
+  - claim: "In latest, a well-formed source_cutoff moves nuclear's target-window reference day (R-ENE-43)."
+    command: "cd r11gate/simB11f && PYTHONPATH=. python3.12 ../probe_target_rewind.py. The sim's nuclear_theme_research.py and tests/nuclear_research_helpers.py hash to sha256 3a795c54c70e3a08 and 60801c548c0831b2, equal to git show 508d8c206357:<path>."
+    result: "Control: forward N03 only, with target_windows_judged_at:2026-09-20. source_cutoff 2025-12-31: forward N03 and N03B, no disclosure. 2099-12-31: forward none, no disclosure. source_history 2026-09-30: forward N03. source_history 2025-12-31: selected 0. Python 3.12.13."
+  - claim: "The scheduled watch is live."
+    command: "scheduled-tasks list_task_runs watch-gmi-energy-fable-ceo-e2e-20260923 (limit 8)"
+    result: "8 of 8 runs succeeded, the newest started at 2026-09-29T15:49:53Z. The next run is due at 17:29:50Z."
 unverified:
   - claim: "Semiconductor B's theme-research response envelope can carry a shared economic-change dossier section without a second route."
     what_would_verify: "B's T08/T09 landed shape on #7870 (schema semiconductor_theme_research.v1 top-level fields, /api/themes/v1/research/query request schema) read at its exact head; decision reserved to Task 7 (ruling R-ENE-04)."
@@ -187,11 +205,13 @@ unresolved:
   - "_le reads an instant against a date-only cutoff on the instant's own local day, so UTC order can invert across such a cutoff (_le('2026-12-31T23:00:00-05:00','2026-12-31') is True, _le('2027-01-01T01:00:00+08:00','2026-12-31') is False). Base-owned contract question, relayed with no ask in #7870 comment 5868018569; nuclear inherits the owner's answer."
   - "The shell's Limitations line prints wire tokens verbatim in EN and ZH. Asked on #7870 comment 5866433049 item 6 whether a token-to-plain-words map is planned; Energy offered a bilingual table for its 20 tokens. Unanswered."
   - "Nuclear's review-expiry gate reads a supplied recorded_cutoff in every mode and no test observes it: two swallow mutants and a replay-only clock mutant survive the 117-test suite. The candidate pin (R-ENE-40) is with the reviewer for a pre-review and rides round 11. (Resolved 2026-09-28 by round 11, R-ENE-40, at #8002 508d8c206357: a replay judges review expiry at its recorded cutoff, and outside a replay only the failure is pinned. Which clock applies outside a replay stays out of scope, R-ENE-18; the rewind hazard that leaves open is its own item below.)"
-  - "Nuclear's response schema $defs/when does not match _parse_day. It refuses 2026-1-5, 2026-12-31T12:00Z, +0800 offsets and full-width digits, and it admits 2026-13-45 and 2026-02-29; today's silent 200 already echoes schema-invalid cutoffs such as not-a-date and 20261231. Energy aligns it at the rebase, to whatever grammar #7870's item 7 admits (addendum 5870740225, no ask)."
-  - "The rewind hazard (reviewer probe P3, round-10 closure), recorded and unruled. Outside a replay a supplied well-formed recorded_cutoff moves nuclear's review-expiry clock either way: a due time of 2026-09-19 with the newest review at 2026-09-20 is withheld with no recorded cutoff and served with 2026-09-18 or 1970-01-01; a due time of 2027-01-01 is served with none and withheld with 2099-12-31. R-ENE-18 keeps _now_of_query out of scope and unchanged. Decided at the rebase with item 7: if the base refuses a recorded cutoff outside a replay (the refuse_rec_unread shape), the hazard closes at the base and the 4 nuclear tests that fail under that shape change with it; otherwise closing it needs a ruling that supersedes R-ENE-18's unchanged clause, and R-ENE-40's test B then needs the base to validate cutoffs in latest and source_history."
+  - "Nuclear's response schema $defs/when does not match _parse_day. It refuses 2026-1-5, 2026-12-31T12:00Z, +0800 offsets and full-width digits, and it admits 2026-13-45 and 2026-02-29; today's silent 200 already echoes schema-invalid cutoffs such as not-a-date and 20261231. Energy aligns it at the rebase, to whatever grammar #7870's item 7 admits (addendum 5870740225, no ask). (2026-09-29: the ENERGY directive makes this an integration obligation, so the response-date grammar must match the admitted parser. R-ENE-42 validates every supplied cutoff with that same grammar, and REG-PACKET section 5b carries the alignment test.)"
+  - "The rewind hazard (reviewer probe P3, round-10 closure), recorded and unruled. Outside a replay a supplied well-formed recorded_cutoff moves nuclear's review-expiry clock either way: a due time of 2026-09-19 with the newest review at 2026-09-20 is withheld with no recorded cutoff and served with 2026-09-18 or 1970-01-01; a due time of 2027-01-01 is served with none and withheld with 2099-12-31. R-ENE-18 keeps _now_of_query out of scope and unchanged. Decided at the rebase with item 7: if the base refuses a recorded cutoff outside a replay (the refuse_rec_unread shape), the hazard closes at the base and the 4 nuclear tests that fail under that shape change with it; otherwise closing it needs a ruling that supersedes R-ENE-18's unchanged clause, and R-ENE-40's test B then needs the base to validate cutoffs in latest and source_history. (Ruled 2026-09-29 by R-ENE-42, under the ENERGY directive: outside a replay a caller-supplied cutoff must not silently make an overdue review look current. Nuclear uses recorded_cutoff as a clock only in system_replay, and source_cutoff only in source_history and system_replay. It still validates every supplied cutoff in every mode, so test B stays green without a base change. The ruling is executed at the integration, and nothing on #8002 changes before then.)"
+  - "The target-window rewind (R-ENE-43, found 2026-09-29 and reported under the ENERGY directive). _reference_day returns a supplied source_cutoff in every mode, but the base time gate ignores that cutoff in latest. So in latest a caller's cutoff moves the target window while every record stays selected. With 2025-12-31 the passed target N03B (to 2026-01-31) is served as a forward target; with 2099-12-31 the current N03 (to 2027-12-31) drops out; and target_windows_judged_at: disappears in both. R-ENE-42 closes it at the integration. The probe and its output are in rulings/R-ENE-2026-09-29-energy-directive.md."
 next_actions:
+  - "Audits are paused (R-ENE-41, the ENERGY directive of 2026-09-29). While nuclear's engine (508d8c206357) and #7870 (a0d7b054ff23) are unchanged, there is no further audit or review round of nuclear's module and no generic test-pin or docstring round. Any new material correctness, privacy or production defect is still reported; R-ENE-43 was one. #8002 stays at 508d8c206357, DRAFT, with no labels and auto-merge null, and it is neither merged nor retargeted before #7870 is released."
   - "Next #7870 post only with substance, after the carrier fence. Answer the owner's replies to 5866433049 (RULING 8 widening, limitation tokens), to 5868018569 (the malformed-cutoff relay, O1), to 5869344590 (its correction, the parser note, the subject_role constraint) and to 5870740225 (the third reader, the parser sets, validating versus refusing) when they come. No post is owed now: the Robotics seat's 5869676610 asks nothing of Energy. The registration writer is settled: the Robotics seat agreed in 5866989985 that Energy lands nuclear itself."
-  - "After #7870 merges: rebase #8002 onto main, recording m34_broad and my8_swallow_cutoff as EQUIVALENT if the base validates cutoffs with _parse_day. Align nuclear's $defs/when to the grammar item 7 admits, and decide the rewind hazard with item 7; the next review of nuclear's module is at this rebase. Then open the registration carrier per REG-PACKET-2026-09-25-nuclear_power.md sections 3, 3b, 4, 4b and 5, re-running the section-1c gates at the post-merge heads. Then served, browser and privacy proof, then Task 10."
+  - "After #7870 is released and source custody permits (the ENERGY directive), reconcile #8002 onto the accepted base. Record m34_broad and my8_swallow_cutoff as EQUIVALENT if the base validates cutoffs with _parse_day, and re-run the REG-PACKET section-1c gates at the post-merge heads. Then ONE writer executes REG-PACKET-2026-09-25-nuclear_power.md sections 3, 3b, 4, 4b, 5 and 5b. Section 5b carries R-ENE-42 (the cutoff readers) with its six tests, and the $defs/when alignment to the admitted parser. Nuclear's module is reviewed at this reconciliation. Then prove the nuclear route, the browser mount, scoped evidence, the private and cache headers, unavailable and revoked behaviour, and update and restart propagation. The VPS hold (#6902), the production credential boundary (Task 10) and Power-Demand (R-ENE-16) stay separate: nothing is bypassed, and nuclear acceptance is not claimed before its gates."
   - "Fresh-read the Slack root and #7870 before every substantive write; the two-hourly scheduled watch watch-gmi-energy-fable-ceo-e2e-20260923 reports #7870 merge/close, the shared registry file landing on main, and counterpart edges."
 do_not_redo:
   - "Do not repeat R1-R6 research, the 78-requirement design, the 11-task plan or the first-vertical choice (Nuclear first, Power-Demand next)."
@@ -216,8 +236,11 @@ do_not_redo:
   - "Do not re-probe the expiry-gate reader at a0d7b054ff23; r10gate/probe_now_of_query.py and the R-ENE-2026-09-28-w2-module-r10.md tables are the record. Re-probe only if nuclear's _now_of_query or _review_excluded changes, or the owner changes _validate_query."
   - "Do not re-derive the round-11 packet. The seat sims r11gate/simA11f and simB11f plus apply_r11.py (sha256 4de85cc691605d7d...) are the byte reference; 84 mutants leave exactly the documented 9 survivors, and the reviewer's 26 rows kill identically on the lane tree."
   - "Do not open a separate closure review of round 11. It delivers the reviewer's own measured text byte for byte, and the seat reproduced the suites, three base shapes and every row's failure count (R-ENE-2026-09-28-w2-module-r11.md, Round-11 closure). The next review of nuclear's module is at the rebase onto #7870's merged base."
-  - "Do not pin nuclear's review-expiry clock outside a replay. R-ENE-18 keeps _now_of_query out of scope and unchanged, and R-ENE-40 pins only the malformed-cutoff failure there; the rewind hazard is decided at the rebase with item 7."
+  - "Do not pin nuclear's review-expiry clock outside a replay. R-ENE-18 keeps _now_of_query out of scope and unchanged, and R-ENE-40 pins only the malformed-cutoff failure there; the rewind hazard is decided at the rebase with item 7. (Superseded 2026-09-29 by R-ENE-42: the clock outside a replay is now ruled. Pin it only through R-ENE-42's tests, which land with the integration, and never pin today's mode-blind clock.)"
   - "Do not re-probe the replay raise site, the third reader or the expiry gate's selection at a0d7b054ff23. r11gate/probe_replay.py, probe_third_reader.py and probe_selection.py with their .out files are the record; re-probe only at the post-merge heads."
+  - "Do not start another audit or review round of nuclear's module, or a generic test-pin or docstring round, while nuclear's engine and #7870's base are unchanged (R-ENE-41, the ENERGY directive). Rounds 1-11 and their closure evidence stand."
+  - "Do not merge, retarget or reshape #8002 before #7870 is released and source custody permits (the ENERGY directive). It imports modules that exist only on #7870."
+  - "Do not re-probe the target-window rewind at a0d7b054ff23. The probe and its output are recorded verbatim in rulings/R-ENE-2026-09-29-energy-directive.md; re-probe only at the post-merge heads."
 danger_areas:
   - "Macro is public: no full-fidelity paid research bodies, source PDFs, credentials or private production captures on this carrier; fixtures are SYNTHETIC and never copies of live Cameco/Centrus/BWXT/NuScale/Oklo values."
   - "A synthetic-fixture green is not native admission; a schema, a fixture pass, a page shell, green CI or a merge is not first-vertical completion (15-point law, packet section 16)."
@@ -232,7 +255,7 @@ danger_areas:
   - "_le and _parse_day are the base's (semiconductor_theme_research.py); Energy guards its own call sites and never edits the base helper. Never pin an HTTP status for a malformed user cutoff: today's 503 and the base's future 400 are the owner's. Pin the engine with pytest.raises(ValueError), which ResearchRefusal subclasses, as R-ENE-35 does. (Corrected 2026-09-28, round-8 closure NIT-A: this item ended 'A test that pins today's 503 for a malformed user cutoff would fight the base's fix (a 400); do not write one', which was read as meaning no pin was possible.)"
   - "A malformed query cutoff is silent on an empty bundle: 200, with the control's limitations. A probe of the cutoff on an empty bundle reads clean because it is blind. Probe with a bundle whose record reaches the time gate, and keep the well-formed control beside it. (Corrected 2026-09-28, round-9 closure NIT-3 and the seat's round-10 finding: the time gates are not the only readers. Nuclear's replay review guard reads the cutoff for a block with a readable review time, and its review-expiry gate reads recorded_cutoff in every mode for an assertion with a review_due_at.) (Corrected again 2026-09-28, round-10 closure: nuclear's target-window judgement is a third reader, of source_cutoff in every mode. And in a replay, probe with a record observed and retained inside the source cutoff: a record observed after it is dropped on its availability before the time gate reads the recorded cutoff, so the probe reads clean because it is blind. The seat's own first replay probe fell into this; r11gate/probe_replay.py records both records.)"
   - "A raise pin (pytest.raises(ValueError)) passes vacuously when the fixture itself is refused: the shared curation assertion refuses a date-only review_due_at with CurationAssertionError, which is a ValueError. Pair every raise pin with a positive control on the same fixture (round 10's expiry-gate candidate)."
-prs: [7791, 7881, 8001, 8002, 8016, 8018, 8023, 8139, 8143, 8148, 8151]
+prs: [7791, 7881, 8001, 8002, 8016, 8018, 8023, 8139, 8143, 8148, 8151, 8155]
 ---
 
 # GMI Energy — Nuclear Value Capture first vertical: implementation operation working checkpoint
@@ -832,3 +855,45 @@ It also tells the owner, with no ask, that nuclear's `$defs/when` is out of step
 1. the next #7870 post, only with substance (none is owed now);
 2. after #7870 merges: rebase (recording `m34_broad` and `my8_swallow_cutoff` as EQUIVALENT if the owner validates with `_parse_day`), align `$defs/when`, decide the rewind hazard with item 7, then the registration carrier, then served, browser and privacy proof, then Task 10;
 3. fresh-read the Slack root and #7870 before every substantive write, with the scheduled watch reporting.
+
+## 19. State 2026-09-29 ~16:45Z — the ENERGY directive: audits paused (R-ENE-41), the cutoff readers ruled (R-ENE-42), a target-window rewind reported (R-ENE-43)
+
+**The directive.** The operator relayed a portfolio directive at 16:09:43Z. Its Energy entry is numbered 7 there, which is not #7870 relay item 7. It is quoted verbatim in `research/energy/nuclear_program/rulings/R-ENE-2026-09-29-energy-directive.md`. In short:
+- module audits are paused;
+- #8002 is preserved as it is;
+- the integration starts only after #7870 is released, with one writer;
+- both temporal issues are resolved inside that integration;
+- the proof covers the route, the mount, the evidence, the headers, unavailable and revoked behaviour, and restart;
+- the hold, the credentials and Power-Demand stay separate.
+
+**Carriers at 16:10:52Z.** Nothing moved:
+- the Slack root has no reply;
+- #8002 is DRAFT at `508d8c206357`, with no labels and auto-merge null;
+- #7870 is OPEN and DRAFT at `a0d7b054ff23`, with 0 comments since 2026-09-28T13:23:02Z.
+
+The scheduled watch's last 8 runs succeeded, the newest at 15:49:53Z.
+
+**R-ENE-41.** Audits are paused while nuclear's engine and #7870 are unchanged. The next review of nuclear's module is at the reconciliation.
+
+**R-ENE-42, the owner decision the directive asks for.** It supersedes R-ENE-18's "unchanged" clause, effective at the reconciliation:
+- nuclear uses `recorded_cutoff` as a clock only in `system_replay`;
+- it uses `source_cutoff` only in `source_history` and `system_replay`;
+- every supplied cutoff is still validated in every mode;
+- replay semantics are unchanged.
+
+It carries six test obligations. REG-PACKET §5b hands them, with the `$defs/when` alignment and the two added proofs, to the one writer.
+
+**R-ENE-43, a new material defect, reported.** The third reader, the target-window judgement, has P3's rewind in `latest`:
+- with `source_cutoff=2025-12-31`, the passed target `N03B` is served as a forward target;
+- with `2099-12-31`, the current `N03` drops out;
+- in both cases `target_windows_judged_at:` disappears.
+
+It was measured at #8002's exact bytes: the sim's hashes equal `git show 508d8c206357`. The reader is nuclear's, so no #7870 post is owed. R-ENE-42 closes it at the integration.
+
+**Gates, unchanged.**
+- #8002 stays DRAFT/HOLD until #7870 is released.
+- The #8001 live rung is an EXACT_HUMAN_GATE behind #6902.
+- Task 10 is an EXACT_HUMAN_GATE on R2 credentials.
+- Power-Demand stays closed until nuclear ACCEPTANCE (R-ENE-16).
+
+The lever is still the Chairman's: have the Semiconductors seat land the shared base.
