@@ -34,6 +34,12 @@
           "top_events": []
         },
         {
+          "n_events": 19,
+          "source": "earnings_call",
+          "theme": "earnings",
+          "top_events": []
+        },
+        {
           "n_events": 1,
           "source": "earnings",
           "theme": "earnings",
@@ -246,15 +252,15 @@
           "top_events": []
         },
         {
-          "n_events": 21,
-          "source": "prophet_ledger",
-          "theme": null,
+          "n_events": 22,
+          "source": "earnings",
+          "theme": "earnings",
           "top_events": []
         },
         {
-          "n_events": 19,
-          "source": "earnings",
-          "theme": "earnings",
+          "n_events": 21,
+          "source": "prophet_ledger",
+          "theme": null,
           "top_events": []
         },
         {
@@ -299,7 +305,7 @@
           "top_events": []
         },
         {
-          "n_events": 38,
+          "n_events": 39,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -346,7 +352,7 @@
     {
       "clusters": [
         {
-          "n_events": 477,
+          "n_events": 479,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
@@ -358,7 +364,7 @@
           "top_events": []
         },
         {
-          "n_events": 189,
+          "n_events": 190,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -411,13 +417,13 @@
     {
       "clusters": [
         {
-          "n_events": 1187,
+          "n_events": 1189,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
         },
         {
-          "n_events": 793,
+          "n_events": 799,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
@@ -464,7 +470,7 @@
     {
       "clusters": [
         {
-          "n_events": 598,
+          "n_events": 599,
           "source": "earnings",
           "theme": "earnings",
           "top_events": []
