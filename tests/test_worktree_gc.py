@@ -25,6 +25,14 @@ COVERAGE
       local branch on the merged proof; DIRTY / UNPUSHED / LOCKED survive
   14. max_delete_per_run caps deletions
 
+  Reach (an instrument must state how much it looked at):
+  15. the rendered report prints `reach: checked N of M registered worktrees`,
+      and names how many sat outside `roots` and were never examined
+  16. absent reach metadata OMITS the line rather than inventing a count
+  17. apply refusals are PRINTED, grouped by reason — they were counted into
+      an exit code and never shown, so `deleted=0 errors=688` was
+      indistinguishable from a healthy run with nothing to do
+
 All git activity runs against throwaway repos under tmp_path with a local
 bare "origin" — no network, no gh (PR states injected via --pr-states-file),
 no real ledger writes (LEDGER_DIR monkeypatched).
@@ -369,3 +377,69 @@ def test_max_delete_cap(repo, tmp_path, monkeypatch):
     assert payload["apply"]["skipped_cap"] == 1
     survivors = [w for w in ("safe0", "safe1", "safe2") if (repo["root"] / w).exists()]
     assert len(survivors) == 1
+
+
+# ── reach: an instrument that never states its subject count ────────────────
+
+def test_report_states_its_reach(repo, tmp_path, monkeypatch, capsys):
+    """The report a human reads must say how many worktrees it checked.
+
+    Without this line the report is indistinguishable from one with full coverage: every verdict
+    it prints is correct, and the ones it never examined are simply absent.
+    """
+    _add_worktree(repo, "a", branch="claude/a")
+    _add_worktree(repo, "b", branch="claude/b")
+    rc, payload = _run_main(repo, tmp_path, monkeypatch, pr_states={})
+    assert rc == 0
+    out = capsys.readouterr().out
+    assert "reach: checked" in out, "the report never states its reach"
+    meta = payload["meta"]
+    assert f"checked {meta['in_scope']} of {meta['registered_total']}" in out
+
+
+def test_reach_names_what_it_never_examined():
+    """A partial scope must name the gap; full coverage must not invent one."""
+    partial = wgc.reach_line({"registered_total": 804, "in_scope": 225, "orphans": 12})
+    assert "225 of 804" in partial
+    assert "579 outside" in partial and "never examined" in partial
+    assert "12 unregistered" in partial
+
+    full = wgc.reach_line({"registered_total": 40, "in_scope": 40, "orphans": 0})
+    assert "40 of 40" in full
+    assert "outside" not in full, "full coverage must not claim an out-of-scope count"
+
+
+def test_reach_omitted_not_invented_without_metadata():
+    """Missing metadata omits the line. A guessed coverage number is worse than none."""
+    meta = {"host": "h", "ts": "t", "mode": "report", "fetch_ok": True,
+            "proc_scan": True, "pr_states": "none"}
+    md = wgc.render_markdown([], {"armed": False, "min_age_days": 7}, meta)
+    assert "reach:" not in md
+    assert "| verdict | count | GiB |" in md, "the rest of the report must still render"
+
+
+def test_apply_refusals_are_printed_not_just_counted():
+    """Refusals were counted into an exit code and never shown.
+
+    Grouping is what makes printing possible at all: the measured shape on this host is hundreds
+    of identical host-checkout refusals, which would bury the two real errors.
+    """
+    errs = [f"/Volumes/Mastermind/w{i}: refused — host checkout" for i in range(688)]
+    errs += [f"/Users/x/w{i}: refused — outside configured roots" for i in range(3)]
+    errs += ["/Users/x/wA: fatal: could not remove", "/Users/x/wB: permission denied"]
+    rows = wgc.group_refusals(errs)
+
+    assert any("host checkout: 688" in r for r in rows)
+    assert any("outside configured roots: 3" in r for r in rows)
+    # identical refusals collapse to one row each, real errors stay individually visible
+    assert len(rows) == 5, rows
+    assert "fatal: could not remove" in "\n".join(rows)
+    assert "permission denied" in "\n".join(rows)
+
+
+def test_refusal_error_list_is_capped():
+    """A long error list must not become the whole report."""
+    rows = wgc.group_refusals([f"/p{i}: boom {i}" for i in range(14)])
+    assert rows[0].strip() == "error: 14"
+    assert rows[-1].strip() == "... and 4 more"
+    assert len(rows) == 12, rows
