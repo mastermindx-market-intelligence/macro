@@ -375,3 +375,130 @@ def bind_shadow_view(
         "rows": [{"candidate": deepcopy(candidate), "sidecar": deepcopy(row)}
                  for candidate, row in zip(board["buy"], expected["rows"], strict=True)],
     }
+
+
+# Individually authorized-policy consumption, separate from the V0 shadow
+# definition above. There is deliberately no production grant or config switch
+# here. expected_rule_hashes is an INTERNAL trusted-owner input: a public caller
+# must never supply both it and the records it purportedly authorizes. Hashes
+# verify an already accepted source identity; they do not mint authority.
+from dataclasses import dataclass
+
+_POLICY_KEYS = frozenset({
+    "policy_id", "rule_id", "rule_version", "authority_basis", "grant_ref",
+    "action", "state", "market", "board_definition", "lifecycle", "tickers",
+    "starts_at", "expires_at", "restore_condition",
+})
+
+
+@dataclass(frozen=True)
+class NewLongRestrictionRead:
+    """Immutable, subtract-only read for an explicitly adopted internal caller.
+
+    It cannot authorize a buy, rank, position size, liquidation or alert. The
+    existing source/grant owner supplies accepted records and a read-validity
+    window. No policy detector, registry, ledger or scheduler is added here.
+    """
+    board_digest: str
+    records: tuple[str, ...]
+    observed_at: str
+    valid_until: str
+    errors: tuple[str, ...]
+
+    def bind_board(self, board: Mapping[str, Any]) -> None:
+        if _digest(board) != self.board_digest:
+            raise MarketEligibilityError("POLICY_BOARD_BINDING_MISMATCH")
+
+    def decision(self, ticker: str, *, read_at: str) -> dict[str, Any]:
+        now = _utc(read_at, "POLICY_READ_CLOCK_INVALID")
+        start = _utc(self.observed_at, "POLICY_OBSERVATION_INVALID")
+        cutoff = _utc(self.valid_until, "POLICY_VALIDITY_INVALID")
+        if not start <= now < cutoff:
+            return {"state": "UNAVAILABLE", "policy_ids": [], "rules": [],
+                    "errors": ["POLICY_READ_OUTSIDE_VALIDITY"]}
+        matched = []
+        for encoded in self.records:
+            policy = json.loads(encoded)
+            if (policy["state"] == "ACTIVE"
+                    and _utc(policy["starts_at"], "POLICY_START_INVALID") <= now
+                    < _utc(policy["expires_at"], "POLICY_EXPIRY_INVALID")
+                    and (policy["tickers"] == ["*"] or ticker in policy["tickers"])):
+                matched.append({k: policy[k] for k in (
+                    "policy_id", "rule_id", "rule_version", "grant_ref", "action",
+                    "authority_basis", "expires_at", "restore_condition")})
+        # A source gap never erases a still-valid, separately accepted restriction.
+        # All applicable rules survive; there is no voting, score or bullish offset.
+        state = "DENY_NEW_LONG" if matched else (
+            "UNAVAILABLE" if self.errors else "NO_POLICY_CONSTRAINT")
+        return {"state": state, "policy_ids": [p["policy_id"] for p in matched],
+                "rules": matched, "errors": list(self.errors)}
+
+
+def bind_new_long_restrictions(
+    board: Mapping[str, Any], records: list[dict[str, Any]], *,
+    expected_rule_hashes: Mapping[str, str], observed_at: str,
+    valid_until: str, source_available: bool = True,
+) -> NewLongRestrictionRead:
+    """Bind policy-owner receipts without accepting a new financial-policy grant.
+
+    The caller must already have adoption and individual rule authority from the
+    existing owner. No native caller is automatically opted in. A malformed,
+    missing or unrecognized expected record makes the controlled action unknown,
+    never a fabricated all-clear. Future/expired/revoked accepted rules cannot
+    cancel another active rule. Only US board new-long restrictions are supported.
+    """
+    if not isinstance(board, Mapping) or board.get("board_definition") not in SUPPORTED_BOARD_DEFINITIONS:
+        raise MarketEligibilityError("POLICY_BOARD_DEFINITION_UNSUPPORTED")
+    start = _utc(observed_at, "POLICY_OBSERVATION_INVALID")
+    end = _utc(valid_until, "POLICY_VALIDITY_INVALID")
+    if end <= start:
+        raise MarketEligibilityError("POLICY_WINDOW_INVALID")
+    if not isinstance(expected_rule_hashes, Mapping) or not expected_rule_hashes or len(expected_rule_hashes) > 128:
+        raise MarketEligibilityError("POLICY_OWNER_BINDING_REQUIRED")
+    approved = {}
+    for key, value in expected_rule_hashes.items():
+        approved[_text(key, "POLICY_EXPECTED_ID_INVALID")] = _hash(value, "POLICY_EXPECTED_HASH_INVALID")
+    errors = [] if source_available is True else ["POLICY_SOURCE_UNAVAILABLE"]
+    if not isinstance(records, list) or len(records) > 128:
+        records = []
+        errors.append("POLICY_RECORDS_UNREADABLE")
+    seen = set()
+    accepted = []
+    for record in records:
+        try:
+            if not isinstance(record, dict) or set(record) != _POLICY_KEYS:
+                raise MarketEligibilityError("POLICY_RECORD_SHAPE_INVALID")
+            pid = _text(record["policy_id"], "POLICY_ID_INVALID")
+            if pid in seen:
+                raise MarketEligibilityError("POLICY_ID_DUPLICATE")
+            seen.add(pid)
+            if approved.get(pid) != _digest(record):
+                raise MarketEligibilityError("POLICY_OWNER_DIGEST_MISMATCH")
+            for field in ("rule_id", "rule_version", "grant_ref", "restore_condition"):
+                _text(record[field], "POLICY_" + field.upper() + "_INVALID")
+            if record["authority_basis"] not in {"earned", "temporary_operator_safety", "emergency_user_opt_in"}:
+                raise MarketEligibilityError("POLICY_AUTHORITY_BASIS_UNSUPPORTED")
+            if record["action"] not in {"SUPPRESS_NEW_ENTRY", "NO_NEW_LONG_RISK"}:
+                raise MarketEligibilityError("POLICY_ACTION_UNSUPPORTED")
+            if record["state"] not in {"ACTIVE", "REVOKED"}:
+                raise MarketEligibilityError("POLICY_STATE_UNSUPPORTED")
+            if (record["market"] != "US" or record["lifecycle"] != "NEW_LONG_RECOMMENDATION"
+                    or record["board_definition"] != board["board_definition"]):
+                raise MarketEligibilityError("POLICY_SCOPE_MISMATCH")
+            names = record["tickers"]
+            if (not isinstance(names, list) or not names or len(names) > MAX_BOARD_ROWS
+                    or any(not isinstance(n, str) or not n or len(n) > 32 or n != n.upper() or n != n.strip() for n in names)
+                    or names != sorted(set(names)) or ("*" in names and names != ["*"])):
+                raise MarketEligibilityError("POLICY_TICKER_SCOPE_INVALID")
+            if _utc(record["expires_at"], "POLICY_EXPIRY_INVALID") <= _utc(record["starts_at"], "POLICY_START_INVALID"):
+                raise MarketEligibilityError("POLICY_RULE_WINDOW_INVALID")
+            accepted.append(_canonical(record))
+        except MarketEligibilityError as exc:
+            errors.append(str(exc))
+    if set(approved) != seen:
+        errors.append("POLICY_EXPECTED_SET_INCOMPLETE")
+    accepted.sort(key=lambda text: json.loads(text)["policy_id"])
+    return NewLongRestrictionRead(
+        board_digest=_digest(board), records=tuple(accepted), observed_at=observed_at,
+        valid_until=valid_until, errors=tuple(sorted(set(errors))),
+    )

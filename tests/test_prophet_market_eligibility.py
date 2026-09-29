@@ -477,3 +477,163 @@ class CliTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+class TestNamedPolicyOrigination(unittest.TestCase):
+    """Fictional accepted-rule receipts; no production grant or market outcomes."""
+    def setUp(self):
+        from copy import deepcopy
+        self.now = "2026-09-28T13:00:00Z"
+        self.board = {"board_definition":"us_prophet_v3", "as_of":"2026-09-25",
+            "staleness":{"price_through":"2026-09-25","observed_at_utc":"2026-09-28T13:00:00Z",
+                         "delayed":False,"unknown":False,"basis":"panel_majority"},
+            "gate_go":True,"buy":[]}
+        for ticker,score in [("AAA",99),("BBB",90)]:
+            self.board["buy"].append({"ticker":ticker,"dir":"up","act_level":3,
+                "prophet":{"score":score},"conviction":{"score":score,"band":"high"},
+                "entry_signal":{"status":"buy_now","spot":100.0,"trigger":99.0,
+                                "signal_date":"2026-09-25"},
+                "hold":{"anchor":"2026-09-25","invalidation":95.0}})
+        self.rule = {"policy_id":"fixture-risk-pause", "rule_id":"fixture-no-new-long", "rule_version":"1",
+            "authority_basis":"temporary_operator_safety", "grant_ref":"fixture-only:not-a-live-grant",
+            "action":"NO_NEW_LONG_RISK", "state":"ACTIVE", "market":"US",
+            "board_definition":"us_prophet_v3", "lifecycle":"NEW_LONG_RECOMMENDATION", "tickers":["*"],
+            "starts_at":"2026-09-28T12:00:00Z","expires_at":"2026-09-28T20:00:00Z",
+            "restore_condition":"Owning rule lifted or expired; native entry still required."}
+
+    def bind(self, rules=None, *, available=True, expected=None):
+        from engine.prophet_market_eligibility import bind_new_long_restrictions, _digest
+        rules = [self.rule] if rules is None else rules
+        if expected is None: expected = {p["policy_id"]:_digest(p) for p in rules}
+        return bind_new_long_restrictions(self.board, rules, expected_rule_hashes=expected,
+            observed_at=self.now, valid_until="2026-09-28T21:00:00Z", source_available=available)
+
+    def invoke(self, context=None, *, existing_ids=None, active_keys=None, clock=None):
+        from engine import prophet_bridge as pb
+        from unittest.mock import patch
+        import pandas as pd
+        from tempfile import TemporaryDirectory
+        prices=pd.DataFrame({"open":100.0,"high":102.0,"low":98.0,"close":100.0,"volume":1000000},
+            index=pd.bdate_range(end="2026-09-25",periods=40))
+        stats={}
+        with TemporaryDirectory() as root, patch.object(pb,"_load_price_history",return_value=prices):
+            plans=pb.originate_plans(Path(root)/"board.json","2026-09-28",existing_ids or set(),
+                active_keys=active_keys, intake_stats=stats, standouts_doc=self.board,
+                new_long_restrictions=context, policy_read_at=clock or self.now)
+        return plans,stats
+
+    def test_high_rank_native_admission_then_named_rule_stops_origination(self):
+        from engine import prophet_bridge as pb
+        self.assertEqual([r["ticker"] for r in pb.select_candidates(self.board,n=None)],["AAA","BBB"])
+        plans,stats=self.invoke(self.bind())
+        self.assertEqual(plans,[]);self.assertEqual(stats["admitted"],2)
+        self.assertEqual(stats["market_policy_suppressed"],2)
+        self.assertEqual(stats["validation_failed"],0);self.assertEqual(stats["unaccounted"],0)
+        self.assertTrue(stats["lossless"])
+        self.assertEqual([d["policy_ids"] for d in stats["market_policy_dispositions"]],
+                         [["fixture-risk-pause"],["fixture-risk-pause"]])
+
+    def test_unadopted_path_still_originates_native_plans(self):
+        plans,stats=self.invoke()
+        self.assertEqual(len(plans),2,stats)
+        self.assertNotIn("market_policy_suppressed",stats)
+
+    def test_expired_rule_returns_exact_base_plans(self):
+        self.rule["expires_at"]="2026-09-28T12:59:59Z"
+        base,base_stats=self.invoke();plans,stats=self.invoke(self.bind())
+        self.assertEqual(len(base),2,base_stats);self.assertEqual(plans,base)
+        self.assertEqual(stats["market_policy_suppressed"],0)
+
+    def test_scope_only_removes_named_new_entry_not_other_candidate(self):
+        self.rule["tickers"]=["AAA"]
+        base,_=self.invoke();plans,stats=self.invoke(self.bind())
+        self.assertEqual([p["id"] for p in plans],["BBB-BULL-20260925"])
+        self.assertEqual(plans,[p for p in base if p["id"]=="BBB-BULL-20260925"])
+        self.assertEqual(stats["market_policy_suppressed"],1)
+        self.assertEqual(stats["unaccounted"],0)
+
+    def test_existing_position_duplicate_protections_are_not_liquidation(self):
+        from engine import prophet_bridge as pb
+        key=pb.plan_key("AAA","BULL")
+        plans,stats=self.invoke(self.bind(),active_keys={key})
+        self.assertEqual(plans,[]);self.assertEqual(stats["reorigination_blocked"],1)
+        self.assertEqual(stats["market_policy_suppressed"],1)
+        self.assertEqual(stats["unaccounted"],0)
+
+    def test_every_research_row_and_score_is_untouched(self):
+        from copy import deepcopy
+        original=deepcopy(self.board);self.invoke(self.bind())
+        self.assertEqual(self.board,original)
+
+    def test_missing_expected_record_withholds_not_all_clear(self):
+        from engine.prophet_market_eligibility import _digest
+        ctx=self.bind([],expected={self.rule["policy_id"]:_digest(self.rule)})
+        self.assertEqual(ctx.decision("AAA",read_at=self.now)["state"],"UNAVAILABLE")
+        plans,stats=self.invoke(ctx);self.assertEqual(plans,[])
+        self.assertEqual(stats["market_policy_suppressed"],2)
+
+    def test_missing_source_does_not_erase_active_rule(self):
+        decision=self.bind(available=False).decision("AAA",read_at=self.now)
+        self.assertEqual(decision["state"],"DENY_NEW_LONG")
+        self.assertEqual(decision["policy_ids"],["fixture-risk-pause"])
+        self.assertIn("POLICY_SOURCE_UNAVAILABLE",decision["errors"])
+
+    def test_missing_source_without_current_rule_is_unavailable(self):
+        self.rule["state"]="REVOKED"
+        self.assertEqual(self.bind(available=False).decision("AAA",read_at=self.now)["state"],"UNAVAILABLE")
+
+    def test_one_rule_revocation_cannot_cancel_another(self):
+        from copy import deepcopy
+        other=deepcopy(self.rule);other.update(policy_id="fixture-second",state="REVOKED")
+        ctx=self.bind([other,self.rule]);self.assertEqual(ctx.decision("AAA",read_at=self.now)["policy_ids"],["fixture-risk-pause"])
+
+    def test_policy_order_is_irrelevant_and_all_ids_print(self):
+        from copy import deepcopy
+        other=deepcopy(self.rule);other["policy_id"]="fixture-second"
+        a=self.bind([self.rule,other]);b=self.bind([other,self.rule])
+        self.assertEqual(a,b);self.assertEqual(len(a.decision("AAA",read_at=self.now)["rules"]),2)
+
+    def test_rule_digest_mismatch_cannot_restore_permission(self):
+        from engine.prophet_market_eligibility import _digest
+        trusted={self.rule["policy_id"]:_digest(self.rule)}
+        self.rule["state"]="REVOKED"
+        self.assertEqual(self.bind(expected=trusted).decision("AAA",read_at=self.now)["state"],"UNAVAILABLE")
+
+    def test_wrong_board_cannot_reuse_bound_read(self):
+        from engine.prophet_market_eligibility import MarketEligibilityError
+        ctx=self.bind();self.board["buy"][0]["prophet"]["score"]=100
+        with self.assertRaisesRegex(MarketEligibilityError,"BOARD_BINDING_MISMATCH"):self.invoke(ctx)
+
+    def test_outside_read_window_never_authorizes_new_plans(self):
+        for clock in ["2026-09-28T12:59:59Z","2026-09-28T21:00:00Z"]:
+            with self.subTest(clock=clock):
+                plans,stats=self.invoke(self.bind(),clock=clock)
+                self.assertEqual(plans,[]);self.assertEqual(stats["market_policy_suppressed"],2)
+
+    def test_future_policy_has_no_effect_before_its_start(self):
+        self.rule["starts_at"]="2026-09-28T14:00:00Z"
+        self.assertEqual(self.bind().decision("AAA",read_at=self.now)["state"],"NO_POLICY_CONSTRAINT")
+
+    def test_no_grant_set_is_not_an_opt_in(self):
+        from engine.prophet_market_eligibility import MarketEligibilityError
+        with self.assertRaisesRegex(MarketEligibilityError,"OWNER_BINDING_REQUIRED"):self.bind(expected={})
+
+    def test_unsupported_action_or_scope_never_turns_into_buy_permission(self):
+        from copy import deepcopy
+        for key,value in [("action","AUTO_EXIT"),("market","CN"),("lifecycle","EXISTING_POSITION"),
+                          ("authority_basis","MODEL_GUESS"),("tickers",["*","AAA"]),
+                          ("board_definition","unknown")]:
+            with self.subTest(key=key):
+                p=deepcopy(self.rule);p[key]=value
+                self.assertEqual(self.bind([p]).decision("AAA",read_at=self.now)["state"],"UNAVAILABLE")
+
+    def test_input_mutation_cannot_change_frozen_policy(self):
+        ctx=self.bind();self.rule["state"]="REVOKED"
+        self.assertEqual(ctx.decision("AAA",read_at=self.now)["state"],"DENY_NEW_LONG")
+
+    def test_duplicate_rule_does_not_create_extra_votes(self):
+        from copy import deepcopy
+        ctx=self.bind([self.rule,deepcopy(self.rule)])
+        decision=ctx.decision("AAA",read_at=self.now)
+        self.assertEqual(decision["policy_ids"],["fixture-risk-pause"])
+        self.assertIn("POLICY_ID_DUPLICATE",decision["errors"])

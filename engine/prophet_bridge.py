@@ -4087,6 +4087,8 @@ def originate_plans(
     active_keys: set[str] | None = None,
     intake_stats: dict | None = None,
     standouts_doc: Mapping[str, Any] | None = None,
+    new_long_restrictions: Any = None,
+    policy_read_at: str | None = None,
 ) -> list[dict]:
     """
     Read us_standouts.json, apply the pick rule, and return new
@@ -4116,6 +4118,14 @@ def originate_plans(
                      Production uses this to bind every plan to the exact immutable
                      source bytes recorded in the Prophet provenance snapshot.
 
+    new_long_restrictions : optional internal bound policy read, not user JSON.
+                     When present, named restrictions are enforced AFTER native
+                     admission and duplicate checks, before plan construction.
+                     Every affected candidate has a disclosed disposition. The
+                     existing builder/consumer must explicitly adopt the expanded
+                     intake contract before production supplies this argument.
+    policy_read_at : trusted action-boundary UTC clock; defaults to actual UTC.
+
     Returns
     -------
     list of prophet.trade_plan/v1 dicts (validated before return)
@@ -4137,6 +4147,19 @@ def originate_plans(
         if not isinstance(standouts_doc, Mapping):
             raise TypeError("standouts_doc must be a mapping when supplied")
         standouts = copy.deepcopy(dict(standouts_doc))
+
+    # Explicit internal adoption only. The ordinary builder supplies neither
+    # parameter; this code never invents a grant or changes legacy defaults.
+    if new_long_restrictions is not None:
+        from engine.prophet_market_eligibility import NewLongRestrictionRead
+        if not isinstance(new_long_restrictions, NewLongRestrictionRead):
+            raise TypeError("new_long_restrictions requires a bound native policy read")
+        new_long_restrictions.bind_board(standouts)
+        if policy_read_at is None:
+            from datetime import datetime as _policy_datetime, timezone as _policy_timezone
+            policy_read_at = _policy_datetime.now(_policy_timezone.utc).isoformat(timespec="microseconds").replace("+00:00", "Z")
+    market_policy_dispositions: list[dict[str, Any]] = []
+    market_policy_suppressed = 0
 
     # Kept only as a legacy formation-anchor fallback.  It is never price authority;
     # `_resolve_origination_clocks` consumes the ranked-price watermark below.
@@ -4238,8 +4261,14 @@ def originate_plans(
             )
             continue
 
-        policy_survivors += 1
         _seen_ids.add(plan_id)
+        if new_long_restrictions is not None:
+            disposition = new_long_restrictions.decision(ticker, read_at=policy_read_at)
+            market_policy_dispositions.append({"ticker": ticker, "id": plan_id, **disposition})
+            if disposition["state"] != "NO_POLICY_CONSTRAINT":
+                market_policy_suppressed += 1
+                continue
+        policy_survivors += 1
         candidates.append((b, ticker, formation_date, plan_id))
 
     eligible_after_skips = policy_survivors
@@ -4779,6 +4808,7 @@ def originate_plans(
         len(admitted)
         - duplicate_id_blocked
         - len(blocked_keys)
+        - market_policy_suppressed
         - validation_failed
         - len(plans)
     )
@@ -4820,6 +4850,10 @@ def originate_plans(
             flush=True,
         )
     if intake_stats is not None:
+        if new_long_restrictions is not None:
+            intake_stats["market_policy_suppressed"] = market_policy_suppressed
+            intake_stats["market_policy_dispositions"] = market_policy_dispositions
+            intake_stats["market_policy_mode"] = "EXPLICIT_INTERNAL_ADOPTION"
         intake_stats["mode"] = "lossless"
         intake_stats["reorigination_blocked"] = len(blocked_keys)
         intake_stats["reorigination_blocked_keys"] = sorted(set(blocked_keys))
