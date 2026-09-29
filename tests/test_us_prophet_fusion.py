@@ -720,3 +720,110 @@ class TestTheEraFence:
     def test_the_published_score_kind_refuses_the_alpha_claim(self):
         assert "not a calibrated return forecast" in ubr.FUSION_SCORE_KIND
         assert "not a promoted alpha model" in ubr.FUSION_SCORE_KIND
+
+
+
+# --------------------------------------------------------------------------- #
+# versioned earnings semantics: fix meaning without silently changing C1
+# --------------------------------------------------------------------------- #
+
+class TestVersionedEarningsSemantics:
+    @pytest.mark.parametrize("row,expected", [
+        (_row("ZERO", sue_z=2.0, sue_fresh_days=0), False),
+        (_row("POS", sue_z=2.0, sue_fresh_days=1), True),
+        (_row("NEG", sue_z=-2.0, sue_fresh_days=1), True),
+        (_row("EDGE", sue_z=2.0, sue_fresh_days=60), True),
+        (_row("STALE", sue_z=2.0, sue_fresh_days=61), False),
+        ({"ticker": "MISS"}, False),
+    ])
+    def test_default_remains_exact_legacy_boolean(self, row, expected):
+        assert fus.extract_members(row)["sue_fresh"] is expected
+
+    @pytest.mark.parametrize("row,state,positive", [
+        (_row("ZERO", sue_z=2.0, sue_fresh_days=0),
+         "FRESH_REPORTED_RELATIVE_VALUE", True),
+        (_row("NEG", sue_z=-2.0, sue_fresh_days=1),
+         "FRESH_REPORTED_RELATIVE_VALUE", False),
+        (_row("EDGE", sue_z=2.0, sue_fresh_days=60),
+         "FRESH_REPORTED_RELATIVE_VALUE", True),
+        (_row("STALE", sue_z=2.0, sue_fresh_days=61),
+         "STALE", False),
+        ({"ticker": "MISS", "sue_fresh_days": 1},
+         "UNAVAILABLE", None),
+        (_row("BADAGE", sue_z=2.0, sue_fresh_days=-1),
+         "UNAVAILABLE", None),
+    ])
+    def test_v2_observation_preserves_signed_value_and_freshness(self, row, state, positive):
+        out = fus.earnings_evidence_v2(row)
+        assert out["schema"] == "prophet.sue_observation/v2"
+        assert out["measure"] == "cross_sectional_z_of_seasonal_eps_momentum"
+        assert out["analyst_consensus_beat"] is None
+        assert out["rank_authority"] is False
+        assert out["entry_authority"] is False
+        assert out["state"] == state
+        assert out["fresh_positive_relative"] is positive
+
+    def test_v2_explicit_feature_fixes_zero_day_and_negative_sign(self):
+        version = fus.EARNINGS_EVIDENCE_VERSION
+        assert fus.extract_members(
+            _row("ZERO", sue_z=2.0, sue_fresh_days=0),
+            earnings_semantics=version,
+        )["sue_fresh"] is True
+        assert fus.extract_members(
+            _row("NEG", sue_z=-2.0, sue_fresh_days=1),
+            earnings_semantics=version,
+        )["sue_fresh"] is False
+
+    def test_v2_does_not_turn_missingness_into_a_consensus_fact(self):
+        out = fus.earnings_evidence_v2({"ticker": "MISS", "sue_fresh_days": 2})
+        assert out["state"] == "UNAVAILABLE"
+        assert out["fresh_positive_relative"] is None
+        assert out["raw_seasonal_surprise_direction"] is None
+        assert out["analyst_consensus_beat"] is None
+
+    @pytest.mark.parametrize("row", [
+        {"sue_z": True, "sue_fresh_days": 1},
+        {"sue_z": 1.0, "sue_fresh_days": True},
+        {"sue_z": float("nan"), "sue_fresh_days": 1},
+        {"sue_z": 1.0, "sue_fresh_days": float("inf")},
+        {"sue_z": 1.0, "sue_fresh_days": 1.5},
+    ])
+    def test_v2_invalid_numeric_inputs_are_unavailable(self, row):
+        out = fus.earnings_evidence_v2(row)
+        assert out["state"] == "UNAVAILABLE"
+        assert out["fresh_positive_relative"] is None
+
+    def test_serving_and_grader_use_the_same_explicit_version(self):
+        pytest.importorskip("pandas")
+        try:
+            from scripts import grade_us_board
+        except Exception as exc:  # pragma: no cover
+            pytest.skip(f"grader unavailable: {exc}")
+        version = fus.EARNINGS_EVIDENCE_VERSION
+        rows = [
+            _row("ZERO", sue_z=2.0, sue_fresh_days=0),
+            _row("NEG", sue_z=-2.0, sue_fresh_days=1),
+            _row("STALE", sue_z=2.0, sue_fresh_days=61),
+            {"ticker": "MISS"},
+        ]
+        for row in rows:
+            mine = fus.extract_members(row, earnings_semantics=version)["sue_fresh"]
+            theirs = grade_us_board._row_features(
+                dict(row), earnings_semantics=version
+            )["sue_fresh"]
+            assert mine == theirs
+            if earnings := grade_us_board._row_features(
+                dict(row), earnings_semantics=version
+            ).get("earnings_evidence_v2"):
+                assert earnings == fus.earnings_evidence_v2(row)
+
+    def test_unknown_version_refuses_in_serving_and_evaluation(self):
+        with pytest.raises(ValueError, match="unknown earnings semantics"):
+            fus.extract_members(_row("X"), earnings_semantics="unknown")
+        pytest.importorskip("pandas")
+        try:
+            from scripts import grade_us_board
+        except Exception as exc:  # pragma: no cover
+            pytest.skip(f"grader unavailable: {exc}")
+        with pytest.raises(ValueError, match="unknown earnings semantics"):
+            grade_us_board._row_features(_row("X"), earnings_semantics="unknown")
