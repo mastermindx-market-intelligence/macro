@@ -281,3 +281,58 @@ clears the ten-minute campaign step budget that main's own dry run already excee
 What remains outside this carrier is stated in `unresolved` above: production acceptance on two
 natural append observations, the incumbent campaign owner's checkpoint reconciliation, and the
 shared publisher lane's locked-index flake.
+
+## Delivery closed — merged, verified in main's bytes, acceptance baseline pinned
+
+PR #8205 squash-merged as `fd04137075019a471a78ffc6374051c942417489` at 2026-09-29T21:14:46Z, at the
+exact head `dbf4d6a1e21b` that had concluded clean (`--match-head-commit`; the sweeper had
+update-branched the PR twice during the wait, so the flag is what kept an unverified head out).
+
+Verified in `origin/main` after a **bare** `git fetch origin` — a bundled fetch of main plus the
+now-deleted head branch fatals and leaves `origin/main` stale, i.e. the merge's own success breaks the
+naive check that verifies it. All seven paths byte-identical between merged head and main:
+`engine/options_signal_episode.py` `699b7573847e`, `..._contract.py` `22e97d1e589a`,
+`..._campaign.py` `f2b1f59611c2`, `scripts/ci/options_signal_nightly.sh` `d7ac2dd9390e`,
+`tests/test_options_signal_episode.py` `6364169d7bd5`, and the two `agentos/` records. Those four
+engine/publisher blobs are the objects the independent review verified against approved head
+`e562578d`, so main now carries exactly the content that approval covered.
+
+**Installed generation flipped (measured).** Pre-merge, `SESSION_OUTCOME_PART_MAX_BYTES`,
+`session_outcome_part_paths` and `session_outcome_logical_bytes` were ABSENT from `origin/main`; they
+are now present at 7 / 4+2 / 2+5+1 references. #8205 was therefore the release vehicle for the
+capability, not a test supplement — an earlier comment of mine that called it "tests-only" was wrong
+and is retracted on the PR.
+
+**Acceptance baseline, pinned for the two natural observations:**
+
+```
+base size : 100,471,221 B   (1.996x the 50,331,648 B ceiling; ~4.4 MB under GitHub's 100 MiB blob limit)
+base blob : c73ec6998a03b193e219dffa62f668e9eb426420   <-- MUST NOT CHANGE, ever
+parts dir : 0 entries at merge time
+```
+
+Observation #1 = the 22:30Z `daily.yml` firing on 2026-09-29 (the merge landed ~75 min ahead of it),
+which performs the **first rollover**. Observation #2 = the next firing, the first append into an
+*existing* part — a different code path. Check both with:
+
+```bash
+git fetch origin
+git rev-parse origin/main:data/options_signal_episode/outcomes_session.jsonl   # must equal c73ec6998a03…
+git ls-tree -r origin/main -- data/options_signal_episode/outcomes_session_parts/
+```
+
+A changed base blob SHA stops the lane; it is the single failure this design exists to prevent. After
+a part exists, **rollback is no longer a revert** — a revert would install a reader with no knowledge
+of `outcomes_session_parts/`, and because the base stays a valid prefix the receipt check keeps
+passing, so it presents as the ledger quietly ceasing to grow. The lever is then the `COLLECT_LANE`
+writer-stop (`engine/ledger_lane.py:24`), which makes `append_session_outcomes` return `-1` before it
+validates a row, takes the base lock, or creates the parts directory.
+
+**Open, owner-bound, NOT done by this session** (filed on carrier #7265): unbounded in-memory
+rehydration is now the binding growth constraint, because GitHub's 100 MiB blob limit was silently
+capping it and the parts design removes that cap — measured 49.71 s / 39.78 s for a 2-row and 3-row
+append against the real base. Also two MINORs: the shell gate at
+`scripts/ci/options_signal_nightly.sh:58-59` tests `-e` before `-L`, so a *dangling* parts symlink
+returns 0 instead of being rejected (engine raises first, so not exploitable); and the writer's
+in-code comment claims a crash "can never expose a torn row", which is false — pinned instead by
+`test_session_outcome_reader_fails_closed_on_a_torn_or_empty_part`.
