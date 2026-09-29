@@ -1,8 +1,8 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-09-29",
-  "generated_utc": "2026-09-29T14:02:15.014288+00:00",
-  "n_tickers": 2798,
+  "generated_utc": "2026-09-29T17:43:55.755928+00:00",
+  "n_tickers": 2799,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
   "note": "Per-ticker weighted alt-data rollup. convergence_score = distinct independent channels (count); weighted_score ranks by channel quality. Donors / position-size recorded as context, never a voting channel.",
@@ -2605,18 +2605,16 @@
     "RTX": {
       "ticker": "RTX",
       "channels": [
-        "analyst_upgrade_cluster",
         "unusual_options"
       ],
-      "weighted_score": 1.0,
+      "weighted_score": 0.65,
       "opt_vol_oi": 0.393,
       "opt_put_call": 0.05,
-      "analyst_bull_ratio": 1.0,
       "days_to_earnings": 21,
       "next_earnings": "2026-10-20",
       "earnings_surprise_pct": 13.9,
       "congress_position_usd": 81438000.0,
-      "convergence_score": 2,
+      "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
     },
@@ -2906,6 +2904,17 @@
       "weighted_score": 0.35,
       "analyst_bull_ratio": 1.0,
       "congress_position_usd": 76188000.0,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "FIVE": {
+      "ticker": "FIVE",
+      "channels": [
+        "analyst_upgrade_cluster"
+      ],
+      "weighted_score": 0.35,
+      "analyst_bull_ratio": 1.0,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
