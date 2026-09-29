@@ -1,6 +1,6 @@
 {
   "schema": "marketing.state/v1",
-  "as_of": "2026-09-28",
+  "as_of": "2026-09-29",
   "lobe": {
     "id": "marketing",
     "name": "Marketing",
@@ -82,12 +82,12 @@
       ],
       "total_envelope_usd": 0
     },
-    "opportunity_queue_depth": 302,
+    "opportunity_queue_depth": 291,
     "self_improvement": {
       "loop_state": "observing",
       "open_hypotheses": [],
       "last_review": null,
-      "next_review": "2026-10-05"
+      "next_review": "2026-10-06"
     },
     "guardrails": {
       "self_deception_checks": [
@@ -1690,30 +1690,30 @@
   },
   "pipeline": {
     "opportunities": {
-      "open": 302,
-      "scored": 480,
+      "open": 291,
+      "scored": 479,
       "newest": [
         {
-          "id": "radar-stage-A-2026-09-28",
-          "problem_or_desire": "$A: stage 2A_strong_breakout, SATA 9, 6w in stage",
-          "expected_value": 0.4,
-          "score": 0.382624,
-          "half_life_class": "weekly_signal",
-          "status": "open"
-        },
-        {
-          "id": "radar-stage-ACA-2026-09-28",
-          "problem_or_desire": "$ACA: stage 2D_extended_run, SATA 10, 51w in stage",
-          "expected_value": 0.4,
-          "score": 0.382624,
-          "half_life_class": "weekly_signal",
-          "status": "open"
-        },
-        {
-          "id": "radar-earnings-ACN-2026-09-28",
+          "id": "radar-earnings-ACN-2026-09-29",
           "problem_or_desire": "$ACN: earnings 2026-10-01 pre-market",
           "expected_value": 0.5,
-          "score": 0.3664,
+          "score": 0.408371,
+          "half_life_class": "earnings_follow_up",
+          "status": "open"
+        },
+        {
+          "id": "radar-earnings-AIR-2026-09-29",
+          "problem_or_desire": "$AIR: earnings 2026-09-29 after hours",
+          "expected_value": 0.5,
+          "score": 0.408371,
+          "half_life_class": "earnings_follow_up",
+          "status": "open"
+        },
+        {
+          "id": "radar-earnings-CAG-2026-09-29",
+          "problem_or_desire": "$CAG: earnings 2026-09-30 pre-market",
+          "expected_value": 0.5,
+          "score": 0.408371,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         }
@@ -1738,10 +1738,17 @@
       ]
     },
     "publications": {
-      "total": 1421,
-      "receipts": 1421,
+      "total": 1422,
+      "receipts": 1422,
       "corrections": 0,
       "newest": [
+        {
+          "id": "pub-ob-2026-09-29-afa6f1e027",
+          "channel": "x",
+          "account": "mastermind_news",
+          "status": "clean",
+          "published_at": "2026-09-29T01:21:31Z"
+        },
         {
           "id": "pub-ob-2026-09-28-66d15ae751",
           "channel": "x",
@@ -1755,13 +1762,6 @@
           "account": "flagship",
           "status": "clean",
           "published_at": "2026-09-27T20:29:24Z"
-        },
-        {
-          "id": "pub-ob-2026-09-26-1488a67423",
-          "channel": "x",
-          "account": "flagship",
-          "status": "clean",
-          "published_at": "2026-09-27T19:43:12Z"
         }
       ]
     },
@@ -1985,12 +1985,12 @@
     }
   ],
   "content": {
-    "total_posts": 31,
-    "signal_posts": 8,
+    "total_posts": 33,
+    "signal_posts": 3,
     "charts": 130,
     "accounts": 13,
     "state": "present",
-    "as_of": "2026-09-28"
+    "as_of": "2026-09-29"
   },
   "notes": [
     "deterministic v1 substrate; agent actuation staged",
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-09-28T10:45:51Z",
-  "inputs_hash": "sha256:108c3e659ec2cc29534eec6f463a70aff805d3e3853de2bd8decd71c297aeda0",
+  "produced_at": "2026-09-29T07:00:33Z",
+  "inputs_hash": "sha256:804f710691eaeb841dc85e99be2862df5729174714028c7ed711a4c3da07d6f7",
   "tier": "display"
 }
