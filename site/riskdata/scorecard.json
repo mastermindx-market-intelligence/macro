@@ -1,16 +1,16 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-09-29T05:20:39+00:00",
+  "generated_at": "2026-09-29T04:37:59+00:00",
   "markets": {
     "us": {
-      "asof_last_row": "2026-09-25",
+      "asof_last_row": "2026-09-28",
       "monitoring": {
         "log_fresh": true,
-        "last_logged_days_ago": 3,
+        "last_logged_days_ago": 0,
         "ungraded_backlog": 0,
         "awaiting_maturity": 16,
         "backlog_cutoff_bd": 28,
-        "graded_n": 39
+        "graded_n": 40
       },
       "windows": {
         "full": {
@@ -27,10 +27,10 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 4,
+            "n": 5,
             "dd_missed": 0,
-            "quiet": 4,
-            "quiet_rate": null
+            "quiet": 5,
+            "quiet_rate": 1.0
           },
           "by_scare": {},
           "recovery": null
@@ -49,10 +49,10 @@
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 4,
+            "n": 5,
             "dd_missed": 0,
-            "quiet": 4,
-            "quiet_rate": null
+            "quiet": 5,
+            "quiet_rate": 1.0
           },
           "by_scare": {},
           "recovery": null
@@ -62,13 +62,14 @@
         "definition": "us_issued_probability_audit.v1",
         "as_of": "2026-09-28",
         "target": "SPY close-relative loss >=5%; future 5/10/21 closing observations",
-        "input_rows": 55,
+        "input_rows": 56,
         "min_display_n": 5,
         "horizons": {
           "h5": {
             "n": 39,
-            "excluded_n": 16,
+            "excluded_n": 17,
             "excluded": {
+              "invalid_or_future_receipt": 1,
               "ungraded": 16
             },
             "from": "2026-06-23",
@@ -128,8 +129,9 @@
           },
           "h10": {
             "n": 39,
-            "excluded_n": 16,
+            "excluded_n": 17,
             "excluded": {
+              "invalid_or_future_receipt": 1,
               "ungraded": 16
             },
             "from": "2026-06-23",
@@ -189,8 +191,9 @@
           },
           "h21": {
             "n": 39,
-            "excluded_n": 16,
+            "excluded_n": 17,
             "excluded": {
+              "invalid_or_future_receipt": 1,
               "ungraded": 16
             },
             "from": "2026-06-23",
@@ -260,17 +263,17 @@
           "public_publication_timing_verified": false,
           "current_model_validated": false,
           "latest_epoch": "2026-09-23-prospective-v1",
-          "latest_model_fingerprint": "60d2bd2ece6c0272875735601ab0c3a3782d11d784d523a22df10f2f5caa5efc",
-          "latest_engine_source_sha256": "0b02a4410efff12b273c381831fbb94b1682d35c7f4ef73fc40d2f79d73f93f6",
-          "latest_source_bundle_sha256": "1381f1a0271e819d6333fb308e31f21add95ca7d0a80bc9929205fe21b386ed7",
+          "latest_model_fingerprint": "8d3429a1da85cf4396297cf1fc7393370ba5f0c8d0ff5be08ab177c2af00ad17",
+          "latest_engine_source_sha256": "31668c7fe097cdf631edb6cca6e77990b40afdb3d4cb37d27596336689afe70d",
+          "latest_source_bundle_sha256": "f4c5c3af2c51543ac3e44c8637463f579580ab2c52cfb4418d69e98b0fd97bb6",
           "latest_calibration_sha256": "801d15ae2b50d622c153b47863af0e27e1ce080d9fd7bc2d478cee2bc27ebc54",
-          "same_model_issued_n": 2,
+          "same_model_issued_n": 1,
           "same_model_graded_n": 0,
-          "awaiting_maturity": 2,
-          "prior_model_issued_n": 0,
-          "model_fingerprints_seen": 1,
-          "from": "2026-09-24",
-          "through": "2026-09-25",
+          "awaiting_maturity": 1,
+          "prior_model_issued_n": 2,
+          "model_fingerprints_seen": 2,
+          "from": "2026-09-28",
+          "through": "2026-09-28",
           "issue_excluded": {
             "missing_issue_receipt": 53
           },
@@ -337,10 +340,10 @@
             "current_model_validated": false,
             "public_validation_ready": false,
             "cohort": {
-              "issued_n": 2,
-              "span_days": 1,
-              "from": "2026-09-24",
-              "through": "2026-09-25"
+              "issued_n": 1,
+              "span_days": 0,
+              "from": "2026-09-28",
+              "through": "2026-09-28"
             },
             "thresholds": {
               "min_issued_sessions": 252,
