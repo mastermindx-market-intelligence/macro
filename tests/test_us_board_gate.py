@@ -1253,12 +1253,13 @@ def test_candidate_reason_wording_matches_refusal_shelf_for_shared_codes():
     from engine.prophet_bridge import REFUSAL_COPY
 
     template = (ROOT / "templates" / "_us_candidate_pool_rows.html.j2").read_text(encoding="utf-8")
-    block = template.split("_why = {", 1)[1].split("}", 1)[0]
+    block = template.split("_why = {", 1)[1].split("\n{% set _reason", 1)[0]
     why = {}
-    for key, english, chinese in re.findall(
-        r"'([^']+)':\s*\('([^']+)',\s*'([^']+)'\)", block
-    ):
-        why[key] = (english, chinese)
+    for entry in re.findall(r"'([^']+)':\s*\((.*?)\)\s*(?:,|\n})", block):
+        key, values = entry
+        copy = re.findall(r"'([^']*)'|\"([^\"]*)\"", values)
+        copy = [value for pair in copy for value in pair if value]
+        why[key] = tuple(copy[:2])
     assert why
     mismatches = {key: (why.get(key), copy) for key, copy in REFUSAL_COPY.items() if why.get(key) != copy}
     assert not mismatches, f"shared decision codes differ from REFUSAL_COPY: {mismatches}"

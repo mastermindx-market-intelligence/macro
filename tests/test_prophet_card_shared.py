@@ -461,7 +461,7 @@ def test_setup_detail_research_never_borrows_board_levels_or_strategy():
     assert 'UNBOUND_POLICY' not in html
     assert 'buy_now' not in html
     assert not soup.select('.pvs-levels')
-    assert 'No model-plan link is available for this candidate.' in soup.get_text()
+    assert 'No model plan is linked to this candidate.' in soup.get_text()
 
 
 def test_candidate_decision_record_reasons_are_readable_and_machine_values_stable():
@@ -477,9 +477,9 @@ def test_candidate_decision_record_reasons_are_readable_and_machine_values_stabl
     reasons = soup.select('.ucp-receipt .ucp-reason')
     assert [node['data-reason'] for node in reasons] == row['lane_reasons']
     assert [node.select_one('.l-en').get_text(strip=True) for node in reasons] == [
-        'Admission checks passed', 'Featured on the main list', 'A plan is already open']
+        'Admission checks passed', 'Featured on the main list', 'Already has a plan running']
     assert [node.select_one('.l-zh').get_text(strip=True) for node in reasons] == [
-        '已通过准入检查', '主榜重点展示', '已有开放计划']
+        '已通过准入检查', '主榜重点展示', '已有在跑的计划']
     assert not [node for node in soup.find_all('code')
                 if 'ucp-reason-raw' not in (node.get('class') or [])]
 
@@ -527,6 +527,8 @@ def _render_pool_with_scratch_template(row):
     scratch = Path(tempfile.mkdtemp(prefix='pri-ui-c1a-', dir=os.environ.get('TMPDIR')))
     try:
         shutil.copy(ROOT / 'templates' / '_prophet_setup_detail.html.j2', scratch)
+        for template in ('_us_prophet_plan_cards.html.j2', '_prophet_card.html.j2'):
+            shutil.copy(ROOT / 'templates' / template, scratch / template)
         shutil.copy(POOL_ROWS, scratch / '_us_candidate_pool_rows.html.j2')
         from jinja2 import Environment, FileSystemLoader
         env = Environment(loader=FileSystemLoader(str(scratch)), autoescape=True)
@@ -780,7 +782,7 @@ def test_setup_detail_progressive_disclosure_keeps_facts_and_missing_terms():
         assert field.find_parent("details") is None and field.select_one("dd").get_text(strip=True) == val
     for path in ["canonical strategy binding not supplied", "holding duration not supplied", "envelope.as_of", "price_as_of"]:
         assert extra.select_one('[data-source-field="' + path + '"]')
-    assert "No model-plan link is available" in extra.get_text()
+    assert "No model plan is linked to this candidate." in extra.get_text()
 
 
 def test_setup_detail_styles_are_explicit_opt_in_after_acceptance_repair():

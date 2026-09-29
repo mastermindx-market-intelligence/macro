@@ -16862,7 +16862,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <p class="mx-sec-note">{{ t('A preview of the current board’s owner-Featured shelf in its existing order. Featured is not entry permission — the card’s Buy, Near or Wait state still controls timing.', '当前榜单「精选」层的预览，顺序保持不变。精选不等于获准入场——仍以卡片上的买入、接近或等待状态决定时机。') }}</p>
         {%- if _today_visible %}
         <div class="nbgrid" id="us-today-grid">
-          {% with items=_today_visible, sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh %}{% include "_us_board_cards.html.j2" %}{% endwith %}
+          {% with items=_today_visible, sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh, plan_rel=plan_rel if plan_rel is defined else none %}{% include "_us_board_cards.html.j2" %}{% endwith %}
         </div>
         {%- if _today_more > 0 %}
         <p class="mx-sec-note"><span class="l-en">{{ _today_more }} more Featured name{{ '' if _today_more == 1 else 's' }} remain in Screener; this three-card preview is not a pick quota.</span><span class="l-zh">另有 {{ _today_more }} 只精选股票保留在筛选器；三张卡只是预览容量，并非选股名额。</span></p>
@@ -17104,7 +17104,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
            WL1-PROVCARD-CONTRACT below, tests/test_wl1_lifecycle_
            neutralization.py) re-acquires this grid via that absence. -#}
       <div class="nbgrid" data-showmore-rows="3" id="us-cand-grid">
-      {% with items=_render_list.items, sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh %}{% include "_us_board_cards.html.j2" %}{% endwith %}
+      {% with items=_render_list.items, sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh, plan_rel=plan_rel if plan_rel is defined else none %}{% include "_us_board_cards.html.j2" %}{% endwith %}
       </div>{# end #us-cand-grid #}
         {#- P0 #6185 (B4) — restored CANDIDATE tier wall, keyed on `gate`
            (not `life_gate` — that key belongs to the plan wall inside
@@ -20383,6 +20383,29 @@ if (document.readyState === 'loading') {
     if (b) setSrc(b.getAttribute('data-src'));
   });
   window.USProphetSource = { set: setSrc, get: function(){ return panel.getAttribute('data-prophet-src'); } };
+
+  document.addEventListener('click', function(event){
+    var button = event.target && event.target.closest ? event.target.closest('.pvs-plan-link[data-pvs-plan-target]') : null;
+    if (!button) return;
+    var target = button.getAttribute('data-pvs-plan-target');
+    var dialog = document.getElementById('pv-setup-dialog');
+    if (dialog && dialog.open) {
+      var close = dialog.querySelector('.pvs-close');
+      if (close) close.click();
+    }
+    if (window.USProphetSource) window.USProphetSource.set('plans');
+    var card = document.getElementById(target);
+    if (!card) {
+      document.body.dataset.pvsPlanLinkResult='missing';
+      return;
+    }
+    if (card.classList.contains('sm-hidden')) card.classList.remove('sm-hidden');
+    if (card.classList.contains('sm-reveal')) card.classList.remove('sm-reveal');
+    card.setAttribute('tabindex','-1');
+    card.scrollIntoView({block:'center'});
+    card.focus({preventScroll:true});
+    document.body.dataset.pvsPlanLinkResult='ok';
+  });
 })();
 </script>
 {% if gate or pgate or life_gate %}

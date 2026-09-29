@@ -19,7 +19,7 @@ def _relation(book, error=False):
     from scripts.build_site import _plan_relations_for
 
     default, by_ticker = _plan_relations_for(book, error)
-    return {"state": default, "plans": by_ticker.get("LFUS", [])}
+    return {"state": ("related_security" if by_ticker.get("LFUS") else default), "plans": by_ticker.get("LFUS", [])}
 
 
 def _lfus_book():
@@ -62,7 +62,51 @@ def test_plan_relation_pure_function_is_open_same_security_and_sorted():
         "plan_asof": "2026-08-16",
     }
     assert _plan_relations_for(None, True)[0] == "unknown"
-    assert _plan_relations_for(None, False)[0] == "none"
+    assert _plan_relations_for({}, False) == ("none", {})
+
+
+def test_plan_relation_sorts_multiple_open_plans_and_matches_normalized_tickers():
+    from scripts.build_site import _plan_relations_for
+
+    book = {"plans": [
+        {"id": "AAA-EARLY", "asset": " aa ", "closed": False, "formation_date": "2026-08-01"},
+        {"id": "AAA-LATE-B", "asset": "AA", "closed": False, "formation_date": "2026-08-10"},
+        {"id": "AAA-LATE-A", "asset": "aA", "closed": False, "formation_date": "2026-08-10"},
+    ]}
+    default, by_ticker = _plan_relations_for(book)
+    assert default == "none"
+    assert list(by_ticker) == ["AA"]
+    assert [plan["id"] for plan in by_ticker["AA"]] == [
+        "AAA-LATE-B", "AAA-LATE-A", "AAA-EARLY"]
+
+
+def test_missing_plan_book_is_unknown_and_presenters_render_none_without_a_match():
+    from scripts.build_site import _plan_relations_for
+    from tests.test_dashboard_template_render import _env
+
+    assert _plan_relations_for(None, False)[0] == "unknown"
+
+    env = _env()
+    row = {"ticker": "AAA", "name": "AAA", "sector": "Industrials"}
+    relation = {"state": "none", "plans": []}
+    by_ticker = {"BBB": relation["plans"]}
+    pool = env.get_template("_us_candidate_pool_rows.html.j2").render(
+        rows=[row], plan_rel=relation, plan_rel_by_ticker=by_ticker)
+    board = env.get_template("_us_board_cards.html.j2").render(
+        items=[row], sg_any=False, bs_adj=False, xu_allfeat=False, trg_map={},
+        rw_en="", rw_zh="", plan_rel=relation, plan_rel_by_ticker=by_ticker)
+    assert 'data-plan-relation="none"' in pool
+    assert 'data-plan-relation="none"' in board
+
+
+def test_setup_detail_reuses_the_existing_plan_lifecycle_vocabulary():
+    setup = (ROOT / "templates" / "_prophet_setup_detail.html.j2").read_text(encoding="utf-8")
+    plan_cards = (ROOT / "templates" / "_us_prophet_plan_cards.html.j2").read_text(encoding="utf-8")
+    assert "{% from '_us_prophet_plan_cards.html.j2' import life_label_en, life_label_zh %}" in setup
+    assert "_LIFE_LABEL_EN" not in setup
+    assert "_LIFE_LABEL_ZH" not in setup
+    assert "{% macro life_label_en(code) -%}" in plan_cards
+    assert "{% macro life_label_zh(code) -%}" in plan_cards
 
 
 def test_setup_detail_renders_related_security_record():
@@ -71,20 +115,20 @@ def test_setup_detail_renders_related_security_record():
     section = soup.select_one(".pvs-plan-relation")
     assert section["data-plan-relation"] == "related_security"
     assert section["data-plan-exact"] == "unavailable"
-    assert section.select_one("h3").get_text(strip=True) == "Related model record"
+    assert section.select_one("h3").get_text(" ", strip=True) == "Related model record 相关模型记录"
     records = section.select(".pvs-plan-rec")
     assert len(records) == 1
     assert records[0]["data-plan-id"] == "LFUS-BULL-20260810"
     assert records[0]["data-plan-lifecycle"] == "entered"
     assert "Entered" in records[0].get_text(" ", strip=True)
     assert "入场" in records[0].get_text(" ", strip=True)
-    assert "Formed 2026-08-10" in records[0].get_text(" ", strip=True)
-    assert "Signal date 2026-08-15" in records[0].get_text(" ", strip=True)
-    assert "Plan as of 2026-08-16" in records[0].get_text(" ", strip=True)
+    assert "Formed 形成于 2026-08-10" in records[0].get_text(" ", strip=True)
+    assert "Signal date 信号日期 2026-08-15" in records[0].get_text(" ", strip=True)
+    assert "Plan as of 计划截至 2026-08-16" in records[0].get_text(" ", strip=True)
     button = records[0].select_one(".pvs-plan-link")
     assert button["data-pvs-plan-target"] == "pv-LFUS-BULL-20260810"
     text = section.get_text(" ", strip=True)
-    assert "It is not this candidate's plan and not a position you hold." in text
+    assert "It is not this candidate’s plan and not a position you hold." in text
     assert "这是同一证券的模型记录，不是此候选的计划，也不是您持有的仓位。" in text
     assert "Exact plan relation: not available from the source." in text
     assert "精确计划关联：来源未提供。" in text
@@ -113,14 +157,17 @@ def test_three_presenters_render_the_same_plan_relation_body():
 
     env = _env()
     relation = _relation(_lfus_book())
-    row = {"ticker": "LFUS", "name": "LFUS", "sector": "Industrials"}
+    row = {"ticker": " lfus ", "name": "LFUS", "sector": "Industrials"}
     module = env.get_template("_prophet_setup_detail.html.j2").module
     expected = str(module.body(row, "pool", None, relation))
-    pool = env.get_template("_us_candidate_pool_rows.html.j2").module.row(
-        dict(row, lane_reasons=["cleared_admission"]), "cleared_admission", plan_rel=relation)
-    board = env.get_template("_us_board_cards.html.j2").module.card(row, plan_rel=relation)
+    pool = env.get_template("_us_candidate_pool_rows.html.j2").render(
+        rows=[dict(row, lane_reasons=["cleared_admission"])], plan_rel=relation,
+        plan_rel_by_ticker={"LFUS": relation["plans"]})
+    board = env.get_template("_us_board_cards.html.j2").render(
+        items=[row], sg_any=False, bs_adj=False, xu_allfeat=False, trg_map={}, rw_en="", rw_zh="",
+        plan_rel=relation, plan_rel_by_ticker={"LFUS": relation["plans"]})
     table = str(module.table_action(row, None, plan_rel=relation))
-    rendered = [BeautifulSoup(fragment, "html.parser").select_one(".pv-setup-body") for fragment in
+    rendered = [BeautifulSoup(fragment, "html.parser").select_one(".pvs-plan-relation") for fragment in
                 (expected, pool, board, table)]
     normalized = [" ".join(str(node).split()) for node in rendered]
     assert normalized[0] == normalized[1] == normalized[2] == normalized[3]
@@ -135,7 +182,7 @@ def test_dashboard_has_delegated_plan_link_handler_without_pool_state_writes():
         "pv-setup-dialog", ".pvs-close", "USProphetSource.set('plans')",
         "document.getElementById(target)", "pvsPlanLinkResult='missing'",
         "sm-hidden", "sm-reveal", "scrollIntoView", "focus({preventScroll:true})",
-        "tabindex='-1'", "pvsPlanLinkResult='ok'"):
+        "setAttribute('tabindex','-1')", "pvsPlanLinkResult='ok'"):
         assert expected in handler
     assert "createElement" not in handler
     assert "us-candidate-pool" not in handler
