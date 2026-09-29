@@ -1,0 +1,483 @@
+{
+  "checks": [
+    {
+      "details": {
+        "affine_cases": 36,
+        "positive_scale_required": true
+      },
+      "name": "C01_positive_affine_context_preserves_fixed_k",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "coarse_mean_squared_error": {
+          "decimal": 100.0,
+          "exact": "100"
+        },
+        "context_error": 0,
+        "selection_value": {
+          "decimal": 0.0,
+          "exact": "0"
+        }
+      },
+      "name": "C02_perfect_forecast_improvement_zero_selection_value",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "equality_iff_common_optimum": true,
+        "finite_world_checks": 4374
+      },
+      "name": "C03_value_of_information_and_equality_exhaustive",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "gross_selection_value": {
+          "decimal": 1.0,
+          "exact": "1"
+        },
+        "units": "fictional payoff units"
+      },
+      "name": "C04_actual_rank_crossing_can_create_value",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "fully_incorporated_information_slope": 0,
+        "pure_pressure_slope": -1,
+        "pure_unincorporated_information_slope": 1
+      },
+      "name": "C05_information_pressure_and_full_price_incorporation",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "distribution_claim": "identical x distributions additionally follows under independent centered Gaussian components; not simulated",
+        "information_world": [
+          {
+            "decimal": 1.0,
+            "exact": "1"
+          },
+          {
+            "decimal": 0.5,
+            "exact": "1/2"
+          },
+          {
+            "decimal": 0.5,
+            "exact": "1/2"
+          }
+        ],
+        "pressure_world": [
+          {
+            "decimal": 1.0,
+            "exact": "1"
+          },
+          {
+            "decimal": -0.5,
+            "exact": "-1/2"
+          },
+          {
+            "decimal": -0.5,
+            "exact": "-1/2"
+          }
+        ]
+      },
+      "name": "C06_equal_observed_variance_opposite_remaining_payoff",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "exact_four_point_moments": [
+          {
+            "decimal": 1.1111111111111112,
+            "exact": "10/9"
+          },
+          {
+            "decimal": -0.6388888888888888,
+            "exact": "-23/36"
+          },
+          {
+            "decimal": -0.575,
+            "exact": "-23/40"
+          }
+        ]
+      },
+      "name": "C07_shock_formula_matches_enumerated_moments",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "columns": 4,
+        "design_rank": 2,
+        "same_training_predictions": [
+          1,
+          1
+        ],
+        "unseen_contrast_by_parameter_shift": [
+          {
+            "decimal": 200.0,
+            "exact": "200"
+          },
+          {
+            "decimal": 0.0,
+            "exact": "0"
+          },
+          {
+            "decimal": -200.0,
+            "exact": "-200"
+          }
+        ]
+      },
+      "name": "C08_missing_cross_context_support_reverses_unseen_ranking",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "month_count_is_not_identification": true,
+        "months_each_stated_context": 12,
+        "rank_before_after": [
+          2,
+          2
+        ],
+        "replicated_rows": 2400,
+        "rows": 24
+      },
+      "name": "C09_calendar_floor_and_row_replication_cannot_repair_null_space",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "singular_design_can_identify_some_contrasts": true,
+        "unobserved_feature_need_not_block_unrelated_contrast": true
+      },
+      "name": "C10_contrast_specific_identification_not_whole_model_veto",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "constant_context_times_signal_is_existing_signal_direction": true
+      },
+      "name": "C11_interaction_can_duplicate_main_effect",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "copied_rows": 400,
+        "normalized_gram_unchanged": true,
+        "original_rows": 4
+      },
+      "name": "C12_fixed_date_mass_not_more_information_from_duplicate_rows",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "assumption": "four independent date shocks, perfect within-date correlation",
+        "iid_row_variance": {
+          "decimal": 0.00025,
+          "exact": "1/4000"
+        },
+        "true_variance": {
+          "decimal": 0.25,
+          "exact": "1/4"
+        },
+        "underestimate_factor": {
+          "decimal": 1000.0,
+          "exact": "1000"
+        }
+      },
+      "name": "C13_shared_date_shocks_not_independent_stocks",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "not_top_k_profit": true,
+        "squared_coefficient_risks": {
+          "0": {
+            "decimal": 0.25,
+            "exact": "1/4"
+          },
+          "1": {
+            "decimal": 1.0,
+            "exact": "1"
+          },
+          "1/5": {
+            "decimal": 0.2,
+            "exact": "1/5"
+          }
+        }
+      },
+      "name": "C14_partial_pooling_beats_pool_all_and_fit_each_in_toy_model",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "break_even_context_probability": {
+          "decimal": 0.7916666666666666,
+          "exact": "19/24"
+        },
+        "context_probability": {
+          "decimal": 0.7,
+          "exact": "7/10"
+        },
+        "gain_basis_points": {
+          "decimal": -11.0,
+          "exact": "-11"
+        },
+        "not_observed_strategy": true
+      },
+      "name": "C15_seventy_percent_context_can_have_negative_decision_value",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "compatible_gain_range_bp": [
+          {
+            "decimal": -23.0,
+            "exact": "-23"
+          },
+          {
+            "decimal": 7.0,
+            "exact": "7"
+          }
+        ],
+        "context_probability_range": [
+          {
+            "decimal": 0.6,
+            "exact": "3/5"
+          },
+          {
+            "decimal": 0.85,
+            "exact": "17/20"
+          }
+        ],
+        "point_estimate_gain_bp": 1
+      },
+      "name": "C16_context_probability_uncertainty_reverses_nominal_choice",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "attained_lower_bound": {
+          "decimal": 13.0,
+          "exact": "13"
+        },
+        "finite_feasible_points": 317
+      },
+      "name": "C17_joint_ellipsoid_support_attains_analytic_bound",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "attainer": [
+          {
+            "decimal": -0.25,
+            "exact": "-1/4"
+          },
+          {
+            "decimal": 0.25,
+            "exact": "1/4"
+          }
+        ],
+        "separate_marginal_lower_bound": {
+          "decimal": -1.0,
+          "exact": "-1"
+        },
+        "shared_parameter_lower_bound": {
+          "decimal": 0.5,
+          "exact": "1/2"
+        }
+      },
+      "name": "C18_shared_uncertainty_pairing_beats_incompatible_extremes",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "alternatives_each": 6,
+        "charge_per_changed_basket_bp": 1,
+        "narrow_A_C_lower_gain_bp": {
+          "decimal": 6.5,
+          "exact": "13/2"
+        },
+        "narrow_interval_choice": "A,C",
+        "wide_A_C_lower_gain_bp": {
+          "decimal": -3.5,
+          "exact": "-7/2"
+        },
+        "wide_interval_choice": "A,B"
+      },
+      "name": "C19_robust_incumbent_relative_shortlist_defers_uncertain_swap",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "all_eleven_parameter_values_positive_relative_lower_gain": true,
+        "negative_absolute_payoffs_still_possible": true
+      },
+      "name": "C20_robust_relative_model_gain_is_not_profit_guarantee",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "initial_decision_variance_scale": {
+          "decimal": 1.0,
+          "exact": "1"
+        },
+        "irrelevant_row_reduction": {
+          "decimal": 0.0,
+          "exact": "0"
+        },
+        "mixed_row_reduction": {
+          "decimal": 0.4999750012499375,
+          "exact": "10000/20001"
+        },
+        "relevant_row_reduction": {
+          "decimal": 0.5,
+          "exact": "1/2"
+        }
+      },
+      "name": "C21_decision_specific_value_of_additional_design_support",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "no_data_or_power_claim": true,
+        "one_cross_axis_row_closes_rank_gap": true,
+        "rows_along_one_axis": 10000
+      },
+      "name": "C22_one_new_support_direction_can_beat_ten_thousand_duplicates",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "common_level_error_cancels": true,
+        "worst_stock_specific_error_bp": {
+          "decimal": -2.0,
+          "exact": "-2"
+        }
+      },
+      "name": "C23_model_error_allowance_targets_the_actual_swap",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "finite_information_updates": 147,
+        "uncertainty_does_not_increase_under_stated_model": true
+      },
+      "name": "C24_information_update_monotonicity",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "first_positive_stipulated_horizon": 4,
+        "horizons": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "interpretation": "different relaxation speeds; not a holding policy or measured time constant",
+        "remaining_return_slopes": [
+          {
+            "decimal": -0.15,
+            "exact": "-3/20"
+          },
+          {
+            "decimal": -0.105,
+            "exact": "-21/200"
+          },
+          {
+            "decimal": -0.0465,
+            "exact": "-93/2000"
+          },
+          {
+            "decimal": 0.00795,
+            "exact": "159/20000"
+          },
+          {
+            "decimal": 0.057135,
+            "exact": "11427/200000"
+          },
+          {
+            "decimal": 0.1014195,
+            "exact": "202839/2000000"
+          },
+          {
+            "decimal": 0.14127735,
+            "exact": "2825547/20000000"
+          },
+          {
+            "decimal": 0.177149595,
+            "exact": "35429919/200000000"
+          }
+        ]
+      },
+      "name": "C25_one_mechanism_short_reversal_long_continuation",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "correct_correlated_moments": [
+          {
+            "decimal": 1.6944444444444444,
+            "exact": "61/36"
+          },
+          {
+            "decimal": -0.7847222222222222,
+            "exact": "-113/144"
+          },
+          {
+            "decimal": -0.46311475409836067,
+            "exact": "-113/244"
+          }
+        ],
+        "wrong_independence_moments": [
+          {
+            "decimal": 1.3611111111111112,
+            "exact": "49/36"
+          },
+          {
+            "decimal": -0.8263888888888888,
+            "exact": "-119/144"
+          },
+          {
+            "decimal": -0.6071428571428571,
+            "exact": "-17/28"
+          }
+        ]
+      },
+      "name": "C26_correlated_latent_shocks_require_extra_terms",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "fixed_k_stability_interval": "theta <= 10, with declared tie rule",
+        "information_within_5_to_9_selection_value": 0,
+        "integer_parameter_cases": 201
+      },
+      "name": "C27_exact_selection_stability_boundary",
+      "status": "PASS"
+    },
+    {
+      "details": {
+        "error_box_vertices_checked": 16,
+        "not_a_claim_that_all_uncertainty_boxes_are_empirically_valid": true,
+        "sufficient_margin": "> 2*epsilon"
+      },
+      "name": "C28_rank_margin_precision_not_uniform_forecast_perfection",
+      "status": "PASS"
+    }
+  ],
+  "evidence_class": "exact fictional mathematical checks; not empirical validation",
+  "failed": 0,
+  "financial_data_read": false,
+  "model_fitted": false,
+  "native_modules_imported": false,
+  "passed": 28,
+  "python": "3.13.5",
+  "registered_trial_run": false
+}
