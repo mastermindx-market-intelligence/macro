@@ -1,0 +1,11 @@
+INFO China theme action availability: UNAVAILABLE
+INFO China theme action availability: UNAVAILABLE
+ERROR china Act Now theme-intel refresh failed (controlled producer failure); preserving source evidence
+INFO China theme action availability: UNAVAILABLE
+INFO China theme action availability: UNAVAILABLE
+INFO China theme action availability: UNAVAILABLE
+INFO China theme action availability: UNAVAILABLE
+ERROR china Act Now theme-intel refresh failed (controlled producer failure); preserving source evidence
+INFO China theme action availability: UNAVAILABLE
+INFO China theme action availability: UNAVAILABLE
+{"cases": 16, "failed": 0, "receipt_sha256": "048b9b1cef1512d1ad2c6df573c6f08079a50d2f7d854aae786ce8b73806134a"}
