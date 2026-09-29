@@ -679,12 +679,107 @@ positional mistake sat in the census's own protective screen: the HUMAN-class te
 name PREFIXES (`sol-`), so `prophet-b4-owner-archeology-20260921-sol-001` — 6.03 GiB, Sol
 class by any reading — was admitted as reclaimable until the marker was matched anywhere.
 
-**Six independent pools have now been measured and five are null.** Shared mint root 726.4 GiB
+**SEVEN independent pools have now been measured and SIX are null.** Shared mint root 726.4 GiB
 (58% unreachable), `/Volumes/Worktrees` 801 GiB (report-only forever), full clones 163.2 GiB,
 session scratchpads 216.6 GiB (0.00 GiB dead), `Offloaded` 190.7 GiB (verified backups), SSD
-`tmp` 214.8 GiB (0.55 GiB free-and-clear + 44.19 GiB proven-but-unauthorized). What bounds
+`tmp` 214.8 GiB (0.55 GiB free-and-clear + 44.19 GiB proven-but-unauthorized), and
+`transfers` 233.2 GiB (**zero reclaimable**, and holding the single most dangerous object on
+the volume — see below). (This sentence read "Six independent pools … and five are null" with
+no `transfers` row, and is **CORRECTED 2026-09-28, same day**: the seventh pool was measured
+hours later by a census that then had to be corrected itself.) What bounds
 reclaim on this host is not the byte count and not the instruments — it is the judgment gate,
 exactly as §9 says.
+
+### The non-git bucket: 20.19 GiB with no landedness question to ask
+
+The 203 non-git dirs in `/Volumes/Mastermind/tmp` are the one bucket
+`DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM` structurally cannot reach. That law decides on
+landedness; a directory with no repository has no HEAD, so there is nothing that could be an
+ancestor of anything. The threshold is not the problem — the QUESTION is. For a dir with no
+git identity the only honest questions are what it is, whether anything is still writing to
+it, and whether its content is **regenerable from something that outlives it**. Profiled
+read-only (extension histogram, file count, newest mtime, top-level shape):
+
+| GiB | dirs | class | the question that applies |
+|---:|---:|---|---|
+| 10.38 | 138 | no git identity of any kind | unprovable → **REFUSED** |
+| 7.41 | 25 | HUMAN/Sol marker in the name | never auto-reclaimed → **REFUSED** |
+| 1.90 | 6 | virtualenv (`pyvenv.cfg`) | **regenerable by construction** |
+| 0.32 | 1 | a **bare** git store (`macro-reconcile.git`) | judge as a git store, not as files |
+| 0.18 | 16 | written inside 2 days | live → leave |
+| 0.00 | 17 | empty (0 files) | nothing to reclaim |
+
+**Virtualenvs are the one class here where "no git identity" is not a blocker.** A venv is pip
+output: nothing authored lives in it, and the thing that outlives it — the requirements file in
+some repo — regenerates it. All 6 carry `pyvenv.cfg` and **none has an open file** (`lsof +D`).
+That is 1.90 GiB whose refusal would be superstition rather than caution. It is also
+**1.9 GiB against a 731 GiB free volume**, which is the honest reason not to spend a
+ratification act on it: the class is defensible, the amount is not worth the paperwork. Recorded
+so the next census does not re-derive it.
+
+**The 10.38 GiB refusal is the real content of this bucket, and its largest member is a single
+7.23 GiB tree**, `prophet-7457-release-snapshot` — 60,618 files, idle 8 days, no `.git`, no
+`HEAD`, no `COMMIT_EDITMSG`, no manifest of any kind. It is *probably* a checkout of some
+release candidate. "Probably" is exactly what §9 refuses: with no commit to name, no proof
+exists that its content is anywhere else, and the same reasoning that protects the 7.2 GiB
+`sol-flow-velocity-recovery-proof-20260920` protects this.
+
+**One number moved when the protective screen was repaired, and the direction matters.** Before
+the HUMAN-class test matched its marker anywhere in the name, this bucket's unprovable class was
+**14.46 GiB** — two 7.23 GiB snapshots. The second, `prophet-7526-current-main-review`, is
+HUMAN-class on `review`, so it moved to a different refusal. The verdict on it did not change;
+only the REASON did. That is worth stating because a ratification act operates on reasons: an
+operator deciding "clear the unprovable snapshots" would have been handed a Sol review tree in
+the same list.
+
+### `transfers` — the seventh pool, zero reclaimable, and a census that could not see 84% of it
+
+`/Volumes/Mastermind/transfers` is **71 entries / 233.2 GiB**. Its name says the files are in
+transit; its contents are live agent review rounds (`executive-os-convergence-20260918`
+28.54 GiB, `mastermind-os-orchestrator-launchpad-20260926-sol-001` 4.70 GiB,
+`pr870-task2-prepared-*`, `current-turn-r2-observer-cut-*`) plus checkpoint and handoff scratch.
+Nothing in it is reclaimable: the large dirs are HUMAN/Sol-marked or days old, and the rest is
+rounding error.
+
+**It is recorded here for the defect, not the bytes.** The census that measured it ran every
+instrument this document had already repaired — bare-store detection, marker-anywhere HUMAN
+screen, origin-partitioned landedness — and still reported **37.97 GiB for a 233.25 GiB pool**,
+because it iterated `x.is_dir()`:
+
+| entries | GiB | share | seen by the census |
+|---:|---:|---:|---|
+| 57 dirs | 37.97 | 16.3% | yes |
+| **14 files** | **195.28** | **83.7%** | **no** |
+| 71 total | 233.25 | 100% | — |
+
+**A single file was 84% of the pool** and the instrument's shape made it unobservable — not
+misjudged, not refused, absent. It was found by `find -maxdepth 1 -type f`, which is the whole
+fix. This is the fifth instance in this document of the same failure mode: an instrument asking
+a POSITIONAL question (*what sits at a directory position?*) in place of a semantic one (*what
+occupies this pool?*), and returning a clean, plausible, wrong number with no error.
+
+**What that file is makes this the most consequential line in the document.**
+`runner-fleet-resilience-worktrees-photoslib-20260924.tar` is 195.28 GiB and contains
+`Photos Library.photoslibrary/` with `originals/`, `database/`, `resources/` and `scopes/` — the
+operator's personal photo library. There is no `.photoslibrary` in `~/Pictures` and none
+anywhere on this volume at depth ≤ 3, so **this tar appears to be the only copy on the machine.**
+Its first three words are fleet-infrastructure vocabulary, so it reads as reclaim residue from a
+2026-09-24 worktree operation; the sibling pre-transfer manifests under
+`Offloaded/runner-fleet-resilience-worktrees-reclaim-20260922-sol-001/` confirm that operation
+moved PERSONAL data, not fleet data. **Any sweeper deleting "stale transfer artifacts older
+than 7 days" destroys it.** It is untouched, and `/Volumes/Mastermind/transfers` joins
+`/Volumes/Worktrees` as **REPORT-ONLY for every automated path**. Full record:
+`DSC:THE-TRANSFERS-POOL-HOLDS-THE-ONLY-COPY-OF-OPERATOR-PHOTO-DATA`.
+
+Two rules follow, and neither is about this file:
+
+1. **Census files as well as directories, at every level.** A pool measured by directory
+   iteration has an unstated precondition — that nothing large is stored as a file — and this
+   volume violated it by 195 GiB.
+2. **When the largest object in a pool carries an infrastructure name, open it before
+   classifying it.** The name described the operation that moved the object, never the object.
+   Every neighbour of this tar genuinely is machine residue, which is precisely what made the
+   name plausible.
 
 
 
