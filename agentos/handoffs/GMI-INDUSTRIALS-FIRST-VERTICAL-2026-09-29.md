@@ -427,3 +427,33 @@ Carrier returns: `5895609916` (the four merges and the fence breach) and `589599
 capability). Still **no `PRODUCTION_PROOF` and no `ACCEPTANCE`**: no accepted Exponent or
 Pentair dossier, no authenticated theme-to-company journey, no ordinary-refresh,
 correction-propagation or served-navigation proof.
+
+## Addendum — records merged, and a carrier return that delivered nothing
+
+`#8215` (records) **MERGED**, squash `5a64abf6c347` at 19:07:08Z from head `5df1e092dece`,
+and verified **6/6 in `origin/main`'s own bytes** by a checker scoring 0/6 on the pre-merge
+ref. So both this wave's merges are verified against main itself, never a local checkout:
+`#8213` → `28a3ab1e7cb2` (10/10, control 0/10) and `#8215` → `5a64abf6c347` (6/6, control
+0/6).
+
+**Do NOT cite `5896637219` as the merge return — it delivered nothing.** Its body was 147
+characters of filesystem path, because it was posted with `gh issue comment --body
+"@<file>"` and `--body` does not expand `@file`; only `--body-file` reads one. `gh` returned
+a real comment URL, so the id looked exactly like a success and was recorded as one in the
+#8215 PR body, in program memory and in two session reports. **The canonical return for this
+wave is `5896924077`**, re-delivered with `--body-file` and then read back and diffed against
+its source file; `5896637219` has been PATCHed to a pointer so the thread carries no bare
+path. Full record: `DSC:A-COMMENT-ID-IS-NOT-PROOF-OF-WHAT-THE-COMMENT-SAYS`.
+
+**Danger area, and the reason this was caught at all:** the mandated fresh carrier re-read
+before a new post prints each recent comment's first ~110 characters, and that is what showed
+a body beginning `@/private/tmp/…`. A fence written to catch a stale premise caught a failed
+delivery instead. A cold stranger should take two habits from it — always send a carrier
+return from a file with `--body-file`, and treat `DELIVERED` as a claim needing read-back
+proof exactly as `MERGED` does. A comment id proves a request succeeded, never what the
+comment said.
+
+`do_not_redo`: the #8213 and #8215 verifications are complete and their checkers are
+calibrated on both sides (`verify_8213_bytes.py`, `verify_8215_bytes.py` in this session's
+scratchpad) — re-running them against main is cheap but re-deriving them is not, and a
+partial score from a re-derived checker is indistinguishable from real loss.
