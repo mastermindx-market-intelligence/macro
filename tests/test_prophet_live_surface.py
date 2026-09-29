@@ -936,6 +936,22 @@ def test_as_of_stamp_comes_from_the_artifact_never_the_browser_clock():
     assert "Date.now" not in line[0] and "new Date" not in line[0]
 
 
+def test_as_of_stamp_discloses_today_prior_day_and_unavailable_states():
+    js = _nc(_strip_js())
+    render = js[js.index("function _plvRender"):js.index("function _plvFetch")]
+    stamp = render[render.index("var stamp="):render.index("/* the stance line", render.index("var stamp="))]
+    assert stamp.count("new Date(") == 1
+    assert "Date.now" not in stamp
+    assert stamp.index("_plvEt(new Date(") < stamp.index("_plvAsOfState") if "_plvAsOfState" in stamp else True
+    for text in ("quotes as of ", "last read ", "quote time unavailable"):
+        assert text in stamp
+    for text in ("报价截至 美东 ", "上次判读 ", "报价时间不可用"):
+        assert text in stamp
+    assert "asEl.dataset.plvAsofState='today'" in stamp
+    assert "asEl.dataset.plvAsofState='prior_day'" in stamp
+    assert "asEl.dataset.plvAsofState='unavailable'" in stamp
+
+
 def test_first_fetch_is_never_gated_on_document_hidden():
     """The preview pane renders with visibility:hidden, so a visibility-gated first fetch
     produces a permanently empty strip in every verification screenshot."""

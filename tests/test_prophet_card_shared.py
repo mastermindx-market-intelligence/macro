@@ -32,6 +32,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PARTIAL = ROOT / "templates" / "_prophet_card.html.j2"
+POOL_ROWS = ROOT / "templates" / "_us_candidate_pool_rows.html.j2"
 THEME = ROOT / "templates" / "theme.css"
 THEME_CSS = THEME.read_text(encoding="utf-8")
 
@@ -463,6 +464,79 @@ def test_setup_detail_research_never_borrows_board_levels_or_strategy():
     assert 'No model-plan link is available for this candidate.' in soup.get_text()
 
 
+def test_candidate_decision_record_reasons_are_readable_and_machine_values_stable():
+    from bs4 import BeautifulSoup
+    from jinja2 import Environment, FileSystemLoader
+
+    env = Environment(loader=FileSystemLoader(str(ROOT / 'templates')), autoescape=True)
+    row = {'ticker': 'LFUS', 'headline_reason': 'already_open',
+           'lane_reasons': ['cleared_admission', 'board_featured', 'already_open']}
+    html = env.get_template('_us_candidate_pool_rows.html.j2').render(
+        rows=[row], setup_as_of='2026-09-25')
+    soup = BeautifulSoup(html, 'html.parser')
+    reasons = soup.select('.ucp-receipt .ucp-reason')
+    assert [node['data-reason'] for node in reasons] == row['lane_reasons']
+    assert [node.select_one('.l-en').get_text(strip=True) for node in reasons] == [
+        'Admission checks passed', 'Featured on the main list', 'A plan is already open']
+    assert [node.select_one('.l-zh').get_text(strip=True) for node in reasons] == [
+        '已通过准入检查', '主榜重点展示', '已有开放计划']
+    assert not [node for node in soup.find_all('code')
+                if 'ucp-reason-raw' not in (node.get('class') or [])]
+
+
+def test_candidate_decision_record_unknown_reason_stays_visible():
+    from bs4 import BeautifulSoup
+    from jinja2 import Environment, FileSystemLoader
+
+    env = Environment(loader=FileSystemLoader(str(ROOT / 'templates')), autoescape=True)
+    html = env.get_template('_us_candidate_pool_rows.html.j2').render(
+        rows=[{'ticker': 'ZZZ', 'lane_reasons': ['zzz_new_code']}])
+    soup = BeautifulSoup(html, 'html.parser')
+    reason = soup.select_one('.ucp-receipt .ucp-reason')
+    assert reason['data-reason'] == 'zzz_new_code'
+    assert reason.select_one('.l-en').get_text(strip=True) == 'Unlabelled decision code'
+    assert reason.select_one('.l-zh').get_text(strip=True) == '未标注的决策代码'
+    assert reason.select_one('code.ucp-reason-raw').get_text(strip=True) == 'zzz_new_code'
+
+
+def test_candidate_decision_reason_vocabulary_is_complete():
+    import ast
+    from engine.prophet_bridge import REFUSAL_ORDER
+    from engine.us_candidate_lanes import (
+        FEATURED_SHORTFALL_CODES,
+        FEATURED_SHORTFALL_FAMILY_VALUES,
+        declared_reasons,
+    )
+
+    source = POOL_ROWS.read_text(encoding='utf-8')
+    match = re.search(r'\{% set _why = (.*?) %\}', source, re.S)
+    assert match, 'the existing _why map must remain'
+    literal = '{' + match.group(1).rstrip().rstrip(',') + '}'
+    why = ast.literal_eval(literal)
+    codes = set(declared_reasons()) | set(REFUSAL_ORDER)
+    for values in FEATURED_SHORTFALL_FAMILY_VALUES.values():
+        codes.update(values)
+    missing = sorted(codes - set(why))
+    assert not missing, f'unlabelled production decision codes: {missing}'
+
+
+def _render_pool_with_scratch_template(row):
+    import os
+    import shutil
+    import tempfile
+
+    scratch = Path(tempfile.mkdtemp(prefix='pri-ui-c1a-', dir=os.environ.get('TMPDIR')))
+    try:
+        shutil.copy(ROOT / 'templates' / '_prophet_setup_detail.html.j2', scratch)
+        shutil.copy(POOL_ROWS, scratch / '_us_candidate_pool_rows.html.j2')
+        from jinja2 import Environment, FileSystemLoader
+        env = Environment(loader=FileSystemLoader(str(scratch)), autoescape=True)
+        return env.get_template('_us_candidate_pool_rows.html.j2').render(
+            rows=[row], setup_as_of=None)
+    finally:
+        shutil.rmtree(scratch)
+
+
 def test_setup_detail_rejects_nonfinite_or_boolean_prices():
     from bs4 import BeautifulSoup
     m = _r18_env().get_template('_prophet_setup_detail.html.j2').module
@@ -532,6 +606,32 @@ def test_setup_table_same_row_body_and_clock_match_card_presenter():
     assert table.select_one('[data-entry-status]')['data-entry-status'] == 'bounce_wait'
     assert table.select_one('[data-source-field="entry_signal.stop"] dd').text == '$90.00'
     assert table.select_one('[data-source-field="hold.invalidation"] dd').text == '$85.00'
+
+
+def test_board_entry_read_shows_owner_clock_separate_from_quote_clock():
+    from bs4 import BeautifulSoup
+    row = {'ticker': 'LFUS', 'signal_asof': '2026-09-25',
+           'entry_signal': {'status': 'buy_now', 'headline': 'Wait for the base'},
+           'signal': {}, 'hold': {}}
+    html = str(_r18_env().get_template('_prophet_setup_detail.html.j2').module.body(
+        row, 'board', '2026-09-24'))
+    soup = BeautifulSoup(html, 'html.parser')
+    clock = soup.select_one('.pvs-assessment-clock')
+    assert clock['data-assessment-asof'] == '2026-09-25'
+    text = clock.get_text(' ', strip=True)
+    assert 'Entry read as of 2026-09-25' in text
+    assert '入场判读截至 2026-09-25' in text
+    assert 'quote time not supplied' in text
+    assert '报价时间 来源未提供' in text
+    assert "owner's assessment at that date" in soup.get_text(' ', strip=True)
+    assert '之后报价处于区间内并不会更新该判读。' in soup.get_text(' ', strip=True)
+
+
+def test_pool_entry_read_has_no_assessment_clock():
+    row = {'ticker': 'TEST_ONLY', 'signal_asof': '2026-09-25'}
+    html = _render_pool_with_scratch_template(row)
+    assert '.pvs-assessment-clock' not in html
+    assert 'Entry read as of' not in html
 
 
 def test_setup_table_chart_is_inert_text_until_display_guard():
