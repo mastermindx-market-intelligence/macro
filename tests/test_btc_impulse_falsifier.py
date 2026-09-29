@@ -682,3 +682,87 @@ if __name__ == "__main__":
     for fn in fns:
         fn(); print(f"  ok  {fn.__name__}")
     print(f"\n{len(fns)} tests passed")
+
+
+# R7 extends the existing scientific test owner; R1-R6 test bytes remain intact.
+def _r7_training():
+    f=_r6_training()
+    f['p1']=.35+.05*np.sin(np.arange(len(f)))
+    f['p2']=.4+.05*np.cos(np.arange(len(f)))
+    f['forecast_status']='ok'
+    return f
+
+
+def test_r7_calibration_uses_prior_mature_out_of_training_records_only():
+    from research.crypto_science.r7_calibration_study import training_frame
+    f=_r7_training();q=f.issue.iloc[100]
+    got=training_frame(f,q)
+    assert len(got)==100 and (got.end+pd.Timedelta(hours=24)<q).all()
+    f.loc[99,'end']=q-pd.Timedelta(hours=24)
+    f.loc[3,'p1']=np.nan;f.loc[4,'forecast_status']='features_unavailable'
+    assert len(training_frame(f,q))==97
+
+
+def test_r7_recency_weights_use_time_not_row_position():
+    from research.crypto_science.r7_calibration_study import decayed_weights
+    q=pd.Timestamp('2025-01-01');dates=[q-pd.Timedelta(days=365),q-pd.Timedelta(days=730)]
+    assert np.allclose(decayed_weights(dates,q),[.5,.25])
+
+
+def test_r7_intercept_fit_preserves_order_and_solves_training_gradient():
+    from research.crypto_science.r7_calibration_study import offset_fit, apply_offset
+    p=np.full(100,.6);y=np.r_[np.ones(20),np.zeros(80)];w=np.ones(100)
+    m=offset_fit(p,y,w)
+    assert m['offset']<0 and abs(m['gradient'])<1e-9
+    pp=apply_offset(np.array([.1,.2,.9]),m['offset'])
+    assert np.diff(pp).min()>0 and np.isfinite(pp).all()
+    assert np.allclose(pp,apply_offset(np.array([.1,.2,.9]),offset_fit(p,y,w)['offset']))
+    try:apply_offset(np.array([np.nan]),m['offset'])
+    except ValueError:pass
+    else:raise AssertionError('Unknown probabilities must not be calibrated')
+
+
+def test_r7_fit_gate_and_future_changes_do_not_rewrite_calibration():
+    from research.crypto_science.r7_calibration_study import fit_calibrator
+    f=_r7_training();q=f.issue.iloc[100];m=fit_calibrator(f,q)
+    assert m['status']=='ok' and m['n']==100
+    g=f.copy();g.loc[100:,'y']=1.;g.loc[100:,'p1']=.999
+    assert fit_calibrator(g,q)==m
+    assert fit_calibrator(f.iloc[:50],q)['status']=='insufficient_training'
+    f['y']=0.;assert fit_calibrator(f,q)['status']=='insufficient_training'
+
+
+def test_r7_brier_decomposition_keeps_the_within_bin_residual():
+    from research.crypto_science.r7_calibration_study import brier_decomposition
+    y=np.array([0.,1.,0.,1.]);p=np.array([.11,.19,.41,.49]);d=brier_decomposition(y,p)
+    assert np.isclose(d['brier'],np.mean((y-p)**2))
+    assert np.isclose(d['brier'],d['uncertainty']-d['resolution']+d['reliability']+d['within_bin_residual'])
+    assert abs(d['within_bin_residual'])>1e-6
+
+
+def test_r7_protection_units_and_opportunity_floor_are_explicit():
+    from research.crypto_science.r7_calibration_study import protection_utility, choose_cash
+    assert np.isclose(protection_utility(.01,-.08,1),-.02)
+    assert np.isclose(protection_utility(.01,-.04,1),.01)
+    assert np.isclose(protection_utility(.01,-.08,0),.01)
+    u={'mu0':.01,'mu1':.02};ok={'mu0':-.001,'mu1':-.001};bad={'mu0':-.003,'mu1':-.003}
+    assert choose_cash(.4,u,ok)['action'] is True
+    assert choose_cash(.4,u,bad)['action'] is False
+    assert choose_cash(.4,{'mu0':0.,'mu1':0.},ok)['action'] is False
+
+
+def test_r7_mapping_shrinks_weighted_prior_and_handles_missingness():
+    from research.crypto_science.r7_calibration_study import gain_map
+    y=np.r_[np.zeros(80),np.ones(20)];g=np.r_[np.full(80,-.01),np.full(20,.1)];w=np.ones(100)
+    m=gain_map(y,g,w);overall=g.mean()
+    assert np.isclose(m['mu0'],(-.8+10*overall)/90)
+    assert np.isclose(m['mu1'],(2+10*overall)/30)
+    g[-6:]=np.nan;assert gain_map(y,g,w) is None
+
+
+def test_r7_frequency_control_is_a_diagnostic_not_free_extra_cash():
+    from research.crypto_science.r7_calibration_study import frequency_adjust
+    d=np.array([.1,-.1,.05,-.05]);a=np.array([True,False,False,False])
+    adjusted,q=frequency_adjust(a,d)
+    assert q==.25 and np.isclose(np.mean(adjusted),.025)
+    assert np.allclose(frequency_adjust(np.zeros(4,bool),d)[0],0)
