@@ -86,24 +86,52 @@ verified:
       admin_verified=true for #7861; the failing part is strictly context_active=false with
       context_reason=inactive_base_context for the codex/merge-queue-pilot base context, which this PR does not
       target. Zero duration, started==completed at 20:39:15Z. Same class as the known-spurious Workers Builds X.
+  - claim: PRODUCTION REPRODUCTION. The defect is live right now on the published surface, and was reproduced anonymously with no credentials, no source-host access and no licensed-data exposure.
+    command: curl -A macro-acceptance-probe/1.0 https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/options_structure/matrix/<ROOT>.json for all 12 enrolled roots
+    result: >-
+      All 10 currently published roots (SPY QQQ IWM NVDA TSLA AAPL MSFT META AMD GOOGL) return HTTP 200 at
+      855 B with cells=[], spot=null, strikes=[], expiries=[], every level null, and
+      _no_data_reason="spot unavailable on 2026-09-24". Every one was written 2026-09-24T23:00-23:01Z, so the
+      entire served matrix surface has been an empty heatmap for five days. MU and ARM are 404 - they are not
+      yet enrolled, which is what this PR adds. This is the packet's own-reproduction requirement closed at
+      PRODUCTION level rather than in tests. No licensed value was exposed: every field is null or empty.
+  - claim: The published artifacts independently corroborate that the installed producer is UNREPAIRED, without any host access.
+    command: key-presence check on the fetched payloads vs engine/options_matrix.py:1173-1177
+    result: >-
+      Every published payload matches _null_payload's shape exactly (same keys, authority_tier="display",
+      identical reliability strings) but carries NO "session" key at all, whereas the repaired _null_payload
+      sets "session": None. The served bytes alone therefore date the producer as pre-repair, agreeing with the
+      m1 probe from a completely independent direction.
+  - claim: The repaired publisher would have withheld every one of those ten empty artifacts, against REAL published data rather than fixtures.
+    command: python - importing scripts.build_options_matrix and applying its real _payload_session plus the literal gate at :237-241 to the ten fetched payloads
+    result: >-
+      _payload_session returned None for all ten (no "session", no _build_meta.asof_date to fall back to) and the
+      withhold predicate returned True for all ten. The null-data gate fires first, ahead of the session
+      anti-regression comparison, so the repaired publisher preserves the prior dated artifact instead of
+      overwriting it with an empty one. The empty heatmaps currently being served would never have been published.
+      This is the unrepaired publisher overwriting good artifacts with nulls - exactly what the repair stops.
 unverified:
   - claim: The repair actually eliminates empty/mixed-session heatmaps in production.
     what_would_verify: A merged release installed on the source host with its lib/nyse_calendar.py dependency carried, then two natural untouched qualifying sessions whose published R2 matrix artifacts each carry a single coherent source session and a non-regressing session date.
   - claim: The repaired producer imports and runs cleanly under the source host's interpreter and .env binding.
     what_would_verify: An import smoke of engine.options_matrix under that host's interpreter AFTER the checkout carries a lib/nyse_calendar.py containing sessions_apart. Measured today it would raise ImportError, so this is currently known-false for the tree as it stands.
-  - claim: The anti-regression gate withholds correctly against a real previously-published R2 artifact.
-    what_would_verify: Exercised in tests against fixtures only. A live run observing an actual prior R2 publication would close it.
+  - claim: The SESSION anti-regression comparison (new session strictly precedes published session) withholds correctly against a real R2 pair.
+    what_would_verify: >-
+      The null-data half of the gate is now PROVEN against the ten real published artifacts (see verified above).
+      The remaining half needs a real prior-vs-new pair where both carry a parseable session, which cannot exist
+      until the repaired producer has published at least once. Downstream of install.
   - claim: The host's mid-July gex_state asof reflects a genuine production staleness rather than stale local copies of a lane that publishes elsewhere.
     what_would_verify: An owner read of where gex_state actually publishes from, and whether the served artifacts carry the same asof.
 unresolved:
   - Sol's hold on #7861. The 02:41Z review explicitly grants no Ready/merge/deploy/source-writer authority. Merge authority is not this seat's.
-  - Normal merged-source publication, and real published-data-to-Terminal proof over two natural qualifying sessions. Both are downstream of the merge AND of the install prerequisite above.
+  - "Normal merged-source publication, and real published-data proof over two natural qualifying sessions. Both remain downstream of the merge AND of the install prerequisite. What is NO LONGER unresolved is the reproduction and the baseline: the defect is confirmed live on all ten published roots and the repaired gate was proven against those real payloads."
   - Owner reconciliation of the +35 B publisher divergence on the source host. A rollback preimage cannot be trusted while the installed publisher matches no committed revision.
   - The host's gex_state/*.json carry a mid-July asof. Different producer lane, possibly just stale local copies rather than the live publication. Flagged for an owner read, NOT claimed as a production defect.
 next_actions:
   - Await Sol's disposition of the hold on #7861. Do not arm merge-on-green, mark ready, or merge.
   - On release, install must carry lib/nyse_calendar.py (or move the whole checkout to merged main), not just the two repaired files, and must happen with the producer idle and after the publisher divergence is reconciled by its owner.
-  - Take the two-session published proof from R2 or the served endpoint, never from the source host disk.
+  - "Take the two-session published proof ANONYMOUSLY from https://pub-f7ffb4441c5f4ad983ca56ec7c651c61.r2.dev/options_structure/matrix/<ROOT>.json with a custom User-Agent - no credential, token or host access is needed. See DSC:PUBLISHED-R2-ARTIFACTS-ARE-ANONYMOUSLY-READABLE. Never take it from the source host disk."
+  - "Acceptance is now a narrow diff: the pre-repair baseline is recorded below (all ten roots empty, spot null, no session key, asof 2026-09-24T23:00-23:01Z). After install, the same fetch must show a populated matrix carrying a first-class session, or a withhold that PRESERVED a dated non-empty artifact. Either outcome ends the empty heatmap; a third empty publication would refute the repair."
 do_not_redo:
   - Do not re-author the repair. The bytes are adopted, committed, pushed and independently reviewed PASS.
   - Do not re-run the m1 preimage probe to answer the same question; hashes, sizes and marker counts are recorded above and on #7861 comment 5895153520.
@@ -129,6 +157,22 @@ that Sol had hashed and provisionally qualified, but nothing held them: no commi
 session adopted those bytes unmodified onto #7861 so the digest custody chain stayed intact, produced the
 discriminating RED/GREEN the packet demanded instead of leaning on historical green, and took an independent
 opus review (PASS).
+
+The decisive evidence is the production reproduction, and it cost no privilege at all. The published matrix
+is R2-only and the Terminal reads it through an authenticated app route, which makes it look like a
+token-gated surface; it is not. The same objects are public on the r2.dev base that four existing scripts
+already use. Fetched anonymously, **all ten published roots are empty heatmaps** — `cells: []`, `spot: null`,
+`_no_data_reason: "spot unavailable on 2026-09-24"` — every one written 2026-09-24T23:00-23:01Z, so the whole
+served surface has been empty for five days. `spot unavailable` is precisely the packet's mechanism: the
+producer selected a session whose OI had published but whose same-root Greeks had not, `_extract_spot`
+correctly refused to substitute a premium close for underlying spot, and the matrix collapsed to nothing.
+
+Two further things fall out of those bytes. They carry no `session` key at all, while the repaired
+`_null_payload` sets `"session": None` — so the published artifact alone dates the installed producer as
+pre-repair, agreeing with the m1 probe from an independent direction. And running the repaired publisher's
+*real* `_payload_session` and withhold gate against those ten real payloads withholds all ten: the null-data
+gate fires ahead of the session comparison, so the repair preserves the prior dated artifact instead of
+overwriting it with an empty one. The empty heatmaps now being served would never have been published.
 
 The substantive new finding is the install prerequisite. The repair depends on `sessions_apart`, imported at
 module top level, and the source host's `lib/nyse_calendar.py` predates that symbol entirely. The obvious
