@@ -48,7 +48,7 @@ Interface: `plan_daily_expansion(expansion: dict, *, legacy_symbols: list[str], 
 - [x] Observe the missing-function/integration failures.
 - [x] Implement deterministic anchor -> supplied priorities -> retained legacy -> equity-group fill; use the existing membership resolver, not a parallel interval algorithm.
 - [x] Run the full focused suite and regressions available to this scope; no full sparse-tree suite.
-- [ ] Commit tested source.
+- [x] Commit tested source.
 
 ## Task 2 — executable, non-writing preflight
 
@@ -65,8 +65,8 @@ CLI: `python -m scripts.plan_options_coverage --as-of YYYY-MM-DD --target-stocks
 
 Files: R1 research result and existing Agent OS handoff schema under the parent workstream.
 
-- [ ] Record source delta, tests, denied actions, unchanged production state and the exact remaining gates.
-- [ ] Push the same source branch; create a draft PR; read back exact head and changed paths.
+- [x] Record source delta, tests, denied actions, unchanged production state and the exact remaining gates.
+- [x] Push the same source branch; create a draft PR; read back exact head and changed paths.
 - [ ] Obtain exact-head CI/review through the existing owners; do not self-claim independent review, merge/deploy or hosted acceptance.
 
 ## Next tightly coupled phase
@@ -74,3 +74,12 @@ Files: R1 research result and existing Agent OS handoff schema under the parent 
 Qualify the market-wide EOD/OI adapter against the current official v3 schema, while preserving the existing per-root Greeks path (there are no Greeks flat files). The inspected official subscription documentation has an account-wide shared concurrency budget, not additive per-asset quotas. Raw-store normalization, actual entitlement, licensed-host recovery and two ordinary source-to-consumer cycles remain production prerequisites. Intraday stays with Terminal.
 
 MISSION_COMPLETE: false
+
+## Continuation slice — source-session coverage in the existing audit
+
+The approved coverage-honesty requirement is implemented through `lib/options_coverage.py` and the existing `scripts/audit_options_entry_coverage.py` writer, not another collector, store, or registry. The state producer sets row `as_of` to the latest source date; that outer date must never qualify all four source clocks.
+
+- [x] Add red-first tests for independently dated sources, duplicate/conflicting root observations, missing versus empty inputs, malformed/future/non-session clocks, and Monday-before-close comparison semantics.
+- [x] Implement `source_session_coverage(frame, *, comparison_session, date_columns)` as an additive shared report of unique ticker identities and exact source-session alignment. Return named per-source ticker buckets; do not infer optionability, provider SLA freshness, complete chains, or a qualified ticker count.
+- [x] Wire that report into the existing audit's returned/written `coverage.json` as `source_session_coverage`; reuse the existing exchange calendar and the same frozen run instant. Keep old feature-presence counts and promotion logic unchanged. Prove the real writer against operation-owned synthetic files only; do not read denied production data.
+- [ ] Enroll through the already-wired coverage-object test suite, run existing audit regressions, and preserve measured results on the same PR.

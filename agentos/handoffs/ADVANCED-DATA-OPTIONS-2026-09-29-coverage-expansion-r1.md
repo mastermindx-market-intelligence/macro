@@ -3,152 +3,159 @@ workstream: WS:ADVANCED-DATA-OPTIONS
 session: claude/options-coverage-expansion-20260929
 model: sol
 ended_because: ci_handoff
+prs: [8191]
 mission: >-
-  Implement the Chairman-approved broad options coverage expansion through the
-  existing ThetaData owners: market-wide EOD/OI where entitled, 1000 then 1500
-  qualified daily stocks, and a separately owned Terminal intraday tier.
+  Implement the approved broader options coverage through existing owners:
+  market-wide EOD/OI where entitled, 1000 then 1500 qualified daily stocks,
+  and the separate Terminal intraday tier, preserving data-quality gates.
 state_before: >-
-  The shared options universe was capped at 375 roots. The September 29
-  investigation established wider but inconsistently fresh display coverage;
-  saved root counts were not current qualified options coverage. No source
-  expansion had been implemented.
+  R1 selection/preflight was published at 87a14323628d2bbd9a21439bc1f90a524ef2e84d.
+  CI 36563918232 failed the new CLI's repository-import pinning check; the other
+  eleven code packs passed. The source audit counted value presence without
+  per-ticker source-date alignment. No qualified production coverage increase existed.
 changed:
   - path: engine/options_universe.py
     what: >-
-      Added an explicitly enabled expansion to the existing resolver, retaining
-      all incumbent roots, prioritizing supplied symbols, and counting equity
-      membership separately from other roots under strict total-root ceilings.
-      Default production behavior and all admission/scoring gates are unchanged.
+      Existing R1 opt-in selection retains every legacy root and separates
+      membership-classified stocks from total symbols. No production activation.
   - path: scripts/plan_options_coverage.py
     what: >-
-      Added a JSON stdout preflight using the same selector and existing inputs;
-      it does not collect, modify configuration, or claim qualified coverage.
+      Fixed the CI defect using the established repository-root import pin.
+      The actual file-path CLI now works from foreign cwd/PYTHONPATH and isolated Python.
   - path: tests/test_options_universe_expansion.py
+    what: 51 hermetic cases including two red-first real subprocess startup cases.
+  - path: lib/options_coverage.py
     what: >-
-      Added 49 hermetic cases including red-first selector/CLI and adversarial
-      date-validation proof, non-mutation, denominator separation and refusals.
+      Added source_session_coverage to the existing coverage owner. Counts exact
+      source-session alignment by unique ticker; conflicting observations never
+      become latest-row-wins. Missing input remains unknown; qualified count is null.
+  - path: scripts/audit_options_entry_coverage.py
+    what: >-
+      Wires the additive source_session_coverage section into the existing
+      coverage.json writer using the frozen run instant and existing calendar.
+      Old value-presence counts and promotion gates are unchanged.
+  - path: tests/test_options_coverage_object.py
+    what: >-
+      Added 25 source-date tests, including actual synthetic audit-writer readback,
+      input preservation, duplicate/conflict cases, malformed cells and date types.
+      The suite is already enrolled in the existing CI coverage-object step.
   - path: .github/ci/legacy-jobs.yml
-    what: Enrolled the new tests in the existing ric-w2-surface code gate.
-  - path: research/options_estate/COVERAGE_EXPANSION_R1_SELECTION_2026-09-29.json
+    what: Original R1 test enrollment only; no new CI job, runner, workflow or waiver.
+  - path: research/options_estate/COVERAGE_EXPANSION_R1_SOURCE_SESSIONS_2026-09-29.json
     what: >-
-      Preserved exact-input and code hashes plus real CLI selection proof:
-      1000 stocks in 1082 roots and 1500 in 1582, retaining all 375 legacy roots.
+      Integrated synthetic writer evidence, exact input/output and code hashes,
+      showing two present GEX values but only one comparison-session GEX date.
 verified:
-  - claim: The focused expansion, surface and membership regression suite passes.
+  - claim: The six-scope combined local regression passes after both repairs.
     command: >-
-      python -m pytest tests/test_options_surface.py
+      python -B -m pytest tests/test_options_surface.py
       tests/test_options_universe_expansion.py tests/test_universe_history.py
-      -q --tb=short --basetemp <unique-operation-owned-directory>
-    result: 85 passed; no production collection or full-suite claim.
-  - claim: Both approved stock targets are selectable without evicting the old cohort.
-    command: >-
-      scripts.plan_options_coverage.main with --as-of 2026-09-28,
-      --target-stocks 1000/1500, --max-total-roots 1500/2000, and priorities
-      MU ARM INTC; config.data_dir redirected only in the proof process to
-      exact d5e20a62b5da656f62b3cc06a7c7675c43f0de1a committed inputs.
+      tests/test_check_script_import_pinning.py tests/test_options_coverage_object.py
+      tests/test_audit_options_entry_coverage.py -q --tb=short
+      --basetemp <operation-owned-directory>
+    result: 189 passed; no full-repository, hosted, or production-proof claim.
+  - claim: Startup repair was published through the existing source carrier.
+    command: git ls-remote origin refs/heads/claude/options-coverage-expansion-20260929
     result: >-
-      1082/1582 roots; 1000/1500 membership-classified stocks; 375 retained;
-      zero uncovered supplied priorities; qualified_stock_count null;
-      collection_started false. Repeated after interval hardening.
-  - claim: The staged source has no whitespace errors.
-    command: git diff --cached --check
-    result: Exit 0.
+      2e70013bf190573bd14f607776aea379b0b1bbd3 read back after push;
+      later source-audit changes are carried by the same PR, not a new operation.
+  - claim: The actual audit writer distinguishes source dates from value presence.
+    command: >-
+      pytest tests/test_options_coverage_object.py::test_source_sessions_real_audit_writer_preserves_inputs_and_uses_settled_session
+    result: >-
+      Synthetic Monday-morning input compares with Friday 2026-09-25. Two GEX
+      values remain present, one GEX date matches, zero tickers match all four
+      source dates, qualified_ticker_count is null. Input bytes unchanged.
+  - claim: Existing selection evidence retains both approved target cohorts.
+    command: >-
+      Read research/options_estate/COVERAGE_EXPANSION_R1_SELECTION_2026-09-29.json
+      at original source 87a14323628d2bbd9a21439bc1f90a524ef2e84d.
+    result: >-
+      1000/1500 classified stocks in 1082/1582 roots; all 375 retained. This
+      remains the original versioned selection proof, not new acquisition.
 unverified:
-  - claim: Hosted exact-head CI and independent review are complete.
-    what_would_verify: Exact PR head, concluded checks and an independent review receipt.
-  - claim: The selected stocks have current qualified options data.
+  - claim: The latest head has concluded hosted CI and independent approval.
+    what_would_verify: Exact current PR head, concluded binding checks and independent review.
+  - claim: The selected stocks have fresh qualified options data in production.
     what_would_verify: >-
-      Licensed-host/provider admission, measured capacity, optionability and
-      per-feature source/completeness receipts followed by ordinary scheduled
-      source-to-publication-to-consumer proof.
-  - claim: Dynamic current Prophet candidate priority is integrated.
-    what_would_verify: >-
-      A current source-clock-bound join from the existing candidate owner,
-      preserving all-candidate and optionable-candidate denominators.
+      Provider/host admission, capacity, optionability and per-feature completeness
+      receipts through ordinary acquisition, publication and consumer cycles.
+  - claim: Current Prophet priorities feed the selector automatically.
+    what_would_verify: A clock-bound join from the existing candidate owner.
 unresolved:
   - >-
-    Parent MISSION_COMPLETE is false. R1 is BUILT_NOT_PROVEN; production
-    configuration, licensed host, collectors and raw stores were not changed.
+    MISSION_COMPLETE is false. No production config, source store, licensed
+    Terminal, collector, host process, provider subscription or scoring gate changed.
   - >-
-    Existing Macro PR 7889 at ff11820b52be465cdaca48418634b0ccdaae2629
-    retains W4 store-host admission; PR 7861 at
-    ad114ece05c1c5a9a578d395195dde7e28dca533 retains aligned-source heatmaps.
-    Neither was modified or declared deployed.
+    The repository review request to mastermindx-2 is still the incumbent review
+    request. Native GitHub Codex returned an account/GitHub-connection prompt,
+    not a review. Do not repeat that request or switch accounts to bypass it.
   - >-
-    Prior platform-denied raw-store/board actions and the current refused
-    compound ThetaData source-symbol/PR/wrapper inspection remain unexecuted;
-    neither was retried or delegated via a different carrier.
+    Executive state read succeeded and reports mode readonly. No reviewer or
+    worker was submitted, dispatched, or claimed through that ingress.
   - >-
-    No eligible independently executing reviewer has been asserted. Executive
-    submit exposed here creates QUEUED only, not dispatch; the Workbench
-    command recipes are canaries, not a worker review surface.
+    Explicitly denied production raw-store/board and compound ThetaData source
+    inspections remain closed. Do not inspect collectors/thetadata.py,
+    scripts/topup_thetadata_day.py, scripts/backfill_thetadata_eod.py,
+    engine/thetadata_store.py or installed M1 source/store as a retry or workaround.
+  - >-
+    PR 7889 retains W4/store-host placement and PR 7861 aligned-source heatmaps.
+    Their gates and custody were not overridden. The dated M1 process-pressure
+    observation remains unrepaired by this operation, not a proven universal cause.
 next_actions:
   - >-
-    Contract-delta process 92045 completed with 0 introduced and 0 inherited
-    findings. Complete source checks and publish/reconcile this same branch and one draft
-    PR, preserve the exact source head and obtain independent review plus CI.
+    Consume the exact current head's CI and independent review on PR 8191;
+    repair concrete findings on this same branch. Do not call pending CI green.
   - >-
-    Before enabling daily_expansion, qualify all gex_symbols consumers,
-    current source membership and actual provider/host capacity; do not flip
-    configuration merely because the selector is locally green.
+    Before enabling daily_expansion, qualify all shared gex_symbols consumers
+    and actual provider capacity through permitted source/admission owners.
   - >-
-    Continue the approved bulk EOD/OI and per-root Greek integration only
-    through the existing collector/store owners after the exact blocked
-    access/admission dependencies are lawfully recovered. No alternate
-    collector or second Terminal is permitted.
+    Resume bulk EOD/OI and per-root Greeks integration only when the exact
+    blocked access/admission dependencies have a lawful recovery. Preserve
+    one collector/store/Terminal and source time semantics.
   - >-
-    Connect the existing candidate-priority source and prove fresh qualified
-    daily coverage, not just configured selection, over normal cycles.
+    Bind current candidate priorities and verify qualified 1000-stock coverage
+    through ordinary publication and consumer cycles; 1500 follows capacity proof.
 do_not_redo:
-  - >-
-    Do not repeat the accepted baseline census, recreate a universe registry,
-    create a second collector/store/Terminal, or fork options lifecycle and
-    publication owners.
-  - >-
-    Do not lower the 90 percent source gate or Prophet admission/variance
-    gates, turn a delayed GEX state into live demand, or count unclassified
-    roots as verified stocks/ETFs/options-qualified names.
-  - >-
-    Do not retry the explicit platform-denied actions or treat user approval
-    of expansion as a safety-permission override.
-  - >-
-    Do not reimplement the existing host-placement or heatmap repair on a new
-    carrier; retain their current ownership and unresolved gates.
+  - Accepted baseline census and unchanged selection proof without material invalidation.
+  - Existing PR 7889 and 7861 implementations or a second universe/collector/store.
+  - Denied inspections through a new tool, actor, account, or rephrasing.
+  - Repeated review requests merely because the incumbent has not answered.
+  - Lowering source, admission, variance, or promotion thresholds.
 danger_areas:
   - >-
-    gex_symbols is shared across consumers. Activation affects a larger graph
-    than ThetaData alone and must not widen legacy vendor calls by accident.
+    Source-date matching is not provider freshness, optionability, chain completeness,
+    Greek quality or feature validity. Older means relative to comparison session,
+    not a provider-SLA breach. qualified_ticker_count intentionally remains null.
   - >-
-    Membership classification is not optionability. The 82 other selected
-    roots are not asserted to be 82 ETFs. No 1000-stock live coverage is proven.
+    gex_symbols has a shared consumer graph. Activation must not accidentally
+    enlarge legacy provider requests or change an unreviewed denominator.
   - >-
-    Keep the M1 process-pressure incident separate from a causal explanation
-    of every stale options artifact; never blanket-kill Python processes.
-  - >-
-    One initial test-file write lost its session response, but same-carrier
-    ENOENT proved absence before one bounded technical recovery. All later
-    writes were acknowledged; EFFECT_UNKNOWN is none.
+    The 82 roots outside equity-membership classification are not asserted to
+    be 82 ETFs; symbol aliases are not silently merged.
+  - Never blanket-kill Python processes or duplicate the licensed Theta Terminal.
 ---
 
-# Rolling source checkpoint — options coverage expansion R1
+# Cumulative implementation frontier — PR 8191
 
-This record's `model: sol` denotes the existing CEO author role, not a claim
-about a served model identifier. The handoff schema's `ci_handoff` reason names
-the source-release boundary, not parent completion or transfer of custody.
+**MISSION_COMPLETE: false.** Operation `options-coverage-expansion-20260929-sol-001`
+retains the same branch and Studio workspace:
+`/Volumes/Mastermind/worktrees/options-coverage-expansion-20260929-sol`.
+No custody transfer, new lifecycle, worker, watcher or autonomous wake is claimed.
 
-**MISSION_COMPLETE: false.** Same-chat continuation remains valid. The working
-source carrier is `claude/options-coverage-expansion-20260929` in the isolated
-Studio workspace `/Volumes/Mastermind/worktrees/options-coverage-expansion-20260929-sol`.
-Operation `options-coverage-expansion-20260929-sol-001` retains source custody.
+Current protected procedure is Mastermind `0b3bdf78be9b86bc3672f224ddacf80854a4c3fb`
+(skillpack 1.0.1/bootstrap 1). Required companions were re-read and matched the
+previous loaded revision byte-for-byte. Macro implementation base remains
+`d5e20a62b5da656f62b3cc06a7c7675c43f0de1a`; current-main relevant source comparison
+at `1df73c1ac9289a21e192aeb50088a4f9119aee82` found no changes in the touched owners.
 
-Protected procedure is Mastermind
-`c7407c6c77ef82cc6590401e80cc8f1868dc9085` (skillpack 1.0.1/bootstrap 1).
-Macro source base is `d5e20a62b5da656f62b3cc06a7c7675c43f0de1a`.
-Research and code/input evidence live in
-`research/options_estate/COVERAGE_EXPANSION_R1_2026-09-29.md` and
-`research/options_estate/COVERAGE_EXPANSION_R1_SELECTION_2026-09-29.json`.
-The cumulative implementation plan is
+Research, the original selection receipt, and the new synthetic writer receipt
+live in `research/options_estate/COVERAGE_EXPANSION_R1*`. The plan is
 `docs/superpowers/plans/2026-09-29-options-coverage-expansion-r1.md`.
+The exact pushed head and post-publication CI facts belong to this same PR's
+read-back checkpoint; this committed record cannot contain its own commit SHA.
 
-No Executive Job, worker, watcher or autonomous return path was created.
-The active session continues bounded source delivery; a record is not a daemon.
+**EFFECT_UNKNOWN: none** at authoring. All source writes were acknowledged.
+An evidence-extraction guard found two pytest paths before any write; the bounded
+same-carrier diagnostic proved both resolved to one fixture via pytest's `current`
+symlink, then wrote the receipt once. No production data was inspected by that proof.
