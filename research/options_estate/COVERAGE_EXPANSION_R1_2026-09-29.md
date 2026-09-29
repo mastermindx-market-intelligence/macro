@@ -30,7 +30,7 @@ The stock target and total-root budget are separate. A name outside the existing
 
 `python -B -m scripts.plan_options_coverage` is the executable preflight. It reads existing configuration and membership, emits JSON to stdout, and does not write product data/configuration or invoke a collector. A named selection refusal returns exit 2. Required CLI arguments are `--as-of`, `--target-stocks`, and `--max-total-roots`; `--priority` is repeatable. No historical date from this evidence is installed in production configuration.
 
-The new hermetic suite is enrolled in the existing `ric-w2-surface` code-gate job, alongside `tests/test_options_surface.py`. No new CI job, runner, workflow trigger or waiver was created.
+The expansion suite is enrolled alongside the existing coverage-object suite in the `workflow-yaml` code gate. It originally ran in `ric-w2-surface`; the continuation moves it to the broader family-coverage step to close the measured packing regression described below. No new CI job, runner, workflow trigger or waiver was created.
 
 ## Real-input selection proof
 
@@ -51,13 +51,13 @@ Membership input: 78,300 bytes, SHA-256 `602f0cf393331653175e199a3249785ee40040c
 
 Red-first: 38 missing-selector/integration failures and one legacy-pass control; then 39 passes. The missing CLI produced three expected failures before implementation; then the expanded suite passed. Adversarial null/reversed membership intervals produced three failures before strict input validation; all passed afterward.
 
-Current focused regression command:
+Initial R1 focused regression command:
 
 ```sh
 python -m pytest tests/test_options_surface.py tests/test_options_universe_expansion.py tests/test_universe_history.py -q --tb=short --basetemp <operation-owned-temporary-directory>
 ```
 
-Result: **85 passed** (49 expansion cases and 36 existing surface/membership cases). `git diff --cached --check` passed. These are local focused results, not a full repository or hosted CI pass. The full sparse-tree test suite is deliberately not run under the existing repository rule.
+Initial R1 result: **85 passed** (49 expansion cases and 36 existing surface/membership cases). `git diff --cached --check` passed. These are local focused results, not a full repository or hosted CI pass. The full sparse-tree test suite is deliberately not run under the existing repository rule.
 
 The first test run used the host's shared pytest temporary directory and produced unrelated cleanup warnings. Subsequent runs use an operation-owned unique temporary directory and finish without those warnings. No other session's files were removed or repaired.
 
@@ -105,3 +105,10 @@ The real audit writer was exercised using operation-owned synthetic files only. 
 Red-first proof: 19 missing-function/missing-writer-section cases failed, then passed. An additional adversarial pass reproduced two defects (non-scalar date cells and naive midnight storage), both repaired. The latest combined regression ran **189 tests, all passed**: expansion, options-surface, membership, import pinning, coverage-object and the full existing entry-audit suite. The 25 new source-session cases are in the already-wired coverage-object suite; there is no new CI job, runner, workflow or waiver.
 
 No production options source, collector, store, process, subscription, publication job or gate was changed. The approved 1,000/1,500 stock acquisition and Terminal intraday goals remain unproven and incomplete. This continuation fixes the real R1 CI defect and adds the source-clock accounting needed to measure that future expansion honestly.
+
+
+## Continuation: keep the shared-universe tests in their proper CI job
+
+The full continuation contract-delta run completed with **two introduced findings**, both the same test-enrollment issue: the expanded CLI suite pulled the narrow `ric-w2-surface` job into the ordinary `build_free_content.py` and `engine/prophet/plan_book.py` packing probes, making 133 jobs exceed 132 and 128 exceed 127. The underlying guards were correct. The correction moves the entire expansion suite into the already-selected `workflow-yaml` options-coverage step and restores the ETF-surface step to its own original suite. No test, ceiling, failure, code gate, or review requirement is removed. Product implementation hashes in the synthetic writer receipt are unchanged by this CI-only repair. The exact packing-guard and refreshed contract results are recorded on the same PR after completion.
+
+The corrected enrollment passed the actual existing packing assertion together with both affected suites: `python -B -m pytest tests/test_ci_pack.py::test_exclusive_curation_narrows_ordinary_code_prs tests/test_options_coverage_object.py tests/test_options_universe_expansion.py -q` returned **111 passed**, exit 0. This preserves all 51 expansion and 59 coverage-object cases and the packing ceilings. The earlier 189-test combined code regression remains valid for unchanged product code; the counts overlap and are not added together. A fresh full contract-delta run is separately owned and pending at this source checkpoint; the exact result belongs in the current PR receipt, not an invented pass.

@@ -40,7 +40,10 @@ changed:
       input preservation, duplicate/conflict cases, malformed cells and date types.
       The suite is already enrolled in the existing CI coverage-object step.
   - path: .github/ci/legacy-jobs.yml
-    what: Original R1 test enrollment only; no new CI job, runner, workflow or waiver.
+    what: >-
+      Moved the expansion suite from the narrow ric-w2-surface job into the existing
+      workflow-yaml coverage step to repair measured packing fanout. No test or
+      ceiling was removed; no new CI job, runner, workflow or waiver.
   - path: research/options_estate/COVERAGE_EXPANSION_R1_SOURCE_SESSIONS_2026-09-29.json
     what: >-
       Integrated synthetic writer evidence, exact input/output and code hashes,
