@@ -717,9 +717,17 @@ reading the merged head, which is also the correct value on a healthy merge. `--
 a second false friend: it reports the MERGED paths, so the obvious check "do the PR's files
 appear in the squash?" compares the merged head with itself and passes on a PR that provably
 lost two files. No read of a pull request can see a commit that arrived after its merge; only
-the branch ref can — `git log origin/main..origin/<branch> --name-only`, then a per-path blob
-comparison against `origin/main`, which is squash-tolerant because a squash preserves the tree
-even though it rewrites the commit. Push every commit the PR needs, THEN add the label; if a
+the branch ref can — **`git fetch origin` FIRST**, then
+`git log origin/main..origin/<branch> --name-only`, then a per-path blob comparison against
+`origin/main`, which is squash-tolerant because a squash preserves the tree even though it
+rewrites the commit. **The fetch is not hygiene, it is the whole test: `origin/main` is a LOCAL
+ref**, so a stale one makes every path report missing and this check then tells you to replay
+work that already landed — duplicating it. Measured 2026-09-29: the #8169 watcher compared
+without fetching, exited `MERGED BUT NOT LANDED`, and both files were byte-identical in main the
+entire time. A verifier that cries wolf on every merge is as useless as one that never fires,
+and this one fails toward a destructive remedy — so on a MISSING verdict, re-fetch and re-run
+before believing it, and cross-check by grepping main's own bytes for a string only your commit
+introduced (`git grep <needle> origin/main -- <path>`). Push every commit the PR needs, THEN add the label; if a
 late push is genuinely required, disarm, push, re-arm under the disarming rule below; and treat
 `MERGED` as a fact about a pull request, never about your bytes.
 `DSC:A-PUSH-TO-AN-ARMED-PR-CAN-LAND-AFTER-ITS-MERGE-AND-NOTHING-ERRORS`.
