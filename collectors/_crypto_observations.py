@@ -63,16 +63,26 @@ def _safe_payload(source: str, payload: Any) -> tuple[Any, int]:
         if not isinstance(payload,list): raise ValueError('Expected public list payload')
         rows = payload
         if any(not isinstance(x,dict) for x in rows): raise ValueError('Expected metric records')
+        if len(rows)>MAX_ROWS: raise ValueError('Public response row bound exceeded')
         safe = [{k:v for k,v in x.items() if k in BGEO_FIELDS} for x in rows]
+        if any(not isinstance(v,(str,int,float,bool,type(None))) for x in safe for v in x.values()):
+            raise ValueError('Expected scalar public metric fields')
     else:
         if not isinstance(payload,dict) or not isinstance(payload.get('data'),list): raise ValueError('Expected public data envelope')
         rows = payload['data']
+        if len(rows)>MAX_ROWS: raise ValueError('Public response row bound exceeded')
+        if not isinstance(payload.get('code'),(str,int,float,bool,type(None))):
+            raise ValueError('Expected scalar provider status')
         if source == 'okx_funding':
             if any(not isinstance(x,dict) for x in rows): raise ValueError('Expected funding records')
             values = [{k:v for k,v in x.items() if k in FUNDING_FIELDS} for x in rows]
+            if any(not isinstance(v,(str,int,float,bool,type(None))) for x in values for v in x.values()):
+                raise ValueError('Expected scalar public funding fields')
         else:
             if any(not isinstance(x,(list,tuple)) or len(x)!=3 for x in rows): raise ValueError('Expected ts,sell,buy triplets')
             values = [list(x) for x in rows]
+            if any(not isinstance(v,(str,int,float,bool,type(None))) for x in values for v in x):
+                raise ValueError('Expected scalar public flow fields')
         safe = {'code':payload.get('code'), 'data':values}
     if len(rows)>MAX_ROWS: raise ValueError('Public response row bound exceeded')
     if len(canonical(safe).encode())>MAX_JSON_BYTES: raise ValueError('Public response byte bound exceeded')
@@ -154,6 +164,8 @@ def load_asof(source_id: str, as_of: Any, *, root: Path | None = None) -> pd.Dat
     if f is None: raise ValueError('Evidence store unreadable; not an empty history')
     if f.empty:return f
     rows=[checked(x) for x in f.to_dict('records')]
+    if any(SOURCES[x['source_id']][0] != SOURCES[source_id][0] for x in rows):
+        raise ValueError('Evidence store provider scope mismatch')
     f=pd.DataFrame(rows)
     if f.capture_id.duplicated().any(): raise ValueError('Duplicate capture identity')
     return f.loc[(f.source_id==source_id)&(pd.to_datetime(f.received_at,utc=True)<=stamp)].copy()

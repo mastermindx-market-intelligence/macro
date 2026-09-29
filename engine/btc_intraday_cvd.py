@@ -57,12 +57,16 @@ def compute(sig_df: pd.DataFrame | None = None, *, as_of=None) -> dict:
             return {'ok': False, 'reason': 'okx/taker_volume_hourly unavailable',
                     'display_only': True, 'accruing': True, 'causally_qualified': False}
         h = h.copy(); h.index = _index(h.index)
+        if h.index.hasnans:
+            raise ValueError('Undated observation cannot be assigned to an as-of window')
         h = h.loc[h.index <= clock].sort_index()
         if h.empty or h.index.hasnans or h.index.has_duplicates or (h.index != h.index.floor('h')).any():
             raise ValueError('Missing, duplicate or off-hour observation labels')
         okx_last = h.index[-1]
-        numeric = h[['taker_buy_vol', 'taker_sell_vol']].apply(pd.to_numeric, errors='coerce')
-        valid = np.isfinite(numeric).all(axis=1) & (numeric >= 0).all(axis=1)
+        raw = h[['taker_buy_vol', 'taker_sell_vol']]
+        boolean = raw.apply(lambda col: col.map(lambda v: isinstance(v, (bool, np.bool_)))).any(axis=1)
+        numeric = raw.apply(pd.to_numeric, errors='coerce')
+        valid = np.isfinite(numeric).all(axis=1) & (numeric >= 0).all(axis=1) & ~boolean
         gap_detected = bool((h.index.to_series().diff().dropna() != pd.Timedelta(hours=1)).any() or (~valid).any())
         # Walk backward to the latest contiguous valid segment, without allocating
         # a huge resampled index across a provider outage. No fallback past a bad tail.

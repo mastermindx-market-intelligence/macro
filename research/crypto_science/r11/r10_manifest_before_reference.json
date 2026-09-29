@@ -103,8 +103,8 @@
       "sha256": "5037ebb5664c6d7c47e136061491d724a6aa73d6239989170ae29e2782013897"
     },
     "research/crypto_science/r10_source_qualification.py": {
-      "bytes": 17569,
-      "sha256": "e195a784e5847f29c338bca79c9b37ae725a51d1e13410259dc82087da325990"
+      "bytes": 16859,
+      "sha256": "f538a54a2b87b59b9b5cde6705bbbba2925c31849548249b2686660cd331f7b3"
     },
     "tests/test_btc_impulse_falsifier.py": {
       "bytes": 52254,
@@ -113,10 +113,6 @@
     "research/crypto_science/r10/initial/test_btc_impulse_falsifier.py.txt": {
       "bytes": 51735,
       "sha256": "c65254c4903b7e343ab370c3d1d9c7b6bc6f55aed01ee90e17c4974a7bd5cd37"
-    },
-    "research/crypto_science/r10/reference_btc_intraday_cvd.py.txt": {
-      "bytes": 7798,
-      "sha256": "36921a561b7750b37b7aabe8b8901d5f101d09a0c705248270a9d44b673130b4"
     }
   },
   "packaging_amendment": {
@@ -125,12 +121,5 @@
     "snapshot_bytes_sha256": "c65254c4903b7e343ab370c3d1d9c7b6bc6f55aed01ee90e17c4974a7bd5cd37",
     "renamed_from": "research/crypto_science/r10/initial/test_btc_impulse_falsifier.py",
     "renamed_to": "research/crypto_science/r10/initial/test_btc_impulse_falsifier.py.txt"
-  },
-  "reference_binding_amendment": {
-    "reason": "Historical synthetic reproducer now loads hash-pinned original CVD, not repaired production module. No empirical study rerun or output edit.",
-    "reference_commit": "d636e9c405c0283209eb75b09d477d32003ff827",
-    "original_helper_sha256": "f538a54a2b87b59b9b5cde6705bbbba2925c31849548249b2686660cd331f7b3",
-    "prior_manifest_sha256": "3b45787dd36d1b9a52ec2e78493bca8e8ffa31a3883c3cda50471ba04a6626e9",
-    "original_helper_archive": "research/crypto_science/r11/r10_source_before_reference_fix.py.txt"
   }
 }

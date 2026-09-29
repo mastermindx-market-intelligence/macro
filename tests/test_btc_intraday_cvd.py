@@ -221,3 +221,50 @@ def test_r11_missing_price_hour_blocks_divergence_instead_of_forward_fill(monkey
     monkeypatch.setattr(CVD.store,'read',lambda ns,nm:h if ns=='okx' else px)
     out=CVD.compute(as_of=h.index[-1].tz_localize('UTC'))
     assert out['ok'] and out['divergence'] is None and out['price_alignment_complete'] is False
+
+
+def test_r11_legacy_diagnostic_is_pinned_while_current_gap_guard_is_fixed(monkeypatch):
+    from research.crypto_science.r10_source_qualification import legacy_gap_example
+    legacy=legacy_gap_example()
+    assert legacy['reference_commit']=='d636e9c405c0283209eb75b09d477d32003ff827'
+    assert legacy['incumbent_gap_detected'] is False
+    h=_hourly(25,np.full(25,2.),np.ones(25)).drop(pd.Timestamp('2026-01-01 12:00'))
+    monkeypatch.setattr(CVD.store,'read',lambda ns,nm:h if ns=='okx' else None)
+    current=CVD.compute(as_of=h.index[-1].tz_localize('UTC'))
+    assert current['gap_detected'] is True and current['window_24h_complete'] is False
+
+
+def test_r11_undated_flow_cannot_be_dropped_as_though_outside_the_cutoff(monkeypatch):
+    h=_hourly(200,np.full(200,2.),np.ones(200))
+    h=pd.concat([h,pd.DataFrame({'taker_buy_vol':[2.],'taker_sell_vol':[1.]},index=[pd.NaT])])
+    monkeypatch.setattr(CVD.store,'read',lambda ns,nm:h if ns=='okx' else None)
+    out=CVD.compute(as_of='2026-02-01T00:00:00Z')
+    assert not out['ok'] and out['causally_qualified'] is False
+
+
+def test_r11_boolean_flow_is_not_a_measured_unit(monkeypatch):
+    h=_hourly(200,np.full(200,2.),np.ones(200)).astype(object)
+    h.iloc[-1,0]=True
+    monkeypatch.setattr(CVD.store,'read',lambda ns,nm:h if ns=='okx' else None)
+    out=CVD.compute(as_of=h.index[-1].tz_localize('UTC'))
+    assert not out['ok'] and out['window_24h_complete'] is False
+
+
+def test_r11_asof_is_timezone_normalized_without_using_future_rows(monkeypatch):
+    h=_hourly(200,np.full(200,2.),np.ones(200))
+    monkeypatch.setattr(CVD.store,'read',lambda ns,nm:h if ns=='okx' else None)
+    t=h.index[-3].tz_localize('UTC')
+    a=CVD.compute(as_of=t);b=CVD.compute(as_of=t.tz_convert('America/New_York'))
+    assert a==b and a['stored_rows']==198
+    assert a['causally_qualified'] is False and a['net_flow_24h_mn'] is None
+
+
+def test_r11_builder_warnings_do_not_mislabel_short_gaps_or_stale_snapshots():
+    from pathlib import Path
+    source=(Path(__file__).resolve().parents[1]/'scripts/build_vector.py').read_text()
+    section=source.split('_cvd = legs.get("intraday_cvd")',1)[1].split('try:',1)[0]
+    assert 'hours_behind_clock' in section
+    assert 'unbackfillable >30d' not in section
+    assert 'STOPPED accruing' not in section
+    assert 'if _cvd.get("gap_detected"):' in section
+    assert 'missing or invalid hourly observations' in section

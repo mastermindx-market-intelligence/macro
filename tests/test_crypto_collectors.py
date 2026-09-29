@@ -338,3 +338,59 @@ def test_r11_run_adapter_proves_legacy_storage_and_evidence_together(tmp_path,mo
     monkeypatch.setattr(o,'persist_capture',lambda *a,**k:{'status':'unavailable','error_type':'OSError'})
     result=base.run_adapter(a,stale_after_days=10000)
     assert result.status=='stale' and store.read('okx','funding_rate') is not None
+
+
+# Continuation hardening: preserve evidence even on partial failure and reject
+# malformed public shapes instead of carrying unexpected nested metadata.
+def test_r11_capture_rejects_nested_values_inside_known_public_fields():
+    import pytest
+    from collectors import _crypto_observations as o
+    p=_capture_payload();p['data'][0]['fundingRate']={'token':'not-a-rate'}
+    with pytest.raises(ValueError):
+        o.build_capture('okx_funding',{'instId':'BTC-USDT-SWAP'},p,'2026-01-01T01:00:00Z')
+    with pytest.raises(ValueError):
+        o.build_capture('okx_taker',{'ccy':'BTC','instType':'CONTRACTS','period':'1H'},
+            {'code':'0','data':[['1767225600000',{'token':'invalid'},'3']]},'2026-01-01T01:00:00Z')
+
+
+def test_r11_wrong_provider_rows_cannot_look_like_empty_asof_history(tmp_path):
+    import pytest
+    from collectors import _crypto_observations as o
+    p=o.capture_path('okx_funding',root=tmp_path);p.parent.mkdir(parents=True)
+    b=o.build_capture('bgeo_funding',{'day':'2026-01-01'},[{'d':'2026-01-01','fundingRate':'.001'}],'2026-01-02T00:00:00Z')
+    pd.DataFrame([b]).to_parquet(p,index=False)
+    with pytest.raises(ValueError):o.load_asof('okx_funding','2026-01-03T00:00:00Z',root=tmp_path)
+
+
+def test_r11_atomic_store_failure_keeps_earlier_receipt_unchanged(tmp_path,monkeypatch):
+    from collectors import _crypto_observations as o
+    a=_capture();assert o.persist_capture(a,root=tmp_path)['status']=='stored'
+    path=o.capture_path('okx_funding',root=tmp_path);original=path.read_bytes()
+    def fail(*args,**kwargs):raise OSError('synthetic atomic failure')
+    monkeypatch.setattr(o.fss,'atomic_write',fail)
+    b=_capture('2026-01-01T02:00:00Z',realized='.0004')
+    assert o.persist_capture(b,root=tmp_path)['status']=='unavailable'
+    assert path.read_bytes()==original
+    assert o.funding_asof(o.load_asof('okx_funding','2026-01-02T00:00:00Z',root=tmp_path),
+                          '2026-01-02T00:00:00Z')[0]['settled_rate']==.00021
+
+
+def test_r11_simultaneous_conflict_and_later_revision_are_order_independent():
+    import itertools
+    from collectors import _crypto_observations as o
+    a=_capture();b=_capture(realized='.0004');c=_capture('2026-01-01T02:00:00Z',realized='0')
+    for rows in itertools.permutations([a,b,c]):
+        early=o.funding_asof(pd.DataFrame(rows),'2026-01-01T01:00:00Z')[0]
+        late=o.funding_asof(pd.DataFrame(rows),'2026-01-01T02:00:00Z')[0]
+        assert early['status']=='conflicting_capture' and early['settled_rate'] is None
+        assert late['status']=='observed' and late['settled_rate']==0
+
+
+def test_r11_later_missing_actual_is_not_repaired_with_an_old_value(tmp_path):
+    from collectors import _crypto_observations as o
+    a=_capture();b=_capture('2026-01-01T02:00:00Z',realized=None)
+    for c in [a,b]:assert o.persist_capture(c,root=tmp_path)['status']=='stored'
+    rows=o.load_asof('okx_funding','2026-01-03T00:00:00Z',root=tmp_path)
+    assert o.funding_asof(rows,'2026-01-01T01:30:00Z')[0]['settled_rate']==.00021
+    assert o.funding_asof(rows,'2026-01-01T02:30:00Z')[0]['settled_rate'] is None
+    assert len(rows)==2

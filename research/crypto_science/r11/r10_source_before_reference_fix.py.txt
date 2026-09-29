@@ -84,27 +84,16 @@ def funding_event(raw,received_at,interval_hours=None):
 
 
 def legacy_gap_example():
-    # The R10 diagnostic concerns the ORIGINAL implementation, not whichever
-    # production engine happens to be installed after the repair. Keep exact
-    # reference bytes and fail if they drift; do not rerun a market study here.
-    from types import ModuleType, SimpleNamespace
-    reference = Path(__file__).with_name('r10') / 'reference_btc_intraday_cvd.py.txt'
-    raw = reference.read_bytes()
-    if __import__('hashlib').sha256(raw).hexdigest() != '36921a561b7750b37b7aabe8b8901d5f101d09a0c705248270a9d44b673130b4':
-        raise ValueError('R10 CVD reference identity changed')
-    cvd = ModuleType('r10_original_cvd')
-    exec(compile(raw, str(reference), 'exec'), cvd.__dict__)
+    from engine import btc_intraday_cvd as cvd
     ix=pd.date_range('2026-01-01',periods=25,freq='h').delete(12)
     f=pd.DataFrame({COLS[0]:2.,COLS[1]:1.},index=ix)
     def read(g,n):
         if (g,n)==('okx','taker_volume_hourly'):return f.copy()
         if (g,n)==('coinbase','btc_hourly'):return pd.DataFrame({'close':[100.]},index=ix[-1:])
         raise AssertionError('Unexpected source')
-    cvd.store = SimpleNamespace(read=read)
-    old=cvd.compute()
+    with patch.object(cvd.store,'read',side_effect=read):old=cvd.compute()
     strict=flow_window(f,ix[-1]+H,24,'start')
-    return {'classification':'OFFLINE_SYNTHETIC_REPRODUCTION_NOT_LIVE_MARKET',
-            'reference_commit':'d636e9c405c0283209eb75b09d477d32003ff827','stored_rows':len(f),
+    return {'classification':'OFFLINE_SYNTHETIC_REPRODUCTION_NOT_LIVE_MARKET','stored_rows':len(f),
             'covered_elapsed_hours':int((ix[-1]-ix[0])/H)+1,'incumbent_gap_detected':old['gap_detected'],
             'incumbent_ok':old['ok'],'incumbent_net_units':24.,'strict_window_status':strict['status']}
 

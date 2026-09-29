@@ -4591,18 +4591,19 @@ def main() -> int:
             except Exception as _le:  # noqa: BLE001 — context legs are optional
                 legs[_key] = {"ok": False, "reason": f"{type(_le).__name__}"}
         regime["context_legs"] = legs
-        _cvd = legs.get("intraday_cvd") or {}      # LOUD alarm if the hourly aggressor-CVD
-        if _cvd.get("ok") and _cvd.get("stale"):   # feed silently freezes (audit HIGH) — shows
-            # in the daily run summary.  Bare print, NOT a logger call: GitHub only parses a
-            # workflow command when "::" STARTS the line, and this module's logging format
-            # prefixes every record ("WARNING ::warning ..."), silently dropping the alarm.
-            print(f"::warning:: intraday aggressor-CVD STALE — okx hourly lags "
-                  f"{_cvd.get('hours_behind_ref')} h behind the live reference; the feed has "
-                  f"STOPPED accruing — check OKX rubik 1H",
+        _cvd = legs.get("intraday_cvd") or {}
+        if _cvd.get("stale"):
+            # Distinguish old stored observations from a proven collector outage.
+            # Bare print preserves the existing GitHub workflow warning owner.
+            print(f"::warning:: intraday aggressor-flow observations STALE — "
+                  f"{_cvd.get('hours_behind_clock')} h behind the evaluation clock; "
+                  f"{_cvd.get('hours_behind_ref')} h behind the stored price reference. "
+                  "Inspect existing collector status; this alone does not prove an outage.",
                   flush=True)
-        if _cvd.get("ok") and _cvd.get("gap_detected"):
-            print("::warning:: intraday aggressor-CVD: unbackfillable >30d gap in the hourly "
-                  "history — cumsum restarted after the gap",
+        if _cvd.get("gap_detected"):
+            print("::warning:: intraday aggressor-flow: missing or invalid hourly observations; "
+                  "cumulative context uses only the latest contiguous valid segment. "
+                  "Incomplete elapsed windows remain unavailable.",
                   flush=True)
         try:                       # P3 forward-outcome ledger: stamp today + grade matured rows
             from engine import btc_impulse_ledger
