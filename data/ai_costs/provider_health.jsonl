@@ -28571,3 +28571,11 @@
 {"ts":"2026-09-29T06:59:38Z","event":"attempt","lane":"marketing-auditor","context":"marketing_auditor","rung":"codex","cap_id":"codex_account","model":"gpt-5.6-terra","ok":true,"error_class":"","latency_ms":19781}
 {"ts":"2026-09-29T06:59:47Z","event":"attempt","lane":"marketing-auditor","context":"marketing_auditor","rung":"codex","cap_id":"codex_account","model":"gpt-5.6-terra","ok":true,"error_class":"","latency_ms":9493}
 {"ts":"2026-09-29T07:00:02Z","event":"attempt","lane":"marketing-auditor","context":"marketing_auditor","rung":"codex","cap_id":"codex_account","model":"gpt-5.6-terra","ok":true,"error_class":"","latency_ms":14198}
+{"ts":"2026-09-29T09:07:06Z","event":"waterfall","lane":"master-brain","context":"macro","n_rungs":1,"rungs":[{"rung":"codex","cap_id":"codex_account","model":"gpt-5.6-sol"}]}
+{"ts":"2026-09-29T09:07:32Z","event":"attempt","lane":"master-brain","context":"master_brain","rung":"codex","cap_id":"codex_account","model":"gpt-5.6-sol","ok":true,"error_class":"","latency_ms":25685}
+{"ts":"2026-09-29T09:07:32Z","event":"waterfall","lane":"master-brain","context":"macro-zh","n_rungs":1,"rungs":[{"rung":"codex","cap_id":"codex_account","model":"gpt-5.6-sol"}]}
+{"ts":"2026-09-29T09:07:45Z","event":"attempt","lane":"master-brain","context":"master_brain","rung":"codex","cap_id":"codex_account","model":"gpt-5.6-sol","ok":true,"error_class":"","latency_ms":12583}
+{"ts":"2026-09-29T09:07:45Z","event":"waterfall","lane":"master-brain","context":"macro-zh","n_rungs":1,"rungs":[{"rung":"codex","cap_id":"codex_account","model":"gpt-5.6-sol"}]}
+{"ts":"2026-09-29T09:07:51Z","event":"attempt","lane":"master-brain","context":"master_brain","rung":"codex","cap_id":"codex_account","model":"gpt-5.6-sol","ok":true,"error_class":"","latency_ms":6196}
+{"ts":"2026-09-29T09:07:51Z","event":"waterfall","lane":"master-brain","context":"macro-zh","n_rungs":1,"rungs":[{"rung":"codex","cap_id":"codex_account","model":"gpt-5.6-sol"}]}
+{"ts":"2026-09-29T09:07:57Z","event":"attempt","lane":"master-brain","context":"master_brain","rung":"codex","cap_id":"codex_account","model":"gpt-5.6-sol","ok":true,"error_class":"","latency_ms":5673}
