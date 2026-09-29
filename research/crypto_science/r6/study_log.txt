@@ -1,0 +1,5 @@
+Finished downside lag=1; fixed quarters, no tuning
+Finished downside lag=6; fixed quarters, no tuning
+Finished recovery lag=1; fixed quarters, no tuning
+Finished recovery lag=6; fixed quarters, no tuning
+R6_COMPLETED {"parent_features": 647, "event_records": 1294, "quarter_fits": 122, "prediction_rows": 1100, "policy_rows": 7425}
