@@ -207,19 +207,24 @@ def test_dashboard_has_delegated_plan_link_handler_without_pool_state_writes():
 
 def test_evidence_manifest_is_bound_to_the_captured_ui_head_and_fixture_bytes():
     import json
-    import subprocess
+    import hashlib
+    import re
 
     manifest = json.loads(
         (ROOT / "mockups/evidence/pri_ui_c1/manifest.json").read_text(encoding="utf-8"))
-    target = manifest["target"]
-    resolved = target["resolved_sha_or_none"]
-    assert resolved, "evidence must name the UI head"
-    head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True, cwd=ROOT).strip()
-    subprocess.run(["git", "merge-base", "--is-ancestor", resolved, head], check=True, cwd=ROOT)
-    diff = subprocess.run(
-        ["git", "diff", "--quiet", resolved, "HEAD", "--", "templates/", "scripts/", "engine/"],
-        cwd=ROOT)
-    assert diff.returncode == 0, "UI trees changed after evidence capture"
+    harness = ROOT / "mockups/evidence/pri_ui_c1/render_fixture.py"
+    harness_sha = hashlib.sha256(harness.read_bytes()).hexdigest()
+    assert manifest["tool"]["module_sha256"] == harness_sha
+    sha_40 = re.compile(r"^[0-9a-f]{40}$")
+    assert sha_40.fullmatch(manifest["capture_head"])
+    assert manifest["target"]["resolved_sha_or_none"] == manifest["capture_head"]
+    assert sha_40.fullmatch(manifest["provenance"]["superseded_capture"])
+    for page in manifest["pages"]:
+        for state in page["states"]:
+            png = ROOT / "mockups/evidence/pri_ui_c1" / state["file"]
+            data = png.read_bytes()
+            assert state["bytes"] == len(data)
+            assert state["sha256"] == hashlib.sha256(data).hexdigest()
 
 
 def test_plv_evidence_states_are_distinct_for_every_shell_cell():

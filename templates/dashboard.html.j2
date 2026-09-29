@@ -19457,11 +19457,21 @@ function _plvRender(){
   }else if(!visRows.length){
     var lastMin=(stampMin===null)?null:stampMin;
     if(mode==='closed'){
-      _plvPaintNone(body, 'Nothing crossed today — last checked '+(lastMin===null?'—':_plvHm12(lastMin))+' ET.',
-                          '今日没有出现上穿 — 最近一次检查 美东 '+(lastMin===null?'—':_plvHm24(lastMin))+'。', null, false);
+      if(lastMin===null){
+        _plvPaintNone(body, 'Nothing crossed today — last check time unavailable.',
+                            '今日没有出现上穿 — 最近一次检查时间不可用。', null, false);
+      }else{
+        _plvPaintNone(body, 'Nothing crossed today — last checked '+_plvHm12(lastMin)+' ET.',
+                            '今日没有出现上穿 — 最近一次检查 美东 '+_plvHm24(lastMin)+'。', null, false);
+      }
     }else{
-      _plvPaintNone(body, 'Nothing crossing yet — last checked '+(lastMin===null?'—':_plvHm12(lastMin))+' ET.',
-                          '尚无新的上穿 — 最近一次检查 美东 '+(lastMin===null?'—':_plvHm24(lastMin))+'。', null, false);
+      if(lastMin===null){
+        _plvPaintNone(body, 'Nothing crossing yet — last check time unavailable.',
+                            '尚无新的上穿 — 最近一次检查时间不可用。', null, false);
+      }else{
+        _plvPaintNone(body, 'Nothing crossing yet — last checked '+_plvHm12(lastMin)+' ET.',
+                              '尚无新的上穿 — 最近一次检查 美东 '+_plvHm24(lastMin)+'。', null, false);
+      }
     }
   }else{
     _plvPaintRows(body, visRows, delay, mode==='closed');

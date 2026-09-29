@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+import itertools
 import json
 import os
 import struct
@@ -23,6 +24,9 @@ from scripts.build_site import _plan_relations_for
 from tests.test_dashboard_template_render import _base_vm, _board_row, _env, _prophet_book
 
 VIEWPORTS = {"desktop": (1440, 900), "mobile": (390, 844)}
+# The expected strings mirror the _plvAsOfToday, _plvAsOfPrior, and
+# _plvAsOfUnavailable formatters in templates/dashboard.html.j2. Capture fails
+# closed if those source formatters or the fixture expectations diverge.
 PLV_EXPECTATIONS = {
     "fixture_plv_today.html": (
         "today", {"en": "quotes as of 10:12 am ET", "zh": "报价截至 美东 10:12"}),
@@ -63,16 +67,33 @@ PLV_ASSERT_JS = """([expectedState, expectedText]) => {
   if (asOf.dataset.plvAsofState !== expectedState) {
     throw new Error(`PLV state is ${asOf.dataset.plvAsofState}, expected ${expectedState}`);
   }
-  const text = asOf.textContent || '';
+  const localeNode = asOf.querySelector('.plv-v.is-on .' + (expectedText.includes('报价') || expectedText.includes('判读') ? 'l-zh' : 'l-en'));
+  const text = localeNode ? (localeNode.textContent || '') : '';
   if (!text.trim()) throw new Error('PLV as-of text is empty');
-  if (!text.includes(expectedText)) {
-    throw new Error(`PLV as-of text ${JSON.stringify(text)} lacks ${JSON.stringify(expectedText)}`);
+  if (text.trim() !== expectedText) {
+    throw new Error(`PLV as-of text ${JSON.stringify(text)} is not ${JSON.stringify(expectedText)}`);
   }
   const asBox = asOf.getBoundingClientRect();
   const targetBox = target.getBoundingClientRect();
+  if (asBox.width <= 0 || asBox.height <= 0) {
+    throw new Error('PLV as-of bounding box has zero size');
+  }
+  if (targetBox.width <= 0 || targetBox.height <= 0) {
+    throw new Error('PLV target bounding box has zero size');
+  }
+  if (getComputedStyle(asOf).visibility !== 'visible' || Number(getComputedStyle(asOf).opacity) <= 0) {
+    throw new Error('PLV as-of is not visible');
+  }
   if (asBox.left < targetBox.left || asBox.right > targetBox.right ||
       asBox.top < targetBox.top || asBox.bottom > targetBox.bottom) {
-    throw new Error('PLV as-of bounding box is outside #plv-panel');
+    throw new Error('PLV as-of bounding box is outside #prophet-live');
+  }
+  if (expectedState === 'unavailable') {
+    const body = document.querySelector('#plv-body');
+    const expectedBody = expectedText.includes('报价') ? '检查时间不可用' : 'last check time unavailable';
+    if (!body || !body.textContent.includes(expectedBody)) {
+      throw new Error(`PLV body does not say that the last check time is unavailable: ${body ? body.textContent : 'missing'}`);
+    }
   }
   return true;
 }"""
@@ -153,7 +174,7 @@ def render_base() -> str:
         if href.startswith("/") and not href.startswith("//"):
             external["href" if external.name == "link" else "src"] = href[1:]
     style = soup.new_tag("style")
-    style.string = "body{margin:0;background:var(--bg);color:var(--text)} #content{display:block !important;margin:16px auto;max-width:1180px;padding:0 16px} #plv-panel{display:block !important;margin:12px 0} #us-today{display:block !important;visibility:visible !important;opacity:1 !important}"
+    style.string = "body{margin:0;background:var(--bg);color:var(--text)} #content{display:block !important;margin:16px auto;max-width:1180px;padding:0 16px} #us-today{display:block !important;visibility:visible !important;opacity:1 !important} #prophet-live[hidden]{display:none !important}"
     soup.head.append(style)
     theme = soup.new_tag("script", src="theme.js")
     soup.body.append(theme)
@@ -206,6 +227,12 @@ def prepare_site(site: Path) -> dict[str, str]:
 
 
 def capture() -> None:
+    dirty = subprocess.check_output(
+        ["git", "status", "--porcelain", "--", "templates", "scripts", "engine",
+         "mockups/evidence/pri_ui_c1/render_fixture.py"],
+        text=True, cwd=ROOT).strip()
+    if dirty:
+        raise RuntimeError(f"capture outputs manifest.json and PNGs may be dirty; commit the harness first: {dirty}")
     head = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True, cwd=ROOT).strip()
     with tempfile.TemporaryDirectory(dir=os.environ["TMPDIR"]) as temporary:
         site = Path(temporary) / "site"
@@ -269,6 +296,28 @@ def capture() -> None:
                     "gaps": [],
                 })
             browser.close()
+    plv_hashes = {}
+    for page in pages_out:
+        if not page["page_id"].startswith("fixture_plv_"):
+            continue
+        state_name = (page["page_id"][len("fixture_plv_"):-len(".html")]
+                      .replace("prior", "prior_day"))
+        for state in page["states"]:
+            cell = (state["theme"], state["locale"], state["viewport"])
+            plv_hashes.setdefault(cell, {})[state_name] = state["sha256"]
+    expected_cells = {
+        (theme, locale, viewport)
+        for theme in ("dark", "light")
+        for locale in ("en", "zh")
+        for viewport in ("desktop", "mobile")
+    }
+    if set(plv_hashes) != expected_cells:
+        raise RuntimeError(f"PLV evidence cells are incomplete: {sorted(set(plv_hashes) ^ expected_cells)}")
+    for cell, hashes in plv_hashes.items():
+        for left, right in itertools.combinations(sorted(hashes), 2):
+            if hashes[left] == hashes[right]:
+                raise RuntimeError(
+                    f"PLV evidence cell {cell} has identical {left} and {right} PNG sha256 values")
     manifest = {
         "schema": "mastermind.p0_evidence.v2",
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -276,6 +325,9 @@ def capture() -> None:
             "details.pvs-audit, the #us-candidate-pool details element, details.ucp-receipt, and details.pv-setup-inline are forced open by render_fixture.py::render_base only so folded content is visible in the crops.",
             "Those details elements are collapsed by default in production.",
             "The view model is synthetic fixture data from render_fixture.py::base_vm; it is not a production board.",
+            "The injected style block sets #content to display:block !important with 16-pixel auto margins and an 1180-pixel maximum width, and sets #us-today to display:block !important, visibility:visible !important, and opacity:1 !important; #us-today is the screenshot target for the 24 non-PLV crops.",
+            "Every script whose text does not contain one of USProphetSource, _plvRender, setLang, setTheme, or pv-setup-dialog is decomposed before capture.",
+            "window.fetch is monkey-patched for live/prophet_live.json so it returns the synthetic PLV payload for each state while other fetches use the native fetch function.",
         ],
         "provenance": {
             "superseded_capture": "4a1e829ef70879d58e317c65065596bee15fc3d0",
@@ -286,6 +338,11 @@ def capture() -> None:
             ],
         },
         "capture_head": head,
+        "tool": {
+            "module_ref": "mockups/evidence/pri_ui_c1/render_fixture.py",
+            "module_sha256": sha256(Path(__file__).read_bytes()),
+            "version": "1.0.0",
+        },
         "target": {"resolved_sha_or_none": head},
         "pages": pages_out,
     }
