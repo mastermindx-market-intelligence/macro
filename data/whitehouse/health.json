@@ -1,10 +1,23 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-25T07:47:38.651736+00:00",
+  "as_of": "2026-09-29T15:51:20.724776+00:00",
   "posts_seen": 14,
-  "seen_total": 227,
-  "evaluated": 0,
+  "seen_total": 240,
+  "evaluated": 2,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-09-29-streamlining-access-to-government-services-through-america-gov",
+      "importance": 15,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    },
+    {
+      "id": "wh-2026-09-29-fact-sheet-president-donald-j-trump-streamlines-access-to-government-services-th",
+      "importance": 15,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    }
+  ]
 }
