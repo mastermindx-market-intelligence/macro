@@ -134,6 +134,29 @@ verified:
       was preserved on #8164 rather than folded into this repair.
     command: "gh api repos/mastermindx-market-intelligence/macro/actions/runs/36566370352/jobs --jq '.jobs[]|\"\\(.name) \\(.conclusion) \\(.started_at) \\(.completed_at)\"'"
     result: "collect CANCELLED at 98.9m of a 240m cap, `run collectors` cancelled at 91.4m, `commit market data` SKIPPED, later steps scheduled and green. Every job >~90m cancelled, every job <=~23.5m green. Posted as issuecomment-5895187021."
+  - claim: >
+      The source-to-live chain is INTACT and the loss is entirely upstream of
+      publication: the served Canada page matches the protected remote exactly. Both
+      carry session 2026-09-25 while US carries 2026-09-28.
+    command: "curl -s https://www.mastermind-x.com/canada.html | grep -oE 'as of 2026-[0-9-]+' ; git show origin/main:data/canada_stocks/latest.json | python3 -c \"import json,sys;print(json.load(sys.stdin)['date'])\""
+    result: "served = 'as of 2026-09-25' (HTTP 200, 250,831 B); origin/main data = 2026-09-25; site/canada.html @origin/main = 14x '2026-09-25'; data/us_stocks/latest.json = 2026-09-28"
+  - claim: >
+      The CURRENT Canada staleness is NOT the cap exhaustion. The 09-26 nightly
+      re-collected and pushed session 09-25, so that loss self-healed. The missing
+      session is Monday 2026-09-28, lost to the 09-29 mass cancellation.
+    command: "git log -10 --format=%H origin/main -- data/canada_stocks/latest.json | while read s; do git show $s:data/canada_stocks/latest.json | python3 -c \"import json,sys;print(json.load(sys.stdin).get('date'))\"; done"
+    result: "last advance c7f88de510a5 on 2026-09-26 carrying session 2026-09-25; nothing since. Run 36566370352 on 09-29 cancelled collect at 98.9m of 240m with `commit market data` SKIPPED."
+  - claim: >
+      Canada session loss is CHRONIC, roughly one trading session in four, not a
+      one-off. Sessions 09-14, 09-22 and 09-24 never appear as a published value.
+    command: "for sha in $(git log -30 --format=%H origin/main -- data/canada_stocks/latest.json); do git show $sha:data/canada_stocks/latest.json | python3 -c \"import json,sys;print(json.load(sys.stdin).get('date'))\"; done | sort -u"
+    result: "09-04, 09-08, 09-09, 09-10, 09-11, 09-15, 09-16, 09-17, 09-18, 09-21, 09-23, 09-25 - 09-14/09-22/09-24 absent (09-07 correctly absent, Labour Day). Bound: samples the 30 most recent commits touching that one file; WHY each session is missing is NOT established."
+  - claim: >
+      None of this alerted because the production freshness sentinel has no Canada
+      surface at all - Canada is not stale, not blind, not indeterminate, it is
+      unwatched.
+    command: "grep -cin canada scripts/freshness_sentinel.py ; curl -s https://www.mastermind-x.com/live/staleness.json | python3 -c \"import json,sys;d=json.load(sys.stdin);print(d['ok'],d['stale_surfaces'],d['blind_surfaces'])\""
+    result: "grep = 0. Live at 2026-09-29T17:42:11Z: ok=False, stale=['prophet_live'], blind=['entry_radar_live','prophet_us','us_standouts']. SURFACES registry = us_stocks/china/hub/r2_massive_stock_day/prophet_us/prophet_live/prophet_live_armed/cn_board_live/entry_radar_live/us_board_provisional/us_standouts."
   - claim: "The change touches no published market data and is therefore rollback-safe."
     command: "git diff --stat 2868086f84a2..HEAD -- data/ site/"
     result: "empty - 6 files changed overall, all workflow/script/test/records"
@@ -164,9 +187,19 @@ unverified:
       transcripts.
 unresolved:
   - >
-      The 2026-09-29 mass cancellation (#8164) is currently a LARGER constraint on US
-      freshness than the cap exhaustion this PR repairs. A cap raise cannot help a job
-      that is cancelled at 98.9m of 240m. Both are real; this PR fixes one.
+      The 2026-09-29 mass cancellation (#8164) is currently a LARGER constraint on
+      freshness than the cap exhaustion this PR repairs, for Canada as well as US. A
+      cap raise cannot help a job cancelled at 98.9m of 240m. Both are real; this PR
+      fixes one. MERGING THIS PR CANNOT BY ITSELF MAKE CANADA CURRENT - do not report
+      it as though it does. Acceptance requires the next natural nightly to complete
+      publication inside the raised budget AND not be cancelled.
+  - >
+      Canada has no surface in `scripts/freshness_sentinel.py`, so a lost Canada
+      checkpoint is reported as nothing at all. That is the detection half of the
+      packet's Task 1 and it is NOT fixed here: adding a surface starts real paging,
+      needs a TSX-calendar-free way to tell a closed market from a lost session (the
+      repo has no TSX holiday table - sessions derive from yfinance price data), and
+      deserves its own owner. Spawned as its own lane.
   - >
       #8008 is OPEN and awaiting its CI conclusion on head 732d3e8b55a1. The independent
       opus reviewer APPROVED on d1e53a094592 (code identical to 732d3e8b55a1; the two
