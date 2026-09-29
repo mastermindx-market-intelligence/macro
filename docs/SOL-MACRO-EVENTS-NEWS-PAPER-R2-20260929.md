@@ -27,7 +27,19 @@ Additional native screenshot-reviewed boards (all 1440x900, editable):
 - 2IS-0: 42 Correction Impact Light EN; hypothetical before/after claim, consequences for brief/source/following; right-column spacing repaired.
 - 2LO-0: 43 Ownership Dark EN; +46% ABNB and -23% P examples use prior-position denominator and same 0-50 magnitude scale; missing absolute holdings/weights remain visible.
 
-Exact next action: Following choices/review/save outcomes, native mobile EN/ZH/dark/light counterparts and a native component-linked implementation/source map. Continue using Mastermind_Paper, same file/page, fresh target snapshot as necessary. Finish only the owned artboard working indicators at final boundary.
+Further native screenshot-reviewed boards:
+- 2NU-0: 50 Follow Subject Choices Light EN. Exact subject, material facts/corrections selected, every mention off, email off, no save yet.
+- 2Q2-0: 51 Follow Review Light EN. Review before save; saved preference is not monitoring.
+- 2RX-0: 52 Save Feedback. Pending, saved, failed/draft-kept variants; ambiguous effects reconcile before retry.
+- 2SY-0: 60 Briefing Mobile Dark EN, 390x844. Official mobile status bar; first-read/action/release cue; gap repaired for footer.
+- 2US-0: 61 Briefing Mobile Light EN, screenshot clean.
+- 2WC-0: 62 Briefing Mobile Dark ZH; translated native text, PingFang SC, screenshot clean.
+- 2XW-0: 63 Briefing Mobile Light ZH; translated native text, screenshot clean.
+- 2ZG-0: 64 Release Guide Mobile Light EN, fit-content study height. Inflation disclosure open, other investigation entries, follow/source/return paths specified; screenshot clean.
+
+18 owned artboards now saved. No unresolved Paper effects. Native actions remain design states, not wired navigation or real subscriptions.
+
+Exact next action: resilient source/loading/search/history states, native implementation and journey directory; organize owned artboards and verify native JSX/readback before design review boundary. Continue using Mastermind_Paper, same file/page, fresh target snapshot as necessary. Finish only the owned artboard working indicators at final boundary.
 
 Production dashboard.html.j2 integration remains separately held after the prior platform refusal. Do not retry or bypass it. Local prototype tests below remain local-only, not native/browser production proof. PR8186 stays DRAFT/HOLD.
 
