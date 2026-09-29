@@ -727,7 +727,16 @@ without fetching, exited `MERGED BUT NOT LANDED`, and both files were byte-ident
 entire time. A verifier that cries wolf on every merge is as useless as one that never fires,
 and this one fails toward a destructive remedy — so on a MISSING verdict, re-fetch and re-run
 before believing it, and cross-check by grepping main's own bytes for a string only your commit
-introduced (`git grep <needle> origin/main -- <path>`). Push every commit the PR needs, THEN add the label; if a
+introduced (`git grep <needle> origin/main -- <path>`). **And fetch `main` on its OWN — never
+bundled with the branch ref.** The measured mechanism is nastier than a forgotten fetch: GitHub
+**deletes the head branch on merge**, so the natural one-liner `git fetch origin main <branch>`
+fatals with `couldn't find remote ref <branch>` and, because it aborts, leaves `origin/main`
+un-updated — while the stale local `origin/<branch>` survives and keeps the comparison looking
+perfectly functional. **The merge's own success is what breaks the check that verifies the
+merge.** So: bare `git fetch origin` (or `git fetch origin main` alone), check its exit status
+rather than swallowing it, and treat the branch's absence from the remote as the EXPECTED
+post-merge state — you are comparing your local `origin/<branch>` against a freshly updated
+`origin/main`, and only the latter has to be current. Push every commit the PR needs, THEN add the label; if a
 late push is genuinely required, disarm, push, re-arm under the disarming rule below; and treat
 `MERGED` as a fact about a pull request, never about your bytes.
 `DSC:A-PUSH-TO-AN-ARMED-PR-CAN-LAND-AFTER-ITS-MERGE-AND-NOTHING-ERRORS`.

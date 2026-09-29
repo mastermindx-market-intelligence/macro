@@ -119,6 +119,21 @@ root: the comparison was right and the thing compared against was wrong (the fir
 head with itself via `--json files`; this one compared against a stale ref). **Pin what a verifier
 compares against, and make it prove that baseline is current before it reports.**
 
+**The mechanism is worse than a forgotten fetch, and the sufficient fix is narrower than "fetch
+first".** The watcher DID fetch — `git fetch origin main <branch>` — and that command **fatals**,
+because GitHub **deletes the head branch on merge**: `fatal: couldn't find remote ref
+claude/documents-pool-sweeper-blind-20260928`, confirmed by an empty `git ls-remote --heads origin
+<branch>`. A fetch that aborts updates nothing, so `origin/main` stayed pre-merge; meanwhile the
+stale local `origin/<branch>` still resolved, so every blob lookup succeeded and the comparison
+looked healthy while running entirely on pre-merge data. **The merge's own success — deleting the
+branch — is what broke the check that verifies the merge.** The helper swallowed the non-zero exit
+(it returns `""` on any failure), so nothing surfaced.
+
+Three requirements, not one: fetch `main` **alone** (bare `git fetch origin`, never bundled with the
+branch ref); **check the fetch's exit status** instead of swallowing it; and treat the branch's
+absence from the remote as the **expected** post-merge state — only `origin/main` has to be current,
+since the branch side is read from the local ref you already have.
+
 ## Why the replay was cheap
 
 The late commit existed to fix an earlier sequencing error: the workstream record's `DSC:` citations
