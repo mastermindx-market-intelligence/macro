@@ -18,7 +18,16 @@ All modifying effects returned APPLIED_RESPONSE_OBSERVED; no EFFECT_UNKNOWN. Onl
 
 Native group cloning works. Each text node needs an explicit color binding: inherited color produced black text on a dark surface; repaired and screenshot verified before reuse. Native schematic/action states are not proof of working click navigation. The observed catalog has no prototype-action setter. Do not claim native interaction wiring or working production features.
 
-Exact next action: native release guide, then reaction/impact, story/source/correction, Following and mobile EN/ZH counterparts; add source/interaction map beside designs. Continue using Mastermind_Paper, same file/page, fresh target snapshot as necessary. Finish only the owned artboard working indicators at final boundary.
+Additional native screenshot-reviewed boards (all 1440x900, editable):
+- 24X-0: 30 Release Guide Light EN; same-window GDP/PCE, source availability and exploration rows. Readiness padding/gap repaired after screenshot.
+- 29V-0: 31 Conditional Impact Map Dark EN; two labelled mechanism paths, selected connection inspector, no causal strength/probability. Final fit screenshot clean.
+- 2C0-0: 32 Release Reaction Dark EN; explicitly synthetic shared-baseline/time/scale two-series illustration; actual/consensus example separate from observations and qualified historical evidence.
+- 2ED-0: 40 NVDA Story Dark EN; authorization/purchases/net shares separated, missing execution data explicit.
+- 2GD-0: 41 Source Trail Light EN; original disclosure missing, reporting vs commentary vs repeated coverage, separate clocks.
+- 2IS-0: 42 Correction Impact Light EN; hypothetical before/after claim, consequences for brief/source/following; right-column spacing repaired.
+- 2LO-0: 43 Ownership Dark EN; +46% ABNB and -23% P examples use prior-position denominator and same 0-50 magnitude scale; missing absolute holdings/weights remain visible.
+
+Exact next action: Following choices/review/save outcomes, native mobile EN/ZH/dark/light counterparts and a native component-linked implementation/source map. Continue using Mastermind_Paper, same file/page, fresh target snapshot as necessary. Finish only the owned artboard working indicators at final boundary.
 
 Production dashboard.html.j2 integration remains separately held after the prior platform refusal. Do not retry or bypass it. Local prototype tests below remain local-only, not native/browser production proof. PR8186 stays DRAFT/HOLD.
 
