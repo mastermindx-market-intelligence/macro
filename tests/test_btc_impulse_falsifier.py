@@ -954,3 +954,118 @@ def test_r9_average_precision_handles_ties_without_optimistic_interpolation():
     assert np.isclose(average_precision([0,0,1,1],[.1,.4,.35,.8]),5/6)
     assert np.isclose(average_precision([0,1,1],[.5,.5,.5]),2/3)
     assert average_precision([0,0],[.1,.2]) is None
+
+
+# R10: qualification diagnostics only; incumbent production functions unchanged.
+def _r10_flow(n=30):
+    return pd.DataFrame({'taker_buy_vol':np.full(n,2.),'taker_sell_vol':np.ones(n)},index=pd.date_range('2026-01-01',periods=n,freq='h'))
+
+
+def test_r10_elapsed_windows_do_not_bridge_missing_hours():
+    from research.crypto_science.r10_source_qualification import flow_window
+    f=_r10_flow();t=f.index[24]
+    assert flow_window(f,t,24,'start')['net_units']==24
+    bad=f.drop(f.index[12]);a=flow_window(bad,t,24,'start')
+    assert a['status']=='incomplete' and a['net_units'] is None and a['missing_hours']==1
+
+
+def test_r10_end_labels_and_release_delay_have_distinct_boundaries():
+    from research.crypto_science.r10_source_qualification import flow_window
+    f=_r10_flow();f.loc[f.index[24],'taker_buy_vol']=100.
+    assert flow_window(f,f.index[24],24,'start')['net_units']==24
+    assert flow_window(f,f.index[24],24,'end')['net_units']==122
+    assert flow_window(f,f.index[25],24,'start',delay_hours=1)['net_units']==24
+
+
+def test_r10_future_changes_and_missing_metadata_cannot_create_eligibility():
+    from research.crypto_science.r10_source_qualification import flow_window, qualification
+    f=_r10_flow();t=f.index[24];w=flow_window(f,t,24,'start')
+    f.loc[t:,'taker_buy_vol']=999.
+    assert flow_window(f,t,24,'start')==w
+    q=qualification(w,{},None)
+    assert not q['causally_usable'] and q['mechanically_complete']
+    assert 'unit_unverified' in q['reasons'] and 'first_available_missing' in q['reasons']
+
+
+def test_r10_zero_flow_is_not_unknown_but_has_no_directional_ratio():
+    from research.crypto_science.r10_source_qualification import flow_window
+    f=_r10_flow();f[:]=0.;w=flow_window(f,f.index[24],24,'start')
+    assert w['status']=='ok' and w['net_units']==0 and w['imbalance'] is None
+    f[:]=1.;w=flow_window(f,f.index[24],24,'start')
+    assert w['imbalance']==0 and w['buy_share']==.5
+
+
+def test_r10_invalid_values_and_timestamps_are_not_sanitized_into_flow():
+    from research.crypto_science.r10_source_qualification import flow_window
+    for v in [-1.,np.nan,np.inf]:
+        f=_r10_flow();f.iloc[2,0]=v
+        assert flow_window(f,f.index[24],24,'start')['status']=='incomplete'
+    for f in [_r10_flow().iloc[::-1],pd.concat([_r10_flow(),_r10_flow().iloc[-1:]])]:
+        try:flow_window(f,pd.Timestamp('2026-01-02'),24,'start')
+        except ValueError:pass
+        else:raise AssertionError('Nonunique/unordered input accepted')
+
+
+def test_r10_qualification_needs_received_history_not_just_end_time():
+    from research.crypto_science.r10_source_qualification import flow_window, qualification
+    f=_r10_flow();t=f.index[24];w=flow_window(f,t,24,'start')
+    spec={'scope':'OKX/BTC/CONTRACTS','unit':'USD','label':'start','contract_verified':True,'finality_verified':True,'vintage_verified':True}
+    assert qualification(w,spec,t)['causally_usable']
+    q=qualification(w,spec,t+pd.Timedelta(seconds=1))
+    assert not q['causally_usable'] and 'not_yet_available' in q['reasons']
+    spec['label']='end';assert not qualification(w,spec,t)['causally_usable']
+
+
+def test_r10_funding_predicted_and_settled_rates_remain_separate():
+    from research.crypto_science.r10_source_qualification import funding_event
+    t=pd.Timestamp('2026-01-01');raw={'instId':'BTC-USDT-SWAP','fundingTime':str(t.value//10**6),'fundingRate':'0.001','realizedRate':'-0.0002','method':'next_period','formulaType':'withRate'}
+    a=funding_event(raw,t,interval_hours=8)
+    assert a['expected_rate']==.001 and a['settled_rate']==-.0002
+    assert np.isclose(a['settled_simple_annualized'],-.0002*3*365)
+    raw.pop('realizedRate');assert funding_event(raw,t,interval_hours=8)['settled_rate'] is None
+    assert funding_event(raw,t,interval_hours=8)['settled_simple_annualized'] is None
+
+
+def test_r10_unknown_interval_cannot_be_inferred_as_eight_hours():
+    from research.crypto_science.r10_source_qualification import funding_event
+    t=pd.Timestamp('2026-01-01');r={'instId':'BTC-USDT-SWAP','fundingTime':str(t.value//10**6),'fundingRate':'0','realizedRate':'0'}
+    a=funding_event(r,t);assert a['settled_rate']==0 and a['settled_simple_annualized'] is None
+    assert a['interval_hours'] is None
+    r['instId']='ETH-USDT-SWAP'
+    try:funding_event(r,t)
+    except ValueError:pass
+    else:raise AssertionError('Wrong instrument accepted')
+
+
+def test_r10_funding_receipt_cannot_precede_settlement():
+    from research.crypto_science.r10_source_qualification import funding_event
+    t=pd.Timestamp('2026-01-01');r={'instId':'BTC-USDT-SWAP','fundingTime':str(t.value//10**6),'realizedRate':'.001'}
+    a=funding_event(r,t-pd.Timedelta(seconds=1),interval_hours=8)
+    assert not a['settled_observed'] and a['settled_simple_annualized'] is None
+    assert funding_event(r,None,interval_hours=8)['available_at'] is None
+
+
+def test_r10_legacy_row_count_diagnostic_does_not_label_gaps_complete(monkeypatch):
+    from research.crypto_science.r10_source_qualification import legacy_gap_example
+    r=legacy_gap_example()
+    assert r['stored_rows']==24 and r['covered_elapsed_hours']==25
+    assert r['incumbent_gap_detected'] is False and r['strict_window_status']=='incomplete'
+
+
+def test_r10_offline_collector_probe_preserves_predicted_actual_distinction():
+    from research.crypto_science.r10_source_qualification import collector_probe
+    d=collector_probe()
+    assert np.isclose(d['okx_daily_predicted_mean'],.0002)
+    assert np.isclose(d['actual_settlement_mean'],.00021)
+    assert d['okx_retained_columns']==['funding_rate_okx']
+    assert d['okx_date_label']=='2026-01-01 00:00:00'
+    assert d['last_settlement']=='2026-01-01 16:00:00'
+
+
+def test_r10_bgeo_release_flag_does_not_prove_observation_availability():
+    from research.crypto_science.r10_source_qualification import collector_probe
+    d=collector_probe()
+    assert 'funding_rate_delayed' in d['bgeo_retained_columns']
+    assert not d['bgeo_retained_unix_timestamp']
+    assert d['bgeo_date_label']=='2026-01-01 00:00:00'
+    assert d['bgeo_delay_value']==1
