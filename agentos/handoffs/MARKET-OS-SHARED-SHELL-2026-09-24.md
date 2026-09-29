@@ -43,7 +43,7 @@ verified:
     command: >
       Targeted pytest set across product chrome, navigation refresh, nav hover, account,
       controls and adjacent navigation packs, excluding six named known assertions.
-    result: "230 passed, 6 deselected, 4 deprecation warnings."
+    result: "231 passed, 6 deselected, 4 deprecation warnings."
   - claim: Actual builders consume the shared host.
     command: "python -m scripts.build_reports; python -m scripts.build_sector_central; full build_site attempt"
     result: >
@@ -103,6 +103,8 @@ ACTIVE_PHASE: Source adoption, exact release-contract repair and real-path proof
 Protected procedure: Mastermind@39d0bfd55bf19c2c27322ec691189e63df201c15,
 INDEX blob94d1af402598894372858793a5b1931019c5fa77, compatible1.0.1/bootstrap1.
 Macro PR7949, branch sol/market-os-shared-shell-design-20260924.
+Feature commit cf5d546a17a80832cf2b5edb77e67b36074e5ac0; current-base merge/checkpoint head
+111860be99c2e5a03fe9e61681833ebf28be2b70.
 Candidate worktree: /Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/shared-shell-r27.
 Current relevant-source compatibility checked against main@744a5b75e8d19db9ec6e0df0542c3123f67d6866;
 movement from the earlier observed main revision did not touch the joined navigation/pilot paths.
@@ -136,7 +138,7 @@ current-main bytes before inserting only the 45-line rendered dialog host, avoid
 ## Proof and explicit negative results
 
 Fresh production-byte Node result:97pass/0fail. Fresh integration test:8pass. Fresh broad unaffected
-suite:230pass/6deselected. All production template/site pairs and the theme emitter match. Reports and
+suite:231pass/6deselected. All production template/site pairs and the theme emitter match. Reports and
 Sector builders completed. The 23-minute full build is not green: after rendering macro, it hit a
 current-main stocks-helper mismatch in the sparse branch environment; the later fast renderer also lacks
 a stocks helper global. These failures do not prove the menu defective and are not hidden as success.
