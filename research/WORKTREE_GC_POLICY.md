@@ -683,8 +683,8 @@ class by any reading — was admitted as reclaimable until the marker was matche
 (58% unreachable), `/Volumes/Worktrees` 801 GiB (report-only forever), full clones 163.2 GiB,
 session scratchpads 216.6 GiB (0.00 GiB dead), `Offloaded` 190.7 GiB (verified backups), SSD
 `tmp` 214.8 GiB (0.55 GiB free-and-clear + 44.19 GiB proven-but-unauthorized), and
-`transfers` 233.2 GiB (**zero reclaimable**, and holding the single most dangerous object on
-the volume — see below). (This sentence read "Six independent pools … and five are null" with
+`transfers` 233.2 GiB (**zero reclaimable**, and holding 195.28 GiB of operator photo data
+that no automated path may touch — see below). (This sentence read "Six independent pools … and five are null" with
 no `transfers` row, and is **CORRECTED 2026-09-28, same day**: the seventh pool was measured
 hours later by a census that then had to be corrected itself.) What bounds
 reclaim on this host is not the byte count and not the instruments — it is the judgment gate,
@@ -758,18 +758,46 @@ fix. This is the fifth instance in this document of the same failure mode: an in
 a POSITIONAL question (*what sits at a directory position?*) in place of a semantic one (*what
 occupies this pool?*), and returning a clean, plausible, wrong number with no error.
 
-**What that file is makes this the most consequential line in the document.**
+**What that file is, and the sixth instance of this document's own failure mode.**
 `runner-fleet-resilience-worktrees-photoslib-20260924.tar` is 195.28 GiB and contains
 `Photos Library.photoslibrary/` with `originals/`, `database/`, `resources/` and `scopes/` — the
-operator's personal photo library. There is no `.photoslibrary` in `~/Pictures` and none
-anywhere on this volume at depth ≤ 3, so **this tar appears to be the only copy on the machine.**
-Its first three words are fleet-infrastructure vocabulary, so it reads as reclaim residue from a
-2026-09-24 worktree operation; the sibling pre-transfer manifests under
-`Offloaded/runner-fleet-resilience-worktrees-reclaim-20260922-sol-001/` confirm that operation
-moved PERSONAL data, not fleet data. **Any sweeper deleting "stale transfer artifacts older
-than 7 days" destroys it.** It is untouched, and `/Volumes/Mastermind/transfers` joins
-`/Volumes/Worktrees` as **REPORT-ONLY for every automated path**. Full record:
-`DSC:THE-TRANSFERS-POOL-HOLDS-THE-ONLY-COPY-OF-OPERATOR-PHOTO-DATA`.
+operator's personal photo library, sitting in a directory whose other 70 entries are agent
+scratch, under a name whose first three words are fleet-infrastructure vocabulary. It is
+untouched, it must never be deleted, moved or truncated, and `/Volumes/Mastermind/transfers`
+joins `/Volumes/Worktrees` as **REPORT-ONLY for every automated path**. Any sweeper deleting
+"stale transfer artifacts older than 7 days" would destroy it.
+
+**It is a BACKUP, not the only copy — and getting that wrong was my own reach failure, made
+while writing this section.** This paragraph first read:
+
+> There is no `.photoslibrary` in `~/Pictures` and none anywhere on this volume at depth ≤ 3,
+> so **this tar appears to be the only copy on the machine.**
+
+Both facts in that sentence are true and the conclusion does not follow, because the search
+enumerated two locations and the claim was about a machine. **CORRECTED 2026-09-28, same day:**
+the live library is `/Volumes/Worktrees/Documents/Photos Library.photoslibrary` — **247 GB**,
+with `database/`, `external/`, `internal/`, `originals/`, `private/`, `resources/`, `scopes/`
+all present — and `PREFLIGHT.txt` for the very operation the tar is named after lists it as
+`protected=`, i.e. deliberately excluded from that move alongside `Pictures` and `WeChat`; the
+operation's actual candidates were `Courses`, `Documents New` and `Jewelry`, two of which halted
+`HELD_SOURCE_RACE` with `no_source_removal`. The tar is therefore a 2026-09-24 point-in-time
+copy of a library that is still in place and has since grown.
+
+The omitted volume is the one this document had **already classified two sections earlier** as
+holding the operator's `Backups`/`Companies`/`Documents` — so the gap was not ignorance of the
+volume, it was a search whose scope was never restated as a REACH claim. What survives
+unchanged: the file is operator data in the wrong place, it is never deletable, and the pool is
+report-only. What changes is urgency and framing — relocating a redundant 195 GiB backup is
+housekeeping, whereas relocating an irreplaceable original is an emergency, and reporting the
+second when the first is true spends operator attention that the real gaps need. Full record:
+`DSC:TRANSFERS-HOLDS-A-195-GIB-OPERATOR-PHOTO-BACKUP-NOT-THE-ONLY-COPY`.
+
+**The genuine hazard the correction exposes is larger than the one it retracts.** Both copies of
+the operator's photo data — the 247 GB live library and its 195.28 GiB tar — sit on volumes the
+fleet writes to and sweeps: the live one on `/Volumes/Worktrees` (87% full, exFAT, also holding
+9 fleet worktrees and the AdsPower payload), the tar on `/Volumes/Mastermind` among PR proof
+clones. Neither is on a backup device. That is a real finding, and it is the one to hand an
+operator.
 
 Two rules follow, and neither is about this file:
 
@@ -780,6 +808,18 @@ Two rules follow, and neither is about this file:
    classifying it.** The name described the operation that moved the object, never the object.
    Every neighbour of this tar genuinely is machine residue, which is precisely what made the
    name plausible.
+3. **A search reports its REACH, never a machine-wide absence.** "No `.photoslibrary` in
+   `~/Pictures` or on `/Volumes/Mastermind` at depth ≤ 3" is a finding; "the only copy on the
+   machine" is a claim about three mounted volumes, and the one omitted was already documented
+   in this file as holding the operator's `Documents`. Before any absence claim, enumerate the
+   mounted volumes (`mount`, `df`) and say which were searched — the same discipline §"A second
+   external volume" already imposes on storage totals, applied to existence questions.
+4. **The pre-transfer receipts are the authority on what a past operation touched.** `PREFLIGHT.txt`
+   in a reclaim directory names `source_volume`, `target_volume`, every `protected=` path, each
+   `candidate=`, and a `candidate_status=` per candidate including halts. Reading it costs one
+   `cat` and answers questions a `du` census cannot: two of that operation's three candidates
+   halted `HELD_SOURCE_RACE|no_source_removal`, so source data it was meant to remove is still
+   in place. Read the receipts before inferring intent from a directory name.
 
 
 
