@@ -1,7 +1,7 @@
 {
   "schema": "china_validation.v1",
   "is_context_only": true,
-  "generated_utc": "2026-09-24T13:23:39.052400+00:00",
+  "generated_utc": "2026-09-29T04:11:55.839428+00:00",
   "fdr_alpha": 0.1,
   "horizons": [
     5,
@@ -15,59 +15,59 @@
       "status": "validated",
       "tier": "confirmer",
       "proven": false,
-      "n_obs": 26,
+      "n_obs": 25,
       "n_weeks": 6,
       "n_indep": 2,
       "by_horizon": {
         "5": {
-          "mean_ic": 0.2296,
-          "ic_ir": 0.793,
-          "t_hac": 3.038,
-          "p_hac": 0.0024,
-          "hit": 0.846,
-          "n": 26,
-          "n_weeks": 8,
-          "n_indep": 7,
+          "mean_ic": 0.2522,
+          "ic_ir": 0.835,
+          "t_hac": 3.33,
+          "p_hac": 0.0009,
+          "hit": 0.84,
+          "n": 25,
+          "n_weeks": 9,
+          "n_indep": 8,
           "sampling_step_td": 1.0,
           "hac_lags": 5,
           "overlap_ratio": 5.0,
           "incremental": {
-            "surviving_frac": 0.561,
-            "ic_delta": -0.1007
+            "surviving_frac": 0.533,
+            "ic_delta": -0.1179
           }
         },
         "10": {
-          "mean_ic": 0.263,
-          "ic_ir": 1.027,
-          "t_hac": 2.771,
-          "p_hac": 0.0056,
-          "hit": 0.84,
-          "n": 25,
+          "mean_ic": 0.3211,
+          "ic_ir": 1.555,
+          "t_hac": 4.517,
+          "p_hac": 0.0,
+          "hit": 0.955,
+          "n": 22,
           "n_weeks": 8,
           "n_indep": 5,
           "sampling_step_td": 1.0,
           "hac_lags": 10,
           "overlap_ratio": 10.0,
           "incremental": {
-            "surviving_frac": 0.546,
-            "ic_delta": -0.1194
+            "surviving_frac": 0.55,
+            "ic_delta": -0.1444
           }
         },
         "21": {
-          "mean_ic": 0.2146,
-          "ic_ir": 0.835,
-          "t_hac": 2.447,
-          "p_hac": 0.0144,
-          "hit": 0.714,
-          "n": 14,
+          "mean_ic": 0.2062,
+          "ic_ir": 0.86,
+          "t_hac": 2.641,
+          "p_hac": 0.0083,
+          "hit": 0.688,
+          "n": 16,
           "n_weeks": 6,
           "n_indep": 2,
           "sampling_step_td": 1.0,
           "hac_lags": 21,
           "overlap_ratio": 21.0,
           "incremental": {
-            "surviving_frac": 0.234,
-            "ic_delta": -0.1643
+            "surviving_frac": 0.358,
+            "ic_delta": -0.1324
           }
         },
         "63": {
@@ -86,181 +86,181 @@
       },
       "sign_expected": 1,
       "sign_ok": true,
-      "t_hac": 2.447,
-      "mean_ic": 0.2146,
+      "t_hac": 2.641,
+      "mean_ic": 0.2062,
       "is_context_only": true,
-      "n_gate": "6/40 distinct weeks, 2/8 non-overlapping windows (from 14 overlapping rows)",
-      "q_fdr": 0.0864
+      "n_gate": "6/40 distinct weeks, 2/8 non-overlapping windows (from 16 overlapping rows)",
+      "q_fdr": 0.0498
     },
     "fundflow": {
       "family": "fundflow",
       "status": "tested",
       "tier": "pending",
       "proven": false,
-      "n_obs": 316,
+      "n_obs": 318,
       "n_weeks": 65,
       "n_indep": 15,
       "by_horizon": {
         "5": {
           "mean_ic": 0.0035,
           "ic_ir": 0.041,
-          "t_hac": 0.686,
-          "p_hac": 0.4925,
+          "t_hac": 0.68,
+          "p_hac": 0.4964,
           "hit": 0.535,
-          "n": 316,
-          "n_weeks": 68,
-          "n_indep": 65,
+          "n": 318,
+          "n_weeks": 69,
+          "n_indep": 66,
           "sampling_step_td": 1.0,
           "hac_lags": 5,
           "overlap_ratio": 5.0,
           "incremental": {
-            "surviving_frac": 1.457,
-            "ic_delta": 0.0016
+            "surviving_frac": 1.429,
+            "ic_delta": 0.0015
           }
         },
         "10": {
-          "mean_ic": 0.0048,
+          "mean_ic": 0.0047,
           "ic_ir": 0.054,
-          "t_hac": 0.799,
-          "p_hac": 0.4242,
+          "t_hac": 0.796,
+          "p_hac": 0.4258,
           "hit": 0.537,
-          "n": 311,
-          "n_weeks": 67,
-          "n_indep": 32,
+          "n": 313,
+          "n_weeks": 68,
+          "n_indep": 33,
           "sampling_step_td": 1.0,
           "hac_lags": 10,
           "overlap_ratio": 10.0,
           "incremental": {
-            "surviving_frac": 0.979,
-            "ic_delta": -0.0001
+            "surviving_frac": 1.043,
+            "ic_delta": 0.0002
           }
         },
         "21": {
           "mean_ic": 0.006,
           "ic_ir": 0.072,
-          "t_hac": 1.062,
-          "p_hac": 0.2882,
-          "hit": 0.527,
-          "n": 300,
+          "t_hac": 1.069,
+          "p_hac": 0.285,
+          "hit": 0.526,
+          "n": 302,
           "n_weeks": 65,
           "n_indep": 15,
           "sampling_step_td": 1.0,
           "hac_lags": 21,
           "overlap_ratio": 21.0,
           "incremental": {
-            "surviving_frac": 0.7,
-            "ic_delta": -0.0018
+            "surviving_frac": 0.733,
+            "ic_delta": -0.0016
           }
         },
         "63": {
-          "mean_ic": 0.015,
-          "ic_ir": 0.193,
-          "t_hac": 1.553,
-          "p_hac": 0.1205,
+          "mean_ic": 0.0146,
+          "ic_ir": 0.186,
+          "t_hac": 1.5,
+          "p_hac": 0.1335,
           "hit": 0.612,
-          "n": 258,
+          "n": 260,
           "n_weeks": 57,
           "n_indep": 5,
           "sampling_step_td": 1.0,
           "hac_lags": 63,
           "overlap_ratio": 63.0,
           "incremental": {
-            "surviving_frac": 0.947,
-            "ic_delta": -0.0008
+            "surviving_frac": 0.938,
+            "ic_delta": -0.0009
           }
         }
       },
       "sign_expected": 1,
       "sign_ok": true,
-      "t_hac": 1.062,
+      "t_hac": 1.069,
       "mean_ic": 0.006,
       "is_context_only": true,
-      "q_fdr": 0.4323
+      "q_fdr": 0.57
     },
     "chips": {
       "family": "chips",
       "status": "tested",
       "tier": "pending",
       "proven": false,
-      "n_obs": 316,
+      "n_obs": 318,
       "n_weeks": 65,
       "n_indep": 15,
       "by_horizon": {
         "5": {
-          "mean_ic": -0.0178,
-          "ic_ir": -0.114,
-          "t_hac": -1.203,
-          "p_hac": 0.229,
-          "hit": 0.465,
-          "n": 316,
-          "n_weeks": 68,
-          "n_indep": 65,
+          "mean_ic": -0.0187,
+          "ic_ir": -0.12,
+          "t_hac": -1.27,
+          "p_hac": 0.204,
+          "hit": 0.462,
+          "n": 318,
+          "n_weeks": 69,
+          "n_indep": 66,
           "sampling_step_td": 1.0,
           "hac_lags": 5,
           "overlap_ratio": 5.0,
           "incremental": {
-            "surviving_frac": 0.23,
-            "ic_delta": 0.0137
+            "surviving_frac": 0.225,
+            "ic_delta": 0.0145
           }
         },
         "10": {
-          "mean_ic": -0.0189,
-          "ic_ir": -0.12,
-          "t_hac": -0.968,
-          "p_hac": 0.3328,
-          "hit": 0.482,
-          "n": 311,
-          "n_weeks": 67,
-          "n_indep": 32,
+          "mean_ic": -0.0197,
+          "ic_ir": -0.125,
+          "t_hac": -1.009,
+          "p_hac": 0.3129,
+          "hit": 0.479,
+          "n": 313,
+          "n_weeks": 68,
+          "n_indep": 33,
           "sampling_step_td": 1.0,
           "hac_lags": 10,
           "overlap_ratio": 10.0,
           "incremental": {
-            "surviving_frac": 0.307,
-            "ic_delta": 0.0131
+            "surviving_frac": 0.299,
+            "ic_delta": 0.0138
           }
         },
         "21": {
-          "mean_ic": -0.0156,
-          "ic_ir": -0.095,
-          "t_hac": -0.502,
-          "p_hac": 0.6156,
-          "hit": 0.5,
-          "n": 300,
+          "mean_ic": -0.016,
+          "ic_ir": -0.097,
+          "t_hac": -0.517,
+          "p_hac": 0.6055,
+          "hit": 0.497,
+          "n": 302,
           "n_weeks": 65,
           "n_indep": 15,
           "sampling_step_td": 1.0,
           "hac_lags": 21,
           "overlap_ratio": 21.0,
           "incremental": {
-            "surviving_frac": 0.019,
+            "surviving_frac": 0.044,
             "ic_delta": 0.0153
           }
         },
         "63": {
-          "mean_ic": -0.0048,
-          "ic_ir": -0.039,
-          "t_hac": -0.165,
-          "p_hac": 0.8689,
-          "hit": 0.574,
-          "n": 258,
+          "mean_ic": -0.0086,
+          "ic_ir": -0.065,
+          "t_hac": -0.268,
+          "p_hac": 0.7883,
+          "hit": 0.569,
+          "n": 260,
           "n_weeks": 57,
           "n_indep": 5,
           "sampling_step_td": 1.0,
           "hac_lags": 63,
           "overlap_ratio": 63.0,
           "incremental": {
-            "surviving_frac": -1.354,
-            "ic_delta": 0.0113
+            "surviving_frac": -0.581,
+            "ic_delta": 0.0136
           }
         }
       },
       "sign_expected": -1,
       "sign_ok": true,
-      "t_hac": -0.502,
-      "mean_ic": -0.0156,
+      "t_hac": -0.517,
+      "mean_ic": -0.016,
       "is_context_only": true,
-      "q_fdr": 0.6156
+      "q_fdr": 0.6324
     },
     "guidance": {
       "family": "guidance",
@@ -346,57 +346,57 @@
       "mean_ic": -0.0485,
       "is_context_only": true,
       "n_gate": "15/40 distinct weeks, 4/8 non-overlapping windows (from 30 overlapping rows)",
-      "q_fdr": 0.3098
+      "q_fdr": 0.4647
     },
     "margin": {
       "family": "margin",
       "status": "tested",
       "tier": "pending",
       "proven": false,
-      "n_obs": 3481,
+      "n_obs": 3483,
       "n_weeks": 733,
-      "n_indep": 165,
+      "n_indep": 166,
       "by_horizon": {
         "5": {
           "mean_ic": 0.00133,
           "ic_ir": null,
-          "t_hac": 1.355,
-          "p_hac": 0.1753,
+          "t_hac": 1.362,
+          "p_hac": 0.1732,
           "hit": null,
-          "n": 3481,
-          "n_weeks": 736,
+          "n": 3483,
+          "n_weeks": 737,
           "n_indep": 697,
           "hac_lags": 4
         },
         "10": {
           "mean_ic": 0.00209,
           "ic_ir": null,
-          "t_hac": 1.074,
-          "p_hac": 0.2828,
+          "t_hac": 1.075,
+          "p_hac": 0.2825,
           "hit": null,
-          "n": 3476,
-          "n_weeks": 735,
+          "n": 3478,
+          "n_weeks": 736,
           "n_indep": 348,
           "hac_lags": 9
         },
         "21": {
           "mean_ic": 0.00347,
           "ic_ir": null,
-          "t_hac": 0.787,
-          "p_hac": 0.4315,
+          "t_hac": 0.788,
+          "p_hac": 0.4305,
           "hit": null,
-          "n": 3465,
+          "n": 3467,
           "n_weeks": 733,
-          "n_indep": 165,
+          "n_indep": 166,
           "hac_lags": 20
         },
         "63": {
-          "mean_ic": 0.01442,
+          "mean_ic": 0.01432,
           "ic_ir": null,
-          "t_hac": 0.995,
-          "p_hac": 0.32,
+          "t_hac": 0.988,
+          "p_hac": 0.323,
           "hit": null,
-          "n": 3423,
+          "n": 3425,
           "n_weeks": 725,
           "n_indep": 55,
           "hac_lags": 62
@@ -404,49 +404,49 @@
       },
       "sign_expected": -1,
       "sign_ok": false,
-      "t_hac": 0.787,
+      "t_hac": 0.788,
       "mean_ic": 0.00347,
       "is_context_only": true,
-      "q_fdr": 0.5178
+      "q_fdr": 0.6324
     },
     "news_sentiment": {
       "family": "news_sentiment",
-      "status": "validated",
-      "tier": "confirmer",
+      "status": "tested",
+      "tier": "pending",
       "proven": false,
-      "n_obs": 28,
+      "n_obs": 30,
       "n_weeks": 3,
       "n_indep": 1,
       "by_horizon": {
         "5": {
-          "mean_ic": -0.00311,
+          "mean_ic": -0.00142,
           "ic_ir": null,
-          "t_hac": -1.22,
-          "p_hac": 0.2227,
+          "t_hac": -0.477,
+          "p_hac": 0.6335,
           "hit": null,
-          "n": 28,
-          "n_weeks": 6,
+          "n": 30,
+          "n_weeks": 7,
           "n_indep": 6,
           "hac_lags": 4
         },
         "10": {
-          "mean_ic": -0.0032,
+          "mean_ic": -0.00375,
           "ic_ir": null,
-          "t_hac": -1.243,
-          "p_hac": 0.214,
+          "t_hac": -1.908,
+          "p_hac": 0.0565,
           "hit": null,
-          "n": 23,
-          "n_weeks": 5,
+          "n": 25,
+          "n_weeks": 6,
           "n_indep": 3,
           "hac_lags": 9
         },
         "21": {
-          "mean_ic": -0.00799,
+          "mean_ic": -0.00364,
           "ic_ir": null,
-          "t_hac": -1.777,
-          "p_hac": 0.0755,
+          "t_hac": -0.478,
+          "p_hac": 0.6324,
           "hit": null,
-          "n": 12,
+          "n": 14,
           "n_weeks": 3,
           "n_indep": 1,
           "hac_lags": 20
@@ -454,11 +454,11 @@
       },
       "sign_expected": -1,
       "sign_ok": true,
-      "t_hac": -1.777,
-      "mean_ic": -0.00799,
+      "t_hac": -0.478,
+      "mean_ic": -0.00364,
       "is_context_only": true,
-      "n_gate": "3/25 distinct weeks, 1/8 non-overlapping windows (from 12 overlapping rows)",
-      "q_fdr": 0.2265
+      "n_gate": "3/25 distinct weeks, 1/8 non-overlapping windows (from 14 overlapping rows)",
+      "q_fdr": 0.6324
     }
   }
 }

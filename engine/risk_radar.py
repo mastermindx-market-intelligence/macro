@@ -1144,7 +1144,15 @@ def compute(sigs: pd.DataFrame | None = None, calib: dict | None = None, asof=No
                        "n_legs_resolved": sum(1 for lg, _w in _reg
                                               if lg in sigrow.index and not pd.isna(sigrow.get(lg))),
                        "weight_coverage": _cov,
-                       "partial_composition": bool(_cov is not None and _cov < 1.0)})
+                       "partial_composition": bool(_cov is not None and _cov < 1.0),
+                       # Presentation truth only. Keep the legacy arithmetic/score/band
+                       # immutable, but do not present a value as an eligible risk read
+                       # when every structurally eligible leg is absent today.
+                       "reading_state": ("UNAVAILABLE" if not _res_w else
+                                         "PARTIAL" if _cov is not None and _cov < 1.0
+                                         else "AVAILABLE"),
+                       "display_score": round(sc, 1) if _res_w else None,
+                       "display_band": band if _res_w else None})
 
     # DISPLAY-ONLY leg readings (VSB W6). These legs are excluded from every sub-score AND from
     # escalation eligibility, so a scare whose only RESOLVING leg is display_only now has no
@@ -1171,6 +1179,9 @@ def compute(sigs: pd.DataFrame | None = None, calib: dict | None = None, asof=No
         })
 
     scares.sort(key=lambda d: -d["score"])
+    unavailable_scares = {
+        s["scare"] for s in scares if s.get("reading_state") == "UNAVAILABLE"
+    }
     tierA = [s for s in scares if s["tier"] == "A"]
     # dominant/named scare from the VALIDATED (Tier-A) set, lift-weighted so leading > coincident
     dominant = max(tierA, key=lambda d: d["lead_weighted"]) if tierA else (scares[0] if scares else None)
@@ -1199,8 +1210,16 @@ def compute(sigs: pd.DataFrame | None = None, calib: dict | None = None, asof=No
     )
     head_en, head_zh = _headline(state, dominant, hotA, prob)
     authority = _market_state_authority(state, bool(alert), scares, prob, calib)
-    traj = trajectory(subs, calib, sigs=sigs)
-    deesc = _deescalation(dominant["scare"] if dominant else None, subs, traj, prob)
+    traj = trajectory(
+        subs, calib, sigs=sigs, unavailable_scares=unavailable_scares
+    )
+    deesc = _deescalation(
+        dominant["scare"] if dominant else None,
+        subs,
+        traj,
+        prob,
+        unavailable_scares=unavailable_scares,
+    )
 
     # cap_leadership is True from 'elevated'. THRESHOLD REVIEW (incident
     # synthesis.md §4 item 6, flagged NOT auto-decided): the opt-in knob below
@@ -1503,7 +1522,8 @@ def _trajectory_from_series(win, states, odds, caution_band: float) -> dict:
 
 
 def trajectory(subs: pd.DataFrame | None = None, calib: dict | None = None,
-               window: int = _TRAJ_WINDOW, sigs: pd.DataFrame | None = None) -> dict | None:
+               window: int = _TRAJ_WINDOW, sigs: pd.DataFrame | None = None,
+               unavailable_scares: set[str] | None = None) -> dict | None:
     """Recent PATH of the radar — has its intensity peaked and turned down, and how fast are the
     pullback odds dropping? Powers the de-escalation / "risk-off may be ending" panel
     (engine/risk_radar_recovery.py). LEAK-FREE: every input is a causal trailing-window percentile
@@ -1553,6 +1573,12 @@ def trajectory(subs: pd.DataFrame | None = None, calib: dict | None = None,
             drivers_faded = []
             drivers_warm = []
             for scare in subs.columns:
+                if (
+                    scare in (unavailable_scares or set())
+                    or pd.isna(subs[scare].iloc[-1])
+                ):
+                    # Missing/ineligible TODAY cannot reuse yesterday as a warm/faded read.
+                    continue
                 sw = subs[scare].dropna().tail(window)
                 if len(sw) < 3:
                     continue
@@ -1585,7 +1611,8 @@ _RISK_OFF_SCARES = {"growth", "credit", "rates", "vol"}
 
 
 def _deescalation(dominant: str | None, subs: pd.DataFrame | None,
-                  traj: dict | None, prob: dict | None) -> dict:
+                  traj: dict | None, prob: dict | None, *,
+                  unavailable_scares: set[str] | None = None) -> dict:
     """ONE risk voice per page (2026-07-02 incident root-cause #10). Through the
     semis breakdown the de-escalation panel showed green 'risk receding' (the
     June vol scare fading) while this radar's own dominant growth scare sat at
@@ -1610,6 +1637,12 @@ def _deescalation(dominant: str | None, subs: pd.DataFrame | None,
         if subs is not None and not subs.empty:
             best_off = None
             for s in subs.columns:
+                if (
+                    s in (unavailable_scares or set())
+                    or pd.isna(subs[s].iloc[-1])
+                ):
+                    # An older observation is not evidence that risk is receding today.
+                    continue
                 w = subs[s].dropna().tail(_TRAJ_WINDOW)
                 if len(w) < 10:
                     continue

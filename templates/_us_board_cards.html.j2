@@ -1,3 +1,4 @@
+{% import '_prophet_setup_detail.html.j2' as psd %}
 {#- ── US Prophet board CARDS (docs/TIER_PREVIEW_PATTERN.md) ─────────────────────
    Extracted verbatim from the `.nbgrid` loop that used to live inline in
    dashboard.html.j2 (the priority/legacy heading + Prophet card block,
@@ -281,6 +282,7 @@
              _us_prophet_plan_cards.html.j2, whose dates ARE per-plan and honest. -#}
         {{ pv.pv_card({
           'href': 'stock.html#' ~ n.ticker, 'tk': n.ticker, 'mkt': 'us',
+          'setup_detail': psd.body(n, 'board', setup_as_of if setup_as_of is defined else (us_standouts.get('as_of') if us_standouts is defined and us_standouts is mapping else none)),
           'name': n.name, 'sec': n.sector, 'sec_zh': tr(n.sector),
           'price_txt': ('$' ~ ('%.2f'|format(n.price))) if n.get('price') is not none else none,
           'show_change': true,

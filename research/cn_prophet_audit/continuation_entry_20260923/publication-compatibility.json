@@ -1,0 +1,36 @@
+{
+  "schema": "china_continuation.integration_compatibility.v1",
+  "semantic_head": "887917fbb1190ddee5dcfc76de557ddb195d0c7b",
+  "protected_procedure": "bf764f494b9cd0ecede6234bb472c3344c8e77cc",
+  "main": "c4da107fe729e46b4d4036b3e0e290390315d0fd",
+  "merge_base": "310a23dcd3e5fb8fdb95169a489b94487b091777",
+  "integrated_tree": "c0fbe2d647f4c0a966df807ccf0654a82fd027ec",
+  "owned_source_paths_changed_on_main": [],
+  "dependency_movement": {
+    "scripts/build_china.py": "17 added lines persist the separate CN market-state snapshot after the unchanged action assembler; no action routing change",
+    "templates/theme.css": "additive Macro Command tokens and markets risk strip selectors; action and decision-card styles unchanged",
+    "templates/theme.js": "navigation/settings/help accessibility changes; existing row-pop handler untouched"
+  },
+  "compatibility": "conflict-free composition; inspected changes disjoint from reviewed action semantics",
+  "hosted_integration_proven": false,
+  "production_proven": false,
+  "source_sha256": {
+    "engine/china_act_now.py": "f0eb565a355d6f76f99a4b42486b5c5f1ebb0e007315c132b3853383b8b37719",
+    "templates/_china_act_now_board.html.j2": "37e231d296eebbe96aa116695bfcc8eb540c8254b0aebfd44649a73965fe29b8",
+    "tests/test_china_act_now.py": "d434baa9aff11c509a08120df614773f494c310595f65689c4b9053edf7e84c1"
+  },
+  "review_operation": "cn-action-template-review-887917fb-20260923",
+  "review_process": 88490,
+  "review_result": "PENDING",
+  "blocked_independent_reads": [
+    "actual mixed-sector/cycle acquisition",
+    "sibling main-baseline/publisher-state reconciliation"
+  ],
+  "regional_entry_boundary": {
+    "incumbent_pr": 7664,
+    "head": "e43c769325311a06724ae211fdcc393ffcf05338",
+    "comment": 5792783734,
+    "finding": "EntryContextSource presently binds US setup sources and instrument.market=US; shared schema alone does not prove native CN entry wiring"
+  },
+  "mission_complete": false
+}
