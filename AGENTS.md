@@ -706,6 +706,23 @@ deliberate freeze must ship a DEC record plus an expiry plan
 
 **ARM `merge-on-green`, THEN STAY.** After opening an ordinary pull request, run
 `gh pr edit <n> --add-label merge-on-green`.
+**Arm LAST — never push into an already-armed pull request (measured #8163, 2026-09-29).**
+The window between the sweeper deciding to merge and the merge completing is invisible from a
+session, so a commit pushed onto an armed PR can land on the far side of it. Measured: the
+sweeper merged head `2ff0f92f` at 02:09:24Z while the follow-up commit carries committer time
+02:09:24Z, so the push completed at or after the merge. GitHub accepted it with `rc=0`, did not
+reopen or amend the PR, and raised nothing — and every field a session can read was identical
+to success: `state=MERGED`, a true `mergedAt`, the right `mergeCommit`, and `headRefOid`
+reading the merged head, which is also the correct value on a healthy merge. `--json files` is
+a second false friend: it reports the MERGED paths, so the obvious check "do the PR's files
+appear in the squash?" compares the merged head with itself and passes on a PR that provably
+lost two files. No read of a pull request can see a commit that arrived after its merge; only
+the branch ref can — `git log origin/main..origin/<branch> --name-only`, then a per-path blob
+comparison against `origin/main`, which is squash-tolerant because a squash preserves the tree
+even though it rewrites the commit. Push every commit the PR needs, THEN add the label; if a
+late push is genuinely required, disarm, push, re-arm under the disarming rule below; and treat
+`MERGED` as a fact about a pull request, never about your bytes.
+`DSC:A-PUSH-TO-AN-ARMED-PR-CAN-LAND-AFTER-ITS-MERGE-AND-NOTHING-ERRORS`.
 **Current topology (2026-08-21): `.github/workflows/merge-on-green.yml` still runs on
 `[self-hosted, macOS, ARM64, merge-control]` on the M2; it is NOT yet GitHub-hosted.**
 W1-A's read-only hosted canary is merged, but production authority stays on the M2 until
