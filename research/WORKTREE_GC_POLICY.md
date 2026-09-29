@@ -1095,6 +1095,27 @@ floor guard prints `OK` between breaches, and the fault line only appears when a
 remediation. Any reclaim lane must enumerate what it could not read and report that count beside
 its verdict, or its silence will be taken for success.
 
+**How much the grant would actually free: 1.81 GiB of 201.13, measured — and that is the whole
+honest case.** The `DSC` pre-registered this as its own falsifier and it FIRED. Running the GC's
+report over the pool as a principal that can read `~/Documents` (207 registrations = the 203
+directories + 4 already-gone checkouts) verdicts `DIRTY 68/95.43G`, `LOCKED 43/40.49G`,
+`UNPUSHED 57/27.01G`, `RECENT 11/13.12G`, `OPEN_PR 15/8.48G`, `ORPHAN 5/7.72G`, `LIVE_PROC 1/7.05G`,
+`MISSING 4/0G` — and **`SAFE_MERGED` 3 trees / 1.81 GiB, 0.9 %**. Half the pool (103 trees /
+99.94 GiB) is HUMAN-class `sol*`/`review*` that `DEC:COMPLETION-SIGNAL-AUTHORIZES-RECLAIM` never
+auto-reclaims; 61 % is `DIRTY`+`UNPUSHED` unlanded work. **So do not sell the grant on bytes.** Sell
+it on the two things it actually buys: a floor guard whose remediation RUNS (today every breach ends
+in `REMEDIATOR FAULT`, so the net is absent, not slow), and reach for the reclaim-at-merge FLOW gate
+over the busiest pool in the fleet.
+
+Two follow-on levers die here on measurement, and both die the way §9 keeps predicting — the pool's
+composition, not its size, decides. The `worktree_gc.py:501` lock short-circuit is worth 41 trees /
+26.6 GiB on the SSD pool because 282 of 285 locks there are the helper's content-free stamp; in THIS
+pool **zero of 43 locks is a stamp** — every one carries real seat text — so its ceiling is 17.01 GiB
+across 15 non-human locked trees and realistically less. And retrofit-to-sparse is not the lever:
+**181 of 207 trees are already sparse (<1 GiB) and still total 88.99 GiB**, while 16 un-sparsified
+FULL trees hold 98.41 GiB. This pool is large by COUNT, so the matching lever is the per-root
+population cap below, not a thinner tree.
+
 **The floor is not currently breached** — internal free is 316.8 GiB against a floor of 260, last
 breach 2026-09-26. The broken thing is the safety net, not the disk, which is exactly how it stayed
 broken from 09-24 without being noticed. `DSC:THE-SWEEPER-IS-TCC-BLIND-TO-THE-LARGEST-INTERNAL-
