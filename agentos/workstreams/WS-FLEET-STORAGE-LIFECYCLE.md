@@ -22,12 +22,15 @@ owns_paths:
   - scripts/worktree_gc.py
   - config/worktree_gc.json
   - config/sparse_worktree.json
+  - scripts/worktree_gc_launchd.py
+  - tests/test_worktree_gc_launchd.py
 blocked_by:
-  - "OPERATOR RATIFICATION — the `human_driven_roots` deny-list. FIRST because it is purely
-     protective and can delete nothing. Today the 527 human-driven SSD checkouts (`sol/`,
-     `review/`, all of `/Volumes/Mastermind/worktrees`) are protected by a path-naming heuristic
-     nobody chose, and the obvious repair that makes a wider `roots` work is the same commit that
-     would silently delete them."
+  - "DONE 2026-09-29 (#8175, squash `43f81e98d0ea`) — the `human_driven_roots` deny-list, now
+     live. Kept in this list rather than deleted so that the gate numbering used by
+     `research/WORKTREE_GC_POLICY.md` §9 and by both handoffs still resolves: gate (1) of four is
+     closed, the three below are not. It shipped FIRST because it is purely protective and can
+     delete nothing, and because the obvious repair that makes a wider `roots` work is the same
+     commit that would otherwise silently delete the 527 human-driven SSD checkouts."
   - "OPERATOR RATIFICATION — widening `roots` by SUBTREE (`…/agent-workspaces/claude` and
      `…/agent-workspaces/tmp` only; never `/Volumes/Mastermind/worktrees`, `…/agent-workspaces`
      itself, `…/sol` or `…/review`). Inert without a companion code change: measured over 804
@@ -46,6 +49,7 @@ discoveries:
   - DSC:A-HOST-CHECKOUT-BELT-MAKES-A-WIDER-ROOTS-LIST-INERT
   - DSC:A-PUSH-TO-AN-ARMED-PR-CAN-LAND-AFTER-ITS-MERGE-AND-NOTHING-ERRORS
   - DSC:A-GUARDS-CORRECT-TOLERANCE-FOR-AN-ABSENT-SUBJECT-STILL-LIES-IN-ITS-VERDICT
+  - DSC:TWO-INDEPENDENT-GATES-MAKE-A-REGRESSION-IN-EITHER-ONE-INVISIBLE
 landmines:
   - "`/Volumes/Worktrees/Documents/Photos Library.photoslibrary` (247 GB, the LIVE library) and
      `/Volumes/Mastermind/transfers/runner-fleet-resilience-worktrees-photoslib-20260924.tar`
@@ -66,6 +70,19 @@ landmines:
      (`DSC:A-PUSH-TO-AN-ARMED-PR-CAN-LAND-AFTER-ITS-MERGE-AND-NOTHING-ERRORS`). Arm last."
   - "Web/ChatGPT session roots are never auto-reclaimed: a resumable browser conversation has no
      process, no shell and no reflog, so its attachment is undetectable."
+  - "`scripts/worktree_gc_launchd.py` is the ONE file in this workstream that is not re-read from
+     `origin/main` at run time — it has to live somewhere stable — so it is the one file that
+     drifts and no merge can reach it. Only `scripts/install_worktree_gc_launchd.sh` reconciles
+     the installed copy, and that is a host act outside the ship chain which changes an ARMED
+     deleter's behaviour. It has no operator yes and no session may run it without one."
+  - "`~/Library/Logs/macro_worktree_gc/last_attempt.json` is written BY the wrapper, so it can
+     only ever describe a run that STARTED. A healthy receipt is not evidence that the schedule
+     fired — the four-day non-start window (09-18 → 09-21) is invisible to it. Detecting a
+     never-started run needs an EXTERNAL age-based check that does not exist yet."
+  - "A PROTECTIVE config key inverts the wrapper's staleness argument. For `armed` and `roots`,
+     older policy is narrower is safer; for `human_driven_roots`, older policy means LESS
+     protection. Exposure is bounded because refs only advance, but the protective half of any
+     future pair must land in the EARLIER commit."
 do_not_redo:
   - "Do NOT re-measure the seven null pools. Attributed and recorded: `/Volumes/Worktrees`
      (93.5% operator data, whole fleet 51.85 GiB / 6.5%, at most ~5.4 GiB agent-reclaimable on
@@ -81,6 +98,24 @@ do_not_redo:
      8–14%, not the 79% the ancestry census reported."
   - "Do NOT re-litigate whether a wider `roots` alone frees space. Measured: +496 trees of
      REPORTING, +1 of deletion. The host-checkout belt is the binding constraint."
+  - "Do NOT re-ratify gate (1). The `human_driven_roots` deny-list landed in #8175 and is live."
+  - "Do NOT re-measure the launchd run history. 45 runs 2026-08-13 → 09-28: 30 completions, 13
+     crashes (9 at the 3000 s sweep cap, 4 at the 120 s git cap, one exception class), 2 clean
+     fail-closed refusals on EINTR, and 4 days with no run at all. §11."
+  - "Do NOT classify a run as crashed because it lacks a `done rc=` line, and do NOT count
+     tracebacks by occurrences of the timeout VALUE. The refusal path returns before printing a
+     completion line, and `timed out after 120 seconds` also matches the value echoed inside the
+     exception's own command repr — the two traps inflated 13 crashes to 15 and the git class
+     from 4 to 10. Count terminal `^subprocess.TimeoutExpired: Command` lines."
+  - "Do NOT attribute the operator's `sweeper BLIND: Operation not permitted:
+     '/Users/chriswong/Documents'` notification to the worktree GC. It belongs to
+     `storage_floor_guard.py`. This job reads the primary fine and deleted nine trees cleanly on
+     09-27, and the Full Disk Access ask is therefore about the other principal."
+  - "Do NOT reason about the launchd job as running the repo's script against the primary
+     checkout's config. It runs an installed wrapper that re-extracts BOTH tool and config from
+     `origin/main` every run; the primary is only the git vantage point."
+  - "Do NOT cite the unified log about this job. `log show` has zero rows for
+     `com.macro.worktree-gc` even on days it demonstrably ran, so its silence carries no signal."
 needs_ceo:
   question: >
     Four storage acts are fully measured and blocked only on a decision, not on evidence. Which,
@@ -164,22 +199,51 @@ waves:
     title: >
       The same reach law in the CI guards — two that printed a PASS having examined zero
       subjects, one of them asserting that an absent file passed 5 invariants
-    status: awaiting_ci
+    status: done
+    pr: 8174
     depends_on:
       - W9
+  - id: W11
+    title: >
+      Gate (1) ratified and shipped — `human_driven_roots`, the purely protective deny-list that
+      makes the 527 human-driven checkouts' protection deliberate instead of a naming accident
+    status: done
+    pr: 8175
+    depends_on:
+      - W1
+  - id: W12
+    title: >
+      The second bound on the programme's yield — AVAILABILITY. The armed sweeper's launchd job
+      crashed on 13 of 45 runs and never started on 4 further days; the timeouts were uncaught
+      and recorded nowhere
+    status: awaiting_ci
+    pr: 8176
+    depends_on:
+      - W11
+  - id: W13
+    title: >
+      This record and the handoff for W11/W12, deliberately held out of both of their PRs to
+      keep them off a shared file
+    status: awaiting_ci
+    depends_on:
+      - W12
 next_action: >
   Put the `needs_ceo` options to the operator, re-ranked by W6's measurement: the CI runner git
-  stores (177.26 GiB, 87% `.git`) are now clearly the largest real lever, and the Full Disk Access
-  grant is worth asking for on the broken safety net rather than on bytes — it frees 1.81 GiB.
-  Ratify the `human_driven_roots` deny-list first regardless; it is purely protective and can delete
-  nothing. W9 makes the scope gap legible (the report now prints `checked 224 of 789`) but closes
-  none of it — that is still the three unratified acts, and legibility is a precondition for
-  ratifying them, never a substitute. W10 spent a CI-blocked interval on the one lane the W9
-  law pointed at ("wherever a reach figure is computed for a machine consumer and never shown
-  to a human") and closed two CI guards; it frees no bytes and changes no storage decision.
+  stores (177.26 GiB, 87% `.git`) are the largest real lever and the only fully reversible one, and
+  the Full Disk Access grant is worth asking for on the broken safety net rather than on bytes — it
+  frees 1.81 GiB, and the principal that needs it is `storage_floor_guard.py`, not this sweeper.
+  Gate (1) is closed: W11 landed `human_driven_roots`. The next ratification is (2) widening
+  `roots` by SUBTREE (`…/agent-workspaces/claude` and `…/agent-workspaces/tmp` ONLY), then (3) the
+  lock-stamp fix at `scripts/worktree_gc.py:501`, then gate 3 — which the deny-list now guards.
+  Also awaiting an explicit operator yes, and deliberately NOT done: running
+  `scripts/install_worktree_gc_launchd.sh`. Until it runs, W12's availability fix is in the repo
+  and not on the host, because the wrapper is the one file no merge reaches. W9 through W13 make
+  the programme's bounds legible and free zero bytes; legibility is a precondition for ratifying
+  the three acts, never a substitute for it.
 artifacts:
   - research/WORKTREE_GC_POLICY.md
   - scripts/worktree_gc.py
+  - scripts/worktree_gc_launchd.py
   - config/worktree_gc.json
 ---
 
@@ -208,7 +272,24 @@ refusal case green), and a lexical scan cannot answer a semantic question (three
 returned 177, then 57, then a set including guards that already print their count — the cheap
 discriminator was a positive control, running each instrument against an empty subject set).
 
- The ENOSPC remediation aimed at agent
+## The bound nobody had measured until 2026-09-29: availability
+
+Waves 1-10 argued about SCOPE — which trees the sweeper may see. W12 measured whether it RUNS. Of
+45 scheduled firings between 2026-08-13 and 09-28 it crashed on **13 (29 %)**, every one an uncaught
+`subprocess.TimeoutExpired`, and it never started at all on four further days whose host was proven
+up. So on roughly a third of days the trees it could already reach were not swept either, which
+means **an armed deleter failing a third of the time cannot be judged on its scope at all.**
+
+Two properties of that finding matter more than the number. First, it was recorded NOWHERE: the
+receipt the job wrote (`last_run.json`) described only successful sweeps, so a crash left a healthy
+file behind — the fix adds `last_attempt.json`, written on every exit path. Second, the receipt
+still cannot see the four-day gap, because a file written BY the subject cannot report the
+subject's absence; that needs an external age-based check, and it does not exist yet. And the fix
+is in the repo, not on the host: the wrapper is the one file not re-read from `origin/main`, so only
+an operator-authorised `install_worktree_gc_launchd.sh` reconciles it.
+
+Fixing availability frees **zero bytes**, and saying so is the point — the same discipline §9's
+reach work demanded. The ENOSPC remediation aimed at agent
 working trees; the operator-data volumes turned out to be operator data (93.5% and 84%), the
 scratchpad pool turned out to be 64.8% live, and the one pool with a real lever — 177.26 GiB of CI
 runner git stores — is the one nobody calls a worktree. Attribute the target volume, state the
