@@ -272,6 +272,19 @@ def capture() -> None:
     manifest = {
         "schema": "mastermind.p0_evidence.v2",
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "capture_affordances": [
+            "details.pvs-audit, the #us-candidate-pool details element, details.ucp-receipt, and details.pv-setup-inline are forced open by render_fixture.py::render_base only so folded content is visible in the crops.",
+            "Those details elements are collapsed by default in production.",
+            "The view model is synthetic fixture data from render_fixture.py::base_vm; it is not a production board.",
+        ],
+        "provenance": {
+            "superseded_capture": "4a1e829ef70879d58e317c65065596bee15fc3d0",
+            "superseded_at": "2026-09-29T15:57Z",
+            "superseded_reasons": [
+                "R4-1 changed the none-state plan-relation copy.",
+                "R4-3 used the wrong screenshot target for the PLV states.",
+            ],
+        },
         "capture_head": head,
         "target": {"resolved_sha_or_none": head},
         "pages": pages_out,

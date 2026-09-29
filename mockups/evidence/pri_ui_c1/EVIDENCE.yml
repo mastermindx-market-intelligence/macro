@@ -1,14 +1,4 @@
 schema: mastermind.page_evidence_receipt.v1
-capture_affordances:
-  - details.pvs-audit, the #us-candidate-pool details element, details.ucp-receipt, and details.pv-setup-inline are forced open by render_fixture.py::render_base only so folded content is visible in the crops.
-  - Those details elements are collapsed by default in production.
-  - The view model is synthetic fixture data from render_fixture.py::base_vm; it is not a production board.
-provenance:
-  superseded_capture: 4a1e829ef70879d58e317c65065596bee15fc3d0
-  superseded_at: "2026-09-29T15:57Z"
-  superseded_reasons:
-    - R4-1 changed the none-state plan-relation copy.
-    - R4-3 used the wrong screenshot target for the PLV states.
 changed_paths:
   - templates/_prophet_setup_detail.html.j2
   - templates/_us_board_cards.html.j2
