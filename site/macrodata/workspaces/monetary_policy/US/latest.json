@@ -162,8 +162,8 @@
         "prior_value": 3.88
       },
       {
-        "current_value": 87.0,
-        "delta": -3.0,
+        "current_value": 89.0,
+        "delta": -1.0,
         "metric_id": "market_implied_path_12m_bp",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 90.0
@@ -176,8 +176,8 @@
         "prior_value": 0.36
       },
       {
-        "current_value": 1.0,
-        "delta": -2.0,
+        "current_value": 2.0,
+        "delta": -1.0,
         "metric_id": "dots_vs_market_gap_bp",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 3.0
@@ -190,10 +190,13 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [],
-    "correction_state": "none",
-    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "monetary_policy-US-48e9b08bd9982da7"
+    "changed_fingerprints": [
+      "dots_vs_market_gap_bp:dots_vs_market_gap_bp:9f04be6b3f200104",
+      "market_implied_path_12m_bp:market_implied_path_12m_bp:eda3fc744520bc26"
+    ],
+    "correction_state": "superseded",
+    "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
+    "predecessor_generation_id": "monetary_policy-US-7cc0593362df0224"
   },
   "drivers": {
     "balance_sheet": [
@@ -258,7 +261,7 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "market_implied_path_12m_bp",
-        "impact_magnitude": 87.0,
+        "impact_magnitude": 89.0,
         "impact_sign": 1,
         "label": {
           "en": "Market-implied 12m path",
@@ -267,12 +270,12 @@
         "note": "positive = market prices net hikes over 12m; negative = net cuts; a market PRICE, not a forecast",
         "owner_field": "board.rate_path_row.implied_bp_12m",
         "unit": "bp",
-        "value": 87.0
+        "value": 89.0
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "dots_vs_market_gap_bp",
-        "impact_magnitude": 1.0,
+        "impact_magnitude": 2.0,
         "impact_sign": 1,
         "label": {
           "en": "Dots vs market gap",
@@ -281,7 +284,7 @@
         "note": "positive = market prices a higher rate than the FOMC SEP median dot",
         "owner_field": "board.rate_path_row.gap.gap_bp",
         "unit": "bp",
-        "value": 1.0
+        "value": 2.0
       },
       {
         "coverage_state": "PRESENT",
@@ -314,11 +317,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-29T04:46:52Z",
+    "built_at": "2026-09-29T14:16:34Z",
     "calculation_as_of": "2026-09-25",
-    "code_version": "764daf3fff2cfc8d9deb9e2b947db3738b3909f2",
-    "content_sha256": "7cc0593362df022460ca99058d3685571b0f668213aea4de6d984311fc4ac5c2",
-    "generation_id": "monetary_policy-US-7cc0593362df0224",
+    "code_version": "8ad6a9828ff0220d7b296728a44ea7440fdaa896",
+    "content_sha256": "6e2c6839fca08ae120cf5fa52accc5ff4f3bae1088b50f1d53007a8e665c628a",
+    "generation_id": "monetary_policy-US-6e2c6839fca08ae1",
     "producer": "engine.market_os.macro_workspaces.monetary_policy",
     "rendered_at": null
   },
@@ -390,8 +393,8 @@
         "horizon": "current",
         "implication_id": "policy_stance_descriptive",
         "text": {
-          "en": "Easing pressure is building — futures still price about three hikes. A deeper equity pullback is the main offset.",
-          "zh": "宽松压力积聚——期货仍定价约三次加息。 股市进一步回调是主要对冲。"
+          "en": "Easing pressure is building — futures still price about 4 hikes. A deeper equity pullback is the main offset.",
+          "zh": "宽松压力积聚——期货仍定价约4次加息。 股市进一步回调是主要对冲。"
         },
         "trace_ref": "data/rates_command/latest.json#stance"
       },
@@ -413,8 +416,8 @@
         "horizon": "months",
         "implication_id": "dots_vs_market_read",
         "text": {
-          "en": "At end-2026 the market implies 4.11% vs the Fed's 4.1% median dot (1bp - market ≈ the Fed). This is a market PRICE (futures-implied), not a Fed forecast or stated intent.",
-          "zh": "在end-2026，市场隐含4.11%，对比美联储4.1%的中位点（1个基点 — 市场与美联储基本一致）。这是市场价格（期货隐含），并非美联储预测或既定意图。"
+          "en": "At end-2026 the market implies 4.12% vs the Fed's 4.1% median dot (2bp - market ≈ the Fed). This is a market PRICE (futures-implied), not a Fed forecast or stated intent.",
+          "zh": "在end-2026，市场隐含4.12%，对比美联储4.1%的中位点（2个基点 — 市场与美联储基本一致）。这是市场价格（期货隐含），并非美联储预测或既定意图。"
         },
         "trace_ref": "data/rates_command/latest.json#board.rate_path_row.gap"
       }
@@ -611,7 +614,7 @@
           "value": null
         },
         "unit": "bp",
-        "value": 87.0,
+        "value": 89.0,
         "value_type": "basis_points"
       },
       {
@@ -647,7 +650,7 @@
           "value": null
         },
         "unit": "percent",
-        "value": 4.4,
+        "value": 4.42,
         "value_type": "percent"
       },
       {
@@ -683,7 +686,7 @@
           "value": null
         },
         "unit": "percent",
-        "value": 4.75,
+        "value": 4.77,
         "value_type": "percent"
       },
       {
@@ -755,7 +758,7 @@
           "value": null
         },
         "unit": "bp",
-        "value": 1.0,
+        "value": 2.0,
         "value_type": "basis_points"
       },
       {

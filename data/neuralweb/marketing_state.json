@@ -82,7 +82,7 @@
       ],
       "total_envelope_usd": 0
     },
-    "opportunity_queue_depth": 291,
+    "opportunity_queue_depth": 286,
     "self_improvement": {
       "loop_state": "observing",
       "open_hypotheses": [],
@@ -206,7 +206,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-05"
+        "next_review": "2026-10-06"
       },
       "retirement_test": "Retire if a simpler governance mechanism achieves equivalent attribution accuracy with lower inference cost over 90 days.",
       "scorecard": {
@@ -301,7 +301,7 @@
       "clock": {
         "cadence": "daily",
         "last_review": null,
-        "next_review": "2026-09-29"
+        "next_review": "2026-09-30"
       },
       "retirement_test": "Retire if a managed external execution platform provides equivalent reliability, auditability, and cost transparency.",
       "scorecard": {
@@ -397,7 +397,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-05"
+        "next_review": "2026-10-06"
       },
       "retirement_test": "Retire if opportunity detection recall falls below 60% on major events for two consecutive quarters.",
       "scorecard": {
@@ -503,7 +503,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-05"
+        "next_review": "2026-10-06"
       },
       "retirement_test": "Retire a specific product when it generates fewer than 10 qualified acquisition events per month for 60 days.",
       "scorecard": {
@@ -609,7 +609,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-05"
+        "next_review": "2026-10-06"
       },
       "retirement_test": "Retire if creative output fails distinctness checks or produces zero qualified-reach events for 30 consecutive days.",
       "scorecard": {
@@ -730,7 +730,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-05"
+        "next_review": "2026-10-06"
       },
       "retirement_test": "Retire a channel adapter if it produces warnings, policy flags, or zero qualified-reach events for 60 days.",
       "scorecard": {
@@ -831,7 +831,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-05"
+        "next_review": "2026-10-06"
       },
       "retirement_test": "Redesign if day-30 retained-contribution forecast is negative for two consecutive cohort reviews.",
       "scorecard": {
@@ -931,7 +931,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-05"
+        "next_review": "2026-10-06"
       },
       "retirement_test": "Retire a partner if they produce zero incremental retained contributions after two payout cycles.",
       "scorecard": {
@@ -1047,7 +1047,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-05"
+        "next_review": "2026-10-06"
       },
       "retirement_test": "Redesign if attribution methodology fails holdout validation on two consecutive quarter reviews.",
       "scorecard": {
@@ -1153,7 +1153,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-05"
+        "next_review": "2026-10-06"
       },
       "retirement_test": "The auditor is never retired; it may be redesigned if it generates more than 5% false-positive quarantines per month.",
       "scorecard": {
@@ -1250,7 +1250,7 @@
       "clock": {
         "cadence": "weekly",
         "last_review": null,
-        "next_review": "2026-10-05"
+        "next_review": "2026-10-06"
       },
       "retirement_test": "Retire if indexed dossier pages produce fewer than 10 qualified organic acquisition events per month for 60 consecutive days.",
       "scorecard": {
@@ -1690,14 +1690,14 @@
   },
   "pipeline": {
     "opportunities": {
-      "open": 291,
-      "scored": 479,
+      "open": 286,
+      "scored": 481,
       "newest": [
         {
           "id": "radar-earnings-ACN-2026-09-29",
           "problem_or_desire": "$ACN: earnings 2026-10-01 pre-market",
           "expected_value": 0.5,
-          "score": 0.408371,
+          "score": 0.309549,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         },
@@ -1705,7 +1705,7 @@
           "id": "radar-earnings-AIR-2026-09-29",
           "problem_or_desire": "$AIR: earnings 2026-09-29 after hours",
           "expected_value": 0.5,
-          "score": 0.408371,
+          "score": 0.309549,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         },
@@ -1713,7 +1713,7 @@
           "id": "radar-earnings-CAG-2026-09-29",
           "problem_or_desire": "$CAG: earnings 2026-09-30 pre-market",
           "expected_value": 0.5,
-          "score": 0.408371,
+          "score": 0.309549,
           "half_life_class": "earnings_follow_up",
           "status": "open"
         }
@@ -1738,30 +1738,30 @@
       ]
     },
     "publications": {
-      "total": 1422,
-      "receipts": 1422,
+      "total": 1434,
+      "receipts": 1434,
       "corrections": 0,
       "newest": [
         {
-          "id": "pub-ob-2026-09-29-afa6f1e027",
+          "id": "pub-ob-2026-09-29-2691e4d884",
           "channel": "x",
           "account": "mastermind_news",
           "status": "clean",
-          "published_at": "2026-09-29T01:21:31Z"
+          "published_at": "2026-09-29T14:01:07Z"
         },
         {
-          "id": "pub-ob-2026-09-28-66d15ae751",
+          "id": "pub-ob-2026-09-29-37d16036b4",
           "channel": "x",
-          "account": "flagship",
+          "account": "mastermind_news",
           "status": "clean",
-          "published_at": "2026-09-28T08:37:49Z"
+          "published_at": "2026-09-29T14:01:07Z"
         },
         {
-          "id": "pub-ob-2026-09-27-937f3c5b12",
+          "id": "pub-ob-2026-09-29-3a72b129da",
           "channel": "x",
-          "account": "flagship",
+          "account": "mastermind_news",
           "status": "clean",
-          "published_at": "2026-09-27T20:29:24Z"
+          "published_at": "2026-09-29T14:01:07Z"
         }
       ]
     },
@@ -1985,9 +1985,9 @@
     }
   ],
   "content": {
-    "total_posts": 33,
-    "signal_posts": 3,
-    "charts": 130,
+    "total_posts": 29,
+    "signal_posts": 4,
+    "charts": 138,
     "accounts": 13,
     "state": "present",
     "as_of": "2026-09-29"
@@ -2000,7 +2000,7 @@
   ],
   "schema_version": 1,
   "produced_by": "engine/neuralweb/marketing_governor.py",
-  "produced_at": "2026-09-29T07:00:33Z",
-  "inputs_hash": "sha256:804f710691eaeb841dc85e99be2862df5729174714028c7ed711a4c3da07d6f7",
+  "produced_at": "2026-09-29T16:36:08Z",
+  "inputs_hash": "sha256:18f96888d2b147373ba4d01d9508eb5dfeb6023fbb5ace2daebdc3db9010eb85",
   "tier": "display"
 }

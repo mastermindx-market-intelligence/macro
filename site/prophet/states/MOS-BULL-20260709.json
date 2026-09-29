@@ -1,7 +1,7 @@
 {
   "schema": "prophet.management_state/v1",
   "id": "MOS-BULL-20260709",
-  "asof": "2026-09-28",
+  "asof": "2026-09-29",
   "phase": "overtime",
   "detection_phase": "overtime",
   "management_confidence": 43.7,
@@ -14,13 +14,13 @@
     "progress": 16.5,
     "pace": 0.0,
     "retention": 16.6,
-    "overlay": 53.0
+    "overlay": 61.0
   },
   "geometry": {
     "dist_to_stop_r": 1.227,
     "dist_to_t1_r": 1.273,
     "dist_to_t2_r": 2.773,
-    "horizon_pct_used": 168.9,
+    "horizon_pct_used": 171.1,
     "p1": 0.1515,
     "p2": 0.0758,
     "p3": null,
@@ -45,6 +45,6 @@
   "_first_trigger_ts": "2026-07-28",
   "_first_t1_ts": null,
   "_first_t2_ts": null,
-  "days_elapsed": 76,
-  "tau": 1.6889
+  "days_elapsed": 77,
+  "tau": 1.7111
 }

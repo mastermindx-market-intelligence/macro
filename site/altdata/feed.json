@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-09-29T04:39:08.450851+00:00",
+  "generated_utc": "2026-09-29T14:02:04.563875+00:00",
   "as_of": "2026-09-29",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -26511,17 +26511,6 @@
         "hot": true
       },
       {
-        "ticker": "FIVE",
-        "net_up_30d": 23,
-        "breadth": 1.0,
-        "est_chg_30d": 11.39,
-        "n_analysts": 23,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 23,
-        "hot": true
-      },
-      {
         "ticker": "RTX",
         "net_up_30d": 23,
         "breadth": 1.0,
@@ -26548,6 +26537,17 @@
         "net_up_30d": 23,
         "breadth": 1.0,
         "est_chg_30d": 0.66,
+        "n_analysts": 23,
+        "bull_ratio": 1.0,
+        "rising": true,
+        "revision_delta": 23,
+        "hot": true
+      },
+      {
+        "ticker": "VEEV",
+        "net_up_30d": 23,
+        "breadth": 1.0,
+        "est_chg_30d": 2.22,
         "n_analysts": 23,
         "bull_ratio": 1.0,
         "rising": true,
@@ -28840,14 +28840,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "MSFT",
-        "mentions": 25,
-        "sentiment": 0.015
-      },
-      {
         "ticker": "QQQ",
         "mentions": 25,
         "sentiment": 0.074
+      },
+      {
+        "ticker": "MSFT",
+        "mentions": 25,
+        "sentiment": 0.015
       },
       {
         "ticker": "OKLO",
@@ -30680,7 +30680,7 @@
         "ticker": "TFC",
         "next_date": "2026-10-16",
         "days_to": 17,
-        "eps_forecast": 1.11,
+        "eps_forecast": 1.12,
         "last_surprise_pct": 13.9
       },
       {
@@ -30701,7 +30701,7 @@
         "ticker": "FITB",
         "next_date": "2026-10-19",
         "days_to": 20,
-        "eps_forecast": 1.08,
+        "eps_forecast": 1.09,
         "last_surprise_pct": 4.1
       },
       {
@@ -30743,7 +30743,7 @@
         "ticker": "GM",
         "next_date": "2026-10-20",
         "days_to": 21,
-        "eps_forecast": 3.37,
+        "eps_forecast": 3.41,
         "last_surprise_pct": 14.1
       },
       {

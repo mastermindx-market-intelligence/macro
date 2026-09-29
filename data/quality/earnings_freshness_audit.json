@@ -1,14 +1,14 @@
 {
-  "as_of": "2026-09-29T04:03:50.397859+00:00",
+  "as_of": "2026-09-29T14:05:16.628701+00:00",
   "ok": true,
   "fail_reasons": [],
   "warnings": [],
   "errors": [],
   "detail": {
     "today_utc": "2026-09-29",
-    "store_path": "/Users/chriswong/actions-runner-2/_work/macro/macro/data/earnings/earnings.parquet",
+    "store_path": "/Users/chriswong/actions-runner-4/_work/macro/macro/data/earnings/earnings.parquet",
     "store_present": true,
-    "as_of_str": "2026-09-29T03:58:53.635811+00:00",
+    "as_of_str": "2026-09-29T14:00:05.641733+00:00",
     "as_of_age_td": 0,
     "ticker_count": 2311,
     "with_next_date": 2311,

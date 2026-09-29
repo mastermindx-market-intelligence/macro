@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-09-29T07:00:02Z",
+  "produced_at": "2026-09-29T16:35:37Z",
   "as_of": "2026-09-29",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
-    "items": 33,
-    "passed": 31,
+    "items": 30,
+    "passed": 28,
     "quarantined": 2,
     "quarantined_policy": 2,
     "quarantined_overflow": 0,
@@ -20,15 +20,15 @@
   },
   "quarantined": [
     {
-      "id": "post-meagan-013",
-      "account": "meagan",
-      "slot": "D1-S13",
+      "id": "post-sophia-012",
+      "account": "sophia",
+      "slot": "D1-S12",
       "type": "macro",
       "cashtag": "",
-      "headline": "Growth is holding up. Inflation is still warm.",
+      "headline": "",
       "class": "policy",
       "reasons": [
-        "near_dup:post-flagship-020"
+        "near_dup:post-founder-016"
       ]
     },
     {
@@ -37,7 +37,7 @@
       "slot": "D1-S3",
       "type": "macro",
       "cashtag": "",
-      "headline": "New York wakes to a labor market that still isn't cracking.",
+      "headline": "While New York slept, the US growth scare lost another data point.",
       "class": "policy",
       "reasons": [
         "near_dup:post-flagship-020"
@@ -46,20 +46,28 @@
   ],
   "passed": [
     {
-      "id": "post-flagship-006",
-      "account": "flagship",
-      "slot": "D1-S6",
-      "type": "watchlist",
-      "cashtag": "$COHU",
-      "headline": ""
-    },
-    {
       "id": "post-flagship-016",
       "account": "flagship",
       "slot": "D1-S16",
       "type": "chart",
-      "cashtag": "$REX",
-      "headline": "$REX turned away at 44.5"
+      "cashtag": "$AMKR",
+      "headline": "$AMKR at the decision point"
+    },
+    {
+      "id": "post-flagship-017",
+      "account": "flagship",
+      "slot": "D1-S17",
+      "type": "signal",
+      "cashtag": "$TNDM",
+      "headline": ""
+    },
+    {
+      "id": "post-flagship-019",
+      "account": "flagship",
+      "slot": "D1-S19",
+      "type": "chart",
+      "cashtag": "$COHU",
+      "headline": ""
     },
     {
       "id": "post-flagship-020",
@@ -67,39 +75,7 @@
       "slot": "D1-S20",
       "type": "macro",
       "cashtag": "",
-      "headline": "The growth scare still isn't in the claims data"
-    },
-    {
-      "id": "post-flagship-022",
-      "account": "flagship",
-      "slot": "D1-S22",
-      "type": "chart",
-      "cashtag": "$CLH",
-      "headline": ""
-    },
-    {
-      "id": "post-flagship-028",
-      "account": "flagship",
-      "slot": "D1-S28",
-      "type": "chart",
-      "cashtag": "$GAP",
-      "headline": ""
-    },
-    {
-      "id": "post-flagship-033",
-      "account": "flagship",
-      "slot": "D1-S33",
-      "type": "receipt",
-      "cashtag": "$WHR",
-      "headline": "$WHR is among today's most-talked-about names"
-    },
-    {
-      "id": "post-flagship-055",
-      "account": "flagship",
-      "slot": "D1-S55",
-      "type": "chart",
-      "cashtag": "$ELF",
-      "headline": ""
+      "headline": "Claims still point to a firm labor market"
     },
     {
       "id": "post-conf-flagship-001",
@@ -122,31 +98,31 @@
       "account": "founder",
       "slot": "D1-S6",
       "type": "chart",
-      "cashtag": "$IPGP",
+      "cashtag": "$SHO",
       "headline": ""
-    },
-    {
-      "id": "post-founder-007",
-      "account": "founder",
-      "slot": "D1-S7",
-      "type": "receipt",
-      "cashtag": "$WHR",
-      "headline": "$WHR is one of today's most-talked-about names"
     },
     {
       "id": "post-founder-009",
       "account": "founder",
       "slot": "D1-S9",
       "type": "chart",
-      "cashtag": "$CLH",
+      "cashtag": "$ELF",
       "headline": ""
     },
     {
-      "id": "post-founder-031",
+      "id": "post-founder-016",
       "account": "founder",
-      "slot": "D1-S31",
-      "type": "chart",
-      "cashtag": "$AIZ",
+      "slot": "D1-S16",
+      "type": "macro",
+      "cashtag": "",
+      "headline": ""
+    },
+    {
+      "id": "post-founder-032",
+      "account": "founder",
+      "slot": "D1-S32",
+      "type": "receipt",
+      "cashtag": "$WING",
       "headline": ""
     },
     {
@@ -154,56 +130,48 @@
       "account": "founder",
       "slot": "D1-S34",
       "type": "signal",
-      "cashtag": "$WABC",
+      "cashtag": "$QDEL",
       "headline": ""
+    },
+    {
+      "id": "post-founder-045",
+      "account": "founder",
+      "slot": "D1-S45",
+      "type": "chart",
+      "cashtag": "$VTRS",
+      "headline": "$VTRS closes at 17.8"
     },
     {
       "id": "post-founder-046",
       "account": "founder",
       "slot": "D1-S46",
       "type": "chart",
-      "cashtag": "$BKR",
+      "cashtag": "$GAP",
       "headline": ""
     },
     {
-      "id": "post-meagan-004",
+      "id": "post-meagan-013",
       "account": "meagan",
-      "slot": "D1-S4",
-      "type": "chart",
-      "cashtag": "$CNM",
-      "headline": ""
+      "slot": "D1-S13",
+      "type": "macro",
+      "cashtag": "",
+      "headline": "The labor market still isn't confirming a growth scare."
     },
     {
-      "id": "post-meagan-012",
+      "id": "post-meagan-051",
       "account": "meagan",
-      "slot": "D1-S12",
-      "type": "receipt",
-      "cashtag": "$AAP",
-      "headline": ""
-    },
-    {
-      "id": "post-meagan-022",
-      "account": "meagan",
-      "slot": "D1-S22",
-      "type": "chart",
-      "cashtag": "$TNDM",
-      "headline": ""
-    },
-    {
-      "id": "post-meagan-029",
-      "account": "meagan",
-      "slot": "D1-S29",
+      "slot": "D1-S51",
       "type": "chart",
       "cashtag": "$ALGT",
       "headline": ""
     },
     {
-      "id": "post-meagan-031",
+      "id": "post-meagan-053",
       "account": "meagan",
-      "slot": "D1-S31",
-      "type": "chart",
-      "cashtag": "$BKR",
-      "headline": ""
+      "slot": "D1-S53",
+      "type": "signal",
+      "cashtag": "$AEIS",
+      "headline": "$AEIS gained ground last week, but 290 still held."
     },
     {
       "id": "post-theme-004",
@@ -214,27 +182,59 @@
       "headline": "Cloud Computing selling off, -1.5% avg on Monday"
     },
     {
-      "id": "post-sophia-020",
-      "account": "sophia",
-      "slot": "D1-S20",
-      "type": "chart",
-      "cashtag": "$REX",
-      "headline": "$REX keeps finding the same long-term ceiling"
-    },
-    {
-      "id": "post-sophia-032",
-      "account": "sophia",
-      "slot": "D1-S32",
-      "type": "chart",
-      "cashtag": "$GAP",
+      "id": "post-housepick-003",
+      "account": "meagan",
+      "slot": "D1-S6",
+      "type": "watchlist",
+      "cashtag": "$JCI",
       "headline": ""
     },
     {
-      "id": "post-kelly-012",
+      "id": "post-sophia-006",
+      "account": "sophia",
+      "slot": "D1-S6",
+      "type": "chart",
+      "cashtag": "$AMKR",
+      "headline": ""
+    },
+    {
+      "id": "post-sophia-008",
+      "account": "sophia",
+      "slot": "D1-S8",
+      "type": "receipt",
+      "cashtag": "$DAL",
+      "headline": ""
+    },
+    {
+      "id": "post-sophia-039",
+      "account": "sophia",
+      "slot": "D1-S39",
+      "type": "chart",
+      "cashtag": "$TNDM",
+      "headline": ""
+    },
+    {
+      "id": "post-sophia-054",
+      "account": "sophia",
+      "slot": "D1-S54",
+      "type": "receipt",
+      "cashtag": "$WING",
+      "headline": ""
+    },
+    {
+      "id": "post-kelly-006",
       "account": "kelly",
-      "slot": "D1-S12",
-      "type": "macro",
-      "cashtag": "",
+      "slot": "D1-S6",
+      "type": "chart",
+      "cashtag": "$CNM",
+      "headline": ""
+    },
+    {
+      "id": "post-kelly-016",
+      "account": "kelly",
+      "slot": "D1-S16",
+      "type": "chart",
+      "cashtag": "$IPGP",
       "headline": ""
     },
     {
@@ -242,16 +242,16 @@
       "account": "kelly",
       "slot": "D1-S17",
       "type": "chart",
-      "cashtag": "$PDFS",
+      "cashtag": "$VTRS",
       "headline": ""
     },
     {
-      "id": "post-kelly-045",
+      "id": "post-kelly-040",
       "account": "kelly",
-      "slot": "D1-S45",
+      "slot": "D1-S40",
       "type": "chart",
-      "cashtag": "$WABC",
-      "headline": "$WABC retested the spike buyers' average"
+      "cashtag": "$CLH",
+      "headline": ""
     },
     {
       "id": "post-theme-005",
@@ -262,41 +262,17 @@
       "headline": "Semiconductors ripping, +2.0% avg on Monday"
     },
     {
-      "id": "post-cici-028",
+      "id": "post-cici-024",
       "account": "cici",
-      "slot": "D1-S28",
-      "type": "chart",
-      "cashtag": "$IPGP",
-      "headline": "旧关再试 (old gate, tested again)"
-    },
-    {
-      "id": "post-cici-048",
-      "account": "cici",
-      "slot": "D1-S48",
-      "type": "chart",
-      "cashtag": "$AEIS",
-      "headline": ""
-    },
-    {
-      "id": "post-cici-049",
-      "account": "cici",
-      "slot": "D1-S49",
+      "slot": "D1-S24",
       "type": "receipt",
-      "cashtag": "$WING",
+      "cashtag": "$XRAY",
       "headline": ""
-    },
-    {
-      "id": "post-theme-006",
-      "account": "cici",
-      "slot": "D1-S2",
-      "type": "theme_list",
-      "cashtag": "$STEM",
-      "headline": "Smart Home ripping, +1.1% avg on Monday"
     }
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 392,
+      "pairs_checked": 329,
       "hits": 2,
       "shared_media_hits": 0
     },
