@@ -211,7 +211,6 @@ def capture() -> None:
         site = Path(temporary) / "site"
         site.mkdir()
         pages = prepare_site(site)
-        Path("debug-fixture.html").write_text(pages["fixture_plv_today.html"], encoding="utf-8")
         from playwright.sync_api import sync_playwright
         pages_out = []
         with sync_playwright() as playwright:
