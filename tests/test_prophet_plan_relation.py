@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import pytest
 from bs4 import BeautifulSoup
 
 
@@ -205,6 +206,7 @@ def test_dashboard_has_delegated_plan_link_handler_without_pool_state_writes():
     assert "ucp-" not in handler
 
 
+@pytest.mark.needs_full_checkout("mockups")
 def test_evidence_manifest_is_bound_to_the_captured_ui_head_and_fixture_bytes():
     import json
     import hashlib
@@ -227,6 +229,7 @@ def test_evidence_manifest_is_bound_to_the_captured_ui_head_and_fixture_bytes():
             assert state["sha256"] == hashlib.sha256(data).hexdigest()
 
 
+@pytest.mark.needs_full_checkout("mockups")
 def test_plv_evidence_states_are_distinct_for_every_shell_cell():
     import json
     import itertools
