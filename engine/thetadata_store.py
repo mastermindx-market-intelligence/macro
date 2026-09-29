@@ -96,15 +96,62 @@ _OPS_WT_STORE = Path("/Users/chriswong/theta-ops-wt/data/thetadata_eod")
 _STORE_TIERS = ("eod", "oi", "greeks")
 
 
+def _drained_store(p: Path) -> bool:
+    """True for the AD-1T2b shape specifically: the directory exists and carries
+    at least one tier directory, but no tier holds a single root. Diagnostic only
+    — resolution is decided by ``_has_store_content``."""
+    try:
+        if not p.is_dir():
+            return False
+        tiers = [p / t for t in _STORE_TIERS if (p / t).is_dir()]
+        if not tiers:
+            return False
+        return not any(any(c.is_dir() for c in t.iterdir()) for t in tiers)
+    except OSError:
+        return False
+
+
 def _has_store_content(p: Path) -> bool:
-    """True when `p` exists and contains at least one of eod/, oi/, greeks/.
+    """True when `p` exists and at least one of eod/, oi/, greeks/ HOLDS A ROOT.
 
     An empty stub directory (exists, no tier subdirs) does NOT count — resolving
     one silently yields empty frames everywhere downstream, which is the exact
     incident shape (options_witness published 0/18 themes from a stub store).
+
+    AD-1T2b (2026-09-29): a directory whose tier subdirs all EXIST but are EMPTY
+    is the same incident wearing a better disguise, so it does not count either.
+    Observed live on the store-bearing M1 (m1studio) that day: eod/, oi/ and
+    greeks/ all present and all holding zero roots, beside a _manifest.json still
+    reading ``"status": "healthy", "complete_t1_roots": 372`` from 2026-09-25 —
+    while a control directory on the same host and filesystem (data/yahoo/) held
+    728 entries. The old directory-existence-only predicate admitted that store,
+    so the options-intel producer resolved it, took build()'s ``anchor_str is
+    None`` branch, and published a blank DEGRADED/MIXED_VINTAGE brief OVER the
+    last good one while exiting 0 — even under ``--require-store``, whose
+    artifact readback compares the brief against the receipt_id that same run had
+    just written.
+
+    A root is a DIRECTORY, matching how the store is actually read
+    (``roots()`` counts ``p.is_dir()`` children only), so a stray ``.DS_Store``
+    or a leftover lock file cannot revive the false positive. This stays cheap:
+    one readdir per tier, stopping at the first tier that has a root, and it
+    never walks a root's year files.
+
+    NOT a health or freshness check — a store holding real but thin or stale data
+    still resolves, and publishing that honestly (NO_SIGNAL, INSUFFICIENT_COVERAGE,
+    STALE_SOURCE) remains the contract. This predicate answers only "is there any
+    data here at all".
     """
     try:
-        return p.is_dir() and any((p / t).is_dir() for t in _STORE_TIERS)
+        if not p.is_dir():
+            return False
+        for tier in _STORE_TIERS:
+            tier_dir = p / tier
+            if not tier_dir.is_dir():
+                continue
+            if any(child.is_dir() for child in tier_dir.iterdir()):
+                return True
+        return False
     except OSError:
         return False
 
@@ -119,8 +166,9 @@ def resolve_thetadata_store(required: bool = False,
       2. lib.config data_dir()/thetadata_eod (the repo-local store / symlink).
       3. the ops-host worktree store (_OPS_WT_STORE).
 
-    A candidate resolves only if it EXISTS and contains at least one of
-    eod/, oi/, greeks/ (see _has_store_content).
+    A candidate resolves only if it EXISTS and at least one of eod/, oi/,
+    greeks/ actually HOLDS A ROOT (see _has_store_content). A store whose tier
+    directories are all present but empty is a drained store, not a store.
 
     Args:
         required: when True and nothing resolves, raise RuntimeError naming
@@ -148,13 +196,27 @@ def resolve_thetadata_store(required: bool = False,
             log.info("thetadata_store: resolved store=%s source=%s purpose=%s",
                      path, source, purpose or "-")
             return path
+        # AD-1T2b: distinguish the two failures an operator must treat
+        # differently. "no store on this host" is a PLACEMENT fault (the job is
+        # on the wrong runner); "the store is here but drained" is a DATA fault
+        # (the collector stopped, or the bytes were reclaimed) and re-placing the
+        # job will not fix it. The old message said only "resolved store=NONE",
+        # which reads as the first while being the second.
+        if _drained_store(path):
+            log.error(
+                "thetadata_store: %s=%s EXISTS with tier directories but holds "
+                "ZERO roots — a DRAINED store, not a missing one. Re-placing this "
+                "job on another host will not fix it; the store's own writer is "
+                "the owner (purpose=%s)", source, path, purpose or "-")
         if source == "env":
             if not path.exists():
                 log.warning(
                     "thetadata_store: THETADATA_STORE=%s is SET but the path does "
                     "not exist — ignoring the env override and falling through "
                     "(purpose=%s)", env, purpose or "-")
-            else:
+            elif not _drained_store(path):
+                # A drained store already got its own, more precise ERROR above;
+                # this branch is the true stub (no tier directories at all).
                 log.warning(
                     "thetadata_store: THETADATA_STORE=%s exists but contains none "
                     "of eod/ oi/ greeks/ — empty stub, not a store; falling "
@@ -167,8 +229,10 @@ def resolve_thetadata_store(required: bool = False,
         raise RuntimeError(
             f"ThetaData store required (purpose={purpose or '-'}) but no path "
             f"resolves. Tried: {', '.join(tried)}. A path only resolves if it "
-            f"exists and contains at least one of eod/, oi/, greeks/. Set "
-            f"THETADATA_STORE or point the caller at a real store."
+            f"exists and at least one of eod/, oi/, greeks/ holds a root — a "
+            f"store whose tier directories are all present but EMPTY is drained, "
+            f"not resolvable. Set THETADATA_STORE or point the caller at a real "
+            f"store."
         )
     return None
 
