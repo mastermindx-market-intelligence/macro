@@ -954,6 +954,47 @@ def test_j8_fail_closed_plan():
     assert chk["status"] == "FAIL", chk
 
 
+def test_j8_fail_duplicate_target_ids():
+    # Two live page nodes carry the same plan id: the link's target identity is
+    # ambiguous, so J8 must FAIL rather than silently binding to the first one.
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    card = soup.select_one("#pv-PLAN1")
+    twin = BeautifulSoup(str(card), _pjr.HTML_PARSER).select_one("#pv-PLAN1")
+    card.insert_after(twin)
+    assert len(soup.select("#pv-PLAN1")) == 2
+    chk, _ = _pjr._check_j8(soup, _index_payload(), "TEST1")
+    assert chk["status"] == "FAIL", chk
+    assert any(f.get("reason") == "duplicate_target_id"
+               for f in chk["observed"]), chk
+
+
+def _unknown_relation_soup() -> BeautifulSoup:
+    soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
+    for body in soup.select('[data-setup-ticker="TEST1"] .pv-setup-body'):
+        body["data-plan-relation"] = "unknown"
+        section = body.select_one(".pvs-plan-relation")
+        section["data-plan-relation"] = "unknown"
+        for link in section.select(".pvs-plan-link"):
+            link.decompose()
+    return soup
+
+
+def test_j8_pass_unknown_relation_when_no_open_plan_exists():
+    # 'unknown' is an honest state only when the open plan book agrees that
+    # nothing could have been related: the only TEST1 plan is closed.
+    chk, plan_ids = _pjr._check_j8(_unknown_relation_soup(),
+                                   _index_payload(plan_closed=True), "TEST1")
+    assert chk["status"] == "PASS", chk
+    assert plan_ids == []
+
+
+def test_j8_fail_unknown_relation_while_open_plan_exists():
+    # An open same-security plan exists in the book, so 'unknown' hides a
+    # relation the source could have shown: FAIL, never a quiet PASS.
+    chk, _ = _pjr._check_j8(_unknown_relation_soup(), _index_payload(), "TEST1")
+    assert chk["status"] == "FAIL", chk
+
+
 def test_j8_fail_target_exists_only_in_template():
     soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     card = soup.select_one("#pv-PLAN1")

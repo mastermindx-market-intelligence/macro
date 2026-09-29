@@ -1048,9 +1048,12 @@ def _check_j8(soup: BeautifulSoup, index: dict[str, Any],
         record = link.find_parent(class_="pvs-plan-rec")
         rendered_id = str(record.get("data-plan-id", "")) if record else ""
         book = plans.get(plan_id)
-        card = _select_first(soup, f'#pv-{plan_id}') if plan_id else None
-        if card is not None and card.find_parent("template") is not None:
-            card = None
+        live_cards = [c for c in (_select_all(soup, f'#pv-{plan_id}') if plan_id else [])
+                      if c.find_parent("template") is None]
+        card = live_cards[0] if live_cards else None
+        if len(live_cards) > 1:
+            failures.append({"target": target, "reason": "duplicate_target_id",
+                             "live_nodes": len(live_cards)})
         card_ticker = str(card.get("data-ticker", "")).upper() if card else ""
         if not card_ticker and card is not None:
             href = card.select_one('a[href*="stock.html#"]')
