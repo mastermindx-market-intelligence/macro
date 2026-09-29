@@ -5,36 +5,49 @@ model: sol
 prs:
 - 8154
 ended_because: ci_handoff
-mission: Fix the existing Reflex firing metadata contract before future risk-policy
-  evidence reuses it. MISSION_COMPLETE:false.
-state_before: Caller payload could overwrite five documented writer-owned metadata
-  fields in the actual append function.
+mission: Preserve Reflex writer metadata and bind cached registry rules to the requested
+  source root before future risk-policy use. MISSION_COMPLETE:false.
+state_before: The firing metadata repair was tested and CI-green, but the same module
+  could return cached rules from a different registry root.
 changed:
 - path: engine/neuralweb/reflexes.py
-  what: Preserve canonical metadata after merging the caller payload without changing
-    ordinary bytes.
+  what: Bind the existing single-entry cache to resolved source path atomically; preserve
+    metadata repair and explicit refresh contract.
 - path: tests/test_reflexes.py
-  what: Five methods / twelve additional cases for reserved fields and compatibility.
+  what: Eleven registry-root tests plus unchanged selected writer/load cases.
 - path: .github/ci/legacy-jobs.yml
-  what: Register only writer/reader classes in existing neural-web-core job.
+  what: Append the new test class to the existing neural-web-core command.
+- path: research/grey_deer/REFLEX_FIRING_METADATA_INTEGRITY_2026-09-28.md
+  what: Record causal witness, proof, current CI limits and original policy gates.
 verified:
-- claim: Reserved-field regression and ordinary byte compatibility are discriminated.
+- claim: The final tests distinguish wrong-root rule reuse and preserve prior writer
+    semantics.
   command: python3.12 -m pytest tests/test_reflexes.py::TestRecordFiring tests/test_reflexes.py::TestLoadFirings
-    -q
-  result: Original 10 failures/10 passes; repaired 20 passes, synthetic isolated source
-    module.
+    tests/test_reflexes.py::TestRegistryRootIsolation -q
+  result: Original 8 failures/23 passes; repaired31 passes. Synthetic isolated native
+    module. Green log 61f0d6ff93d29e24d178e1c17bc116ace18799f56554829040a2426d15136468.
+- claim: The earlier immutable R7 candidate completed its hosted CI.
+  command: gh api repos/mastermindx-market-intelligence/macro/actions/runs/36430924429
+  result: Run completed success for98b2fa535551eecd407aa7ea54afc0070d94d179; not new
+    R8 acceptance.
 unverified:
-- claim: Source release and production behavior.
-  what_would_verify: Real hosted/current-base acceptance and normal release with original
-    telemetry behavior preserved.
+- claim: New-head source release and ordinary production behavior.
+  what_would_verify: Concluded current integration/CI, accepted self-audit and ordinary
+    native producer/reader evidence.
 unresolved:
-- No active policy grant or predictive claim is conferred by this metadata repair.
-- 'GD6A #8141 remains separately frozen pending its actual compatibility qualification.'
-- An additional native spine-consumer source read was refused before dispatch; it
-  was not retried or proxied. The proven scope remains the writer/load boundary.
+- No live risk-policy authority or predictive performance follows from evidence metadata
+  or source-root isolation.
+- Same-path registry content refresh remains explicit force/invalidate, not a new
+  hot-reload capability.
+- Current-base CI source/artifact/manifest inspection refusals remain; no retry or
+  proxy.
+- GD6A#8141 stays separately frozen and unmerged.
 next_actions:
-- Read exact branch/PR results and resolve actual CI findings.
-- Do not use this operation to retry the separately refused GD6A compatibility read.
+- Consume actual new-head CI and named findings without source churn for ancestry
+  alone.
+- Qualify the same source for release, then ordinary producer/reader behavior.
+- Bind first nonzero policy through the existing grant/scope/evidence/expiry owners;
+  do not infer a grant from the cache.
 do_not_redo:
 - Do not rewrite historic firing records or alter the claim ID algorithm.
 - Do not change rankings, policy thresholds, portfolios, source collectors or schedulers.
@@ -43,6 +56,6 @@ danger_areas:
 - A context-only marker is not financial authority or proof of single-writer admission.
 ---
 
-# Existing Grey Deer / Prophet prerequisite
+# R8 same-PR source-integrity continuation
 
-PR #8154; implementation head d3c26386464d365979e3e6bbd24bdedc4f01e72a. Five new regression methods, twenty passing writer/load cases. This is source implementation, not production acceptance. MISSION_COMPLETE:false.
+MISSION_COMPLETE:false. No source-writer release, live policy or background execution is claimed.
