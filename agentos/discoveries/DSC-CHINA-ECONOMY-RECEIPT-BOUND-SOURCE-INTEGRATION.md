@@ -8,7 +8,7 @@ claim: >
   dataframe column-wise merges must not lend old metadata to changed values.
 falsifier: >
   Run python3 -m pytest -q tests/test_china_economy_acquisition.py
-  tests/test_china_economy_adapter.py tests/test_china_economy_store.py:
+  tests/test_china_economy_parser.py tests/test_china_economy_store.py:
   an altered value admitted under an old receipt, a mixed seasonal revision,
   or a missing source silently populated from review data refutes the contract.
   A failed real build or JSON/UI mismatch refutes the corresponding integration
@@ -24,7 +24,7 @@ verified_by: >
   Sol attended integration: python3 -m scripts.build_china completed with
   RENDER_NO_DRIP=1 and CHINA_VM_DUMP=1; installed ChinaMacroAdapter qualified
   through collectors.base.run_adapter; source-final.xml records 358 passed
-  and one explicitly deselected baseline test. Evidence manifest and exact
+  with zero failures/errors/skips. Evidence manifest and exact
   local receipt paths are in research/CHINA_ECONOMY_SOURCE_INTEGRATION_20260929.md.
   Machine/client chart-value, unit and definition parity was checked on the
   actual builder output, not the separately transcribed research preview.

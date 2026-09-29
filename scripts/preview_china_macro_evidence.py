@@ -118,9 +118,19 @@ def synthetic_snapshot():
     return x
 
 
+def evidence_theme_tokens() -> str:
+    """Project canonical evidence tokens into the self-contained offline preview."""
+    import re
+    css = (ROOT / "templates/theme.css").read_text()
+    declarations = re.findall(r"--(?:r-evidence-[\w-]+|evidence-[\w-]+|font-ui)\s*:[^;{}]+;", css)
+    return ":root{" + "".join(dict.fromkeys(declarations)) + "}"
+
+
 def render(snapshot:dict, destination:Path, synthetic:bool=False):
     destination.mkdir(parents=True,exist_ok=True)
     env=Environment(loader=FileSystemLoader(ROOT/'templates'),autoescape=True,undefined=StrictUndefined)
+    from engine.i18n import t_pctile
+    env.globals["t_pctile"]=t_pctile
     template=env.from_string('''<!doctype html><html lang="en" data-lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>China macro · implementation review</title><style>{{ shell_css|safe }}{{ feature_css|safe }}</style></head><body class="page-china">
     <div class="preview-header"><strong>MASTERMIND <span>CHINA / REVIEW BUILD</span></strong><div><button type="button" onclick="document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark'">Light / dark</button><button type="button" onclick="document.documentElement.dataset.lang=document.documentElement.dataset.lang==='en'?'zh':'en'">EN / 中文</button></div></div>
     <main class="preview-home"><p class="preview-label">{{ disclaimer }}</p><h1>From scattered readings<br>to a clear China brief.</h1><p>Four perspectives. Dated evidence. Definitions and limitations one click away.</p><nav>{% for key in ['policy','property','flows','sentiment'] %}<button type="button" data-open="{{ key }}" onclick="cnxOpenDlg('cnx-dlg-{{ key }}')">{{ snapshot.panels[key].title_en }} ↗</button>{% endfor %}</nav><p>Review artifact only. The live China dashboard has not been changed by opening this file.</p></main>
@@ -138,7 +148,7 @@ def render(snapshot:dict, destination:Path, synthetic:bool=False):
     lb['warnings'].append('Review includes one verified example per venue, not the full top-ten snapshot')
     disclaimer=('SYNTHETIC INTERACTION TEST — generated fixture histories, NOT market observations.' if synthetic else 'REVIEW PREVIEW — latest audited values and public property releases. Missing histories and percentile ranks are not fabricated. Not a production feed.')
     html=template.render(snapshot=prepare_view(snapshot),lb=lb,shell_css=shell_css,
-        feature_css=(ROOT/'templates/china-macro-evidence.css').read_text(),feature_js=(ROOT/'templates/china-macro-evidence.js').read_text(),disclaimer=disclaimer)
+        feature_css=evidence_theme_tokens()+(ROOT/'templates/china-macro-evidence.css').read_text(),feature_js=(ROOT/'templates/china-macro-evidence.js').read_text(),disclaimer=disclaimer)
     (destination/'index.html').write_text(html)
     (destination/'china_macro_evidence.json').write_text(json.dumps(snapshot,ensure_ascii=False,allow_nan=False,indent=2))
     return destination/'index.html'

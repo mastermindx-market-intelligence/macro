@@ -1,18 +1,21 @@
 {# Evidence-first additions only. Imported WITH CONTEXT to share the page's t(). #}
-{% macro unit(u) -%}
+{% macro unit(u) -%}{% autoescape true %}
 {{ t(u, {'CNY bn':'人民币十亿','CNY tn':'人民币万亿','pp':'个百分点','pp of GDP':'GDP百分点','% YoY':'% 同比','net cities':'净城市数','cities':'城','stocks':'只','index':'指数','bp':'基点'}.get(u,u)) }}
-{%- endmacro %}
-{% macro status(m) -%}<span class="cnm-status cnm-status--{{ m.status }}">{{ t(m.status_en,m.status_zh) }}</span>{%- endmacro %}
-{% macro metric(m) -%}
+{% endautoescape %}{%- endmacro %}
+{% macro percentile_reading(m) -%}{% autoescape true %}
+{% if m.percentile and m.percentile.value is not none %}<div class="cnm-percentile"><i style="left:{{ m.percentile.value }}%"></i></div><p class="cnm-caveat cnm-percentile-reading">{{ t_pctile(m.percentile.value) }} · n={{ m.percentile.n }}/{{ m.percentile.window }} · {{ m.percentile.start }} → {{ m.percentile.end }}</p>{% endif %}
+{% endautoescape %}{%- endmacro %}
+{% macro status(m) -%}{% autoescape true %}<span class="cnm-status cnm-status--{{ m.status }}">{{ t(m.status_en,m.status_zh) }}</span>{% endautoescape %}{%- endmacro %}
+{% macro metric(m) -%}{% autoescape true %}
 <article class="cnm-metric" data-metric="{{ m.id }}">
   <div class="cnm-metric-label">{{ t(m.label_en,m.label_zh) }}</div>
   <div class="cnm-value">{{ m.display }}<span>{{ unit(m.unit) }}</span></div>
   <div class="cnm-metric-foot"><time datetime="{{ m.reference_date or '' }}">{{ m.get('reference_label') or m.reference_date or '—' }}</time>{{ status(m) }}</div>
   {% if m.delta_display is not none %}<div class="cnm-delta">{{ m.delta_display }} {{ unit(m.get('delta_unit',m.unit)) }} {{ t('vs previous observation','较前次观测') }} · {{ m.previous_date }}</div>{% endif %}
 </article>
-{%- endmacro %}
-{% macro empty(en, zh) -%}<div class="cnm-empty"><span aria-hidden="true">◎</span><p>{{ t(en,zh) }}</p></div>{%- endmacro %}
-{% macro leaderboard(lb) -%}
+{% endautoescape %}{%- endmacro %}
+{% macro empty(en, zh) -%}{% autoescape true %}<div class="cnm-empty"><span aria-hidden="true">◎</span><p>{{ t(en,zh) }}</p></div>{% endautoescape %}{%- endmacro %}
+{% macro leaderboard(lb) -%}{% autoescape true %}
 <h3>{{ t('Where disclosed activity is concentrated','披露成交集中在哪里') }}</h3>
 <p class="cnm-subcopy">{{ t('Most-active securities, not the whole market. Amounts stay in each disclosure currency.','仅活跃证券，不代表全市场。金额保留各自披露币种。') }}</p>
 {% if lb and (lb.southbound_buy or lb.southbound_sell or lb.northbound_turnover) %}
@@ -24,8 +27,8 @@
 {% endfor %}
 {% else %}{{ empty('The stock-level snapshot is unavailable. Aggregate flows remain separate; no destination or “smart money” claim is inferred.','个股快照暂无可用数据。总量资金独立展示，不据此推断资金去向或“聪明钱”。') }}{% endif %}
 {% if lb and lb.get('warnings') %}<p class="cnm-caveat">{{ lb.warnings | join(' · ') }}</p>{% endif %}
-{%- endmacro %}
-{% macro composition(snapshot, p, lb=none) -%}
+{% endautoescape %}{%- endmacro %}
+{% macro composition(snapshot, p, lb=none) -%}{% autoescape true %}
 {% if p.id == 'policy' %}
 <h3>{{ t('Who is supplying new financing?','新增融资来自哪里？') }}</h3>
 <p class="cnm-subcopy">{{ t('Latest single-month TSF composition · CNY bn. Negative contributions are retained.','最新单月社融构成·人民币十亿。保留负贡献项。') }}</p>
@@ -51,11 +54,11 @@
 {% for id,en,zh,question,qzh in [('margin_ratio','Leverage','杠杆','Is positioning crowded?','持仓拥挤吗？'),('turnover','Trading activity','成交活跃度','Is participation unusually active?','参与度异常活跃吗？'),('limit_balance','Speculative breadth','投机广度','Are limit-ups or limit-downs dominant?','涨停还是跌停占优？')] %}
 {% set m = (p.metrics|selectattr('id','equalto',id)|list)[0] %}
 <div class="cnm-question"><div><strong>{{ t(en,zh) }}</strong><span>{{ t(question,qzh) }}</span></div><b>{{ m.display }} <small>{{ unit(m.unit) }}</small></b></div>
-{% if m.percentile and m.percentile.value is not none %}<div class="cnm-percentile"><i style="left:{{ m.percentile.value }}%"></i></div><p class="cnm-caveat">{{ m.percentile.value }} {{ t('percentile','分位') }} · n={{ m.percentile.n }}/{{ m.percentile.window }} · {{ m.percentile.start }} → {{ m.percentile.end }}</p>{% endif %}
+{{ percentile_reading(m) }}
 {% endfor %}
 {% endif %}
-{%- endmacro %}
-{% macro panel(snapshot, key, leaderboard_data=none, legacy=none) -%}
+{% endautoescape %}{%- endmacro %}
+{% macro panel(snapshot, key, leaderboard_data=none, legacy=none) -%}{% autoescape true %}
 {% set p = snapshot.panels.get(key) if snapshot else none %}
 <div class="cnx-dlg cnm-dialog" id="cnx-dlg-{{ key }}" data-cnm-dialog>
   <div class="cnx-dlg-backdrop" onclick="cnxCloseDlg()" aria-hidden="true"></div>
@@ -93,18 +96,18 @@
     </div>
   </section>
 </div>
-{%- endmacro %}
+{% endautoescape %}{%- endmacro %}
 
-{% macro summary_rows(snapshot, key) -%}
+{% macro summary_rows(snapshot, key) -%}{% autoescape true %}
 {% set p = snapshot.panels.get(key) if snapshot else none %}
 {% if p %}<div class="cnm-summary-rows">{% for m in p.primary %}<div class="cnx-kv"><span class="k">{{ t(m.label_en,m.label_zh) }}<small>{{ m.get('reference_label') or m.reference_date or '—' }}</small></span><span class="v">{{ m.display }} {{ unit(m.unit) }}</span></div>{% endfor %}</div><div class="cnx-foot">{{ t(p.headline_en,p.headline_zh) }}</div>
 {% else %}<div class="cnx-foot">{{ t('Evidence snapshot unavailable. No stance is substituted.','证据快照暂无数据，不以其他立场代替。') }}</div>{% endif %}
-{%- endmacro %}
-{% macro glance(snapshot, key, lb=none) -%}
+{% endautoescape %}{%- endmacro %}
+{% macro glance(snapshot, key, lb=none) -%}{% autoescape true %}
 {% set p = snapshot.panels.get(key) if snapshot else none %}
 <div class="cnx-card cnm-glance" role="button" tabindex="0" aria-haspopup="dialog" onclick="cnxOpenDlg('cnx-dlg-{{ key }}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();cnxOpenDlg('cnx-dlg-{{ key }}');}"><div class="cnx-ctitle">{{ t(p.title_en,p.title_zh) if p else t('Macro evidence','宏观证据') }}</div>{{ summary_rows(snapshot,key) }}
 {% if key == 'flows' and lb %}
 {% set _buys = lb.southbound_buy | selectattr('age_days','le',7) | map(attribute='name_zh') | select | unique | list %}
 {% if _buys %}<div class="cnx-kv"><span class="k">{{ t('Disclosed buys','披露净买入') }}</span><span class="v">{{ _buys[:3] | join(' · ') }}</span></div>{% endif %}
 {% endif %}</div>
-{%- endmacro %}
+{% endautoescape %}{%- endmacro %}

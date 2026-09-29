@@ -5,8 +5,10 @@
 {% macro t(en, zh='') -%}
 <span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
 {%- endmacro %}
-{% import "_china_macro_evidence.html.j2" as cnm with context %}
-{% import "_china_economy_lens.html.j2" as eco_lens with context %}
+{# Isolate source text from this legacy page's unescaped local t() macro. #}
+{% import "_china_macro_evidence.html.j2" as cnm %}
+{# Isolate source text from this legacy page's unescaped local t() macro. #}
+{% import "_china_economy_lens.html.j2" as eco_lens %}
 {# Event-calendar impact badge. `importance` is a raw slug (high/med/low) and
    both call sites used to print it straight through `| upper`, so a Chinese
    reader got "HIGH" sitting beside a Chinese event name. #}

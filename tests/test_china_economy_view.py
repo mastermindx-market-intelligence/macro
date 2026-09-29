@@ -145,3 +145,17 @@ def test_error_contract_and_shared_language_handling_are_explicit():
  assert '!data.metrics' in js and '!select' in js
  assert "attributeFilter:['data-lang']" in js
  assert 'localStorage' not in js
+
+
+def test_offline_preview_reuses_canonical_evidence_palette():
+ from scripts.preview_china_macro_evidence import evidence_theme_tokens
+ import re
+ tokens=evidence_theme_tokens()
+ theme=(ROOT/'templates/theme.css').read_text()
+ for css_name in ('china-economy.css','china-macro-evidence.css'):
+  css=(ROOT/'templates'/css_name).read_text()
+  for name in re.findall(r'var\((--(?:r-evidence|evidence)-[a-z-]+)\)',css):
+   declaration=re.search(re.escape(name)+r'\s*:[^;{}]+;',theme)
+   assert declaration is not None,name
+   assert declaration.group(0) in tokens,name
+ assert '--font-ui:' in tokens

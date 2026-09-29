@@ -1256,6 +1256,14 @@ jobs:
     # suites read can still start this job.
     scope: exclusive
     paths:
+      # China builder imports added by the receipt-bound overview.
+      - "config/china_economy_catalog.json"
+      - "engine/china_connect_leaderboard.py"
+      - "engine/china_economy.py"
+      - "engine/china_economy_store.py"
+      - "engine/china_economy_view.py"
+      - "engine/china_macro_evidence.py"
+      - "engine/china_macro_evidence_view.py"
       - "engine/theme_graph/identity.py"
       - "engine/theme_graph/__init__.py"
       - "engine/earnings_release/receipts.py"
@@ -3084,6 +3092,17 @@ jobs:
           tests/test_risk_state_live_copy_sync.py
           tests/test_build_china_risk_state.py
           tests/test_china_connect_leaderboard_render.py
+          tests/test_china_connect_evidence.py
+          tests/test_china_economy.py
+          tests/test_china_economy_acquisition.py
+          tests/test_china_economy_additional_parsers.py
+          tests/test_china_economy_page_payload.py
+          tests/test_china_economy_parser.py
+          tests/test_china_economy_store.py
+          tests/test_china_economy_view.py
+          tests/test_china_macro_activity.py
+          tests/test_china_macro_evidence.py
+          tests/test_china_macro_evidence_view.py
           tests/test_canon.py tests/test_whitehouse_w5.py
           tests/test_winner_autopsy.py tests/test_admin_long_hold.py
           tests/test_falsifier_packet.py

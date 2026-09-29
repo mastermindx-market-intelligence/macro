@@ -19,6 +19,23 @@
 @font-face{font-family:Inter;font-style:normal;font-weight:800;font-display:swap;src:url("fonts/Inter-800.woff2") format("woff2");}
 @font-face{font-family:Inter;font-style:normal;font-weight:900;font-display:swap;src:url("fonts/Inter-900.woff2") format("woff2");}
 :root {
+  /* Receipt-bound China evidence: scoped consumers; no legacy repaint.
+     Controls/cards/panels use the documented 8/10/12/14 radius stops.
+     Small marks and the existing dialog retain their optical dimensions. */
+  --r-evidence-hairline:2px; --r-evidence-mark:3px; --r-evidence-control:8px;
+  --r-evidence-button:10px; --r-evidence-card:12px; --r-evidence-panel:14px;
+  --r-evidence-dialog:22px; --r-evidence-pill:999px;
+  --evidence-dialog-shadow:0 32px 110px rgba(0,0,0,.32);
+  --evidence-light-shadow:0 1px 3px color-mix(in srgb,var(--text) 4%,transparent);
+  --evidence-info-surface:color-mix(in srgb,var(--info) 7%,var(--panel));
+  --evidence-recessed-surface:color-mix(in srgb,var(--panel) 80%,var(--bg));
+  --evidence-warn-rule:color-mix(in srgb,var(--warn) 40%,transparent);
+  --evidence-warn-wash:color-mix(in srgb,var(--warn) 6%,transparent);
+  --evidence-hairline:color-mix(in srgb,var(--line) 50%,transparent);
+  --evidence-muted-wash:color-mix(in srgb,var(--muted) 25%,transparent);
+  --evidence-raised-surface:color-mix(in srgb,var(--panel2) 64%,var(--panel));
+  --evidence-hold-rule:color-mix(in srgb,var(--warn) 30%,transparent);
+  --evidence-hold-wash:color-mix(in srgb,var(--warn) 7%,transparent);
   /* ── font stacks ─────────────────────────────────────────────────────────────
      --font-ui   : primary UI stack. San Francisco leads via the system keywords
                    — SF cannot be self-hosted (Apple's licence bars webfont

@@ -1,13 +1,13 @@
-{% macro detail(m) %}
+{% macro detail(m) %}{% autoescape true %}
 <div class="eco-chart-title"><h3>{{ t(m.label_en,m.label_zh) }}</h3><strong>{{ m.value_text }}<small>{{ t(m.unit_en,m.unit_zh) }}</small></strong></div><div class="eco-chart-meta">{{ m.reference_period or '—' }} · {{ t('Monthly' if m.frequency=='monthly' else 'Quarterly','月度' if m.frequency=='monthly' else '季度') }} · {{ t('Reference-period observation' if m.status=='current' else ('Older reference period' if m.status=='older_period' else 'Not verified for this period'),'本参考期观测' if m.status=='current' else ('较早参考期' if m.status=='older_period' else '本期尚未核验')) }}</div>
     {% if m.chart_svg %}<div class="eco-history">{{ m.chart_svg | safe }}</div>{% else %}<div class="eco-history-empty">{{ t('A latest reading is available, but a historical curve is not.','有最新读数，但暂无历史曲线。') if m.value is not none else t('No admitted observation for this period.','本参考期暂无已核验观测。') }}<small>{{ t('Missing history is never drawn as a flat line.','缺失历史不会画成水平线。') }}</small></div>{% endif %}
     <div class="eco-detail-stats"><div><small>{{ t('Change in reading','公布读数变化') }}</small><b>{{ '%+.2f'|format(m.change_1m) if m.change_1m is not none else '—' }}</b><small>{{ t(m.change_unit_en,m.change_unit_zh) }}</small></div><div><small>{{ t('Recent rate slope','近期公布增速斜率') }}</small><b>{{ m.pace.slope_recent_3m_display }}</b><small>{{ t(m.pace.slope_unit_en,m.pace.slope_unit_zh) }}</small></div><div><small>{{ t('Rate-slope acceleration','公布增速斜率加速度') }}</small><b>{{ m.pace.acceleration_display }}</b><small>{{ t(m.pace.acceleration_unit_en,m.pace.acceleration_unit_zh) }}</small></div></div>
     {% if m.kind=='sa_mom' %}<p class="eco-footnote">{{ t('Use the activity-pace cards for compounded growth; the chart shows monthly SA changes.','累计活动增速见上方速度卡；此图显示季调月度变化。') }}</p>{% endif %}
     <details class="eco-method"><summary>{{ t('Definition, source and observations','定义、来源与观测值') }}</summary><p>{{ t(m.note_en,m.note_zh) }}</p><p>{{ t('Canonical owner','既有数据归属') }}: <code>{{ m.owner_path }}</code></p>{% if m.source %}<p><a href="{{ m.source.url }}" target="_blank" rel="noopener noreferrer">{{ m.source.publisher }} · {{ m.source.title }}</a></p><p>{{ t('Published','发布') }}: {{ m.published_at }}<br>{{ t('Current released revisions, not an original-vintage backtest.','现行公布版本，不是原始实时版本回测。') }}</p>{% endif %}<div class="eco-observation-table"><table><thead><tr><th>{{ t('Reference month','参考月') }}</th><th>{{ m.unit }}</th></tr></thead><tbody>{% for r in m.tail_rows %}<tr><td>{{ r.date }}</td><td>{{ r.value }}</td></tr>{% endfor %}</tbody></table></div></details>
-   
-{% endmacro %}
+
+{% endautoescape %}{% endmacro %}
 {# Additive China lens. Existing global navigation, tokens and four dialogs survive. #}
-{% macro lens(E, title_level=2) %}
+{% macro lens(E, title_level=2) %}{% autoescape true %}
 <section class="eco" id="china-economy" aria-labelledby="eco-title">
   <header class="eco-topline"><span class="eco-eyebrow">{{ t('CHINA / ECONOMIC LENS','中国 / 经济透视') }}</span><span>{{ t('Reference','参考期') }} {{ E.reference_period }} · {{ t('Snapshot','快照') }} {{ E.snapshot_date }}</span></header>
   <div class="eco-hero">
@@ -80,4 +80,4 @@
   <details class="eco-audit eco-conflicts"><summary>{{ t('Data conflicts to resolve','待解决的数据冲突') }} · {{ E.known_source_conflicts|length }}</summary>{% for c in E.known_source_conflicts %}<p><b>{{ c.metric_id }}</b>: {{ t('earlier cached reading','此前缓存读数') }} {{ c.legacy_value }} · {{ t('identified origin reading','已识别原始来源读数') }} {{ c.origin_value }} · {{ c.period }}</p><p>{{ c.resolution }}</p>{% endfor %}<p>{{ t('The original data store has not been overwritten. Different currencies and revised coverage require reconciliation.','未覆盖原数据存储；币种及修订口径仍须对账。') }}</p></details>
   <details class="eco-audit"><summary>{{ t('Methodology & access','方法与数据访问') }}</summary><p>{{ t(E.breadth.method_en,E.breadth.method_zh) }}</p><p>{{ t(E.activity_pulse.method_en,E.activity_pulse.method_zh) }}</p><p>{{ t('Momentum deadbands are explicit research display choices, not calibrated statistical significance. A missing domain retains its weight and stays unknown.','动能中性阈值是明确的研究展示选择，不是已校准的统计显著性。缺失领域保留其分母，保持未知。') }}</p><p>{{ t('Each value retains its source, reference period and availability boundary. Read source metadata for acquisition and revision evidence; research inputs are not production acceptance.','各数值保留来源、参考期与可用时间边界。采集及版本证据见来源元数据；研究输入不代表生产验收。') }}</p><ul>{% for source in E.sources.values() %}<li><a href="{{ source.url }}" target="_blank" rel="noopener noreferrer">{{ source.publisher }} · {{ source.title }}</a> · {{ source.published_at }}</li>{% endfor %}</ul></details>
 </section>
-{% endmacro %}
+{% endautoescape %}{% endmacro %}

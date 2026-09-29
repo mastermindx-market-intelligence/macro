@@ -147,3 +147,49 @@ def test_latest_missing_value_does_not_erase_usable_historical_research():
     assert view['panels']['policy']['selected_chart']['id']==metric['id']
     assert 'cnm-bar' in view['panels']['policy']['chart_svg']
     assert x['panels']['policy']['metrics'][0]['value'] is None
+
+
+def test_production_environment_escapes_disclosed_security_names():
+    """Preview autoescape=True must not hide the real builder's False setting."""
+    from pathlib import Path
+    from jinja2 import Environment, FileSystemLoader, StrictUndefined
+    from bs4 import BeautifulSoup
+    from engine.i18n import t, t_pctile
+    root = Path(__file__).resolve().parents[1]
+    env = Environment(loader=FileSystemLoader(root / 'templates'),
+                      autoescape=False, undefined=StrictUndefined)
+    env.globals.update(t=t, t_pctile=t_pctile)
+    row = {'ticker': '00700', 'name': '<img src=x onerror=alert(1)>',
+           'name_zh': None, 'net': 1, 'venue': 'Shanghai',
+           'reference_date': '2026-09-29'}
+    lb = {'southbound_buy': [row], 'southbound_sell': [],
+          'northbound_turnover': [], 'southbound_date': '2026-09-29', 'warnings': []}
+    source = '{% import "_china_macro_evidence.html.j2" as e %}{{ e.leaderboard(lb) }}'
+    html = env.from_string(source).render(lb=lb)
+    soup = BeautifulSoup(html, 'html.parser')
+    assert not soup.find_all('img', onerror=True)
+    assert row['name'] in soup.get_text()
+
+
+def test_new_partials_do_not_inherit_unsafe_legacy_translator():
+    from pathlib import Path
+    from jinja2 import Environment, FileSystemLoader, StrictUndefined
+    from bs4 import BeautifulSoup
+    from engine.i18n import t, t_pctile
+    from engine.china_macro_evidence import build_snapshot
+    from datetime import date
+    root = Path(__file__).resolve().parents[1]
+    page = (root / 'templates/china.html.j2').read_text()
+    for name, alias in [('_china_macro_evidence.html.j2', 'cnm'),
+                        ('_china_economy_lens.html.j2', 'eco_lens')]:
+        assert '{% import "' + name + '" as ' + alias + ' %}' in page
+    env = Environment(loader=FileSystemLoader(root / 'templates'),
+                      autoescape=False, undefined=StrictUndefined)
+    env.globals.update(t=t, t_pctile=t_pctile)
+    m = build_snapshot(lambda group, name: None, date(2026, 9, 29))['panels']['policy']['metrics'][0]
+    m['label_en'] = '<img src=x onerror=alert(1)>'
+    m['label_zh'] = '<script>alert(1)</script>'
+    source = '{% macro t(a,b) %}{{ a }}{{ b }}{% endmacro %}{% import "_china_macro_evidence.html.j2" as e %}{{ e.metric(m) }}'
+    soup = BeautifulSoup(env.from_string(source).render(m=m), 'html.parser')
+    assert not soup.find_all('img') and not soup.find_all('script')
+    assert m['label_en'] in soup.get_text() and m['label_zh'] in soup.get_text()

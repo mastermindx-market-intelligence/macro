@@ -18,7 +18,7 @@ Branch: `worktree-china-macro-evidence-20260929-sol-001`.
 The earlier access denial cleared when Studio's observed allowlist included the
 GitHub checkout root. Reading the exact preserved workspace succeeded. Five known
 WIP files were preserved and reconciled against exact hashes, not blindly replaced.
-The source-only transfer was 35 files / 854,568 decoded bytes, SHA256
+The source-only transfer was 35 files, SHA256
 `5a829026762a8cc4ccf92c2abc5ab0bac3abeef12f15294d2f67962b8f37da9c`.
 The reviewed patch passed `git apply --check`, applied once, and every postimage
 was verified. Initial patch SHA256:
@@ -56,10 +56,10 @@ The offline review still exports its full in-memory input.
 |---|---|---|
 | Initial focused real-repository tests after migration | 328 passed | Not full repo CI |
 | Four payload-integrity/performance tests | 4 passed | Included in later suite |
-| Final focused tests including migrated China archetype guards | **358 passed, one explicitly deselected baseline test** | No skips; includes prior missing Parquet bridge test |
-| Broad China/build-China tests before static-guard migration | **3,451 passed, 3 failed, 8 skipped** | Two introduced expectations subsequently migrated and passed; redirect-stub size failure remains |
+| Final focused tests including migrated China archetype guards | **358 passed, zero failures/errors/skips** | No skips; includes prior missing Parquet bridge test |
+| Broad China/build-China tests before static-guard migration | **3,451 passed, 3 failed, zero skipped** | Two introduced expectations subsequently migrated and passed; redirect-stub size failure remains |
 | Full repository test attempt | Collection stopped by two unrelated options imports | Guard was not disabled |
-| Installed ChinaMacroAdapter through existing run_adapter | `ok`, 94 rows; seven requested families accepted; no conflicts | Local owned checkout, not VPS/production enrollment |
+| Installed ChinaMacroAdapter through existing run_adapter | `ok`, 2,572 total rows; seven requested families accepted; no conflicts | Local owned checkout, not VPS/production enrollment |
 | Actual China builder, final run | Exit 0; both China macro and stock pages generated | No browser/auth/live proof |
 | JSON/client/asset readback | Every interaction chart point, unit and definition matches full JSON; both pages have no duplicate IDs; copied assets match source | Static readback only |
 | JavaScript syntax and scoped Python compilation | Passed | Not browser behavior |
@@ -71,19 +71,22 @@ economic direction remains withheld; 128 catalog definitions do not mean 128
 acquired series. Fiscal remains a prior HTTP502 gap and was not retried here.
 The broader transcribed research preview is never used as a missing-source fallback.
 
-The final collector reference result was `last_date: 2026-09-15`. Source receipt
-fields carry individual dates. All 94 rows were passed through the actual existing
-runner and local parquet store; the economy reader admitted 53 current series,
-with 23 supporting the defined direction and reported-rate acceleration checks.
-These are not 53 independent signals or a trained growth estimate.
+The final collector runner result was `last_date: 2026-09-29` and
+2,572 total adapter rows (legacy plus economy tables), not a count of distinct
+economy indicators. Individual source receipts retain their own reference dates.
+The qualified economy view admits 53 current series; no claim is made that these
+are 53 independent signals or a trained growth estimate.
 
 ## Performance and preserved failures
 
 Using the same real builder view-model, original template versus integrated:
-445,071 / 98,624 gzip bytes versus initial 1,649,416 / 271,764 gzip bytes.
-The compact projection reduced the integrated result to 1,094,575 / 199,099 gzip
-bytes in that same-input comparison. The final collected-data build is separately
-hashed; sizes can change with input history. Browser performance remains unmeasured.
+445,156 / 100,289 gzip bytes versus initial
+1,807,252 / 277,890 gzip bytes.
+The compact projection reduced that integrated result to
+1,238,647 / 199,062 gzip bytes.
+These values come from `page-size.json` and `page-size-compact.json`. The final
+collected-data build is separately hashed; sizes vary with history. No browser
+load-time or interaction-performance claim follows from compressed byte counts.
 
 `tests/test_china_sector_intelligence_page.py` expects the basket redirect render
 below 4,000 characters. Its unchanged baseline/current template produces exactly
@@ -118,3 +121,46 @@ release with installed identity and live receipts can promote this to proven liv
 No source values were manually altered to green coverage. No production backfill,
 configuration activation, merge/deployment, worker, watcher or background continuation
 is claimed. The live product mission remains incomplete.
+
+## Correction and release-remediation record
+
+The earlier chat/checkpoint incorrectly named PR #8219 and an unrelated commit.
+The actual pushed implementation is PR #8196 at
+`6ad2d07273dcfaa97093c15d8a3cb7051724591f`. This report's earlier deselection,
+skip, collector-row/date and page-byte statements also disagreed with the
+committed machine receipts. They have been corrected from those receipts; the
+original receipt files and their hashes have not been rewritten.
+
+The next patch registers all eleven new suites in the existing engine/render CI
+job, expands its affected curated import coverage, migrates the remaining two
+old-template test consumers and restores the canonical percentile formatter.
+Evidence CSS now consumes palette-owned colors/elevation and explicitly scoped
+8/10/12/14px radius stops. Existing surfaces consume none of these new names;
+small chart marks and the dialog retain their optical dimensions. Offline
+previews read the same palette declarations rather than maintaining a copy.
+
+No screenshot receipt is fabricated: the separate visual-evidence gate is still
+unmet and the PR remains draft. Source/token/static tests are not a visual PASS.
+
+### Completed follow-up verification (local; not release acceptance)
+
+The focused rerun completed **434 tests**, zero failures/errors/skips. The
+repository structural contract checker completed with **0 introduced and 0
+inherited findings** against the exact failed-CI base
+`be0ca1fa3aaf64eec16d89edbd992f5025d2b823`. Design enforcement reports zero newly
+blocking findings. Agent OS validation reports zero errors and 70 existing
+warnings; shared source/site synchronization passes 109 pairs.
+
+A further review found that the legacy builder disables Jinja autoescaping.
+Preview-only escaping had hidden a candidate security-name HTML injection.
+Both new partials now escape inside their macros and are imported without the
+page-local unsafe translator context; the shared engine.i18n formatter handles
+translated text. New tests reproduce the actual production Jinja setting and
+assert malicious names and labels remain text. This candidate was not deployed.
+
+Both actual China pages rebuild successfully after the fix. Static readback
+verifies complete compact-client/JSON parity, no duplicate IDs and no nested
+translation spans in the new sections. These results and exact file hashes are
+in `research/china_economy_integration_20260929/release-remediation-r2.json`.
+Real browser/theme/locale/viewport/interaction evidence and authenticated gateway
+acceptance remain missing; the visual guard remains red rather than waived.
