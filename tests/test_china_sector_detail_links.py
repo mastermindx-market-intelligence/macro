@@ -38,8 +38,9 @@ def test_china_template_wires_every_sector_name_surface_to_detail_pages() -> Non
     """
     src = TEMPLATE.read_text(encoding="utf-8")
 
-    # x.ticker: Sector Temperature hot/buy chips + dialog buy/avoid/leader chips.
-    assert src.count('href="sectors/{{ x.ticker }}.html"') == 5
+    # x.ticker: Sector Temperature hot/buy chips, sector-dialog buy/avoid/leader
+    # chips, and Regime Playbook preferred/avoid rows.
+    assert src.count('href="sectors/{{ x.ticker }}.html"') == 7
 
     # s.ticker: risk-dialog leaders/laggards + Rotation-vs-CSI-300 table.
     assert src.count('href="sectors/{{ s.ticker }}.html"') == 3
@@ -68,3 +69,24 @@ def test_rendered_china_sector_dialog_links_current_sector_universe() -> None:
     top10 = SECTOR_TICKERS[:10]
     for ticker in top10:
         assert f'<td><a class="cnx-sector-link" href="sectors/{ticker}.html">' in dlg
+
+
+def test_rendered_china_playbook_sector_rows_are_clickable() -> None:
+    html = RENDERED.read_text(encoding="utf-8")
+    start = html.index('<!-- Playbook dialog -->')
+    end = html.index('<!-- Calendar events dialog -->', start)
+    playbook = html[start:end]
+
+    displayed = (
+        "512400.SS",  # preferred: Nonferrous Metals
+        "515220.SS",  # preferred: Coal
+        "512800.SS",  # preferred: Banks
+        "159928.SZ",  # preferred: Consumer Staples
+        "512170.SS",  # avoid: Healthcare
+        "512660.SS",  # avoid: Defense & Military
+        "512760.SS",  # avoid: Semiconductors
+        "159992.SZ",  # avoid: Innovative Drugs
+        "515250.SS",  # avoid: Automobiles
+    )
+    for ticker in displayed:
+        assert f'href="sectors/{ticker}.html"' in playbook
