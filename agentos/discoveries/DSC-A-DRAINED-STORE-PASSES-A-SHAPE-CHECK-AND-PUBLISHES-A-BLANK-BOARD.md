@@ -31,8 +31,18 @@ so_what: >
   Second, when adding any new "does this data source exist" gate anywhere in this repo, assert on
   CONTENT, not on the presence of a container — and pin it with a test that also proves a
   minimally-populated source still passes, or the tightening will refuse thin-but-valid data.
-  A root is required to be a directory because `roots()` enumerates `p.is_dir()` children only;
-  if a tier ever stores roots as files, this predicate must change with it.
+  A root is required to be a directory because the real enumerators do the same — `universe()`
+  and `iv_coverage()` in `engine/thetadata_store.py` count `is_dir()` children, and
+  `_load_parquets()` then globs inside a root. (An earlier draft of this record cited a `roots()`
+  function; no such function exists — the claim held, the citation did not.) THIRD, and the part
+  an adversarial review caught before merge: a content check is a `readdir`, whereas the shape
+  check it replaces was a `stat`. On the ops host the three tier dirs are SYMLINKS onto an
+  external volume, and listing them is exactly the operation that hangs or is denied under
+  launchd — `scripts/build_options_hub_nightly.py::preflight_store` exists solely to bound it,
+  and it runs AFTER resolution. So any emptiness check inside the resolver must be BOUNDED and
+  must FAIL OPEN: only a provably drained store may be refused, while denied/blocked/errored
+  resolves exactly as it did before the check existed. Fail-closed here would report an intact
+  store as missing across every nightly lane — a far worse failure than the one being fixed.
 kind: landmine
 verified_at: 2026-09-29
 verified_by: "PR #8203; RED/GREEN on base 942956ea69f6 — python3 -m pytest tests/test_thetadata_resolver.py tests/test_index_gex_history.py::TestStorePathRoutesThroughTheResolver -q (25 passed; 4 failed + 1 control passed with engine/thetadata_store.py reverted)"

@@ -58,6 +58,12 @@ verified:
   - claim: agentos records are schema-clean.
     command: "python3 scripts/agentos.py validate"
     result: "1386 records — 0 errors, 109 warnings (all pre-existing review-overdue on other workstreams)"
+  - claim: The tightening cannot report an unreadable-but-intact store as drained, and cannot hang the resolver.
+    command: "python3 -m pytest tests/test_thetadata_resolver.py::TestUnreadableIsNeverDrained -q, plus two mutations — _RESOLVABLE narrowed to (_HAS_ROOT,) and th.join(_STORE_PROBE_S) replaced by th.join()"
+    result: "5 passed clean; fail-closed mutant -> 4 failed; unbounded mutant -> the bound test failed after 18.86s against its <3s assertion"
+  - claim: No regression across the resolver, store, topup, options-intel, skew and payoff-lab suites after the repair.
+    command: "python3 -m pytest tests/test_thetadata_resolver.py tests/test_index_gex_history.py tests/test_thetadata_store.py tests/test_topup_thetadata_daily.py tests/test_topup_thetadata_legacy.py tests/test_options_intel_brief.py tests/test_options_skew.py tests/test_options_payoff_lab.py -q"
+    result: "424 passed, 1 skipped, 1 failed — the failure is pre-existing test_f15_writer_lock_gitignored, which reads a hardcoded absolute path into a stale sibling worktree and is unrelated to these files"
 unverified:
   - claim: That refilling the store would let the AD-1 producer emit a real brief.
     what_would_verify: "a store with non-zero roots on a registered m1-theta runner, then two natural post-daily executions per the MACRO-04 §6 bar"
@@ -83,7 +89,9 @@ do_not_redo:
   - "Do not silence R6, relabel the M2 as the M1, or bypass the missing admission."
 danger_areas:
   - "engine/thetadata_store.py is THE single canonical resolver — every ThetaData consumer routes through it, so a false negative here silently disables a production data path across several nightly lanes. `scripts/backfill_thetadata_eod.py:560` is safe under the tightening only because a clean None is its explicit fresh-install exception; any NEW writer that resolves before it writes needs the same exception or it cannot bootstrap an empty store."
-  - "`_has_store_content` counts only directory children as roots, matching `roots()`. If any tier ever stores roots as files, or the layout departs from {store}/{tier}/{ROOT}/{YEAR}.parquet, this predicate must change with it."
+  - "`_has_store_content` counts only directory children as roots, matching the real enumerators `universe()` and `iv_coverage()` (`_load_parquets()` then globs inside a root). There is no `roots()` function — an earlier draft cited one. If any tier ever stores roots as files, or the layout departs from {store}/{tier}/{ROOT}/{YEAR}.parquet, this predicate must change with it."
+  - "THE landmine in this area: a content check is a readdir, the shape check it replaced was a stat. The three tier dirs are SYMLINKS onto an external volume (scripts/publish_r2.py::_walk_files), and listing them is what hangs or is denied under launchd — build_options_hub_nightly.preflight_store bounds it in a daemon thread and exits 4, and it runs AFTER resolution. Any emptiness check in the resolver must therefore be BOUNDED and FAIL OPEN. `_RESOLVABLE = (_HAS_ROOT, _UNKNOWN)` is that rule in one place; narrowing it to `(_HAS_ROOT,)` reports every unreadable-but-intact store as missing across all nightly lanes. Mutation-tested both ways."
+  - "`resolve_thetadata_store() is None` is now AMBIGUOUS — it means fresh-install OR drained-canonical. Any writer that reads None as a fresh-install permit must consult `drained_store_candidates()` first or it will mint a second store beside the drained one."
   - "The ::error must stay a bare print(..., flush=True) at line start. Routing it through a logger emits `WARNING ::error ...`, which GitHub silently drops — the call reviews as an alarm and produces nothing."
   - "Both `_mk_store` fixtures are shared by other tests in their files; changing them changes what those tests assert against."
 prs: [8203, 7889]

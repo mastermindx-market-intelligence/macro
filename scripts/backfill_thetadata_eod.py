@@ -575,6 +575,23 @@ def main() -> int:
                  "(no mutation)", type(e).__name__, e)
         return 1
     own_store = _store_dir()
+    if resolved is None:
+        # AD-1T2b: `None` stopped meaning "no store anywhere". A DRAINED canonical
+        # store (tier dirs present, zero roots) no longer resolves, so the
+        # fresh-install exception below would let this process mint a SECOND store
+        # beside it — the exact hazard this block exists to prevent, now reachable
+        # through the path that used to be safe. A drained store is a store.
+        from engine.thetadata_store import drained_store_candidates  # noqa: PLC0415
+        elsewhere = [d for d in drained_store_candidates()
+                     if Path(d).resolve() != Path(own_store).resolve()]
+        if elsewhere:
+            log.error("backfill: nothing RESOLVES, but a DRAINED store exists at "
+                      "%s, which disagrees with this process's own store %s — "
+                      "refusing to mint a second T1 store. That store is drained, "
+                      "not absent: point THETADATA_STORE / lib.config.data_dir() "
+                      "at it and re-run to refill it in place.",
+                      ", ".join(str(d) for d in elsewhere), own_store)
+            return 1
     if resolved is not None and Path(resolved).resolve() != Path(own_store).resolve():
         log.error("backfill: resolve_thetadata_store() resolved %s, which "
                  "DISAGREES with this process's own store %s — refusing to "
