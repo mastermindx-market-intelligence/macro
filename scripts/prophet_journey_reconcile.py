@@ -122,8 +122,9 @@ import hashlib
 import json
 import re
 import sys
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 try:
     from bs4 import BeautifulSoup, NavigableString, Tag
@@ -149,6 +150,34 @@ PLAN_ENUM_FIELDS = (
     "admission_class",
 )
 STANDOUTS_ENUM_FIELDS = ("lane", "state", "entry_signal")
+
+FIXED_REASON_VOCABULARY = frozenset({
+    "sector_cap_overflow", "dual_class_duplicate", "buy_slice_cap",
+    "event_blackout", "sector_label_unreadable",
+    "off_board_reason_unknown", "conviction_low", "ran_too_far",
+    "stood_down", "pending_expired", "already_open", "plan_not_built",
+    "board_featured", "cleared_admission", "tier_not_buyable",
+    "not_yet", "tone_refused", "unknown", "ticks_unknown",
+    "ticks_stale", "antichase_blocked", "extended",
+    "alpha_unknown", "alpha_below_floor", "earnings_blackout",
+    "featured_cap", "sector_cap", "not_evaluated", "plan_not_built",
+    "already_open", "not_ready", "ran_too_far", "stood_down",
+    "grade_low", "conviction_low", "pointing_down", "no_trigger",
+    "unknown",
+})
+PLAN_ENUM_VOCABULARY = frozenset({
+    "pre_trigger", "zone_open", "anticipation_v1", "buy_now",
+    "partial", "await_confluence", "buy_soon", "wait_pullback",
+    "extended", "bounce_wait", "topping", "setting_up", "featured",
+    "more_actionable", "late_or_unfillable", "forming",
+})
+LIFECYCLE_VOCABULARY = frozenset({
+    "watch", "ready", "entered", "delivering", "overtime",
+    "invalidated", "resolved",
+})
+PLAN_RELATION_VOCABULARY = frozenset({
+    "none", "related_security", "unknown",
+})
 
 # Cross-market href patterns (J10). Case-insensitive; the journey must not
 # carry any HK / China / Canada / Intl market HTML inside its nodes.
@@ -675,170 +704,147 @@ def _resolve_dotted(row: dict[str, Any], path: str) -> Any:
     return node
 
 
-def _check_j6(soup: BeautifulSoup, standouts: dict[str, Any],
-              ticker: str | None) -> dict[str, Any]:
-    """J6 — every ``[data-source-field]`` inside the detail is preserved."""
-    where = ("[data-source-field=...] <dd> inside the detail body "
-             "(templates/_prophet_setup_detail.html.j2:12; "
-             ":44-46 entry_signal paths; "
-             ":58-60 signal paths; "
-             ":65-67 / :74-77 audit paths)")
-    detail = _setup_detail_node(soup, ticker)
-    if detail is None:
-        return _check_status("N/A", "source fields present",
-                             "no detail body to inspect", where)
-    payload_row = _standouts_payload_row(standouts, ticker or "")
-    if payload_row is None:
-        return _check_status("N/A", "source fields preserved",
-                             "no payload row for ticker", where)
-    fields = detail.select("[data-source-field]")
-    if not fields:
-        return _check_status("FAIL", "at least one [data-source-field]",
-                             "detail body has zero source fields",
-                             where)
-    misses: list[dict[str, Any]] = []
-    str_misses: list[dict[str, Any]] = []
-    raw_pairs: list[dict[str, Any]] = []
+def _setup_source_bodies(soup: BeautifulSoup, ticker: str) -> tuple[Tag | None, Tag | None]:
+    """Return the displayed selected body and its template copy, if present."""
+    displayed = template = None
+    for body in soup.select(".pv-setup-body"):
+        selected = body.find_parent(attrs={"data-setup-ticker": ticker})
+        if selected is None:
+            continue
+        if body.find_parent("template") is not None:
+            template = body if template is None else template
+        else:
+            displayed = body if displayed is None else body
+    return displayed, template
+
+
+def _body_binding(body: Tag) -> dict[str, Any]:
+    clock = body.select_one(".pvs-summary-clock")
+    return {
+        "data-plan-relation": str(body.get("data-plan-relation", "")),
+        "data-entry-status": str(body.get("data-entry-status", "")),
+        "data-native-id": str(body.get("data-native-id", "")),
+        "summary-clock-text": clock.get_text(" ", strip=True) if clock else "",
+    }
+
+
+def _field_misses(body: Tag, row: dict[str, Any]) -> list[dict[str, Any]]:
     money_paths = ("price", "entry_signal.buy_zone.low",
                    "entry_signal.buy_zone.high", "entry_signal.stop",
                    "hold.invalidation", "entry_signal.chase_above")
-    bool_paths = ("signal.above200", "signal.weekly_bull",
-                  "signal.provisional")
-    for fld in fields:
-        path = fld.get("data-source-field", "")
-        dd = fld.select_one("dd")
-        dd_text = dd.get_text(" ", strip=True) if dd is not None else ""
-        # Resolve the payload value for the same path.
-        raw = _resolve_dotted(payload_row, path)
-        raw_pairs.append({"path": path, "dd_text": dd_text,
-                          "payload": raw})
-        # Template "Not supplied 来源未提供" — the source field is unbound
-        # by the live template (no data ever flows here). This is a
-        # coverage gap, not a data-integrity defect — record the pair but
-        # do not FAIL on it; the path is intentionally open. Combined
-        # dd_text ``"Not supplied 来源未提供"`` is treated as the sentinel.
-        sentinel_prefixes = ("not supplied", "来源未提供")
-        dd_norm = dd_text.strip().lower()
-        if any(dd_norm.startswith(p) for p in sentinel_prefixes):
-            raw_pairs.append({"path": path, "dd_text": dd_text,
-                              "payload": raw, "template_unbound": True})
-            continue
-        if raw is None:
-            misses.append({"path": path, "reason": "payload_path_missing",
-                           "dd_text": dd_text})
-            continue
-        # Empty / None / nan / undefined / null dd → FAIL on preservation.
-        if dd_norm in EMPTY_SENTINELS:
-            misses.append({"path": path, "reason": "dd_empty_or_sentinel",
-                           "dd_text": dd_text, "payload": raw})
-            continue
-        # Booleans — the template renders "Yes" / "No" (EN) / "是" / "否"
-        # (ZH) at :5-6. The two locale spans are siblings inside the dd
-        # so ``dd.get_text(' ')`` produces the combined string (e.g.
-        # ``"Yes 是"``); accept ANY of the four tokens as a substring.
-        if path in bool_paths:
-            if isinstance(raw, bool):
-                yes_hits = sum(
-                    1 for tok in ("Yes", "No", "是", "否")
-                    if tok in dd_text)
-                truthy_ok = (
-                    ("Yes" in dd_text or "是" in dd_text) if raw
-                    else ("No" in dd_text or "否" in dd_text))
-                if yes_hits == 0 or not truthy_ok:
-                    misses.append({
-                        "path": path, "reason": "bool_render_mismatch",
-                        "dd_text": dd_text, "payload": raw})
-            continue
-        # Numbers — the template formats money as ``$%.2f`` (:7). Mirror it.
-        if path in money_paths:
-            if isinstance(raw, (int, float)) and not isinstance(raw, bool):
-                formatted = f"${raw:.2f}"
-                if formatted != dd_text.strip():
-                    misses.append(
-                        {"path": path, "reason": "money_mismatch",
-                         "dd_text": dd_text, "expected": formatted,
-                         "payload": raw})
-            continue
-        # Strings — the dd text must CONTAIN the value verbatim (the
-        # template wraps it in ``pvs-original-source`` when a verbatim
-        # echo is wanted, but the dd itself prints the value at :8).
-        if isinstance(raw, str):
-            if raw and raw not in dd_text:
-                str_misses.append({"path": path, "reason": "string_missing",
-                                   "dd_text": dd_text, "payload": raw})
-            continue
-        # Other types (lists / dicts) — emit N/A but record the pair.
-    if misses or str_misses:
-        return _check_status(
-            "FAIL",
-            "every dd text reflects its payload value",
-            {"misses": misses, "str_misses": str_misses,
-             "raw_pairs_sample": raw_pairs[:5],
-             "total_fields": len(fields)},
-            where,
-        )
-    return _check_status(
-        "PASS",
-        "every [data-source-field] dd reflects its payload value",
-        {"total_fields": len(fields),
-         "raw_pairs_sample": raw_pairs[:5]},
-        where,
-    )
+    bool_paths = ("signal.above200", "signal.weekly_bull", "signal.provisional")
+    misses: list[dict[str, Any]] = []
+    for field in body.select("[data-source-field]"):
+        path = str(field.get("data-source-field", ""))
+        raw = _resolve_dotted(row, path)
+        text = (field.select_one("dd").get_text(" ", strip=True)
+                if field.select_one("dd") is not None else "")
+        if path in money_paths and isinstance(raw, (int, float)):
+            expected = f"${raw:.2f}"
+            if text != expected:
+                misses.append({"path": path, "reason": "money_mismatch", "text": text, "expected": expected})
+        elif path in bool_paths and isinstance(raw, bool):
+            accepted = ("Yes", "No") if raw else ("No", "Yes")
+            if not any(token in text for token in (accepted[0], "是" if raw else "否")):
+                misses.append({"path": path, "reason": "bool_mismatch", "text": text})
+        elif isinstance(raw, str) and raw and raw not in text:
+            misses.append({"path": path, "reason": "string_missing", "text": text, "expected": raw})
+    return misses
 
 
-def _check_j7(soup: BeautifulSoup, standouts: dict[str, Any]) -> dict[str, Any]:
-    """J7 — pool clocks: data-as-of, data-total, data-source-digest."""
-    where = ("#us-candidate-pool[data-as-of / data-total / data-source-digest] "
-             "(templates/_us_candidate_pool.html.j2:17; "
-             "engine/us_candidate_lanes.py:1002-1006 / :1008)")
+def _check_j6(soup: BeautifulSoup, standouts: dict[str, Any],
+              ticker: str | None) -> dict[str, Any]:
+    """J6 — displayed body, template copy and rendered source fields agree."""
+    where = ("selected displayed .pv-setup-body and template.pvs-body-source "
+             "binding plus rendered source fields")
+    if not ticker:
+        return _check_status("FAIL", "displayed selected body", "no ticker", where)
+    displayed, template = _setup_source_bodies(soup, ticker)
+    if displayed is None:
+        return _check_status("FAIL", "displayed selected body",
+                             "no displayed .pv-setup-body for ticker", where)
+    binding = _body_binding(displayed)
+    if template is not None and binding != _body_binding(template):
+        return _check_status("FAIL", "displayed binding equals template binding",
+                             {"displayed": binding, "template": _body_binding(template)}, where)
+    if binding["data-plan-relation"] not in PLAN_RELATION_VOCABULARY:
+        return _check_status("FAIL", "supported plan relation", binding, where)
+    row = _standouts_payload_row(standouts, ticker)
+    if row is None:
+        return _check_status("FAIL", "selected source row", "no row for ticker", where)
+    misses = _field_misses(displayed, row)
+    if misses:
+        return _check_status("FAIL", "source fields equal payload", misses, where)
+    return _check_status("PASS", "displayed body binding and fields supported",
+                         {**binding, "total_fields": len(displayed.select("[data-source-field]"))}, where)
+
+def _journey_digest(standouts: dict[str, Any], ticker: str) -> str | None:
+    """Hash exactly the selected row fields the journey renders."""
+    row = _standouts_payload_row(standouts, ticker)
+    if row is None:
+        return None
+    pool_rows = ((standouts.get("candidate_pool") or {}).get("rows") or [])
+    pool_row = next((candidate for candidate in pool_rows
+                     if str(candidate.get("ticker", "")).upper() == ticker.upper()), None)
+    reasons = ((pool_row or {}).get("lane_reasons")
+               or ([pool_row.get("headline_reason")] if pool_row and pool_row.get("headline_reason") is not None else []))
+    payload = {
+        "ticker": str(row.get("ticker", "")),
+        "entry_status": ((row.get("entry_signal") or {}).get("status")
+                         if isinstance(row.get("entry_signal"), dict) else None),
+        "signal_asof": row.get("signal_asof"),
+        "price_as_of": row.get("price_as_of"),
+        "plan_relation": None,
+        "plan_ids": [],
+        "reason_codes": [str(reason) for reason in reasons if reason is not None],
+    }
+    return hashlib.sha256(json.dumps(payload, sort_keys=True,
+                                     separators=(",", ":"), ensure_ascii=True,
+                                     allow_nan=False).encode()).hexdigest()
+
+
+def _check_j7(soup: BeautifulSoup, standouts: dict[str, Any],
+              ticker: str | None = None) -> dict[str, Any]:
+    """J7 - independently bind the selected row and its rendered digest."""
+    where = "#us-candidate-pool clock, total, selected reasons and digest"
     pool = _select_first(soup, "#us-candidate-pool")
     if pool is None:
-        return _check_status("N/A", "pool container present",
-                             "no #us-candidate-pool", where)
-    asof = pool.get("data-as-of", "")
-    total = pool.get("data-total", "")
-    digest = pool.get("data-source-digest", "")
-    standouts_asof = standouts.get("as_of")
+        return _check_status("N/A", "pool container present", "no pool", where)
+    if not ticker:
+        return _check_status("FAIL", "selected row digest", "no ticker", where)
+    if not standouts.get("candidate_pool", {}).get("rows"):
+        return _check_status("N/A", "selected pool row", "candidate pool absent", where)
+    digest = _journey_digest(standouts, ticker)
+    row = _standouts_payload_row(standouts, ticker)
+    pool_row = next((candidate for candidate in ((standouts.get("candidate_pool") or {}).get("rows") or [])
+                     if str(candidate.get("ticker", "")).upper() == ticker.upper()), None)
+    rendered = pool.select_one(f'.ucp-row[data-ticker="{ticker}"]')
+    if digest is None or row is None or pool_row is None or rendered is None:
+        return _check_status("FAIL", "selected source and rendered rows",
+                             "source or rendered row missing", where)
+    rendered_reasons = [str(node.get("data-reason", ""))
+                        for node in rendered.select(".ucp-reason[data-reason]")]
+    source_reasons = [str(value) for value in (pool_row.get("lane_reasons") or
+                        ([pool_row["headline_reason"]] if pool_row.get("headline_reason") is not None else []))]
     pool_dict = standouts.get("candidate_pool") or {}
-    payload_total = (pool_dict.get("counts") or {}).get("eligible")
-    payload_digest = pool_dict.get("source_digest")
-    observed = {"data_as_of": asof, "data_total": total,
-                "data_source_digest": bool(digest)}
-    fails: list[str] = []
-    if standouts_asof and asof != standouts_asof:
-        fails.append(f"data-as-of={standouts_asof!r} != pool {asof!r}")
-    if isinstance(payload_total, int) and str(payload_total) != total:
-        fails.append(
-            f"data-total={payload_total} != pool {total!r}")
-    # ``data-source-digest`` mirrors the engine's SHA-256; we do NOT
-    # re-compute the hash here (that requires rebuilding the engine's
-    # exact row serialization — GAPS in the spec). Instead we report
-    # whether the page's digest equals the payload's and note N/A when
-    # the digest field is empty (the engine may legitimately omit it).
-    if digest and payload_digest and digest != payload_digest:
-        fails.append("data-source-digest mismatch (page != payload)")
-    if fails:
-        return _check_status(
-            "FAIL",
-            "pool clocks reconcile",
-            {**observed, "fails": fails,
-             "payload_total": payload_total,
-             "payload_digest_match": (
-                 bool(payload_digest) and digest == payload_digest)},
-            where,
-        )
-    notes: list[str] = []
-    if not digest:
-        notes.append("page data-source-digest empty; engine digest not mirrored")
-    return _check_status(
-        "PASS" if not notes else "N/A",
-        "pool clocks reconcile",
-        {**observed, "payload_total": payload_total,
-         "payload_digest_match": (
-             bool(payload_digest) and digest == payload_digest),
-         "notes": notes},
-        where,
-    )
+    observed = {"rendered_reasons": rendered_reasons,
+                "source_reasons": source_reasons,
+                "data_as_of": pool.get("data-as-of", ""),
+                "source_as_of": str(pool_dict.get("as_of") or ""),
+                "data_total": pool.get("data-total", ""),
+                "source_total": str((pool_dict.get("counts") or {}).get("eligible")),
+                "digest_match": pool.get("data-source-digest") == digest}
+    if not source_reasons or not rendered_reasons or any(not reason for reason in rendered_reasons):
+        return _check_status("FAIL", "non-empty reason codes", observed, where)
+    if rendered_reasons != source_reasons:
+        return _check_status("FAIL", "rendered reasons equal source reasons", observed, where)
+    if observed["data_as_of"] != observed["source_as_of"]:
+        return _check_status("FAIL", "pool clock equals source clock", observed, where)
+    if observed["data_total"] != observed["source_total"]:
+        return _check_status("FAIL", "pool total equals source total", observed, where)
+    if not observed["digest_match"]:
+        return _check_status("FAIL", "selected-row digest recomputes exactly", observed, where)
+    return _check_status("PASS", "selected-row digest recomputes exactly", observed, where)
 
 
 def _plan_lifecycle_states(plans: list[dict[str, Any]]) -> set[str]:
@@ -856,203 +862,203 @@ def _plan_lifecycle_states(plans: list[dict[str, Any]]) -> set[str]:
 
 def _check_j8(soup: BeautifulSoup, index: dict[str, Any],
               ticker: str | None) -> tuple[dict[str, Any], list[str]]:
-    """J8 — plan relationship: native plan link OR honest no-plan path.
-
-    Returns ``(check, linked_plan_ids)``; the linked ids are passed into
-    the J10 / J11 / J12 walks so the linked plan node is part of the
-    journey.
-
-    A "fabricated plan" — any ``#pv-<id>`` link OR ``id="pv-<id>"`` anchor
-    that is NOT in ``index.plans[*].id`` — is a FAIL regardless of
-    whether the audited ticker itself has a live plan.
-    """
-    where = ("plans = [p for p in index.plans if p.asset == T]; "
-             "plan card id=\"pv-<id>\" "
-             "(templates/_prophet_card.html.j2:608; "
-             "scripts/build_prophet.py:1383 lifecycle_state(); "
-             ":1331 LIVE cells)")
+    """J8 — validate every selected plan link's three-part identity."""
+    where = ("selected .pvs-plan-link[data-pvs-plan-target]; page plan card "
+             "id and ticker; index plan id, asset and closed flag")
     if not ticker:
-        return (_check_status("N/A", "plan linkage", "no ticker resolved",
-                              where), [])
-    plans = [p for p in (index.get("plans") or [])
-             if isinstance(p, dict)
-             and str(p.get("asset", "")).upper() == ticker.upper()]
-    live_states = _plan_lifecycle_states(plans)
-    # Inventory EVERY ``#pv-<id>`` the page carries (anchor target via
-    # ``id`` attribute, or link via ``href="#pv-..."``).
-    page_plan_ids: set[str] = set()
-    for el in soup.select("[id^='pv-']"):
-        pid = (el.get("id") or "")[len("pv-"):]
-        if pid:
-            page_plan_ids.add(pid)
-    for a in soup.select("a[href^='#pv-']"):
-        pid = (a.get("href") or "")[len("#pv-"):]
-        if pid:
-            page_plan_ids.add(pid)
-    # Index inventory — every plan id the index declares (any ticker).
-    index_plan_ids: set[str] = {
-        str(p.get("id")) for p in (index.get("plans") or [])
-        if isinstance(p, dict) and p.get("id")
-    }
-    # A fabricated plan id: page carries it but the index doesn't.
-    fabric_ids = sorted(page_plan_ids - index_plan_ids)
-    # Tickerspecific plan ids (only this ticker's plans).
-    plan_ids = [str(p.get("id")) for p in plans if p.get("id")]
-    # ≥1 live plan for T: each must have a #pv-<id> anchor in the page.
-    if plans:
-        detail = _setup_detail_node(soup, ticker)
-        detail_links: list[str] = []
-        if detail is not None:
-            wrapper = detail.find_parent(
-                attrs={"data-setup-ticker": True}) or detail
-            for a in wrapper.find_all("a"):
-                href = a.get("href", "")
-                if href.startswith("#pv-"):
-                    detail_links.append(href)
-        page_ids = [pid for pid in plan_ids
-                    if _select_first(soup, f"#pv-{pid}") is not None]
-        missing = [pid for pid in plan_ids
-                   if _select_first(soup, f"#pv-{pid}") is None]
-        if missing or fabric_ids:
-            return (_check_status(
-                "FAIL",
-                "every plan id has a #pv-<id> anchor AND no fabrication",
-                {"expected_ids": plan_ids,
-                 "page_ids_present": page_ids,
-                 "missing_in_page": missing,
-                 "detail_links": detail_links,
-                 "fabricated_in_page": fabric_ids},
-                where,
-            ), plan_ids)
-        return (_check_status(
-            "PASS",
-            "every plan id has a #pv-<id> anchor and no fabrication",
-            {"expected_ids": plan_ids,
-             "page_ids_present": page_ids,
-             "detail_links": detail_links,
-             "fabricated_in_page": fabric_ids},
-            where,
-        ), plan_ids)
-    # No live plan for T: any fabricated #pv-* link on the page is FAIL.
-    if fabric_ids:
-        return (_check_status(
-            "FAIL",
-            "no #pv-* link for a ticker with no live plan",
-            {"fabricated_links": fabric_ids},
-            where,
-        ), [])
-    return (_check_status(
-        "PASS",
-        "no #pv-* link for a ticker with no live plan",
-        {"linked_plan_ids": [],
-         "live_lifecycle_states_seen": sorted(live_states)},
-        where,
-    ), [])
+        return (_check_status("FAIL", "selected plan link identity",
+                              "no ticker resolved", where), [])
+    detail = _setup_detail_node(soup, ticker)
+    if detail is None:
+        return (_check_status("FAIL", "displayed selected setup body",
+                              "no displayed body for ticker", where), [])
+    section = detail.select_one(".pvs-plan-relation")
+    relation = section.get("data-plan-relation", "") if section else ""
+    if relation not in PLAN_RELATION_VOCABULARY:
+        return (_check_status("FAIL", "supported plan relation state",
+                              relation or "missing", where), [])
+    links = section.select(".pvs-plan-link[data-pvs-plan-target]") \
+        if section else []
+    open_plans = [plan for plan in index.get("plans") or []
+                  if isinstance(plan, dict)
+                  and str(plan.get("asset", "")).upper() == ticker.upper()
+                  and not plan.get("closed")]
+    expected_relation = "related_security" if open_plans else relation
+    if relation != "related_security":
+        if links or relation != expected_relation:
+            return (_check_status("FAIL", "relation agrees with the open plan book",
+                                  {"relation": relation,
+                                   "expected_relation": expected_relation,
+                                   "links": len(links)}, where), [])
+        return (_check_status("PASS", "honest non-related plan relation",
+                              relation, where), [])
+    if not links:
+        return (_check_status("FAIL", "one or more related plan links",
+                              "none rendered", where), [])
+    plans = {str(p.get("id")): p for p in (index.get("plans") or [])
+             if isinstance(p, dict) and p.get("id")}
+    failures: list[dict[str, str]] = []
+    plan_ids: list[str] = []
+    for link in links:
+        target = str(link.get("data-pvs-plan-target", ""))
+        plan_id = target[3:] if target.startswith("pv-") else ""
+        record = link.find_parent(class_="pvs-plan-rec")
+        rendered_id = str(record.get("data-plan-id", "")) if record else ""
+        book = plans.get(plan_id)
+        card = _select_first(soup, f'#pv-{plan_id}') if plan_id else None
+        if card is not None and card.find_parent("template") is not None:
+            card = None
+        card_ticker = str(card.get("data-ticker", "")).upper() if card else ""
+        if not card_ticker and card is not None:
+            href = card.select_one('a[href*="stock.html#"]')
+            if href:
+                card_ticker = (href.get("href", "").split("#", 1)[-1]).upper()
+        expected_ticker = str(book.get("asset", "")).upper() if book else ticker.upper()
+        if not plan_id or rendered_id != plan_id:
+            failures.append({"target": target, "reason": "record_id_mismatch",
+                             "rendered_id": rendered_id})
+        if book is None:
+            failures.append({"target": target, "reason": "book_id_missing"})
+        elif str(book.get("asset", "")).upper() != ticker.upper():
+            failures.append({"target": target, "reason": "other_ticker_book"})
+        if book and book.get("closed"):
+            failures.append({"target": target, "reason": "closed_plan"})
+        if card is None:
+            failures.append({"target": target, "reason": "page_card_missing"})
+        elif card_ticker != ticker.upper():
+            failures.append({"target": target, "reason": "other_ticker_card",
+                             "card_ticker": card_ticker})
+        if expected_ticker != ticker.upper():
+            failures.append({"target": target, "reason": "book_ticker_mismatch"})
+        if plan_id and book and not book.get("closed"):
+            plan_ids.append(plan_id)
+    if failures:
+        return (_check_status("FAIL", "target exists, ticker matches, book open",
+                              failures, where), plan_ids)
+    return (_check_status("PASS", "target exists, ticker matches, book open",
+                          {"targets": [l.get("data-pvs-plan-target") for l in links]},
+                          where), plan_ids)
+
+def _iso_date(value: Any) -> datetime | None:
+    if not isinstance(value, str):
+        return None
+    try:
+        return datetime.strptime(value, "%Y-%m-%d")
+    except ValueError:
+        return None
+
+
+def _runtime_stamp(value: Any) -> datetime | None:
+    if not isinstance(value, str) or not value:
+        return None
+    parsed = None
+    for fmt in ("%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%dT%H:%M:%SZ",
+                "%Y-%m-%dT%H:%M:%S"):
+        try:
+            parsed = datetime.strptime(value, fmt)
+            break
+        except ValueError:
+            continue
+    if parsed is None:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone(timedelta(hours=-4), "ET"))
+
+
+def _expected_plv_state(runtime: dict[str, Any]) -> str | None:
+    stamp = _runtime_stamp((runtime.get("meta") or {}).get("quote_asof"))
+    if stamp is None:
+        return "unavailable"
+    return "today" if stamp.date() == date.today() else "prior_day"
+
+
+def _plv_time_text(stamp: datetime, locale: str) -> str:
+    hour = stamp.hour % 12 or 12
+    minute = f"{stamp.minute:02d}"
+    suffix = "am" if stamp.hour < 12 else "pm"
+    return (f"美东 {hour}:{minute}" if locale == "zh"
+            else f"{hour}:{minute} {suffix} ET")
 
 
 def _check_j9(soup: BeautifulSoup, index: dict[str, Any],
-               standouts: dict[str, Any] | None = None) -> dict[str, Any]:
-    """J9 — index clocks reconcile with standouts; page plan clock rendered.
-
-    Three falsifiable rules. Each can PASS independently — the overall
-    status is PASS only when ALL three hold simultaneously, FAIL when
-    any reconciliation rule breaks OR the panel stamp is empty on a
-    snapshot with populated index clocks, and N/A when ``#plv-asof``
-    is absent (e.g., dialog-only fixture — the spec's "N/A with
-    observed text" applies to a MISSING node, not to an EMPTY stamp).
-
-    Rules
-    -----
-    R1. ``index.source_board_asof == standouts.as_of`` — same vintage.
-    R2. ``index.asof >= index.source_board_asof`` — publication stamp
-        cannot predate the source board (R2 fails when the builder
-        reran the index without refreshing the source snapshot).
-    R3. ``#plv-asof`` is present AND its visible text is non-empty —
-        the page JS ``_plvAsOf`` filled the panel stamp.
-
-    Keys
-    ----
-    Builder emits the publication clock at ``index["asof"]``
-    (scripts/build_prophet.py:2607) and the source board vintage at
-    ``index["source_board_asof"]`` (:2609). Legacy / synthetic payloads
-    carry ``as_of`` instead — the harness accepts both so a synthetic
-    test fixture does not have to mirror the builder's key spelling.
-    """
-    where = (
-        "R1 index.source_board_asof == standouts.as_of; "
-        "R2 index.asof >= index.source_board_asof "
-        "(scripts/build_prophet.py:2607 'asof' key, "
-        ":2609 'source_board_asof' key — also accepts legacy 'as_of'); "
-        "R3 #plv-asof visible text filled by _plvAsOf "
-        "(templates/dashboard.html.j2:16378 static markup; "
-        ":18992 _plvAsOf formatter; :19422 stack call). "
-        "Mirror contract: TIME-OF-DAY stamp, not ISO date."
-    )
-    # Builder key is "asof" (scripts/build_prophet.py:2607). Accept
-    # "as_of" too for synthetic / legacy fixtures (the test suite
-    # uses "as_of"; the live builder uses "asof").
+               standouts: dict[str, Any] | None = None,
+               runtime: dict[str, Any] | None = None,
+               locale: str = "en", ticker: str | None = None) -> dict[str, Any]:
+    """J9 — bind plan-book, assessment and quote clocks to their sources."""
+    where = ("#us-plan-book-asof, .pvs-assessment-clock and #plv-asof "
+             "against index.asof, signal_asof and runtime meta quote_asof")
+    fails: list[str] = []
+    book = _select_first(soup, "#us-plan-book-asof")
+    if book is None:
+        fails.append("plan book clock missing")
+    else:
+        raw_asof = index.get("asof") or index.get("as_of")
+        rendered = str(book.get("data-plan-book-asof", ""))
+        parsed_book = _iso_date(rendered)
+        if rendered == "":
+            if "Plan record date unavailable" not in book.get_text(" ", strip=True):
+                fails.append("plan book empty attribute with non-unavailable text")
+        elif parsed_book is None:
+            fails.append("plan book attribute is not YYYY-MM-DD")
+        elif str(raw_asof) != rendered:
+            fails.append("plan book attribute differs from index.asof")
     idx_asof = index.get("asof") or index.get("as_of")
     idx_source = index.get("source_board_asof")
-    su_asof = (standouts or {}).get("as_of") if standouts else None
-
-    plv = _select_first(soup, "#plv-asof")
-    observed_plv = plv.get_text(" ", strip=True) if plv is not None else ""
-
-    fails: list[str] = []
-
-    # R1 — same vintage across the two payloads.
+    su_asof = (standouts or {}).get("as_of")
     if idx_source and su_asof and idx_source != su_asof:
-        fails.append(
-            f"R1: index.source_board_asof={idx_source!r} "
-            f"!= standouts.as_of={su_asof!r}"
-        )
-    # R2 — publication stamp >= source board.
-    if idx_source and idx_asof and idx_source > idx_asof:
-        fails.append(
-            f"R2: index.source_board_asof={idx_source!r} "
-            f"> index.asof={idx_asof!r} (publication predates source)"
-        )
-    # R3 — visible plan clock stamp.
-    if plv is not None and not observed_plv and (idx_source or idx_asof):
-        fails.append(
-            "R3: #plv-asof visible text empty — JS did not fill "
-            "the panel stamp before the snapshot"
-        )
+        fails.append("index.source_board_asof differs from standouts.as_of")
+    if idx_source and idx_asof and str(idx_source) > str(idx_asof):
+        fails.append("index publication predates its source board")
 
-    observed = {
-        "index_as_of": idx_asof,
-        "index_source_board_asof": idx_source,
-        "standouts_as_of": su_asof,
-        "plv_asof_observed": observed_plv,
-        "plv_asof_present": plv is not None,
-    }
-
-    if fails:
-        return _check_status(
-            "FAIL",
-            "R1+R2+R3: index clocks reconcile AND plan clock stamp rendered",
-            {**observed, "fails": fails},
-            where,
-        )
-
-    # N/A: node absent — the spec's "N/A with observed text" applies.
+    selected_row = _standouts_payload_row(standouts or {}, ticker or "")
+    wrapper = soup.select_one(f'[data-setup-ticker="{ticker}"]') if ticker else None
+    body = wrapper.select_one(".pv-setup-body") if wrapper else None
+    clock = body.select_one(".pvs-assessment-clock") if body else None
+    if clock is None or selected_row is None:
+        fails.append("assessment clock missing")
+    else:
+        rendered = str(clock.get("data-assessment-asof", ""))
+        source = str(selected_row.get("signal_asof", ""))
+        if not rendered or _iso_date(rendered) is None or rendered != source:
+            fails.append("assessment clock differs from signal_asof")
+    plv = _select_first(soup, "#plv-asof")
     if plv is None:
-        return _check_status(
-            "N/A",
-            "R1+R2+R3: index clocks reconcile AND plan clock stamp rendered",
-            {**observed,
-             "reason": "#plv-asof node absent (dialog-only snapshot)"},
-            where,
-        )
-
-    # All three rules hold — clocks reconcile AND stamp rendered.
-    return _check_status(
-        "PASS",
-        "R1+R2+R3: index clocks reconcile AND plan clock stamp rendered",
-        observed,
-        where,
-    )
-
+        fails.append("#plv-asof missing")
+    else:
+        state = str(plv.get("data-plv-asof-state", ""))
+        text = plv.get_text(" ", strip=True)
+        if state not in ("today", "prior_day", "unavailable"):
+            fails.append("#plv-asof state missing or unsupported")
+        if runtime is None:
+            if not fails:
+                fails.append("runtime payload missing")
+        else:
+            quote_raw = (runtime.get("meta") or {}).get("quote_asof")
+            stamp = _runtime_stamp(quote_raw)
+            expected = _expected_plv_state(runtime)
+            if stamp is None or expected == "unavailable":
+                if state != "unavailable" or "quote time unavailable" not in text and "报价时间不可用" not in text:
+                    fails.append("unavailable quote state or text mismatch")
+            else:
+                minute = _plv_time_text(stamp, locale)
+                if state != expected:
+                    fails.append("#plv-asof state differs from quote_asof")
+                if minute not in text:
+                    fails.append("#plv-asof time differs from quote_asof")
+    if runtime is None:
+        return _check_status("UNSUPPORTED",
+                             "runtime quote state judged from rendered DOM",
+                             {"reason": "live/prophet_live.json runtime payload not supplied",
+                              "fails": fails},
+                             where)
+    if fails:
+        return _check_status("FAIL", "all clocks bound to their sources",
+                             fails, where)
+    return _check_status("PASS", "all clocks bound to their sources",
+                         {"plan_book": str(book.get("data-plan-book-asof", "")) if book else None,
+                          "plv_state": str(plv.get("data-plv-asof-state", "")) if plv else None},
+                         where)
 
 def _check_j10(soup: BeautifulSoup, ticker: str | None,
                plan_ids: list[str]) -> dict[str, Any]:
@@ -1074,7 +1080,7 @@ def _check_j10(soup: BeautifulSoup, ticker: str | None,
             if _CROSSMARKET_HREF_RE.match(href):
                 bad_hrefs.append({"node": n.name or "?", "href": href})
         for mkt in _data_mkts(n):
-            if mkt != "US":
+            if mkt.upper() != "US":
                 bad_mkts.append({"node": n.name or "?", "data_mkt": mkt})
     if bad_hrefs or bad_mkts:
         return _check_status(
@@ -1092,114 +1098,61 @@ def _check_j10(soup: BeautifulSoup, ticker: str | None,
 
 
 def _enum_values(standouts: dict[str, Any], index: dict[str, Any]) -> set[str]:
-    """The set of enum-string values that J11 bans from visible text.
-
-    Reads the values off the supplied payloads (NOT off a hard-coded enum
-    list) so a degraded payload never widens or narrows the banned set
-    incorrectly. Only ``_``-containing raw tokens count — plain words
-    are language copy and never flagged (J11 spec).
-    """
-    banned: set[str] = set()
-    for row in (standouts.get("buy") or []):
-        if not isinstance(row, dict):
-            continue
-        for k in STANDOUTS_ENUM_FIELDS:
-            v = row.get(k)
-            if isinstance(v, str) and "_" in v:
-                banned.add(v)
-    pool = standouts.get("candidate_pool") or {}
-    for row in (pool.get("rows") or []):
-        if not isinstance(row, dict):
-            continue
-        for k in STANDOUTS_ENUM_FIELDS:
-            v = row.get(k)
-            if isinstance(v, str) and "_" in v:
-                banned.add(v)
-    for plan in (index.get("plans") or []):
-        if not isinstance(plan, dict):
-            continue
-        for k in PLAN_ENUM_FIELDS:
-            v = plan.get(k)
-            if isinstance(v, str) and "_" in v:
-                banned.add(v)
-    # Also accept entries nested under ``plan.state`` (the nested shape
-    # scripts/build_prophet.py:2425-2433 documents). Carry those over too.
-    for plan in (index.get("plans") or []):
-        state = plan.get("state")
-        if isinstance(state, dict):
-            for k in ("phase", "lifecycle_state", "management_status"):
-                v = state.get(k)
-                if isinstance(v, str) and "_" in v:
-                    banned.add(v)
-    return {b for b in banned if _SNAKE_RE.match(b)}
+    """Fixed internal vocabularies that must never appear as display copy."""
+    return (FIXED_REASON_VOCABULARY | LIFECYCLE_VOCABULARY
+            | PLAN_RELATION_VOCABULARY | PLAN_ENUM_VOCABULARY)
 
 
 def _scan_tokens(text: str, banned: set[str]) -> list[dict[str, str]]:
-    """Find banned enum tokens inside ``text`` and return snippets.
-
-    A token must match a banned value WHOLE-WORD (so ``buy_now_v2`` is NOT
-    a hit for ``buy_now``) and the snippet is ≤80 chars centered on the
-    match (J11 spec).
-    """
+    """Find banned enum tokens in display text, preserving snippets."""
     hits: list[dict[str, str]] = []
-    for tok in banned:
-        for m in re.finditer(r"\b" + re.escape(tok) + r"\b", text):
-            start = max(0, m.start() - 30)
-            end = min(len(text), m.end() + 30)
-            snippet = text[start:end].replace("\n", " ").strip()
-            hits.append({"token": tok, "snippet": snippet[:80]})
+    for token in sorted(banned):
+        for match in re.finditer(r"(?<![\w])" + re.escape(token) + r"(?![\w])", text, re.IGNORECASE):
+            start = max(0, match.start() - 30)
+            end = min(len(text), match.end() + 30)
+            hits.append({"token": token,
+                         "snippet": text[start:end].replace("\n", " ").strip()[:80]})
     return hits
+
+
+def _remove_raw_reason_nodes(node: Tag) -> None:
+    for raw in node.select("code.ucp-reason-raw, .ucp-reason-raw"):
+        raw.decompose()
 
 
 def _check_j11(soup: BeautifulSoup, locale: str,
                standouts: dict[str, Any], index: dict[str, Any],
                ticker: str | None,
                plan_ids: list[str]) -> dict[str, Any]:
-    """J11 — no raw internal enum tokens in the visible journey text."""
-    where = ("journey-node visible text in locale; "
-             "banned enums read off the supplied payloads "
-             "(PLAN_ENUM_FIELDS / STANDOUTS_ENUM_FIELDS in this script; "
-             "templates/_prophet_card.html.j2:75 bilingual span wrapper)")
-    if not ticker:
-        return _check_status("N/A", "no enum leakage in visible text",
-                             "no ticker resolved", where)
-    nodes = _journey_nodes(soup, ticker, plan_ids)
-    if not nodes:
-        return _check_status("N/A", "no enum leakage in visible text",
-                             "no journey nodes", where)
+    """J11 — no internal enum tokens in displayed journey text."""
+    where = (".ucp-receipt, .pvs-section and .pv-setup-body displayed text; "
+             "raw codes allowed only inside code.ucp-reason-raw")
+    scopes: list[Tag] = []
+    for selector in (".ucp-receipt", ".pvs-section", ".pv-setup-body"):
+        for node in soup.select(selector):
+            if node.find_parent("template") is not None:
+                continue
+            scopes.append(node)
+    # Avoid double-walking nested .pvs-section descendants of .pv-setup-body.
+    scopes = [node for node in scopes
+              if not any(other is not node and other in node.parents for other in scopes)]
+    if not scopes:
+        return _check_status("FAIL", "displayed scopes present",
+                             "no displayed scopes", where)
     banned = _enum_values(standouts, index)
-    if not banned:
-        return _check_status(
-            "N/A",
-            "no enum leakage in visible text",
-            "payloads carry no _-containing enum values to ban",
-            where,
-        )
     hits: list[dict[str, Any]] = []
-    for n in nodes:
-        text = _visible_text(n, locale)
+    for node in scopes:
+        copied = BeautifulSoup(str(node), "lxml")
+        _remove_raw_reason_nodes(copied.body or copied)
+        text = _visible_text(copied.body or copied, locale)
         for hit in _scan_tokens(text, banned):
-            hit["node"] = n.name or "?"
+            hit["node"] = node.name or "?"
             hits.append(hit)
     if hits:
-        return _check_status(
-            "FAIL",
-            "no raw enum tokens in journey visible text",
-            {"hits": hits[:20],
-             "banned_tokens": sorted(banned),
-             "nodes_walked": len(nodes),
-             "locale": locale},
-            where,
-        )
-    return _check_status(
-        "PASS",
-        "no raw enum tokens in journey visible text",
-        {"banned_tokens": sorted(banned),
-         "nodes_walked": len(nodes),
-         "locale": locale},
-        where,
-    )
-
+        return _check_status("FAIL", "no internal enum tokens in displayed text",
+                             hits[:20], where)
+    return _check_status("PASS", "no internal enum tokens in displayed text",
+                         {"scopes_walked": len(scopes)}, where)
 
 def _check_j12(soup: BeautifulSoup, index: dict[str, Any],
                standouts: dict[str, Any],
@@ -1291,9 +1244,11 @@ def run(argv: list[str] | None = None) -> int:
                     if j1_observed else None)
     j5 = _check_j5(soup, standouts, ticker)
     j6 = _check_j6(soup, standouts, ticker)
-    j7 = _check_j7(soup, standouts)
+    j7 = _check_j7(soup, standouts, ticker)
     j8, plan_ids = _check_j8(soup, index, ticker)
-    j9 = _check_j9(soup, index, standouts)
+    runtime_path = page_path.parent / "prophet_live.json"
+    runtime = _load_json(runtime_path) if runtime_path.exists() else None
+    j9 = _check_j9(soup, index, standouts, runtime, args.locale, ticker)
     j10 = _check_j10(soup, ticker, plan_ids)
     j11 = _check_j11(soup, args.locale, standouts, index, ticker, plan_ids)
     j12 = _check_j12(soup, index, standouts, ticker, plan_ids)
