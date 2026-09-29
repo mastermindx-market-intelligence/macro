@@ -79,6 +79,42 @@ changed:
       a coupled raise would have silenced, and the four alternatives rejected.
 verified:
   - claim: >
+      The reviewer's three findings are applied and the exact CI step that was red is
+      green: 554 passed over the nine files in `market-os-macro-suite-pages` step 5,
+      matching CI's red run of 1 failed / 545 passed / 8 skipped (554 collected).
+    command: "python3 -m pytest tests/test_macro_suite_pages.py tests/test_macro_workspace_prior_publication.py tests/test_macro_command_shell.py tests/test_macro_command_copy_law.py tests/test_macro_command_read_strip.py tests/test_macro_command_panels.py tests/test_macro_command_empty_states.py tests/test_macro_command_p4_copy.py tests/test_macro_command_capture_guards.py -q"
+  - claim: >
+      Packet section 5 verification set is green on head 21bdaf85d6ef: 109 passed
+      (107 before this session's two added tests).
+    command: "python3 -m pytest -q tests/test_daily_collect_commit_path.py tests/test_nightly_timings.py tests/test_daily_et_gate.py tests/test_workflow_file_size.py"
+  - claim: >
+      The no-op-rerun discriminator has a test and two RED controls, run against a
+      mutated daily.yml that was restored and re-checksummed identical. Defect
+      INSERTED (duplicate `committed=true`) -> fails "found 2"; defect MOVED (flip
+      reordered above the empty-index check, count still 1) -> fails on the ordering
+      assertion. Under EITHER defect the two pre-existing tests
+      (`test_a_failed_push_cannot_advance_the_served_source_receipt`,
+      `test_each_checkpoint_keeps_the_commit_push_split`) BOTH still pass - which is
+      the producer-side gap the new test closes.
+    command: "python3 -m pytest tests/test_daily_collect_commit_path.py -q -k 'no_op_rerun or failed_push or commit_push_split'"
+  - claim: >
+      `ci-authority/codex/merge-queue-pilot` is FAILURE on 8 of 8 open pull requests
+      (#8008, #7891, #7300, #7789, #8205, #7426, #8194, #7870) - seven independent
+      siblings across unrelated programs. Red by design on every main-targeting PR and
+      sweeper-excluded per #5815: NOT a merge blocker, NOT attributable to this head.
+      `ci-authority/main` passed; the gate's own summary reads `allowed: True`,
+      `reason: same_repo_admin_authority_change`, with the failing SUB-context
+      reporting `context_active: False`, `context_reason: inactive_base_context`.
+    command: "gh api graphql -f query='{repository(owner:\"mastermindx-market-intelligence\",name:\"macro\"){pullRequests(states:OPEN,first:8,orderBy:{field:UPDATED_AT,direction:DESC}){nodes{number headRefOid commits(last:1){nodes{commit{checkSuites(first:20){nodes{checkRuns(first:30,filterBy:{checkName:\"ci-authority/codex/merge-queue-pilot\"}){nodes{name conclusion}}}}}}}}}}}'"
+  - claim: >
+      `git diff --check origin/main HEAD` is the WRONG scope and reports a FALSE
+      failure: 60+ trailing-whitespace lines in `site/china_stocks.html`, a file this
+      branch never touched and which main moved under us. Correct scope is
+      merge-base..HEAD, which is CLEAN. Overlap between the 12 files this branch
+      changes and the files main moved since the merge-base: ZERO - clean merge,
+      reverts nothing.
+    command: "MB=$(git merge-base origin/main HEAD); git diff --check \"$MB\" HEAD; comm -12 <(git diff --name-only \"$MB\" HEAD|sort) <(git diff --name-only \"$MB\" origin/main|sort)"
+  - claim: >
       A job-level timeout does NOT skip the always()/cancelled() tail; it runs the
       remaining steps inside a bounded grace of about five minutes. Job 105033526139
       hit its 240m cap at 04:48:55Z and still completed `push market data` at
@@ -187,6 +223,16 @@ unverified:
       transcripts.
 unresolved:
   - >
+      Section 5 discriminator "a closed-market day does not generate a false
+      stale/current verdict" is NOT evidenced by this PR and is NOT in its scope. The
+      stale/current verdict is decided in the workspace modules, not in daily.yml:
+      `scripts/build_macro_suite_pages.py` has ZERO market-calendar references, while
+      `scripts/build_options_command.py` (56 hits), `engine/market_os/macro_workspaces/
+      national_debt.py` (21) and `engine/options_intel_brief.py` (13) are
+      calendar-aware. Whether the macro-suite path SHOULD be calendar-aware is a real
+      open question and a separate owner's; it is not a MACRO-01 regression. The other
+      five section-5 discriminators are covered and named in the carrier comment.
+  - >
       The 2026-09-29 mass cancellation (#8164) is currently a LARGER constraint on
       freshness than the cap exhaustion this PR repairs, for Canada as well as US.
       MECHANISM NOW ESTABLISHED at step level, run 36511549800: `run collectors` was
@@ -294,6 +340,21 @@ next_actions:
       canceller needs a surface outside this fleet's transcripts.
 do_not_redo:
   - >
+      Do NOT mint a discovery for the `ci-authority/codex/merge-queue-pilot` red. It is
+      already recorded (red by design on every main-targeting PR, sweeper-excluded per
+      #5815) and appears in DEC:AGENT-ROUTING-CONTROL, WS:CONSUMER-CYCLICAL-V1,
+      DEC-UIUX-VPS-ONLY-DELIVERY-20260920 and
+      DSC:A-WATCHER-GRADING-CHECK-ROWS-REPORTS-A-FALSE-ALL-CLEAR. Confirming it costs
+      one GraphQL query; re-recording it is duplication.
+  - >
+      Do NOT re-derive the empty-state precedence. Measured and settled this session:
+      E4 OUTRANKS E2 because `_command_tab_withheld` is checked first at
+      `scripts/build_macro_suite_pages.py:1281` and returns E4, reaching the E2 path
+      only in its `else`. Matrix: stale+flag-on -> e4; stale+flag-off -> e2;
+      pinned-CURRENT+flag-on -> e4; pinned-CURRENT+flag-off -> None. An earlier claim
+      of mine said the reverse; it is refuted and swept from the docstring, both
+      records and the carrier.
+  - >
       Do NOT re-assert that a job-level timeout skips the always()/cancelled() tail.
       It is measured false on this exact job and cap (DSC:A-JOB-TIMEOUT-RUNS-THE-
       ALWAYS-TAIL-INSIDE-A-BOUNDED-GRACE). Four prose sites in daily.yml were rewritten
@@ -321,6 +382,16 @@ do_not_redo:
       reconciliation is complete against a zero-drift base.
 danger_areas:
   - >
+      A CI watcher here must not decide "concluded" from `gh pr checks` rows alone -
+      `pending == 0` is satisfied by an EMPTY or PARTIAL list, which is
+      DSC:A-WATCHER-GRADING-CHECK-ROWS-REPORTS-A-FALSE-ALL-CLEAR. This session's first
+      two watchers had that defect and a third had a worse one: `gh pr checks` is TAB
+      separated and check names contain spaces, so a `^\S+\s+fail` regex silently
+      misses every space-named check. The armed watcher now pins the head, requires
+      `ci-gate` PRESENT by name (its absence means ci-plan has not published the pack
+      set), cross-checks `gh run list` filtered to the exact headSha for unfinished
+      runs, and splits on tabs.
+  - >
       `.github/workflows/daily.yml` is a GLOBAL CI invalidator - editing it forces the
       full suite, so every push here costs a complete run. It is also a shared
       composition surface: this repair serializes ahead of MACRO-02's operation clock
@@ -345,5 +416,5 @@ danger_areas:
       Never `git add -A` an unexpected `data/` or `site/` diff here.
 prs: [8008]
 decisions: ["DEC:SPLIT-THE-CREEP-BUDGET-FROM-THE-SURVIVAL-CAP"]
-discoveries: ["DSC:A-JOB-TIMEOUT-RUNS-THE-ALWAYS-TAIL-INSIDE-A-BOUNDED-GRACE"]
+discoveries: ["DSC:A-JOB-TIMEOUT-RUNS-THE-ALWAYS-TAIL-INSIDE-A-BOUNDED-GRACE", "DSC:A-WATCHER-GRADING-CHECK-ROWS-REPORTS-A-FALSE-ALL-CLEAR", "DSC:A-GLOBAL-INVALIDATOR-PR-CANNOT-USE-SIBLING-HEAD-EXONERATION"]
 ---
