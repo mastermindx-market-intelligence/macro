@@ -2592,6 +2592,89 @@ def test_owner_inputs_in_generators_compose_the_document_their_lists_compose(fix
     assert _composed(generated) == _composed(base)
 
 
+@pytest.mark.parametrize("field", ["expectation_observations", "financial_packets", "market_observations"])
+def test_a_keyed_input_whose_sequences_of_rows_are_empty_is_received_as_read(field: str) -> None:
+    """The gate withholds an input only when it read rows of it and kept
+    none. A keyed input whose every sequence of rows is empty holds no row
+    the cutoff could withhold: the owner answered with no rows, so its
+    receipt reads READ, as it did when the receipts counted rows with
+    len(). An empty keyed input is still received as DEGRADED."""
+    base = _extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+
+    def receipt(inputs: FinanceOwnerInputs) -> str:
+        document = _composed(inputs)
+        return next(r["state"] for r in document["input_receipts"] if r["owner"] == _RECEIPT_FOR_INPUT[field])
+
+    assert receipt(_gated_rows_in(base, field, lambda rows: [])) == "READ"
+    assert receipt(dataclasses.replace(base, **{field: {}})) == "DEGRADED"
+
+
+def _rows_in_tuples(inputs: FinanceOwnerInputs) -> FinanceOwnerInputs:
+    """``inputs`` with the rows of theme evidence, source records and each
+    slice's expectation and market observations held in a tuple, and every
+    list inside each row, however deep, a generator of the same items."""
+    listed = {field: tuple(_as_generators(row) for row in getattr(inputs, field))
+              for field in ("theme_evidence", "source_records")}
+    keyed = {field: {slice_id: tuple(_as_generators(row) for row in rows)
+                     for slice_id, rows in getattr(inputs, field).items()}
+             for field in ("expectation_observations", "market_observations")}
+    return dataclasses.replace(inputs, **listed, **keyed)
+
+
+@pytest.mark.parametrize("fixture", _FENCE_FIXTURES)
+def test_rows_held_in_tuples_compose_the_document_their_lists_compose(fixture: str) -> None:
+    """A one-shot iterator is read once wherever it sits, a tuple included.
+    With the rows of every owner list held in a tuple and every list inside
+    those rows a generator, the composer returns the same document, input
+    digest included."""
+    base = _extended_owner_inputs(fixture)
+    assert _composed(_rows_in_tuples(base)) == _composed(base)
+
+
+class _RefusesIteration:
+    """An owner value that declares iteration and refuses it, as a 0-d
+    array does."""
+
+    def __iter__(self) -> Any:
+        raise TypeError("SYNTHETIC: iteration refused")
+
+    def __str__(self) -> str:
+        return "SYNTHETIC-opaque"
+
+
+def test_a_row_value_that_refuses_iteration_is_hashed_as_its_text() -> None:
+    """The digest hashes a value it cannot walk as its str(). An owner row
+    holding a value that declares iteration and refuses it composes, and it
+    has the digest of the same row holding that value's text, as it did
+    before the digest walked containers."""
+    base = _extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+    first, *rest = base.theme_evidence
+
+    def digest(value: Any) -> str:
+        document = _composed(dataclasses.replace(base, theme_evidence=[dict(first, synthetic_value=value), *rest]))
+        return document["snapshot_identity"]["input_digest"]
+
+    assert digest(_RefusesIteration()) == digest("SYNTHETIC-opaque")
+
+
+class _MappingAndIterator(dict):
+    """A mapping that also declares itself an iterator."""
+
+    def __next__(self) -> Any:
+        raise StopIteration
+
+
+def test_an_owner_mapping_that_is_also_an_iterator_is_read_as_a_mapping() -> None:
+    """Draining reads a mapping as a mapping before it asks whether the
+    value is an iterator. Identity bindings held in a mapping that also
+    declares itself an iterator compose the document a plain mapping
+    composes."""
+    base = _extended_owner_inputs("EARNINGS_UP_P_E_DOWN")
+    assert base.identity_bindings
+    bindings = _MappingAndIterator(base.identity_bindings)
+    assert _composed(dataclasses.replace(base, identity_bindings=bindings)) == _composed(base)
+
+
 @pytest.mark.parametrize("fixture", _FENCE_FIXTURES)
 def test_rows_the_gate_reads_in_deques_compose_the_document_their_lists_compose(fixture: str) -> None:
     """The input digest hashes what a container holds, never the container.
