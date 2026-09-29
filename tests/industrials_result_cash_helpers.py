@@ -87,7 +87,9 @@ PLAN_REQUIREMENT_ANCHORS: Mapping[str, tuple[str, str]] = {
     # is reachable without the held seams, anchored on recovered ORIGINAL wording
     # (r2 blob 9c98e106b954d0a48610afad418de2a9eeb1e58b) rather than on a ruling
     # or on landed code.  The other eight T06 rows stay absent on purpose.
+    "IND-D23": (_T06_SUITE, "test_ind_d23"),
     "IND-R214": (_T06_SUITE, "test_ind_r214"),
+    "IND-R215": (_T06_SUITE, "test_ind_r215"),
 }
 _COMPARISON_PURPOSES = frozenset(
     {"same_period", "year_over_year", "final_vs_preview", "segment_bridge", "rollforward"}
