@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-28T03:44:12.040516+00:00",
-  "as_of": "2026-09-27",
-  "n_open": 113467,
-  "n_graded_today": 0,
-  "n_blocked_by_coverage": 43846,
+  "generated_at": "2026-09-28T13:45:55.000775+00:00",
+  "as_of": "2026-09-28",
+  "n_open": 113880,
+  "n_graded_today": 96,
+  "n_blocked_by_coverage": 44375,
   "n_ungradeable": 18,
   "n_already_graded": 149124,
   "clock_unresolvable_claims": {
@@ -26,10 +26,10 @@
     "families_approaching": [
       "radar@63d"
     ],
-    "grader_quiet_days": 1
+    "grader_quiet_days": 0
   },
   "regime_stamp_backfill": {
-    "n_claims": 113487,
+    "n_claims": 113900,
     "n_backfilled": 0,
     "n_unstamped": 6673,
     "n_precoverage": 4361

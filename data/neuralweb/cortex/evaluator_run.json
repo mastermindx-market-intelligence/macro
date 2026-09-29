@@ -1,33 +1,54 @@
 {
-  "as_of": "2026-09-23",
+  "as_of": "2026-09-28",
   "evaluator_version": "W7b-PR3",
   "dry_run": false,
-  "n_due": 1,
+  "n_due": 2,
   "results": [
     {
-      "id": "cortex-2026-08-26-when-the-confirmed-us-regime-label-remai-3fe580",
-      "claim_shape": "entry_quality",
-      "verdict": "uncomputable-metric",
+      "id": "cortex-2026-08-31-in-low-volatility-regimes-negative-10-d-3ac05c",
+      "claim_shape": "conditional_regime",
+      "verdict": "insufficient-n",
       "n": 0,
       "metric_value": null,
       "detail": {
-        "gate_error": "metric 'matched_mean_signed_excess_difference_21d' is not computable by this evaluator",
-        "supported_metrics": [
-          "excess_mean",
-          "excess_mean_difference",
-          "hit_rate",
-          "hit_rate_difference",
-          "hit_rate_ratio",
-          "stop_out_rate",
-          "stop_out_rate_difference"
+        "metric_space": "absolute",
+        "query_axes_applied": [
+          "symbol"
         ],
-        "remediation": "re-register with a supported metric name; the evaluator will not substitute a different metric for the one that was pre-committed",
+        "declares_feature": false,
+        "total_spine_rows": 0,
+        "pre_reg_dropped": 0,
+        "post_reg_n": 0,
+        "note": "No post-registration graded rows found. All data predates registration \u2014 anti-mining law enforced.",
         "evaluator_version": "W7b-PR3"
       },
       "gate": {
-        "metric": "matched_mean_signed_excess_difference_21d",
-        "threshold": -0.02,
-        "min_n": 30,
+        "metric": "hit_rate",
+        "threshold": 0.55,
+        "min_n": 35,
+        "horizon_d": 21,
+        "direction_expected": 1
+      },
+      "note": null
+    },
+    {
+      "id": "cortex-2026-08-31-in-high-volatility-regimes-extended-dwe-235ca3",
+      "claim_shape": "entry_quality",
+      "verdict": "insufficient-n",
+      "n": 0,
+      "metric_value": null,
+      "detail": {
+        "metric_space": "absolute",
+        "total_spine_rows": 0,
+        "pre_reg_dropped": 0,
+        "post_reg_n": 0,
+        "note": "insufficient post-registration signals (0 < 25)",
+        "evaluator_version": "W7b-PR3"
+      },
+      "gate": {
+        "metric": "hit_rate",
+        "threshold": 0.55,
+        "min_n": 25,
         "horizon_d": 21,
         "direction_expected": -1
       },
@@ -36,5 +57,5 @@
   ],
   "n_passed": 0,
   "n_failed": 0,
-  "n_insufficient": 0
+  "n_insufficient": 2
 }
