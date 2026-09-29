@@ -1097,7 +1097,8 @@ def test_j11_fail_human_reason_label_with_empty_binding():
 
 
 def test_j11_fail_raw_code_when_selector_is_not_code():
-    soup = BeautifulSoup(_corrected_html(detail_lane="quiet", detail_stage="quiet"), "lxml")
+    soup = BeautifulSoup(
+        _corrected_html(detail_lane="quiet", detail_stage="quiet"), "lxml")
     receipt = soup.select_one(".ucp-receipt")
     reason = soup.new_tag(
         "span", attrs={"class": "ucp-reason", "data-reason": "unmapped_new_code"})
@@ -1119,6 +1120,16 @@ def test_j11_fail_declared_lane_family_codes_from_engine():
     assert chk["status"] == "FAIL", chk
     tokens = {hit["token"] for hit in chk["observed"]}
     assert {"entry_status_bounce_wait", "stage_basing", "tier_T1"} <= tokens
+
+
+def test_declared_reason_vocabulary_superset_engine_runtime_union():
+    engine_reasons, refusal_order = _runtime_engine_vocabulary()
+    assert engine_reasons
+    assert _pjr.RUNTIME_DECLARED_REASON_VOCABULARY == engine_reasons
+    assert set(_pjr.REFUSAL_ORDER) == set(refusal_order)
+    assert _pjr.LIFECYCLE_VOCABULARY == {
+        "watch", "ready", "entered", "delivering", "overtime",
+        "invalidated", "resolved"}
 
 
 def test_j12_pass_alert_absent_with_sources():
