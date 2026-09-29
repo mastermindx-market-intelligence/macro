@@ -1,7 +1,7 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-09-29",
-  "generated_utc": "2026-09-29T00:35:54.932925+00:00",
+  "generated_utc": "2026-09-29T01:33:59.525415+00:00",
   "n_tickers": 2799,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
@@ -780,8 +780,8 @@
         "insider_cluster"
       ],
       "weighted_score": 1.0,
-      "insider_net_usd": 848749703.0,
-      "insider_buyers": 33,
+      "insider_net_usd": 848500446.0,
+      "insider_buyers": 30,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
