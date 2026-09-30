@@ -14459,6 +14459,7 @@ jobs:
       - "engine/neuralweb/__init__.py"
       - "engine/neuralweb/company_intelligence_reader.py"
       - "engine/press/earnings_adapter.py"
+      - "scripts/publish_company_intelligence_r2.py"
       - "config/earnings_story_promotion.yml"
       - "config/fundamental_forensics_disclosure_diff.v1.json"
       - "tests/earnings_economic_fixtures.py"
