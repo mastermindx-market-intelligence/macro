@@ -545,7 +545,9 @@ def test_v2_publish_validates_prepared_closure_before_store_access(tmp_path):
     )
     object.__setattr__(prepared, "manifest", MappingProxyType(manifest))
     object.__setattr__(prepared, "artifacts", artifacts)
-    object.__setattr__(prepared, "payloads", MappingProxyType({**prepared.payloads, source_key: altered}))
+    payloads = {key: value for key, value in prepared.payloads.items() if key != source_key}
+    payloads[altered_key] = altered
+    object.__setattr__(prepared, "payloads", MappingProxyType(payloads))
     store.versioned_reads.clear()
     store.put_calls.clear()
     store.conditional_calls.clear()
