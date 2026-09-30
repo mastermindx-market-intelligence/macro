@@ -153,3 +153,20 @@ def frames_from_receipt(points,receipt,catalog):
     for key,rows in data.items():
         f=pd.DataFrame.from_dict(rows,orient='index');f.index=pd.to_datetime(f.index);f.index.name='date';result[key]=f.sort_index()
     return result
+
+
+def read_metric_from_store(ident, read, as_of=None, reference_period=None):
+    """Read one catalog measure through the SAME admission used by the overview.
+
+    This is a caller convenience, not another validator or publication owner.
+    It prevents a detailed dialog from bypassing the receipt/definition checks.
+    """
+    from engine.china_economy import metric_view
+    catalog = json.loads((Path(__file__).resolve().parents[1] /
+                          'config/china_economy_catalog.json').read_text())['metrics']
+    meta = catalog[ident]
+    doc = document_from_store(read, {ident: meta}, as_of, reference_period)
+    result = metric_view(meta, doc['observations'], doc['sources'],
+                         timestamp(doc['as_of']), doc['display_reference_period'])
+    result['source_errors'] = doc['source_errors']
+    return result

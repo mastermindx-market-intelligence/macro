@@ -1,0 +1,80 @@
+{
+  "scope": "actual owned-worktree builder static data readback; not browser or production",
+  "counts": {
+    "catalog": 128,
+    "valid_current": 84,
+    "diagnostics": 11
+  },
+  "breadth": {
+    "universe": 6,
+    "covered": 2,
+    "counts": {
+      "improving": 1,
+      "fading": 0,
+      "steady": 0,
+      "mixed": 1,
+      "unknown": 4
+    },
+    "eligible": false,
+    "minimum_coverage": 4,
+    "improvement_lower_bound_pct": 16.7,
+    "improvement_upper_bound_pct": 83.3,
+    "bounds_type": "missing-domain bounds, NOT statistical confidence intervals",
+    "headline_en": "Economic direction needs more evidence.",
+    "headline_zh": "经济方向仍需更多证据。",
+    "is_gdp_nowcast": false,
+    "is_probability": false,
+    "not_trade_authority": true,
+    "method_en": "One diagnostic vote per six fixed growth domains; conflicting evidence stays mixed. No weight is reassigned when a domain is unavailable. This is not a GDP-weighted economy score.",
+    "method_zh": "六个固定增长领域各一票；冲突保留为分化。缺失时不转移权重；这不是GDP加权经济评分。"
+  },
+  "complete_client_value_unit_definition_parity": true,
+  "fai_dialog_overview_parity": true,
+  "fai_dialog_row": "Fixed-asset investment · YTD 固定资产投资·年内累计 -7.2 % YTD YoY % YTD YoY — 2026-08 Recent 近期数据",
+  "fai_value": -7.2,
+  "definition_id": "investment_ytd.nbs_comparable.v2",
+  "files": {
+    "china.html": {
+      "bytes": 1320085,
+      "gzip_bytes": 210142,
+      "sha256": "a02e511564b2f6bc433c463377508201521fdd3d75e3dc517951de94316ad52f",
+      "duplicate_ids": 0,
+      "h1_count": 0
+    },
+    "china_stocks.html": {
+      "bytes": 1117111,
+      "gzip_bytes": 154852,
+      "sha256": "8b6eb4f4ccadc033ddeca67d89a13fb99b34025bce9a563cdc058bacedbedc8b",
+      "duplicate_ids": 0,
+      "h1_count": 1
+    },
+    "china_macro_evidence.json": {
+      "bytes": 1028448,
+      "gzip_bytes": 101396,
+      "sha256": "6fc0ae1055e177dcbb022fa691a1fe92d74e2962dee1771636c62ae6483e4fb3"
+    }
+  },
+  "focused_tests": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "482",
+      "time": "19.235",
+      "timestamp": "2026-09-29T18:05:00.047895-07:00",
+      "hostname": "m2studio"
+    }
+  ],
+  "source_sha256": {
+    "collectors/china_macro.py": "85c160ecf32af0dde342bc9182b82c318083d49a0b75e93518f9ff436f8a9f8c",
+    "collectors/china_economy_release_parser.py": "e81936a1254e1d649c98f8715bb743ee7919a89f2f0b00228bef2e502451f3b5",
+    "collectors/china_economy_acquisition.py": "24f9b62cbac1642ff0ccea9ffbfc448cf9ad20a04f7d9727e37af1c05369abf7",
+    "config/china_economy_catalog.json": "6b4a5a57e1493f28161670c13ff5eba6fc8b434d830eed51ff1ce12ee946bd9a",
+    "engine/china_macro_evidence.py": "c0e50b231f066daa1c81d4f5abd767b921e7dd8ab2b1f950fa58a5fc99b2df3e",
+    "engine/china_economy_store.py": "3765a1c8cebbdb7d184cc3236c746dcd0e8abd8de48236e821510bcdecfed94b",
+    "tests/test_china_economy_store.py": "e70a00774d48b7e4b9cb142a8261e04897c6de8bba7f6ba056c3731e771c31b0",
+    "tests/test_china_economy_acquisition.py": "07cfce4896935bbaca7f235a0af29d1ce63d8cfef28db4dff638f651490070bd",
+    "tests/test_china_economy_additional_parsers.py": "29e54696730cbc11bd054b97befc1442a93e2ac12584d45009713b33ec3e03f9"
+  }
+}

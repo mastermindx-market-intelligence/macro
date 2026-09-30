@@ -266,3 +266,66 @@ def test_paragraph_wrapper_scopes_equal_publisher_twins_and_keeps_title_year():
     page=f'<title>{title}</title><meta name="PubDate" content="2026/09/28 09:30"><div class="detail-text-content"><div class="txt-content">{body}</div></div><div class="mobile-content"><div class="mobile-news-content">{body}</div></div>'
     _,_,points=parse_acquisition('profits',URL,page.encode(),NOW,'2026-08',CAT)
     assert len(points)==19
+
+
+_DETAIL_INDUSTRY_TABLE = '''<table><tr><th>指标</th><th>8月</th><th>8月</th><th>1—8月</th><th>1—8月</th></tr><tr><th>指标</th><th>绝对量</th><th>同比增长(%)</th><th>绝对量</th><th>同比增长(%)</th></tr><tr><td>规模以上工业增加值</td><td>…</td><td>5.2</td><td>…</td><td>5.3</td></tr><tr><td>制造业</td><td>…</td><td>6.1</td><td>…</td><td>5.7</td></tr></table>'''
+
+
+def test_same_response_enriches_new_values_without_replacing_history():
+    old_frames, _, core = parse_acquisition('industry', URL, sa_page().encode(), NOW, '2026-08', CAT)
+    raw = (sa_page()+_DETAIL_INDUSTRY_TABLE).encode()
+    frames, receipt, points = parse_acquisition('industry', URL, raw, NOW, '2026-08', CAT)
+    assert [p for p in points if p['metric_id']=='industrial_sa'] == core
+    pd.testing.assert_series_equal(frames['china_macro/activity_sa']['indpro_mom'], old_frames['china_macro/activity_sa']['indpro_mom'])
+    assert len(points)==len(core)+2
+    assert len([p for p in points if p['metric_id']=='industrial_yoy'])==1
+    assert receipt['supplemental_evidence']['history_inferred'] is False
+    for frame in frames.values():
+        for col in frame.columns:
+            if col.endswith('__response_sha256'):
+                assert set(frame[col].dropna()) == {hashlib.sha256(raw).hexdigest()}
+    assert build(frames)['metrics']['output_manufacturing']['value']==6.1
+
+
+def test_bad_supplemental_table_cannot_erase_valid_core_history():
+    _, _, before = parse_acquisition('industry', URL, sa_page().encode(), NOW, '2026-08', CAT)
+    raw = (sa_page()+_DETAIL_INDUSTRY_TABLE*2).encode()
+    frames, receipt, after = parse_acquisition('industry', URL, raw, NOW, '2026-08', CAT)
+    assert before==after
+    assert receipt['supplemental_evidence']['status']=='withheld'
+    assert 'industrial_yoy' in receipt['supplemental_evidence']['null_reasons']
+    assert build(frames)['counts']['valid_current']==1
+
+
+def test_new_detail_respects_unqualified_legacy_disagreement():
+    frames, receipt, _ = parse_acquisition('industry', URL, (sa_page()+_DETAIL_INDUSTRY_TABLE).encode(), NOW, '2026-08', CAT)
+    old = pd.DataFrame({'indpro_yoy':[99.]}, index=pd.to_datetime(['2026-08-01']))
+    batch = CollectionBatch(frames=frames,receipts={'industry':receipt})
+    qualified = qualify_against_owner(batch, {'indpro':old}, lambda g,t:None, CAT)
+    assert qualified['indpro'].iloc[0]['indpro_yoy']==99
+    assert batch.conflicts and batch.status=='blocked'
+    result = build({'china_macro/'+k:v for k,v in qualified.items()})
+    assert result['metrics']['industrial_yoy']['value'] is None
+    assert result['metrics']['output_manufacturing']['value']==6.1
+    assert result['metrics']['industrial_sa']['value']==.54
+
+
+def test_fai_monthly_and_nbs_ytd_keep_distinct_values_and_index_name():
+    official=frames_from_receipt([point(-7.2,'investment_ytd')],rec(),CAT)
+    old=pd.DataFrame({'fai_yoy':[-13.51]},index=pd.DatetimeIndex(['2026-08-01'],name='REPORT_DATE'))
+    batch=CollectionBatch(frames=official)
+    qualified=qualify_against_owner(batch,{'fai':old},lambda g,t:old if (g,t)==('china_macro','fai') else None,CAT)
+    assert not batch.conflicts and not batch.failures
+    assert qualified['fai'].index.name=='REPORT_DATE'
+    assert qualified['fai'].iloc[0]['fai_yoy']==-13.51
+    assert qualified['fai'].iloc[0]['fai_ytd_yoy']==-7.2
+    assert qualified['fai'].iloc[0]['fai_ytd_yoy__definition_id']=='investment_ytd.nbs_comparable.v2'
+
+
+def test_fai_mismatching_official_value_still_triggers_existing_conflict_guard():
+    official=frames_from_receipt([point(-7.2,'investment_ytd')],rec(),CAT)
+    old=pd.DataFrame({'fai_ytd_yoy':[-9.9]},index=pd.DatetimeIndex(['2026-08-01'],name='REPORT_DATE'))
+    batch=CollectionBatch(frames=official)
+    qualified=qualify_against_owner(batch,{'fai':old},lambda g,t:None,CAT)
+    assert batch.conflicts and batch.status=='blocked'
+    assert qualified['fai'].iloc[0]['fai_ytd_yoy']==-9.9

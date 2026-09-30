@@ -16,10 +16,12 @@ falsifier: >
 so_what: >
   Continue issue #8185 in the same owned source lane. Preserve the original
   four dialogs and the 128-series catalog, but do not report all catalog series
-  as acquired. A successful local collector with 53 admitted series covers
-  only two of six growth domains; the overall direction must remain withheld.
+  as acquired. The current source-detail qualification admits 84 series but
+  still covers only two of six growth-domain directions; withhold the overall
+  direction. Keep legacy monthly FAI amounts separate from official comparable
+  cumulative growth, even when both observations refer to the same month.
 kind: landmine
-verified_at: 2026-09-29
+verified_at: 2026-09-30
 verified_by: >
   Sol attended integration: python3 -m scripts.build_china completed with
   RENDER_NO_DRIP=1 and CHINA_VM_DUMP=1; installed ChinaMacroAdapter qualified
@@ -28,6 +30,10 @@ verified_by: >
   local receipt paths are in research/CHINA_ECONOMY_SOURCE_INTEGRATION_20260929.md.
   Machine/client chart-value, unit and definition parity was checked on the
   actual builder output, not the separately transcribed research preview.
+  The subsequent focused suite records 482 passed in focused-final-v2.xml;
+  read research/CHINA_ECONOMY_DETAIL_AND_FAI_BASIS_20260929.md and its r3
+  source/ingestion/build receipts for the new 31 readings and same-owner FAI
+  correction. Original evidence hashes are not rewritten.
 scope: [macro, collectors/china_macro.py, collectors/china_economy_adapter.py, engine/china_economy_store.py, scripts/build_china.py]
 confidence: verified
 ---
@@ -44,5 +50,14 @@ browser behavior, authentication, installed production identity or acceptance.
 
 The raw-source acquisition configuration remains disabled in the shipped example.
 Qualification used an instance-local configuration, not a production enrollment.
-Existing FAI/export source-basis differences, fiscal acquisition failure, wider
-catalog acquisition and commercial redistribution review remain open.
+The observed FAI discrepancy is resolved at the new evidence binding: the
+legacy BASE_SAME matches single-month amount arithmetic, not comparable YTD
+growth. The NBS value occupies a separate column in the same table and both
+new views share its receipt admission. Every original legacy date/value and
+index name is preserved; no strategy computation was changed. Export basis,
+fiscal acquisition, wider histories and commercial redistribution review remain open.
+
+The original browser refusal and an additional unclear OpenAI refusal of a
+compound UI/CI/palette/browser-source read remain action-scoped gates. Neither
+was retried through another route. No visual, authenticated gateway or release
+acceptance follows from this independent data-unit completion.

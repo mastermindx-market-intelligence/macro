@@ -1,0 +1,488 @@
+{
+  "scope": "existing installed adapter / existing local store, NOT production enrollment",
+  "started_at": "2026-09-30T00:48:51.091281+00:00",
+  "completed_at": "2026-09-30T00:50:05.718383+00:00",
+  "adapter_result": {
+    "source": "china_macro",
+    "status": "blocked",
+    "rows": 2573,
+    "last_date": "2026-09-29",
+    "error": null,
+    "notes": [
+      "frozen tail: rrr last=2025-05-07 age=511d"
+    ],
+    "probed_at": null
+  },
+  "before_counts": {
+    "catalog": 128,
+    "valid_current": 53,
+    "diagnostics": 11
+  },
+  "after_counts": {
+    "catalog": 128,
+    "valid_current": 83,
+    "diagnostics": 11
+  },
+  "breadth": {
+    "universe": 6,
+    "covered": 2,
+    "counts": {
+      "improving": 1,
+      "fading": 0,
+      "steady": 0,
+      "mixed": 1,
+      "unknown": 4
+    },
+    "eligible": false,
+    "minimum_coverage": 4,
+    "improvement_lower_bound_pct": 16.7,
+    "improvement_upper_bound_pct": 83.3,
+    "bounds_type": "missing-domain bounds, NOT statistical confidence intervals",
+    "headline_en": "Economic direction needs more evidence.",
+    "headline_zh": "经济方向仍需更多证据。",
+    "is_gdp_nowcast": false,
+    "is_probability": false,
+    "not_trade_authority": true,
+    "method_en": "One diagnostic vote per six fixed growth domains; conflicting evidence stays mixed. No weight is reassigned when a domain is unavailable. This is not a GDP-weighted economy score.",
+    "method_zh": "六个固定增长领域各一票；冲突保留为分化。缺失时不转移权重；这不是GDP加权经济评分。"
+  },
+  "newly_available": [
+    "industrial_yoy",
+    "industry_positive",
+    "investment_equipment",
+    "investment_infra",
+    "investment_ip",
+    "manufacturing_investment",
+    "output_cement",
+    "output_electronics",
+    "output_hightech",
+    "output_manufacturing",
+    "output_mining",
+    "output_nev",
+    "output_steel",
+    "output_utilities",
+    "pmi_construction",
+    "pmi_large",
+    "pmi_medium",
+    "pmi_services",
+    "pmi_small",
+    "private_investment",
+    "products_positive",
+    "regional_investment_central",
+    "regional_investment_east",
+    "regional_investment_northeast",
+    "regional_investment_west",
+    "retail_catering",
+    "retail_exauto",
+    "retail_rural",
+    "retail_urban",
+    "retail_yoy"
+  ],
+  "new_values": {
+    "industrial_yoy": {
+      "value": 5.2,
+      "unit": "% YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "industrial_yoy.v1"
+    },
+    "industry_positive": {
+      "value": 29.0,
+      "unit": "of 41",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "industry_positive.v1"
+    },
+    "investment_equipment": {
+      "value": 9.3,
+      "unit": "% YTD YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "investment_equipment.v1"
+    },
+    "investment_infra": {
+      "value": -4.0,
+      "unit": "% YTD YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "investment_infra.v1"
+    },
+    "investment_ip": {
+      "value": 9.2,
+      "unit": "% YTD YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "investment_ip.v1"
+    },
+    "manufacturing_investment": {
+      "value": -2.3,
+      "unit": "% YTD YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "manufacturing_investment.v1"
+    },
+    "output_cement": {
+      "value": -11.7,
+      "unit": "% YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "output_cement.v1"
+    },
+    "output_electronics": {
+      "value": 17.2,
+      "unit": "% YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "output_electronics.v1"
+    },
+    "output_hightech": {
+      "value": 16.7,
+      "unit": "% YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "output_hightech.v1"
+    },
+    "output_manufacturing": {
+      "value": 6.1,
+      "unit": "% YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "output_manufacturing.v1"
+    },
+    "output_mining": {
+      "value": -1.4,
+      "unit": "% YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "output_mining.v1"
+    },
+    "output_nev": {
+      "value": 21.9,
+      "unit": "% YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "output_nev.v1"
+    },
+    "output_steel": {
+      "value": -5.5,
+      "unit": "% YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "output_steel.v1"
+    },
+    "output_utilities": {
+      "value": 4.9,
+      "unit": "% YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "output_utilities.v1"
+    },
+    "pmi_construction": {
+      "value": 46.9,
+      "unit": "index",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "pmi_construction.v1"
+    },
+    "pmi_large": {
+      "value": 50.6,
+      "unit": "index",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "pmi_large.v1"
+    },
+    "pmi_medium": {
+      "value": 49.4,
+      "unit": "index",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "pmi_medium.v1"
+    },
+    "pmi_services": {
+      "value": 49.3,
+      "unit": "index",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "pmi_services.v1"
+    },
+    "pmi_small": {
+      "value": 47.9,
+      "unit": "index",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "pmi_small.v1"
+    },
+    "private_investment": {
+      "value": -10.1,
+      "unit": "% YTD YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "private_investment.v1"
+    },
+    "products_positive": {
+      "value": 286.0,
+      "unit": "of 626",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "products_positive.v1"
+    },
+    "regional_investment_central": {
+      "value": -8.7,
+      "unit": "% YTD YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "regional_investment_central.v1"
+    },
+    "regional_investment_east": {
+      "value": -9.4,
+      "unit": "% YTD YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "regional_investment_east.v1"
+    },
+    "regional_investment_northeast": {
+      "value": -25.5,
+      "unit": "% YTD YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "regional_investment_northeast.v1"
+    },
+    "regional_investment_west": {
+      "value": -8.8,
+      "unit": "% YTD YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "regional_investment_west.v1"
+    },
+    "retail_catering": {
+      "value": 1.1,
+      "unit": "% YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "retail_catering.v1"
+    },
+    "retail_exauto": {
+      "value": 2.5,
+      "unit": "% YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "retail_exauto.v1"
+    },
+    "retail_rural": {
+      "value": 1.6,
+      "unit": "% YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "retail_rural.v1"
+    },
+    "retail_urban": {
+      "value": 0.2,
+      "unit": "% YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "retail_urban.v1"
+    },
+    "retail_yoy": {
+      "value": 0.4,
+      "unit": "% YoY",
+      "reference_period": "2026-08",
+      "status": "current",
+      "definition_id": "retail_yoy.v1"
+    }
+  },
+  "receipts": {
+    "industry": {
+      "title": "2026年8月份规模以上工业增加值增长5.2%",
+      "published_at": "2026-09-15T10:00:00+08:00",
+      "publication_precision": "minute",
+      "reference_period": "2026-08",
+      "family": "industry",
+      "url": "https://www.stats.gov.cn/sj/zxfb/202609/t20260915_1965308.html",
+      "observed_at": "2026-09-30T00:49:40.403567+00:00",
+      "response_sha256": "ea8ea06141f0163ac0db50c50b2bf12c8ad602b18bcb1dbfaa96b59ff0950439",
+      "http_status": 200,
+      "content_type": "text/html",
+      "response_bytes": 411119,
+      "parser_version": "china-economy-acquisition.v1.1",
+      "response_hash_basis": "exact_http_response_bytes",
+      "original_vintage": false,
+      "supplemental_evidence": {
+        "scope": "same_release_current_period_only",
+        "status": "complete",
+        "admitted_metrics": [
+          "industrial_yoy",
+          "industry_positive",
+          "output_cement",
+          "output_electronics",
+          "output_hightech",
+          "output_manufacturing",
+          "output_mining",
+          "output_nev",
+          "output_steel",
+          "output_utilities",
+          "products_positive"
+        ],
+        "null_reasons": {},
+        "history_inferred": false
+      }
+    },
+    "retail": {
+      "title": "2026年1—8月份社会消费品零售总额增长1.1%",
+      "published_at": "2026-09-15T10:00:00+08:00",
+      "publication_precision": "minute",
+      "reference_period": "2026-08",
+      "family": "retail",
+      "url": "https://www.stats.gov.cn/sj/zxfb/202609/t20260915_1965311.html",
+      "observed_at": "2026-09-30T00:49:45.356926+00:00",
+      "response_sha256": "76f505afaa8490a8bc65f5468cc75e0a98af9b5310832df66aabef2c6ff1f4a1",
+      "http_status": 200,
+      "content_type": "text/html",
+      "response_bytes": 238347,
+      "parser_version": "china-economy-acquisition.v1.1",
+      "response_hash_basis": "exact_http_response_bytes",
+      "original_vintage": false,
+      "supplemental_evidence": {
+        "scope": "same_release_current_period_only",
+        "status": "complete",
+        "admitted_metrics": [
+          "retail_catering",
+          "retail_exauto",
+          "retail_rural",
+          "retail_urban",
+          "retail_yoy"
+        ],
+        "null_reasons": {},
+        "history_inferred": false
+      }
+    },
+    "investment": {
+      "title": "2026年1—8月份全国固定资产投资基本情况",
+      "published_at": "2026-09-15T10:00:00+08:00",
+      "publication_precision": "minute",
+      "reference_period": "2026-08",
+      "family": "investment",
+      "url": "https://www.stats.gov.cn/sj/zxfb/202609/t20260915_1965309.html",
+      "observed_at": "2026-09-30T00:49:49.393171+00:00",
+      "response_sha256": "63a04d05208d841a18c0cecba8f048c9c5532a3f80dfae008c2fcac9e26d540d",
+      "http_status": 200,
+      "content_type": "text/html",
+      "response_bytes": 190088,
+      "parser_version": "china-economy-acquisition.v1.1",
+      "response_hash_basis": "exact_http_response_bytes",
+      "original_vintage": false,
+      "supplemental_evidence": {
+        "scope": "same_release_current_period_only",
+        "status": "complete",
+        "admitted_metrics": [
+          "investment_equipment",
+          "investment_infra",
+          "investment_ip",
+          "investment_ytd",
+          "manufacturing_investment",
+          "private_investment",
+          "regional_investment_central",
+          "regional_investment_east",
+          "regional_investment_northeast",
+          "regional_investment_west"
+        ],
+        "null_reasons": {},
+        "history_inferred": false
+      }
+    },
+    "pmi": {
+      "title": "2026年8月中国采购经理指数运行情况",
+      "published_at": "2026-08-31T09:30:00+08:00",
+      "publication_precision": "minute",
+      "reference_period": "2026-08",
+      "family": "pmi",
+      "url": "https://www.stats.gov.cn/sj/zxfb/202608/t20260831_1965154.html",
+      "observed_at": "2026-09-30T00:49:54.591827+00:00",
+      "response_sha256": "a561911c92b4ea4ea58ed808d5fe4ef61a1dfb79a31f593ba46ad4692aa5af46",
+      "http_status": 200,
+      "content_type": "text/html",
+      "response_bytes": 398531,
+      "parser_version": "china-economy-acquisition.v1.1",
+      "response_hash_basis": "exact_http_response_bytes",
+      "original_vintage": false,
+      "supplemental_evidence": {
+        "scope": "same_release_current_period_only",
+        "status": "complete",
+        "admitted_metrics": [
+          "pmi_construction",
+          "pmi_large",
+          "pmi_medium",
+          "pmi_services",
+          "pmi_small"
+        ],
+        "null_reasons": {},
+        "history_inferred": false
+      }
+    },
+    "profits": {
+      "title": "2026年1—8月份全国规模以上工业企业利润增长15.7%",
+      "published_at": "2026-09-28T09:30:00+08:00",
+      "publication_precision": "minute",
+      "reference_period": "2026-08",
+      "family": "profits",
+      "url": "https://www.stats.gov.cn/sj/zxfb/202609/t20260928_1965425.html",
+      "observed_at": "2026-09-30T00:50:00.492515+00:00",
+      "response_sha256": "7731d5e18d8f41630e495201dd02f3948751c8412598bddca9b4e5c06ffad06e",
+      "http_status": 200,
+      "content_type": "text/html",
+      "response_bytes": 493851,
+      "parser_version": "china-economy-acquisition.v1.1",
+      "response_hash_basis": "exact_http_response_bytes",
+      "original_vintage": false
+    },
+    "safe": {
+      "title": "国家外汇管理局公布2026年8月银行结售汇和银行代客涉外收付款数据",
+      "published_at": "2026-09-15T23:59:59+08:00",
+      "publication_precision": "day_conservative_end",
+      "reference_period": "2026-08",
+      "family": "safe",
+      "url": "https://www.safe.gov.cn/safe/2026/0915/27897.html",
+      "observed_at": "2026-09-30T00:50:02.871291+00:00",
+      "response_sha256": "2ae51d911fa1cbbbd0f78b78418a8500c2401b4cd7bb76020b5a23d05b0a59ad",
+      "http_status": 200,
+      "content_type": "text/html",
+      "response_bytes": 29070,
+      "parser_version": "china-economy-acquisition.v1.1",
+      "response_hash_basis": "exact_http_response_bytes",
+      "original_vintage": false
+    },
+    "power": {
+      "title": "8月份全社会用电量再破万亿，负荷创历史新高",
+      "published_at": "2026-09-20T11:38:19+08:00",
+      "publication_precision": "second",
+      "reference_period": "2026-08",
+      "family": "power",
+      "url": "https://www.nea.gov.cn/20260920/bd277235282140f4b43e9e0f5f0af3d9/c.html",
+      "observed_at": "2026-09-30T00:50:04.484220+00:00",
+      "response_sha256": "71b65db39fa375048267b4c8cf1b7c5be6f3b239bbd4e9956c38046a576d30af",
+      "http_status": 200,
+      "content_type": "text/html",
+      "response_bytes": 11405,
+      "parser_version": "china-economy-acquisition.v1.1",
+      "response_hash_basis": "exact_http_response_bytes",
+      "original_vintage": false
+    }
+  },
+  "failures": {},
+  "conflicts": [
+    {
+      "table": "china_macro/fai",
+      "column": "fai_yoy",
+      "periods": [
+        "2026-08"
+      ],
+      "reason": "unqualified_legacy_value_disagreement"
+    }
+  ],
+  "excluded": {
+    "fiscal": "prior HTTP502 not retried"
+  },
+  "source_sha256": {
+    "collectors/china_economy_release_parser.py": "9322101bf22bceabb794e9390be48aa35c8c64e606cadf25f1c9a56b7ebeb70f",
+    "collectors/china_economy_acquisition.py": "9284b5088e1c0f48b524a0a1e48ae082477be0ddc206b9078fca3943e619e6fd"
+  }
+}

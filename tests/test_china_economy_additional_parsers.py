@@ -45,3 +45,132 @@ def test_nea_cannot_guess_changed_scope_or_order(a,b):
 
 def test_nea_wrong_reference():
  with pytest.raises(ValueError):parse_nea_text(NEA,'2026-07')
+
+
+# Supplemental current-period evidence: adversarial synthetic fixtures only.
+# The committed catalog, source owner and old seasonal histories are unchanged.
+from collectors.china_economy_release_parser import parse_activity_detail
+
+
+def _detail_release(family, table='', prose='', period='2026-08'):
+    year, month = period.split('-'); month = str(int(month))
+    labels = {'industry': '规模以上工业增加值', 'retail': '社会消费品零售总额',
+              'investment': '固定资产投资', 'pmi': '采购经理指数'}
+    label_period = f'1—{month}' if family == 'investment' else month
+    title = f'{year}年{label_period}月份{labels[family]}'
+    return f'<html><head><meta name="ArticleTitle" content="{title}"></head><body><h1>{title}</h1>{prose}{table}</body></html>'
+
+
+def _detail_table(rows, family='retail', reverse_periods=False):
+    if family == 'investment':
+        header = '<tr><th>指标</th><th>同比增长(%)</th></tr>'
+    else:
+        periods = ['1—8月', '1—8月', '8月', '8月'] if reverse_periods else ['8月', '8月', '1—8月', '1—8月']
+        header = '<tr><th>指标</th>'+''.join(f'<th>{p}</th>' for p in periods)+'</tr>'
+        header += '<tr><th>指标</th><th>绝对量(亿元)</th><th>同比增长(%)</th><th>绝对量(亿元)</th><th>同比增长(%)</th></tr>'
+    return '<table>'+header+''.join('<tr>'+''.join(f'<td>{c}</td>' for c in row)+'</tr>' for row in rows)+'</table>'
+
+
+def _detail_map(html, family='retail'):
+    points, receipt = parse_activity_detail(html, family, '2026-08')
+    return {p['metric_id']: p['value'] for p in points}, receipt
+
+
+def test_detail_monthly_column_is_not_ytd_or_absolute_amount():
+    table = _detail_table([['社会消费品零售总额', '40000', '0.4', '320000', '1.1'],
+                           ['其中：除汽车以外的消费品零售额', '36000', '2.5', '300000', '2.7']])
+    values, meta = _detail_map(_detail_release('retail', table))
+    assert values == {'retail_yoy': 0.4, 'retail_exauto': 2.5}
+    assert meta['history_inferred'] is False and 'retail_rural' in meta['null_reasons']
+
+
+def test_detail_follows_header_when_columns_move():
+    table = _detail_table([['社会消费品零售总额', '320000', '1.1', '40000', '0.4']], reverse_periods=True)
+    assert _detail_map(_detail_release('retail', table))[0]['retail_yoy'] == 0.4
+
+
+@pytest.mark.parametrize('raw', ['—', '…', 'NaN', 'inf', '-100.1', '0.4个百分点', '1,234', 'true', ''])
+def test_detail_bad_growth_is_not_assigned_zero(raw):
+    table = _detail_table([['社会消费品零售总额', '40000', raw, '320000', '1.1']])
+    values, meta = _detail_map(_detail_release('retail', table))
+    assert 'retail_yoy' not in values and 'retail_yoy' in meta['null_reasons']
+
+
+@pytest.mark.parametrize('raw,expected', [('0', 0), ('-0.0', 0), ('-100', -100), ('150.5', 150.5)])
+def test_detail_real_zero_or_large_change_survives(raw, expected):
+    table = _detail_table([['社会消费品零售总额', '40000', raw, '320000', '1.1']])
+    assert _detail_map(_detail_release('retail', table))[0]['retail_yoy'] == expected
+
+
+@pytest.mark.parametrize('change', ['wrong_month', 'no_growth_unit', 'duplicate_column', 'truncated_row', 'duplicate_table', 'duplicate_row'])
+def test_detail_ambiguous_table_is_withheld(change):
+    row = ['社会消费品零售总额', '40000', '0.4', '320000', '1.1']
+    table = _detail_table([row])
+    if change == 'wrong_month': table = table.replace('<th>8月</th>', '<th>7月</th>')
+    if change == 'no_growth_unit': table = table.replace('同比增长(%)', '绝对量')
+    if change == 'duplicate_column': table = table.replace('1—8月', '8月')
+    if change == 'truncated_row': table = _detail_table([row[:-1]])
+    if change == 'duplicate_table': table += table
+    if change == 'duplicate_row': table = _detail_table([row, row])
+    values, receipt = _detail_map(_detail_release('retail', table))
+    assert values == {} and receipt['status'] == 'withheld'
+
+
+def test_detail_investment_remains_cumulative_and_exact_category():
+    rows = [['固定资产投资(不含农户)', '-7.2'], ['其中：民间投资', '-10.1'],
+            ['制造业', '-2.3'], ['设备工器具购置', '9.3'], ['汽车制造业', '99']]
+    prose = '<p>基础设施投资（口径详见附注1）同比下降4.0%。知识产权产品投资同比增长9.2%。东部地区投资同比下降9.4%。</p>'
+    values, receipt = _detail_map(_detail_release('investment', _detail_table(rows, 'investment'), prose), 'investment')
+    assert values['investment_ytd'] == -7.2 and values['manufacturing_investment'] == -2.3
+    assert values['investment_equipment'] == 9.3 and values['investment_infra'] == -4
+    assert values['investment_ip'] == 9.2 and values['regional_investment_east'] == -9.4
+    assert 'regional_investment_west' in receipt['null_reasons']
+
+
+@pytest.mark.parametrize('denom,count,accepted', [(41, 29, True), (41, 0, True), (41, 42, False), (42, 29, False)])
+def test_detail_count_denominator_is_an_admission_gate(denom, count, accepted):
+    text = f'<p>{denom}个大类行业中有{count}个行业增加值保持同比增长。626种产品中有286种产品产量同比增长。</p>'
+    values, receipt = _detail_map(_detail_release('industry', prose=text), 'industry')
+    assert ('industry_positive' in values) == accepted
+    assert values['products_positive'] == 286
+    if not accepted: assert 'industry_positive' in receipt['null_reasons']
+
+
+def test_detail_pmi_reads_levels_not_previous_month_changes():
+    text = '<p>大型企业PMI为50.6%，比上月上升1.1个百分点；中型企业PMI为49.4%，比上月下降0.3个百分点；小型企业PMI为47.9%，比上月上升0.5个百分点。建筑业商务活动指数为46.9%，服务业商务活动指数为49.3%。</p>'
+    values, receipt = _detail_map(_detail_release('pmi', prose=text), 'pmi')
+    assert values == {'pmi_large': 50.6, 'pmi_medium': 49.4, 'pmi_small': 47.9, 'pmi_construction': 46.9, 'pmi_services': 49.3}
+    assert receipt['status'] == 'complete' and receipt['history_inferred'] is False
+
+
+@pytest.mark.parametrize('text', ['大型企业PMI为101%。', '大型企业PMI为50.6%。大型企业PMI为50.7%。', '大型企业PMI比上月上升1.1个百分点。'])
+def test_detail_pmi_invalid_or_ambiguous_is_missing(text):
+    values, receipt = _detail_map(_detail_release('pmi', prose='<p>'+text+'</p>'), 'pmi')
+    assert 'pmi_large' not in values and 'pmi_large' in receipt['null_reasons']
+
+
+def test_detail_never_invents_prior_points_from_reported_deltas():
+    points, _ = parse_activity_detail(_detail_release('pmi', prose='<p>大型企业PMI为50.6%，比上月上升1.1个百分点。</p>'), 'pmi', '2026-08')
+    assert points == [{'metric_id': 'pmi_large', 'period': '2026-08', 'value': 50.6}]
+
+
+def test_detail_wrong_release_period_is_rejected():
+    with pytest.raises(ValueError, match='reference'):
+        parse_activity_detail(_detail_release('pmi', period='2026-07'), 'pmi', '2026-08')
+
+
+def test_detail_repeated_article_copies_must_agree():
+    body = '<p>大型企业PMI为50.6%。</p>'
+    desktop = '<div class="detail-text-content"><div class="txt-content">'+body+'</div></div>'
+    mobile = '<div class="mobile-content"><div class="mobile-news-content">'+body+'</div></div>'
+    values, _ = _detail_map(_detail_release('pmi', prose=desktop+mobile), 'pmi')
+    assert values['pmi_large'] == 50.6
+    with pytest.raises(ValueError, match='disagree'):
+        _detail_map(_detail_release('pmi', prose=desktop+mobile.replace('50.6', '50.7')), 'pmi')
+
+
+def test_detail_investment_requires_a_cumulative_reference_not_monthly_only():
+    table = _detail_table([['固定资产投资(不含农户)', '-7.2']], 'investment')
+    html = _detail_release('investment', table).replace('2026年1—8月份', '2026年8月份')
+    with pytest.raises(ValueError, match='reference'):
+        _detail_map(html, 'investment')

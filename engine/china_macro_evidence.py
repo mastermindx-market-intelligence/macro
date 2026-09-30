@@ -26,6 +26,7 @@ MONTHLY_SOURCES = {
 SOURCES = {
     "credit": ("PBoC · monthly TSF", "https://www.pbc.gov.cn/diaochatongjisi/116219/index.html"),
     "macro": ("NBS / PBoC via Eastmoney", "https://data.eastmoney.com/cjsj/"),
+    "nbs": ("NBS · comparable-scope investment", "https://www.stats.gov.cn/sj/zxfb/"),
     "property": ("NBS via Eastmoney", "https://www.stats.gov.cn/english/PressRelease/"),
     "futures": ("Sina · continuous main contracts", "https://finance.sina.com.cn/futures/"),
     "curve": ("China government yield curve via Eastmoney", "https://data.eastmoney.com/cjsj/zggzsyl.html"),
@@ -293,9 +294,43 @@ def build_snapshot(read: Read | None = None, as_of: date | None = None) -> dict:
     events = []
     for idx, row in rrr.tail(8).iloc[::-1].iterrows():
         events.append({"date": idx.date().isoformat(), "change": finite(row.get("rrr_change")), "level": finite(row.get("rrr_big"))})
-    tape = []
-    for name, column, en, zh in [("fai", "fai_yoy", "Fixed-asset investment · YTD", "固定资产投资·年内累计"),
-                                 ("retail", "retail_yoy", "Retail sales · YoY", "社会消费品零售·同比"),
+    tape = ["macro_fai_yoy"]
+    # Legacy fai_yoy is provider MONTHLY amount growth. The stable dialog ID
+    # now reads the distinct NBS YTD column through the overview's exact reader.
+    fai = add("macro_fai_yoy", ("Fixed-asset investment · YTD", "固定资产投资·年内累计"),
+        pd.Series(dtype=float, index=pd.DatetimeIndex([])), "% YTD YoY", "nbs", "china_macro/fai.fai_ytd_yoy",
+        ("NBS reported comparable-scope cumulative YoY. Not the provider's single-month amount growth and not a ratio of unrevised published cumulative amounts. Same value/definition/receipt admission as the economy overview.",
+         "国家统计局公布的可比口径累计同比，并非供应商单月金额同比，也不是旧版累计金额之比。采用与经济总览相同的读数、定义及来源凭据核验。"),
+        frequency="monthly", digits=1, signed=True,
+        note=("Legacy monthly values remain preserved separately. Missing official evidence is not replaced by that series.",
+              "原有单月读数另列保留；官方证据缺失时不使用该序列替代。"))
+    fai['delta_unit'] = 'pp'
+    try:
+        from engine.china_economy_store import read_metric_from_store
+        cutoff = ctx.as_of.tz_localize('Asia/Shanghai') + pd.Timedelta(days=1) - pd.Timedelta(microseconds=1)
+        fm = read_metric_from_store('investment_ytd', ctx.frame, as_of=cutoff.isoformat())
+        ctx.errors.update(fm['source_errors'])
+        state = {'current': 'recent', 'older_period': 'stale', 'quality_hold': 'quality_hold'}.get(fm['status'], 'unavailable')
+        ref = fm['reference_period']
+        fai.update(value=fm['value'], display=f'{fm["value"]:+.1f}' if fm['value'] is not None else '—',
+                   status=state, status_en=STATUS[state][0], status_zh=STATUS[state][1],
+                   reference_label=ref, reference_date=ref+'-01' if ref else None,
+                   chart=fm['chart'], n=fm['point_count'], percentile=None,
+                   definition_id=fm['definition_id'], requested_period=fm['requested_period'],
+                   delta=fm['change_1m'], delta_display=f'{fm["change_1m"]:+.1f}' if fm['change_1m'] is not None else None)
+        if ref:
+            fai['age_days'] = max(0, (ctx.as_of - (pd.Timestamp(ref+'-01') + pd.offsets.MonthEnd(0))).days)
+        if fm['change_1m'] is not None:
+            fai['previous_date'] = (pd.Timestamp(fm['requested_period']+'-01') - pd.offsets.MonthBegin(1)).date().isoformat()
+        if fm.get('source'):
+            source = fm['source']
+            fai['source'].update(url=source['url'], publication_time=source['published_at'],
+                observed_at=source['observed_at'], source_sha256=source['response_sha256'],
+                publication_time_verified=True, value_receipt_verified=True,
+                revision_vintage='current published revision, not original-vintage replay')
+    except (ValueError, KeyError, TypeError, OSError) as exc:
+        ctx.errors['china_macro/fai.fai_ytd_yoy'] = type(exc).__name__ + ': ' + str(exc)[:120]
+    for name, column, en, zh in [("retail", "retail_yoy", "Retail sales · YoY", "社会消费品零售·同比"),
                                  ("customs", "exports_yoy", "Exports · YoY", "出口·同比"),
                                  ("customs", "imports_yoy", "Imports · YoY", "进口·同比")]:
         ident = "macro_" + column

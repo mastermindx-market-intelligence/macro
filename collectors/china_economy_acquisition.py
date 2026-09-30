@@ -24,7 +24,7 @@ from engine.china_economy import month_index, month_end, number, timestamp
 from engine.china_economy_store import frames_from_receipt, value_receipt_digest
 
 log = logging.getLogger(__name__)
-VERSION = 'china-economy-acquisition.v1'
+VERSION = 'china-economy-acquisition.v1.1'
 MAX_BYTES = 4_000_000
 TZ = ZoneInfo('Asia/Shanghai')
 # Exact source families, not an arbitrary URL fetch API.
@@ -151,12 +151,24 @@ def parse_acquisition(family: str, url: str, body: bytes, observed_at: str, expe
         function = {'fiscal': parsers.parse_mof_text, 'safe': parsers.parse_safe_text,
                     'profits': parsers.parse_corporate_text, 'power': parsers.parse_nea_text}[family]
         points = function(text, expected_period)
+    supplemental = None
+    if family in {'industry', 'retail', 'investment', 'pmi'}:
+        try:
+            details, supplemental = parsers.parse_activity_detail(html, family, expected_period)
+            points = points + details
+        except ValueError as exc:
+            # Detail admission cannot erase a valid seasonal/survey history.
+            supplemental = {'scope': 'same_release_current_period_only', 'status': 'withheld',
+                            'admitted_metrics': [], 'null_reasons': {'_detail': str(exc)},
+                            'history_inferred': False}
     if not points:
         raise ValueError('empty_release')
     receipt = {**identity, 'url': url, 'observed_at': observed.isoformat(),
                'response_sha256': hashlib.sha256(body).hexdigest(), 'http_status': status,
                'content_type': content_type, 'response_bytes': len(body), 'parser_version': VERSION,
                'response_hash_basis': 'exact_http_response_bytes', 'original_vintage': False}
+    if supplemental is not None:
+        receipt['supplemental_evidence'] = supplemental
     frames = frames_from_receipt(points, receipt, catalog)
     if any(not k.startswith('china_macro/') for k in frames):
         raise ValueError('wrong_collector_group')
@@ -273,6 +285,9 @@ def qualify_against_owner(batch: CollectionBatch, legacy_frames: dict, read: Cal
                 batch.conflicts.append({'table': path, 'column': col, 'periods': unsafe, 'reason': 'unqualified_legacy_value_disagreement'})
                 qualified = qualified.drop(columns=[c for c in qualified if c == col or c.startswith(col+'__')])
         if len(qualified.columns):
+            # Preserve the existing table's index metadata as well as its values.
+            if not existing.empty:
+                qualified.index.name = existing.index.name
             # Return only incoming+current-fetch rows; normal runner owns upsert.
             result[table] = qualified.combine_first(result.get(table, pd.DataFrame()))
     return result

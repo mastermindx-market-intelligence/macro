@@ -1,0 +1,51 @@
+{
+  "source_head": "47010d95a47bc9412f9d3077bd0b2ad76f336d94",
+  "run_id": 36601967474,
+  "state": "completed",
+  "scope": "consumed CI result before r3 data changes; not a new-head acceptance",
+  "passed": [
+    "ci-plan",
+    "contract-delta",
+    "ci-pack-0",
+    "ci-pack-1",
+    "ci-pack-2",
+    "ci-pack-3",
+    "ci-pack-4",
+    "ci-pack-6",
+    "ci-pack-7",
+    "ci-pack-8",
+    "ci-pack-10"
+  ],
+  "failed_jobs": [
+    {
+      "pack": "ci-pack-5",
+      "job_id": 109523143789,
+      "logical_job": "p0b-receipt-closure",
+      "reason": "shared theme change lacks required Canada/US receipt remints"
+    },
+    {
+      "pack": "ci-pack-9",
+      "job_id": 109523143805,
+      "logical_job": "research-screener",
+      "reason": "test_fresh_bake_matches_committed_site_html"
+    },
+    {
+      "pack": "ci-pack-11",
+      "job_id": 109523143860,
+      "logical_job": "design-governance",
+      "reason": "missing actual EVIDENCE.yml receipts for two evidence CSS files"
+    },
+    {
+      "pack": "ci-pack-11",
+      "job_id": 109523143860,
+      "logical_job": "market-os-macro-suite-pages",
+      "reason": "test_credit_funding_e4_needs_the_capture_fixture_flag"
+    }
+  ],
+  "baseline_attribution_for_unrelated_failures": "not_proven",
+  "log_sha256": {
+    "pack5": "448d6a309c45c80939dd7a928519ea81542a3a3e6ef85442adcc4e3583b9765f",
+    "pack9": "624270614471dc5b3d26e87fe1a1ebaf3f1b18a7e0f7c8d7da211265cfac5f01",
+    "pack11": "cf55c8ca96cf357cd2f6f0bce404b19e90ac6de9400fc012b21ec041274427c7"
+  }
+}

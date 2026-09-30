@@ -164,3 +164,28 @@ translation spans in the new sections. These results and exact file hashes are
 in `research/china_economy_integration_20260929/release-remediation-r2.json`.
 Real browser/theme/locale/viewport/interaction evidence and authenticated gateway
 acceptance remain missing; the visual guard remains red rather than waived.
+
+
+### R3 acquired-detail and FAI-basis continuation
+
+The subsequent data-only unit adds 31 source-derived current catalog readings and
+raises qualified current coverage to **84/128**, while growth-domain direction
+coverage remains **2/6**. The final focused run is **482 passed**, no failures,
+errors or skips; both actual China pages rebuild and the client/JSON values agree.
+Read `research/CHINA_ECONOMY_DETAIL_AND_FAI_BASIS_20260929.md` and the `r3/` receipt
+subdirectory for the exact observations, changes, definitions and residual gates.
+
+The earlier FAI disagreement is no longer unexplained: three provider months show
+that legacy `BASE_SAME` matches single-month nominal-amount YoY. NBS comparable
+cumulative YoY is a distinct measure, now `china_macro/fai.fai_ytd_yoy` under the
+same existing collector/table owner and `investment_ytd.nbs_comparable.v2`.
+Legacy values remain unchanged. The macro dialog and economy overview share the
+same receipt-qualified official value rather than overwriting or relabeling the
+old monthly series. This supersedes only the prior unresolved FAI-basis note,
+not historical receipts or the still-unresolved export/history/rights gates.
+
+The first detail collector correctly returned blocked with one conflict, then
+the separate-measure migration was qualified. That earlier blocked result is not
+rewritten as success. Browser/visual/pinned-mobile/authenticated gateway and
+remaining exact-head CI/reviewer gates still prevent release; no screenshot
+receipt, waiver, production enrollment, merge or deployment is asserted.

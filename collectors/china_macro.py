@@ -47,7 +47,7 @@ DATACENTER = {
     # new bank credit: the credit-cycle proxy (TSF/社融 itself is mofcom-only/legacy-SSL,
     # so we lead the credit read with new RMB loans + the M1-M2 scissors derived downstream)
     "rmb_loan":     ("RPT_ECONOMY_RMB_LOAN",       {"new_loans": "RMB_LOAN", "new_loans_yoy": "RMB_LOAN_SAME"}),
-    "fai":          ("RPT_ECONOMY_ASSET_INVEST",   {"fai_yoy": "BASE_SAME"}),          # fixed-asset investment, cumulative YoY
+    "fai":          ("RPT_ECONOMY_ASSET_INVEST",   {"fai_yoy": "BASE_SAME"}),          # legacy monthly-amount YoY; NOT NBS comparable YTD
     "retail":       ("RPT_ECONOMY_TOTAL_RETAIL",   {"retail_yoy": "RETAIL_TOTAL_SAME"}),  # retail sales YoY
     "customs":      ("RPT_ECONOMY_CUSTOMS",        {"exports_yoy": "EXIT_BASE_SAME",   # trade YoY (EXIT=exports)
                                                      "imports_yoy": "IMPORT_BASE_SAME"}),

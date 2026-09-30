@@ -1,0 +1,45 @@
+{
+  "scope": "R3 immutable receipts; original R1/R2 evidence untouched",
+  "starting_head": "47010d95a47bc9412f9d3077bd0b2ad76f336d94",
+  "files": {
+    "contract-final.json": {
+      "sha256": "f9b2d2b112c0ef07ec28c9100f1771a6db51558577ab167bfa2d06622332ce40",
+      "bytes": 1104
+    },
+    "detail-collector-result.json": {
+      "sha256": "23a9a2de93b78d2c6256abc8f6a3e3bf6135ce7a158bd0e74d1af1ba5400d436",
+      "bytes": 15432
+    },
+    "fai-origin-comparison.json": {
+      "sha256": "7d577f775e8068705d64b951b06578b4885f12dc4dda0e6b1f7d852a25f4e65a",
+      "bytes": 1653
+    },
+    "fai-period-basis-proof.json": {
+      "sha256": "88dff6e30d8d2b19b8c1e5e6f64f427f2f1e50412f7630ea79b4981422a849f6",
+      "bytes": 4892
+    },
+    "fai-separation-result.json": {
+      "sha256": "f0b1602fffd22c0c571515bc1f559241deef6685a3bbb5816ceac9bd601423aa",
+      "bytes": 6966
+    },
+    "final-data-readback.json": {
+      "sha256": "05d1be4eb8b746541186bc9a0e28b9a657be74aa96f34bfd4caa78e429e65e1f",
+      "bytes": 3335
+    },
+    "prior-head-ci-result.json": {
+      "sha256": "57d03413f58cd73416ef404ef94d4f5dd7d2ea157af7fc204d140df1605627f4",
+      "bytes": 1514
+    }
+  },
+  "source_sha256": {
+    "collectors/china_macro.py": "85c160ecf32af0dde342bc9182b82c318083d49a0b75e93518f9ff436f8a9f8c",
+    "collectors/china_economy_release_parser.py": "e81936a1254e1d649c98f8715bb743ee7919a89f2f0b00228bef2e502451f3b5",
+    "collectors/china_economy_acquisition.py": "24f9b62cbac1642ff0ccea9ffbfc448cf9ad20a04f7d9727e37af1c05369abf7",
+    "config/china_economy_catalog.json": "6b4a5a57e1493f28161670c13ff5eba6fc8b434d830eed51ff1ce12ee946bd9a",
+    "engine/china_macro_evidence.py": "c0e50b231f066daa1c81d4f5abd767b921e7dd8ab2b1f950fa58a5fc99b2df3e",
+    "engine/china_economy_store.py": "3765a1c8cebbdb7d184cc3236c746dcd0e8abd8de48236e821510bcdecfed94b",
+    "tests/test_china_economy_store.py": "e70a00774d48b7e4b9cb142a8261e04897c6de8bba7f6ba056c3731e771c31b0",
+    "tests/test_china_economy_acquisition.py": "07cfce4896935bbaca7f235a0af29d1ce63d8cfef28db4dff638f651490070bd",
+    "tests/test_china_economy_additional_parsers.py": "29e54696730cbc11bd054b97befc1442a93e2ac12584d45009713b33ec3e03f9"
+  }
+}

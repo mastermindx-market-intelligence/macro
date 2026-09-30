@@ -1,0 +1,56 @@
+{
+  "question": "Is the held August FAI value present in the current provider payload, or only in local legacy data?",
+  "observed_at": "2026-09-30T00:51:54.389034+00:00",
+  "response_sha256": "674c79cfeb92e1c346322d717e920feb90fe3fec9b56c45b5ce09601be868cd7",
+  "http_status": 200,
+  "source_url": "https://datacenter-web.eastmoney.com/api/data/v1/get",
+  "report_name": "RPT_ECONOMY_ASSET_INVEST",
+  "rows": [
+    {
+      "REPORT_DATE": "2026-08-01 00:00:00",
+      "TIME": "2026年08月份",
+      "BASE": 32764,
+      "BASE_SAME": -13.51,
+      "BASE_SEQUENTIAL": -3.52,
+      "BASE_ACCUMULATE": 293092
+    },
+    {
+      "REPORT_DATE": "2026-07-01 00:00:00",
+      "TIME": "2026年07月份",
+      "BASE": 33958,
+      "BASE_SAME": -14.19,
+      "BASE_SEQUENTIAL": -29.04,
+      "BASE_ACCUMULATE": 260328
+    },
+    {
+      "REPORT_DATE": "2026-06-01 00:00:00",
+      "TIME": "2026年06月份",
+      "BASE": 47858,
+      "BASE_SAME": -15.6,
+      "BASE_SEQUENTIAL": 28.58,
+      "BASE_ACCUMULATE": 226370
+    }
+  ],
+  "local_tail": [
+    {
+      "REPORT_DATE": "2026-06-01 00:00:00",
+      "fai_yoy": -15.6
+    },
+    {
+      "REPORT_DATE": "2026-07-01 00:00:00",
+      "fai_yoy": -14.19
+    },
+    {
+      "REPORT_DATE": "2026-08-01 00:00:00",
+      "fai_yoy": -13.51
+    }
+  ],
+  "nbs_comparison": {
+    "url": "https://www.stats.gov.cn/sj/zxfb/202609/t20260915_1965309.html",
+    "reference": "2026-08",
+    "reported_ytd_yoy": -7.2,
+    "basis": "publisher comparable scope; prior-year denominator subject to revision",
+    "raw_sha256": "63a04d05208d841a18c0cecba8f048c9c5532a3f80dfae008c2fcac9e26d540d"
+  },
+  "owner_values_changed": false
+}

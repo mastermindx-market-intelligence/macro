@@ -306,3 +306,154 @@ def parse_nea_text(text:str,expected_period:str)->list[dict]:
     out['power_charging'],out['power_datacenters']=map(float,matches[0])
     if any(v<-100 for v in out.values()):raise ValueError('impossible NEA change')
     return [{'metric_id':k,'period':expected_period,'value':v} for k,v in out.items()]
+
+
+# Current-period detail comes from the SAME acquired release as the history.
+# These are existing catalog bindings, not independent growth-domain votes.
+ACTIVITY_DETAIL_ROWS = {
+    'industry': {
+        '规模以上工业增加值': 'industrial_yoy', '采矿业': 'output_mining',
+        '制造业': 'output_manufacturing', '其中：高技术制造业': 'output_hightech',
+        '电力、热力、燃气及水生产和供应业': 'output_utilities',
+        '计算机、通信和其他电子设备制造业': 'output_electronics',
+        '水泥(万吨)': 'output_cement', '钢材(万吨)': 'output_steel',
+        '其中：新能源汽车(万辆)': 'output_nev',
+    },
+    'retail': {
+        '社会消费品零售总额': 'retail_yoy',
+        '其中：除汽车以外的消费品零售额': 'retail_exauto',
+        '城镇': 'retail_urban', '乡村': 'retail_rural', '餐饮收入': 'retail_catering',
+    },
+    'investment': {
+        '固定资产投资(不含农户)': 'investment_ytd',
+        '其中：民间投资': 'private_investment', '制造业': 'manufacturing_investment',
+        '设备工器具购置': 'investment_equipment',
+    },
+}
+_DETAIL_ANCHOR = {'industry': '规模以上工业增加值', 'retail': '社会消费品零售总额',
+                  'investment': '固定资产投资(不含农户)'}
+_DETAIL_RATE_LABELS = {
+    'investment': {
+        '基础设施投资': 'investment_infra', '知识产权产品投资': 'investment_ip',
+        '东部地区投资': 'regional_investment_east',
+        '中部地区投资': 'regional_investment_central',
+        '西部地区投资': 'regional_investment_west',
+        '东北地区投资': 'regional_investment_northeast',
+    },
+    'pmi': {'大型企业PMI为': 'pmi_large', '中型企业PMI为': 'pmi_medium',
+            '小型企业PMI为': 'pmi_small', '服务业商务活动指数为': 'pmi_services',
+            '建筑业商务活动指数为': 'pmi_construction'},
+}
+
+
+def _detail_table_values(article, family: str, expected_period: str) -> dict:
+    """Select a single national table and a named GROWTH column, never offsets."""
+    mapping = ACTIVITY_DETAIL_ROWS[family]
+    candidates = [expand_table(t) for t in article.find_all('table')
+                  if any(r and r[0] == _DETAIL_ANCHOR[family] for r in expand_table(t))]
+    if len(candidates) != 1:
+        raise ValueError('detail_table_missing_or_ambiguous')
+    rows = candidates[0]
+    if family == 'investment':
+        if rows[0] != ['指标', '同比增长(%)']:
+            raise ValueError('detail_ytd_growth_header_changed')
+        column, width = 1, 2
+    else:
+        if len(rows) < 2 or len(rows[0]) != len(rows[1]):
+            raise ValueError('detail_monthly_header_incomplete')
+        month = str(int(expected_period[-2:])) + '月'
+        columns = [i for i, (period, field) in enumerate(zip(rows[0], rows[1]))
+                   if period == month and field.replace('％', '%') == '同比增长(%)']
+        if len(columns) != 1:
+            raise ValueError('detail_monthly_growth_column_missing_or_ambiguous')
+        column, width = columns[0], len(rows[0])
+    result = {}
+    for row in rows:
+        if not row or row[0] not in mapping:
+            continue
+        ident = mapping[row[0]]
+        if ident in result:
+            raise ValueError('detail_duplicate_national_metric')
+        if len(row) != width:
+            raise ValueError('detail_truncated_national_row')
+        raw = row[column]
+        value = number(raw) if re.fullmatch(r'[+-]?\d+(?:\.\d+)?', raw) else None
+        # Do not turn missing/suppressed values or incompatible units into zero.
+        result[ident] = value if value is not None and value >= -100 else None
+    return result
+
+
+def parse_activity_detail(html: str, family: str, expected_period: str) -> tuple[list[dict], dict]:
+    """Additional current observations, with explicit per-measure null reasons.
+
+    Core seasonal/survey parsers still own their histories. Missing or malformed
+    supplemental detail cannot silently destroy those histories or borrow them
+    for a new measure. No network, revision reconstruction, or new store owner.
+    """
+    month_index(expected_period)
+    if family not in {'industry', 'retail', 'investment', 'pmi'}:
+        raise ValueError('unsupported_detail_family')
+    year, month = map(int, expected_period.split('-'))
+    article = publisher_article_root(html)
+    soup = BeautifulSoup(html, 'html.parser')
+    meta = soup.find('meta', attrs={'name': 'ArticleTitle'})
+    title = meta.get('content', '') if meta else soup.title.get_text() if soup.title else ''
+    combined = compact(title + ' ' + article.get_text(' ', strip=True))
+    period_pattern = (rf'{year}年1[—–－-]{month}月(?:份)?' if family == 'investment'
+                      else rf'{year}年(?:1[—–－-])?{month}月(?:份)?')
+    if not re.search(period_pattern, combined):
+        raise ValueError('detail_release_reference_missing_or_changed')
+    values, missing = {}, {}
+    fields = ACTIVITY_DETAIL_ROWS.get(family, {})
+    if fields:
+        try:
+            values.update(_detail_table_values(article, family, expected_period))
+            for ident in fields.values():
+                if values.get(ident) is None:
+                    missing[ident] = 'not_disclosed_or_invalid_in_expected_column'
+        except ValueError as exc:
+            missing.update({ident: str(exc) for ident in fields.values()})
+    # Remove every statistical table before paragraph matching. A quoted table
+    # number, an absolute amount, and a previous-period delta are not this value.
+    prose = BeautifulSoup(str(article), 'html.parser')
+    for node in prose.find_all(['table', 'script', 'style', 'noscript']):
+        node.decompose()
+    text = compact(prose.get_text(' ', strip=True))
+    for label, ident in _DETAIL_RATE_LABELS.get(family, {}).items():
+        if family == 'pmi':
+            matches = re.findall(re.escape(label) + r'(\d+(?:\.\d+)?)%', text)
+            value = number(matches[0]) if len(matches) == 1 else None
+            if value is not None and not 0 <= value <= 100:
+                value = None
+        else:
+            pattern = re.escape(label) + r'(?:\([^()]{1,60}\))?(?:同比)?(?:(增长|下降)(\d+(?:\.\d+)?)%|(持平))'
+            matches = re.findall(pattern, text)
+            value = None
+            if len(matches) == 1:
+                word, raw, flat = matches[0]
+                value = 0.0 if flat else number(raw)
+                if value is not None and word == '下降':
+                    value = -value
+                if value is not None and value < -100:
+                    value = None
+        if value is None:
+            missing[ident] = 'paragraph_not_unique_or_value_invalid'
+        else:
+            values[ident] = value
+    if family == 'industry':
+        # Counts use the catalog's exact denominators, NOT percentage coverage.
+        for ident, pattern, denominator in (
+            ('industry_positive', r'(\d+)个大类行业中有(\d+)个行业增加值(?:保持)?同比增长', 41),
+            ('products_positive', r'(\d+)种产品中有(\d+)种产品产量同比增长', 626),
+        ):
+            matches = re.findall(pattern, text)
+            if len(matches) == 1 and int(matches[0][0]) == denominator and 0 <= int(matches[0][1]) <= denominator:
+                values[ident] = int(matches[0][1])
+            else:
+                missing[ident] = 'count_denominator_or_disclosure_not_verified'
+    points = [{'metric_id': ident, 'period': expected_period, 'value': value}
+              for ident, value in sorted(values.items()) if value is not None]
+    return points, {'scope': 'same_release_current_period_only',
+                    'status': 'partial' if missing and points else 'withheld' if missing else 'complete',
+                    'admitted_metrics': [p['metric_id'] for p in points],
+                    'null_reasons': missing, 'history_inferred': False}
