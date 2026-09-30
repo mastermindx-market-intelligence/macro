@@ -242,8 +242,18 @@ def write_economic_stage(stage_dir: Path, parts: dict) -> Path:
     (native / "latest.json").write_bytes(canonical_json_bytes(stage_manifest))
     return private_dir
 
-def stage_economic_case(tmp_path: Path, case: str) -> Path:
-    return write_economic_stage(tmp_path / "economic", economic_stage_parts(case))
+def stage_economic_case(tmp_path: Path, case: str, *, name: str = "economic") -> Path:
+    stage = write_economic_stage(tmp_path / name, economic_stage_parts(case))
+    stage_manifest_path = stage / "native" / "latest.json"
+    stage_manifest = json.loads(stage_manifest_path.read_bytes())
+    installed = tmp_path / "private-r2"
+    stage_manifest["previous_manifest"] = (
+        private_module.load_private_predecessor(LocalStore(installed))
+        if (installed / "earnings_wire_private" / "v1" / "current.json").is_file()
+        else None
+    )
+    stage_manifest_path.write_bytes(canonical_json_bytes(stage_manifest))
+    return stage
 
 
 def published_v1_case(tmp_path: Path):
@@ -251,20 +261,6 @@ def published_v1_case(tmp_path: Path):
     prepared = private_module.prepare_private_publication(stage)
     store = ConditionalCountingStore(tmp_path / "private-r2")
     return store, private_module.publish_private_publication(store, prepared)
-
-
-def stage_economic_named_case(tmp_path: Path, case: str, *, name: str = "economic") -> Path:
-    stage = write_economic_stage(tmp_path / name, economic_stage_parts(case))
-    stage_manifest_path = stage / "native" / "latest.json"
-    stage_manifest = json.loads(stage_manifest_path.read_bytes())
-    installed = tmp_path / "private-r2"
-    stage_manifest["previous_manifest"] = (
-        private_module.load_private_predecessor(LocalStore(installed))
-        if (installed / "current.json").is_file()
-        else None
-    )
-    stage_manifest_path.write_bytes(canonical_json_bytes(stage_manifest))
-    return stage
 
 
 class ConditionalCountingStore(CountingLocalStore):

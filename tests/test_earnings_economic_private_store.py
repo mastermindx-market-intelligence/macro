@@ -299,10 +299,10 @@ def test_v2_publication_requires_conditional_store(tmp_path):
 
 
 def test_v1_downgrade_and_retirement_are_refused_before_writes(tmp_path):
-    _public, v1_stage, _slug = _staged_publication(tmp_path / "v1")
+    _public, v1_stage, _slug = _staged_publication(tmp_path / "v1-stage")
     v1_prepared = pp.prepare_private_publication(v1_stage)
-    store, baseline = published_v1_case(tmp_path / "baseline")
-    valid = pp.prepare_private_publication(stage_economic_case(tmp_path / "valid", "valid"))
+    store, baseline = published_v1_case(tmp_path)
+    valid = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
     pp.publish_private_publication(store, valid)
     installed = pp.load_private_manifest(store)
     v1_prepared = pp.prepare_private_publication(v1_stage)
@@ -321,6 +321,29 @@ def test_v1_downgrade_and_retirement_are_refused_before_writes(tmp_path):
     with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
         pp.publish_private_publication(ConditionalCountingStore(tmp_path / "retired"), retired)
     assert exc.value.reason == "retirement_invalid"
+
+
+def test_mixed_v2_generation_publishes_and_reads(tmp_path):
+    store, baseline = published_v1_case(tmp_path)
+    stage = stage_economic_case(tmp_path, "valid")
+    prepared = pp.prepare_private_publication(stage)
+    assert prepared.manifest["previous_manifest"] == {
+        key: baseline[key] for key in pp.load_private_predecessor(store)
+    }
+    pointer = pp.publish_private_publication(store, prepared)
+    current = pp.load_private_manifest(store)
+    assert current == dict(prepared.manifest)
+    assert current["schema"] == pp.MANIFEST_SCHEMA_V2
+    assert set(current) == {
+        "schema", "generation_id", "published_at", "source", "record_count", "ticker_count",
+        "records", "context", "native", "native_source_cutoff", "previous_manifest",
+    }
+    record_slugs = tuple(current["records"])
+    wire_slug = next(slug for slug in record_slugs if slug != "pg-synthetic-economic-dossier")
+    baseline_body = store.get_bytes(baseline["manifest_key"])
+    baseline_manifest = pp.validate_v1_manifest(json.loads(baseline_body))
+    baseline_record = pp.load_private_record(store, wire_slug, manifest=baseline_manifest)
+    assert pp.load_private_record(store, wire_slug) == baseline_record
 
 def _rename_one_directory_member(directory, suffix):
     path = next(iter(directory.glob(f"*{suffix}")))

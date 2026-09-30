@@ -1792,6 +1792,73 @@ def _load_private_generation_for_publication(
     except EarningsPrivatePublicationError as exc:
         raise EarningsPrivatePublishConflict("installed_unreadable") from exc
 
+
+def _pointer_predecessor(pointer: Mapping[str, Any] | None) -> dict[str, Any] | None:
+    if pointer is None:
+        return None
+    return {
+        key: pointer[key] for key in (
+            "generation_id", "manifest_key", "manifest_sha256", "manifest_bytes", "published_at"
+        )
+    }
+
+
+def _read_pointer_versioned(store: Store) -> tuple[dict[str, Any] | None, bytes | None, str | None]:
+    try:
+        versioned = store.get_bytes_strict_bounded_versioned(POINTER_KEY, MAX_POINTER_BYTES)
+    except Exception as exc:
+        raise EarningsPrivatePublicationError("private earnings object read failed") from exc
+    if versioned.data is None:
+        return None, None, None
+    if type(versioned.data) is not bytes or not isinstance(versioned.version, str):
+        raise EarningsPrivatePublicationError("private earnings object read failed")
+    pointer = validate_private_pointer(
+        _json_object(versioned.data, maximum=MAX_POINTER_BYTES, name="private earnings pointer")
+    )
+    return pointer, versioned.data, versioned.version
+
+
+def _validate_v2_installed_rules(
+    store: Store,
+    prepared: PreparedPrivatePublication,
+    installed_pointer: dict[str, Any] | None,
+) -> None:
+    installed_predecessor = _pointer_predecessor(installed_pointer)
+    if prepared.manifest["previous_manifest"] != installed_predecessor:
+        raise EarningsPrivatePublishConflict("predecessor_conflict")
+    if installed_pointer is None:
+        if prepared.retired_slots:
+            raise EarningsPrivatePublishConflict("retirement_invalid")
+        return
+    _installed_pointer, _manifest_bytes, installed = _load_private_generation_for_publication(store)
+    if str(prepared.manifest["published_at"]) < str(installed_pointer["published_at"]):
+        raise EarningsPrivatePublicationError("stale private publication cannot rewind current")
+    if installed.get("schema") == MANIFEST_SCHEMA_V2:
+        if prepared.manifest["native_source_cutoff"] < installed["native_source_cutoff"]:
+            raise EarningsPrivatePublishConflict("stale_native_cutoff")
+        installed_native = installed["native"]
+        candidate_native = prepared.manifest["native"]
+        for company_id in prepared.retired_slots:
+            if company_id not in installed_native["economic_slots"] or company_id in candidate_native["economic_slots"]:
+                raise EarningsPrivatePublishConflict("retirement_invalid")
+        for company_id in installed_native["economic_slots"]:
+            if company_id not in candidate_native["economic_slots"] and company_id not in prepared.retired_slots:
+                raise EarningsPrivatePublishConflict("slot_removed")
+        installed_selections = installed_native["selections"]
+        candidate_selections = candidate_native["selections"]
+        for installed_selection in installed_selections.values():
+            identity = (installed_selection["company_id"], installed_selection["event_id"])
+            for candidate_selection in candidate_selections.values():
+                if (candidate_selection["company_id"], candidate_selection["event_id"]) != identity:
+                    continue
+                if len(candidate_selection["chain"]) < len(installed_selection["chain"]):
+                    raise EarningsPrivatePublishConflict("chain_not_extended")
+                if candidate_selection["chain"][:len(installed_selection["chain"])] != installed_selection["chain"]:
+                    raise EarningsPrivatePublishConflict("chain_not_extended")
+                break
+    elif prepared.retired_slots:
+        raise EarningsPrivatePublishConflict("retirement_invalid")
+
 def publish_private_publication(
     store: Store,
     prepared: PreparedPrivatePublication,
@@ -1831,10 +1898,17 @@ def publish_private_publication(
         )
         if ready is not None:
             return ready
-        if prepared_schema == MANIFEST_SCHEMA and _bounded_read(store, POINTER_KEY, maximum=MAX_POINTER_BYTES) is not None:
-            _installed_pointer, _installed_bytes, installed = _load_private_generation_for_publication(store)
-            if installed.get("schema") == MANIFEST_SCHEMA_V2:
-                raise EarningsPrivatePublishConflict("downgrade_refused")
+        installed_pointer, _installed_pointer_bytes, _installed_version = (
+            _read_pointer_versioned(store) if prepared_schema == MANIFEST_SCHEMA_V2 else (None, None, None)
+        )
+        if prepared_schema == MANIFEST_SCHEMA and installed_pointer is None:
+            if _bounded_read(store, POINTER_KEY, maximum=MAX_POINTER_BYTES) is not None:
+                _plain_pointer, _plain_bytes, installed = _load_private_generation_for_publication(store)
+                installed_pointer = _plain_pointer
+                if installed.get("schema") == MANIFEST_SCHEMA_V2:
+                    raise EarningsPrivatePublishConflict("downgrade_refused")
+        if prepared_schema == MANIFEST_SCHEMA_V2:
+            _validate_v2_installed_rules(store, prepared, installed_pointer)
         if unique_payloads:
             worker_count = min(PUBLISH_WORKERS, len(unique_payloads))
             with ThreadPoolExecutor(
@@ -1855,37 +1929,78 @@ def publish_private_publication(
         )
         pointer = _pointer_for(prepared)
         pointer_bytes = canonical_json_bytes(pointer)
-        prior = _bounded_read(store, POINTER_KEY, maximum=MAX_POINTER_BYTES)
-        if prior is not None:
-            prior_pointer = validate_private_pointer(
-                _json_object(prior, maximum=MAX_POINTER_BYTES, name="prior private pointer")
+        if prepared_schema == MANIFEST_SCHEMA_V2:
+            objects = {
+                artifact.object_key: _bounded_read(store, artifact.object_key, maximum=artifact.maximum_bytes)
+                for artifact in prepared.artifacts
+            }
+            manifest_readback = _bounded_read(
+                store, prepared.manifest_key, maximum=MAX_MANIFEST_BYTES
             )
-            if prior_pointer["generation_id"] == prepared.generation_id:
-                if prior != pointer_bytes:
-                    raise EarningsPrivatePublicationError("private pointer disagrees with generation")
-                return pointer
-            _prior_pointer, _prior_bytes, prior_manifest = _load_private_generation_for_publication(store)
-            if prior_manifest.get("schema") == MANIFEST_SCHEMA_V2:
-                raise EarningsPrivatePublishConflict("downgrade_refused")
-            if str(pointer["published_at"]) < str(prior_pointer["published_at"]):
-                raise EarningsPrivatePublicationError("stale private publication cannot rewind current")
-        try:
-            written = store.put_bytes(POINTER_KEY, pointer_bytes, content_type="application/json")
-        except Exception as exc:  # noqa: BLE001
-            raise EarningsPrivatePublicationError("private earnings pointer write failed") from exc
-        if written is not True:
-            raise EarningsPrivatePublicationError("private earnings pointer write failed")
-        echoed = _bounded_read(store, POINTER_KEY, maximum=MAX_POINTER_BYTES)
-        if echoed != pointer_bytes:
+            if manifest_readback != prepared.manifest_bytes:
+                raise EarningsPrivateClosureError("digest_mismatch")
+            validate_native_closure(prepared.manifest, objects)
+            installed_pointer, _installed_bytes, expected_version = _read_pointer_versioned(store)
+            if _pointer_predecessor(installed_pointer) != prepared.manifest["previous_manifest"]:
+                raise EarningsPrivatePublishConflict("predecessor_conflict")
+            try:
+                written = store.put_bytes_strict_conditional(
+                    POINTER_KEY,
+                    pointer_bytes,
+                    expected_version=expected_version,
+                    content_type="application/json",
+                )
+            except Exception as exc:
+                raise EarningsPrivatePointerEffectUnknown(
+                    prepared.generation_id,
+                    sha256(pointer_bytes).hexdigest(),
+                    expected_version,
+                ) from exc
+            if written is not True:
+                raise EarningsPrivatePublishConflict("predecessor_conflict")
+            try:
+                echoed = _bounded_read(store, POINTER_KEY, maximum=MAX_POINTER_BYTES)
+            except Exception as exc:
+                raise EarningsPrivatePointerEffectUnknown(
+                    prepared.generation_id,
+                    sha256(pointer_bytes).hexdigest(),
+                    expected_version,
+                ) from exc
+            if echoed != pointer_bytes:
+                raise EarningsPrivatePointerEffectUnknown(
+                    prepared.generation_id,
+                    sha256(pointer_bytes).hexdigest(),
+                    expected_version,
+                )
+        else:
+            prior = _bounded_read(store, POINTER_KEY, maximum=MAX_POINTER_BYTES)
             if prior is not None:
-                try:
-                    store.put_bytes(POINTER_KEY, prior, content_type="application/json")
-                except Exception:  # pragma: no cover - original error remains authoritative
-                    pass
-            raise EarningsPrivatePublicationError("private earnings pointer read-back mismatch")
-        # Replay the complete current closure after promotion.  This catches a
-        # pointer/object mismatch before the workflow is allowed to publish its
-        # corresponding public shells.
+                prior_pointer = validate_private_pointer(
+                    _json_object(prior, maximum=MAX_POINTER_BYTES, name="prior private pointer")
+                )
+                if prior_pointer["generation_id"] == prepared.generation_id:
+                    if prior != pointer_bytes:
+                        raise EarningsPrivatePublicationError("private pointer disagrees with generation")
+                    return pointer
+                _prior_pointer, _prior_bytes, prior_manifest = _load_private_generation_for_publication(store)
+                if prior_manifest.get("schema") == MANIFEST_SCHEMA_V2:
+                    raise EarningsPrivatePublishConflict("downgrade_refused")
+                if str(pointer["published_at"]) < str(prior_pointer["published_at"]):
+                    raise EarningsPrivatePublicationError("stale private publication cannot rewind current")
+            try:
+                written = store.put_bytes(POINTER_KEY, pointer_bytes, content_type="application/json")
+            except Exception as exc:
+                raise EarningsPrivatePublicationError("private earnings pointer write failed") from exc
+            if written is not True:
+                raise EarningsPrivatePublicationError("private earnings pointer write failed")
+            echoed = _bounded_read(store, POINTER_KEY, maximum=MAX_POINTER_BYTES)
+            if echoed != pointer_bytes:
+                if prior is not None:
+                    try:
+                        store.put_bytes(POINTER_KEY, prior, content_type="application/json")
+                    except Exception:
+                        pass
+                raise EarningsPrivatePublicationError("private earnings pointer read-back mismatch")
         loaded = load_private_manifest(store)
         if loaded != dict(prepared.manifest):
             raise EarningsPrivatePublicationError("private earnings publication replay mismatch")
