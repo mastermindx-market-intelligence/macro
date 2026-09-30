@@ -25,6 +25,7 @@ The existing `scripts/build_bonds.py` remains the route builder. It already rend
 | `templates/_bonds_duration.mjs.j2` | Reused R11 calculation/projection, strict DOM input adapter, native-dialog lifecycle and local draft rendering. |
 | `tests/test_bonds_duration_workflow.py` | Actual-route wiring, fail-closed markup, identity, styling, Node invocation and real page-writer/asset-sweep integration. |
 | `tests/bonds_duration_workflow.test.mjs` | Model and DOM-port tests against the unmodified production module. |
+| `.github/ci/legacy-jobs.yml` | Existing `ccw-w4-credit-desk` job runs the duration suite with Node22 and tracks all four component/test paths. No waiver or new workflow. |
 | `research/BONDS_DURATION_R11_INTEGRATION.md` | This implementation and verification receipt. |
 
 No generated `site/` or runtime `data/` file is part of this candidate. A production release still needs the existing admitted render/publish path; changing a template does not prove the served page has changed.
@@ -86,10 +87,23 @@ Observed owner-fixture payload before postprocessing:146,375 →173,858 bytes, a
 | Path | SHA-256 |
 |---|---|
 | `templates/bonds.html.j2` | `a07c5b2b3fefc756332558df4726a490a5a4b431bd3ee46913f97b437548c5dd` |
-| `templates/_bonds_duration.html.j2` | `52b26abac5740b7431a51abdb61f4c2876d1f11af23f8e9b3a3cdfb070ad096e` |
+| `templates/_bonds_duration.html.j2` | `dba8f0ff6d972db808cecccbd72ae35c1c68484880809a05ce0db6a7ea909a96` |
 | `templates/_bonds_duration.mjs.j2` | `3d44053d71710a53d3af00cc89f69084286a3b21098eaf1e4e20c9adff7433ec` |
-| `tests/test_bonds_duration_workflow.py` | `dea3dd062e62f3fcca11bb80123e3be702806558495e28542e467c4b58602ea8` |
+| `tests/test_bonds_duration_workflow.py` | `bb95cda421532978d5b55423b736813d5bfc23e01379cc325a024a0d9b6264ea` |
 | `tests/bonds_duration_workflow.test.mjs` | `76eeee6044a4eb8eda581dc58b6fa4e8b3f13841d95ca1b97dc0e6b2c0c7d0f2` |
+
+## CI repair continuation — 2026-09-30
+
+Original-head CI run `36700334712` concluded failure, not a green result. Eleven packs and the fences workflow passed. The two blocking causes were introduced by this candidate:
+
+1. `contract-delta` job `109838012440` found the duration pytest suite was not named by a workflow run step.
+2. `ci-pack-9` job `109839134033` failed only its `design-governance` job: four component-local colour functions on newly added lines.
+
+The suite is now wired into the existing `ccw-w4-credit-desk` job, with Node22 and explicit component/test dependencies. No suite is waived and no checker or workflow gate is weakened. The component now uses the existing glass backdrop/border and panel/health tokens instead of defining new colour mixes. This is a scoped material change; visual conformance must still be checked in a real browser.
+
+Fresh scoped run (Studio PID32837, exit0): **127 passed, 2 deselected** across the complete owning job's four Python suites, with only the same two committed-site tests excluded. The duration suite invokes the existing36 Node cases. The actual forward-only design checker reports **0 introduced blockers**, and `gated_unrun_suites()` reports **0 orphaned suites**. The regression forbidding component-local colour functions was observed failing before correction (PID25723).
+
+These local results repair the observed failures but do not stand in for the next exact-head hosted CI result, an independent review, generated-site proof or browser acceptance. The Executive V2 read preflight currently reports `mode=readonly`; no reviewer job was submitted or claimed. Browser administrator denial is unchanged and is not retried or delegated around.
 
 ## Release gates and rollback
 

@@ -75,6 +75,7 @@ def test_styling_is_scoped_dual_theme_and_uses_existing_tokens() -> None:
     css = re.search(r'<style>(.*?)</style>', html, re.S).group(1)
     assert ':root' not in css
     assert not re.search(r'#[0-9a-fA-F]{3,8}\b', css)
+    assert not re.search(r'\b(?:rgba?|hsla?|color-mix|oklch|oklab)\(', css), 'Use the existing theme palette; no new colour decisions in the component'
     assert 'style.textContent' not in html
     assert 'data-theme="light"' in css
     assert 'prefers-reduced-motion' in css
