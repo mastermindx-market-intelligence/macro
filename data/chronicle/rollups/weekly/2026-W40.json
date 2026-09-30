@@ -11,6 +11,12 @@
     {
       "clusters": [
         {
+          "n_events": 6,
+          "source": "earnings_call",
+          "theme": "earnings",
+          "top_events": []
+        },
+        {
           "n_events": 1,
           "source": "regime_flip",
           "theme": "regime",
@@ -34,7 +40,7 @@
           "top_events": []
         },
         {
-          "n_events": 19,
+          "n_events": 20,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
@@ -240,7 +246,7 @@
     {
       "clusters": [
         {
-          "n_events": 115,
+          "n_events": 116,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
@@ -503,18 +509,7 @@
           "n_events": 2,
           "source": "regime_flip",
           "theme": "regime",
-          "top_events": [
-            {
-              "date": "2026-07-28",
-              "id": "cev-regime_flip-2c5d90609138",
-              "kind": "state_flip",
-              "source": "regime_flip",
-              "source_ref": "state_log#2026-07-28#regime_hk",
-              "tickers": [],
-              "title": "HK regime: Q3 Stagflation → Q1 Goldilocks",
-              "weight_hint": 3
-            }
-          ]
+          "top_events": []
         },
         {
           "n_events": 1,
