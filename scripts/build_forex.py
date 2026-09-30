@@ -31,6 +31,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from lib import config, store  # noqa: E402
 from lib.pages import write_page  # noqa: E402
+from lib.forex_kinematics_view import project_kinematics  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger("build_forex")
@@ -1301,6 +1302,8 @@ def main() -> int:
         "transmission": _transmission_latest(transmission),
         # MSX-1: strength meter forwarded verbatim (was display-dead-end)
         "strength": strength if strength else {},
+        # R12: existing computed values, explicit units and unknown per-metric clocks.
+        "kinematics": project_kinematics(kinematics, cfg),
         # MSX-1: regime_radar gains 'scenarios' compact receipts (additive)
         "regime_radar": ({"as_of": regime.get("as_of"), "dominant": regime.get("dominant"),
                           "active": [s["key"] for s in regime.get("scenarios", []) if s.get("active")],

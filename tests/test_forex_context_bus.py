@@ -853,3 +853,264 @@ if __name__ == "__main__":
         fn()
         print(f"PASS {fn.__name__}")
     print("all context bus tests passed (pytest-fixture tests skipped in __main__ mode)")
+
+
+# R12: project existing producer output into the actual latest.json owner.
+# This is value-availability/provenance, not a new freshness or market-state rule.
+def _r12_cfg():
+    return {'regime': {'enabled': True, 'z_lookback_d': 252,
+            'z_min_periods': 60, 'ewma_halflife_d': 20,
+            'kinematics': {'lit_windows_d': [1, 5, 20],
+                           'rvol_window_d': 20, 'rvol_pctile_lookback_d': 504}}}
+
+
+def _r12_table():
+    return {'as_of': '2026-09-25', 'caveat': True, 'rows': [{
+        'ccy': 'JPY', 'label_en': 'JPY', 'label_zh': '日元',
+        'lit_1d_pct': 0.2, 'lit_5d_pct': 1.2, 'lit_20d_pct': 2.7,
+        'vel_z': 1.3, 'accel_z': 0.6, 'rvol_pctile': 0.91,
+        'resid_5d_pct': 0.7, 'state_en': 'accelerating up', 'state_zh': '加速升'}]}
+
+
+def _r12_project(table=None, cfg=None):
+    from lib.forex_kinematics_view import project_kinematics
+    return project_kinematics(_r12_table() if table is None else table,
+                              _r12_cfg() if cfg is None else cfg)
+
+
+def test_r12_kinematics_preserves_existing_values_with_explicit_units():
+    import copy
+    table, cfg = _r12_table(), _r12_cfg()
+    original = copy.deepcopy((table, cfg))
+    got = _r12_project(table, cfg)
+    assert (table, cfg) == original
+    assert got['display_only'] is True and got['value_status'] == 'complete'
+    assert got['basis'] == 'currency_vs_usd'
+    assert got['positive_direction'] == 'currency_appreciation_vs_usd'
+    assert got['rows'][0]['values'] == {
+        'return_short': 0.2, 'return_medium': 1.2, 'return_long': 2.7,
+        'velocity_z': 1.3, 'acceleration_z': 0.6,
+        'volatility_percentile': 0.91, 'residual_return': 0.7}
+    assert got['metrics']['return_medium']['unit'] == 'percent'
+    assert got['metrics']['return_medium']['window_observations'] == 5
+    assert got['metrics']['velocity_z']['unit'] == 'z_score'
+    assert got['metrics']['volatility_percentile']['unit'] == 'fraction'
+    assert got['metrics']['residual_return']['basis'] == 'ex_dollar_residual'
+    assert got['metrics']['residual_return']['window_observations'] == 5
+    json.dumps(got, allow_nan=False)
+
+
+def test_r12_table_date_is_not_a_per_metric_observation_or_freshness_receipt():
+    got = _r12_project()
+    assert got['table_as_of'] == '2026-09-25'
+    assert got['date_basis'] == 'producer_max_index'
+    assert got['freshness'] == 'unknown'
+    assert got['metric_dates_available'] is False
+    assert all(value is None for value in got['rows'][0]['observed_at'].values())
+    assert 'last_non_null' in got['limitations']
+    assert not {'active', 'probability', 'confidence', 'score', 'action'} & got.keys()
+    assert 'state_en' not in got['rows'][0]
+
+
+@pytest.mark.parametrize('bad', [None, True, False, float('nan'), float('inf'), '-2.7', ''])
+def test_r12_missing_or_malformed_value_never_becomes_zero_or_a_signal(bad):
+    table = _r12_table()
+    table['rows'][0]['lit_20d_pct'] = bad
+    got = _r12_project(table)
+    row = got['rows'][0]
+    assert row['values']['return_long'] is None
+    assert row['availability']['return_long'] == ('missing' if bad is None else 'invalid')
+    assert got['value_status'] == 'partial'
+    assert row['values']['return_medium'] == 1.2
+    json.dumps(got, allow_nan=False)
+
+
+@pytest.mark.parametrize('bad', [-0.01, 1.01, 91, True, float('nan')])
+def test_r12_percentile_fraction_is_not_a_percent_or_boolean(bad):
+    table = _r12_table(); table['rows'][0]['rvol_pctile'] = bad
+    got = _r12_project(table)
+    assert got['rows'][0]['values']['volatility_percentile'] is None
+    assert got['rows'][0]['availability']['volatility_percentile'] == 'invalid'
+
+
+def test_r12_zero_negative_moves_and_percentile_endpoints_are_real_values():
+    table = _r12_table(); row = table['rows'][0]
+    row.update(lit_1d_pct=0, lit_5d_pct=-1.2, rvol_pctile=0, vel_z=-1.3, accel_z=-0.6)
+    got = _r12_project(table)
+    assert got['value_status'] == 'complete'
+    assert got['rows'][0]['values']['return_short'] == 0
+    assert got['rows'][0]['values']['return_medium'] == -1.2
+    row['rvol_pctile'] = 1
+    assert _r12_project(table)['rows'][0]['values']['volatility_percentile'] == 1
+
+
+def test_r12_duplicate_currency_identity_withholds_both_conflicting_claims():
+    import copy
+    table = _r12_table(); extra = copy.deepcopy(table['rows'][0]); extra['lit_5d_pct'] = -9
+    table['rows'].append(extra)
+    got = _r12_project(table)
+    assert got['value_status'] == 'unavailable'
+    assert len(got['rows']) == 1 and got['rows'][0]['ccy'] == 'JPY'
+    assert set(got['rows'][0]['availability'].values()) == {'identity_conflict'}
+    assert all(value is None for value in got['rows'][0]['values'].values())
+    assert 'duplicate_currency:JPY' in got['issues']
+
+
+@pytest.mark.parametrize('bad', [True, [], 'bad', {'rows': None}, {'rows': [None]},
+                               {'rows': [{'ccy': 'jpy'}]}, {'rows': [{'ccy': 3}]}])
+def test_r12_malformed_table_is_diagnosed_not_raised(bad):
+    from lib.forex_kinematics_view import project_kinematics
+    got = project_kinematics(bad, _r12_cfg())
+    assert got['value_status'] == 'unavailable'
+    assert got['issues']
+    json.dumps(got, allow_nan=False)
+
+
+@pytest.mark.parametrize('bad', [None, '', '2026-02-30', '09/25/2026', '2026-09-25T12:00:00Z', True])
+def test_r12_missing_or_invalid_table_clock_cannot_be_replaced_with_build_time(bad):
+    table = _r12_table(); table['as_of'] = bad
+    got = _r12_project(table)
+    assert got['table_as_of'] is None and got['value_status'] == 'unavailable'
+    assert got['freshness'] == 'unknown'
+
+
+def test_r12_custom_literal_windows_do_not_inherit_the_producers_fixed_field_names():
+    cfg = _r12_cfg(); cfg['regime']['kinematics']['lit_windows_d'] = [2, 7, 30]
+    got = _r12_project(cfg=cfg)
+    assert [got['metrics'][k]['window_observations'] for k in
+            ['return_short', 'return_medium', 'return_long']] == [2, 7, 30]
+    assert got['rows'][0]['values']['return_medium'] == 1.2
+    assert got['metrics']['return_medium']['source_field'] == 'lit_5d_pct'
+
+
+@pytest.mark.parametrize('windows', [None, [1, 5], [1, True, 20], [1, 5, 5],
+                                    [1, 20, 5], [0, 5, 20], ['1', 5, 20]])
+def test_r12_ambiguous_window_metadata_is_not_silently_defaulted(windows):
+    cfg = _r12_cfg(); cfg['regime']['kinematics']['lit_windows_d'] = windows
+    got = _r12_project(cfg=cfg)
+    assert got['value_status'] == 'unavailable' and got['rows'] == []
+    assert 'invalid_configuration' in got['issues']
+
+
+def test_r12_missing_config_and_empty_producer_output_remain_unavailable():
+    assert _r12_project(cfg={})['value_status'] == 'unavailable'
+    assert _r12_project(table={})['value_status'] == 'unavailable'
+
+
+def _r12_build_fixture(tmp_path, monkeypatch, table):
+    """Run actual builder assembly/write; replace market engines, not JSON construction."""
+    import copy
+    from scripts import build_forex as BF
+    from engine import forex_inputs, forex_signals, forex_conviction, forex_dollar
+    from engine import forex_transmission, forex_scorecards, forex_regime, forex_alerts
+    cfg = _r12_cfg()
+    cfg.update(active=['EURUSD'], assets={'EURUSD': {'archetype': 'major'}}, transmission={}, strength={}, scorecards={},
+               alerts={'timeline_days': 30})
+    monkeypatch.setattr(BF.config, 'load', lambda: {'forex': cfg, 'storage': {'site_dir': str(tmp_path / 'site')}})
+    monkeypatch.setattr(BF.config, 'data_dir', lambda: tmp_path / 'data')
+    monkeypatch.setattr(BF.store, 'read', lambda *args, **kwargs: pd.DataFrame())
+    monkeypatch.setattr(forex_inputs, 'load_all', lambda *args: {'EURUSD': {'drivers': {}}})
+    monkeypatch.setattr(forex_signals, 'compute_all', lambda *args: {'_dollar': _dol_frame(), 'EURUSD': _dol_frame()})
+    monkeypatch.setattr(forex_conviction, 'load_calibration', lambda: {})
+    monkeypatch.setattr(BF, 'dollar_vm', lambda *args: {'regime': 'Neutral', 'favored': [],
+                                                     'risk_word': 'Calm', 'dollar_dir': 'up'})
+    monkeypatch.setattr(BF, 'pair_vm', lambda *args: copy.deepcopy(_fake_pairs()[0]))
+    monkeypatch.setattr(BF, '_extra_inputs', lambda: {})
+    monkeypatch.setattr(BF, '_transmission_assets', lambda *args: {})
+    monkeypatch.setattr(BF, 'chart_real_rate', lambda *args: '')
+    monkeypatch.setattr(forex_dollar, 'dollar_desk', lambda *args: _fake_desk())
+    monkeypatch.setattr(forex_dollar, 'strength_meter', lambda *args: _fake_strength())
+    monkeypatch.setattr(forex_transmission, 'transmission', lambda *args: {})
+    monkeypatch.setattr(forex_scorecards, 'scorecards', lambda *args, **kwargs: [])
+    monkeypatch.setattr(forex_regime, 'fx_stress_regime', lambda *args: _fake_regime())
+    monkeypatch.setattr(forex_regime, 'fx_kinematics_table', lambda *args: table)
+    # Existing market-state/alert writers are separate owners: never exercise live writes here.
+    monkeypatch.setattr(forex_alerts, 'rebuild', lambda *args, **kwargs: [])
+    monkeypatch.setattr(forex_alerts, 'recent', lambda *args: [])
+    monkeypatch.setattr(BF, '_state_changes', lambda *args: {})
+    monkeypatch.setattr(BF, '_append_context_forward_log', lambda *args: None)
+    contexts = []
+    class Template:
+        def render(self, **context):
+            contexts.append(context)
+            return '<!doctype html><html><body>unchanged rendering boundary</body></html>'
+    class Templates:
+        globals = {}
+        def get_template(self, name):
+            assert name == 'forex.html.j2'
+            return Template()
+    monkeypatch.setattr(BF, 'Environment', lambda *args, **kwargs: Templates())
+    monkeypatch.setattr(BF, 'write_page', lambda path, html: None)
+    assert BF.main() == 0
+    return json.loads((tmp_path / 'data/forex/latest.json').read_text()), contexts
+
+
+def test_r12_actual_builder_writes_kinematics_without_changing_other_snapshot_fields(tmp_path, monkeypatch):
+    import copy
+    table = _r12_table(); original = copy.deepcopy(table)
+    baseline, _ = _r12_build_fixture(tmp_path / 'missing', monkeypatch, {})
+    got, contexts = _r12_build_fixture(tmp_path / 'valid', monkeypatch, table)
+    assert 'kinematics' in got, 'computed producer output is still missing from actual latest.json'
+    assert got['kinematics']['rows'][0]['values']['return_medium'] == 1.2
+    assert got['kinematics']['table_as_of'] == '2026-09-25'
+    assert got['asof'] != got['kinematics']['table_as_of'], 'build/market date must not stamp the metric date'
+    assert contexts[0]['kinematics'] == original == table
+    assert {k: v for k, v in got.items() if k != 'kinematics'} == {
+        k: v for k, v in baseline.items() if k != 'kinematics'}
+    assert got['regime_radar']['active'] == []
+    assert baseline['kinematics']['value_status'] == 'unavailable'
+
+
+def test_r12_bad_optional_kinematics_does_not_block_the_real_snapshot_write(tmp_path, monkeypatch):
+    got, _ = _r12_build_fixture(tmp_path, monkeypatch, {'as_of': '2026-09-25', 'rows': [None]})
+    assert got['kinematics']['value_status'] == 'unavailable'
+    assert got['regime'] == 'Neutral' and got['pairs']['EURUSD']['quote'] == 1.082
+
+
+def test_r12_broad_dollar_reference_is_not_a_currency_against_itself():
+    import copy
+    table = _r12_table(); dollar = copy.deepcopy(table['rows'][0]); dollar['ccy'] = 'USD'
+    table['rows'].insert(0, dollar)
+    got = _r12_project(table)
+    assert [row['ccy'] for row in got['rows']] == ['JPY']
+    assert got['reference_rows_excluded'] == ['USD']
+    assert got['value_status'] == 'complete'
+    assert 'invalid_currency_row' not in got['issues']
+
+
+def test_r12_real_producer_output_reaches_projection_without_recalculation():
+    from engine.forex_regime import fx_kinematics_table
+    cfg = _r12_cfg(); cfg['assets'] = {'USDJPY': {'base': 'JPY'}}
+    idx = pd.date_range('2022-01-03', periods=760, freq='B')
+    rng = np.random.default_rng(8241)
+    close = pd.Series(np.exp(np.cumsum(rng.normal(0.0001, 0.005, len(idx)))), index=idx)
+    residual = pd.Series(np.exp(np.cumsum(rng.normal(0.0, 0.003, len(idx)))), index=idx)
+    results = {'USDJPY': pd.DataFrame({'close': close, 'resid_close': residual})}
+    raw = fx_kinematics_table(results, {'broad_dollar': close * 100}, cfg)
+    assert raw['rows'], 'producer, not a hand-built table, must supply this case'
+    got = _r12_project(raw, cfg)
+    row = next(r for r in got['rows'] if r['ccy'] == 'JPY')
+    original = next(r for r in raw['rows'] if r['ccy'] == 'JPY')
+    for name, definition in got['metrics'].items():
+        assert row['values'][name] == original[definition['source_field']]
+    assert got['value_status'] == 'complete'
+    assert got['freshness'] == 'unknown' and got['metric_dates_available'] is False
+
+
+@pytest.mark.parametrize('row_update', [
+    {'ccy': 'EUR', 'lit_5d_pct': True}, {'ccy': 'EUR', 'lit_5d_pct': np.float64(0.0)},
+])
+def test_r12_optional_second_row_never_changes_the_first_currency(row_update):
+    import copy
+    table = _r12_table(); second = copy.deepcopy(table['rows'][0]); second.update(row_update)
+    table['rows'].append(second)
+    got = _r12_project(table)
+    assert got['rows'][0]['values'] == _r12_project()['rows'][0]['values']
+    json.dumps(got, allow_nan=False)
+
+
+def test_r12_non_scalar_currency_identity_cannot_crash_optional_projection():
+    table = _r12_table(); table['rows'][0]['ccy'] = np.array(['JPY', 'CHF'])
+    got = _r12_project(table)
+    assert got['value_status'] == 'unavailable'
+    assert 'invalid_currency_row' in got['issues']

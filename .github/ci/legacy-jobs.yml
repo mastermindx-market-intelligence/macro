@@ -14813,6 +14813,7 @@ jobs:
       - "tests/test_financial_news.py"
       - "tests/test_forex.py"
       - "tests/test_forex_context_bus.py"
+      - "lib/forex_kinematics_view.py"
       - "tests/test_news_event_ledger.py"
       - "tests/test_phase_buildout.py"
       - "tests/test_policy_lever.py"
