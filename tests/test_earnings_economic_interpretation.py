@@ -1,4 +1,5 @@
 from decimal import Decimal
+import ast
 import copy
 import hashlib
 import json
@@ -829,3 +830,83 @@ def test_parser_positive_controls_and_clock_text():
     validate_economic_interpretation(
         none_clock, workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE,
     )
+
+
+def _opaque(base, *args):
+    """A `base` subclass whose type raises when hashed or compared, so only an identity test classifies it."""
+
+    class _Meta(type):
+        def __hash__(cls):
+            raise RuntimeError('a type test hashed an unchecked type')
+
+        def __eq__(cls, other):
+            raise RuntimeError('a type test compared an unchecked type')
+
+    return _Meta('_Opaque', (base,), {})(*args)
+
+
+@pytest.mark.parametrize('prior', ['0', '-1', '1.52'])
+@pytest.mark.parametrize('position', ['current', 'prior', 'uncertainty'])
+def test_compare_eps_classifies_numbers_by_identity(position, prior):
+    arguments = {'current': '1.64', 'prior': prior, 'uncertainty': '0.01'}
+    arguments[position] = _opaque(str, arguments[position])
+    with pytest.raises(EconomicInterpretationError, match='decimal-compatible'):
+        compare_eps(
+            arguments['current'], arguments['prior'], precision=2, uncertainty=arguments['uncertainty']
+        )
+
+
+@pytest.mark.parametrize('base', [tuple, list])
+def test_fiscal_scope_container_is_classified_by_identity(base):
+    payload = build_case_interpretation('identical_inputs')
+    workspace, texts = _case('identical_inputs')
+    _with_fiscal_scope(base(FISCAL_SCOPE))
+    validate_economic_interpretation(
+        payload, workspaces=workspace, source_texts=texts, fiscal_scope=base(FISCAL_SCOPE)
+    )
+    scope = _opaque(base, FISCAL_SCOPE)
+    with pytest.raises(EconomicInterpretationError, match='exactly four dates'):
+        _with_fiscal_scope(scope)
+    with pytest.raises(EconomicInterpretationError, match='exactly four dates'):
+        validate_economic_interpretation(
+            payload, workspaces=workspace, source_texts=texts, fiscal_scope=scope
+        )
+
+
+def test_stored_handle_values_are_exact_strings():
+    workspace, texts = _case('identical_inputs')
+    baseline = build_case_interpretation('identical_inputs')
+    validate_economic_interpretation(
+        baseline, workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE
+    )
+    fields = sorted(baseline['observations'][0]['handle'])
+    assert fields
+    for field in fields:
+        for wrap in (_Str, lambda value: _opaque(str, value)):
+            payload = copy.deepcopy(baseline)
+            handle = payload['observations'][0]['handle']
+            handle[field] = wrap(handle[field])
+            with pytest.raises(EconomicInterpretationError, match='handle is malformed'):
+                validate_economic_interpretation(
+                    payload, workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE
+                )
+
+
+def test_type_tests_follow_the_parsing_boundary():
+    with open(economic_interpretation.__file__, encoding='utf-8') as source:
+        tree = ast.parse(source.read())
+    containers = {'Mapping', 'list', 'tuple'}
+    container_tests = 0
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == 'isinstance':
+            kinds = node.args[1].elts if isinstance(node.args[1], ast.Tuple) else [node.args[1]]
+            assert all(isinstance(kind, ast.Name) and kind.id in containers for kind in kinds), ast.unparse(node)
+            container_tests += 1
+        if (
+            isinstance(node, ast.Compare)
+            and isinstance(node.left, ast.Call)
+            and isinstance(node.left.func, ast.Name)
+            and node.left.func.id == 'type'
+        ):
+            assert all(isinstance(op, (ast.Is, ast.IsNot)) for op in node.ops), ast.unparse(node)
+    assert container_tests

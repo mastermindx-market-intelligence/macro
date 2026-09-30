@@ -181,7 +181,8 @@ def _parse_token(value: Any, allowed: frozenset[str], name: str) -> str:
 
 
 def _parse_decimal(value: Any, name: str) -> Decimal:
-    if type(value) not in {str, int, float, Decimal}:
+    kind = type(value)
+    if kind is not str and kind is not int and kind is not float and kind is not Decimal:
         raise EconomicInterpretationError(f"{name} is not a decimal-compatible value")
     try:
         result = Decimal(str(value))
@@ -201,7 +202,8 @@ def _parse_precision(value: Any) -> int | None:
 
 
 def _parse_fiscal_scope(value: Any) -> tuple[date, date, date, date]:
-    if type(value) not in {tuple, list} or len(value) != 4:
+    kind = type(value)
+    if (kind is not tuple and kind is not list) or len(value) != 4:
         raise EconomicInterpretationError("fiscal_scope must contain exactly four dates")
     return tuple(_parse_date(item, f"fiscal_scope[{index}]") for index, item in enumerate(value))
 
@@ -648,7 +650,7 @@ def build_economic_interpretation(
     )
     document_id = release.get("document_id")
     source_text = source_texts.get(document_id)
-    if not isinstance(source_text, str):
+    if type(source_text) is not str:
         raise EconomicInterpretationError("selected release source text is absent")
     source_digest = hashlib.sha256(source_text.encode("utf-8")).hexdigest()
     identity_input = {
@@ -733,7 +735,7 @@ def _validate_payload_shape(payload: Mapping[str, Any]) -> Mapping[str, Any]:
         if not isinstance(handle, Mapping):
             raise EconomicInterpretationError("stored observation handle is malformed")
         for value in handle.values():
-            if not isinstance(value, str):
+            if type(value) is not str:
                 raise EconomicInterpretationError("stored observation handle is malformed")
     selection = payload.get("selection")
     if (
