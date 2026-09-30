@@ -2,7 +2,7 @@
 workstream: "WS:MARKET-OS"
 session: sol/market-os-shared-shell-design-20260924
 model: sol
-ended_because: checkpointed_continuation
+ended_because: ci_handoff
 mission: >
   Deliver instantly understandable shared navigation with advanced depth and long-page
   reading. All tools is mega-menu first; full directory browsing remains available.
