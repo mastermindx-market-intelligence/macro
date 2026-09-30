@@ -781,7 +781,7 @@ def _build(
             "state": currentness["state"],
             "source_clock": (
                 None if currentness["source_clock"] is None
-                else currentness["source_clock"]
+                else _format_instant(currentness["source_clock"])
             ),
         },
     }
@@ -794,7 +794,7 @@ def _build(
             "comparison_count": len(comparisons), "currentness": currentness["state"],
             "currentness_observed_at": (
                 None if currentness["source_clock"] is None
-                else currentness["source_clock"]
+                else _format_instant(currentness["source_clock"])
             ),
             "selector_version": None,
         },
