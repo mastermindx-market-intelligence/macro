@@ -1475,6 +1475,18 @@
       "at": "2026-09-30T13:42:42.522520+00:00",
       "activated": false,
       "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=51747": {
+      "id": "wh-2026-09-30-icymi-president-trump-announces-largest-ever-steel-plant-coming-to-iowa",
+      "at": "2026-09-30T19:19:31.537340+00:00",
+      "activated": true,
+      "importance": 72
+    },
+    "https://www.whitehouse.gov/?p=51745": {
+      "id": "wh-2026-09-30-congressional-bill-s-2398-signed-into-law",
+      "at": "2026-09-30T19:19:40.632715+00:00",
+      "activated": false,
+      "importance": 5
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."

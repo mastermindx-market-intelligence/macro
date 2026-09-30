@@ -1,0 +1,86 @@
+{
+  "activate": true,
+  "importance": 72,
+  "banner_days": 3,
+  "tone": "mixed",
+  "banner_title": "$15B Mesabi steel plant in Iowa — domestic capacity jump, steel names react",
+  "banner_title_zh": "梅萨比15亿美元爱荷华钢厂——美国本土产能跃升，钢铁股波动",
+  "summary": "President Trump announced a $15 billion Mesabi Metallics steel complex in Iowa, the largest U.S. steel plant ever, with 10M tons annual capacity and full mine-to-mill integration. The announcement reinforces the Section 232 tariff-driven reshoring trend and signals additional domestic steel supply pressure for incumbent producers.",
+  "summary_zh": "特朗普总统宣布梅萨比冶金公司在爱荷华州投资150亿美元建设美国史上最大钢厂，年产能1000万吨，实现从矿山到轧机的全链条整合。此举强化了232条款关税推动的制造业回流趋势，并对现有美国钢企构成新增供给压力。",
+  "analysis": "Mesabi Metallics will build a $15 billion integrated steel complex in Lee County, Iowa, producing 10 million tons of steel annually using direct-reduced iron (DRI) from its Minnesota Iron Range mine feeding electric-arc furnaces (EAF). The plant creates 1,750 permanent jobs and up to 6,000 construction jobs, with an estimated $95 billion in economic output over construction and the first decade. This is a private-capital project, not a federal appropriation, though it lands in the context of Section 232 steel tariffs that have made domestic steelmaking economics more attractive.\n\nThe market transmission mechanism operates on two sides. First, the announcement validates the industrial-policy/reflation narrative: tariff protection is pulling steel capacity back to the U.S., supporting construction, railroads, energy, and equipment suppliers during the multi-year buildout. Second, it introduces a structural headwind for incumbent integrated and EAF steelmakers—Nucor, Steel Dynamics, U.S. Steel, Cleveland-Cliffs—who would face a new 10M-ton competitor in the domestic market once the plant ramps, compressing pricing power and potentially squeezing margins in an already cyclical industry.\n\nThe key uncertainty is timing and execution. Large greenfield steel projects have a history of delays and cost overruns; Mesabi Metallics itself has faced financing and timeline challenges at its Nashwauk, Minnesota mine. If the plant takes five to seven years to reach full output, the near-term impact on incumbent steel pricing is limited, but the announcement alone can weigh on sentiment and forward valuation multiples. Suppliers to the project—railroads hauling ore and steel, construction materials, and EAF equipment makers—stand to benefit earlier.\n\nNet, this is a reflation-positive signal for the broader economy and for industrial construction, but a competitive negative for incumbent domestic steel producers' medium-term pricing outlook.",
+  "sectors": [
+    {
+      "name": "Steel Producers (incumbent)",
+      "impact": "headwind",
+      "rationale": "New 10M-ton domestic competitor threatens pricing power and market share for existing U.S. steelmakers."
+    },
+    {
+      "name": "Construction & Engineering",
+      "impact": "tailwind",
+      "rationale": "6,000 construction jobs over multi-year buildout support heavy civil and industrial construction activity."
+    },
+    {
+      "name": "Railroads",
+      "impact": "tailwind",
+      "rationale": "Mine-to-mill logistics require moving iron ore pellets from Minnesota to Iowa and finished steel to end markets."
+    },
+    {
+      "name": "Industrial Equipment / EAF Technology",
+      "impact": "tailwind",
+      "rationale": "DRI-to-EAF steelmaking requires specialized furnaces, material handling, and process equipment."
+    },
+    {
+      "name": "Steel Consumers (autos, appliances, infrastructure)",
+      "impact": "tailwind",
+      "rationale": "More domestic supply could ease input costs for steel-intensive manufacturers over the medium term."
+    }
+  ],
+  "tickers": [
+    {
+      "symbol": "NUE",
+      "direction": "hurt",
+      "rationale": "Largest U.S. EAF steelmaker faces a major new domestic competitor using the same EAF technology."
+    },
+    {
+      "symbol": "STLD",
+      "direction": "hurt",
+      "rationale": "EAF operator with Midwest presence exposed to new Iowa capacity competing for overlapping customers."
+    },
+    {
+      "symbol": "X",
+      "direction": "hurt",
+      "rationale": "U.S. Steel's domestic flat-rolled business could see pricing pressure from 10M tons of new supply."
+    },
+    {
+      "symbol": "CLF",
+      "direction": "hurt",
+      "rationale": "Integrated producer whose blast-furnace economics look worse if new EAF capacity expands total supply."
+    },
+    {
+      "symbol": "UNP",
+      "direction": "benefit",
+      "rationale": "Major rail carrier moving iron ore, scrap, and finished steel across the Midwest corridor."
+    },
+    {
+      "symbol": "CSX",
+      "direction": "benefit",
+      "rationale": "Eastern rail network likely to haul finished steel from Iowa to coastal and industrial end markets."
+    },
+    {
+      "symbol": "CAT",
+      "direction": "benefit",
+      "rationale": "Heavy equipment demand for site preparation, construction, and ongoing plant operations."
+    },
+    {
+      "symbol": "MLM",
+      "direction": "benefit",
+      "rationale": "Aggregates and construction materials supplier positioned for a multi-year large-scale build."
+    },
+    {
+      "symbol": "VMC",
+      "direction": "benefit",
+      "rationale": "Construction materials supplier with exposure to large infrastructure and industrial projects."
+    }
+  ],
+  "confidence": "medium"
+}
