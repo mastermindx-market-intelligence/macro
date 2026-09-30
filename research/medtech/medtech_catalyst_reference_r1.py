@@ -117,6 +117,56 @@ def _commercial_state(commercial: Mapping[str, Any]) -> tuple[str, list[str]]:
     return ("COMMERCIAL_READY" if not gaps else "COMMERCIAL_UNQUALIFIED", gaps)
 
 
+def _commercial_binding_reasons(
+    event: Mapping[str, Any],
+    exposure: Mapping[str, Any],
+    commercial: Mapping[str, Any],
+) -> list[str]:
+    bound_case = commercial.get("bound_case")
+    if not isinstance(bound_case, Mapping):
+        return ["COMMERCIAL_BOUND_CASE_MISSING"]
+
+    reasons: list[str] = []
+    required = {
+        "issuer_id": "COMMERCIAL_ISSUER_MISSING",
+        "security_id": "COMMERCIAL_SECURITY_MISSING",
+        "relationship_id": "COMMERCIAL_RELATIONSHIP_MISSING",
+        "device_id": "COMMERCIAL_DEVICE_MISSING",
+        "applicant": "COMMERCIAL_APPLICANT_MISSING",
+        "submission_id": "COMMERCIAL_SUBMISSION_MISSING",
+        "indication_id": "COMMERCIAL_INDICATION_MISSING",
+        "territory": "COMMERCIAL_TERRITORY_MISSING",
+        "regulatory_source_id": "COMMERCIAL_REGULATORY_SOURCE_MISSING",
+    }
+    for field, reason in required.items():
+        if bound_case.get(field) in (None, ""):
+            reasons.append(reason)
+
+    exposure_comparisons = (
+        ("issuer_id", "issuer_id", "COMMERCIAL_ISSUER_MISMATCH"),
+        ("security_id", "security_id", "COMMERCIAL_SECURITY_MISMATCH"),
+        ("relationship_id", "relationship_id", "COMMERCIAL_RELATIONSHIP_MISMATCH"),
+    )
+    for bound_field, exposure_field, reason in exposure_comparisons:
+        value = bound_case.get(bound_field)
+        if value not in (None, "") and value != exposure.get(exposure_field):
+            reasons.append(reason)
+
+    event_comparisons = (
+        ("device_id", "device_id", "COMMERCIAL_DEVICE_MISMATCH"),
+        ("applicant", "applicant", "COMMERCIAL_APPLICANT_MISMATCH"),
+        ("submission_id", "submission_id", "COMMERCIAL_SUBMISSION_MISMATCH"),
+        ("indication_id", "indication_id", "COMMERCIAL_INDICATION_MISMATCH"),
+        ("territory", "territory", "COMMERCIAL_TERRITORY_MISMATCH"),
+        ("regulatory_source_id", "source_id", "COMMERCIAL_REGULATORY_SOURCE_MISMATCH"),
+    )
+    for bound_field, event_field, reason in event_comparisons:
+        value = bound_case.get(bound_field)
+        if value not in (None, "") and value != event.get(event_field):
+            reasons.append(reason)
+    return reasons
+
+
 def _relationship_reasons(event: Mapping[str, Any], exposure: Mapping[str, Any]) -> list[str]:
     reasons: list[str] = []
     required = {
@@ -169,10 +219,27 @@ def _relationship_reasons(event: Mapping[str, Any], exposure: Mapping[str, Any])
 
 def _materiality_reasons(exposure: Mapping[str, Any]) -> list[str]:
     reasons: list[str] = []
-    if exposure.get("materiality_source_id") in (None, ""):
-        reasons.append("MATERIALITY_SOURCE_MISSING")
-    if exposure.get("materiality_basis") in (None, ""):
-        reasons.append("MATERIALITY_BASIS_MISSING")
+    required = {
+        "materiality_source_id": "MATERIALITY_SOURCE_MISSING",
+        "materiality_basis": "MATERIALITY_BASIS_MISSING",
+        "materiality_issuer_id": "MATERIALITY_ISSUER_MISSING",
+        "materiality_security_id": "MATERIALITY_SECURITY_MISSING",
+        "materiality_relationship_id": "MATERIALITY_RELATIONSHIP_MISSING",
+    }
+    for field, reason in required.items():
+        if exposure.get(field) in (None, ""):
+            reasons.append(reason)
+
+    comparisons = (
+        ("materiality_issuer_id", "issuer_id", "MATERIALITY_ISSUER_MISMATCH"),
+        ("materiality_security_id", "security_id", "MATERIALITY_SECURITY_MISMATCH"),
+        ("materiality_relationship_id", "relationship_id", "MATERIALITY_RELATIONSHIP_MISMATCH"),
+    )
+    for materiality_field, exposure_field, reason in comparisons:
+        value = exposure.get(materiality_field)
+        if value not in (None, "") and value != exposure.get(exposure_field):
+            reasons.append(reason)
+
     materiality = str(exposure["materiality_state"])
     basis = exposure.get("materiality_basis")
     if basis not in (None, "") and basis not in MATERIALITY_BASIS_BY_STATE[materiality]:
@@ -185,7 +252,7 @@ def _expectations_state(
     *,
     cutoff: datetime,
 ) -> tuple[dict[str, Any], bool]:
-    if not options:
+    if options is None:
         return (
             {
                 "state": "UNAVAILABLE",
@@ -198,6 +265,8 @@ def _expectations_state(
             False,
         )
 
+    if not isinstance(options, Mapping):
+        raise ValueError("options must be a mapping")
     _require(
         options,
         ("observation_state", "as_of", "source_id", "coverage", "latency"),
@@ -301,8 +370,15 @@ def qualify_case(
         field="exposure.materiality_public_at",
     )
 
-    commercial_state, commercial_gaps = _commercial_state(commercial)
+    readiness_state, readiness_gaps = _commercial_state(commercial)
     commercial_public_at = _utc(str(commercial["public_at"]), field="commercial.public_at")
+    commercial_binding_reasons = _commercial_binding_reasons(event, exposure, commercial)
+    if commercial_binding_reasons:
+        commercial_state = "COMMERCIAL_UNQUALIFIED"
+        commercial_gaps = ["COMMERCIAL_CASE_BINDING_UNRESOLVED", *commercial_binding_reasons]
+    else:
+        commercial_state = readiness_state
+        commercial_gaps = readiness_gaps
     expectations, options_future = _expectations_state(options, cutoff=cutoff)
 
     event_future = event_public_at > cutoff
@@ -484,17 +560,22 @@ def qualify_case(
 
 
 def apply_market_revision(case: Mapping[str, Any], *, reference_price: float, observed_at: str) -> dict[str, Any]:
-    """Add market context without rewriting regulatory, rights, or commercial evidence."""
+    """Add cutoff-qualified market context without rewriting case evidence."""
     if not isinstance(reference_price, (int, float)) or isinstance(reference_price, bool) or reference_price <= 0:
         raise ValueError("reference_price must be positive")
-    _utc(observed_at, field="observed_at")
+    if not isinstance(case, Mapping):
+        raise ValueError("case must be a mapping")
+    case_cutoff = _utc(str(case.get("as_of") or ""), field="case.as_of")
+    observed = _utc(observed_at, field="observed_at")
+    if observed > case_cutoff:
+        raise ValueError("observed_at must be no later than case.as_of")
     result = deepcopy(dict(case))
     before_event = deepcopy(result.get("event"))
     before_exposure = deepcopy(result.get("exposure"))
     before_commercial = deepcopy(result.get("commercial"))
     result["market_revision"] = {
         "reference_price": float(reference_price),
-        "observed_at": observed_at,
+        "observed_at": _iso(observed),
         "effect": "PRICE_CONTEXT_ONLY",
     }
     if result.get("event") != before_event:

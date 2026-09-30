@@ -43,19 +43,25 @@ def exposure(event_data=None, rights="owned", materiality="core"):
         "licensed": "exclusive_license",
         "unresolved": "unresolved",
     }[rights]
+    issuer_id = "ISS:US-XNAS-TMDX"
+    security_id = "SEC:US-XNAS-TMDX"
+    relationship_id = "REL:TMDX:OCS-HEART:P180051-S001:US"
     return {
-        "issuer_id": "ISS:US-XNAS-TMDX",
-        "security_id": "SEC:US-XNAS-TMDX",
-        "relationship_issuer_id": "ISS:US-XNAS-TMDX",
-        "relationship_security_id": "SEC:US-XNAS-TMDX",
+        "issuer_id": issuer_id,
+        "security_id": security_id,
+        "relationship_issuer_id": issuer_id,
+        "relationship_security_id": security_id,
         "rights_state": rights,
         "materiality_state": materiality,
-        "relationship_id": "REL:TMDX:OCS-HEART:P180051-S001:US",
+        "relationship_id": relationship_id,
         "rights_source_id": "TMDX:10-Q:2021Q3:OCS-HEART-RIGHTS",
         "rights_public_at": "2021-09-01T12:00:00Z",
         "materiality_source_id": "TMDX:10-Q:2021Q3:SEGMENT",
         "materiality_public_at": "2021-09-01T12:00:00Z",
         "materiality_basis": materiality_basis,
+        "materiality_issuer_id": issuer_id,
+        "materiality_security_id": security_id,
+        "materiality_relationship_id": relationship_id,
         "device_id": bound["device_id"],
         "applicant": bound["applicant"],
         "submission_id": bound["submission_id"],
@@ -74,7 +80,11 @@ def commercial(
     adoption="early",
     *,
     public_at="2021-09-02T12:00:00Z",
+    event_data=None,
+    exposure_data=None,
 ):
+    bound_event = event_data or event()
+    bound_exposure = exposure_data or exposure(bound_event)
     return {
         "manufacturing_readiness": manufacturing,
         "launch_readiness": launch,
@@ -82,6 +92,17 @@ def commercial(
         "adoption_state": adoption,
         "public_at": public_at,
         "source_id": "TMDX:COMMERCIAL-READINESS:2021-09-02",
+        "bound_case": {
+            "issuer_id": bound_exposure["issuer_id"],
+            "security_id": bound_exposure["security_id"],
+            "relationship_id": bound_exposure["relationship_id"],
+            "device_id": bound_event["device_id"],
+            "applicant": bound_event["applicant"],
+            "submission_id": bound_event["submission_id"],
+            "indication_id": bound_event["indication_id"],
+            "territory": bound_event["territory"],
+            "regulatory_source_id": bound_event["source_id"],
+        },
     }
 
 
@@ -97,10 +118,15 @@ def options(*, observation_state="observed", as_of="2021-09-07T11:30:00Z"):
 
 def qualify(**kwargs):
     event_value = kwargs.get("event", event())
+    exposure_value = kwargs.get("exposure", exposure(event_value))
+    commercial_value = kwargs.get(
+        "commercial",
+        commercial(event_data=event_value, exposure_data=exposure_value),
+    )
     return qualify_case(
         event=event_value,
-        exposure=kwargs.get("exposure", exposure(event_value)),
-        commercial=kwargs.get("commercial", commercial()),
+        exposure=exposure_value,
+        commercial=commercial_value,
         options=kwargs.get("options"),
         as_of=kwargs.get("as_of", "2021-09-07T12:00:00Z"),
     )
@@ -207,15 +233,29 @@ def test_unqualified_options_are_not_silently_used():
     assert result["expectations"]["use"] == "none"
 
 
+def test_empty_supplied_options_are_malformed_not_unavailable():
+    with pytest.raises(ValueError, match="options missing required fields"):
+        qualify(options={})
+
+
 def test_price_only_revision_preserves_event_and_disposition():
     base = qualify()
     before_event = deepcopy(base["event"])
     before_exposure = deepcopy(base["exposure"])
-    revised = apply_market_revision(base, reference_price=39.69, observed_at="2021-09-07T20:00:00Z")
+    revised = apply_market_revision(base, reference_price=39.69, observed_at="2021-09-07T12:00:00Z")
     assert revised["event"] == before_event
     assert revised["exposure"] == before_exposure
     assert revised["disposition"] == base["disposition"]
     assert revised["market_revision"]["effect"] == "PRICE_CONTEXT_ONLY"
+
+
+def test_market_revision_after_case_cutoff_is_refused():
+    with pytest.raises(ValueError, match="no later than case.as_of"):
+        apply_market_revision(
+            qualify(),
+            reference_price=39.69,
+            observed_at="2025-01-01T20:00:00Z",
+        )
 
 
 def test_timezone_is_required_for_event_knowledge_clock():
@@ -359,6 +399,60 @@ def test_claimed_owned_core_without_relationship_provenance_fails_closed():
     assert result["disposition"] == "WITHHELD_IDENTITY_RIGHTS"
     assert "RELATIONSHIP_ID_MISSING" in result["reasons"]
     assert "RIGHTS_SOURCE_MISSING" in result["reasons"]
+
+
+@pytest.mark.parametrize(
+    ("field", "replacement", "reason"),
+    [
+        ("materiality_issuer_id", "ISS:US-XNYS-OTHER", "MATERIALITY_ISSUER_MISMATCH"),
+        ("materiality_security_id", "SEC:US-XNYS-OTHER", "MATERIALITY_SECURITY_MISMATCH"),
+        ("materiality_relationship_id", "REL:OTHER", "MATERIALITY_RELATIONSHIP_MISMATCH"),
+    ],
+)
+def test_materiality_evidence_must_bind_to_the_listed_case(field, replacement, reason):
+    payload = exposure()
+    payload[field] = replacement
+    result = qualify(exposure=payload)
+    assert result["disposition"] == "REVIEW_MATERIALITY"
+    assert result["exposure"]["materiality_state"] == "unknown"
+    assert reason in result["reasons"]
+
+
+def test_materiality_listing_identity_is_required_as_evidence():
+    payload = exposure()
+    del payload["materiality_security_id"]
+    result = qualify(exposure=payload)
+    assert result["disposition"] == "REVIEW_MATERIALITY"
+    assert "MATERIALITY_SECURITY_MISSING" in result["reasons"]
+
+
+@pytest.mark.parametrize(
+    ("field", "replacement", "reason"),
+    [
+        ("issuer_id", "ISS:US-XNYS-OTHER", "COMMERCIAL_ISSUER_MISMATCH"),
+        ("security_id", "SEC:US-XNYS-OTHER", "COMMERCIAL_SECURITY_MISMATCH"),
+        ("relationship_id", "REL:OTHER", "COMMERCIAL_RELATIONSHIP_MISMATCH"),
+        ("device_id", "OTHER-DEVICE", "COMMERCIAL_DEVICE_MISMATCH"),
+    ],
+)
+def test_commercial_evidence_must_bind_to_the_qualified_case(field, replacement, reason):
+    payload = commercial()
+    payload["bound_case"][field] = replacement
+    result = qualify(commercial=payload)
+    assert result["disposition"] == "AUTHORIZED_AWAITING_COMMERCIAL_PROOF"
+    assert result["commercial"]["state"] == "COMMERCIAL_UNQUALIFIED"
+    assert "COMMERCIAL_CASE_BINDING_UNRESOLVED" in result["commercial"]["gaps"]
+    assert reason in result["commercial"]["gaps"]
+    assert reason in result["reasons"]
+
+
+def test_missing_commercial_bound_case_blocks_candidate_review():
+    payload = commercial()
+    del payload["bound_case"]
+    result = qualify(commercial=payload)
+    assert result["disposition"] == "AUTHORIZED_AWAITING_COMMERCIAL_PROOF"
+    assert result["commercial"]["state"] == "COMMERCIAL_UNQUALIFIED"
+    assert "COMMERCIAL_BOUND_CASE_MISSING" in result["commercial"]["gaps"]
 
 
 def test_materiality_without_provenance_is_treated_as_unknown():
