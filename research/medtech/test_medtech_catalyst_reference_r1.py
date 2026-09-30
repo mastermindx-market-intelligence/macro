@@ -346,6 +346,18 @@ def test_future_rights_and_materiality_claims_are_redacted():
     assert result["exposure"]["materiality_evidence"]["basis"] is None
 
 
+def test_future_rights_keep_public_materiality_unresolved_until_the_join_is_public():
+    payload = exposure()
+    payload["rights_public_at"] = "2025-01-01T12:00:00Z"
+    result = qualify(exposure=payload)
+    assert result["disposition"] == "WITHHELD_TEMPORAL"
+    assert result["exposure"]["rights_state"] == "unresolved"
+    assert result["exposure"]["materiality_state"] == "unknown"
+    assert result["exposure"]["relationship"]["state"] == "WITHHELD_TEMPORAL"
+    assert result["exposure"]["materiality_evidence"]["state"] == "UNRESOLVED"
+    assert result["exposure"]["materiality_evidence"]["basis"] is None
+
+
 def test_future_commercial_and_options_payloads_are_redacted():
     result = qualify(
         commercial=commercial(public_at="2025-01-01T12:00:00Z"),

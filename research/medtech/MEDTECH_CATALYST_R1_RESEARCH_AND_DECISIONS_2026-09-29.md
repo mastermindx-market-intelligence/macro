@@ -61,7 +61,7 @@ Decision date, database refresh, advisory-panel scheduling, rights evidence, mat
 
 A nonempty ticker, issuer id or `owned`/`licensed` enum does not prove that the listed security retains economics from a specific device decision. The relationship must bind evidence-side issuer and security identifiers to the top-level listing and bind the exact device, applicant, submission, indication, territory and regulatory source to that listing. It must carry a stable relationship id plus source provenance. Licensed rights also require a specific license-term identity. Materiality requires its own source, clock and basis rather than inheriting from the rights assertion.
 
-**Ruling:** any missing or mismatched relationship field—including issuer or security identity—makes rights `unresolved` and materiality `unknown`; the case becomes `WITHHELD_IDENTITY_RIGHTS`. An explicitly unresolved rights state also keeps the relationship and materiality evidence unresolved even when the remaining identifiers are syntactically complete. Materiality evidence must separately bind its issuer, security and retained-rights relationship to the listed exposure; missing, mismatched or inconsistent materiality provenance makes materiality `unknown` and the case `REVIEW_MATERIALITY`. Claimed rights and materiality are never accepted from enums, an arbitrary source id or an unbound listing id alone.
+**Ruling:** any missing or mismatched relationship field—including issuer or security identity—makes rights `unresolved` and materiality `unknown`; the case becomes `WITHHELD_IDENTITY_RIGHTS`. An explicitly unresolved or not-yet-public rights state also keeps the relationship and materiality evidence unresolved even when the remaining identifiers are syntactically complete; public materiality provenance cannot become a resolved relationship-dependent claim before the rights join is cutoff-qualified. Materiality evidence must separately bind its issuer, security and retained-rights relationship to the listed exposure; missing, mismatched or inconsistent materiality provenance makes materiality `unknown` and the case `REVIEW_MATERIALITY`. Claimed rights and materiality are never accepted from enums, an arbitrary source id or an unbound listing id alone.
 
 ### 2.6 Options and positioning are expectations evidence, not native regulatory evidence
 
@@ -115,8 +115,8 @@ The pure reference:
 
 Verification in a clean scratch root:
 
-- `python3 -m pytest -q test_medtech_catalyst_reference_r1.py` → **51 passed**;
-- discriminating cases cover fifteen harmful families:
+- `python3 -m pytest -q test_medtech_catalyst_reference_r1.py` → **52 passed**;
+- discriminating cases cover sixteen harmful families:
   1. accepting `approved` as a 510(k) state;
   2. returning future decision fields despite a withheld disposition;
   3. leaking a future event source through a nested relationship projection;
@@ -131,7 +131,8 @@ Verification in a clean scratch root:
   12. accepting NaN or infinite market prices;
   13. projecting known materiality through an explicitly unresolved rights join;
   14. projecting commercial readiness through an unresolved or future rights relationship;
-  15. treating every authorization as commercially ready.
+  15. presenting materiality evidence as resolved before a future rights join becomes public;
+  16. treating every authorization as commercially ready.
 
 These tests establish contract behavior only. They are not independent review, source coverage, historical calibration or investment performance.
 

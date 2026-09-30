@@ -391,7 +391,7 @@ def qualify_case(
     materiality_reasons = _materiality_reasons(exposure)
     relationship_resolved = not relationship_reasons and rights != "unresolved"
     relationship_qualified = relationship_resolved and not rights_future
-    materiality_resolved = not materiality_reasons and relationship_resolved
+    materiality_resolved = not materiality_reasons and relationship_qualified
 
     if not relationship_qualified:
         commercial_state = "COMMERCIAL_UNQUALIFIED"
