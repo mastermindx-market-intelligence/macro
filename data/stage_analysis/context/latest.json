@@ -1,8 +1,8 @@
 {
   "schema": "stage_context.v1",
-  "asof": "2026-09-28",
+  "asof": "2026-09-30",
   "data_session": "2026-09-25",
-  "built": "2026-09-28T07:13:38Z",
+  "built": "2026-09-30T12:08:29Z",
   "is_context_only": true,
   "display_only": true,
   "disclaimer": "Context only — stage classification display, never a signal or sizing input.",
@@ -76,117 +76,6 @@
     "spy_weeks": 22
   },
   "top_stage2": [
-    {
-      "ticker": "CV",
-      "company": "CapsoVision Inc",
-      "sector": "Healthcare",
-      "stage_source_asof": "2026-09-25",
-      "stage_week_end": "2026-09-25",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 3,
-      "fresh": true,
-      "sga_score": 70,
-      "ma30_slope_pct5w": 3.6,
-      "pct_vs_ma30": 0.61,
-      "mansfield_rs": -7.91,
-      "vol_ratio": 1.27,
-      "event": null,
-      "gate_tier": "T1",
-      "blackout": false,
-      "arc_pos": 0.2875,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.1,
-        "performance": 5.0,
-        "tone_word": "mixed",
-        "tags": [
-          "margin_contraction",
-          "competitor_threat",
-          "regulatory_headwind",
-          "new_product"
-        ],
-        "quarter": "Q2",
-        "summary": "CapsoVision reported Q2 FY2026 revenue of $3.6 million, up approximately 10% year over year from $3.3 million, driven by a 13% increase in CapsoCam Plus capsules sold (8,845 vs 7,856) partly offset by an approximately 3% decline in average watching price. Gross margin contract…"
-      },
-      "why": [
-        "Early in its climb — 3 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 3 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 0.8692,
-      "atr_ext": 0.046,
-      "atr_pct_price": 0.13071,
-      "sata_score": 4,
-      "sata_change_1w": 0,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": null
-    },
-    {
-      "ticker": "VKTX",
-      "company": "Viking Therapeutics, Inc.",
-      "sector": "Health Care",
-      "stage_source_asof": "2026-09-25",
-      "stage_week_end": "2026-09-25",
-      "stage_current": true,
-      "stage": 2,
-      "weeks_in_stage": 4,
-      "fresh": true,
-      "sga_score": 67,
-      "ma30_slope_pct5w": 1.241,
-      "pct_vs_ma30": 7.09,
-      "mansfield_rs": -3.56,
-      "vol_ratio": 2.37,
-      "event": "trendline_recapture",
-      "gate_tier": "T2",
-      "blackout": false,
-      "arc_pos": 0.3,
-      "earnings": {
-        "present": true,
-        "sentiment": 0.6111111111111112,
-        "performance": 6.25,
-        "tone_word": "confident",
-        "tags": [
-          "clinical_trials",
-          "obesity",
-          "glp-1",
-          "drug_development",
-          "biotech",
-          "phase_3",
-          "obesity_therapeutics",
-          "glp_1_agonists",
-          "oral_formulations",
-          "clinical_stage_biotech",
-          "metabolic_disorders",
-          "peptide_therapeutics",
-          "amylin_agonists"
-        ],
-        "quarter": "Q2",
-        "summary": "With this timing, we believe that VK2735 is positioned to become the first oral formulation of a dual GLP-1 GIP agonist to reach the market."
-      },
-      "why": [
-        "Early in its climb — 4 weeks up so far",
-        "Trading above its 30-week line — the trend is with it",
-        "Also shows a strong confirmation from our other checks"
-      ],
-      "why_zh": [
-        "上升初期 — 已上行 4 周",
-        "位于 30 周均线之上 — 趋势向好",
-        "其他多项验证同样给出强确认"
-      ],
-      "atr_14w": 4.9535,
-      "atr_ext": 0.476,
-      "atr_pct_price": 0.1393,
-      "sata_score": 5,
-      "sata_change_1w": 1,
-      "stage_detailed": "2X_catch_price_above_ma",
-      "industry_percentile": 56.5
-    },
     {
       "ticker": "RUM",
       "company": "RUM Group Inc",
@@ -2564,6 +2453,55 @@
       "industry_percentile": null
     },
     {
+      "ticker": "CV",
+      "company": "CapsoVision Inc",
+      "sector": "Healthcare",
+      "stage_source_asof": "2026-09-25",
+      "stage_week_end": "2026-09-25",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 3,
+      "fresh": true,
+      "sga_score": 45,
+      "ma30_slope_pct5w": 3.6,
+      "pct_vs_ma30": 0.61,
+      "mansfield_rs": -7.91,
+      "vol_ratio": 1.27,
+      "event": null,
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.2875,
+      "earnings": {
+        "present": true,
+        "sentiment": 0.1,
+        "performance": 5.0,
+        "tone_word": "mixed",
+        "tags": [
+          "margin_contraction",
+          "competitor_threat",
+          "regulatory_headwind",
+          "new_product"
+        ],
+        "quarter": "Q2",
+        "summary": "CapsoVision reported Q2 FY2026 revenue of $3.6 million, up approximately 10% year over year from $3.3 million, driven by a 13% increase in CapsoCam Plus capsules sold (8,845 vs 7,856) partly offset by an approximately 3% decline in average watching price. Gross margin contract…"
+      },
+      "why": [
+        "Early in its climb — 3 weeks up so far",
+        "Trading above its 30-week line — the trend is with it"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 3 周",
+        "位于 30 周均线之上 — 趋势向好"
+      ],
+      "atr_14w": 0.8692,
+      "atr_ext": 0.046,
+      "atr_pct_price": 0.13071,
+      "sata_score": 4,
+      "sata_change_1w": 0,
+      "stage_detailed": "2X_catch_price_above_ma",
+      "industry_percentile": null
+    },
+    {
       "ticker": "INOD",
       "company": "Innodata Inc",
       "sector": "Technology",
@@ -3051,6 +2989,50 @@
       "sata_change_1w": 1,
       "stage_detailed": "2X_catch_price_above_ma",
       "industry_percentile": 87.5
+    },
+    {
+      "ticker": "FNWD",
+      "company": "FNWD",
+      "sector": "Unknown",
+      "stage_source_asof": "2026-09-25",
+      "stage_week_end": "2026-09-25",
+      "stage_current": true,
+      "stage": 2,
+      "weeks_in_stage": 9,
+      "fresh": true,
+      "sga_score": 44,
+      "ma30_slope_pct5w": 2.781,
+      "pct_vs_ma30": 15.24,
+      "mansfield_rs": 7.74,
+      "vol_ratio": 0.87,
+      "event": "pullback_resume",
+      "gate_tier": null,
+      "blackout": false,
+      "arc_pos": 0.3625,
+      "earnings": {
+        "present": false,
+        "sentiment": null,
+        "performance": null,
+        "tone_word": null,
+        "tags": [],
+        "quarter": null,
+        "summary": null
+      },
+      "why": [
+        "Early in its climb — 9 weeks up so far",
+        "Already stretched well above its 30-week line — may need a rest"
+      ],
+      "why_zh": [
+        "上升初期 — 已上行 9 周",
+        "已明显高于 30 周均线 — 可能需要回踩"
+      ],
+      "atr_14w": 2.5042,
+      "atr_ext": 2.283,
+      "atr_pct_price": 0.05791,
+      "sata_score": 8,
+      "sata_change_1w": 0,
+      "stage_detailed": "2D_extended_run",
+      "industry_percentile": null
     }
   ],
   "warnings_stage3": [
@@ -3103,20 +3085,8 @@
       "sga_score": 26
     },
     {
-      "ticker": "BCML",
-      "company": "BayCom Corp",
-      "weeks_in_stage": 2,
-      "sga_score": 25
-    },
-    {
       "ticker": "EME",
       "company": "Emcor",
-      "weeks_in_stage": 2,
-      "sga_score": 25
-    },
-    {
-      "ticker": "IMKTA",
-      "company": "Ingles Markets Inc",
       "weeks_in_stage": 2,
       "sga_score": 25
     },
@@ -3125,18 +3095,6 @@
       "company": "Microchip Technology",
       "weeks_in_stage": 4,
       "sga_score": 25
-    },
-    {
-      "ticker": "RDNW",
-      "company": "RideNow Group Inc",
-      "weeks_in_stage": 3,
-      "sga_score": 25
-    },
-    {
-      "ticker": "CORZ",
-      "company": "Core Scientific Inc",
-      "weeks_in_stage": 4,
-      "sga_score": 23
     },
     {
       "ticker": "GOLD",
@@ -3173,6 +3131,30 @@
       "company": "Amtech Systems Inc",
       "weeks_in_stage": 5,
       "sga_score": 16
+    },
+    {
+      "ticker": "ACGL",
+      "company": "Arch Capital Group",
+      "weeks_in_stage": 4,
+      "sga_score": 15
+    },
+    {
+      "ticker": "BFS",
+      "company": "Saul Centers, Inc.",
+      "weeks_in_stage": 3,
+      "sga_score": 15
+    },
+    {
+      "ticker": "DBRG",
+      "company": "DigitalBridge Group Inc",
+      "weeks_in_stage": 5,
+      "sga_score": 15
+    },
+    {
+      "ticker": "GHC",
+      "company": "Graham Holdings",
+      "weeks_in_stage": 5,
+      "sga_score": 15
     }
   ],
   "sectors": [

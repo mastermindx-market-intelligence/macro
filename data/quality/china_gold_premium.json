@@ -1,9 +1,9 @@
 {
   "schema": "commodity.china_gold_premium_quality.v1",
-  "checked_at": "2026-09-30T05:36:23+00:00",
-  "status": "render_mismatch",
+  "checked_at": "2026-09-30T12:43:09+00:00",
+  "status": "honest_unavailable",
   "render_consistent": true,
-  "machine_projection_consistent": false,
+  "machine_projection_consistent": true,
   "available": false,
   "headline_method": null,
   "headline_state": "unavailable",
@@ -40,14 +40,7 @@
   "history_points": 0,
   "stats_5_ready": false,
   "stats_30_ready": false,
-  "violations": [
-    "machine.available: expected False, rendered True",
-    "machine.method: expected None, rendered close_proxy",
-    "machine.state: expected unavailable, rendered premium",
-    "machine.source_asof: expected None, rendered 2026-09-24T07:30:00+00:00",
-    "machine.source_fresh: expected False, rendered True",
-    "machine.premium_pct: expected None, rendered 0.16216220051121777"
-  ],
+  "violations": [],
   "source_artifacts": [
     {
       "role": "sge",
@@ -80,10 +73,9 @@
   ],
   "close_proxy_dataos_promotion_ready": false,
   "close_proxy_dataos_promotion_blockers": [
-    "status is render_mismatch, not available_fresh",
+    "status is honest_unavailable, not available_fresh",
     "5-session average is not ready",
     "30-session range is not ready",
-    "machine projection was not proven consistent",
     "headline method is none, required close_proxy"
   ]
 }

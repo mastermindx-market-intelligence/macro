@@ -3,7 +3,7 @@
   "spec_version": "v1",
   "session_date": "2026-09-25",
   "asof": "2026-09-30",
-  "generated_utc": "2026-09-30T05:30:33Z",
+  "generated_utc": "2026-09-30T12:36:59Z",
   "horizon_days": 63,
   "source": {
     "events": "r2:live_flow/events/2026-09-25.jsonl",

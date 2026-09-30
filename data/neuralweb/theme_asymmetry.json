@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_asymmetry.v1",
   "as_of": "2026-09-30",
-  "generated_at": "2026-09-30T05:34:57Z",
+  "generated_at": "2026-09-30T12:41:34Z",
   "hard_caveat": "not a buy score; no behavior-changing consumer",
   "authority": {
     "is_context_only": true,
@@ -612,7 +612,7 @@
       ],
       "legs": {
         "bottleneck_tightness": {
-          "value": 0.585,
+          "value": 0.565,
           "band": "med",
           "inputs": [
             "foresight_cascade:bottleneck_band",
@@ -620,8 +620,8 @@
             "radar:flags.observable.accel"
           ],
           "stale": false,
-          "note_en": "bottleneck_band=band=NEUTRAL, accel=2.39 → tightness=0.58",
-          "note_zh": "瓶颈波段=band=NEUTRAL，活动加速=accel=2.39，综合紧张度=0.58"
+          "note_en": "bottleneck_band=band=NEUTRAL, accel=2.39 → tightness=0.56",
+          "note_zh": "瓶颈波段=band=NEUTRAL，活动加速=accel=2.39，综合紧张度=0.56"
         },
         "stale_consensus_gap": {
           "value": 0.85,
@@ -1765,7 +1765,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-09-30T05:34:57Z",
-  "inputs_hash": "sha256:e20afe026372c3daae24a9ba0b1a9a276d5db729bc9457d23216120d4c1c3816",
+  "produced_at": "2026-09-30T12:41:34Z",
+  "inputs_hash": "sha256:f4ff0841c29668a040cc3369a1b8c00159e1b9cc294c978d69e6fa74daec4c55",
   "tier": "display"
 }

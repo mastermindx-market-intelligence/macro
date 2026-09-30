@@ -1,18 +1,34 @@
 {
   "schema": "active_builds.v1",
-  "generated_at": "2026-09-29T13:51:42.503394+00:00",
+  "generated_at": "2026-09-30T10:48:24.395602+00:00",
   "base": {
-    "sha": "3e294ac2fb70269db105cd71c4fb139734a53ea8"
+    "sha": "14cf7214d510f9673475515861f4e1c09d6713a8"
   },
   "merged_days": 14,
   "merged_truncated": true,
   "open_prs_truncated": true,
   "open_prs": [
     {
-      "number": 8194,
-      "title": "prophet: US journey correctness \u2014 readable decision labels, honest plan relation, source clocks (F1/F2/F3/F4)",
-      "head_ref": "claude/prophet-us-journey-correction-20260929",
-      "updated_at": "2026-09-29T12:47:55Z",
+      "number": 8242,
+      "title": "[Agent OS] Preserve Web communications source repairs and live-proof boundary",
+      "head_ref": "sol/web-executive-communications-continuity-20260930-c3-001",
+      "updated_at": "2026-09-30T10:36:39Z",
+      "is_draft": false,
+      "merge_state": "CLEAN",
+      "merge_state_raw": "CLEAN",
+      "files_count": 1,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "agentos/handoffs/WS-EXECUTIVE-CAPACITY-FABRIC-2026-09-30-WEB-COMMUNICATIONS-C3.md"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 8241,
+      "title": "[HOLD] Bonds: integrate Paper R11 duration review into the existing route",
+      "head_ref": "claude/bonds-duration-r11-20260930-sol-c1",
+      "updated_at": "2026-09-30T10:45:26Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -20,13 +36,263 @@
       "files_truncated": false,
       "files_error": false,
       "files": [
-        "templates/_prophet_setup_detail.html.j2",
-        "templates/_us_candidate_pool_rows.html.j2",
-        "templates/dashboard.html.j2",
-        "tests/test_prophet_card_shared.py",
-        "tests/test_prophet_live_surface.py",
-        "tests/test_prophet_whynot_receipts.py",
-        "tests/test_us_board_gate.py"
+        ".github/ci/legacy-jobs.yml",
+        "research/BONDS_DURATION_R11_INTEGRATION.md",
+        "templates/_bonds_duration.html.j2",
+        "templates/_bonds_duration.mjs.j2",
+        "templates/bonds.html.j2",
+        "tests/bonds_duration_workflow.test.mjs",
+        "tests/test_bonds_duration_workflow.py"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 8240,
+      "title": "feat(prophet): compile source-bound Early Leadership evidence",
+      "head_ref": "sol/prophet-early-leadership-evidence-v1-20260930",
+      "updated_at": "2026-09-30T09:50:43Z",
+      "is_draft": true,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 3,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "engine/prophet_early_leadership_evidence.py",
+        "research/prophet_v4/PROPHET_EARLY_LEADERSHIP_EVIDENCE_V1_2026-09-30.md",
+        "tests/test_prophet_fusion_w3_structural.py"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 8239,
+      "title": "feat(prophet): encode governed eight-sleeve strategy catalog",
+      "head_ref": "sol/prophet-strategy-catalog-v1-20260930",
+      "updated_at": "2026-09-30T09:40:07Z",
+      "is_draft": true,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 3,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "engine/prophet_strategy_definition.py",
+        "research/prophet_v4/PROPHET_STRATEGY_CATALOG_V1_2026-09-30.md",
+        "tests/test_prophet_strategy_definition.py"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 8237,
+      "title": "docs(agentos): preserve four-Codex/four-Claude headless convergence",
+      "head_ref": "sol/headless-eight-realm-convergence-20260930",
+      "updated_at": "2026-09-30T10:17:21Z",
+      "is_draft": false,
+      "merge_state": "CLEAN",
+      "merge_state_raw": "CLEAN",
+      "files_count": 1,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "agentos/handoffs/WS-EXECUTIVE-CAPACITY-FABRIC-2026-09-30-HEADLESS-EIGHT-REALMS.md"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 8234,
+      "title": "feat(earnings): preserve private acquisition currentness and revision clocks (CDV-1 Task 2)",
+      "head_ref": "claude/cdv1-t2-source-currentness",
+      "updated_at": "2026-09-30T08:12:35Z",
+      "is_draft": true,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 6,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        ".github/ci/legacy-jobs.yml",
+        "engine/company_intelligence/pg_profile.py",
+        "scripts/refresh_event_workspaces.py",
+        "tests/earnings_economic_fixtures.py",
+        "tests/test_ci_pack.py",
+        "tests/test_pg_economic_source_selection.py"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 8232,
+      "title": "feat(earnings): derive bounded source-linked economic explanations (CDV-1 Task 3)",
+      "head_ref": "claude/cdv1-t3-economic-interpretation",
+      "updated_at": "2026-09-30T09:52:48Z",
+      "is_draft": true,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 4,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        ".github/ci/legacy-jobs.yml",
+        "engine/earnings_narrative/economic_interpretation.py",
+        "tests/earnings_economic_interpretation_fixtures.py",
+        "tests/test_earnings_economic_interpretation.py"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 8229,
+      "title": "feat(prophet): add independent peer continuity evidence",
+      "head_ref": "sol/prophet-leadership-evidence-v1-20260929",
+      "updated_at": "2026-09-30T00:53:13Z",
+      "is_draft": true,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 3,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "engine/group_flow.py",
+        "research/prophet_v4/leadership_evidence_v1/README.md",
+        "tests/test_group_flow.py"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 8201,
+      "title": "fix(options): preserve decision-time source clocks in Flow history",
+      "head_ref": "claude/options-flow-source-clocks-20260929-sol",
+      "updated_at": "2026-09-30T01:48:15Z",
+      "is_draft": true,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 10,
+      "files_truncated": false,
+      "files_error": false,
+      "files": [
+        "agentos/handoffs/OPTIONS-ALPHA-INTELLIGENCE-RECOVERY-2026-09-29-flow-source-clocks.md",
+        "collectors/flow_signals.py",
+        "research/options_estate/OPTIONS_FLOW_SOURCE_CLOCK_QUALIFICATION_2026-09-29.md",
+        "research/options_estate/flow_source_clock_qualification_20260929/native-producer-bridge.json",
+        "research/options_estate/flow_source_clock_qualification_20260929/real-input-baseline.json",
+        "research/options_estate/flow_source_clock_qualification_20260929/real-input-native-stats-and-gate.json",
+        "research/options_estate/flow_source_clock_qualification_20260929/software-evidence.json",
+        "research/options_estate/flow_source_clock_qualification_20260929/source-manifest.json",
+        "scripts/build_flow_signals.py",
+        "tests/test_flow_signals.py"
+      ],
+      "protected_paths_touched": []
+    },
+    {
+      "number": 8196,
+      "title": "feat(china): integrate receipt-bound economy overview and macro dialogs",
+      "head_ref": "worktree-china-macro-evidence-20260929-sol-001",
+      "updated_at": "2026-09-30T10:01:21Z",
+      "is_draft": true,
+      "merge_state": "CLEAN",
+      "merge_state_raw": "CLEAN",
+      "files_count": 100,
+      "files_truncated": true,
+      "files_error": false,
+      "files": [
+        ".github/ci/legacy-jobs.yml",
+        "agentos/discoveries/DSC-CHINA-ECONOMY-RECEIPT-BOUND-SOURCE-INTEGRATION.md",
+        "app/deploy/Caddyfile",
+        "collectors/china_connect.py",
+        "collectors/china_connect_top_active.py",
+        "collectors/china_economy_acquisition.py",
+        "collectors/china_economy_adapter.py",
+        "collectors/china_economy_release_parser.py",
+        "collectors/china_macro.py",
+        "collectors/china_property.py",
+        "collectors/china_property_activity.py",
+        "config/china_economy_acquisition_example.json",
+        "config/china_economy_catalog.json",
+        "config/site_access.yml",
+        "engine/china_connect_leaderboard.py",
+        "engine/china_economy.py",
+        "engine/china_economy_store.py",
+        "engine/china_economy_view.py",
+        "engine/china_macro_evidence.py",
+        "engine/china_macro_evidence_view.py",
+        "mockups/evidence/china-economy-r4/EVIDENCE.yml",
+        "mockups/evidence/china-economy-r4/cells/0902af51ee77bfff.png",
+        "mockups/evidence/china-economy-r4/cells/14175d5a7ec1a965.png",
+        "mockups/evidence/china-economy-r4/cells/2c6e0d172e5ccc68--deep-cta-focus.png",
+        "mockups/evidence/china-economy-r4/cells/2c8ec5e247ed4755--deep-cta-focus.png",
+        "mockups/evidence/china-economy-r4/cells/2d4ac3b0f154a895--deep-cta-focus.png",
+        "mockups/evidence/china-economy-r4/cells/35cecc73f74f9257.png",
+        "mockups/evidence/china-economy-r4/cells/3f07c029bd69f2f1--deep-cta-hover.png",
+        "mockups/evidence/china-economy-r4/cells/4298054b9cf0e532--deep-cta-hover.png",
+        "mockups/evidence/china-economy-r4/cells/50d87380b7f1cba4--deep-cta-focus.png",
+        "mockups/evidence/china-economy-r4/cells/5d4772d71a5bead3--deep-cta-hover.png",
+        "mockups/evidence/china-economy-r4/cells/6e14812d927c5ca7--deep-cta-focus.png",
+        "mockups/evidence/china-economy-r4/cells/737e801c135ba9b6.png",
+        "mockups/evidence/china-economy-r4/cells/76433cac1e28fb07.png",
+        "mockups/evidence/china-economy-r4/cells/8ed147e282d1402d.png",
+        "mockups/evidence/china-economy-r4/cells/8f3f432fd638e9f8.png",
+        "mockups/evidence/china-economy-r4/cells/90c8e001e470d27a--deep-cta-hover.png",
+        "mockups/evidence/china-economy-r4/cells/9f18953ff6f49826--deep-cta-focus.png",
+        "mockups/evidence/china-economy-r4/cells/a19f7d2de53fa628--deep-cta-hover.png",
+        "mockups/evidence/china-economy-r4/cells/b2c33ad6f90e2c2a--deep-cta-hover.png",
+        "mockups/evidence/china-economy-r4/cells/bd6251bcbde50e62--deep-cta-focus.png",
+        "mockups/evidence/china-economy-r4/cells/e8b5184617e7155d.png",
+        "mockups/evidence/china-economy-r4/cells/f2a4253e3a51be33--deep-cta-hover.png",
+        "mockups/evidence/china-economy-r4/cells/f34fff7e2c8aa3b4--deep-cta-hover.png",
+        "mockups/evidence/china-economy-r4/cells/fb7a80825f1ca6a9--deep-cta-focus.png",
+        "mockups/evidence/china-economy-r4/manifest.json",
+        "mockups/evidence/china-economy-r4/smells.json",
+        "mockups/evidence/china-economy-r4/smells.md",
+        "research/CHINA_ECONOMY_DETAIL_AND_FAI_BASIS_20260929.md",
+        "research/CHINA_ECONOMY_SOURCE_INTEGRATION_20260929.md",
+        "research/china_economy_integration_20260929/actual-build-readback.json",
+        "research/china_economy_integration_20260929/applied-receipt.json",
+        "research/china_economy_integration_20260929/installed-collector-qualification.json",
+        "research/china_economy_integration_20260929/manifest.json",
+        "research/china_economy_integration_20260929/page-size-compact.json",
+        "research/china_economy_integration_20260929/page-size.json",
+        "research/china_economy_integration_20260929/preexisting-regression-proof.json",
+        "research/china_economy_integration_20260929/r3/contract-final.json",
+        "research/china_economy_integration_20260929/r3/detail-collector-result.json",
+        "research/china_economy_integration_20260929/r3/fai-origin-comparison.json",
+        "research/china_economy_integration_20260929/r3/fai-period-basis-proof.json",
+        "research/china_economy_integration_20260929/r3/fai-separation-result.json",
+        "research/china_economy_integration_20260929/r3/final-data-readback.json",
+        "research/china_economy_integration_20260929/r3/manifest.json",
+        "research/china_economy_integration_20260929/r3/prior-head-ci-result.json",
+        "research/china_economy_integration_20260929/r4-release.json",
+        "research/china_economy_integration_20260929/r5-auth-hydration.json",
+        "research/china_economy_integration_20260929/r6-source-compliance.json",
+        "research/china_economy_integration_20260929/release-remediation-r2.json",
+        "research/china_economy_integration_20260929/test-results.json",
+        "scripts/build_china.py",
+        "scripts/preview_china_economy.py",
+        "scripts/preview_china_macro_evidence.py",
+        "site/china-economy.css",
+        "site/china-economy.js",
+        "site/china-macro-evidence.css",
+        "site/china-macro-evidence.js",
+        "templates/_china_economy_lens.html.j2",
+        "templates/_china_macro_evidence.html.j2",
+        "templates/china-economy.css",
+        "templates/china-economy.js",
+        "templates/china-macro-evidence.css",
+        "templates/china-macro-evidence.js",
+        "templates/china.html.j2",
+        "tests/fixtures/china_economy_review.json",
+        "tests/test_action_board_lane_split.py",
+        "tests/test_analyzer_i18n_percentile.py",
+        "tests/test_china_archetype_d_s1.py",
+        "tests/test_china_connect_evidence.py",
+        "tests/test_china_connect_leaderboard_render.py",
+        "tests/test_china_economy.py",
+        "tests/test_china_economy_acquisition.py",
+        "tests/test_china_economy_additional_parsers.py",
+        "tests/test_china_economy_page_payload.py",
+        "tests/test_china_economy_parser.py",
+        "tests/test_china_economy_store.py",
+        "tests/test_china_economy_view.py",
+        "tests/test_china_macro_activity.py",
+        "tests/test_china_macro_evidence.py",
+        "tests/test_china_macro_evidence_view.py"
       ],
       "protected_paths_touched": []
     },
@@ -52,13 +318,13 @@
     },
     {
       "number": 8191,
-      "title": "feat(options): expand daily stock selection to 1000\u20131500 with honest preflight",
+      "title": "[HOLD: verification blocked] feat(options): daily expansion and source coverage",
       "head_ref": "claude/options-coverage-expansion-20260929",
-      "updated_at": "2026-09-29T11:56:22Z",
+      "updated_at": "2026-09-30T01:39:38Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 8,
+      "files_count": 16,
       "files_truncated": false,
       "files_error": false,
       "files": [
@@ -66,10 +332,18 @@
         "agentos/handoffs/ADVANCED-DATA-OPTIONS-2026-09-29-coverage-expansion-r1.md",
         "docs/superpowers/plans/2026-09-29-options-coverage-expansion-r1.md",
         "engine/options_universe.py",
+        "lib/options_coverage.py",
         "research/options_estate/COVERAGE_EXPANSION_R1_2026-09-29.md",
         "research/options_estate/COVERAGE_EXPANSION_R1_SELECTION_2026-09-29.json",
+        "research/options_estate/COVERAGE_EXPANSION_R1_SOURCE_SESSIONS_2026-09-29.json",
+        "scripts/audit_options_entry_coverage.py",
+        "scripts/build_options_flow.py",
+        "scripts/build_polygon_gex.py",
         "scripts/plan_options_coverage.py",
-        "tests/test_options_universe_expansion.py"
+        "tests/test_options_coverage_object.py",
+        "tests/test_options_flow.py",
+        "tests/test_options_universe_expansion.py",
+        "tests/test_polygon_gex.py"
       ],
       "protected_paths_touched": []
     },
@@ -77,14 +351,15 @@
       "number": 8189,
       "title": "feat(prophet): version earnings evidence semantics without changing C1 default",
       "head_ref": "sol/prophet-earnings-semantics-v1-20260929",
-      "updated_at": "2026-09-29T11:28:30Z",
+      "updated_at": "2026-09-30T00:40:18Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 4,
+      "files_count": 5,
       "files_truncated": false,
       "files_error": false,
       "files": [
+        "engine/sue.py",
         "engine/us_prophet_fusion.py",
         "research/prophet_v4/earnings_semantics_v1/README.md",
         "scripts/grade_us_board.py",
@@ -98,8 +373,8 @@
       "head_ref": "claude/ssd-cn-pullback-lifecycle-20260929-68e848e41de4db74",
       "updated_at": "2026-09-29T11:51:10Z",
       "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
+      "merge_state": "DIRTY",
+      "merge_state_raw": "DIRTY",
       "files_count": 96,
       "files_truncated": false,
       "files_error": false,
@@ -221,23 +496,33 @@
     },
     {
       "number": 8186,
-      "title": "HOLD: Events & News desk component \u2014 integration blocked",
+      "title": "HOLD: Events & News R2 official-result component \u2014 integration blocked",
       "head_ref": "sol/macro-events-news-desk-20260929-sol-001",
-      "updated_at": "2026-09-29T13:28:37Z",
+      "updated_at": "2026-09-30T08:31:06Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 7,
+      "files_count": 17,
       "files_truncated": false,
       "files_error": false,
       "files": [
         "docs/SOL-MACRO-EVENTS-NEWS-CHECKPOINT-20260929.md",
         "docs/SOL-MACRO-EVENTS-NEWS-PAPER-R2-20260929.md",
+        "engine/events_news_release_evidence.py",
         "site/macro-events-news.css",
         "site/macro-events-news.js",
         "templates/_macro_events_news.html.j2",
+        "templates/_macro_events_news_release.html.j2",
         "templates/macro-events-news.css",
-        "templates/macro-events-news.js"
+        "templates/macro-events-news.js",
+        "tests/events_news_release_browser_support.py",
+        "tests/events_news_release_fixture.py",
+        "tests/fixtures/events_news_actual_defects.json",
+        "tests/fixtures/events_news_official_receipts.json",
+        "tests/test_events_news_release_browser.py",
+        "tests/test_events_news_release_evidence.py",
+        "tests/test_events_news_release_render.py",
+        "tests/test_macro_events_news_r2.py"
       ],
       "protected_paths_touched": []
     },
@@ -281,18 +566,20 @@
       "number": 8182,
       "title": "research(medtech): establish Catalyst R1 regulatory and materiality contract",
       "head_ref": "sol/medtech-catalyst-r1-20260929",
-      "updated_at": "2026-09-29T13:41:09Z",
-      "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 4,
+      "updated_at": "2026-09-30T09:30:40Z",
+      "is_draft": false,
+      "merge_state": "CLEAN",
+      "merge_state_raw": "CLEAN",
+      "files_count": 6,
       "files_truncated": false,
       "files_error": false,
       "files": [
         ".github/ci/legacy-jobs.yml",
         "research/medtech/MEDTECH_CATALYST_R1_RESEARCH_AND_DECISIONS_2026-09-29.md",
         "research/medtech/medtech_catalyst_reference_r1.py",
-        "research/medtech/test_medtech_catalyst_reference_r1.py"
+        "research/medtech/test_medtech_catalyst_reference_r1.py",
+        "scripts/worktree_gc_liveness.py",
+        "tests/test_worktree_gc_liveness.py"
       ],
       "protected_paths_touched": []
     },
@@ -666,14 +953,15 @@
       "number": 8108,
       "title": "feat(prophet): journey reconciliation harness (release-integration proof tool)",
       "head_ref": "claude/prophet-journey-reconcile-20260927",
-      "updated_at": "2026-09-29T13:43:09Z",
+      "updated_at": "2026-09-30T01:58:02Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 10,
+      "files_count": 11,
       "files_truncated": false,
       "files_error": false,
       "files": [
+        ".github/ci/legacy-jobs.yml",
         "scripts/prophet_journey_reconcile.py",
         "tests/fixtures/prophet_journey/corrected/index.json",
         "tests/fixtures/prophet_journey/corrected/page.html",
@@ -952,7 +1240,7 @@
       "number": 8069,
       "title": "[HOLD-FOR-SOL] research(prophet): Q06 SEC comparable-revenue capture",
       "head_ref": "claude/prophet-economic-evidence-research-20260926-sol-001",
-      "updated_at": "2026-09-29T11:41:45Z",
+      "updated_at": "2026-09-30T09:25:19Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -1052,7 +1340,7 @@
       "number": 8061,
       "title": "ci(catalysts): enroll reviewed financial and related-evidence reference tests",
       "head_ref": "claude/sector-catalyst-recommendation-north-star-20260926",
-      "updated_at": "2026-09-29T08:22:19Z",
+      "updated_at": "2026-09-30T09:31:23Z",
       "is_draft": false,
       "merge_state": "CLEAN",
       "merge_state_raw": "CLEAN",
@@ -1180,10 +1468,10 @@
       "number": 8050,
       "title": "Crypto + Bitcoin R2: chart-led redesign, interaction proof and release contract",
       "head_ref": "sol/crypto-vector-r2-20260926",
-      "updated_at": "2026-09-29T09:35:21Z",
+      "updated_at": "2026-09-30T07:29:28Z",
       "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
+      "merge_state": "CLEAN",
+      "merge_state_raw": "CLEAN",
       "files_count": 100,
       "files_truncated": true,
       "files_error": false,
@@ -1192,10 +1480,14 @@
         "agentos/decisions/DEC-CRYPTO-H5-BTC-BUDGET-AUTHORITY.md",
         "agentos/decisions/DEC-CRYPTO-VECTOR-R2-20260926.md",
         "agentos/workstreams/WS-CRYPTO-INTELLIGENCE.md",
+        "collectors/_crypto_observations.py",
+        "collectors/bgeo.py",
+        "collectors/okx.py",
         "engine/btc_decision.py",
         "engine/btc_impulse_radar.py",
         "engine/btc_impulse_radar_backtest.py",
         "engine/btc_inputs.py",
+        "engine/btc_intraday_cvd.py",
         "engine/btc_signals.py",
         "engine/crypto_universe.py",
         "mockups/evidence/crypto-h5-authority-20260927/19ee7eae2c89eb77.png",
@@ -1283,11 +1575,7 @@
         "mockups/evidence/crypto-universe-snapshot-20260928/d5bc6a6a1e53b375.png",
         "mockups/evidence/crypto-universe-snapshot-20260928/e40974f856f40578.png",
         "mockups/evidence/crypto-universe-snapshot-20260928/ea93480d4d3056eb.png",
-        "mockups/evidence/crypto-universe-snapshot-20260928/ecedbb1607f45273.png",
-        "mockups/evidence/crypto-universe-snapshot-20260928/f5cee44393af9ae7.png",
-        "mockups/evidence/crypto-universe-snapshot-20260928/manifest.json",
-        "mockups/evidence/crypto-universe-snapshot-20260928/proof_summary.json",
-        "mockups/evidence/crypto-universe-snapshot-20260928/render_universe_snapshots.py"
+        "mockups/evidence/crypto-universe-snapshot-20260928/ecedbb1607f45273.png"
       ],
       "protected_paths_touched": []
     },
@@ -1725,15 +2013,26 @@
       "number": 8008,
       "title": "fix(daily): keep market checkpoint alive past the collect cap",
       "head_ref": "claude/prophet-delivery-nightly-collect-cap-20260925",
-      "updated_at": "2026-09-27T01:13:31Z",
-      "is_draft": false,
-      "merge_state": "BLOCKED",
-      "merge_state_raw": "BLOCKED",
-      "files_count": 1,
+      "updated_at": "2026-09-29T20:10:45Z",
+      "is_draft": true,
+      "merge_state": "UNSTABLE",
+      "merge_state_raw": "UNSTABLE",
+      "files_count": 12,
       "files_truncated": false,
       "files_error": false,
       "files": [
-        ".github/workflows/daily.yml"
+        ".github/workflows/daily.yml",
+        "agentos/decisions/DEC-SPLIT-THE-CREEP-BUDGET-FROM-THE-SURVIVAL-CAP.md",
+        "agentos/discoveries/DSC-A-GLOBAL-INVALIDATOR-PR-CANNOT-USE-SIBLING-HEAD-EXONERATION.md",
+        "agentos/discoveries/DSC-A-JOB-TIMEOUT-RUNS-THE-ALWAYS-TAIL-INSIDE-A-BOUNDED-GRACE.md",
+        "agentos/discoveries/DSC-THE-W2-LEDGER-DISCRIMINATES-A-CAP-KILL-FROM-A-FOREIGN-CANCEL.md",
+        "agentos/handoffs/WS-RUNNER-FLEET-RESILIENCE-2026-09-29-NIGHTLY-CHECKPOINT-PUBLICATION.md",
+        "scripts/ci/nightly_timings_finish.sh",
+        "scripts/nightly_timings.py",
+        "scripts/nightly_timings_report.py",
+        "tests/test_daily_collect_commit_path.py",
+        "tests/test_macro_command_p4_copy.py",
+        "tests/test_nightly_timings.py"
       ],
       "protected_paths_touched": [
         ".github/workflows/daily.yml"
@@ -2260,11 +2559,11 @@
       "number": 7949,
       "title": "[DESIGN REVIEW / HOLD] Market OS shared shell: Paper studies and migration contract",
       "head_ref": "sol/market-os-shared-shell-design-20260924",
-      "updated_at": "2026-09-29T09:32:24Z",
+      "updated_at": "2026-09-30T08:10:41Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
-      "files_count": 50,
+      "files_count": 64,
       "files_truncated": false,
       "files_error": false,
       "files": [
@@ -2276,11 +2575,23 @@
         "research/market_os/SHARED_SHELL_REGISTRY_QUALIFICATION_2026-09-24.md",
         "research/market_os/WATCHLIST_MEMBERSHIP_OBSERVATION.md",
         "research/market_os/all_tools_adoption/README.md",
+        "research/market_os/all_tools_adoption/browser/README.md",
+        "research/market_os/all_tools_adoption/browser/pilot.spec.cjs",
+        "research/market_os/all_tools_adoption/browser/playwright.config.cjs",
+        "research/market_os/all_tools_adoption/browser/run.sh",
         "research/market_os/all_tools_adoption/evidence/mutations.json",
         "research/market_os/all_tools_adoption/evidence/qualification.json",
         "research/market_os/all_tools_adoption/evidence/r22-README.md",
         "research/market_os/all_tools_adoption/evidence/r22-mutations.json",
         "research/market_os/all_tools_adoption/evidence/r22-qualification.json",
+        "research/market_os/all_tools_adoption/evidence/r33-browser/README.md",
+        "research/market_os/all_tools_adoption/evidence/r33-browser/macro-desktop-dark-en.png",
+        "research/market_os/all_tools_adoption/evidence/r33-browser/macro-mobile-light-zh.png",
+        "research/market_os/all_tools_adoption/evidence/r33-browser/receipt.json",
+        "research/market_os/all_tools_adoption/evidence/r33-browser/reports-desktop-dark-en.png",
+        "research/market_os/all_tools_adoption/evidence/r33-browser/reports-mobile-light-zh.png",
+        "research/market_os/all_tools_adoption/evidence/r33-browser/sector_central-desktop-dark-en.png",
+        "research/market_os/all_tools_adoption/evidence/r33-browser/sector_central-mobile-light-zh.png",
         "research/market_os/all_tools_adoption/shared-header.patch",
         "research/market_os/all_tools_adoption/source/_site_nav.html.j2",
         "research/market_os/all_tools_adoption/src/_all_tools_menu.html.j2",
@@ -2315,7 +2626,9 @@
         "templates/sector_central.html.j2",
         "templates/theme.js",
         "templates/watchstore.js",
+        "tests/test_account_actions.py",
         "tests/test_all_tools_menu.py",
+        "tests/test_nav_hover_bridge.py",
         "tests/test_watchstore_multilist_js.py",
         "tests/watchstore_membership_observation.node.test.mjs"
       ],
@@ -2594,113 +2907,6 @@
       "protected_paths_touched": []
     },
     {
-      "number": 7905,
-      "title": "feat(earnings): validate private PG economic facts at source scope (CDV-1 Task 1)",
-      "head_ref": "claude/cdv1-t1-pg-profile-facts",
-      "updated_at": "2026-09-28T11:57:49Z",
-      "is_draft": true,
-      "merge_state": "DIRTY",
-      "merge_state_raw": "DIRTY",
-      "files_count": 92,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        ".github/ci/legacy-jobs.yml",
-        "engine/company_intelligence/documents.py",
-        "engine/company_intelligence/economic_observations.py",
-        "engine/company_intelligence/issuer_profiles.py",
-        "engine/company_intelligence/pg_envelope.py",
-        "engine/company_intelligence/pg_profile.py",
-        "engine/company_intelligence/qa_exchange.py",
-        "engine/fundamental_forensics/disclosure_diff.py",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_ENVELOPE_AUDIT_R1_2026-09-25.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_ENVELOPE_AUDIT_R2_2026-09-25.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_ENVELOPE_AUDIT_R3_2026-09-25.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_ENVELOPE_AUDIT_R4_2026-09-25.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_ENVELOPE_AUDIT_R5_2026-09-25.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_ENVELOPE_AUDIT_R6_2026-09-25.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_ENVELOPE_AUDIT_R7_2026-09-25.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R10_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R11_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R12_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R13_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R14_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R15_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R16_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R1_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R2_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R3_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R4_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R5_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R6_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R7_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R8_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/OPUS_T1_PR_REVIEW_R9_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_ENVELOPE_2026-09-25.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_ENVELOPE_R1_2026-09-25.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_ENVELOPE_R2_2026-09-25.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_ENVELOPE_R3_2026-09-25.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_ENVELOPE_R4_2026-09-25.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_ENVELOPE_R5_2026-09-25.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_ENVELOPE_R6_2026-09-25.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_ENVELOPE_R7_2026-09-28.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R10_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R11_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R12_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R13_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R14_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R15_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R16_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R1_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R2_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R3_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R4_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R5_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R6_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R7_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R8_2026-09-24.md",
-        "research/consumer_defensive/cdv1_program/reviews/SEAT_RULING_T1_PR_R9_2026-09-24.md",
-        "tests/earnings_economic_fixtures.py",
-        "tests/fixtures/pg_envelope/SOURCES.md",
-        "tests/fixtures/pg_envelope/fy2425q4amj8-kexhibit991.htm.gz",
-        "tests/fixtures/pg_envelope/fy2526q1jas8-kexhibit991.htm.gz",
-        "tests/fixtures/pg_envelope/fy2526q2ond8-kexhibit991.htm.gz",
-        "tests/fixtures/pg_envelope/fy2526q3jfm8-kexhibit991.htm.gz",
-        "tests/fixtures/pg_envelope/fy2526q4amj8-kexhibit991.htm.gz",
-        "tests/fixtures/pg_envelope/oracle_f1.json",
-        "tests/fixtures/pg_envelope/oracle_f1_notes.md",
-        "tests/fixtures/pg_envelope/oracle_f1_spec.md",
-        "tests/fixtures/pg_envelope/q22026pressreleasetables.htm.gz",
-        "tests/fixtures/pg_envelope/seat_adjudication.json",
-        "tests/test_ci_pack.py",
-        "tests/test_pg_economic_observations.py",
-        "tests/test_pg_economic_observations_probes.py",
-        "tests/test_pg_economic_observations_probes_r10.py",
-        "tests/test_pg_economic_observations_probes_r11.py",
-        "tests/test_pg_economic_observations_probes_r12.py",
-        "tests/test_pg_economic_observations_probes_r13.py",
-        "tests/test_pg_economic_observations_probes_r14.py",
-        "tests/test_pg_economic_observations_probes_r15.py",
-        "tests/test_pg_economic_observations_probes_r2.py",
-        "tests/test_pg_economic_observations_probes_r3.py",
-        "tests/test_pg_economic_observations_probes_r4.py",
-        "tests/test_pg_economic_observations_probes_r5.py",
-        "tests/test_pg_economic_observations_probes_r6.py",
-        "tests/test_pg_economic_observations_probes_r7.py",
-        "tests/test_pg_economic_observations_probes_r8.py",
-        "tests/test_pg_economic_observations_probes_r9.py",
-        "tests/test_pg_envelope_f1.py",
-        "tests/test_pg_envelope_f1_probes_r1.py",
-        "tests/test_pg_envelope_f1_probes_r2.py",
-        "tests/test_pg_envelope_f1_probes_r3.py",
-        "tests/test_pg_envelope_f1_probes_r4.py",
-        "tests/test_pg_envelope_f1_probes_r5.py",
-        "tests/test_pg_envelope_f1_probes_r6.py",
-        "tests/test_pg_envelope_f1_probes_r7.py"
-      ],
-      "protected_paths_touched": []
-    },
-    {
       "number": 7899,
       "title": "feat(themes): preserve event-first thesis evidence and SEC context",
       "head_ref": "sol/sector-strength-measurement-20260922",
@@ -2797,7 +3003,7 @@
       "number": 7891,
       "title": "[DRAFT/HOLD] Technology ex-Semiconductors Economic Change \u2014 implementation carrier",
       "head_ref": "claude/ssd-technology-ex-semis-impl-c887181119dd2aaf",
-      "updated_at": "2026-09-28T13:34:40Z",
+      "updated_at": "2026-09-30T01:35:39Z",
       "is_draft": true,
       "merge_state": "UNSTABLE",
       "merge_state_raw": "UNSTABLE",
@@ -2851,7 +3057,7 @@
       "number": 7889,
       "title": "fix(ad-1): run the options-intel producer on the store-bearing host [HELD \u2014 needs W4 admission]",
       "head_ref": "claude/ad1t2-producer-placement-repair",
-      "updated_at": "2026-09-29T10:52:02Z",
+      "updated_at": "2026-09-29T19:24:30Z",
       "is_draft": true,
       "merge_state": "BLOCKED",
       "merge_state_raw": "BLOCKED",
@@ -2909,205 +3115,76 @@
         "tests/test_cybersecurity_basket_integrity.py"
       ],
       "protected_paths_touched": []
-    },
-    {
-      "number": 7886,
-      "title": "[GMI][RESEARCH/HOLD] Public reader added; cross-domain semantics and snapshot proof bounded",
-      "head_ref": "sol/gmi-theme-research-leadership-20260924",
-      "updated_at": "2026-09-27T01:21:50Z",
-      "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 8,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "agentos/handoffs/GMI-THEMATIC-RESEARCH-META-CEO-2026-09-24.md",
-        "research/theme_graph/thematic_research_20260924/GMI_PARENT_COORDINATION_WATCH_2026-09-24.md",
-        "research/theme_graph/thematic_research_20260924/GMI_PUBLICATION_BOUNDARY_REVIEW_2026-09-24.md",
-        "research/theme_graph/thematic_research_20260924/RESEARCH_WAVE_1.md",
-        "research/theme_graph/thematic_research_20260924/SHARED_CONSUMER_DISPOSITION_2026-09-24.md",
-        "research/theme_graph/thematic_research_20260924/SHARED_V1_1_AND_BINDER_REVIEW_2026-09-24.md",
-        "research/theme_graph/thematic_research_20260924/WAVE1_C_REPAIR_ACCEPTANCE_2026-09-24.md",
-        "research/theme_graph/thematic_research_20260924/WAVE1_META_CEO_REVIEW_2026-09-24.md"
-      ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 7885,
-      "title": "[AGENTOS][DRAFT] Record the Executive E1 worker-pair constraint and the E2 MiniMax gate map",
-      "head_ref": "claude/agentos-dsc-executive-e1-e2-20260924",
-      "updated_at": "2026-09-25T02:05:06Z",
-      "is_draft": true,
-      "merge_state": "CLEAN",
-      "merge_state_raw": "CLEAN",
-      "files_count": 11,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "agentos/discoveries/DSC-EXECUTIVE-COMPANY-CONSULTATION-FACET-AND-RUNTIME-NEVER-JOINED.md",
-        "agentos/discoveries/DSC-EXECUTIVE-E1-IS-THE-ONLY-RUNNABLE-WORKER-PAIR.md",
-        "agentos/discoveries/DSC-EXECUTIVE-E2-MINIMAX-NEEDS-SIX-GATES-NOT-A-CONFIG-FLIP.md",
-        "agentos/discoveries/DSC-EXECUTIVE-PROTECTED-RELEASE-IS-QUEUE-ONLY-AND-SQUASHES-TO-ONE-PARENT.md",
-        "agentos/discoveries/DSC-EXECUTIVE-ROUTES-ALIAS-ELIGIBILITY-IS-A-PLACEMENT-GRANT.md",
-        "agentos/discoveries/DSC-EXECUTIVE-UNDISPATCHED-INTENT-HAS-NO-OWED-TURN-SIGNAL.md",
-        "agentos/discoveries/DSC-EXECUTIVE-WORK-QUEUE-READ-AVAILABLE-OVER-BOUND-RUNTIME-NOT-INSTALLED.md",
-        "agentos/discoveries/DSC-FABRIC-MINIMAX-REMOTE-LANE-EXECUTOR-CAPS-AT-120-TURNS-UNCOMMITTED.md",
-        "agentos/discoveries/DSC-FABRIC-REMOTE-LANE-SUPPORT-GUARD-REFUSES-WHILE-FOREIGN-LANES-ACTIVE.md",
-        "agentos/discoveries/DSC-GH-API-PAGINATE-WITH-JQ-APPLIES-THE-FILTER-PER-PAGE-AND-CORRUPTS-CURSORS.md",
-        "agentos/discoveries/DSC-MASTERMIND-VENDOR-MACRO-SRC-SYMLINK-SHADOWS-THE-REPO-SCRIPTS-PACKAGE.md"
-      ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 7884,
-      "title": "[DRAFT/HOLD] Validate China Risk Radar capital policy",
-      "head_ref": "sol/cn-risk-p4-capital-policy-20260923",
-      "updated_at": "2026-09-25T12:02:33Z",
-      "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 18,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "research/cn_risk_capital_policy/2026-09-23-design.md",
-        "research/cn_risk_capital_policy/2026-09-23-implementation-plan.md",
-        "research/cn_risk_capital_policy/PREREGISTRATION.md",
-        "research/cn_risk_capital_policy/SOURCE_QUALIFICATION.md",
-        "research/cn_risk_capital_policy/preregistration.json",
-        "research/cn_risk_capital_policy/results/REPORT.md",
-        "research/cn_risk_capital_policy/results/artifact_manifest.json",
-        "research/cn_risk_capital_policy/results/bootstrap.json",
-        "research/cn_risk_capital_policy/results/crisis_results.csv",
-        "research/cn_risk_capital_policy/results/episode_results.csv",
-        "research/cn_risk_capital_policy/results/era_results.csv",
-        "research/cn_risk_capital_policy/results/input_manifest.json",
-        "research/cn_risk_capital_policy/results/loco_results.csv",
-        "research/cn_risk_capital_policy/results/metrics.csv",
-        "research/cn_risk_capital_policy/results/source_qualification.json",
-        "research/cn_risk_capital_policy/results/summary.json",
-        "scripts/research/cn_risk_capital_policy.py",
-        "tests/test_cn_risk_capital_policy.py"
-      ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 7883,
-      "title": "docs(agentos): record improvement-discovery source proof and continuation",
-      "head_ref": "sol/improvement-discovery-agentos-20260924",
-      "updated_at": "2026-09-25T02:11:31Z",
-      "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 1,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "agentos/handoffs/CHAIRMAN-CONTROL-ROOM-2026-09-24-improvement-discovery.md"
-      ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 7882,
-      "title": "[Agent OS] Checkpoint Claude fabric auth client",
-      "head_ref": "claude/ssd-claude-fabric-auth-client-checkpoint-20260923-7238cda1cfdfd83f",
-      "updated_at": "2026-09-26T10:55:45Z",
-      "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 1,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "agentos/handoffs/EXECUTIVE-CAPACITY-FABRIC-2026-09-23-CLAUDE-FABRIC-AUTH-CLIENT-CHECKPOINT.md"
-      ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 7878,
-      "title": "[HOLD-FOR-SOL][Provider Control] Shadow-only MiniMax PAYG production canary",
-      "head_ref": "sol/provider-production-minimax-canary-20260924",
-      "updated_at": "2026-09-24T09:48:38Z",
-      "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 4,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        ".github/workflows/deploy-api-secrets.yml",
-        "docs/ops/provider-production-inference.md",
-        "engine/provider_production_modes.py",
-        "tests/test_provider_production_modes.py"
-      ],
-      "protected_paths_touched": [
-        ".github/workflows/deploy-api-secrets.yml"
-      ]
-    },
-    {
-      "number": 7875,
-      "title": "[HOLD] Repair China risk state, hazard, and authority semantics",
-      "head_ref": "sol/cn-risk-p0-semantics-20260923",
-      "updated_at": "2026-09-25T11:37:48Z",
-      "is_draft": true,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 12,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "docs/site_semantics/china.md",
-        "research/evidence/cn-risk-p0-semantics-20260923/README.md",
-        "research/evidence/cn-risk-p0-semantics-20260923/tests.txt",
-        "research/evidence/cn-risk-p0-semantics-20260923/verify_browser.py",
-        "site/china_risk_state_live.js",
-        "templates/_risk_radar_card.html.j2",
-        "templates/_risk_radar_dlg.css.j2",
-        "templates/_risk_radar_dlg.html.j2",
-        "templates/china.html.j2",
-        "templates/china_risk_state_live.js",
-        "tests/test_china_archetype_d_s1.py",
-        "tests/test_risk_radar_dlg_partial.py"
-      ],
-      "protected_paths_touched": []
-    },
-    {
-      "number": 7873,
-      "title": "ops(earnings): package native Ubuntu Qwen producer",
-      "head_ref": "sol/native-ubuntu-earnings-worker-systemd-20260923",
-      "updated_at": "2026-09-24T04:11:07Z",
-      "is_draft": false,
-      "merge_state": "UNSTABLE",
-      "merge_state_raw": "UNSTABLE",
-      "files_count": 4,
-      "files_truncated": false,
-      "files_error": false,
-      "files": [
-        "ops/bootstrap_earnings_worker_linux.sh",
-        "ops/systemd/mastermind-earnings-worker.service",
-        "ops/systemd/mastermind-earnings-worker.timer",
-        "tests/test_earnings_worker_systemd.py"
-      ],
-      "protected_paths_touched": []
     }
   ],
   "collisions": [
     {
-      "pr_a": 8188,
-      "pr_b": 8184,
+      "pr_a": 8196,
+      "pr_b": 8188,
       "shared_files": [
-        "site/china.html",
+        ".github/ci/legacy-jobs.yml",
+        "scripts/build_china.py",
         "templates/china.html.j2"
+      ],
+      "shared_count": 3,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8144,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml",
+        "app/deploy/Caddyfile",
+        "config/site_access.yml"
+      ],
+      "shared_count": 3,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8144,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml",
+        "tests/test_ci_pack.py"
+      ],
+      "shared_count": 2,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8091,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml",
+        "tests/test_ci_pack.py"
+      ],
+      "shared_count": 2,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8061,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml",
+        "tests/test_ci_pack.py"
+      ],
+      "shared_count": 2,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 7982,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml",
+        "tests/test_ci_pack.py"
       ],
       "shared_count": 2,
       "any_protected": false
     },
     {
       "pr_a": 8188,
-      "pr_b": 7875,
+      "pr_b": 8184,
       "shared_files": [
-        "templates/_risk_radar_dlg.html.j2",
+        "site/china.html",
         "templates/china.html.j2"
       ],
       "shared_count": 2,
@@ -3164,16 +3241,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 8144,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        "tests/test_ci_pack.py"
-      ],
-      "shared_count": 2,
-      "any_protected": false
-    },
-    {
       "pr_a": 8091,
       "pr_b": 8061,
       "shared_files": [
@@ -3186,16 +3253,6 @@
     {
       "pr_a": 8091,
       "pr_b": 7982,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        "tests/test_ci_pack.py"
-      ],
-      "shared_count": 2,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8091,
-      "pr_b": 7905,
       "shared_files": [
         ".github/ci/legacy-jobs.yml",
         "tests/test_ci_pack.py"
@@ -3224,16 +3281,6 @@
       "any_protected": false
     },
     {
-      "pr_a": 8061,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        "tests/test_ci_pack.py"
-      ],
-      "shared_count": 2,
-      "any_protected": false
-    },
-    {
       "pr_a": 8014,
       "pr_b": 8005,
       "shared_files": [
@@ -3254,29 +3301,1054 @@
       "any_protected": false
     },
     {
-      "pr_a": 7982,
-      "pr_b": 7905,
+      "pr_a": 8241,
+      "pr_b": 8234,
       "shared_files": [
-        ".github/ci/legacy-jobs.yml",
-        "tests/test_ci_pack.py"
-      ],
-      "shared_count": 2,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8194,
-      "pr_b": 7978,
-      "shared_files": [
-        "templates/dashboard.html.j2"
+        ".github/ci/legacy-jobs.yml"
       ],
       "shared_count": 1,
       "any_protected": false
     },
     {
-      "pr_a": 8194,
-      "pr_b": 7949,
+      "pr_a": 8241,
+      "pr_b": 8232,
       "shared_files": [
-        "templates/dashboard.html.j2"
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8196,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8192,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8191,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8188,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8183,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8182,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8154,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8144,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8141,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8136,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8125,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8108,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8091,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8076,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8061,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8057,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8050,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8045,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8041,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8039,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8022,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 8012,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 7992,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 7982,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 7976,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 7909,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 7899,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 7897,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 7891,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8241,
+      "pr_b": 7888,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8232,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8196,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8192,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8191,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8188,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8183,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8182,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8154,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8141,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8136,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8125,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8108,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8076,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8057,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8050,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8045,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8041,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8039,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8022,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 8012,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 7992,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 7976,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 7909,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 7899,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 7897,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 7891,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8234,
+      "pr_b": 7888,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8196,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8192,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8191,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8188,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8183,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8182,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8154,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8144,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8141,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8136,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8125,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8108,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8091,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8076,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8061,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8057,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8050,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8045,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8041,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8039,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8022,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 8012,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 7992,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 7982,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 7976,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 7909,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 7899,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 7897,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 7891,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8232,
+      "pr_b": 7888,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8192,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8191,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8184,
+      "shared_files": [
+        "templates/china.html.j2"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8183,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8182,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8154,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8141,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8136,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8125,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8108,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8091,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8076,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8061,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8057,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8050,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8045,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8041,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8039,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8022,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 8012,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 7992,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 7982,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 7976,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 7909,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 7899,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 7897,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 7891,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8196,
+      "pr_b": 7888,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
       ],
       "shared_count": 1,
       "any_protected": false
@@ -3364,6 +4436,15 @@
     },
     {
       "pr_a": 8192,
+      "pr_b": 8108,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8192,
       "pr_b": 8091,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3482,15 +4563,6 @@
     {
       "pr_a": 8192,
       "pr_b": 7909,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8192,
-      "pr_b": 7905,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -3607,6 +4679,15 @@
     },
     {
       "pr_a": 8191,
+      "pr_b": 8108,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8191,
       "pr_b": 8091,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3725,15 +4806,6 @@
     {
       "pr_a": 8191,
       "pr_b": 7909,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8191,
-      "pr_b": 7905,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -3841,6 +4913,15 @@
     },
     {
       "pr_a": 8188,
+      "pr_b": 8108,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8188,
       "pr_b": 8091,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -3967,15 +5048,6 @@
     },
     {
       "pr_a": 8188,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8188,
       "pr_b": 7899,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -4011,10 +5083,10 @@
       "any_protected": false
     },
     {
-      "pr_a": 8184,
-      "pr_b": 7875,
+      "pr_a": 8187,
+      "pr_b": 8008,
       "shared_files": [
-        "templates/china.html.j2"
+        "tests/test_macro_command_p4_copy.py"
       ],
       "shared_count": 1,
       "any_protected": false
@@ -4075,6 +5147,15 @@
     },
     {
       "pr_a": 8183,
+      "pr_b": 8108,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8183,
       "pr_b": 8091,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -4193,15 +5274,6 @@
     {
       "pr_a": 8183,
       "pr_b": 7909,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8183,
-      "pr_b": 7905,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -4291,6 +5363,15 @@
     },
     {
       "pr_a": 8182,
+      "pr_b": 8108,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8182,
       "pr_b": 8091,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -4409,15 +5490,6 @@
     {
       "pr_a": 8182,
       "pr_b": 7909,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8182,
-      "pr_b": 7905,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -4498,6 +5570,15 @@
     },
     {
       "pr_a": 8154,
+      "pr_b": 8108,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8154,
       "pr_b": 8091,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -4624,15 +5705,6 @@
     },
     {
       "pr_a": 8154,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8154,
       "pr_b": 7899,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -4688,6 +5760,15 @@
     {
       "pr_a": 8144,
       "pr_b": 8125,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8144,
+      "pr_b": 8108,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -4849,6 +5930,15 @@
     },
     {
       "pr_a": 8141,
+      "pr_b": 8108,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8141,
       "pr_b": 8091,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -4984,15 +6074,6 @@
     },
     {
       "pr_a": 8141,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8141,
       "pr_b": 7899,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -5038,6 +6119,15 @@
     },
     {
       "pr_a": 8136,
+      "pr_b": 8108,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8136,
       "pr_b": 8091,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -5164,15 +6254,6 @@
     },
     {
       "pr_a": 8136,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8136,
       "pr_b": 7899,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -5201,6 +6282,15 @@
     {
       "pr_a": 8136,
       "pr_b": 7888,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8125,
+      "pr_b": 8108,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -5335,15 +6425,6 @@
     },
     {
       "pr_a": 8125,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8125,
       "pr_b": 7899,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -5371,6 +6452,168 @@
     },
     {
       "pr_a": 8125,
+      "pr_b": 7888,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8108,
+      "pr_b": 8091,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8108,
+      "pr_b": 8076,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8108,
+      "pr_b": 8061,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8108,
+      "pr_b": 8057,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8108,
+      "pr_b": 8050,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8108,
+      "pr_b": 8045,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8108,
+      "pr_b": 8041,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8108,
+      "pr_b": 8039,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8108,
+      "pr_b": 8022,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8108,
+      "pr_b": 8012,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8108,
+      "pr_b": 7992,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8108,
+      "pr_b": 7982,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8108,
+      "pr_b": 7976,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8108,
+      "pr_b": 7909,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8108,
+      "pr_b": 7899,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8108,
+      "pr_b": 7897,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8108,
+      "pr_b": 7891,
+      "shared_files": [
+        ".github/ci/legacy-jobs.yml"
+      ],
+      "shared_count": 1,
+      "any_protected": false
+    },
+    {
+      "pr_a": 8108,
       "pr_b": 7888,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -5614,15 +6857,6 @@
     },
     {
       "pr_a": 8076,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8076,
       "pr_b": 7899,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -5875,15 +7109,6 @@
     },
     {
       "pr_a": 8057,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8057,
       "pr_b": 7899,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6001,15 +7226,6 @@
     },
     {
       "pr_a": 8050,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8050,
       "pr_b": 7899,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6118,15 +7334,6 @@
     },
     {
       "pr_a": 8045,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8045,
       "pr_b": 7899,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6226,15 +7433,6 @@
     },
     {
       "pr_a": 8041,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8041,
       "pr_b": 7899,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6325,15 +7523,6 @@
     },
     {
       "pr_a": 8039,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8039,
       "pr_b": 7899,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6364,15 +7553,6 @@
       "pr_b": 7888,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8026,
-      "pr_b": 7875,
-      "shared_files": [
-        "docs/site_semantics/china.md"
       ],
       "shared_count": 1,
       "any_protected": false
@@ -6424,15 +7604,6 @@
     },
     {
       "pr_a": 8022,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8022,
       "pr_b": 7899,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6497,15 +7668,6 @@
     {
       "pr_a": 8012,
       "pr_b": 7909,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 8012,
-      "pr_b": 7905,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -6578,15 +7740,6 @@
     {
       "pr_a": 7992,
       "pr_b": 7909,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7992,
-      "pr_b": 7905,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
       ],
@@ -6712,15 +7865,6 @@
     },
     {
       "pr_a": 7976,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7976,
       "pr_b": 7899,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6766,15 +7910,6 @@
     },
     {
       "pr_a": 7909,
-      "pr_b": 7905,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7909,
       "pr_b": 7899,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6802,42 +7937,6 @@
     },
     {
       "pr_a": 7909,
-      "pr_b": 7888,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7905,
-      "pr_b": 7899,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7905,
-      "pr_b": 7897,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7905,
-      "pr_b": 7891,
-      "shared_files": [
-        ".github/ci/legacy-jobs.yml"
-      ],
-      "shared_count": 1,
-      "any_protected": false
-    },
-    {
-      "pr_a": 7905,
       "pr_b": 7888,
       "shared_files": [
         ".github/ci/legacy-jobs.yml"
@@ -6902,9 +8001,194 @@
   ],
   "recent_merged": [
     {
+      "number": 8236,
+      "title": "agentos: an acceptance observation is an engine JOB, not a nightly run",
+      "merged_at": "2026-09-30T06:30:17Z"
+    },
+    {
+      "number": 8235,
+      "title": "docs(cdv1): record the T2 r1 and T3 r2 reviews, rulings and the T2 r4 / T3 r5 packets",
+      "merged_at": "2026-09-30T05:38:30Z"
+    },
+    {
+      "number": 8233,
+      "title": "docs(cdv1): record the T3 PR review and dispatch the r4 fix round",
+      "merged_at": "2026-09-30T04:15:46Z"
+    },
+    {
+      "number": 8231,
+      "title": "docs(cdv1): correct the r3 packet record and restore the dropped T2/T3 rulings",
+      "merged_at": "2026-09-30T03:14:54Z"
+    },
+    {
+      "number": 8230,
+      "title": "docs(cdv1): record the Task 1 merge and the parallel T2/T3 dispatch",
+      "merged_at": "2026-09-30T02:26:55Z"
+    },
+    {
+      "number": 8228,
+      "title": "agentos(dsc): a canvas price-axis strip is a quantised witness",
+      "merged_at": "2026-09-29T22:20:23Z"
+    },
+    {
+      "number": 8227,
+      "title": "agentos(dsc): public/data is staged as a hardlink farm, outside the transaction",
+      "merged_at": "2026-09-29T21:56:19Z"
+    },
+    {
+      "number": 8226,
+      "title": "docs(agentos): correct the inertness mechanism dropped by #8225's SHA pin",
+      "merged_at": "2026-09-29T22:02:54Z"
+    },
+    {
+      "number": 8225,
+      "title": "docs(agentos): retract a falsifier that could not fail; record the inert published phase",
+      "merged_at": "2026-09-29T21:38:36Z"
+    },
+    {
+      "number": 8224,
+      "title": "agentos: restored-index stat-cache landmine + MACRO-03 closeout",
+      "merged_at": "2026-09-29T21:40:32Z"
+    },
+    {
+      "number": 8223,
+      "title": "agentos(dec): the post-commit rollback purge is design, not degradation",
+      "merged_at": "2026-09-29T20:52:39Z"
+    },
+    {
+      "number": 8222,
+      "title": "agentos(dec): give the TERMINAL-05 rollback finding real provenance",
+      "merged_at": "2026-09-29T20:48:26Z"
+    },
+    {
+      "number": 8221,
+      "title": "docs(agentos): canonical bar-identity decision + zero-shared-keys measurement",
+      "merged_at": "2026-09-29T20:48:23Z"
+    },
+    {
+      "number": 8220,
+      "title": "agentos(dsc): an acceptance probe can fire on the negative case",
+      "merged_at": "2026-09-29T20:22:46Z"
+    },
+    {
+      "number": 8219,
+      "title": "docs(agentos): close out MACRO-04 \u2014 round-2 knowledge, merge receipt, parked tests",
+      "merged_at": "2026-09-29T19:33:09Z"
+    },
+    {
+      "number": 8218,
+      "title": "industrials: record that a comment id is not proof of what the comment says",
+      "merged_at": "2026-09-29T19:28:21Z"
+    },
+    {
+      "number": 8217,
+      "title": "agentos: record the Terminal deploy pycache landmine and the TERMINAL-05 retarget",
+      "merged_at": "2026-09-29T19:11:12Z"
+    },
+    {
+      "number": 8216,
+      "title": "records: K4-G current-main closure regression + measured remedy (no code paths)",
+      "merged_at": "2026-09-29T19:14:50Z"
+    },
+    {
+      "number": 8215,
+      "title": "industrials: record the two T06 findings and open the W4 wave (IND-T06)",
+      "merged_at": "2026-09-29T19:07:08Z"
+    },
+    {
+      "number": 8214,
+      "title": "docs(agentos): canonical session grid changes bar COUNT, not just keys",
+      "merged_at": "2026-09-29T18:38:06Z"
+    },
+    {
+      "number": 8213,
+      "title": "industrials: one required-versus-optional dossier capability (IND-D23/R201/R215/R218/SF04)",
+      "merged_at": "2026-09-29T18:50:04Z"
+    },
+    {
+      "number": 8212,
+      "title": "records: terminal drawing pane ownership over clipping",
+      "merged_at": "2026-09-29T18:29:25Z"
+    },
+    {
+      "number": 8211,
+      "title": "agentos: zero-manual-wake #991 handoff + two Claude Code host discoveries",
+      "merged_at": "2026-09-29T18:47:41Z"
+    },
+    {
+      "number": 8210,
+      "title": "energy records: #7870 f12db8bff1d1 re-check \u2014 #8002 compatible (R-ENE-44), packet delta (R-ENE-45), business_valid_to crash (R-ENE-46)",
+      "merged_at": "2026-09-29T19:24:42Z"
+    },
+    {
+      "number": 8209,
+      "title": "records: the ipo basis is unreachable in production, and why that is fine",
+      "merged_at": "2026-09-29T18:18:10Z"
+    },
+    {
+      "number": 8208,
+      "title": "industrials: guard the typed-absence and required/optional distinctions (IND-D23, IND-R215)",
+      "merged_at": "2026-09-29T18:05:35Z"
+    },
+    {
+      "number": 8207,
+      "title": "records: canonical 2D/3D session bar identity, and two landmines it exposed",
+      "merged_at": "2026-09-29T17:38:52Z"
+    },
+    {
+      "number": 8206,
+      "title": "industrials: write the owed handoff for the recovered-authority session",
+      "merged_at": "2026-09-29T18:06:27Z"
+    },
+    {
+      "number": 8205,
+      "title": "test(options): drive the session-part rollover at the real 48 MiB ceiling (continues #7265)",
+      "merged_at": "2026-09-29T21:14:46Z"
+    },
+    {
+      "number": 8204,
+      "title": "industrials: amend a superseded discovery at source and mint the two findings behind it",
+      "merged_at": "2026-09-29T17:37:00Z"
+    },
+    {
+      "number": 8203,
+      "title": "fix(thetadata): a drained store is not a store \u2014 refuse to resolve it",
+      "merged_at": "2026-09-29T19:11:26Z"
+    },
+    {
+      "number": 8202,
+      "title": "records: carrier adoption + the failed-index-read landmine",
+      "merged_at": "2026-09-29T17:18:58Z"
+    },
+    {
+      "number": 8200,
+      "title": "industrials: bind the receipt's derived identity to the formula version (IND-R214)",
+      "merged_at": "2026-09-29T17:40:30Z"
+    },
+    {
+      "number": 8199,
+      "title": "[GMI ROBOTICS] Record the four-family rule revalidation and rule the shared-type mirror seam",
+      "merged_at": "2026-09-29T17:34:39Z"
+    },
+    {
+      "number": 8198,
+      "title": "records(energy): the ENERGY directive \u2014 audits paused, cutoff readers ruled for the integration, target-window rewind reported (R-ENE-41..43)",
+      "merged_at": "2026-09-29T17:08:46Z"
+    },
+    {
+      "number": 8197,
+      "title": "industrials: record the specification-authority PAUSE and the recovery pointers at source",
+      "merged_at": "2026-09-29T16:45:57Z"
+    },
+    {
       "number": 8195,
       "title": "agentos: EXECUTIVE-CAPACITY-FABRIC retract the credits/spend-control human gate",
       "merged_at": "2026-09-29T13:04:14Z"
+    },
+    {
+      "number": 8194,
+      "title": "prophet: US journey correctness \u2014 readable decision labels, honest plan relation, source clocks (F1/F2/F3/F4)",
+      "merged_at": "2026-09-30T01:46:30Z"
     },
     {
       "number": 8193,
@@ -7830,6 +9114,11 @@
       "number": 7906,
       "title": "docs(agentos): mint WS-CONSUMER-DEFENSIVE-CDV1 + DEC-CDV1-PLAN-SEAM-RULINGS",
       "merged_at": "2026-09-24T08:02:40Z"
+    },
+    {
+      "number": 7905,
+      "title": "feat(earnings): validate private PG economic facts at source scope (CDV-1 Task 1)",
+      "merged_at": "2026-09-30T01:42:53Z"
     },
     {
       "number": 7904,
@@ -9210,196 +10499,6 @@
       "number": 7425,
       "title": "[MO-B F13-1] glossary: recapture the 8-cell design evidence at the merged ZH heal (480bc807); retires recapture=NEEDED",
       "merged_at": "2026-09-19T16:06:58Z"
-    },
-    {
-      "number": 7424,
-      "title": "orch(audit): record macro PR #7337 plain-language/theme/validated-claims audit (2026-09-19)",
-      "merged_at": "2026-09-19T15:19:03Z"
-    },
-    {
-      "number": 7422,
-      "title": "orch(audit): record mastermind-terminal PR #586 plain-language/theme/validated-claims audit (2026-09-19)",
-      "merged_at": "2026-09-19T14:32:42Z"
-    },
-    {
-      "number": 7416,
-      "title": "fix(macro-context): simplify regime confidence and context UX",
-      "merged_at": "2026-09-20T04:33:00Z"
-    },
-    {
-      "number": 7414,
-      "title": "fix(briefs): close privacy, cadence, and read-truth gaps",
-      "merged_at": "2026-09-20T02:41:53Z"
-    },
-    {
-      "number": 7412,
-      "title": "fix(basket-detail): simplify technical UX and score disclosures",
-      "merged_at": "2026-09-20T06:56:41Z"
-    },
-    {
-      "number": 7411,
-      "title": "[MO-B F11-7b hotfix] recurring briefs DORMANT = no subscription read, no run(), no user text in workflow logs (Sol #7106 blocker 1 mitigation)",
-      "merged_at": "2026-09-19T11:52:37Z"
-    },
-    {
-      "number": 7408,
-      "title": "fix(banner): make dismiss control touch reachable",
-      "merged_at": "2026-09-21T10:30:48Z"
-    },
-    {
-      "number": 7407,
-      "title": "[MO-B F00C records] manifest mirrors the #7335 ledger; B-REC3 fence re-pinned; 4 in-cell corrections Sol's test demands (closes the reconciliation main-red)",
-      "merged_at": "2026-09-19T11:58:40Z"
-    },
-    {
-      "number": 7406,
-      "title": "feat(brain): profile Fast questions for better evidence seeds",
-      "merged_at": "2026-09-21T13:18:39Z"
-    },
-    {
-      "number": 7404,
-      "title": "perf(ci): reuse planner AST traversal",
-      "merged_at": "2026-09-27T08:20:25Z"
-    },
-    {
-      "number": 7392,
-      "title": "fix(prophet): rebind P0B nav and theme asset receipts",
-      "merged_at": "2026-09-19T23:12:02Z"
-    },
-    {
-      "number": 7391,
-      "title": "fix(flow-leaders): publish browser-parseable strict JSON",
-      "merged_at": "2026-09-19T10:20:59Z"
-    },
-    {
-      "number": 7390,
-      "title": "records(market-ontology): correct MO-PAID-039 internal-route boundary",
-      "merged_at": "2026-09-19T22:10:48Z"
-    },
-    {
-      "number": 7388,
-      "title": "[AGENT EVAL] Reconcile OL-V1 Executive runtime frontier",
-      "merged_at": "2026-09-19T22:24:03Z"
-    },
-    {
-      "number": 7386,
-      "title": "[HOLD-FOR-SOL] ci: rescue legacy PR callers onto hosted packs",
-      "merged_at": "2026-09-21T09:36:20Z"
-    },
-    {
-      "number": 7382,
-      "title": "feat(intraday-flow): add provenance-safe session history projection",
-      "merged_at": "2026-09-22T15:43:56Z"
-    },
-    {
-      "number": 7377,
-      "title": "[MO-B W7-2] F02: public-news event layer on sanctions_map.html (UK\u2192GBR path; EU/EA dated list; overlays 048-050 untouched) (MO-PAID-008)",
-      "merged_at": "2026-09-19T10:56:02Z"
-    },
-    {
-      "number": 7373,
-      "title": "fix(brain): make panel explain affordance touch reachable",
-      "merged_at": "2026-09-19T09:43:41Z"
-    },
-    {
-      "number": 7372,
-      "title": "docs(agentos): record MRKT integration Web CEO commissioning",
-      "merged_at": "2026-09-22T14:39:24Z"
-    },
-    {
-      "number": 7364,
-      "title": "feat(marketing): wire Chronicle earnings calls into canonical outbox",
-      "merged_at": "2026-09-19T06:35:59Z"
-    },
-    {
-      "number": 7362,
-      "title": "[MO-B W7-1] F02: Europe official-press panel on euro_area.html over the existing qbus join (MO-PAID-034)",
-      "merged_at": "2026-09-19T10:53:30Z"
-    },
-    {
-      "number": 7361,
-      "title": "fix(intelligence-hub): simplify ranking and status UX",
-      "merged_at": "2026-09-21T05:47:55Z"
-    },
-    {
-      "number": 7360,
-      "title": "fix(nav): tighten keyboard and press interactions",
-      "merged_at": "2026-09-19T06:08:32Z"
-    },
-    {
-      "number": 7356,
-      "title": "feat(prophet): add conservative B3 candidate-state core",
-      "merged_at": "2026-09-20T05:34:23Z"
-    },
-    {
-      "number": 7355,
-      "title": "perf(site): lazy-load row ticker logos",
-      "merged_at": "2026-09-22T13:59:28Z"
-    },
-    {
-      "number": 7351,
-      "title": "[MO-F02] Activate the shipped UK policy desk on its sentinel lane",
-      "merged_at": "2026-09-23T03:06:26Z"
-    },
-    {
-      "number": 7347,
-      "title": "docs(research): record Maerino capability gap census",
-      "merged_at": "2026-09-19T05:36:18Z"
-    },
-    {
-      "number": 7346,
-      "title": "fix(hub): simplify signed-in home UX and truthful freshness",
-      "merged_at": "2026-09-20T04:48:13Z"
-    },
-    {
-      "number": 7345,
-      "title": "Admin UX + performance sweep: navigation, slow panels, and Outbox",
-      "merged_at": "2026-09-21T09:10:31Z"
-    },
-    {
-      "number": 7344,
-      "title": "[AGENT EVAL] Reconcile continuation frontier and C2 execution gates",
-      "merged_at": "2026-09-19T08:50:03Z"
-    },
-    {
-      "number": 7342,
-      "title": "feat(commodities): wire Shanghai-close China gold basis proxy",
-      "merged_at": "2026-09-19T02:35:28Z"
-    },
-    {
-      "number": 7341,
-      "title": "[MO-B F01] Re-pin the credit wiring-trace record to the moved E4 label",
-      "merged_at": "2026-09-19T15:16:32Z"
-    },
-    {
-      "number": 7338,
-      "title": "[MO-B-REC] Agent OS handoff \u2014 MarketOntology HOLD decision docket (21 gates, 5 owners)",
-      "merged_at": "2026-09-19T15:16:37Z"
-    },
-    {
-      "number": 7337,
-      "title": "[MO-B F01-1] Morning edition page before the US open",
-      "merged_at": "2026-09-19T14:03:08Z"
-    },
-    {
-      "number": 7336,
-      "title": "[MO-B-REC] Agent OS handoff \u2014 Meta-CEO B seat transfer aa22a3d2 \u2192 026851bd (records only)",
-      "merged_at": "2026-09-19T15:25:53Z"
-    },
-    {
-      "number": 7335,
-      "title": "[MO-B-REC] F00C ledger reconciliation 2026-09-18 \u2014 ratified moves from the wave-3 records audits",
-      "merged_at": "2026-09-19T08:56:40Z"
-    },
-    {
-      "number": 7334,
-      "title": "ci: default ordinary PR packs to GitHub-hosted Linux",
-      "merged_at": "2026-09-19T05:08:53Z"
-    },
-    {
-      "number": 7333,
-      "title": "docs(prophet): record Chairman's rotation-participation Meta-CEO mandate",
-      "merged_at": "2026-09-22T13:56:23Z"
     }
   ]
 }

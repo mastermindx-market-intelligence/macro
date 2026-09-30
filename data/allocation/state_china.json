@@ -10,12 +10,12 @@
     "cn_semis"
   ],
   "held": [
-    "cn_ai_compute",
     "cn_banks",
+    "cn_ai_compute",
     "cn_pharma_cxo",
     "cn_coal"
   ],
-  "leader": "cn_ai_compute",
+  "leader": "cn_banks",
   "names": {
     "cn_ai_compute": "AI Compute & Optics",
     "cn_appliances": "Home Appliances",

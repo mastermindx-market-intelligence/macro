@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-09-29",
+  "as_of": "2026-09-30",
   "data_session": "2026-09-29",
   "state": "off",
   "k_count": 0,
@@ -292,19 +292,19 @@
     "n_qualifying": 28,
     "null": false,
     "floor": "state in igniting/running (pre-registered ALERT_STATES); empty when nothing clears \u2014 honest null",
-    "as_of": "2026-09-29"
+    "as_of": "2026-09-30"
   },
   "narrow_top": {
     "basket_id": "SMH",
     "name": "SMH",
     "name_zh": "SMH",
     "score": 0.9736,
-    "streak_sessions": 7
+    "streak_sessions": 1
   },
   "radar_xref": {
     "state": "caution",
     "phase": null
   },
   "accruing": "accruing \u2014 display-only until >=30 broad-state grades + operator ruling. Forward-graded by engine/ignition_audit.py (US arm).",
-  "_timing_s": 2.33
+  "_timing_s": 2.42
 }
