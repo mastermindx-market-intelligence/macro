@@ -80,6 +80,7 @@ def test_trace_provenance_is_distinct_and_capped():
     assert trace["decode"] == "latin-1-fallback"
     assert trace["declared_encoding"] == "latin-1"
     assert trace["observed_at"] is None
+    assert trace["currentness"] == "currentness_unverified"
 
 
 def test_newest_unparsed_source_stays_selected_and_yields_typed_absences():
@@ -325,6 +326,22 @@ def test_unchanged_source_carries_first_observation_forward_under_each_currentne
         }
 
 
+def test_decoded_source_digest_is_native_with_and_without_prior():
+    acquisition, _ = _trace("same_source_rebuild")
+    result = prepare_pg_workspace(
+        acquisition, prior=None, observed_at=acquisition["acceptance_datetime"]
+    )
+    source = result["workspace"]["sources"][0]
+    document_id = source["document_id"]
+    assert source["source_sha256"] == hashlib.sha256(
+        result["source_texts"][document_id].encode("utf-8")
+    ).hexdigest()
+    republished = prepare_pg_workspace(
+        acquisition, prior=result["workspace"], observed_at="2026-07-29T17:20:00Z"
+    )
+    assert republished["workspace"]["sources"][0]["source_sha256"] == source["source_sha256"]
+
+
 def test_changed_bytes_at_the_same_url_link_a_new_revision_to_its_predecessor():
     first = _prepared()
     acquisition, _ = _trace("changed_bytes")
@@ -401,6 +418,19 @@ def test_currentness_round_trips_from_trace_to_preparation_for_every_state():
         }
 
 
+def test_preparation_uses_checked_at_not_observed_at():
+    acquisition, _ = _trace("same_source_rebuild")
+    acquisition["currentness"] = {
+        "state": "up_to_date", "checked_at": "2026-07-29T17:11:00Z"
+    }
+    result = prepare_pg_workspace(
+        acquisition, prior=None, observed_at="2026-07-29T17:20:00Z"
+    )
+    assert result["currentness_context"]["currentness"]["source_clock"] == (
+        "2026-07-29T17:11:00Z"
+    )
+
+
 def test_absent_acquisition_currentness_prepares_none_currentness():
     acquisition, _ = _trace("same_source_rebuild")
     acquisition.pop("currentness")
@@ -462,6 +492,16 @@ def test_exact_accession_request_never_falls_back():
         )
     assert events[-1]["selected_accession"] is None
     assert events[-1]["candidates"][-1]["outcome"] == "fetch_failure"
+
+
+def test_legacy_latin1_acquisition_is_refused_as_non_utf8_source():
+    acquisition = acquire_results_filing(
+        cik="0000080424", http_get=fixture_http_get("malformed_encoding")
+    )
+    acquisition["received_bytes"] = {"sha256": "a" * 64, "length": len(acquisition["exhibit_body"].encode("utf-8"))}
+    with pytest.raises(PgPreparationRefused, match="cleanly decoded as utf-8") as raised:
+        prepare_pg_workspace(acquisition, prior=None, observed_at="2026-07-30T17:01:00Z")
+    assert raised.value.reason == "non_utf8_source"
 
 
 def test_exact_accession_success_carries_its_own_receipt_and_currentness():
