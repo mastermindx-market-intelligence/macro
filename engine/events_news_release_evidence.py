@@ -216,6 +216,12 @@ def event_actual_evidence(
         result["reason"] = "invalid_event"
         return result
     result.update(event_type=event_type, release_date=day.isoformat())
+    # Bind presentation to the exact supplied reference fields as well as the
+    # event/date/cutoff. A builder changing a field must recompute the projection;
+    # otherwise a previously qualified result could survive on another period.
+    result["reference_binding"] = {
+        name: event.get(name) for name in official._EXPLICIT_REFERENCE_FIELDS
+    }
     specs = official._TARGETS.get(event_type)
     if specs is None:
         result.update(status="unsupported", reason="unsupported_event_type")
