@@ -1127,6 +1127,19 @@ class _Raiser:
     __int__ = __float__ = __index__ = __getattr__ = _refuse
 
 
+class _Twin:
+    """Hashes like the key it stands in for and raises when compared, so only code that never looks it up gets past it."""
+
+    def __init__(self, key):
+        self._hash = hash(key)
+
+    def __hash__(self):
+        return self._hash
+
+    def __eq__(self, other):
+        raise RuntimeError('an unchecked key ran its own code')
+
+
 def _replace_at(node, path, value):
     """A copy of `node` with `value` at `path`.  Only the containers along the path are copied."""
     if not path:
@@ -1171,6 +1184,8 @@ def _hostile(node):
         if node:
             found.append(('str_subclass_keys', {_Str(key): item for key, item in node.items()}))
             found.append(('liar_keys', {_Liar(key): item for key, item in node.items()}))
+            first = next(iter(node))
+            found.append(('twin_key', {(_Twin(key) if key is first else key): item for key, item in node.items()}))
     elif kind is list:
         found.append(('list_subclass', _opaque(list, node)))
     elif kind is tuple:
@@ -1348,6 +1363,11 @@ def test_every_other_argument_is_refused_when_it_is_not_exact():
         ('workspace_subclass', {generation: _opaque(dict, workspace)}),
         ('workspace_raiser', {generation: _Raiser()}),
         ('workspace_list', {generation: [workspace]}),
+        ('twin_generation', {_Twin(generation): workspace}),
+        ('twin_generation_id', {
+            **{key: item for key, item in workspace.items() if key != 'generation_id'},
+            _Twin('generation_id'): generation,
+        }),
         ('empty', {}),
     ]:
         calls.append((f'validate workspaces <- {name}', lambda value=value: validate(workspaces=value)))
@@ -1688,6 +1708,9 @@ def test_validate_resolves_a_workspace_by_its_generation_id():
 
 
 _EXACT_SUBSTITUTES = [None, 5, 'x', [], {}]
+# Task 1 admits more than JSON parses to: a tuple, a Fraction, and any of its types as a mapping key.
+_ADMITTED_VALUES = [1.5, True, ('x',), Fraction(1, 2)]
+_ADMITTED_KEYS = [None, 5, 1.5, True, ('a',), Fraction(1, 2)]
 
 
 def _without(node, path):
@@ -1701,13 +1724,21 @@ def _without(node, path):
     return [item for index, item in enumerate(node) if index != path[0]]
 
 
-def _edits(tree):
-    """`tree` changed at one position, as (label, tree) pairs: each exact substitute put there, and the entry removed."""
+def _edits(tree, substitutes=_EXACT_SUBSTITUTES):
+    """`tree` changed at one position, as (label, tree) pairs: each substitute put there, and the entry removed."""
     for path, _node in _nodes(tree):
         if path:
-            for value in _EXACT_SUBSTITUTES:
+            for value in substitutes:
                 yield _where(path, repr(value)), _replace_at(tree, path, value)
             yield _where(path, 'removed'), _without(tree, path)
+
+
+def _key_edits(tree):
+    """`tree` with one more key in one of its mappings, as (label, tree) pairs: each key that is not a string."""
+    for path, node in _nodes(tree):
+        if type(node) is dict:
+            for key in _ADMITTED_KEYS:
+                yield _where(path, f'key {key!r}'), _replace_at(tree, path, {**node, key: None})
 
 
 def test_whatever_build_returns_replays():
@@ -1723,9 +1754,15 @@ def test_whatever_build_returns_replays():
         ('a release with values', valued, valued_texts, everything),
         ('a release with values, schema removed', _without(valued, ('schema',)), valued_texts, everything),
     ]
-    calls += [(f'workspace {label}', edited, texts, selection) for label, edited in _edits(workspace)]
+    calls += [
+        (f'workspace {label}', edited, texts, selection)
+        for label, edited in _edits(workspace, _EXACT_SUBSTITUTES + _ADMITTED_VALUES)
+    ]
+    keyed = [(f'workspace {label}', edited, texts, selection) for label, edited in _key_edits(workspace)]
+    calls += keyed
     calls += [(f'selection {label}', workspace, texts, edited) for label, edited in _edits(selection)]
-    failures, replayed, refused = [], 0, 0
+    keyed_labels = {call[0] for call in keyed}
+    failures, replayed, refused, keyed_replays = [], 0, 0, 0
     for label, candidate, source_texts, selected in calls:
         outcome, built = _outcome(lambda: _build_with(candidate, source_texts, selection=selected))
         if outcome == 'typed':
@@ -1734,14 +1771,27 @@ def test_whatever_build_returns_replays():
         if outcome != 'returned' or not _is_exact_json(built) or built['quality']['supported'] is not True:
             failures.append(f'{label}: {outcome}')
             continue
-        replay = _outcome(lambda: validate_economic_interpretation(
-            built, workspaces=candidate, source_texts=source_texts, fiscal_scope=FISCAL_SCOPE
-        ))[0]
-        if replay != 'returned':
-            failures.append(f'{label}: built, then validate {replay}')
+        for form, workspaces in (('one workspace', candidate), ('a mapping', {candidate['generation_id']: candidate})):
+            replay = _outcome(lambda: validate_economic_interpretation(
+                built, workspaces=workspaces, source_texts=source_texts, fiscal_scope=FISCAL_SCOPE
+            ))[0]
+            if replay != 'returned':
+                failures.append(f'{label}: built, then validate as {form} {replay}')
         replayed += 1
+        keyed_replays += label in keyed_labels
     assert not failures, failures[:20]
-    assert replayed >= 1000 and refused >= 1500, (replayed, refused)
+    assert replayed >= 2000 and refused >= 3000, (replayed, refused)
+    assert keyed_replays >= 150, (keyed_replays, len(keyed))
+
+
+@pytest.mark.parametrize('key', _ADMITTED_KEYS, ids=['none', 'int', 'float', 'bool', 'tuple', 'fraction'])
+def test_validate_accepts_a_workspace_a_build_accepts_whatever_its_keys(key):
+    base, texts, _payload = _baseline(ABSENT)
+    workspace = {**base, 'generation_id': 'generation_b', key: None}
+    built = _build_with(workspace, texts)
+    assert built['quality']['supported'] is True and _is_exact_json(built)
+    for workspaces in (workspace, {'generation_b': workspace}):
+        validate_economic_interpretation(built, workspaces=workspaces, source_texts=texts, fiscal_scope=FISCAL_SCOPE)
 
 
 @pytest.mark.parametrize('field', ['semantic_revision', 'code_revision'])

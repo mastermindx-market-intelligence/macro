@@ -812,21 +812,26 @@ def build_economic_interpretation(
         raise _unreadable(exc) from exc
 
 
-# `workspaces` is one workspace, or a mapping from generation id to workspace.  A mapping has only mapping
-# values.  No workspace a build accepts does, because its generation id is a string, so the two never overlap.
+# `workspaces` is one workspace, or a mapping from generation id to workspace.  A mapping has only string keys
+# and only mapping values.  No workspace a build accepts does, because its generation id is a string, so the two
+# never overlap.  One workspace is found under its own generation id, and the rebuild decides what else it may
+# carry: Task 1 admits keys that are not strings, so a rule on them here would refuse a workspace a build accepts.
+# The keys are read by iteration, never by lookup, so no key that is not a string is hashed or compared here.
 def _workspaces(value: Any) -> dict[str, dict[str, Any]]:
     if type(value) is not dict or not value:
         raise EconomicInterpretationError("workspaces must map generation ids to workspaces")
-    for key in value:
-        if type(key) is not str:
-            raise EconomicInterpretationError("workspaces must map generation ids to workspaces")
-    for item in value.values():
-        if type(item) is not dict:
-            generation = value.get("generation_id")
-            if type(generation) is not str:
-                raise EconomicInterpretationError("workspaces must map generation ids to workspaces")
-            return {generation: value}
-    return value
+    mapping = True
+    generation = None
+    for key, item in value.items():
+        if type(key) is not str or type(item) is not dict:
+            mapping = False
+        if type(key) is str and key == "generation_id":
+            generation = item
+    if mapping:
+        return value
+    if type(generation) is not str:
+        raise EconomicInterpretationError("workspaces must map generation ids to workspaces")
+    return {generation: value}
 
 
 def _validate_payload_shape(payload: Mapping[str, Any]) -> Mapping[str, Any]:
