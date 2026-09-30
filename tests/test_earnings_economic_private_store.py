@@ -551,11 +551,11 @@ def test_closure_mode_shape_and_strict_evidence_digest(tmp_path, economic_publis
     verified = pp.load_economic_closure(store, manifest=manifest, slug=slug)
     assert set(verified) == {"record", "selection", "interpretation", "chain"}
 
-    class DeceptiveConflict(pp.EarningsPrivatePublishConflict):
+    class OriginalReasonConflict(pp.EarningsPrivatePublishConflict):
         def __init__(self):
             super().__init__("downgrade_refused")
-            self.reason = "conditional_write_unavailable"
-    store.capability_error = DeceptiveConflict()
+            self.reason = "downgrade_refused"
+    store.capability_error = OriginalReasonConflict()
     prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "corrected", name="capability"))
     store.versioned_reads.clear()
     store.put_calls.clear()
