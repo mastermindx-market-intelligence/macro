@@ -4,7 +4,8 @@
 {% macro release_evidence(event, bi, snapshot_utc) -%}
 {% autoescape true %}
 {% set raw = event.get('official_evidence') %}
-{% set ev = raw if raw is mapping and raw.get('schema') == 'release_event_evidence.v1' and raw.get('display_only') is sameas true and raw.get('authority') is sameas false and raw.get('event_type') == event.get('type') and raw.get('release_date') == event.get('date') and raw.get('as_of_input') is string and raw.get('as_of_input') == snapshot_utc else none %}
+{% set reference_binding = {'scheduled_reference_period':event.get('scheduled_reference_period'), 'expected_reference_period':event.get('expected_reference_period'), 'forecast_period':event.get('forecast_period'), 'reference_period':event.get('reference_period')} %}
+{% set ev = raw if raw is mapping and raw.get('schema') == 'release_event_evidence.v1' and raw.get('display_only') is sameas true and raw.get('authority') is sameas false and raw.get('event_type') == event.get('type') and raw.get('release_date') == event.get('date') and raw.get('reference_binding') == reference_binding and raw.get('as_of_input') is string and raw.get('as_of_input') == snapshot_utc else none %}
 {% set labels = {
   'cpi_headline_mom':['Headline CPI','整体 CPI'], 'cpi_core_mom':['Core CPI','核心 CPI'],
   'ppi_headline_mom':['Producer prices','生产者价格'],
@@ -52,7 +53,7 @@
           <h5>{{ bi(label[0],label[1]) }}</h5>
           {% if ev.get('status') in ['available','partial'] and m.get('status') == 'available' and m.get('actual') is number and m.get('actual') is not sameas true and m.get('actual') is not sameas false and m.get('display_value') is string and m.get('metric_id') in labels and m.get('unit') in ['percent','thousands'] %}
             <p class="nd-official-value">{{ m.display_value }}{% if m.unit == 'percent' %}<span>%</span>{% endif %}</p>
-            <p class="nd-official-unit">{{ bi('Month over month','环比') if m.unit == 'percent' else bi('Thousands of people','千人') }}</p>
+            <p class="nd-official-unit">{{ bi('Month over month','环比') if m.unit == 'percent' else (bi('Thousands of payroll jobs','千个非农就业岗位') if m.get('metric_id') == 'nfp_payroll_change' else bi('Thousands of initial claims','千份初请失业金申请')) }}</p>
             <p class="nd-official-period">{{ bi('Reference period','数据时期') }} · {{ m.get('period') if m.get('release') != 'claims' else m.get('official_reference_period') }}</p>
             {% if m.get('correction_pending') is sameas true %}<p class="nd-official-correction">{{ bi('A proposed correction needs review. The first value is retained.','有待核查的更正，暂保留首次公布值。') }}</p>{% endif %}
             <details class="nd-official-provenance" data-nd-provenance>
