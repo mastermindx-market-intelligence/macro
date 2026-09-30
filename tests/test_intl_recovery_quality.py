@@ -270,7 +270,9 @@ def test_builder_and_template_wire_hk_radar_and_quality_without_ranking_it():
     builder = (root / "scripts" / "build_intl.py").read_text(encoding="utf-8")
     template = (root / "templates" / "intl.html.j2").read_text(encoding="utf-8")
 
-    assert "_wr_rri.snapshot(_wr_rri.HK_PROFILE)" in builder
+    assert 'profiles = {"CN": _rri.CN_PROFILE, "HK": _rri.HK_PROFILE}' in builder
+    assert "_readonly_radar_snapshot(profiles[cc])" in builder
+    assert "apply_risk_context" in builder
     assert '_st.get("risk_radar") or _radar_by_cc.get(_cc3)' in builder
     assert "recovery_assessment" in builder
     assert "recovery_assessment" in template
