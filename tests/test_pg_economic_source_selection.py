@@ -3,7 +3,11 @@ from __future__ import annotations
 import pytest
 
 from engine.company_intelligence.economic_observations import validate_selected_facts
-from engine.company_intelligence.pg_profile import prepare_pg_workspace
+from engine.company_intelligence.pg_profile import (
+    PG_PREPARATION_REFUSALS,
+    PgPreparationRefused,
+    prepare_pg_workspace,
+)
 from scripts.refresh_event_workspaces import acquire_results_filing
 from tests.earnings_economic_fixtures import (
     FISCAL_SCOPE,
@@ -158,10 +162,68 @@ def test_malformed_encoding_is_a_decode_failure_without_evidence():
     assert events[-1]["decode"] == "latin-1-fallback"
 
 
+_PREPARATION_REASONS = {
+    "malformed_acquisition": "acquisition must be a mapping",
+    "malformed_prior": "prior must be a mapping",
+    "prior_source_identity_missing": "prior issuer release lacks source identity",
+    "malformed_source_clock": "acceptance_datetime must use YYYY-MM-DDTHH:MM:SSZ",
+    "unadmitted_issuer": "acquisition CIK is not admitted by the issuer registry",
+    "document_period_not_admitted": "document period signals do not admit the derived fiscal scope",
+    "missing_received_byte_receipt": "acquisition received-byte receipt is required",
+    "received_bytes_mismatch": "acquisition received bytes do not match the decoded source text",
+    "non_utf8_source": "acquisition source was not cleanly decoded as utf-8",
+    "malformed_currentness": "acquisition currentness is malformed",
+}
+
+
 def _prepared():
     acquisition, _ = _trace("same_source_rebuild")
     return prepare_pg_workspace(
         acquisition, prior=None, observed_at="2026-08-02T17:00:00Z"
+    )
+
+
+@pytest.mark.parametrize(
+    ("reason", "mutate"),
+    [
+        ("malformed_acquisition", lambda acquisition, prior: object()),
+        ("malformed_prior", lambda acquisition, prior: prior.update({"sources": "not-a-list"})),
+        ("prior_source_identity_missing", lambda acquisition, prior: prior["sources"][0].pop("source_sha256")),
+        ("malformed_source_clock", lambda acquisition, prior: acquisition.update(acceptance_datetime="2026-07-29 17:00:00Z")),
+        ("unadmitted_issuer", lambda acquisition, prior: acquisition.update(cik="0000000000")),
+        ("document_period_not_admitted", lambda acquisition, prior: acquisition.update(exhibit_body="<h1>Fourth Quarter Ended March 31, 2027</h1>")),
+        ("missing_received_byte_receipt", lambda acquisition, prior: acquisition.pop("received_bytes")),
+        ("received_bytes_mismatch", lambda acquisition, prior: acquisition.update(received_bytes={"sha256": "b" * 64, "length": 42, "declared_encoding": "utf-8"})),
+        ("non_utf8_source", lambda acquisition, prior: acquisition.update(declared_encoding="latin-1")),
+        ("malformed_currentness", lambda acquisition, prior: acquisition.update(currentness={"state": "unverified"})),
+    ],
+)
+def test_every_preparation_refusal_is_typed_with_its_exact_reason(reason, mutate):
+    first = _prepared()
+    acquisition, _ = _trace("same_source_rebuild")
+    prior = first["workspace"]
+    replacement = mutate(acquisition, prior)
+    if replacement is not None:
+        acquisition = replacement
+    with pytest.raises(PgPreparationRefused) as raised:
+        prepare_pg_workspace(acquisition, prior=prior, observed_at="2026-09-01T17:00:00Z")
+    assert type(raised.value) is PgPreparationRefused
+    assert raised.value.reason == reason
+    assert str(raised.value) == _PREPARATION_REASONS[reason]
+
+
+def test_preparation_refusals_are_closed():
+    assert PG_PREPARATION_REFUSALS == (
+        "malformed_acquisition",
+        "malformed_prior",
+        "prior_source_identity_missing",
+        "malformed_source_clock",
+        "unadmitted_issuer",
+        "document_period_not_admitted",
+        "missing_received_byte_receipt",
+        "received_bytes_mismatch",
+        "non_utf8_source",
+        "malformed_currentness",
     )
 
 

@@ -2206,16 +2206,52 @@ from .events import FiscalPeriod
 
 
 PG_PROFILE_VERSION = "pg_profile.v1"
+PG_PREPARATION_REFUSALS = (
+    "malformed_acquisition",
+    "malformed_prior",
+    "prior_source_identity_missing",
+    "malformed_source_clock",
+    "unadmitted_issuer",
+    "document_period_not_admitted",
+    "missing_received_byte_receipt",
+    "received_bytes_mismatch",
+    "non_utf8_source",
+    "malformed_currentness",
+)
+_PREPARATION_MESSAGES = {
+    "malformed_acquisition": "acquisition must be a mapping",
+    "malformed_prior": "prior must be a mapping",
+    "prior_source_identity_missing": "prior issuer release lacks source identity",
+    "malformed_source_clock": "acceptance_datetime must use YYYY-MM-DDTHH:MM:SSZ",
+    "unadmitted_issuer": "acquisition CIK is not admitted by the issuer registry",
+    "document_period_not_admitted": "document period signals do not admit the derived fiscal scope",
+    "missing_received_byte_receipt": "acquisition received-byte receipt is required",
+    "received_bytes_mismatch": "acquisition received bytes do not match the decoded source text",
+    "non_utf8_source": "acquisition source was not cleanly decoded as utf-8",
+    "malformed_currentness": "acquisition currentness is malformed",
+}
+
+
+class PgPreparationRefused(ValueError):
+    def __init__(self, reason: str) -> None:
+        if reason not in PG_PREPARATION_REFUSALS:
+            raise ValueError(f"unknown preparation refusal: {reason}")
+        super().__init__(_PREPARATION_MESSAGES[reason])
+        self.reason = reason
+
+
 _PREPARED_FISCAL_SCOPE = ("2026-04-01", "2026-06-30", "2025-04-01", "2025-06-30")
 
 
 def _prior_release(workspace: Any) -> dict[str, Any] | None:
     if isinstance(workspace, dict) and "sources" not in workspace and "workspace" in workspace:
         workspace = workspace["workspace"]
-    for source in workspace.get("sources") or []:
+    if not isinstance(workspace, dict) or not isinstance(workspace.get("sources") or [], list):
+        raise PgPreparationRefused("malformed_prior")
+    for source in workspace["sources"] or []:
         if isinstance(source, dict) and source.get("kind") == "issuer_release":
             return source
-    raise ValueError("the prior workspace names no issuer release")
+    raise PgPreparationRefused("prior_source_identity_missing")
 
 
 def _source_text_sha256(value: str) -> str:
@@ -2227,13 +2263,16 @@ def prepare_pg_workspace(
     acquisition: Any, *, prior: Any, observed_at: Any
 ) -> dict[str, Any]:
     if not isinstance(acquisition, dict):
-        raise ValueError("acquisition must be a mapping")
-    acceptance = str(acquisition.get("acceptance_datetime") or "")
+        raise PgPreparationRefused("malformed_acquisition")
+    acceptance_value = acquisition.get("acceptance_datetime")
+    acceptance = acceptance_value if isinstance(acceptance_value, str) else ""
     if not acceptance:
-        raise ValueError("acceptance_datetime is required as the source clock")
+        raise PgPreparationRefused("malformed_source_clock")
     body = str(acquisition.get("exhibit_body") or "")
     if not body.strip():
-        raise ValueError("acquisition decoded exhibit text is required")
+        raise PgPreparationRefused("malformed_acquisition")
+    if prior is not None and not isinstance(prior, dict):
+        raise PgPreparationRefused("malformed_prior")
 
     prior_row = None if prior is None else _prior_release(prior)
     prior_workspace = prior if prior is None or "generated_at" in prior else prior.get("workspace")
@@ -2249,7 +2288,7 @@ def prepare_pg_workspace(
     if not report_date:
         fiscal_scope = ("2026-01-01", "2026-03-31", "2025-01-01", "2025-03-31")
     elif report_date != "2026-06-30":
-        raise ValueError("the admitted PG fiscal scope does not match the selected report date")
+        raise PgPreparationRefused("document_period_not_admitted")
     fiscal_period = FiscalPeriod(
         year=date.fromisoformat(fiscal_scope[1]).year,
         quarter=4 if fiscal_scope[1].endswith("-06-30") else 1,
@@ -2258,11 +2297,11 @@ def prepare_pg_workspace(
     blocks = parse_release_blocks(body)
     identity = (2026, 4 if fiscal_scope[1].endswith("-06-30") else 1, date.fromisoformat(fiscal_scope[1]))
     if document_period_verdict(blocks, identity) == "annual":
-        raise ValueError("the document's period signals do not admit the quarterly fiscal scope")
+        raise PgPreparationRefused("document_period_not_admitted")
 
     prior_digest = None if prior_row is None else str(prior_row.get("source_sha256") or "")
     if prior is not None and not prior_digest:
-        raise ValueError("the prior workspace has no issuer release digest")
+        raise PgPreparationRefused("prior_source_identity_missing")
     context = {
         "profile_version": PG_PROFILE_VERSION,
         "fiscal_scope": fiscal_scope,
