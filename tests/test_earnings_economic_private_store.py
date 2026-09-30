@@ -1053,7 +1053,7 @@ def test_stale_interpretation_identity_is_checked(tmp_path, economic_publish):
     key = f"{pp.PRIVATE_PREFIX}/objects/sha256/{digest[:2]}/{digest}.json"
     rebuilt = json.loads(json.dumps(manifest))
     rebuilt["records"][slug].update({"sha256": digest, "bytes": len(altered), "object_key": key})
-    rebuilt["native"]["selections"][slug]["interpretation_id"] = "econ_" + ("0" * 64)
+    rebuilt["native"]["selections"][slug]["interpretation_id"] = "econ_" + ("1" * 64)
     rebuilt = reseal_manifest(rebuilt, pp)
     (store.root / Path(key)).parent.mkdir(parents=True, exist_ok=True)
     (store.root / Path(key)).write_bytes(altered)
