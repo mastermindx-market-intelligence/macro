@@ -6,6 +6,7 @@ from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
 from typing import Any, Mapping
@@ -75,15 +76,71 @@ class UnsupportedInterpretationVersion(EconomicInterpretationError):
     pass
 
 
-def _plain_mapping(value: Any, name: str) -> Mapping[str, Any]:
-    if not isinstance(value, Mapping):
+# R6: Task 3 takes Task 1's boundary (R193, R195, R196).  One walk refuses whatever is not bounded exact JSON
+# before anything reads it: the caller's selection, a stored payload, and the payload a build returns.  Task 1's
+# own walk covers the workspace and the source texts.  Bounded means at most 32 levels, at most 100,000 values
+# and integers below Task 1's printable bound.  The walk and every other type test decide by identity,
+# type(value) is T, containers included, so no argument runs code of its own.  Each public entry turns the
+# exceptions a built-in raises on a value of the wrong type or range into the refusal they stand for; it accepts
+# nothing the body refuses, and every other exception still propagates.
+_EXACT_DEPTH = 32
+_EXACT_VALUES = 100_000
+_EXACT_BOUND = 10**640
+_UNREADABLE = (TypeError, ValueError, ArithmeticError, LookupError, AttributeError)
+
+
+def _inexact(value: Any) -> bool:
+    stack = [(value, 1)]
+    visited = 0
+    while stack:
+        item, depth = stack.pop()
+        visited += 1
+        if depth > _EXACT_DEPTH or visited > _EXACT_VALUES:
+            return True
+        kind = type(item)
+        if kind is dict or kind is list:
+            if len(item) > _EXACT_VALUES - visited:
+                return True
+            if kind is dict:
+                for key in item:
+                    if type(key) is not str:
+                        return True
+                item = item.values()
+            stack.extend((entry, depth + 1) for entry in item)
+        elif kind is float:
+            if not math.isfinite(item):
+                return True
+        elif kind is int:
+            if abs(item) >= _EXACT_BOUND:
+                return True
+        elif kind is not str and kind is not bool and item is not None:
+            return True
+    return False
+
+
+def _exact(value: Any, name: str) -> None:
+    if _inexact(value):
+        raise EconomicInterpretationError(f"{name} is not bounded exact JSON data")
+
+
+def _unreadable(exc: Exception) -> EconomicInterpretationError:
+    return EconomicInterpretationError(
+        f"a value has the wrong type or range where the interpretation reads it ({type(exc).__name__})"
+    )
+
+
+def _plain_mapping(value: Any, name: str) -> dict[str, Any]:
+    if type(value) is not dict:
         raise EconomicInterpretationError(f"{name} must be a mapping")
     return value
 
 
+def _canonical(value: Any) -> str:
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+
 def _digest(value: Any) -> str:
-    serialized = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+    return hashlib.sha256(_canonical(value).encode("utf-8")).hexdigest()
 
 
 SEMANTIC_REVISION = _digest([asdict(definition) for definition in PG_DEFINITIONS])
@@ -211,7 +268,7 @@ def _parse_fiscal_scope(value: Any) -> tuple[date, date, date, date]:
 def _release(workspace: Mapping[str, Any]) -> Mapping[str, Any]:
     releases = [
         source for source in workspace.get("sources", [])
-        if isinstance(source, Mapping)
+        if type(source) is dict
         and source.get("kind") == "issuer_release"
         and source.get("receipt_state") == "byte_replayed"
     ]
@@ -248,13 +305,15 @@ def _selected_rows(
             for row in rows
         ]
         return selected, handles
-    if not isinstance(selection, (list, tuple)):
+    if type(selection) is not list:
         raise EconomicInterpretationError("selection must be a list of native handles")
     chosen: set[tuple[Any, Any, Any]] = set()
     for item in selection:
         item = _plain_mapping(item, "selection item")
         fact_id = item.get("fact_id")
         metric = item.get("metric")
+        if (fact_id is not None and type(fact_id) is not str) or (metric is not None and type(metric) is not str):
+            raise EconomicInterpretationError("selected fact handle is malformed")
         row = by_fact.get(fact_id) if fact_id is not None else by_metric.get(metric)
         if row is None or item.get("event_id") != row.get("event_id"):
             raise EconomicInterpretationError("selected fact handle is absent from the workspace")
@@ -305,7 +364,7 @@ def _selection_input(rows: list[dict[str, Any]], workspace: Mapping[str, Any], s
 
 def _absence_reason(row: Mapping[str, Any]) -> str:
     absence = row.get("typed_absence")
-    if not isinstance(absence, Mapping) or type(absence.get("reason")) is not str or not absence.get("reason"):
+    if type(absence) is not dict or type(absence.get("reason")) is not str or not absence.get("reason"):
         raise EconomicInterpretationError("typed absence reason is malformed")
     return absence["reason"]
 
@@ -348,8 +407,8 @@ def _validate_pair(
         raise EconomicInterpretationError("comparison pair does not identify the selected fiscal periods")
 
 
-def compare_eps(
-    current: Any, prior: Any, *, precision: int | None, uncertainty: Any = None
+def _compare_eps(
+    current: Any, prior: Any, *, precision: Any, uncertainty: Any = None
 ) -> dict[str, Any]:
     current_value = _parse_decimal(current, "current")
     prior_value = _parse_decimal(prior, "prior")
@@ -365,7 +424,7 @@ def compare_eps(
             "state": "not_comparable", "value": None,
             "reason": "nonpositive_prior", "formula": "(current / prior - 1) * 100",
         }
-    if uncertainty_value is not None and prior_value - uncertainty_value <= 0:
+    if uncertainty_value is not None and uncertainty_value >= prior_value:
         return {
             "state": "not_comparable", "value": None,
             "reason": "uncertainty_interval_touches_zero",
@@ -383,6 +442,17 @@ def compare_eps(
     }
 
 
+def compare_eps(
+    current: Any, prior: Any, *, precision: int | None, uncertainty: Any = None
+) -> dict[str, Any]:
+    try:
+        return _compare_eps(current, prior, precision=precision, uncertainty=uncertainty)
+    except EconomicInterpretationError:
+        raise
+    except _UNREADABLE as exc:
+        raise _unreadable(exc) from exc
+
+
 def _comparison(
     workspace: Mapping[str, Any], current: Mapping[str, Any], prior: Mapping[str, Any],
     fiscal_scope: tuple[str, str, str, str], reported: Mapping[str, Any] | None,
@@ -392,18 +462,23 @@ def _comparison(
         _comparison_input(workspace, current),
         _comparison_input(workspace, prior),
     ]
-    absent_sides = [side for side in (current, prior) if "value" not in side or "typed_absence" in side]
-    if absent_sides:
-        absent = absent_sides[0]
-        reason = _absence_reason(absent) if absent else "not_selected"
-        detail = absent.get("typed_absence", {}).get("detail") if absent else None
+    typed_absent = [
+        side for side in (current, prior)
+        if side and ("value" not in side or "typed_absence" in side)
+    ]
+    if typed_absent or not current or not prior:
+        if typed_absent:
+            reason = _absence_reason(typed_absent[0])
+            detail = typed_absent[0]["typed_absence"].get("detail")
+        else:
+            reason, detail = "not_selected", None
         return {
             "schema": "economic_comparison/v1", "formula": formula, "inputs": inputs,
             "result": {"state": "not_comparable", "value": None, "reason": reason, "detail": detail},
             "rounding": None, "state": "declined",
         }
     _validate_pair(current, prior, fiscal_scope)
-    derived = compare_eps(current["value"], prior["value"], precision=2)
+    derived = _compare_eps(current["value"], prior["value"], precision=2)
     if reported is not None and "value" in reported and "typed_absence" not in reported:
         result = {
             "state": "native_reported", "value": _json_number(_decimal(reported["value"])),
@@ -427,13 +502,14 @@ def _comparison(
 
 
 def family_lookup(metric: Any) -> tuple[Any, str, str, str, str, str]:
-    try:
-        return _DISPLAY[metric]
-    except (KeyError, TypeError) as exc:
-        raise EconomicInterpretationError("metric is absent from the closed display table") from exc
+    if type(metric) is not str or metric not in _DISPLAY:
+        raise EconomicInterpretationError("metric is absent from the closed display table")
+    return _DISPLAY[metric]
 
 
 def format_value_and_unit(value: Any, unit: Any) -> dict[str, str] | None:
+    if type(unit) is not str:
+        raise EconomicInterpretationError("unit is absent from the closed display table")
     if unit == "text":
         return None
     number = _json_number(_decimal(value))
@@ -448,9 +524,9 @@ def format_value_and_unit(value: Any, unit: Any) -> dict[str, str] | None:
 
 
 def owner_lookup(group: Any, metric: Any = None) -> str:
-    if metric == "pg_core_reconciliation_context":
+    if type(metric) is str and metric == "pg_core_reconciliation_context":
         return "reconciliation"
-    if group not in _OWNER_BY_GROUP:
+    if type(group) is not str or group not in _OWNER_BY_GROUP:
         raise EconomicInterpretationError("group is absent from the closed owner table")
     return _OWNER_BY_GROUP[group]
 
@@ -593,7 +669,11 @@ def _unavailable(reason: str, semantic_revision: Any, code_revision: Any) -> dic
     payload = {key: None for key in TOP_LEVEL_KEYS}
     payload.update({
         "schema": SCHEMA, "issuer": None, "event_id": None,
-        "build": {"semantic_revision": semantic_revision, "code_revision": code_revision, "deterministic": False},
+        "build": {
+            "semantic_revision": semantic_revision if type(semantic_revision) is str else None,
+            "code_revision": code_revision if type(code_revision) is str else None,
+            "deterministic": False,
+        },
         "selection": {"state": "unavailable"}, "observations": [], "comparisons": [],
         "findings": [], "missing_context": [],
         "next_evidence": [], "quality": {"supported": False, "state": "unavailable", "reason": reason},
@@ -607,8 +687,8 @@ def _unavailable(reason: str, semantic_revision: Any, code_revision: Any) -> dic
     return payload
 
 
-def build_economic_interpretation(
-    workspace: Mapping[str, Any], *, source_texts: Mapping[str, str],
+def _build(
+    workspace: Any, *, source_texts: Any,
     fiscal_scope: Any, selection: Any,
     semantic_revision: Any, code_revision: Any,
 ) -> dict[str, Any]:
@@ -620,13 +700,18 @@ def build_economic_interpretation(
         return _unavailable("unsupported interpretation version", semantic_revision, code_revision)
     fiscal_dates = _parse_fiscal_scope(fiscal_scope)
     fiscal_scope = tuple(item.strftime(_DATE_FORMAT) for item in fiscal_dates)
-    if not isinstance(selection, Mapping) or set(selection) != {"facts", "currentness"}:
+    _exact(selection, "selection")
+    if type(selection) is not dict or set(selection) != {"facts", "currentness"}:
         raise EconomicInterpretationError("selection keys are not exact")
     facts = selection.get("facts")
-    if facts is not None and isinstance(facts, (list, tuple)) and len(facts) > 24:
+    if type(facts) is list and len(facts) > 24:
         raise EconomicInterpretationError("comparisons exceed 24")
     rows = _native_rows(workspace, source_texts=source_texts, fiscal_scope=fiscal_scope)
+    if type(workspace.get("generation_id")) is not str or type(workspace.get("event_id")) is not str:
+        raise EconomicInterpretationError("workspace generation or event identity is malformed")
     selected, _handles, currentness = _selection_input(rows, workspace, selection)
+    if not selected:
+        raise EconomicInterpretationError("selection selects no observation")
     by_metric = {row.get("metric"): row for row in selected}
     comparisons: list[dict[str, Any]] = []
     for current_metric, prior_metric, reported_metric in (
@@ -640,6 +725,11 @@ def build_economic_interpretation(
     findings, missing = _rules(selected, workspace)
     release = _release(workspace)
     lifecycle = workspace.get("lifecycle", {})
+    if type(lifecycle) is not dict:
+        raise EconomicInterpretationError("workspace lifecycle is malformed")
+    correction = lifecycle.get("state")
+    if correction is not None and type(correction) is not str:
+        raise EconomicInterpretationError("workspace lifecycle is malformed")
     source_available_at = (
         None if lifecycle.get("source_available_at") is None
         else _parse_instant(lifecycle.get("source_available_at"), "lifecycle.source_available_at")
@@ -666,7 +756,7 @@ def build_economic_interpretation(
             ),
         },
     }
-    return {
+    payload = {
         "schema": SCHEMA, "interpretation_id": f"econ_{_digest(identity_input)}",
         "issuer": workspace.get("issuer"), "event_id": workspace.get("event_id"),
         "build": {"semantic_revision": semantic_revision, "code_revision": code_revision, "deterministic": True},
@@ -698,27 +788,51 @@ def build_economic_interpretation(
                 None if currentness["source_clock"] is None
                 else _clock_text(currentness["source_clock"])
             ),
-            "source_revision": source_digest, "correction": lifecycle.get("state"),
+            "source_revision": source_digest, "correction": correction,
         },
         "authority": dict(AUTHORITY),
     }
+    _exact(payload, "built interpretation")
+    return payload
 
 
-def _workspaces(value: Any) -> dict[str, Mapping[str, Any]]:
-    if isinstance(value, Mapping) and set(value).issuperset({"schema", "facts", "sources"}):
-        return {"": value}
-    if not isinstance(value, Mapping) or not value:
+def build_economic_interpretation(
+    workspace: Mapping[str, Any], *, source_texts: Mapping[str, str],
+    fiscal_scope: Any, selection: Any,
+    semantic_revision: Any, code_revision: Any,
+) -> dict[str, Any]:
+    try:
+        return _build(
+            workspace, source_texts=source_texts, fiscal_scope=fiscal_scope, selection=selection,
+            semantic_revision=semantic_revision, code_revision=code_revision,
+        )
+    except EconomicInterpretationError:
+        raise
+    except _UNREADABLE as exc:
+        raise _unreadable(exc) from exc
+
+
+# `workspaces` is one workspace, or a mapping from generation id to workspace.  A mapping has only mapping
+# values.  No workspace a build accepts does, because its generation id is a string, so the two never overlap.
+def _workspaces(value: Any) -> dict[str, dict[str, Any]]:
+    if type(value) is not dict or not value:
         raise EconomicInterpretationError("workspaces must map generation ids to workspaces")
-    result = {str(key): workspace for key, workspace in value.items()}
-    if any(not isinstance(workspace, Mapping) for workspace in result.values()):
-        raise EconomicInterpretationError("workspaces must map generation ids to workspaces")
-    return result
+    for key in value:
+        if type(key) is not str:
+            raise EconomicInterpretationError("workspaces must map generation ids to workspaces")
+    for item in value.values():
+        if type(item) is not dict:
+            generation = value.get("generation_id")
+            if type(generation) is not str:
+                raise EconomicInterpretationError("workspaces must map generation ids to workspaces")
+            return {generation: value}
+    return value
 
 
 def _validate_payload_shape(payload: Mapping[str, Any]) -> Mapping[str, Any]:
     build = payload.get("build")
     if (
-        not isinstance(build, Mapping)
+        type(build) is not dict
         or type(build.get("semantic_revision")) is not str
         or type(build.get("code_revision")) is not str
     ):
@@ -726,20 +840,20 @@ def _validate_payload_shape(payload: Mapping[str, Any]) -> Mapping[str, Any]:
     if build.get("semantic_revision") != SEMANTIC_REVISION or build.get("code_revision") != CODE_REVISION:
         raise UnsupportedInterpretationVersion("stored interpretation version is unsupported")
     observations = payload.get("observations")
-    if not isinstance(observations, list):
+    if type(observations) is not list:
         raise EconomicInterpretationError("stored observations are malformed")
     for observation in observations:
-        if not isinstance(observation, Mapping):
+        if type(observation) is not dict:
             raise EconomicInterpretationError("stored observations are malformed")
         handle = observation.get("handle")
-        if not isinstance(handle, Mapping):
+        if type(handle) is not dict:
             raise EconomicInterpretationError("stored observation handle is malformed")
         for value in handle.values():
             if type(value) is not str:
                 raise EconomicInterpretationError("stored observation handle is malformed")
     selection = payload.get("selection")
     if (
-        not isinstance(selection, Mapping)
+        type(selection) is not dict
         or type(selection.get("currentness")) is not str
         or not (
             type(selection.get("currentness_observed_at")) is str
@@ -750,11 +864,12 @@ def _validate_payload_shape(payload: Mapping[str, Any]) -> Mapping[str, Any]:
     return build
 
 
-def validate_economic_interpretation(
-    payload: Mapping[str, Any], *, workspaces: Any, source_texts: Mapping[str, str],
+def _validate(
+    payload: Any, *, workspaces: Any, source_texts: Any,
     fiscal_scope: Any,
 ) -> None:
     payload = _plain_mapping(payload, "payload")
+    _exact(payload, "stored interpretation")
     if tuple(payload.keys()) != TOP_LEVEL_KEYS:
         raise EconomicInterpretationError("interpretation top-level keys are not exact")
     stored_payload = dict(payload)
@@ -765,11 +880,7 @@ def validate_economic_interpretation(
     fiscal_scope = tuple(item.strftime(_DATE_FORMAT) for item in fiscal_dates)
     available = _workspaces(workspaces)
     observations = stored_payload.get("observations")
-    handles = [
-        observation.get("handle")
-        for observation in observations
-        if isinstance(observation, Mapping)
-    ]
+    handles = [observation.get("handle") for observation in observations]
     generation_ids = {handle.get("workspace_generation_id") for handle in handles}
     if len(generation_ids) != 1 or next(iter(generation_ids)) not in available:
         raise EconomicInterpretationError("interpretation handles do not resolve to one supplied workspace")
@@ -785,15 +896,27 @@ def validate_economic_interpretation(
             "source_clock": stored_selection.get("currentness_observed_at"),
         },
     }
-    rebuilt = build_economic_interpretation(
+    rebuilt = _build(
         workspace, source_texts=source_texts, fiscal_scope=fiscal_scope,
         selection=selection, semantic_revision=build.get("semantic_revision"),
         code_revision=build.get("code_revision"),
     )
     if stored_payload.get("interpretation_id") != rebuilt.get("interpretation_id"):
         raise EconomicInterpretationError("stored interpretation identity does not replay")
-    if stored_payload != rebuilt:
+    if _canonical(stored_payload) != _canonical(rebuilt):
         raise EconomicInterpretationError("stored interpretation does not replay")
+
+
+def validate_economic_interpretation(
+    payload: Mapping[str, Any], *, workspaces: Any, source_texts: Mapping[str, str],
+    fiscal_scope: Any,
+) -> None:
+    try:
+        return _validate(payload, workspaces=workspaces, source_texts=source_texts, fiscal_scope=fiscal_scope)
+    except EconomicInterpretationError:
+        raise
+    except _UNREADABLE as exc:
+        raise _unreadable(exc) from exc
 
 
 __all__ = [

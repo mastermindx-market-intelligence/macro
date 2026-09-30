@@ -1,8 +1,10 @@
 from decimal import Decimal
+from fractions import Fraction
 import ast
 import copy
 import hashlib
 import json
+import math
 import random
 
 import pytest
@@ -26,7 +28,9 @@ from engine.earnings_narrative.economic_interpretation import (
 )
 from tests.earnings_economic_fixtures import FISCAL_SCOPE
 from tests.earnings_economic_interpretation_fixtures import _case, build_case_interpretation
+from engine.company_intelligence import economic_observations
 from engine.company_intelligence.economic_observations import validate_selected_facts
+from engine.company_intelligence.pg_profile import PG_DEFINITIONS
 
 
 CAUSED_OUTCOMES = {
@@ -279,19 +283,33 @@ SPEC_LABEL_TABLE = {
 }
 
 
+SPEC_SEGMENT_LABELS = {
+    'pg_beauty_organic_sales_growth_pct': 'Beauty',
+    'pg_grooming_organic_sales_growth_pct': 'Grooming',
+    'pg_health_care_organic_sales_growth_pct': 'Health Care',
+    'pg_fabric_home_organic_sales_growth_pct': 'Fabric and Home Care',
+    'pg_baby_feminine_family_organic_sales_growth_pct': 'Baby, Feminine and Family Care',
+}
+
+
 def test_spec_strings_are_exact():
     result = build_case_interpretation('identical_inputs')
     labels = {item['metric']: item['label'] for item in result['observations']}
     for metric, expected in SPEC_LABEL_TABLE.items():
         assert family_lookup(metric) == expected
         assert labels[metric] == {'en': expected[4], 'zh': expected[5]}
-    fixed, actual = set(SPEC_LABEL_TABLE), set()
-    for observation in result['observations']:
-        if observation['group'] == 'segment':
-            assert observation['label']['en'] == observation['label']['zh']
-        else:
-            actual.add(observation['metric'])
-    assert actual == fixed
+    owner_scopes = {
+        definition.metric: definition.segment_scope
+        for definition in PG_DEFINITIONS if definition.segment_scope is not None
+    }
+    assert owner_scopes == SPEC_SEGMENT_LABELS
+    for metric, scope in SPEC_SEGMENT_LABELS.items():
+        assert family_lookup(metric)[4:] == (scope, scope)
+        assert labels[metric] == {'en': scope, 'zh': scope}
+    groups = {item['metric']: item['group'] for item in result['observations']}
+    assert {metric for metric, group in groups.items() if group == 'segment'} == set(SPEC_SEGMENT_LABELS)
+    assert set(labels) == set(SPEC_LABEL_TABLE) | set(SPEC_SEGMENT_LABELS)
+    assert set(economic_interpretation._DISPLAY) == set(SPEC_LABEL_TABLE) | set(SPEC_SEGMENT_LABELS)
     values = {item['metric']: item['value_and_unit'] for item in result['observations']}
     assert values['pg_reported_sales_growth_pct'] == {'en': '3.0%', 'zh': '3.0%'}
     assert values['pg_fx_contribution_pp'] == {'en': '-1.0 pp', 'zh': '-1.0个百分点'}
@@ -350,6 +368,21 @@ def test_display_and_owner_lookups_are_closed():
         owner_lookup('unknown_group')
 
 
+@pytest.mark.parametrize('lookup,admitted', [
+    (family_lookup, 'pg_core_eps'),
+    (lambda unit: format_value_and_unit(Decimal('1'), unit), 'percent'),
+    (owner_lookup, 'demand'),
+], ids=['family_lookup', 'format_value_and_unit', 'owner_lookup'])
+@pytest.mark.parametrize('kind', ['list', 'raiser', 'liar', 'str_subclass'])
+def test_each_lookup_tests_the_type_before_it_reads_the_value(lookup, admitted, kind):
+    assert lookup(admitted) is not None
+    value = {
+        'list': [admitted], 'raiser': _Raiser(), 'liar': _Liar('not_in_any_table'), 'str_subclass': _Str(admitted),
+    }[kind]
+    with pytest.raises(EconomicInterpretationError, match='is absent from the closed'):
+        lookup(value)
+
+
 def test_compare_eps_uncertainty_is_provided():
     assert compare_eps(Decimal('1.64'), Decimal('1.50'), precision=2)['value'] == '9.33'
     assert compare_eps(Decimal('0.03'), Decimal('0.01'), precision=2)['value'] == '200.00'
@@ -386,8 +419,23 @@ def test_compare_eps_parses_current_before_outcomes(bad_current, prior):
 
 @pytest.mark.parametrize('current,prior', [('1.64', '1.52'), ('1e400', '1')])
 def test_compare_eps_arithmetic_stays_guarded(current, prior):
-    with pytest.raises(EconomicInterpretationError):
+    with pytest.raises(EconomicInterpretationError, match='EPS growth arithmetic is not defined'):
         compare_eps(current, prior, precision=40 if current == '1.64' else 2)
+
+
+HUGE = '9.' + '9' * 40 + 'e999999'
+
+
+def test_compare_eps_decides_the_interval_without_arithmetic_that_can_overflow():
+    touching = compare_eps('1.64', '1', precision=2, uncertainty=HUGE)
+    assert touching == {
+        'state': 'not_comparable', 'value': None,
+        'reason': 'uncertainty_interval_touches_zero', 'formula': '(current / prior - 1) * 100',
+    }
+    clear = compare_eps('1.64', HUGE, precision=2, uncertainty='1')
+    assert (clear['state'], clear['value'], clear['reason']) == ('comparable', '-100.00', None)
+    with pytest.raises(EconomicInterpretationError, match='EPS growth arithmetic is not defined'):
+        compare_eps(HUGE, '1e-999999', precision=2)
 
 
 def _all_handles(case):
@@ -461,8 +509,8 @@ def test_finding_handles_are_selected_observations(case):
             assert handle is not None
 
 
-def _selection_with_metrics(*metrics):
-    workspace, texts = _case('identical_inputs')
+def _selection_with_metrics(*metrics, case='identical_inputs'):
+    workspace, texts = _case(case)
     rows = validate_selected_facts(workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE)
     handles = [
         {
@@ -497,10 +545,69 @@ def test_selected_typed_absent_comparison_uses_task_one_reason():
     assert comparison['result']['detail'] == 'envelope_refused:not_ex_99_1'
 
 
+TASK_ONE_ABSENCE = {
+    'state': 'not_comparable', 'value': None,
+    'reason': 'no_span_addressable_evidence', 'detail': 'envelope_refused:not_ex_99_1',
+}
+NOT_SELECTED = {'state': 'not_comparable', 'value': None, 'reason': 'not_selected', 'detail': None}
+
+
+@pytest.mark.parametrize('metric', ['pg_diluted_eps', 'pg_prior_diluted_eps'])
+def test_one_selected_typed_absent_side_gives_task_one_reason(metric):
+    selection = _selection_with_metrics(metric, case='refused_document_outcome')
+    assert len(selection['facts']) == 1
+    payload = build_case_interpretation('refused_document_outcome', selection=selection)
+    assert [item['result'] for item in payload['comparisons']] == [TASK_ONE_ABSENCE, NOT_SELECTED]
+
+
+@pytest.mark.parametrize('metric', ['pg_diluted_eps', 'pg_prior_diluted_eps'])
+def test_one_selected_side_with_a_value_is_not_selected(metric):
+    selection = _selection_with_metrics(metric)
+    assert len(selection['facts']) == 1
+    payload = build_case_interpretation('identical_inputs', selection=selection)
+    assert [item['result'] for item in payload['comparisons']] == [NOT_SELECTED, NOT_SELECTED]
+
+
+def _comparison_side(role, kind):
+    metric = {'current': 'pg_diluted_eps', 'prior': 'pg_prior_diluted_eps'}[role]
+    if kind == 'unselected':
+        return {}
+    side = {'metric': metric, 'event_id': 'evt', 'fact_id': f'fact_{role}'}
+    if kind == 'present':
+        side['value'] = 3.07
+    else:
+        side['typed_absence'] = {'reason': f'{role}_reason', 'detail': f'{role}_detail'}
+    return side
+
+
+@pytest.mark.parametrize('current,prior,reason,detail', [
+    ('absent', 'absent', 'current_reason', 'current_detail'),
+    ('absent', 'present', 'current_reason', 'current_detail'),
+    ('absent', 'unselected', 'current_reason', 'current_detail'),
+    ('present', 'absent', 'prior_reason', 'prior_detail'),
+    ('unselected', 'absent', 'prior_reason', 'prior_detail'),
+    ('present', 'unselected', 'not_selected', None),
+    ('unselected', 'present', 'not_selected', None),
+    ('unselected', 'unselected', 'not_selected', None),
+])
+def test_declined_comparison_reports_the_selected_typed_absence_current_side_first(
+    current, prior, reason, detail
+):
+    comparison = economic_interpretation._comparison(
+        {'generation_id': ''}, _comparison_side('current', current), _comparison_side('prior', prior),
+        FISCAL_SCOPE, None,
+    )
+    assert comparison['state'] == 'declined'
+    assert comparison['result'] == {
+        'state': 'not_comparable', 'value': None, 'reason': reason, 'detail': detail,
+    }
+
+
 def test_unavailable_payload_has_no_missing_context_items():
     payload = build_case_interpretation('identical_inputs', code_revision='0' * 63)
     assert payload['missing_context'] == []
     assert payload['quality']['reason'] == 'unsupported interpretation version'
+    assert payload['build']['code_revision'] == '0' * 63
 
 
 @pytest.mark.parametrize('case', [
@@ -545,8 +652,8 @@ def test_trusted_boundary_rejects_display_and_currentness_edits():
 
 
 def test_trusted_boundary_rejects_every_wrong_typed_top_level_value():
-    payload = build_case_interpretation('identical_inputs')
-    workspace, texts = _case('identical_inputs')
+    workspace, texts, payload = _baseline(ABSENT)
+    validate_economic_interpretation(payload, workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE)
     for key in TOP_LEVEL_KEYS:
         for value in (5, 'x', [1], {'k': 1}, None, True):
             if value == payload[key]:
@@ -681,23 +788,41 @@ def test_rules_and_copy_follow_the_spec_tables():
     }
 
 
+ABSENT = 'refused_document_outcome'
+_BASELINES = {}
+
+
+def _baseline(case='identical_inputs'):
+    """A fixture case's workspace, source texts and built payload: built once, then copied for each caller.
+
+    Every row of the `ABSENT` case is typed-absent.  Task 1 validates that in about a millisecond, and a release
+    with values in about seventy, so tests of rules that read no row's content use `ABSENT`.
+    """
+    if case not in _BASELINES:
+        workspace, texts = _case(case)
+        _BASELINES[case] = (workspace, texts, build_economic_interpretation(
+            workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE,
+            selection={'facts': None, 'currentness': None},
+            semantic_revision=SEMANTIC_REVISION, code_revision=CODE_REVISION,
+        ))
+    return copy.deepcopy(_BASELINES[case])
+
+
 class _Str(str):
     pass
 
 
 def _call_with_currentness(value):
-    build_case_interpretation(
-        'identical_inputs',
-        selection={'facts': None, 'currentness': {'state': 'up_to_date', 'source_clock': value}},
+    workspace, texts, _payload = _baseline(ABSENT)
+    _build_with(
+        workspace, texts, selection={'facts': None, 'currentness': {'state': 'up_to_date', 'source_clock': value}},
     )
 
 
 def _validated_with_observed_at(value):
-    payload = build_case_interpretation(
-        'identical_inputs',
-        selection={'facts': None, 'currentness': {'state': 'up_to_date', 'source_clock': '2026-07-29T17:00:00Z'}},
-    )
-    workspace, texts = _case('identical_inputs')
+    workspace, texts, _payload = _baseline(ABSENT)
+    payload = _build_with(workspace, texts, selection={'facts': None, 'currentness': CLOCKED})
+    validate_economic_interpretation(payload, workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE)
     payload['selection']['currentness_observed_at'] = value
     with pytest.raises(EconomicInterpretationError):
         validate_economic_interpretation(
@@ -706,8 +831,7 @@ def _validated_with_observed_at(value):
 
 
 def _built_with_lifecycle(field, value):
-    workspace, texts = _case('identical_inputs')
-    workspace = copy.deepcopy(workspace)
+    workspace, texts, _payload = _baseline(ABSENT)
     workspace['lifecycle'][field] = value
     with pytest.raises(EconomicInterpretationError):
         build_economic_interpretation(
@@ -750,7 +874,7 @@ _DATE_VALUES = (
 
 
 def _with_fiscal_scope(value):
-    workspace, texts = _case('identical_inputs')
+    workspace, texts, _payload = _baseline(ABSENT)
     build_economic_interpretation(
         workspace, source_texts=texts, fiscal_scope=value,
         selection={'facts': None, 'currentness': None},
@@ -759,44 +883,103 @@ def _with_fiscal_scope(value):
 
 
 @pytest.mark.parametrize('position,value', [
-    *[(position, value) for position in range(4) for value in _DATE_VALUES],
-    *[(position, value) for position in range(4) for value in (FISCAL_SCOPE[:3], FISCAL_SCOPE[:5])],
+    (position, value) for position in range(4) for value in _DATE_VALUES
 ])
 def test_dates_are_parsed_in_build_and_validate(position, value):
     scope = list(FISCAL_SCOPE)
-    if isinstance(value, (list, tuple)) and len(value) != 4:
-        scope = value
-    else:
-        scope[position] = value
-    with pytest.raises(EconomicInterpretationError):
+    scope[position] = value
+    with pytest.raises(EconomicInterpretationError, match='is not a canonical date'):
         _with_fiscal_scope(scope)
-    payload = build_case_interpretation('identical_inputs')
-    workspace, texts = _case('identical_inputs')
-    with pytest.raises(EconomicInterpretationError):
+    workspace, texts, payload = _baseline(ABSENT)
+    with pytest.raises(EconomicInterpretationError, match='is not a canonical date'):
         validate_economic_interpretation(
             payload, workspaces=workspace, source_texts=texts, fiscal_scope=scope
         )
 
 
-@pytest.mark.parametrize('value', [
-    ['up_to_date'], {'s': 1}, 1, None, 'UP_TO_DATE', 'unverified',
-    _Str('up_to_date'),
+@pytest.mark.parametrize('container', [tuple, list])
+@pytest.mark.parametrize('count', [0, 1, 3, 5, 8])
+def test_fiscal_scope_has_exactly_four_entries(count, container):
+    scope = container((FISCAL_SCOPE * 2)[:count])
+    assert len(scope) == count
+    with pytest.raises(EconomicInterpretationError, match='exactly four dates'):
+        _with_fiscal_scope(scope)
+    workspace, texts, payload = _baseline(ABSENT)
+    with pytest.raises(EconomicInterpretationError, match='exactly four dates'):
+        validate_economic_interpretation(
+            payload, workspaces=workspace, source_texts=texts, fiscal_scope=scope
+        )
+
+
+@pytest.mark.parametrize('source_clock', [None, '2026-07-29T17:00:00Z'])
+@pytest.mark.parametrize('value,refusal', [
+    *[(value, 'selection.currentness.state is not an admitted token') for value in (
+        ['up_to_date'], {'s': 1}, 1, None, True, '', 'UP_TO_DATE', 'unverified',
+    )],
+    *[(value, 'selection is not bounded exact JSON data') for value in (
+        _Str('up_to_date'), _Str('currentness_unverified'),
+    )],
 ])
-def test_currentness_state_is_a_closed_exact_string(value):
-    workspace, texts = _case('identical_inputs')
-    with pytest.raises(EconomicInterpretationError):
+def test_currentness_state_is_a_closed_exact_string(value, refusal, source_clock):
+    workspace, texts, _payload = _baseline(ABSENT)
+    with pytest.raises(EconomicInterpretationError, match=refusal):
         build_economic_interpretation(
             workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE,
-            selection={'facts': None, 'currentness': {'state': value, 'source_clock': None}},
+            selection={'facts': None, 'currentness': {'state': value, 'source_clock': source_clock}},
             semantic_revision=SEMANTIC_REVISION, code_revision=CODE_REVISION,
         )
 
 
+def _built_with_currentness(state, source_clock):
+    workspace, texts, _payload = _baseline(ABSENT)
+    return _build_with(
+        workspace, texts, selection={'facts': None, 'currentness': {'state': state, 'source_clock': source_clock}},
+    )
+
+
 def test_currentness_clock_rules_are_exact():
-    with pytest.raises(EconomicInterpretationError):
-        _call_with_currentness({'state': 'currentness_unverified', 'source_clock': '2026-07-29T17:00:00Z'})
-    with pytest.raises(EconomicInterpretationError):
-        _call_with_currentness({'state': 'up_to_date', 'source_clock': None})
+    clock = '2026-07-29T17:00:00Z'
+    with pytest.raises(EconomicInterpretationError, match='cannot carry a source clock'):
+        _built_with_currentness('currentness_unverified', clock)
+    unverified = _built_with_currentness('currentness_unverified', None)['selection']
+    assert (unverified['currentness'], unverified['currentness_observed_at']) == ('currentness_unverified', None)
+    for state in ('up_to_date', 'newer_source_pending'):
+        with pytest.raises(EconomicInterpretationError, match='is not a canonical UTC instant'):
+            _built_with_currentness(state, None)
+        clocked = _built_with_currentness(state, clock)['selection']
+        assert (clocked['currentness'], clocked['currentness_observed_at']) == (state, clock)
+
+
+class _Int(int):
+    pass
+
+
+@pytest.mark.parametrize('wrap', [_Str, lambda value: _opaque(str, value)])
+def test_each_string_parser_decides_by_identity(wrap):
+    states = economic_interpretation._CURRENTNESS_STATES
+    assert economic_interpretation._parse_token('up_to_date', states, 'state') == 'up_to_date'
+    with pytest.raises(EconomicInterpretationError, match='is not an admitted token'):
+        economic_interpretation._parse_token(wrap('up_to_date'), states, 'state')
+    instant = '2026-07-29T17:00:00Z'
+    assert economic_interpretation._parse_instant(instant, 'clock').strftime('%Y-%m-%dT%H:%M:%SZ') == instant
+    with pytest.raises(EconomicInterpretationError, match='is not a canonical UTC instant'):
+        economic_interpretation._parse_instant(wrap(instant), 'clock')
+    assert economic_interpretation._parse_date('2026-06-30', 'date').isoformat() == '2026-06-30'
+    with pytest.raises(EconomicInterpretationError, match='is not a canonical date'):
+        economic_interpretation._parse_date(wrap('2026-06-30'), 'date')
+    assert economic_interpretation._parse_decimal('1.5', 'number') == Decimal('1.5')
+    with pytest.raises(EconomicInterpretationError, match='is not a decimal-compatible value'):
+        economic_interpretation._parse_decimal(wrap('1.5'), 'number')
+
+
+@pytest.mark.parametrize('value', [_Int(2), True, 2.0, '2'])
+def test_the_precision_parser_decides_by_identity(value):
+    assert economic_interpretation._parse_precision(2) == 2
+    assert economic_interpretation._parse_precision(None) is None
+    with pytest.raises(EconomicInterpretationError, match='precision must be a nonnegative integer or None'):
+        economic_interpretation._parse_precision(value)
+    with pytest.raises(EconomicInterpretationError, match='precision must be a nonnegative integer or None'):
+        economic_interpretation._parse_precision(_opaque(int, 2))
 
 
 def test_parser_positive_controls_and_clock_text():
@@ -858,8 +1041,7 @@ def test_compare_eps_classifies_numbers_by_identity(position, prior):
 
 @pytest.mark.parametrize('base', [tuple, list])
 def test_fiscal_scope_container_is_classified_by_identity(base):
-    payload = build_case_interpretation('identical_inputs')
-    workspace, texts = _case('identical_inputs')
+    workspace, texts, payload = _baseline(ABSENT)
     _with_fiscal_scope(base(FISCAL_SCOPE))
     validate_economic_interpretation(
         payload, workspaces=workspace, source_texts=texts, fiscal_scope=base(FISCAL_SCOPE)
@@ -880,33 +1062,705 @@ def test_stored_handle_values_are_exact_strings():
         baseline, workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE
     )
     fields = sorted(baseline['observations'][0]['handle'])
-    assert fields
+    assert fields == ['event_id', 'fact_id', 'workspace_generation_id']
     for field in fields:
+        path = ('observations', 0, 'handle', field)
+        original = baseline['observations'][0]['handle'][field]
         for wrap in (_Str, lambda value: _opaque(str, value)):
-            payload = copy.deepcopy(baseline)
-            handle = payload['observations'][0]['handle']
-            handle[field] = wrap(handle[field])
+            with pytest.raises(EconomicInterpretationError, match='stored interpretation is not bounded exact JSON'):
+                validate_economic_interpretation(
+                    _replace_at(baseline, path, wrap(original)),
+                    workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE,
+                )
+        for value in (3, None, ['x'], {'a': 'b'}, True, 1.5):
             with pytest.raises(EconomicInterpretationError, match='handle is malformed'):
                 validate_economic_interpretation(
-                    payload, workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE
+                    _replace_at(baseline, path, value),
+                    workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE,
                 )
 
 
-def test_type_tests_follow_the_parsing_boundary():
+def test_every_type_test_is_an_identity_test():
     with open(economic_interpretation.__file__, encoding='utf-8') as source:
         tree = ast.parse(source.read())
-    containers = {'Mapping', 'list', 'tuple'}
-    container_tests = 0
+    identity_tests = 0
     for node in ast.walk(tree):
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == 'isinstance':
-            kinds = node.args[1].elts if isinstance(node.args[1], ast.Tuple) else [node.args[1]]
-            assert all(isinstance(kind, ast.Name) and kind.id in containers for kind in kinds), ast.unparse(node)
-            container_tests += 1
-        if (
-            isinstance(node, ast.Compare)
-            and isinstance(node.left, ast.Call)
-            and isinstance(node.left.func, ast.Name)
-            and node.left.func.id == 'type'
-        ):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            assert node.func.id not in {'isinstance', 'issubclass'}, ast.unparse(node)
+        if isinstance(node, ast.Attribute):
+            assert node.attr != '__class__', ast.unparse(node)
+        if not isinstance(node, ast.Compare):
+            continue
+        left = node.left
+        names_a_type = (
+            isinstance(left, ast.Call) and isinstance(left.func, ast.Name) and left.func.id == 'type'
+        ) or (isinstance(left, ast.Name) and left.id == 'kind')
+        if names_a_type:
             assert all(isinstance(op, (ast.Is, ast.IsNot)) for op in node.ops), ast.unparse(node)
-    assert container_tests
+            identity_tests += 1
+    assert identity_tests >= IDENTITY_TEST_FLOOR
+
+
+IDENTITY_TEST_FLOOR = 50
+
+
+class _Liar(str):
+    """Compares equal to anything, so only an identity type test tells it from an exact string."""
+
+    def __eq__(self, other):
+        return True
+
+    def __ne__(self, other):
+        return False
+
+    __hash__ = str.__hash__
+
+
+class _Raiser:
+    """Raises from every operation, so only code that asks it nothing gets past it."""
+
+    def _refuse(self, *args, **kwargs):
+        raise RuntimeError('an unchecked value ran its own code')
+
+    __eq__ = __ne__ = __lt__ = __le__ = __gt__ = __ge__ = __hash__ = __bool__ = _refuse
+    __len__ = __iter__ = __contains__ = __getitem__ = __str__ = __repr__ = __format__ = _refuse
+    __int__ = __float__ = __index__ = __getattr__ = _refuse
+
+
+def _replace_at(node, path, value):
+    """A copy of `node` with `value` at `path`.  Only the containers along the path are copied."""
+    if not path:
+        return value
+    copied = dict(node) if type(node) is dict else list(node)
+    copied[path[0]] = _replace_at(node[path[0]], path[1:], value)
+    return tuple(copied) if type(node) is tuple else copied
+
+
+def _nodes(value, path=()):
+    yield path, value
+    if type(value) is dict:
+        for key, item in value.items():
+            yield from _nodes(item, path + (key,))
+    elif type(value) is list or type(value) is tuple:
+        for index, item in enumerate(value):
+            yield from _nodes(item, path + (index,))
+
+
+def _is_exact_json(value):
+    for _path, node in _nodes(value):
+        kind = type(node)
+        if kind is dict:
+            if any(type(key) is not str for key in node):
+                return False
+        elif kind is float:
+            if not math.isfinite(node):
+                return False
+        elif not (kind is list or kind is str or kind is int or kind is bool or node is None):
+            return False
+    return True
+
+
+def _hostile(node):
+    """Values no contract admits in place of `node`, as (name, value) pairs."""
+    kind = type(node)
+    found = [('raiser', _Raiser())]
+    if kind is str:
+        found += [('str_subclass', _Str(node)), ('opaque_str', _opaque(str, node)), ('liar', _Liar(node))]
+    elif kind is dict:
+        found.append(('dict_subclass', _opaque(dict, node)))
+        if node:
+            found.append(('str_subclass_keys', {_Str(key): item for key, item in node.items()}))
+            found.append(('liar_keys', {_Liar(key): item for key, item in node.items()}))
+    elif kind is list:
+        found.append(('list_subclass', _opaque(list, node)))
+    elif kind is tuple:
+        found.append(('tuple_subclass', _opaque(tuple, node)))
+    elif kind is int:
+        found.append(('int_subclass', _opaque(int, node)))
+    elif kind is float:
+        found.append(('float_subclass', _opaque(float, node)))
+    return found
+
+
+def _look_alikes(node):
+    """Exact values of another type that compare equal to `node`, as (name, value) pairs."""
+    kind = type(node)
+    if kind is list:
+        return [('tuple_for_list', tuple(node))]
+    if kind is bool:
+        return [('int_for_bool', int(node))]
+    if kind is int:
+        return [('float_for_int', float(node))]
+    if kind is float and node == int(node):
+        return [('int_for_float', int(node))]
+    return []
+
+
+def _outcome(call):
+    try:
+        result = call()
+    except EconomicInterpretationError:
+        return 'typed', None
+    except Exception as exc:
+        return f'escaped {type(exc).__name__}', None
+    return 'returned', result
+
+
+def _where(path, name):
+    return '/'.join(str(part) for part in path) + f' <- {name}'
+
+
+def _build_with(workspace, texts, *, fiscal_scope=FISCAL_SCOPE, selection=None):
+    return build_economic_interpretation(
+        workspace, source_texts=texts, fiscal_scope=fiscal_scope,
+        selection={'facts': None, 'currentness': None} if selection is None else selection,
+        semantic_revision=SEMANTIC_REVISION, code_revision=CODE_REVISION,
+    )
+
+
+CLOCKED = {'state': 'up_to_date', 'source_clock': '2026-07-29T17:00:00Z'}
+
+
+def test_validate_refuses_a_substitute_at_every_stored_position():
+    workspace, texts = _case('identical_inputs')
+    baseline = build_case_interpretation('identical_inputs', selection={'facts': None, 'currentness': CLOCKED})
+
+    def validate(payload):
+        return validate_economic_interpretation(
+            payload, workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE
+        )
+
+    assert _outcome(lambda: validate(baseline))[0] == 'returned'
+    assert _is_exact_json(baseline)
+    failures, hostile, look_alikes, patterns = [], 0, 0, set()
+    for path, node in _nodes(baseline):
+        substitutes = _hostile(node)
+        hostile += len(substitutes)
+        pattern = tuple('*' if type(part) is int else part for part in path)
+        if pattern not in patterns:
+            patterns.add(pattern)
+            substitutes += _look_alikes(node)
+            look_alikes += len(_look_alikes(node))
+        for name, value in substitutes:
+            outcome = _outcome(lambda: validate(_replace_at(baseline, path, value)))[0]
+            if outcome != 'typed':
+                failures.append(f'{_where(path, name)}: {outcome}')
+    assert not failures, failures[:20]
+    assert hostile >= 2000 and look_alikes >= 20
+
+
+def test_build_refuses_a_substitute_at_every_selection_position():
+    workspace, texts = _case('identical_inputs')
+    rows = validate_selected_facts(workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE)
+    handles = _all_handles('identical_inputs')
+    by_metric = [
+        {'workspace_generation_id': workspace['generation_id'], 'event_id': row['event_id'], 'metric': row['metric']}
+        for row in rows[:3]
+    ]
+    selections = [
+        {'facts': None, 'currentness': None},
+        {'facts': handles[:3], 'currentness': CLOCKED},
+        {'facts': by_metric, 'currentness': {'state': 'currentness_unverified', 'source_clock': None}},
+    ]
+    failures, checked = [], 0
+    for number, selection in enumerate(selections):
+        outcome, built = _outcome(lambda: _build_with(workspace, texts, selection=selection))
+        assert outcome == 'returned' and built['quality']['supported'] is True
+        for path, node in _nodes(selection):
+            for name, value in _hostile(node) + _look_alikes(node):
+                checked += 1
+                candidate = _replace_at(selection, path, value)
+                outcome = _outcome(lambda: _build_with(workspace, texts, selection=candidate))[0]
+                if outcome != 'typed':
+                    failures.append(f'selection {number} {_where(path, name)}: {outcome}')
+    assert not failures, failures[:20]
+    assert checked >= 100
+
+
+def test_build_refuses_a_hostile_value_at_every_workspace_position():
+    workspace, texts = _case('identical_inputs')
+    assert _outcome(lambda: _build_with(workspace, texts))[0] == 'returned'
+    failures, checked = [], 0
+    for path, node in _nodes(workspace):
+        for name, value in _hostile(node):
+            checked += 1
+            outcome = _outcome(lambda: _build_with(_replace_at(workspace, path, value), texts))[0]
+            if outcome != 'typed':
+                failures.append(f'{_where(path, name)}: {outcome}')
+    assert not failures, failures[:20]
+    assert checked >= 2500
+
+
+def test_build_returns_exact_json_when_a_workspace_list_is_a_tuple():
+    workspace, texts = _case('identical_inputs')
+    failures, returned, refused = [], 0, 0
+    for path, node in _nodes(workspace):
+        for name, value in _look_alikes(node) if type(node) is list else []:
+            outcome, built = _outcome(lambda: _build_with(_replace_at(workspace, path, value), texts))
+            if outcome == 'returned' and _is_exact_json(built):
+                returned += 1
+            elif outcome == 'typed':
+                refused += 1
+            else:
+                failures.append(f'{_where(path, name)}: {outcome}')
+    assert not failures, failures[:20]
+    assert returned >= 1 and refused >= 1
+
+
+def test_every_other_argument_is_refused_when_it_is_not_exact():
+    workspace, texts = _case('identical_inputs')
+    baseline = build_case_interpretation('identical_inputs')
+
+    def build(**changed):
+        arguments = {'workspace': workspace, 'texts': texts, 'fiscal_scope': FISCAL_SCOPE, **changed}
+        return _build_with(arguments['workspace'], arguments['texts'], fiscal_scope=arguments['fiscal_scope'])
+
+    def validate(**changed):
+        arguments = {'workspaces': workspace, 'source_texts': texts, 'fiscal_scope': FISCAL_SCOPE, **changed}
+        return validate_economic_interpretation(baseline, **arguments)
+
+    generation = workspace['generation_id']
+    assert _outcome(lambda: validate(workspaces={generation: workspace}))[0] == 'returned'
+    assert _outcome(lambda: validate(fiscal_scope=list(FISCAL_SCOPE)))[0] == 'returned'
+    calls = []
+    for path, node in _nodes(texts):
+        for name, value in _hostile(node):
+            candidate = _replace_at(texts, path, value)
+            calls.append((f'build source_texts {_where(path, name)}', lambda candidate=candidate: build(texts=candidate)))
+            calls.append((
+                f'validate source_texts {_where(path, name)}',
+                lambda candidate=candidate: validate(source_texts=candidate),
+            ))
+    for path, node in _nodes(FISCAL_SCOPE):
+        for name, value in _hostile(node):
+            candidate = _replace_at(FISCAL_SCOPE, path, value)
+            calls.append((
+                f'build fiscal_scope {_where(path, name)}', lambda candidate=candidate: build(fiscal_scope=candidate),
+            ))
+            calls.append((
+                f'validate fiscal_scope {_where(path, name)}',
+                lambda candidate=candidate: validate(fiscal_scope=candidate),
+            ))
+    for name, value in [
+        *_hostile(workspace),
+        ('str_subclass_generation', {_Str(generation): workspace}),
+        ('liar_generation', {_Liar(generation): workspace}),
+        ('workspace_subclass', {generation: _opaque(dict, workspace)}),
+        ('workspace_raiser', {generation: _Raiser()}),
+        ('workspace_list', {generation: [workspace]}),
+        ('empty', {}),
+    ]:
+        calls.append((f'validate workspaces <- {name}', lambda value=value: validate(workspaces=value)))
+    for name, value in _hostile(workspace):
+        calls.append((f'build workspace <- {name}', lambda value=value: build(workspace=value)))
+    for name, value in _hostile(baseline):
+        calls.append((
+            f'validate payload <- {name}',
+            lambda value=value: validate_economic_interpretation(
+                value, workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE
+            ),
+        ))
+    failures = [f'{label}: {outcome}' for label, call in calls for outcome in [_outcome(call)[0]] if outcome != 'typed']
+    assert not failures, failures[:20]
+    assert len(calls) >= 50
+
+
+def test_compare_eps_refuses_every_unreadable_argument():
+    base = {'current': '1.64', 'prior': '1.52', 'precision': 2, 'uncertainty': '0.01'}
+
+    def compare(**changed):
+        arguments = {**base, **changed}
+        return compare_eps(
+            arguments['current'], arguments['prior'],
+            precision=arguments['precision'], uncertainty=arguments['uncertainty'],
+        )
+
+    assert compare()['value'] == '7.89'
+    numbers = [
+        *_hostile('1.5'), *_hostile(2)[1:], *_hostile(1.5)[1:],
+        ('decimal_subclass', _opaque(Decimal, '1.5')), ('fraction', Fraction(3, 2)), ('bytes', b'1.5'),
+        ('list', ['1.5']), ('true', True),
+    ]
+    calls = [
+        (f'{position} <- {name}', lambda position=position, value=value: compare(**{position: value}))
+        for position in ('current', 'prior', 'uncertainty') for name, value in numbers
+    ]
+    calls += [
+        (f'precision <- {name}', lambda value=value: compare(precision=value))
+        for name, value in [*_hostile(2), ('true', True), ('float', 2.0), ('text', '2'), ('negative', -1)]
+    ]
+    failures = [f'{label}: {outcome}' for label, call in calls for outcome in [_outcome(call)[0]] if outcome != 'typed']
+    assert not failures, failures[:20]
+    assert len(calls) >= 35
+
+
+_UNREADABLE_ERRORS = [
+    TypeError, ValueError, ArithmeticError, LookupError, AttributeError,
+    KeyError, IndexError, OverflowError, ZeroDivisionError,
+]
+
+
+def _entry_calls():
+    workspace, texts, baseline = _baseline(ABSENT)
+    return {
+        'build': ('_release', lambda: _build_with(workspace, texts)),
+        'validate': ('_release', lambda: validate_economic_interpretation(
+            baseline, workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE
+        )),
+        'compare_eps': ('_parse_precision', lambda: compare_eps('1.64', '1.52', precision=2)),
+    }
+
+
+@pytest.mark.parametrize('error', _UNREADABLE_ERRORS)
+@pytest.mark.parametrize('entry', ['build', 'validate', 'compare_eps'])
+def test_each_entry_turns_an_unreadable_value_into_the_typed_refusal(entry, error, monkeypatch):
+    patched, call = _entry_calls()[entry]
+
+    def unreadable(*args, **kwargs):
+        raise error('a built-in refused a value')
+
+    monkeypatch.setattr(economic_interpretation, patched, unreadable)
+    with pytest.raises(EconomicInterpretationError) as caught:
+        call()
+    assert type(caught.value) is EconomicInterpretationError
+    assert str(caught.value) == (
+        f'a value has the wrong type or range where the interpretation reads it ({error.__name__})'
+    )
+    assert type(caught.value.__cause__) is error
+
+
+@pytest.mark.parametrize('entry', ['build', 'validate', 'compare_eps'])
+def test_each_entry_lets_every_other_exception_through(entry, monkeypatch):
+    patched, call = _entry_calls()[entry]
+
+    def broken(*args, **kwargs):
+        raise RuntimeError('not a wrong-typed value')
+
+    monkeypatch.setattr(economic_interpretation, patched, broken)
+    with pytest.raises(RuntimeError, match='not a wrong-typed value'):
+        call()
+
+
+@pytest.mark.parametrize('case,convert,path', [
+    (ABSENT, int, ('authority', 'can_rank')),
+    (ABSENT, float, ('authority', 'can_rank')),
+    (ABSENT, int, ('build', 'deterministic')),
+    (ABSENT, int, ('quality', 'supported')),
+    (ABSENT, float, ('selection', 'observation_count')),
+    ('identical_inputs', int, ('observations', 0, 'value')),
+])
+def test_replay_compares_types_as_well_as_values(case, convert, path):
+    workspace, texts, baseline = _baseline(case)
+    original = baseline
+    for part in path:
+        original = original[part]
+    value = convert(original)
+    assert value == original and type(value) is not type(original)
+    with pytest.raises(EconomicInterpretationError, match='stored interpretation does not replay'):
+        validate_economic_interpretation(
+            _replace_at(baseline, path, value),
+            workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE,
+        )
+
+
+def _nested(depth):
+    value = 'x'
+    for _ in range(depth):
+        value = [value]
+    return value
+
+
+def _fan(levels):
+    value = ['x']
+    for _ in range(levels):
+        value = [value, value]
+    return value
+
+
+def _cycle():
+    value = []
+    value.append(value)
+    return value
+
+
+_UNBOUNDED = [
+    ('count', lambda: list(range(100_001))),
+    ('nesting', lambda: _nested(40)),
+    ('deep_nesting', lambda: _nested(5000)),
+    ('shared_fan', lambda: _fan(25)),
+    ('cycle', _cycle),
+    ('integer', lambda: 10 ** 5000),
+    ('integer_at_the_bound', lambda: 10 ** 640),
+    ('negative_integer', lambda: -(10 ** 640)),
+    ('not_a_number', lambda: float('nan')),
+    ('infinity', lambda: float('-inf')),
+    ('integer_key', lambda: {1: 'x'}),
+    ('tuple', lambda: ('x',)),
+    ('fraction', lambda: Fraction(1, 3)),
+    ('bytes', lambda: b'x'),
+    ('set', lambda: {'x'}),
+]
+
+
+@pytest.mark.parametrize('name', [name for name, _make in _UNBOUNDED])
+def test_the_selection_and_a_stored_payload_are_bounded_exact_json(name):
+    value = dict(_UNBOUNDED)[name]()
+    workspace, texts, baseline = _baseline(ABSENT)
+    with pytest.raises(EconomicInterpretationError, match='selection is not bounded exact JSON data'):
+        _build_with(workspace, texts, selection={'facts': None, 'currentness': value})
+    with pytest.raises(EconomicInterpretationError, match='selection is not bounded exact JSON data'):
+        _build_with(workspace, texts, selection={'facts': [value], 'currentness': None})
+    with pytest.raises(EconomicInterpretationError, match='stored interpretation is not bounded exact JSON data'):
+        validate_economic_interpretation(
+            _replace_at(baseline, ('next_evidence',), value),
+            workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE,
+        )
+
+
+def test_values_at_the_bounds_are_read_and_one_past_them_is_refused():
+    workspace, texts, baseline = _baseline(ABSENT)
+
+    def build(currentness=None, facts=None):
+        return _build_with(workspace, texts, selection={'facts': facts, 'currentness': currentness})
+
+    def validate(selector_version):
+        return validate_economic_interpretation(
+            _replace_at(baseline, ('selection', 'selector_version'), selector_version),
+            workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE,
+        )
+
+    for value in (10 ** 640 - 1, -(10 ** 640) + 1, _nested(30)):
+        with pytest.raises(EconomicInterpretationError, match='selection.currentness must be a mapping'):
+            build(currentness=value)
+    with pytest.raises(EconomicInterpretationError, match='selection is not bounded exact JSON data'):
+        build(currentness=_nested(31))
+    for value in (10 ** 640 - 1, -(10 ** 640) + 1, _nested(29)):
+        with pytest.raises(EconomicInterpretationError, match='stored interpretation does not replay'):
+            validate(value)
+    with pytest.raises(EconomicInterpretationError, match='stored interpretation is not bounded exact JSON data'):
+        validate(_nested(30))
+    with pytest.raises(EconomicInterpretationError, match='comparisons exceed 24'):
+        build(facts=list(range(99_997)))
+    with pytest.raises(EconomicInterpretationError, match='selection is not bounded exact JSON data'):
+        build(facts=list(range(99_998)))
+
+
+@pytest.mark.parametrize('value', [
+    ('PG',), Fraction(1, 3), float('nan'), float('inf'), {'listings': ('x',)}, [{'rate': Fraction(1, 2)}],
+])
+def test_a_built_payload_is_exact_json(value):
+    workspace, texts, baseline = _baseline(ABSENT)
+    assert _is_exact_json(baseline)
+    with pytest.raises(EconomicInterpretationError, match='built interpretation is not bounded exact JSON data'):
+        _build_with({**workspace, 'issuer': value}, texts)
+
+
+@pytest.mark.parametrize('value', [None, 5, 1.5, True, ['x'], ('x',), {'a': 1}])
+def test_workspace_generation_id_is_an_exact_string(value):
+    workspace, texts, _payload = _baseline(ABSENT)
+    renamed = _build_with({**workspace, 'generation_id': 'generation_b'}, texts)
+    assert {item['handle']['workspace_generation_id'] for item in renamed['observations']} == {'generation_b'}
+    with pytest.raises(EconomicInterpretationError, match='workspace generation or event identity is malformed'):
+        _build_with({**workspace, 'generation_id': value}, texts)
+    without = {key: item for key, item in workspace.items() if key != 'generation_id'}
+    with pytest.raises(EconomicInterpretationError, match='workspace generation or event identity is malformed'):
+        _build_with(without, texts)
+
+
+def _with_event_id(workspace, event_id):
+    """The workspace under another event id, renamed everywhere Task 1 checks it, so Task 1 still accepts it."""
+    facts = []
+    for fact in workspace['facts']:
+        fact = {**fact, 'event_id': event_id}
+        if 'typed_absence' in fact and 'event_id' in fact['typed_absence']:
+            fact['typed_absence'] = {**fact['typed_absence'], 'event_id': event_id}
+        try:
+            definition = economic_observations._definition(fact['metric'])
+        except economic_observations.EconomicObservationError:
+            facts.append(fact)
+            continue
+        period = fact['period'] if 'value' in fact else fact['metric']
+        fact['fact_id'] = economic_observations._fact_id(event_id, fact['metric'], period, definition.basis)
+        facts.append(fact)
+    return {**workspace, 'event_id': event_id, 'facts': facts}
+
+
+@pytest.mark.parametrize('value', [None, 5, 1.5, True])
+def test_workspace_event_id_is_an_exact_string(value):
+    workspace, texts, _payload = _baseline()
+    renamed = _build_with(_with_event_id(workspace, 'evt_other'), texts)
+    assert renamed['event_id'] == 'evt_other'
+    assert {item['handle']['event_id'] for item in renamed['observations']} == {'evt_other'}
+    tampered = _with_event_id(workspace, value)
+    assert validate_selected_facts(tampered, source_texts=texts, fiscal_scope=FISCAL_SCOPE)
+    with pytest.raises(EconomicInterpretationError, match='workspace generation or event identity is malformed'):
+        _build_with(tampered, texts)
+
+
+@pytest.mark.parametrize('field,value', [
+    *[('lifecycle', value) for value in (None, 5, 'x', [], ['x'], 1.5, True)],
+    *[('state', value) for value in (5, 1.5, True, ['x'], {'a': 1})],
+])
+def test_workspace_lifecycle_is_a_mapping_with_a_string_state(field, value):
+    workspace, texts, _payload = _baseline(ABSENT)
+    lifecycle = value if field == 'lifecycle' else {**workspace['lifecycle'], 'state': value}
+    with pytest.raises(EconomicInterpretationError, match='workspace lifecycle is malformed'):
+        _build_with({**workspace, 'lifecycle': lifecycle}, texts)
+
+
+def test_workspace_lifecycle_positive_controls():
+    workspace, texts = _case('identical_inputs')
+    assert _build_with(workspace, texts)['clocks']['correction'] == 'complete'
+    for state in (None, 'corrected'):
+        built = _build_with({**workspace, 'lifecycle': {**workspace['lifecycle'], 'state': state}}, texts)
+        assert built['clocks']['correction'] == state
+    without = {key: item for key, item in workspace.items() if key != 'lifecycle'}
+    clocks = _build_with(without, texts)['clocks']
+    assert (clocks['correction'], clocks['source_available_at'], clocks['first_observed_at']) == (None, None, None)
+
+
+@pytest.mark.parametrize('item', [
+    {'fact_id': ['x']}, {'fact_id': {'a': 1}}, {'fact_id': 5}, {'fact_id': True}, {'fact_id': 1.5},
+    {'metric': ['x']}, {'metric': {'a': 1}}, {'metric': 5}, {'metric': True},
+    {'fact_id': 'fact_x', 'metric': 5}, {'fact_id': 5, 'metric': 'pg_diluted_eps'},
+])
+def test_a_selected_handle_names_its_fact_with_exact_strings(item):
+    workspace, texts, _payload = _baseline(ABSENT)
+    handle = {'workspace_generation_id': workspace['generation_id'], 'event_id': workspace['event_id'], **item}
+    with pytest.raises(EconomicInterpretationError, match='selected fact handle is malformed'):
+        _build_with(workspace, texts, selection={'facts': [handle], 'currentness': None})
+
+
+@pytest.mark.parametrize('facts', ['x', {'a': 1}, 5, True, 1.5])
+def test_selected_facts_are_none_or_an_exact_list(facts):
+    workspace, texts, payload = _baseline(ABSENT)
+    handles = [dict(item['handle']) for item in payload['observations'][:2]]
+    assert len(_build_with(workspace, texts, selection={'facts': handles, 'currentness': None})['observations']) == 2
+    with pytest.raises(EconomicInterpretationError, match='selection must be a list of native handles'):
+        _build_with(workspace, texts, selection={'facts': facts, 'currentness': None})
+    with pytest.raises(EconomicInterpretationError, match='selection is not bounded exact JSON data'):
+        _build_with(workspace, texts, selection={'facts': tuple(handles), 'currentness': None})
+
+
+def test_a_selection_selects_at_least_one_observation():
+    workspace, texts, payload = _baseline(ABSENT)
+    handles = [dict(item['handle']) for item in payload['observations']]
+    assert len(_build_with(workspace, texts, selection={'facts': handles[:1], 'currentness': None})['observations']) == 1
+    with pytest.raises(EconomicInterpretationError, match='selection selects no observation'):
+        _build_with(workspace, texts, selection={'facts': [], 'currentness': None})
+
+
+@pytest.mark.parametrize('depth', [40, 5000])
+def test_a_deep_workspace_value_is_refused(depth):
+    workspace, texts, _payload = _baseline(ABSENT)
+    with pytest.raises(EconomicInterpretationError, match='native observations are refused'):
+        _build_with({**workspace, 'issuer': _nested(depth)}, texts)
+
+
+def test_validate_resolves_a_workspace_by_its_generation_id():
+    base, texts, _payload = _baseline(ABSENT)
+    workspace = {**base, 'generation_id': 'generation_b'}
+    other = {**base, 'generation_id': 'generation_a'}
+    payload = _build_with(workspace, texts)
+
+    def validate(workspaces):
+        return validate_economic_interpretation(
+            payload, workspaces=workspaces, source_texts=texts, fiscal_scope=FISCAL_SCOPE
+        )
+
+    validate(workspace)
+    validate({'generation_b': workspace})
+    validate({'generation_a': other, 'generation_b': workspace})
+    for workspaces in (other, {'generation_a': other}, {'generation_a': workspace}):
+        with pytest.raises(EconomicInterpretationError, match='do not resolve to one supplied workspace'):
+            validate(workspaces)
+    with pytest.raises(EconomicInterpretationError, match='belongs to another workspace generation'):
+        validate({'generation_b': other})
+    for generation in (None, 5, ['x'], True):
+        with pytest.raises(EconomicInterpretationError, match='workspaces must map generation ids to workspaces'):
+            validate({**workspace, 'generation_id': generation})
+    with pytest.raises(EconomicInterpretationError, match='workspaces must map generation ids to workspaces'):
+        validate({'generation_b': workspace, 'note': 'x'})
+    bare = _without(workspace, ('schema',))
+    built = _build_with(bare, texts)
+    for workspaces in (bare, {'generation_b': bare}):
+        validate_economic_interpretation(built, workspaces=workspaces, source_texts=texts, fiscal_scope=FISCAL_SCOPE)
+
+
+_EXACT_SUBSTITUTES = [None, 5, 'x', [], {}]
+
+
+def _without(node, path):
+    """A copy of `node` without the entry at `path`."""
+    if len(path) > 1:
+        copied = dict(node) if type(node) is dict else list(node)
+        copied[path[0]] = _without(node[path[0]], path[1:])
+        return copied
+    if type(node) is dict:
+        return {key: item for key, item in node.items() if key != path[0]}
+    return [item for index, item in enumerate(node) if index != path[0]]
+
+
+def _edits(tree):
+    """`tree` changed at one position, as (label, tree) pairs: each exact substitute put there, and the entry removed."""
+    for path, _node in _nodes(tree):
+        if path:
+            for value in _EXACT_SUBSTITUTES:
+                yield _where(path, repr(value)), _replace_at(tree, path, value)
+            yield _where(path, 'removed'), _without(tree, path)
+
+
+def test_whatever_build_returns_replays():
+    base, texts, _payload = _baseline(ABSENT)
+    workspace = {**base, 'generation_id': 'generation_b'}
+    handles = [dict(item['handle']) for item in _build_with(workspace, texts)['observations']]
+    selection = {'facts': handles[:2], 'currentness': CLOCKED}
+    valued, valued_texts, _payload = _baseline()
+    valued = {**valued, 'generation_id': 'generation_b'}
+    everything = {'facts': None, 'currentness': CLOCKED}
+    calls = [
+        ('nothing changed', workspace, texts, selection),
+        ('a release with values', valued, valued_texts, everything),
+        ('a release with values, schema removed', _without(valued, ('schema',)), valued_texts, everything),
+    ]
+    calls += [(f'workspace {label}', edited, texts, selection) for label, edited in _edits(workspace)]
+    calls += [(f'selection {label}', workspace, texts, edited) for label, edited in _edits(selection)]
+    failures, replayed, refused = [], 0, 0
+    for label, candidate, source_texts, selected in calls:
+        outcome, built = _outcome(lambda: _build_with(candidate, source_texts, selection=selected))
+        if outcome == 'typed':
+            refused += 1
+            continue
+        if outcome != 'returned' or not _is_exact_json(built) or built['quality']['supported'] is not True:
+            failures.append(f'{label}: {outcome}')
+            continue
+        replay = _outcome(lambda: validate_economic_interpretation(
+            built, workspaces=candidate, source_texts=source_texts, fiscal_scope=FISCAL_SCOPE
+        ))[0]
+        if replay != 'returned':
+            failures.append(f'{label}: built, then validate {replay}')
+        replayed += 1
+    assert not failures, failures[:20]
+    assert replayed >= 1000 and refused >= 1500, (replayed, refused)
+
+
+@pytest.mark.parametrize('field', ['semantic_revision', 'code_revision'])
+@pytest.mark.parametrize('kind', ['none', 'int', 'list', 'tuple', 'subclass', 'liar', 'opaque', 'raiser'])
+def test_unavailable_payload_echoes_only_an_exact_string_revision(kind, field):
+    revisions = {'semantic_revision': SEMANTIC_REVISION, 'code_revision': CODE_REVISION}
+    other = next(name for name in revisions if name != field)
+    revisions[field] = {
+        'none': None, 'int': 5, 'list': ['x'], 'tuple': ('x',), 'subclass': _Str(revisions[field]),
+        'liar': _Liar('x'), 'opaque': _opaque(str, revisions[field]), 'raiser': _Raiser(),
+    }[kind]
+    workspace, texts, _payload = _baseline(ABSENT)
+    payload = build_economic_interpretation(
+        workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE,
+        selection={'facts': None, 'currentness': None}, **revisions,
+    )
+    assert payload['quality'] == {
+        'supported': False, 'state': 'unavailable', 'reason': 'unsupported interpretation version',
+    }
+    assert payload['build'][field] is None
+    assert payload['build'][other] == revisions[other]
+    assert _is_exact_json(payload)
