@@ -342,6 +342,12 @@ is a legitimate null, not a failure, and is not one of the two.
 
 `daily.yml` is the only workflow that can append these rows, so no alternative observation source
 exists, and `36655184116` can no longer produce one: its `engine` job is terminally `cancelled`.
+That sole-appender claim is verified three deep, because a name grep over `.github/workflows/` is too
+narrow to establish it — a workflow can reach the writer through a script. (1) Exactly one production
+caller: `scripts/build_options_signal_episode.py:861`. (2) Two workflows reference that script, but
+`ci.yml`'s is a **path-filter entry** listing files that trigger the adversarial suite, not an
+invocation. (3) `ci.yml` never sets `COLLECT_LANE`/`US_LANE`, so even a hypothetical invocation hits
+`nightly_advance_enabled()` and returns `-1` without touching a byte.
 Run-level status is misleading in BOTH directions here — the decoy reads SUCCESS having done nothing,
 and the real firing reads `queued` while its engine job had already run for two hours and been
 cancelled. This session made exactly that second error before correcting it, which is why this
