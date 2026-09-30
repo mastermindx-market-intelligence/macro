@@ -1,0 +1,256 @@
+FFFFFF...FFFFFF....                                                      [100%]
+=================================== FAILURES ===================================
+_ test_signal_serialization_preserves_explicit_daily_input_receipt[2026-09-22-compact] _
+
+serializer_name = 'compact', input_asof = '2026-09-22'
+
+    @pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+    @pytest.mark.parametrize('input_asof', ['2026-09-22', '2026-09-21', None])
+    def test_signal_serialization_preserves_explicit_daily_input_receipt(serializer_name, input_asof):
+        from copy import deepcopy
+        from engine import signal_gate as sg
+        full = {'eligible': True, 'tier_cascade': 'T2', 'ticks': 1,
+                'asof': '2026-09-18', 'input_asof': input_asof}
+        before = deepcopy(full)
+        out = getattr(sg, serializer_name)(full)
+>       assert 'input_asof' in out
+E       AssertionError: assert 'input_asof' in {'eligible': True, 'tier': None, 'sub': None, 'reason': None, ...}
+
+tests/test_signal_gate.py:405: AssertionError
+_ test_signal_serialization_preserves_explicit_daily_input_receipt[2026-09-22-buy_signal] _
+
+serializer_name = 'buy_signal', input_asof = '2026-09-22'
+
+    @pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+    @pytest.mark.parametrize('input_asof', ['2026-09-22', '2026-09-21', None])
+    def test_signal_serialization_preserves_explicit_daily_input_receipt(serializer_name, input_asof):
+        from copy import deepcopy
+        from engine import signal_gate as sg
+        full = {'eligible': True, 'tier_cascade': 'T2', 'ticks': 1,
+                'asof': '2026-09-18', 'input_asof': input_asof}
+        before = deepcopy(full)
+        out = getattr(sg, serializer_name)(full)
+>       assert 'input_asof' in out
+E       AssertionError: assert 'input_asof' in {'eligible': True, 'tier_cascade': 'T2', 'tier_sub': None, 'ticks': 1, ...}
+
+tests/test_signal_gate.py:405: AssertionError
+_ test_signal_serialization_preserves_explicit_daily_input_receipt[2026-09-21-compact] _
+
+serializer_name = 'compact', input_asof = '2026-09-21'
+
+    @pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+    @pytest.mark.parametrize('input_asof', ['2026-09-22', '2026-09-21', None])
+    def test_signal_serialization_preserves_explicit_daily_input_receipt(serializer_name, input_asof):
+        from copy import deepcopy
+        from engine import signal_gate as sg
+        full = {'eligible': True, 'tier_cascade': 'T2', 'ticks': 1,
+                'asof': '2026-09-18', 'input_asof': input_asof}
+        before = deepcopy(full)
+        out = getattr(sg, serializer_name)(full)
+>       assert 'input_asof' in out
+E       AssertionError: assert 'input_asof' in {'eligible': True, 'tier': None, 'sub': None, 'reason': None, ...}
+
+tests/test_signal_gate.py:405: AssertionError
+_ test_signal_serialization_preserves_explicit_daily_input_receipt[2026-09-21-buy_signal] _
+
+serializer_name = 'buy_signal', input_asof = '2026-09-21'
+
+    @pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+    @pytest.mark.parametrize('input_asof', ['2026-09-22', '2026-09-21', None])
+    def test_signal_serialization_preserves_explicit_daily_input_receipt(serializer_name, input_asof):
+        from copy import deepcopy
+        from engine import signal_gate as sg
+        full = {'eligible': True, 'tier_cascade': 'T2', 'ticks': 1,
+                'asof': '2026-09-18', 'input_asof': input_asof}
+        before = deepcopy(full)
+        out = getattr(sg, serializer_name)(full)
+>       assert 'input_asof' in out
+E       AssertionError: assert 'input_asof' in {'eligible': True, 'tier_cascade': 'T2', 'tier_sub': None, 'ticks': 1, ...}
+
+tests/test_signal_gate.py:405: AssertionError
+_ test_signal_serialization_preserves_explicit_daily_input_receipt[None-compact] _
+
+serializer_name = 'compact', input_asof = None
+
+    @pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+    @pytest.mark.parametrize('input_asof', ['2026-09-22', '2026-09-21', None])
+    def test_signal_serialization_preserves_explicit_daily_input_receipt(serializer_name, input_asof):
+        from copy import deepcopy
+        from engine import signal_gate as sg
+        full = {'eligible': True, 'tier_cascade': 'T2', 'ticks': 1,
+                'asof': '2026-09-18', 'input_asof': input_asof}
+        before = deepcopy(full)
+        out = getattr(sg, serializer_name)(full)
+>       assert 'input_asof' in out
+E       AssertionError: assert 'input_asof' in {'eligible': True, 'tier': None, 'sub': None, 'reason': None, ...}
+
+tests/test_signal_gate.py:405: AssertionError
+_ test_signal_serialization_preserves_explicit_daily_input_receipt[None-buy_signal] _
+
+serializer_name = 'buy_signal', input_asof = None
+
+    @pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+    @pytest.mark.parametrize('input_asof', ['2026-09-22', '2026-09-21', None])
+    def test_signal_serialization_preserves_explicit_daily_input_receipt(serializer_name, input_asof):
+        from copy import deepcopy
+        from engine import signal_gate as sg
+        full = {'eligible': True, 'tier_cascade': 'T2', 'ticks': 1,
+                'asof': '2026-09-18', 'input_asof': input_asof}
+        before = deepcopy(full)
+        out = getattr(sg, serializer_name)(full)
+>       assert 'input_asof' in out
+E       AssertionError: assert 'input_asof' in {'eligible': True, 'tier_cascade': 'T2', 'tier_sub': None, 'ticks': 1, ...}
+
+tests/test_signal_gate.py:405: AssertionError
+_ test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer[2026-07-29-True-compact] _
+
+serializer_name = 'compact', daily = '2026-07-29', expected = True
+
+    @pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+    @pytest.mark.parametrize('daily,expected', [(ASOF, True), ('2026-07-28', False),
+                                              ('2026-07-30', False), (None, False)])
+    def test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer(serializer_name, daily, expected):
+        import json
+        from engine import signal_gate
+        original = _verdict(asof='2026-07-27', input_asof=daily)
+        signal = json.loads(json.dumps(getattr(signal_gate, serializer_name)(original), allow_nan=False))
+        enriched, = china_board_rank.enrich_and_score_rows(
+            [{**_row('600001.SS'), 'signal': signal}], board_asof=ASOF)
+>       assert china_board_rank._signal_is_fresh(enriched) is expected
+E       AssertionError: assert False is True
+E        +  where False = <function _signal_is_fresh at 0x111f3b1c0>({'ticker': '600001.SS', 'sector': 'Industrials', 'stage': 'ENTRY', 'extension': {'score': 0.0, 'extended': False}, ...})
+E        +    where <function _signal_is_fresh at 0x111f3b1c0> = china_board_rank._signal_is_fresh
+
+tests/test_china_board_rank.py:619: AssertionError
+----------------------------- Captured stdout call -----------------------------
+::warning title=cn-prophet-v4-intel-partial::Intelligence coverage 0/1; entire board reverted to v3 ordering for this bake
+_ test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer[2026-07-29-True-buy_signal] _
+
+serializer_name = 'buy_signal', daily = '2026-07-29', expected = True
+
+    @pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+    @pytest.mark.parametrize('daily,expected', [(ASOF, True), ('2026-07-28', False),
+                                              ('2026-07-30', False), (None, False)])
+    def test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer(serializer_name, daily, expected):
+        import json
+        from engine import signal_gate
+        original = _verdict(asof='2026-07-27', input_asof=daily)
+        signal = json.loads(json.dumps(getattr(signal_gate, serializer_name)(original), allow_nan=False))
+        enriched, = china_board_rank.enrich_and_score_rows(
+            [{**_row('600001.SS'), 'signal': signal}], board_asof=ASOF)
+>       assert china_board_rank._signal_is_fresh(enriched) is expected
+E       AssertionError: assert False is True
+E        +  where False = <function _signal_is_fresh at 0x111f3b1c0>({'ticker': '600001.SS', 'sector': 'Industrials', 'stage': 'ENTRY', 'extension': {'score': 0.0, 'extended': False}, ...})
+E        +    where <function _signal_is_fresh at 0x111f3b1c0> = china_board_rank._signal_is_fresh
+
+tests/test_china_board_rank.py:619: AssertionError
+----------------------------- Captured stdout call -----------------------------
+::warning title=cn-prophet-v4-intel-partial::Intelligence coverage 0/1; entire board reverted to v3 ordering for this bake
+_ test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer[2026-07-28-False-compact] _
+
+serializer_name = 'compact', daily = '2026-07-28', expected = False
+
+    @pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+    @pytest.mark.parametrize('daily,expected', [(ASOF, True), ('2026-07-28', False),
+                                              ('2026-07-30', False), (None, False)])
+    def test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer(serializer_name, daily, expected):
+        import json
+        from engine import signal_gate
+        original = _verdict(asof='2026-07-27', input_asof=daily)
+        signal = json.loads(json.dumps(getattr(signal_gate, serializer_name)(original), allow_nan=False))
+        enriched, = china_board_rank.enrich_and_score_rows(
+            [{**_row('600001.SS'), 'signal': signal}], board_asof=ASOF)
+        assert china_board_rank._signal_is_fresh(enriched) is expected
+>       assert enriched['_signal_research'].get('input_asof') == daily
+E       AssertionError: assert None == '2026-07-28'
+E        +  where None = <built-in method get of dict object at 0x10b476000>('input_asof')
+E        +    where <built-in method get of dict object at 0x10b476000> = {'eligible': True, 'tier_cascade': 'T2', 'tier_sub': None, 'sub': None, ...}.get
+
+tests/test_china_board_rank.py:620: AssertionError
+----------------------------- Captured stdout call -----------------------------
+::warning title=cn-prophet-v4-intel-partial::Intelligence coverage 0/1; entire board reverted to v3 ordering for this bake
+_ test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer[2026-07-28-False-buy_signal] _
+
+serializer_name = 'buy_signal', daily = '2026-07-28', expected = False
+
+    @pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+    @pytest.mark.parametrize('daily,expected', [(ASOF, True), ('2026-07-28', False),
+                                              ('2026-07-30', False), (None, False)])
+    def test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer(serializer_name, daily, expected):
+        import json
+        from engine import signal_gate
+        original = _verdict(asof='2026-07-27', input_asof=daily)
+        signal = json.loads(json.dumps(getattr(signal_gate, serializer_name)(original), allow_nan=False))
+        enriched, = china_board_rank.enrich_and_score_rows(
+            [{**_row('600001.SS'), 'signal': signal}], board_asof=ASOF)
+        assert china_board_rank._signal_is_fresh(enriched) is expected
+>       assert enriched['_signal_research'].get('input_asof') == daily
+E       AssertionError: assert None == '2026-07-28'
+E        +  where None = <built-in method get of dict object at 0x112106d40>('input_asof')
+E        +    where <built-in method get of dict object at 0x112106d40> = {'eligible': True, 'tier_cascade': 'T2', 'tier_sub': None, 'ticks': None, ...}.get
+
+tests/test_china_board_rank.py:620: AssertionError
+----------------------------- Captured stdout call -----------------------------
+::warning title=cn-prophet-v4-intel-partial::Intelligence coverage 0/1; entire board reverted to v3 ordering for this bake
+_ test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer[2026-07-30-False-compact] _
+
+serializer_name = 'compact', daily = '2026-07-30', expected = False
+
+    @pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+    @pytest.mark.parametrize('daily,expected', [(ASOF, True), ('2026-07-28', False),
+                                              ('2026-07-30', False), (None, False)])
+    def test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer(serializer_name, daily, expected):
+        import json
+        from engine import signal_gate
+        original = _verdict(asof='2026-07-27', input_asof=daily)
+        signal = json.loads(json.dumps(getattr(signal_gate, serializer_name)(original), allow_nan=False))
+        enriched, = china_board_rank.enrich_and_score_rows(
+            [{**_row('600001.SS'), 'signal': signal}], board_asof=ASOF)
+        assert china_board_rank._signal_is_fresh(enriched) is expected
+>       assert enriched['_signal_research'].get('input_asof') == daily
+E       AssertionError: assert None == '2026-07-30'
+E        +  where None = <built-in method get of dict object at 0x111fbab00>('input_asof')
+E        +    where <built-in method get of dict object at 0x111fbab00> = {'eligible': True, 'tier_cascade': 'T2', 'tier_sub': None, 'sub': None, ...}.get
+
+tests/test_china_board_rank.py:620: AssertionError
+----------------------------- Captured stdout call -----------------------------
+::warning title=cn-prophet-v4-intel-partial::Intelligence coverage 0/1; entire board reverted to v3 ordering for this bake
+_ test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer[2026-07-30-False-buy_signal] _
+
+serializer_name = 'buy_signal', daily = '2026-07-30', expected = False
+
+    @pytest.mark.parametrize('serializer_name', ['compact', 'buy_signal'])
+    @pytest.mark.parametrize('daily,expected', [(ASOF, True), ('2026-07-28', False),
+                                              ('2026-07-30', False), (None, False)])
+    def test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer(serializer_name, daily, expected):
+        import json
+        from engine import signal_gate
+        original = _verdict(asof='2026-07-27', input_asof=daily)
+        signal = json.loads(json.dumps(getattr(signal_gate, serializer_name)(original), allow_nan=False))
+        enriched, = china_board_rank.enrich_and_score_rows(
+            [{**_row('600001.SS'), 'signal': signal}], board_asof=ASOF)
+        assert china_board_rank._signal_is_fresh(enriched) is expected
+>       assert enriched['_signal_research'].get('input_asof') == daily
+E       AssertionError: assert None == '2026-07-30'
+E        +  where None = <built-in method get of dict object at 0x111e52a80>('input_asof')
+E        +    where <built-in method get of dict object at 0x111e52a80> = {'eligible': True, 'tier_cascade': 'T2', 'tier_sub': None, 'ticks': None, ...}.get
+
+tests/test_china_board_rank.py:620: AssertionError
+----------------------------- Captured stdout call -----------------------------
+::warning title=cn-prophet-v4-intel-partial::Intelligence coverage 0/1; entire board reverted to v3 ordering for this bake
+
+NOTE: sparse worktree — .agents, .claude, .codex, .cursor, .grok, .warp, admin, app, browser, calibration, collectors, content, contracts, data, docs, finviz_themes, knowledge, mockups, ops, orch, properties, reports, requirements, site, tools, ux-evidence, verify_shots, worker not checked out; opt into a full checkout with: python3 scripts/worktree_sparse.py full
+=========================== short test summary info ============================
+FAILED tests/test_signal_gate.py::test_signal_serialization_preserves_explicit_daily_input_receipt[2026-09-22-compact]
+FAILED tests/test_signal_gate.py::test_signal_serialization_preserves_explicit_daily_input_receipt[2026-09-22-buy_signal]
+FAILED tests/test_signal_gate.py::test_signal_serialization_preserves_explicit_daily_input_receipt[2026-09-21-compact]
+FAILED tests/test_signal_gate.py::test_signal_serialization_preserves_explicit_daily_input_receipt[2026-09-21-buy_signal]
+FAILED tests/test_signal_gate.py::test_signal_serialization_preserves_explicit_daily_input_receipt[None-compact]
+FAILED tests/test_signal_gate.py::test_signal_serialization_preserves_explicit_daily_input_receipt[None-buy_signal]
+FAILED tests/test_china_board_rank.py::test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer[2026-07-29-True-compact]
+FAILED tests/test_china_board_rank.py::test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer[2026-07-29-True-buy_signal]
+FAILED tests/test_china_board_rank.py::test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer[2026-07-28-False-compact]
+FAILED tests/test_china_board_rank.py::test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer[2026-07-28-False-buy_signal]
+FAILED tests/test_china_board_rank.py::test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer[2026-07-30-False-compact]
+FAILED tests/test_china_board_rank.py::test_native_signal_daily_receipt_survives_json_to_existing_cn_consumer[2026-07-30-False-buy_signal]
+12 failed, 7 passed, 39 deselected in 2.77s
