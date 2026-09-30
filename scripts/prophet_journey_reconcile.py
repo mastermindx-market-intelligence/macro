@@ -941,9 +941,10 @@ def _check_j7(soup: BeautifulSoup, standouts: dict[str, Any],
     row = _standouts_payload_row(standouts, ticker)
     pool_row = next((candidate for candidate in ((standouts.get("candidate_pool") or {}).get("rows") or [])
                      if str(candidate.get("ticker", "")).upper() == ticker.upper()), None)
-    digest = _journey_digest(standouts, ticker, plan_relation, plan_ids)
+    source_digest = str((standouts.get("candidate_pool") or {}).get("source_digest") or "")
+    rendered_digest = str(pool.get("data-source-digest", ""))
     rendered = pool.select_one(f'.ucp-row[data-ticker="{ticker}"]')
-    if digest is None or row is None or pool_row is None or rendered is None:
+    if row is None or pool_row is None or rendered is None:
         return _check_status("FAIL", "selected source and rendered rows",
                              "source or rendered row missing", where)
     rendered_reasons = [str(node.get("data-reason", ""))
@@ -985,7 +986,9 @@ def _check_j7(soup: BeautifulSoup, standouts: dict[str, Any],
                 "source_as_of": str(pool_dict.get("as_of") or ""),
                 "data_total": pool.get("data-total", ""),
                 "source_total": str((pool_dict.get("counts") or {}).get("eligible")),
-                "digest_match": pool.get("data-source-digest") == digest}
+                "rendered_source_digest": rendered_digest,
+                "source_digest": source_digest,
+                "digest_match": bool(source_digest) and rendered_digest == source_digest}
     if not source_reasons or not rendered_reasons or any(not reason for reason in rendered_reasons):
         return _check_status("FAIL", "non-empty reason codes", observed, where)
     if rendered_reasons != source_reasons:
@@ -997,9 +1000,11 @@ def _check_j7(soup: BeautifulSoup, standouts: dict[str, Any],
         return _check_status("FAIL", "pool clock equals source clock", observed, where)
     if observed["data_total"] != observed["source_total"]:
         return _check_status("FAIL", "pool total equals source total", observed, where)
+    if not source_digest:
+        return _check_status("FAIL", "non-empty candidate_pool.source_digest", observed, where)
     if not observed["digest_match"]:
-        return _check_status("FAIL", "selected-row digest recomputes exactly", observed, where)
-    return _check_status("PASS", "selected-row digest recomputes exactly", observed, where)
+        return _check_status("FAIL", "DOM pool digest equals candidate_pool.source_digest", observed, where)
+    return _check_status("PASS", "pool provenance and selected journey fields agree with source", observed, where)
 
 
 def _plan_lifecycle_states(plans: list[dict[str, Any]]) -> set[str]:

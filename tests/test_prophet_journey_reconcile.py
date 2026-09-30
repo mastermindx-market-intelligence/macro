@@ -665,12 +665,11 @@ def test_j6_fail_bool_mismatch():
 
 
 def test_j7_pass_pool_clocks_match():
+    digest = "pool-source-digest"
     soup = BeautifulSoup(_full_page(ticker="TEST1",
-                                    pool_digest=""), _pjr.HTML_PARSER)
+                                    pool_digest=digest), _pjr.HTML_PARSER)
     su = _standouts_payload(ticker="TEST1", pool_as_of="2026-09-26",
-                            pool_total=12, pool_digest="")
-    soup.select_one("#us-candidate-pool")["data-source-digest"] = (
-        _pjr._journey_digest(su, "TEST1"))
+                            pool_total=12, pool_digest=digest)
     chk = _pjr._check_j7(soup, su, "TEST1")
     assert chk["status"] == "PASS", chk
 
@@ -921,62 +920,52 @@ def test_j6_fail_second_displayed_body_with_foreign_native_id():
     assert chk["observed"]["bad_displayed"][0]["data-native-id"] == "OTHER"
 
 
-def test_j7_pass_recomputes_selected_row_digest():
-    su = _standouts_payload(pool_digest="")
+def test_j7_pass_binds_candidate_pool_source_digest():
+    su = _standouts_payload(pool_digest="pool-source-digest")
     soup = BeautifulSoup(_corrected_html(plan_relation="none"), _pjr.HTML_PARSER)
     pool = soup.select_one("#us-candidate-pool")
-    pool["data-source-digest"] = _pjr._journey_digest(
-        su, "TEST1", "none", [])
+    pool["data-source-digest"] = su["candidate_pool"]["source_digest"]
     chk = _pjr._check_j7(soup, su, "TEST1")
     assert chk["status"] == "PASS", chk
 
 
 def test_j7_fail_rendered_reason_differs_from_source():
-    su = _standouts_payload(pool_digest="")
+    su = _standouts_payload(pool_digest="pool-source-digest")
     soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     pool = soup.select_one("#us-candidate-pool")
     receipt = pool.select_one(".ucp-receipt")
     receipt.string = "cleared_admission"
-    pool["data-source-digest"] = _pjr._journey_digest(
-        su, "TEST1", "related_security", ["PLAN1"])
+    pool["data-source-digest"] = su["candidate_pool"]["source_digest"]
     chk = _pjr._check_j7(soup, su, "TEST1")
     assert chk["status"] == "FAIL", chk
 
 
-def test_j7_fail_digest_from_different_row_or_fixed_string():
-    source = _standouts_payload(pool_digest="")
-    other = _standouts_payload(ticker="OTHER", pool_digest="")
-    wrong = _pjr._journey_digest(other, "OTHER")
+def test_j7_fail_dom_digest_differs_from_candidate_pool_source_digest():
+    source = _standouts_payload(pool_digest="source-pool-digest")
     soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     pool = soup.select_one("#us-candidate-pool")
-    pool["data-source-digest"] = wrong
-    assert _pjr._check_j7(soup, source, "TEST1")["status"] == "FAIL"
-    pool["data-source-digest"] = "fixed-string"
-    assert _pjr._check_j7(soup, source, "TEST1")["status"] == "FAIL"
+    pool["data-source-digest"] = "different-pool-digest"
+    chk = _pjr._check_j7(soup, source, "TEST1")
+    assert chk["status"] == "FAIL", chk
+    assert chk["observed"]["source_digest"] == "source-pool-digest"
+    assert chk["observed"]["rendered_source_digest"] == "different-pool-digest"
 
 
 def test_j7_fail_empty_reason_code():
-    su = _standouts_payload(pool_digest="")
+    su = _standouts_payload(pool_digest="pool-source-digest")
     su["candidate_pool"]["rows"][0]["lane_reasons"] = [""]
     soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     pool = soup.select_one("#us-candidate-pool")
-    pool["data-source-digest"] = _pjr._journey_digest(
-        su, "TEST1", "related_security", ["PLAN1"])
+    pool["data-source-digest"] = su["candidate_pool"]["source_digest"]
     chk = _pjr._check_j7(soup, su, "TEST1")
     assert chk["status"] == "FAIL", chk
 
 
-def test_j7_fail_one_field_digest_mutation():
-    source = _standouts_payload()
-    rendered = _standouts_payload(entry_status="entered")
-    source_digest = _pjr._journey_digest(
-        source, "TEST1", "related_security", ["PLAN1"])
-    rendered_digest = _pjr._journey_digest(
-        rendered, "TEST1", "related_security", ["PLAN1"])
-    assert source_digest != rendered_digest
+def test_j7_fail_selected_field_mutation_even_when_pool_digest_matches():
+    source = _standouts_payload(pool_digest="pool-source-digest")
     soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     pool = soup.select_one("#us-candidate-pool")
-    pool["data-source-digest"] = source_digest
+    pool["data-source-digest"] = source["candidate_pool"]["source_digest"]
     body = soup.select_one('[data-setup-ticker="TEST1"] > .pv-setup-body')
     body["data-entry-status"] = "entered"
     read = body.select_one("[data-entry-status]")
@@ -1581,12 +1570,11 @@ def test_j12_pass_alert_with_empty_sources():
 # =========================================================================== #
 def test_cli_clean_journey_exit_code_zero():
     """A frozen corrected full journey returns PASS."""
-    standouts = _standouts_payload(pool_digest="")
+    standouts = _standouts_payload(pool_digest="pool-source-digest")
     index = _index_payload(with_plan=True)
-    digest = _pjr._journey_digest(
-        standouts, "TEST1", "related_security", ["PLAN1"])
     soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
-    soup.select_one("#us-candidate-pool")["data-source-digest"] = digest
+    soup.select_one("#us-candidate-pool")["data-source-digest"] = (
+        standouts["candidate_pool"]["source_digest"])
     page, standouts_path, index_path, out = _write_io(
         str(soup), standouts, index, "TEST1")
     (page.parent / "prophet_live.json").write_text(
@@ -1852,11 +1840,11 @@ def test_cli_subprocess_pass():
     gone — J9 now PASSes when the synthetic page's ``#plv-asof`` stamp
     is rendered (R3 holds).
     """
-    su = _standouts_payload(ticker="TEST1", pool_digest="")
+    su = _standouts_payload(ticker="TEST1", pool_digest="pool-source-digest")
     ix = _index_payload()
     soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     soup.select_one("#us-candidate-pool")["data-source-digest"] = (
-        _pjr._journey_digest(su, "TEST1", "related_security", ["PLAN1"]))
+        su["candidate_pool"]["source_digest"])
     page, su_p, ix_p, out = _write_io(str(soup), su, ix, "SUBP")
     (page.parent / "prophet_live.json").write_text(
         json.dumps(_runtime_payload()), encoding="utf-8")
@@ -1872,11 +1860,11 @@ def test_cli_subprocess_pass():
 
 
 def test_cli_subprocess_prints_check_and_result_lines():
-    su = _standouts_payload(ticker="TEST1", pool_digest="")
+    su = _standouts_payload(ticker="TEST1", pool_digest="pool-source-digest")
     ix = _index_payload()
     soup = BeautifulSoup(_corrected_html(), _pjr.HTML_PARSER)
     soup.select_one("#us-candidate-pool")["data-source-digest"] = (
-        _pjr._journey_digest(su, "TEST1", "related_security", ["PLAN1"]))
+        su["candidate_pool"]["source_digest"])
     page, su_p, ix_p, out = _write_io(str(soup), su, ix, "CLIOUT")
     (page.parent / "prophet_live.json").write_text(
         json.dumps(_runtime_payload()), encoding="utf-8")
