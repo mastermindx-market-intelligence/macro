@@ -94,6 +94,7 @@ _ARCHIVES = "https://www.sec.gov/Archives/edgar/data"
 _PACE_S = 0.12
 _RETRIES = 3
 _TIMEOUT = 30
+_TRACE_CANDIDATE_LIMIT = 24
 _EX99_TYPE = re.compile(r"^EX-99\.1(?:\b|$)", re.I)
 _EX99_NAME = re.compile(r"ex[-_]?99[-_.]?1", re.I)
 
@@ -233,7 +234,7 @@ def _select_newest_results_rows(rows: list[Mapping[str, Any]]) -> list[dict[str,
     return candidates
 
 
-def acquire_results_filing(
+def _acquire_results_filing_legacy(
     *, cik: str, http_get: HttpGet = _http_get, accession: str | None = None
 ) -> dict[str, Any]:
     """Resolve one issuer's results 8-K + EX-99.1 through the submissions + SGML seam.
@@ -363,6 +364,314 @@ def acquire_results_filing(
             "items": row["items"],
         }
     raise RefreshError(last_error or f"no results filing with an EX-99.1 exhibit is available for CIK {cik}")
+
+
+class _RecordingHttpGet:
+    def __init__(self, http_get: HttpGet):
+        self._http_get = http_get
+        self.responses: dict[str, tuple[int, bytes]] = {}
+
+    def __call__(self, url: str) -> tuple[int, bytes]:
+        response = self._http_get(url)
+        self.responses[url] = response
+        return response
+
+
+def _manifest_exhibit_count(header_body: bytes) -> int:
+    manifest = _parse_sgml_manifest(header_body.decode("utf-8", errors="replace"))
+    return sum(
+        1 for kind, filename in manifest
+        if filename.lower().endswith((".htm", ".html", ".txt")) and _EX99_TYPE.match(kind)
+    )
+
+
+def _trace_row(row: Mapping[str, Any], *, exhibit_url: str | None, outcome: str,
+               failure: str | None = None, receipt: dict[str, Any] | None = None,
+               decode: str | None = None, declared_encoding: str | None = None) -> dict[str, Any]:
+    return {
+        "accession": str(row.get("accessionNumber") or row.get("accession") or ""),
+        "form": row.get("form") or "",
+        "acceptance_datetime": row.get("acceptanceDateTime") or row.get("acceptance_datetime") or "",
+        "report_date": row.get("reportDate") or row.get("report_date") or "",
+        "exhibit_url": exhibit_url,
+        "outcome": outcome,
+        **({"failure": failure} if failure else {}),
+        **({"received_bytes": receipt} if receipt else {}),
+        "decode": decode,
+        "declared_encoding": declared_encoding,
+    }
+
+
+def _selected_acquisition(row: Mapping[str, Any], exhibit_url: str, exhibit_body: bytes,
+                          exhibit_text: str) -> dict[str, Any]:
+    receipt = {"sha256": sha256(exhibit_body).hexdigest(), "length": len(exhibit_body)}
+    acquisition = {
+        "cik": str(row.get("cik") or ""),
+        "accession": str(row.get("accessionNumber") or row.get("accession") or ""),
+        "form": row.get("form") or "",
+        "filing_date": row.get("filingDate") or row.get("filing_date") or "",
+        "acceptance_datetime": _iso_z(row.get("acceptanceDateTime") or row.get("acceptance_datetime")),
+        "report_date": row.get("reportDate") or row.get("report_date") or "",
+        "exhibit_url": exhibit_url,
+        "exhibit_body": exhibit_text,
+        "items": row.get("items") or "",
+        "received_bytes": receipt,
+        "declared_encoding": "utf-8",
+    }
+    return acquisition
+
+
+def _archived_row(row: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        "cik": str(row.get("cik") or ""),
+        "accession": str(row.get("accession") or row.get("accessionNumber") or ""),
+        "form": str(row.get("form") or ""),
+        "filing_date": str(row.get("filingDate") or row.get("filing_date") or ""),
+        "acceptance_datetime": str(row.get("acceptanceDateTime") or row.get("acceptance_datetime") or ""),
+        "report_date": str(row.get("reportDate") or row.get("report_date") or ""),
+        "primary_document": str(row.get("primaryDocument") or ""),
+        "items": str(row.get("items") or ""),
+    }
+
+
+def _acquire_results_filing_traced(*, cik: str, http_get: HttpGet,
+                                    accession: str | None) -> tuple[dict[str, Any] | None, dict[str, Any]]:
+    recorder = _RecordingHttpGet(http_get)
+    trace_rows: list[dict[str, Any]] = []
+    selected: dict[str, Any] | None = None
+    last_error: str | None = None
+    fatal_error: str | None = None
+    selected_target_accession: str | None = None
+    typed_handling: dict[str, str] = {}
+
+    if accession is not None:
+        submissions_status, submissions_body = recorder(
+            _SUBMISSIONS_URL.format(cik=int(cik))
+        )
+        try:
+            submissions = json.loads(submissions_body.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise RefreshError(f"SEC submissions JSON invalid: {exc}") from exc
+        row = _archived_row(_parallel_row(
+            (submissions.get("filings") or {}).get("recent") or {}, accession, cik=cik
+        ) or {"accession": accession, "cik": cik})
+        if row.get("accession") != accession:
+            row = {"accession": accession, "cik": cik}
+        if row.get("accession") == accession and row.get("form"):
+            try:
+                selected = _acquire_results_filing_legacy(
+                    cik=cik, http_get=recorder, accession=accession
+                )
+            except Exception as exc:
+                last_error = str(exc)
+            row = {"accession": accession, "cik": cik}
+        else:
+            resolved = _resolve_exhibit_for_row(row, cik=cik, http_get=recorder)
+            if resolved is not None:
+                row = _archived_row(resolved)
+    else:
+        candidates = list(reversed(_fetch_submissions_candidates(cik, http_get=recorder)))
+        submissions_url = _SUBMISSIONS_URL.format(cik=int(cik))
+        status, body = recorder.responses[submissions_url]
+        payload = json.loads(body.decode("utf-8"))
+        excluded = [
+            item for item in submissions_rows(payload, block="recent")
+            if item not in candidates
+        ]
+        merged = sorted(
+            [*excluded, *candidates],
+            key=lambda item: (
+                str(item.get("acceptanceDateTime") or ""),
+                str(item.get("filingDate") or ""),
+            ),
+            reverse=True,
+        )
+        trace_rows.extend(
+            _trace_row(item, exhibit_url=None, outcome="excluded_non_results")
+            for item in excluded[:_TRACE_CANDIDATE_LIMIT]
+        )
+        for row in candidates:
+            merged_item = next(
+                (item for item in merged if item.get("accessionNumber") == row.get("accessionNumber")),
+                row,
+            )
+            row_accession = str(row.get("accessionNumber") or "")
+            archive = f"{_ARCHIVES}/{int(cik)}/{row_accession.replace('-', '')}"
+            header_url = f"{archive}/{row_accession}-index-headers.html"
+            resolved = _resolve_exhibit_for_row(row, cik=cik, http_get=recorder)
+            if resolved is not None:
+                row = _archived_row(resolved)
+                merged_item = row
+            header_response = recorder.responses.get(header_url)
+            header_status = 0 if header_response is None else header_response[0]
+            header_body = b"" if header_response is None else header_response[1]
+            filename = _select_exhibit_99_1(
+                _parse_sgml_manifest(header_body.decode("utf-8", errors="replace"))
+            )
+            exhibit_url = None if filename is None else f"{archive}/{filename}"
+            exhibit_response = (
+                None if exhibit_url is None else recorder.responses.get(exhibit_url)
+            )
+
+            if header_status != 200:
+                failure = f"SEC filing document map unavailable for {row_accession}: HTTP {header_status}"
+                trace_rows.append(_trace_row(row, exhibit_url=header_url, outcome="fetch_failure", failure=failure))
+                last_error = failure
+                continue
+            if filename is None or exhibit_response is None:
+                failure = f"EX-99.1 is absent from the SGML document map for {row_accession}"
+                if exhibit_response is not None:
+                    failure = f"Exhibit 99.1 unavailable at {exhibit_url}: HTTP {exhibit_response[0]}"
+                trace_rows.append(_trace_row(row, exhibit_url=exhibit_url or header_url, outcome="no_exhibit", failure=failure))
+                last_error = failure
+                continue
+
+            exhibit_status, exhibit_body = exhibit_response
+            if exhibit_status != 200 or not exhibit_body.strip():
+                failure = f"Exhibit 99.1 unavailable at {exhibit_url}: HTTP {exhibit_status}"
+                trace_rows.append(_trace_row(row, exhibit_url=exhibit_url, outcome="fetch_failure", failure=failure))
+                last_error = failure
+                if accession is not None:
+                    fatal_error = failure
+                    break
+                continue
+
+            receipt = {"sha256": sha256(exhibit_body).hexdigest(), "length": len(exhibit_body)}
+            if _manifest_exhibit_count(header_body) > 1:
+                failure = f"ambiguous EX-99.1 document map for {row_accession}"
+                trace_rows.append(_trace_row(row, exhibit_url=exhibit_url, outcome="no_exhibit", failure=failure))
+                last_error = fatal_error = failure
+                break
+            try:
+                exhibit_text = exhibit_body.decode("utf-8")
+                decode_label, declared = "utf-8", "utf-8"
+            except UnicodeDecodeError:
+                failure = f"Exhibit 99.1 at {exhibit_url} does not decode as UTF-8"
+                trace_rows.append(_trace_row(
+                    row, exhibit_url=exhibit_url, outcome="decode_failure", failure=failure,
+                    receipt=receipt, decode="latin-1-fallback", declared_encoding="latin-1",
+                ))
+                last_error = fatal_error = failure
+                break
+
+            typed_handling = {
+                key: "missing" for key in ("report_date", "acceptance_datetime")
+                if not str(merged_item.get(key) or "").strip()
+            }
+            trace_rows.append(_trace_row(
+                row, exhibit_url=exhibit_url, outcome="selected", receipt=receipt,
+                decode=decode_label, declared_encoding=declared,
+            ) | {"typed_handling": typed_handling})
+            selected_target_accession = row_accession
+            if "acceptance_datetime" in typed_handling:
+                failure = "filing acceptance_datetime is required as the source clock"
+                last_error = fatal_error = failure
+                break
+            selected = _selected_acquisition(row, exhibit_url, exhibit_body, exhibit_text)
+            selected["cik"] = cik
+            break
+
+    if accession is not None and row is not None:
+        row_accession = str(row.get("accession") or accession)
+        archive = f"{_ARCHIVES}/{int(cik)}/{row_accession.replace('-', '')}"
+        header_url = f"{archive}/{row_accession}-index-headers.html"
+        header_response = recorder.responses.get(header_url)
+        header_status = 0 if header_response is None else header_response[0]
+        header_body = b"" if header_response is None else header_response[1]
+        filename = _select_exhibit_99_1(
+            _parse_sgml_manifest(header_body.decode("utf-8", errors="replace"))
+        )
+        exhibit_url = None if filename is None else f"{archive}/{filename}"
+        exhibit_response = None if exhibit_url is None else recorder.responses.get(exhibit_url)
+        receipt = None
+        decode_label = None
+        declared = None
+        outcome = "selected"
+        failure = last_error
+        if header_status != 200:
+            outcome = "fetch_failure"
+            failure = failure or f"SEC filing document map unavailable for {row_accession}: HTTP {header_status}"
+        elif filename is None:
+            outcome = "no_exhibit"
+            failure = failure or f"EX-99.1 is absent from the SGML document map for {row_accession}"
+        elif exhibit_response is None:
+            outcome = "fetch_failure"
+            failure = failure or f"Exhibit 99.1 unavailable at {exhibit_url}: HTTP 0"
+        else:
+            exhibit_status, exhibit_body = exhibit_response
+            if exhibit_status != 200 or not exhibit_body.strip():
+                outcome = "fetch_failure"
+                failure = failure or f"Exhibit 99.1 unavailable at {exhibit_url}: HTTP {exhibit_status}"
+            else:
+                receipt = {"sha256": sha256(exhibit_body).hexdigest(), "length": len(exhibit_body)}
+                if _manifest_exhibit_count(header_body) > 1:
+                    outcome = "no_exhibit"
+                    failure = f"ambiguous EX-99.1 document map for {row_accession}"
+                else:
+                    try:
+                        exhibit_body.decode("utf-8")
+                        decode_label, declared = "utf-8", "utf-8"
+                    except UnicodeDecodeError:
+                        outcome = "decode_failure"
+                        failure = f"Exhibit 99.1 at {exhibit_url} does not decode as UTF-8"
+        trace_rows.append(_trace_row(
+            row, exhibit_url=exhibit_url or header_url, outcome=outcome, failure=failure,
+            receipt=receipt, decode=decode_label, declared_encoding=declared,
+        ))
+        if selected is not None and outcome != "selected":
+            selected = None
+        if outcome == "selected":
+            selected_target_accession = row_accession
+        fatal_error = fatal_error or failure or last_error
+
+    newest_relevant = next((item["accession"] for item in trace_rows if item["outcome"] != "excluded_non_results"), None)
+    selected_accession = None if selected is None else str(selected["accession"])
+    if selected is None and selected_target_accession is not None:
+        selected_accession = selected_target_accession
+    pending = any(item["outcome"] not in {"selected", "excluded_non_results"} and item["accession"] != selected_accession for item in trace_rows)
+    currentness = "newer_source_pending" if selected is not None and pending else ("up_to_date" if selected is not None else "unverified")
+    if selected is not None:
+        selected["currentness"] = {"state": currentness}
+    decoded_digest = None if selected is None else {"sha256": sha256(selected["exhibit_body"].encode("utf-8")).hexdigest(), "length": len(selected["exhibit_body"].encode("utf-8"))}
+    selected_receipt = None if selected is None else selected["received_bytes"]
+    terminal = next((item for item in reversed(trace_rows) if item["outcome"] != "excluded_non_results"), None)
+    provenance = selected_receipt if selected_receipt is not None else None if terminal is None else terminal.get("received_bytes")
+    trace = {
+        "cik": cik,
+        "candidates": trace_rows[:_TRACE_CANDIDATE_LIMIT],
+        "newest_relevant_accession": newest_relevant,
+        "selected_accession": selected_accession,
+        "received_bytes": provenance,
+        "decoded_text": decoded_digest,
+        "decode": "utf-8" if selected is not None else None if terminal is None else terminal.get("decode"),
+        "declared_encoding": "utf-8" if selected is not None else None if terminal is None else terminal.get("declared_encoding"),
+        "observed_at": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z") if selected is not None else None,
+        "source": None if selected is None else {key: selected.get(key) for key in ("accession", "report_date", "acceptance_datetime", "exhibit_url")},
+        "currentness": currentness,
+        "candidate_limit": _TRACE_CANDIDATE_LIMIT,
+        "excluded_non_results": sum(item["outcome"] == "excluded_non_results" for item in trace_rows),
+        "typed_handling": typed_handling,
+    }
+    if fatal_error:
+        trace["failure"] = fatal_error
+    elif last_error and selected is None:
+        trace["failure"] = last_error
+    return selected, trace
+
+
+def acquire_results_filing(
+    *, cik: str, http_get: HttpGet = _http_get, accession: str | None = None,
+    trace: Callable[[dict[str, Any]], None] | None = None,
+) -> dict[str, Any]:
+    if trace is None:
+        return _acquire_results_filing_legacy(cik=cik, http_get=http_get, accession=accession)
+    selected, completed_trace = _acquire_results_filing_traced(
+        cik=cik, http_get=http_get, accession=accession
+    )
+    trace(completed_trace)
+    if selected is None:
+        raise RefreshError(completed_trace.get("failure") or f"no results filing with an EX-99.1 exhibit is available for CIK {cik}")
+    return selected
 
 
 def acquire_flagship_filing(*, http_get: HttpGet = _http_get) -> dict[str, Any]:

@@ -201,3 +201,156 @@ def pg_source_texts(
 ) -> dict[str, str]:
     bound = pg_bound_case(kind, fiscal_period=document_period or fiscal_period)
     return {bound.revision.document_id: bound.source}
+
+
+# ---- Task 2: acquisition fixtures ----
+import json
+
+
+def fixture_accession(name: str) -> str:
+    numbers = {
+        "older": "0000080424-26-000001",
+        "newer": "0000080424-26-000002",
+        "non_results": "0000080424-26-000003",
+        "amendment": "0000080424-26-000004",
+        "malformed": "0000080424-26-000005",
+    }
+    try:
+        return numbers[name]
+    except KeyError as exc:
+        raise ValueError(f"unknown synthetic acquisition fixture: {name}") from exc
+
+
+def _sgml(filename: str = "synthetic-exhibit-991.htm") -> bytes:
+    return (
+        f"<DOCUMENT><TYPE>EX-99.1<FILENAME>{filename}<TEXT>\n</TEXT></DOCUMENT>"
+    ).encode("utf-8")
+
+
+def _acquisition_case(case: str):
+    base = pg_bound_case("annual_first")
+    older_body = base.source.encode("utf-8")
+    accession = fixture_accession("older")
+    rows = [
+        {
+            "accessionNumber": accession,
+            "form": "8-K",
+            "filingDate": "2026-07-29",
+            "acceptanceDateTime": "2026-07-29T17:10:00Z",
+            "reportDate": "2026-06-30",
+            "items": "2.02",
+            "primaryDocument": "older.htm",
+        }
+    ]
+    responses = {}
+
+    def add_responses(row_accession: str, *, body: bytes, status: int = 200,
+                      filename: str = "synthetic-exhibit-991.htm") -> None:
+        archive = f"https://www.sec.gov/Archives/edgar/data/80424/{row_accession.replace('-', '')}"
+        responses[f"{archive}/{row_accession}-index-headers.html"] = (200, _sgml(filename))
+        responses[f"{archive}/{filename}"] = (status, body)
+
+    add_responses(accession, body=older_body)
+
+    def add_filing(row: dict, *, body: bytes | None = None, status: int = 200,
+                   filename: str = "synthetic-exhibit-991.htm") -> None:
+        row_accession = row["accessionNumber"]
+        rows.append(row)
+        add_responses(
+            row_accession,
+            body=body if body is not None else older_body,
+            status=status,
+            filename=filename,
+        )
+
+    if case == "newer_fetch_failed":
+        non_results = {
+            "accessionNumber": fixture_accession("non_results"),
+            "form": "8-K",
+            "filingDate": "2026-08-01",
+            "acceptanceDateTime": "2026-08-01T12:00:00Z",
+            "reportDate": "2026-06-30",
+            "items": "8.01",
+            "primaryDocument": "other.htm",
+        }
+        add_filing(non_results)
+        add_filing({
+            "accessionNumber": fixture_accession("newer"),
+            "form": "8-K",
+            "filingDate": "2026-07-30",
+            "acceptanceDateTime": "2026-07-30T17:00:00Z",
+            "reportDate": "2026-06-30",
+            "items": "2.02",
+            "primaryDocument": "newer.htm",
+        }, status=503)
+    elif case == "newest_no_facts":
+        add_filing({
+            "accessionNumber": fixture_accession("newer"),
+            "form": "8-K",
+            "filingDate": "2026-07-30",
+            "acceptanceDateTime": "2026-07-30T17:00:00Z",
+            "reportDate": "2026-06-30",
+            "items": "2.02",
+            "primaryDocument": "newer.htm",
+        }, body=b"<html><body><p>Synthetic release with no present facts.</p></body></html>")
+    elif case == "amendment_8ka":
+        row = rows[0]
+        row["form"] = "8-K/A"
+        row["accessionNumber"] = fixture_accession("amendment")
+        row["acceptanceDateTime"] = "2026-07-30T18:00:00Z"
+        row["filingDate"] = "2026-07-30"
+        archive = f"https://www.sec.gov/Archives/edgar/data/80424/{row['accessionNumber'].replace('-', '')}"
+        responses[f"{archive}/{row['accessionNumber']}-index-headers.html"] = (200, _sgml())
+        responses[f"{archive}/synthetic-exhibit-991.htm"] = (200, older_body)
+    elif case == "no_report_date":
+        rows[0]["reportDate"] = ""
+    elif case == "missing_acceptance_ts":
+        rows[0]["acceptanceDateTime"] = ""
+    elif case == "two_plausible_exhibits":
+        archive = f"https://www.sec.gov/Archives/edgar/data/80424/{accession.replace('-', '')}"
+        manifest = (
+            "<DOCUMENT><TYPE>EX-99.1<FILENAME>a.htm<TEXT>\n</TEXT></DOCUMENT>"
+            "<DOCUMENT><TYPE>EX-99.1<FILENAME>b.htm<TEXT>\n</TEXT></DOCUMENT>"
+        ).encode("utf-8")
+        responses[f"{archive}/{accession}-index-headers.html"] = (200, manifest)
+        responses[f"{archive}/a.htm"] = (200, older_body)
+        responses[f"{archive}/b.htm"] = (200, older_body)
+    elif case == "malformed_encoding":
+        add_filing({
+            "accessionNumber": fixture_accession("malformed"),
+            "form": "8-K",
+            "filingDate": "2026-07-30",
+            "acceptanceDateTime": "2026-07-30T17:00:00Z",
+            "reportDate": "2026-06-30",
+            "items": "2.02",
+            "primaryDocument": "malformed.htm",
+        }, body=b"<html><body>\xff< /body></html>", filename="malformed.htm")
+    elif case in {"same_source_rebuild", "prior_unavailable"}:
+        pass
+    else:
+        raise ValueError(f"unknown synthetic acquisition case: {case}")
+
+    submissions = {"filings": {"recent": {key: [row[key] for row in rows] for key in (
+        "accessionNumber", "form", "filingDate", "acceptanceDateTime", "reportDate", "items", "primaryDocument"
+    )}}}
+    responses["https://data.sec.gov/submissions/CIK0000080424.json"] = (
+        200, json.dumps(submissions).encode("utf-8")
+    )
+    if accession not in {row["accessionNumber"] for row in rows}:
+        add_responses(accession, body=older_body)
+    elif case == "newer_fetch_failed":
+        newer_accession = fixture_accession("newer")
+        archive = f"https://www.sec.gov/Archives/edgar/data/80424/{newer_accession.replace('-', '')}"
+        responses[f"{archive}/{newer_accession}-index-headers.html"] = (200, _sgml())
+
+    def http_get(url: str):
+        try:
+            return responses[url]
+        except KeyError as exc:
+            raise AssertionError(f"unexpected synthetic SEC URL: {url}") from exc
+
+    return http_get
+
+
+def fixture_http_get(case: str):
+    return _acquisition_case(case)
