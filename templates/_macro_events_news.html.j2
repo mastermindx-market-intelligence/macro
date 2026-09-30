@@ -2,6 +2,7 @@
    Calendar context never becomes an actionable signal. Keep data-al-row one
    per source alert, including the legacy dislocation row. No new score/store. #}
 {% autoescape true %}
+{% from "_macro_events_news_release.html.j2" import release_evidence %}
 {% macro nd_bi(en, zh='') -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh or en }}</span>{%- endmacro %}
 {% macro nd_date(value, kind='date') -%}
   {% if value %}<time class="nd-date" data-nd-date="{{ value }}" data-nd-date-kind="{{ kind }}">{{ value }}</time>{% else %}{{ nd_bi('Date unavailable', '日期未提供') }}{% endif %}
@@ -133,6 +134,7 @@
                   <h4>{{ nd_bi(e.get('label') or 'Scheduled event', e.get('label_zh') or e.get('label') or '已排期事件') }}</h4>
                   <div class="nd-event-full-date">{{ nd_date(e.get('date')) }}<span class="nd-past-date" hidden>{{ nd_bi('Date passed', '日期已过') }}</span></div>
                   {% if e.get('note') %}<p>{{ nd_bi(e.note, e.get('note_zh')) }}</p>{% endif %}
+                  {{ release_evidence(e, nd_bi, generated_utc|default(none)) }}
                 </div>
               </article>
             {% endfor %}
