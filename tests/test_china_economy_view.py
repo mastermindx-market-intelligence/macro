@@ -91,9 +91,12 @@ def test_css_scoped_no_parallel_global_tokens():
  assert ':root' not in css and '--bg:' not in css
  assert '.eco' in css and 'minmax(0,1fr)' in css
 
-def test_json_and_csv_do_not_issue_network_requests():
+def test_deep_hydration_uses_only_the_existing_same_origin_boundary():
  js=(ROOT/'templates/china-economy.js').read_text()
- assert 'fetch(' not in js and 'XMLHttpRequest' not in js and 'localStorage' not in js
+ assert "fetch(detailHref" in js
+ assert "credentials:'same-origin'" in js and "cache:'no-store'" in js
+ assert "detailHref !== 'china_economy_detail.json'" in js
+ assert 'XMLHttpRequest' not in js and 'localStorage' not in js
 
 def test_html5_options_do_not_contain_spans(html):
  soup=BeautifulSoup(html,'html.parser')
@@ -139,6 +142,27 @@ def test_production_component_preserves_heading_hierarchy(doc):
  text=e.from_string('{% macro t(a,b) %}{{ a }}{% endmacro %}{% import "_china_economy_lens.html.j2" as eco with context %}{{ eco.lens(E) }}').render(E=prepare_economy_view(build_economy(doc)))
  soup=BeautifulSoup(text,'html.parser')
  assert soup.find(id='eco-title').name=='h2' and not soup.find('h1')
+
+def test_public_shell_contains_state_but_not_deep_metric_library(doc):
+ from jinja2 import Environment,FileSystemLoader,StrictUndefined
+ e=Environment(loader=FileSystemLoader(ROOT/'templates'),undefined=StrictUndefined)
+ tpl=e.from_string('{% macro t(a,b) %}{{ a }}{% endmacro %}{% import "_china_economy_lens.html.j2" as eco with context %}{{ eco.lens(E,shell="public") }}')
+ text=tpl.render(E=prepare_economy_view(build_economy(doc)))
+ soup=BeautifulSoup(text,'html.parser')
+ assert len(soup.select('.eco-domain[id]'))==6 and len(soup.select('.eco-pace-card'))==3
+ assert soup.select_one('#eco-detail-lock') is not None
+ assert soup.select_one('#eco-explorer') is None and soup.select_one('#eco-library') is None
+ assert not soup.select('[id^="eco-template-"]')
+
+def test_protected_deep_fragment_has_library_without_duplicate_outer_shell(doc):
+ from jinja2 import Environment,FileSystemLoader,StrictUndefined
+ e=Environment(loader=FileSystemLoader(ROOT/'templates'),undefined=StrictUndefined)
+ tpl=e.from_string('{% macro t(a,b) %}{{ a }}{% endmacro %}{% import "_china_economy_lens.html.j2" as eco with context %}{{ eco.lens(E,shell="deep") }}')
+ text=tpl.render(E=prepare_economy_view(build_economy(doc)))
+ soup=BeautifulSoup(text,'html.parser')
+ assert soup.find(id='china-economy') is None and soup.find(id='eco-detail-lock') is None
+ assert soup.find(id='eco-explorer') is not None and soup.find(id='eco-library') is not None
+ assert len(soup.select('[id^="eco-template-"]'))==128
 
 def test_error_contract_and_shared_language_handling_are_explicit():
  js=(ROOT/'templates/china-economy.js').read_text()

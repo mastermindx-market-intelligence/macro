@@ -2074,6 +2074,7 @@ def main() -> int:
         # A schema/configuration failure affects this optional lens, not the page.
         vm["economy_lens"] = None
         vm["economy_error"] = False
+        _economy_view = None
         try:
             from engine.china_economy_store import build_from_store as build_economy_lens
             from engine.china_economy import extend_snapshot as extend_macro_snapshot
@@ -2093,9 +2094,34 @@ def main() -> int:
             log.error("China economy lens unavailable (%s)", type(_economy_exc).__name__)
         vm["economy_publication"] = _macro_evidence
         from engine.china_economy_view import client_publication
-        vm["economy_client_publication"] = client_publication(_macro_evidence)
+        # Anonymous HTML carries only the glanceable shell. Deep series/history
+        # stay behind the existing static data boundary and hydrate after access.
+        vm["economy_client_publication"] = client_publication(
+            _macro_evidence, include_metrics=False)
         vm["macro_evidence"] = macro_evidence_view(_macro_evidence)
         import json as _macro_json
+        _detail_payload = {
+            "schema": "mastermind.china_economy_detail_payload.v1",
+            "status": "unavailable",
+            "reference_period": (_macro_evidence.get("economy") or {}).get("reference_period"),
+            "client": None,
+            "html": "",
+        }
+        if _economy_view is not None:
+            try:
+                _eco_template = env.get_template("_china_economy_lens.html.j2")
+                _detail_payload.update(
+                    status="ok",
+                    client=client_publication(_macro_evidence),
+                    html=str(_eco_template.module.lens(_economy_view, shell="deep")),
+                )
+            except Exception as _detail_exc:  # protected detail must fail closed
+                log.error("China economy detail payload unavailable (%s)",
+                          type(_detail_exc).__name__)
+        (site / "china_economy_detail.json").write_text(
+            _macro_json.dumps(_detail_payload, ensure_ascii=False, allow_nan=False, indent=2),
+            encoding="utf-8",
+        )
         (site / "china_macro_evidence.json").write_text(
             _macro_json.dumps(_macro_evidence, ensure_ascii=False, allow_nan=False, indent=2),
             encoding="utf-8",

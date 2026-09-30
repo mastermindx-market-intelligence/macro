@@ -708,6 +708,36 @@ def test_no_broad_assets_or_signal_data_prefix_was_opened_for_ihmp():
         assert not p.startswith("/live/"), "a live/signal-data prefix must never be public"
 
 
+def test_china_evidence_presentation_assets_are_public_but_evidence_json_is_not():
+    """Anonymous China shell gets presentation code, never the evidence payload."""
+    shell_paths = {
+        "/china-economy.css",
+        "/china-economy.js",
+        "/china-macro-evidence.css",
+        "/china-macro-evidence.js",
+    }
+    public_exact = set(POLICY["public"]["exact"])
+    assert shell_paths <= public_exact
+    assert shell_paths.isdisjoint(POLICY["free_registered"]["exact"])
+    assert shell_paths <= _caddy_public_exclusions()
+
+    error_matcher = re.search(
+        r"@reg_asset_err\s*\{\s*not path ([^\n]+)", CADDY, flags=re.S
+    )
+    assert error_matcher, "@reg_asset_err matcher missing"
+    assert shell_paths <= set(shlex.split(error_matcher.group(1)))
+
+    for block in ("public_static", "public_versioned"):
+        matcher = re.search(rf"@{block}\s*\{{\s*path ([^\n]+)", CADDY, flags=re.S)
+        assert matcher, f"@{block} matcher missing"
+        assert shell_paths <= set(shlex.split(matcher.group(1))), block
+
+    for protected in ("/china_macro_evidence.json", "/china_economy_detail.json"):
+        assert protected not in public_exact
+        assert protected not in _caddy_public_exclusions()
+        assert not any(protected.startswith(p) for p in POLICY["public"]["prefixes"])
+
+
 def test_macro_suite_shell_assets_are_public_but_the_snapshot_payload_is_not():
     """The three presentation assets, and nothing that carries a reading.
 

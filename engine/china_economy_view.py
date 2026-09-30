@@ -106,14 +106,13 @@ def prepare_economy_view(economy):
  return v
 
 
-def client_publication(publication):
- """Interaction-only projection. The complete JSON stays at its canonical URL.
-
- The page already server-renders definitions/provenance, and needs only the
- selected series for CSV plus group IDs for navigation. Do not inline the whole
- four-panel publication a second time. No numbers are recalculated or sampled.
- """
+def client_publication(publication, *, include_metrics=True):
+ """Bound the HTML projection; the complete evidence stays behind its data URL."""
  economy=publication.get('economy')
+ if not include_metrics:
+  return {'economy':None,'detail_href':'china_economy_detail.json',
+          'download_href':'china_macro_evidence.json',
+          'projection':'public_shell_locked_detail'}
  if not isinstance(economy,dict):
   return {'economy':None,'download_href':'china_macro_evidence.json'}
  keys=('schema','input_class','reference_period','authority')

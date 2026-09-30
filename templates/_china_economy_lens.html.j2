@@ -7,8 +7,8 @@
 
 {% endautoescape %}{% endmacro %}
 {# Additive China lens. Existing global navigation, tokens and four dialogs survive. #}
-{% macro lens(E, title_level=2) %}{% autoescape true %}
-<section class="eco" id="china-economy" aria-labelledby="eco-title">
+{% macro lens(E, title_level=2, shell='full') %}{% autoescape true %}
+{% if shell != 'deep' %}<section class="eco" id="china-economy" aria-labelledby="eco-title">
   <header class="eco-topline"><span class="eco-eyebrow">{{ t('CHINA / ECONOMIC LENS','中国 / 经济透视') }}</span><span>{{ t('Reference','参考期') }} {{ E.reference_period }} · {{ t('Snapshot','快照') }} {{ E.snapshot_date }}</span></header>
   <div class="eco-hero">
     <div><div class="eco-kicker">{{ t('STATE · DIRECTION · PACE','状态 · 方向 · 速度') }}</div><{% if title_level == 1 %}h1{% else %}h2{% endif %} id="eco-title">{{ t(E.breadth.headline_en,E.breadth.headline_zh) }}</{% if title_level == 1 %}h1{% else %}h2{% endif %}>
@@ -44,7 +44,21 @@
       <div role="cell"><span class="eco-momentum {{ d.momentum }}">{{ d.symbol }} {{ t(d.momentum_en,d.momentum_zh) }}</span><details><summary>{{ t('Why?','原因') }}</summary><p>{{ t(d.qualifier_en,d.qualifier_zh) }}</p>{% for driver in d.drivers %}<p>{{ t(E.metrics[driver.metric_id].label_en,E.metrics[driver.metric_id].label_zh) }}: {{ t(E.metrics[driver.metric_id].direction_label_en,E.metrics[driver.metric_id].direction_label_zh) }}</p>{% endfor %}</details></div>
     </div>{% endfor %}
   </div>
+  {% endif %}
 
+  {% if shell == 'public' %}
+  <section class="eco-deep-lock" id="eco-detail-slot" aria-labelledby="eco-deep-lock-title">
+    <div id="eco-detail-lock">
+      <div class="eco-kicker">{{ t('DEEP EVIDENCE','深度证据') }}</div>
+      <h2 id="eco-deep-lock-title">{{ t('Inspect the full economic evidence library','深入查看完整经济证据库') }}</h2>
+      <p>{{ t('Histories, source receipts, calculated diagnostics and the complete metric library load only after the existing site access boundary admits the request.','历史序列、来源凭据、计算诊断与完整指标库仅在既有站点访问边界放行后加载。') }}</p>
+      <div class="eco-deep-lock-actions"><a href="/?signin=1&ret=/china.html#china-economy">{{ t('Sign in','登录') }}</a><a href="/plans.html">{{ t('View plans','查看方案') }}</a></div>
+    </div>
+  </section>
+  {% endif %}
+
+  {% if shell != 'public' %}
+  <div class="eco-deep-fragment">
   <div class="eco-context-grid">{% for c in E.context_cards %}<article class="eco-context-card"><header><h3>{{ t(c.title_en,c.title_zh) }}</h3><button type="button" data-eco-group="{{ c.group }}" aria-label="Explore {{ c.title_en }}" data-aria-en="Explore {{ c.title_en }}" data-aria-zh="查看{{ c.title_zh }}">↗</button></header>
     {% for k in c.ids %}{% set m=E.metrics[k] %}<div><span>{{ t(m.label_en,m.label_zh) }}</span><b>{{ m.value_text }}{% if not m.unit.startswith('%') and m.unit != 'index' %}<small> {{ t(m.unit_en,m.unit_zh) }}</small>{% endif %}</b></div>{% endfor %}
     <p>{{ t(c.note_en,c.note_zh) }}</p></article>{% endfor %}</div>
@@ -79,5 +93,7 @@
   <details class="eco-audit"><summary>{{ t('Calculated diagnostics','计算诊断') }} · {{ E.counts.diagnostics }}</summary><div class="eco-diagnostics">{% for d in E.diagnostics %}<article><h3>{{ t(d.label_en,d.label_zh) }}</h3><b>{{ d.display }} <small>{{ d.unit }}</small></b><p>{{ t(d.method_en,d.method_zh) }}</p></article>{% endfor %}</div></details>
   <details class="eco-audit eco-conflicts"><summary>{{ t('Data conflicts to resolve','待解决的数据冲突') }} · {{ E.known_source_conflicts|length }}</summary>{% for c in E.known_source_conflicts %}<p><b>{{ c.metric_id }}</b>: {{ t('earlier cached reading','此前缓存读数') }} {{ c.legacy_value }} · {{ t('identified origin reading','已识别原始来源读数') }} {{ c.origin_value }} · {{ c.period }}</p><p>{{ c.resolution }}</p>{% endfor %}<p>{{ t('The original data store has not been overwritten. Different currencies and revised coverage require reconciliation.','未覆盖原数据存储；币种及修订口径仍须对账。') }}</p></details>
   <details class="eco-audit"><summary>{{ t('Methodology & access','方法与数据访问') }}</summary><p>{{ t(E.breadth.method_en,E.breadth.method_zh) }}</p><p>{{ t(E.activity_pulse.method_en,E.activity_pulse.method_zh) }}</p><p>{{ t('Momentum deadbands are explicit research display choices, not calibrated statistical significance. A missing domain retains its weight and stays unknown.','动能中性阈值是明确的研究展示选择，不是已校准的统计显著性。缺失领域保留其分母，保持未知。') }}</p><p>{{ t('Each value retains its source, reference period and availability boundary. Read source metadata for acquisition and revision evidence; research inputs are not production acceptance.','各数值保留来源、参考期与可用时间边界。采集及版本证据见来源元数据；研究输入不代表生产验收。') }}</p><ul>{% for source in E.sources.values() %}<li><a href="{{ source.url }}" target="_blank" rel="noopener noreferrer">{{ source.publisher }} · {{ source.title }}</a> · {{ source.published_at }}</li>{% endfor %}</ul></details>
-</section>
+  </div>
+  {% endif %}
+{% if shell != 'deep' %}</section>{% endif %}
 {% endautoescape %}{% endmacro %}

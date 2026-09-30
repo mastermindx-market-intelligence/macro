@@ -2360,7 +2360,7 @@ html[data-lang="zh"][data-theme="light"] body.page-china .ms-red .cnx-big-score 
 
   {# Economy is additive within macro mode; existing risk/stock/market sections survive. #}
   {% if economy_lens is defined and economy_lens %}
-  {{ eco_lens.lens(economy_lens) }}
+  {{ eco_lens.lens(economy_lens, shell='public') }}
   {% elif economy_error is defined and economy_error %}
   <section class="eco" id="china-economy" aria-labelledby="eco-title">
     <h2 id="eco-title">{{ t('Economy evidence unavailable','经济证据暂不可用') }}</h2>
