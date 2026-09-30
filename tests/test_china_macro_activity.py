@@ -4,7 +4,9 @@ import json
 import pandas as pd
 import pytest
 
-from collectors.china_property_activity import parse_release, release_links, origin_url, number
+from collectors.china_property_activity import (
+    INDEX, fetch_activity, parse_release, release_links, origin_url, number,
+)
 from engine.china_macro_evidence import nominal_gdp_four_quarters, build_snapshot, true_credit_impulse
 
 URL='https://www.stats.gov.cn/sj/zxfb/202609/t20260915_1965310.html'
@@ -15,6 +17,14 @@ def html(extra='', pub='2026/09/15 10:00', title='2026年1—8月份全国房地
     return f'<meta name="ArticleTitle" content="{title}"><meta name="PubDate" content="{pub}"><table>'+''.join('<tr>'+''.join(f'<td>{v}</td>' for v in row)+'</tr>' for row in rows)+extra+'</table>'
 
 def find(x,id):return next(m for p in x['panels'].values() for m in p['metrics'] if m['id']==id)
+
+class HttpResponse:
+    def __init__(self,text,status,url,ctype='text/html'):
+        self.text=text;self.content=text.encode();self.status_code=status;self.url=url
+        self.headers={'Content-Type':ctype};self.encoding='utf-8'
+    def raise_for_status(self):
+        if self.status_code >= 400:
+            raise ValueError('http '+str(self.status_code))
 
 def test_real_release_fields_period_units_and_observed_publication():
     d=parse_release(html(),URL,observed_at=NOW)
@@ -58,6 +68,32 @@ def test_origin_boundary(url):
 def test_release_index_only_accepts_property_reports_and_preserves_date():
     x='<a href="202609/t20260915_1965310.html">2026年1—8月份全国房地产市场基本情况</a><a href="x">Other release</a>'
     assert release_links(x)==[(URL,(2026,8))]
+
+def test_property_activity_checks_robots_once_and_keeps_receipt_metadata():
+    calls=[]
+    index='<a href="202609/t20260915_1965310.html">2026年1—8月份全国房地产市场基本情况</a>'
+    def get(url,**kwargs):
+        calls.append(url)
+        if url.endswith('/robots.txt'): return HttpResponse('',404,url,'text/plain')
+        if url==INDEX: return HttpResponse(index,200,url)
+        if url==URL: return HttpResponse(html(),200,url)
+        raise AssertionError(url)
+    d=fetch_activity(get)
+    assert calls==['https://www.stats.gov.cn/robots.txt',INDEX,URL]
+    r=d.iloc[0]
+    assert r.robots_policy=='not_published' and r.robots_http_status==404
+    assert len(r.robots_sha256)==64
+
+def test_property_activity_robots_disallow_stops_before_index():
+    calls=[]
+    def get(url,**kwargs):
+        calls.append(url)
+        if url.endswith('/robots.txt'):
+            return HttpResponse('User-agent: *\nDisallow: /sj/\n',200,url,'text/plain')
+        raise AssertionError('index must not be fetched')
+    with pytest.raises(ValueError,match='robots_disallowed'):
+        fetch_activity(get)
+    assert calls==['https://www.stats.gov.cn/robots.txt']
 
 def test_missing_numbers_are_not_zero():
     assert number('—') is None and number('0')==0 and number(' -19.9 ')==-19.9

@@ -13,6 +13,7 @@ import json
 import logging
 import re
 from typing import Callable
+from urllib import robotparser
 from urllib.parse import unquote, urlparse, urljoin
 from zoneinfo import ZoneInfo
 
@@ -26,6 +27,8 @@ from engine.china_economy_store import frames_from_receipt, value_receipt_digest
 log = logging.getLogger(__name__)
 VERSION = 'china-economy-acquisition.v1.1'
 MAX_BYTES = 4_000_000
+ROBOTS_MAX_BYTES = 512_000
+USER_AGENT = 'Mozilla/5.0 (compatible; MastermindEconomicData/1.0)'
 TZ = ZoneInfo('Asia/Shanghai')
 # Exact source families, not an arbitrary URL fetch API.
 FAMILIES = {
@@ -59,6 +62,66 @@ def checked_url(url: str, family: str) -> str:
             or not any(decoded.startswith(prefix) for prefix in PATHS.get(p.hostname, ()))):
         raise ValueError('unapproved_source_url')
     return url
+
+
+def check_robots(url: str, http_get: Callable, cache: dict | None = None) -> dict:
+    """Enforce one publisher robots policy per host, then check this exact path.
+
+    A missing robots file (404/410) contains no explicit disallow and is admitted.
+    Redirected, denied, malformed, or transport-ambiguous robots responses fail
+    the source family closed. Only status/hash metadata is retained; never body text.
+    """
+    host = urlparse(url).hostname
+    if not host:
+        raise ValueError('robots_host_missing')
+    cache = cache if cache is not None else {}
+    if host not in cache:
+        robots_url = f'https://{host}/robots.txt'
+        try:
+            response = http_get(
+                robots_url, timeout=10, retries=1, allow_redirects=False,
+                headers={'User-Agent': USER_AGENT, 'Accept': 'text/plain,*/*;q=0.1'},
+            )
+            if getattr(response, 'url', robots_url) != robots_url:
+                raise ValueError('robots_unexpected_response_url')
+            status = int(response.status_code)
+            body = bytes(response.content or b'')
+            base = {
+                'url': robots_url,
+                'http_status': status,
+                'response_sha256': hashlib.sha256(body).hexdigest(),
+                'response_bytes': len(body),
+            }
+            if status in {404, 410}:
+                cache[host] = {
+                    'receipt': {**base, 'policy': 'not_published'},
+                    'parser': None,
+                }
+            elif status == 200:
+                ctype = str(response.headers.get('Content-Type', '')).lower()
+                if not body or len(body) > ROBOTS_MAX_BYTES:
+                    raise ValueError('robots_invalid_body')
+                if 'text/html' in ctype:
+                    raise ValueError('robots_invalid_content_type')
+                parser = robotparser.RobotFileParser()
+                parser.set_url(robots_url)
+                parser.parse(body.decode('utf-8-sig', errors='replace').splitlines())
+                cache[host] = {
+                    'receipt': {**base, 'policy': 'published'},
+                    'parser': parser,
+                }
+            else:
+                raise ValueError(f'robots_http_status_{status}')
+        except Exception as exc:
+            reason = str(exc)[:100] if isinstance(exc, ValueError) else 'robots_acquisition_failed'
+            cache[host] = {'error': reason}
+    state = cache[host]
+    if state.get('error'):
+        raise ValueError(state['error'])
+    parser = state.get('parser')
+    if parser is not None and not parser.can_fetch(USER_AGENT, url):
+        raise ValueError('robots_disallowed')
+    return {**state['receipt'], 'checked_path': urlparse(url).path, 'allowed': True}
 
 
 def _visible_text(soup) -> str:
@@ -202,20 +265,23 @@ def _merge_disjoint(left, right):
 
 
 def collect_releases(targets: dict, expected_period: str, http_get: Callable, catalog: dict,
-                     clock: Callable = lambda: datetime.now(timezone.utc)) -> CollectionBatch:
+                     clock: Callable = lambda: datetime.now(timezone.utc),
+                     robots_cache: dict | None = None) -> CollectionBatch:
     """One bounded acquisition per configured family; retry owner is Adapter."""
     month_index(expected_period)
     if not isinstance(targets, dict) or len(targets) > len(FAMILIES):
         raise ValueError('invalid_release_target_set')
     batch = CollectionBatch(requested=len(targets)); unavailable_hosts = set()
+    robots_cache = robots_cache if robots_cache is not None else {}
     for family, url in targets.items():
         try:
             checked_url(url, family)
             host = urlparse(url).hostname
             if host in unavailable_hosts:
                 raise ValueError('host_unavailable_this_batch')
+            robots = check_robots(url, http_get, robots_cache)
             response = http_get(url, timeout=15, retries=1, allow_redirects=False,
-                                headers={'User-Agent': 'Mozilla/5.0 (Mastermind economic data)', 'Accept': 'text/html'})
+                                headers={'User-Agent': USER_AGENT, 'Accept': 'text/html'})
             if response.status_code in {401, 403, 429}:
                 unavailable_hosts.add(host)
             # Redirects must not switch origin or bypass a denial.
@@ -223,6 +289,7 @@ def collect_releases(targets: dict, expected_period: str, http_get: Callable, ca
                 raise ValueError('unexpected_response_url')
             frames, receipt, _ = parse_acquisition(family, url, response.content, clock().isoformat(),
                 expected_period, catalog, status=response.status_code, content_type=response.headers.get('Content-Type', ''))
+            receipt['robots'] = robots
             batch.frames = _merge_disjoint(batch.frames, frames)
             batch.receipts[family] = receipt
         except Exception as exc:

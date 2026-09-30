@@ -26,7 +26,13 @@ def safe_page():
     return '<title>2026年8月银行结售汇数据</title><meta name="PubDate" content="2026-09-15"><p>2026年8月，银行结汇17090亿元人民币，售汇13800亿元人民币。2026年8月，银行代客涉外收入52718亿元人民币，对外付款48486亿元人民币。</p>'
 
 def response(body=None,status=200,url=URL,ctype='text/html'):
-    return SimpleNamespace(content=(body or sa_page()).encode(),status_code=status,url=url,headers={'Content-Type':ctype})
+    if url.endswith('/robots.txt') and body is None and status == 200:
+        status=404;body='';ctype='text/plain'
+    payload = body if body is not None else sa_page()
+    return SimpleNamespace(content=payload.encode(),status_code=status,url=url,headers={'Content-Type':ctype})
+
+def robots(body='User-agent: *\nAllow: /\n',status=200,url='https://www.stats.gov.cn/robots.txt'):
+    return response(body,status,url,'text/plain')
 
 def rec(observed=NOW,sha='a'*64,url=URL):
     return {'url':url,'published_at':'2026-09-15T10:00:00+08:00','observed_at':observed,'response_sha256':sha}
@@ -100,12 +106,71 @@ def test_exact_public_origin_contract(url):
 def test_bad_http_body_not_a_release(status,ctype,body):
     with pytest.raises((ValueError,UnicodeDecodeError)):parse_acquisition('industry',URL,body,NOW,'2026-08',CAT,status=status,content_type=ctype)
 
+def test_published_robots_allow_is_bound_to_release_receipt():
+    calls=[]
+    def get(url,**kwargs):
+        calls.append(url)
+        return robots() if url.endswith('/robots.txt') else response(url=url)
+    b=collect_releases({'industry':URL},'2026-08',get,CAT,lambda:datetime.fromisoformat(NOW))
+    assert b.status=='ok' and calls==['https://www.stats.gov.cn/robots.txt',URL]
+    rr=b.receipts['industry']['robots']
+    assert rr['policy']=='published' and rr['http_status']==200 and rr['allowed'] is True
+    assert rr['checked_path']=='/sj/zxfb/202609/test.html' and len(rr['response_sha256'])==64
+
+def test_missing_robots_means_no_explicit_disallow_not_no_check():
+    calls=[]
+    def get(url,**kwargs):
+        calls.append(url);return response(url=url)
+    b=collect_releases({'industry':URL},'2026-08',get,CAT,lambda:datetime.fromisoformat(NOW))
+    assert b.status=='ok' and calls[0].endswith('/robots.txt')
+    assert b.receipts['industry']['robots']['policy']=='not_published'
+    assert b.receipts['industry']['robots']['http_status']==404
+
+def test_robots_disallow_blocks_article_before_fetch():
+    calls=[]
+    def get(url,**kwargs):
+        calls.append(url)
+        if url.endswith('/robots.txt'):
+            return robots('User-agent: *\nDisallow: /sj/\n')
+        raise AssertionError('article must not be fetched')
+    b=collect_releases({'industry':URL},'2026-08',get,CAT)
+    assert calls==['https://www.stats.gov.cn/robots.txt']
+    assert not b.frames and b.failures['industry']['reason']=='robots_disallowed'
+
+def test_robots_redirect_or_html_200_fails_closed():
+    for mode in ('redirect','html'):
+        calls=[]
+        def get(url,**kwargs):
+            calls.append(url)
+            if mode=='redirect':
+                return response('moved',302,url,'text/html')
+            return response('<html>not robots</html>',200,url,'text/html')
+        b=collect_releases({'industry':URL},'2026-08',get,CAT)
+        assert len(calls)==1 and not b.frames
+        assert b.failures['industry']['reason'].startswith('robots_')
+
+def test_index_and_release_share_one_robots_fetch():
+    index='https://www.stats.gov.cn/sj/zxfb/';calls=[];cache={}
+    h='<a href="202609/test.html">2026年8月份规模以上工业增加值</a>'
+    def get(url,**kwargs):
+        calls.append(url)
+        if url.endswith('/robots.txt'): return robots()
+        if url==index: return response(h,url=index)
+        return response(url=url)
+    targets,failures=configured_targets({'sources':{'industry':{'index_url':index}}},get,'2026-08',cache)
+    batch=collect_releases(targets,'2026-08',get,CAT,lambda:datetime.fromisoformat(NOW),robots_cache=cache)
+    assert not failures and batch.status=='ok'
+    assert calls.count('https://www.stats.gov.cn/robots.txt')==1
+    assert calls.count(index)==1 and calls.count(URL)==1
+
 def test_independent_publisher_survives_http_failure():
     calls=[]
     def get(url,**kwargs):
-        calls.append((url,kwargs));return response(status=502) if url==URL else response(safe_page(),url=SAFE)
+        calls.append((url,kwargs))
+        if url.endswith('/robots.txt'): return response(url=url)
+        return response(status=502,url=url) if url==URL else response(safe_page(),url=SAFE)
     b=collect_releases({'industry':URL,'safe':SAFE},'2026-08',get,CAT,lambda:datetime.fromisoformat(NOW))
-    assert b.status=='blocked' and set(b.receipts)=={'safe'} and len(calls)==2
+    assert b.status=='blocked' and set(b.receipts)=={'safe'} and len(calls)==4
     assert all(c[1]['retries']==1 and c[1]['allow_redirects'] is False for c in calls)
 
 @pytest.mark.parametrize('status',[401,403,429])
@@ -180,9 +245,12 @@ def test_discovery_exact_month_unique_and_relative():
 def test_shared_index_fetched_once():
     index='https://www.stats.gov.cn/sj/zxfb/';calls=[]
     h='<a href="202609/test.html">2026年8月份规模以上工业增加值</a><a href="202609/retail.html">2026年1—8月份社会消费品零售总额</a>'
-    def get(url,**kwargs):calls.append(url);return response(h,url=url)
+    def get(url,**kwargs):
+        calls.append(url)
+        return response(url=url) if url.endswith('/robots.txt') else response(h,url=url)
     t,f=configured_targets({'sources':{'industry':{'index_url':index},'retail':{'index_url':index}}},get,'2026-08')
-    assert len(calls)==1 and len(t)==2 and not f
+    assert calls.count('https://www.stats.gov.cn/robots.txt')==1
+    assert calls.count(index)==1 and len(t)==2 and not f
 
 def test_feature_disabled_has_no_network_or_store_effect():
     def fail(*a,**kw):raise AssertionError('should not run')
@@ -245,15 +313,20 @@ def test_empty_enabled_acquisition_never_declares_success():
 
 
 def test_source_response_url_change_not_silently_followed():
-    b=collect_releases({'industry':URL},'2026-08',lambda *a,**k:response(url=URL+'2'),CAT)
+    def get(url,**kwargs):
+        return response(url=url) if url.endswith('/robots.txt') else response(url=URL+'2')
+    b=collect_releases({'industry':URL},'2026-08',get,CAT)
     assert not b.frames and b.failures['industry']['reason']=='unexpected_response_url'
 
 
 def test_index_http_error_cached_once_for_all_dependent_families():
     calls=[];index='https://www.stats.gov.cn/sj/zxfb/'
-    def get(url,**kwargs):calls.append(url);return response(status=502,url=url)
+    def get(url,**kwargs):
+        calls.append(url)
+        return response(url=url) if url.endswith('/robots.txt') else response(status=502,url=url)
     t,f=configured_targets({'sources':{'industry':{'index_url':index},'retail':{'index_url':index}}},get,'2026-08')
-    assert len(calls)==1 and not t and len(f)==2
+    assert calls.count('https://www.stats.gov.cn/robots.txt')==1
+    assert calls.count(index)==1 and not t and len(f)==2
 
 
 def test_paragraph_wrapper_scopes_equal_publisher_twins_and_keeps_title_year():

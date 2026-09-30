@@ -11,8 +11,8 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from collectors.china_economy_acquisition import (
-    CollectionBatch, checked_url, collect_releases, discover_release,
-    qualify_against_owner, MAX_BYTES,
+    CollectionBatch, checked_url, check_robots, collect_releases, discover_release,
+    qualify_against_owner, MAX_BYTES, USER_AGENT,
 )
 from engine.china_economy import month_from_index, month_index, timestamp
 
@@ -23,9 +23,10 @@ def _period(clock):
     return month_from_index(now.year * 12 + now.month - 2)
 
 
-def configured_targets(config: dict, http_get, expected_period: str):
+def configured_targets(config: dict, http_get, expected_period: str, robots_cache: dict | None = None):
     """Resolve each index at most once; no oldest-working-release fallback."""
     month_index(expected_period)
+    robots_cache = robots_cache if robots_cache is not None else {}
     sources = config.get('sources')
     if not isinstance(sources, dict) or not 1 <= len(sources) <= 8:
         raise ValueError('enabled_economy_requires_one_to_eight_sources')
@@ -49,8 +50,9 @@ def configured_targets(config: dict, http_get, expected_period: str):
                 raise ValueError('index_host_denied_this_batch')
             if candidate not in index_cache:
                 try:
+                    check_robots(candidate, http_get, robots_cache)
                     r = http_get(candidate, timeout=15, retries=1, allow_redirects=False,
-                                 headers={'User-Agent': 'Mozilla/5.0 (Mastermind economic data)', 'Accept': 'text/html'})
+                                 headers={'User-Agent': USER_AGENT, 'Accept': 'text/html'})
                     if r.status_code in {401, 403, 429}:
                         denied_hosts.add(host)
                     if r.status_code != 200 or getattr(r, 'url', candidate) != candidate:
@@ -93,8 +95,10 @@ def enrich_existing_frames(adapter, legacy_frames, read, *, catalog=None,
             path = Path(__file__).resolve().parents[1] / 'config/china_economy_catalog.json'
             catalog = json.loads(path.read_text())['metrics']
         expected = _period(clock)
-        targets, failed = configured_targets(config, adapter.http_get, expected)
-        batch = collect_releases(targets, expected, adapter.http_get, catalog, clock)
+        robots_cache = {}
+        targets, failed = configured_targets(config, adapter.http_get, expected, robots_cache)
+        batch = collect_releases(
+            targets, expected, adapter.http_get, catalog, clock, robots_cache=robots_cache)
         batch.requested = len(config['sources']); batch.failures.update(failed)
         frames = qualify_against_owner(batch, legacy_frames, read, catalog)
         return frames, batch

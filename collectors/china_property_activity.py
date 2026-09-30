@@ -13,6 +13,8 @@ from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 import pandas as pd
 
+from collectors.china_economy_acquisition import USER_AGENT, check_robots
+
 INDEX = "https://www.stats.gov.cn/sj/zxfb/"
 TITLE = re.compile(r"(20\d{2})年1[—－–-](\d{1,2})月份全国房地产(?:市场基本情况|开发投资和销售情况)")
 FIELDS = {
@@ -126,7 +128,9 @@ def parse_release(html: str, url: str, *, observed_at: datetime | None = None) -
 
 def fetch_activity(http_get, *, full_history: bool = False) -> pd.DataFrame:
     """Bounded latest-release ingestion; no silent fallback to an older release."""
-    headers = {"User-Agent":"Mozilla/5.0", "Referer":INDEX}
+    robots_cache = {}
+    check_robots(INDEX, http_get, robots_cache)
+    headers = {"User-Agent":USER_AGENT, "Referer":INDEX}
     response = http_get(INDEX, timeout=20, retries=2, headers=headers)
     response.raise_for_status()
     if getattr(response, "url", None):
@@ -137,6 +141,7 @@ def fetch_activity(http_get, *, full_history: bool = False) -> pd.DataFrame:
         raise ValueError("NBS index has no matching property releases")
     frames = []
     for url, period in links[:6 if full_history else 1]:
+        robots = check_robots(url, http_get, robots_cache)
         response = http_get(url, timeout=20, retries=2, headers=headers)
         response.raise_for_status()
         if getattr(response, "url", None):
@@ -146,6 +151,10 @@ def fetch_activity(http_get, *, full_history: bool = False) -> pd.DataFrame:
         actual = (frame.index[0].year, frame.index[0].month)
         if actual != period:
             raise ValueError("NBS index and article reference periods disagree")
+        frame["robots_url"] = robots["url"]
+        frame["robots_http_status"] = robots["http_status"]
+        frame["robots_policy"] = robots["policy"]
+        frame["robots_sha256"] = robots["response_sha256"]
         frames.append(frame)
     result = pd.concat(frames).sort_index()
     if result.index.has_duplicates:

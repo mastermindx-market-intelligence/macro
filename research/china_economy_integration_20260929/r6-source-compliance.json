@@ -1,0 +1,94 @@
+{
+  "schema": "mastermind.china_economy_source_compliance_receipt.r6",
+  "capability_state": "BUILT_NOT_PROVEN",
+  "mission_complete": false,
+  "operation": "china-macro-evidence-upgrade-20260929-sol-001",
+  "procedure": {
+    "mastermind_pin": "6b91339a3bd7553292068c72d11b4227d30e371b",
+    "index_blob": "94d1af402598894372858793a5b1931019c5fa77",
+    "skillpack_version": "1.0.1",
+    "bootstrap_major": 1
+  },
+  "parent_head": "a1c002dba5b68e4c698ae99df3d573bd8007bd11",
+  "compliance_contract": {
+    "owner": "docs/QUAL_DATA_COMPLIANCE.md §4.3",
+    "rules": [
+      "collectors check robots.txt before crawling",
+      "an explicit Disallow blocks the target path",
+      "no scraping behind authentication walls",
+      "CN official corpora use bounded browser-identifying UA and retain hashes/derived values rather than republishing article bodies"
+    ]
+  },
+  "change": {
+    "robots_owner": "collectors/china_economy_acquisition.check_robots",
+    "semantics": {
+      "404_or_410": "robots not published; no explicit disallow; exact path may proceed",
+      "200_valid_text": "parse and enforce robots policy for exact target path",
+      "redirect_denial_malformed_transport_ambiguity": "affected publisher/source fails closed",
+      "cache": "one robots request per host per acquisition batch; index and article share it",
+      "retention": "robots URL/status/hash/byte-count/policy/path only; robots body is not stored"
+    },
+    "covered_new_collectors": [
+      "collectors/china_economy_acquisition.py",
+      "collectors/china_property_activity.py"
+    ],
+    "economic_release_refetch": false
+  },
+  "live_robots_only_probe": {
+    "observed_note": "robots endpoints only; no economic article/release was refetched",
+    "nbs": {
+      "url": "https://www.stats.gov.cn/robots.txt",
+      "http_status": 404,
+      "response_sha256": "6807c84bf35d67496e020c1528303b87d4759933c09817e514a7159ac689d352",
+      "policy": "not_published",
+      "allowed": true
+    },
+    "safe": {
+      "url": "https://www.safe.gov.cn/robots.txt",
+      "http_status": 404,
+      "response_sha256": "015f20b08bc6455cfb34124fae9037a494aa38da5d4836b926072018860912bf",
+      "policy": "not_published",
+      "allowed": true
+    },
+    "nea": {
+      "url": "https://www.nea.gov.cn/robots.txt",
+      "http_status": 404,
+      "response_sha256": "55f7d9e99b8e2d4e0e193b2f0275501e6d9c1ebd29cadbea6a0da48a8587e3e0",
+      "policy": "not_published",
+      "allowed": true
+    },
+    "mof": {
+      "url": "https://gks.mof.gov.cn/robots.txt",
+      "http_status": 302,
+      "result": "blocked",
+      "reason": "robots_http_status_302"
+    }
+  },
+  "verification": {
+    "focused_suite": {
+      "passed": 435,
+      "failed": 0,
+      "junit_sha256": "e3ea488527621ced7e9a8b6927eb6761f08edf9f694846afa9ba1795cb6e2c7b"
+    },
+    "acquisition_and_property_subset": {
+      "passed": 99,
+      "failed": 0
+    },
+    "source_compile": "PASS",
+    "scoped_diff_check": "PASS"
+  },
+  "source_sha256": {
+    "collectors/china_economy_acquisition.py": "2323501aa9d9cd3e08c29f2f3ed7b5bf289f043f7d805c909d6042ee33ae753c",
+    "collectors/china_economy_adapter.py": "f202f937f6515e29938e9dbfe9ba94fb5065eb034764c715c5eadb43cdc800c3",
+    "collectors/china_property_activity.py": "cd3be0136e03c3f3f64734ef1dec555974e6802e12abc71f0e716eb1b607d982",
+    "tests/test_china_economy_acquisition.py": "8b25e33b5f4a6e4d7644534fb7c273886d5c40cfdfd0e82e0c3baf1c0f788e63",
+    "tests/test_china_macro_activity.py": "7902eff0b5751baee46ce0666164e23cf60cc09b06ca1f956c7d16ee529ea9f9"
+  },
+  "residuals": [
+    "MOF fiscal source remains blocked under the robots ambiguity policy",
+    "real authenticated gateway acceptance remains open",
+    "production collector enrollment/backfill remains open",
+    "publishing-rights review and wider source histories remain open",
+    "exact-head CI and independent review remain open"
+  ]
+}
