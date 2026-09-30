@@ -1,12 +1,12 @@
 {
   "schema": "rates_command.v1",
-  "asof": "2026-09-25",
-  "built": "2026-09-30T05:32:02.247401+00:00",
+  "asof": "2026-09-29",
+  "built": "2026-09-30T12:38:31.434249+00:00",
   "display_only": true,
   "authority": false,
   "board": {
     "rate_path_row": {
-      "asof": "2026-09-25",
+      "asof": "2026-09-29",
       "policy_rate": 3.88,
       "implied_path": {
         "m1": 3.82,
@@ -75,7 +75,7 @@
       }
     },
     "risk_row": {
-      "real_speed_pctile": 0.88,
+      "real_speed_pctile": 0.86,
       "real_speed_note_en": "Flags risk, not return — high percentile = fast real-rate moves, not directional signal.",
       "real_speed_note_zh": "标记风险而非收益——高百分位表示实际利率快速波动，并非方向性信号。",
       "curve_regime_key": "bear_flattener",
@@ -86,7 +86,7 @@
       "term_premium_note_en": "Kim-Wright model (FRED THREEFYTP10); ACM pending",
       "term_premium_note_zh": "Kim-Wright模型（FRED THREEFYTP10）；ACM待接入",
       "front2y_speed_bp": 73.0,
-      "real10y_speed_bp": 65.0,
+      "real10y_speed_bp": 59.0,
       "recession_ntfs": 1.08,
       "nyfed_prob": 13.0
     },
@@ -132,9 +132,9 @@
         "key": "H2_breakeven_momentum",
         "active": false,
         "weight": 1,
-        "value": 3.0,
-        "detail_en": "10y breakeven moved +3.0bp over 20 days (threshold: +8bp).",
-        "detail_zh": "10年期盈亏平衡点20天变动+3.0个基点（阈值：+8bp）。",
+        "value": -1.0,
+        "detail_en": "10y breakeven moved -1.0bp over 20 days (threshold: +8bp).",
+        "detail_zh": "10年期盈亏平衡点20天变动-1.0个基点（阈值：+8bp）。",
         "null_reason": null
       },
       {
@@ -184,11 +184,11 @@
       },
       {
         "key": "E2_growth_cooling",
-        "active": true,
+        "active": false,
         "weight": 1,
-        "value": "falling",
-        "detail_en": "Commodity complex growth direction: falling.",
-        "detail_zh": "商品综合增长方向：下行。",
+        "value": "rising",
+        "detail_en": "No NFP cooler skew; complex growth direction not falling.",
+        "detail_zh": "无NFP偏冷倾斜；商品综合增长方向未下行。",
         "null_reason": null
       },
       {
@@ -220,11 +220,11 @@
       }
     ],
     "hawk_score": 2,
-    "ease_score": 4,
-    "net_state": "pressure_fading",
+    "ease_score": 3,
+    "net_state": "two_sided",
     "state_label": {
-      "en": "Easing pressure building",
-      "zh": "宽松压力积聚"
+      "en": "Two-sided — watch the tape",
+      "zh": "双向——观察市场走势"
     }
   },
   "divergence": [
@@ -238,14 +238,14 @@
     {
       "key": "D2_projection_vs_breakeven",
       "active": false,
-      "detail_en": "No projection-breakeven wedge: CPI tag=inline, 20d breakeven=+3bp.",
-      "detail_zh": "无预测-盈亏平衡楔形：CPI标签=inline，20天盈亏平衡点=+3bp。"
+      "detail_en": "No projection-breakeven wedge: CPI tag=inline, 20d breakeven=-1bp.",
+      "detail_zh": "无预测-盈亏平衡楔形：CPI标签=inline，20天盈亏平衡点=-1bp。"
     },
     {
       "key": "D3_pressure_vs_market",
-      "active": true,
-      "detail_en": "Easing pressure building but futures imply +89bp over 12m — market still priced for tightening.",
-      "detail_zh": "宽松压力积聚但期货12个月隐含+89个基点——市场仍定价紧缩。"
+      "active": false,
+      "detail_en": "Pressure-vs-market gap not active (net_state=two_sided, implied=+89bp).",
+      "detail_zh": "压力与市场背离未激活（net_state=two_sided，隐含=+89bp）。"
     }
   ],
   "conditions": [
@@ -316,7 +316,7 @@
   "yield_momentum": {
     "schema": "yield_momentum.v1",
     "calculation_version": "fixed_grid_origin.v4",
-    "asof": "2026-09-25",
+    "asof": "2026-09-29",
     "display_only": true,
     "authority": false,
     "can_score": false,
@@ -335,7 +335,7 @@
         "source_id": "DGS2",
         "status": "available",
         "as_of": "2026-09-24",
-        "frame_as_of": "2026-09-25",
+        "frame_as_of": "2026-09-29",
         "available_at": null,
         "availability_status": "not_provided_by_feature_frame",
         "historical_availability_qualified": false,
@@ -344,9 +344,9 @@
         "path_qualified": true,
         "holiday_basis": "us_federal_holidays_plus_good_friday_v1",
         "expected_absent_grid_rows": 57,
-        "unexpected_carried_grid_rows": 1,
+        "unexpected_carried_grid_rows": 3,
         "path_qualification_basis": "captured_source_rows_or_expected_absent",
-        "trailing_publication_lag_rows": 1,
+        "trailing_publication_lag_rows": 3,
         "trailing_expected_absent_rows": 0,
         "lag_tolerance_rows": 3,
         "lag_basis": "fred_next_business_day_publication_v1",
@@ -363,8 +363,8 @@
           "change_bp": 2.0,
           "elapsed_calendar_days": 1,
           "elapsed_grid_intervals": 1,
-          "age_calendar_days": 1,
-          "age_grid_intervals": 1,
+          "age_calendar_days": 5,
+          "age_grid_intervals": 3,
           "is_current_grid_row": false,
           "historical_availability_qualified": false
         },
@@ -398,7 +398,7 @@
         "source_id": "DGS5",
         "status": "available",
         "as_of": "2026-09-24",
-        "frame_as_of": "2026-09-25",
+        "frame_as_of": "2026-09-29",
         "available_at": null,
         "availability_status": "not_provided_by_feature_frame",
         "historical_availability_qualified": false,
@@ -407,9 +407,9 @@
         "path_qualified": true,
         "holiday_basis": "us_federal_holidays_plus_good_friday_v1",
         "expected_absent_grid_rows": 57,
-        "unexpected_carried_grid_rows": 1,
+        "unexpected_carried_grid_rows": 3,
         "path_qualification_basis": "captured_source_rows_or_expected_absent",
-        "trailing_publication_lag_rows": 1,
+        "trailing_publication_lag_rows": 3,
         "trailing_expected_absent_rows": 0,
         "lag_tolerance_rows": 3,
         "lag_basis": "fred_next_business_day_publication_v1",
@@ -426,8 +426,8 @@
           "change_bp": 4.0,
           "elapsed_calendar_days": 1,
           "elapsed_grid_intervals": 1,
-          "age_calendar_days": 1,
-          "age_grid_intervals": 1,
+          "age_calendar_days": 5,
+          "age_grid_intervals": 3,
           "is_current_grid_row": false,
           "historical_availability_qualified": false
         },
@@ -461,7 +461,7 @@
         "source_id": "DGS10",
         "status": "available",
         "as_of": "2026-09-24",
-        "frame_as_of": "2026-09-25",
+        "frame_as_of": "2026-09-29",
         "available_at": null,
         "availability_status": "not_provided_by_feature_frame",
         "historical_availability_qualified": false,
@@ -470,9 +470,9 @@
         "path_qualified": true,
         "holiday_basis": "us_federal_holidays_plus_good_friday_v1",
         "expected_absent_grid_rows": 57,
-        "unexpected_carried_grid_rows": 1,
+        "unexpected_carried_grid_rows": 3,
         "path_qualification_basis": "captured_source_rows_or_expected_absent",
-        "trailing_publication_lag_rows": 1,
+        "trailing_publication_lag_rows": 3,
         "trailing_expected_absent_rows": 0,
         "lag_tolerance_rows": 3,
         "lag_basis": "fred_next_business_day_publication_v1",
@@ -489,8 +489,8 @@
           "change_bp": 7.0,
           "elapsed_calendar_days": 1,
           "elapsed_grid_intervals": 1,
-          "age_calendar_days": 1,
-          "age_grid_intervals": 1,
+          "age_calendar_days": 5,
+          "age_grid_intervals": 3,
           "is_current_grid_row": false,
           "historical_availability_qualified": false
         },
@@ -524,7 +524,7 @@
         "source_id": "DGS20",
         "status": "available",
         "as_of": "2026-09-24",
-        "frame_as_of": "2026-09-25",
+        "frame_as_of": "2026-09-29",
         "available_at": null,
         "availability_status": "not_provided_by_feature_frame",
         "historical_availability_qualified": false,
@@ -533,9 +533,9 @@
         "path_qualified": true,
         "holiday_basis": "us_federal_holidays_plus_good_friday_v1",
         "expected_absent_grid_rows": 57,
-        "unexpected_carried_grid_rows": 1,
+        "unexpected_carried_grid_rows": 3,
         "path_qualification_basis": "captured_source_rows_or_expected_absent",
-        "trailing_publication_lag_rows": 1,
+        "trailing_publication_lag_rows": 3,
         "trailing_expected_absent_rows": 0,
         "lag_tolerance_rows": 3,
         "lag_basis": "fred_next_business_day_publication_v1",
@@ -552,8 +552,8 @@
           "change_bp": 8.0,
           "elapsed_calendar_days": 1,
           "elapsed_grid_intervals": 1,
-          "age_calendar_days": 1,
-          "age_grid_intervals": 1,
+          "age_calendar_days": 5,
+          "age_grid_intervals": 3,
           "is_current_grid_row": false,
           "historical_availability_qualified": false
         },
@@ -587,7 +587,7 @@
         "source_id": "DGS30",
         "status": "available",
         "as_of": "2026-09-24",
-        "frame_as_of": "2026-09-25",
+        "frame_as_of": "2026-09-29",
         "available_at": null,
         "availability_status": "not_provided_by_feature_frame",
         "historical_availability_qualified": false,
@@ -596,9 +596,9 @@
         "path_qualified": true,
         "holiday_basis": "us_federal_holidays_plus_good_friday_v1",
         "expected_absent_grid_rows": 57,
-        "unexpected_carried_grid_rows": 1,
+        "unexpected_carried_grid_rows": 3,
         "path_qualification_basis": "captured_source_rows_or_expected_absent",
-        "trailing_publication_lag_rows": 1,
+        "trailing_publication_lag_rows": 3,
         "trailing_expected_absent_rows": 0,
         "lag_tolerance_rows": 3,
         "lag_basis": "fred_next_business_day_publication_v1",
@@ -615,8 +615,8 @@
           "change_bp": 7.0,
           "elapsed_calendar_days": 1,
           "elapsed_grid_intervals": 1,
-          "age_calendar_days": 1,
-          "age_grid_intervals": 1,
+          "age_calendar_days": 5,
+          "age_grid_intervals": 3,
           "is_current_grid_row": false,
           "historical_availability_qualified": false
         },
@@ -654,128 +654,64 @@
     "policy/intel.json is 79d old — policy row quotes as-of 2026-07-13"
   ],
   "stance": {
-    "en": "Easing pressure is building — futures still price about 4 hikes. A deeper equity pullback is the main offset.",
-    "zh": "宽松压力积聚——期货仍定价约4次加息。 股市进一步回调是主要对冲。"
+    "en": "Outlook is two-sided: futures price about 4 hikes; hawkish and easing inputs are roughly balanced (2 vs 3). Front-end futures repricing and a deeper equity pullback are pulling against each other.",
+    "zh": "前景双向：期货定价约4次加息；鹰派与宽松因素大体制衡（2对3）。 期货利率重新定价与股市进一步回调相互制衡。"
   },
   "changes": {
-    "vs_asof": "2026-09-24",
+    "vs_asof": "2026-09-25",
     "items": [
       {
         "key": "net_state",
-        "from": "two_sided",
-        "to": "pressure_fading",
-        "en": "Pressure state changed: Two-sided — watch the tape → Easing pressure building",
-        "zh": "压力状态变化：双向——观察市场走势 → 宽松压力积聚"
-      },
-      {
-        "key": "usd_dir",
-        "from": {
-          "state": "QUIET",
-          "jawboning": {
-            "n_7d": 0,
-            "n_30d": 13,
-            "last_alert_ts": "2026-09-16T20:29:14+00:00",
-            "last_alert_summary": "US bars Canadian goods from federal procurement — Canadian suppliers hit, US industrial winners",
-            "last_alert_summary_zh": "美国禁止加拿大商品进入联邦采购——加拿大供应商受挫，美国本土工业受益"
-          },
-          "lever_asof": "2026-09-24",
-          "chair": "Kevin Warsh",
-          "chair_profile_en": "Warsh's revealed agenda (CFR confirmation-hearing analysis + his June 17 debut): narrow the Fed's mandate, revert to a strict 2% target (abandoning 2020 flexible-average-inflation-targeting), cut reliance on unconventional tools (QE/balance sheet), and abandon forward guidance — potentially making the dot plot obsolete. He withheld his own dot, dropped guidance, issued a ~114-word statement, and c…",
-          "chair_profile_zh": "",
-          "optionality_read_en": "Decode the Warsh redesign as PIVOT INFRASTRUCTURE, not just hawkishness. (1) Deleting the dot plot / forward guidance removes the time-stamped record against which a future political-looking cut could be judged — a sudden post-midterm cut violates no prior, it is just 'the new data' (accountability-deletion as optionality). (2) The inflation-frameworks task force is the machinery to re-specify what '2%' operationally means (index, horizon, tariff look-through) — watch for language splitting 'tariff level-shifts' from 'underlying inflation', the cut permission slip that prices first in breakevens and the belly. (3) The productivity/AI task force furnishes a higher-trend-growth / lower-required-real-rate alibi so ~3.3% core PCE becomes compatible with easing without formally moving the target. One week on, the design has already done the Fed's tightening FOR it: dollar 13-mo high, real 10y +57bp, the AI froth and the debasement trade both flushed — with the policy rate UNCHANGED. ADVERSARY CAVEATS: Warsh's anti-guidance ideology predates any 2026-27 cut calculus and cuts both ways; tariff look-through is orthodox decades-old doctrine; any chair would study AI — only TIMING relative to the pivot window discriminates intent from coincidence.",
-          "intel_as_of": "2026-07-13",
-          "intel_staleness_days": 74,
-          "iran_context": {
-            "title_en": "Iran / Middle East -- ceasefire COLLAPSED (as of 7/8)",
-            "title_zh": "伊朗/中东 —— 停火已崩溃（截至7/8）",
-            "facts_en": "A ~6-week 2026 Iran war pushed oil above $120/bbl (Brent peak at Hormuz closure) as shipping lanes went offline; Apr 8 2026 a Pakistan-mediated conditional ceasefire. Jun 17 2026: US-Iran signed 14-point MOU opening ~60-day talks window on Hormuz navigation, nuclear/missile limits, and sanctions. Jun 20: Iran briefly re-declared Strait closed. Jun 27: JMIC widened transit route near Oman -- coinciding with the tanker Kiku struck by Iranian projectile and CENTCOM retaliatory airstrikes. Jul 6-7: additional tanker attacks (Al Rekayyat, Wedyan). OVERTAKEN (7/8): Trump declared the ceasefire 'OVER' at the NATO Ankara summit; CENTCOM launched sustained strikes on Iranian sites 7/8-7/11; Brent spiked ~$80 intraday (+8.7%), JMIC raised Hormuz threat to 'severe'; Hormuz tanker traffic near-standstill by 7/9. Doha talks (7/1) said 'going well' (Vance); no comprehensive deal. NUCLEAR GAP: as of Jun 14 the US had shifted to accepting a 15-20 year enrichment SUSPENSION (not permanent zero-enrichment); live gap = suspension duration + HEU down-blended material location; US messaging inconsistent (Vance 6/18: 'Ours will not [allow enrichment]').",
-            "facts_zh": "约6周的2026年伊朗战争在霍尔木兹封锁高峰期将布伦特推升至120美元以上，航道一度中断；2026年4月8日达成巴基斯坦斡旋的有条件停火。2026年6月17日：美伊签署14点谅解备忘录，开启约60天谈判窗口，议题涵盖霍尔木兹通航、核/导弹限制、制裁。6月20日：伊朗短暂宣布海峡再次关闭。6月27日：JMIC在阿曼附近拓宽通行航路——同日油轮Kiku遇伊朗投射物打击，CENTCOM展开报复性空袭。7月6-7日：更多油轮遇袭（Al Rekayyat、Wedyan）。已被推翻（7/8）：特朗普在北约安卡拉峰会宣告停火“已终结”；CENTCOM于7/8-7/11对伊朗境内目标发动持续打击；布伦特盘中飙至约80美元（+8.7%），JMIC将霍尔木兹威胁评级升至“严峻”；7/9起霍尔木兹油轮交通濒临停滞。多哈谈判（7/1）万斯称“进展顺利”；无全面协议。核谈分歧：截至6月14日，美方已转为接受15-20年的浓缩暂停（而非永久零浓缩）；现实分歧在于暂停期限及高浓铀下混后材料的存放地点，且美方表态不一致（万斯6/18：“我们不允许浓缩”）。",
-            "as_of_note_en": "Intel as of 2026-07-13 (74d old)",
-            "as_of_note_zh": "情报截至2026-07-13（74天前）",
-            "unsigned_display": true
-          }
-        },
-        "to": {
-          "state": "QUIET",
-          "jawboning": {
-            "n_7d": 4,
-            "n_30d": 12,
-            "last_alert_ts": "2026-09-28T19:56:22+00:00",
-            "last_alert_summary": "$15B Mesabi Metallics steel mega-mill announced — US steel capacity surges, importers squeezed",
-            "last_alert_summary_zh": "特朗普宣布150亿美元Mesabi Metallics钢铁超级工厂——美国钢铁产能激增，进口商承压"
-          },
-          "lever_asof": "2026-09-29",
-          "chair": "Kevin Warsh",
-          "chair_profile_en": "Warsh's revealed agenda (CFR confirmation-hearing analysis + his June 17 debut): narrow the Fed's mandate, revert to a strict 2% target (abandoning 2020 flexible-average-inflation-targeting), cut reliance on unconventional tools (QE/balance sheet), and abandon forward guidance — potentially making the dot plot obsolete. He withheld his own dot, dropped guidance, issued a ~114-word statement, and c…",
-          "chair_profile_zh": "",
-          "optionality_read_en": "Decode the Warsh redesign as PIVOT INFRASTRUCTURE, not just hawkishness. (1) Deleting the dot plot / forward guidance removes the time-stamped record against which a future political-looking cut could be judged — a sudden post-midterm cut violates no prior, it is just 'the new data' (accountability-deletion as optionality). (2) The inflation-frameworks task force is the machinery to re-specify what '2%' operationally means (index, horizon, tariff look-through) — watch for language splitting 'tariff level-shifts' from 'underlying inflation', the cut permission slip that prices first in breakevens and the belly. (3) The productivity/AI task force furnishes a higher-trend-growth / lower-required-real-rate alibi so ~3.3% core PCE becomes compatible with easing without formally moving the target. One week on, the design has already done the Fed's tightening FOR it: dollar 13-mo high, real 10y +57bp, the AI froth and the debasement trade both flushed — with the policy rate UNCHANGED. ADVERSARY CAVEATS: Warsh's anti-guidance ideology predates any 2026-27 cut calculus and cuts both ways; tariff look-through is orthodox decades-old doctrine; any chair would study AI — only TIMING relative to the pivot window discriminates intent from coincidence.",
-          "intel_as_of": "2026-07-13",
-          "intel_staleness_days": 79,
-          "iran_context": {
-            "title_en": "Iran / Middle East -- ceasefire COLLAPSED (as of 7/8)",
-            "title_zh": "伊朗/中东 —— 停火已崩溃（截至7/8）",
-            "facts_en": "A ~6-week 2026 Iran war pushed oil above $120/bbl (Brent peak at Hormuz closure) as shipping lanes went offline; Apr 8 2026 a Pakistan-mediated conditional ceasefire. Jun 17 2026: US-Iran signed 14-point MOU opening ~60-day talks window on Hormuz navigation, nuclear/missile limits, and sanctions. Jun 20: Iran briefly re-declared Strait closed. Jun 27: JMIC widened transit route near Oman -- coinciding with the tanker Kiku struck by Iranian projectile and CENTCOM retaliatory airstrikes. Jul 6-7: additional tanker attacks (Al Rekayyat, Wedyan). OVERTAKEN (7/8): Trump declared the ceasefire 'OVER' at the NATO Ankara summit; CENTCOM launched sustained strikes on Iranian sites 7/8-7/11; Brent spiked ~$80 intraday (+8.7%), JMIC raised Hormuz threat to 'severe'; Hormuz tanker traffic near-standstill by 7/9. Doha talks (7/1) said 'going well' (Vance); no comprehensive deal. NUCLEAR GAP: as of Jun 14 the US had shifted to accepting a 15-20 year enrichment SUSPENSION (not permanent zero-enrichment); live gap = suspension duration + HEU down-blended material location; US messaging inconsistent (Vance 6/18: 'Ours will not [allow enrichment]').",
-            "facts_zh": "约6周的2026年伊朗战争在霍尔木兹封锁高峰期将布伦特推升至120美元以上，航道一度中断；2026年4月8日达成巴基斯坦斡旋的有条件停火。2026年6月17日：美伊签署14点谅解备忘录，开启约60天谈判窗口，议题涵盖霍尔木兹通航、核/导弹限制、制裁。6月20日：伊朗短暂宣布海峡再次关闭。6月27日：JMIC在阿曼附近拓宽通行航路——同日油轮Kiku遇伊朗投射物打击，CENTCOM展开报复性空袭。7月6-7日：更多油轮遇袭（Al Rekayyat、Wedyan）。已被推翻（7/8）：特朗普在北约安卡拉峰会宣告停火“已终结”；CENTCOM于7/8-7/11对伊朗境内目标发动持续打击；布伦特盘中飙至约80美元（+8.7%），JMIC将霍尔木兹威胁评级升至“严峻”；7/9起霍尔木兹油轮交通濒临停滞。多哈谈判（7/1）万斯称“进展顺利”；无全面协议。核谈分歧：截至6月14日，美方已转为接受15-20年的浓缩暂停（而非永久零浓缩）；现实分歧在于暂停期限及高浓铀下混后材料的存放地点，且美方表态不一致（万斯6/18：“我们不允许浓缩”）。",
-            "as_of_note_en": "Intel as of 2026-07-13 (79d old)",
-            "as_of_note_zh": "情报截至2026-07-13（79天前）",
-            "unsigned_display": true
-          }
-        },
-        "en": "usd_dir changed: {'state': 'QUIET', 'jawboning': {'n_7d': 0, 'n_30d': 13, 'last_alert_ts': '2026-09-16T20:29:14+00:00', 'last_alert_summary': 'US bars Canadian goods from federal procurement — Canadian suppliers hit, US industrial winners', 'last_alert_summary_zh': '美国禁止加拿大商品进入联邦采购——加拿大供应商受挫，美国本土工业受益'}, 'lever_asof': '2026-09-24', 'chair': 'Kevin Warsh', 'chair_profile_en': \"Warsh's revealed agenda (CFR confirmation-hearing analysis + his June 17 debut): narrow the Fed's mandate, revert to a strict 2% target (abandoning 2020 flexible-average-inflation-targeting), cut reliance on unconventional tools (QE/balance sheet), and abandon forward guidance — potentially making the dot plot obsolete. He withheld his own dot, dropped guidance, issued a ~114-word statement, and c…\", 'chair_profile_zh': '', 'optionality_read_en': \"Decode the Warsh redesign as PIVOT INFRASTRUCTURE, not just hawkishness. (1) Deleting the dot plot / forward guidance removes the time-stamped record against which a future political-looking cut could be judged — a sudden post-midterm cut violates no prior, it is just 'the new data' (accountability-deletion as optionality). (2) The inflation-frameworks task force is the machinery to re-specify what '2%' operationally means (index, horizon, tariff look-through) — watch for language splitting 'tariff level-shifts' from 'underlying inflation', the cut permission slip that prices first in breakevens and the belly. (3) The productivity/AI task force furnishes a higher-trend-growth / lower-required-real-rate alibi so ~3.3% core PCE becomes compatible with easing without formally moving the target. One week on, the design has already done the Fed's tightening FOR it: dollar 13-mo high, real 10y +57bp, the AI froth and the debasement trade both flushed — with the policy rate UNCHANGED. ADVERSARY CAVEATS: Warsh's anti-guidance ideology predates any 2026-27 cut calculus and cuts both ways; tariff look-through is orthodox decades-old doctrine; any chair would study AI — only TIMING relative to the pivot window discriminates intent from coincidence.\", 'intel_as_of': '2026-07-13', 'intel_staleness_days': 74, 'iran_context': {'title_en': 'Iran / Middle East -- ceasefire COLLAPSED (as of 7/8)', 'title_zh': '伊朗/中东 —— 停火已崩溃（截至7/8）', 'facts_en': \"A ~6-week 2026 Iran war pushed oil above $120/bbl (Brent peak at Hormuz closure) as shipping lanes went offline; Apr 8 2026 a Pakistan-mediated conditional ceasefire. Jun 17 2026: US-Iran signed 14-point MOU opening ~60-day talks window on Hormuz navigation, nuclear/missile limits, and sanctions. Jun 20: Iran briefly re-declared Strait closed. Jun 27: JMIC widened transit route near Oman -- coinciding with the tanker Kiku struck by Iranian projectile and CENTCOM retaliatory airstrikes. Jul 6-7: additional tanker attacks (Al Rekayyat, Wedyan). OVERTAKEN (7/8): Trump declared the ceasefire 'OVER' at the NATO Ankara summit; CENTCOM launched sustained strikes on Iranian sites 7/8-7/11; Brent spiked ~$80 intraday (+8.7%), JMIC raised Hormuz threat to 'severe'; Hormuz tanker traffic near-standstill by 7/9. Doha talks (7/1) said 'going well' (Vance); no comprehensive deal. NUCLEAR GAP: as of Jun 14 the US had shifted to accepting a 15-20 year enrichment SUSPENSION (not permanent zero-enrichment); live gap = suspension duration + HEU down-blended material location; US messaging inconsistent (Vance 6/18: 'Ours will not [allow enrichment]').\", 'facts_zh': '约6周的2026年伊朗战争在霍尔木兹封锁高峰期将布伦特推升至120美元以上，航道一度中断；2026年4月8日达成巴基斯坦斡旋的有条件停火。2026年6月17日：美伊签署14点谅解备忘录，开启约60天谈判窗口，议题涵盖霍尔木兹通航、核/导弹限制、制裁。6月20日：伊朗短暂宣布海峡再次关闭。6月27日：JMIC在阿曼附近拓宽通行航路——同日油轮Kiku遇伊朗投射物打击，CENTCOM展开报复性空袭。7月6-7日：更多油轮遇袭（Al Rekayyat、Wedyan）。已被推翻（7/8）：特朗普在北约安卡拉峰会宣告停火“已终结”；CENTCOM于7/8-7/11对伊朗境内目标发动持续打击；布伦特盘中飙至约80美元（+8.7%），JMIC将霍尔木兹威胁评级升至“严峻”；7/9起霍尔木兹油轮交通濒临停滞。多哈谈判（7/1）万斯称“进展顺利”；无全面协议。核谈分歧：截至6月14日，美方已转为接受15-20年的浓缩暂停（而非永久零浓缩）；现实分歧在于暂停期限及高浓铀下混后材料的存放地点，且美方表态不一致（万斯6/18：“我们不允许浓缩”）。', 'as_of_note_en': 'Intel as of 2026-07-13 (74d old)', 'as_of_note_zh': '情报截至2026-07-13（74天前）', 'unsigned_display': True}} → {'state': 'QUIET', 'jawboning': {'n_7d': 4, 'n_30d': 12, 'last_alert_ts': '2026-09-28T19:56:22+00:00', 'last_alert_summary': '$15B Mesabi Metallics steel mega-mill announced — US steel capacity surges, importers squeezed', 'last_alert_summary_zh': '特朗普宣布150亿美元Mesabi Metallics钢铁超级工厂——美国钢铁产能激增，进口商承压'}, 'lever_asof': '2026-09-29', 'chair': 'Kevin Warsh', 'chair_profile_en': \"Warsh's revealed agenda (CFR confirmation-hearing analysis + his June 17 debut): narrow the Fed's mandate, revert to a strict 2% target (abandoning 2020 flexible-average-inflation-targeting), cut reliance on unconventional tools (QE/balance sheet), and abandon forward guidance — potentially making the dot plot obsolete. He withheld his own dot, dropped guidance, issued a ~114-word statement, and c…\", 'chair_profile_zh': '', 'optionality_read_en': \"Decode the Warsh redesign as PIVOT INFRASTRUCTURE, not just hawkishness. (1) Deleting the dot plot / forward guidance removes the time-stamped record against which a future political-looking cut could be judged — a sudden post-midterm cut violates no prior, it is just 'the new data' (accountability-deletion as optionality). (2) The inflation-frameworks task force is the machinery to re-specify what '2%' operationally means (index, horizon, tariff look-through) — watch for language splitting 'tariff level-shifts' from 'underlying inflation', the cut permission slip that prices first in breakevens and the belly. (3) The productivity/AI task force furnishes a higher-trend-growth / lower-required-real-rate alibi so ~3.3% core PCE becomes compatible with easing without formally moving the target. One week on, the design has already done the Fed's tightening FOR it: dollar 13-mo high, real 10y +57bp, the AI froth and the debasement trade both flushed — with the policy rate UNCHANGED. ADVERSARY CAVEATS: Warsh's anti-guidance ideology predates any 2026-27 cut calculus and cuts both ways; tariff look-through is orthodox decades-old doctrine; any chair would study AI — only TIMING relative to the pivot window discriminates intent from coincidence.\", 'intel_as_of': '2026-07-13', 'intel_staleness_days': 79, 'iran_context': {'title_en': 'Iran / Middle East -- ceasefire COLLAPSED (as of 7/8)', 'title_zh': '伊朗/中东 —— 停火已崩溃（截至7/8）', 'facts_en': \"A ~6-week 2026 Iran war pushed oil above $120/bbl (Brent peak at Hormuz closure) as shipping lanes went offline; Apr 8 2026 a Pakistan-mediated conditional ceasefire. Jun 17 2026: US-Iran signed 14-point MOU opening ~60-day talks window on Hormuz navigation, nuclear/missile limits, and sanctions. Jun 20: Iran briefly re-declared Strait closed. Jun 27: JMIC widened transit route near Oman -- coinciding with the tanker Kiku struck by Iranian projectile and CENTCOM retaliatory airstrikes. Jul 6-7: additional tanker attacks (Al Rekayyat, Wedyan). OVERTAKEN (7/8): Trump declared the ceasefire 'OVER' at the NATO Ankara summit; CENTCOM launched sustained strikes on Iranian sites 7/8-7/11; Brent spiked ~$80 intraday (+8.7%), JMIC raised Hormuz threat to 'severe'; Hormuz tanker traffic near-standstill by 7/9. Doha talks (7/1) said 'going well' (Vance); no comprehensive deal. NUCLEAR GAP: as of Jun 14 the US had shifted to accepting a 15-20 year enrichment SUSPENSION (not permanent zero-enrichment); live gap = suspension duration + HEU down-blended material location; US messaging inconsistent (Vance 6/18: 'Ours will not [allow enrichment]').\", 'facts_zh': '约6周的2026年伊朗战争在霍尔木兹封锁高峰期将布伦特推升至120美元以上，航道一度中断；2026年4月8日达成巴基斯坦斡旋的有条件停火。2026年6月17日：美伊签署14点谅解备忘录，开启约60天谈判窗口，议题涵盖霍尔木兹通航、核/导弹限制、制裁。6月20日：伊朗短暂宣布海峡再次关闭。6月27日：JMIC在阿曼附近拓宽通行航路——同日油轮Kiku遇伊朗投射物打击，CENTCOM展开报复性空袭。7月6-7日：更多油轮遇袭（Al Rekayyat、Wedyan）。已被推翻（7/8）：特朗普在北约安卡拉峰会宣告停火“已终结”；CENTCOM于7/8-7/11对伊朗境内目标发动持续打击；布伦特盘中飙至约80美元（+8.7%），JMIC将霍尔木兹威胁评级升至“严峻”；7/9起霍尔木兹油轮交通濒临停滞。多哈谈判（7/1）万斯称“进展顺利”；无全面协议。核谈分歧：截至6月14日，美方已转为接受15-20年的浓缩暂停（而非永久零浓缩）；现实分歧在于暂停期限及高浓铀下混后材料的存放地点，且美方表态不一致（万斯6/18：“我们不允许浓缩”）。', 'as_of_note_en': 'Intel as of 2026-07-13 (79d old)', 'as_of_note_zh': '情报截至2026-07-13（79天前）', 'unsigned_display': True}}",
-        "zh": "usd_dir变化：{'state': 'QUIET', 'jawboning': {'n_7d': 0, 'n_30d': 13, 'last_alert_ts': '2026-09-16T20:29:14+00:00', 'last_alert_summary': 'US bars Canadian goods from federal procurement — Canadian suppliers hit, US industrial winners', 'last_alert_summary_zh': '美国禁止加拿大商品进入联邦采购——加拿大供应商受挫，美国本土工业受益'}, 'lever_asof': '2026-09-24', 'chair': 'Kevin Warsh', 'chair_profile_en': \"Warsh's revealed agenda (CFR confirmation-hearing analysis + his June 17 debut): narrow the Fed's mandate, revert to a strict 2% target (abandoning 2020 flexible-average-inflation-targeting), cut reliance on unconventional tools (QE/balance sheet), and abandon forward guidance — potentially making the dot plot obsolete. He withheld his own dot, dropped guidance, issued a ~114-word statement, and c…\", 'chair_profile_zh': '', 'optionality_read_en': \"Decode the Warsh redesign as PIVOT INFRASTRUCTURE, not just hawkishness. (1) Deleting the dot plot / forward guidance removes the time-stamped record against which a future political-looking cut could be judged — a sudden post-midterm cut violates no prior, it is just 'the new data' (accountability-deletion as optionality). (2) The inflation-frameworks task force is the machinery to re-specify what '2%' operationally means (index, horizon, tariff look-through) — watch for language splitting 'tariff level-shifts' from 'underlying inflation', the cut permission slip that prices first in breakevens and the belly. (3) The productivity/AI task force furnishes a higher-trend-growth / lower-required-real-rate alibi so ~3.3% core PCE becomes compatible with easing without formally moving the target. One week on, the design has already done the Fed's tightening FOR it: dollar 13-mo high, real 10y +57bp, the AI froth and the debasement trade both flushed — with the policy rate UNCHANGED. ADVERSARY CAVEATS: Warsh's anti-guidance ideology predates any 2026-27 cut calculus and cuts both ways; tariff look-through is orthodox decades-old doctrine; any chair would study AI — only TIMING relative to the pivot window discriminates intent from coincidence.\", 'intel_as_of': '2026-07-13', 'intel_staleness_days': 74, 'iran_context': {'title_en': 'Iran / Middle East -- ceasefire COLLAPSED (as of 7/8)', 'title_zh': '伊朗/中东 —— 停火已崩溃（截至7/8）', 'facts_en': \"A ~6-week 2026 Iran war pushed oil above $120/bbl (Brent peak at Hormuz closure) as shipping lanes went offline; Apr 8 2026 a Pakistan-mediated conditional ceasefire. Jun 17 2026: US-Iran signed 14-point MOU opening ~60-day talks window on Hormuz navigation, nuclear/missile limits, and sanctions. Jun 20: Iran briefly re-declared Strait closed. Jun 27: JMIC widened transit route near Oman -- coinciding with the tanker Kiku struck by Iranian projectile and CENTCOM retaliatory airstrikes. Jul 6-7: additional tanker attacks (Al Rekayyat, Wedyan). OVERTAKEN (7/8): Trump declared the ceasefire 'OVER' at the NATO Ankara summit; CENTCOM launched sustained strikes on Iranian sites 7/8-7/11; Brent spiked ~$80 intraday (+8.7%), JMIC raised Hormuz threat to 'severe'; Hormuz tanker traffic near-standstill by 7/9. Doha talks (7/1) said 'going well' (Vance); no comprehensive deal. NUCLEAR GAP: as of Jun 14 the US had shifted to accepting a 15-20 year enrichment SUSPENSION (not permanent zero-enrichment); live gap = suspension duration + HEU down-blended material location; US messaging inconsistent (Vance 6/18: 'Ours will not [allow enrichment]').\", 'facts_zh': '约6周的2026年伊朗战争在霍尔木兹封锁高峰期将布伦特推升至120美元以上，航道一度中断；2026年4月8日达成巴基斯坦斡旋的有条件停火。2026年6月17日：美伊签署14点谅解备忘录，开启约60天谈判窗口，议题涵盖霍尔木兹通航、核/导弹限制、制裁。6月20日：伊朗短暂宣布海峡再次关闭。6月27日：JMIC在阿曼附近拓宽通行航路——同日油轮Kiku遇伊朗投射物打击，CENTCOM展开报复性空袭。7月6-7日：更多油轮遇袭（Al Rekayyat、Wedyan）。已被推翻（7/8）：特朗普在北约安卡拉峰会宣告停火“已终结”；CENTCOM于7/8-7/11对伊朗境内目标发动持续打击；布伦特盘中飙至约80美元（+8.7%），JMIC将霍尔木兹威胁评级升至“严峻”；7/9起霍尔木兹油轮交通濒临停滞。多哈谈判（7/1）万斯称“进展顺利”；无全面协议。核谈分歧：截至6月14日，美方已转为接受15-20年的浓缩暂停（而非永久零浓缩）；现实分歧在于暂停期限及高浓铀下混后材料的存放地点，且美方表态不一致（万斯6/18：“我们不允许浓缩”）。', 'as_of_note_en': 'Intel as of 2026-07-13 (74d old)', 'as_of_note_zh': '情报截至2026-07-13（74天前）', 'unsigned_display': True}} → {'state': 'QUIET', 'jawboning': {'n_7d': 4, 'n_30d': 12, 'last_alert_ts': '2026-09-28T19:56:22+00:00', 'last_alert_summary': '$15B Mesabi Metallics steel mega-mill announced — US steel capacity surges, importers squeezed', 'last_alert_summary_zh': '特朗普宣布150亿美元Mesabi Metallics钢铁超级工厂——美国钢铁产能激增，进口商承压'}, 'lever_asof': '2026-09-29', 'chair': 'Kevin Warsh', 'chair_profile_en': \"Warsh's revealed agenda (CFR confirmation-hearing analysis + his June 17 debut): narrow the Fed's mandate, revert to a strict 2% target (abandoning 2020 flexible-average-inflation-targeting), cut reliance on unconventional tools (QE/balance sheet), and abandon forward guidance — potentially making the dot plot obsolete. He withheld his own dot, dropped guidance, issued a ~114-word statement, and c…\", 'chair_profile_zh': '', 'optionality_read_en': \"Decode the Warsh redesign as PIVOT INFRASTRUCTURE, not just hawkishness. (1) Deleting the dot plot / forward guidance removes the time-stamped record against which a future political-looking cut could be judged — a sudden post-midterm cut violates no prior, it is just 'the new data' (accountability-deletion as optionality). (2) The inflation-frameworks task force is the machinery to re-specify what '2%' operationally means (index, horizon, tariff look-through) — watch for language splitting 'tariff level-shifts' from 'underlying inflation', the cut permission slip that prices first in breakevens and the belly. (3) The productivity/AI task force furnishes a higher-trend-growth / lower-required-real-rate alibi so ~3.3% core PCE becomes compatible with easing without formally moving the target. One week on, the design has already done the Fed's tightening FOR it: dollar 13-mo high, real 10y +57bp, the AI froth and the debasement trade both flushed — with the policy rate UNCHANGED. ADVERSARY CAVEATS: Warsh's anti-guidance ideology predates any 2026-27 cut calculus and cuts both ways; tariff look-through is orthodox decades-old doctrine; any chair would study AI — only TIMING relative to the pivot window discriminates intent from coincidence.\", 'intel_as_of': '2026-07-13', 'intel_staleness_days': 79, 'iran_context': {'title_en': 'Iran / Middle East -- ceasefire COLLAPSED (as of 7/8)', 'title_zh': '伊朗/中东 —— 停火已崩溃（截至7/8）', 'facts_en': \"A ~6-week 2026 Iran war pushed oil above $120/bbl (Brent peak at Hormuz closure) as shipping lanes went offline; Apr 8 2026 a Pakistan-mediated conditional ceasefire. Jun 17 2026: US-Iran signed 14-point MOU opening ~60-day talks window on Hormuz navigation, nuclear/missile limits, and sanctions. Jun 20: Iran briefly re-declared Strait closed. Jun 27: JMIC widened transit route near Oman -- coinciding with the tanker Kiku struck by Iranian projectile and CENTCOM retaliatory airstrikes. Jul 6-7: additional tanker attacks (Al Rekayyat, Wedyan). OVERTAKEN (7/8): Trump declared the ceasefire 'OVER' at the NATO Ankara summit; CENTCOM launched sustained strikes on Iranian sites 7/8-7/11; Brent spiked ~$80 intraday (+8.7%), JMIC raised Hormuz threat to 'severe'; Hormuz tanker traffic near-standstill by 7/9. Doha talks (7/1) said 'going well' (Vance); no comprehensive deal. NUCLEAR GAP: as of Jun 14 the US had shifted to accepting a 15-20 year enrichment SUSPENSION (not permanent zero-enrichment); live gap = suspension duration + HEU down-blended material location; US messaging inconsistent (Vance 6/18: 'Ours will not [allow enrichment]').\", 'facts_zh': '约6周的2026年伊朗战争在霍尔木兹封锁高峰期将布伦特推升至120美元以上，航道一度中断；2026年4月8日达成巴基斯坦斡旋的有条件停火。2026年6月17日：美伊签署14点谅解备忘录，开启约60天谈判窗口，议题涵盖霍尔木兹通航、核/导弹限制、制裁。6月20日：伊朗短暂宣布海峡再次关闭。6月27日：JMIC在阿曼附近拓宽通行航路——同日油轮Kiku遇伊朗投射物打击，CENTCOM展开报复性空袭。7月6-7日：更多油轮遇袭（Al Rekayyat、Wedyan）。已被推翻（7/8）：特朗普在北约安卡拉峰会宣告停火“已终结”；CENTCOM于7/8-7/11对伊朗境内目标发动持续打击；布伦特盘中飙至约80美元（+8.7%），JMIC将霍尔木兹威胁评级升至“严峻”；7/9起霍尔木兹油轮交通濒临停滞。多哈谈判（7/1）万斯称“进展顺利”；无全面协议。核谈分歧：截至6月14日，美方已转为接受15-20年的浓缩暂停（而非永久零浓缩）；现实分歧在于暂停期限及高浓铀下混后材料的存放地点，且美方表态不一致（万斯6/18：“我们不允许浓缩”）。', 'as_of_note_en': 'Intel as of 2026-07-13 (79d old)', 'as_of_note_zh': '情报截至2026-07-13（79天前）', 'unsigned_display': True}}"
-      },
-      {
-        "key": "hawk_score",
-        "from": 3,
-        "to": 2,
-        "en": "hawk_score changed: 3 → 2",
-        "zh": "hawk_score变化：3 → 2"
+        "from": "pressure_fading",
+        "to": "two_sided",
+        "en": "Pressure state changed: Easing pressure building → Two-sided — watch the tape",
+        "zh": "压力状态变化：宽松压力积聚 → 双向——观察市场走势"
       },
       {
         "key": "ease_score",
-        "from": 3,
-        "to": 4,
-        "en": "ease_score changed: 3 → 4",
-        "zh": "ease_score变化：3 → 4"
+        "from": 4,
+        "to": 3,
+        "en": "ease_score changed: 4 → 3",
+        "zh": "ease_score变化：4 → 3"
       }
     ]
   },
   "prev_state": {
-    "as_of": "2026-09-24",
+    "as_of": "2026-09-25",
     "state": {
-      "net_state": "two_sided",
-      "hawk_score": 3,
-      "ease_score": 3,
+      "net_state": "pressure_fading",
+      "hawk_score": 2,
+      "ease_score": 4,
       "curve_regime": "bear_flattener",
       "anchoring": "anchored",
       "infl_dir": "cooling",
       "usd_dir": {
         "state": "QUIET",
         "jawboning": {
-          "n_7d": 0,
-          "n_30d": 13,
-          "last_alert_ts": "2026-09-16T20:29:14+00:00",
-          "last_alert_summary": "US bars Canadian goods from federal procurement — Canadian suppliers hit, US industrial winners",
-          "last_alert_summary_zh": "美国禁止加拿大商品进入联邦采购——加拿大供应商受挫，美国本土工业受益"
+          "n_7d": 4,
+          "n_30d": 12,
+          "last_alert_ts": "2026-09-28T19:56:22+00:00",
+          "last_alert_summary": "$15B Mesabi Metallics steel mega-mill announced — US steel capacity surges, importers squeezed",
+          "last_alert_summary_zh": "特朗普宣布150亿美元Mesabi Metallics钢铁超级工厂——美国钢铁产能激增，进口商承压"
         },
-        "lever_asof": "2026-09-24",
+        "lever_asof": "2026-09-29",
         "chair": "Kevin Warsh",
         "chair_profile_en": "Warsh's revealed agenda (CFR confirmation-hearing analysis + his June 17 debut): narrow the Fed's mandate, revert to a strict 2% target (abandoning 2020 flexible-average-inflation-targeting), cut reliance on unconventional tools (QE/balance sheet), and abandon forward guidance — potentially making the dot plot obsolete. He withheld his own dot, dropped guidance, issued a ~114-word statement, and c…",
         "chair_profile_zh": "",
         "optionality_read_en": "Decode the Warsh redesign as PIVOT INFRASTRUCTURE, not just hawkishness. (1) Deleting the dot plot / forward guidance removes the time-stamped record against which a future political-looking cut could be judged — a sudden post-midterm cut violates no prior, it is just 'the new data' (accountability-deletion as optionality). (2) The inflation-frameworks task force is the machinery to re-specify what '2%' operationally means (index, horizon, tariff look-through) — watch for language splitting 'tariff level-shifts' from 'underlying inflation', the cut permission slip that prices first in breakevens and the belly. (3) The productivity/AI task force furnishes a higher-trend-growth / lower-required-real-rate alibi so ~3.3% core PCE becomes compatible with easing without formally moving the target. One week on, the design has already done the Fed's tightening FOR it: dollar 13-mo high, real 10y +57bp, the AI froth and the debasement trade both flushed — with the policy rate UNCHANGED. ADVERSARY CAVEATS: Warsh's anti-guidance ideology predates any 2026-27 cut calculus and cuts both ways; tariff look-through is orthodox decades-old doctrine; any chair would study AI — only TIMING relative to the pivot window discriminates intent from coincidence.",
         "intel_as_of": "2026-07-13",
-        "intel_staleness_days": 74,
+        "intel_staleness_days": 79,
         "iran_context": {
           "title_en": "Iran / Middle East -- ceasefire COLLAPSED (as of 7/8)",
           "title_zh": "伊朗/中东 —— 停火已崩溃（截至7/8）",
           "facts_en": "A ~6-week 2026 Iran war pushed oil above $120/bbl (Brent peak at Hormuz closure) as shipping lanes went offline; Apr 8 2026 a Pakistan-mediated conditional ceasefire. Jun 17 2026: US-Iran signed 14-point MOU opening ~60-day talks window on Hormuz navigation, nuclear/missile limits, and sanctions. Jun 20: Iran briefly re-declared Strait closed. Jun 27: JMIC widened transit route near Oman -- coinciding with the tanker Kiku struck by Iranian projectile and CENTCOM retaliatory airstrikes. Jul 6-7: additional tanker attacks (Al Rekayyat, Wedyan). OVERTAKEN (7/8): Trump declared the ceasefire 'OVER' at the NATO Ankara summit; CENTCOM launched sustained strikes on Iranian sites 7/8-7/11; Brent spiked ~$80 intraday (+8.7%), JMIC raised Hormuz threat to 'severe'; Hormuz tanker traffic near-standstill by 7/9. Doha talks (7/1) said 'going well' (Vance); no comprehensive deal. NUCLEAR GAP: as of Jun 14 the US had shifted to accepting a 15-20 year enrichment SUSPENSION (not permanent zero-enrichment); live gap = suspension duration + HEU down-blended material location; US messaging inconsistent (Vance 6/18: 'Ours will not [allow enrichment]').",
           "facts_zh": "约6周的2026年伊朗战争在霍尔木兹封锁高峰期将布伦特推升至120美元以上，航道一度中断；2026年4月8日达成巴基斯坦斡旋的有条件停火。2026年6月17日：美伊签署14点谅解备忘录，开启约60天谈判窗口，议题涵盖霍尔木兹通航、核/导弹限制、制裁。6月20日：伊朗短暂宣布海峡再次关闭。6月27日：JMIC在阿曼附近拓宽通行航路——同日油轮Kiku遇伊朗投射物打击，CENTCOM展开报复性空袭。7月6-7日：更多油轮遇袭（Al Rekayyat、Wedyan）。已被推翻（7/8）：特朗普在北约安卡拉峰会宣告停火“已终结”；CENTCOM于7/8-7/11对伊朗境内目标发动持续打击；布伦特盘中飙至约80美元（+8.7%），JMIC将霍尔木兹威胁评级升至“严峻”；7/9起霍尔木兹油轮交通濒临停滞。多哈谈判（7/1）万斯称“进展顺利”；无全面协议。核谈分歧：截至6月14日，美方已转为接受15-20年的浓缩暂停（而非永久零浓缩）；现实分歧在于暂停期限及高浓铀下混后材料的存放地点，且美方表态不一致（万斯6/18：“我们不允许浓缩”）。",
-          "as_of_note_en": "Intel as of 2026-07-13 (74d old)",
-          "as_of_note_zh": "情报截至2026-07-13（74天前）",
+          "as_of_note_en": "Intel as of 2026-07-13 (79d old)",
+          "as_of_note_zh": "情报截至2026-07-13（79天前）",
           "unsigned_display": true
         }
       },
-      "implied_bp_12m": 90
+      "implied_bp_12m": 89
     }
   }
 }

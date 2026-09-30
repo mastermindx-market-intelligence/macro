@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
   "as_of": "2026-09-30",
-  "generated_utc": "2026-09-30T05:35:40Z",
+  "generated_utc": "2026-09-30T12:42:22Z",
   "authority": "display_only",
   "summary": {
     "n_rows": 319,
@@ -2543,7 +2543,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 51,
+        "n_open": 52,
         "n_past_check_by": 1
       },
       "allowed_actions": [
@@ -2575,7 +2575,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 119,
+        "n_open": 122,
         "n_past_check_by": 4
       },
       "allowed_actions": [
@@ -3252,11 +3252,13 @@
       "readiness": {
         "as_of": "2026-09-01",
         "stale_chips": [
+          "market",
           "reliability",
           "contradictions",
           "bottom_sensors",
           "options_entry",
           "macro_weather",
+          "claim_reliability",
           "inflation_intelligence",
           "government_revenue"
         ]
@@ -3341,8 +3343,8 @@
       "state": "blocked",
       "date_state": "accruing",
       "readiness": {
-        "n_claims": 115646,
-        "n_with_falsifier": 1074,
+        "n_claims": 115650,
+        "n_with_falsifier": 1078,
         "falsifier_coverage": "0.9%",
         "blocking_reason": "falsifier coverage 0.9%; not a promotion-grade substrate"
       },
