@@ -1,6 +1,6 @@
 {
   "schema": "prophet.status/v1",
-  "as_of": "2026-09-30T05:39:42+00:00",
+  "as_of": "2026-09-30T12:46:50+00:00",
   "built_by": "engine.neuralweb.prophet_governor",
   "markets": {
     "us": {
@@ -45,7 +45,7 @@
         "process_integrity": null
       },
       "track_history": {
-        "as_of": "2026-09-29",
+        "as_of": "2026-09-30",
         "n_cohorts": null,
         "status": null
       },
@@ -186,21 +186,21 @@
           "artifact": "us-audit-scoreboard",
           "path": "site/factordata/us_audit_scoreboard.json",
           "status": "stale",
-          "age_hours": 1277.7,
+          "age_hours": 1284.8,
           "sla_hours": 48.0
         },
         {
           "artifact": "us-track-history",
           "path": "site/factordata/us_track_history.json",
           "status": "ok",
-          "age_hours": 29.7,
+          "age_hours": 12.8,
           "sla_hours": 48.0
         },
         {
           "artifact": "us-board-outcomes",
           "path": "site/factordata/us_board_outcomes.json",
           "status": "stale",
-          "age_hours": 125.7,
+          "age_hours": 132.8,
           "sla_hours": 48
         }
       ],
@@ -213,13 +213,13 @@
         {
           "artifact": "site-china-standouts",
           "path": "data/metabolism/fitness/standouts_cn.json",
-          "status": "ok",
-          "age_hours": 29.7,
+          "status": "stale",
+          "age_hours": 36.8,
           "sla_hours": 30.0
         }
       ],
       "data_gap_count": 0,
-      "overall_health": "ok"
+      "overall_health": "degraded"
     },
     "hk": {
       "market": "hk",
@@ -228,7 +228,7 @@
           "artifact": "hk-board-ledger",
           "path": "data/board_ledger/hk_board.parquet",
           "status": "ok",
-          "age_hours": 25.4,
+          "age_hours": 31.3,
           "sla_hours": 48
         }
       ],
@@ -241,13 +241,13 @@
         {
           "artifact": "ca-board-ledger",
           "path": "data/board_ledger/ca_board.parquet",
-          "status": "ok",
-          "age_hours": 44.1,
+          "status": "stale",
+          "age_hours": 80.8,
           "sla_hours": 48
         }
       ],
       "data_gap_count": 0,
-      "overall_health": "ok"
+      "overall_health": "degraded"
     },
     "intl": {
       "market": "intl",
@@ -256,7 +256,7 @@
           "artifact": "intl-setups",
           "path": "site/factordata/intl_setups.json",
           "status": "ok",
-          "age_hours": 44.0,
+          "age_hours": 9.9,
           "sla_hours": 48
         }
       ],

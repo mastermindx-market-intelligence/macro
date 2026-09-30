@@ -647,3 +647,9 @@
 {"date": "2026-09-29", "pair_id": "smh_vs_rsp", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": 0.006655, "leg_den_ret_1w": -0.01392, "state": "NO_ANCHOR", "kind": "etf"}
 {"date": "2026-09-29", "pair_id": "software_vs_ailogic", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": -0.004513, "leg_den_ret_1w": 0.093037, "state": "NO_ANCHOR", "kind": "basket"}
 {"date": "2026-09-29", "pair_id": "cyber_vs_software", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": 0.018865, "leg_den_ret_1w": -0.004513, "state": "NO_ANCHOR", "kind": "basket"}
+{"date": "2026-09-30", "pair_id": "smh_vs_spy", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": -0.000922, "leg_den_ret_1w": -0.011941, "state": "NO_ANCHOR", "kind": "etf"}
+{"date": "2026-09-30", "pair_id": "smh_vs_qqq", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": -0.000922, "leg_den_ret_1w": -0.012832, "state": "NO_ANCHOR", "kind": "etf"}
+{"date": "2026-09-30", "pair_id": "igv_vs_smh", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": -0.014436, "leg_den_ret_1w": -0.000922, "state": "NO_ANCHOR", "kind": "etf"}
+{"date": "2026-09-30", "pair_id": "smh_vs_rsp", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": -0.000922, "leg_den_ret_1w": -0.015629, "state": "NO_ANCHOR", "kind": "etf"}
+{"date": "2026-09-30", "pair_id": "software_vs_ailogic", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": -0.004513, "leg_den_ret_1w": 0.093037, "state": "NO_ANCHOR", "kind": "basket"}
+{"date": "2026-09-30", "pair_id": "cyber_vs_software", "event": "one_sided_shape", "shape_1w": "one_sided", "leg_num_ret_1w": 0.018865, "leg_den_ret_1w": -0.004513, "state": "NO_ANCHOR", "kind": "basket"}
