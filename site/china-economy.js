@@ -138,7 +138,10 @@
         .catch(function(){return null;});
     }
     if (window.MDXAuth) inspectSession();
-    window.addEventListener('mdx-auth',inspectSession,{once:true});
+    // Keep listening after an anonymous INITIAL_SESSION: sign-in can complete
+    // in-place and emit a later SIGNED_IN event. `started` still prevents a
+    // duplicate protected fetch once one authenticated load begins.
+    window.addEventListener('mdx-auth',inspectSession);
   }
   beginDetailLoad();
 })();

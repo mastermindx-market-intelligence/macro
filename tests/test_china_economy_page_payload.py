@@ -47,3 +47,11 @@ def test_page_uses_projection_and_json_button_uses_exact_canonical_relative_url(
     assert "a.download='china-macro-evidence.json'" in js
     assert "fetch(detailHref" in js
     assert "JSON.stringify(publication,null,2)" in js # offline review still works
+
+def test_auth_listener_survives_anonymous_initial_session_for_later_sign_in():
+    root=Path(__file__).resolve().parents[1]
+    js=(root/'templates/china-economy.js').read_text()
+    assert "window.addEventListener('mdx-auth',inspectSession);" in js
+    assert "window.addEventListener('mdx-auth',inspectSession,{once:true});" not in js
+    assert "if(started || !window.MDXAuth" in js
+    assert "started=true;" in js
