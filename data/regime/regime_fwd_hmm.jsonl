@@ -50,3 +50,4 @@
 {"asof": "2026-09-24", "pred_modal_quad": "Q3", "p_quad_filtered": {"Q1": 0.0014, "Q2": 0.1932, "Q3": 0.7788, "Q4": 0.0266}, "realized_quad_at_21d": null}
 {"asof": "2026-09-25", "pred_modal_quad": "Q2", "p_quad_filtered": {"Q1": 0.0015, "Q2": 0.5182, "Q3": 0.4689, "Q4": 0.0113}, "realized_quad_at_21d": null}
 {"asof": "2026-09-28", "pred_modal_quad": "Q3", "p_quad_filtered": {"Q1": 0.0011, "Q2": 0.4661, "Q3": 0.5245, "Q4": 0.0082}, "realized_quad_at_21d": null}
+{"asof": "2026-09-29", "pred_modal_quad": "Q3", "p_quad_filtered": {"Q1": 0.0252, "Q2": 0.3846, "Q3": 0.5259, "Q4": 0.0643}, "realized_quad_at_21d": null}
