@@ -515,7 +515,20 @@ def test_v2_publish_validates_prepared_closure_before_store_access(tmp_path):
     altered = prepared.payloads[source_key] + b" "
     manifest["native"]["source_bodies"][source_digest]["text"]["sha256"] = sha256(altered).hexdigest()
     manifest = reseal_manifest(manifest, pp)
+    artifacts = tuple(
+        artifact if artifact.object_key != source_key else pp.PrivateArtifact(
+            role=artifact.role,
+            identity=artifact.identity,
+            object_key=artifact.object_key,
+            sha256=sha256(altered).hexdigest(),
+            byte_length=len(altered),
+            maximum_bytes=artifact.maximum_bytes,
+            content_type=artifact.content_type,
+        )
+        for artifact in prepared.artifacts
+    )
     object.__setattr__(prepared, "manifest", MappingProxyType(manifest))
+    object.__setattr__(prepared, "artifacts", artifacts)
     object.__setattr__(prepared, "payloads", MappingProxyType({**prepared.payloads, source_key: altered}))
     store.versioned_reads.clear()
     store.put_calls.clear()
