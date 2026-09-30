@@ -10,16 +10,16 @@ One integrated vertical shipped as one PR per plan task, each branched from fres
 
 | Task | Lane label | Branch | State |
 |---|---|---|---|
-| 1 native PG profile + strict scoped facts | `cdv1_t1_pg_facts` (rounds r1 m1, r2–r3 mini2, r4 mini2, r5 mini2/MiniMax) | `claude/cdv1-t1-pg-profile-facts` | PR #7905 DRAFT — repair round 5; probe suite frozen at 7804e24a, seat head b8bb513e93 |
-| 2 source selection + native preparation | `cdv1_t2_source_currentness` | `claude/cdv1-t2-source-currentness` | packet ready (after T1) + CI dependency law + foundation-map Q6 fold |
-| 3 deterministic interpretation | `cdv1_t3_interpretation` | `claude/cdv1-t3-economic-interpretation` | packet ready (after T1) + T7 contract binding |
+| 1 native PG profile + strict scoped facts | `cdv1_t1_pg_facts` (rounds r1 m1, r2–r3 mini2, r4 mini2, r5 mini2/MiniMax; envelope rounds 2026-09-25 → 09-29) | `claude/cdv1-t1-pg-profile-facts` | **MERGED** #7905 on 2026-09-30 01:42:52Z: squash `cdce3023` of the exact head `1c3e2215`, released by Sol 5902318060 after the R11 ACCEPT |
+| 2 source selection + native preparation | `cdv1_t2_source_currentness_r3` (mb) | `claude/cdv1-t2-source-currentness` | r3 dispatched 2026-09-30 in parallel with T3: `packets/CDV1_T2_R3_PACKET_2026-09-30.md` |
+| 3 deterministic interpretation | `cdv1_t3_interpretation_r4` (mini2) | `claude/cdv1-t3-economic-interpretation` | PR #8232 (draft). The r3 head `f2714400` was rejected by its first review; the r4 fix round was dispatched 2026-09-30: `packets/CDV1_T3_R4_PACKET_2026-09-30.md` |
 | 4 private publication v2 + readers | `cdv1_t4_private_v2` | `claude/cdv1-t4-private-publication-v2` | packet ready (after T1–T3) + T7 contract binding + Q6 fold |
 | 5 normal refresh integration (flag off) | `cdv1_t5_refresh_integration` | `claude/cdv1-t5-refresh-integration` | packet ready (after T4) |
 | 6 API current selector + pinned evidence | `cdv1_t6_api_evidence` | `claude/cdv1-t6-api-evidence` | packet ready (after T4) + T7 contract binding + Q6 fold |
 | 7 shared dossier display | `cdv1_t7_design_spec` (r1–r3 mb/mini2) | `claude/cdv1-t7-design-spec` | RE-SCOPED to CONTENT + CONTRACT: spec MERGED #7904; UI build waits for the foundation host slot (#7870) |
 | 8 qualification + release | `cdv1_t8_census` + seat | `claude/cdv1-t8-release-census` | release-readiness census MERGED #7910; readers first, producer enable last |
 
-New test suites are wired into the gate:code job `earnings-economic-dossier` (`.github/ci/legacy-jobs.yml`, minted by Task 1 per the `prophet-us-b4-prereg-registration` recipe); the legacy earnings suites otherwise live only in `if: false` gate:data jobs.
+New test suites are wired into the gate:code job `earnings-economic-dossier` (`.github/ci/legacy-jobs.yml`, minted by Task 1 per the `prophet-us-b4-prereg-registration` recipe); the legacy earnings suites otherwise live only in `if: false` gate:data jobs. The exception is Task 2's suite. Its import closure reaches `requests` through `scripts/refresh_event_workspaces.py`, so it runs in its own exclusive job `earnings-economic-source-selection` rather than widening the dossier job (T2 R5, `reviews/SEAT_RULING_T2_T3_R3_2026-09-30.md`).
 
 ## Records
 
@@ -35,3 +35,48 @@ Gates: G1 exercised by the seat as delegated owner; G2 (real source admission), 
 - **Lane incidents:** glm-5.3 fix lanes collapsed into gibberish three times on this task (r1 on m1 after 105 min with two shim `upstream=500`; r4 on mini2 after 35 min with a clean upstream) — each time the seat salvaged the dirty worktree over ssh and pushed it (WIP d5d2dd7e80, fix b8bb513e93). Round 5 runs on MiniMax-M3 with commit-per-group law. ci-pack-8 red on the first T1 head was a missing `pyyaml` in the job's `pip install` (fixed 5dadd935). mini2 refused one admission on load (Spotlight indexing `~/lanes`; operator item: exclude `/Users/mini2/lanes` from Spotlight).
 - **CI wiring:** gate:code job `earnings-economic-dossier` (`.github/ci/legacy-jobs.yml`) runs `tests/test_pg_economic_observations.py` + `tests/test_pg_economic_observations_probes.py` in a clean venv with `pip install pytest pyyaml`; every test added to `run:` must also appear in `paths:`.
 - **Next:** T1 round 5 → final Opus round bounded to R7–R16 → CI on the exact head → ready → merge → T2 ∥ T3 → T4 → T5 ∥ T6; T7 UI build and T8 release gates wait for #7870.
+
+## Wave 2 (2026-09-25 → 09-30) — seat ledger
+
+- **Seat model:** from 2026-09-29 the seat runs Opus 5.5 under the fable-mode doctrine. Routing is unchanged: labor runs on the external fabric, and Opus native children run only as read-only auditors.
+- **T1 first-release envelope.** On 09-25, T1 gained the family F1-Q envelope (`engine/company_intelligence/pg_envelope.py`, rulings R116–R121 in `reviews/SEAT_RULING_T1_ENVELOPE_2026-09-25.md`). Rounds 1–10 followed, 09-25 → 09-29 (rulings R122–R197). Each round has three parts:
+  - an independent read-only Opus audit, `reviews/OPUS_T1_ENVELOPE_AUDIT_R<n>_*.md`;
+  - a seat ruling, `reviews/SEAT_RULING_T1_ENVELOPE_R<n>_*.md`;
+  - a frozen single-author probe suite, `tests/test_pg_envelope_f1_probes_r<n>.py`.
+- **Bounded design correction.** One integrity class — a value the validator's entry admits raises instead of being refused — survived two rulings meant to close it (R189, R193). Under the operating brief of 09-29, round 10 stopped adding literal cases:
+  - R195 admits a number only in the form Python builds, and it decides every type by identity.
+  - R196 makes the public entry's contract total. A built-in type or range error anywhere in the body leaves the entry as the typed refusal.
+- **Round 11.** Two independent Opus groups audited exact head `1c3e2215` and both returned ACCEPT (`reviews/OPUS_T1_ENVELOPE_AUDIT_R11_A_2026-09-30.md`, `..._R11_B_...`). The dossier command gave 2313 passed / 176 skipped / 0 failed, both on the candidate and on its current-base composition.
+- **Real release.** `release/T1_REAL_RELEASE_DEMONSTRATION_2026-09-29.md` covers P&G's FY25Q4–FY26Q4 exhibits and a Colgate near-neighbour. They run from the exact bytes EDGAR serves, through `bind_release_document` → `build_event_workspace` → `validate_selected_facts`. Source, value, period and refusal are as expected, with 0 failures on CPython 3.12.13 and 3.14.7.
+- **Release and merge.** Sol ruling 5902318060 (01:33:57Z) accepted R11 and released the HOLD for exact head `1c3e2215` only. The seat then ran one final reconciliation in the same invocation as the merge, checking:
+  - the head, the base and mergeability;
+  - that the carrier had not moved;
+  - `git merge-tree`;
+  - that no path overlapped main's movement since Sol's composition proof.
+
+  It then squash-merged with `--match-head-commit`, giving `cdce3023` at 01:42:52Z; the receipt is #7905 comment 5902450708. The T1 child is ACCEPTED / STOP. What merged is the T1 source seam only: not the dossier, not publication, and not a served experience.
+- **Carried notes:**
+  - n-B1: `fiscal_period` is typed text, not a date.
+  - n-B2: the validator never reads the release entry's metadata.
+
+  Both became obligations in the r3 packets. T2 produces that metadata from the actual acquisition. T3 takes the fiscal pair from `fiscal_scope` plus the facts' `period` fields, and never uses entry metadata.
+- **Runtime note (Sol 5902318060).** In teardown, the frozen R9 100,000-level nested-deque probe can SIGSEGV under CPython 3.12 with an 8 MiB stack, after the validator has already refused correctly. It is not a product crash, and the frozen witness is not mutated to hide it. Lanes run dossier commands under `ulimit -s hard`.
+- **T2 ∥ T3 (r3).** Dispatched 2026-09-30 on disjoint file grants: `reviews/SEAT_RULING_T2_T3_R3_2026-09-30.md` (T2 R5, T3 R2, and the fourteen-key correction). The only shared file is `.github/ci/legacy-jobs.yml`, edited at non-adjacent anchors.
+- **r3 erratum.** The r3 packets were rewritten rather than derived from r2, and the rewrite dropped binding sections. `reviews/SEAT_RULING_T2_T3_R3_ERRATUM_2026-09-30.md` restores them:
+  - T2 R6: the `PROFILE_SOURCE_FAMILY` constant (FOUNDATION MAP Q6);
+  - T3 R3: the §6.2 payload paths (R13 on #7904);
+  - a common anti-collapse and exact-venv ruling.
+
+  They bind at acceptance: seat verification, each PR's review bar and the next fix round. Every later re-based packet is diffed paragraph by paragraph against its predecessor before dispatch.
+- **T3 review → r4.** PR #8232 at `f2714400` passed every mechanical check in the seat harness. The independent Opus review still returned REJECT, with ten blocking semantic findings (`reviews/OPUS_T3_PR_REVIEW_R1_2026-09-30.md`). `reviews/SEAT_RULING_T3_R4_2026-09-30.md` upholds all ten and dispatches one fix round on the same PR. Rulings R4–R13 replace the hand-listed special cases with general rules. This records PR also amends spec §5.7: owner rows for `demand` and `earnings`, and one rendered sentence per owner.
+- **Next:**
+  1. For each T2/T3 PR, the seat verifies:
+     - RED, then GREEN;
+     - T2's pure-addition proof;
+     - the T1 freeze;
+     - the curated-closure test;
+     - the dossier command under `ulimit -s hard`.
+
+     Each PR then gets an independent read-only Opus review, then concluded CI, then a merge with `--match-head-commit`.
+  2. Before the second of the two merges, check `git merge-tree` on the two heads.
+  3. Then T4, then T5 ∥ T6. The T7 UI and the T8 release still wait for the foundation host edge (#7870).
