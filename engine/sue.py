@@ -374,6 +374,8 @@ def reported_change(
         "change_pct": None if pct is None else pct * 100.0,
         "current_source_ref": current.source_ref,
         "prior_source_ref": prior.source_ref,
+        "current_event_id": current.event_id,
+        "prior_event_id": prior.event_id,
         "current_available_at": current.available_at,
         "prior_available_at": prior.available_at,
         "decision_at": decision_at,
@@ -596,6 +598,7 @@ def per_share_bridge(
         raise EvidenceError("per-share bridge overflow")
     return {
         "schema": SCHEMA,
+        "kind": "PER_SHARE_BRIDGE",
         "old_eps": eps0,
         "new_eps": eps1,
         "eps_change": eps1 - eps0,
@@ -636,6 +639,7 @@ def entry_economics(
     ceiling = (target_value - win_fee) / (1 + ratio) + (ratio / (1 + ratio)) * (stop_value - loss_fee)
     return {
         "schema": SCHEMA,
+        "kind": "ENTRY_ECONOMICS",
         "net_upside": upside,
         "scenario_loss": loss,
         "net_reward_risk": upside / loss,
@@ -706,11 +710,65 @@ def factual_dossier(
     required_text(issuer_id, "issuer_id")
     aware_utc(decision_at, "decision_at")
     refs = [required_text(ref, "source_contract_ref") for ref in source_contract_refs]
+    if not refs:
+        raise EvidenceError("at least one source contract reference required")
     if len(refs) != len(set(refs)):
         raise EvidenceError("duplicate source contract reference")
-    for collection in (reported_changes, surprises, revisions):
-        if any(not isinstance(item, Mapping) for item in collection):
+
+    decision = aware_utc(decision_at, "decision_at")
+
+    def no_child_authority(item: Mapping[str, Any]) -> None:
+        for field in (
+            "rank_authority", "entry_authority", "policy_authority",
+            "sizing_authority", "trade_authority", "entry_permission",
+        ):
+            if item.get(field) is True:
+                raise EvidenceError("authoritative child cannot enter factual dossier")
+
+    for item in reported_changes:
+        if not isinstance(item, Mapping):
             raise EvidenceError("dossier evidence must be mappings")
+        if item.get("schema") != SCHEMA or item.get("kind") != "COMPARABLE_REPORTED_CHANGE":
+            raise EvidenceError("invalid reported-change evidence")
+        if item.get("issuer_id") != issuer_id or item.get("current_event_id") != event_id:
+            raise EvidenceError("reported-change identity mismatch")
+        if aware_utc(str(item.get("decision_at")), "reported-change decision_at") > decision:
+            raise EvidenceError("reported-change evidence is from the future")
+        no_child_authority(item)
+
+    for item in surprises:
+        if not isinstance(item, Mapping):
+            raise EvidenceError("dossier evidence must be mappings")
+        if item.get("schema") != SCHEMA or item.get("kind") != "EXPECTATION_SURPRISE":
+            raise EvidenceError("invalid surprise evidence")
+        basis = item.get("basis")
+        if not isinstance(basis, Mapping) or basis.get("issuer_id") != issuer_id or item.get("event_id") != event_id:
+            raise EvidenceError("surprise identity mismatch")
+        if aware_utc(str(item.get("decision_at")), "surprise decision_at") > decision:
+            raise EvidenceError("surprise evidence is from the future")
+        no_child_authority(item)
+
+    for item in revisions:
+        if not isinstance(item, Mapping):
+            raise EvidenceError("dossier evidence must be mappings")
+        if item.get("schema") != SCHEMA or item.get("kind") != "FIXED_CONTRIBUTOR_FIXED_PERIOD_REVISION":
+            raise EvidenceError("invalid revision evidence")
+        basis = item.get("basis")
+        if not isinstance(basis, Mapping) or basis.get("issuer_id") != issuer_id:
+            raise EvidenceError("revision identity mismatch")
+        if aware_utc(str(item.get("after")), "revision after") > decision:
+            raise EvidenceError("revision evidence is from the future")
+        no_child_authority(item)
+
+    if per_share is not None:
+        if not isinstance(per_share, Mapping) or per_share.get("schema") != SCHEMA or per_share.get("kind") != "PER_SHARE_BRIDGE":
+            raise EvidenceError("invalid per-share evidence")
+        no_child_authority(per_share)
+    if entry is not None:
+        if not isinstance(entry, Mapping) or entry.get("schema") != SCHEMA or entry.get("kind") != "ENTRY_ECONOMICS":
+            raise EvidenceError("invalid entry evidence")
+        no_child_authority(entry)
+
     limitations: list[str] = []
     if not reported_changes:
         limitations.append("no comparable reported change")

@@ -1148,3 +1148,61 @@ class TestEarningsEvidenceEngine:
         assert "no qualified pre-release expectation surprise" in dossier[
             "limitations"
         ]
+
+    def test_dossier_refuses_cross_issuer_or_cross_event_evidence(self):
+        basis = self._basis()
+        actual = self._actual(basis=basis)
+        surprise = sue_engine.surprise(
+            actual, self._expectation(basis=basis),
+            decision_at="2026-07-30T20:31:00Z")
+        with pytest.raises(sue_engine.EvidenceError, match="surprise identity mismatch"):
+            sue_engine.factual_dossier(
+                event_id="other-event",
+                issuer_id="cik:other",
+                decision_at="2026-07-30T20:31:00Z",
+                surprises=[surprise],
+                source_contract_refs=["fixture"],
+            )
+
+    def test_dossier_requires_a_source_contract_reference(self):
+        with pytest.raises(sue_engine.EvidenceError, match="source contract"):
+            sue_engine.factual_dossier(
+                event_id="fixture-event",
+                issuer_id="cik:0000320193",
+                decision_at="2026-07-30T20:31:00Z",
+            )
+
+    def test_dossier_refuses_authoritative_child_even_if_rehashed_elsewhere(self):
+        basis = self._basis()
+        surprise = sue_engine.surprise(
+            self._actual(basis=basis),
+            self._expectation(basis=basis),
+            decision_at="2026-07-30T20:31:00Z")
+        surprise = dict(surprise)
+        surprise["rank_authority"] = True
+        with pytest.raises(sue_engine.EvidenceError, match="authoritative child"):
+            sue_engine.factual_dossier(
+                event_id="evt_cik0000320193_2026q3_results",
+                issuer_id="cik:0000320193",
+                decision_at="2026-07-30T20:31:00Z",
+                surprises=[surprise],
+                source_contract_refs=["fixture"],
+            )
+
+    def test_dossier_refuses_revision_snapshot_after_its_decision(self):
+        rows = [
+            self._forecast("A", 100, "2026-07-01T00:00:00Z", "a0"),
+            self._forecast("A", 101, "2026-07-31T00:00:00Z", "a1"),
+        ]
+        revision = sue_engine.matched_revisions(
+            rows, basis=self._basis(),
+            before="2026-07-02T00:00:00Z",
+            after="2026-08-01T00:00:00Z")
+        with pytest.raises(sue_engine.EvidenceError, match="revision evidence is from the future"):
+            sue_engine.factual_dossier(
+                event_id="fixture-event",
+                issuer_id="cik:0000320193",
+                decision_at="2026-07-30T20:31:00Z",
+                revisions=[revision],
+                source_contract_refs=["fixture"],
+            )
