@@ -27,11 +27,7 @@ from engine.company_intelligence import documents, event_workspace, pg_profile
 from engine.earnings_narrative import economic_interpretation
 from engine.earnings_narrative.context_packets import (canonical_json_bytes, validate_context_manifest,
                                                       validate_context_packet_at_cutoff)
-from engine.research_vault.r2_store import (
-    StrictBoundedReadStore,
-    StrictConditionalWriteStore,
-    Store,
-)
+from engine.research_vault.r2_store import StrictBoundedReadStore, StrictConditionalWriteStore, Store
 from engine.theme_graph import rights
 
 PRIVATE_PREFIX = "earnings_wire_private/v1"
@@ -1761,6 +1757,41 @@ def _existing_exact_publication(
         raise EarningsPrivatePublicationError("private pointer changed during idempotent replay")
     return expected_pointer
 
+
+def _load_private_generation(store: Store) -> tuple[dict[str, Any], bytes, dict[str, Any]]:
+    pointer_body = _bounded_read(store, POINTER_KEY, maximum=MAX_POINTER_BYTES)
+    if pointer_body is None:
+        raise EarningsPrivatePublicationError("private earnings pointer is unavailable")
+    pointer = validate_private_pointer(
+        _json_object(pointer_body, maximum=MAX_POINTER_BYTES, name="private earnings pointer")
+    )
+    manifest_body = _bounded_read(store, pointer["manifest_key"], maximum=MAX_MANIFEST_BYTES)
+    if manifest_body is None:
+        raise EarningsPrivatePublicationError("private earnings manifest is unavailable")
+    if (
+        len(manifest_body) != pointer["manifest_bytes"]
+        or sha256(manifest_body).hexdigest() != pointer["manifest_sha256"]
+    ):
+        raise EarningsPrivatePublicationError("private earnings manifest receipt mismatch")
+    manifest = validate_private_manifest(
+        _json_object(manifest_body, maximum=MAX_MANIFEST_BYTES, name="private earnings manifest")
+    )
+    if (
+        manifest["generation_id"] != pointer["generation_id"]
+        or manifest["published_at"] != pointer["published_at"]
+    ):
+        raise EarningsPrivatePublicationError("private pointer does not bind its manifest")
+    return pointer, manifest_body, manifest
+
+
+def _load_private_generation_for_publication(
+    store: Store,
+) -> tuple[dict[str, Any], bytes, dict[str, Any]]:
+    try:
+        return _load_private_generation(store)
+    except EarningsPrivatePublicationError as exc:
+        raise EarningsPrivatePublishConflict("installed_unreadable") from exc
+
 def publish_private_publication(
     store: Store,
     prepared: PreparedPrivatePublication,
@@ -1773,6 +1804,8 @@ def publish_private_publication(
     prepared_schema = prepared.manifest.get("schema")
     if prepared_schema not in (MANIFEST_SCHEMA, MANIFEST_SCHEMA_V2):
         raise EarningsPrivatePublicationError("unsupported private manifest schema")
+    if prepared_schema == MANIFEST_SCHEMA and prepared.retired_slots:
+        raise EarningsPrivatePublishConflict("retirement_invalid")
     with _PUBLISH_LOCK:
         if prepared_schema == MANIFEST_SCHEMA_V2:
             if (
@@ -1798,6 +1831,10 @@ def publish_private_publication(
         )
         if ready is not None:
             return ready
+        if prepared_schema == MANIFEST_SCHEMA and _bounded_read(store, POINTER_KEY, maximum=MAX_POINTER_BYTES) is not None:
+            _installed_pointer, _installed_bytes, installed = _load_private_generation_for_publication(store)
+            if installed.get("schema") == MANIFEST_SCHEMA_V2:
+                raise EarningsPrivatePublishConflict("downgrade_refused")
         if unique_payloads:
             worker_count = min(PUBLISH_WORKERS, len(unique_payloads))
             with ThreadPoolExecutor(
@@ -1827,6 +1864,9 @@ def publish_private_publication(
                 if prior != pointer_bytes:
                     raise EarningsPrivatePublicationError("private pointer disagrees with generation")
                 return pointer
+            _prior_pointer, _prior_bytes, prior_manifest = _load_private_generation_for_publication(store)
+            if prior_manifest.get("schema") == MANIFEST_SCHEMA_V2:
+                raise EarningsPrivatePublishConflict("downgrade_refused")
             if str(pointer["published_at"]) < str(prior_pointer["published_at"]):
                 raise EarningsPrivatePublicationError("stale private publication cannot rewind current")
         try:
@@ -1853,29 +1893,20 @@ def publish_private_publication(
 
 def load_private_manifest(store: Store) -> dict[str, Any]:
     """Load the current private manifest through its pointer and exact receipt."""
+    _pointer, _manifest_bytes, manifest = _load_private_generation(store)
+    return manifest
+
+
+def load_private_predecessor(store: Store) -> dict[str, Any] | None:
     pointer_body = _bounded_read(store, POINTER_KEY, maximum=MAX_POINTER_BYTES)
     if pointer_body is None:
-        raise EarningsPrivatePublicationError("private earnings pointer is unavailable")
-    pointer = validate_private_pointer(
-        _json_object(pointer_body, maximum=MAX_POINTER_BYTES, name="private earnings pointer")
-    )
-    manifest_body = _bounded_read(store, pointer["manifest_key"], maximum=MAX_MANIFEST_BYTES)
-    if manifest_body is None:
-        raise EarningsPrivatePublicationError("private earnings manifest is unavailable")
-    if (
-        len(manifest_body) != pointer["manifest_bytes"]
-        or sha256(manifest_body).hexdigest() != pointer["manifest_sha256"]
-    ):
-        raise EarningsPrivatePublicationError("private earnings manifest receipt mismatch")
-    manifest = validate_private_manifest(
-        _json_object(manifest_body, maximum=MAX_MANIFEST_BYTES, name="private earnings manifest")
-    )
-    if (
-        manifest["generation_id"] != pointer["generation_id"]
-        or manifest["published_at"] != pointer["published_at"]
-    ):
-        raise EarningsPrivatePublicationError("private pointer does not bind its manifest")
-    return manifest
+        return None
+    _pointer, _manifest_bytes, _manifest = _load_private_generation_for_publication(store)
+    return {
+        key: _pointer[key] for key in (
+            "generation_id", "manifest_key", "manifest_sha256", "manifest_bytes", "published_at"
+        )
+    }
 
 def _load_receipted_object(
     store: Store,

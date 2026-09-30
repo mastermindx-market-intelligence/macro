@@ -17,7 +17,7 @@ from tests.earnings_economic_private_fixtures import (
     rights_registry,
     stage_economic_case,
 )
-from tests.test_earnings_private_store import CountingLocalStore
+from tests.test_earnings_private_store import CountingLocalStore, _staged_publication
 
 @pytest.fixture
 def valid(tmp_path: Path):
@@ -296,6 +296,31 @@ def test_v2_publication_requires_conditional_store(tmp_path):
     assert exc.value.reason == "conditional_write_unavailable"
     assert store.versioned_reads == []
     assert store.put_calls[-1] == pp.POINTER_KEY
+
+
+def test_v1_downgrade_and_retirement_are_refused_before_writes(tmp_path):
+    _public, v1_stage, _slug = _staged_publication(tmp_path / "v1")
+    v1_prepared = pp.prepare_private_publication(v1_stage)
+    store, baseline = published_v1_case(tmp_path / "baseline")
+    valid = pp.prepare_private_publication(stage_economic_case(tmp_path / "valid", "valid"))
+    pp.publish_private_publication(store, valid)
+    installed = pp.load_private_manifest(store)
+    v1_prepared = pp.prepare_private_publication(v1_stage)
+    store.put_calls.clear()
+    with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
+        pp.publish_private_publication(store, v1_prepared)
+    assert exc.value.reason == "downgrade_refused"
+    assert store.put_calls == []
+    predecessor = pp.load_private_predecessor(store)
+    assert set(predecessor) == {
+        "generation_id", "manifest_key", "manifest_sha256", "manifest_bytes", "published_at"
+    }
+    assert predecessor["generation_id"] == installed["generation_id"]
+
+    retired = pp.prepare_private_publication(v1_stage, retire_slots=("cik:0000080424",))
+    with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
+        pp.publish_private_publication(ConditionalCountingStore(tmp_path / "retired"), retired)
+    assert exc.value.reason == "retirement_invalid"
 
 def _rename_one_directory_member(directory, suffix):
     path = next(iter(directory.glob(f"*{suffix}")))
