@@ -16,13 +16,13 @@ changed:
   - path: scripts/build_flow_signals.py
     what: Carry source-clock coverage through the existing operational gate without changing scoring.
   - path: tests/test_flow_signals.py
-    what: Add 30 source-clock and native-consumer cases to the already-enumerated collector CI suite.
+    what: Add 34 source-clock and native-consumer cases to the already-enumerated collector CI suite.
   - path: research/options_estate/OPTIONS_FLOW_SOURCE_CLOCK_QUALIFICATION_2026-09-29.md
     what: Record exact real-input coverage, scientific limits, source references and release proof owed.
 verified:
-  - claim: The collector's complete existing test suite passes including 30 added cases.
-    command: python3 -m pytest tests/test_flow_signals.py -q
-    result: 68 passed; original 38-case baseline and initial 22 failing regressions retained in evidence.
+  - claim: The collector and native producer suites pass, including the full source-stage/harvest bridge.
+    command: python3 -m pytest tests/test_flow_signals.py tests/test_live_flow.py -q
+    result: 366 passed, 6 warnings; collector now 72 cases. Original baseline and initial failing regressions retained in evidence.
   - claim: Real committed Flow history has 92574 events, including 16052 measured rows, and lacks five producer-clock columns.
     command: git show 1df73c1ac9289a21e192aeb50088a4f9119aee82:data/flow_signals/ledger.parquet | pandas.read_parquet via BytesIO
     result: Blob 9b322983866ffc42b274e495f5107c9c1364c06b; aggregated counts and SHA256 in real-input-baseline.json.
@@ -44,6 +44,9 @@ unresolved:
   - The specific combined campaign-source/current-hosted-check inspection remains safety-held; do not retry via another tool, account, model, or worker.
   - Existing Terminal #667 review request on Slack C0BSBM78V1N/1790679598.450589 has no pickup; no worker or watcher is claimed running.
   - The new source-clock patch needs independent review, normal protected delivery and natural scheduled proof; local tests are not release authority.
+  - Native GitHub review requested from MastermindX1 on #8201; no reviewer pickup or approval claimed.
+  - Read-only effective-main-rule and classic-protection inspection was safety-blocked before dispatch; do not retry or infer the required rules.
+  - AD-1T2 owner #7889 reports missing runner and drained store; resolver #8203 is already merged but does not refill data or authorize W4.
 next_actions:
   - Review the exact source-clock PR and evidence, then use its normal protected delivery path; only after release inspect an ordinary newly accrued event and native coverage report.
   - Preserve the held campaign-integrity lane until its inspection can lawfully proceed; reconcile through the incumbent #7265/#7398 owners rather than recreating history.
@@ -58,7 +61,7 @@ danger_areas:
   - The legacy ledger's absent clocks do not prove all historical rows are irrecoverable through separately qualified exact-event receipts.
   - Full Macro tests are prohibited in a sparse workspace; only the named owner suite was run.
   - Older CHANGES_REQUESTED metadata, delivered Slack messages, green tests and pushed commits each have distinct meanings from current acceptance or running workers.
-prs: [7265]
+prs: [7265, 8201]
 ---
 
 ## §0 State — what is true now
@@ -84,3 +87,9 @@ Protected source law for this continuation is Mastermind `0b3bdf78be9b86bc3672f2
 ## §4 Not in scope — do not adopt
 
 No scoring/model fit, direction promotion, new candidate composer, provider purchase, production harvesting, source-history correction, UI redesign, alert/outbox, worker dispatch, auto-merge or deployment was performed. No background continuation is promised. Primary-source research notes explain why labelled opening-volume studies and next-day reference datasets do not supply intraday predictive authority to this feed.
+
+## Native producer qualification delta
+
+The same #8201 carrier now contains four additional tests from the real source-staging/WAL owner through native feed serialization, both collector harvest paths, parquet and the existing gate. Combined source-owner suites: 366 passed / 6 warnings. Deliberately removing clock propagation produces two assertion failures at the saved availability value. No production source blob changed. Native replay preserves first source clocks and immutable harvested bytes. Temporary dry harvest writes no history. Source and proof hashes are in `research/options_estate/flow_source_clock_qualification_20260929/native-producer-bridge.json`.
+
+The next phase remains exact-head independent acceptance and lawful release qualification. The native review request is recorded on #8201; it does not mean a worker is running. The specific release-rules read was safety-blocked and remains held without retry. Source-clock tests and evidence publication are independent of that denied administration read; no merge, production activation or protection change was attempted.

@@ -47,3 +47,13 @@ RFC3339 section 4.3 states that `-00:00` retains a known UTC instant while the l
 ## Exact next acceptance
 
 After independent review and protected release, prove one **ordinary scheduled** new event reaches the incumbent ledger with the original source timestamps unchanged and appears in the existing coverage report. Do not invoke a historical production harvest to manufacture this proof. Then qualify candidate observation/publication delay under the accepted formation policy. Existing Macro #7265 history-integrity failure, #7398 correction law, AD-1T2 acceptance, OA-2 no-fit gates and Terminal #667 production/browser proof remain independent outstanding obligations.
+
+## Native producer bridge continuation
+
+The follow-up qualification executes the actual durable event stage, write-ahead state clearing, feed JSON serializer, collector `harvest()`, parquet append, ledger statistics and gate writer. The generated source event is synthetic; external transport and paths are isolated. This is stronger software integration evidence, not an observation of current production or investment performance.
+
+Both local-feed and archived-feed paths preserve original observed/decision/availability timestamps; unknown publication stays null. A replay with later observation clocks cannot rewrite the original event or its collected history. A dry harvest reports the available event without writing history. Four new cases pass; the complete collector and producer suites pass **366 tests, 6 warnings**. A deliberate in-memory clock-dropping mutation fails both transport cases on the actual persisted availability value. Production collector/gate/poller/engine/scoring blobs remain identical to the prior review candidate. Commands, source identities and log digests are in `native-producer-bridge.json`.
+
+Independent review was formally requested from the existing GitHub reviewer `MastermindX1`; this is a request, not pickup or approval. A read-only release-rules/protection inspection was safety-blocked before dispatch and was not retried. The PR remains Draft, unmerged and inactive. Natural scheduled evidence and final release acceptance remain owed.
+
+The current AD-1T2 owner return on #7889 (comment 5897099128) supersedes the old assumption that runner admission alone repairs the dependency: it reports no `m1-theta` carrier and a drained source store. Resolver #8203 already merged as `54f62e4d4b25c4e475ece482aff856d052e42e67`; do not rebuild it. That source hardening does not repopulate the store or grant W4 admission. This continuation did not inspect or change the remote host/store.
