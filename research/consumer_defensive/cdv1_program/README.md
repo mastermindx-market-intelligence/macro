@@ -12,7 +12,7 @@ One integrated vertical shipped as one PR per plan task, each branched from fres
 |---|---|---|---|
 | 1 native PG profile + strict scoped facts | `cdv1_t1_pg_facts` (rounds r1 m1, r2–r3 mini2, r4 mini2, r5 mini2/MiniMax; envelope rounds 2026-09-25 → 09-29) | `claude/cdv1-t1-pg-profile-facts` | **MERGED** #7905 on 2026-09-30 01:42:52Z: squash `cdce3023` of the exact head `1c3e2215`, released by Sol 5902318060 after the R11 ACCEPT |
 | 2 source selection + native preparation | `cdv1_t2_source_currentness_r3` (mb) | `claude/cdv1-t2-source-currentness` | r3 dispatched 2026-09-30 in parallel with T3: `packets/CDV1_T2_R3_PACKET_2026-09-30.md` |
-| 3 deterministic interpretation | `cdv1_t3_interpretation_r3` (mini2) | `claude/cdv1-t3-economic-interpretation` | r3 dispatched 2026-09-30 in parallel with T2: `packets/CDV1_T3_R3_PACKET_2026-09-30.md` |
+| 3 deterministic interpretation | `cdv1_t3_interpretation_r4` (mini2) | `claude/cdv1-t3-economic-interpretation` | PR #8232 (draft). The r3 head `f2714400` was rejected by its first review; the r4 fix round was dispatched 2026-09-30: `packets/CDV1_T3_R4_PACKET_2026-09-30.md` |
 | 4 private publication v2 + readers | `cdv1_t4_private_v2` | `claude/cdv1-t4-private-publication-v2` | packet ready (after T1–T3) + T7 contract binding + Q6 fold |
 | 5 normal refresh integration (flag off) | `cdv1_t5_refresh_integration` | `claude/cdv1-t5-refresh-integration` | packet ready (after T4) |
 | 6 API current selector + pinned evidence | `cdv1_t6_api_evidence` | `claude/cdv1-t6-api-evidence` | packet ready (after T4) + T7 contract binding + Q6 fold |
@@ -68,6 +68,7 @@ Gates: G1 exercised by the seat as delegated owner; G2 (real source admission), 
   - a common anti-collapse and exact-venv ruling.
 
   They bind at acceptance: seat verification, each PR's review bar and the next fix round. Every later re-based packet is diffed paragraph by paragraph against its predecessor before dispatch.
+- **T3 review → r4.** PR #8232 at `f2714400` passed every mechanical check in the seat harness. The independent Opus review still returned REJECT, with ten blocking semantic findings (`reviews/OPUS_T3_PR_REVIEW_R1_2026-09-30.md`). `reviews/SEAT_RULING_T3_R4_2026-09-30.md` upholds all ten and dispatches one fix round on the same PR. Rulings R4–R13 replace the hand-listed special cases with general rules. This records PR also amends spec §5.7: owner rows for `demand` and `earnings`, and one rendered sentence per owner.
 - **Next:**
   1. For each T2/T3 PR, the seat verifies:
      - RED, then GREEN;
