@@ -1,18 +1,18 @@
 {
   "schema": "market_structure_context.v1",
-  "asof": "2026-09-28",
-  "built_at": "2026-09-29T04:46:46.510230+00:00",
+  "asof": "2026-09-29",
+  "built_at": "2026-09-30T03:57:35.174712+00:00",
   "is_context_only": true,
   "display_only": true,
   "gamma": {
     "regime": "long",
-    "net_gex_bn": 11.397656,
-    "net_gex_pctile": 38.6,
-    "gamma_flip": 7670.436658,
-    "spot": 7683.6899,
-    "dist_to_flip_pct": 0.172485,
-    "days_in_regime": 8,
-    "days_in_regime_observed": 7,
+    "net_gex_bn": 0.553038,
+    "net_gex_pctile": 29.3,
+    "gamma_flip": 7670.207799,
+    "spot": 7670.8398,
+    "dist_to_flip_pct": 0.008239,
+    "days_in_regime": 9,
+    "days_in_regime_observed": 8,
     "series_start": "2026-06-15",
     "history": [
       {
@@ -413,11 +413,18 @@
         "regime": "long",
         "flip": 7670.436658,
         "spot": 7683.6899
+      },
+      {
+        "date": "2026-09-29",
+        "net_gex_bn": 0.553038,
+        "regime": "long",
+        "flip": 7670.207799,
+        "spot": 7670.8398
       }
     ],
     "coverage": {
-      "last_obs": "2026-09-28",
-      "expected_last_session": "2026-09-28",
+      "last_obs": "2026-09-29",
+      "expected_last_session": "2026-09-29",
       "sessions_behind": 0,
       "window_sessions": 20,
       "missing_recent": [
@@ -433,21 +440,21 @@
   },
   "systematic": {
     "vc": {
-      "alloc_bn": 271.436769,
-      "alloc_frac": 0.904789,
-      "flow_1d_bn": 2.270918,
-      "flow_5d_bn": 8.301618,
-      "state": "adding",
+      "alloc_bn": 273.738022,
+      "alloc_frac": 0.91246,
+      "flow_1d_bn": 2.301253,
+      "flow_5d_bn": 0.866119,
+      "state": "pausing",
       "flow_window_n": 5,
       "aum_bn": 300.0,
       "target_vol_pct": 10.0,
       "series_start": "1927-12-30"
     },
     "cta": {
-      "score": 0.67376,
-      "z": -0.442521,
-      "flow_1d": -0.118552,
-      "flow_5d": -0.279492,
+      "score": 0.601712,
+      "z": -0.555284,
+      "flow_1d": -0.072048,
+      "flow_5d": -0.420874,
       "state": "cutting",
       "flow_window_n": 5,
       "cta_near_flat": false
@@ -455,14 +462,6 @@
     "agreement": "split",
     "flow_window_n": 5,
     "history": [
-      {
-        "date": "2024-09-30",
-        "vc_alloc_bn": 188.328957,
-        "vc_flow_bn": -0.12086,
-        "cta_score": 1.152361,
-        "cta_flow": 0.016306,
-        "spx_close": 5762.47998
-      },
       {
         "date": "2024-10-01",
         "vc_alloc_bn": 187.276268,
@@ -4454,12 +4453,20 @@
         "cta_score": 0.67376,
         "cta_flow": -0.118552,
         "spx_close": 7683.689941
+      },
+      {
+        "date": "2026-09-29",
+        "vc_alloc_bn": 273.738022,
+        "vc_flow_bn": 2.301253,
+        "cta_score": 0.601712,
+        "cta_flow": -0.072048,
+        "spx_close": 7670.839844
       }
     ]
   },
   "vol": {
-    "rv21": 0.106231,
-    "rv63": 0.110523,
+    "rv21": 0.106063,
+    "rv63": 0.109594,
     "rv_cross_state": "calm",
     "vix_curve": [
       {
@@ -6518,37 +6525,29 @@
     "band_1sigma_hi": 7873.03,
     "band_2sigma_lo": 7484.18,
     "band_2sigma_hi": 8002.64,
-    "gamma_flip": 7670.436658,
+    "gamma_flip": 7670.207799,
     "implied_weekly_pct": 1.67,
     "source": "spx_iv30_scaled_5d"
   },
   "state_changes": {
-    "vs_asof": "2026-09-25",
+    "vs_asof": "2026-09-28",
     "items": [
       {
         "key": "vc_state",
-        "from": "cutting",
-        "to": "adding",
-        "note_en": "Vol-control funds: cutting → adding",
-        "note_zh": "波动率控制基金：减仓 → 加仓",
-        "display_only": true
-      },
-      {
-        "key": "cta_state",
         "from": "adding",
-        "to": "cutting",
-        "note_en": "CTA funds: adding → cutting",
-        "note_zh": "CTA基金：加仓 → 减仓",
+        "to": "pausing",
+        "note_en": "Vol-control funds: adding → pausing",
+        "note_zh": "波动率控制基金：加仓 → 暂停",
         "display_only": true
       }
     ]
   },
   "prev_state": {
-    "as_of": "2026-09-25",
+    "as_of": "2026-09-28",
     "state": {
       "gamma_regime": "long",
-      "vc_state": "cutting",
-      "cta_state": "adding",
+      "vc_state": "adding",
+      "cta_state": "cutting",
       "agreement": "split",
       "rv_cross_state": "calm",
       "cor1m_regime": "dispersion"

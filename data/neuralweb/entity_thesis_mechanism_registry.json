@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-09-29",
+  "as_of": "2026-09-30",
   "authority": {
     "allowed_actions": [
       "display",
@@ -1108,7 +1108,7 @@
       "src": "species:T1-T4@1.0"
     }
   ],
-  "generated_utc": "2026-09-29T06:23:53.913537+00:00",
+  "generated_utc": "2026-09-30T05:34:56.039949+00:00",
   "is_context_only": true,
   "notes": "Crosswalk only; local systems remain authoritative. No invented links; unknowns stay null.",
   "possible_duplicates": [
@@ -1413,7 +1413,7 @@
   "rows": {
     "entity:US:AVGO": {
       "authority": "display_only",
-      "funnel_as_of": "2026-09-28",
+      "funnel_as_of": "2026-09-29",
       "funnel_state": "not_eligible",
       "market": "US",
       "registry_id": "entity:US:AVGO",
@@ -1426,7 +1426,7 @@
     },
     "entity:US:NVDA": {
       "authority": "display_only",
-      "funnel_as_of": "2026-09-28",
+      "funnel_as_of": "2026-09-29",
       "funnel_state": "not_eligible",
       "market": "US",
       "registry_id": "entity:US:NVDA",
@@ -1439,7 +1439,7 @@
     },
     "entity:US:VRT": {
       "authority": "display_only",
-      "funnel_as_of": "2026-09-28",
+      "funnel_as_of": "2026-09-29",
       "funnel_state": "not_eligible",
       "market": "US",
       "registry_id": "entity:US:VRT",
@@ -3347,7 +3347,7 @@
       "present": true
     },
     "data/neuralweb/governance.jsonl": {
-      "n": 193,
+      "n": 195,
       "present": true
     },
     "data/research/thesis_funnel_states.parquet": {

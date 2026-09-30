@@ -7,7 +7,7 @@ objective: >
   Exponent and Pentair dossiers pass the T09 real-path proofs (two journeys, correction,
   revocation, ordinary refresh, non-interference) with every one of the 56 inherited
   requirements executed — never a merged slice alone.
-status: blocked
+status: active
 program: earnings-intelligence
 repos: [macro]
 owner: fable-meta-ceo
@@ -45,26 +45,68 @@ waves:
     next_action: "Sequence is T03 then T05, not T03 || T05: the frozen plan lists T03 event/document refs among T05's consumed inputs, and T05's C0 gate also demands T02's industrials_profiles.py on main. A T05 lane dispatched early invents the document-reference shape rather than returning BLOCKED. The pre-built T05 payload stays parked."
   - id: IND-W4
     title: "T06 closed financial dossier contract and thin shared adapter"
-    status: todo
+    status: in_progress
     depends_on: [IND-W3]
-    next_action: "T06 consumes T04 per rulings_t06.md R7-R8: quote T04's value or report T04's refusal, never re-derive; pin no receipt_id literal or golden receipt."
+    next_action: "SIX of the nine T06 obligations are covered as of #8213 (squash 28a3ab1e7cb2): IND-D23, IND-R201, IND-R215, IND-R218 and IND-SF04 by assemble_evidence_view in engine/company_intelligence/financial_dossier.py, plus the all-present control. This wave opened AHEAD of its depends_on IND-W3 because Sol commissioned the capability directly (#7789 comment 5894912727) as ONE user-facing behaviour rather than five isolated anchors - W3 was not skipped silently and T03/T05 sequencing is unchanged. R7-R8 still bind and are honoured: the view QUOTES already-derived result-to-cash values or reports their refusal, re-derives nothing, and pins no receipt_id literal or golden receipt. IND-D03, IND-D22 and IND-R213 remain UNCOVERED because their seams are unmerged - do not author tests for them against a branch. Do not re-point IND-D23 or IND-R215 at the dossier tests: they keep their result-to-cash anchors, and re-pointing would trade unit coverage for page coverage rather than add it."
   - id: IND-W5
     title: "T07 private role, T08 typed view on the shared aggregator, T09 real-path proofs"
     status: todo
     depends_on: [IND-W4]
     next_action: "Wait for Semiconductor B's shared route family and aggregator on main; never build against #7870's branch."
 next_action: >
-  NOTHING IS DISPATCHABLE AT THIS SEAT. IND-T04b (#8105, 717e16cccc24) and the records pair
-  #8109 (4e61869bfecd) are merged and verified in origin/main's own bytes; T01, T04, T02a and
-  every records PR before them are closed. The honest state is ALL_SCOPED_LANES_BLOCKED:
-  T02 waits on the shared seam held by #7870 and #7905, T03 on T02, T05 on T03, T06 on
-  T01-T05, T07-T09 on Semiconductor B reaching main for G1. The unblocking act belongs to
-  those PRs, not to this program - do not manufacture a lane, and do not dispatch T05
-  (args_ind_t05_source_history.json stays PARKED; rulings_t05 R8 forbids it).
-  Coverage is 15 of 56 as MEASURED (3 in T01, 12 in T04), never from the plan's table.
-  Two absences are deliberate: tests/test_industrials_issuer_enrollment.py is not created
-  and no anchor-map row exists for a T02 requirement - in both cases the absence is the
-  honest signal that T02 is unstarted.
+  SPECIFICATION AUTHORITY RESOLVED 2026-09-29 - SOL RULING / CONTINUE (#7789 comment
+  5894127980), which consumes this seat's asks 5881951284 / 5882425483 / 5894142128.
+  RECOVERY SUCCEEDED AND NO RE-SPECIFICATION IS AUTHORIZED OR NEEDED. The original corpus was
+  never deleted; it is simply not vendored at any path on main. Read this clause before every
+  sub-wave next_action below: those entries were written when the binding blocker was believed
+  to be missing requirement text, and that belief is now closed.
+  THE RECOVERED ORIGINAL AUTHORITY, at commit 40d91e50a38c604e26255c1451eda5ddc95fb9cc on the
+  original #7789 source line sol/industrials-sector-research-20260923. All three blobs are
+  present in this host's object store and were read directly to verify the counts below:
+  r1 = docs/superpowers/specs/2026-09-23-industrials-result-cash-dossier-design.md,
+  blob 40fd1e3783102c28fe748fe35b927484d4f3dddb (28638 B), IND-D01..IND-D30 - VERIFIED 30
+  unique IND-D ids in the blob's own bytes.
+  r2 = the same path with the -r2 suffix, blob 9c98e106b954d0a48610afad418de2a9eeb1e58b
+  (20947 B), IND-R201..IND-R218 - VERIFIED 18 unique IND-R ids; it explicitly preserves r1.
+  W12 = research/industrials/INDUSTRIALS_WAVE12_SEMICONDUCTOR_FOUNDATION_ALIGNMENT_2026-09-24.md,
+  blob b343cbd7bc1f52cfc6fbb5e18ab8d9e9f9392f6c (21187 B), IND-SF01..IND-SF08 - VERIFIED 8
+  unique IND-SF ids; it preserves the prior D/R corpus.
+  30 + 18 + 8 = 56 with zero missing and zero extra against the frozen plan's table. The frozen
+  plan itself is docs/superpowers/plans/2026-09-24-industrials-shared-foundation-increment-implementation.md,
+  blob a5462dc7f36aea08c57ce43a8a230ef00ebae802, likewise tracked at no path on main and pinned
+  host-locally as refs/salvage/ind-first-vertical-plan-a5462dc7.
+  DISPOSITION PER THE RULING: no requirement id is retired, superseded, renumbered or reworded.
+  The earlier claim that 41 obligations have NO RETRIEVABLE AUTHORITY is SUPERSEDED - they are
+  not vendored on main, but their original wording is recoverable from the blobs above. The
+  #8160 anti-fabrication guard stays and stays fail-closed: when a substantive change first
+  touches one of those 41 ids, update that row's source basis to the exact recovered blob/path
+  IN THAT SAME CHANGE. Never silently reword recovered text, and never label a new
+  clarification as recovered original text; a genuinely new obligation needs an explicitly
+  versioned amendment plus an explicit disposition of the affected old id.
+  NEXT ACTION IS PRODUCT WORK, NOT BOOKKEEPING. Do NOT open another traceability-only
+  increment; a minimal source-reference correction is supporting work inside the first
+  substantive product build, never its outcome. Build and test PATH-DISJOINT product work now
+  toward the preserved vertical: theme/company entry -> economic change ->
+  earnings/cash/conditions -> exact evidence + falsifier -> correct company navigation/return,
+  for Exponent and Pentair, preserving publication/refresh/correction behaviour, access and
+  revocation behaviour, and legacy/cross-sector non-interference. Use the existing Company
+  Intelligence, Fundamental Forensics, Earnings, private-publication, route and shared-theme
+  owners; create no second schema, store, router, registry, traceability plane, rights plane,
+  lifecycle or authority plane.
+  THE RULING CLOSES ONLY THE CORPUS GAP. It does NOT release the independent holds or incumbent
+  ownership on #7870 or #7905, so T02 is still gated on #7905's profile_for_ticker signature
+  (R-IND-12) even though its three obligations IND-D04, IND-D05 and IND-R210 now have recovered
+  text. Where landing or real-path proof still depends on an incumbent seam, return THAT EXACT
+  GATE rather than waiting broadly or substituting more bookkeeping. #7780 is
+  research/specification/handoff evidence, never runtime source.
+  UNCHANGED AND STILL BINDING: do not dispatch T05 (args_ind_t05_source_history.json stays
+  PARKED; rulings_t05 R8 forbids it); tests/test_industrials_issuer_enrollment.py is not
+  created and no anchor-map row exists for a T02 requirement while T02 is unstarted. Do not
+  re-run the index/traceability audit - it is recorded in requirement_index.md and on #7789.
+  Return with the exact candidate head, tests tied to the RECOVERED ORIGINAL WORDING, and the
+  strongest available Exponent/Pentair journey proof; claim no acceptance until the real user
+  path satisfies the whole outcome. Re-arm the approved exact-carrier wait/watch path after the
+  next nonterminal return, or report the exact WATCH_UNAVAILABLE condition.
 artifacts:
   - agentos/handoffs/GMI-INDUSTRIALS-2026-09-24-first-vertical-implementation.md
   - research/industrials/first_vertical_program/rulings/R-IND-2026-09-24-wave1.md

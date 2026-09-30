@@ -23,14 +23,37 @@ specifications are not in this repository.
 - `NO_SOURCE` — **neither exists.**  The obligation's text is not reachable from
   this repository or from the program carrier, so an anchor row for it would be
   inventing the requirement rather than enforcing it.
+- `RECOVERED_ORIGINAL` — the obligation's **exact original wording** is readable at
+  a named blob.  Added 2026-09-29 after Sol's CONTINUE ruling (#7789 comment
+  `5894127980`) recovered the corpus from the original branch history at commit
+  `40d91e50a38c604e26255c1451eda5ddc95fb9cc` on
+  `sol/industrials-sector-research-20260923`.  This is the STRONGEST basis of the
+  four: `RULING` and `LANDED_BEHAVIOUR` both reconstruct the pair from something
+  downstream of the obligation, while this one quotes the obligation itself.
+  - r1 blob `40fd1e3783102c28fe748fe35b927484d4f3dddb` — `IND-D01`–`IND-D30`
+  - r2 blob `9c98e106b954d0a48610afad418de2a9eeb1e58b` — `IND-R201`–`IND-R218`
+  - W12 blob `b343cbd7bc1f52cfc6fbb5e18ab8d9e9f9392f6c` — `IND-SF01`–`IND-SF08`
 
-## Measured 2026-09-29
+  None of the three is vendored at any path on `main`, which is what made a
+  main-only path lookup read as absence.  Verified by reading each blob directly:
+  30 + 18 + 8 = 56 unique ids, zero missing and zero extra.
+
+## Measured 2026-09-29 (historical — superseded the same day)
 
 Two independent instruments (one grep per id, and a single-pass alternation)
 agree: of the 56 ids this table names, **15 appear anywhere in the tree and 41
 appear nowhere** — no spec, no doc, no fixture, no test.  The 15 are exactly the
 T01 and T04 rows, and they are present only *because* landed code cites them.
 Carrier #7789 carries 4 ids, all posted by this seat.
+
+**That measurement is still accurate about this repository and is no longer the
+whole picture.**  It measured presence *in the tree*, and Sol's CONTINUE ruling
+later the same day recovered the obligation texts from the original branch history
+— so "appears nowhere in the tree" turned out to mean *not vendored on `main`*, not
+*lost*.  The conclusion drawn from it at the time, that 41 obligations have no
+retrievable authority, is superseded; the count itself is unchanged.  Rows migrate
+from `NO_SOURCE` to `RECOVERED_ORIGINAL` one substantive change at a time, never in
+a bulk edit, because the basis column is a claim that something enforces the row.
 
 ```
 task   reqs  anchored  id-in-tree
@@ -95,13 +118,13 @@ Requirement, owning task and planned exact test are verbatim from the plan.
 | IND-SF03 | T05 | `tests/test_industrials_source_history.py` | `test_ind_sf03` | NO_SOURCE |
 | IND-D03 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_d03` | NO_SOURCE |
 | IND-D22 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_d22` | NO_SOURCE |
-| IND-D23 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_d23` | NO_SOURCE |
-| IND-R201 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_r201` | NO_SOURCE |
+| IND-D23 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_d23` | RECOVERED_ORIGINAL |
+| IND-R201 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_r201` | RECOVERED_ORIGINAL |
 | IND-R213 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_r213` | NO_SOURCE |
-| IND-R214 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_r214` | NO_SOURCE |
-| IND-R215 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_r215` | NO_SOURCE |
-| IND-R218 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_r218` | NO_SOURCE |
-| IND-SF04 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_sf04` | NO_SOURCE |
+| IND-R214 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_r214` | RECOVERED_ORIGINAL |
+| IND-R215 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_r215` | RECOVERED_ORIGINAL |
+| IND-R218 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_r218` | RECOVERED_ORIGINAL |
+| IND-SF04 | T06 | `tests/test_industrials_financial_dossier.py` | `test_ind_sf04` | RECOVERED_ORIGINAL |
 | IND-D25 | T07 | `tests/test_industrials_private_publication.py` | `test_ind_d25` | NO_SOURCE |
 | IND-D26 | T07 | `tests/test_industrials_private_publication.py` | `test_ind_d26` | NO_SOURCE |
 | IND-D27 | T07 | `tests/test_industrials_private_publication.py` | `test_ind_d27` | NO_SOURCE |

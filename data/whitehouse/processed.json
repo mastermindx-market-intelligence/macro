@@ -1427,6 +1427,48 @@
       "at": "2026-09-29T01:57:07.744054+00:00",
       "activated": true,
       "importance": 72
+    },
+    "https://www.whitehouse.gov/?p=51585": {
+      "id": "wh-2026-09-29-streamlining-access-to-government-services-through-america-gov",
+      "at": "2026-09-29T15:51:19.012629+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=51583": {
+      "id": "wh-2026-09-29-fact-sheet-president-donald-j-trump-streamlines-access-to-government-services-th",
+      "at": "2026-09-29T15:51:20.720990+00:00",
+      "activated": false,
+      "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=51602": {
+      "id": "wh-2026-09-29-first-lady-melania-trump-announces-2026-fall-garden-tours",
+      "at": "2026-09-29T20:46:46.007610+00:00",
+      "activated": false,
+      "importance": 0
+    },
+    "https://www.whitehouse.gov/?p=51607": {
+      "id": "wh-2026-09-29-fact-sheet-president-donald-j-trump-eliminates-disease-carrying-pests-and-restor",
+      "at": "2026-09-30T00:26:51.474304+00:00",
+      "activated": false,
+      "importance": 12
+    },
+    "https://www.whitehouse.gov/?p=51617": {
+      "id": "wh-2026-09-29-eliminating-disease-carrying-pests-and-restoring-enjoyment-of-the-great-outdoors",
+      "at": "2026-09-30T00:27:05.924184+00:00",
+      "activated": false,
+      "importance": 58
+    },
+    "https://www.whitehouse.gov/?p=51618": {
+      "id": "wh-2026-09-29-fact-sheet-president-donald-j-trump-inaugurates-the-era-of-super-intelligence",
+      "at": "2026-09-30T00:27:07.303126+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=51615": {
+      "id": "wh-2026-09-29-inaugurating-the-era-of-super-intelligence",
+      "at": "2026-09-30T00:27:08.537687+00:00",
+      "activated": false,
+      "importance": 5
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."

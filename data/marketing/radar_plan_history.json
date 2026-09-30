@@ -2,26 +2,48 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-09-30",
+      "tickers": [
+        "CARR",
+        "CMS",
+        "COHU",
+        "FIX",
+        "GATX",
+        "KMT",
+        "LMAT",
+        "NVDA",
+        "OTTR",
+        "PBH",
+        "PG",
+        "REX",
+        "RPM",
+        "SHO",
+        "SHW",
+        "WS",
+        "XLF"
+      ]
+    },
+    {
       "as_of": "2026-09-29",
       "tickers": [
-        "AAP",
         "AEIS",
-        "AIZ",
         "ALGT",
-        "BKR",
+        "AMKR",
         "CLH",
         "CNM",
         "COHU",
+        "DAL",
         "ELF",
         "GAP",
         "IPGP",
-        "PDFS",
+        "JCI",
         "PG",
-        "REX",
+        "QDEL",
+        "SHO",
         "TNDM",
-        "WABC",
-        "WHR",
-        "WING"
+        "VTRS",
+        "WING",
+        "XRAY"
       ]
     },
     {
@@ -135,21 +157,6 @@
         "MATW",
         "REX",
         "ROL"
-      ]
-    },
-    {
-      "as_of": "2026-09-23",
-      "tickers": [
-        "AAPL",
-        "ABBV",
-        "ADEA",
-        "CMI",
-        "COHU",
-        "CTRI",
-        "GOOGL",
-        "IPGP",
-        "NCLH",
-        "WING"
       ]
     }
   ]

@@ -1,6 +1,6 @@
 {
-  "checked_at": "2026-09-29T05:02:54+00:00",
-  "expected_session": "2026-09-28",
+  "checked_at": "2026-09-30T02:08:03+00:00",
+  "expected_session": "2026-09-29",
   "stores": {
     "cache": {
       "asof": "2026-09-29",
@@ -24,7 +24,7 @@
     },
     "southbound": {
       "asof": "2026-09-28",
-      "lag_days": 0,
+      "lag_days": 1,
       "state": "fresh"
     }
   },

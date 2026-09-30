@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_thesis.v1",
-  "as_of": "2026-09-29",
-  "generated_at": "2026-09-29T06:23:55Z",
+  "as_of": "2026-09-30",
+  "generated_at": "2026-09-30T05:34:57Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -28,10 +28,10 @@
   "theses": [
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-29",
+      "as_of": "2026-09-30",
       "thesis_id": "ai_semiconductors.v1",
-      "content_hash": "sha256:e3bfb4d9b3cfc2b94398e2796d66eb4984d11d919c1b3ff0f20694ca984e7fbc",
-      "prev_content_hash": "sha256:c19aca110b9c8ecee70ef8d0e421a480b50dfa7ba3018d51c833877f2106ff79",
+      "content_hash": "sha256:706697c9db2e6c1aa38281972d9208963e00e6a0ec59c11c7220a8a89a70496e",
+      "prev_content_hash": "sha256:e3bfb4d9b3cfc2b94398e2796d66eb4984d11d919c1b3ff0f20694ca984e7fbc",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -106,12 +106,12 @@
                 "condition_met": false
               },
               {
-                "as_of": "2026-09-29",
+                "as_of": "2026-09-30",
                 "value": 0.497,
                 "condition_met": false
               }
             ],
-            "corrections_superseded": 0
+            "corrections_superseded": 1
           }
         },
         {
@@ -155,10 +155,10 @@
     },
     {
       "schema": "neuralweb.theme_thesis.v1",
-      "as_of": "2026-09-29",
+      "as_of": "2026-09-30",
       "thesis_id": "memory_storage.v1",
-      "content_hash": "sha256:cf7d6bbf5b96889902a4cb05cffbdc0adbc581d0c66b00c158388962ca86cd33",
-      "prev_content_hash": "sha256:982629b83526165e04c9eddf6e6636495fca8dae234b8e6c90a990bfcd87e12a",
+      "content_hash": "sha256:d45937ec841302bd85e65b584d367b5cde1fb326a7c1284844b8d06f2585b80c",
+      "prev_content_hash": "sha256:cf7d6bbf5b96889902a4cb05cffbdc0adbc581d0c66b00c158388962ca86cd33",
       "authority": {
         "is_context_only": true,
         "may_rank": false,
@@ -224,7 +224,7 @@
                 "condition_met": false
               },
               {
-                "as_of": "2026-09-29",
+                "as_of": "2026-09-30",
                 "value": 0.655,
                 "condition_met": false
               }
@@ -1578,7 +1578,7 @@
   ],
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-09-29T06:23:55Z",
-  "inputs_hash": "sha256:828a456e2f2f14682a9de527970f4b6dee4d258576235e4a2163632169eb5959",
+  "produced_at": "2026-09-30T05:34:57Z",
+  "inputs_hash": "sha256:ebc3a2d3165c309bb0639260205d5995cdf4a3b8309e3cfaceb8b0df63212270",
   "tier": "display"
 }
