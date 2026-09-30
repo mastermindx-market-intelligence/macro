@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from datetime import datetime
 from hashlib import sha256
 import json
 from pathlib import Path
@@ -22,15 +23,67 @@ import threading
 from types import MappingProxyType
 from typing import Any, Mapping
 
-from engine.earnings_narrative.context_packets import (
-    canonical_json_bytes,
-    validate_context_manifest,
-    validate_context_packet_at_cutoff,
-)
+from engine.company_intelligence import documents, event_workspace, pg_profile
+from engine.earnings_narrative import economic_interpretation
+from engine.earnings_narrative.context_packets import (canonical_json_bytes, validate_context_manifest,
+                                                      validate_context_packet_at_cutoff)
 from engine.research_vault.r2_store import StrictBoundedReadStore, Store
-
+from engine.theme_graph import rights
 
 PRIVATE_PREFIX = "earnings_wire_private/v1"
+RECORD_SCHEMA_V2 = "earnings.tier_payload/v2"
+MANIFEST_SCHEMA_V2 = "earnings.private_manifest/v2"
+DOSSIER_PAGE = "earnings_economic_dossier"
+NATIVE_STAGE_DIR = "native"
+NATIVE_STAGE_MANIFEST_NAME = "latest.json"
+NATIVE_STAGE_SCHEMA = "earnings.private_native_stage/v1"
+MAX_NATIVE_CHAIN = 4
+MAX_ECONOMIC_FACTS = 24
+MAX_ECONOMIC_COMPARISONS = 24
+MAX_SOURCE_BODY_BYTES = 8 * 1024 * 1024
+MAX_NATIVE_WORKSPACE_BYTES = 2 * 1024 * 1024
+MAX_NATIVE_DOCUMENT_BYTES = 64 * 1024
+MAX_NATIVE_STAGE_MANIFEST_BYTES = 1024 * 1024
+RECORD_UNAVAILABLE_REASONS = ("no_native_selection",)
+NATIVE_RIGHTS_REGISTRY_PATH = None
+CLOSURE_REASONS = (
+    "unsupported_schema",
+    "malformed_native_section",
+    "unsafe_path",
+    "missing_artifact",
+    "unexpected_artifact",
+    "wrong_role",
+    "digest_mismatch",
+    "size_mismatch",
+    "over_limit",
+    "mismatched_source",
+    "cross_issuer",
+    "broken_chain",
+    "predecessor_cycle",
+    "future_source_clock",
+    "interpretation_mismatch",
+    "interpretation_unsupported",
+    "rights_refused",
+)
+_CLOSURE_MESSAGES = {
+    "unsupported_schema": "The stored schema is not supported.",
+    "malformed_native_section": "The native economic section is malformed.",
+    "unsafe_path": "The native storage path is unsafe.",
+    "missing_artifact": "A required native artifact is missing.",
+    "unexpected_artifact": "An unexpected native artifact was found.",
+    "wrong_role": "An object key has the wrong native role.",
+    "digest_mismatch": "An artifact digest does not match its bytes.",
+    "size_mismatch": "An artifact size does not match its receipt.",
+    "over_limit": "The native evidence exceeds a fixed limit.",
+    "mismatched_source": "The native source bindings disagree.",
+    "cross_issuer": "The native issuer is not admitted for this chain.",
+    "broken_chain": "The native document chain is broken.",
+    "predecessor_cycle": "The native predecessor link is cyclic.",
+    "future_source_clock": "A native source clock is later than the cutoff.",
+    "interpretation_mismatch": "The stored interpretation does not replay.",
+    "interpretation_unsupported": "The stored interpretation version is unsupported.",
+    "rights_refused": "The native rights registry refused publication.",
+}
 POINTER_KEY = f"{PRIVATE_PREFIX}/current.json"
 POINTER_SCHEMA = "earnings.private_pointer/v1"
 MANIFEST_SCHEMA = "earnings.private_manifest/v1"
@@ -49,6 +102,25 @@ MAX_CONTEXT_PACKETS = 10_000
 IDEMPOTENT_READ_WORKERS = 8
 PUBLISH_WORKERS = 8
 
+_NATIVE_CATALOG_ROLES = MappingProxyType({
+    "workspaces": "native_workspace",
+    "documents": "native_document",
+    "source_bodies": "source_body_text",
+})
+_NATIVE_GENERATION_ID_RE = re.compile(r"\A[a-f0-9]{24}\Z")
+_INTERPRETATION_ID_RE = re.compile(r"\Aecon_[a-f0-9]{64}\Z")
+_CANONICAL_CLOCK_RE = re.compile(r"\A[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z\Z")
+_CANONICAL_DATE_RE = re.compile(r"\A[0-9]{4}-[0-9]{2}-[0-9]{2}\Z")
+_NATIVE_PATH_RE = re.compile(r"\A(?:native/latest\.json|native/workspaces/[a-f0-9]{24}\.json|native/documents/[a-f0-9]{64}\.json|native/source_bodies/[a-f0-9]{64}\.txt)\Z")
+_ARTIFACT_ROLES: Mapping[str, tuple[str, str, int]] = MappingProxyType({
+    "record": (".json", "application/json", MAX_RECORD_BYTES),
+    "context_manifest": (".json", "application/json", MAX_CONTEXT_MANIFEST_BYTES),
+    "context_packet": (".json", "application/json", MAX_CONTEXT_PACKET_BYTES),
+    "native_workspace": (".json", "application/json", MAX_NATIVE_WORKSPACE_BYTES),
+    "native_document": (".json", "application/json", MAX_NATIVE_DOCUMENT_BYTES),
+    "source_body_text": (".txt", "text/plain; charset=utf-8", MAX_SOURCE_BODY_BYTES),
+})
+
 _SLUG_RE = re.compile(r"\A[a-z0-9][a-z0-9-]{0,120}\Z")
 _TICKER_RE = re.compile(r"\A[A-Z0-9.\-]{1,16}\Z")
 _GENERATION_RE = re.compile(r"\Aearnpriv_[a-f0-9]{32}\Z")
@@ -65,14 +137,20 @@ _UNSAFE_HTML_RE = re.compile(
 )
 _PUBLISH_LOCK = threading.Lock()
 
-
 class EarningsPrivatePublicationError(RuntimeError):
     """Private staging, publication, or read verification failed closed."""
-
 
 class EarningsPrivateRecordNotFound(EarningsPrivatePublicationError):
     """A syntactically valid slug is not present in the current generation."""
 
+class EarningsPrivateClosureError(EarningsPrivatePublicationError):
+    """A v2 native evidence closure was refused."""
+
+    def __init__(self, reason: str, message: str | None = None):
+        if reason not in CLOSURE_REASONS:
+            raise ValueError("unknown private closure reason")
+        self.reason = reason
+        super().__init__(message or _CLOSURE_MESSAGES[reason])
 
 @dataclass(frozen=True)
 class PrivateArtifact:
@@ -84,6 +162,7 @@ class PrivateArtifact:
     sha256: str
     byte_length: int
     maximum_bytes: int
+    content_type: str = "application/json"
 
     def receipt(self) -> dict[str, Any]:
         return {
@@ -91,7 +170,6 @@ class PrivateArtifact:
             "sha256": self.sha256,
             "bytes": self.byte_length,
         }
-
 
 @dataclass(frozen=True)
 class PreparedPrivatePublication:
@@ -103,13 +181,12 @@ class PreparedPrivatePublication:
     manifest_bytes: bytes
     artifacts: tuple[PrivateArtifact, ...]
     payloads: Mapping[str, bytes]
-
+    retired_slots: tuple[str, ...] = ()
 
 def _strict_object(value: Any, *, keys: frozenset[str], name: str) -> Mapping[str, Any]:
     if not isinstance(value, Mapping) or set(value) != keys:
         raise EarningsPrivatePublicationError(f"{name} fields mismatch")
     return value
-
 
 def _json_object(body: bytes, *, maximum: int, name: str) -> dict[str, Any]:
     if not isinstance(body, bytes) or not body or len(body) > maximum:
@@ -125,18 +202,15 @@ def _json_object(body: bytes, *, maximum: int, name: str) -> dict[str, Any]:
         raise EarningsPrivatePublicationError(f"{name} is not canonical JSON")
     return value
 
-
 def validate_slug(value: str) -> str:
     if not isinstance(value, str) or not _SLUG_RE.fullmatch(value):
         raise EarningsPrivatePublicationError("invalid earnings record slug")
     return value
 
-
 def validate_ticker(value: str) -> str:
     if not isinstance(value, str) or not _TICKER_RE.fullmatch(value):
         raise EarningsPrivatePublicationError("invalid earnings context ticker")
     return value
-
 
 def _safe_fragment(value: Any, *, field: str) -> str:
     if not isinstance(value, str) or len(value.encode("utf-8")) > MAX_RECORD_BYTES:
@@ -145,8 +219,7 @@ def _safe_fragment(value: Any, *, field: str) -> str:
         raise EarningsPrivatePublicationError(f"private record {field} contains active content")
     return value
 
-
-def validate_private_record(value: object, *, expected_slug: str | None = None) -> dict[str, Any]:
+def validate_v1_record(value: object, *, expected_slug: str | None = None) -> dict[str, Any]:
     record = _strict_object(
         value,
         keys=frozenset(
@@ -182,6 +255,86 @@ def validate_private_record(value: object, *, expected_slug: str | None = None) 
     _safe_fragment(record.get("receipt_rows_html"), field="receipt_rows_html")
     return dict(record)
 
+def _interpretation_shape(value: Any) -> dict[str, Any] | None:
+    if type(value) is not dict:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    if value.get("schema") != economic_interpretation.SCHEMA:
+        raise EarningsPrivateClosureError("interpretation_unsupported")
+    if set(value) != set(economic_interpretation.TOP_LEVEL_KEYS):
+        raise EarningsPrivateClosureError("malformed_native_section")
+    if (
+        type(value.get("interpretation_id")) is not str
+        or type(value.get("event_id")) is not str
+        or type(value.get("issuer")) is not dict
+        or type(value.get("issuer", {}).get("company_id")) is not str
+    ):
+        raise EarningsPrivateClosureError("malformed_native_section")
+    observations = value.get("observations")
+    comparisons = value.get("comparisons")
+    if (
+        type(observations) is not list
+        or type(comparisons) is not list
+    ):
+        raise EarningsPrivateClosureError("malformed_native_section")
+    if (
+        len(observations) > MAX_ECONOMIC_FACTS
+        or len(comparisons) > MAX_ECONOMIC_COMPARISONS
+    ):
+        raise EarningsPrivateClosureError("over_limit")
+    return value
+
+def _validate_interpretation_field(value: Any) -> dict[str, Any]:
+    unavailable = {"state": "unavailable", "reason": "no_native_selection"}
+    if type(value) is not dict:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    if set(value) == {"state", "reason"}:
+        if value != unavailable:
+            raise EarningsPrivateClosureError("malformed_native_section")
+        return value
+    return _interpretation_shape(value)
+
+def validate_v2_record(value: object, *, expected_slug: str | None = None) -> dict[str, Any]:
+    if type(value) is not dict or set(value) != frozenset(
+        {
+            "schema", "page", "slug", "required_tier", "public_facts", "locked_facts",
+            "facts_html", "receipt_rows_html", "economic_interpretation",
+        }
+    ):
+        raise EarningsPrivateClosureError("malformed_native_section")
+    shared = {key: value[key] for key in (
+        "schema", "page", "slug", "required_tier", "public_facts", "locked_facts",
+        "facts_html", "receipt_rows_html",
+    )}
+    shared["schema"] = RECORD_SCHEMA
+    shared["page"] = "earnings_wire_article"
+    record = validate_v1_record(shared, expected_slug=expected_slug)
+    record["schema"] = RECORD_SCHEMA_V2
+    record["page"] = value["page"]
+    if value["page"] not in ("earnings_wire_article", DOSSIER_PAGE):
+        raise EarningsPrivateClosureError("malformed_native_section")
+    interpretation = _validate_interpretation_field(value["economic_interpretation"])
+    if record["page"] == DOSSIER_PAGE:
+        if (
+            record["required_tier"] != "essential"
+            or record["public_facts"] != 0
+            or record["facts_html"] != ""
+            or record["receipt_rows_html"] != ""
+            or set(interpretation) == {"state", "reason"}
+            or record["locked_facts"] != len(interpretation.get("observations", []))
+            or not 1 <= record["locked_facts"] <= MAX_ECONOMIC_FACTS
+        ):
+            raise EarningsPrivateClosureError("malformed_native_section")
+    return {**record, "economic_interpretation": interpretation}
+
+def validate_private_record(value: object, *, expected_slug: str | None = None) -> dict[str, Any]:
+    if type(value) is not dict:
+        return validate_v1_record(value, expected_slug=expected_slug)
+    schema = value.get("schema")
+    if schema == RECORD_SCHEMA:
+        return validate_v1_record(value, expected_slug=expected_slug)
+    if schema == RECORD_SCHEMA_V2:
+        return validate_v2_record(value, expected_slug=expected_slug)
+    raise EarningsPrivateClosureError("unsupported_schema", "unsupported private record schema")
 
 def _stage_file(root: Path, relative: Path, *, maximum: int, name: str) -> bytes:
     root = root.resolve()
@@ -208,26 +361,29 @@ def _stage_file(root: Path, relative: Path, *, maximum: int, name: str) -> bytes
         raise EarningsPrivatePublicationError(f"{name} changed during read")
     return body
 
+def _object_key(role: str, digest: str) -> str:
+    suffix = _ARTIFACT_ROLES[role][0]
+    return f"{PRIVATE_PREFIX}/objects/sha256/{digest[:2]}/{digest}{suffix}"
 
-def _artifact(role: str, identity: str, body: bytes, *, maximum: int) -> PrivateArtifact:
+def _artifact(role: str, identity: str, body: bytes, *, maximum: int | None = None) -> PrivateArtifact:
+    suffix, content_type, maximum = _ARTIFACT_ROLES[role]
     digest = sha256(body).hexdigest()
     return PrivateArtifact(
         role=role,
         identity=identity,
-        object_key=f"{PRIVATE_PREFIX}/objects/sha256/{digest[:2]}/{digest}.json",
+        object_key=_object_key(role, digest),
         sha256=digest,
         byte_length=len(body),
         maximum_bytes=maximum,
+        content_type=content_type,
     )
-
 
 def _generation_id(manifest: Mapping[str, Any]) -> str:
     unsigned = dict(manifest)
     unsigned["generation_id"] = "earnpriv_" + ("0" * 32)
     return "earnpriv_" + sha256(canonical_json_bytes(unsigned)).hexdigest()[:32]
 
-
-def _validate_receipt(value: Any, *, name: str) -> Mapping[str, Any]:
+def _validate_v1_receipt(value: Any, *, name: str) -> Mapping[str, Any]:
     receipt = _strict_object(
         value,
         keys=frozenset({"object_key", "sha256", "bytes"}),
@@ -246,8 +402,35 @@ def _validate_receipt(value: Any, *, name: str) -> Mapping[str, Any]:
         raise EarningsPrivatePublicationError(f"{name} is invalid")
     return receipt
 
+def _validate_receipt(value: Any, *, name: str, role: str | None = None) -> Mapping[str, Any]:
+    if role is None:
+        return _validate_v1_receipt(value, name=name)
+    if type(value) is not dict or set(value) != {"object_key", "sha256", "bytes"}:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    receipt = value
+    digest = receipt.get("sha256")
+    count = receipt.get("bytes")
+    object_key = receipt.get("object_key")
+    if (
+        type(digest) is not str
+        or not _SHA_RE.fullmatch(digest)
+        or type(count) is not int
+        or count < 1
+    ):
+        raise EarningsPrivateClosureError("malformed_native_section")
+    suffix, _content_type, maximum = _ARTIFACT_ROLES[role]
+    expected = _object_key(role, digest)
+    if type(object_key) is str and object_key == expected:
+        if count > maximum:
+            raise EarningsPrivateClosureError("over_limit")
+        return receipt
+    if type(object_key) is str:
+        for other in _ARTIFACT_ROLES:
+            if other != role and object_key == _object_key(other, digest):
+                raise EarningsPrivateClosureError("wrong_role")
+    raise EarningsPrivateClosureError("unsafe_path")
 
-def validate_private_manifest(value: object) -> dict[str, Any]:
+def _validate_v1_manifest(value: object, *, check_generation: bool = True) -> dict[str, Any]:
     manifest = _strict_object(
         value,
         keys=frozenset(
@@ -267,9 +450,11 @@ def validate_private_manifest(value: object) -> dict[str, Any]:
     generation_id = manifest.get("generation_id")
     if (
         manifest.get("schema") != MANIFEST_SCHEMA
-        or not isinstance(generation_id, str)
-        or not _GENERATION_RE.fullmatch(generation_id)
-        or generation_id != _generation_id(manifest)
+        or (check_generation and (
+            not isinstance(generation_id, str)
+            or not _GENERATION_RE.fullmatch(generation_id)
+            or generation_id != _generation_id(manifest)
+        ))
     ):
         raise EarningsPrivatePublicationError("private earnings generation identity is invalid")
     if not isinstance(manifest.get("published_at"), str) or len(manifest["published_at"]) > 64:
@@ -314,9 +499,787 @@ def validate_private_manifest(value: object) -> dict[str, Any]:
         _validate_receipt(receipt, name=f"private context receipt {ticker}")
     return dict(manifest)
 
+def validate_v1_manifest(value: object) -> dict[str, Any]:
+    return _validate_v1_manifest(value)
 
-def prepare_private_publication(stage_dir: str | Path) -> PreparedPrivatePublication:
+def _canonical_clock(value: Any, *, date: bool = False) -> str:
+    pattern = _CANONICAL_DATE_RE if date else _CANONICAL_CLOCK_RE
+    if (
+        type(value) is not str
+        or pattern.fullmatch(value) is None
+    ):
+        raise EarningsPrivateClosureError("malformed_native_section")
+    try:
+        datetime.strptime(value, "%Y-%m-%d" if date else "%Y-%m-%dT%H:%M:%SZ")
+    except ValueError as exc:
+        raise EarningsPrivateClosureError("malformed_native_section") from exc
+    return value
+
+def _validate_native_selection(value: Any, slug: str) -> dict[str, Any]:
+    if type(value) is not dict or set(value) != {
+        "company_id", "event_id", "profile_version", "fiscal_scope", "chain", "selection", "interpretation_id",
+    }:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    for field in ("company_id", "event_id", "profile_version"):
+        if type(value[field]) is not str:
+            raise EarningsPrivateClosureError("malformed_native_section")
+    scope = value["fiscal_scope"]
+    if type(scope) is not list or len(scope) != 4:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    for item in scope:
+        _canonical_clock(item, date=True)
+    chain = value["chain"]
+    if type(chain) is not list:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    if len(chain) > MAX_NATIVE_CHAIN:
+        raise EarningsPrivateClosureError("over_limit")
+    if not chain:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    for entry in chain:
+        if type(entry) is not dict or set(entry) != {"workspace", "document"}:
+            raise EarningsPrivateClosureError("malformed_native_section")
+        if (
+            type(entry["workspace"]) is not str
+            or not _NATIVE_GENERATION_ID_RE.fullmatch(entry["workspace"])
+            or type(entry["document"]) is not str
+            or not _SHA_RE.fullmatch(entry["document"])
+        ):
+            raise EarningsPrivateClosureError("unsafe_path")
+    selection = value["selection"]
+    if type(selection) is not dict or set(selection) != {"facts", "currentness"}:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    facts = selection["facts"]
+    if facts is not None:
+        if type(facts) is not list:
+            raise EarningsPrivateClosureError("malformed_native_section")
+        if len(facts) > MAX_ECONOMIC_FACTS:
+            raise EarningsPrivateClosureError("over_limit")
+        if not facts:
+            raise EarningsPrivateClosureError("malformed_native_section")
+        for handle in facts:
+            if type(handle) is not dict or set(handle) != {
+                "workspace_generation_id", "event_id", "fact_id",
+            }:
+                raise EarningsPrivateClosureError("malformed_native_section")
+            if any(type(handle[field]) is not str for field in handle):
+                raise EarningsPrivateClosureError("malformed_native_section")
+    currentness = selection["currentness"]
+    if currentness is not None:
+        if type(currentness) is not dict or set(currentness) != {"state", "source_clock"}:
+            raise EarningsPrivateClosureError("malformed_native_section")
+        if type(currentness["state"]) is not str:
+            raise EarningsPrivateClosureError("malformed_native_section")
+        if currentness["source_clock"] is not None:
+            _canonical_clock(currentness["source_clock"])
+    if type(value["interpretation_id"]) is not str or not _INTERPRETATION_ID_RE.fullmatch(value["interpretation_id"]):
+        raise EarningsPrivateClosureError("malformed_native_section")
+    return value
+
+def _validate_native_section(value: Any, *, manifest: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    if type(value) is not dict or set(value) != {
+        "workspaces", "documents", "source_bodies", "selections", "economic_slots",
+    }:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    catalogs: dict[str, dict[str, Any]] = {}
+    for catalog_name in ("workspaces", "documents", "source_bodies"):
+        catalog = value[catalog_name]
+        if type(catalog) is not dict:
+            raise EarningsPrivateClosureError("malformed_native_section")
+        role = _NATIVE_CATALOG_ROLES[catalog_name]
+        for identity, receipt in (
+            catalog.items() if catalog_name != "source_bodies"
+            else [(digest, item["text"]) for digest, item in catalog.items()]
+        ):
+            if type(identity) is not str:
+                raise EarningsPrivateClosureError("unsafe_path")
+            if catalog_name == "workspaces" and not _NATIVE_GENERATION_ID_RE.fullmatch(identity):
+                raise EarningsPrivateClosureError("unsafe_path")
+            if catalog_name != "workspaces" and not _SHA_RE.fullmatch(identity):
+                raise EarningsPrivateClosureError("unsafe_path")
+            _validate_receipt(receipt, name=f"native {catalog_name} receipt", role=role)
+            if catalog_name != "workspaces" and receipt["sha256"] != identity:
+                raise EarningsPrivateClosureError("digest_mismatch")
+            catalogs[catalog_name] = catalog
+    for digest, body in value["source_bodies"].items():
+        if type(body) is not dict or set(body) != {"text", "received"}:
+            raise EarningsPrivateClosureError("malformed_native_section")
+        text = _validate_receipt(body["text"], name="native source body receipt", role="source_body_text")
+        if text["sha256"] != digest:
+            raise EarningsPrivateClosureError("digest_mismatch")
+        received = body["received"]
+        if type(received) is not dict or set(received) != {"sha256", "length", "declared_encoding"}:
+            raise EarningsPrivateClosureError("malformed_native_section")
+        if (
+            type(received["sha256"]) is not str
+            or type(received["length"]) is not int
+            or received["sha256"] != digest
+            or received["length"] != text["bytes"]
+            or received["declared_encoding"] != "utf-8"
+        ):
+            raise EarningsPrivateClosureError("mismatched_source")
+    selections = value["selections"]
+    if type(selections) is not dict:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    for slug, selection in selections.items():
+        validate_slug(slug)
+        value["selections"][slug] = _validate_native_selection(selection, slug)
+    slots = value["economic_slots"]
+    if type(slots) is not dict:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    for company_id, slot in slots.items():
+        if type(company_id) is not str or type(slot) is not dict or set(slot) != {"slug", "event_id"}:
+            raise EarningsPrivateClosureError("malformed_native_section")
+        if type(slot["slug"]) is not str or type(slot["event_id"]) is not str:
+            raise EarningsPrivateClosureError("malformed_native_section")
+    if manifest is None:
+        object_keys = []
+    else:
+        object_keys = [receipt["object_key"] for receipt in manifest["records"].values()]
+        object_keys.append(manifest["context"]["manifest"]["object_key"])
+        object_keys.extend(receipt["object_key"] for receipt in manifest["context"]["objects"].values())
+    for catalog_name in ("workspaces", "documents"):
+        object_keys.extend(receipt["object_key"] for receipt in catalogs[catalog_name].values())
+    object_keys.extend(entry["text"]["object_key"] for entry in value["source_bodies"].values())
+    if len(object_keys) != len(set(object_keys)):
+        raise EarningsPrivateClosureError("wrong_role")
+    return value
+
+def _validate_previous_manifest(value: Any) -> dict[str, Any] | None:
+    if value is None:
+        return None
+    if type(value) is not dict or set(value) != {
+        "generation_id", "manifest_key", "manifest_sha256", "manifest_bytes", "published_at",
+    }:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    validate_private_pointer({"schema": POINTER_SCHEMA, **value})
+    return dict(value)
+
+def _native_json(body: bytes, *, maximum: int, name: str) -> dict[str, Any]:
+    if type(body) is not bytes or not body or len(body) > maximum:
+        raise EarningsPrivateClosureError("over_limit")
+    try:
+        return _json_object(body, maximum=maximum, name=name)
+    except (EarningsPrivatePublicationError, UnicodeDecodeError, json.JSONDecodeError, ValueError, RecursionError) as exc:
+        raise EarningsPrivateClosureError("malformed_native_section") from exc
+
+
+def _verify_body(body: bytes, receipt: Mapping[str, Any], maximum: int) -> None:
+    if body is None:
+        raise EarningsPrivateClosureError("missing_artifact")
+    if len(body) > maximum:
+        raise EarningsPrivateClosureError("over_limit")
+    if len(body) != receipt["bytes"]:
+        raise EarningsPrivateClosureError("size_mismatch")
+    if sha256(body).hexdigest() != receipt["sha256"]:
+        raise EarningsPrivateClosureError("digest_mismatch")
+
+def _seam(call: Any, reason: str) -> Any:
+    try:
+        return call()
+    except EarningsPrivateClosureError:
+        raise
+    except Exception as exc:  # noqa: BLE001 - normalize contract boundary
+        raise EarningsPrivateClosureError(reason) from exc
+def _document_roundtrip(document: Mapping[str, Any]) -> bool:
+    return _seam(
+        lambda: _unsafe_document_roundtrip(document),
+        "malformed_native_section",
+    )
+
+
+def _unsafe_document_roundtrip(document: Mapping[str, Any]) -> bool:
+    if (
+        document.get("schema") != documents.DOCUMENT_SCHEMA
+        or document.get("authority") != documents.AUTHORITY
+    ):
+        return False
+    fields = {key: value for key, value in document.items() if key not in ("schema", "authority", "filing_key")}
+    filing = document.get("filing_key")
+    if type(filing) is not dict:
+        return False
+    rebuilt = documents.SourceDocument(**fields, filing_key=documents.FilingKey(**filing)).to_payload()
+    return rebuilt == document
+
+def _safe_field(mapping: Mapping[str, Any], key: str, default: Any = None) -> Any:
+    try:
+        return mapping[key]
+    except (KeyError, TypeError, ValueError) as exc:
+        raise EarningsPrivateClosureError("malformed_native_section") from exc
+
+def validate_native_closure(
+    manifest: Mapping[str, Any],
+    objects: Mapping[str, bytes],
+    *,
+    slugs: tuple[str, ...] | list[str] | None = None,
+    interpretations: bool = True,
+) -> dict[str, dict[str, Any]]:
+    try:
+        value = validate_private_manifest(manifest)
+        record_slugs = tuple(sorted(value["records"]))
+        selected_slugs = tuple(slugs) if slugs is not None else record_slugs
+        for slug in selected_slugs:
+            validate_slug(slug)
+        if any(slug not in value["records"] for slug in selected_slugs):
+            raise EarningsPrivateClosureError("missing_artifact")
+
+        if slugs is None:
+            expected_keys = {receipt["object_key"] for receipt in value["records"].values()}
+            expected_keys.add(value["context"]["manifest"]["object_key"])
+            expected_keys.update(receipt["object_key"] for receipt in value["context"]["objects"].values())
+            native = value["native"]
+            for catalog in ("workspaces", "documents"):
+                expected_keys.update(receipt["object_key"] for receipt in native[catalog].values())
+            expected_keys.update(entry["text"]["object_key"] for entry in native["source_bodies"].values())
+            if set(objects) != expected_keys:
+                unexpected = set(objects) - expected_keys
+                if unexpected:
+                    raise EarningsPrivateClosureError("unexpected_artifact")
+                raise EarningsPrivateClosureError("missing_artifact")
+        else:
+            native = value["native"]
+
+        records: dict[str, dict[str, Any]] = {}
+        chains: dict[str, list[dict[str, Any]]] = {}
+        for slug in selected_slugs:
+            receipt = value["records"][slug]
+            role = "record"
+            body = objects.get(receipt["object_key"])
+            if body is None:
+                raise EarningsPrivateClosureError("missing_artifact")
+            _verify_body(body, receipt, _ARTIFACT_ROLES[role][2])
+            record = validate_private_record(
+                _native_json(body, maximum=_ARTIFACT_ROLES[role][2], name=f"record {slug}"),
+                expected_slug=slug,
+            )
+            records[slug] = record
+            chains[slug] = []
+            if slug not in native["selections"]:
+                continue
+            selection = native["selections"][slug]
+            for index, entry in enumerate(selection["chain"], start=1):
+                if entry["workspace"] not in native["workspaces"] or entry["document"] not in native["documents"]:
+                    raise EarningsPrivateClosureError("missing_artifact")
+                workspace_receipt = native["workspaces"][entry["workspace"]]
+                workspace_body = objects.get(workspace_receipt["object_key"])
+                if workspace_body is None:
+                    raise EarningsPrivateClosureError("missing_artifact")
+                _verify_body(workspace_body, workspace_receipt, MAX_NATIVE_WORKSPACE_BYTES)
+                workspace = _native_json(workspace_body, maximum=MAX_NATIVE_WORKSPACE_BYTES, name="native workspace")
+                _seam(lambda: event_workspace.validate_event_workspace(workspace), "malformed_native_section")
+                computed = _seam(
+                    lambda: event_workspace.preview_generation_identity(
+                        {workspace["event_id"]: workspace},
+                        workspace["generated_at"],
+                        previous_generation_id=None,
+                    ),
+                    "malformed_native_section",
+                )
+                if (
+                    computed != workspace.get("generation_id")
+                    or workspace.get("generation_id") != entry["workspace"]
+                ):
+                    raise EarningsPrivateClosureError("digest_mismatch")
+                document_receipt = native["documents"][entry["document"]]
+                document_body = objects.get(document_receipt["object_key"])
+                if document_body is None:
+                    raise EarningsPrivateClosureError("missing_artifact")
+                _verify_body(document_body, document_receipt, MAX_NATIVE_DOCUMENT_BYTES)
+                document = _native_json(document_body, maximum=MAX_NATIVE_DOCUMENT_BYTES, name="native document")
+                if not _document_roundtrip(document):
+                    raise EarningsPrivateClosureError("malformed_native_section")
+                if (
+                    document.get("rights_profile") != pg_profile.PG_PRIVATE_RIGHTS_PROFILE
+                    or document.get("rights_state") != "internal_only"
+                    or document.get("holds_bytes") is not False
+                ):
+                    raise EarningsPrivateClosureError("malformed_native_section")
+                if document.get("revision") != index:
+                    raise EarningsPrivateClosureError("broken_chain")
+                predecessor = document.get("supersedes_document_id")
+                if index == 1:
+                    if predecessor == document.get("document_id"):
+                        raise EarningsPrivateClosureError("predecessor_cycle")
+                    if predecessor is not None:
+                        raise EarningsPrivateClosureError("broken_chain")
+                else:
+                    prior = chains[slug][-1]["document"]
+                    if predecessor == document.get("document_id"):
+                        raise EarningsPrivateClosureError("predecessor_cycle")
+                    if predecessor != prior.get("document_id"):
+                        raise EarningsPrivateClosureError("broken_chain")
+                digest = document.get("content_sha256")
+                if type(digest) is not str or digest not in native["source_bodies"]:
+                    raise EarningsPrivateClosureError("missing_artifact")
+                source = native["source_bodies"][digest]
+                text_receipt = source["text"]
+                text_body = objects.get(text_receipt["object_key"])
+                if text_body is None:
+                    raise EarningsPrivateClosureError("missing_artifact")
+                _verify_body(text_body, text_receipt, MAX_SOURCE_BODY_BYTES)
+                try:
+                    text = text_body.decode("utf-8")
+                except UnicodeDecodeError as exc:
+                    raise EarningsPrivateClosureError("mismatched_source") from exc
+                lifecycle = _safe_field(workspace, "lifecycle", {})
+                release_rows = [row for row in _safe_field(workspace, "sources", []) if type(row) is dict and row.get("kind") == "issuer_release"]
+                if len(release_rows) != 1:
+                    raise EarningsPrivateClosureError("mismatched_source")
+                release = release_rows[0]
+                if (
+                    document.get("content_bytes") != len(text_body)
+                    or release.get("source_sha256") != sha256(text_body).hexdigest()
+                    or release.get("document_id") != document.get("document_id")
+                    or release.get("filing_key") != document.get("filing_key")
+                    or document.get("event_id") != workspace.get("event_id")
+                    or workspace.get("event_id") != selection.get("event_id")
+                    or document.get("available_at") != _safe_field(lifecycle, "source_available_at")
+                ):
+                    raise EarningsPrivateClosureError("mismatched_source")
+                if _safe_field(_safe_field(workspace, "issuer", {}), "company_id") != selection.get("company_id"):
+                    raise EarningsPrivateClosureError("cross_issuer")
+                clocks = (
+                    _safe_field(lifecycle, "source_available_at"),
+                    _safe_field(lifecycle, "observed_at"),
+                    _safe_field(workspace, "generated_at"),
+                    document.get("available_at"),
+                    document.get("fetched_at"),
+                )
+                canonical_clocks = tuple(_canonical_clock(clock) for clock in clocks)
+                cutoff = value["native_source_cutoff"]
+                if canonical_clocks[0] > canonical_clocks[1] or any(clock > cutoff for clock in canonical_clocks):
+                    raise EarningsPrivateClosureError("future_source_clock")
+                currentness = selection["selection"]["currentness"]
+                if currentness is not None and currentness["source_clock"] > cutoff:
+                    raise EarningsPrivateClosureError("future_source_clock")
+                if chains[slug] and canonical_clocks[0] < chains[slug][-1]["source_available_at"]:
+                    raise EarningsPrivateClosureError("broken_chain")
+                chains[slug].append({
+                    "workspace": workspace,
+                    "document": document,
+                    "text": text,
+                    "source_available_at": canonical_clocks[0],
+                })
+
+        registry = _seam(pg_profile.pg_private_registry, "cross_issuer")
+        for company_id in native["economic_slots"]:
+            if _seam(lambda: registry.get(company_id), "cross_issuer") is None:
+                raise EarningsPrivateClosureError("cross_issuer")
+        for slug, selection in native["selections"].items():
+            if slug not in records:
+                continue
+            if _seam(lambda: registry.get(selection["company_id"]), "cross_issuer") is None:
+                raise EarningsPrivateClosureError("cross_issuer")
+
+        pairings: dict[str, dict[str, Any]] = {}
+        events: dict[tuple[str, str], str] = {}
+        for selection_slug in native["selections"]:
+            if selection_slug not in records:
+                raise EarningsPrivateClosureError("malformed_native_section")
+        for slug, record in records.items():
+            interpretation = record.get("economic_interpretation")
+            has_native = type(interpretation) is dict and "interpretation_id" in interpretation
+            has_selection = slug in native["selections"]
+            if (record["schema"] == RECORD_SCHEMA_V2 and has_native) != has_selection:
+                raise EarningsPrivateClosureError("malformed_native_section")
+            if record["schema"] == RECORD_SCHEMA and has_selection:
+                raise EarningsPrivateClosureError("malformed_native_section")
+            if has_selection:
+                selection = native["selections"][slug]
+                identity = (selection["company_id"], selection["event_id"])
+                if identity in events:
+                    raise EarningsPrivateClosureError("malformed_native_section")
+                events[identity] = slug
+                pairings[slug] = {
+                    key: interpretation[key] for key in economic_interpretation.TOP_LEVEL_KEYS
+                }
+        for company_id, slot in native["economic_slots"].items():
+            slug = slot["slug"]
+            if slug not in native["selections"]:
+                raise EarningsPrivateClosureError("malformed_native_section")
+            selection = native["selections"][slug]
+            if (
+                selection["company_id"] != company_id
+                or selection["event_id"] != slot["event_id"]
+            ):
+                raise EarningsPrivateClosureError("malformed_native_section")
+
+        if slugs is None:
+            named_native = set(native["workspaces"]) | set(native["documents"])
+            for selection in native["selections"].values():
+                for entry in selection["chain"]:
+                    named_native.discard(entry["workspace"])
+                    named_native.discard(entry["document"])
+            if named_native:
+                raise EarningsPrivateClosureError("unexpected_artifact")
+
+        if not interpretations:
+            return {
+                slug: {
+                    "record": records[slug],
+                    "selection": native["selections"].get(slug),
+                    "interpretation": pairings.get(slug),
+                    "chain": chains[slug],
+                }
+                for slug in selected_slugs
+            }
+
+        for slug in selected_slugs:
+            if slug not in pairings:
+                continue
+            selection = native["selections"][slug]
+            stored = pairings[slug]
+            newest = chains[slug][-1]
+            if selection["profile_version"] != pg_profile.PG_PROFILE_VERSION:
+                raise EarningsPrivateClosureError("interpretation_unsupported")
+            if (
+                stored["interpretation_id"] != selection["interpretation_id"]
+                or stored["event_id"] != selection["event_id"]
+            ):
+                raise EarningsPrivateClosureError("interpretation_mismatch")
+            if stored["issuer"]["company_id"] != selection["company_id"]:
+                raise EarningsPrivateClosureError("cross_issuer")
+            ordered = {key: stored[key] for key in economic_interpretation.TOP_LEVEL_KEYS}
+            texts = {newest["document"]["document_id"]: newest["text"]}
+            scope = tuple(selection["fiscal_scope"])
+            try:
+                economic_interpretation.validate_economic_interpretation(
+                    ordered,
+                    workspaces=newest["workspace"],
+                    source_texts=texts,
+                    fiscal_scope=scope,
+                )
+            except economic_interpretation.UnsupportedInterpretationVersion as exc:
+                raise EarningsPrivateClosureError("interpretation_unsupported") from exc
+            except Exception as exc:  # noqa: BLE001 - normalize contract boundary
+                raise EarningsPrivateClosureError("interpretation_mismatch") from exc
+            try:
+                rebuilt = economic_interpretation.build_economic_interpretation(
+                    newest["workspace"],
+                    source_texts=texts,
+                    fiscal_scope=scope,
+                    selection=selection["selection"],
+                    semantic_revision=economic_interpretation.SEMANTIC_REVISION,
+                    code_revision=economic_interpretation.CODE_REVISION,
+                )
+            except economic_interpretation.UnsupportedInterpretationVersion as exc:
+                raise EarningsPrivateClosureError("interpretation_unsupported") from exc
+            except Exception as exc:  # noqa: BLE001 - normalize contract boundary
+                raise EarningsPrivateClosureError("interpretation_mismatch") from exc
+            if canonical_json_bytes(rebuilt) != canonical_json_bytes(stored):
+                raise EarningsPrivateClosureError("interpretation_mismatch")
+        return {
+            slug: {
+                "record": records[slug],
+                "selection": native["selections"].get(slug),
+                "interpretation": pairings.get(slug),
+                "chain": chains[slug],
+            }
+            for slug in selected_slugs
+        }
+    except EarningsPrivateClosureError:
+        raise
+    except (KeyError, TypeError, ValueError) as exc:
+        raise EarningsPrivateClosureError("malformed_native_section") from exc
+
+def validate_v2_manifest(value: object) -> dict[str, Any]:
+    if not isinstance(value, Mapping) or set(value) != {
+        "schema", "generation_id", "published_at", "source", "record_count", "ticker_count",
+        "records", "context", "native", "native_source_cutoff", "previous_manifest",
+    }:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    shared = dict(value)
+    shared["schema"] = MANIFEST_SCHEMA
+    del shared["native"], shared["native_source_cutoff"], shared["previous_manifest"]
+    base = _validate_v1_manifest(shared, check_generation=False)
+    base["schema"] = MANIFEST_SCHEMA_V2
+    _canonical_clock(value["native_source_cutoff"])
+    _validate_previous_manifest(value["previous_manifest"])
+    native = _validate_native_section(value["native"], manifest=value)
+    generation_id = value.get("generation_id")
+    if (
+        type(generation_id) is not str
+        or not _GENERATION_RE.fullmatch(generation_id)
+        or generation_id != _generation_id(value)
+    ):
+        raise EarningsPrivateClosureError("digest_mismatch", "private earnings generation identity is invalid")
+    return {**base, "native": native, "native_source_cutoff": value["native_source_cutoff"], "previous_manifest": value["previous_manifest"]}
+
+def validate_private_manifest(value: object) -> dict[str, Any]:
+    if not isinstance(value, Mapping):
+        return validate_v1_manifest(value)
+    schema = value.get("schema")
+    if schema == MANIFEST_SCHEMA:
+        return validate_v1_manifest(value)
+    if schema == MANIFEST_SCHEMA_V2:
+        return validate_v2_manifest(value)
+    raise EarningsPrivateClosureError("unsupported_schema", "unsupported private manifest schema")
+
+def _native_stage_manifest(value: Any) -> dict[str, Any]:
+    if type(value) is not dict or set(value) != {
+        "schema", "native_source_cutoff", "previous_manifest", "selections", "economic_slots", "received",
+    }:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    if value["schema"] != NATIVE_STAGE_SCHEMA:
+        raise EarningsPrivateClosureError("unsupported_schema")
+    _canonical_clock(value["native_source_cutoff"])
+    _validate_previous_manifest(value["previous_manifest"])
+    selections = value["selections"]
+    if type(selections) is not dict:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    for slug, selection in selections.items():
+        validate_slug(slug)
+        _validate_native_selection(selection, slug)
+    slots = value["economic_slots"]
+    if type(slots) is not dict:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    for company_id, slot in slots.items():
+        if type(company_id) is not str or type(slot) is not dict or set(slot) != {"slug", "event_id"}:
+            raise EarningsPrivateClosureError("malformed_native_section")
+        if type(slot["slug"]) is not str or type(slot["event_id"]) is not str:
+            raise EarningsPrivateClosureError("malformed_native_section")
+    received = value["received"]
+    if type(received) is not dict:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    for digest, receipt in received.items():
+        if type(digest) is not str or not _SHA_RE.fullmatch(digest):
+            raise EarningsPrivateClosureError("unsafe_path")
+        if (
+            type(receipt) is not dict
+            or set(receipt) != {"sha256", "length", "declared_encoding"}
+            or receipt.get("sha256") != digest
+            or type(receipt.get("length")) is not int
+            or receipt.get("declared_encoding") != "utf-8"
+        ):
+            raise EarningsPrivateClosureError("malformed_native_section")
+    return value
+
+def _native_stage_file(root: Path, relative: str, maximum: int) -> bytes:
+    if not _NATIVE_PATH_RE.fullmatch(relative):
+        raise EarningsPrivateClosureError("unsafe_path")
+    path = root / Path(relative)
+    try:
+        size = path.stat().st_size
+    except OSError as exc:
+        raise EarningsPrivateClosureError("missing_artifact") from exc
+    if size == 0:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    if size > maximum:
+        raise EarningsPrivateClosureError("over_limit")
+    try:
+        return _stage_file(root, Path(relative), maximum=maximum, name="native stage file")
+    except EarningsPrivatePublicationError as exc:
+        if "cannot traverse a symlink" in str(exc):
+            raise EarningsPrivateClosureError("unsafe_path") from exc
+        if "exceeds its safe size bound" in str(exc):
+            raise EarningsPrivateClosureError("over_limit") from exc
+        if "is unavailable" in str(exc):
+            raise EarningsPrivateClosureError("missing_artifact") from exc
+        raise EarningsPrivateClosureError("malformed_native_section") from exc
+
+def _write_stage_file(path: Path, body: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(body)
+
+def assert_native_rights() -> None:
+    try:
+        family = pg_profile.source_family_for_profile(pg_profile.RIGHTS_PROFILE)
+        rights.assert_public_emission_allowed(family, path=NATIVE_RIGHTS_REGISTRY_PATH)
+    except EarningsPrivateClosureError:
+        raise
+    except Exception as exc:  # noqa: BLE001 - normalize contract boundary
+        raise EarningsPrivateClosureError("rights_refused") from exc
+
+def _prepare_v2_private_publication(
+    root: Path,
+    records: tuple[tuple[str, bytes], ...],
+    context_manifest_body: bytes,
+    context_packets: tuple[tuple[str, bytes], ...],
+    retired_slots: tuple[str, ...],
+) -> PreparedPrivatePublication:
+    native_root = root / NATIVE_STAGE_DIR
+    if native_root.is_symlink() or not native_root.is_dir():
+        raise EarningsPrivateClosureError("unsafe_path")
+    artifacts: list[PrivateArtifact] = []
+    payloads: dict[str, bytes] = {}
+    record_receipts: dict[str, dict[str, Any]] = {}
+    expected_paths: set[Path] = set()
+    for slug, body in records:
+        validate_private_record(_native_json(body, maximum=MAX_RECORD_BYTES, name=f"record {slug}"), expected_slug=slug)
+        artifact = _artifact("record", slug, body, maximum=MAX_RECORD_BYTES)
+        artifacts.append(artifact)
+        payloads[artifact.object_key] = body
+        record_receipts[slug] = artifact.receipt()
+        expected_paths.add((root / RECORD_STAGE_DIR / f"{slug}.json").resolve())
+
+    context_manifest = _native_json(context_manifest_body, maximum=MAX_CONTEXT_MANIFEST_BYTES, name="context manifest")
+    try:
+        validate_context_manifest(context_manifest)
+    except Exception as exc:  # noqa: BLE001 - normalize contract boundary
+        raise EarningsPrivateClosureError("malformed_native_section") from exc
+    context_manifest_artifact = _artifact(
+        "context_manifest",
+        "latest",
+        context_manifest_body,
+        maximum=MAX_CONTEXT_MANIFEST_BYTES,
+    )
+    artifacts.append(context_manifest_artifact)
+    payloads[context_manifest_artifact.object_key] = context_manifest_body
+    expected_paths.add((root / CONTEXT_STAGE_DIR / CONTEXT_MANIFEST_NAME).resolve())
+
+    context_receipts: dict[str, dict[str, Any]] = {}
+    for ticker, body in context_packets:
+        artifact = _artifact(
+            "context_packet",
+            ticker,
+            body,
+            maximum=MAX_CONTEXT_PACKET_BYTES,
+        )
+        artifacts.append(artifact)
+        payloads[artifact.object_key] = body
+        context_receipts[ticker] = artifact.receipt()
+        expected_paths.add((root / CONTEXT_STAGE_DIR / f"{ticker.lower()}.json").resolve())
+
+    native_root = root / NATIVE_STAGE_DIR
+    stage_manifest_body = _native_stage_file(
+        root, f"{NATIVE_STAGE_DIR}/{NATIVE_STAGE_MANIFEST_NAME}", MAX_NATIVE_STAGE_MANIFEST_BYTES
+    )
+    stage_manifest = _native_stage_manifest(
+        _native_json(stage_manifest_body, maximum=MAX_NATIVE_STAGE_MANIFEST_BYTES, name="native stage manifest")
+    )
+    expected_paths.add((native_root / NATIVE_STAGE_MANIFEST_NAME).resolve())
+
+    workspace_catalog: dict[str, dict[str, Any]] = {}
+    document_catalog: dict[str, dict[str, Any]] = {}
+    source_catalog: dict[str, dict[str, Any]] = {}
+    native_documents_by_key: dict[str, dict[str, Any]] = {}
+    for selection in stage_manifest["selections"].values():
+        for entry in selection["chain"]:
+            workspace_name = entry["workspace"]
+            workspace_body = _native_stage_file(
+                root, f"{NATIVE_STAGE_DIR}/workspaces/{workspace_name}.json", MAX_NATIVE_WORKSPACE_BYTES
+            )
+            workspace_artifact = _artifact("native_workspace", workspace_name, workspace_body)
+            artifacts.append(workspace_artifact)
+            payloads[workspace_artifact.object_key] = workspace_body
+            workspace_catalog[workspace_name] = workspace_artifact.receipt()
+            expected_paths.add((native_root / "workspaces" / f"{workspace_name}.json").resolve())
+            document_name = entry["document"]
+            document_body = _native_stage_file(
+                root, f"{NATIVE_STAGE_DIR}/documents/{document_name}.json", MAX_NATIVE_DOCUMENT_BYTES
+            )
+            document = _native_json(document_body, maximum=MAX_NATIVE_DOCUMENT_BYTES, name="native document")
+            content_digest = _safe_field(document, "content_sha256")
+            if type(content_digest) is not str or content_digest not in stage_manifest["received"]:
+                raise EarningsPrivateClosureError("malformed_native_section")
+            if content_digest not in source_catalog:
+                body_digest = sha256(document_body).hexdigest()
+                if document_name != body_digest:
+                    raise EarningsPrivateClosureError("digest_mismatch")
+                text_body = _native_stage_file(
+                    root, f"{NATIVE_STAGE_DIR}/source_bodies/{content_digest}.txt", MAX_SOURCE_BODY_BYTES
+                )
+                received = stage_manifest["received"][content_digest]
+                if (
+                    sha256(text_body).hexdigest() != content_digest
+                    or len(text_body) != received["length"]
+                ):
+                    raise EarningsPrivateClosureError("digest_mismatch")
+                text_artifact = _artifact("source_body_text", content_digest, text_body)
+                artifacts.append(text_artifact)
+                payloads[text_artifact.object_key] = text_body
+                source_catalog[content_digest] = {
+                    "text": text_artifact.receipt(),
+                    "received": {
+                        "sha256": received["sha256"],
+                        "length": received["length"],
+                        "declared_encoding": received["declared_encoding"],
+                    },
+                }
+                expected_paths.add((native_root / "source_bodies" / f"{content_digest}.txt").resolve())
+            document_artifact = _artifact("native_document", document_name, document_body)
+            if document_artifact.sha256 != document_name:
+                raise EarningsPrivateClosureError("digest_mismatch")
+            if document_name not in native_documents_by_key:
+                native_documents_by_key[document_name] = document
+            artifacts.append(document_artifact)
+            payloads[document_artifact.object_key] = document_body
+            document_catalog[document_name] = document_artifact.receipt()
+            expected_paths.add((native_root / "documents" / f"{document_name}.json").resolve())
+
+    named_digests = set(stage_manifest["received"])
+    for selection in stage_manifest["selections"].values():
+        for entry in selection["chain"]:
+            named_digests.discard(_safe_field(native_documents_by_key[entry["document"]], "content_sha256"))
+    if named_digests:
+        raise EarningsPrivateClosureError("unexpected_artifact")
+
+    expected_native_directories = {
+        (native_root / name).resolve() for name in ("workspaces", "documents", "source_bodies")
+    }
+    expected_native_paths = {
+        path for path in expected_paths
+        if path.is_relative_to(native_root.resolve())
+    } | expected_native_directories
+    actual_native_paths = {path.resolve() for path in native_root.rglob("*")}
+    if actual_native_paths != expected_native_paths:
+        raise EarningsPrivateClosureError("unexpected_artifact")
+    actual_paths = {path.resolve() for path in root.rglob("*") if path.is_file()}
+    if actual_paths != expected_paths:
+        raise EarningsPrivateClosureError("unexpected_artifact")
+
+    manifest: dict[str, Any] = {
+        "schema": MANIFEST_SCHEMA_V2,
+        "generation_id": "earnpriv_" + ("0" * 32),
+        "published_at": str(context_manifest["knowledge_cutoff"]),
+        "source": {
+            "wire_manifest_id": str(context_manifest["source"]["wire_manifest_id"]),
+            "source_generation_id": str(context_manifest["source"]["generation_id"]),
+            "source_manifest_sha256": str(context_manifest["source"]["manifest_sha256"]),
+        },
+        "record_count": len(record_receipts),
+        "ticker_count": len(context_receipts),
+        "records": dict(sorted(record_receipts.items())),
+        "context": {
+            "manifest": context_manifest_artifact.receipt(),
+            "objects": dict(sorted(context_receipts.items())),
+        },
+        "native": {
+            "workspaces": dict(sorted(workspace_catalog.items())),
+            "documents": dict(sorted(document_catalog.items())),
+            "source_bodies": dict(sorted(source_catalog.items())),
+            "selections": stage_manifest["selections"],
+            "economic_slots": stage_manifest["economic_slots"],
+        },
+        "native_source_cutoff": stage_manifest["native_source_cutoff"],
+        "previous_manifest": stage_manifest["previous_manifest"],
+    }
+    manifest["generation_id"] = _generation_id(manifest)
+    validate_native_closure(manifest, payloads)
+    manifest_bytes = canonical_json_bytes(manifest)
+    if len(manifest_bytes) > MAX_MANIFEST_BYTES:
+        raise EarningsPrivateClosureError("over_limit")
+    manifest_key = f"{PRIVATE_PREFIX}/manifests/{manifest['generation_id']}.json"
+    return PreparedPrivatePublication(
+        generation_id=str(manifest["generation_id"]),
+        manifest_key=manifest_key,
+        manifest=MappingProxyType(manifest),
+        manifest_bytes=manifest_bytes,
+        artifacts=tuple(artifacts),
+        payloads=MappingProxyType(payloads),
+        retired_slots=retired_slots,
+    )
+
+def prepare_private_publication(
+    stage_dir: str | Path,
+    *,
+    retire_slots: tuple[str, ...] | list[str] = (),
+) -> PreparedPrivatePublication:
     """Validate a complete off-repo staging tree and freeze one generation."""
+    if type(retire_slots) is not tuple and type(retire_slots) is not list:
+        raise EarningsPrivateClosureError("malformed_native_section")
+    if any(type(slot) is not str for slot in retire_slots):
+        raise EarningsPrivateClosureError("malformed_native_section")
+    retired = tuple(sorted(set(retire_slots)))
     root = Path(stage_dir).resolve()
     records_dir = root / RECORD_STAGE_DIR
     context_dir = root / CONTEXT_STAGE_DIR
@@ -330,12 +1293,20 @@ def prepare_private_publication(stage_dir: str | Path) -> PreparedPrivatePublica
     payloads: dict[str, bytes] = {}
     record_receipts: dict[str, dict[str, Any]] = {}
     expected_paths: set[Path] = set()
+    native_root = root / NATIVE_STAGE_DIR
+    if native_root.is_symlink():
+        raise EarningsPrivateClosureError("unsafe_path")
+    native = native_root.is_dir()
+    native_records: list[tuple[str, bytes]] = []
     for path in record_paths:
         slug = validate_slug(path.stem)
         relative = Path(RECORD_STAGE_DIR) / path.name
         body = _stage_file(root, relative, maximum=MAX_RECORD_BYTES, name=f"record {slug}")
         record = _json_object(body, maximum=MAX_RECORD_BYTES, name=f"record {slug}")
+        if not native and record.get("schema") == RECORD_SCHEMA_V2:
+            raise EarningsPrivateClosureError("malformed_native_section")
         validate_private_record(record, expected_slug=slug)
+        native_records.append((slug, body))
         artifact = _artifact("record", slug, body, maximum=MAX_RECORD_BYTES)
         artifacts.append(artifact)
         payloads[artifact.object_key] = body
@@ -409,11 +1380,26 @@ def prepare_private_publication(stage_dir: str | Path) -> PreparedPrivatePublica
             or packet["event"].get("ticker") != ticker
         ):
             raise EarningsPrivatePublicationError(f"context packet {ticker} identity mismatch")
-        artifact = _artifact("context_packet", ticker, body, maximum=MAX_CONTEXT_PACKET_BYTES)
+        artifact = _artifact(
+            "context_packet",
+            ticker,
+            body,
+            maximum=MAX_CONTEXT_PACKET_BYTES,
+        )
         artifacts.append(artifact)
         payloads[artifact.object_key] = body
         context_receipts[ticker] = artifact.receipt()
         expected_paths.add((root / relative).resolve())
+
+
+    if native:
+        return _prepare_v2_private_publication(
+            root,
+            tuple(native_records),
+            context_manifest_body,
+            tuple((ticker, _stage_file(root, Path(CONTEXT_STAGE_DIR) / f"{ticker.lower()}.json", maximum=MAX_CONTEXT_PACKET_BYTES, name=f"context packet {ticker}")) for ticker in context_receipts),
+            retired,
+        )
 
     actual_paths = {path.resolve() for path in root.rglob("*") if path.is_file()}
     if actual_paths != expected_paths:
@@ -449,8 +1435,8 @@ def prepare_private_publication(stage_dir: str | Path) -> PreparedPrivatePublica
         manifest_bytes=manifest_bytes,
         artifacts=tuple(artifacts),
         payloads=MappingProxyType(payloads),
+        retired_slots=retired,
     )
-
 
 def _bounded_read(store: Store, key: str, *, maximum: int) -> bytes | None:
     if not isinstance(store, StrictBoundedReadStore):
@@ -463,14 +1449,13 @@ def _bounded_read(store: Store, key: str, *, maximum: int) -> bytes | None:
         raise EarningsPrivatePublicationError("private earnings store returned non-bytes")
     return body
 
-
-def _put_verified(store: Store, *, key: str, body: bytes, maximum: int) -> None:
+def _put_verified(store: Store, *, key: str, body: bytes, maximum: int, content_type: str = "application/json") -> None:
     existing = _bounded_read(store, key, maximum=maximum)
     if existing is not None and existing != body:
         raise EarningsPrivatePublicationError("immutable private earnings object collision")
     if existing is None:
         try:
-            written = store.put_bytes(key, body, content_type="application/json")
+            written = store.put_bytes(key, body, content_type=content_type)
         except Exception as exc:  # noqa: BLE001
             raise EarningsPrivatePublicationError("private earnings object write failed") from exc
         if written is not True:
@@ -478,7 +1463,6 @@ def _put_verified(store: Store, *, key: str, body: bytes, maximum: int) -> None:
     echoed = _bounded_read(store, key, maximum=maximum)
     if echoed != body or sha256(echoed or b"").hexdigest() != sha256(body).hexdigest():
         raise EarningsPrivatePublicationError("private earnings object read-back mismatch")
-
 
 def _pointer_for(prepared: PreparedPrivatePublication) -> dict[str, Any]:
     return {
@@ -489,7 +1473,6 @@ def _pointer_for(prepared: PreparedPrivatePublication) -> dict[str, Any]:
         "manifest_bytes": len(prepared.manifest_bytes),
         "published_at": str(prepared.manifest["published_at"]),
     }
-
 
 def validate_private_pointer(value: object) -> dict[str, Any]:
     pointer = _strict_object(
@@ -523,7 +1506,6 @@ def validate_private_pointer(value: object) -> dict[str, Any]:
         raise EarningsPrivatePublicationError("private earnings pointer is invalid")
     return dict(pointer)
 
-
 def _validated_prepared_payloads(
     prepared: PreparedPrivatePublication,
 ) -> tuple[tuple[PrivateArtifact, bytes], ...]:
@@ -545,11 +1527,9 @@ def _validated_prepared_payloads(
         verified.append((artifact, body))
     return tuple(verified)
 
-
 def _bounded_artifact_read(store: Store, artifact: PrivateArtifact) -> bytes | None:
     """One immutable-object replay read, kept separate for ordered executor.map."""
     return _bounded_read(store, artifact.object_key, maximum=artifact.maximum_bytes)
-
 
 def _unique_verified_payloads(
     verified_payloads: tuple[tuple[PrivateArtifact, bytes], ...],
@@ -578,7 +1558,6 @@ def _unique_verified_payloads(
         unique.append((artifact, body))
     return tuple(unique)
 
-
 def _put_verified_artifact(
     store: Store,
     payload: tuple[PrivateArtifact, bytes],
@@ -590,8 +1569,8 @@ def _put_verified_artifact(
         key=artifact.object_key,
         body=body,
         maximum=artifact.maximum_bytes,
+        content_type=artifact.content_type,
     )
-
 
 def _existing_exact_publication(
     store: Store,
@@ -668,7 +1647,6 @@ def _existing_exact_publication(
         raise EarningsPrivatePublicationError("private pointer changed during idempotent replay")
     return expected_pointer
 
-
 def publish_private_publication(
     store: Store,
     prepared: PreparedPrivatePublication,
@@ -678,6 +1656,8 @@ def publish_private_publication(
         raise TypeError("prepared must be PreparedPrivatePublication")
     if not isinstance(store, Store) or not isinstance(store, StrictBoundedReadStore):
         raise EarningsPrivatePublicationError("private earnings publication requires a strict store")
+    if prepared.manifest.get("schema") != MANIFEST_SCHEMA:
+        raise EarningsPrivatePublicationError("v2 private publication is not enabled")
     with _PUBLISH_LOCK:
         verified_payloads = _validated_prepared_payloads(prepared)
         # Validate every caller-provided bound before either the idempotent
@@ -744,7 +1724,6 @@ def publish_private_publication(
             raise EarningsPrivatePublicationError("private earnings publication replay mismatch")
         return pointer
 
-
 def load_private_manifest(store: Store) -> dict[str, Any]:
     """Load the current private manifest through its pointer and exact receipt."""
     pointer_body = _bounded_read(store, POINTER_KEY, maximum=MAX_POINTER_BYTES)
@@ -771,7 +1750,6 @@ def load_private_manifest(store: Store) -> dict[str, Any]:
         raise EarningsPrivatePublicationError("private pointer does not bind its manifest")
     return manifest
 
-
 def _load_receipted_object(
     store: Store,
     receipt: Mapping[str, Any],
@@ -788,7 +1766,6 @@ def _load_receipted_object(
     if len(body) != normalized["bytes"] or sha256(body).hexdigest() != normalized["sha256"]:
         raise EarningsPrivatePublicationError(f"{name} receipt mismatch")
     return body
-
 
 def load_private_record(
     store: Store,
@@ -812,7 +1789,6 @@ def load_private_record(
         _json_object(body, maximum=MAX_RECORD_BYTES, name="private earnings record"),
         expected_slug=slug,
     )
-
 
 def load_private_context_packet(
     store: Store,
@@ -887,26 +1863,48 @@ def load_private_context_packet(
         raise EarningsPrivatePublicationError("private context packet identity mismatch")
     return packet, catalog, receipt
 
-
 __all__ = [
+    "CLOSURE_REASONS",
     "CONTEXT_STAGE_DIR",
+    "DOSSIER_PAGE",
+    "EarningsPrivateClosureError",
     "EarningsPrivatePublicationError",
     "EarningsPrivateRecordNotFound",
     "MANIFEST_SCHEMA",
+    "MANIFEST_SCHEMA_V2",
+    "MAX_ECONOMIC_COMPARISONS",
+    "MAX_ECONOMIC_FACTS",
+    "MAX_NATIVE_CHAIN",
+    "MAX_NATIVE_DOCUMENT_BYTES",
+    "MAX_NATIVE_STAGE_MANIFEST_BYTES",
+    "MAX_NATIVE_WORKSPACE_BYTES",
+    "MAX_SOURCE_BODY_BYTES",
+    "NATIVE_RIGHTS_REGISTRY_PATH",
+    "NATIVE_STAGE_DIR",
+    "NATIVE_STAGE_MANIFEST_NAME",
+    "NATIVE_STAGE_SCHEMA",
     "POINTER_KEY",
     "POINTER_SCHEMA",
     "PUBLISH_WORKERS",
     "PreparedPrivatePublication",
     "RECORD_SCHEMA",
+    "RECORD_SCHEMA_V2",
     "RECORD_STAGE_DIR",
+    "RECORD_UNAVAILABLE_REASONS",
+    "assert_native_rights",
     "load_private_context_packet",
     "load_private_manifest",
     "load_private_record",
     "prepare_private_publication",
     "publish_private_publication",
+    "validate_native_closure",
     "validate_private_manifest",
     "validate_private_pointer",
     "validate_private_record",
+    "validate_v1_manifest",
+    "validate_v1_record",
+    "validate_v2_manifest",
+    "validate_v2_record",
     "validate_slug",
     "validate_ticker",
 ]
