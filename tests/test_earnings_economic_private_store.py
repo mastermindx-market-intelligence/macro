@@ -513,22 +513,13 @@ def test_v2_publish_validates_prepared_closure_before_store_access(tmp_path):
     source_digest = next(iter(manifest["native"]["source_bodies"]))
     source_key = manifest["native"]["source_bodies"][source_digest]["text"]["object_key"]
     altered = prepared.payloads[source_key] + b" "
-    manifest["native"]["source_bodies"][source_digest]["text"]["sha256"] = sha256(altered).hexdigest()
-    manifest = reseal_manifest(manifest, pp)
-    artifacts = tuple(
-        artifact if artifact.object_key != source_key else pp.PrivateArtifact(
-            role=artifact.role,
-            identity=artifact.identity,
-            object_key=artifact.object_key,
-            sha256=sha256(altered).hexdigest(),
-            byte_length=len(altered),
-            maximum_bytes=artifact.maximum_bytes,
-            content_type=artifact.content_type,
-        )
-        for artifact in prepared.artifacts
-    )
     altered_digest = sha256(altered).hexdigest()
     altered_key = f"{pp.PRIVATE_PREFIX}/objects/sha256/{altered_digest[:2]}/{altered_digest}.txt"
+    manifest["native"]["source_bodies"][source_digest]["text"].update({
+        "sha256": altered_digest,
+        "object_key": altered_key,
+    })
+    manifest = reseal_manifest(manifest, pp)
     manifest["native"]["source_bodies"][source_digest]["text"]["object_key"] = altered_key
     manifest = reseal_manifest(manifest, pp)
     artifacts = tuple(
