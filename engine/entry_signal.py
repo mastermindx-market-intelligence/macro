@@ -260,13 +260,17 @@ def assess(close: pd.Series, high: pd.Series | None, rec: dict, *,
     # a confluence-gated name is "forming, don't act yet" — never the act-now ring, regardless
     # of the (still-fresh) daily-cycle urgency that drove it.
     act = 1 if confluence_gated else _ACT_LEVEL.get(urg, 1)
+    # The waiting verdict must also own the instruction, not the ungated ladder.
+    action = ("Wait for confirmation — no new entry yet."
+              if confluence_gated else entry.get("text"))
+    action_zh = "等待确认 — 暂不新开仓。" if confluence_gated else entry.get("text_zh")
     out = {
         "status": status,
         "urgency": urg,
         "act_level": act,
         "confluence_gated": confluence_gated,
         "headline": en, "headline_zh": zh,
-        "action": entry.get("text"), "action_zh": entry.get("text_zh"),
+        "action": action, "action_zh": action_zh,
         "entry_z": eq_score,                       # signed drawdown-calibrated quality
         "entry_grade": lad.get("eq_grade"),
         "confidence": lad.get("bottom_confidence"),   # 0-100 durability (buy states)
@@ -278,7 +282,7 @@ def assess(close: pd.Series, high: pd.Series | None, rec: dict, *,
         "spot": _round_px(spot),
         "atr_pct": atrp,
         "timing": {"opens_in_days_lo": opens_lo, "opens_in_days_hi": opens_hi,
-                   "next_trigger": entry.get("text")},
+                   "next_trigger": action},
         "cycle_pos": {"dc_day": dc_day, "dc_band": list(band),
                       "pct_through": pct_through, "phase": cyc.get("dc_phase")},
     }

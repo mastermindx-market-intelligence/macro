@@ -169,3 +169,82 @@ def test_true_extended_still_reads_extended() -> None:
     rec = _rec("TOP WATCH", "caution", "DON'T CHASE", dcl=float(close.iloc[-1]) * 0.85,
                eq=-25, pv200=30.0)
     assert entry_signal.assess(close, None, rec)["status"] == "extended"
+
+
+@pytest.mark.parametrize("state,tag", [("FRESH BUY", "BUY NOW"),
+                                        ("TURN SIGNALED", "HALF SIZE")])
+def test_waiting_gate_replaces_opening_action_and_next_trigger(state, tag):
+    import copy
+    close = _uptrend()
+    rec = _rec(state, "now", tag, dcl=float(close.iloc[-1]) * 0.95)
+    rec["ladder"]["entry"].update(
+        text="Take a half position now.", text_zh="现在建立半仓。")
+    original = copy.deepcopy(rec)
+    result = entry_signal.assess(close, None, rec, buyable=False)
+    assert result["confluence_gated"] is True
+    assert result["status"] == "await_confluence"
+    assert result["action"] == "Wait for confirmation — no new entry yet."
+    assert result["action_zh"] == "等待确认 — 暂不新开仓。"
+    assert result["timing"]["next_trigger"] == result["action"]
+    assert result["act_level"] == 1
+    assert rec == original
+
+
+@pytest.mark.parametrize("buyable", [True, None])
+@pytest.mark.parametrize("state,tag", [("FRESH BUY", "BUY NOW"),
+                                        ("TURN SIGNALED", "HALF SIZE")])
+def test_non_gated_open_action_copy_remains_original(buyable, state, tag):
+    close = _uptrend()
+    rec = _rec(state, "now", tag, dcl=float(close.iloc[-1]) * 0.95)
+    result = entry_signal.assess(close, None, rec, buyable=buyable)
+    assert result["confluence_gated"] is False
+    assert result["action"] == result["timing"]["next_trigger"] == "do the thing"
+    assert result["action_zh"] == "做"
+
+
+@pytest.mark.parametrize("state,urgency,tag", [
+    ("TOP WATCH", "caution", "DON'T CHASE"),
+    ("COUNTERTREND BOUNCE", "caution", "UNCONFIRMED — HIGH RISK"),
+    ("RALLY ON", "hold", "HOLD"),
+])
+def test_closed_or_held_states_do_not_acquire_the_gate_copy(state, urgency, tag):
+    close = _uptrend()
+    rec = _rec(state, urgency, tag, dcl=float(close.iloc[-1]) * 0.9)
+    original = entry_signal.assess(close, None, rec, buyable=None)
+    gated = entry_signal.assess(close, None, rec, buyable=False)
+    assert gated["confluence_gated"] is False
+    assert gated == original
+
+
+@pytest.mark.parametrize("field", ["text", "text_zh"])
+def test_gated_action_ignores_missing_upstream_opening_copy(field):
+    close = _uptrend()
+    rec = _rec("FRESH BUY", "now", "BUY NOW", dcl=float(close.iloc[-1]) * 0.95)
+    rec["ladder"]["entry"].pop(field)
+    result = entry_signal.assess(close, None, rec, buyable=False)
+    assert result["action"] == "Wait for confirmation — no new entry yet."
+    assert result["action_zh"] == "等待确认 — 暂不新开仓。"
+    assert result["timing"]["next_trigger"] == result["action"]
+
+
+@pytest.mark.parametrize("state,tag", [("FRESH BUY", "BUY NOW"),
+                                        ("TURN SIGNALED", "HALF SIZE")])
+def test_waiting_instruction_reaches_real_china_lane_hover(state, tag):
+    # Reuse the shelf owner's real Jinja/partial renderer, not a copied template.
+    from test_china_stocks_w1c_render import _make_entry_row, _render_w1c
+
+    close = _uptrend()
+    rec = _rec(state, "now", tag, dcl=float(close.iloc[-1]) * 0.95)
+    rec["ladder"]["entry"].update(
+        text="Take a half position now.", text_zh="现在建立半仓。")
+    row = _make_entry_row()
+    row.update(lane_reasons=["entry_status_await_confluence"], prophet={"score": 70})
+    row["entry_signal"] = entry_signal.assess(close, None, rec, buyable=False)
+    # All buy-shelf rows are featured in this renderer. A waiting row belongs
+    # in more_actionable so the actual nonfeatured gate-chip hover is exercised.
+    html = _render_w1c({"buy": [], "more_actionable": [row], "ripening": [], "ran": []})
+    assert 'data-tip-en="Wait for confirmation — no new entry yet."' in html
+    assert 'data-tip-zh="等待确认 — 暂不新开仓。"' in html
+    assert "Waiting on confirmation" in html
+    assert "Take a half position now." not in html
+    assert "现在建立半仓。" not in html
