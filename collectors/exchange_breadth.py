@@ -147,6 +147,7 @@ class MassiveReferenceClient:
         params: dict[str, Any],
         *,
         source_kind: str,
+        allow_empty: bool = False,
     ) -> PageBundle:
         url = f"{self.base_url}{path}"
         first_params = dict(params)
@@ -185,16 +186,25 @@ class MassiveReferenceClient:
             page_rows = payload.get("results")
             if not isinstance(page_rows, list):
                 raise CollectionRefused(f"{source_kind} results are not a list")
-            if not page_rows:
-                raise CollectionRefused(f"{source_kind} empty response")
-            if not all(isinstance(row, Mapping) for row in page_rows):
-                raise CollectionRefused(f"{source_kind} contains a non-object row")
-
             next_url = payload.get("next_url")
             try:
                 reported_count = int(payload.get("count", len(page_rows)))
             except (TypeError, ValueError) as exc:
                 raise CollectionRefused(f"{source_kind} count is invalid") from exc
+            if not page_rows:
+                quiet_window = (
+                    allow_empty and page == 1 and not next_url and reported_count == 0
+                )
+                if not quiet_window:
+                    raise CollectionRefused(f"{source_kind} empty response")
+                request_id = _normal_text(payload.get("request_id"))
+                if request_id:
+                    request_ids.append(request_id)
+                safe_urls.append(_safe_url(url))
+                break
+            if not all(isinstance(row, Mapping) for row in page_rows):
+                raise CollectionRefused(f"{source_kind} contains a non-object row")
+
             if reported_count < len(page_rows):
                 raise CollectionRefused(
                     f"{source_kind} count is smaller than returned results"
@@ -286,6 +296,7 @@ class MassiveReferenceClient:
                 "order": "asc",
             },
             source_kind="splits",
+            allow_empty=True,
         )
         seen: set[str] = set()
         validated: list[dict[str, Any]] = []

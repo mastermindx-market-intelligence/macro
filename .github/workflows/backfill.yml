@@ -6,6 +6,22 @@ on:
         description: "comma-separated adapter keys (empty = all)"
         required: false
         default: ""
+      breadth_start:
+        description: "exchange_breadth optional first date (YYYY-MM-DD)"
+        required: false
+        default: ""
+      breadth_end:
+        description: "exchange_breadth optional last completed date (YYYY-MM-DD)"
+        required: false
+        default: ""
+      breadth_recent_sessions:
+        description: "exchange_breadth recent seed size when start is omitted"
+        required: false
+        default: "270"
+      breadth_max_sessions:
+        description: "exchange_breadth bounded sessions per run"
+        required: false
+        default: "50"
 
 permissions:
   contents: write
@@ -41,9 +57,77 @@ jobs:
               ;;
           esac
       - name: fetch archived OAS history (idempotent)
-        if: github.event.inputs.only != 'gold_china_basis'
+        if: github.event.inputs.only != 'gold_china_basis' && github.event.inputs.only != 'exchange_breadth'
         run: python -m scripts.fetch_archive
+      - name: restore Massive R2 for exchange breadth
+        if: ${{ github.event.inputs.only == 'exchange_breadth' }}
+        env:
+          R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: python -m scripts.fetch_r2 --dirs massive_stock_day --workers 24
+      - name: bounded exchange breadth history seed
+        if: ${{ github.event.inputs.only == 'exchange_breadth' }}
+        env:
+          POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
+          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
+          BREADTH_START: ${{ github.event.inputs.breadth_start }}
+          BREADTH_END: ${{ github.event.inputs.breadth_end }}
+          BREADTH_RECENT: ${{ github.event.inputs.breadth_recent_sessions }}
+          BREADTH_MAX: ${{ github.event.inputs.breadth_max_sessions }}
+        run: |
+          set -euo pipefail
+          args=(
+            --recent-sessions "${BREADTH_RECENT:-270}"
+            --max-sessions "${BREADTH_MAX:-50}"
+            --resume
+          )
+          if [ -n "${BREADTH_START:-}" ]; then args+=(--start "$BREADTH_START"); fi
+          if [ -n "${BREADTH_END:-}" ]; then args+=(--end "$BREADTH_END"); fi
+          python -m scripts.backfill_exchange_breadth "${args[@]}"
+      - name: audit exchange breadth generation
+        if: ${{ github.event.inputs.only == 'exchange_breadth' }}
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          import pandas as pd
+
+          root = Path("data/exchange_breadth")
+          required = {
+              "universe_intervals.parquet",
+              "source_splits.parquet",
+              "nyse_operating.parquet",
+              "nyse_all_issues.parquet",
+              "_state.json",
+              "_receipt.json",
+              "_backfill_state.json",
+          }
+          missing = sorted(name for name in required if not (root / name).exists())
+          if missing:
+              raise SystemExit(f"missing exchange breadth artifacts: {missing}")
+          state = json.loads((root / "_state.json").read_text())
+          receipt = json.loads((root / "_receipt.json").read_text())
+          checkpoint = json.loads((root / "_backfill_state.json").read_text())
+          tip = state.get("last_observed_session")
+          if not tip or receipt.get("accepted_session") != tip:
+              raise SystemExit("receipt/state accepted-session mismatch")
+          if tip not in set(checkpoint.get("completed_sessions") or []):
+              raise SystemExit("backfill checkpoint does not include accepted tip")
+          if receipt.get("authority") != "display_research_context_only":
+              raise SystemExit("breadth authority changed")
+          serialized = json.dumps(receipt)
+          if "apiKey" in serialized or "POLYGON_API_KEY" in serialized:
+              raise SystemExit("secret-bearing receipt")
+          for name in ("nyse_operating.parquet", "nyse_all_issues.parquet"):
+              frame = pd.read_parquet(root / name)
+              if frame.empty or str(pd.Timestamp(frame.index.max()).date()) != tip:
+                  raise SystemExit(f"{name} does not end at accepted tip {tip}")
+          print(f"exchange breadth audit OK: accepted tip {tip}")
+          PY
       - name: full-history collection
+        if: ${{ github.event.inputs.only != 'exchange_breadth' }}
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           FINNHUB_KEY: ${{ secrets.FINNHUB_KEY }}
@@ -77,7 +161,13 @@ jobs:
           # also regenerates docs/CLAIM_ACCOUNTABILITY.md and docs/GRADING_CLOSURE.md,
           # which no lane publishes (the nightly stages neither, deliberately), and any
           # future grader writing outside data/+site/qledger/ would re-open the hole.
-          git add data/ site/qledger/
+          if [ "${{ github.event.inputs.only }}" = "exchange_breadth" ]; then
+            # The R2 restore is an input, not a publication effect. Fence this lane to
+            # the accepted breadth generation and its resumability checkpoint only.
+            git add data/exchange_breadth/
+          else
+            git add data/ site/qledger/
+          fi
           if git diff --cached --quiet; then echo "no backfill changes to commit"; exit 0; fi
           git commit -m "data: backfill $(date -u +%F)"
           # best-effort push: daily now runs in its own lane and may push concurrently,

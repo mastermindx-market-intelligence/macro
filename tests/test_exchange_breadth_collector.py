@@ -518,3 +518,22 @@ def test_managed_persistence_adapter_is_not_upserted_twice(monkeypatch) -> None:
     assert result.status == "ok"
     assert result.rows == 1
     assert result.last_date == "2026-01-09"
+
+
+def test_splits_accept_a_legitimate_quiet_window() -> None:
+    client = MassiveReferenceClient(
+        api_key="k",
+        base_url="https://api.example.test",
+        request_json=lambda _url, _params: {
+            "status": "OK",
+            "request_id": "quiet",
+            "count": 0,
+            "results": [],
+        },
+    )
+
+    bundle = client.fetch_splits(date(2025, 1, 1), SESSION)
+
+    assert bundle.rows == ()
+    assert bundle.receipt["row_count"] == 0
+    assert bundle.receipt["request_ids"] == ["quiet"]
