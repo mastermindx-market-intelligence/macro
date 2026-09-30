@@ -3,96 +3,96 @@ workstream: WS:EXECUTIVE-CAPACITY-FABRIC
 session: sol/web-executive-os-codex-turn-evidence-20260930-c3-001
 model: sol
 ended_because: ci_handoff
-mission: Finish authenticated Web CEO and native-agent communication through the existing Executive owners.
-state_before: Source transport existed, but interactive follow-up execution resealed the initial plan and native event evidence crossed turn boundaries.
+mission: Complete authenticated Web CEO to exact native-parent and subagent communication through existing Executive owners.
+state_before: Interactive follow-up resealed the initial plan; native evidence and result collection could confuse turns or replace prior evidence.
 changed:
   - path: Mastermind/control_plane/executive_operator_harness_port.py
-    what: Added a read-only projection using existing Runtime validators for the immutable initial interactive plan seal.
+    what: Read the initial interactive plan seal using existing Runtime lease, lineage and generation validators.
   - path: Mastermind/control_plane/operator_harness_orchestrator.py
-    what: Preserve and revalidate the initial plan while returning later candidate evidence; ordinary first-turn sealing remains unchanged.
+    what: Preserve and revalidate the initial seal while returning later candidate evidence.
   - path: Mastermind/control_plane/codex_operator_adapter.py
-    what: Scope evidence to the selected logical turn and require exact native completion identity; preserve generation-wide cursors.
+    what: Bind completion and events to the exact turn; reject ambiguous, incomplete, contradictory or changed candidate results.
   - path: Mastermind/tests/test_interactive_followup_orchestrator.py
-    what: Added real temporary Runtime and driver regressions for follow-up, limits, concurrent send, response loss and seal drift.
+    what: Real temporary Runtime and driver tests cover follow-up, limits, concurrency, response loss and seal drift.
   - path: Mastermind/tests/test_codex_turn_evidence_scope.py
-    what: Added local fake-App-Server regressions for sequential native turns, stale completion, cursor and malformed identity cases.
+    what: Thirty-one local fake-App-Server cases cover event, completion and candidate identity with first-collection and replay controls.
 verified:
-  - claim: The actual interactive driver failed its second turn by attempting to reseal the initial plan.
+  - claim: The actual driver could not execute a second interactive turn without resealing the initial plan.
     command: python3 -B -m pytest tests/test_interactive_followup_orchestrator.py -q -p no:randomly
-    result: Causal baseline1PASS/1FAIL; repaired driver campaign102PASS with zero failures, errors or skips.
-  - claim: The actual Codex adapter mixed old/new logical-turn evidence and accepted a stale native completion.
-    command: python3 -B -m pytest tests/test_codex_turn_evidence_scope.py tests/test_codex_operator_adapter.py -q -p no:randomly
-    result: Baseline7FAIL/2controls; final owning and adjacent campaign146PASS, zero failures, errors or skips.
-  - claim: The two source repairs compose without the three temporary driver overlays entering the native-adapter PR.
-    command: python3 -B -m pytest tests/test_interactive_followup_orchestrator.py tests/test_codex_turn_evidence_scope.py tests/test_codex_operator_adapter.py tests/test_ohf_p1b_orchestrator.py tests/test_ohf_p1b_runtime_orchestrator.py tests/test_ohf_app_server_client.py tests/test_interactive_tx5_runtime.py tests/test_executive_operator_supervisor.py tests/test_ohf_p1b_runtime_adversarial.py -q -p no:randomly
-    result: Joint189PASS, zero failures, errors or skips; overlays restored byte-exact before publication.
-  - claim: Both new candidates are committed and published on their own canonical source branches.
-    command: studio_git_commit_current_changes and studio_git_push_current_branch with expected head, followed by GitHub PR readback
-    result: Mastermind1100 at0174709dab1a71e3c761c093625ed3f104c34d8d and1103 atb23a7cc5cbf81efe024fb1cf92c60fb4982979f6; clean local/remote equality.
+    result: Causal baseline1PASS/1FAIL; final driver campaign102PASS. Exact1100 hosted CI36698837829 also SUCCESS.
+  - claim: Native event, completion and candidate evidence are now bound to the selected turn.
+    command: python3 -B -m pytest tests/test_codex_turn_evidence_scope.py tests/test_codex_operator_adapter.py tests/test_ohf_p1b_orchestrator.py tests/test_ohf_p1b_runtime_orchestrator.py tests/test_ohf_app_server_client.py tests/test_interactive_tx5_runtime.py -q -p no:randomly
+    result: Final162PASS with0errors/failures/skips. R1 and R2 causal stages each had7failures and2controls before their respective repairs.
+  - claim: The final two repairs compose against the newer protected source.
+    command: Local immutable merge-tree composition plus the nine-module joint Runtime, driver, adapter and Supervisor pytest campaign
+    result: Protected31e618cb plus1100 head0174709d and1103 headbaa1d4cf produces treef0df9ec018066c9fbbb4ea84812d77799710609f;205PASS,0errors/failures/skips. All temporary overlays restored.
+  - claim: Both exact final source candidates are published with clean local and remote equality.
+    command: Guarded studio_git_commit_current_changes and studio_git_push_current_branch with expected HEAD, followed by PR readback
+    result: Mastermind1100 at0174709dab1a71e3c761c093625ed3f104c34d8d; Mastermind1103 atbaa1d4cf11cf846c2edad1c733a27b53c6967fdc. No force or foreign branch write.
   - claim: The previous recipient-ambiguity repair has independent approval and an existing protected queue entry.
-    command: GitHub PR1095 review5364161999 and queue event32151690204 readback
-    result: Exact0fdb04f62564dda2a09d8c201bc8d7111810a568 approved; queue entry09:16:55Z predates this continuation's auto-merge request. No second queue or merged claim.
+    command: Mastermind1095 review5364161999 and queue event32151690204
+    result: Exact0fdb04f62564dda2a09d8c201bc8d7111810a568 approved; existing09:16:55Z queue entry predates this continuation's enable-auto-merge request. No second queue or merged claim.
 unverified:
-  - claim: Installed authenticated Web message delivery and original-parent result consumption.
-    what_would_verify: Real qualified caller, exact current target, immutable message input, actual native turn and child result, correlated requester consumption.
-  - claim: All intended accounts, jobs and sessions are onboarded and launchable.
-    what_would_verify: Existing enrollment, Worker, Quota and Capacity owners provide per-realm and installed-service proofs, not app-window or registry-count inference.
-  - claim: Required hosted checks and independent reviews of the two new source repairs have completed.
-    what_would_verify: Exact-head review and current protected integration results for Mastermind1100 and1103.
+  - claim: Final independent review, protected release and installation of1100 and1103.
+    what_would_verify: Exact final-head reviewer verdicts, normal current-base hosted checks and actual accepted installation receipts.
+  - claim: Real authenticated Web message delivery and original-parent consumption.
+    what_would_verify: One qualified caller, immutable operation/message input, exact native target, useful child/result and correlated requester consumption on the installed path.
+  - claim: All intended accounts and sessions are onboarded and launchable.
+    what_would_verify: Per-realm enrollment and Worker, Quota, Capacity and installed-service qualification, not app presence or registry totals.
 unresolved:
-  - Production command binding at the stock App entrypoint remains absent in the current frontend owner's source return.
-  - Message bytes and digest must be bound to the original operation and exact target before BEGIN_TURN through the incumbent Runtime/input owner.
-  - Full local repository collection remains blocked by missing jwt; no full-suite or installed acceptance is claimed.
+  - The stock App entrypoint still lacks the production command binding in the current frontend owner's return.
+  - Existing Runtime/input ownership must freeze message bytes and digest before BEGIN_TURN without another mailbox or operation ledger.
+  - Full local repository collection was blocked by missing jwt; no full local-suite or installed acceptance is claimed.
 next_actions:
-  - Consume exact-head review and hosted checks on Mastermind1100 and1103 without rewriting frozen candidates or duplicating reviewer assignments.
-  - Integrate accepted repairs through the existing Product installer; preserve the sole original first-Web-root operation.
-  - Complete the existing authenticated command and immutable input binding, then prove one meaningful same-parent message and useful child/result consumption.
-  - Qualify lost reply, changed payload under the same operation, stale target, concurrent send, reopen and scoped stop on the actual installed path.
+  - Consume reviews for exact1100 head0174709d and1103 headbaa1d4cf; old b23-only evidence does not approve the R2 candidate.
+  - Complete normal protected release and existing Product installation without duplicating the original first-Web-root request.
+  - Complete the existing authenticated command/input binding, then prove a meaningful same-parent message and useful child/result consumption.
+  - Verify lost reply, changed payload under one operation, stale target, concurrent send, reopen and scoped stop on the installed path.
 do_not_redo:
-  - Do not rebuild Mastermind990,1001,1019,1046 or919 source already accepted or owned by active counterparts.
-  - Do not re-enqueue Mastermind1095, self-approve new source, copy credentials or replay633's unknown enrollment effect.
-  - Do not invent Worker/Job identities for Web callers or add a second mailbox, queue, state, retry or control plane.
+  - Preserve accepted or actively owned990,1001,1019,1046,919 and1056 work; no unchanged broad review or rewrite.
+  - Do not re-enqueue1095, self-approve source, copy credentials, or replay633's unknown enrollment effect.
+  - Do not invent Worker/Job identities for Web callers or add a second mailbox, queue, retry, identity or control plane.
 danger_areas:
-  - Reader mode readonly is not proof that separate authenticated CeoIngress is disabled; inspect the actual intended path.
-  - AVAILABLE registry status and an online desktop session do not prove installed worker launchability.
-  - Source tests use real temporary Runtime and local fake App Server, not actual paid-provider or installed-account execution.
-  - Late or ambiguous completion preserves unknown effects and cannot authorize retry or target substitution.
+  - Reader mode readonly is not proof that separate authenticated CeoIngress is disabled.
+  - AVAILABLE registry state and online desktop sessions do not prove installed worker launchability.
+  - Local fake-App-Server and temporary Runtime proof is not paid-provider or real-account execution.
+  - Candidate pagination remains bounded; an unread next page refuses rather than claiming uniqueness or adding an unbounded reader.
 ---
 
-# Executive communications — C3 source delivery and remaining installed boundary
+# Executive communications — current C3 source and installed boundary
 
-## 0. State
+## 0. Mission and authority
 
-MISSION_COMPLETE:false. This is a source CI/review handoff, not a terminal company-project state or a new execution owner. The `sol` model field denotes the Agent OS author role, not a served-model attestation.
+MISSION_COMPLETE:false. This record carries a source CI/review phase, not project closure or an execution-owner transfer. The model field sol denotes the Agent OS author role, not served-model telemetry. Current Chairman instruction is to continue productive critical-path work beyond checkpoints.
 
-Current Chairman intent is to keep executing useful critical-path work beyond checkpoints. During this continuation, two new implementation slices were built, tested, published and requested for independent review after the earlier recipient repair entered release review. No provider, credential, installed service or Runtime Job was changed.
+Product01a0bd6f-78ba-7581-afac-135b87e2d39c retains installed/service/credential and command-binding custody. Parent01a0e296-2e89-7960-a591-67e1e6b5c6d5 remains sole submitter ofexec-os-web-ceo-01a0e296-r1. The1046 frontend,1056 enhancement and four-Codex/four-Claude owners remain separate. No provider, credential, installed service or Runtime Job was changed here.
 
-Mastermind procedure/source was pinned at6b91339a3bd7553292068c72d11b4227d30e371b, then atomically reloaded byte-identical atf640773f2e67cdeea6b4a7dfc56bb7907caefdac. INDEX blob94d1af402598894372858793a5b1931019c5fa77. This record uses Macroa7e00a9af0f437a4907a32b4591d965e438ca42a and its handoff schema/protocol.
+Mastermind procedure was loaded at6b91339a3bd7553292068c72d11b4227d30e371b and atomically reloaded unchanged atf640773f2e67cdeea6b4a7dfc56bb7907caefdac; relevant laws remain byte-identical at31e618cb6d4c2a38b01df795af32da2c3e87edb4. INDEX blob94d1af402598894372858793a5b1931019c5fa77. Macro schema/protocol pin is a7e00a9af0f437a4907a32b4591d965e438ca42a.
 
-## 1. What is left
+## 1. Current source and release
 
-[Mastermind1100](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1100) is the immutable-plan follow-up repair at0174709d. [Mastermind1103](https://github.com/mastermindx-market-intelligence/Mastermind/pull/1103) is the native completion/evidence repair atb23a7cc5. Both are source-only candidates, with individual GitHub review requests to mastermindx-2; request is not native pickup or approval. The original1100 CI handle is36698837829. Read exact current results, not a superseded check or unchanged poll loop.
+Mastermind PR1100 is the driver repair at0174709dab1a71e3c761c093625ed3f104c34d8d; hosted CI36698837829 SUCCESS, Ready applied10:20:11Z. PR1103 is now the native-evidence/candidate repair atbaa1d4cf11cf846c2edad1c733a27b53c6967fdc, superseding original R1 headb23a7cc5cbf81efe024fb1cf92c60fb4982979f6; Ready applied10:21:57Z. Existing review requests to mastermindx-2 remain. Requested is not pickup, START or approval. Required1103 checks must bind baa1, not the previous b23 run36700773460.
 
-The remaining user path is authenticated Web command -> original operation and message input -> exact admitted native parent -> useful bounded child -> canonical result -> original-parent consumption. The current App owner reports no actual command binding in stock main.tsx. Reuse its existing command interfaces and the interactive Runtime, not another messaging service. Agent consultation is a separate bounded Worker-attempt Q&A path and does not itself bind Web principals.
+R1 native tests146PASS and joint189PASS remain historical. The final standalone result is162PASS; the final current-base joint result is205PASS. Six final source mutants across both PRs were caught. One preliminary duplicate recollection mutant survived because the digest guard also refused it; first-collection tests were added to isolate cardinality, and the final mutant failed as required. No survived probe is counted as a kill.
 
-## 2. What will bite
+## 2. Exact retained evidence
 
-The first-turn driver and native adapter each passed their earlier isolated tests while the follow-up composition was broken. Initial plan sealing, per-turn candidate evidence, generation-global cursors and native completion IDs must stay distinct. A late old completion is not proof that current work finished.
+Driver root: /Volumes/Mastermind/evidence/executive-os-interactive-followup-20260930-c3-001. Manifest36e4fb2e9af557dc37e28f5f843952ecc94cb42dc67a2ee25b57c0b32d8c94fd.
 
-Read-only Executive state describes its reader. Do not infer the separate mutation path's capability from that field. Latest direct reader observation at2026-09-30T09:24:25Z remained installedc7407c6,7Jobs,10Attempts,1AVAILABLEWorker and0running. Separately, the existing installation reviewer reported disabled worker services; that transport return was consumed, not independently re-probed by this source lane.
+Native root: /Volumes/Mastermind/evidence/executive-os-codex-turn-evidence-20260930-c3-001. Current r2-candidate/SOURCE_MANIFEST.json SHA2561a5f2c0ea467be83a7dc3e6c806cdaa8d1b2997c29f09197e9987f6da5cf877f. Current-base compatibility receipt192492cf2eeaf39d9347966643e18ae269452d42a01a5826131da053f06d5cc2, XML4a4e2060c270e9cde8ac150b394dbd55f05c94057891a7648c853c49ec05e44c. Original R1 manifest90fd08131efc59f6a2ffa99cde81fa782f4bae52f4eb7e549f21a9111b212d33 is preserved.
 
-A Studio read of backend comment5868465578 was explicitly refused before execution. It was not retried or moved to another carrier. Independent source-local tests and publication succeeded. Preserve all original633 uncertainty and foreign source denials.
+Both source workspaces are canonical launcher-owned, clean and remotely published. Temporary overlays were restored exactly; no foreign worktree or branch was changed. Earlier dirty compatibility evidence remains preserved. No local test process is being claimed as an unattended provider worker.
 
-## 3. Decisions and evidence
+## 3. Actual installed limits and preserved uncertainty
 
-Runtime admission, finite-turn limits, original plan identity, generation/writer/lease and unknown-effect authority were not loosened. The Runtime source remains unchanged by these repairs. Four deliberate source mutations across the two candidates were caught; restored source was retested. These are author-run tests, not independent reviews or live acceptance.
+Direct Executive reader at2026-09-30T10:31:37Z: healthy, degraded[], installedc7407c6c77ef82cc6590401e80cc8f1868dc9085, Macro88804ed7079700c598bb8e04aa64307d1335402d,7Jobs/10Attempts/1AVAILABLEWorker/0running. Reader mode is readonly; this is not a write-path diagnosis. The installed reviewer separately reported disabled worker services; that return was consumed rather than re-probed here.
 
-Driver evidence root: /Volumes/Mastermind/evidence/executive-os-interactive-followup-20260930-c3-001. Manifest SHA25636e4fb2e9af557dc37e28f5f843952ecc94cb42dc67a2ee25b57c0b32d8c94fd.
-Adapter evidence root: /Volumes/Mastermind/evidence/executive-os-codex-turn-evidence-20260930-c3-001. Manifest SHA25690fd08131efc59f6a2ffa99cde81fa782f4bae52f4eb7e549f21a9111b212d33.
-The exact source branches are named by their operation IDs. Both canonical source workspaces are retained clean and published. Earlier dirty compatibility evidence remains preserved, not deleted.
+A Studio command reading backend comment5868465578 was explicitly refused before execution. It was not retried or moved to another carrier. Own source-local tests, guarded publication and this separate Agent OS record succeeded. Preserve633 EFFECT_UNKNOWN and other foreign denials.
 
-## 4. Not in scope for these source slices
+Full local pytest collection stopped at tests/mastermind_window_reader/test_mission_association.py for missing jwt. No dependency was installed globally. Source checks and CI do not substitute for an installed user journey or all-account acceptance.
 
-Product01a0bd6f-78ba-7581-afac-135b87e2d39c keeps installed/service/credential and command-binding custody. Parent01a0e296-2e89-7960-a591-67e1e6b5c6d5 remains sole submitter ofexec-os-web-ceo-01a0e296-r1. The four-Codex/four-Claude,1046 frontend and1056 enhancement owners remain separate. This record changes neither their assignment nor their Runtime authority.
+## 4. Next real product proof
 
-The material source return was delivered on the existing Slack build rootC0C47UNNF3R/1790428520.458669 as message1790763137.277829. Delivery is not adoption, a watcher, a started worker or an automatic future Web turn. This authored Agent OS record is not main-branch incorporation until its own PR is accepted.
+The exact missing connection is authenticated Web command -> immutable original operation and message -> admitted same native parent -> useful bounded child -> canonical result -> original-parent consumption. Reuse existing command interfaces, Runtime BEGIN_TURN and host turn_input_loader. Worker-attempt Company Consultation is a separate bounded Q&A contract and does not bind a Web principal by exposing its catalog.
+
+Source return was delivered on existing Slack rootC0C47UNNF3R/1790428520.458669 as message1790763137.277829. Delivery is not native adoption or automatic Web wake. This Agent OS record is maintained in Macro PR8242; publication and its previous-version CI success are not main-branch incorporation or current-source approval.
