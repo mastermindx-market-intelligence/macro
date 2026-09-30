@@ -6,9 +6,9 @@
   "descriptive_not_gauntleted": true,
   "blocks": {
     "rates": {
-      "dominant_pc_share": 0.8263,
+      "dominant_pc_share": 0.8265,
       "first3_var": 0.9635,
-      "effective_dimension_pr": 1.441,
+      "effective_dimension_pr": 1.4403,
       "pc3_to_pc4_gap": null,
       "oos_pctile_vs_null": null,
       "curvature_stability_tag": "stable",
