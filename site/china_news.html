@@ -312,18 +312,688 @@
   <header class="cn-hero">
     <p class="cn-eyebrow"><span class="cn-live"></span><span class="cn-brand">📡 <span class="gn"><span class="l-en">China Tape</span><span class="l-zh">中国快讯</span></span></span></p>
     
-      <p class="cn-lead"><span class="l-en">The China macro tape is quiet right now.</span><span class="l-zh">当前中国宏观新闻流较安静。</span></p>
+      
+      
+      
+      
+      <p class="cn-lead">
+        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone leans cautious. <b>7</b> rated high-impact, led by <b>equity market</b>.</span>
+        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调偏谨慎。其中 <b>7</b> 条高影响，主导<b>股票市场</b>。</span>
+      </p>
       <p class="cn-asof"><span class="l-en">As of</span><span class="l-zh">截至</span>  · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></p>
+      <div class="cn-glance">
+        
+        
+        <span class="cn-gchip st-cautious"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">leans cautious</span><span class="l-zh">偏谨慎</span></b></span>
+        
+        <span class="cn-gchip hot"><span class="dot"></span><b>7</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
+        <span class="cn-gchip led th-markets"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">equity market</span><span class="l-zh">股票市场</span></b></span>
+        <span class="cn-gchip"><b>24</b> <span class="l-en">on the tape</span><span class="l-zh">条在流</span></span>
+        <span class="cn-gchip hidden" id="fresh"><span class="dot" style="background:var(--up)"></span><span id="fresh-t"></span></span>
+      </div>
     
   </header>
 
   
-  <!-- ===================== EMPTY STATE ===================== -->
-  <div class="cn-empty">
-    <h2><span class="l-en">No filtered China headlines on this pull.</span><span class="l-zh">本次抓取暂无筛选中国头条。</span></h2>
-    <p><span class="l-en">This can happen when official pages are quiet, the flash-wire fetch is unavailable, or no macro-relevant item cleared the gate. Policy tone and scheduled catalysts remain live.</span><span class="l-zh">当官方页面安静、快讯抓取不可用，或没有宏观相关条目通过筛选时会出现这种情况。政策基调与排定催化仍保持更新。</span></p>
-  </div>
-  <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+  <!-- ===================== OVERVIEW 3-UP ===================== -->
+  <section class="cn-rail3">
+
+    <!-- policy tone -->
+    <article class="ov-card ov-tone st-cautious" style="--ac:var(--warn)">
+      <p class="ov-h"><span class="ic">🏛️</span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span></p>
+      
+      
+      <div class="tg-top">
+        <div class="tg-state"><span class="l-en">leans cautious</span><span class="l-zh">偏谨慎</span></div>
+        <div class="tg-z">-1.3</div>
+      </div>
+      
+      
+      <div class="tg-track"><span class="mid"></span>
+        <span class="tg-fill" style="right:50%;width:25.8%"></span>
+      </div>
+      <div class="tg-scale"><span><span class="l-en">cautious</span><span class="l-zh">谨慎</span></span><span><span class="l-en">neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">supportive</span><span class="l-zh">积极</span></span></div>
+      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 110<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-09-30</p>
+      
+    </article>
+
+    <!-- what's on the tape -->
+    <article class="ov-card ov-mix">
+      <p class="ov-h"><span class="ic">🌡️</span><span class="l-en">What's on the tape</span><span class="l-zh">快讯结构</span></p>
+      
+        
+        
+        
+        
+        <div class="mx-row th-markets">
+          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+          <span class="mx-bar"><i style="width:100%"></i></span>
+          <span class="mx-n">11</span>
+        </div>
+        
+        
+        <div class="mx-row th-growth">
+          <span class="mx-name"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+          <span class="mx-bar"><i style="width:36%"></i></span>
+          <span class="mx-n">4</span>
+        </div>
+        
+        
+        <div class="mx-row th-monetary">
+          <span class="mx-name"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+          <span class="mx-bar"><i style="width:27%"></i></span>
+          <span class="mx-n">3</span>
+        </div>
+        
+        
+        <div class="mx-row th-fiscal">
+          <span class="mx-name"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+          <span class="mx-bar"><i style="width:27%"></i></span>
+          <span class="mx-n">3</span>
+        </div>
+        
+        
+        <div class="mx-row th-credit">
+          <span class="mx-name"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+          <span class="mx-bar"><i style="width:9%"></i></span>
+          <span class="mx-n">1</span>
+        </div>
+        
+      
+      
+      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 20 · <span class="l-en">global wire</span><span class="l-zh">国际通讯社</span> 2 · <span class="l-en">official releases</span><span class="l-zh">官方发布</span> 1 · <span class="l-en">domestic wire</span><span class="l-zh">国内财经快讯</span> 1</p>
+      
+    </article>
+
+    <!-- next catalyst -->
+    <article class="ov-card ov-next">
+      <p class="ov-h"><span class="ic">📅</span><span class="l-en">Next catalyst</span><span class="l-zh">下一催化</span></p>
+      
+      
+      <div class="nx-when">
+        
+          <span class="nx-days" style="color:#d0554f"><span class="l-en">Today</span><span class="l-zh">今日</span></span>
+          
+        
+      </div>
+      <p class="nx-name"><span class="l-en">NBS PMI (mfg + non-mfg)</span><span class="l-zh">国家统计局 PMI（制造业＋非制造业）</span></p>
+      <p class="nx-date"><span class="l-en">Sep 30</span><span class="l-zh">9月30日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
+      
+    </article>
+  </section>
+
+  <!-- ===================== THE TAPE + RAIL ===================== -->
+  <section class="cn-main">
+    <div class="cn-feed-col">
+      <div class="cn-toolbar">
+        <div class="cn-search"><span class="mag">⌕</span><input id="q" type="search" autocomplete="off" placeholder="Search headlines, channels or tickers…" data-ph-en="Search headlines, channels or tickers…" data-ph-zh="搜索头条、通道或标的…"></div>
+        <div class="cn-filters" id="filters">
+          <button class="fbtn on" data-theme="all"><span class="l-en">All</span><span class="l-zh">全部</span></button>
+          <button class="fbtn" data-importance="high"><span class="l-en">High impact</span><span class="l-zh">高影响</span></button>
+          <button class="fbtn" data-theme="monetary"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span><span class="fc" data-fc="monetary"></span></button><button class="fbtn" data-theme="inflation"><span class="l-en">Inflation</span><span class="l-zh">物价</span><span class="fc" data-fc="inflation"></span></button><button class="fbtn" data-theme="growth"><span class="l-en">Growth</span><span class="l-zh">增长</span><span class="fc" data-fc="growth"></span></button><button class="fbtn" data-theme="credit"><span class="l-en">Credit</span><span class="l-zh">信用</span><span class="fc" data-fc="credit"></span></button><button class="fbtn" data-theme="fiscal"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span><span class="fc" data-fc="fiscal"></span></button><button class="fbtn" data-theme="policy"><span class="l-en">Policy</span><span class="l-zh">政策</span><span class="fc" data-fc="policy"></span></button><button class="fbtn" data-theme="politics"><span class="l-en">Politics</span><span class="l-zh">政治/地缘</span><span class="fc" data-fc="politics"></span></button><button class="fbtn" data-theme="tech"><span class="l-en">Tech</span><span class="l-zh">科技</span><span class="fc" data-fc="tech"></span></button><button class="fbtn" data-theme="markets"><span class="l-en">Markets</span><span class="l-zh">市场</span><span class="fc" data-fc="markets"></span></button><button class="fbtn" data-theme="macro"><span class="l-en">Macro</span><span class="l-zh">宏观</span><span class="fc" data-fc="macro"></span></button>
+        </div>
+        <span class="cn-count" id="count"></span>
+      </div>
+
+      <div class="tp-feed" id="feed">
+        
+        
+        <a class="tp-item th-growth lead" href="https://wallstreetcn.com/livenews/3172927" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="提醒：北京时间20:30，将公布美国二季度gdp终值，8月个人收入、个人消费支出（pce） reminder: at 20:30 beijing time, the final reading of u.s. q2 gdp, august personal income, and personal consumption expenditures (pce) will be released 提醒：北京时间20:30，将公布美国二季度gdp终值，8月个人收入、个人消费支出（pce） 提醒：北京时间20:30，将公布美国二季度gdp终值，8月个人收入、个人消费支出（pce）。 reminder: at 20:30 beijing time, the final us q2 gdp reading, august personal income, and personal consumption expenditures (pce) will be released. 提醒：北京时间20:30，将公布美国二季度gdp终值，8月个人收入、个人消费支出（pce）。 华尔街见闻 consumer consumer 消费 ">
+          <time class="tp-when" data-t="2026-09-30T12:20:26+00:00" datetime="2026-09-30T12:20:26+00:00">09-30<br>12:20</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-30T12:20:26+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-high"><b>82</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Reminder: At 20:30 Beijing time, the final reading of U.S. Q2 GDP, August personal income, and personal consumption expenditures (PCE) will be released</span><span class="l-zh">提醒：北京时间20:30，将公布美国二季度GDP终值，8月个人收入、个人消费支出（PCE）</span></h2>
+            <p class="tp-sum"><span class="l-en">Reminder: At 20:30 Beijing time, the final US Q2 GDP reading, August personal income, and personal consumption expenditures (PCE) will be released.</span><span class="l-zh">提醒：北京时间20:30，将公布美国二季度GDP终值，8月个人收入、个人消费支出（PCE）。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.cnstock.com/topicDetail/356068" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="重返扩张区间！9月制造业pmi升至50.1% back to expansion! september manufacturing pmi rises to 50.1% 重返扩张区间！9月制造业pmi升至50.1%    上海证券报 industrial industry & manufacturing 工业与制造业 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Back to expansion! September manufacturing PMI rises to 50.1%</span><span class="l-zh">重返扩张区间！9月制造业PMI升至50.1%</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.scmp.com/economy/china-economy/article/3369296/chinas-rd-spending-hits-record-28-gdp-beating-oecd-average-first-time?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="china’s r&d spending hits record 2.8% of gdp, beating oecd average for the first time  中国研发支出占gdp比重达到创纪录的2.8%，首次超过oecd平均水平 for the first time, china’s spending on research and development as a share of gross domestic product has surpassed the average for organisation for economic cooperation and development (oecd) members – a trend one analyst expects to continue as beijing seeks to strengthen technological self-reliance amid intensifying global competition.
+r&d expenditure exceeded 3.92 trillion yuan (us$584.8 billion) in 2025, accounting for 2.8 per cent of gdp, science and technology minister yin hejun said at a...  中国的研发支出占国内生产总值的比重首次超过经济合作与发展组织（oecd）成员国的平均水平——一位分析师预计，随着北京在日益激烈的全球竞争中寻求加强技术自立自强，这一趋势还将持续。
+研发支出超过 scmp - china economy yuan tech_policy yuan & fx 人民币与汇率 tech policy 科技政策 cny">
+          <time class="tp-when" data-t="2026-09-30T06:01:56+00:00" datetime="2026-09-30T06:01:56+00:00">09-30<br>06:01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-30T06:01:56+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>70</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China’s R&D spending hits record 2.8% of GDP, beating OECD average for the first time</span><span class="l-zh">中国研发支出占GDP比重达到创纪录的2.8%，首次超过OECD平均水平</span></h2>
+            <p class="tp-sum"><span class="l-en">For the first time, China’s spending on research and development as a share of gross domestic product has surpassed the average for Organisation for Economic Cooperation and Development (OECD) members – a trend one analyst expects to continue as Beijing seeks to strengthen technological self-reliance amid intensifying global competition.
+R&D expenditure exceeded 3.92 trillion yuan (US$584.8 billion) in 2025, accounting for 2.8 per cent of GDP, Science and Technology Minister Yin Hejun said at a...</span><span class="l-zh">中国的研发支出占国内生产总值的比重首次超过经济合作与发展组织（OECD）成员国的平均水平——一位分析师预计，随着北京在日益激烈的全球竞争中寻求加强技术自立自强，这一趋势还将持续。
+研发支出超过</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">CNY</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3172924" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="宁德时代：拟推2026年a股第二期员工持股计划，受让价158.42元/股 catl: plans to launch the second phase of its 2026 a-share employee stock ownership plan, with a transfer price of 158.42 yuan/share 宁德时代：拟推2026年a股第二期员工持股计划，受让价158.42元/股 宁德时代公告，公司发布2026年a股第二期员工持股计划（草案），首次授予参加对象为中层管理人员及核心骨干人员共5960人，受让价格（含预留）为158.42元/股，资金总额不超过12.8亿元，股份来源为公司回购专用证券账户回购的a股普通股，规模不超过808.16万股，占目前公司总股本46.27亿股的0.175%，其中预留股份170万股，占本持股计划总股数的21.04%。存续期60个月，首次授予分三期解锁，每期锁定期12个月，总锁定期36个月，解锁比例分别为30%、30%、40%。 catl announced that the company has released the draft of its 2026 second-phase a-share employee stock ownership plan. the initial grant recipients are 5,960 mid-level managers and core key personnel. the transfer price (including reserved shares) is rmb 158.42 per share, with total funds not exceeding rmb 1.28 billion. the shares come from a-share ordinary shares repurchased by the company through its dedicated repurchase securities account, with a scale not exceeding 8.0816 million shares, accounting for 0.175% of the company's current total share capital of 4.627 billion shares. among these, 1.7 million shares are reserved, accounting for 21.04% of the total shares under this plan. the duration is 60 months. the initial grant vests in three tranches, each with a 12-month lock-up period and a total lock-up period of 36 months, with vesting ratios of 30%, 30%, and 40%, respectively. 宁德时代公告，公司发布2026年a股第二期员工持股计划（草案），首次授予参加对象为中层管理人员及核心骨干人员共5960人，受让价格（含预留）为158.42元/股，资金总额不超过12.8亿元，股份来源为公司回购专用证券账户回购的a股普通股，规模不超过808.16万股，占目前公司总股本46.27亿股的0.175%，其中预留股份170万股，占本持股计划总股数的21.04%。存续期60个月，首次授予分三期解锁，每期锁定期12个月，总锁定期36个月，解锁比例分别为30%、30%、40%。 华尔街见闻 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-09-30T12:14:02+00:00" datetime="2026-09-30T12:14:02+00:00">09-30<br>12:14</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-30T12:14:02+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CATL: Plans to launch the second phase of its 2026 A-share employee stock ownership plan, with a transfer price of 158.42 yuan/share</span><span class="l-zh">宁德时代：拟推2026年A股第二期员工持股计划，受让价158.42元/股</span></h2>
+            <p class="tp-sum"><span class="l-en">CATL announced that the company has released the draft of its 2026 second-phase A-share employee stock ownership plan. The initial grant recipients are 5,960 mid-level managers and core key personnel. The transfer price (including reserved shares) is RMB 158.42 per share, with total funds not exceeding RMB 1.28 billion. The shares come from A-share ordinary shares repurchased by the company through its dedicated repurchase securities account, with a scale not exceeding 8.0816 million shares, accounting for 0.175% of the company's current total share capital of 4.627 billion shares. Among these, 1.7 million shares are reserved, accounting for 21.04% of the total shares under this plan. The duration is 60 months. The initial grant vests in three tranches, each with a 12-month lock-up period and a total lock-up period of 36 months, with vesting ratios of 30%, 30%, and 40%, respectively.</span><span class="l-zh">宁德时代公告，公司发布2026年A股第二期员工持股计划（草案），首次授予参加对象为中层管理人员及核心骨干人员共5960人，受让价格（含预留）为158.42元/股，资金总额不超过12.8亿元，股份来源为公司回购专用证券账户回购的A股普通股，规模不超过808.16万股，占目前公司总股本46.27亿股的0.175%，其中预留股份170万股，占本持股计划总股数的21.04%。存续期60个月，首次授予分三期解锁，每期锁定期12个月，总锁定期36个月，解锁比例分别为30%、30%、40%。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.pbc.gov.cn/en/3688110/3688172/2026/2026093015565447786/index.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="pbocâ adjusts and improvesâ several monetary policy tools  中国人民银行调整和完善多项货币政策工具    pboc pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="2026-09-29" datetime="2026-09-29">09-29</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-29"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">PBoC</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOCÂ Adjusts and ImprovesÂ Several Monetary Policy Tools</span><span class="l-zh">中国人民银行调整和完善多项货币政策工具</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.yicai.com/news/103383102.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="又有大行股价新高！房贷贴息、结构性降息对银行影响几何？ 规模支撑、质量改善。 another major bank's stock price hits a new high! what is the impact of mortgage interest subsidies and structural rate cuts on banks? scale support, quality improvement. 又有大行股价新高！房贷贴息、结构性降息对银行影响几何？ 规模支撑、质量改善。    第一财经 pboc_liquidity pboc & liquidity 央行与流动性 512800.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Another major bank's stock price hits a new high! What is the impact of mortgage interest subsidies and structural rate cuts on banks? Scale support, quality improvement.</span><span class="l-zh">又有大行股价新高！房贷贴息、结构性降息对银行影响几何？ 规模支撑、质量改善。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512800.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.stcn.com/article/detail/4204423.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="1.2万亿元！央行10月8日将开展买断式逆回购操作 1.2 trillion yuan! pboc to conduct outright reverse repo operation on october 8 1.2万亿元！央行10月8日将开展买断式逆回购操作    证券时报 pboc_liquidity pboc & liquidity 央行与流动性 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">1.2 trillion yuan! PBOC to conduct outright reverse repo operation on October 8</span><span class="l-zh">1.2万亿元！央行10月8日将开展买断式逆回购操作</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/topicDetail/797461" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="专题 | “十五五”资本市场高质量发展座谈会 special topic | symposium on high-quality development of the capital market during the 15th five-year plan 专题 | “十五五”资本市场高质量发展座谈会    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Special topic | Symposium on high-quality development of the capital market during the 15th Five-Year Plan</span><span class="l-zh">专题 | “十五五”资本市场高质量发展座谈会</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-credit" href="https://www.gelonghui.com/live/2695370" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="medium"
+           data-search="多只宽基etf产品逆势吸金 multiple broad-based etf products attract inflows against the trend 多只宽基etf产品逆势吸金 据中证报，今日，a股大消费板块整体温和走强，酿酒、粮食等行业表现活跃，多只相关主题etf表现突出。本周以来a股市场整体震荡回调，多只宽基etf产品逆势“吸金”。其中，疫苗、创新药、医疗等细分行业表现强势，多只相关主题etf今日涨幅超3%，领涨etf市场。今日，受跨节资金拆借交易等因素影响，部分货币、债券类etf产品成交金额显著放大。其中，短融etf海富通成交额超700亿元，银华日利etf成交额超300亿元。资金流动方面，资金在etf市场上逢低吸纳宽基etf产品。具体来看，截至9月29日，在本周以来资金净流入额排名前十的etf中，有6只为股票etf。其中， according to china securities journal, today the a-share major consumer sector strengthened modestly overall, with brewing, grain, and other industries performing actively, and multiple related thematic etfs standing out. since the start of this week, the a-share market has been broadly fluctuating and pulling back, while multiple broad-based etf products have attracted inflows against the trend. among them, vaccine, innovative drug, medical, and other sub-sectors showed strong performance, with multiple related thematic etfs rising more than 3% today, leading the etf market. today, affected by factors such as cross-holiday funding lending transactions, the turnover of some money market and bond etf products increased significantly. among them, the short-term financing etf haitong recorded turnover exceeding rmb 70 billion, and the yinua rili etf recorded turnover exceeding rmb 30 billion. in terms of fund flows, capital was bargain-hunting broad-based etf products in the etf market. specifically, as of september 29, among the top ten etfs by net inflows since the start of this week, six were equity etfs. among them, 据中证报，今日，a股大消费板块整体温和走强，酿酒、粮食等行业表现活跃，多只相关主题etf表现突出。本周以来a股市场整体震荡回调，多只宽基etf产品逆势“吸金”。其中，疫苗、创新药、医疗等细分行业表现强势，多只相关主题etf今日涨幅超3%，领涨etf市场。今日，受跨节资金拆借交易等因素影响，部分货币、债券类etf产品成交金额显著放大。其中，短融etf海富通成交额超700亿元，银华日利etf成交额超300亿元。资金流动方面，资金在etf市场上逢低吸纳宽基etf产品。具体来看，截至9月29日，在本周以来资金净流入额排名前十的etf中，有6只为股票etf。其中， 格隆汇 consumer markets consumer 消费 equity market 股票市场 ">
+          <time class="tp-when" data-t="2026-09-30T13:18:43+00:00" datetime="2026-09-30T13:18:43+00:00">09-30<br>13:18</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-30T13:18:43+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">格隆汇</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Multiple broad-based ETF products attract inflows against the trend</span><span class="l-zh">多只宽基ETF产品逆势吸金</span></h2>
+            <p class="tp-sum"><span class="l-en">According to China Securities Journal, today the A-share major consumer sector strengthened modestly overall, with brewing, grain, and other industries performing actively, and multiple related thematic ETFs standing out. Since the start of this week, the A-share market has been broadly fluctuating and pulling back, while multiple broad-based ETF products have attracted inflows against the trend. Among them, vaccine, innovative drug, medical, and other sub-sectors showed strong performance, with multiple related thematic ETFs rising more than 3% today, leading the ETF market. Today, affected by factors such as cross-holiday funding lending transactions, the turnover of some money market and bond ETF products increased significantly. Among them, the Short-Term Financing ETF Haitong recorded turnover exceeding RMB 70 billion, and the Yinua Rili ETF recorded turnover exceeding RMB 30 billion. In terms of fund flows, capital was bargain-hunting broad-based ETF products in the ETF market. Specifically, as of September 29, among the top ten ETFs by net inflows since the start of this week, six were equity ETFs. Among them,</span><span class="l-zh">据中证报，今日，A股大消费板块整体温和走强，酿酒、粮食等行业表现活跃，多只相关主题ETF表现突出。本周以来A股市场整体震荡回调，多只宽基ETF产品逆势“吸金”。其中，疫苗、创新药、医疗等细分行业表现强势，多只相关主题ETF今日涨幅超3%，领涨ETF市场。今日，受跨节资金拆借交易等因素影响，部分货币、债券类ETF产品成交金额显著放大。其中，短融ETF海富通成交额超700亿元，银华日利ETF成交额超300亿元。资金流动方面，资金在ETF市场上逢低吸纳宽基ETF产品。具体来看，截至9月29日，在本周以来资金净流入额排名前十的ETF中，有6只为股票ETF。其中，</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://flash.jin10.com/detail/20260930203908295800" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="medium"
+           data-search="美国8月商品贸易逆差意外扩大 u.s. august goods trade deficit unexpectedly widens 美国8月商品贸易逆差意外扩大 金十数据9月30日讯，受进口增加影响，美国8月商品贸易逆差意外扩大。美国商务部周三公布的数据显示，商品贸易逆差较上月增长11.5%，达到1326亿美元，创下2025年初以来的最大缺口。此前对经济学家进行的调查显示，预估中值为逆差1150亿美元。上述数据未针对通胀进行调整。 jinshi data, september 30 - affected by increased imports, the us august goods trade deficit unexpectedly widened. data released by the us department of commerce on wednesday showed that the goods trade deficit increased 11.5% from the previous month to usd 132.6 billion, the largest gap since early 2025. a previous survey of economists showed a median estimate of a usd 115 billion deficit. the data are not adjusted for inflation. 金十数据9月30日讯，受进口增加影响，美国8月商品贸易逆差意外扩大。美国商务部周三公布的数据显示，商品贸易逆差较上月增长11.5%，达到1326亿美元，创下2025年初以来的最大缺口。此前对经济学家进行的调查显示，预估中值为逆差1150亿美元。上述数据未针对通胀进行调整。 金十数据 fiscal_trade fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="2026-09-30T20:39:08+08:00" datetime="2026-09-30T20:39:08+08:00">09-30<br>20:39</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-30T20:39:08+08:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">金十数据</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">U.S. August goods trade deficit unexpectedly widens</span><span class="l-zh">美国8月商品贸易逆差意外扩大</span></h2>
+            <p class="tp-sum"><span class="l-en">Jinshi Data, September 30 - Affected by increased imports, the US August goods trade deficit unexpectedly widened. Data released by the US Department of Commerce on Wednesday showed that the goods trade deficit increased 11.5% from the previous month to USD 132.6 billion, the largest gap since early 2025. A previous survey of economists showed a median estimate of a USD 115 billion deficit. The data are not adjusted for inflation.</span><span class="l-zh">金十数据9月30日讯，受进口增加影响，美国8月商品贸易逆差意外扩大。美国商务部周三公布的数据显示，商品贸易逆差较上月增长11.5%，达到1326亿美元，创下2025年初以来的最大缺口。此前对经济学家进行的调查显示，预估中值为逆差1150亿美元。上述数据未针对通胀进行调整。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://news.10jqka.com.cn/20260930/c680420548.shtml" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="medium"
+           data-search="9月30日 周三《新闻联播》要闻14条 september 30, wednesday, xinwen lianbo highlights: 14 items 9月30日 周三《新闻联播》要闻14条 1、烈士纪念日向人民英雄敬献花篮仪式在京隆重举行； 2、庆祝中华人民共和国成立77周年招待会在京举行 习近平发表重要讲话； 3、人民日报社论：在新的伟大征程上接续奋斗再创辉煌——热烈庆祝中华人民共和国成立七十七周年； 4、习近平同文莱苏丹就中文建交35周年互致贺电； 5、【“十五五”开好局起好步】我国加快建设现代化水网； 6、9月制造业采购经理指数回升 重回扩张区间； 7、喜迎国庆 各地节日氛围浓厚； 8、254项国家标准10月1日起实施； 9、中欧联合研制“微笑”卫星首批观测图像发布； 10、经港珠澳大桥供港鲜活食品明天起将全天通关； 11、我驻国际组 1. the flower basket presentation ceremony to people's heroes on martyrs' day was grandly held in beijing; 2. the reception celebrating the 77th anniversary of the founding of the people's republic of china was held in beijing, and xi jinping delivered an important speech; 3. people's daily editorial: continue striving and create new glory on the new great journey - warmly celebrating the 77th anniversary of the founding of the people's republic of china; 4. xi jinping and the sultan of brunei exchanged congratulatory messages on the 35th anniversary of the establishment of china-brunei diplomatic relations; 5. [getting off to a good start and making good progress in the 15th five-year plan] china is accelerating the construction of a modern water network; 6. the september manufacturing purchasing managers' index rebounded and returned to the expansion range; 7. welcoming national day, festive atmosphere is strong across the country; 8. 254 national standards will take effect from october 1; 9. the first batch of observation images from the 'smile' satellite jointly developed by china and europe was released; 10. fresh food supplied to hong kong via the hong kong-zhuhai-macao bridge will begin 24-hour customs clearance tomorrow; 11. our permanent mission to the international organization 1、烈士纪念日向人民英雄敬献花篮仪式在京隆重举行； 2、庆祝中华人民共和国成立77周年招待会在京举行 习近平发表重要讲话； 3、人民日报社论：在新的伟大征程上接续奋斗再创辉煌——热烈庆祝中华人民共和国成立七十七周年； 4、习近平同文莱苏丹就中文建交35周年互致贺电； 5、【“十五五”开好局起好步】我国加快建设现代化水网； 6、9月制造业采购经理指数回升 重回扩张区间； 7、喜迎国庆 各地节日氛围浓厚； 8、254项国家标准10月1日起实施； 9、中欧联合研制“微笑”卫星首批观测图像发布； 10、经港珠澳大桥供港鲜活食品明天起将全天通关； 11、我驻国际组 同花顺 industrial industry & manufacturing 工业与制造业 ">
+          <time class="tp-when" data-t="2026-09-30T11:49:19+00:00" datetime="2026-09-30T11:49:19+00:00">09-30<br>11:49</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-30T11:49:19+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">同花顺</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">September 30, Wednesday, Xinwen Lianbo highlights: 14 items</span><span class="l-zh">9月30日 周三《新闻联播》要闻14条</span></h2>
+            <p class="tp-sum"><span class="l-en">1. The flower basket presentation ceremony to people's heroes on Martyrs' Day was grandly held in Beijing; 2. The reception celebrating the 77th anniversary of the founding of the People's Republic of China was held in Beijing, and Xi Jinping delivered an important speech; 3. People's Daily editorial: Continue striving and create new glory on the new great journey - warmly celebrating the 77th anniversary of the founding of the People's Republic of China; 4. Xi Jinping and the Sultan of Brunei exchanged congratulatory messages on the 35th anniversary of the establishment of China-Brunei diplomatic relations; 5. [Getting off to a good start and making good progress in the 15th Five-Year Plan] China is accelerating the construction of a modern water network; 6. The September manufacturing purchasing managers' index rebounded and returned to the expansion range; 7. Welcoming National Day, festive atmosphere is strong across the country; 8. 254 national standards will take effect from October 1; 9. The first batch of observation images from the 'Smile' satellite jointly developed by China and Europe was released; 10. Fresh food supplied to Hong Kong via the Hong Kong-Zhuhai-Macao Bridge will begin 24-hour customs clearance tomorrow; 11. Our permanent mission to the international organization</span><span class="l-zh">1、烈士纪念日向人民英雄敬献花篮仪式在京隆重举行； 2、庆祝中华人民共和国成立77周年招待会在京举行 习近平发表重要讲话； 3、人民日报社论：在新的伟大征程上接续奋斗再创辉煌——热烈庆祝中华人民共和国成立七十七周年； 4、习近平同文莱苏丹就中文建交35周年互致贺电； 5、【“十五五”开好局起好步】我国加快建设现代化水网； 6、9月制造业采购经理指数回升 重回扩张区间； 7、喜迎国庆 各地节日氛围浓厚； 8、254项国家标准10月1日起实施； 9、中欧联合研制“微笑”卫星首批观测图像发布； 10、经港珠澳大桥供港鲜活食品明天起将全天通关； 11、我驻国际组</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://news.10jqka.com.cn/20260930/c680423033.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="华灿光电：2026年度向特定对象发行股票申请获深交所受理 hc semitek: application for 2026 targeted issuance of shares to specific targets accepted by the shenzhen stock exchange 华灿光电：2026年度向特定对象发行股票申请获深交所受理 华灿光电公告，公司2026年度向特定对象发行股票申请于2026年9月30日获深圳证券交易所受理。深交所核对后认为申请文件齐备，决定予以受理。 hc semitek announced that the company's application for a targeted issuance of shares to specific objects for 2026 was accepted by the shenzhen stock exchange on september 30, 2026. after review, the shenzhen stock exchange deemed the application documents complete and decided to accept them. 华灿光电公告，公司2026年度向特定对象发行股票申请于2026年9月30日获深圳证券交易所受理。深交所核对后认为申请文件齐备，决定予以受理。 同花顺 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-09-30T12:40:26+00:00" datetime="2026-09-30T12:40:26+00:00">09-30<br>12:40</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-30T12:40:26+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">同花顺</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">HC Semitek: Application for 2026 targeted issuance of shares to specific targets accepted by the Shenzhen Stock Exchange</span><span class="l-zh">华灿光电：2026年度向特定对象发行股票申请获深交所受理</span></h2>
+            <p class="tp-sum"><span class="l-en">HC Semitek announced that the company's application for a targeted issuance of shares to specific objects for 2026 was accepted by the Shenzhen Stock Exchange on September 30, 2026. After review, the Shenzhen Stock Exchange deemed the application documents complete and decided to accept them.</span><span class="l-zh">华灿光电公告，公司2026年度向特定对象发行股票申请于2026年9月30日获深圳证券交易所受理。深交所核对后认为申请文件齐备，决定予以受理。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://news.10jqka.com.cn/20260930/c680420637.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="长城证券：深圳新江南拟减持不超1.5%股份 great wall securities: shenzhen xinjiangnan plans to reduce its stake by no more than 1.5% 长城证券：深圳新江南拟减持不超1.5%股份 长城证券公告，持股5%以上股东深圳新江南投资有限公司持有公司股份4.49亿股，占公司总股本比例11.12%，计划于2026年10月29日至2027年1月28日期间，通过集中竞价或大宗交易减持不超过6051.64万股，占公司总股本比例不超过1.5%。 great wall securities announced that shareholder shenzhen xinjiangnan investment co., ltd., which holds more than 5% of the company's shares, holds 449 million shares, accounting for 11.12% of the company's total share capital. it plans to reduce its holdings by no more than 60.5164 million shares through centralized bidding or block trades during the period from october 29, 2026 to january 28, 2027, accounting for no more than 1.5% of the company's total share capital. 长城证券公告，持股5%以上股东深圳新江南投资有限公司持有公司股份4.49亿股，占公司总股本比例11.12%，计划于2026年10月29日至2027年1月28日期间，通过集中竞价或大宗交易减持不超过6051.64万股，占公司总股本比例不超过1.5%。 同花顺 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-09-30T11:52:15+00:00" datetime="2026-09-30T11:52:15+00:00">09-30<br>11:52</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-30T11:52:15+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">同花顺</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Great Wall Securities: Shenzhen Xinjiangnan plans to reduce its stake by no more than 1.5%</span><span class="l-zh">长城证券：深圳新江南拟减持不超1.5%股份</span></h2>
+            <p class="tp-sum"><span class="l-en">Great Wall Securities announced that shareholder Shenzhen Xinjiangnan Investment Co., Ltd., which holds more than 5% of the company's shares, holds 449 million shares, accounting for 11.12% of the company's total share capital. It plans to reduce its holdings by no more than 60.5164 million shares through centralized bidding or block trades during the period from October 29, 2026 to January 28, 2027, accounting for no more than 1.5% of the company's total share capital.</span><span class="l-zh">长城证券公告，持股5%以上股东深圳新江南投资有限公司持有公司股份4.49亿股，占公司总股本比例11.12%，计划于2026年10月29日至2027年1月28日期间，通过集中竞价或大宗交易减持不超过6051.64万股，占公司总股本比例不超过1.5%。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3172914" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="长城证券：股东深圳新江南投资有限公司拟减持不超过公司总股本1.5%，减持期间为2026年10月29日至2027年1月28日，原因为业务发展需求及资金需求 great wall securities: shareholder shenzhen xinjiangnan investment co., ltd. plans to reduce its stake by no more than 1.5% of the company's total share capital, with the reduction period from october 29, 2026 to january 28, 2027, due to business development needs and funding needs 长城证券：股东深圳新江南投资有限公司拟减持不超过公司总股本1.5%，减持期间为2026年10月29日至2027年1月28日，原因为业务发展需求及资金需求 长城证券：股东深圳新江南投资有限公司拟减持不超过公司总股本1.5%，减持期间为2026年10月29日至2027年1月28日，原因为业务发展需求及资金需求。 great wall securities: shareholder shenzhen xinjiangnan investment co., ltd. plans to reduce its holdings by no more than 1.5% of the company's total share capital. the reduction period is from october 29, 2026 to january 28, 2027, due to business development needs and funding needs. 长城证券：股东深圳新江南投资有限公司拟减持不超过公司总股本1.5%，减持期间为2026年10月29日至2027年1月28日，原因为业务发展需求及资金需求。 华尔街见闻 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-09-30T11:51:28+00:00" datetime="2026-09-30T11:51:28+00:00">09-30<br>11:51</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-30T11:51:28+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Great Wall Securities: Shareholder Shenzhen Xinjiangnan Investment Co., Ltd. plans to reduce its stake by no more than 1.5% of the company's total share capital, with the reduction period from October 29, 2026 to January 28, 2027, due to business development needs and funding needs</span><span class="l-zh">长城证券：股东深圳新江南投资有限公司拟减持不超过公司总股本1.5%，减持期间为2026年10月29日至2027年1月28日，原因为业务发展需求及资金需求</span></h2>
+            <p class="tp-sum"><span class="l-en">Great Wall Securities: Shareholder Shenzhen Xinjiangnan Investment Co., Ltd. plans to reduce its holdings by no more than 1.5% of the company's total share capital. The reduction period is from October 29, 2026 to January 28, 2027, due to business development needs and funding needs.</span><span class="l-zh">长城证券：股东深圳新江南投资有限公司拟减持不超过公司总股本1.5%，减持期间为2026年10月29日至2027年1月28日，原因为业务发展需求及资金需求。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3172893" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="康希诺：正在进行mrna预防用疫苗及治疗性生物制品的开发，以及相关递送系统的开发 cansino: currently conducting development of mrna preventive vaccines and therapeutic biological products, as well as related delivery systems 康希诺：正在进行mrna预防用疫苗及治疗性生物制品的开发，以及相关递送系统的开发 康希诺发布公告，股票于2026年9月28日、9月29日及9月30日连续3个交易日内日收盘价格涨幅偏离值累计超过30%，根据《上海证券交易所交易规则》《上海证券交易所科创板股票异常交易实时监控细则》的有关规定，属于股票交易异常波动情形。公司关注到近期市场上关于mrna技术的发展，海外mrna肿瘤疫苗临床阶段性数据发布或计划公开。 cansino announced that the cumulative deviation of the daily closing price of its stock exceeded 30% over three consecutive trading days on september 28, september 29, and september 30, 2026. according to the relevant provisions of the shanghai stock exchange trading rules and the shanghai stock exchange rules for real-time monitoring of abnormal trading on the star market, this constitutes abnormal stock trading fluctuation. the company noted recent market attention to the development of mrna technology and the release or planned disclosure of phased clinical data for overseas mrna cancer vaccines. 康希诺发布公告，股票于2026年9月28日、9月29日及9月30日连续3个交易日内日收盘价格涨幅偏离值累计超过30%，根据《上海证券交易所交易规则》《上海证券交易所科创板股票异常交易实时监控细则》的有关规定，属于股票交易异常波动情形。公司关注到近期市场上关于mrna技术的发展，海外mrna肿瘤疫苗临床阶段性数据发布或计划公开。 华尔街见闻 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-09-30T10:53:34+00:00" datetime="2026-09-30T10:53:34+00:00">09-30<br>10:53</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-30T10:53:34+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">CanSino: Currently conducting development of mRNA preventive vaccines and therapeutic biological products, as well as related delivery systems</span><span class="l-zh">康希诺：正在进行mRNA预防用疫苗及治疗性生物制品的开发，以及相关递送系统的开发</span></h2>
+            <p class="tp-sum"><span class="l-en">CanSino announced that the cumulative deviation of the daily closing price of its stock exceeded 30% over three consecutive trading days on September 28, September 29, and September 30, 2026. According to the relevant provisions of the Shanghai Stock Exchange Trading Rules and the Shanghai Stock Exchange Rules for Real-Time Monitoring of Abnormal Trading on the STAR Market, this constitutes abnormal stock trading fluctuation. The company noted recent market attention to the development of mRNA technology and the release or planned disclosure of phased clinical data for overseas mRNA cancer vaccines.</span><span class="l-zh">康希诺发布公告，股票于2026年9月28日、9月29日及9月30日连续3个交易日内日收盘价格涨幅偏离值累计超过30%，根据《上海证券交易所交易规则》《上海证券交易所科创板股票异常交易实时监控细则》的有关规定，属于股票交易异常波动情形。公司关注到近期市场上关于mRNA技术的发展，海外mRNA肿瘤疫苗临床阶段性数据发布或计划公开。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://wallstreetcn.com/livenews/3172882" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="水利部：确保完成今年全年水利建设投资1万亿元目标 ministry of water resources: ensure completion of this year's 1 trillion yuan target for water conservancy construction investment 水利部：确保完成今年全年水利建设投资1万亿元目标 水利部规划计划司司长李明30日在国新办新闻发布会上表示，现在距离年底还有3个月时间，水利部将进一步加大工作力度，确保实现全年新开工重大水利工程40项、完成水利建设投资1万亿元的目标。（上证报） li ming, director of the planning and program department of the ministry of water resources, said at a state council information office press conference on the 30th that there are still 3 months left before the end of the year. the ministry of water resources will further intensify its work to ensure the achievement of the goals of starting construction on 40 major water conservancy projects for the year and completing 1 trillion yuan in water conservancy construction investment. (shanghai securities news) 水利部规划计划司司长李明30日在国新办新闻发布会上表示，现在距离年底还有3个月时间，水利部将进一步加大工作力度，确保实现全年新开工重大水利工程40项、完成水利建设投资1万亿元的目标。（上证报） 华尔街见闻 markets equity market 股票市场 510300.ss">
+          <time class="tp-when" data-t="2026-09-30T10:36:24+00:00" datetime="2026-09-30T10:36:24+00:00">09-30<br>10:36</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-30T10:36:24+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Ministry of Water Resources: Ensure completion of this year's 1 trillion yuan target for water conservancy construction investment</span><span class="l-zh">水利部：确保完成今年全年水利建设投资1万亿元目标</span></h2>
+            <p class="tp-sum"><span class="l-en">Li Ming, director of the Planning and Program Department of the Ministry of Water Resources, said at a State Council Information Office press conference on the 30th that there are still 3 months left before the end of the year. The Ministry of Water Resources will further intensify its work to ensure the achievement of the goals of starting construction on 40 major water conservancy projects for the year and completing 1 trillion yuan in water conservancy construction investment. (Shanghai Securities News)</span><span class="l-zh">水利部规划计划司司长李明30日在国新办新闻发布会上表示，现在距离年底还有3个月时间，水利部将进一步加大工作力度，确保实现全年新开工重大水利工程40项、完成水利建设投资1万亿元的目标。（上证报）</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">510300.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://www.stcn.com/article/detail/4204275.html" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="财政部：1—8月全国国有企业利润总额同比增长0.2% ministry of finance: total profits of state-owned enterprises nationwide rose 0.2% year-on-year in january-august 财政部：1—8月全国国有企业利润总额同比增长0.2%    证券时报 fiscal_trade fiscal & trade 财政与贸易 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Ministry of Finance: Total profits of state-owned enterprises nationwide rose 0.2% year-on-year in January-August</span><span class="l-zh">财政部：1—8月全国国有企业利润总额同比增长0.2%</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/topicDetail/521957" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="专题·四点半观市 | ﻿机构：关注假期场景消费品类格局变化 专题 special topic · 4:30 market view | institutions: focus on changes in the consumer goods category landscape during the holiday scenario special topic 专题·四点半观市 | ﻿机构：关注假期场景消费品类格局变化 专题    上海证券报 consumer consumer 消费 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Special topic · 4:30 Market View | Institutions: Focus on changes in the consumer goods category landscape during the holiday scenario Special topic</span><span class="l-zh">专题·四点半观市 | ﻿机构：关注假期场景消费品类格局变化 专题</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://www.cnstock.com/commonDetail/797669" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="国务院办公厅印发《关于发展体育赛事激发消费活力的意见》 general office of the state council issues the opinions on developing sports events to stimulate consumer vitality 国务院办公厅印发《关于发展体育赛事激发消费活力的意见》    上海证券报 consumer consumer 消费 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">General Office of the State Council issues the Opinions on Developing Sports Events to Stimulate Consumer Vitality</span><span class="l-zh">国务院办公厅印发《关于发展体育赛事激发消费活力的意见》</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://www.cnstock.com/commonDetail/797581" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="专家：中央财政首次实施房贷贴息不止于降低购房成本 expert: central government's first implementation of mortgage interest subsidies goes beyond merely lowering home purchase costs 专家：中央财政首次实施房贷贴息不止于降低购房成本    上海证券报 fiscal_trade fiscal & trade 财政与贸易 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Expert: Central government's first implementation of mortgage interest subsidies goes beyond merely lowering home purchase costs</span><span class="l-zh">专家：中央财政首次实施房贷贴息不止于降低购房成本</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.scmp.com/native/business/topics/hong-kong-global-hub-talent/article/3369062/how-hong-kong-entices-europes-young-start-talent?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="how hong kong entices europe’s young start-up talent  香港如何吸引欧洲年轻初创企业人才 hong kong’s efforts in advancing the city’s innovation and technology (i&t) industry have been highlighted in a number of international surveys in recent years.
+one of the most recent was the international institute for management development’s “world competitiveness ranking 2026”, which placed hong kong second among 70 economies worldwide.
+the city is also part of the shenzhen-hong kong-guangzhou innovation cluster, which retained first place globally in the world intellectual property...  近年来，多项国际调查凸显了香港在推动城市创新科技（i&t）产业方面的努力。
+其中最新的一项是国际管理发展学院的《2026年世界竞争力排名》，该排名将香港列为全球70个经济体中的第二位。
+这座城市还 scmp - business property tech_policy property 房地产 tech policy 科技政策 512200.ss">
+          <time class="tp-when" data-t="2026-09-30T08:00:12+00:00" datetime="2026-09-30T08:00:12+00:00">09-30<br>08:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-30T08:00:12+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-medium"><b>56</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">How Hong Kong entices Europe’s young start-up talent</span><span class="l-zh">香港如何吸引欧洲年轻初创企业人才</span></h2>
+            <p class="tp-sum"><span class="l-en">Hong Kong’s efforts in advancing the city’s innovation and technology (I&T) industry have been highlighted in a number of international surveys in recent years.
+One of the most recent was the International Institute for Management Development’s “World Competitiveness Ranking 2026”, which placed Hong Kong second among 70 economies worldwide.
+The city is also part of the Shenzhen-Hong Kong-Guangzhou innovation cluster, which retained first place globally in the World Intellectual Property...</span><span class="l-zh">近年来，多项国际调查凸显了香港在推动城市创新科技（I&T）产业方面的努力。
+其中最新的一项是国际管理发展学院的《2026年世界竞争力排名》，该排名将香港列为全球70个经济体中的第二位。
+这座城市还</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-fiscal" href="https://finance.eastmoney.com/a/202609303887866875.html" target="_blank" rel="noopener"
+           data-theme="fiscal" data-importance="medium"
+           data-search="外国企业对特定挤出涂层磁线提起337调查申请 foreign company files section 337 investigation application concerning certain extrusion-coated magnet wire 外国企业对特定挤出涂层磁线提起337调查申请 【外国企业对特定挤出涂层磁线提起337调查申请】据中国贸易救济信息网消息，2026年9月29日，美国essex solutions inc.、美国essex solutions usa llc根据《美国1930年关税法》第337节规定向美国国际贸易委员会提出申请，主张对美出口、在美进口及销售的特定挤出涂层磁线违反了美国337条款。 [foreign companies file section 337 investigation application over certain extrusion-coated magnet wire] according to the china trade remedy information network, on september 29, 2026, us-based essex solutions inc. and essex solutions usa llc filed an application with the us international trade commission under section 337 of the us tariff act of 1930, alleging that certain extrusion-coated magnet wire exported to, imported into, and sold in the united states violates us section 337. 【外国企业对特定挤出涂层磁线提起337调查申请】据中国贸易救济信息网消息，2026年9月29日，美国essex solutions inc.、美国essex solutions usa llc根据《美国1930年关税法》第337节规定向美国国际贸易委员会提出申请，主张对美出口、在美进口及销售的特定挤出涂层磁线违反了美国337条款。 eastmoney fiscal_trade fiscal & trade 财政与贸易 ">
+          <time class="tp-when" data-t="2026-09-30 20:25:54" datetime="2026-09-30 20:25:54">09-30<br>20:25</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-30 20:25:54"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span></span>
+              <span class="cn-src">Eastmoney</span>
+              <span class="cn-imp imp-medium"><b>55</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Foreign company files Section 337 investigation application concerning certain extrusion-coated magnet wire</span><span class="l-zh">外国企业对特定挤出涂层磁线提起337调查申请</span></h2>
+            <p class="tp-sum"><span class="l-en">[Foreign companies file Section 337 investigation application over certain extrusion-coated magnet wire] According to the China Trade Remedy Information Network, on September 29, 2026, US-based Essex Solutions Inc. and Essex Solutions USA LLC filed an application with the US International Trade Commission under Section 337 of the US Tariff Act of 1930, alleging that certain extrusion-coated magnet wire exported to, imported into, and sold in the United States violates US Section 337.</span><span class="l-zh">【外国企业对特定挤出涂层磁线提起337调查申请】据中国贸易救济信息网消息，2026年9月29日，美国Essex Solutions Inc.、美国Essex Solutions USA LLC根据《美国1930年关税法》第337节规定向美国国际贸易委员会提出申请，主张对美出口、在美进口及销售的特定挤出涂层磁线违反了美国337条款。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/jjxw/2026-09-30/doc-initpxxr5885304.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="上半年境外对境内 证券投资净增加117亿美元 in the first half of the year, net foreign investment in domestic securities increased by us$11.7 billion 上半年境外对境内 证券投资净增加117亿美元    新浪财经股票 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-09-30" datetime="2026-09-30">09-30</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-30"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">In the first half of the year, net foreign investment in domestic securities increased by US$11.7 billion</span><span class="l-zh">上半年境外对境内 证券投资净增加117亿美元</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/stock/s/2026-09-30/doc-initqeff7160211.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="股海导航_2026年9月30日_沪深股市公告与交易提示 stock market navigation_september 30, 2026_shanghai and shenzhen stock market announcements and trading tips 股海导航_2026年9月30日_沪深股市公告与交易提示    新浪财经股票 markets equity market 股票市场 ashr">
+          <time class="tp-when" data-t="2026-09-30" datetime="2026-09-30">09-30</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-30"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Stock Market Navigation_September 30, 2026_Shanghai and Shenzhen stock market announcements and trading tips</span><span class="l-zh">股海导航_2026年9月30日_沪深股市公告与交易提示</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">ASHR</span></div>
+          </div>
+        </a>
+        
+      </div>
+      <div class="cn-none hidden" id="none"><h3><span class="l-en">No stories match that view.</span><span class="l-zh">没有符合当前视图的新闻。</span></h3><p><span class="l-en">Clear the search or switch back to All.</span><span class="l-zh">清空搜索或切回全部。</span></p></div>
+
+      <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+    </div>
+
+    <aside class="cn-side">
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Scheduled catalysts</span><span class="l-zh">排定催化</span></h2>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">·</span><span class="cu"><span class="l-en">today</span><span class="l-zh">今</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">PMI</span><span class="l-en">NBS PMI (mfg + non-mfg)</span><span class="l-zh">国家统计局 PMI（制造业＋非制造业）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">1</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">CAIXIN M</span><span class="l-en">Caixin Manufacturing PMI</span><span class="l-zh">财新制造业 PMI</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">5</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">CAIXIN S</span><span class="l-en">Caixin Services PMI</span><span class="l-zh">财新服务业 PMI</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">7</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">TRADE</span><span class="l-en">Customs trade (exports/imports)</span><span class="l-zh">海关进出口数据</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">7</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">FXRES</span><span class="l-en">FX reserves (SAFE)</span><span class="l-zh">外汇储备（外管局）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">12</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">CREDIT</span><span class="l-en">Money supply, RMB loans & TSF</span><span class="l-zh">货币供应、人民币贷款与社融</span></div>
+        </div>
+        
+      </section>
+
+      
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Exposures on the tape</span><span class="l-zh">相关标的</span></h2>
+        <div class="exp-pills">
+          
+          
+          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×13</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">CNY</span><span class="nm"><span class="l-en">yuan</span><span class="l-zh">人民币</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">510300.SS</span><span class="nm"><span class="l-en">CSI 300</span><span class="l-zh">沪深300</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512200.SS</span><span class="nm"><span class="l-en">property</span><span class="l-zh">房地产</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">ASHR</span><span class="nm"><span class="l-en">A-shares</span><span class="l-zh">A股</span></span></span>
+          
+        </div>
+      </section>
+      
+    </aside>
+  </section>
+
   
 </main>
 
