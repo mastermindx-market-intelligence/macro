@@ -714,6 +714,11 @@ def validate_native_closure(
     interpretations: bool = True,
 ) -> dict[str, dict[str, Any]]:
     try:
+        if type(manifest) is not dict:
+            try:
+                manifest = dict(manifest)
+            except (TypeError, ValueError) as exc:
+                raise EarningsPrivateClosureError("malformed_native_section") from exc
         value = validate_private_manifest(manifest)
         record_slugs = tuple(sorted(value["records"]))
         selected_slugs = tuple(slugs) if slugs is not None else record_slugs
@@ -982,7 +987,7 @@ def validate_native_closure(
         raise EarningsPrivateClosureError("malformed_native_section") from exc
 
 def validate_v2_manifest(value: object) -> dict[str, Any]:
-    if not isinstance(value, Mapping) or set(value) != {
+    if type(value) is not dict or set(value) != {
         "schema", "generation_id", "published_at", "source", "record_count", "ticker_count",
         "records", "context", "native", "native_source_cutoff", "previous_manifest",
     }:
@@ -1005,8 +1010,12 @@ def validate_v2_manifest(value: object) -> dict[str, Any]:
     return {**base, "native": native, "native_source_cutoff": value["native_source_cutoff"], "previous_manifest": value["previous_manifest"]}
 
 def validate_private_manifest(value: object) -> dict[str, Any]:
-    if not isinstance(value, Mapping):
-        return validate_v1_manifest(value)
+    if type(value) is not dict:
+        try:
+            validate_v1_manifest(value)
+        except EarningsPrivatePublicationError:
+            raise EarningsPrivateClosureError("malformed_native_section") from None
+        value = dict(value)
     schema = value.get("schema")
     if schema == MANIFEST_SCHEMA:
         return validate_v1_manifest(value)
