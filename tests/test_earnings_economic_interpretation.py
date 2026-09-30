@@ -2,6 +2,7 @@ from decimal import Context, Decimal, ROUND_CEILING, ROUND_DOWN, localcontext
 from fractions import Fraction
 import ast
 import copy
+from datetime import date, datetime
 import hashlib
 import json
 import math
@@ -1477,6 +1478,24 @@ def test_compare_eps_pins_the_known_default_context_double_rounding():
 def test_compare_eps_still_refuses_a_result_with_too_many_digits():
     with pytest.raises(EconomicInterpretationError, match='EPS growth arithmetic is not defined'):
         compare_eps('1E+40', '1', precision=2)
+
+
+def test_clock_helpers_format_short_years_with_zero_padding():
+    assert economic_interpretation._format_instant(datetime(999, 1, 2, 3, 4, 5)) == '0999-01-02T03:04:05Z'
+    assert economic_interpretation._format_date(date(999, 1, 2)) == '0999-01-02'
+
+
+def test_parsers_accept_short_years_but_keep_the_canonical_forms():
+    instant = datetime(999, 1, 2, 3, 4, 5)
+    day = date(999, 1, 2)
+    assert economic_interpretation._parse_instant('0999-01-02T03:04:05Z', 'x') == instant
+    assert economic_interpretation._parse_date('0999-01-02', 'x') == day
+    for value in (
+        '2026-9-30T00:00:00Z', '2026-09-30T00:00:00+00:00', '2026-02-30T00:00:00Z',
+        '0000-01-01T00:00:00Z',
+    ):
+        with pytest.raises(EconomicInterpretationError):
+            economic_interpretation._parse_instant(value, 'x')
 
 
 def test_compare_eps_refuses_every_unreadable_argument():
