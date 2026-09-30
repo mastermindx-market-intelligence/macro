@@ -283,6 +283,8 @@ class ConditionalCountingStore(CountingLocalStore):
         self.fail_source_readback_after_manifest: str | None = None
         self.fail_source_readback_keys: dict[str, bytes] = {}
         self._manifest_written = False
+        self.versioned_reads: list[str] = []
+        self.capability_error: BaseException | None = None
 
     def get_bytes_strict_bounded(self, key: str, maximum_bytes: int):
         with self._lock:
@@ -301,6 +303,8 @@ class ConditionalCountingStore(CountingLocalStore):
         return result
 
     def get_bytes_strict_bounded_versioned(self, key: str, maximum_bytes: int):
+        with self._lock:
+            self.versioned_reads.append(key)
         result = super().get_bytes_strict_bounded_versioned(key, maximum_bytes)
         if (
             self.race_after_key is not None
@@ -327,6 +331,11 @@ class ConditionalCountingStore(CountingLocalStore):
                 self._race_written = True
                 self._race_arm()
             return written
+
+    def validate_strict_conditional_write_capability(self):
+        if self.capability_error is not None:
+            raise self.capability_error
+        return super().validate_strict_conditional_write_capability()
 
     def get_bytes_strict_bounded_after_write(self):
         return None
@@ -364,13 +373,33 @@ class NoConditionalStore:
         self.store = LocalStore(root)
         self.calls: list[str] = []
 
+    def get_bytes_strict(self, key: str):
+        self.calls.append(f"strict:{key}")
+        return self.store.get_bytes_strict(key)
+
     def get_bytes_strict_bounded(self, key: str, maximum_bytes: int):
         self.calls.append(f"read:{key}")
         return self.store.get_bytes_strict_bounded(key, maximum_bytes)
 
+    def get_bytes_strict_bounded_versioned(self, key: str, maximum_bytes: int):
+        self.calls.append(f"versioned:{key}")
+        return self.store.get_bytes_strict_bounded_versioned(key, maximum_bytes)
+
     def get_bytes(self, key: str):
         self.calls.append(f"get:{key}")
         return self.store.get_bytes(key)
+
+    def list_prefix(self, prefix: str):
+        self.calls.append(f"list:{prefix}")
+        return self.store.list_prefix(prefix)
+
+    def exists(self, key: str):
+        self.calls.append(f"exists:{key}")
+        return self.store.exists(key)
+
+    def upload_time(self, key: str):
+        self.calls.append(f"upload_time:{key}")
+        return self.store.upload_time(key)
 
     def put_bytes(self, key: str, data: bytes, content_type: str = "application/octet-stream"):
         self.calls.append(f"put:{key}")

@@ -1770,9 +1770,22 @@ def publish_private_publication(
         raise TypeError("prepared must be PreparedPrivatePublication")
     if not isinstance(store, Store) or not isinstance(store, StrictBoundedReadStore):
         raise EarningsPrivatePublicationError("private earnings publication requires a strict store")
-    if prepared.manifest.get("schema") != MANIFEST_SCHEMA:
-        raise EarningsPrivatePublicationError("v2 private publication is not enabled")
+    prepared_schema = prepared.manifest.get("schema")
+    if prepared_schema not in (MANIFEST_SCHEMA, MANIFEST_SCHEMA_V2):
+        raise EarningsPrivatePublicationError("unsupported private manifest schema")
     with _PUBLISH_LOCK:
+        if prepared_schema == MANIFEST_SCHEMA_V2:
+            if (
+                not isinstance(store, StrictConditionalWriteStore)
+                or not callable(getattr(store, "validate_strict_conditional_write_capability", None))
+            ):
+                raise EarningsPrivatePublishConflict("conditional_write_unavailable")
+            try:
+                store.validate_strict_conditional_write_capability()
+            except EarningsPrivatePublicationError:
+                raise
+            except Exception as exc:
+                raise EarningsPrivatePublishConflict("conditional_write_unavailable") from exc
         verified_payloads = _validated_prepared_payloads(prepared)
         # Validate every caller-provided bound before either the idempotent
         # fast path or promotion can return.  Reusing this set also keeps

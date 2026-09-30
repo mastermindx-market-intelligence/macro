@@ -126,8 +126,9 @@ def test_rights_guard_and_surface(tmp_path, valid):
     assert issubclass(pp.EarningsPrivateClosureError, pp.EarningsPrivatePublicationError)
     with pytest.raises(ValueError):
         pp.EarningsPrivateClosureError("not-a-reason")
-    with pytest.raises(pp.EarningsPrivatePublicationError, match="v2 private publication is not enabled"):
-        pp.publish_private_publication(CountingLocalStore(tmp_path / "store"), valid)
+    with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
+        pp.publish_private_publication(NoConditionalStore(tmp_path / "store"), valid)
+    assert exc.value.reason == "conditional_write_unavailable"
     prepared = pp.prepare_private_publication(stage_economic_case(tmp_path / "stage", "valid"), retire_slots=["b", "a", "b"])
     assert prepared.retired_slots == ("a", "b")
     with pytest.raises(pp.EarningsPrivateClosureError) as exc:
@@ -278,6 +279,23 @@ def test_round_b_fixture_surface(tmp_path):
     assert not list((stage / "native" / "documents").iterdir())
     assert not list((stage / "native" / "source_bodies").iterdir())
     assert pointer["schema"] == pp.POINTER_SCHEMA
+
+
+def test_v2_publication_requires_conditional_store(tmp_path):
+    store, _baseline = published_v1_case(tmp_path)
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
+    no_conditional = NoConditionalStore(tmp_path / "no-conditional")
+    with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
+        pp.publish_private_publication(no_conditional, prepared)
+    assert exc.value.reason == "conditional_write_unavailable"
+    assert no_conditional.calls == []
+
+    store.capability_error = RuntimeError("capability probe failed")
+    with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
+        pp.publish_private_publication(store, prepared)
+    assert exc.value.reason == "conditional_write_unavailable"
+    assert store.versioned_reads == []
+    assert store.put_calls[-1] == pp.POINTER_KEY
 
 def _rename_one_directory_member(directory, suffix):
     path = next(iter(directory.glob(f"*{suffix}")))
