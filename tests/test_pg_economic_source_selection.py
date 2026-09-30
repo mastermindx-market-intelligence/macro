@@ -2084,6 +2084,19 @@ def test_an_older_filing_never_supersedes_a_newer_one(monkeypatch, chain):
     assert chain["refiled"][3]["document_metadata"]["revision"] == 2
 
 
+def test_the_source_order_reads_the_source_clock_and_not_the_first_observation(monkeypatch):
+    # The amendment is accepted after the root's source and before the root was first observed.  R6.1 orders source
+    # time, so it is admitted.
+    monkeypatch.setattr(refresh_module, "_PACE_S", 0)
+    root = _outcome(_acquired("same_source_rebuild"), None, "2026-08-05T00:00:00Z")[2]
+    assert root["workspace"]["lifecycle"]["source_available_at"] < "2026-07-30T18:00:00Z" < root["workspace"]["lifecycle"]["observed_at"]
+    amendment = _acquired("amendment_sequence")
+    assert amendment["acceptance_datetime"] == "2026-07-30T18:00:00Z"
+    reason, _detail, result = _outcome(amendment, root, "2026-08-06T00:00:00Z")
+    assert reason == "returned"
+    assert result["document_metadata"]["revision"] == 2
+
+
 def test_a_generation_id_can_repeat_along_a_chain_and_the_revision_cannot(chain):
     """Equal run clocks: a text that alternates in place rebuilds the same workspace at a later chain position."""
     first, _, _, root = chain["root"]
