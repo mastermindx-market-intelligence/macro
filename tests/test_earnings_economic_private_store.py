@@ -1060,6 +1060,9 @@ def test_stale_interpretation_identity_is_checked(tmp_path, economic_publish):
     with pytest.raises(pp.EarningsPrivateClosureError) as error:
         pp.load_economic_closure(store, manifest=rebuilt, slug=slug, interpretation="stale_ok")
     assert error.value.reason == "interpretation_mismatch"
+
+    control = pp.load_economic_closure(store, manifest=manifest, slug=slug, interpretation="stale_ok")
+    assert control["interpretation_state"] == "current"
     record_path.write_bytes(original)
 
 
