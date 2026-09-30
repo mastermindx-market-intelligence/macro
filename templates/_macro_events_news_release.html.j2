@@ -1,0 +1,84 @@
+{# Read-only display of engine.events_news_release_evidence output. This macro is
+   not a receipt validator: only a server-side call to the canonical adapter may
+   supply this schema. Never accept a client-authored projection as verified data. #}
+{% macro release_evidence(event, bi, snapshot_utc) -%}
+{% autoescape true %}
+{% set raw = event.get('official_evidence') %}
+{% set ev = raw if raw is mapping and raw.get('schema') == 'release_event_evidence.v1' and raw.get('display_only') is sameas true and raw.get('authority') is sameas false and raw.get('event_type') == event.get('type') and raw.get('release_date') == event.get('date') and raw.get('as_of_input') is string and raw.get('as_of_input') == snapshot_utc else none %}
+{% set labels = {
+  'cpi_headline_mom':['Headline CPI','整体 CPI'], 'cpi_core_mom':['Core CPI','核心 CPI'],
+  'ppi_headline_mom':['Producer prices','生产者价格'],
+  'pce_headline_mom':['Headline PCE','整体 PCE'], 'pce_core_mom':['Core PCE','核心 PCE'],
+  'nfp_payroll_change':['Payroll change','非农就业变化'], 'claims_initial':['Initial claims','初请失业金人数']
+} %}
+{% set reasons = {
+ 'unsupported_event_type':['Result coverage is not connected for this release.','此数据类型尚未接入官方结果。'],
+ 'invalid_as_of':['The evidence cutoff is missing or invalid.','证据截止时间缺失或无效。'],
+ 'published_precision_mismatch':['The value and its published precision disagree.','数值与其公布精度不一致。'],
+ 'verification_time_missing':['The verification time for this result was not supplied.','未提供此结果的核验时间。'],
+ 'invalid_reference_period':['The reference period could not be matched.','无法核对数据所属时期。'],
+ 'reference_period_conflict':['The supplied reference periods disagree.','提供的数据所属时期不一致。'],
+ 'reference_period_mismatch':['The receipt belongs to a different reference period.','该凭据对应其他数据时期。'],
+ 'ambiguous_reference_period':['Several reference periods match; no value was selected.','匹配到多个数据时期，暂不选取数值。'],
+ 'conflicting_first_receipts':['Conflicting first-result evidence needs review.','首次公布值的证据存在冲突，需要核查。'],
+ 'source_unavailable':['Official-result evidence was not supplied.','未提供官方结果证据。'],
+ 'quarantine_policy_unavailable':['Source-integrity checks are unavailable.','来源完整性检查暂不可用。'],
+ 'quarantine_policy_changed':['Source-integrity policy changed during this read.','读取期间来源完整性规则发生变化。'],
+ 'quarantined':['This source receipt is withheld for an integrity issue.','此来源凭据因完整性问题暂不显示。'],
+ 'not_available_as_of':['No qualified result was available by this cutoff.','截至此时间，尚无符合要求的结果。'],
+ 'receipt_integrity_failed':['The result did not pass the source-integrity checks.','该结果未通过来源完整性检查。'],
+ 'no_canonical_first_receipt':['A proposed correction is not an accepted first result.','待核查的更正不能替代首次公布值。'],
+ 'no_matching_receipt':['No exact result receipt is present in this snapshot.','此快照中没有精确匹配的结果凭据。']
+} %}
+{% set ns = namespace(metrics=[],available=0) %}
+{% if ev and ev.get('metrics') is sequence and ev.get('metrics') is not string and ev.get('metrics') is not mapping %}
+  {% for m in ev.metrics %}{% if m is mapping %}{% set ns.metrics = ns.metrics + [m] %}{% if m.get('status') == 'available' and m.get('actual') is number and m.get('actual') is not sameas true and m.get('actual') is not sameas false and m.get('display_value') is string and m.get('metric_id') in labels and m.get('unit') in ['percent','thousands'] %}{% set ns.available = ns.available + 1 %}{% endif %}{% endif %}{% endfor %}
+{% endif %}
+{% set available = ns.available if ev and not ev.get('reason') and ev.get('status') in ['available','partial'] else 0 %}
+{% if raw is not none %}
+<details class="nd-official-evidence" data-nd-official-count="{{ available }}" data-nd-evidence-asof="{{ ev.get('as_of') or '' if ev else '' }}">
+  <summary><span>{{ bi('Official result','官方结果') }}</span><span class="nd-official-status">{% if available %}{{ available }} {{ bi('available','项可查看') }}{% else %}{{ bi('Unavailable','暂不可用') }}{% endif %}<span aria-hidden="true">＋</span></span></summary>
+  <div class="nd-official-body">
+    {% if not ev %}
+      <p class="nd-official-missing">{{ bi('The evidence does not match this event or snapshot. No result is shown.','证据与此事件或快照不匹配，暂不显示结果。') }}</p>
+    {% elif ev.get('reason') %}
+      {% set why = reasons.get(ev.reason, reasons['source_unavailable']) %}<p class="nd-official-missing">{{ bi(why[0],why[1]) }}</p>
+    {% else %}
+      <p class="nd-official-intro">{{ bi('First-published figures. Compare the same measure and period before drawing conclusions.','以下为首次公布值。作出判断前，请比较相同指标与数据时期。') }}</p>
+      <div class="nd-official-metrics">
+      {% for m in ns.metrics %}
+        {% set label = labels.get(m.get('metric_id'), ['Release measure','数据指标']) %}
+        <section class="nd-official-metric">
+          <h5>{{ bi(label[0],label[1]) }}</h5>
+          {% if ev.get('status') in ['available','partial'] and m.get('status') == 'available' and m.get('actual') is number and m.get('actual') is not sameas true and m.get('actual') is not sameas false and m.get('display_value') is string and m.get('metric_id') in labels and m.get('unit') in ['percent','thousands'] %}
+            <p class="nd-official-value">{{ m.display_value }}{% if m.unit == 'percent' %}<span>%</span>{% endif %}</p>
+            <p class="nd-official-unit">{{ bi('Month over month','环比') if m.unit == 'percent' else bi('Thousands of people','千人') }}</p>
+            <p class="nd-official-period">{{ bi('Reference period','数据时期') }} · {{ m.get('period') if m.get('release') != 'claims' else m.get('official_reference_period') }}</p>
+            {% if m.get('correction_pending') is sameas true %}<p class="nd-official-correction">{{ bi('A proposed correction needs review. The first value is retained.','有待核查的更正，暂保留首次公布值。') }}</p>{% endif %}
+            <details class="nd-official-provenance" data-nd-provenance>
+              <summary>{{ bi('Inspect source & timing','核查来源与时间') }}<span aria-hidden="true">＋</span></summary>
+              <dl>
+                <dt>{{ bi('Publisher','发布机构') }}</dt><dd>{{ m.get('publisher') or bi('Not supplied','未提供') }}</dd>
+                <dt>{{ bi('Source published','来源公布时间') }}</dt><dd>{{ m.get('source_released_at') or bi('Not supplied','未提供') }}</dd>
+                <dt>{{ bi('First observed','首次观察时间') }}</dt><dd>{{ m.get('observed_at') or bi('Not supplied','未提供') }}</dd>
+                <dt>{{ bi('Verified','核验时间') }}</dt><dd>{{ m.get('verified_at') or bi('Not supplied','未提供') }}</dd>
+                <dt>{{ bi('Evidence available','证据可用时间') }}</dt><dd>{{ m.get('available_at') or bi('Not supplied','未提供') }}</dd>
+                <dt>{{ bi('Receipt ID','凭据编号') }}</dt><dd class="nd-proof-id">{{ m.get('receipt_id') or '—' }}</dd>
+                <dt>{{ bi('Source document hash','来源文档指纹') }}</dt><dd class="nd-proof-id">{{ m.get('source_sha256') or '—' }}</dd>
+              </dl>
+              {% set u = m.get('source_url') %}{% if u is string and u.startswith('https://') and '\\' not in u and '\n' not in u and '\r' not in u %}<a class="nd-text-link" href="{{ u }}" target="_blank" rel="noopener noreferrer">{{ bi('Open source document','打开来源文档') }} ↗<span class="nd-sr-only">{{ bi('(opens in a new tab)','（在新标签页打开）') }}</span></a>{% endif %}
+            </details>
+          {% else %}
+            {% set why = reasons.get(m.get('reason'), reasons['receipt_integrity_failed']) %}<p class="nd-official-missing">{{ bi(why[0],why[1]) }}</p>
+          {% endif %}
+        </section>
+      {% endfor %}
+      </div>
+    {% endif %}
+    {% if ev and ev.get('source_partial') is sameas true %}<p class="nd-evidence-cutoff">{{ bi('Some source records were unreadable. Shown figures passed their own checks.','部分来源记录无法读取，已显示数值均通过各自检查。') }}</p>{% endif %}
+    {% if ev and ev.get('as_of') %}<p class="nd-evidence-cutoff">{{ bi('Evidence cutoff','证据截止时间') }} · {{ ev.as_of }}</p>{% endif %}
+  </div>
+</details>
+{% endif %}
+{% endautoescape %}
+{%- endmacro %}
