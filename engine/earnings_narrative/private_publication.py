@@ -27,7 +27,11 @@ from engine.company_intelligence import documents, event_workspace, pg_profile
 from engine.earnings_narrative import economic_interpretation
 from engine.earnings_narrative.context_packets import (canonical_json_bytes, validate_context_manifest,
                                                       validate_context_packet_at_cutoff)
-from engine.research_vault.r2_store import StrictBoundedReadStore, Store
+from engine.research_vault.r2_store import (
+    StrictBoundedReadStore,
+    StrictConditionalWriteStore,
+    Store,
+)
 from engine.theme_graph import rights
 
 PRIVATE_PREFIX = "earnings_wire_private/v1"
@@ -137,6 +141,51 @@ _UNSAFE_HTML_RE = re.compile(
 )
 _PUBLISH_LOCK = threading.Lock()
 
+PUBLISH_CONFLICT_REASONS = (
+    "predecessor_conflict",
+    "downgrade_refused",
+    "slot_removed",
+    "retirement_invalid",
+    "chain_not_extended",
+    "conditional_write_unavailable",
+    "stale_native_cutoff",
+    "installed_unreadable",
+)
+NOT_FOUND_REASONS = (
+    "no_slot",
+    "unknown_generation",
+    "unknown_record",
+    "unknown_fact",
+    "absent_fact",
+)
+READ_UNAVAILABLE_REASONS = (
+    "interpretation_unsupported",
+    "rights_refused",
+    "evidence_retired",
+)
+_PUBLISH_CONFLICT_MESSAGES = {
+    "predecessor_conflict": "The installed private generation moved before publication.",
+    "downgrade_refused": "A v2 private generation cannot return to v1.",
+    "slot_removed": "An installed economic slot was removed without retirement.",
+    "retirement_invalid": "The economic slot retirement instruction is invalid.",
+    "chain_not_extended": "A retained native evidence chain was not extended.",
+    "conditional_write_unavailable": "The store offers no conditional pointer write so v2 promotion is refused.",
+    "stale_native_cutoff": "The candidate native source cutoff is older than the installed cutoff.",
+    "installed_unreadable": "The installed private generation cannot be read.",
+}
+_NOT_FOUND_MESSAGES = {
+    "no_slot": "No economic slot is currently available for this ticker.",
+    "unknown_generation": "The requested private generation is unknown.",
+    "unknown_record": "The requested economic record is unknown.",
+    "unknown_fact": "The requested economic fact is unknown.",
+    "absent_fact": "The requested economic fact has no source excerpt.",
+}
+_READ_UNAVAILABLE_MESSAGES = {
+    "interpretation_unsupported": "The stored economic interpretation is unsupported.",
+    "rights_refused": "Current rights do not permit this economic evidence.",
+    "evidence_retired": "The economic evidence was retired from the current generation.",
+}
+
 class EarningsPrivatePublicationError(RuntimeError):
     """Private staging, publication, or read verification failed closed."""
 
@@ -151,6 +200,50 @@ class EarningsPrivateClosureError(EarningsPrivatePublicationError):
             raise ValueError("unknown private closure reason")
         self.reason = reason
         super().__init__(message or _CLOSURE_MESSAGES[reason])
+
+
+class EarningsPrivatePublishConflict(EarningsPrivatePublicationError):
+    """A v2 publication cannot advance from the installed generation."""
+
+    def __init__(self, reason: str, message: str | None = None):
+        if reason not in PUBLISH_CONFLICT_REASONS:
+            raise ValueError("unknown private publish conflict reason")
+        self.reason = reason
+        super().__init__(message or _PUBLISH_CONFLICT_MESSAGES[reason])
+
+
+class EarningsPrivatePointerEffectUnknown(EarningsPrivatePublicationError):
+    """The conditional pointer write may or may not have taken effect."""
+
+    def __init__(self, generation_id: str, pointer_sha256: str, expected_version: str):
+        self.generation_id = generation_id
+        self.pointer_sha256 = pointer_sha256
+        self.expected_version = expected_version
+        super().__init__("private earnings pointer write effect is unknown")
+
+
+class EarningsEconomicNotFound(EarningsPrivateRecordNotFound):
+    """A typed economic record absence."""
+
+    def __init__(self, reason: str, message: str | None = None):
+        if reason not in NOT_FOUND_REASONS:
+            raise ValueError("unknown economic not-found reason")
+        self.reason = reason
+        super().__init__(message or _NOT_FOUND_MESSAGES[reason])
+
+
+class EarningsEconomicUnavailable(EarningsPrivatePublicationError):
+    """Current rights or interpretation support cannot serve economic evidence."""
+
+    def __init__(self, reason: str, message: str | None = None):
+        if reason not in READ_UNAVAILABLE_REASONS:
+            raise ValueError("unknown economic read-unavailable reason")
+        self.reason = reason
+        super().__init__(message or _READ_UNAVAILABLE_MESSAGES[reason])
+
+
+class EarningsPrivateManifestNotCurrent(EarningsPrivatePublicationError):
+    """The supplied manifest is not the generation named by the current pointer."""
 
 @dataclass(frozen=True)
 class PrivateArtifact:
@@ -210,6 +303,18 @@ def validate_slug(value: str) -> str:
 def validate_ticker(value: str) -> str:
     if not isinstance(value, str) or not _TICKER_RE.fullmatch(value):
         raise EarningsPrivatePublicationError("invalid earnings context ticker")
+    return value
+
+
+def validate_generation_id(value: str) -> str:
+    if type(value) is not str or not _GENERATION_RE.fullmatch(value):
+        raise EarningsPrivatePublicationError("invalid earnings generation id")
+    return value
+
+
+def validate_digest(value: str) -> str:
+    if type(value) is not str or not _SHA_RE.fullmatch(value):
+        raise EarningsPrivatePublicationError("invalid earnings digest")
     return value
 
 def _safe_fragment(value: Any, *, field: str) -> str:
@@ -1876,8 +1981,13 @@ __all__ = [
     "CLOSURE_REASONS",
     "CONTEXT_STAGE_DIR",
     "DOSSIER_PAGE",
+    "EarningsEconomicNotFound",
+    "EarningsEconomicUnavailable",
     "EarningsPrivateClosureError",
+    "EarningsPrivateManifestNotCurrent",
     "EarningsPrivatePublicationError",
+    "EarningsPrivatePublishConflict",
+    "EarningsPrivatePointerEffectUnknown",
     "EarningsPrivateRecordNotFound",
     "MANIFEST_SCHEMA",
     "MANIFEST_SCHEMA_V2",
@@ -1888,21 +1998,29 @@ __all__ = [
     "MAX_NATIVE_STAGE_MANIFEST_BYTES",
     "MAX_NATIVE_WORKSPACE_BYTES",
     "MAX_SOURCE_BODY_BYTES",
+    "NOT_FOUND_REASONS",
     "NATIVE_RIGHTS_REGISTRY_PATH",
     "NATIVE_STAGE_DIR",
     "NATIVE_STAGE_MANIFEST_NAME",
     "NATIVE_STAGE_SCHEMA",
     "POINTER_KEY",
     "POINTER_SCHEMA",
+    "PUBLISH_CONFLICT_REASONS",
     "PUBLISH_WORKERS",
+    "READ_UNAVAILABLE_REASONS",
     "PreparedPrivatePublication",
     "RECORD_SCHEMA",
     "RECORD_SCHEMA_V2",
     "RECORD_STAGE_DIR",
     "RECORD_UNAVAILABLE_REASONS",
     "assert_native_rights",
+    "load_current_economic_view",
+    "load_economic_closure",
+    "load_economic_evidence",
     "load_private_context_packet",
     "load_private_manifest",
+    "load_private_manifest_version",
+    "load_private_predecessor",
     "load_private_record",
     "prepare_private_publication",
     "publish_private_publication",
@@ -1914,6 +2032,8 @@ __all__ = [
     "validate_v1_record",
     "validate_v2_manifest",
     "validate_v2_record",
+    "validate_digest",
+    "validate_generation_id",
     "validate_slug",
     "validate_ticker",
 ]

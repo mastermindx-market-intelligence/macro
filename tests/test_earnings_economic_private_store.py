@@ -194,6 +194,71 @@ def test_native_stage_file_faults(tmp_path, valid):
         fault(stage)
         expect_closure(reason, pp.prepare_private_publication, stage)
 
+
+def test_round_b_public_surface(valid):
+    generation_id = valid.generation_id
+    digest = sha256(valid.manifest_bytes).hexdigest()
+
+    assert pp.validate_generation_id(generation_id) == generation_id
+    assert pp.validate_digest(digest) == digest
+    for value in (
+        type("Substr", (str,), {})(generation_id),
+        1,
+        generation_id.upper(),
+        generation_id + "\n",
+    ):
+        with pytest.raises(pp.EarningsPrivatePublicationError, match="invalid earnings generation id"):
+            pp.validate_generation_id(value)
+    for value in (
+        type("Substr", (str,), {})(digest),
+        1,
+        digest.upper(),
+        digest + "\n",
+    ):
+        with pytest.raises(pp.EarningsPrivatePublicationError, match="invalid earnings digest"):
+            pp.validate_digest(value)
+
+    assert pp.PUBLISH_CONFLICT_REASONS == (
+        "predecessor_conflict", "downgrade_refused", "slot_removed", "retirement_invalid",
+        "chain_not_extended", "conditional_write_unavailable", "stale_native_cutoff",
+        "installed_unreadable",
+    )
+    assert pp.NOT_FOUND_REASONS == (
+        "no_slot", "unknown_generation", "unknown_record", "unknown_fact", "absent_fact",
+    )
+    assert pp.READ_UNAVAILABLE_REASONS == (
+        "interpretation_unsupported", "rights_refused", "evidence_retired",
+    )
+    assert issubclass(pp.EarningsPrivatePublishConflict, pp.EarningsPrivatePublicationError)
+    assert issubclass(pp.EarningsPrivatePointerEffectUnknown, pp.EarningsPrivatePublicationError)
+    assert issubclass(pp.EarningsEconomicNotFound, pp.EarningsPrivateRecordNotFound)
+    assert issubclass(pp.EarningsEconomicUnavailable, pp.EarningsPrivatePublicationError)
+    assert not issubclass(pp.EarningsEconomicUnavailable, pp.EarningsPrivateRecordNotFound)
+    assert issubclass(pp.EarningsPrivateManifestNotCurrent, pp.EarningsPrivatePublicationError)
+
+    with pytest.raises(ValueError):
+        pp.EarningsPrivatePublishConflict("not-a-reason")
+    with pytest.raises(ValueError):
+        pp.EarningsEconomicNotFound("not-a-reason")
+    with pytest.raises(ValueError):
+        pp.EarningsEconomicUnavailable("not-a-reason")
+    unknown = pp.EarningsPrivatePointerEffectUnknown(generation_id, digest, "sha256:" + digest)
+    assert (unknown.generation_id, unknown.pointer_sha256, unknown.expected_version) == (
+        generation_id, digest, "sha256:" + digest
+    )
+    assert str(unknown) == "private earnings pointer write effect is unknown"
+    assert not any(piece in str(unknown) for piece in (generation_id, digest))
+
+    public_names = (
+        "EarningsPrivatePublishConflict", "EarningsPrivatePointerEffectUnknown",
+        "EarningsEconomicNotFound", "EarningsEconomicUnavailable",
+        "EarningsPrivateManifestNotCurrent", "validate_generation_id", "validate_digest",
+        "load_private_predecessor", "load_private_manifest_version", "load_economic_closure",
+        "load_current_economic_view", "load_economic_evidence", "PUBLISH_CONFLICT_REASONS",
+        "NOT_FOUND_REASONS", "READ_UNAVAILABLE_REASONS",
+    )
+    assert set(public_names) <= set(pp.__all__)
+
 def _rename_one_directory_member(directory, suffix):
     path = next(iter(directory.glob(f"*{suffix}")))
     target = path.with_name(("f" + "0" * 63) + suffix)
