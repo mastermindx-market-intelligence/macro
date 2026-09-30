@@ -3,7 +3,10 @@ from __future__ import annotations
 
 from dataclasses import asdict
 from datetime import date, datetime
-from decimal import Decimal, InvalidOperation
+from decimal import (
+    Context, Decimal, DivisionByZero, InvalidOperation, Overflow,
+    localcontext, ROUND_HALF_EVEN,
+)
 import hashlib
 import json
 import math
@@ -145,6 +148,15 @@ def _digest(value: Any) -> str:
 
 SEMANTIC_REVISION = _digest([asdict(definition) for definition in PG_DEFINITIONS])
 CODE_REVISION = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+_EPS_TRAPS = [InvalidOperation, DivisionByZero, Overflow]
+_EPS_WORK_CONTEXT = Context(
+    prec=100, rounding=ROUND_HALF_EVEN,
+    Emax=999999, Emin=-999999, traps=_EPS_TRAPS,
+)
+_EPS_RESULT_CONTEXT = Context(
+    prec=28, rounding=ROUND_HALF_EVEN,
+    Emax=999999, Emin=-999999, traps=_EPS_TRAPS,
+)
 
 
 def _decimal(value: Any) -> Decimal:
@@ -431,8 +443,16 @@ def _compare_eps(
             "formula": "(current / prior - 1) * 100",
         }
     try:
-        rate = (current_value / prior_value - Decimal("1")) * Decimal("100")
-        rounded = rate if precision_value is None else rate.quantize(Decimal(1).scaleb(-precision_value))
+        with localcontext(_EPS_WORK_CONTEXT):
+            rate = (current_value / prior_value - Decimal("1")) * Decimal("100")
+        with localcontext(_EPS_RESULT_CONTEXT):
+            if precision_value is None:
+                rounded = _EPS_RESULT_CONTEXT.plus(rate)
+            else:
+                rounded = rate.quantize(
+                    Decimal(1).scaleb(-precision_value, context=_EPS_RESULT_CONTEXT),
+                    context=_EPS_RESULT_CONTEXT,
+                )
     except ArithmeticError as exc:
         raise EconomicInterpretationError("EPS growth arithmetic is not defined") from exc
     return {

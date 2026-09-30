@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import Context, Decimal, ROUND_CEILING, ROUND_DOWN, localcontext
 from fractions import Fraction
 import ast
 import copy
@@ -1406,6 +1406,77 @@ def test_every_other_argument_is_refused_when_it_is_not_exact():
     failures = [f'{label}: {outcome}' for label, call in calls for outcome in [_outcome(call)[0]] if outcome != 'typed']
     assert not failures, failures[:20]
     assert len(calls) >= 77
+
+
+def _exact_eps_value(current, prior, precision):
+    exact = (Fraction(Decimal(current)) / Fraction(Decimal(prior)) - 1) * 100
+    return format(round(exact, precision), f'.{precision}f')
+
+
+def test_compare_eps_is_independent_of_the_callers_decimal_context():
+    contexts = [
+        None,
+        Context(prec=5, rounding=ROUND_DOWN),
+        Context(prec=50, rounding=ROUND_CEILING),
+        Context(prec=9, Emax=999999, Emin=-999999, traps=[]),
+    ]
+    for context in contexts:
+        if context is None:
+            assert compare_eps('3.07', '2.93', precision=2)['value'] == '4.78'
+            assert compare_eps('1.64', '1.50', precision=2)['value'] == '9.33'
+            assert compare_eps('1', '0', precision=2)['reason'] == 'nonpositive_prior'
+            with pytest.raises(EconomicInterpretationError, match='EPS growth arithmetic is not defined'):
+                compare_eps('1E+999999', '1E-999999', precision=2)
+            continue
+        with localcontext(context):
+            assert compare_eps('3.07', '2.93', precision=2)['value'] == '4.78'
+            assert compare_eps('1.64', '1.50', precision=2)['value'] == '9.33'
+            assert compare_eps('1', '0', precision=2)['reason'] == 'nonpositive_prior'
+            with pytest.raises(EconomicInterpretationError, match='EPS growth arithmetic is not defined'):
+                compare_eps('1E+999999', '1E-999999', precision=2)
+
+
+def _fuzzed_eps_pairs(count):
+    generator = random.Random(0xC0FFEE)
+    pairs = []
+    for _ in range(count):
+        current_digits = ''.join(generator.choice('0123456789') for _ in range(generator.randint(1, 30))).lstrip('0') or '1'
+        prior_digits = ''.join(generator.choice('0123456789') for _ in range(generator.randint(1, 30))).lstrip('0') or '1'
+        current = Decimal(f"{current_digits}E{generator.randint(-10, 10)}")
+        prior = Decimal(f"{prior_digits}E{generator.randint(-10, 10)}")
+        if prior <= 0:
+            prior = abs(prior)
+        pairs.append((current, prior, generator.randint(0, 6)))
+    return pairs
+
+
+def test_compare_eps_matches_an_exact_oracle_on_a_fixed_fuzz():
+    pairs = _fuzzed_eps_pairs(2500)
+    mismatches = []
+    for current, prior, precision in pairs:
+        try:
+            actual = compare_eps(current, prior, precision=precision)['value']
+        except EconomicInterpretationError as exc:
+            if str(exc) != 'EPS growth arithmetic is not defined':
+                raise
+            continue
+        expected = _exact_eps_value(current, prior, precision)
+        if actual != expected:
+            mismatches.append((current, prior, precision, actual, expected))
+    assert not mismatches, f'{len(pairs)} fuzzed pairs; {len(mismatches)} differed from the oracle; first={mismatches[:3]}'
+
+
+def test_compare_eps_pins_the_known_default_context_double_rounding():
+    # This pair was verified against a copy of the old implementation beside the exact oracle.
+    current = '86599450252.21717677831864229'
+    prior = '7.86759076908354901062539863897E-8'
+    assert compare_eps(current, prior, precision=6)['value'] == '110071116805563916092.505877'
+    assert _exact_eps_value(current, prior, 6) == '110071116805563916092.505877'
+
+
+def test_compare_eps_still_refuses_a_result_with_too_many_digits():
+    with pytest.raises(EconomicInterpretationError, match='EPS growth arithmetic is not defined'):
+        compare_eps('1E+40', '1', precision=2)
 
 
 def test_compare_eps_refuses_every_unreadable_argument():
