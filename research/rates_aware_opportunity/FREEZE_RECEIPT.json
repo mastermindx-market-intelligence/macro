@@ -1,0 +1,33 @@
+{
+  "schema": "rates_aware_opportunity.prereg_freeze_receipt/v1",
+  "operation": "rates-entry-context-20260919-sol-006",
+  "procedure_commit": "ac6180d0ca9107daae54f9eea6bd4b8aef92d630",
+  "source_base": "af6fda723c1f5e5997748bb0992bb2ddcce51f93",
+  "frozen_files": {
+    "engine/entry_radar/replay/rates_context.py": "607dfffd277e63340f13bc7672e8d5237e88723481721bf02fb559a5ef75c64c",
+    "tests/test_entry_radar_w5_data.py": "06b74b758b044c72ee3dff31d54a4d18206202ff9d80e730a6741a1e37dcc27f",
+    "research/rates_aware_opportunity/leader_reset_rates_context_v1.json": "1a90fb843ab8634d3fd0657a62f504594d84a11161278f0c4fb636ab5272a7ea",
+    "research/rates_aware_opportunity/LEADER_RESET_RATES_CONTEXT_PREREG_2026-09-19.md": "55f621c68af77466d273a1f3dda2a94bdb7464ceff027231cc7d48cbf29bb993"
+  },
+  "trial_ledger_before": {
+    "sha256": "beb20607f5757d3a7dd169f0e88e274e8fa3e2dd952dd9bfad76c02edde6d03d",
+    "rows": 1676,
+    "changed_by_this_operation": false
+  },
+  "verification": {
+    "focused_rates_context": "11 passed, 75 deselected",
+    "w5_data": "84 passed, 2 skipped",
+    "w5_data_gates_battery": "200 passed, 2 skipped",
+    "target_study_outcomes_opened": false,
+    "trial_rows_registered": false,
+    "target_study_outcome_files_read": false
+  },
+  "authority": {
+    "rank": false,
+    "score": false,
+    "gate": false,
+    "size": false,
+    "trade": false
+  },
+  "next_gate": "source review then existing TrialLedger registration before any empirical outcome read"
+}
