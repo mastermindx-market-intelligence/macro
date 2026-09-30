@@ -925,3 +925,165 @@ def test_group_flow_refuses_basket_below_population_floor_before_fingerprint(mon
     assert refusal["coverage"] == 0.5
     assert refusal["aggregate_eligible"] is False
     assert "::warning title=group-flow-observation-coverage::" in capsys.readouterr().out
+
+
+
+# ---- Prophet Leadership evidence: leave-issuer-out peer context, research-only ----
+
+def _issuer_map():
+    return {
+        "FOCAL": "issuer:focal",
+        "FOCAL.B": "issuer:focal",
+        "A": "issuer:a",
+        "B": "issuer:b",
+        "C": "issuer:c",
+        "D": "issuer:d",
+        "E": "issuer:e",
+    }
+
+
+def test_independent_peer_observation_excludes_focal_issuer_and_keeps_missing_in_denominator():
+    values = {
+        "FOCAL": 0.09,
+        "FOCAL.B": 0.08,
+        "A": 0.03,
+        "B": -0.02,
+        "C": None,
+        "D": 0.01,
+    }
+    out = gf.independent_peer_observation(
+        values, focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+    assert out["peer_denominator"] == 4
+    assert out["excluded_same_issuer"] == ["FOCAL", "FOCAL.B"]
+    assert out["observed_independent_peers"] == 3
+    assert out["missing_market_observation"] == ["C"]
+    assert out["n_positive"] == 2 and out["n_negative"] == 1
+    assert out["positive_breadth_lower"] == pytest.approx(.5)
+    assert out["positive_breadth_upper"] == pytest.approx(.75)
+    assert out["focal_minus_peer_median"] == pytest.approx(.08)
+    assert out["independence_status"] == "AVAILABLE"
+    assert out["rank_authority"] is False
+    assert out["entry_authority"] is False
+
+
+def test_independent_peer_observation_unknown_identity_cannot_create_confirmation():
+    issuers = _issuer_map()
+    issuers.pop("C")
+    values = {"FOCAL": .05, "A": .02, "B": .01, "C": 1.0}
+    out = gf.independent_peer_observation(
+        values, focal_ticker="FOCAL", issuer_by_ticker=issuers)
+    assert out["peer_denominator"] == 3
+    assert out["unknown_peer_identity"] == ["C"]
+    assert out["observed_independent_peers"] == 2
+    assert out["n_positive"] == 2
+    assert out["positive_breadth_lower"] == pytest.approx(2 / 3)
+    assert out["positive_breadth_upper"] == 1.0
+    assert out["independence_status"] == "UNAVAILABLE"
+    assert out["focal_minus_peer_median"] is None
+
+
+def test_independent_peer_observation_missing_focal_identity_fails_closed():
+    issuers = _issuer_map()
+    issuers.pop("FOCAL")
+    values = {"FOCAL": .05, "A": .02, "B": -.01}
+    out = gf.independent_peer_observation(
+        values, focal_ticker="FOCAL", issuer_by_ticker=issuers)
+    assert out["peer_denominator"] == 2
+    assert out["independence_status"] == "UNAVAILABLE"
+    assert set(out["unknown_peer_identity"]) == {"A", "B"}
+    assert out["observed_independent_peers"] == 0
+    assert out["positive_breadth_lower"] == 0
+    assert out["positive_breadth_upper"] == 1
+
+
+def test_independent_peer_continuity_distinguishes_same_marginals_different_members():
+    issuers = _issuer_map()
+    stable = gf.independent_peer_continuity(
+        {"FOCAL": True, "A": True, "B": True, "C": False, "D": False},
+        {"FOCAL": True, "A": True, "B": True, "C": False, "D": False},
+        focal_ticker="FOCAL", issuer_by_ticker=issuers)
+    churn = gf.independent_peer_continuity(
+        {"FOCAL": True, "A": True, "B": True, "C": False, "D": False},
+        {"FOCAL": True, "A": False, "B": False, "C": True, "D": True},
+        focal_ticker="FOCAL", issuer_by_ticker=issuers)
+
+    for out in (stable, churn):
+        assert out["prior_positive_breadth_lower"] == .5
+        assert out["current_positive_breadth_lower"] == .5
+        assert out["peer_denominator"] == 4
+    assert stable["retained"] == ["A", "B"]
+    assert stable["retained_full_roster_lower"] == .5
+    assert churn["retained"] == []
+    assert churn["entered"] == ["C", "D"]
+    assert churn["exited"] == ["A", "B"]
+    assert churn["retained_full_roster_lower"] == 0
+
+
+def test_independent_peer_continuity_missing_states_widen_bounds_not_denominator():
+    out = gf.independent_peer_continuity(
+        {"FOCAL": True, "A": True, "B": None, "C": False, "D": False},
+        {"FOCAL": True, "A": None, "B": True, "C": False, "D": None},
+        focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+    assert out["peer_denominator"] == 4
+    assert out["prior_positive_breadth_lower"] == .25
+    assert out["prior_positive_breadth_upper"] == .5
+    assert out["current_positive_breadth_lower"] == .25
+    assert out["current_positive_breadth_upper"] == .75
+    assert out["retained_full_roster_lower"] == 0
+    assert out["retained_full_roster_upper"] == .5
+    assert set(out["unknown_transition"]) == {"A", "B", "D"}
+
+
+def test_independent_peer_continuity_excludes_all_focal_listings():
+    out = gf.independent_peer_continuity(
+        {"FOCAL": True, "FOCAL.B": True, "A": True, "B": False},
+        {"FOCAL": True, "FOCAL.B": True, "A": True, "B": True},
+        focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+    assert out["peer_denominator"] == 2
+    assert out["excluded_same_issuer"] == ["FOCAL", "FOCAL.B"]
+    assert out["entered"] == ["B"]
+    assert out["retained"] == ["A"]
+
+
+def test_independent_peer_continuity_refuses_roster_drift():
+    with pytest.raises(ValueError, match="roster_changed"):
+        gf.independent_peer_continuity(
+            {"FOCAL": True, "A": True, "B": False},
+            {"FOCAL": True, "A": True, "C": False},
+            focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+
+
+@pytest.mark.parametrize("bad", [1, 1.5, "true", [], {}])
+def test_independent_peer_continuity_refuses_non_boolean_state(bad):
+    with pytest.raises(ValueError, match="bool_or_none"):
+        gf.independent_peer_continuity(
+            {"FOCAL": True, "A": bad, "B": False},
+            {"FOCAL": True, "A": True, "B": False},
+            focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+
+
+def test_peer_evidence_does_not_mutate_inputs_or_claim_fund_flow():
+    values = {"FOCAL": .1, "A": .03, "B": -.02, "C": None}
+    issuers = _issuer_map()
+    values_before = dict(values)
+    issuers_before = dict(issuers)
+    out = gf.independent_peer_observation(
+        values, focal_ticker="FOCAL", issuer_by_ticker=issuers)
+    assert values == values_before
+    assert issuers == issuers_before
+    assert "not fund-flow" in out["interpretation"]
+    assert all(out[key] is False for key in (
+        "rank_authority", "entry_authority", "policy_authority",
+        "sizing_authority", "trade_authority"))
+
+
+def test_peer_continuity_has_no_threshold_or_directional_authority():
+    out = gf.independent_peer_continuity(
+        {"FOCAL": True, "A": True, "B": False},
+        {"FOCAL": True, "A": True, "B": False},
+        focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+    assert "forecast" in out["interpretation"]
+    assert not any("threshold" in key for key in out)
+    assert all(out[key] is False for key in (
+        "rank_authority", "entry_authority", "policy_authority",
+        "sizing_authority", "trade_authority"))
