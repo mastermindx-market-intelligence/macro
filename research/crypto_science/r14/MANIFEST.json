@@ -1,0 +1,83 @@
+{
+  "schema": "crypto.research_evidence.v1",
+  "classification": "CI_CONFIGURATION_REPAIR_NOT_PRODUCT_OR_SCIENTIFIC_PROMOTION",
+  "baseline": "b74875a6171a4d52cb48decf70d608f106a9fa8e",
+  "artifacts": {
+    ".github/ci/legacy-jobs.yml": {
+      "bytes": 1020473,
+      "sha256": "ddb67c3c40acbee55ef2d9c63a4579c94e26cd324c7fe6446c87c8dde6ffeca9"
+    },
+    "research/CRYPTO_SCIENCE_R14_CI_INTEGRATION_PLAN.md": {
+      "bytes": 6116,
+      "sha256": "a61cd5c2af5a9c3ce3a7b8f68ab73dc4498e6f557728d1776f8a3022f77f8dd3"
+    },
+    "research/CRYPTO_SCIENCE_R14_CI_INTEGRATION_RESULTS.md": {
+      "bytes": 8789,
+      "sha256": "ed472c8047f67608e583d9f784ddccf89c83aa0e6f06a62e671d624b92f15615"
+    },
+    "research/crypto_science/r14/README.md": {
+      "bytes": 3165,
+      "sha256": "35d8efdc58c3b1536346336fe6bb389aac3af5c16d0d9e653262a2a3b6712168"
+    },
+    "research/crypto_science/r14/ci_failure_and_reproduction.json": {
+      "bytes": 1018,
+      "sha256": "4ec66a39593c266844db1b5332f6a06a5d6de0757aa1206908867f2354d05bc9"
+    },
+    "research/crypto_science/r14/ci_pack_full.txt": {
+      "bytes": 3874,
+      "sha256": "11425020dedfcb6120b71e90c96bacff892aba431e98bad1b444695ff1281132"
+    },
+    "research/crypto_science/r14/ci_pack_full_materialized.txt": {
+      "bytes": 426,
+      "sha256": "9de8e2824a220a1720f974005415ea787e81daedbfaac226e8238d059e8f810f"
+    },
+    "research/crypto_science/r14/green_closure.txt": {
+      "bytes": 29026,
+      "sha256": "848f4aa6d7d749c2a2587dcf7b544825570bbc32280ead1f24e32322fc1c277a"
+    },
+    "research/crypto_science/r14/green_dependency_recovery.txt": {
+      "bytes": 123,
+      "sha256": "b4b5d432d2c89e99aab995c4f158c4e29a21fd45657c2cf271b42a09e8813de2"
+    },
+    "research/crypto_science/r14/manifest_fix.patch": {
+      "bytes": 749,
+      "sha256": "46ca7c4478d0389c3a44d921ab607cbc3ff03edb5950fa0fb15b4356477aa87f"
+    },
+    "research/crypto_science/r14/red_closure.txt": {
+      "bytes": 30370,
+      "sha256": "8c2a707fda7aa2d76912a0111268959d61cf97a44f8c1506b0cd3213309c418b"
+    },
+    "research/crypto_science/r14/red_closure_original.txt.gz": {
+      "bytes": 1616,
+      "sha256": "d2b42a54d59b42c8de0375c12a95fc94dffcff408355c09265e1a97626013587"
+    },
+    "research/crypto_science/r14/red_log_normalization.json": {
+      "bytes": 623,
+      "sha256": "ec74491f5bb5ba30153ff5285ce854de3279ea94228932f779545521f5f99750"
+    },
+    "research/crypto_science/r14/selection_initial_failure.txt": {
+      "bytes": 681,
+      "sha256": "cc498bae676f384b648838decae8f36c820fc3c279757f2a0357c32786a7a1e6"
+    },
+    "research/crypto_science/r14/selection_proof.json": {
+      "bytes": 13337,
+      "sha256": "af4aff51781421a9ecbaea222e116d09624c30b33816b05cd960c1348ee27a22"
+    },
+    "research/crypto_science/r14/sibling_integration_probe.json": {
+      "bytes": 15140,
+      "sha256": "55e9c930a9a0597cb3635c1674d43316f105c087e5df1e1317ffe247e0a2650d"
+    },
+    "research/crypto_science/r14/sparse_dependency_recovery.json": {
+      "bytes": 773,
+      "sha256": "ac9b79d4f0834542770db8d76dfb26d0cf11b805205fe414393bfcc0a615deed"
+    },
+    "research/crypto_science/r14/verification_final.txt": {
+      "bytes": 16080,
+      "sha256": "2fccc7d6202b6c958246b08aeb511c6f4375234643bf8994c3309d704d063293"
+    },
+    "research/crypto_science/r14/verify_manifest.py": {
+      "bytes": 3082,
+      "sha256": "3ee379b5068651095c36b100821918b9843d2d530415d854d3ea8cd13f854ffa"
+    }
+  }
+}

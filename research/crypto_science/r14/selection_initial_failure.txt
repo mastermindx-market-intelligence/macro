@@ -1,0 +1,5 @@
+The first local selection-proof invocation exited 1 at:
+assert now-then==JOBS and not then-now
+AssertionError: (['conviction-profile'], [])
+
+Cause: the helper loaded only gate='code'. The unchanged manifest places conviction-profile in the code gate and unrun-picks-boards in the data gate. Both are exclusive jobs. The product configuration is correct and not changed to make the check pass. The verifier is corrected to compare before/after selection separately in both existing gate planes and require exactly the newly declared job in each. No job moves between gates, and no failed runtime/financial result is discarded. This record preserves the initial proof-scoping error.

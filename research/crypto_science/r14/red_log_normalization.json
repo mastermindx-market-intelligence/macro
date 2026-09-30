@@ -1,0 +1,11 @@
+{
+  "classification": "LOG_WHITESPACE_NORMALIZATION_NOT_TEST_RERUN_OR_RESULT_CHANGE",
+  "original_log_sha256": "7d598003c1c29afbe4f6a39bad6dc9db4091861a14b3a23f9e37b2f12f2dea54",
+  "normalized_log_sha256": "8c2a707fda7aa2d76912a0111268959d61cf97a44f8c1506b0cd3213309c418b",
+  "original_archive_sha256": "d2b42a54d59b42c8de0375c12a95fc94dffcff408355c09265e1a97626013587",
+  "changed_lines": [
+    9
+  ],
+  "cause": "git diff --cached --check rejected a whitespace-only pytest E diagnostic at line9; no commit began. Exact original output is retained losslessly in gzip.",
+  "original_test_result": "1 failed, 43 warnings"
+}

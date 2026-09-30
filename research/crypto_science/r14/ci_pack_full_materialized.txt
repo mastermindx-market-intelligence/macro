@@ -1,0 +1,6 @@
+CHECK /opt/homebrew/opt/python@3.14/bin/python3.14 -m pytest tests/test_ci_pack.py -q --tb=short --disable-warnings --basetemp /Volumes/Mastermind/research/crypto-vector-r2-20260926-sol-001/r14-ci-verification-3wdx8noj/pytest
+........................................................................ [ 53%]
+...............................................................          [100%]
+135 passed in 551.37s (0:09:11)
+
+EXIT 0
