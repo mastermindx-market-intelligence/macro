@@ -4,140 +4,150 @@ session: sol/headless-eight-realm-convergence-20260930-sol-001
 model: sol
 ended_because: ci_handoff
 mission: >
-  Qualify exactly four Codex and four native Claude subscription realms for
-  headless principal and child execution through the existing Executive,
-  Provider Control and Capacity owners, without desktop applications.
+  Make exactly four Codex and four native Claude subscription accounts usable
+  for headless principal and child orchestration through the existing
+  Executive, Provider Control and Capacity owners, without desktop apps.
 state_before: >
-  The installed registry had one Worker. Native facade, admission and transport
-  releases were incomplete, the native slot projection accepted one legacy label,
-  and reviewed capacity/proxy/model work was disconnected or unreleased.
+  The installed registry had one Worker. Reviewed native integration and
+  resource-observation source was disconnected or unreleased; native local
+  slot projection accepted only one legacy label.
 changed:
-  - path: Mastermind/pull/999
-    what: Native remote facade is protected at0d73b1b9; prior release and proof remain accepted.
   - path: Mastermind/pull/919
-    what: Current-source repair independently accepted and original protected queue entry retained.
-  - path: Mastermind/pull/992
-    what: Current-source transport repair passed CI and entered the original protected queue after999 merged.
-  - path: Mastermind/pull/1096
-    what: Published closed four-slot native projection with no account-identity inference; exact-head CI now passes.
+    what: Native admission independently accepted and now protected at6b91339a; facade999 was already protected.
   - path: Mastermind/pull/994
-    what: Published current broker integration preserving subscription, native, operator and capacity behavior; roster reduced to its three actual owned paths.
+    what: Repaired actual current-broker conflicts while preserving subscription, native, operator and capacity behavior; source roster is three owned files.
   - path: Mastermind/pull/660
-    what: Repaired the common proxy to accept actual native Claude no-resume capabilities and retained protected consultation removal.
+    what: Common proxy now accepts actual native no-resume capabilities and preserves original-operation reconciliation and removed consultation behavior.
   - path: Mastermind/pull/1028
-    what: Independently qualified unchanged model/quota source on current protected base, approved and queued normally.
+    what: Independently approved unchanged quota/exact-model source against current protected code and queued normally.
   - path: Mastermind/pull/1098
-    what: Connected existing model/runtime checks to native SDK preflight, refusing bad configurations before helper initialization.
+    what: Reused existing exact-model/runtime checks in native SDK preflight before helper initialization; no runtime pin widening.
+  - path: Mastermind/pull/1095
+    what: Independently approved duplicate-peer refusal through real gateway and added the unchanged source to its original normal queue.
+  - path: Mastermind/commit/6470d5eccc1972dd6b447e3fbe9497935ad5757c
+    what: Published combined native proxy/broker/adapter lifecycle and lost-start-reply proof, with provider responses explicitly simulated.
 verified:
-  - claim: The native facade completed its original protected release.
-    command: gh api repos/mastermindx-market-intelligence/Mastermind/pulls/999
-    result: Merged2026-09-30T08:27:49Z as0d73b1b9f4345110fa9fb732896cd20ac76ad5ef; installation not inferred.
-  - claim: The capacity observer composes with current protected broker behavior.
-    command: PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -B -m pytest -p anyio.pytest_plugin tests/test_cf2i_observer_composition_review.py tests/test_executive_worker_broker.py tests/test_worker_capacity_observer.py tests/test_executive_capacity_observation.py tests/test_remote_worker_broker_client.py tests/test_remote_worker_broker_fleet.py tests/test_native_claude_remote_fleet.py tests/test_native_claude_worker_factory.py tests/test_operator_only_worker_broker.py -q -o addopts=''
-    result: 264 tests and25subtests passed in14.38s; exact fd860 CI36691637850 also SUCCESS.
-  - claim: The common remote proxy accepts actual Claude capabilities without pretending resume support.
-    command: PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -B -m pytest -p anyio.pytest_plugin tests/test_remote_operator_harness_adapter.py tests/test_executive_operator_broker.py tests/test_executive_operator_supervisor.py tests/test_codex_app_server_wake_rpc.py tests/test_w6b_native_round_trip.py tests/test_w6c2_consultation_runtime.py tests/test_autonomy_session_materialization_source_law.py tests/test_native_claude_operator_supervisor.py -q -o addopts=''
-    result: Two new causal native tests failed before repair; final240PASS in22.10s, no provider calls.
-  - claim: The unchanged quota and exact-model repair is independently qualified on current source.
-    command: PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -B -m pytest -p anyio.pytest_plugin tests/test_executive_claude_worker.py tests/test_capacity_economics_projection.py tests/test_worker_adapter.py tests/test_claude_worker_preflight.py -q -o addopts=''
-    result: 285PASS in47.26s;55independent checks and3in-memory discriminating mutations; review5363962886 APPROVED.
-  - claim: The headless SDK now uses the existing model checks before process creation.
-    command: PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -B -m pytest -p anyio.pytest_plugin tests/test_claude_operator_adapter.py tests/test_native_claude_worker_factory.py tests/test_native_claude_operator_supervisor.py tests/test_claude_operator_generation_helper.py tests/test_claude_operator_helper_protocol.py tests/test_executive_claude_worker.py tests/test_capacity_economics_projection.py -q -o addopts=''
-    result: Causal16FAIL and1positive control before repair; final310PASS in46.32s; refused paths leave no calls, process, operations or generations.
-  - claim: Installed Executive remains a one-worker registry, not eight-account acceptance.
+  - claim: The native facade and admission source are protected.
+    command: gh api repos/mastermindx-market-intelligence/Mastermind/pulls/919
+    result: 919 merged2026-09-30T09:14:05Z as6b91339a;999 merged08:27:49Z as0d73b1b9. Neither merge proves installation.
+  - claim: Current capacity broker and native proxy source pass their owning tests.
+    command: Read original process41836 and58683 outputs and XML digests in Mastermind994/5907581214 and660/5907682453.
+    result: 994264PASS+25subtests;660240PASS. Their exact-head CI36691637850 and36692319380 both SUCCESS.
+  - claim: Native model and quota guard behavior is causally verified.
+    command: Read original pytest results under headless-native-model-validation-20260930-sol-001 and headless-quota-acceptance-20260930-sol-001.
+    result: 1098 causal16FAIL/1control then310PASS;1028285PASS plus55independent checks/3mutations, approved5363962886.
+  - claim: Ambiguous recipient records cannot cause an order-dependent dispatch.
+    command: python3 -B -m pytest tests/test_company_consultation_peer_uniqueness.py tests/test_company_consultation_mcp.py -q
+    result: Independent106PASS/1existing MCP-dependency skip;25additional checks and one real-gateway causal mutation; review5364161999 APPROVED.
+  - claim: Actual native code composes through start, turn, result, stop and lost-reply reconciliation.
+    command: PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -B -m pytest -p anyio.pytest_plugin tests/test_headless_native_proxy_composition.py tests/test_remote_operator_harness_adapter.py tests/test_claude_operator_adapter.py tests/test_native_claude_operator_supervisor.py tests/test_cf2i_observer_composition_review.py tests/test_executive_operator_broker.py -q -o addopts=''
+    result: 157PASS in4.77s including4new cross-boundary cases. Real adapter/broker/parsers/process/home observations; provider responses, peer credentials, authority callback and sweeper are fixtures. No actual account execution.
+  - claim: Installed Executive remains one Worker, not eight-account acceptance.
     command: Mastermind_Executive_v2.executive_state
-    result: At2026-09-30T09:02:26Z healthy readonly installedc7407c6c, one AVAILABLE Worker, seven Jobs and zero running or queued Jobs.
+    result: At2026-09-30T09:27:43Z healthy readonly installedc7407c6c, one AVAILABLE Worker, seven Jobs and zero running/queued Jobs.
 unverified:
-  - claim: All four Codex and four Claude subscriptions are separately enrolled and capacity-aware.
-    what_would_verify: Existing enrollment and Capacity owners supply eight distinct verified subscription joins and real bounded per-realm execution with fresh resource windows and atomic claims.
-  - claim: Full headless parent and child orchestration works across the eligible accounts and hosts.
-    what_would_verify: The real Control factory consumes selected-worker physical identity and the qualified proxy, followed by actual principal admission, child execution, result consumption and no-replay recovery proof.
+  - claim: All eight intended subscriptions are independently enrolled with real capacity.
+    what_would_verify: Existing enrollment/Provider Control/Capacity owners provide distinct intended-account identities, current readiness, quota windows and bounded per-account receipts.
+  - claim: Installed headless orchestration works across accounts and hosts.
+    what_would_verify: Real Control profile/proxy/selected-worker physical-identity joins followed by authenticated parent-child-result consumption and safe recovery.
 unresolved:
-  - The existing Control composition still binds one configured worker and Codex-only profiles/proxies.
-  - Native runtime readiness, enrollment and account trust remain held by the existing installed owner; slot labels do not clear them.
-  - Authored994,660,1096 and1098 changes require independent acceptance;994 also retains its actual Source Continuity release hold.
-  - The qualified SDK source pins Code2.1.275; Opus5.5 needs separately proven runtime requalification, not a pin increase to pass tests.
-  - Historical633 EFFECT_UNKNOWN and credential-denial fences are unchanged.
+  - Real Control composition remains one configured Worker with Codex-only profile/proxy construction; this is now the principal live integration dependency.
+  - 994 needs new independent integration acceptance and its real original-branch Source Continuity release proof; no fictional local facts or receipt.
+  - 1096,660 and1098 await independent reviews;1098 also awaits1028 protection and original CI completion.
+  - The qualified native SDK source pins Code2.1.275; newer model/runtime qualification is not granted by these tests.
+  - Product owns unresolved native readiness/trust and original-root admission;633 EFFECT_UNKNOWN and prior credential-denial fences remain.
 next_actions:
-  - Consume the original919,992 and1028 merge queue entries; never duplicate enqueue or infer release from queue status.
-  - Consume exact-head reviews for1096,994,660 and1098 and their original CI results; repair only concrete failures on the existing carriers.
-  - Resolve994 Source Continuity with a real original-branch workspace and current source/effect facts; never inject fictional local evidence.
-  - Through the incumbent Control and Capacity owners, connect the already-selected worker to its real UID, home, run and workspace identity, proxy and capacity registration without adding a scheduler.
-  - Complete actual account enrollment and readiness, then the original prepared root and per-account/concurrent headless result-consumption proofs.
+  - Read the original992,1028 and1095 queue entries and1098 CI36694251418; do not reenqueue or blindly rerun.
+  - Consume exact-head independent reviews for1096,994,660,1098; keep source stable unless a concrete finding requires repair.
+  - Resolve994 Source Continuity through a real original-branch workspace and current effect/collision observations.
+  - Integrate the already-selected Worker with its trusted UID, private home, workspace/run roots, proxy and Capacity join on the incumbent Control owner carrier.
+  - Qualify real intended account enrollment/readiness, then original root and per-account/concurrent headless result consumption without desktop apps.
 do_not_redo:
-  - Do not rebuild native SDK factory, adapter, attestation reader, broker, post-claim transport or Agent OS stores.
-  - Do not repeat accepted999 release,987 substrate, or earlier real completed-Job and recovery proofs absent a material invalidator.
-  - Do not restart unchanged CI, reenqueue existing releases, or redo complete semantic reviews when source reuse is proven.
-  - Do not copy credentials, infer subscriptions from ordinal labels, spend unapproved credits or replay STARTed or uncertain work on another account.
-  - Do not take over Product B2/B4 or the original first-root request, and do not change a qualified runtime pin without actual requalification.
+  - Do not rebuild native factory, SDK adapter, attestation reader, common broker, post-claim transport or Agent OS stores.
+  - Do not repeat999/919 protected release,987 substrate, earlier completed Job/recovery proofs or unchanged semantic reviews without a material invalidator.
+  - Do not revive obsolete698 wholesale: current protected Supervisor already has native profile support and newer capability restrictions that its older refactor must not replace.
+  - Do not copy credentials, infer subscriptions from slot labels, change runtime pins without proof, spend unapproved credits or replay STARTed/uncertain work on another account.
+  - Do not duplicate Product B2/B4 workers, original prepared root, reviewers or queues.
 danger_areas:
-  - The generic proxy previously required resume that native Claude does not support; reconciliation is not restart permission.
-  - A multi-host adapter with the primary worker's UID or paths is not a valid physical execution binding.
-  - External pool preparation has no production caller and is not eight-worker registration.
-  - Enabled sealed profiles and four directories do not prove eligible provider capacity or paid usage consent.
-  - Native noninteractive Fable can bill credits without asking; model validation alone is not billing admission.
-  - Source publication, review, CI, merge, installation and real-path acceptance remain separate.
+  - Native Claude truthfully lacks resume; read-only receipt reconciliation is not permission to restart it.
+  - A remote adapter with another worker's UID/home/run roots is not a valid account/host binding.
+  - External pool preparation has no production caller; local slot labels and desktop apps are not independent subscription capacity.
+  - Native noninteractive model usage can bill credits; exact model/runtime checks do not grant spend or entitlement.
+  - Fixture process-backed integration is not real SDK/provider, authenticated kernel peer transport, installed Runtime or account acceptance.
+  - Source publication, reviews, CI, merge, installation and actual user acceptance remain distinct.
 ---
 
-## 0. Current state
+## 0. State and authority
 
-MISSION_COMPLETE:false. The user explicitly required continued wiring work while queues wait. This cumulative record preserves four additional coherent source/review units instead of another status-only turn. It does not make the eight-account system live or become a new runtime/control plane.
+MISSION_COMPLETE:false. The current Chairman required continued useful wiring work while prior queues wait. Six source/review contributions and a combined process-backed integration proof advanced; the eight-account runtime remains unproven. This record is the existing Agent OS knowledge plane, not a new scheduler, lease, grant or control plane.
 
-Mastermind procedure pin0d73b1b9f4345110fa9fb732896cd20ac76ad5ef, INDEX94d1af402598894372858793a5b1931019c5fa77, compatible Skillpack1.0.1/bootstrap1; twelve companions/laws loaded and unchanged. Later protecteddd31d4cc9ba605ae1ba4326def8a3328fc9a42c0 has no governing-law change. This record's sol label identifies the record-author role, not inferred served-model identity.
+Procedure loaded at0d73b1b9f4345110fa9fb732896cd20ac76ad5ef, INDEX94d1af402598894372858793a5b1931019c5fa77, Skillpack1.0.1/bootstrap1. Twelve companions/laws read unchanged. Subsequent protecteddd31d4cc and6b91339a preserve governing law. Role label sol is not an inference of served-model identity.
 
-## 1. Exact source and release frontier
+## 1. Exact source/release frontier
 
-| PR | Exact candidate | Proof / remaining release |
+| PR | Candidate | Current proof and original release owner |
 |---|---|---|
-|999|c4918484287c37433370cd86a453dec96ab44552|Merged0d73b1b9 at08:27:49Z; do not redo.|
-|919|40ee2ddb0f3326cc1bc04aca2a4223a8e17846fb|CI36686375698 SUCCESS, review5363477598 APPROVED; original queue MQE_lQDOTotz3c8AAAABEjm0I84ABAiKzgMHSMY.|
-|992|5cb1334ef45bb76236b0806200d48f58cf925a65|CI36685470627 SUCCESS, unchanged reviewed transport; original queue MQE_lQDOTotz3c8AAAABFG_Quc4ABAiKzgMHUDs.|
-|1096|54e85226cf29be8d78843792c21d3ddb44010da2|222local tests, CI36689709532 SUCCESS; independent review not yet observed.|
-|994|fd8602b5230e208a1892d684bf072c33741f16cd|264tests+25subtests, CI36691637850 SUCCESS; independent integration review and Source Continuity still owed.|
-|660|eb764c15a5bcd81460686c8ae2642a930f71892b|240tests; CI36692319380 in progress; new independent review required.|
-|1028|fd4b6b37c17130674ac27c22c999acb3a95c752d|285current-base tests,55checks/3mutations, independent5363962886 approved; queue MQE_lQDOTotz3c8AAAABFZJAMs4ABAiKzgMHaok enqueued09:01:14Z.|
-|1098|817ed391ed80a2ca7d3c5970a8bb7e07cdb42d48|310tests; CI36694251418 in progress; independent review and1028 protection required.|
+|999|c4918484287c37433370cd86a453dec96ab44552|Protected0d73b1b9f4345110fa9fb732896cd20ac76ad5ef,08:27:49Z.|
+|919|40ee2ddb0f3326cc1bc04aca2a4223a8e17846fb|Protected6b91339a3bd7553292068c72d11b4227d30e371b,09:14:05Z; review5363477598.|
+|992|5cb1334ef45bb76236b0806200d48f58cf925a65|CI36685470627SUCCESS; queueMQE_lQDOTotz3c8AAAABFG_Quc4ABAiKzgMHUDs.|
+|1096|54e85226cf29be8d78843792c21d3ddb44010da2|222localPASS,CI36689709532SUCCESS; independent review pending.|
+|994|fd8602b5230e208a1892d684bf072c33741f16cd|264tests+25subtests,CI36691637850SUCCESS; independent review and Source Continuity hold.|
+|660|eb764c15a5bcd81460686c8ae2642a930f71892b|240PASS,CI36692319380SUCCESS; independent review pending.|
+|1028|fd4b6b37c17130674ac27c22c999acb3a95c752d|Approved5363962886; queueMQE_lQDOTotz3c8AAAABFZJAMs4ABAiKzgMHaok,09:01:14Z.|
+|1098|817ed391ed80a2ca7d3c5970a8bb7e07cdb42d48|310PASS; CI36694251418 in progress; Ready, independent review and1028 protection required.|
+|1095|0fdb04f62564dda2a09d8c201bc8d7111810a568|Approved5364161999,CI36686227266SUCCESS; queueMQE_lQDOTotz3c8AAAABF2cEOc4ABAiKzgMHeD0,09:16:55Z.|
 
-Review requests to mastermindx-3 are source requests, not claimed worker START. Local campaigns are complete. GitHub owns the identified CI/queues; no Web daemon or new autonomous watcher is claimed.
+No duplicate queue entries or worker/reviewer START claims. Existing mastermindx-3 requests on authored repairs remain requests until a real return. All local tests in this record have terminated; GitHub owns actual CI/queue execution.
 
-## 2. New code and causal findings
+## 2. What changed and what remains
 
-994 retains the independently repaired post-lock autonomy fence while composing current subscription_realm_owner, interactive-canary, peer-aware dispatch, operator-only checks and native collection-attribution tests. Exactly three owned files remain in its PR roster instead of35 inherited paths. That resolves the roster discrepancy but does not fabricate the original-branch Source Continuity receipt required by5852047326. Detailed return5907581214.
+994 resolves actual broker conflicts while retaining subscription_realm_owner, interactive-canary, peer-aware dispatch, operator-only guards, native attribution tests and the observer's pre/post-lock autonomy checks. Its old35-file roster is now exactly3owned paths, but old Source Continuity refusal5852047326 is not waived. Use a true original-branch workspace, not fabricated local metadata. Return5907581214.
 
-660 retains the Codex wrapper and existing typed wire as one implementation. Actual native Claude capability declarations now construct the common proxy without fabricated resume. Unsupported resume refuses before I/O; materialization status and read-only reconciliation are preserved. The obsolete consultation ingress removed in protected source is not resurrected. Detailed return5907682453.
+660 preserves one common typed proxy and the Codex wrapper. Actual native Claude declarations no longer fail because of fabricated resume requirements. Only two closed operation-list shapes and consistent actual boolean resume claims are supported. Unsupported resume stops before broker I/O. Protected removal of obsolete consultation ingress remains. Return5907682453; combined proof5908267559.
 
-1028 was not edited. The independent current-source review checked zero-capacity refusal, advisory/noncommitment semantics, immutable inputs, exact-model aliases and numeric runtime floors. Official primary source code.claude.com/docs/en/model-config was rechecked on September30. The requester's intended-account entitlement, actual model serving and credit eligibility remain unobserved. Review5363962886 closes the earlier author-only review gap5350271189.
+1028 source was not edited by the independent reviewer. Exact-model selectors, runtime floors and actionable nonzero quota hints passed current-source and causal checks; advisory output remains noncommitting and requires claim-time revalidation. Review5363962886. Primary current model facts were checked on code.claude.com/docs/en/model-config; actual entitlement remains unknown.
 
-1098 applies the same1028 validation functions to the actual SDK preflight instead of duplicating rules. The new semantic delta is exactly two files/45lines against proof1301df99. Its branch includes the unchanged five-file1028 dependency and cannot release that dependency by inclusion. Early refusal leaves the operation unconsumed and effect_unknown=false. The runtime remains qualified at2.1.275; this repair truthfully refuses Opus5.5 there rather than pretending an upgrade occurred.
+1098 is exactly two NEW files/45lines over the unchanged five-file1028 dependency. It reuses the existing model/runtime checks in SDK preflight, compares the constructor's qualified runtime, and refuses before operation/client/generation creation. It does not raise the qualified2.1.275 pin. Dependency inclusion is not1028 release.
 
-## 3. Workspaces, immutable proofs and recovery
+1095 source was not edited by the independent reviewer. Multiple matching same-program records refuse before dispatch even with a repeated public ID. Current-source106PASS/1pre-existing native-MCP skip plus25additional checks; one-line in-memory reversion makes the real gateway dispatch incorrectly. Review5364161999 closes the pending non-author source gate without claiming installed communications.
 
-All workspaces are under `/Volumes/Mastermind/agent-workspaces/web/` and were acquired through mmx-workspace. Source commits and pushes were read back. Do not release a workspace while its review depends on local evidence. Typed commits may leave merge metadata even when source status is clean; never abort/reset preserved bytes to clean it.
+The next larger integration unit is the actual Control-to-pool connection. `_service_from_config` constructs one WorkerBrokerClient and Codex-only proxies; `_load_coo_execution_binding` remains Codex-oriented; `_register_worker` registers one configured Worker. Supervisor launch specs use one configured UID/GID and workspace/run roots. Connect selected-worker identity through the existing trusted owner before changing account/host selection. Pure external_pool_binding preparation is not registration. Native factory/SDK/attestation already exist; do not rebuild them or adopt older698 over newer protected native restrictions.
 
-| Operation directory | Published proof head | Main local evidence |
-|---|---|---|
-|headless-eight-realm-convergence-20260930-sol-001|41356800025198b142e9ae30454c92dc28f7d34c|.pytest_cache/headless-eight/|
-|headless-native-claude-slot-projection-20260930-sol-001|54e85226cf29be8d78843792c21d3ddb44010da2|.pytest_cache/headless-slots/|
-|headless-capacity-observer-integration-20260930-sol-001|fcb381bb7be195d714fb5fc0665b890410f5cc80|.pytest_cache/headless-capacity/|
-|headless-operator-proxy-acceptance-20260930-sol-001|d51c4f1b3704a8dd57810feb35db37589aae6fab|.pytest_cache/headless-proxy/|
-|headless-quota-acceptance-20260930-sol-001|1301df9961143e5ad5a4ff1354833e3b50bf9cf6|.pytest_cache/headless-quota/|
-|headless-native-model-validation-20260930-sol-001|817ed391ed80a2ca7d3c5970a8bb7e07cdb42d48|.pytest_cache/headless-native-model/|
+## 3. Process-backed cross-boundary proof
 
-994 integration XML SHA2561d86e2426daf6b73b8093ca254d86ba1c62320c71175397a55ca57f09d704bd6; tree4b7b84b037abf208a35d072e7cce287146447bc6.
-660 GREEN1896356e84cd84094a00ef1d0c05312c23e46cfd04e629b5ad5dd5d0e85ccbb5; RED730db233d67a61fcdbd392ad7e62a88799b1194c36f5660b4e2d98332d950653; treecbb72d69c300acc8935fd474e321c9e90b89fa6e.
-1028 current-source XML7c335254448e1acb37fabc3a9cb9485b8e134511f5730b5f102aae7eb019ed21; independent8e54d484b00517e09ef9cdf04348f68664b53160faa8805f6c3d7dd498c4556a; treed58658abfd84dff71da8b519251e41e5f57c65a4.
-1098 GREEN42057a1e4fbb52671b308fb682eae0df9b1b55e21d287f942cd44beaa13b1959; REDfe679efbc80d007c7287b2ac8a42c5acbca22b5c9d7a935e373e8b87d6e198e0.
+Published proof6470d5eccc1972dd6b447e3fbe9497935ad5757c combines protected6b91339a with exact660eb764,994fd860 and1098817ed. New `tests/test_headless_native_proxy_composition.py` proves four journeys: ordinary native start/turn/result/stop; lost successful start reply with readonly receipt recovery and no second initialization; unsupported resume with zero broker calls; model preflight refusal across serialization.
 
-The original integration launcher once reported dirty while direct status and diffs were empty. No cleaning or custody transfer followed. The original994 adoption workspace at92986 was observed clean and left unchanged. New original-branch994/660 publication used non-force two-parent commits; no old worktree was overwritten.
+The real adapter, broker, wire-data conversion, materialization store and process/home observers run. An owned benign process provides OS identity and exits cleanly. Provider/SDK responses, peer credential evidence, authority callback and sweep verdict are fixtures. This does not prove real inference, kernel-authenticated transport, production Jobs or eight-account readiness. Fixture construction failures are retained as fixture failures, not application defects. Combined six-module regression157PASS in4.77s, all processes settled.
 
-## 4. Remaining live architecture and preserved owners
+Durable evidence root `/Volumes/Mastermind/evidence/headless-native-path-composition-20260930-sol-001/`:
+- final-manifest.json SHA25666e3694e0427f33408770aaa12cd3eb47cb902eb32284dc2a32ff8d695066cba
+- combined.xml SHA25677706928f062ff84d039590c931109c51575090998ac4702087feaf26dc4dc2c
+- new4case path.xml SHA2563a3af0dd4fa8005baff970b85615aaeecc28d2139207df7366453e5c473766cc
+- published testSHA2569a45934d254276c1fcbbeae58583943f5357d03d2adcc3f8d6ff20255e73ec53
 
-The next materially different integration unit is the real Control-to-pool connection. Source inspection found `_service_from_config` constructs one WorkerBrokerClient and Codex-only proxies, `_load_coo_execution_binding` requires Codex profiles, and `_register_worker` registers one configured Worker. Supervisor launch specifications currently use one configured UID/GID and workspace/run roots. Do not attach another host/account while leaving the primary worker's physical identity in the request. Existing994 observation and992 attempt-bound transport must be connected by their existing trusted owners.
+## 4. Recoverable workspaces and effects
 
-`external_pool_binding.py` remains pure preparation without a production caller. Native SDK factory, adapter and attestation reader already exist. Native Provider Control registration, local realm generation and Capacity generations are independent; ordinal slot labels cannot replace their proof. Runtime source rule and requested capacity count are not actual enrollment.
+Canonical workspaces are `/Volumes/Mastermind/agent-workspaces/web/<operation>/`:
 
-Product01a0bd6f-78ba-7581-afac-135b87e2d39c and parent01a0e296-2e89-7960-a591-67e1e6b5c6d5 retain installed, provider/credential, B2/B4 and review custody. Their current checkpoint is Mastermind703 comment5868465578. The original prepared requestexec-os-web-ceo-01a0e296-r1 remains their future submission after real readiness, not a new root for this session. Accepted987 substrate and earlier completed Jobs/recovery stay accepted. Preserve633 uncertainty and prior credential denials.
+| Operation | Published source/proof |
+|---|---|
+|headless-eight-realm-convergence-20260930-sol-001|41356800025198b142e9ae30454c92dc28f7d34c|
+|headless-native-claude-slot-projection-20260930-sol-001|54e85226cf29be8d78843792c21d3ddb44010da2|
+|headless-capacity-observer-integration-20260930-sol-001|fcb381bb7be195d714fb5fc0665b890410f5cc80|
+|headless-operator-proxy-acceptance-20260930-sol-001|d51c4f1b3704a8dd57810feb35db37589aae6fab|
+|headless-quota-acceptance-20260930-sol-001|1301df9961143e5ad5a4ff1354833e3b50bf9cf6|
+|headless-native-model-validation-20260930-sol-001|817ed391ed80a2ca7d3c5970a8bb7e07cdb42d48|
+|headless-native-path-composition-20260930-sol-001|6470d5eccc1972dd6b447e3fbe9497935ad5757c|
+|headless-peer-communication-review-20260930-sol-001|Base dd31d4cc plus unchanged0fdb merge; review evidence remains local in .pytest_cache/headless-peer/.|
 
-Same-program integration ruling5907743816 and cumulative source checkpoint5906890968 locate current dependencies without creating another owner. Ordinary new account-agnostic pre-START placement is existing Capacity work; genuine account authentication, entitlement and source/permission boundaries remain. No credential bytes, account enrollment, provider inference, installed service, Runtime Job, binary update, deployment or activation were performed by this Web source session.
+Peer review XML62c201aef28c798c6893f5cf7cafbe6aa58fbd28f9e850622abc9681c0ce71d2; independent1efba411dc2725855256ee3fdaa6776a73ed936bab44de6388e92fc4680cf4aa. Earlier exact XML hashes and commands remain in the relevant PR reviews/returns and prior versioncb8dd173152bedaa9b42baf98f7ed1ea5b36d932 of this same record. No second evidence authority or handoff chain is created.
 
-Final eight-account acceptance remains owed: exact intended subscriptions, current quota/readiness and physical identities, real per-realm tasks, concurrent governed placement, authenticated headless parent/child/result consumption and no modifying or uncertain replay across accounts.
+Preserve workspaces while reviews depend on them. Typed source commits may leave MERGE_HEAD despite clean source; never abort/reset preserved work. Source operations and non-force publication are reconciled; no real provider/credential/Runtime effect was created here. The original integration launcher once reported dirty while direct status/diffs were empty; no cleaning or custody transfer followed.
+
+## 5. Installed boundary and next ownership
+
+At09:27:43Z Executive still serves c7407c6c77ef82cc6590401e80cc8f1868dc9085 with one AVAILABLE Worker. Product01a0bd6f-78ba-7581-afac-135b87e2d39c and parent01a0e296-2e89-7960-a591-67e1e6b5c6d5 retain installed, provider/credential, B2/B4 and reviewer custody. Their current checkpoint is703/5868465578. The single prepared requestexec-os-web-ceo-01a0e296-r1 remains their future submission after actual readiness; no competing root is created.
+
+Same-program ruling5907743816 localizes Control/Capacity joins; current source checkpoint5906890968 is the bounded recovery entrypoint. Ordinary new account-agnostic pre-START placement is Capacity work, not a new Chairman account-number ceremony. Genuine account authentication/entitlement and source/permission gates remain; no633 replay or credential-denial workaround.
+
+The source/review/combined-proof batch is recoverable; the next materially larger phase changes incumbent-owned Control composition and actual realm qualification. Resume on these existing carriers, consume the original returns and obtain the precise current source allocation before touching their active Control files. Final acceptance still requires real intended subscriptions, fresh capacity and physical identities, per-realm execution, concurrent governed placement, authenticated parent/child/result consumption and safe original-operation recovery.
