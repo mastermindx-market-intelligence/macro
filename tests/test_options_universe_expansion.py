@@ -328,3 +328,74 @@ def test_preflight_file_entry_uses_own_repository_from_foreign_cwd(tmp_path, iso
     assert "--max-total-roots" in proc.stdout
     assert "Traceback" not in proc.stderr
     assert not (tmp_path / "data").exists()
+
+
+@pytest.mark.parametrize("expansion", [
+    {"enabled": True, "target_stocks": 1500, "max_total_roots": 2000},
+    {"enabled": "invalid"}, "not-a-config", None,
+])
+def test_legacy_provider_cohort_ignores_only_daily_expansion(monkeypatch, expansion):
+    import copy
+    assert hasattr(universe, "legacy_gex_symbols"), "legacy-provider isolation is missing"
+    cfg = {"symbols": ["spy", "AAPL", "SPY"], "include_baskets": True,
+           "max_underlyings": 3, "daily_expansion": expansion}
+    before = copy.deepcopy(cfg)
+    monkeypatch.setattr(universe, "baskets_universe", lambda: ["AAPL", "AAA", "BBB"])
+    def no_expansion(*args, **kwargs):
+        raise AssertionError("legacy provider attempted expanded membership")
+    monkeypatch.setattr(universe, "plan_daily_expansion", no_expansion)
+    assert universe.legacy_gex_symbols(cfg) == ["SPY", "AAPL", "AAA"]
+    assert cfg == before
+
+
+def test_legacy_provider_cohort_resolves_current_config_without_mutation(monkeypatch):
+    assert hasattr(universe, "legacy_gex_symbols"), "legacy-provider isolation is missing"
+    cfg = {"symbols": ["SPY"], "include_baskets": False,
+           "daily_expansion": {"enabled": True, "target_stocks": 1000, "max_total_roots": 1500}}
+    monkeypatch.setattr(universe.config, "load", lambda: {"polygon": {"gex": cfg}})
+    assert universe.legacy_gex_symbols() == ["SPY"]
+    assert cfg["daily_expansion"]["enabled"] is True
+
+
+def _missing_basket_sources(monkeypatch, tmp_path, baskets):
+    (tmp_path / "universe").mkdir()
+    membership("AAA", "BBB").to_parquet(tmp_path / "universe" / "membership.parquet", index=False)
+    monkeypatch.setattr(universe.config, "data_dir", lambda: tmp_path)
+    monkeypatch.setattr(universe, "baskets_universe", lambda: list(baskets))
+    cfg = {"symbols": ["SPY"], "include_baskets": True, "max_underlyings": 375,
+           "daily_expansion": {"enabled": True, "as_of": "2026-09-28",
+                               "target_stocks": 2, "max_total_roots": 5}}
+    monkeypatch.setattr(universe.config, "load", lambda: {"polygon": {"gex": cfg}})
+    return cfg
+
+
+def test_enabled_expansion_refuses_missing_incumbent_basket_cohort(monkeypatch, tmp_path):
+    cfg = _missing_basket_sources(monkeypatch, tmp_path, [])
+    with pytest.raises(universe.OptionsUniverseError, match="legacy_cohort_unavailable"):
+        universe.gex_symbols(cfg)
+
+
+def test_preflight_refuses_missing_incumbent_basket_cohort(monkeypatch, tmp_path, capsys):
+    import copy
+    import json
+    cfg = _missing_basket_sources(monkeypatch, tmp_path, [])
+    before = copy.deepcopy(cfg)
+    assert cli().main(["--as-of", "2026-09-28", "--target-stocks", "2",
+                       "--max-total-roots", "5"]) == 2
+    result = json.loads(capsys.readouterr().out)
+    assert result["reason"] == "legacy_cohort_unavailable"
+    assert result["collection_started"] is False
+    assert cfg == before
+
+
+def test_basket_overlap_with_anchors_is_not_a_missing_cohort(monkeypatch, tmp_path):
+    cfg = _missing_basket_sources(monkeypatch, tmp_path, ["SPY"])
+    assert universe.gex_symbols(cfg) == ["SPY", "AAA", "BBB"]
+    assert universe.legacy_gex_symbols(cfg) == ["SPY"]
+
+
+def test_legacy_behavior_stays_best_effort_when_baskets_are_missing(monkeypatch, tmp_path):
+    cfg = _missing_basket_sources(monkeypatch, tmp_path, [])
+    assert universe.legacy_gex_symbols(cfg) == ["SPY"]
+    cfg["daily_expansion"]["enabled"] = False
+    assert universe.gex_symbols(cfg) == ["SPY"]

@@ -46,7 +46,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         # Recover exactly the legacy cohort. Never execute a configured expansion
         # as an accidental prerequisite of previewing another selection.
         cfg.pop("daily_expansion", None)
-        legacy = gex_symbols(cfg)
+        legacy = gex_symbols(cfg, require_baskets=True)
         anchors = list(cfg.get("symbols") or DEFAULT_ANCHORS)
         result = plan_daily_expansion(
             {"target_stocks": args.target_stocks, "max_total_roots": args.max_total_roots,

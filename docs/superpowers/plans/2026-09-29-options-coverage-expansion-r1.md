@@ -83,3 +83,20 @@ The approved coverage-honesty requirement is implemented through `lib/options_co
 - [x] Implement `source_session_coverage(frame, *, comparison_session, date_columns)` as an additive shared report of unique ticker identities and exact source-session alignment. Return named per-source ticker buckets; do not infer optionability, provider SLA freshness, complete chains, or a qualified ticker count.
 - [x] Wire that report into the existing audit's returned/written `coverage.json` as `source_session_coverage`; reuse the existing exchange calendar and the same frozen run instant. Keep old feature-presence counts and promotion logic unchanged. Prove the real writer against operation-owned synthetic files only; do not read denied production data.
 - [ ] Enroll through the already-wired coverage-object test suite, run existing audit regressions, and preserve measured results on the same PR.
+
+
+## Continuation — isolate the approved expansion from legacy providers
+
+The current permitted consumer inspection proved that both `build_options_flow.build`
+and `build_polygon_gex.accrue` call the expanded resolver before legacy vendor requests.
+A shared opt-in would therefore enlarge noncanonical provider work. This is a concrete
+activation hazard, not a reason to weaken the source gate or revive legacy entitlement.
+
+Use `engine.options_universe.legacy_gex_symbols` as a thin call into the same resolver
+with only `daily_expansion` removed from a copied configuration. Switch the two existing
+legacy consumers to that entry point. Preserve the canonical expansion, old anchors,
+basket ordering/cap, all configuration bytes, source clocks and current request guards.
+Prove both real consumer entry paths reject accidental expansion with provider calls
+stubbed, plus malformed-expansion/no-input cases and the existing provider regressions.
+No collection, subscription, installation, current board, or raw-store access is part
+of this source change. Other shared-consumer qualification and live acquisition remain owed.

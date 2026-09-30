@@ -1,9 +1,9 @@
 """engine/options_universe.py — the underlyings we snapshot option chains / flow for.
 
-ONE place that resolves the effective options universe so the per-strike GEX accrual
-(scripts/build_polygon_gex) and the measured-flow desk (scripts/build_options_flow) read
-the SAME set. The universe is the config anchors (the index ETFs + mega-caps that always
-have to be there) optionally UNIONED with every active single name in the baskets we trade
+ONE place owns the anchor/basket/cap selection policy. Legacy per-strike accrual
+(scripts/build_polygon_gex) and the measured-flow desk (scripts/build_options_flow) use
+legacy_gex_symbols so a ThetaData rollout cannot silently enlarge their vendor requests.
+The base universe is the config anchors optionally UNIONED with active names in our baskets
 (data/baskets/membership.json) — so the per-name flow / positioning / GEX reads extend to
 the whole optionable set, not just 10 names.
 
@@ -59,11 +59,16 @@ def baskets_universe() -> list[str]:
     return list(seen)
 
 
-def gex_symbols(cfg: dict | None = None) -> list[str]:
-    """The effective options universe = config anchors (`polygon.gex.symbols`, or the
-    DEFAULT_ANCHORS) optionally unioned with the baskets universe (`include_baskets`), deduped
-    with anchors first, capped at `max_underlyings`. Anchors are never dropped by the cap (they
-    take the first slots). Pure function of config + the membership file."""
+def gex_symbols(cfg: dict | None = None, *, require_baskets: bool = False) -> list[str]:
+    """Resolve the canonical universe; expansion requires a readable base cohort.
+
+    Legacy callers retain their existing best-effort behavior. Expansion and its
+    preflight must not interpret a missing requested basket source as an empty
+    incumbent cohort. ``require_baskets`` lets the preflight check that base
+    without executing a separately configured expansion.
+    """
+    if type(require_baskets) is not bool:
+        raise OptionsUniverseError("invalid_config", field="require_baskets")
     if cfg is None:
         cfg = (config.load().get("polygon", {}) or {}).get("gex", {}) or {}
     anchors = list(cfg.get("symbols") or DEFAULT_ANCHORS)
@@ -74,8 +79,10 @@ def gex_symbols(cfg: dict | None = None) -> list[str]:
         if u not in seen:
             seen.add(u); out.append(u)
     n_anchors = len(out)
+    basket_symbols = []
     if cfg.get("include_baskets", False):
-        for t in baskets_universe():
+        basket_symbols = baskets_universe()
+        for t in basket_symbols:
             if t not in seen:
                 seen.add(t); out.append(t)
     cap = int(cfg.get("max_underlyings", 400) or 400)
@@ -84,6 +91,9 @@ def gex_symbols(cfg: dict | None = None) -> list[str]:
         log.info("options_universe: %d underlyings capped to %d (max_underlyings=%d)",
                  len(out), len(capped), cap)
     expansion = cfg.get("daily_expansion")
+    expansion_enabled = isinstance(expansion, dict) and expansion.get("enabled") is True
+    if (require_baskets or expansion_enabled) and cfg.get("include_baskets", False) and not basket_symbols:
+        raise OptionsUniverseError("legacy_cohort_unavailable", reason="basket_membership_empty")
     if expansion is None:
         return capped
     if not isinstance(expansion, dict) or type(expansion.get("enabled", False)) is not bool:
@@ -93,6 +103,20 @@ def gex_symbols(cfg: dict | None = None) -> list[str]:
     return plan_daily_expansion(
         expansion, legacy_symbols=capped, anchor_symbols=out[:n_anchors],
     )["symbols"]
+
+
+def legacy_gex_symbols(cfg: dict | None = None) -> list[str]:
+    """Resolve the incumbent cohort for legacy Massive/Polygon consumers.
+
+    Daily expansion is a separate ThetaData rollout, not a grant to enlarge
+    legacy-provider requests. Reuse the same anchor/basket/cap policy with only
+    the opt-in expansion removed from a copy; never mutate shared configuration.
+    This preserves the old cohort even when expansion inputs are unavailable.
+    """
+    if cfg is None:
+        cfg = (config.load().get("polygon", {}) or {}).get("gex", {}) or {}
+    return gex_symbols({key: value for key, value in cfg.items()
+                        if key != "daily_expansion"})
 
 
 # These are safety bounds on one selection, not account/host capacity grants.
