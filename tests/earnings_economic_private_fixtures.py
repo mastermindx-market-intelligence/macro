@@ -274,7 +274,8 @@ class ConditionalCountingStore(CountingLocalStore):
         self.raise_after_conditional = False
         self.foreign_echo = False
         self.race_after_key: str | None = None
-        self._race_written = False
+        self.race_when: str = "after_next_versioned_read"
+        self._race_armed = False
         self._foreign_pointer = b'{"foreign":true}\n'
         self._lock = threading.Lock()
         self.fail_source_readback_after_manifest: str | None = None
@@ -293,24 +294,22 @@ class ConditionalCountingStore(CountingLocalStore):
             if self._manifest_written and key in self.fail_source_readback_keys:
                 return self.fail_source_readback_keys[key]
             result = super().get_bytes_strict_bounded(key, maximum_bytes)
-        if (
-            self.race_after_key is not None
-            and key == private_module.POINTER_KEY
-            and self._race_written
-        ):
-            self._inject_foreign_pointer()
         return result
 
     def get_bytes_strict_bounded_versioned(self, key: str, maximum_bytes: int):
         with self._lock:
             self.versioned_reads.append(key)
         result = super().get_bytes_strict_bounded_versioned(key, maximum_bytes)
-        if (
-            self.race_after_key is not None
-            and key == private_module.POINTER_KEY
-            and self._race_written
-        ):
+        if self._should_fire_race(key):
             self._inject_foreign_pointer()
+        return result
+
+    def put_bytes(self, key: str, data: bytes, content_type: str = "application/octet-stream"):
+        result = super().put_bytes(key, data, content_type=content_type)
+        if key == self.race_after_key and data != self._foreign_pointer:
+            self._race_armed = True
+            if self.race_when == "after_key_write":
+                self._inject_foreign_pointer()
         return result
 
     def put_bytes_strict_conditional(self, key, data, *, expected_version, content_type):
@@ -326,9 +325,6 @@ class ConditionalCountingStore(CountingLocalStore):
             )
             if self.raise_after_conditional:
                 raise RuntimeError("conditional write effect is unknown")
-            if self.race_after_key is not None and key == private_module.POINTER_KEY:
-                self._race_written = True
-                self._race_arm()
             return written
 
     def validate_strict_conditional_write_capability(self):
@@ -339,16 +335,21 @@ class ConditionalCountingStore(CountingLocalStore):
     def get_bytes_strict_bounded_after_write(self):
         return None
 
-    def _race_arm(self):
-        self._foreign_pointer = b'{"foreign":true}\n'
+    def _should_fire_race(self, key: str) -> bool:
+        return bool(
+            self.race_after_key is not None
+            and self._race_armed
+            and key == private_module.POINTER_KEY
+            and self.race_when == "after_next_versioned_read"
+        )
 
     def _inject_foreign_pointer(self):
         self.race_after_key = None
-        super().put_bytes(
-            private_module.POINTER_KEY,
-            self._foreign_pointer,
-            content_type="application/json",
-        )
+        self._race_armed = False
+        self._foreign_path().write_bytes(self._foreign_pointer)
+
+    def _foreign_path(self) -> Path:
+        return self._p(private_module.POINTER_KEY)
 
 
 def fail_source_readback(store: ConditionalCountingStore, prepared) -> None:

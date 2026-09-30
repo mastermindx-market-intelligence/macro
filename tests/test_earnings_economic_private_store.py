@@ -548,6 +548,32 @@ def test_closure_mode_shape_and_strict_evidence_digest(tmp_path, economic_publis
     assert real["record_sha256"] == view["record_sha256"]
 
 
+def test_predecessor_race_hooks_and_control(tmp_path):
+    for race_when in ("after_key_write", "after_next_versioned_read"):
+        store, _baseline = published_v1_case(tmp_path / race_when)
+        prepared = pp.prepare_private_publication(stage_economic_case(tmp_path / race_when, "valid"))
+        store.race_after_key = prepared.manifest_key
+        store.race_when = race_when
+        store.put_calls.clear()
+        before_conditional_calls = list(store.conditional_calls)
+        with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
+            pp.publish_private_publication(store, prepared)
+        assert exc.value.reason == "predecessor_conflict"
+        assert store.get_bytes(pp.POINTER_KEY) == b'{"foreign":true}\n'
+        assert pp.POINTER_KEY not in store.put_calls
+        expected_conditionals = (
+            before_conditional_calls
+            if race_when == "after_key_write"
+            else before_conditional_calls + [pp.POINTER_KEY]
+        )
+        assert store.conditional_calls == expected_conditionals
+
+    control_store, _control_baseline = published_v1_case(tmp_path / "control")
+    control = pp.prepare_private_publication(stage_economic_case(tmp_path / "control", "valid"))
+    pp.publish_private_publication(control_store, control)
+    assert control_store.get_bytes(pp.POINTER_KEY) == canonical_json_bytes(pp._pointer_for(control))
+
+
 def test_stale_ok_only_downgrades_supported_code_revision(tmp_path, monkeypatch, economic_publish):
     store, prepared, _baseline, _fixture_patch = economic_publish
     manifest = pp.load_private_manifest(store)

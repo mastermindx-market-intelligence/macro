@@ -13405,7 +13405,7 @@ jobs:
     paths:
       - "engine/company_intelligence/economic_observations.py"
       - "engine/theme_graph/rights.py"
-      - "scripts/build_ticker_pages.py"
+      - scripts/build_ticker_pages.py
       - scripts/capture_debt_maturity_evidence.py
       - scripts/capture_hk_tier1_shell.py
       - site/assets/js/company-intelligence-dossier.js
