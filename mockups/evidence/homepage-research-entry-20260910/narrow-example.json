@@ -1,0 +1,32 @@
+[
+  {
+    "locale": "en",
+    "width": 320,
+    "document_width": 320
+  },
+  {
+    "locale": "en",
+    "width": 390,
+    "document_width": 390
+  },
+  {
+    "locale": "en",
+    "width": 1440,
+    "document_width": 1440
+  },
+  {
+    "locale": "zh",
+    "width": 320,
+    "document_width": 320
+  },
+  {
+    "locale": "zh",
+    "width": 390,
+    "document_width": 390
+  },
+  {
+    "locale": "zh",
+    "width": 1440,
+    "document_width": 1440
+  }
+]
