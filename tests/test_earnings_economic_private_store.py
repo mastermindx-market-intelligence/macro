@@ -759,9 +759,15 @@ def test_chain_and_cutoff_rules(tmp_path):
     store, baseline = published_v1_case(tmp_path)
     pp.publish_private_publication(store, pp.prepare_private_publication(stage_economic_case(tmp_path, "valid")))
     pp.publish_private_publication(store, pp.prepare_private_publication(stage_economic_case(tmp_path, "corrected", name="corrected")))
+    pointer = store.get_bytes(pp.POINTER_KEY)
     with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
         pp.publish_private_publication(store, pp.prepare_private_publication(stage_economic_case(tmp_path, "amended", name="amended")))
     assert exc.value.reason == "chain_not_extended"
+    assert store.get_bytes(pp.POINTER_KEY) == pointer
+    with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
+        pp.publish_private_publication(store, pp.prepare_private_publication(stage_economic_case(tmp_path, "valid", name="short")))
+    assert exc.value.reason == "chain_not_extended"
+    assert store.get_bytes(pp.POINTER_KEY) == pointer
 
     stale_stage = stage_economic_case(tmp_path, "corrected", name="stale")
     latest = json.loads((stale_stage / "native" / "latest.json").read_bytes())
@@ -980,13 +986,12 @@ def test_reader_rights_are_checked(tmp_path, monkeypatch, economic_publish):
     assert evidence_error.value.reason == "rights_refused"
 
 
-def test_predecessor_reader_deletion_twin_and_chain_shortening(tmp_path):
+def test_predecessor_reader_deletion_twin(tmp_path):
     empty = ConditionalCountingStore(tmp_path / "empty")
     assert pp.load_private_predecessor(empty) is None
     store, baseline = published_v1_case(tmp_path)
     predecessor = pp.load_private_predecessor(store)
     assert predecessor == {key: baseline[key] for key in predecessor}
-
     manifest_path = store.root / Path(baseline["manifest_key"])
     original_manifest = manifest_path.read_bytes()
     manifest_path.unlink()
@@ -995,13 +1000,6 @@ def test_predecessor_reader_deletion_twin_and_chain_shortening(tmp_path):
     assert unreadable.value.reason == "installed_unreadable"
     manifest_path.write_bytes(original_manifest)
     assert pp.load_private_predecessor(store) == predecessor
-
-    pp.publish_private_publication(store, pp.prepare_private_publication(stage_economic_case(tmp_path, "corrected", name="corrected")))
-    pointer = store.get_bytes(pp.POINTER_KEY)
-    with pytest.raises(pp.EarningsPrivatePublishConflict) as shortened:
-        pp.publish_private_publication(store, pp.prepare_private_publication(stage_economic_case(tmp_path, "valid", name="short")))
-    assert shortened.value.reason == "chain_not_extended"
-    assert store.get_bytes(pp.POINTER_KEY) == pointer
 
 
 def test_mixed_v2_generation_publishes_and_reads(tmp_path):
