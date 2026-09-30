@@ -139,7 +139,7 @@ _DISPLAY.update({
     for metric in _SEGMENT_METRICS
 })
 _OWNER_BY_GROUP = {"demand": "demand", "segment": "segments", "earnings": "earnings"}
-_MARGIN_OR_CASH_FAMILIES = frozenset()
+_MARGIN_OR_CASH_FAMILIES = frozenset({"margin", "cash"})
 _MONTHS = (
     "January", "February", "March", "April", "May", "June", "July", "August",
     "September", "October", "November", "December",
@@ -148,6 +148,7 @@ _MONTH_ABBREVIATIONS = (
     "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 )
 _TIMESTAMP_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+_CLOCKED_STATES = frozenset({"up_to_date", "newer_source_pending"})
 
 
 def _release(workspace: Mapping[str, Any]) -> Mapping[str, Any]:
@@ -222,7 +223,7 @@ def _currentness(value: Any) -> dict[str, Any]:
     source_clock = currentness.get("source_clock")
     if state not in {"up_to_date", "newer_source_pending", "currentness_unverified"}:
         raise EconomicInterpretationError("selection.currentness state is unsupported")
-    if state == "currentness_unverified":
+    if state not in _CLOCKED_STATES:
         if source_clock is not None:
             raise EconomicInterpretationError("currentness_unverified cannot carry a source clock")
     elif not isinstance(source_clock, str) or _TIMESTAMP_PATTERN.fullmatch(source_clock) is None:
@@ -503,7 +504,13 @@ def _rules(rows: list[dict[str, Any]], workspace: Mapping[str, Any]) -> tuple[li
             eps_handles.extend([_handle(workspace, current), _handle(workspace, prior)])
     if len(eps_changes) == 2 and eps_changes[0] != eps_changes[1]:
         rules["reported_vs_core_earnings_disagreement"].extend(eps_handles)
-    rules["incomplete_margin_to_cash_bridge"].append(None)
+    present_margin_or_cash = [
+        row for row in rows
+        if row and "value" in row and "typed_absence" not in row
+        and family_lookup(row.get("metric"))[0] in _MARGIN_OR_CASH_FAMILIES
+    ]
+    if not present_margin_or_cash:
+        rules["incomplete_margin_to_cash_bridge"].append(None)
     segments = [by_metric.get(metric, {}) for metric in _SEGMENT_METRICS]
     present_segments = [
         row for row in segments
@@ -555,7 +562,7 @@ def build_economic_interpretation(
     if not isinstance(selection, Mapping) or set(selection) != {"facts", "currentness"}:
         raise EconomicInterpretationError("selection keys are not exact")
     facts = selection.get("facts")
-    if facts is not None and (not isinstance(facts, (list, tuple)) or len(facts) > 24):
+    if facts is not None and isinstance(facts, (list, tuple)) and len(facts) > 24:
         raise EconomicInterpretationError("comparisons exceed 24")
     rows = _native_rows(workspace, source_texts=source_texts, fiscal_scope=fiscal_scope)
     selected, _handles, currentness = _selection_input(rows, workspace, selection)
