@@ -569,7 +569,7 @@ _R5_MESSAGES = {
     **_PREPARATION_REASONS,
     "unsupported_source_profile": "profile is not mapped to a source family",
     "malformed_observation_clock": "observed_at must use YYYY-MM-DDTHH:MM:SSZ and must not precede the source",
-    "source_precedes_prior_event": "acquisition belongs to an earlier fiscal period than the prior workspace",
+    "source_precedes_prior_event": "acquisition is older than the source of the prior workspace",
     "workspace_build_refused": "native workspace build refused the acquisition",
 }
 _COMPARED = ("workspace", "document_metadata", "decoded_source", "source_texts", "received_byte_receipt")
@@ -961,12 +961,18 @@ def _native_document(payload: dict) -> SourceDocument:
 
 @pytest.fixture(scope="module")
 def chain():
-    """The round-5 scenarios.  Each entry is ``(acquisition, prior, observed_at, result)``; never mutate one."""
+    """The chain scenarios.  Each entry is ``(acquisition, prior, observed_at, result)``; never mutate one.
+
+    Along every path the acceptance clock never decreases (R6.1).
+    """
     a = _acquired("same_source_rebuild")
+    a_in_place = _with_body(a, a["exhibit_body"].replace("</body>", "<p>Synthetic correction in place.</p></body>"))
     b = _acquired("changed_bytes")
     c = _with_body(b, b["exhibit_body"].replace("</body>", "<p>Second synthetic correction.</p></body>"))
     assert c["exhibit_body"] != b["exhibit_body"] and a["exhibit_body"] != b["exhibit_body"]
+    assert a_in_place["exhibit_body"] not in (a["exhibit_body"], b["exhibit_body"], c["exhibit_body"])
     refiled = dict(a, accession=fixture_accession("changed"))
+    refiled_correction = dict(b, accession=fixture_accession("amended"))
     amendment = _acquired("amendment_sequence")
     moved = dict(a, exhibit_url=a["exhibit_url"] + "?moved=1")
     steps = {}
@@ -979,18 +985,20 @@ def chain():
         )
 
     step("root", a, None, "2026-07-29T17:10:00Z")
+    step("changed_in_place", a_in_place, "root", "2026-07-30T09:00:00Z")
+    step("back_to_first", a, "changed_in_place", "2026-07-31T11:00:00Z")
     step("changed", b, "root", "2026-07-30T17:20:00Z")
     step("changed_twice", c, "changed", "2026-07-31T10:00:00Z")
-    step("back_to_first", a, "changed", "2026-07-31T11:00:00Z")
     step("refiled", refiled, "root", "2026-07-29T17:20:00Z")
-    step("refiled_after_correction", refiled, "changed", "2026-07-31T12:00:00Z")
+    step("refiled_after_correction", refiled_correction, "changed", "2026-07-31T12:00:00Z")
     step("amendment", amendment, "root", "2026-07-30T18:01:00Z")
     step("moved_url", moved, "root", "2026-07-29T19:00:00Z")
     return steps
 
 
 _SCENARIOS = (
-    "root", "changed", "changed_twice", "back_to_first", "refiled", "refiled_after_correction", "amendment", "moved_url",
+    "root", "changed_in_place", "back_to_first", "changed", "changed_twice", "refiled", "refiled_after_correction",
+    "amendment", "moved_url",
 )
 _BAD_CLOCKS = (
     None, "", 20260729, "2026-07-29", "2026-07-29T17:20:00", "2026-07-29T17:20:00+00:00", "2026-07-29 17:20:00Z",
@@ -1152,6 +1160,8 @@ def test_one_canonical_clock_is_read_at_every_clock_position(chain):
          ("malformed_currentness", "acquisition.currentness.checked_at")),
         (lambda bad: (acquisition, _replace_at(root, ("workspace", "lifecycle", "observed_at"), bad), "2026-07-29T17:20:00Z"),
          ("malformed_prior", "prior.workspace.lifecycle.observed_at")),
+        (lambda bad: (acquisition, _replace_at(root, ("workspace", "lifecycle", "source_available_at"), bad), "2026-07-29T17:20:00Z"),
+         ("malformed_prior", "prior.workspace.lifecycle.source_available_at")),
     )
     for build, expected in positions:
         for bad in _bad_clocks():
@@ -1242,6 +1252,11 @@ _PRIOR_ROWS = [
     (6, "lifecycle a string", lambda p: _replace_at(p, _W + ("lifecycle",), "complete"), "malformed_prior", "prior.workspace.lifecycle"),
     (6, "lifecycle a dict subclass", lambda p: _replace_at(p, _W + ("lifecycle",), type("Mapping", (dict,), {})(p["workspace"]["lifecycle"])), "malformed_prior", "prior.workspace.lifecycle"),
     (7, "no first observation", lambda p: _without(p, _W + ("lifecycle", "observed_at")), "malformed_prior", "prior.workspace.lifecycle.observed_at"),
+    ("7a", "no source clock", lambda p: _without(p, _W + ("lifecycle", "source_available_at")), "malformed_prior", "prior.workspace.lifecycle.source_available_at"),
+    ("7a", "source clock None", lambda p: _replace_at(p, _W + ("lifecycle", "source_available_at"), None), "malformed_prior", "prior.workspace.lifecycle.source_available_at"),
+    ("7a", "source clock with an offset", lambda p: _replace_at(p, _W + ("lifecycle", "source_available_at"), "2026-07-29T17:10:00+00:00"), "malformed_prior", "prior.workspace.lifecycle.source_available_at"),
+    ("7a", "source clock a date", lambda p: _replace_at(p, _W + ("lifecycle", "source_available_at"), "2026-07-29"), "malformed_prior", "prior.workspace.lifecycle.source_available_at"),
+    ("7a", "source clock str subclass", lambda p: _replace_at(p, _W + ("lifecycle", "source_available_at"), _StrSub("2026-07-29T17:10:00Z")), "malformed_prior", "prior.workspace.lifecycle.source_available_at"),
     (8, "no state", lambda p: _without(p, _W + ("lifecycle", "state")), "malformed_prior", "prior.workspace.lifecycle.state"),
     (8, "state None", lambda p: _replace_at(p, _W + ("lifecycle", "state"), None), "malformed_prior", "prior.workspace.lifecycle.state"),
     (8, "state capitalised", lambda p: _replace_at(p, _W + ("lifecycle", "state"), "Complete"), "malformed_prior", "prior.workspace.lifecycle.state"),
@@ -1294,6 +1309,8 @@ _PRIOR_ROWS = [
     (25, "another issuer", lambda p: _replace_at(p, _RELEASE + ("filing_key", "cik"), "0000000001"), "malformed_prior", "prior.workspace.sources.filing_key.cik"),
     (26, "a later fiscal year", lambda p: _replace_at(p, _W + ("fiscal_period", "year"), 2027), "source_precedes_prior_event", "prior.workspace.fiscal_period"),
     (26, "a later fiscal quarter", lambda p: _replace_at(_replace_at(p, _W + ("fiscal_period", "year"), 2027), _W + ("fiscal_period", "quarter"), 1), "source_precedes_prior_event", "prior.workspace.fiscal_period"),
+    ("26a", "a source accepted one second after this acquisition", lambda p: _replace_at(p, _W + ("lifecycle", "source_available_at"), "2026-07-29T17:10:01Z"), "source_precedes_prior_event", "prior.workspace.lifecycle.source_available_at"),
+    ("26a", "a source accepted a day after this acquisition", lambda p: _replace_at(p, _W + ("lifecycle", "source_available_at"), "2026-07-30T18:00:00Z"), "source_precedes_prior_event", "prior.workspace.lifecycle.source_available_at"),
     (27, "a carried first observation before the acceptance", lambda p: _replace_at(p, _W + ("lifecycle", "observed_at"), "2026-07-29T17:09:59Z"), "malformed_prior", "prior.workspace.lifecycle.observed_at"),
     (30, "an earlier period under this event's id", lambda p: _replace_at(p, _W + ("fiscal_period", "quarter"), 3), "malformed_prior", "prior.workspace.event_id"),
     (30, "this period under another event's id", lambda p: _replace_at(_replace_at(p, _W + ("event_id",), "evt_other"), _D + ("event_id",), "evt_other"), "malformed_prior", "prior.workspace.event_id"),
@@ -1369,6 +1386,12 @@ _ORDER = [
     ("rows 25 and 26", lambda a: a,
      lambda p: _replace_at(_replace_at(p, _RELEASE + ("filing_key", "cik"), "0000000001"), _W + ("fiscal_period", "year"), 2027),
      "2026-07-29T17:20:00Z", ("malformed_prior", "prior.workspace.sources.filing_key.cik")),
+    ("rows 26 and 26a", lambda a: a,
+     lambda p: _replace_at(_replace_at(p, _W + ("fiscal_period", "year"), 2027), _W + ("lifecycle", "source_available_at"), "2026-07-29T17:10:01Z"),
+     "2026-07-29T17:20:00Z", ("source_precedes_prior_event", "prior.workspace.fiscal_period")),
+    ("rows 26a and 27", lambda a: a,
+     lambda p: _replace_at(_replace_at(p, _W + ("lifecycle", "source_available_at"), "2026-07-29T17:10:01Z"), _W + ("lifecycle", "observed_at"), "2026-07-29T17:09:59Z"),
+     "2026-07-29T17:20:00Z", ("source_precedes_prior_event", "prior.workspace.lifecycle.source_available_at")),
     ("rows 23 and 24", lambda a: {**_with_body(a, "<h1>Second Quarter Ended March 31, 2027</h1>"), "acceptance_datetime": "0001-01-01T00:00:00Z"},
      None, "2026-07-29T17:20:00Z", ("malformed_source_clock", "acquisition.acceptance_datetime")),
     ("rows 27 and 30", lambda a: a,
@@ -1385,6 +1408,12 @@ _ORDER = [
     ("rows 4 of the prior and 16 of the prior", lambda a: a,
      lambda p: _replace_at(_replace_at(p, _W + ("event_id",), ""), _D + ("document_id",), "doc_other"),
      "2026-07-29T17:20:00Z", ("malformed_prior", "prior.workspace.event_id")),
+    ("rows 7 of the prior and 7a of the prior", lambda a: a,
+     lambda p: _replace_at(_replace_at(p, _W + ("lifecycle", "observed_at"), "x"), _W + ("lifecycle", "source_available_at"), "x"),
+     "2026-07-29T17:20:00Z", ("malformed_prior", "prior.workspace.lifecycle.observed_at")),
+    ("rows 7a of the prior and 8 of the prior", lambda a: a,
+     lambda p: _replace_at(_replace_at(p, _W + ("lifecycle", "source_available_at"), "x"), _W + ("lifecycle", "state"), "x"),
+     "2026-07-29T17:20:00Z", ("malformed_prior", "prior.workspace.lifecycle.source_available_at")),
     ("rows 8 of the prior and 10 of the prior", lambda a: a,
      lambda p: _replace_at(_replace_at(p, _W + ("lifecycle", "state"), "x"), _W + ("sources",), []),
      "2026-07-29T17:20:00Z", ("malformed_prior", "prior.workspace.lifecycle.state")),
@@ -1414,7 +1443,7 @@ _PRIOR_FAMILY = (
 _READ_FROM_THE_PRIOR = (
     (), _W, _D, _W + ("event_id",), _W + ("fiscal_period",), _W + ("fiscal_period", "year"),
     _W + ("fiscal_period", "quarter"), _W + ("lifecycle",), _W + ("lifecycle", "observed_at"),
-    _W + ("lifecycle", "state"), _W + ("sources",), _RELEASE, _RELEASE + ("kind",), _RELEASE + ("filing_key",),
+    _W + ("lifecycle", "source_available_at"), _W + ("lifecycle", "state"), _W + ("sources",), _RELEASE, _RELEASE + ("kind",), _RELEASE + ("filing_key",),
     _RELEASE + ("filing_key", "cik"), _RELEASE + ("filing_key", "accession"), _RELEASE + ("source_sha256",),
     _RELEASE + ("document_id",), _D + ("document_id",), _D + ("event_id",), _D + ("revision",),
     _D + ("supersedes_document_id",),
@@ -1483,7 +1512,7 @@ def test_no_prior_value_at_a_read_position_escapes_the_typed_boundary(chain):
                     assert detail.startswith("prior") or (reason, detail) == ("malformed_observation_clock", "observed_at"), label
                 else:
                     returned += 1
-    assert (calls, returned) == (2368, 22), (calls, returned)
+    assert (calls, returned) == (2485, 25), (calls, returned)
 
 
 def test_positions_the_preparation_does_not_read_cannot_change_the_result(chain):
@@ -1494,7 +1523,7 @@ def test_positions_the_preparation_does_not_read_cannot_change_the_result(chain)
     unread = [
         container + (key,) for container in containers for key in _at(second, container) if container + (key,) not in read
     ]
-    assert len(unread) == 39, unread
+    assert len(unread) == 38, unread
     assert _W + ("generation_id",) in unread and _W + ("facts",) in unread and ("decoded_source",) in unread
     for path in unread:
         for value in (None, 5, {}, _Hostile(), _HostileTyped()):
@@ -1577,7 +1606,7 @@ def test_every_refusal_in_the_section_names_a_reason_and_a_position():
         node for node in ast.walk(tree)
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "PgPreparationRefused"
     ]
-    assert len(refusals) == 52, len(refusals)
+    assert len(refusals) == 54, len(refusals)
     reasons = set()
     for node in refusals:
         assert len(node.args) == 2 and not node.keywords, ast.unparse(node)
@@ -1681,9 +1710,10 @@ def test_the_lifecycle_follows_the_native_law(chain):
     states = {name: chain[name][3]["workspace"]["lifecycle"]["state"] for name in _SCENARIOS}
     assert states == {
         "root": "complete",
+        "changed_in_place": "corrected",
+        "back_to_first": "corrected",
         "changed": "corrected",
         "changed_twice": "corrected",
-        "back_to_first": "corrected",
         "refiled": "complete",
         "refiled_after_correction": "corrected",
         "amendment": "complete",
@@ -1692,9 +1722,10 @@ def test_the_lifecycle_follows_the_native_law(chain):
     observed = {name: chain[name][3]["workspace"]["lifecycle"]["observed_at"] for name in _SCENARIOS}
     assert observed == {
         "root": "2026-07-29T17:10:00Z",
+        "changed_in_place": "2026-07-30T09:00:00Z",
+        "back_to_first": "2026-07-31T11:00:00Z",
         "changed": "2026-07-30T17:20:00Z",
         "changed_twice": "2026-07-31T10:00:00Z",
-        "back_to_first": "2026-07-31T11:00:00Z",
         "refiled": "2026-07-29T17:20:00Z",
         "refiled_after_correction": "2026-07-31T12:00:00Z",
         "amendment": "2026-07-30T18:01:00Z",
@@ -1716,9 +1747,10 @@ def test_the_document_chain_follows_the_native_document_id(chain):
     ids = {name: document[name]["document_id"] for name in _SCENARIOS}
     assert {name: (document[name]["revision"], document[name]["supersedes_document_id"]) for name in _SCENARIOS} == {
         "root": (1, None),
+        "changed_in_place": (2, ids["root"]),
+        "back_to_first": (3, ids["changed_in_place"]),
         "changed": (2, ids["root"]),
         "changed_twice": (3, ids["changed"]),
-        "back_to_first": (3, ids["changed"]),
         "refiled": (2, ids["root"]),
         "refiled_after_correction": (3, ids["changed"]),
         "amendment": (2, ids["root"]),
@@ -1726,8 +1758,7 @@ def test_the_document_chain_follows_the_native_document_id(chain):
     }
     # A text that returns to an earlier version repeats that version's native id; nothing else repeats.
     assert ids["back_to_first"] == ids["root"]
-    assert ids["refiled_after_correction"] == ids["refiled"]
-    assert len(set(ids.values())) == len(_SCENARIOS) - 2
+    assert len(set(ids.values())) == len(_SCENARIOS) - 1
     assert {name: document[name]["document_kind"] for name in _SCENARIOS} == {
         name: ("release_amendment" if name == "amendment" else "release") for name in _SCENARIOS
     }
@@ -1738,9 +1769,12 @@ def test_the_document_chain_follows_the_native_document_id(chain):
         assert document[name]["filing_key"] == {"cik": "0000080424", "accession": acquisition["accession"]}
         assert document[name]["superseded_by_document_id"] is None and document[name]["holds_bytes"] is False
         assert document[name]["presented_fiscal_label"] == "FY2026 Q4"
+        # The stored document is private: the rights stamp is the internal profile, never the public one.
+        assert (document[name]["rights_profile"], document[name]["rights_state"]) == (PG_PRIVATE_RIGHTS_PROFILE, "internal_only")
+        assert PG_PRIVATE_RIGHTS_PROFILE == "rp_internal_private_v1" != RIGHTS_PROFILE
     # The native chain validator admits each path, the repeated id included.
     for path in (
-        ("root", "changed", "changed_twice"), ("root", "changed", "back_to_first"), ("root", "refiled"),
+        ("root", "changed", "changed_twice"), ("root", "changed_in_place", "back_to_first"), ("root", "refiled"),
         ("root", "changed", "refiled_after_correction"), ("root", "amendment"), ("root", "moved_url"),
     ):
         DocumentRevisionChain(tuple(_native_document(document[name]) for name in path))
@@ -1772,6 +1806,9 @@ def test_a_prior_of_another_fiscal_period_never_enters_the_result(chain):
     assert earlier["workspace"]["fiscal_period"] == {"year": 2026, "quarter": 3, "calendar_end": "2026-03-31"}
     # An earlier period is no predecessor: the result is the root, in every part.
     assert _outcome(fourth, earlier, "2026-07-29T17:10:00Z")[2] == root
+    # ... whatever its source clock: R6.1 orders the sources of one period, never those of two.
+    late = _replace_at(earlier, _W + ("lifecycle", "source_available_at"), "2026-12-01T00:00:00Z")
+    assert _outcome(fourth, late, "2026-07-29T17:10:00Z")[2] == root
     later_root = _outcome(first_of_next_year, None, "2026-10-24T17:30:00Z")[2]
     assert later_root["workspace"]["event_id"] == "evt_cik0000080424_2027q1_results"
     assert later_root["document_metadata"]["revision"] == 1
@@ -1807,6 +1844,14 @@ def test_the_run_clock_is_bound_by_the_predecessor_only_when_it_is_recorded(chai
     assert _refusal(acquisition, early, "2026-07-29T18:00:00Z") == ("malformed_prior", "prior.workspace.lifecycle.observed_at")
     # Not carried: that same early observation in the prior is no obstacle (the new run clock is recorded).
     assert _outcome(chain["changed"][0], early, "2026-07-30T17:20:00Z")[0] == "returned"
+    # Not carried, under another accession: the bound is the same for an amendment and for a refiling.  Both were
+    # accepted before the predecessor was first observed and not before its source, so R6.1 admits them.
+    observed_late = _outcome(acquisition, None, "2026-08-05T00:00:00Z")[2]
+    for other in (chain["amendment"][0], chain["refiled"][0]):
+        assert other["accession"] != acquisition["accession"]
+        assert acquisition["acceptance_datetime"] <= other["acceptance_datetime"] < "2026-08-04T23:59:59Z"
+        assert _refusal(other, observed_late, "2026-08-04T23:59:59Z") == ("malformed_observation_clock", "observed_at")
+        assert _outcome(other, observed_late, "2026-08-05T00:00:00Z")[2]["document_metadata"]["revision"] == 2
 
 
 @pytest.mark.parametrize("name", _SCENARIOS)
@@ -1926,6 +1971,8 @@ def test_the_native_build_receives_only_admitted_exact_values(monkeypatch, chain
         {"prior_source_sha256": None, "prior_lifecycle_state": None, "prior_observed_at": None,
          "observed_at": "2026-07-29T17:10:00Z", "source_available_at": "2026-07-29T17:10:00Z", "ticker": "PG", "transcript": None},
     ]
+    assert [call["asof"] for call in seen] == [date(2026, 7, 30), date(2026, 7, 30), date(2026, 7, 29), date(2026, 7, 29)]
+    assert all(type(call["asof"]) is date for call in seen)
     assert seen[0]["filing"] == {
         "cik": "0000080424", "accession": changed["accession"], "form": "8-K", "filing_date": changed["filing_date"],
         "acceptance_datetime": changed["acceptance_datetime"], "report_date": changed["report_date"],
@@ -1985,6 +2032,98 @@ def _answering(case, overrides):
             return 404, b""  # the fixture asserts on a URL it does not know; a server answers 404
 
     return http_get
+
+
+# -- R6.1: within one fiscal period the source clock never steps back ------------------------------
+
+_OLDER_SOURCE = ("source_precedes_prior_event", "prior.workspace.lifecycle.source_available_at")
+
+
+def test_an_older_filing_never_supersedes_a_newer_one(monkeypatch, chain):
+    """Three nights.  The newest exhibit fails once; the fallback to the older filing must not enter the chain."""
+    monkeypatch.setattr(refresh_module, "_PACE_S", 0)
+    status, amended = _traced(fixture_http_get("amendment_sequence"))
+    assert status == "returned"
+    assert (amended["accession"], amended["form"], amended["currentness"]["state"]) == (
+        fixture_accession("amended"), "8-K/A", "up_to_date"
+    )
+    first_night = prepare_pg_workspace(amended, prior=None, observed_at="2026-07-31T02:00:00Z")
+    # The second night: the amendment's exhibit answers 503, so the acquisition falls back to the original filing.
+    status, fallback = _traced(_answering("amendment_sequence", {amended["exhibit_url"]: (503, b"")}))
+    assert status == "returned"
+    assert (fallback["accession"], fallback["form"], fallback["currentness"]["state"]) == (
+        fixture_accession("older"), "8-K", "newer_source_pending"
+    )
+    assert fallback["acceptance_datetime"] < amended["acceptance_datetime"]
+    assert _refusal(fallback, first_night, "2026-08-01T02:00:00Z") == _OLDER_SOURCE
+    # The refusal does not depend on the stamp: the older filing is refused however current it claims to be.
+    for stamp in (
+        {"state": "up_to_date", "checked_at": "2026-08-01T01:59:00Z"},
+        {"state": "currentness_unverified", "checked_at": None},
+    ):
+        assert _refusal(dict(fallback, currentness=stamp), first_night, "2026-08-01T02:00:00Z") == _OLDER_SOURCE
+    assert _refusal(_without(fallback, ("currentness",)), first_night, "2026-08-01T02:00:00Z") == _OLDER_SOURCE
+    # The third night: the amendment is back.  The caller kept the first night, and the result is the first night.
+    status, again = _traced(fixture_http_get("amendment_sequence"))
+    assert status == "returned"
+    third_night = prepare_pg_workspace(again, prior=first_night, observed_at="2026-08-02T02:00:00Z")
+    for key in _COMPARED:
+        assert third_night[key] == first_night[key], key
+    assert third_night["document_metadata"]["revision"] == 1
+    assert third_night["document_metadata"]["fetched_at"] == "2026-07-31T02:00:00Z"
+    # With no prior the older filing is a root: the rule orders a chain, it does not judge a first record.
+    assert _outcome(fallback, None, "2026-08-01T02:00:00Z")[2]["document_metadata"]["revision"] == 1
+    # The same holds on top of a correction: the older, uncorrected text never follows the corrected one.
+    older, _, _, _ = chain["root"]
+    for name in ("changed", "changed_twice", "refiled_after_correction", "amendment"):
+        newer, _, _, held = chain[name]
+        assert older["acceptance_datetime"] < newer["acceptance_datetime"]
+        assert _refusal(older, held, "2026-08-03T00:00:00Z") == _OLDER_SOURCE
+    # Equal acceptance clocks are no step back: a refiling accepted at the predecessor's clock is admitted.
+    assert chain["refiled"][0]["acceptance_datetime"] == chain["root"][0]["acceptance_datetime"]
+    assert chain["refiled"][3]["document_metadata"]["revision"] == 2
+
+
+def test_a_generation_id_can_repeat_along_a_chain_and_the_revision_cannot(chain):
+    """Equal run clocks: a text that alternates in place rebuilds the same workspace at a later chain position."""
+    first, _, _, root = chain["root"]
+    second = chain["changed_in_place"][0]
+    clock = "2026-07-30T09:00:00Z"
+    results = [root]
+    for acquisition in (second, first, second):
+        results.append(prepare_pg_workspace(acquisition, prior=results[-1], observed_at=clock))
+    assert [result["document_metadata"]["revision"] for result in results] == [1, 2, 3, 4]
+    assert results[3]["workspace"] == results[1]["workspace"]
+    assert results[3]["workspace"]["generation_id"] == results[1]["workspace"]["generation_id"]
+    assert results[3]["document_metadata"] != results[1]["document_metadata"]
+    for result in results:
+        assert _p2_violations(result) == []
+    DocumentRevisionChain(tuple(_native_document(result["document_metadata"]) for result in results))
+
+
+def test_a_token_of_128_characters_is_admitted_and_one_of_129_is_not(chain):
+    fourth, _, _, root = chain["root"]
+    earlier = _outcome(_quarter("2026-04-24T17:00:00Z", "555"), None, "2026-04-24T17:30:00Z")[2]
+    changed, _, _, second = chain["changed"]
+    for length, admitted in ((128, True), (129, False)):
+        token = "e" * length
+        event = _replace_at(_replace_at(earlier, _W + ("event_id",), token), _D + ("event_id",), token)
+        document = _replace_at(_replace_at(earlier, _RELEASE + ("document_id",), token), _D + ("document_id",), token)
+        supersedes = _replace_at(second, _D + ("supersedes_document_id",), token)
+        if admitted:
+            # An earlier period is no predecessor, so an admitted token leaves the root unchanged.
+            assert _outcome(fourth, event, "2026-07-29T17:10:00Z")[2] == root
+            assert _outcome(fourth, document, "2026-07-29T17:10:00Z")[2] == root
+            carried = _outcome(changed, supersedes, "2026-08-01T00:00:00Z")[2]
+            assert carried["document_metadata"]["supersedes_document_id"] == token
+        else:
+            assert _refusal(fourth, event, "2026-07-29T17:10:00Z") == ("malformed_prior", "prior.workspace.event_id")
+            assert _refusal(fourth, document, "2026-07-29T17:10:00Z") == (
+                "prior_source_identity_missing", "prior.workspace.sources.document_id"
+            )
+            assert _refusal(changed, supersedes, "2026-08-01T00:00:00Z") == (
+                "malformed_prior", "prior.document_metadata.supersedes_document_id"
+            )
 
 
 def test_traced_acquisition_returns_or_raises_refresh_error_for_every_answer(monkeypatch, chain):

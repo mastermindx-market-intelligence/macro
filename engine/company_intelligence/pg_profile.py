@@ -2238,7 +2238,7 @@ _PREPARATION_MESSAGES = {
     "malformed_currentness": "acquisition currentness is malformed",
     "unsupported_source_profile": "profile is not mapped to a source family",
     "malformed_observation_clock": "observed_at must use YYYY-MM-DDTHH:MM:SSZ and must not precede the source",
-    "source_precedes_prior_event": "acquisition belongs to an earlier fiscal period than the prior workspace",
+    "source_precedes_prior_event": "acquisition is older than the source of the prior workspace",
     "workspace_build_refused": "native workspace build refused the acquisition",
 }
 _CURRENTNESS_STATES = ("up_to_date", "newer_source_pending", "currentness_unverified")
@@ -2415,6 +2415,9 @@ def _admitted_prior(prior: Any) -> dict[str, Any] | None:
     observed_clock = _canonical_clock(observed_at)
     if observed_clock is None:
         raise PgPreparationRefused("malformed_prior", "prior.workspace.lifecycle.observed_at")
+    source_available_clock = _canonical_clock(lifecycle.get("source_available_at"))
+    if source_available_clock is None:
+        raise PgPreparationRefused("malformed_prior", "prior.workspace.lifecycle.source_available_at")
     state = lifecycle.get("state")
     if type(state) is not str or state not in _PRIOR_LIFECYCLE_STATES:
         raise PgPreparationRefused("malformed_prior", "prior.workspace.lifecycle.state")
@@ -2458,6 +2461,7 @@ def _admitted_prior(prior: Any) -> dict[str, Any] | None:
         "period": (period["year"], period["quarter"]),
         "observed_at": observed_at,
         "observed_clock": observed_clock,
+        "source_available_clock": source_available_clock,
         "state": state,
         "cik": filing_key["cik"],
         "accession": filing_key["accession"],
@@ -2529,6 +2533,12 @@ def _prepare_pg_workspace(acquisition: Any, prior: Any, observed_at: Any) -> dic
         if held["period"] > (identity[0], identity[1]):
             raise PgPreparationRefused("source_precedes_prior_event", "prior.workspace.fiscal_period")
         if held["period"] == (identity[0], identity[1]):
+            # Within one event the chain never steps back in source time.  An acquisition accepted before the
+            # predecessor's source is an older filing, whatever its accession or its currentness stamp.
+            if acceptance_clock < held["source_available_clock"]:
+                raise PgPreparationRefused(
+                    "source_precedes_prior_event", "prior.workspace.lifecycle.source_available_at"
+                )
             predecessor = held
     same_text = predecessor is not None and predecessor["source_sha256"] == decoded_digest
     same_filing = predecessor is not None and predecessor["accession"] == fields["accession"]
