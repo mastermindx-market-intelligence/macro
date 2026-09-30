@@ -1044,29 +1044,15 @@ def test_stale_interpretation_identity_is_checked(tmp_path, economic_publish):
     store, _prepared, _baseline, _patch = economic_publish
     manifest = pp.load_private_manifest(store)
     slug = manifest["native"]["economic_slots"]["cik:0000080424"]["slug"]
-    record_path = store.root / Path(manifest["records"][slug]["object_key"])
-    original = record_path.read_bytes()
-    record = json.loads(original)
-    record["economic_interpretation"]["interpretation_id"] = "econ_" + ("b" * 64)
-    altered = canonical_json_bytes(record)
-    digest = sha256(altered).hexdigest()
-    key = f"{pp.PRIVATE_PREFIX}/objects/sha256/{digest[:2]}/{digest}.json"
     rebuilt = json.loads(json.dumps(manifest))
-    rebuilt["records"][slug].update({"sha256": digest, "bytes": len(altered), "object_key": key})
     rebuilt["native"]["selections"][slug]["interpretation_id"] = "econ_" + ("a" * 64)
     rebuilt = reseal_manifest(rebuilt, pp)
-    (store.root / Path(key)).parent.mkdir(parents=True, exist_ok=True)
-    (store.root / Path(key)).write_bytes(altered)
-    try:
+    with pytest.raises(pp.EarningsPrivateClosureError) as error:
         pp.load_economic_closure(store, manifest=rebuilt, slug=slug, interpretation="stale_ok")
-    except pp.EarningsPrivateClosureError as error:
-        assert error.reason == "interpretation_mismatch"
-    else:
-        raise AssertionError("expected stale identity mismatch")
+    assert error.value.reason == "interpretation_mismatch"
 
     control = pp.load_economic_closure(store, manifest=manifest, slug=slug, interpretation="stale_ok")
     assert control["interpretation_state"] == "current"
-    record_path.write_bytes(original)
 
 
 def test_surface_validators_refuse_exact_types_without_leaking_values():
