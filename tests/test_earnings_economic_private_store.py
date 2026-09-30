@@ -1026,6 +1026,22 @@ def test_mixed_v2_generation_publishes_and_reads(tmp_path):
     baseline_record = pp.load_private_record(store, wire_slug, manifest=baseline_manifest)
     assert pp.load_private_record(store, wire_slug) == baseline_record
 
+def test_manifest_wrong_digest_is_unknown_generation(tmp_path):
+    store, baseline = published_v1_case(tmp_path)
+    assert pp.load_private_manifest_version(
+        store,
+        generation_id=baseline["generation_id"],
+        expected_digest=baseline["manifest_sha256"],
+    ) == pp.validate_v1_manifest(json.loads(store.get_bytes(baseline["manifest_key"])))
+    with pytest.raises(pp.EarningsEconomicNotFound) as error:
+        pp.load_private_manifest_version(
+            store,
+            generation_id=baseline["generation_id"],
+            expected_digest="0" * 64,
+        )
+    assert error.value.reason == "unknown_generation"
+
+
 def test_stale_interpretation_identity_is_checked(tmp_path, economic_publish):
     store, _prepared, _baseline, _patch = economic_publish
     manifest = pp.load_private_manifest(store)
