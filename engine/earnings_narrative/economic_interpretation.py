@@ -248,6 +248,7 @@ def _selected_rows(
         return selected, handles
     if not isinstance(selection, (list, tuple)):
         raise EconomicInterpretationError("selection must be a list of native handles")
+    chosen: set[tuple[Any, Any, Any]] = set()
     for item in selection:
         item = _plain_mapping(item, "selection item")
         fact_id = item.get("fact_id")
@@ -258,13 +259,20 @@ def _selected_rows(
         expected_generation = item.get("workspace_generation_id")
         if expected_generation != native_generation:
             raise EconomicInterpretationError("selected fact handle belongs to another workspace generation")
-        if row not in selected:
-            selected.append(row)
-            handles.append({
-                "workspace_generation_id": native_generation,
-                "event_id": row["event_id"],
-                "fact_id": row["fact_id"],
-            })
+        key = (native_generation, row["event_id"], row["fact_id"])
+        if key in chosen:
+            raise EconomicInterpretationError("selected fact handle is duplicated")
+        chosen.add(key)
+    selected_set = chosen
+    selected = [row for row in rows if (native_generation, row.get("event_id"), row.get("fact_id")) in selected_set]
+    handles = [
+        {
+            "workspace_generation_id": native_generation,
+            "event_id": row["event_id"],
+            "fact_id": row["fact_id"],
+        }
+        for row in selected
+    ]
     return selected, handles
 
 

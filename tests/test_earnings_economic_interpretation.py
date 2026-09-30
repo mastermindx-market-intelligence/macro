@@ -1,6 +1,8 @@
 from decimal import Decimal
 import copy
 import hashlib
+import json
+import random
 
 import pytest
 
@@ -324,6 +326,55 @@ def test_compare_eps_parses_current_before_outcomes(bad_current, prior):
 def test_compare_eps_arithmetic_stays_guarded(current, prior):
     with pytest.raises(EconomicInterpretationError):
         compare_eps(current, prior, precision=40 if current == '1.64' else 2)
+
+
+def _all_handles(case):
+    workspace, texts = _case(case)
+    rows = validate_selected_facts(workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE)
+    return [
+        {
+            'workspace_generation_id': workspace['generation_id'],
+            'event_id': row['event_id'],
+            'fact_id': row['fact_id'],
+        }
+        for row in rows
+    ]
+
+
+@pytest.mark.parametrize('case', ['identical_inputs', 'segment_and_reconciliation_absent'])
+def test_selection_order_cannot_change_payload_or_identity(case):
+    handles = _all_handles(case)
+    shuffled = list(handles)
+    random.Random(8232).shuffle(shuffled)
+    five = shuffled[:5]
+    facts_orders = [None, list(handles), list(reversed(handles)), shuffled, five, list(reversed(five))]
+    payloads = []
+    for facts in facts_orders:
+        payloads.append(build_case_interpretation(case, selection={
+            'facts': facts, 'currentness': None,
+        }))
+    assert len({json.dumps(payload, sort_keys=True) for payload in payloads}) == 2
+    workspace, texts = _case(case)
+    expected_ids = [row['fact_id'] for row in validate_selected_facts(
+        workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE
+    )]
+    selected_ids = {item['fact_id'] for item in payloads[3]['observations']}
+    assert [item['fact_id'] for item in payloads[3]['observations']] == [
+        fact_id for fact_id in expected_ids if fact_id in selected_ids
+    ]
+    for payload, facts in zip(payloads[4:], (five, list(reversed(five)))):
+        assert [item['fact_id'] for item in payload['observations']] == [
+            fact_id for fact_id in expected_ids if fact_id in {item['fact_id'] for item in facts}
+        ]
+
+
+@pytest.mark.parametrize('case', ['identical_inputs', 'segment_and_reconciliation_absent'])
+def test_duplicate_selection_is_refused(case):
+    duplicate = _all_handles(case)[0]
+    with pytest.raises(EconomicInterpretationError):
+        build_case_interpretation(case, selection={
+            'facts': [duplicate, dict(duplicate)], 'currentness': None,
+        })
 
 
 def test_trusted_boundary_rejects_display_and_currentness_edits():
