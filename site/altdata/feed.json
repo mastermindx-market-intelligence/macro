@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-09-30T03:49:53.615465+00:00",
+  "generated_utc": "2026-09-30T11:11:45.204226+00:00",
   "as_of": "2026-09-30",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -26360,7 +26360,7 @@
         "ticker": "AMGN",
         "net_up_30d": 31,
         "breadth": 1.0,
-        "est_chg_30d": 0.13,
+        "est_chg_30d": 0.21,
         "n_analysts": 31,
         "bull_ratio": 1.0,
         "rising": true,
@@ -26371,7 +26371,7 @@
         "ticker": "AMD",
         "net_up_30d": 30,
         "breadth": 0.83,
-        "est_chg_30d": 1.4,
+        "est_chg_30d": 1.63,
         "n_analysts": 36,
         "bull_ratio": 0.92,
         "rising": true,
@@ -26404,22 +26404,11 @@
         "ticker": "AMAT",
         "net_up_30d": 27,
         "breadth": 0.93,
-        "est_chg_30d": 0.62,
+        "est_chg_30d": 0.01,
         "n_analysts": 29,
         "bull_ratio": 0.97,
         "rising": true,
         "revision_delta": 27,
-        "hot": true
-      },
-      {
-        "ticker": "ANET",
-        "net_up_30d": 26,
-        "breadth": 1.0,
-        "est_chg_30d": 0.54,
-        "n_analysts": 26,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 26,
         "hot": true
       },
       {
@@ -26435,6 +26424,17 @@
       },
       {
         "ticker": "PLTR",
+        "net_up_30d": 26,
+        "breadth": 1.0,
+        "est_chg_30d": 0.54,
+        "n_analysts": 26,
+        "bull_ratio": 1.0,
+        "rising": true,
+        "revision_delta": 26,
+        "hot": true
+      },
+      {
+        "ticker": "ANET",
         "net_up_30d": 26,
         "breadth": 1.0,
         "est_chg_30d": 0.54,
@@ -26511,17 +26511,6 @@
         "hot": true
       },
       {
-        "ticker": "ADI",
-        "net_up_30d": 23,
-        "breadth": 1.0,
-        "est_chg_30d": 8.54,
-        "n_analysts": 23,
-        "bull_ratio": 1.0,
-        "rising": true,
-        "revision_delta": 23,
-        "hot": true
-      },
-      {
         "ticker": "TXN",
         "net_up_30d": 23,
         "breadth": 1.0,
@@ -26548,6 +26537,17 @@
         "net_up_30d": 23,
         "breadth": 1.0,
         "est_chg_30d": 11.39,
+        "n_analysts": 23,
+        "bull_ratio": 1.0,
+        "rising": true,
+        "revision_delta": 23,
+        "hot": true
+      },
+      {
+        "ticker": "RTX",
+        "net_up_30d": 23,
+        "breadth": 1.0,
+        "est_chg_30d": 0.02,
         "n_analysts": 23,
         "bull_ratio": 1.0,
         "rising": true,
@@ -31241,15 +31241,14 @@
         "why": "material_8k: 3 material 8-Ks (items 1.01, 2.03, 7.01, 8.01) \u00b7 trump: CLEANSPARK INC"
       },
       {
-        "ticker": "GOOGL",
-        "score": 3,
-        "weighted_score": 0.95,
+        "ticker": "RTX",
+        "score": 2,
+        "weighted_score": 1.0,
         "channel_list": [
-          "app_demand",
-          "cnbc_pick",
-          "github_momentum"
+          "analyst_upgrade_cluster",
+          "unusual_options"
         ],
-        "why": "app_demand: 4.7\u2605 \u00d7 26,641,118 reviews \u00b7 cnbc_pick: Guy Adami \u00b7 github_momentum: +0.18% stars"
+        "why": "analyst_upgrade_cluster: net upgrades +23 revision delta \u00b7 unusual_options: 4.28\u00d7 vol/OI, call-skew"
       }
     ]
   }

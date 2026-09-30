@@ -1,8 +1,8 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-09-30",
-  "generated_utc": "2026-09-30T03:50:03.787539+00:00",
-  "n_tickers": 2798,
+  "generated_utc": "2026-09-30T11:11:55.837929+00:00",
+  "n_tickers": 2797,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
   "note": "Per-ticker weighted alt-data rollup. convergence_score = distinct independent channels (count); weighted_score ranks by channel quality. Donors / position-size recorded as context, never a voting channel.",
@@ -2612,16 +2612,18 @@
     "RTX": {
       "ticker": "RTX",
       "channels": [
+        "analyst_upgrade_cluster",
         "unusual_options"
       ],
-      "weighted_score": 0.65,
+      "weighted_score": 1.0,
       "opt_vol_oi": 0.393,
       "opt_put_call": 0.05,
+      "analyst_bull_ratio": 1.0,
       "days_to_earnings": 20,
       "next_earnings": "2026-10-20",
       "earnings_surprise_pct": 13.9,
       "congress_position_usd": 81438000.0,
-      "convergence_score": 1,
+      "convergence_score": 2,
       "trump_linked": false,
       "affiliated": false
     },
@@ -2889,17 +2891,6 @@
       "stocktwits_bull_ratio": 0.83,
       "stocktwits_watchers": 178615,
       "convergence_score": 2,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "ADI": {
-      "ticker": "ADI",
-      "channels": [
-        "analyst_upgrade_cluster"
-      ],
-      "weighted_score": 0.35,
-      "analyst_bull_ratio": 1.0,
-      "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
     },

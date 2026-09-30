@@ -137,24 +137,21 @@
     "status": "ABSENT"
   },
   "corrections": {
-    "changed_fingerprints": [
-      "business_cycle:leading_tier_index:d74e47e9895aac0a",
-      "business_cycle:leading_tier_momentum_6m:54c08b2f5996d1a7"
-    ],
-    "correction_state": "superseded",
-    "note": "Same reference period as the predecessor print, but one or more owner-native tier fields changed value: this print supersedes the prior one as a revision.",
-    "predecessor_generation_id": "business_activity-US-10dce30e962a4ccc"
+    "changed_fingerprints": [],
+    "correction_state": "none",
+    "note": "Same reference period as the predecessor print; no tracked tier field changed value (no-change republication).",
+    "predecessor_generation_id": "business_activity-US-6a93201b79f99605"
   },
   "drivers": {
     "balance_sheet": [],
     "rate_side": []
   },
   "generation": {
-    "built_at": "2026-09-30T03:57:40Z",
+    "built_at": "2026-09-30T11:20:26Z",
     "calculation_as_of": "2026-09-30",
-    "code_version": "89eb98edc05e795d74f939396e868b2023fe7938",
-    "content_sha256": "6a93201b79f9960539d988cd94f73c6f6f6a4f38fbc22f70d1bcc87172f7cd72",
-    "generation_id": "business_activity-US-6a93201b79f99605",
+    "code_version": "38d281629cceec19c20295bf84cca7ecd3b17132",
+    "content_sha256": "b9522b443979aac943fb6ff6b9e42a4e33f3a8ec8291d20bd1fdce589dd8e74e",
+    "generation_id": "business_activity-US-b9522b443979aac9",
     "producer": "engine.market_os.macro_workspaces.business_activity",
     "rendered_at": null
   },

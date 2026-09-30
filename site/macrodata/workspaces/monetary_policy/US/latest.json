@@ -193,7 +193,7 @@
     "changed_fingerprints": [],
     "correction_state": "none",
     "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "monetary_policy-US-6e2c6839fca08ae1"
+    "predecessor_generation_id": "monetary_policy-US-0cc25220ac540c70"
   },
   "drivers": {
     "balance_sheet": [
@@ -314,11 +314,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-09-30T03:57:40Z",
+    "built_at": "2026-09-30T11:20:26Z",
     "calculation_as_of": "2026-09-25",
-    "code_version": "89eb98edc05e795d74f939396e868b2023fe7938",
-    "content_sha256": "0cc25220ac540c70843faa09b990d012843af53e4eb619ead655b96da4ecbc03",
-    "generation_id": "monetary_policy-US-0cc25220ac540c70",
+    "code_version": "38d281629cceec19c20295bf84cca7ecd3b17132",
+    "content_sha256": "219a5f5231d5ca7aed6a8f9cd23de3373d62d7cabcf081e7c0ff0aeca25ba1c2",
+    "generation_id": "monetary_policy-US-219a5f5231d5ca7a",
     "producer": "engine.market_os.macro_workspaces.monetary_policy",
     "rendered_at": null
   },
