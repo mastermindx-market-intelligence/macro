@@ -471,3 +471,335 @@ class TestReceiptIsCompactAndOutcomeBlind:
             text = open(path, encoding="utf-8").read()
             assert "data/us_prophet_rank/w3" not in text
             assert "us_prophet_rank/w3" not in text
+
+
+# --------------------------------------------------------------------------- #
+# Early Leadership source-bound evidence compiler -- no outcomes, no score
+# --------------------------------------------------------------------------- #
+
+from engine.prophet_early_leadership_evidence import (
+    EarlyLeadershipEvidenceError,
+    build_early_leadership_evidence,
+)
+
+
+_DECISION = "2026-09-29T20:10:00Z"
+_ASOF = "2026-09-29T20:00:00Z"
+_KNOWN = "2026-09-29T20:05:00Z"
+_THEME = "theme:memory-storage"
+_ISSUER = "ISS:A"
+_SECURITY = "SEC:XNAS:A"
+
+
+def _leadership_inputs():
+    candidate = {
+        "schema": "prophet.stock_window_observation/v1",
+        "issuer_id": _ISSUER,
+        "security_id": _SECURITY,
+        "ticker": "AAA",
+        "theme_id": _THEME,
+        "asof": _ASOF,
+        "known_at": _KNOWN,
+        "return_window_sessions": 10,
+        "return_basis": "split_adjusted_close_to_close",
+        "stock_return": 0.12,
+        "market_return": 0.03,
+        "market_id": "SPY",
+        "source_ref": "price-owner:aaa:10d",
+    }
+    peer = {
+        "schema": "prophet.peer_ex_candidate/v1",
+        "candidate_issuer_id": _ISSUER,
+        "candidate_security_id": _SECURITY,
+        "theme_id": _THEME,
+        "asof": _ASOF,
+        "known_at": _KNOWN,
+        "membership_vintage": "2026-09-29",
+        "return_window_sessions": 10,
+        "return_basis": "split_adjusted_close_to_close",
+        "candidate_excluded": True,
+        "issuer_aliases_excluded": True,
+        "peer_member_count": 8,
+        "priced_peer_count": 6,
+        "coverage": 0.75,
+        "equal_weight_return": 0.06,
+        "median_return": 0.05,
+        "positive_share": 2 / 3,
+        "source_ref": "gmi:peer-ex-aa",
+    }
+    theme = {
+        "schema": "theme_state/v1",
+        "theme_id": _THEME,
+        "asof": _ASOF,
+        "known_at": _KNOWN,
+        "membership_vintage": "2026-09-29",
+        "member_count": 10,
+        "priced_member_count": 8,
+        "coverage": 0.8,
+        "performance": {
+            "excess_5d_vs_spy": 0.04,
+            "excess_20d_vs_sector": 0.08,
+            "vol_normalized_10d": 1.4,
+        },
+        "dynamics": {
+            "velocity": 0.6,
+            "acceleration": 0.25,
+            "persistence": 0.75,
+            "decay_risk": 0.15,
+        },
+        "breadth": {
+            "positive_5d": 0.75,
+            "rising_rs": 0.625,
+            "early_event_share": 0.25,
+            "entry_open_share": 0.125,
+        },
+        "diffusion": {
+            "subthemes_participating": 4,
+            "leadership_entropy": 0.78,
+            "leader_median_spread": 0.10,
+        },
+        "authority": "display",
+        "rights_state": "internal_allowed",
+        "receipts": ["gmi:theme-state:receipt"],
+    }
+    exposure = {
+        "schema": "prophet.economic_exposure_read/v1",
+        "issuer_id": _ISSUER,
+        "theme_id": _THEME,
+        "state": "CONFIRMED_DIRECT",
+        "known_at": _KNOWN,
+        "source_ref": "gmi:company-theme-exposure",
+        "evidence_refs": ["issuer:segment-revenue"],
+        "mapping_qualifier": "product_revenue_direct",
+    }
+    setup = {
+        "schema": "prophet.owner_setup_observation/v1",
+        "state": "ARMED",
+        "observed_at": "2026-09-29T19:55:00Z",
+        "known_at": "2026-09-29T19:56:00Z",
+        "source_ref": "toi:setup:aaa",
+        "invalidation_ref": "toi:setup:aaa:invalidates",
+    }
+    geometry = {
+        "schema": "prophet.owner_entry_geometry_read/v1",
+        "current_price": 100.0,
+        "invalidation_price": 95.0,
+        "chase_boundary": 105.0,
+        "target_price": 115.0,
+        "quote_asof": "2026-09-29T20:08:00Z",
+        "known_at": "2026-09-29T20:09:00Z",
+        "source_ref": "entry-owner:aaa",
+    }
+    return candidate, peer, theme, exposure, setup, geometry
+
+
+def _build_leadership(**replace):
+    candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+    values = {
+        "candidate": candidate,
+        "peer_ex_candidate": peer,
+        "theme_state": theme,
+        "economic_exposure": exposure,
+        "setup_observation": setup,
+        "entry_geometry": geometry,
+    }
+    values.update(replace)
+    return build_early_leadership_evidence(decision_at=_DECISION, **values)
+
+
+class TestEarlyLeadershipEvidenceContract:
+    def test_decomposes_stock_group_and_market_without_a_score(self):
+        out = _build_leadership()
+        d = out["return_decomposition"]
+        assert d["stock_excess_market"] == pytest.approx(0.09)
+        assert d["peer_excess_market"] == pytest.approx(0.03)
+        assert d["stock_excess_peer"] == pytest.approx(0.06)
+        assert d["identity_error"] == pytest.approx(0.0)
+        assert out["interpretation"]["score"] is None
+        assert out["interpretation"]["probability"] is None
+        assert out["interpretation"]["rank"] is None
+        assert out["interpretation"]["recommendation"] is None
+        assert out["interpretation"]["availability"] == "DEFER_TO_B4"
+        assert all(value is False for value in out["authority"].values())
+
+    def test_peer_receipt_must_exclude_candidate_and_all_issuer_aliases(self):
+        for key in ("candidate_excluded", "issuer_aliases_excluded"):
+            candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+            peer[key] = False
+            with pytest.raises(EarlyLeadershipEvidenceError, match="excluded"):
+                _build_leadership(peer_ex_candidate=peer)
+
+    def test_peer_and_candidate_identity_must_match(self):
+        candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+        peer["candidate_issuer_id"] = "ISS:OTHER"
+        with pytest.raises(EarlyLeadershipEvidenceError, match="issuer_mismatch"):
+            _build_leadership(peer_ex_candidate=peer)
+
+        candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+        peer["candidate_security_id"] = "SEC:XNAS:OTHER"
+        with pytest.raises(EarlyLeadershipEvidenceError, match="security_mismatch"):
+            _build_leadership(peer_ex_candidate=peer)
+
+    def test_theme_identity_asof_membership_and_return_basis_are_jointly_bound(self):
+        mutators = [
+            ("theme", lambda c,p,t,e,s,g: t.update(theme_id="theme:other"), "theme_identity_mismatch"),
+            ("asof", lambda c,p,t,e,s,g: p.update(asof="2026-09-28T20:00:00Z"), "measurement_asof_mismatch"),
+            ("vintage", lambda c,p,t,e,s,g: p.update(membership_vintage="2026-09-28"), "membership_vintage_mismatch"),
+            ("window", lambda c,p,t,e,s,g: p.update(return_window_sessions=5), "return_window_mismatch"),
+            ("basis", lambda c,p,t,e,s,g: p.update(return_basis="raw_close"), "return_basis_mismatch"),
+        ]
+        for name, mutate, error in mutators:
+            candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+            mutate(candidate, peer, theme, exposure, setup, geometry)
+            with pytest.raises(EarlyLeadershipEvidenceError, match=error):
+                _build_leadership(
+                    candidate=candidate, peer_ex_candidate=peer, theme_state=theme,
+                    economic_exposure=exposure, setup_observation=setup, entry_geometry=geometry,
+                )
+
+    def test_singleton_or_empty_peer_support_is_unknown_not_zero(self):
+        candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+        peer.update(
+            peer_member_count=1, priced_peer_count=1, coverage=1.0,
+            equal_weight_return=None, median_return=None, positive_share=None,
+        )
+        out = _build_leadership(peer_ex_candidate=peer)
+        assert out["peer_ex_candidate"]["measurement_state"] == "UNAVAILABLE_SINGLETON_OR_EMPTY"
+        assert out["return_decomposition"]["peer_excess_market"] is None
+        assert out["return_decomposition"]["stock_excess_peer"] is None
+        assert out["research_features"]["peer_positive_share"] is None
+        assert out["research_state"] == "UNAVAILABLE"
+
+    def test_partial_peer_coverage_remains_partial_and_keeps_denominator(self):
+        out = _build_leadership()
+        peer = out["peer_ex_candidate"]
+        assert peer["measurement_state"] == "PARTIAL"
+        assert peer["peer_member_count"] == 8
+        assert peer["priced_peer_count"] == 6
+        assert peer["coverage"] == pytest.approx(.75)
+
+    def test_peer_coverage_must_match_counts(self):
+        candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+        peer["coverage"] = .9
+        with pytest.raises(EarlyLeadershipEvidenceError, match="coverage_count_mismatch"):
+            _build_leadership(peer_ex_candidate=peer)
+
+    def test_theme_state_is_projected_not_recomputed_or_promoted(self):
+        candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+        original = copy.deepcopy(theme)
+        out = _build_leadership(theme_state=theme)
+        projected = out["theme_state_projection"]
+        assert projected["dynamics"]["acceleration"] == .25
+        assert projected["breadth"]["rising_rs"] == .625
+        assert projected["diffusion"]["leadership_entropy"] == .78
+        assert projected["authority"] == "display"
+        assert theme == original
+
+    def test_theme_state_must_remain_display_authority(self):
+        candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+        theme["authority"] = "rank"
+        with pytest.raises(EarlyLeadershipEvidenceError, match="authority_must_be_display"):
+            _build_leadership(theme_state=theme)
+
+    def test_membership_only_is_not_economic_exposure(self):
+        candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+        exposure.update(state="MEMBERSHIP_ONLY", evidence_refs=[])
+        out = _build_leadership(economic_exposure=exposure)
+        assert out["economic_exposure"]["economic_exposure_confirmed"] is False
+        assert out["research_state"] == "ACCRUING"
+
+    @pytest.mark.parametrize("state", ["CONFIRMED_DIRECT", "CONFIRMED_INDIRECT"])
+    def test_direct_or_indirect_confirmed_exposure_can_support_research(self, state):
+        candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+        exposure["state"] = state
+        out = _build_leadership(economic_exposure=exposure)
+        assert out["economic_exposure"]["economic_exposure_confirmed"] is True
+        assert out["research_state"] == "READY_FOR_RESEARCH_COMPARISON"
+
+    def test_setup_state_is_preserved_not_scalarized(self):
+        for state in ("FORMING", "ARMED", "TRIGGERED", "CONFIRMED", "FAILED", "EXTENDED"):
+            candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+            setup["state"] = state
+            out = _build_leadership(setup_observation=setup)
+            assert out["setup_observation"]["state"] == state
+            assert out["research_features"]["setup_state"] == state
+
+    def test_unknown_setup_is_accruing_not_bearish(self):
+        candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+        setup["state"] = "UNKNOWN"
+        out = _build_leadership(setup_observation=setup)
+        assert out["research_state"] == "ACCRUING"
+        assert out["setup_observation"]["state"] == "UNKNOWN"
+
+    def test_geometry_exposes_remaining_room_without_minting_availability(self):
+        out = _build_leadership()
+        geometry = out["entry_geometry"]
+        assert geometry["risk_to_invalidation_pct"] == pytest.approx(.05)
+        assert geometry["room_to_chase_pct"] == pytest.approx(.05)
+        assert geometry["target_room_pct"] == pytest.approx(.15)
+        assert geometry["gross_reward_risk"] == pytest.approx(3.0)
+        assert geometry["past_chase_boundary"] is False
+        assert geometry["availability_interpretation"] == "GEOMETRY_CONTEXT_ONLY_B4_REMAINS_OWNER"
+
+    def test_extended_price_can_show_negative_room_without_becoming_a_sell(self):
+        candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+        geometry.update(current_price=108.0, target_price=120.0)
+        out = _build_leadership(entry_geometry=geometry)
+        assert out["entry_geometry"]["room_to_chase_pct"] < 0
+        assert out["entry_geometry"]["past_chase_boundary"] is True
+        assert out["interpretation"]["recommendation"] is None
+        assert out["authority"]["can_change_entry_open"] is False
+
+    def test_invalid_long_geometry_is_refused(self):
+        candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+        geometry["target_price"] = 99.0
+        with pytest.raises(EarlyLeadershipEvidenceError, match="target_must_be_above"):
+            _build_leadership(entry_geometry=geometry)
+
+    def test_future_candidate_peer_theme_setup_or_geometry_evidence_is_refused(self):
+        cases = [
+            ("candidate", "known_at", "2026-09-29T20:11:00Z"),
+            ("peer", "known_at", "2026-09-29T20:11:00Z"),
+            ("theme", "known_at", "2026-09-29T20:11:00Z"),
+            ("setup", "known_at", "2026-09-29T20:11:00Z"),
+            ("geometry", "known_at", "2026-09-29T20:11:00Z"),
+        ]
+        for which, key, value in cases:
+            candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+            mapping = {
+                "candidate": candidate, "peer": peer, "theme": theme,
+                "setup": setup, "geometry": geometry,
+            }[which]
+            mapping[key] = value
+            with pytest.raises(EarlyLeadershipEvidenceError, match="clock_invalid|future_evidence"):
+                _build_leadership(
+                    candidate=candidate, peer_ex_candidate=peer, theme_state=theme,
+                    economic_exposure=exposure, setup_observation=setup, entry_geometry=geometry,
+                )
+
+    def test_future_exposure_is_refused(self):
+        candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+        exposure["known_at"] = "2026-09-29T20:11:00Z"
+        with pytest.raises(EarlyLeadershipEvidenceError, match="future_evidence"):
+            _build_leadership(economic_exposure=exposure)
+
+    def test_feedback_outputs_cannot_enter_candidate_measurement(self):
+        candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+        candidate["score_rank"] = 1
+        with pytest.raises(EarlyLeadershipEvidenceError, match="prohibited_feedback_input"):
+            _build_leadership(candidate=candidate)
+
+    def test_theme_rights_block_is_unavailable_not_negative_support(self):
+        candidate, peer, theme, exposure, setup, geometry = _leadership_inputs()
+        theme["rights_state"] = "RIGHTS_BLOCKED"
+        out = _build_leadership(theme_state=theme)
+        assert out["research_state"] == "UNAVAILABLE"
+        assert out["research_features"]["theme_acceleration"] == .25
+
+    def test_output_is_content_addressed_and_deep_copy_safe(self):
+        left = _build_leadership()
+        right = _build_leadership()
+        assert left == right
+        assert left["evidence_id"].startswith("pele:")
+        left["research_features"]["theme_acceleration"] = 999
+        assert _build_leadership() == right
