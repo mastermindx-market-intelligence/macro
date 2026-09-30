@@ -305,3 +305,41 @@ def test_r12_numeric_reference_prices_are_not_confused_with_boolean(monkeypatch)
         after=CVD.compute(as_of=h.index[-1].tz_localize('UTC'))
         assert after['price_alignment_complete'] is True
         assert after['net_flow_24h_native']==before['net_flow_24h_native']
+
+
+import pytest
+
+
+def test_r12_future_and_outside_dependency_boolean_does_not_poison_current_view(monkeypatch):
+    h,p,before=_r12_reference_case(monkeypatch)
+    cutoff=h.index[-2].tz_localize('UTC')
+    prior=CVD.compute(as_of=cutoff)
+    bad=p.astype(object);bad.iloc[-1,0]=True
+    monkeypatch.setattr(CVD.store,'read',lambda ns,nm:bad if ns=='coinbase' else h)
+    assert CVD.compute(as_of=cutoff)==prior
+    bad=p.astype(object);bad.iloc[0,0]=True
+    out=CVD.compute(as_of=h.index[-1].tz_localize('UTC'))
+    assert out['price_alignment_complete'] is True and out['divergence'] is not None
+
+
+@pytest.mark.parametrize('n',[23,24,72,1512,1800])
+@pytest.mark.parametrize('seed',[13,29])
+@pytest.mark.parametrize('shape',['numeric','string_price','flow_gap','null_volume','no_price','stale_clock'])
+def test_r12_unchanged_numeric_coverage_and_freshness(monkeypatch,n,seed,shape):
+    import hashlib
+    from types import ModuleType,SimpleNamespace
+    reference=Path(__file__).resolve().parents[1]/'research/crypto_science/r12/reference_cvd_before_price_guard.py.txt'
+    raw=reference.read_bytes()
+    assert hashlib.sha256(raw).hexdigest()=='12117869d18239cdffd4d70b0c6906ba8a51bf140894c860e07321db2a8420a9'
+    old=ModuleType('r12_original_cvd');exec(compile(raw,str(reference),'exec'),old.__dict__)
+    rng=np.random.default_rng(seed);ix=pd.date_range('2026-01-01',periods=n,freq='h')
+    h=pd.DataFrame({'taker_buy_vol':rng.uniform(0,10,n),'taker_sell_vol':rng.uniform(0,10,n)},index=ix)
+    p=pd.DataFrame({'close':60000+np.cumsum(rng.normal(0,20,n))},index=ix);clock=ix[-1].tz_localize('UTC')
+    if shape=='string_price':p['close']=p.close.astype(str)
+    elif shape=='flow_gap':h=h.drop(ix[n//2])
+    elif shape=='null_volume':h.iloc[-1,0]=np.nan
+    elif shape=='no_price':p=pd.DataFrame()
+    elif shape=='stale_clock':clock+=pd.Timedelta(hours=72)
+    reader=lambda ns,nm:p.copy() if ns=='coinbase' else h.copy()
+    old.store=SimpleNamespace(read=reader);monkeypatch.setattr(CVD.store,'read',reader)
+    assert CVD.compute(as_of=clock)==old.compute(as_of=clock)
