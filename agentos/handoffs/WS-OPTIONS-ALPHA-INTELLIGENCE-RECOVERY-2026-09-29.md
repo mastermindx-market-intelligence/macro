@@ -169,11 +169,17 @@ unverified:
       logical ledger with the historical prefix unchanged, on two natural append
       observations.
     what_would_verify: >
-      Two consecutive scheduled nightly runs after merge showing
-      outcomes_session.jsonl byte-unchanged, outcomes_session_parts/part-*.jsonl
-      extending contiguously, and the campaign consuming them as one logical
-      ledger without a prefix error. This is a scheduled event; it cannot be
-      replayed or fabricated in-session.
+      Two nightly runs after merge whose `engine` JOB concluded success --
+      NOT two runs whose run-level conclusion is success: daily.yml is
+      DST-paired and the wrong-DST run reports run-level SUCCESS with every job
+      skipped (DSC:NIGHTLY-ARTIFACT-ATTRIBUTION-NEEDS-THE-ENGINE-JOB) --
+      showing outcomes_session.jsonl byte-unchanged,
+      outcomes_session_parts/part-*.jsonl extending contiguously, and the
+      campaign consuming them as one logical ledger without a prefix error.
+      This is a scheduled event; it cannot be replayed or fabricated
+      in-session. Measured at closeout: ZERO such observations exist yet; see
+      the acceptance section for the two post-merge runs and why neither
+      counts.
   - claim: >
       The mechanism behind the locked-index flake — whether a real TOCTOU window
       exists in oip_commit_locked_roots or only in its test harness.
@@ -311,11 +317,35 @@ base blob : c73ec6998a03b193e219dffa62f668e9eb426420   <-- MUST NOT CHANGE, ever
 parts dir : 0 entries at merge time
 ```
 
-Observation #1 = the 22:30Z `daily.yml` firing on 2026-09-29 (the merge landed ~75 min ahead of it),
-which performs the **first rollover**. Observation #2 = the next firing, the first append into an
-*existing* part — a different code path. Check both with:
+**An observation is an `engine` JOB, never a run.** `daily.yml` is DST-paired, so each night
+produces TWO scheduled runs: the wrong-DST one exits in seconds reporting run-level **SUCCESS** with
+every job skipped, while the run that actually builds can report run-level CANCELLED/FAILURE from a
+late job hours after `engine` already succeeded and pushed. The session-outcome publisher lives
+inside the `engine` job (`daily.yml:3358-3426`, build → publish-episode → publish-campaign;
+`assert-integrity` at :4861), so a run whose `engine` is `skipped` is **not an observation at all**
+whatever its run-level colour, and `parts/ == 0` after such a run says nothing about maturation.
+Canonical method and receipts: `DSC:NIGHTLY-ARTIFACT-ATTRIBUTION-NEEDS-THE-ENGINE-JOB`.
+
+Observation #1 = the first post-merge nightly whose `engine` job concludes `success` **and appends**.
+Because the frozen base is already 1.996× the 48 MiB part ceiling, that first append necessarily
+creates `part-000001.jsonl` — the **first rollover**. Observation #2 = the next such run, the first
+append into an *existing* part, a different code path. An `engine success` night that matures no rows
+is a legitimate null, not a failure, and is not one of the two.
+
+**Status at closeout: ZERO observations, cause external.** The only two `daily.yml` runs created
+after the merge (2026-09-29T21:40:32Z) were `36658978247` (02:15:12Z, run-level completed/**success**,
+`engine` **skipped** — the DST decoy) and `36655184116` (01:27:15Z, the EDT-intended firing), still
+`queued` and never started 4h26m after creation as of 2026-09-30T05:53Z. `daily.yml` is the only
+workflow that can append these rows, so no alternative observation source exists. Base blob and
+parts count re-verified unchanged at that time (`c73ec6998a03…` / 0) — the expected reading when the
+writer has not run, and NOT evidence about maturation.
+
+Attribute first, then read the ledger. The path is `options_signal_episode`, not `options_signal`; a
+wrong prefix returns a false `0` rather than an error:
 
 ```bash
+gh api "repos/mastermindx-market-intelligence/macro/actions/runs/<id>/jobs?per_page=100" \
+  --jq '.jobs[]|select(.name=="engine")|"\(.conclusion) \(.started_at) \(.completed_at)"'
 git fetch origin
 git rev-parse origin/main:data/options_signal_episode/outcomes_session.jsonl   # must equal c73ec6998a03…
 git ls-tree -r origin/main -- data/options_signal_episode/outcomes_session_parts/
