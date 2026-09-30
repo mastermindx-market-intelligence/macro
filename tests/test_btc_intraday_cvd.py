@@ -268,3 +268,40 @@ def test_r11_builder_warnings_do_not_mislabel_short_gaps_or_stale_snapshots():
     assert 'STOPPED accruing' not in section
     assert 'if _cvd.get("gap_detected"):' in section
     assert 'missing or invalid hourly observations' in section
+
+
+# R12 integrates the previously sandbox-only review into the existing test owner.
+def _r12_reference_case(monkeypatch):
+    t = np.arange(1800)
+    ix = pd.date_range('2026-01-01', periods=len(t), freq='h')
+    h = pd.DataFrame({'taker_buy_vol':100+10*np.sin(t/19),
+                      'taker_sell_vol':100+7*np.cos(t/31)}, index=ix)
+    p = pd.DataFrame({'close':60000+20*t+1000*np.sin(t/27)}, index=ix)
+    monkeypatch.setattr(CVD.store,'read',lambda ns,nm:p if ns=='coinbase' else h)
+    before=CVD.compute(as_of=ix[-1].tz_localize('UTC'))
+    assert before['price_alignment_complete'] and before['divergence'] is not None
+    return h,p,before
+
+
+def test_r12_boolean_reference_price_withholds_divergence_only(monkeypatch):
+    h,p,before=_r12_reference_case(monkeypatch)
+    for bad in (True,np.bool_(True),False,np.bool_(False)):
+        for offset in (0,12,24):
+            broken=p.astype(object).copy();broken.iloc[-1-offset,0]=bad
+            monkeypatch.setattr(CVD.store,'read',lambda ns,nm:broken if ns=='coinbase' else h)
+            after=CVD.compute(as_of=h.index[-1].tz_localize('UTC'))
+            assert after['ok'] and after['causally_qualified'] is False
+            assert after['price_alignment_complete'] is False
+            assert after['divergence'] is None
+            for key in ['net_flow_24h_native','net_flow_72h_native','buy_share_24h']:
+                assert after[key]==before[key]
+
+
+def test_r12_numeric_reference_prices_are_not_confused_with_boolean(monkeypatch):
+    h,p,before=_r12_reference_case(monkeypatch)
+    for valid in (1,1.0,np.float64(1),str(p.close.iloc[-1])):
+        changed=p.astype(object).copy();changed.iloc[-1,0]=valid
+        monkeypatch.setattr(CVD.store,'read',lambda ns,nm:changed if ns=='coinbase' else h)
+        after=CVD.compute(as_of=h.index[-1].tz_localize('UTC'))
+        assert after['price_alignment_complete'] is True
+        assert after['net_flow_24h_native']==before['net_flow_24h_native']

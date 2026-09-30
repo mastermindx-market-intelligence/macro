@@ -122,7 +122,11 @@ def compute(sig_df: pd.DataFrame | None = None, *, as_of=None) -> dict:
         if n >= MIN_HOURS_DIV:
             out['price_alignment_complete'] = False
             if ref is not None and not ref.empty and 'close' in ref.columns and not ref.index.has_duplicates:
-                close = pd.to_numeric(ref['close'], errors='coerce').sort_index().reindex(cvd.index)
+                raw_close = ref['close']
+                # Boolean truth values are not observed price levels. Preserve
+                # valid flow context while withholding its price-dependent view.
+                invalid_type = raw_close.map(lambda v: isinstance(v, (bool, np.bool_)))
+                close = pd.to_numeric(raw_close.mask(invalid_type), errors='coerce').sort_index().reindex(cvd.index)
                 tail = close.tail(MIN_HOURS_DIV)
                 complete = bool(np.isfinite(tail).all() and (tail > 0).all())
                 out['price_alignment_complete'] = complete
