@@ -11,9 +11,9 @@ One integrated vertical shipped as one PR per plan task, each branched from fres
 | Task | Lane label | Branch | State |
 |---|---|---|---|
 | 1 native PG profile + strict scoped facts | `cdv1_t1_pg_facts` (rounds r1 m1, r2–r3 mini2, r4 mini2, r5 mini2/MiniMax; envelope rounds 2026-09-25 → 09-29) | `claude/cdv1-t1-pg-profile-facts` | **MERGED** #7905 on 2026-09-30 01:42:52Z: squash `cdce3023` of the exact head `1c3e2215`, released by Sol 5902318060 after the R11 ACCEPT |
-| 2 source selection + native preparation | `cdv1_t2_source_currentness_r3` (mb) | `claude/cdv1-t2-source-currentness` | r3 dispatched 2026-09-30 in parallel with T3: `packets/CDV1_T2_R3_PACKET_2026-09-30.md` |
-| 3 deterministic interpretation | `cdv1_t3_interpretation_r4` (mini2) | `claude/cdv1-t3-economic-interpretation` | PR #8232 (draft). The r3 head `f2714400` was rejected by its first review; the r4 fix round was dispatched 2026-09-30: `packets/CDV1_T3_R4_PACKET_2026-09-30.md` |
-| 4 private publication v2 + readers | `cdv1_t4_private_v2` | `claude/cdv1-t4-private-publication-v2` | packet ready (after T1–T3) + T7 contract binding + Q6 fold |
+| 2 source selection + native preparation | `cdv1_t2_source_currentness_r3` (mb), then r4 (mb); rounds 5–6 seat commits | `claude/cdv1-t2-source-currentness` | **MERGED** #8234 on 2026-09-30 16:22:30Z: squash `b1b2ea3b` of the exact head `5f33a5a2`, after the round-6 review's ACCEPT |
+| 3 deterministic interpretation | `cdv1_t3_interpretation_r4`, then r5 (mini2); round 6 seat commits | `claude/cdv1-t3-economic-interpretation` | **MERGED** #8232 on 2026-09-30 12:20:22Z: squash `ddf03116` of the exact head `47441f3b`, after the fourth review's ACCEPT |
+| 4 private publication v2 + readers | `cdv1_t4_private_publication_r2a` (mini2) | `claude/cdv1-t4-private-publication-v2` | round A dispatched 2026-09-30 17:32Z: `packets/CDV1_T4_R2A_PACKET_2026-09-30.md`. Round B follows on the same PR |
 | 5 normal refresh integration (flag off) | `cdv1_t5_refresh_integration` | `claude/cdv1-t5-refresh-integration` | packet ready (after T4) |
 | 6 API current selector + pinned evidence | `cdv1_t6_api_evidence` | `claude/cdv1-t6-api-evidence` | packet ready (after T4) + T7 contract binding + Q6 fold |
 | 7 shared dossier display | `cdv1_t7_design_spec` (r1–r3 mb/mini2) | `claude/cdv1-t7-design-spec` | RE-SCOPED to CONTENT + CONTRACT: spec MERGED #7904; UI build waits for the foundation host slot (#7870) |
@@ -80,3 +80,28 @@ Gates: G1 exercised by the seat as delegated owner; G2 (real source admission), 
      Each PR then gets an independent read-only Opus review, then concluded CI, then a merge with `--match-head-commit`.
   2. Before the second of the two merges, check `git merge-tree` on the two heads.
   3. Then T4, then T5 ∥ T6. The T7 UI and the T8 release still wait for the foundation host edge (#7870).
+
+## Wave 3 (2026-09-30) — seat ledger
+
+- **T3 rounds 5–6 → MERGED.** The round-5 lane returned at `f4a167ff`, and the seat added one commit under R5a (`reviews/SEAT_RULING_T3_R5A_2026-09-30.md`). The third Opus review rejected head `38e4e71b` on seven blocking findings, F1–F7 (`reviews/OPUS_T3_PR_REVIEW_R3_2026-09-30.md`). Round 6 answered them with rulings R6.1–R6.10, one boundary for every value, in two seat commits, `be277281` and `47441f3b` (`reviews/SEAT_RULING_T3_R6_2026-09-30.md`). The fourth review accepted `47441f3b` with no blocking finding and eight notes (`reviews/OPUS_T3_PR_REVIEW_R4_2026-09-30.md`). The seat squash-merged it with `--match-head-commit` at 12:20:22Z as `ddf03116`.
+- **T3 follow-up owed (R6a):** five test pins, a local decimal context for `compare_eps`, and a platform-independent clock form. It changes `CODE_REVISION`, so it lands before Task 4 stores an interpretation in production.
+- **T2 rounds 5–6 → MERGED.**
+  - The erratum R4.2a (`reviews/SEAT_ERRATUM_T2_R4_2A_2026-09-30.md`) aligned Task 2's unverified currentness with Task 3. Round 5 amends it.
+  - Round 5 (`reviews/SEAT_RULING_T2_R5_2026-09-30.md`, rulings R5.1–R5.8 and R5.10–R5.14) was a seat commit on the round-4 lane's return.
+  - The second review rejected its head `113323df` on B1: after a transient 503, an older filing could supersede a newer one (`reviews/OPUS_T2_PR_REVIEW_R2_2026-09-30.md`).
+  - Round 6 closed it with ruling R6.1: inside one fiscal period the source clock never steps back (`reviews/SEAT_RULING_T2_R6_2026-09-30.md`).
+  - The third review accepted head `5f33a5a2` with no blocking finding (`reviews/OPUS_T2_PR_REVIEW_R3_2026-09-30.md`). The seat squash-merged it with `--match-head-commit` at 16:22:30Z as `b1b2ea3b`.
+- **Carried to Task 4** from that review:
+  - N1: the stored chain of an event must be a prefix of the candidate's chain, entry for entry.
+  - N2: a stored workspace's `source_available_at` is never later than its `observed_at`.
+- **One standing red on both merges.** `ci-authority/codex/merge-queue-pilot` ("CI authority context rejected") was red on #8232 and #8234 at merge, because each PR edits CI-authority paths. Each PR body named it; it was neither rerun nor worked around. Every other check concluded green.
+- **T4 runs in two rounds on one PR.**
+  - Round A (`packets/CDV1_T4_R2A_PACKET_2026-09-30.md`, rulings R-A1–R-A12) stages a v2 private generation beside the unchanged v1, and adds one closure validator over the native objects of Tasks 1–3.
+  - Round B adds the v2 publish transaction, the readers, the rights seam, the CI job and the deploy restart wiring.
+  - Until round B lands, the PR's CI-manifest and restart checks are expected to be red. The PR is not merged between rounds.
+  - The seat checked the packet against `main`'s code with its own probes before dispatch. Round A was dispatched at 17:32Z on mini2, with a CPython 3.12 venv to match CI.
+- **Next:**
+  1. Seat verification of round A, then the round-B packet and its ruling record.
+  2. An independent read-only Opus review of the integrated T4 head, then concluded CI and a merge with `--match-head-commit`.
+  3. The T3 R6a follow-up.
+  4. Then T5 ∥ T6. The T7 UI and the T8 release still wait for the foundation host edge (#7870).
