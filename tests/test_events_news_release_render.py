@@ -82,3 +82,63 @@ def test_evidence_for_another_snapshot_is_not_displayed():
     assert not s.select('.nd-official-value')
     assert s.select_one('[data-nd-official-count]')['data-nd-official-count']=='0'
     assert 'event or snapshot' in s.get_text()
+
+
+@pytest.mark.parametrize('field',[
+    'scheduled_reference_period','expected_reference_period','forecast_period','reference_period',
+])
+def test_changed_reference_after_projection_withholds_stale_result(field):
+    data=historical_data()
+    data['macro_catalysts'][0][field]='June 2026'
+    s=BeautifulSoup(render_component(**data),'html.parser')
+    assert not s.select('.nd-official-value')
+    assert s.select_one('[data-nd-official-count]')['data-nd-official-count']=='0'
+
+
+def test_removed_reference_after_projection_requires_reprojection():
+    data=historical_data()
+    event=data['macro_catalysts'][0]
+    from engine.events_news_release_evidence import attach_event_actual_evidence
+    import json
+    event['reference_period']='July 2026'
+    rows=json.loads((ROOT/'tests/fixtures/events_news_official_receipts.json').read_text())['rows']
+    data['macro_catalysts']=attach_event_actual_evidence(
+        [event],rows,as_of=data['generated_utc'],
+        defects_path=ROOT/'tests/fixtures/events_news_actual_defects.json')
+    data['macro_catalysts'][0].pop('reference_period')
+    s=BeautifulSoup(render_component(**data),'html.parser')
+    assert not s.select('.nd-official-value')
+
+
+def test_unchanged_explicit_reference_displays_qualified_result():
+    data=historical_data()
+    event=data['macro_catalysts'][0]
+    from engine.events_news_release_evidence import attach_event_actual_evidence
+    import json
+    event['reference_period']='July 2026'
+    rows=json.loads((ROOT/'tests/fixtures/events_news_official_receipts.json').read_text())['rows']
+    data['macro_catalysts']=attach_event_actual_evidence(
+        [event],rows,as_of=data['generated_utc'],
+        defects_path=ROOT/'tests/fixtures/events_news_actual_defects.json')
+    assert len(BeautifulSoup(render_component(**data),'html.parser').select('.nd-official-value'))==2
+
+
+@pytest.mark.parametrize('family,label',[
+    ('NFP','Thousands of payroll jobs'),('CLAIMS','Thousands of initial claims'),
+])
+def test_thousands_label_preserves_the_measured_quantity(tmp_path,family,label):
+    import json
+    from test_events_news_release_evidence import publication
+    from engine import release_actuals as official
+    from engine.events_news_release_evidence import attach_event_actual_evidence
+    policy=tmp_path/'policy.json'
+    policy.write_text(json.dumps({'schema':'official_actual_defects.v1','defects_by_receipt':{}}))
+    rows=official.normalize_publication(publication(family),defects_path=policy)
+    data={'alerts':[],'macro_news':{'headlines':[]},'latest':None,
+          'generated_utc':'2026-09-30T13:00:00Z'}
+    data['macro_catalysts']=attach_event_actual_evidence(
+        [{'type':family,'date':'2026-09-30'}],rows,
+        as_of=data['generated_utc'],defects_path=policy)
+    s=BeautifulSoup(render_component(**data),'html.parser')
+    assert label in s.select_one('.nd-official-unit').get_text()
+    assert 'Thousands of people' not in s.get_text()
