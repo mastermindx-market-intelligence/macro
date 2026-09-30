@@ -1887,6 +1887,11 @@ def publish_private_publication(
             except Exception as exc:
                 raise EarningsPrivatePublishConflict("conditional_write_unavailable") from exc
         verified_payloads = _validated_prepared_payloads(prepared)
+        if prepared_schema == MANIFEST_SCHEMA_V2 and prepared.manifest["native"]["selections"]:
+            try:
+                assert_native_rights()
+            except EarningsPrivateClosureError as exc:
+                raise EarningsEconomicUnavailable("rights_refused") from exc
         # Validate every caller-provided bound before either the idempotent
         # fast path or promotion can return.  Reusing this set also keeps
         # duplicate content keys out of the write pool.
@@ -2098,61 +2103,73 @@ def load_economic_closure(
         validate_slug(slug)
     except EarningsPrivatePublicationError as exc:
         raise EarningsEconomicNotFound("unknown_record") from exc
-    if value.get("schema") != MANIFEST_SCHEMA_V2 or slug not in value.get("records", {}):
-        raise EarningsEconomicNotFound("unknown_record")
-    if slug not in value["native"]["selections"]:
+    if (
+        value.get("schema") != MANIFEST_SCHEMA_V2
+        or slug not in value.get("records", {})
+        or slug not in value.get("native", {}).get("selections", {})
+    ):
         raise EarningsEconomicNotFound("unknown_record")
     objects = _native_objects_for_slug(store, value, slug)
+    if interpretation == "stale_ok":
+        try:
+            stale = _load_stale_economic_entry(value, objects, slug)
+        except EarningsPrivateClosureError as exc:
+            if exc.reason == "interpretation_unsupported":
+                raise EarningsEconomicUnavailable("interpretation_unsupported") from exc
+            raise
+        if stale["interpretation_state"] == "stale":
+            return stale
     try:
         entry = validate_native_closure(value, objects, slugs=[slug])[slug]
+        return {**entry, "interpretation_state": "current"}
     except EarningsPrivateClosureError as exc:
-        if interpretation == "stale_ok" and exc.reason == "interpretation_unsupported":
-            all_objects = dict(objects)
-            native = value["native"]
-            selection = native["selections"][slug]
-            all_objects[value["context"]["manifest"]["object_key"]] = _bounded_read(
-                store,
-                value["context"]["manifest"]["object_key"],
-                maximum=value["context"]["manifest"]["bytes"],
-            )
-            for receipt in value["context"]["objects"].values():
-                all_objects[receipt["object_key"]] = _bounded_read(
-                    store, receipt["object_key"], maximum=receipt["bytes"]
-                )
-            for catalog in ("workspaces", "documents"):
-                for receipt in native[catalog].values():
-                    all_objects[receipt["object_key"]] = _bounded_read(
-                        store, receipt["object_key"], maximum=receipt["bytes"]
-                    )
-            for body in native["source_bodies"].values():
-                receipt = body["text"]
-                all_objects[receipt["object_key"]] = _bounded_read(
-                    store, receipt["object_key"], maximum=receipt["bytes"]
-                )
-            non_replaying = validate_native_closure(
-                value,
-                {key: body for key, body in all_objects.items() if body is not None},
-                interpretations=False,
-            )[slug]
-            stored = non_replaying["interpretation"]
-            selection = non_replaying["selection"]
-            if (
-                stored["schema"] != economic_interpretation.SCHEMA
-                or stored["interpretation_id"] != selection["interpretation_id"]
-                or stored["event_id"] != selection["event_id"]
-                or stored["issuer"]["company_id"] != selection["company_id"]
-            ):
-                raise
-            return {
-                **non_replaying,
-                "interpretation": None,
-                "interpretation_state": "stale",
-            }
-        if exc.reason == "interpretation_unsupported":
-            raise EarningsEconomicUnavailable("interpretation_unsupported") from exc
-        raise
-    return entry
+        if exc.reason != "interpretation_unsupported":
+            raise
+        raise EarningsEconomicUnavailable("interpretation_unsupported") from exc
 
+def _load_stale_economic_entry(
+    manifest: Mapping[str, Any],
+    objects: Mapping[str, bytes],
+    slug: str,
+) -> dict[str, Any]:
+    try:
+        entry = validate_native_closure(manifest, objects, slugs=[slug], interpretations=False)[slug]
+        stored = entry["interpretation"]
+        selection = entry["selection"]
+        if (
+            stored is None
+            or selection is None
+            or type(stored) is not dict
+            or stored.get("schema") != economic_interpretation.SCHEMA
+            or stored.get("authority") != economic_interpretation.AUTHORITY
+            or selection.get("profile_version") != pg_profile.PG_PROFILE_VERSION
+        ):
+            raise EarningsPrivateClosureError("interpretation_unsupported")
+        if (
+            stored.get("interpretation_id") != selection.get("interpretation_id")
+            or stored.get("event_id") != selection.get("event_id")
+            or stored.get("issuer", {}).get("company_id") != selection.get("company_id")
+        ):
+            raise EarningsPrivateClosureError("interpretation_mismatch")
+        economic_interpretation.validate_economic_interpretation(
+            {key: stored[key] for key in economic_interpretation.TOP_LEVEL_KEYS},
+            workspaces=entry["chain"][-1]["workspace"],
+            source_texts={entry["chain"][-1]["document"]["document_id"]: entry["chain"][-1]["text"]},
+            fiscal_scope=tuple(selection["fiscal_scope"]),
+        )
+    except KeyError as exc:
+        raise EarningsPrivateClosureError("malformed_native_section") from exc
+    except EarningsPrivateClosureError:
+        raise
+    except economic_interpretation.UnsupportedInterpretationVersion:
+        return {
+            **entry,
+            "interpretation": None,
+            "interpretation_state": "stale",
+        }
+    except Exception as exc:
+        raise EarningsPrivateClosureError("interpretation_mismatch") from exc
+    return {**entry, "interpretation_state": "current"}
 
 def load_current_economic_view(store: Store, ticker: str, *, manifest: Mapping[str, Any]):
     try:

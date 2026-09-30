@@ -291,11 +291,13 @@ def test_v2_publication_requires_conditional_store(tmp_path):
     assert no_conditional.calls == []
 
     store.capability_error = RuntimeError("capability probe failed")
+    store.put_calls.clear()
     with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
         pp.publish_private_publication(store, prepared)
     assert exc.value.reason == "conditional_write_unavailable"
     assert store.versioned_reads == []
-    assert store.put_calls[-1] == pp.POINTER_KEY
+    assert store.put_calls == []
+    assert pp.POINTER_KEY not in store.put_calls
 
 
 def test_v1_downgrade_and_retirement_are_refused_before_writes(tmp_path):
@@ -321,6 +323,133 @@ def test_v1_downgrade_and_retirement_are_refused_before_writes(tmp_path):
     with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
         pp.publish_private_publication(ConditionalCountingStore(tmp_path / "retired"), retired)
     assert exc.value.reason == "retirement_invalid"
+
+
+def test_pointer_does_not_move_when_required_source_readback_fails(tmp_path):
+    store, baseline = published_v1_case(tmp_path)
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
+    fail_source_readback(store, prepared)
+    store.put_calls.clear()
+
+    with pytest.raises(pp.EarningsPrivateClosureError) as exc:
+        pp.publish_private_publication(store, prepared)
+
+    assert exc.value.reason == "digest_mismatch"
+    assert store.get_bytes(pp.POINTER_KEY) == canonical_json_bytes(baseline)
+    assert pp.POINTER_KEY not in store.put_calls
+    assert pp.POINTER_KEY not in store.conditional_calls
+
+    control_store, control_baseline = published_v1_case(tmp_path / "control")
+    control = pp.prepare_private_publication(stage_economic_case(tmp_path / "control", "valid"))
+    pp.publish_private_publication(control_store, control)
+    assert control_store.get_bytes(pp.POINTER_KEY) != canonical_json_bytes(control_baseline)
+    assert pp.POINTER_KEY in control_store.conditional_calls
+
+
+@pytest.fixture
+def economic_publish(tmp_path, monkeypatch):
+    monkeypatch.setattr(pp, "NATIVE_RIGHTS_REGISTRY_PATH", rights_registry(tmp_path))
+    store, baseline = published_v1_case(tmp_path)
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
+    pointer = pp.publish_private_publication(store, prepared)
+    return store, prepared, pointer, baseline, monkeypatch
+
+
+def test_v2_publication_refuses_when_native_rights_are_refused(tmp_path, monkeypatch):
+    monkeypatch.setattr(pp, "NATIVE_RIGHTS_REGISTRY_PATH", rights_registry(tmp_path, refusing=True))
+    store, baseline = published_v1_case(tmp_path)
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
+    store.put_calls.clear()
+    store.conditional_calls.clear()
+    with pytest.raises(pp.EarningsEconomicUnavailable) as exc:
+        pp.publish_private_publication(store, prepared)
+    assert exc.value.reason == "rights_refused"
+    assert store.put_calls == []
+    assert store.conditional_calls == []
+    assert store.get_bytes(pp.POINTER_KEY) == canonical_json_bytes(baseline)
+
+
+def test_uncertain_pointer_write_is_never_restored(tmp_path, monkeypatch):
+    monkeypatch.setattr(pp, "NATIVE_RIGHTS_REGISTRY_PATH", rights_registry(tmp_path))
+    store, baseline = published_v1_case(tmp_path)
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
+    store.put_calls.clear()
+    pointer_bytes = canonical_json_bytes(pp._pointer_for(prepared))
+    old_bytes = canonical_json_bytes(baseline)
+    expected_version = store.get_bytes_strict_bounded_versioned(
+        pp.POINTER_KEY, pp.MAX_POINTER_BYTES
+    ).version
+
+    store.raise_before_conditional = True
+    with pytest.raises(pp.EarningsPrivatePointerEffectUnknown) as exc:
+        pp.publish_private_publication(store, prepared)
+    assert (exc.value.generation_id, exc.value.expected_version) == (
+        prepared.generation_id, expected_version
+    )
+    assert exc.value.pointer_sha256 == sha256(pointer_bytes).hexdigest()
+    assert sha256(str(exc.value).encode()).hexdigest() != exc.value.pointer_sha256
+    assert store.get_bytes(pp.POINTER_KEY) == old_bytes
+    assert store.conditional_calls == [pp.POINTER_KEY]
+    assert pp.POINTER_KEY not in store.put_calls
+
+    store.raise_before_conditional = False
+    store.raise_after_conditional = True
+    with pytest.raises(pp.EarningsPrivatePointerEffectUnknown):
+        pp.publish_private_publication(store, prepared)
+    assert store.get_bytes(pp.POINTER_KEY) == pointer_bytes
+    assert store.conditional_calls.count(pp.POINTER_KEY) == 2
+
+    store.raise_after_conditional = False
+    reconciled = pp.publish_private_publication(store, prepared)
+    assert reconciled == pp._pointer_for(prepared)
+    assert store.conditional_calls.count(pp.POINTER_KEY) == 2
+
+
+def test_foreign_pointer_echo_is_not_restored(tmp_path, monkeypatch):
+    monkeypatch.setattr(pp, "NATIVE_RIGHTS_REGISTRY_PATH", rights_registry(tmp_path))
+    store, baseline = published_v1_case(tmp_path)
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
+    pointer_bytes = canonical_json_bytes(pp._pointer_for(prepared))
+    old_bytes = canonical_json_bytes(baseline)
+    store.put_calls.clear()
+    store.foreign_echo = True
+    with pytest.raises(pp.EarningsPrivatePointerEffectUnknown):
+        pp.publish_private_publication(store, prepared)
+    assert store.get_bytes(pp.POINTER_KEY) == pointer_bytes
+    assert store.conditional_calls == [pp.POINTER_KEY]
+    assert pp.POINTER_KEY not in store.put_calls
+
+
+def test_stale_ok_only_downgrades_supported_code_revision(tmp_path, monkeypatch, economic_publish):
+    store, prepared, _pointer, _baseline, _fixture_patch = economic_publish
+    manifest = pp.load_private_manifest(store)
+    slug = manifest["native"]["economic_slots"]["cik:0000080424"]["slug"]
+    current = pp.load_economic_closure(store, manifest=manifest, slug=slug, interpretation="stale_ok")
+    assert set(current) == {"record", "selection", "interpretation", "chain", "interpretation_state"}
+    assert current["interpretation_state"] == "current"
+
+    monkeypatch.setattr(pp.economic_interpretation, "CODE_REVISION", "0" * 64)
+    with pytest.raises(pp.EarningsEconomicUnavailable) as verify_error:
+        pp.load_economic_closure(store, manifest=manifest, slug=slug)
+    assert verify_error.value.reason == "interpretation_unsupported"
+    stale = pp.load_economic_closure(store, manifest=manifest, slug=slug, interpretation="stale_ok")
+    assert stale["interpretation"] is None
+    assert stale["interpretation_state"] == "stale"
+    assert (stale["record"], stale["selection"], stale["chain"]) == (
+        current["record"], current["selection"], current["chain"]
+    )
+
+    monkeypatch.setattr(pp.pg_profile, "PG_PROFILE_VERSION", "synthetic-other")
+    with pytest.raises(pp.EarningsEconomicUnavailable) as profile_error:
+        pp.load_economic_closure(store, manifest=manifest, slug=slug, interpretation="stale_ok")
+    assert profile_error.value.reason == "interpretation_unsupported"
+
+
+@pytest.fixture(autouse=True)
+def permitting_native_rights(tmp_path, monkeypatch):
+    monkeypatch.setattr(
+        pp, "NATIVE_RIGHTS_REGISTRY_PATH", rights_registry(tmp_path)
+    )
 
 
 def test_mixed_v2_generation_publishes_and_reads(tmp_path):

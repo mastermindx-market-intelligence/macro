@@ -89,6 +89,7 @@ def _copy(value: object) -> object:
 
 def rights_registry(tmp_path: Path, *, refusing: bool = False) -> Path:
     path = tmp_path / ("refusing-rights.yml" if refusing else "permitting-rights.yml")
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(_REFUSING_RIGHTS if refusing else _PERMITTING_RIGHTS, encoding="utf-8")
     return path
 
@@ -284,6 +285,8 @@ class ConditionalCountingStore(CountingLocalStore):
 
     def get_bytes_strict_bounded(self, key: str, maximum_bytes: int):
         with self._lock:
+            if self.foreign_echo and key == private_module.POINTER_KEY and self.conditional_calls:
+                return self._foreign_pointer
             if self.fail_source_readback_after_manifest == key:
                 self._manifest_written = True
                 self.fail_source_readback_after_manifest = None
