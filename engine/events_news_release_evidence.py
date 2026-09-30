@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 import hashlib
+import math
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -25,6 +26,7 @@ _NY = ZoneInfo("America/New_York")
 _BINDING_FIELDS = (
     "receipt_id", "actual", "unit", "period", "official_reference_period",
     "source_url", "source_sha256", "observed_at", "verified_at", "source_released_at",
+    "published_precision",
 )
 
 
@@ -41,6 +43,16 @@ def _display_errors(row: dict[str, Any], defects_path: str | Path) -> list[str]:
     errors = official.receipt_integrity_errors(row, defects_path=defects_path)
     if type(row.get("actual")) not in (int, float) or type(row.get("actual_raw")) not in (int, float):
         errors.append("non_numeric_actual")
+    precision = row.get("published_precision")
+    expected_precision = 0 if row.get("unit") == "thousands" else 1
+    actual = row.get("actual")
+    if type(precision) is not int or precision != expected_precision:
+        errors.append("published_precision_mismatch")
+    elif type(actual) in (int, float) and math.isfinite(actual) and not math.isclose(
+        actual, round(actual, precision), rel_tol=0.0, abs_tol=1e-10
+    ):
+        # Never round a stored result into a different displayed observation.
+        errors.append("published_precision_mismatch")
     if official._parse_iso_timestamp(row.get("verified_at")) is None:
         errors.append("verification_time_missing")
     if row.get("automatic_scoring_eligible") is False:
@@ -118,6 +130,7 @@ def _metric_evidence(
             ("quarantine_policy_unavailable", {"official_actual_defect_sidecar_invalid"}),
             ("reference_period_mismatch", {"reference_period_mismatch"}),
             ("verification_time_missing", {"verification_time_missing"}),
+            ("published_precision_mismatch", {"published_precision_mismatch"}),
             ("not_available_as_of", {"not_available_as_of"}),
         ):
             if withheld & codes:
@@ -166,9 +179,7 @@ def _metric_evidence(
             valid, available = False, None
         if valid and available is not None and available <= cutoff:
             pending = True
-    precision = first.get("published_precision")
-    if type(precision) is not int or not 0 <= precision <= 6:
-        precision = 1 if unit == "percent" else 0
+    precision = first["published_precision"]
     result.update({k: first.get(k) for k in _BINDING_FIELDS})
     result.update({
         "status": "available", "reason": None, "publisher": first["publisher"],
