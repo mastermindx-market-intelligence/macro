@@ -28,7 +28,7 @@ from tests.earnings_economic_private_fixtures import (
     rights_registry,
     stage_economic_case,
 )
-from tests.test_earnings_private_store import _staged_publication
+from tests.test_earnings_private_store import ReadCountingLocalStore, _staged_publication
 
 @pytest.fixture
 def valid(tmp_path: Path):
@@ -334,6 +334,18 @@ def test_v1_downgrade_and_retirement_are_refused_before_writes(tmp_path):
     with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
         pp.publish_private_publication(ConditionalCountingStore(tmp_path / "retired"), retired)
     assert exc.value.reason == "retirement_invalid"
+
+    rewind = pp.prepare_private_publication(stage_economic_case(tmp_path, "corrected", name="rewind"))
+    manifest = {**rewind.manifest, "published_at": "2000-01-01T00:00:00Z"}
+    manifest = reseal_manifest(manifest, pp)
+    object.__setattr__(rewind, "manifest", MappingProxyType(manifest))
+    object.__setattr__(rewind, "generation_id", manifest["generation_id"])
+    object.__setattr__(rewind, "manifest_key", f"{pp.PRIVATE_PREFIX}/manifests/{manifest['generation_id']}.json")
+    object.__setattr__(rewind, "manifest_bytes", canonical_json_bytes(manifest))
+    store.put_calls.clear()
+    with pytest.raises(pp.EarningsPrivatePublicationError, match="stale private publication cannot rewind current"):
+        pp.publish_private_publication(store, rewind)
+    assert store.put_calls == []
 
 
 def test_readback_failure_reason_and_control_twins(tmp_path):
@@ -696,9 +708,11 @@ def test_closure_reader_matrix_and_plain_interpretation_argument(tmp_path, econo
     class StringValue(str):
         pass
 
+    counting_store = ReadCountingLocalStore(store.root)
     for interpretation in ("STALE_OK", None, StringValue("stale_ok")):
         with pytest.raises(ValueError):
             pp.load_economic_closure(store, manifest=rebuilt, slug=slug, interpretation=interpretation)
+    assert counting_store.read_calls.total() == 0
 
     record_path.write_bytes(original_record)
 
@@ -943,6 +957,7 @@ def test_manifest_version_reader_matrix(tmp_path):
     class StringValue(str):
         pass
 
+    unknown_id = "earnpriv_" + "2" * 32
     malformed_ids = (
         StringValue(baseline["generation_id"]),
         baseline["generation_id"].upper(),
@@ -956,18 +971,20 @@ def test_manifest_version_reader_matrix(tmp_path):
         baseline["manifest_sha256"][:-1],
         "0" * 63,
     )
-    for generation_id in malformed_ids:
+    counting_store = ReadCountingLocalStore(store.root)
+    for generation_id in (unknown_id, *malformed_ids):
         with pytest.raises(pp.EarningsEconomicNotFound) as error:
             pp.load_private_manifest_version(
-                store, generation_id=generation_id, expected_digest=baseline["manifest_sha256"]
+                counting_store, generation_id=generation_id, expected_digest=baseline["manifest_sha256"]
             )
         assert error.value.reason == "unknown_generation"
     for expected_digest in malformed_digests:
         with pytest.raises(pp.EarningsEconomicNotFound) as error:
             pp.load_private_manifest_version(
-                store, generation_id=baseline["generation_id"], expected_digest=expected_digest
+                counting_store, generation_id=baseline["generation_id"], expected_digest=expected_digest
             )
         assert error.value.reason == "unknown_generation"
+    assert counting_store.read_calls.total() == 1
 
 
 def test_cross_generation_manifest_bytes_are_refused(tmp_path):
