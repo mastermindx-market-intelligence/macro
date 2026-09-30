@@ -1057,9 +1057,12 @@ def test_stale_interpretation_identity_is_checked(tmp_path, economic_publish):
     rebuilt = reseal_manifest(rebuilt, pp)
     (store.root / Path(key)).parent.mkdir(parents=True, exist_ok=True)
     (store.root / Path(key)).write_bytes(altered)
-    with pytest.raises(pp.EarningsPrivateClosureError) as error:
+    try:
         pp.load_economic_closure(store, manifest=rebuilt, slug=slug, interpretation="stale_ok")
-    assert error.value.reason == "interpretation_mismatch"
+    except pp.EarningsPrivateClosureError as error:
+        assert error.reason == "interpretation_mismatch"
+    else:
+        raise AssertionError("expected stale identity mismatch")
 
     control = pp.load_economic_closure(store, manifest=manifest, slug=slug, interpretation="stale_ok")
     assert control["interpretation_state"] == "current"
