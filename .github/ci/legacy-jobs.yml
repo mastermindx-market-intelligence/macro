@@ -1275,6 +1275,7 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/events.py"
       - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
       - "engine/company_intelligence/qa_exchange.py"
       - "engine/company_intelligence/qa_reconstruction.py"
       - "engine/company_intelligence/event_id_adapter.py"
@@ -13423,6 +13424,7 @@ jobs:
       - "engine/company_intelligence/documents.py"
       - "engine/company_intelligence/event_id_adapter.py"
       - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
       - "engine/company_intelligence/qa_exchange.py"
       - "engine/company_intelligence/qa_reconstruction.py"
       - "engine/company_intelligence/events.py"
@@ -14415,6 +14417,66 @@ jobs:
         run: python -m pytest tests/test_fda_supply_probes.py tests/test_fda_supply_probes_t02r.py tests/test_fda_supply_probes_t02r2.py tests/test_fda_supply_probes_t01r.py tests/test_fda_supply_probes_t02r3.py tests/test_fda_supply_probes_final.py tests/test_fda_supply_probes_mixed.py -q
       - name: FDA sweep completeness regression probes (duplicate dedupe keys)
         run: python -m pytest tests/test_fda_sweep_duplicate_key_completeness.py -q
+
+  earnings-economic-source-selection:
+    # CDV-1 Task 2: preserve private PG acquisition currentness and revision clocks.
+    # The suite exercises the existing SEC discovery seam with synthetic fixtures only.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "tests/test_pg_economic_source_selection.py"
+      - "scripts/refresh_event_workspaces.py"
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/pg_envelope.py"
+      - "engine/company_intelligence/economic_observations.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/earnings_transcript_intake.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/neuralweb/__init__.py"
+      - "engine/neuralweb/company_intelligence_reader.py"
+      - "engine/press/earnings_adapter.py"
+      - "scripts/publish_company_intelligence_r2.py"
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "tests/earnings_economic_fixtures.py"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install deps for the earnings source-selection suite
+        # requests: scripts.refresh_event_workspaces imports
+        # engine.neuralweb.company_intelligence_reader at module scope, and that
+        # module imports requests at module scope.
+        run: pip install pytest pyyaml requests
+      - name: PG private acquisition source selection
+        run: python -m pytest tests/test_pg_economic_source_selection.py -q
 
   earnings-economic-dossier:
     # CDV-1 Task 1: private PG issuer-profile economics at source scope. The fifteen
@@ -17784,6 +17846,7 @@ jobs:
       - "engine/company_intelligence/documents.py"
       - "engine/company_intelligence/event_id_adapter.py"
       - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
       - "engine/company_intelligence/events.py"
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
