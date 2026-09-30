@@ -1,0 +1,68 @@
+{
+  "classification": "IMMUTABLE_TEXT_INTEGRATION_PROOF_NOT_EXECUTED_MERGE_OR_RELEASE",
+  "candidate": "87bb3ae30e1ef3fa077faf3c63efa6ee8a6816c0",
+  "current_main": "e4018a2bbd75585eb5e701232c1647c61ef1f920",
+  "merge_tree_exit": 0,
+  "tree": "b633cfbb98e41b36293c1390dbdbbec4dc17193c",
+  "conflict_paths": [],
+  "source_branch_unchanged": true,
+  "working_tree_clean_before_evidence": true,
+  "candidate_vs_integrated_blobs": {
+    "scripts/build_vector.py": {
+      "candidate": "e66b485759c5a94b07ffa2b4e4742cb1c288818a",
+      "integrated": "e66b485759c5a94b07ffa2b4e4742cb1c288818a",
+      "equal": true
+    },
+    "templates/vector.html.j2": {
+      "candidate": "8765b0b3012a8839e831b73d97e8e7ea140e6ad1",
+      "integrated": "8765b0b3012a8839e831b73d97e8e7ea140e6ad1",
+      "equal": true
+    },
+    "engine/btc_intraday_cvd.py": {
+      "candidate": "0b703ff62cec776b8ffefd3ec0c047ff2e20ffd1",
+      "integrated": "0b703ff62cec776b8ffefd3ec0c047ff2e20ffd1",
+      "equal": true
+    },
+    "collectors/_crypto_observations.py": {
+      "candidate": "bd6daab35e7fe3a4dc6a09eab8a28556409c037e",
+      "integrated": "bd6daab35e7fe3a4dc6a09eab8a28556409c037e",
+      "equal": true
+    },
+    "collectors/_first_seen_store.py": {
+      "candidate": "3a28fb75d693fb046fe68832276c111f390996ae",
+      "integrated": "3a28fb75d693fb046fe68832276c111f390996ae",
+      "equal": true
+    },
+    "collectors/okx.py": {
+      "candidate": "bd86d0dd6ed04a7fff049b2a6d4587e70d15db98",
+      "integrated": "bd86d0dd6ed04a7fff049b2a6d4587e70d15db98",
+      "equal": true
+    },
+    "collectors/bgeo.py": {
+      "candidate": "60b4f6d964a2ec1bc624249a92c0c0a3418dd25f",
+      "integrated": "60b4f6d964a2ec1bc624249a92c0c0a3418dd25f",
+      "equal": true
+    },
+    "tests/test_ci_pack.py": {
+      "candidate": "11b0df9c89189b53531545324e45ba2a7cafdde5",
+      "integrated": "6b48acd3510a647b13b2251281a3eee51e2b851b",
+      "equal": false
+    },
+    "scripts/check_contract_delta.py": {
+      "candidate": "1d28efd767ff2a98c1f2db7721f743180620ab9f",
+      "integrated": "deefde717818f4be641097a24c2f5b01e55cddbd",
+      "equal": false
+    },
+    "scripts/run_ci_pack.py": {
+      "candidate": "bb78ea45b849572a6e7d9e95d882d6c83de811ed",
+      "integrated": "a2fb03844ea7a6e12fd9eba05f0aa9df57d4101f",
+      "equal": false
+    }
+  },
+  "integrated_cvd_paths": {
+    "conviction-profile": 1,
+    "unrun-picks-boards": 1
+  },
+  "main_control_paths_changed_during_turn": [],
+  "local_test_limitation": "Local135-test suite uses branch control source; hosted integrated-tree CI is still required."
+}

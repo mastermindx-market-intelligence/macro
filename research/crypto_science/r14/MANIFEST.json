@@ -2,6 +2,7 @@
   "schema": "crypto.research_evidence.v1",
   "classification": "CI_CONFIGURATION_REPAIR_NOT_PRODUCT_OR_SCIENTIFIC_PROMOTION",
   "baseline": "b74875a6171a4d52cb48decf70d608f106a9fa8e",
+  "source_candidate": "87bb3ae30e1ef3fa077faf3c63efa6ee8a6816c0",
   "artifacts": {
     ".github/ci/legacy-jobs.yml": {
       "bytes": 1020473,
@@ -12,8 +13,8 @@
       "sha256": "a61cd5c2af5a9c3ce3a7b8f68ab73dc4498e6f557728d1776f8a3022f77f8dd3"
     },
     "research/CRYPTO_SCIENCE_R14_CI_INTEGRATION_RESULTS.md": {
-      "bytes": 8789,
-      "sha256": "ed472c8047f67608e583d9f784ddccf89c83aa0e6f06a62e671d624b92f15615"
+      "bytes": 10006,
+      "sha256": "442e7b4f1487e4bb2f336ba131c1a619d5501fa7e55a28eca6475a1921e01301"
     },
     "research/crypto_science/r14/README.md": {
       "bytes": 3165,
@@ -38,6 +39,10 @@
     "research/crypto_science/r14/green_dependency_recovery.txt": {
       "bytes": 123,
       "sha256": "b4b5d432d2c89e99aab995c4f158c4e29a21fd45657c2cf271b42a09e8813de2"
+    },
+    "research/crypto_science/r14/latest_base_integration.json": {
+      "bytes": 2585,
+      "sha256": "af37a26bd8737d1c980b2e51dbaef69d09c5566fe8efbdfb2fd1af5d932e9ff9"
     },
     "research/crypto_science/r14/manifest_fix.patch": {
       "bytes": 749,
