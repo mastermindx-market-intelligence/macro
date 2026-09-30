@@ -681,7 +681,7 @@ def _validate_native_section(value: Any, *, manifest: Mapping[str, Any] | None =
         "workspaces", "documents", "source_bodies", "selections", "economic_slots",
     }:
         raise EarningsPrivateClosureError("malformed_native_section")
-    catalogs: dict[str, dict[str, Any]] = {}
+    catalogs = {name: {} for name in ("workspaces", "documents", "source_bodies")}
     for catalog_name in ("workspaces", "documents", "source_bodies"):
         catalog = value[catalog_name]
         if type(catalog) is not dict:

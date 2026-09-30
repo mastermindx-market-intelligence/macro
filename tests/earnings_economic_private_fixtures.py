@@ -192,7 +192,7 @@ def economic_stage_parts(case: str) -> dict:
     }
 
 def write_economic_stage(stage_dir: Path, parts: dict) -> Path:
-    _public_dir, private_dir, wire_slug = _staged_publication(stage_dir.parent)
+    _public_dir, private_dir, wire_slug = _staged_publication(stage_dir)
     records_dir = private_dir / "records"
     dossier = dict(parts["dossier"]) if parts.get("dossier") else None
     if parts.get("wire_v2"):

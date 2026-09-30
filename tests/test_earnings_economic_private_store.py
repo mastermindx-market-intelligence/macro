@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from types import MappingProxyType
 import pytest
 from hashlib import sha256
 
@@ -449,6 +450,78 @@ def permitting_native_rights(tmp_path, monkeypatch):
     monkeypatch.setattr(
         pp, "NATIVE_RIGHTS_REGISTRY_PATH", rights_registry(tmp_path)
     )
+
+
+
+
+def test_predecessor_and_slot_rules(tmp_path):
+    store, baseline = published_v1_case(tmp_path)
+    pp.publish_private_publication(store, pp.prepare_private_publication(stage_economic_case(tmp_path, "valid")))
+    installed = pp.load_private_manifest(store)
+    empty_store, _empty_baseline = published_v1_case(tmp_path / "empty-v1")
+    empty_store.put_calls.clear()
+
+    none_bound = pp.prepare_private_publication(stage_economic_case(tmp_path, "corrected", name="none"))
+    object.__setattr__(none_bound, "manifest", MappingProxyType({**none_bound.manifest, "previous_manifest": None}))
+    with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
+        pp.publish_private_publication(empty_store, none_bound)
+    assert exc.value.reason == "predecessor_conflict"
+    assert empty_store.put_calls == []
+
+    foreign = {
+        "generation_id": "earnpriv_" + "1" * 32,
+        "manifest_key": f"{pp.PRIVATE_PREFIX}/manifests/earnpriv_" + "1" * 32 + ".json",
+        "manifest_sha256": "1" * 64,
+        "manifest_bytes": 2,
+        "published_at": installed["previous_manifest"]["published_at"],
+    }
+    other_bound = pp.prepare_private_publication(stage_economic_case(tmp_path, "corrected", name="other"))
+    object.__setattr__(other_bound, "manifest", MappingProxyType({**other_bound.manifest, "previous_manifest": foreign}))
+    store.put_calls.clear()
+    store.conditional_calls.clear()
+    with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
+        pp.publish_private_publication(store, other_bound)
+    assert exc.value.reason == "predecessor_conflict"
+    assert store.put_calls == []
+
+    with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
+        pp.publish_private_publication(store, pp.prepare_private_publication(stage_economic_case(tmp_path, "empty_native", name="removed")))
+    assert exc.value.reason == "slot_removed"
+    pp.publish_private_publication(store, pp.prepare_private_publication(stage_economic_case(tmp_path, "empty_native", name="retired"), retire_slots=("cik:0000080424",)))
+    with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
+        pp.publish_private_publication(store, pp.prepare_private_publication(stage_economic_case(tmp_path, "empty_native", name="invalid"), retire_slots=("cik:0000080424",)))
+    assert exc.value.reason == "retirement_invalid"
+
+
+def test_chain_and_cutoff_rules(tmp_path):
+    store, baseline = published_v1_case(tmp_path)
+    pp.publish_private_publication(store, pp.prepare_private_publication(stage_economic_case(tmp_path, "valid")))
+    pp.publish_private_publication(store, pp.prepare_private_publication(stage_economic_case(tmp_path, "corrected", name="corrected")))
+    with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
+        pp.publish_private_publication(store, pp.prepare_private_publication(stage_economic_case(tmp_path, "amended", name="amended")))
+    assert exc.value.reason == "chain_not_extended"
+
+    stale_stage = stage_economic_case(tmp_path, "corrected", name="stale")
+    latest = json.loads((stale_stage / "native" / "latest.json").read_bytes())
+    latest["native_source_cutoff"] = "2026-07-30T23:59:59Z"
+    (stale_stage / "native" / "latest.json").write_bytes(canonical_json_bytes(latest))
+    with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
+        pp.publish_private_publication(store, pp.prepare_private_publication(stale_stage))
+    assert exc.value.reason == "stale_native_cutoff"
+
+
+def test_reader_rights_are_checked(tmp_path, monkeypatch, economic_publish):
+    store, _prepared, _baseline, _patch = economic_publish
+    current = pp.load_private_manifest(store)
+    view = pp.load_current_economic_view(store, "PG", manifest=current)
+    fact = next(item for item in view["interpretation"]["observations"] if item.get("source_excerpt"))
+    monkeypatch.setattr(pp, "NATIVE_RIGHTS_REGISTRY_PATH", rights_registry(tmp_path / "refused", refusing=True))
+    with pytest.raises(pp.EarningsEconomicUnavailable) as view_error:
+        pp.load_current_economic_view(store, "PG", manifest=current)
+    assert view_error.value.reason == "rights_refused"
+    with pytest.raises(pp.EarningsEconomicUnavailable) as evidence_error:
+        pp.load_economic_evidence(store, generation_id=view["generation_id"], manifest_digest=view["manifest_sha256"], record_digest=view["record_sha256"], slug=view["slug"], fact_id=fact["fact_id"])
+    assert evidence_error.value.reason == "rights_refused"
 
 
 def test_mixed_v2_generation_publishes_and_reads(tmp_path):
