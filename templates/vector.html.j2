@@ -220,6 +220,23 @@ a{color:var(--ink-link, var(--link))}
 .chart-card{padding:15px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
 .chart-title{margin-bottom:8px;font-size:11px;font-weight:700;color:var(--muted)}
 .receipt-line{margin-top:12px;color:var(--muted);font-size:10.5px}
+/* Local descriptive-evidence surface; house tokens and existing disclosure owner. */
+.flow-context-panel{margin-top:18px;padding:22px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--panel);min-width:0}
+.flow-context-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(145px,auto);gap:28px;align-items:center}
+.flow-context-copy{min-width:0}.flow-eyebrow{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.025em}
+.flow-context-copy h3{margin:8px 0;font-size:23px;font-weight:650;letter-spacing:-.025em;line-height:1.2}
+.flow-context-panel p{margin:8px 0 0;font-size:14px;line-height:1.55;color:var(--muted);overflow-wrap:anywhere}
+.flow-share{min-width:0;text-align:right;font-size:12px;color:var(--muted)}
+.flow-share-value{font:650 44px/1.1 var(--font-ui);letter-spacing:-.04em;color:var(--text);font-variant-numeric:tabular-nums;white-space:nowrap;margin-bottom:6px}
+.flow-share-value>span{font-size:22px;letter-spacing:0;margin-left:3px}
+.flow-evidence{margin-top:18px;border-top:1px solid var(--line);min-width:0}
+.flow-evidence>summary{display:list-item;min-height:44px;padding:13px 2px 6px;box-sizing:border-box;cursor:pointer;font-size:14px;line-height:1.4;font-weight:600;list-style-position:inside;color:var(--text);overflow-wrap:anywhere}
+.flow-evidence>summary:focus-visible{outline:2px solid var(--info);outline-offset:3px;border-radius:var(--r-ctl,8px)}
+.flow-evidence-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 22px;margin:16px 0}
+.flow-evidence-grid>div{min-width:0}.flow-evidence-grid dt{font-size:12px;color:var(--muted);line-height:1.4}
+.flow-evidence-grid dd{margin:5px 0 0;font-size:14px;line-height:1.5;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.funding-qualification .k{font-size:12px}.funding-qualification p{font-size:12px;line-height:1.45;margin:6px 0 0;color:var(--muted)}
+@media(max-width:600px){.flow-context-panel{padding:16px}.flow-context-top{grid-template-columns:1fr;gap:16px}.flow-share{text-align:left}.flow-share-value{font-size:36px}.flow-context-copy h3{font-size:21px}.flow-evidence-grid{grid-template-columns:1fr}}
 .data-table{width:100%;border-collapse:collapse;font-size:11.5px;font-variant-numeric:tabular-nums}
 .data-table th{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);color:var(--muted);
   font-size:9px;text-transform:uppercase;letter-spacing:.06em}
@@ -305,6 +322,11 @@ a{color:var(--ink-link, var(--link))}
 }
 @media(prefers-reduced-motion:reduce){.ilx-path,.ilx-bar{animation:none!important}}
 {% include "_crypto_house_style.html.j2" %}
+/* Equal-specificity page override follows the house desktop grid. */
+@media(max-width:780px){
+  body.page-vector .hero-read{grid-template-columns:minmax(0,1fr);gap:20px}
+  body.page-vector .hero-read>div{min-width:0}
+}
 </style>
 </head>
 <body class="page-vector">
@@ -587,7 +609,7 @@ a{color:var(--ink-link, var(--link))}
       </details>
 
       <details class="study-fold" id="derivatives-desk">
-        <summary><span class="fold-title">{{ t('Derivatives Desk','衍生品台') }}</span><span class="fold-hint">{{ t('Volatility, leverage and positioning receipts','波动、杠杆与持仓明细') }}</span><span class="fold-stat">{{ options.dvol if options.dvol is not none else '—' }} DVOL · {{ leverage.funding_annual if leverage.funding_annual is not none else '—' }}%</span></summary>
+        <summary><span class="fold-title">{{ t('Derivatives Desk','衍生品台') }}</span><span class="fold-hint">{{ t('Volatility, leverage and positioning receipts','波动、杠杆与持仓明细') }}</span><span class="fold-stat">{{ t('Coverage & sources','覆盖与来源') }}</span></summary>
         <div class="study-body">
           <div class="fact-grid">
             <div class="fact"><div class="k">{{ t('Implied volatility','隐含波动率') }}</div><div class="v">{{ "%.1f"|format(btc_options.volatility.atm_iv_30d) if btc_options.volatility.atm_iv_30d is not none else (options.dvol if options.dvol is not none else '—') }}</div></div>
@@ -596,15 +618,35 @@ a{color:var(--ink-link, var(--link))}
             <div class="fact"><div class="k">{{ t('Put / call OI','看跌/看涨持仓') }}</div><div class="v">{{ "%.2f×"|format(btc_options.positioning.put_call_oi_ratio) if btc_options.positioning.put_call_oi_ratio is not none else '—' }}</div></div>
             <div class="fact"><div class="k">{{ t('Max pain','最大痛点') }}</div><div class="v">{% if btc_options.positioning.max_pain is not none %}${{ "{:,.0f}".format(btc_options.positioning.max_pain) }}{% else %}—{% endif %}</div></div>
             <div class="fact"><div class="k">{{ t('Futures basis','期货基差') }}</div><div class="v">{{ "%+.1f%%"|format(btc_options.basis.annualized_pct) if btc_options.basis.annualized_pct is not none else '—' }}</div></div>
-            <div class="fact"><div class="k">{{ t('Funding, annualized','资金费率年化') }}</div><div class="v">{{ leverage.funding_annual if leverage.funding_annual is not none else '—' }}%</div></div>
+            <div class="fact funding-qualification" data-funding-qualification><div class="k">{{ t('Annualized funding cost','年化资金成本') }}</div><div class="v">—</div><p>{{ t('Settlement interval not established','结算间隔尚未确定') }}</p></div>
             <div class="fact"><div class="k">{{ t('Open interest','未平仓量') }}</div><div class="v">{% if leverage.oi_total %}${{ "{:,.0f}".format(leverage.oi_total/1e9) }}B{% else %}—{% endif %}</div></div>
             {% if leverage.okx_ls_ratio is not none %}
             <div class="fact"><div class="k">{{ t('Retail long/short ratio','散户账户多空比') }} {{ qmark('Contrarian context only. ' ~ leverage.okx_ls_pctile ~ '%ile · z ' ~ leverage.okx_ls_z ~ '. A crowded long is not a buy signal.','仅作反向背景参考。' ~ leverage.okx_ls_pctile ~ ' 百分位 · 标准分 ' ~ leverage.okx_ls_z ~ '。多头拥挤不等于买入信号。') }}</div><div class="v">{{ leverage.okx_ls_ratio }}×</div></div>
             {% endif %}
-            {% if leverage.okx_taker_buy is not none %}
-            <div class="fact"><div class="k">{{ t('Taker buy share','主动买盘占比') }} {{ qmark('Share of aggressive OKX volume crossing the offer. Context only; not a standalone trade signal.','OKX 主动成交量中向上吃单的占比。仅供参考，不是独立交易信号。') }}</div><div class="v">{{ "%.1f%%"|format(leverage.okx_taker_buy*100) }}</div></div>
-            {% endif %}
           </div>
+          {% set flow = derivatives_flow|default({}) %}
+          {% set flow_state = flow.state|default('unavailable') %}
+          <section class="flow-context-panel" data-flow-context data-flow-state="{{ flow_state }}" aria-label="OKX BTC derivatives activity">
+            <div class="flow-context-top">
+              <div class="flow-context-copy">
+                <div class="flow-eyebrow">{{ t('OKX · BTC derivatives','OKX · BTC 衍生品') }}</div>
+                <h3>{% if flow_state == 'available' %}{{ t('Participation observed','成交参与度已观测') }}{% elif flow_state == 'stale' %}{{ t('Stale observations','观测已过期') }}{% elif flow_state == 'coverage_gap' %}{{ t('Incomplete 24-hour window','24 小时窗口不完整') }}{% elif flow_state == 'no_activity' %}{{ t('No activity observed','未观测到成交活动') }}{% else %}{{ t('Activity unavailable','成交活动暂不可用') }}{% endif %}</h3>
+                <p>{% if flow_state == 'available' %}{{ t('Buy-side share of reported aggressive volume. Not spot flow or a trading signal.','报告的主动成交量中买方占比。并非现货资金流，也不是交易信号。') }}{% elif flow_state == 'stale' %}{{ t('The stored window is too old for a current activity reading. Its timestamps remain inspectable.','存储窗口过旧，不能作为当前成交活动读数。仍可查看其时间戳。') }}{% elif flow_state == 'coverage_gap' %}{{ t('Missing observations are not zero selling or neutral activity. The current share is withheld.','缺失观测不等于零卖盘或中性活动。当前占比暂不展示。') }}{% elif flow_state == 'no_activity' %}{{ t('A complete window reports no volume. A buy-side percentage would be undefined, not 0%.','完整窗口报告零成交量。买方占比没有定义，并非 0%。') }}{% else %}{{ t('A usable source snapshot is not available. Bitcoin research and model allocation remain separate.','暂无可用的来源快照。比特币研究与模型仓位仍独立呈现。') }}{% endif %}</p>
+              </div>
+              <div class="flow-share" data-flow-share><div class="flow-share-value">{% if flow_state == 'available' %}{{ '%.1f'|format(flow.buy_share_pct) }}<span>%</span>{% else %}—{% endif %}</div><div>{{ t('24h buy-side share','24 小时买方占比') }}</div></div>
+            </div>
+            <details class="flow-evidence" data-flow-evidence>
+              <summary>{{ t('Inspect coverage & source','查看覆盖与来源') }}</summary>
+              <dl class="flow-evidence-grid">
+                <div><dt>{{ t('Observed label · UTC','观测标签 · UTC') }}</dt><dd>{{ flow.observed_at or '—' }}</dd></div>
+                <div><dt>{{ t('Evaluated · UTC','评估时间 · UTC') }}</dt><dd>{{ flow.evaluated_at or '—' }}</dd></div>
+                <div><dt>{{ t('24h / 72h label coverage','24 / 72 小时标签覆盖') }}</dt><dd>{% if flow.window_24h_complete %}{{ t('Complete','完整') }}{% else %}{{ t('Unavailable','不可用') }}{% endif %} / {% if flow.window_72h_complete %}{{ t('Complete','完整') }}{% else %}{{ t('Unavailable','不可用') }}{% endif %}</dd></div>
+                <div><dt>{{ t('Contiguous observations','连续观测数') }}</dt><dd>{{ flow.n_hours if flow.n_hours is defined and flow.n_hours is not none else '—' }}</dd></div>
+              </dl>
+              <p>{{ t('Source scope: OKX BTC aggregate derivatives. Absolute units, bucket finality and provider first-publication time are not established. Complete labels are not proof of historical availability.','来源范围：OKX BTC 汇总衍生品。绝对单位、时间桶最终性与提供商首次发布时间尚未确定。标签完整不证明历史上已可获得。') }}</p>
+              {% if flow.historical_gap %}<p>{{ t('Earlier history contains missing or invalid observations; current coverage uses the latest contiguous segment only.','早期历史存在缺失或无效观测；当前覆盖仅使用最近的连续片段。') }}</p>{% endif %}
+            </details>
+          </section>
           {% if charts.etf_flow %}<div class="chart-card" style="margin-top:14px"><div class="chart-title">{{ t('ETF net flow','ETF 净流量') }}</div>{{ charts.etf_flow|safe }}</div>{% endif %}
           <div class="receipt-line">{{ t(btc_options.coverage.note_en,btc_options.coverage.note_zh) }} {{ t(btc_options.gamma.assumption_en,btc_options.gamma.assumption_zh) }}</div>
           <div class="receipt-line">{{ t('Positioning describes pressure, not direction. It never changes the verdict by itself.','持仓数据描述压力，不直接判断方向，也不会单独改变结论。') }}</div>

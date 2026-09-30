@@ -4351,6 +4351,77 @@ def build_timeline(site: Path, sig: pd.DataFrame) -> None:
     log.info("wrote %s/vector_timeline.json (%d days, %d KB)", site, len(tape["dates"]), len(blob) // 1024)
 
 
+def _derivatives_flow_view(regime) -> dict:
+    """Pure display projection of the existing descriptive CVD contract.
+
+    No source reads, re-scoring, dollar conversion or allocation authority.
+    UTC-naive clocks are accepted only from this known internal CVD schema.
+    """
+    from collections.abc import Mapping
+    from numbers import Integral, Real
+    from engine.btc_intraday_cvd import STALE_AFTER_H
+
+    out = dict(state='unavailable', buy_share_pct=None, observed_at=None,
+               evaluated_at=None, n_hours=None, window_24h_complete=False,
+               window_72h_complete=False, historical_gap=False,
+               scope=None, causally_qualified=False)
+    if not isinstance(regime, Mapping):
+        return out
+    legs = regime.get('context_legs')
+    raw = legs.get('intraday_cvd') if isinstance(legs, Mapping) else None
+    if not isinstance(raw, Mapping):
+        return out
+    if (raw.get('scope') != 'OKX/BTC/CONTRACTS' or raw.get('display_only') is not True
+            or raw.get('causally_qualified') is not False or raw.get('stale') not in (True, False)
+            or not isinstance(raw.get('stale'), bool)):
+        return out
+    n = raw.get('n_hours')
+    if isinstance(n, (bool, np.bool_)) or not isinstance(n, Integral) or n < 0:
+        return out
+    clocks = []
+    for key in ('asof', 'evaluated_at'):
+        value = raw.get(key)
+        if not isinstance(value, (str, pd.Timestamp)):
+            return out
+        try:
+            t = pd.Timestamp(value)
+            if pd.isna(t):
+                return out
+            t = t.tz_localize('UTC') if t.tz is None else t.tz_convert('UTC')
+        except (ValueError, TypeError, OverflowError):
+            return out
+        clocks.append(t)
+    observed, evaluated = clocks
+    if observed > evaluated:
+        return out
+    out.update(scope='OKX/BTC/CONTRACTS', n_hours=int(n),
+               observed_at=observed.strftime('%Y-%m-%d %H:%M UTC'),
+               evaluated_at=evaluated.strftime('%Y-%m-%d %H:%M UTC'),
+               window_24h_complete=bool(n >= 24 and raw.get('window_24h_complete') is True),
+               window_72h_complete=bool(n >= 72 and raw.get('window_72h_complete') is True),
+               historical_gap=raw.get('gap_detected') is True)
+    if raw['stale'] or (evaluated-observed) > pd.Timedelta(hours=STALE_AFTER_H):
+        out['state'] = 'stale'
+        return out
+    if not out['window_24h_complete']:
+        out['state'] = 'coverage_gap'
+        return out
+    if raw.get('ok') is not True:
+        return out
+    share = raw.get('buy_share_24h')
+    if raw.get('flow_state') == 'no_activity':
+        net = raw.get('net_flow_24h_native')
+        if (share is None and isinstance(net, Real) and not isinstance(net, (bool, np.bool_))
+                and np.isfinite(net) and net == 0):
+            out['state'] = 'no_activity'
+        return out
+    if (isinstance(share, (bool, np.bool_)) or not isinstance(share, Real)
+            or not np.isfinite(share) or not 0 <= share <= 1):
+        return out
+    out.update(state='available', buy_share_pct=round(float(share)*100, 1))
+    return out
+
+
 def main() -> int:
     # self-sufficient: recompute signals every build (daily freshness) and
     # persist them. The heavy calibration (verdicts/backtests in calibration.json)
@@ -4809,6 +4880,7 @@ def main() -> int:
             "em_lower": _r(last.get("em_lower"), 0),
         },
         "btc_options": btc_options_contract,
+        "derivatives_flow": _derivatives_flow_view(regime),
         "cycle_vintage": {
             "reserve_risk_asof": str(reserve_risk_asof) if reserve_risk_asof else None,
             "vdd_asof": str(vdd_asof) if vdd_asof else None,
