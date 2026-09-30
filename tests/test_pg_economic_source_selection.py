@@ -342,6 +342,26 @@ def test_decoded_source_digest_is_native_with_and_without_prior():
     assert republished["workspace"]["sources"][0]["source_sha256"] == source["source_sha256"]
 
 
+def test_changed_text_with_a_prior_valid_receipt_is_refused():
+    first = _prepared()
+    acquisition, _ = _trace("changed_bytes")
+    acquisition["received_bytes"] = {
+        "sha256": first["workspace"]["sources"][0]["source_sha256"],
+        "length": len(first["decoded_source"].encode("utf-8")),
+    }
+    with pytest.raises(PgPreparationRefused, match="do not match") as raised:
+        prepare_pg_workspace(acquisition, prior=first["workspace"], observed_at="2026-07-30T17:20:00Z")
+    assert raised.value.reason == "received_bytes_mismatch"
+
+
+def test_missing_decode_label_is_refused_without_a_utf8_default():
+    acquisition, _ = _trace("same_source_rebuild")
+    acquisition.pop("declared_encoding")
+    with pytest.raises(PgPreparationRefused, match="cleanly decoded as utf-8") as raised:
+        prepare_pg_workspace(acquisition, prior=None, observed_at="2026-07-29T17:20:00Z")
+    assert raised.value.reason == "non_utf8_source"
+
+
 def test_changed_bytes_at_the_same_url_link_a_new_revision_to_its_predecessor():
     first = _prepared()
     acquisition, _ = _trace("changed_bytes")
