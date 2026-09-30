@@ -1298,7 +1298,8 @@ def _refusal_payload(*, state: str, reasons: Sequence[str], now: datetime,
             "c3_reader": {"fetched_n": 0, "cache_hits": 0, "errors": 0, "empty": 0,
                           "deferred_n": 0, "incomplete_n": 0,
                           "reader_fetched_n": 0, "reader_cache_hits": 0,
-                          "reader_errors": 0, "reader_empty": 0},
+                          "reader_errors": 0, "reader_empty": 0,
+                          "source_arrival": None},
         },
         "basis": {"audited_n": 0, "mismatched_n": 0, "unchecked_n": 0, "refused": []},
         "null_readings": {"reading_unavailable": 0, "reading_stale": 0,
@@ -1485,8 +1486,11 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
                                        and intraday_reader is not None)
     results: list[NameResult] = []
     deltas: list[ll.PendingDelta] = []
-    c3_stats = {"fetched_n": 0, "cache_hits": 0, "errors": 0, "empty": 0,
-                "deferred_n": len(c3_deferred), "incomplete_n": 0}
+    c3_stats: dict[str, Any] = {
+        "fetched_n": 0, "cache_hits": 0, "errors": 0, "empty": 0,
+        "deferred_n": len(c3_deferred), "incomplete_n": 0,
+        "source_arrival": None,
+    }
     basis_stats = {"audited_n": 0, "mismatched_n": 0, "unchecked_n": 0,
                    "refused": []}
     stale_quotes = 0
@@ -1573,6 +1577,7 @@ def _evaluate(*, now: datetime, session: date, pack: lp.LivePack,
         if deltas else ll.PendingDelta(ticker="*", as_of_session=session_iso,
                                        pass_id=cfg.pass_id)
 
+    c3_stats["source_arrival"] = _reader_source_arrival(intraday_reader)
     health = _health(now=now, session=session, pack=pack, quotes=quotes,
                      results=results, ledger=ledger, state_dir=state_dir, cfg=cfg,
                      c3_stats=c3_stats, basis_stats=basis_stats,
@@ -1629,7 +1634,7 @@ def _evaluate_name(*, ticker: str, now: datetime, session: date, session_iso: st
                    audit: Mapping[str, Any], journal: SessionJournal,
                    ledger: ll.LiveEpisodeLedger, cfg: LiveEvalConfig,
                    intraday_reader: Any, c3_deferred: bool,
-                   c3_stats: dict[str, int]) -> NameResult:
+                   c3_stats: dict[str, Any]) -> NameResult:
     """Steps 6-7 for ONE name: journal, observations, cross-check, evaluators."""
     record = journal.open_session(session=session_iso, ticker=ticker,
                                   pack_as_of=pack.as_of, pack_hash=pack.pack_hash,
@@ -1951,7 +1956,7 @@ def _c3_wanted(pack_name: lp.PackName, ledger: ll.LiveEpisodeLedger,
 
 def _run_c3(*, ticker: str, daily: ch.DailyHistory, session: date, now: datetime,
             reader: Any, ledger: ll.LiveEpisodeLedger, cfg: LiveEvalConfig,
-            stats: dict[str, int], pack_as_of: str,
+            stats: dict[str, Any], pack_as_of: str,
             ) -> tuple[fh.C3Run | None, tuple[date, ...]]:
     """``(run, missing_sessions)`` for C3 over the episode window.
 
@@ -2054,6 +2059,24 @@ def _reader_stats(reader: Any) -> dict[str, int]:
         return {}
 
 
+def _reader_source_arrival(reader: Any) -> dict[str, Any] | None:
+    """Latest successful client-observed minute fetch, for health observability only."""
+    if reader is None:
+        return None
+    latest = getattr(reader, "latest_fetch_receipt", None)
+    if not callable(latest):
+        return None
+    try:
+        receipt = latest()
+        if receipt is None:
+            return None
+        to_dict = getattr(receipt, "to_dict", None)
+        payload = to_dict() if callable(to_dict) else None
+        return dict(payload) if isinstance(payload, Mapping) else None
+    except Exception:  # noqa: BLE001 — health observation cannot fail a pass
+        return None
+
+
 def _session_back(session: date, n: int) -> date | None:
     from lib.nyse_calendar import session_n_back  # noqa: PLC0415
     try:
@@ -2145,7 +2168,7 @@ def _lane_rows(readings: Sequence[Any]) -> list[dict[str, Any]]:
 def _health(*, now: datetime, session: date, pack: lp.LivePack,
             quotes: Mapping[str, Any] | None, results: Sequence[NameResult],
             ledger: ll.LiveEpisodeLedger, state_dir: Path | None,
-            cfg: LiveEvalConfig, c3_stats: Mapping[str, int],
+            cfg: LiveEvalConfig, c3_stats: Mapping[str, Any],
             basis_stats: Mapping[str, Any], stale_quotes: int, covered: int,
             probe: Sequence[str], delta: ll.PendingDelta) -> dict[str, Any]:
     """The deterministic, enumerated health block."""

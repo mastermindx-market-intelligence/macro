@@ -312,7 +312,7 @@ def _reader(state: Path | None):
     """
     try:
         from engine.entry_radar.vendor_minutes import VendorMinuteReader  # noqa: PLC0415
-        return VendorMinuteReader(state_dir=state)
+        return VendorMinuteReader(state_dir=state, receipt_clock=lambda: datetime.now(timezone.utc))
     except Exception as exc:  # noqa: BLE001
         print(f"::notice title=entry-radar-live::no C3 minute reader on this host "
               f"({exc}) — C1/C2 still evaluate, C3 publishes unavailable", flush=True)
