@@ -1,8 +1,8 @@
 {
  "status": "ok",
  "detail": "1763 candidate row(s) this run",
- "last_attempt_utc": "2026-09-30T13:10:05.375088+00:00",
- "last_success_utc": "2026-09-30T13:10:05.375088+00:00",
+ "last_attempt_utc": "2026-09-30T14:57:40.356048+00:00",
+ "last_success_utc": "2026-09-30T14:57:40.356048+00:00",
  "candidate_accounting": {
   "eligible": 1763,
   "represented_downstream": 1763,
