@@ -44,7 +44,7 @@ def _body(case: str) -> str:
     if case == "missing_demand_context":
         return body.replace("<td>Price</td>", "<td>Unrecognized</td>", 1)
     if case == "unlocated_outcome":
-        return body.replace("<p>全球品牌 demand was stable before 3.07 units of synthetic EPS.</p>", "<p>全球品牌 demand was stable before synthetic EPS.</p>")
+        return body.replace("<td>Mix</td>", "<td>Unrecognized</td>", 1)
     if case == "refused_document_outcome":
         return "<DOCUMENT>\n<TYPE>EX-99.2\n<TITLE>synthetic refused document\n<TEXT>\n</TEXT>\n</DOCUMENT>\n"
     if case == "segment_and_reconciliation_absent":

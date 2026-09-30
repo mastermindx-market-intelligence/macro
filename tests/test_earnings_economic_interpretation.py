@@ -28,6 +28,47 @@ from tests.earnings_economic_interpretation_fixtures import _case, build_case_in
 from engine.company_intelligence.economic_observations import validate_selected_facts
 
 
+CAUSED_OUTCOMES = {
+    'headline_positive_organic_flat': ('finding', 'reported_vs_organic_difference'),
+    'reported_core_opposite_direction': ('finding', 'reported_vs_core_earnings_disagreement'),
+    'negative_prior_eps': ('declined_comparison', 'nonpositive_prior'),
+    'zero_prior_eps': ('declined_comparison', 'nonpositive_prior'),
+    'reported_negative_organic_positive': ('finding', 'reported_vs_organic_difference'),
+    'eps_flat_core_rises': ('finding', 'reported_vs_core_earnings_disagreement'),
+    'missing_demand_context': ('typed_absent', 'pg_price_contribution_pp', 'no_span_addressable_evidence'),
+    'unlocated_outcome': ('typed_absent', 'pg_mix_contribution_pp', 'no_span_addressable_evidence'),
+    'segment_and_reconciliation_absent': ('typed_absent', 'pg_core_reconciliation_context', 'no_span_addressable_evidence'),
+    'conflict_outcome': ('typed_absent', 'pg_total_volume_growth_pct', 'cross_check_conflict'),
+    'refused_document_outcome': ('declined_comparison', 'no_span_addressable_evidence'),
+    'combined_volume_mix': ('typed_absent', 'pg_total_volume_growth_pct', 'no_span_addressable_evidence'),
+}
+
+
+def _has_caused_outcome(payload, outcome):
+    kind, expected = outcome[0], outcome[1]
+    if kind == 'finding':
+        return expected in {item['rule_id'] for item in payload['findings']}
+    if kind == 'declined_comparison':
+        return any(
+            item['state'] in {'declined', 'not_comparable'}
+            and item['result']['reason'] == expected
+            for item in payload['comparisons']
+        )
+    return any(
+        item['metric'] == expected and item.get('typed_absence', {}).get('reason') == outcome[2]
+        for item in payload['observations']
+    )
+
+
+@pytest.mark.parametrize('case', sorted(CAUSED_OUTCOMES))
+def test_fixture_edit_causes_its_declared_outcome(case):
+    base = build_case_interpretation('identical_inputs')
+    edited = build_case_interpretation(case)
+    outcome = CAUSED_OUTCOMES[case]
+    assert _has_caused_outcome(edited, outcome)
+    assert not _has_caused_outcome(base, outcome)
+
+
 def test_positive_headline_does_not_become_positive_organic_demand():
     result = build_case_interpretation('headline_positive_organic_flat')
     codes = {item['rule_id'] for item in result['findings']}
@@ -185,7 +226,7 @@ def test_unsupported_historical_version_is_typed_unavailable():
 def test_unlocated_outcome_is_never_zero():
     result = build_case_interpretation('unlocated_outcome')
     missing = {x['subject']: x['reason'] for x in result['missing_context']}
-    assert missing['pg_reported_eps_growth_pct'] == 'no_span_addressable_evidence'
+    assert missing['pg_mix_contribution_pp'] == 'no_span_addressable_evidence'
 
 
 def test_conflict_outcome_carries_envelope_reason():
@@ -459,15 +500,18 @@ def test_owner_and_general_missing_context_rule():
     item = next(value for value in demand if value['subject'] == 'pg_price_contribution_pp')
     assert item['owner'] == 'demand'
     assert item['detail'] == 'No unique heading, row label, and column header identifies this observation.'
-    earnings = build_case_interpretation('unlocated_outcome')['missing_context']
-    assert any(value['subject'] == 'pg_reported_eps_growth_pct' and value['owner'] == 'earnings' for value in earnings)
+    demand_case = build_case_interpretation('unlocated_outcome')['missing_context']
+    assert any(
+        value['subject'] == 'pg_mix_contribution_pp' and value['owner'] == 'demand'
+        for value in demand_case
+    )
 
 
 def test_unforged_outcome_and_demand_absence_come_from_task_one():
     unlocated = build_case_interpretation('unlocated_outcome')
-    row = next(item for item in unlocated['observations'] if item['metric'] == 'pg_reported_eps_growth_pct')
+    row = next(item for item in unlocated['observations'] if item['metric'] == 'pg_mix_contribution_pp')
     assert row['typed_absence']['reason'] == 'no_span_addressable_evidence'
-    assert row['typed_absence']['detail'] == 'This literal growth fact is not separately disclosed by the selected source.'
+    assert row['typed_absence']['detail'] == 'No unique heading, row label, and column header identifies this observation.'
     demand = build_case_interpretation('missing_demand_context')
     assert [item['subject'] for item in demand['missing_context']].count('pg_price_contribution_pp') == 1
 
