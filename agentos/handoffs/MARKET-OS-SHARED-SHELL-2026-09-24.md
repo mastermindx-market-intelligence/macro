@@ -7,9 +7,9 @@ mission: >
   Deliver instantly understandable shared navigation with advanced depth and long-page
   reading. All tools is mega-menu first; full directory browsing remains available.
 state_before: >
-  R31 completed the mobile All tools directory, search, no-match recovery and light-theme
-  parity on the original Paper carrier. The source-fed pilot was joined to the incumbent
-  shared header, but five release-cache assertions still pinned the superseded key/digest.
+  R32 repaired the stale release-cache test contract on the original branch. Real-browser
+  proof was still owed, and its first visual pass exposed a Sector Central host-page footer
+  rule leaking into the shared dialog footer.
 changed:
   - path: "paper:01M2WGNCX9475G79JRKJTCM08P/p-D-0/45–50"
     what: >
@@ -30,6 +30,15 @@ changed:
     what: >
       Updated only the three release-contract constants to the shipped key
       20260929-all-tools-menu and payload digest 52711a9a. Production assets were unchanged.
+  - path: "templates/site navigation-refresh.css + three committed pilot pages"
+    what: >
+      Isolated .mmx-tools-footer from generic host-page footer rules with width:100%,
+      max-width:none and margin:0. The paired CSS digest is 791020aa; macro, Sector Central
+      and Reports now carry that exact preload and stylesheet stamp without widening the pilot.
+  - path: "research/market_os/all_tools_adoption/browser + evidence/r33-browser"
+    what: >
+      Added a bounded reproducible Chrome/Playwright harness and committed six reviewed
+      dual-device/theme/locale screenshots plus a machine-readable browser receipt.
 verified:
   - claim: Production controller behavior remains source-driven and fail-closed.
     command: >
@@ -41,9 +50,10 @@ verified:
       tests/test_all_tools_menu.py; template/site byte-pair checks; theme emitter check;
       scripts/check_template_site_sync.py; git diff --check.
     result: >
-      8 integration tests passed; nav/CSS/account pairs match; theme emitter matches;
-      105 template↔site pairs pass; diff check passes. Pilot host counts are 1/1/1 and
-      us_stocks is 0.
+      10 integration tests passed, including the 97-test production-controller suite;
+      nav/CSS/account pairs match; theme emitter matches; 105 template↔site pairs pass;
+      diff check passes. Pilot host counts are 1/1/1, us_stocks is 0, and each pilot has
+      two current navigation CSS cache-buster references.
   - claim: The complete targeted product-chrome contract was run without exclusions.
     command: >
       237 collected tests across account actions/preferences, navigation refresh, nav hover,
@@ -62,11 +72,21 @@ verified:
       main; render_macro_fast rendered macro again but its reduced environment lacks
       us_stance_projection for stocks. The pilot-off stocks contract is covered by source
       and committed-page tests; no full-build-green claim.
+  - claim: The three admitted pilots work in a real browser across the selected matrix.
+    command: >
+      research/market_os/all_tools_adoption/browser/run.sh against the committed site tree
+      in Google Chrome 154 / Playwright 1.62, plus fresh screenshot review.
+    result: >
+      8 passed, 0 failed: desktop dark English and mobile light Chinese on macro, Sector
+      Central and Reports; search/no-match/reset, Escape/focus return, modal-stacking refusal,
+      source-withdrawal fail-closed behavior and full-width footer metrics all passed.
+      Six screenshots and SHA256 receipts are committed under evidence/r33-browser.
 unverified:
-  - claim: Production/browser/accessibility acceptance.
+  - claim: Deployment, CDN-cache, physical-device and assistive-technology acceptance.
     what_would_verify: >
-      Consume exact-head CI/review, then complete real three-page browser/device/theme/
-      locale/focus/overlay and cold-reader proof on the admitted pilot pages.
+      Consume exact-head CI/review, release through the normal owner when authorized, then
+      verify served immutable asset identities plus any owed Safari/Firefox, physical-device,
+      screen-reader and 200% text paths. The committed Chrome matrix is local exact-tree proof.
   - claim: Permanent resolution of the historical Paper capacity warning.
     what_would_verify: >
       Supported provider/file diagnostics establish the saved-state health and applicable
@@ -76,21 +96,22 @@ unresolved:
   - The historical Paper capacity warning is not root-caused. R31 writes succeeded without a returned
     warning, which is not proof that the underlying file-limit condition is permanently resolved.
   - One unexcluded navigation-refresh baseline assertion remains red on current origin/main and this branch.
-  - Exact-head CI/review and real-browser acceptance are still owed; no production-release claim exists.
+  - Final exact-head CI/review and deployed/edge acceptance are still owed; no production-release claim exists.
   - R18/R19 and PR7129 persistence-before-rebind obligations remain separate.
 next_actions:
-  - Push the existing branch and verify the remote head matches the local cumulative checkpoint.
-  - Consume exact-head CI/review while keeping PR7949 Draft/HOLD; adjudicate any branch-owned failure.
-  - Prove the menu in real browsers on macro.html, sector_central.html and reports.html before any wider enablement.
+  - Commit and push the cumulative R33 browser evidence on the same branch; verify remote identity.
+  - Consume final exact-head CI/review while keeping PR7949 Draft/HOLD; adjudicate only branch-owned failures.
+  - Repair the PR projection to the current head and preserve the local-browser versus deployment boundary.
   - Preserve Paper boards 45–50 and refine exact existing nodes only; do not recreate the menu family.
 do_not_redo:
   - Keep PR7949, branch sol/market-os-shared-shell-design-20260924 and the existing WS owner.
   - Preserve R26 canvas effects, R23 source semantics and the incumbent navigation catalogue; no replacement registry/header/assets.
   - Do not redo the accepted three-constant release-contract repair unless the production key or payload changes.
+  - Do not redo the accepted footer-isolation repair or recreate its browser harness unless CSS behavior/evidence changes.
   - Do not treat the Paper capacity warning as a generic page-concurrency or M1/M2 issue.
   - Preserve full-directory fallback, stock search, native anchor behavior and exact regional/deep-link destinations.
 danger_areas:
-  - PR remains draft and not release-ready; local verification does not substitute for exact-head CI/review or browser proof.
+  - PR remains draft and not release-ready; local Chrome proof does not substitute for exact-head review or deployed-edge acceptance.
   - Full build generated extensive live-data churn during proof; all unrelated build output was restored before checkpoint.
   - The remaining navigation-refresh failure is baseline debt, not permission to hide it or expand this repair into build_vector.py.
 ---
@@ -193,3 +214,65 @@ this same branch, verify remote identity, consume exact-head CI/review and repai
 After source admission, prove macro.html, sector_central.html and reports.html across real device/theme/locale/
 focus/overlay paths. Preserve Paper boards 45–50 and the journey map; no replacement board family or second
 navigation/search authority.
+
+# R33 — admitted-pilot real-browser proof and host-CSS isolation
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+EFFECT_UNKNOWN: none
+ACTIVE_PHASE: Final exact-head CI/review and release-boundary adjudication.
+
+## Exact implementation and root cause
+
+Implementation commit `7731fad48406fd3875cbf012b0665f0b9adf4580` preserves the incumbent
+navigation/header owners and changes no route catalogue, preference, account or lifecycle plane. The
+first real-browser visual pass exposed a branch-owned Sector Central defect: generic host-page
+`footer { max-width:95ch; margin-top:30px }` styling leaked into `.mmx-tools-footer`, shrinking it to
+about 688px inside a 1238px dialog shell and leaving a 30px offset.
+
+Two red-first source contracts were added. One requires `.mmx-tools-footer` to own `width:100%`,
+`max-width:none` and `margin:0`; the other requires each committed pilot's preload and stylesheet
+links to carry the current shared CSS payload digest. Both failed before the repair and passed after it.
+The template/site CSS pair is byte-identical at digest `791020aa`, and exactly the three admitted pages
+`macro.html`, `sector_central.html` and `reports.html` were restamped to that digest. Pilot scope did
+not expand.
+
+## Durable real-browser proof
+
+A bounded manual harness now lives under `research/market_os/all_tools_adoption/browser/`. Against the
+exact committed `site/` tree in Google Chrome 154.0.8037.58 with Playwright 1.62.0:
+
+- 8 browser cases passed, 0 failed;
+- all three pilots passed desktop 1440x1000 dark English opening, search, no-match recovery, reset,
+  Escape and initiating-focus return;
+- all three passed mobile 390x844 light Chinese heading focus, translation, close affordance and
+  viewport-bounded sheet behavior;
+- an existing live modal blocked All tools without being disturbed;
+- a source destination withdrawn while open lost its href, became disabled and announced the change;
+- theme.js, account.js and nav_market.js were observed at HTTP 200;
+- every desktop footer measured equal to its shell width with `max-width:none` and `margin-top:0px`.
+
+Six post-repair screenshots, a reviewed README and machine-readable receipt are committed at
+`research/market_os/all_tools_adoption/evidence/r33-browser/`. This converts the former simulated-only
+browser claims into real local exact-tree evidence without claiming deployment or production acceptance.
+
+## Cumulative source verification
+
+- All tools integration: 10 passed, including 97 production-controller Node tests;
+- template/site sync: 105 pairs checked / PASS;
+- complete 237-test product-chrome contract: 236 passed, one current-main-identical baseline failure,
+  four deprecation warnings;
+- remaining baseline failure and its producer are byte-identical to current origin/main;
+- git diff check: PASS.
+
+## Boundary and exact continuation
+
+Capability state remains `BUILT_NOT_PROVEN`. The local static tree and selected Chrome matrix are now
+proven; a deployment, CDN immutable-cache response, authenticated/personal-state path, Safari/Firefox,
+physical-device, screen-reader or 200% text acceptance is not. PR7949 remains DRAFT / HOLD-FOR-SOL.
+No merge, ready transition, automatic merge, deployment, account/watchlist/Portfolio/alert/trade effect,
+worker, watcher or autonomous continuation occurred.
+
+Exact next action: push the cumulative R33 checkpoint, verify remote identity, consume final exact-head
+CI/review and repair the PR projection. Only branch-owned failures may reopen source work. Wider enablement
+or release remains separately gated by current authority and the normal release owner.
