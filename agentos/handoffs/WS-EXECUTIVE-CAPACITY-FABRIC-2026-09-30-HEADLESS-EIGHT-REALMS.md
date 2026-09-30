@@ -6,99 +6,138 @@ ended_because: ci_handoff
 mission: >
   Qualify exactly four Codex and four native Claude subscription realms for
   headless principal and child execution through the existing Executive,
-  Provider Control and Capacity owners, with durable Agent OS context.
+  Provider Control and Capacity owners, without desktop applications.
 state_before: >
-  Three native integration PRs were unreleased and the installed Executive
-  registry contained one Worker. The native slot projection accepted only
-  legacy claude8-native-01 despite the current four-Claude target.
+  The installed registry had one Worker. Native facade, admission and transport
+  releases were incomplete, the native slot projection accepted one legacy label,
+  and reviewed capacity/proxy/model work was disconnected or unreleased.
 changed:
   - path: Mastermind/pull/999
-    what: Reconciled its fixed old review, verified current-base integration and completed normal protected-queue merge 0d73b1b9f4345110fa9fb732896cd20ac76ad5ef.
-  - path: Mastermind/pull/992
-    what: Repaired only its inherited test conflict, preserved all reviewed transport blobs, consumed successful hosted CI and enqueued the exact head after PR999 merged.
+    what: Native remote facade is protected at0d73b1b9; prior release and proof remain accepted.
   - path: Mastermind/pull/919
-    what: Repaired two integration conflicts, consumed independent exact-head approval and successful hosted CI, and enqueued the original candidate.
+    what: Current-source repair independently accepted and original protected queue entry retained.
+  - path: Mastermind/pull/992
+    what: Current-source transport repair passed CI and entered the original protected queue after999 merged.
   - path: Mastermind/pull/1096
-    what: Added a closed four-slot native label family to the existing root-config projection, preserving legacy compatibility and all identity checks.
-  - path: Mastermind/issues/703
-    what: Removed routine account-number selection from the Chairman's responsibilities without waiving actual enrollment, readiness, capacity or effect gates.
+    what: Published closed four-slot native projection with no account-identity inference; exact-head CI now passes.
+  - path: Mastermind/pull/994
+    what: Published current broker integration preserving subscription, native, operator and capacity behavior; roster reduced to its three actual owned paths.
+  - path: Mastermind/pull/660
+    what: Repaired the common proxy to accept actual native Claude no-resume capabilities and retained protected consultation removal.
+  - path: Mastermind/pull/1028
+    what: Independently qualified unchanged model/quota source on current protected base, approved and queued normally.
+  - path: Mastermind/pull/1098
+    what: Connected existing model/runtime checks to native SDK preflight, refusing bad configurations before helper initialization.
 verified:
-  - claim: The existing native adapter predecessor is protected, not merely queued.
+  - claim: The native facade completed its original protected release.
     command: gh api repos/mastermindx-market-intelligence/Mastermind/pulls/999
-    result: merged=true at 2026-09-30T08:27:49Z; merge 0d73b1b9f4345110fa9fb732896cd20ac76ad5ef from exact c4918484287c37433370cd86a453dec96ab44552.
-  - claim: Both previously repaired integration heads passed hosted CI.
-    command: gh api repos/mastermindx-market-intelligence/Mastermind/actions/runs/36685470627; gh api repos/mastermindx-market-intelligence/Mastermind/actions/runs/36686375698
-    result: SUCCESS at exact 5cb1334ef45bb76236b0806200d48f58cf925a65 and 40ee2ddb0f3326cc1bc04aca2a4223a8e17846fb respectively.
-  - claim: The two-conflict native admission repair has independent exact-head acceptance.
-    command: gh api repos/mastermindx-market-intelligence/Mastermind/pulls/919/reviews/5363477598
-    result: APPROVED by non-author mastermindx-3 with 227 independent tests, adapter/surface matrix and three discriminating mutations; review child explicitly accepted and stopped.
-  - claim: Four native root-config slot projections now pass the existing realm-owner consumer and safety checks.
-    command: PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -B -m pytest -p anyio.pytest_plugin tests/test_native_claude_slot_inventory.py tests/test_native_provider_realm_owner.py tests/test_provider_worker_slots.py tests/test_native_claude_worker_factory.py tests/test_native_provider_attestation.py tests/test_claude_worker_preflight.py -q --tb=short -o addopts=''
-    result: Original source gave 10 expected failures and 23 passes; repaired candidate passed all 222 owning tests in 6.50 seconds, exit0.
-  - claim: The installed runtime still does not report an eight-Worker workforce.
+    result: Merged2026-09-30T08:27:49Z as0d73b1b9f4345110fa9fb732896cd20ac76ad5ef; installation not inferred.
+  - claim: The capacity observer composes with current protected broker behavior.
+    command: PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -B -m pytest -p anyio.pytest_plugin tests/test_cf2i_observer_composition_review.py tests/test_executive_worker_broker.py tests/test_worker_capacity_observer.py tests/test_executive_capacity_observation.py tests/test_remote_worker_broker_client.py tests/test_remote_worker_broker_fleet.py tests/test_native_claude_remote_fleet.py tests/test_native_claude_worker_factory.py tests/test_operator_only_worker_broker.py -q -o addopts=''
+    result: 264 tests and25subtests passed in14.38s; exact fd860 CI36691637850 also SUCCESS.
+  - claim: The common remote proxy accepts actual Claude capabilities without pretending resume support.
+    command: PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -B -m pytest -p anyio.pytest_plugin tests/test_remote_operator_harness_adapter.py tests/test_executive_operator_broker.py tests/test_executive_operator_supervisor.py tests/test_codex_app_server_wake_rpc.py tests/test_w6b_native_round_trip.py tests/test_w6c2_consultation_runtime.py tests/test_autonomy_session_materialization_source_law.py tests/test_native_claude_operator_supervisor.py -q -o addopts=''
+    result: Two new causal native tests failed before repair; final240PASS in22.10s, no provider calls.
+  - claim: The unchanged quota and exact-model repair is independently qualified on current source.
+    command: PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -B -m pytest -p anyio.pytest_plugin tests/test_executive_claude_worker.py tests/test_capacity_economics_projection.py tests/test_worker_adapter.py tests/test_claude_worker_preflight.py -q -o addopts=''
+    result: 285PASS in47.26s;55independent checks and3in-memory discriminating mutations; review5363962886 APPROVED.
+  - claim: The headless SDK now uses the existing model checks before process creation.
+    command: PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python3 -B -m pytest -p anyio.pytest_plugin tests/test_claude_operator_adapter.py tests/test_native_claude_worker_factory.py tests/test_native_claude_operator_supervisor.py tests/test_claude_operator_generation_helper.py tests/test_claude_operator_helper_protocol.py tests/test_executive_claude_worker.py tests/test_capacity_economics_projection.py -q -o addopts=''
+    result: Causal16FAIL and1positive control before repair; final310PASS in46.32s; refused paths leave no calls, process, operations or generations.
+  - claim: Installed Executive remains a one-worker registry, not eight-account acceptance.
     command: Mastermind_Executive_v2.executive_state
-    result: At 2026-09-30T08:27:10Z, ok=true and degraded=[], installed c7407c6c77ef82cc6590401e80cc8f1868dc9085, one AVAILABLE Worker, seven Jobs and no RUNNING or QUEUED Jobs.
+    result: At2026-09-30T09:02:26Z healthy readonly installedc7407c6c, one AVAILABLE Worker, seven Jobs and zero running or queued Jobs.
 unverified:
-  - claim: The user's exact eight subscriptions are independently enrolled and execution-ready.
-    what_would_verify: Existing enrollment and Provider Control owners supply current distinct subscription/capacity identities and bounded real per-realm execution receipts, not ordinal labels.
-  - claim: Headless principal orchestration and concurrent placement are live end to end.
-    what_would_verify: Installed principal admission, child execution, original-parent result consumption and concurrent account/host placement with negative no-replay proofs.
+  - claim: All four Codex and four Claude subscriptions are separately enrolled and capacity-aware.
+    what_would_verify: Existing enrollment and Capacity owners supply eight distinct verified subscription joins and real bounded per-realm execution with fresh resource windows and atomic claims.
+  - claim: Full headless parent and child orchestration works across the eligible accounts and hosts.
+    what_would_verify: The real Control factory consumes selected-worker physical identity and the qualified proxy, followed by actual principal admission, child execution, result consumption and no-replay recovery proof.
 unresolved:
-  - PR919 and PR992 normal queue entries must complete their own current integrated checks before protected release.
-  - PR1096 is a source candidate requiring independent review and hosted checks, not live realm enrollment.
-  - Installed Product owner retains readiness, authentication, account/capacity and service qualification; prior account exhaustion/trust reports are owner evidence, not an independently established diagnosis here.
-  - Historical PR633 EFFECT_UNKNOWN and prior credential-denial fences remain unchanged.
+  - The existing Control composition still binds one configured worker and Codex-only profiles/proxies.
+  - Native runtime readiness, enrollment and account trust remain held by the existing installed owner; slot labels do not clear them.
+  - Authored994,660,1096 and1098 changes require independent acceptance;994 also retains its actual Source Continuity release hold.
+  - The qualified SDK source pins Code2.1.275; Opus5.5 needs separately proven runtime requalification, not a pin increase to pass tests.
+  - Historical633 EFFECT_UNKNOWN and credential-denial fences are unchanged.
 next_actions:
-  - Consume original PR919 queue MQE_lQDOTotz3c8AAAABEjm0I84ABAiKzgMHSMY and PR992 queue MQE_lQDOTotz3c8AAAABFG_Quc4ABAiKzgMHUDs; do not re-enqueue or replace their source.
-  - Consume PR1096 exact54e85226 independent review and CI36689709532; repair only a demonstrated finding on its same branch.
-  - Have the existing installed owner qualify the actual native factory/profile and the eight intended account bindings; source support is not enrollment or readiness.
-  - Preserve the original parent's sole submission of exec-os-web-ceo-01a0e296-r1 after real gates clear, using lawful pre-START capacity placement only for an account-agnostic target.
+  - Consume the original919,992 and1028 merge queue entries; never duplicate enqueue or infer release from queue status.
+  - Consume exact-head reviews for1096,994,660 and1098 and their original CI results; repair only concrete failures on the existing carriers.
+  - Resolve994 Source Continuity with a real original-branch workspace and current source/effect facts; never inject fictional local evidence.
+  - Through the incumbent Control and Capacity owners, connect the already-selected worker to its real UID, home, run and workspace identity, proxy and capacity registration without adding a scheduler.
+  - Complete actual account enrollment and readiness, then the original prepared root and per-account/concurrent headless result-consumption proofs.
 do_not_redo:
-  - Do not rebuild the rich Claude factory, SDK adapter or native attestation reader; they already exist on protected source.
-  - Do not redo PR999 release, the accepted PR919 independent review, or successful unchanged PR992/919 hosted CI.
-  - Do not replace the existing Runtime, scheduler, Provider Control or Agent OS with an account-label registry.
-  - Do not copy credentials, switch a STARTed operation, bypass an access denial or retry an effect-unknown operation.
-  - Do not interpret four configured labels, four applications or four machines as four distinct subscription capacity domains.
+  - Do not rebuild native SDK factory, adapter, attestation reader, broker, post-claim transport or Agent OS stores.
+  - Do not repeat accepted999 release,987 substrate, or earlier real completed-Job and recovery proofs absent a material invalidator.
+  - Do not restart unchanged CI, reenqueue existing releases, or redo complete semantic reviews when source reuse is proven.
+  - Do not copy credentials, infer subscriptions from ordinal labels, spend unapproved credits or replay STARTed or uncertain work on another account.
+  - Do not take over Product B2/B4 or the original first-root request, and do not change a qualified runtime pin without actual requalification.
 danger_areas:
-  - The legacy Claude slot remains accepted compatibility syntax; it is not a fifth required or automatically enrolled subscription.
-  - The Codex source catalog has one company slot plus three personal slots; its count alone does not prove the user's four intended account bindings.
-  - Native slot projection does not assign a UID, create an OS principal, select a login, register a Worker or publish capacity.
-  - A queued PR is not protected source; protected source is not installed or production-proven.
-  - Agent OS is organizational evidence and cannot grant leases, dispatch, scheduling or authority.
+  - The generic proxy previously required resume that native Claude does not support; reconciliation is not restart permission.
+  - A multi-host adapter with the primary worker's UID or paths is not a valid physical execution binding.
+  - External pool preparation has no production caller and is not eight-worker registration.
+  - Enabled sealed profiles and four directories do not prove eligible provider capacity or paid usage consent.
+  - Native noninteractive Fable can bill credits without asking; model validation alone is not billing admission.
+  - Source publication, review, CI, merge, installation and real-path acceptance remain separate.
 ---
 
 ## 0. Current state
 
-MISSION_COMPLETE:false. The source programme advanced from conflicting/unreleased candidates to one protected adapter release, two green queued integration releases, and a tested four-native-slot repair. The installed workforce remains unproven; the latest actual Executive read still reports one Worker. The schema's model=sol is a record-author role, not a served-model inference.
+MISSION_COMPLETE:false. The user explicitly required continued wiring work while queues wait. This cumulative record preserves four additional coherent source/review units instead of another status-only turn. It does not make the eight-account system live or become a new runtime/control plane.
 
-Current procedure was loaded from protected Mastermind `0c75bc308da39c099b42f10e30741bec416b5afc`; INDEX and twelve companions were verified compatible and byte-identical to the preceding82a0 pin. The expected #999 merge changes only its four already-reviewed broker/fleet paths. Re-pin law before new effects; do not restart unrelated archaeology.
+Mastermind procedure pin0d73b1b9f4345110fa9fb732896cd20ac76ad5ef, INDEX94d1af402598894372858793a5b1931019c5fa77, compatible Skillpack1.0.1/bootstrap1; twelve companions/laws loaded and unchanged. Later protecteddd31d4cc9ba605ae1ba4326def8a3328fc9a42c0 has no governing-law change. This record's sol label identifies the record-author role, not inferred served-model identity.
 
 ## 1. Exact source and release frontier
 
-**PR999 is merged:** `0d73b1b9f4345110fa9fb732896cd20ac76ad5ef`, at08:27:49Z. Exact candidate `c4918484287c37433370cd86a453dec96ab44552`; independent review5350392810 and current-base401-tests/25-subtests plus11-restart proof were already accepted. Prior obsolete review5328250610 was dismissed only after its exact fix and independent acceptance. Do not re-enqueue, re-review or rewrite it.
+| PR | Exact candidate | Proof / remaining release |
+|---|---|---|
+|999|c4918484287c37433370cd86a453dec96ab44552|Merged0d73b1b9 at08:27:49Z; do not redo.|
+|919|40ee2ddb0f3326cc1bc04aca2a4223a8e17846fb|CI36686375698 SUCCESS, review5363477598 APPROVED; original queue MQE_lQDOTotz3c8AAAABEjm0I84ABAiKzgMHSMY.|
+|992|5cb1334ef45bb76236b0806200d48f58cf925a65|CI36685470627 SUCCESS, unchanged reviewed transport; original queue MQE_lQDOTotz3c8AAAABFG_Quc4ABAiKzgMHUDs.|
+|1096|54e85226cf29be8d78843792c21d3ddb44010da2|222local tests, CI36689709532 SUCCESS; independent review not yet observed.|
+|994|fd8602b5230e208a1892d684bf072c33741f16cd|264tests+25subtests, CI36691637850 SUCCESS; independent integration review and Source Continuity still owed.|
+|660|eb764c15a5bcd81460686c8ae2642a930f71892b|240tests; CI36692319380 in progress; new independent review required.|
+|1028|fd4b6b37c17130674ac27c22c999acb3a95c752d|285current-base tests,55checks/3mutations, independent5363962886 approved; queue MQE_lQDOTotz3c8AAAABFZJAMs4ABAiKzgMHaok enqueued09:01:14Z.|
+|1098|817ed391ed80a2ca7d3c5970a8bb7e07cdb42d48|310tests; CI36694251418 in progress; independent review and1028 protection required.|
 
-**PR992:** `5cb1334ef45bb76236b0806200d48f58cf925a65`; original f766 head and protected82a0 remain parents. All three reviewed transport blobs are unchanged. Only the inherited readiness-test conflict was resolved using exact protected no-expiry-extension behavior. Hosted CI36685470627 succeeded. After999 protected, normal expected-head enqueue was applied at08:28:42Z; original queue `MQE_lQDOTotz3c8AAAABFG_Quc4ABAiKzgMHUDs`. Its first immediate read returned no entry; one subsequent same-target reconciliation found the original QUEUED entry. No retry occurred and no effect remains unknown.
+Review requests to mastermindx-3 are source requests, not claimed worker START. Local campaigns are complete. GitHub owns the identified CI/queues; no Web daemon or new autonomous watcher is claimed.
 
-**PR919:** `40ee2ddb0f3326cc1bc04aca2a4223a8e17846fb`; independent approval5363477598 explicitly accepted the two-conflict integration. The reviewer did not author it and ran227 tests plus matrix/mutation checks. Exact CI36686375698 succeeded. Queue `MQE_lQDOTotz3c8AAAABEjm0I84ABAiKzgMHSMY`, enqueued08:20:19Z. Review child ACCEPTED/STOP is comment5907159018; only that child source is terminal, not the reviewer seat or unrelated work. The merged policy digest remains `c2f74c244464bee6d8bbc9d38d430aec362835234ae798b42c045da86c3bdd7a`.
+## 2. New code and causal findings
 
-**PR1096:** new source child `headless-native-claude-slot-projection-20260930-sol-001`, exact `54e85226cf29be8d78843792c21d3ddb44010da2`, parent0c75. Only `ops/executive_os/provider_worker_slots.py` and `tests/test_native_claude_slot_inventory.py` change. The existing projection accepts `claude-native-01..04` plus legacy compatibility, but new labels have oauth_seat_ref=None and never become default Codex inventory, account identity or capacity. Root configuration digest, actual principal/home, binary and revocation checks are unchanged. Existing non-author reviewer mastermindx-3 was requested; a request is not START. Original exact-head CI36689709532 was observed IN_PROGRESS.
+994 retains the independently repaired post-lock autonomy fence while composing current subscription_realm_owner, interactive-canary, peer-aware dispatch, operator-only checks and native collection-attribution tests. Exactly three owned files remain in its PR roster instead of35 inherited paths. That resolves the roster discrepancy but does not fabricate the original-branch Source Continuity receipt required by5852047326. Detailed return5907581214.
 
-The original source-only integration evidence is still published at `41356800025198b142e9ae30454c92dc28f7d34c`. All earlier commands and receipt hashes remain recoverable in the prior immutable record revision `ec79375b3f009ed4e211e363e78a04cb6d990d59` and source comments5906474576/5906639507/5906777247; they need not be rerun without an invalidator.
+660 retains the Codex wrapper and existing typed wire as one implementation. Actual native Claude capability declarations now construct the common proxy without fabricated resume. Unsupported resume refuses before I/O; materialization status and read-only reconciliation are preserved. The obsolete consultation ingress removed in protected source is not resurrected. Detailed return5907682453.
 
-## 2. Workspace and effect recovery
+1028 was not edited. The independent current-source review checked zero-capacity refusal, advisory/noncommitment semantics, immutable inputs, exact-model aliases and numeric runtime floors. Official primary source code.claude.com/docs/en/model-config was rechecked on September30. The requester's intended-account entitlement, actual model serving and credit eligibility remain unobserved. Review5363962886 closes the earlier author-only review gap5350271189.
 
-Original integration operation/workspace: `headless-eight-realm-convergence-20260930-sol-001`, `/Volumes/Mastermind/agent-workspaces/web/headless-eight-realm-convergence-20260930-sol-001`, published head41356800025198b142e9ae30454c92dc28f7d34c. A launcher status transiently said dirty; direct tracked/untracked status and diffs were empty. No cleanup or overwrite followed that disagreement.
+1098 applies the same1028 validation functions to the actual SDK preflight instead of duplicating rules. The new semantic delta is exactly two files/45lines against proof1301df99. Its branch includes the unchanged five-file1028 dependency and cannot release that dependency by inclusion. Early refusal leaves the operation unconsumed and effect_unknown=false. The runtime remains qualified at2.1.275; this repair truthfully refuses Opus5.5 there rather than pretending an upgrade occurred.
 
-New slot-repair operation/workspace: `headless-native-claude-slot-projection-20260930-sol-001`, `/Volumes/Mastermind/agent-workspaces/web/headless-native-claude-slot-projection-20260930-sol-001`, branch `sol/web-headless-native-claude-slot-projection-20260930-sol-001`, local and remote head54e85226 exactly matched and clean after typed publication. Its initial bash lookup could not find mmx-workspace and performed no acquisition; the known installed absolute launcher completed the same operation. No alternate workspace owner was introduced.
+## 3. Workspaces, immutable proofs and recovery
 
-New evidence in `.pytest_cache/headless-slots/`: RED XML `bb1d0f79efb8f912d18685cabf0449b9e3bfec3c66ff5c3ba178edf53581919d`; GREEN XML `6b2e12cd8779c5001b64f0597b25c43bffe3aa645787c34d11dac48ba4569b61`. The new suite has33 cases; all222 across the six-module campaign passed. Local tests completed; no local background worker exists. Preserve proof workspaces until review/acceptance no longer depends on them, then use their canonical release owner.
+All workspaces are under `/Volumes/Mastermind/agent-workspaces/web/` and were acquired through mmx-workspace. Source commits and pushes were read back. Do not release a workspace while its review depends on local evidence. Typed commits may leave merge metadata even when source status is clean; never abort/reset preserved bytes to clean it.
 
-## 3. Installed owner and scope
+| Operation directory | Published proof head | Main local evidence |
+|---|---|---|
+|headless-eight-realm-convergence-20260930-sol-001|41356800025198b142e9ae30454c92dc28f7d34c|.pytest_cache/headless-eight/|
+|headless-native-claude-slot-projection-20260930-sol-001|54e85226cf29be8d78843792c21d3ddb44010da2|.pytest_cache/headless-slots/|
+|headless-capacity-observer-integration-20260930-sol-001|fcb381bb7be195d714fb5fc0665b890410f5cc80|.pytest_cache/headless-capacity/|
+|headless-operator-proxy-acceptance-20260930-sol-001|d51c4f1b3704a8dd57810feb35db37589aae6fab|.pytest_cache/headless-proxy/|
+|headless-quota-acceptance-20260930-sol-001|1301df9961143e5ad5a4ff1354833e3b50bf9cf6|.pytest_cache/headless-quota/|
+|headless-native-model-validation-20260930-sol-001|817ed391ed80a2ca7d3c5970a8bb7e07cdb42d48|.pytest_cache/headless-native-model/|
 
-Product native owner `01a0bd6f-78ba-7581-afac-135b87e2d39c` retains installed service, credential and release custody, plus its existing independent reviewer. Parent `01a0e296-2e89-7960-a591-67e1e6b5c6d5` retains the sole prepared request `exec-os-web-ceo-01a0e296-r1`; current checkpoint Mastermind703/comment5868465578. Rich Claude principal/plugin owner remains Mastermind962/comment5884987715. The six-component principal-stack review returned as5907059536; it is source acceptance, not native OAuth or profile enrollment.
+994 integration XML SHA2561d86e2426daf6b73b8093ca254d86ba1c62320c71175397a55ca57f09d704bd6; tree4b7b84b037abf208a35d072e7cce287146447bc6.
+660 GREEN1896356e84cd84094a00ef1d0c05312c23e46cfd04e629b5ad5dd5d0e85ccbb5; RED730db233d67a61fcdbd392ad7e62a88799b1194c36f5660b4e2d98332d950653; treecbb72d69c300acc8935fd474e321c9e90b89fa6e.
+1028 current-source XML7c335254448e1acb37fabc3a9cb9485b8e134511f5730b5f102aae7eb019ed21; independent8e54d484b00517e09ef9cdf04348f68664b53160faa8805f6c3d7dd498c4556a; treed58658abfd84dff71da8b519251e41e5f57c65a4.
+1098 GREEN42057a1e4fbb52671b308fb682eae0df9b1b55e21d287f942cd44beaa13b1959; REDfe679efbc80d007c7287b2ac8a42c5acbca22b5c9d7a935e373e8b87d6e198e0.
 
-Current Chairman scope is exactly four Codex plus four Claude accounts, headless. Routine account-number placement is not Chairman work for a new account-agnostic operation with no START/effect/uncertainty. Existing Capacity may place only actually eligible enrolled realms; a real exact-session target remains fixed. Comments5906457322/5906644816 and continuation5907207846 preserve this ruling. No speculative credit purchase, denied-path workaround, credential copy or provider replay is authorized.
+The original integration launcher once reported dirty while direct status and diffs were empty. No cleaning or custody transfer followed. The original994 adoption workspace at92986 was observed clean and left unchanged. New original-branch994/660 publication used non-force two-parent commits; no old worktree was overwritten.
 
-## 4. Unchanged limits
+## 4. Remaining live architecture and preserved owners
 
-This Web integration performed source/test/publication, normal PR release actions and organizational persistence only. No new production Job, account enrollment, provider inference, credential action, installed service change, runtime arming or deployment. Historical PR633 uncertainty and prior credential denials remain frozen. Full acceptance still requires actual eight-account identities/readiness/capacity, real per-realm work, concurrent placement, headless parent/child consumption and zero unsafe cross-account replay.
+The next materially different integration unit is the real Control-to-pool connection. Source inspection found `_service_from_config` constructs one WorkerBrokerClient and Codex-only proxies, `_load_coo_execution_binding` requires Codex profiles, and `_register_worker` registers one configured Worker. Supervisor launch specifications currently use one configured UID/GID and workspace/run roots. Do not attach another host/account while leaving the primary worker's physical identity in the request. Existing994 observation and992 attempt-bound transport must be connected by their existing trusted owners.
+
+`external_pool_binding.py` remains pure preparation without a production caller. Native SDK factory, adapter and attestation reader already exist. Native Provider Control registration, local realm generation and Capacity generations are independent; ordinal slot labels cannot replace their proof. Runtime source rule and requested capacity count are not actual enrollment.
+
+Product01a0bd6f-78ba-7581-afac-135b87e2d39c and parent01a0e296-2e89-7960-a591-67e1e6b5c6d5 retain installed, provider/credential, B2/B4 and review custody. Their current checkpoint is Mastermind703 comment5868465578. The original prepared requestexec-os-web-ceo-01a0e296-r1 remains their future submission after real readiness, not a new root for this session. Accepted987 substrate and earlier completed Jobs/recovery stay accepted. Preserve633 uncertainty and prior credential denials.
+
+Same-program integration ruling5907743816 and cumulative source checkpoint5906890968 locate current dependencies without creating another owner. Ordinary new account-agnostic pre-START placement is existing Capacity work; genuine account authentication, entitlement and source/permission boundaries remain. No credential bytes, account enrollment, provider inference, installed service, Runtime Job, binary update, deployment or activation were performed by this Web source session.
+
+Final eight-account acceptance remains owed: exact intended subscriptions, current quota/readiness and physical identities, real per-realm tasks, concurrent governed placement, authenticated headless parent/child/result consumption and no modifying or uncertain replay across accounts.
