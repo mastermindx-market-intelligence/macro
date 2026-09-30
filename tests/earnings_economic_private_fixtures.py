@@ -223,8 +223,12 @@ def write_economic_stage(stage_dir: Path, parts: dict) -> Path:
             (bodies / f"{result['document_metadata']['content_sha256']}.txt").write_bytes(text_body)
             entries.append({"workspace": result["workspace"]["generation_id"], "document": document_digest})
         chain_catalogs.append(entries)
-    for slug in parts["selections"]:
-        parts["selections"][slug]["chain"] = chain_catalogs[0]
+    for slug, slug_selection in parts["selections"].items():
+        slug_selection["chain"] = chain_catalogs[0] if slug_selection["event_id"] else []
+    for chain_catalog in chain_catalogs[1:]:
+        for slug, slug_selection in parts["selections"].items():
+            if slug_selection["event_id"] == chain_catalog[-1]["workspace"].get("event_id"):
+                slug_selection["chain"] = chain_catalog
     if "interpretation_id" in parts["wire_interpretation"]:
         old_slug = dossier["slug"]
         dossier["slug"] = wire_slug
