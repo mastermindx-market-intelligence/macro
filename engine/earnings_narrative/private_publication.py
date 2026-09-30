@@ -1851,9 +1851,10 @@ def _validate_v2_installed_rules(
             for candidate_selection in candidate_selections.values():
                 if (candidate_selection["company_id"], candidate_selection["event_id"]) != identity:
                     continue
-                if len(candidate_selection["chain"]) < len(installed_selection["chain"]):
-                    raise EarningsPrivatePublishConflict("chain_not_extended")
-                if candidate_selection["chain"][:len(installed_selection["chain"])] != installed_selection["chain"]:
+                if (
+                    len(candidate_selection["chain"]) < len(installed_selection["chain"])
+                    or candidate_selection["chain"][:len(installed_selection["chain"])] != installed_selection["chain"]
+                ):
                     raise EarningsPrivatePublishConflict("chain_not_extended")
                 break
     elif prepared.retired_slots:
