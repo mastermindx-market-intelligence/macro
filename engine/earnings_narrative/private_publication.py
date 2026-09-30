@@ -2023,6 +2023,246 @@ def load_private_predecessor(store: Store) -> dict[str, Any] | None:
         )
     }
 
+
+def load_private_manifest_version(
+    store: Store,
+    *,
+    generation_id: str,
+    expected_digest: str,
+) -> dict[str, Any]:
+    try:
+        validate_generation_id(generation_id)
+        validate_digest(expected_digest)
+    except EarningsPrivatePublicationError as exc:
+        raise EarningsEconomicNotFound("unknown_generation") from exc
+    body = _bounded_read(
+        store,
+        f"{PRIVATE_PREFIX}/manifests/{generation_id}.json",
+        maximum=MAX_MANIFEST_BYTES,
+    )
+    if body is None or sha256(body).hexdigest() != expected_digest:
+        raise EarningsEconomicNotFound("unknown_generation")
+    manifest = validate_private_manifest(
+        _json_object(body, maximum=MAX_MANIFEST_BYTES, name="private earnings manifest")
+    )
+    if manifest.get("generation_id") != generation_id:
+        raise EarningsPrivatePublicationError("private pointer does not bind its manifest")
+    return manifest
+
+
+def _native_objects_for_slug(
+    store: Store,
+    manifest: Mapping[str, Any],
+    slug: str,
+) -> dict[str, bytes]:
+    native = manifest["native"]
+    selection = native["selections"][slug]
+    receipts = [manifest["records"][slug]]
+    for entry in selection["chain"]:
+        document = native["documents"][entry["document"]]
+        document_body = _bounded_read(store, document["object_key"], maximum=document["bytes"])
+        if document_body is None:
+            return {}
+        source_digest = _native_json(
+            document_body,
+            maximum=document["bytes"],
+            name="native document",
+        )["content_sha256"]
+        receipts.extend((
+            native["workspaces"][entry["workspace"]],
+            document,
+            native["source_bodies"][source_digest]["text"],
+        ))
+    objects: dict[str, bytes] = {}
+    for receipt in receipts:
+        body = _bounded_read(store, receipt["object_key"], maximum=receipt["bytes"])
+        if body is not None:
+            objects[receipt["object_key"]] = body
+    return objects
+
+
+def load_economic_closure(
+    store: Store,
+    *,
+    manifest: Mapping[str, Any],
+    slug: str,
+    interpretation: str = "verify",
+) -> dict[str, Any]:
+    if type(interpretation) is not str or interpretation not in ("verify", "stale_ok"):
+        raise ValueError("interpretation must be verify or stale_ok")
+    try:
+        value = validate_private_manifest(manifest)
+    except EarningsPrivatePublicationError as exc:
+        raise EarningsEconomicNotFound("unknown_record") from exc
+    try:
+        validate_slug(slug)
+    except EarningsPrivatePublicationError as exc:
+        raise EarningsEconomicNotFound("unknown_record") from exc
+    if value.get("schema") != MANIFEST_SCHEMA_V2 or slug not in value.get("records", {}):
+        raise EarningsEconomicNotFound("unknown_record")
+    if slug not in value["native"]["selections"]:
+        raise EarningsEconomicNotFound("unknown_record")
+    objects = _native_objects_for_slug(store, value, slug)
+    try:
+        entry = validate_native_closure(value, objects, slugs=[slug])[slug]
+    except EarningsPrivateClosureError as exc:
+        if interpretation == "stale_ok" and exc.reason == "interpretation_unsupported":
+            all_objects = dict(objects)
+            native = value["native"]
+            selection = native["selections"][slug]
+            all_objects[value["context"]["manifest"]["object_key"]] = _bounded_read(
+                store,
+                value["context"]["manifest"]["object_key"],
+                maximum=value["context"]["manifest"]["bytes"],
+            )
+            for receipt in value["context"]["objects"].values():
+                all_objects[receipt["object_key"]] = _bounded_read(
+                    store, receipt["object_key"], maximum=receipt["bytes"]
+                )
+            for catalog in ("workspaces", "documents"):
+                for receipt in native[catalog].values():
+                    all_objects[receipt["object_key"]] = _bounded_read(
+                        store, receipt["object_key"], maximum=receipt["bytes"]
+                    )
+            for body in native["source_bodies"].values():
+                receipt = body["text"]
+                all_objects[receipt["object_key"]] = _bounded_read(
+                    store, receipt["object_key"], maximum=receipt["bytes"]
+                )
+            non_replaying = validate_native_closure(
+                value,
+                {key: body for key, body in all_objects.items() if body is not None},
+                interpretations=False,
+            )[slug]
+            stored = non_replaying["interpretation"]
+            selection = non_replaying["selection"]
+            if (
+                stored["schema"] != economic_interpretation.SCHEMA
+                or stored["interpretation_id"] != selection["interpretation_id"]
+                or stored["event_id"] != selection["event_id"]
+                or stored["issuer"]["company_id"] != selection["company_id"]
+            ):
+                raise
+            return {
+                **non_replaying,
+                "interpretation": None,
+                "interpretation_state": "stale",
+            }
+        if exc.reason == "interpretation_unsupported":
+            raise EarningsEconomicUnavailable("interpretation_unsupported") from exc
+        raise
+    return entry
+
+
+def load_current_economic_view(store: Store, ticker: str, *, manifest: Mapping[str, Any]):
+    try:
+        validate_ticker(ticker)
+    except EarningsPrivatePublicationError as exc:
+        raise EarningsEconomicNotFound("no_slot") from exc
+    _pointer, manifest_bytes, current = _load_private_generation(store)
+    if validate_private_manifest(manifest) != current:
+        raise EarningsPrivateManifestNotCurrent
+    if current.get("schema") != MANIFEST_SCHEMA_V2:
+        raise EarningsEconomicNotFound("no_slot")
+    try:
+        resolution = _seam(
+            lambda: pg_profile.pg_private_registry().resolve_ticker(
+                ticker,
+                asof=current["native_source_cutoff"][:10],
+            ),
+            "cross_issuer",
+        )
+    except EarningsPrivatePublicationError:
+        raise
+    slot = current["native"]["economic_slots"].get(resolution.company_id) if resolution is not None else None
+    if slot is None:
+        raise EarningsEconomicNotFound("no_slot")
+    try:
+        assert_native_rights()
+    except EarningsPrivateClosureError as exc:
+        raise EarningsEconomicUnavailable("rights_refused") from exc
+    entry = load_economic_closure(store, manifest=current, slug=slot["slug"])
+    newest_document = entry["chain"][-1]["document"]
+    return {
+        "generation_id": current["generation_id"],
+        "manifest_sha256": sha256(manifest_bytes).hexdigest(),
+        "record_sha256": current["records"][slot["slug"]]["sha256"],
+        "slug": slot["slug"],
+        "interpretation": {
+            key: entry["record"]["economic_interpretation"][key]
+            for key in economic_interpretation.TOP_LEVEL_KEYS
+        },
+        "source": {
+            "document_id": newest_document["document_id"],
+            "source_sha256": newest_document["content_sha256"],
+        },
+    }
+
+
+def load_economic_evidence(
+    store: Store,
+    *,
+    generation_id: str,
+    manifest_digest: str,
+    record_digest: str,
+    slug: str,
+    fact_id: str,
+):
+    manifest = load_private_manifest_version(
+        store,
+        generation_id=generation_id,
+        expected_digest=manifest_digest,
+    )
+    try:
+        validate_slug(slug)
+    except EarningsPrivatePublicationError as exc:
+        raise EarningsEconomicNotFound("unknown_record") from exc
+    if (
+        manifest.get("schema") != MANIFEST_SCHEMA_V2
+        or slug not in manifest.get("native", {}).get("selections", {})
+        or manifest["records"].get(slug, {}).get("sha256") != record_digest
+    ):
+        raise EarningsEconomicNotFound("unknown_record")
+    entry = load_economic_closure(store, manifest=manifest, slug=slug)
+    try:
+        assert_native_rights()
+    except EarningsPrivateClosureError as exc:
+        raise EarningsEconomicUnavailable("rights_refused") from exc
+    _current_pointer, _current_bytes, current = _load_private_generation(store)
+    selection = entry["selection"]
+    if (
+        current.get("schema") != MANIFEST_SCHEMA_V2
+        or selection["company_id"] not in current.get("native", {}).get("economic_slots", {})
+    ):
+        raise EarningsEconomicUnavailable("evidence_retired")
+    if type(fact_id) is not str:
+        raise EarningsEconomicNotFound("unknown_fact")
+    observations = [
+        observation for observation in entry["interpretation"]["observations"]
+        if observation["fact_id"] == fact_id
+    ]
+    if not observations:
+        raise EarningsEconomicNotFound("unknown_fact")
+    observation = observations[0]
+    if (
+        "typed_absence" in observation
+        or type(observation.get("source_excerpt")) is not str
+        or not observation["source_excerpt"]
+    ):
+        raise EarningsEconomicNotFound("absent_fact")
+    newest_document = entry["chain"][-1]["document"]
+    return {
+        "generation_id": generation_id,
+        "manifest_sha256": manifest_digest,
+        "record_sha256": record_digest,
+        "slug": slug,
+        "fact_id": fact_id,
+        "document_id": newest_document["document_id"],
+        "source_sha256": newest_document["content_sha256"],
+        "observation": observation,
+        "source_text": {"text": observation["source_excerpt"], "lang": "en"},
+    }
+
 def _load_receipted_object(
     store: Store,
     receipt: Mapping[str, Any],
@@ -2058,6 +2298,17 @@ def load_private_record(
         maximum=MAX_RECORD_BYTES,
         name="private earnings record",
     )
+    if current.get("schema") == MANIFEST_SCHEMA_V2 and current["records"][slug]["sha256"]:
+        record = _json_object(body, maximum=MAX_RECORD_BYTES, name="private earnings record")
+        if record.get("page") == DOSSIER_PAGE:
+            raise EarningsPrivateRecordNotFound("earnings record is not covered")
+        if record.get("schema") == RECORD_SCHEMA_V2:
+            projected = {
+                key: value for key, value in record.items() if key != "economic_interpretation"
+            }
+            projected["schema"] = RECORD_SCHEMA
+            projected["page"] = "earnings_wire_article"
+            return validate_v1_record(projected, expected_slug=slug)
     return validate_private_record(
         _json_object(body, maximum=MAX_RECORD_BYTES, name="private earnings record"),
         expected_slug=slug,
