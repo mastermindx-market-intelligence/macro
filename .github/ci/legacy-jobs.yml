@@ -1269,6 +1269,8 @@ jobs:
       - "engine/company_intelligence/qa_exchange.py"
       - "engine/company_intelligence/qa_reconstruction.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/events.py"
@@ -12959,7 +12961,7 @@ jobs:
         run: >-
           python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "candidate_heading_discloses_source_date or gated_candidate_journey or historical_plan_wall_does_not"
       - name: Shared Prophet card - record identity and explicit unavailable action
-        run: python -m pytest tests/test_prophet_card_shared.py -q
+        run: python -m pytest tests/test_prophet_card_shared.py tests/test_prophet_plan_relation.py -q
       - name: Prophet Today and Company context - owner selection and typed responses
         run: python -m pytest tests/test_p0_prophet_candidate_board.py -q -k "today or company_context"
       - name: stock-brief context health (R2 context must yield a nonempty batch)
@@ -13432,6 +13434,8 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/pg_envelope.py"
       # 2026-08-26 widening (PR #6454): #6376 (E3-B AAPL canonical
       # qa_exchange publication) added qa_exchange/qa_reconstruction to this
       # job's suite closure; the coverage audit reds without them.
@@ -14416,6 +14420,88 @@ jobs:
         run: python -m pytest tests/test_fda_supply_probes.py tests/test_fda_supply_probes_t02r.py tests/test_fda_supply_probes_t02r2.py tests/test_fda_supply_probes_t01r.py tests/test_fda_supply_probes_t02r3.py tests/test_fda_supply_probes_final.py tests/test_fda_supply_probes_mixed.py -q
       - name: FDA sweep completeness regression probes (duplicate dedupe keys)
         run: python -m pytest tests/test_fda_sweep_duplicate_key_completeness.py -q
+
+  earnings-economic-dossier:
+    # CDV-1 Task 1: private PG issuer-profile economics at source scope. The fifteen
+    # frozen suites use only original synthetic HTML. The F1-Q envelope suites read
+    # exact public SEC EDGAR exhibits, committed gzipped under tests/fixtures/pg_envelope/
+    # by the decision owner's direction on #7905; nothing read from them is published.
+    if: ${{ false }}
+    gate: code
+    scope: exclusive
+    paths:
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/pg_envelope.py"
+      - "engine/company_intelligence/economic_observations.py"
+      - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/__init__.py"
+      - "engine/company_intelligence/health.py"
+      - "engine/company_intelligence/views.py"
+      - "engine/company_intelligence/contracts.py"
+      - "engine/company_intelligence/documents.py"
+      - "engine/company_intelligence/event_id_adapter.py"
+      - "engine/company_intelligence/event_workspace.py"
+      - "engine/company_intelligence/event_workspace_build.py"
+      - "engine/company_intelligence/events.py"
+      - "engine/company_intelligence/identity.py"
+      - "engine/company_intelligence/qa_exchange.py"
+      - "engine/company_intelligence/qa_reconstruction.py"
+      - "engine/earnings_narrative/contracts.py"
+      - "engine/earnings_narrative/digest.py"
+      - "engine/earnings_narrative/promotion.py"
+      - "engine/earnings_narrative/public_wire.py"
+      - "engine/earnings_narrative/story.py"
+      - "engine/earnings_narrative/story_packets.py"
+      - "engine/earnings_release/__init__.py"
+      - "engine/earnings_release/binding.py"
+      - "engine/earnings_release/figures.py"
+      - "engine/earnings_release/filing_key.py"
+      - "engine/earnings_release/receipts.py"
+      - "engine/fundamental_forensics/disclosure_diff.py"
+      - "engine/fundamental_forensics/models.py"
+      - "engine/press/earnings_adapter.py"
+      - "config/earnings_story_promotion.yml"
+      - "config/fundamental_forensics_disclosure_diff.v1.json"
+      - "tests/earnings_economic_fixtures.py"
+      - "tests/test_pg_economic_observations.py"
+      - "tests/test_pg_economic_observations_probes.py"
+      - "tests/test_pg_economic_observations_probes_r2.py"
+      - "tests/test_pg_economic_observations_probes_r3.py"
+      - "tests/test_pg_economic_observations_probes_r4.py"
+      - "tests/test_pg_economic_observations_probes_r5.py"
+      - "tests/test_pg_economic_observations_probes_r6.py"
+      - "tests/test_pg_economic_observations_probes_r7.py"
+      - "tests/test_pg_economic_observations_probes_r8.py"
+      - "tests/test_pg_economic_observations_probes_r9.py"
+      - "tests/test_pg_economic_observations_probes_r10.py"
+      - "tests/test_pg_economic_observations_probes_r11.py"
+      - "tests/test_pg_economic_observations_probes_r12.py"
+      - "tests/test_pg_economic_observations_probes_r13.py"
+      - "tests/test_pg_economic_observations_probes_r14.py"
+      - "tests/test_pg_economic_observations_probes_r15.py"
+      - "tests/test_pg_envelope_f1.py"
+      - "tests/test_pg_envelope_f1_probes_r1.py"
+      - "tests/test_pg_envelope_f1_probes_r2.py"
+      - "tests/test_pg_envelope_f1_probes_r3.py"
+      - "tests/test_pg_envelope_f1_probes_r4.py"
+      - "tests/test_pg_envelope_f1_probes_r5.py"
+      - "tests/test_pg_envelope_f1_probes_r6.py"
+      - "tests/test_pg_envelope_f1_probes_r7.py"
+      - "tests/test_pg_envelope_f1_probes_r8.py"
+      - "tests/test_pg_envelope_f1_probes_r9.py"
+      - "tests/test_pg_envelope_f1_probes_r10.py"
+      - "tests/fixtures/pg_envelope/**"
+    timeout-minutes: 20
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install minimal deps
+        run: pip install pytest pyyaml
+      - name: PG source-scoped economic observations
+        run: python -m pytest tests/test_pg_economic_observations.py tests/test_pg_economic_observations_probes.py tests/test_pg_economic_observations_probes_r2.py tests/test_pg_economic_observations_probes_r3.py tests/test_pg_economic_observations_probes_r4.py tests/test_pg_economic_observations_probes_r5.py tests/test_pg_economic_observations_probes_r6.py tests/test_pg_economic_observations_probes_r7.py tests/test_pg_economic_observations_probes_r8.py tests/test_pg_economic_observations_probes_r9.py tests/test_pg_economic_observations_probes_r10.py tests/test_pg_economic_observations_probes_r11.py tests/test_pg_economic_observations_probes_r12.py tests/test_pg_economic_observations_probes_r13.py tests/test_pg_economic_observations_probes_r14.py tests/test_pg_economic_observations_probes_r15.py tests/test_pg_envelope_f1.py tests/test_pg_envelope_f1_probes_r1.py tests/test_pg_envelope_f1_probes_r2.py tests/test_pg_envelope_f1_probes_r3.py tests/test_pg_envelope_f1_probes_r4.py tests/test_pg_envelope_f1_probes_r5.py tests/test_pg_envelope_f1_probes_r6.py tests/test_pg_envelope_f1_probes_r7.py tests/test_pg_envelope_f1_probes_r8.py tests/test_pg_envelope_f1_probes_r9.py tests/test_pg_envelope_f1_probes_r10.py -q
 
   prophet-us-context-and-grades:
     # PROPHET US §W7 — the full-population candidate record: the PIT context store that
@@ -17703,6 +17789,8 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/pg_profile.py"
+      - "engine/company_intelligence/pg_envelope.py"
       - "engine/company_intelligence/qa_exchange.py"
       - "engine/company_intelligence/qa_reconstruction.py"
       - "engine/company_intelligence/views.py"
@@ -17861,6 +17949,8 @@ jobs:
       - "engine/company_intelligence/health.py"
       - "engine/company_intelligence/identity.py"
       - "engine/company_intelligence/issuer_profiles.py"
+      - "engine/company_intelligence/pg_envelope.py"
+      - "engine/company_intelligence/pg_profile.py"
       - "engine/company_intelligence/qa_exchange.py"
       - "engine/company_intelligence/qa_reconstruction.py"
       - "engine/company_intelligence/views.py"
@@ -17887,6 +17977,10 @@ jobs:
       - "scripts/refresh_event_workspaces.py"
       - "engine/fundamental_forensics/industrials_result_cash.py"
       - "tests/test_industrials_result_cash.py"
+      # IND-T06 (IND-R214): the financial-dossier suite. Registered in the same
+      # change that created it - a suite CI never selects is a guard that cannot
+      # fail, and this job is the whole program's only exclusive gate:code job.
+      - "tests/test_industrials_financial_dossier.py"
     timeout-minutes: 6
     runs-on: ubuntu-latest
     steps:
@@ -17904,7 +17998,7 @@ jobs:
         # Stated identically in clean-venv proof below.
         run: pip install pytest pyyaml requests
       - name: Industrials synthetic dependency binding (T01)
-        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py -q
+        run: python -m pytest tests/test_industrials_dependency_binding.py tests/test_industrials_result_cash.py tests/test_industrials_financial_dossier.py -q
 
   house-law-registry-code:
     if: ${{ false }}

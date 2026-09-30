@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from datetime import datetime, timezone
+import math
 from typing import Any, Mapping
 
 
@@ -388,10 +389,19 @@ def qualify_case(
 
     relationship_reasons = _relationship_reasons(event, exposure)
     materiality_reasons = _materiality_reasons(exposure)
-    relationship_resolved = not relationship_reasons
+    relationship_resolved = not relationship_reasons and rights != "unresolved"
+    relationship_qualified = relationship_resolved and not rights_future
     materiality_resolved = not materiality_reasons and relationship_resolved
 
-    effective_rights = rights if relationship_resolved and not rights_future else "unresolved"
+    if not relationship_qualified:
+        commercial_state = "COMMERCIAL_UNQUALIFIED"
+        commercial_gaps = list(dict.fromkeys([
+            "COMMERCIAL_CASE_BINDING_UNRESOLVED",
+            "COMMERCIAL_RELATIONSHIP_UNRESOLVED",
+            *commercial_gaps,
+        ]))
+
+    effective_rights = rights if relationship_qualified else "unresolved"
     effective_materiality = (
         materiality
         if materiality_resolved and not materiality_future and not rights_future
@@ -561,8 +571,14 @@ def qualify_case(
 
 def apply_market_revision(case: Mapping[str, Any], *, reference_price: float, observed_at: str) -> dict[str, Any]:
     """Add cutoff-qualified market context without rewriting case evidence."""
-    if not isinstance(reference_price, (int, float)) or isinstance(reference_price, bool) or reference_price <= 0:
-        raise ValueError("reference_price must be positive")
+    if not isinstance(reference_price, (int, float)) or isinstance(reference_price, bool):
+        raise ValueError("reference_price must be finite positive")
+    try:
+        normalized_price = float(reference_price)
+    except (OverflowError, ValueError) as exc:
+        raise ValueError("reference_price must be finite positive") from exc
+    if not math.isfinite(normalized_price) or normalized_price <= 0:
+        raise ValueError("reference_price must be finite positive")
     if not isinstance(case, Mapping):
         raise ValueError("case must be a mapping")
     case_cutoff = _utc(str(case.get("as_of") or ""), field="case.as_of")
@@ -574,7 +590,7 @@ def apply_market_revision(case: Mapping[str, Any], *, reference_price: float, ob
     before_exposure = deepcopy(result.get("exposure"))
     before_commercial = deepcopy(result.get("commercial"))
     result["market_revision"] = {
-        "reference_price": float(reference_price),
+        "reference_price": normalized_price,
         "observed_at": _iso(observed),
         "effect": "PRICE_CONTEXT_ONLY",
     }

@@ -49,7 +49,7 @@ Primary anchors:
 
 A marketing decision can precede manufacturing scale, launch readiness, reimbursement/coverage, physician training, hospital budget approval, procedure growth, installed-base conversion and consumables pull-through. The same regulatory event can be company-defining for a focused small issuer and immaterial for a diversified company.
 
-**Ruling:** the case contract carries regulatory state, commercial readiness and issuer materiality separately. Commercial evidence must bind the same listed issuer, security, retained-rights relationship, device, applicant, submission, indication, territory and regulatory source before readiness can qualify. Positive authorization with missing or mismatched commercial binding is `AUTHORIZED_AWAITING_COMMERCIAL_PROOF`; unresolved issuer materiality is `REVIEW_MATERIALITY`; an immaterial event is `CONTEXT_ONLY_IMMATERIAL`.
+**Ruling:** the case contract carries regulatory state, commercial readiness and issuer materiality separately. Commercial evidence must bind the same listed issuer, security, retained-rights relationship, device, applicant, submission, indication, territory and regulatory source before readiness can qualify. A missing, mismatched, future or explicitly unresolved rights relationship also prevents commercial readiness from being projected as qualified for that listed case. Positive authorization with missing or mismatched commercial binding is `AUTHORIZED_AWAITING_COMMERCIAL_PROOF`; unresolved issuer materiality is `REVIEW_MATERIALITY`; an immaterial event is `CONTEXT_ONLY_IMMATERIAL`.
 
 ### 2.4 Public knowledge time is its own clock
 
@@ -61,7 +61,7 @@ Decision date, database refresh, advisory-panel scheduling, rights evidence, mat
 
 A nonempty ticker, issuer id or `owned`/`licensed` enum does not prove that the listed security retains economics from a specific device decision. The relationship must bind evidence-side issuer and security identifiers to the top-level listing and bind the exact device, applicant, submission, indication, territory and regulatory source to that listing. It must carry a stable relationship id plus source provenance. Licensed rights also require a specific license-term identity. Materiality requires its own source, clock and basis rather than inheriting from the rights assertion.
 
-**Ruling:** any missing or mismatched relationship field—including issuer or security identity—makes rights `unresolved` and materiality `unknown`; the case becomes `WITHHELD_IDENTITY_RIGHTS`. Materiality evidence must separately bind its issuer, security and retained-rights relationship to the listed exposure; missing, mismatched or inconsistent materiality provenance makes materiality `unknown` and the case `REVIEW_MATERIALITY`. Claimed rights and materiality are never accepted from enums, an arbitrary source id or an unbound listing id alone.
+**Ruling:** any missing or mismatched relationship field—including issuer or security identity—makes rights `unresolved` and materiality `unknown`; the case becomes `WITHHELD_IDENTITY_RIGHTS`. An explicitly unresolved rights state also keeps the relationship and materiality evidence unresolved even when the remaining identifiers are syntactically complete. Materiality evidence must separately bind its issuer, security and retained-rights relationship to the listed exposure; missing, mismatched or inconsistent materiality provenance makes materiality `unknown` and the case `REVIEW_MATERIALITY`. Claimed rights and materiality are never accepted from enums, an arbitrary source id or an unbound listing id alone.
 
 ### 2.6 Options and positioning are expectations evidence, not native regulatory evidence
 
@@ -73,7 +73,7 @@ Observed event-expiry alignment, implied-volatility term structure, skew, open/c
 
 A price observation is another point-in-time fact. Attaching a later price to a case while leaving the earlier case cutoff unchanged creates hidden look-ahead, even when the revision does not alter regulatory or commercial fields.
 
-**Ruling:** `apply_market_revision` accepts only a timezone-qualified observation at or before the case's own `as_of`. A later observation is refused; producing a later snapshot requires re-qualifying the whole case at that later cutoff rather than partially advancing only price.
+**Ruling:** `apply_market_revision` accepts only a finite positive price and a timezone-qualified observation at or before the case's own `as_of`. NaN, infinities and later observations are refused; producing a later snapshot requires re-qualifying the whole case at that later cutoff rather than partially advancing only price.
 
 ## 3. Worked historical mechanism — TransMedics OCS Heart
 
@@ -115,8 +115,8 @@ The pure reference:
 
 Verification in a clean scratch root:
 
-- `python3 -m pytest -q test_medtech_catalyst_reference_r1.py` → **47 passed**;
-- discriminating cases cover twelve harmful families:
+- `python3 -m pytest -q test_medtech_catalyst_reference_r1.py` → **51 passed**;
+- discriminating cases cover fifteen harmful families:
   1. accepting `approved` as a 510(k) state;
   2. returning future decision fields despite a withheld disposition;
   3. leaking a future event source through a nested relationship projection;
@@ -128,7 +128,10 @@ Verification in a clean scratch root:
   9. treating an empty supplied options mapping as an omitted layer;
   10. allowing options context to change native event probability;
   11. attaching a market observation later than the frozen case cutoff;
-  12. treating every authorization as commercially ready.
+  12. accepting NaN or infinite market prices;
+  13. projecting known materiality through an explicitly unresolved rights join;
+  14. projecting commercial readiness through an unresolved or future rights relationship;
+  15. treating every authorization as commercially ready.
 
 These tests establish contract behavior only. They are not independent review, source coverage, historical calibration or investment performance.
 

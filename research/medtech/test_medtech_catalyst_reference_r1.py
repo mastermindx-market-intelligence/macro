@@ -164,6 +164,11 @@ def test_unresolved_rights_withhold_the_security_join():
     result = qualify(exposure=exposure(rights="unresolved"))
     assert result["disposition"] == "WITHHELD_IDENTITY_RIGHTS"
     assert result["exposure"]["rights_state"] == "unresolved"
+    assert result["exposure"]["materiality_state"] == "unknown"
+    assert result["exposure"]["relationship"]["state"] == "UNRESOLVED"
+    assert result["exposure"]["materiality_evidence"]["state"] == "UNRESOLVED"
+    assert result["commercial"]["state"] == "COMMERCIAL_UNQUALIFIED"
+    assert "COMMERCIAL_RELATIONSHIP_UNRESOLVED" in result["commercial"]["gaps"]
     assert result["recommendation_eligible"] is False
 
 
@@ -247,6 +252,16 @@ def test_price_only_revision_preserves_event_and_disposition():
     assert revised["exposure"] == before_exposure
     assert revised["disposition"] == base["disposition"]
     assert revised["market_revision"]["effect"] == "PRICE_CONTEXT_ONLY"
+
+
+@pytest.mark.parametrize("reference_price", [float("nan"), float("inf"), float("-inf")])
+def test_market_revision_requires_a_finite_price(reference_price):
+    with pytest.raises(ValueError, match="finite positive"):
+        apply_market_revision(
+            qualify(),
+            reference_price=reference_price,
+            observed_at="2021-09-07T12:00:00Z",
+        )
 
 
 def test_market_revision_after_case_cutoff_is_refused():
@@ -389,6 +404,21 @@ def test_relationship_security_identity_is_required_as_evidence():
     result = qualify(exposure=payload)
     assert result["disposition"] == "WITHHELD_IDENTITY_RIGHTS"
     assert "RELATIONSHIP_SECURITY_MISSING" in result["reasons"]
+
+
+def test_relationship_mismatch_also_blocks_commercial_qualification():
+    event_value = event()
+    exposure_value = exposure(event_value)
+    exposure_value["relationship_security_id"] = "SEC:US-XNYS-OTHER"
+    commercial_value = commercial(event_data=event_value, exposure_data=exposure_value)
+    result = qualify(
+        event=event_value,
+        exposure=exposure_value,
+        commercial=commercial_value,
+    )
+    assert result["disposition"] == "WITHHELD_IDENTITY_RIGHTS"
+    assert result["commercial"]["state"] == "COMMERCIAL_UNQUALIFIED"
+    assert "COMMERCIAL_RELATIONSHIP_UNRESOLVED" in result["commercial"]["gaps"]
 
 
 def test_claimed_owned_core_without_relationship_provenance_fails_closed():
