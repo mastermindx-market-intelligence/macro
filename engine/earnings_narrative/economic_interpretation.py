@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict
+from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 import hashlib
 import json
@@ -90,15 +91,7 @@ CODE_REVISION = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 
 
 def _decimal(value: Any) -> Decimal:
-    if isinstance(value, bool) or not isinstance(value, (int, float, str, Decimal)):
-        raise EconomicInterpretationError("numeric input is not a decimal-compatible value")
-    try:
-        result = Decimal(str(value))
-    except (InvalidOperation, ValueError) as exc:
-        raise EconomicInterpretationError("numeric input is not finite decimal data") from exc
-    if not result.is_finite():
-        raise EconomicInterpretationError("numeric input is not finite decimal data")
-    return result
+    return _parse_decimal(value, "numeric input")
 
 
 def _json_number(value: Decimal) -> str:
@@ -147,8 +140,70 @@ _MONTHS = (
 _MONTH_ABBREVIATIONS = (
     "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 )
-_TIMESTAMP_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 _CLOCKED_STATES = frozenset({"up_to_date", "newer_source_pending"})
+_CURRENTNESS_STATES = frozenset({
+    "up_to_date", "newer_source_pending", "currentness_unverified",
+})
+_INSTANT_PATTERN = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z")
+_DATE_PATTERN = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}")
+_INSTANT_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+_DATE_FORMAT = "%Y-%m-%d"
+
+
+def _parse_instant(value: Any, name: str) -> datetime:
+    if type(value) is not str or _INSTANT_PATTERN.fullmatch(value) is None:
+        raise EconomicInterpretationError(f"{name} is not a canonical UTC instant")
+    try:
+        parsed = datetime.strptime(value, _INSTANT_FORMAT)
+    except ValueError as exc:
+        raise EconomicInterpretationError(f"{name} is not a canonical UTC instant") from exc
+    if parsed.strftime(_INSTANT_FORMAT) != value:
+        raise EconomicInterpretationError(f"{name} is not a canonical UTC instant")
+    return parsed
+
+
+def _parse_date(value: Any, name: str) -> date:
+    if type(value) is not str or _DATE_PATTERN.fullmatch(value) is None:
+        raise EconomicInterpretationError(f"{name} is not a canonical date")
+    try:
+        parsed = date.fromisoformat(value)
+    except ValueError as exc:
+        raise EconomicInterpretationError(f"{name} is not a canonical date") from exc
+    if parsed.strftime(_DATE_FORMAT) != value:
+        raise EconomicInterpretationError(f"{name} is not a canonical date")
+    return parsed
+
+
+def _parse_token(value: Any, allowed: frozenset[str], name: str) -> str:
+    if type(value) is not str or value not in allowed:
+        raise EconomicInterpretationError(f"{name} is not an admitted token")
+    return value
+
+
+def _parse_decimal(value: Any, name: str) -> Decimal:
+    if type(value) not in {str, int, float, Decimal}:
+        raise EconomicInterpretationError(f"{name} is not a decimal-compatible value")
+    try:
+        result = Decimal(str(value))
+    except (InvalidOperation, ValueError) as exc:
+        raise EconomicInterpretationError(f"{name} is not finite decimal data") from exc
+    if not result.is_finite():
+        raise EconomicInterpretationError(f"{name} is not finite decimal data")
+    return result
+
+
+def _parse_precision(value: Any) -> int | None:
+    if value is None:
+        return None
+    if type(value) is not int or value < 0:
+        raise EconomicInterpretationError("precision must be a nonnegative integer or None")
+    return value
+
+
+def _parse_fiscal_scope(value: Any) -> tuple[date, date, date, date]:
+    if type(value) not in {tuple, list} or len(value) != 4:
+        raise EconomicInterpretationError("fiscal_scope must contain exactly four dates")
+    return tuple(_parse_date(item, f"fiscal_scope[{index}]") for index, item in enumerate(value))
 
 
 def _release(workspace: Mapping[str, Any]) -> Mapping[str, Any]:
@@ -221,13 +276,12 @@ def _currentness(value: Any) -> dict[str, Any]:
         raise EconomicInterpretationError("selection.currentness keys are not exact")
     state = currentness.get("state")
     source_clock = currentness.get("source_clock")
-    if state not in {"up_to_date", "newer_source_pending", "currentness_unverified"}:
-        raise EconomicInterpretationError("selection.currentness state is unsupported")
+    state = _parse_token(state, _CURRENTNESS_STATES, "selection.currentness.state")
     if state not in _CLOCKED_STATES:
         if source_clock is not None:
             raise EconomicInterpretationError("currentness_unverified cannot carry a source clock")
-    elif not isinstance(source_clock, str) or _TIMESTAMP_PATTERN.fullmatch(source_clock) is None:
-        raise EconomicInterpretationError("selection.currentness source clock is malformed")
+    else:
+        source_clock = _parse_instant(source_clock, "selection.currentness.source_clock")
     return {"state": state, "source_clock": source_clock}
 
 
@@ -388,33 +442,18 @@ def owner_lookup(group: Any, metric: Any = None) -> str:
     return _OWNER_BY_GROUP[group]
 
 
-def _valid_timestamp(value: Any) -> bool:
-    if not isinstance(value, str) or _TIMESTAMP_PATTERN.fullmatch(value) is None:
-        return False
-    try:
-        year, month, day = map(int, value[:10].split("-"))
-        hour, minute = map(int, value[11:16].split(":"))
-        return hour < 24 and minute < 60 and 1 <= day <= 31
-    except ValueError:
-        return False
-
-
-def _clock_text(value: Any) -> dict[str, str] | None:
-    if not _valid_timestamp(value):
-        return None
-    year, month, day = map(int, value[:10].split("-"))
-    hour, minute = map(int, value[11:16].split(":"))
-    english = f"{_MONTH_ABBREVIATIONS[month - 1]} {day}, {year}, {hour:02d}:{minute:02d} UTC"
-    chinese = f"{year}年{month}月{day}日 {hour:02d}:{minute:02d} UTC"
+def _clock_text(value: datetime) -> dict[str, str]:
+    english = (
+        f"{_MONTH_ABBREVIATIONS[value.month - 1]} {value.day}, {value.year}, "
+        f"{value.hour:02d}:{value.minute:02d} UTC"
+    )
+    chinese = f"{value.year}年{value.month}月{value.day}日 {value.hour:02d}:{value.minute:02d} UTC"
     return {"en": english, "zh": chinese}
 
 
-def _fiscal_clock(value: Any) -> dict[str, str] | None:
-    if not _valid_timestamp(f"{value}T00:00:00Z" if isinstance(value, str) else value):
-        return None
-    year, month, day = map(int, value.split("-"))
-    english = f"Quarter ended {_MONTHS[month - 1]} {day}, {year}"
-    chinese = f"截至{year}年{month}月{day}日的季度"
+def _fiscal_clock(value: date) -> dict[str, str]:
+    english = f"Quarter ended {_MONTHS[value.month - 1]} {value.day}, {value.year}"
+    chinese = f"截至{value.year}年{value.month}月{value.day}日的季度"
     return {"en": english, "zh": chinese}
 
 
@@ -552,13 +591,17 @@ def _unavailable(reason: str, semantic_revision: Any, code_revision: Any) -> dic
 
 def build_economic_interpretation(
     workspace: Mapping[str, Any], *, source_texts: Mapping[str, str],
-    fiscal_scope: tuple[str, str, str, str], selection: Any,
-    semantic_revision: str, code_revision: str,
+    fiscal_scope: Any, selection: Any,
+    semantic_revision: Any, code_revision: Any,
 ) -> dict[str, Any]:
     workspace = _plain_mapping(workspace, "workspace")
     source_texts = _plain_mapping(source_texts, "source_texts")
+    if type(semantic_revision) is not str or type(code_revision) is not str:
+        return _unavailable("unsupported interpretation version", semantic_revision, code_revision)
     if semantic_revision != SEMANTIC_REVISION or code_revision != CODE_REVISION:
         return _unavailable("unsupported interpretation version", semantic_revision, code_revision)
+    fiscal_dates = _parse_fiscal_scope(fiscal_scope)
+    fiscal_scope = tuple(item.strftime(_DATE_FORMAT) for item in fiscal_dates)
     if not isinstance(selection, Mapping) or set(selection) != {"facts", "currentness"}:
         raise EconomicInterpretationError("selection keys are not exact")
     facts = selection.get("facts")
@@ -579,6 +622,14 @@ def build_economic_interpretation(
     findings, missing = _rules(selected, workspace)
     release = _release(workspace)
     lifecycle = workspace.get("lifecycle", {})
+    source_available_at = (
+        None if lifecycle.get("source_available_at") is None
+        else _parse_instant(lifecycle.get("source_available_at"), "lifecycle.source_available_at")
+    )
+    observed_at = (
+        None if lifecycle.get("observed_at") is None
+        else _parse_instant(lifecycle.get("observed_at"), "lifecycle.observed_at")
+    )
     document_id = release.get("document_id")
     source_text = source_texts.get(document_id)
     if not isinstance(source_text, str):
@@ -589,7 +640,13 @@ def build_economic_interpretation(
         "workspace_generation_id": workspace.get("generation_id"), "fiscal_scope": list(fiscal_scope),
         "facts": [[row.get("metric"), row.get("fact_id")] for row in selected],
         "semantic_revision": semantic_revision, "code_revision": code_revision,
-        "currentness": {"state": currentness["state"], "source_clock": currentness["source_clock"]},
+        "currentness": {
+            "state": currentness["state"],
+            "source_clock": (
+                None if currentness["source_clock"] is None
+                else currentness["source_clock"].strftime(_INSTANT_FORMAT)
+            ),
+        },
     }
     return {
         "schema": SCHEMA, "interpretation_id": f"econ_{_digest(identity_input)}",
@@ -598,7 +655,11 @@ def build_economic_interpretation(
         "selection": {
             "state": "selected", "observation_count": len(selected),
             "comparison_count": len(comparisons), "currentness": currentness["state"],
-            "currentness_observed_at": currentness["source_clock"], "selector_version": None,
+            "currentness_observed_at": (
+                None if currentness["source_clock"] is None
+                else currentness["source_clock"].strftime(_INSTANT_FORMAT)
+            ),
+            "selector_version": None,
         },
         "observations": [_observation(workspace, row, fiscal_scope) for row in selected],
         "comparisons": comparisons, "findings": findings, "missing_context": missing,
@@ -609,11 +670,16 @@ def build_economic_interpretation(
         "quality": {"supported": True, "state": "supported", "authority_effect": "none"},
         "clocks": {
             "fiscal_scope": list(fiscal_scope),
-            "fiscal_period": _fiscal_clock(fiscal_scope[1]),
-            "source_available_at": lifecycle.get("source_available_at"),
-            "source_accepted": _clock_text(lifecycle.get("source_available_at")),
-            "first_observed_at": lifecycle.get("observed_at"),
-            "source_currentness": _clock_text(currentness["source_clock"]),
+            "fiscal_period": _fiscal_clock(fiscal_dates[1]),
+            "source_available_at": (
+                None if source_available_at is None else source_available_at.strftime(_INSTANT_FORMAT)
+            ),
+            "source_accepted": None if source_available_at is None else _clock_text(source_available_at),
+            "first_observed_at": None if observed_at is None else observed_at.strftime(_INSTANT_FORMAT),
+            "source_currentness": (
+                None if currentness["source_clock"] is None
+                else _clock_text(currentness["source_clock"])
+            ),
             "source_revision": source_digest, "correction": lifecycle.get("state"),
         },
         "authority": dict(AUTHORITY),
@@ -635,8 +701,8 @@ def _validate_payload_shape(payload: Mapping[str, Any]) -> Mapping[str, Any]:
     build = payload.get("build")
     if (
         not isinstance(build, Mapping)
-        or not isinstance(build.get("semantic_revision"), str)
-        or not isinstance(build.get("code_revision"), str)
+        or type(build.get("semantic_revision")) is not str
+        or type(build.get("code_revision")) is not str
     ):
         raise EconomicInterpretationError("stored interpretation build is malformed")
     if build.get("semantic_revision") != SEMANTIC_REVISION or build.get("code_revision") != CODE_REVISION:
@@ -656,9 +722,9 @@ def _validate_payload_shape(payload: Mapping[str, Any]) -> Mapping[str, Any]:
     selection = payload.get("selection")
     if (
         not isinstance(selection, Mapping)
-        or not isinstance(selection.get("currentness"), str)
+        or type(selection.get("currentness")) is not str
         or not (
-            isinstance(selection.get("currentness_observed_at"), str)
+            type(selection.get("currentness_observed_at")) is str
             or selection.get("currentness_observed_at") is None
         )
     ):
@@ -668,7 +734,7 @@ def _validate_payload_shape(payload: Mapping[str, Any]) -> Mapping[str, Any]:
 
 def validate_economic_interpretation(
     payload: Mapping[str, Any], *, workspaces: Any, source_texts: Mapping[str, str],
-    fiscal_scope: tuple[str, str, str, str],
+    fiscal_scope: Any,
 ) -> None:
     payload = _plain_mapping(payload, "payload")
     if tuple(payload.keys()) != TOP_LEVEL_KEYS:
@@ -677,6 +743,8 @@ def validate_economic_interpretation(
     if stored_payload.get("schema") != SCHEMA or stored_payload.get("authority") != AUTHORITY:
         raise EconomicInterpretationError("interpretation schema or authority is refused")
     build = _validate_payload_shape(stored_payload)
+    fiscal_dates = _parse_fiscal_scope(fiscal_scope)
+    fiscal_scope = tuple(item.strftime(_DATE_FORMAT) for item in fiscal_dates)
     available = _workspaces(workspaces)
     observations = stored_payload.get("observations")
     handles = [

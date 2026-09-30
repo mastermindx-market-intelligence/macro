@@ -456,3 +456,154 @@ def test_rules_and_copy_follow_the_spec_tables():
         'segment_scope_limitation': ('Segments cover only those segments — check the source before acting.', '分部仅覆盖这些分部——先核对来源再行动。'),
         'missing_consensus': ('Consensus is unavailable — nothing to act on yet.', '缺少一致预期——暂无可执行事项。'),
     }
+
+
+class _Str(str):
+    pass
+
+
+def _call_with_currentness(value):
+    build_case_interpretation(
+        'identical_inputs',
+        selection={'facts': None, 'currentness': {'state': 'up_to_date', 'source_clock': value}},
+    )
+
+
+def _validated_with_observed_at(value):
+    payload = build_case_interpretation(
+        'identical_inputs',
+        selection={'facts': None, 'currentness': {'state': 'up_to_date', 'source_clock': '2026-07-29T17:00:00Z'}},
+    )
+    workspace, texts = _case('identical_inputs')
+    payload['selection']['currentness_observed_at'] = value
+    with pytest.raises(EconomicInterpretationError):
+        validate_economic_interpretation(
+            payload, workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE
+        )
+
+
+def _built_with_lifecycle(field, value):
+    workspace, texts = _case('identical_inputs')
+    workspace = copy.deepcopy(workspace)
+    workspace['lifecycle'][field] = value
+    with pytest.raises(EconomicInterpretationError):
+        build_economic_interpretation(
+            workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE,
+            selection={'facts': None, 'currentness': None},
+            semantic_revision=SEMANTIC_REVISION, code_revision=CODE_REVISION,
+        )
+
+
+_INSTANT_VALUES = (
+    '2026-13-01T00:00:00Z', '2026-00-10T00:00:00Z', '2026-02-31T00:00:00Z',
+    '2026-01-01T00:00:60Z', '2026-01-01T00:00:99Z', '2026-07-29T24:00:00Z',
+    '٢٠٢٦-٠٧-٢٩T17:00:00Z', '２０２６-07-29T17:00:00Z', '2026-7-29T17:00:00Z',
+    '2026-07-29T17:00:00+00:00', _Str('2026-07-29T17:00:00Z'),
+    b'2026-07-29T17:00:00Z', 0, True, ['2026-07-29T17:00:00Z'], {'at': 1},
+)
+
+
+@pytest.mark.parametrize('entry,value', [
+    *[(f'currentness:{index}', value) for index, value in enumerate(_INSTANT_VALUES)],
+    *[(f'validator:{index}', value) for index, value in enumerate(_INSTANT_VALUES)],
+    *[(f'source_available_at:{index}', value) for index, value in enumerate(_INSTANT_VALUES)],
+    *[(f'observed_at:{index}', value) for index, value in enumerate(_INSTANT_VALUES)],
+])
+def test_instants_are_parsed_once_at_every_boundary(entry, value):
+    kind = entry.split(':', 1)[0]
+    if kind == 'currentness':
+        with pytest.raises(EconomicInterpretationError):
+            _call_with_currentness(value)
+    elif kind == 'validator':
+        _validated_with_observed_at(value)
+    else:
+        _built_with_lifecycle('source_available_at' if kind == 'source_available_at' else 'observed_at', value)
+
+
+_DATE_VALUES = (
+    '2026-13-30', '2026-02-30', '2026-6-30', '٢٠٢٦-٠٦-٣٠',
+    _Str('2026-06-30'), None, 20260630,
+)
+
+
+def _with_fiscal_scope(value):
+    workspace, texts = _case('identical_inputs')
+    build_economic_interpretation(
+        workspace, source_texts=texts, fiscal_scope=value,
+        selection={'facts': None, 'currentness': None},
+        semantic_revision=SEMANTIC_REVISION, code_revision=CODE_REVISION,
+    )
+
+
+@pytest.mark.parametrize('position,value', [
+    *[(position, value) for position in range(4) for value in _DATE_VALUES],
+    *[(position, value) for position in range(4) for value in (FISCAL_SCOPE[:3], FISCAL_SCOPE[:5])],
+])
+def test_dates_are_parsed_in_build_and_validate(position, value):
+    scope = list(FISCAL_SCOPE)
+    if isinstance(value, (list, tuple)) and len(value) != 4:
+        scope = value
+    else:
+        scope[position] = value
+    with pytest.raises(EconomicInterpretationError):
+        _with_fiscal_scope(scope)
+    payload = build_case_interpretation('identical_inputs')
+    workspace, texts = _case('identical_inputs')
+    with pytest.raises(EconomicInterpretationError):
+        validate_economic_interpretation(
+            payload, workspaces=workspace, source_texts=texts, fiscal_scope=scope
+        )
+
+
+@pytest.mark.parametrize('value', [
+    ['up_to_date'], {'s': 1}, 1, None, 'UP_TO_DATE', 'unverified',
+    _Str('up_to_date'),
+])
+def test_currentness_state_is_a_closed_exact_string(value):
+    workspace, texts = _case('identical_inputs')
+    with pytest.raises(EconomicInterpretationError):
+        build_economic_interpretation(
+            workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE,
+            selection={'facts': None, 'currentness': {'state': value, 'source_clock': None}},
+            semantic_revision=SEMANTIC_REVISION, code_revision=CODE_REVISION,
+        )
+
+
+def test_currentness_clock_rules_are_exact():
+    with pytest.raises(EconomicInterpretationError):
+        _call_with_currentness({'state': 'currentness_unverified', 'source_clock': '2026-07-29T17:00:00Z'})
+    with pytest.raises(EconomicInterpretationError):
+        _call_with_currentness({'state': 'up_to_date', 'source_clock': None})
+
+
+def test_parser_positive_controls_and_clock_text():
+    result = build_case_interpretation(
+        'identical_inputs',
+        selection={'facts': None, 'currentness': {'state': 'up_to_date', 'source_clock': '2026-07-29T17:00:00Z'}},
+    )
+    assert result['clocks']['source_currentness'] == {
+        'en': 'Jul 29, 2026, 17:00 UTC', 'zh': '2026年7月29日 17:00 UTC',
+    }
+    base = build_case_interpretation('identical_inputs')
+    assert base['clocks']['source_accepted'] == {
+        'en': 'Jul 29, 2026, 17:00 UTC', 'zh': '2026年7月29日 17:00 UTC',
+    }
+    assert base['clocks']['fiscal_period'] == {
+        'en': 'Quarter ended June 30, 2026', 'zh': '截至2026年6月30日的季度',
+    }
+    workspace, texts = _case('identical_inputs')
+    workspace = copy.deepcopy(workspace)
+    workspace['lifecycle']['source_available_at'] = None
+    none_clock = build_economic_interpretation(
+        workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE,
+        selection={'facts': None, 'currentness': None},
+        semantic_revision=SEMANTIC_REVISION, code_revision=CODE_REVISION,
+    )
+    assert none_clock['clocks']['source_accepted'] is None
+    base_workspace, base_texts = _case('identical_inputs')
+    validate_economic_interpretation(
+        result, workspaces=base_workspace, source_texts=base_texts, fiscal_scope=FISCAL_SCOPE,
+    )
+    validate_economic_interpretation(
+        none_clock, workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE,
+    )
