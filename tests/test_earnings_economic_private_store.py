@@ -530,6 +530,7 @@ def test_v2_publish_validates_prepared_closure_before_store_access(tmp_path):
     object.__setattr__(prepared, "manifest", MappingProxyType(manifest))
     object.__setattr__(prepared, "artifacts", artifacts)
     object.__setattr__(prepared, "payloads", MappingProxyType({**prepared.payloads, source_key: altered}))
+    assert sha256(altered).hexdigest() == sha256(prepared.payloads[source_key]).hexdigest()
     store.versioned_reads.clear()
     store.put_calls.clear()
     store.conditional_calls.clear()
