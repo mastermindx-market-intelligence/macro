@@ -510,6 +510,78 @@ def test_chain_and_cutoff_rules(tmp_path):
     assert exc.value.reason == "stale_native_cutoff"
 
 
+def test_current_view_and_pinned_evidence(tmp_path, economic_publish):
+    store, _prepared, baseline, _patch = economic_publish
+    current = pp.load_private_manifest(store)
+    view = pp.load_current_economic_view(store, "PG", manifest=current)
+    assert set(view) == {
+        "generation_id", "manifest_sha256", "record_sha256", "slug",
+        "interpretation", "source",
+    }
+    assert view["generation_id"] == current["generation_id"]
+    assert view["record_sha256"] == current["records"][view["slug"]]["sha256"]
+    encoded = canonical_json_bytes(view).decode()
+    assert pp.PRIVATE_PREFIX not in encoded and "objects/sha256" not in encoded
+    for ticker in ("ZZZZ", "AAPL"):
+        with pytest.raises(pp.EarningsEconomicNotFound) as ticker_error:
+            pp.load_current_economic_view(store, ticker, manifest=current)
+        assert ticker_error.value.reason == "no_slot"
+    previous = pp.load_private_manifest_version(
+        store,
+        generation_id=baseline["generation_id"],
+        expected_digest=baseline["manifest_sha256"],
+    )
+    with pytest.raises(pp.EarningsPrivateManifestNotCurrent):
+        pp.load_current_economic_view(store, "PG", manifest=previous)
+
+    fact = next(item for item in view["interpretation"]["observations"] if item.get("source_excerpt"))
+    evidence = pp.load_economic_evidence(
+        store,
+        generation_id=view["generation_id"],
+        manifest_digest=view["manifest_sha256"],
+        record_digest=view["record_sha256"],
+        slug=view["slug"],
+        fact_id=fact["fact_id"],
+    )
+    assert set(evidence) == {
+        "generation_id", "manifest_sha256", "record_sha256", "slug", "fact_id",
+        "document_id", "source_sha256", "observation", "source_text",
+    }
+    assert evidence["source_sha256"] == view["source"]["source_sha256"]
+    assert evidence["source_text"] == {"text": fact["source_excerpt"], "lang": "en"}
+    with pytest.raises(pp.EarningsEconomicNotFound) as record_error:
+        pp.load_economic_evidence(
+            store, generation_id=view["generation_id"],
+            manifest_digest=view["manifest_sha256"], record_digest="0" * 64,
+            slug=view["slug"], fact_id=fact["fact_id"],
+        )
+    assert record_error.value.reason == "unknown_record"
+
+    pp.publish_private_publication(
+        store, pp.prepare_private_publication(stage_economic_case(tmp_path, "corrected", name="corrected"))
+    )
+    retained = pp.load_economic_evidence(
+        store, generation_id=view["generation_id"],
+        manifest_digest=view["manifest_sha256"], record_digest=view["record_sha256"],
+        slug=view["slug"], fact_id=fact["fact_id"],
+    )
+    assert retained["generation_id"] == view["generation_id"]
+    pp.publish_private_publication(
+        store,
+        pp.prepare_private_publication(
+            stage_economic_case(tmp_path, "empty_native", name="retired"),
+            retire_slots=("cik:0000080424",),
+        ),
+    )
+    with pytest.raises(pp.EarningsEconomicUnavailable) as retired_error:
+        pp.load_economic_evidence(
+            store, generation_id=view["generation_id"],
+            manifest_digest=view["manifest_sha256"], record_digest=view["record_sha256"],
+            slug=view["slug"], fact_id=fact["fact_id"],
+        )
+    assert retired_error.value.reason == "evidence_retired"
+
+
 def test_reader_rights_are_checked(tmp_path, monkeypatch, economic_publish):
     store, _prepared, _baseline, _patch = economic_publish
     current = pp.load_private_manifest(store)
