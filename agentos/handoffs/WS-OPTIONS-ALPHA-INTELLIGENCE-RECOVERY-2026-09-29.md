@@ -332,13 +332,35 @@ creates `part-000001.jsonl` — the **first rollover**. Observation #2 = the nex
 append into an *existing* part, a different code path. An `engine success` night that matures no rows
 is a legitimate null, not a failure, and is not one of the two.
 
-**Status at closeout: ZERO observations, cause external.** The only two `daily.yml` runs created
-after the merge (2026-09-29T21:40:32Z) were `36658978247` (02:15:12Z, run-level completed/**success**,
-`engine` **skipped** — the DST decoy) and `36655184116` (01:27:15Z, the EDT-intended firing), still
-`queued` and never started 4h26m after creation as of 2026-09-30T05:53Z. `daily.yml` is the only
-workflow that can append these rows, so no alternative observation source exists. Base blob and
-parts count re-verified unchanged at that time (`c73ec6998a03…` / 0) — the expected reading when the
-writer has not run, and NOT evidence about maturation.
+**Status at closeout: ZERO observations, cause external — a cancelled engine job.** The only two
+`daily.yml` runs created after the merge (2026-09-29T21:40:32Z):
+
+| run | created | run level | `engine` job | counts? |
+|---|---|---|---|---|
+| `36658978247` | 02:15:12Z | completed/**success** | **skipped** | no — the DST decoy |
+| `36655184116` | 01:27:15Z | **still in progress** (3 queued, 2 running) | **cancelled**, 03:42:27Z → 05:38:15Z | no — killed before any append landed |
+
+`daily.yml` is the only workflow that can append these rows, so no alternative observation source
+exists, and `36655184116` can no longer produce one: its `engine` job is terminally `cancelled`.
+Run-level status is misleading in BOTH directions here — the decoy reads SUCCESS having done nothing,
+and the real firing reads `queued` while its engine job had already run for two hours and been
+cancelled. This session made exactly that second error before correcting it, which is why this
+section attributes by the job and not by the run.
+
+**That produced real fail-closed evidence, though not an acceptance observation.** Inside the
+cancelled engine job, step 53 "OIP PIT — durable episodes + H+60 and declared-session-close proxy
+accrual" — the session-outcome publisher, `daily.yml:3358-3400` — is `cancelled`, and step 154 "OIP
+PIT — fail closed after unrelated rendering completes" (`assert-integrity`, `:4861`) is `failure`:
+it failed CLOSED rather than reporting green. The ledger after that abrupt termination, in the newly
+installed generation, is base blob `c73ec6998a03…` **byte-identical**, `parts` **0**, no orphan part
+and no torn artifact — the designed behaviour under precisely the abrupt-termination scenario this
+durability work targets, observed in production rather than in a test.
+
+**Honest limit on that evidence:** whether the writer had *begun* an append cannot be determined. The
+engine job's log is not retrievable while the run is still in progress (`gh run view --job … --log`
+answers "run is still in progress; logs will be available when it is complete"), so an empty grep for
+`append_session_outcomes` / `part-0000` is a harness result and NOT evidence of absence. What is
+certain is that no append LANDED, because the base blob and parts count are unchanged.
 
 Attribute first, then read the ledger. The path is `options_signal_episode`, not `options_signal`; a
 wrong prefix returns a false `0` rather than an error:
