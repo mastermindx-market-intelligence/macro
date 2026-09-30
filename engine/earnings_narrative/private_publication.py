@@ -2135,8 +2135,7 @@ def load_economic_closure(
         if stale["interpretation_state"] == "stale":
             return stale
     try:
-        entry = validate_native_closure(value, objects, slugs=[slug])[slug]
-        return {**entry, "interpretation_state": "current"}
+        return validate_native_closure(value, objects, slugs=[slug])[slug]
     except EarningsPrivateClosureError as exc:
         if exc.reason != "interpretation_unsupported":
             raise
@@ -2252,6 +2251,7 @@ def load_economic_evidence(
     if (
         manifest.get("schema") != MANIFEST_SCHEMA_V2
         or slug not in manifest.get("native", {}).get("selections", {})
+        or type(record_digest) is not str
         or manifest["records"].get(slug, {}).get("sha256") != record_digest
     ):
         raise EarningsEconomicNotFound("unknown_record")

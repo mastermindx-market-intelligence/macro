@@ -503,6 +503,51 @@ def test_v2_publish_validates_prepared_closure_before_store_access(tmp_path):
     pp.publish_private_publication(control_store, control)
 
 
+def test_closure_mode_shape_and_strict_evidence_digest(tmp_path, economic_publish):
+    store, _prepared, _baseline, _fixture_patch = economic_publish
+    manifest = pp.load_private_manifest(store)
+    slug = manifest["native"]["economic_slots"]["cik:0000080424"]["slug"]
+    verified = pp.load_economic_closure(store, manifest=manifest, slug=slug)
+    assert set(verified) == {"record", "selection", "interpretation", "chain"}
+
+    store.capability_error = pp.EarningsPrivatePublishConflict("downgrade_refused")
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "corrected", name="capability"))
+    store.versioned_reads.clear()
+    store.put_calls.clear()
+    with pytest.raises(pp.EarningsPrivatePublishConflict) as capability:
+        pp.publish_private_publication(store, prepared)
+    assert capability.value.reason == "conditional_write_unavailable"
+    assert store.versioned_reads == []
+    assert store.put_calls == []
+
+    view = pp.load_current_economic_view(store, "PG", manifest=manifest)
+    fact = next(item for item in view["interpretation"]["observations"] if item.get("source_excerpt"))
+    class DeceptiveStr(str):
+        def __eq__(self, other):
+            return True
+        def __hash__(self):
+            return hash("deceptive")
+    with pytest.raises(pp.EarningsEconomicNotFound) as digest_error:
+        pp.load_economic_evidence(
+            store,
+            generation_id=view["generation_id"],
+            manifest_digest=view["manifest_sha256"],
+            record_digest=DeceptiveStr(view["record_sha256"]),
+            slug=view["slug"],
+            fact_id=fact["fact_id"],
+        )
+    assert digest_error.value.reason == "unknown_record"
+    real = pp.load_economic_evidence(
+        store,
+        generation_id=view["generation_id"],
+        manifest_digest=view["manifest_sha256"],
+        record_digest=view["record_sha256"],
+        slug=view["slug"],
+        fact_id=fact["fact_id"],
+    )
+    assert real["record_sha256"] == view["record_sha256"]
+
+
 def test_stale_ok_only_downgrades_supported_code_revision(tmp_path, monkeypatch, economic_publish):
     store, prepared, _baseline, _fixture_patch = economic_publish
     manifest = pp.load_private_manifest(store)
