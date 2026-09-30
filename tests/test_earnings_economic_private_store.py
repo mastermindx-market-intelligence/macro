@@ -1047,7 +1047,7 @@ def test_stale_interpretation_identity_is_checked(tmp_path, economic_publish):
     record_path = store.root / Path(manifest["records"][slug]["object_key"])
     original = record_path.read_bytes()
     record = json.loads(original)
-    record["economic_interpretation"]["interpretation_id"] = "econ_" + ("a" * 64)
+    record["economic_interpretation"]["interpretation_id"] = "econ_" + ("b" * 64)
     altered = canonical_json_bytes(record)
     digest = sha256(altered).hexdigest()
     key = f"{pp.PRIVATE_PREFIX}/objects/sha256/{digest[:2]}/{digest}.json"
