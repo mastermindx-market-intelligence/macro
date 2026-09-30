@@ -38,7 +38,7 @@
 #dlg-news .nd-section-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}
 #dlg-news .nd-kicker{margin-bottom:4px;color:var(--muted);font-size:var(--fs-label);font-weight:600;letter-spacing:.06em;line-height:1.5}
 #dlg-news .nd-section-heading h3{margin:0;font-size:var(--fs-h2);line-height:1.5;letter-spacing:-.015em;color:var(--text)}
-#dlg-news .nd-section-note{font-size:var(--fs-sm);color:var(--muted);line-height:1.6;margin:-4px 0 16px}
+#dlg-news .nd-section-note{font-size:var(--fs-sm);line-height:1.6;margin:-4px 0 16px}
 #dlg-news .nd-text-link{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:44px;padding:4px 0;border:0;background:transparent;font:inherit;font-size:var(--fs-sm);font-weight:600;line-height:1.4;color:var(--link);text-decoration:none;cursor:pointer;flex-shrink:0}
 #dlg-news .nd-text-link svg{flex-shrink:0}
 #dlg-news .nd-text-link:hover{text-decoration:underline;text-underline-offset:4px}
@@ -250,3 +250,34 @@ html[data-theme="light"] #dlg-news .nd-tag-review{color:var(--ink-link,var(--lin
 /* Detail counts describe the originating list, not the selected record. */
 #dlg-news.nd-reading-detail .nd-result-count{display:none}
 #dlg-news .nd-detail .nd-detail-selected{border-bottom:1px solid var(--line)}
+
+/* Official results use the existing study surface; no new palette or chart system.
+   Dark: quiet inset instruments. Light: white reading cells on a cool-gray inset.
+   Provenance is a nested native disclosure, not extra first-read boilerplate. */
+#dlg-news .nd-official-evidence{margin-top:12px;border-top:1px solid var(--line);min-width:0}
+#dlg-news .nd-official-evidence>summary,#dlg-news .nd-official-provenance>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;list-style:none;cursor:pointer;color:var(--link);font-size:var(--fs-sm);font-weight:600}
+#dlg-news .nd-official-evidence summary::-webkit-details-marker{display:none}
+#dlg-news .nd-official-status{display:flex;align-items:center;gap:12px;color:var(--muted);font-weight:400}
+#dlg-news .nd-official-body{padding:4px 0 12px;min-width:0}
+#dlg-news .nd-official-intro,#dlg-news .nd-official-missing{margin:0;font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
+#dlg-news .nd-official-metrics{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px;align-items:stretch}
+#dlg-news .nd-official-metric{flex:1 1 180px;min-width:0;padding:18px;border:1px solid var(--line);border-radius:var(--r-card,12px);background:var(--bg)}
+#dlg-news .nd-official-metric h5{margin:0 0 12px;font-size:var(--fs-body);line-height:1.5;font-weight:600;color:var(--text)}
+#dlg-news .nd-official-metric p.nd-official-value{margin:0;font-size:var(--fs-h1);font-weight:650;line-height:1.2;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:var(--text)}
+#dlg-news .nd-official-value>span{font-size:var(--fs-h2);padding-left:3px;font-weight:500}
+#dlg-news .nd-official-unit,#dlg-news .nd-official-period{margin:6px 0 0;font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
+#dlg-news .nd-official-provenance{margin-top:14px;border-top:1px solid var(--line)}
+#dlg-news .nd-official-provenance dl{display:flex;flex-direction:column;gap:4px;margin:6px 0 0;font-size:var(--fs-sm);line-height:1.6}
+#dlg-news .nd-official-provenance dt{color:var(--muted);margin-top:8px}
+#dlg-news .nd-official-provenance dd{margin:0;color:var(--text);overflow-wrap:anywhere;min-width:0}
+#dlg-news .nd-proof-id{font-family:var(--font-mono);font-size:var(--fs-label)}
+#dlg-news .nd-official-correction{padding-left:10px;border-left:2px solid var(--warn);margin:12px 0 0;font-size:var(--fs-sm);line-height:1.6;color:var(--text)}
+#dlg-news .nd-evidence-cutoff{margin:16px 0 0;font-size:var(--fs-label);line-height:1.6;color:var(--muted);overflow-wrap:anywhere}
+html[data-theme="light"] #dlg-news .nd-official-body{background:var(--panel2);border-radius:var(--r-card,12px);padding:16px}
+html[data-theme="light"] #dlg-news .nd-official-metric{background:var(--panel);box-shadow:var(--card-shadow);border-color:var(--line)}
+#dlg-news .nd-detail .nd-event.nd-detail-selected{align-items:flex-start}
+#dlg-news .nd-detail .nd-event-content{min-width:0;flex:1}
+@media(max-width:767px){#dlg-news .nd-official-metrics{flex-direction:column}#dlg-news .nd-official-metric{flex-basis:auto;padding:16px}#dlg-news .nd-official-status{gap:8px}#dlg-news .nd-detail .nd-official-body{padding-left:0;padding-right:0}html[data-theme="light"] #dlg-news .nd-detail .nd-official-body{padding:12px}}
+
+#dlg-news #nd-detail-title:focus{outline:2px solid var(--link);outline-offset:4px;border-radius:4px}
+@media(max-width:767px){#dlg-news .nd-detail .nd-event.nd-detail-selected>.nd-event-date{display:none}}
