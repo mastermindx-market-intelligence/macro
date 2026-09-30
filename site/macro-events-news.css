@@ -38,7 +38,7 @@
 #dlg-news .nd-section-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}
 #dlg-news .nd-kicker{margin-bottom:4px;color:var(--muted);font-size:var(--fs-label);font-weight:600;letter-spacing:.06em;line-height:1.5}
 #dlg-news .nd-section-heading h3{margin:0;font-size:var(--fs-h2);line-height:1.5;letter-spacing:-.015em;color:var(--text)}
-#dlg-news .nd-section-note{font-size:var(--fs-sm);line-height:1.6;margin:-4px 0 16px}
+#dlg-news .nd-section-note{font-size:var(--fs-sm);color:var(--muted);line-height:1.6;margin:-4px 0 16px}
 #dlg-news .nd-text-link{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:44px;padding:4px 0;border:0;background:transparent;font:inherit;font-size:var(--fs-sm);font-weight:600;line-height:1.4;color:var(--link);text-decoration:none;cursor:pointer;flex-shrink:0}
 #dlg-news .nd-text-link svg{flex-shrink:0}
 #dlg-news .nd-text-link:hover{text-decoration:underline;text-underline-offset:4px}
