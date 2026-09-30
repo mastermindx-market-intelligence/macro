@@ -17,7 +17,7 @@ from tests.earnings_economic_private_fixtures import (
     rights_registry,
     stage_economic_case,
 )
-from tests.test_earnings_private_store import CountingLocalStore, _staged_publication
+from tests.test_earnings_private_store import _staged_publication
 
 @pytest.fixture
 def valid(tmp_path: Path):
@@ -351,8 +351,8 @@ def economic_publish(tmp_path, monkeypatch):
     monkeypatch.setattr(pp, "NATIVE_RIGHTS_REGISTRY_PATH", rights_registry(tmp_path))
     store, baseline = published_v1_case(tmp_path)
     prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
-    pointer = pp.publish_private_publication(store, prepared)
-    return store, prepared, pointer, baseline, monkeypatch
+    pp.publish_private_publication(store, prepared)
+    return store, prepared, baseline, monkeypatch
 
 
 def test_v2_publication_refuses_when_native_rights_are_refused(tmp_path, monkeypatch):
@@ -410,7 +410,6 @@ def test_foreign_pointer_echo_is_not_restored(tmp_path, monkeypatch):
     store, baseline = published_v1_case(tmp_path)
     prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
     pointer_bytes = canonical_json_bytes(pp._pointer_for(prepared))
-    old_bytes = canonical_json_bytes(baseline)
     store.put_calls.clear()
     store.foreign_echo = True
     with pytest.raises(pp.EarningsPrivatePointerEffectUnknown):
@@ -421,7 +420,7 @@ def test_foreign_pointer_echo_is_not_restored(tmp_path, monkeypatch):
 
 
 def test_stale_ok_only_downgrades_supported_code_revision(tmp_path, monkeypatch, economic_publish):
-    store, prepared, _pointer, _baseline, _fixture_patch = economic_publish
+    store, prepared, _baseline, _fixture_patch = economic_publish
     manifest = pp.load_private_manifest(store)
     slug = manifest["native"]["economic_slots"]["cik:0000080424"]["slug"]
     current = pp.load_economic_closure(store, manifest=manifest, slug=slug, interpretation="stale_ok")
@@ -459,7 +458,7 @@ def test_mixed_v2_generation_publishes_and_reads(tmp_path):
     assert prepared.manifest["previous_manifest"] == {
         key: baseline[key] for key in pp.load_private_predecessor(store)
     }
-    pointer = pp.publish_private_publication(store, prepared)
+    pp.publish_private_publication(store, prepared)
     current = pp.load_private_manifest(store)
     assert current == dict(prepared.manifest)
     assert current["schema"] == pp.MANIFEST_SCHEMA_V2
