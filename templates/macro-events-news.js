@@ -177,7 +177,14 @@
       text($('[data-nd-detail-note]'), word('Scheduled does not mean published. A passed date does not establish an official result or explain a market move.', '已排期不等于已公布。日期已过并不能确认官方结果，也不能解释市场走势。'));
       fact(word('Schedule date', '排期日期'), (item.querySelector('[data-nd-date]') || {}).textContent);
       fact(word('Scheduled time', '排期时间'), (item.querySelector('.nd-event-time') || {}).textContent);
-      fact(word('Official actual', '官方公布值'), '');
+      var officialPanel = item.querySelector('[data-nd-official-count]');
+      var officialCount = officialPanel ? Number(officialPanel.dataset.ndOfficialCount) : 0;
+      fact(word('Official actual', '官方公布值'), officialCount > 0 ? word(officialCount + ' measure(s) in the result panel', '结果面板内有 ' + officialCount + ' 项指标') : '');
+      if (officialCount > 0) {
+        text($('[data-nd-detail-kind]'), word('RELEASE / OFFICIAL RESULT', '数据公布 / 官方结果'));
+        text($('[data-nd-detail-note]'), word('Exact first-result receipts match this release and evidence cutoff. They do not establish a consensus surprise or explain the market reaction.', '首次公布值的凭据与此数据公布及证据截止时间精确匹配，但不能据此确认超出共识的幅度或解释市场反应。'));
+        fact(word('Evidence cutoff', '证据截止时间'), officialPanel.dataset.ndEvidenceAsof);
+      }
       fact(word('Matching consensus', '同口径共识值'), '');
       fact(word('Observed reaction series', '观察到的市场反应序列'), '');
     } else {
@@ -193,7 +200,7 @@
     states[mode].scroll = scroll;
     item.before(anchor);
     origin = {item: item, opener: opener, anchor: anchor, scroll: scroll, disclosures: Array.from(item.querySelectorAll('details')).map(function (node) { return [node, node.open]; })};
-    origin.disclosures.forEach(function (entry) { entry[0].open = true; });
+    origin.disclosures.forEach(function (entry) { if (!entry[0].hasAttribute('data-nd-provenance')) entry[0].open = true; });
     detailRecord.appendChild(item);
     item.hidden = false; item.classList.add('nd-detail-selected'); opener.hidden = true;
     grid.hidden = true; following.hidden = true; empty.hidden = true; footer.hidden = true;
