@@ -331,6 +331,17 @@ def screen_candidate(
         reasons.append("Gate 4 FAIL: no baseline declared")
         gates_failed.append("baseline_named")
 
+    # A price-comparison target needs its own declared, tracked benchmark.
+    # Calendar reminders, strategy baselines and model prose cannot choose it.
+    if isinstance(candidate.get("target"), dict) and candidate["target"].get("kind") == "excess_return":
+        try:
+            from engine.signal_foundry.spec import excess_return_contract
+            excess_return_contract(candidate, repo_root)
+            gates_passed.append("target_contract")
+        except (ValueError, TypeError, OSError) as exc:
+            gates_failed.append("target_contract")
+            reasons.append(f"Target contract FAIL: {exc}")
+
     # ------------------------------------------------------------------ #
     # Gate 5: novelty (construction_hash dedup + name dedup)               #
     # ------------------------------------------------------------------ #
