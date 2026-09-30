@@ -9,16 +9,28 @@ from copy import deepcopy
 from hashlib import sha256
 import json
 from pathlib import Path
+import threading
 
 from engine.earnings_narrative import economic_interpretation
+from engine.earnings_narrative import private_publication as private_module
 from engine.earnings_narrative.context_packets import canonical_json_bytes
 from engine.company_intelligence import event_workspace, pg_profile
+from engine.research_vault.r2_store import LocalStore
 from scripts import refresh_event_workspaces
 from tests.earnings_economic_fixtures import fixture_http_get
-from tests.test_earnings_private_store import _staged_publication
+from tests.test_earnings_private_store import CountingLocalStore, _staged_publication
 
 CUTOFF = "2026-07-31T00:00:00Z"
 _CACHE: dict[str, dict[str, object]] = {}
+
+_PERMITTING_RIGHTS = """families:
+  sec_edgar:
+    rights_class: derived_display_ok
+"""
+_REFUSING_RIGHTS = """families:
+  sec_edgar:
+    rights_class: internal_only
+"""
 
 def _acquire(case: str) -> dict:
     original = refresh_event_workspaces._PACE_S
@@ -74,6 +86,12 @@ def _build_cache() -> dict[str, object]:
 def _copy(value: object) -> object:
     return deepcopy(value)
 
+
+def rights_registry(tmp_path: Path, *, refusing: bool = False) -> Path:
+    path = tmp_path / ("refusing-rights.yml" if refusing else "permitting-rights.yml")
+    path.write_text(_REFUSING_RIGHTS if refusing else _PERMITTING_RIGHTS, encoding="utf-8")
+    return path
+
 def _selection_for(result: dict, interpretation: dict) -> dict:
     return {
         "company_id": "cik:0000080424",
@@ -88,6 +106,7 @@ def _selection_for(result: dict, interpretation: dict) -> dict:
         "interpretation_id": interpretation["interpretation_id"],
     }
 
+
 def economic_stage_parts(case: str) -> dict:
     cache = _build_cache()
     if case in ("valid", "wire_unavailable", "wire_interpretation", "three_handles", "currentness_none"):
@@ -99,10 +118,25 @@ def economic_stage_parts(case: str) -> dict:
     elif case == "amended":
         chain = [cache["v1"], cache["v3"]]
         interpretation = _copy(cache["v3_interpretation"])
+    elif case == "empty_native":
+        chain = []
+        interpretation = {"state": "unavailable", "reason": "no_native_selection"}
     else:
         raise ValueError("unknown synthetic private economic stage case")
 
-    selection = _selection_for(chain[-1], interpretation)
+    selection = (
+        _selection_for(chain[-1], interpretation)
+        if chain
+        else {
+            "company_id": "cik:0000080424",
+            "event_id": "",
+            "profile_version": pg_profile.PG_PROFILE_VERSION,
+            "fiscal_scope": [],
+            "chain": [],
+            "selection": {"facts": None, "currentness": None},
+            "interpretation_id": "",
+        }
+    )
     rebuilt = None
     if case == "currentness_none":
         selection["selection"]["currentness"] = None
@@ -133,7 +167,7 @@ def economic_stage_parts(case: str) -> dict:
         "slug": "pg-synthetic-economic-dossier",
         "required_tier": "essential",
         "public_facts": 0,
-        "locked_facts": len(native_interpretation["observations"]),
+        "locked_facts": len(native_interpretation.get("observations", ())),
         "facts_html": "",
         "receipt_rows_html": "",
         "economic_interpretation": native_interpretation,
@@ -141,8 +175,10 @@ def economic_stage_parts(case: str) -> dict:
     return {
         "chains": [[{"version": result} for result in chain]],
         "selection": selection,
-        "selections": {dossier["slug"]: selection},
-        "slots": {"cik:0000080424": {"slug": dossier["slug"], "event_id": selection["event_id"]}},
+        "selections": {} if case == "empty_native" else {dossier["slug"]: selection},
+        "slots": {} if case == "empty_native" else {
+            "cik:0000080424": {"slug": dossier["slug"], "event_id": selection["event_id"]}
+        },
         "received": {
             result["document_metadata"]["content_sha256"]: result["received_byte_receipt"]
             for result in chain
@@ -151,13 +187,13 @@ def economic_stage_parts(case: str) -> dict:
         "previous_manifest": None,
         "wire_v2": case in ("wire_unavailable", "wire_interpretation"),
         "wire_interpretation": record_interpretation,
-        "dossier": dossier,
+        "dossier": None if case == "empty_native" else dossier,
     }
 
 def write_economic_stage(stage_dir: Path, parts: dict) -> Path:
     _public_dir, private_dir, wire_slug = _staged_publication(stage_dir.parent)
     records_dir = private_dir / "records"
-    dossier = parts["dossier"]
+    dossier = dict(parts["dossier"]) if parts.get("dossier") else None
     if parts.get("wire_v2"):
         wire_path = records_dir / f"{wire_slug}.json"
         wire = json.loads(wire_path.read_bytes())
@@ -193,7 +229,7 @@ def write_economic_stage(stage_dir: Path, parts: dict) -> Path:
         dossier["slug"] = wire_slug
         parts["selections"][wire_slug] = parts["selections"].pop(old_slug)
         parts["slots"]["cik:0000080424"]["slug"] = wire_slug
-    else:
+    elif dossier:
         (records_dir / f"{dossier['slug']}.json").write_bytes(canonical_json_bytes(dossier))
     stage_manifest = {
         "schema": "earnings.private_native_stage/v1",
@@ -208,6 +244,138 @@ def write_economic_stage(stage_dir: Path, parts: dict) -> Path:
 
 def stage_economic_case(tmp_path: Path, case: str) -> Path:
     return write_economic_stage(tmp_path / "economic", economic_stage_parts(case))
+
+
+def published_v1_case(tmp_path: Path):
+    _public_dir, stage, _slug = _staged_publication(tmp_path / "v1")
+    prepared = private_module.prepare_private_publication(stage)
+    store = ConditionalCountingStore(tmp_path / "private-r2")
+    return store, private_module.publish_private_publication(store, prepared)
+
+
+def stage_economic_named_case(tmp_path: Path, case: str, *, name: str = "economic") -> Path:
+    stage = write_economic_stage(tmp_path / name, economic_stage_parts(case))
+    stage_manifest_path = stage / "native" / "latest.json"
+    stage_manifest = json.loads(stage_manifest_path.read_bytes())
+    installed = tmp_path / "private-r2"
+    stage_manifest["previous_manifest"] = (
+        private_module.load_private_predecessor(LocalStore(installed))
+        if (installed / "current.json").is_file()
+        else None
+    )
+    stage_manifest_path.write_bytes(canonical_json_bytes(stage_manifest))
+    return stage
+
+
+class ConditionalCountingStore(CountingLocalStore):
+    """Local conditional-write store with deterministic promotion faults."""
+
+    def __init__(self, root: Path):
+        super().__init__(root)
+        self.conditional_calls: list[str] = []
+        self.raise_before_conditional = False
+        self.raise_after_conditional = False
+        self.foreign_echo = False
+        self.race_after_key: str | None = None
+        self._race_written = False
+        self._foreign_pointer = b'{"foreign":true}\n'
+        self._lock = threading.Lock()
+        self.fail_source_readback_after_manifest: str | None = None
+        self.fail_source_readback_keys: dict[str, bytes] = {}
+        self._manifest_written = False
+
+    def get_bytes_strict_bounded(self, key: str, maximum_bytes: int):
+        with self._lock:
+            if self.fail_source_readback_after_manifest == key:
+                self._manifest_written = True
+                self.fail_source_readback_after_manifest = None
+            if self._manifest_written and key in self.fail_source_readback_keys:
+                return self.fail_source_readback_keys[key]
+            result = super().get_bytes_strict_bounded(key, maximum_bytes)
+        if (
+            self.race_after_key is not None
+            and key == private_module.POINTER_KEY
+            and self._race_written
+        ):
+            self._inject_foreign_pointer()
+        return result
+
+    def get_bytes_strict_bounded_versioned(self, key: str, maximum_bytes: int):
+        result = super().get_bytes_strict_bounded_versioned(key, maximum_bytes)
+        if (
+            self.race_after_key is not None
+            and key == private_module.POINTER_KEY
+            and self._race_written
+        ):
+            self._inject_foreign_pointer()
+        return result
+
+    def put_bytes_strict_conditional(self, key, data, *, expected_version, content_type):
+        with self._lock:
+            self.conditional_calls.append(key)
+            if self.raise_before_conditional:
+                raise RuntimeError("conditional write did not start")
+            written = super().put_bytes_strict_conditional(
+                key,
+                data,
+                expected_version=expected_version,
+                content_type=content_type,
+            )
+            if self.raise_after_conditional:
+                raise RuntimeError("conditional write effect is unknown")
+            if self.race_after_key is not None and key == private_module.POINTER_KEY:
+                self._race_written = True
+                self._race_arm()
+            return written
+
+    def get_bytes_strict_bounded_after_write(self):
+        return None
+
+    def _race_arm(self):
+        self._foreign_pointer = b'{"foreign":true}\n'
+
+    def _inject_foreign_pointer(self):
+        self.race_after_key = None
+        super().put_bytes(
+            private_module.POINTER_KEY,
+            self._foreign_pointer,
+            content_type="application/json",
+        )
+
+
+def fail_source_readback(store: ConditionalCountingStore, prepared) -> None:
+    source_artifacts = [
+        artifact for artifact in prepared.artifacts
+        if artifact.content_type == "text/plain; charset=utf-8"
+    ]
+    assert source_artifacts
+    store.fail_source_readback_after_manifest = prepared.manifest_key
+    store.fail_source_readback_keys = {
+        artifact.object_key: bytes([body[0] ^ 1]) + prepared.payloads[artifact.object_key][1:]
+        for artifact in source_artifacts
+        for body in [prepared.payloads[artifact.object_key]]
+    }
+
+
+class NoConditionalStore:
+    """A bounded strict store without the conditional-write protocol."""
+
+    def __init__(self, root: Path):
+        self.store = LocalStore(root)
+        self.calls: list[str] = []
+
+    def get_bytes_strict_bounded(self, key: str, maximum_bytes: int):
+        self.calls.append(f"read:{key}")
+        return self.store.get_bytes_strict_bounded(key, maximum_bytes)
+
+    def get_bytes(self, key: str):
+        self.calls.append(f"get:{key}")
+        return self.store.get_bytes(key)
+
+    def put_bytes(self, key: str, data: bytes, content_type: str = "application/octet-stream"):
+        self.calls.append(f"put:{key}")
+        return self.store.put_bytes(key, data, content_type=content_type)
+
 
 def reseal_workspace(workspace: dict) -> dict:
     workspace["generation_id"] = event_workspace.preview_generation_identity(

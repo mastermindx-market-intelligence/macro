@@ -8,7 +8,15 @@ from hashlib import sha256
 
 from engine.earnings_narrative import private_publication as pp
 from engine.earnings_narrative.context_packets import canonical_json_bytes
-from tests.earnings_economic_private_fixtures import reseal_manifest, stage_economic_case
+from tests.earnings_economic_private_fixtures import (
+    ConditionalCountingStore,
+    NoConditionalStore,
+    fail_source_readback,
+    published_v1_case,
+    reseal_manifest,
+    rights_registry,
+    stage_economic_case,
+)
 from tests.test_earnings_private_store import CountingLocalStore
 
 @pytest.fixture
@@ -258,6 +266,18 @@ def test_round_b_public_surface(valid):
         "NOT_FOUND_REASONS", "READ_UNAVAILABLE_REASONS",
     )
     assert set(public_names) <= set(pp.__all__)
+
+
+def test_round_b_fixture_surface(tmp_path):
+    store, pointer = published_v1_case(tmp_path)
+    assert isinstance(store, ConditionalCountingStore)
+    assert pp.POINTER_KEY in store.put_calls
+    stage = stage_economic_case(tmp_path, "empty_native")
+    assert (stage / "native").is_dir()
+    assert not list((stage / "native" / "workspaces").iterdir())
+    assert not list((stage / "native" / "documents").iterdir())
+    assert not list((stage / "native" / "source_bodies").iterdir())
+    assert pointer["schema"] == pp.POINTER_SCHEMA
 
 def _rename_one_directory_member(directory, suffix):
     path = next(iter(directory.glob(f"*{suffix}")))
