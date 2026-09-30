@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-09-29T21:26:07.319037+00:00",
+  "generated_utc": "2026-09-29T23:43:19.274768+00:00",
   "as_of": "2026-09-29",
   "schema": "altdata.feed.v1",
   "source": "Quiver Quantitative (Trader plan)",
@@ -27724,10 +27724,10 @@
         {
           "ticker": "CRWV",
           "buy_usd": 0.0,
-          "sell_usd": 1233260578.0,
-          "net_usd": -1233260578.0,
+          "sell_usd": 1204956436.0,
+          "net_usd": -1204956436.0,
           "buyers": 0,
-          "sellers": 852
+          "sellers": 794
         },
         {
           "ticker": "BIRK",
@@ -27764,10 +27764,10 @@
         {
           "ticker": "SNOW",
           "buy_usd": 0.0,
-          "sell_usd": 911477647.0,
-          "net_usd": -911477647.0,
+          "sell_usd": 886330084.0,
+          "net_usd": -886330084.0,
           "buyers": 0,
-          "sellers": 215
+          "sellers": 210
         },
         {
           "ticker": "UMC",
@@ -27778,12 +27778,12 @@
           "sellers": 7
         },
         {
-          "ticker": "ABNB",
+          "ticker": "ILMN",
           "buy_usd": 0.0,
-          "sell_usd": 742365881.0,
-          "net_usd": -742365881.0,
+          "sell_usd": 724475263.0,
+          "net_usd": -724475263.0,
           "buyers": 0,
-          "sellers": 118
+          "sellers": 122
         }
       ]
     },
@@ -28840,14 +28840,14 @@
         "sentiment": 0.107
       },
       {
-        "ticker": "MSFT",
-        "mentions": 25,
-        "sentiment": 0.015
-      },
-      {
         "ticker": "QQQ",
         "mentions": 25,
         "sentiment": 0.074
+      },
+      {
+        "ticker": "MSFT",
+        "mentions": 25,
+        "sentiment": 0.015
       },
       {
         "ticker": "OKLO",
