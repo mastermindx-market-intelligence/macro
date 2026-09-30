@@ -6020,3 +6020,94 @@ def test_session_outcome_shared_reader_rejects_dangling_symlink(
         session_outcome_logical_bytes(base)
     with pytest.raises(episode_engine.ContractError, match=expected):
         episode_engine.load_session_outcomes(base)
+
+
+# The nightly job previously emitted no phase evidence before its ten-minute stop.
+# These exercise the existing builder, not a new scheduler or logging service.
+def _episode_phase_edges(caplog, builder) -> list[tuple[str, str]]:
+    pattern = re.compile(r"^options_episode_phase phase=([a-z0-9_]+) state=(start|complete|failed)")
+    return [match.groups() for record in caplog.records
+            if record.name == builder.log.name
+            and (match := pattern.match(record.getMessage()))]
+
+
+def test_builder_phase_receipts_follow_real_write_order(tmp_path, monkeypatch, caplog):
+    import logging
+    from scripts import build_options_signal_episode as builder
+
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    with caplog.at_level(logging.INFO, logger=builder.log.name):
+        summary = builder.run(
+            root_dir=tmp_path, stages_by_session={"2026-07-02": _stage_records()},
+            computed_at=datetime(2026, 7, 2, 21, tzinfo=timezone.utc),
+        )
+    names = ["stage_load", "stage_validation", "history_validation", "episode_append",
+             "h60_derivation", "h60_append", "session_derivation", "session_append",
+             "checkpoint_publish"]
+    assert _episode_phase_edges(caplog, builder) == [
+        (name, state) for name in names for state in ("start", "complete")
+    ]
+    assert summary["ok"] is True
+    assert summary["episodes_appended"] == 1
+    assert "phase_timings" not in summary  # Preserve the existing stdout contract.
+    assert (tmp_path / "data/options_signal_episode/checkpoint.json").exists()
+
+
+def test_builder_phase_failure_never_claims_completion_or_advances_checkpoint(tmp_path, monkeypatch, caplog):
+    import logging
+    from scripts import build_options_signal_episode as builder
+
+    monkeypatch.setenv("COLLECT_LANE", "nightly")
+    def fail_append(*args, **kwargs):
+        raise ContractError("private-input-content-must-not-enter-phase-log")
+    monkeypatch.setattr(builder, "append_session_outcomes", fail_append)
+    with caplog.at_level(logging.INFO, logger=builder.log.name), pytest.raises(ContractError):
+        builder.run(root_dir=tmp_path, stages_by_session={"2026-07-02": _stage_records()},
+                    computed_at=datetime(2026, 7, 2, 21, tzinfo=timezone.utc))
+    edges = _episode_phase_edges(caplog, builder)
+    assert edges[-2:] == [("session_append", "start"), ("session_append", "failed")]
+    assert not any(name == "checkpoint_publish" for name, _state in edges)
+    assert not (tmp_path / "data/options_signal_episode/checkpoint.json").exists()
+    phase_messages = [r.getMessage() for r in caplog.records if r.getMessage().startswith("options_episode_phase")]
+    assert "error_type=ContractError" in phase_messages[-1]
+    assert all("private-input-content" not in text for text in phase_messages)
+
+
+def test_builder_phase_dry_run_does_not_report_or_perform_writes(tmp_path, caplog):
+    import logging
+    from scripts import build_options_signal_episode as builder
+
+    with caplog.at_level(logging.INFO, logger=builder.log.name):
+        summary = builder.run(root_dir=tmp_path, stages_by_session={"2026-07-02": _stage_records()},
+                              computed_at=datetime(2026, 7, 2, 21, tzinfo=timezone.utc), dry_run=True)
+    names = ["stage_load", "stage_validation", "history_validation", "h60_derivation", "session_derivation"]
+    assert _episode_phase_edges(caplog, builder) == [(name, state) for name in names for state in ("start", "complete")]
+    assert summary["dry_run"] is True
+    assert not list(tmp_path.rglob("*.jsonl"))
+    assert not list(tmp_path.rglob("checkpoint.json"))
+
+
+def test_builder_phase_rejects_bad_stage_before_any_history_read(tmp_path, monkeypatch, caplog):
+    import logging
+    from scripts import build_options_signal_episode as builder
+
+    def unexpected_history(*args, **kwargs):
+        raise AssertionError("invalid source reached history")
+    monkeypatch.setattr(builder, "load_jsonl", unexpected_history)
+    with caplog.at_level(logging.INFO, logger=builder.log.name), pytest.raises(ContractError, match="empty dated"):
+        builder.run(root_dir=tmp_path, stages_by_session={"2026-07-02": []}, dry_run=True)
+    assert _episode_phase_edges(caplog, builder)[-2:] == [("stage_validation", "start"), ("stage_validation", "failed")]
+
+
+def test_builder_phase_main_preserves_single_json_stdout(tmp_path, monkeypatch, capsys, caplog):
+    import logging
+    from scripts import build_options_signal_episode as builder
+
+    monkeypatch.setattr(builder, "discover_event_sessions", lambda: ["2026-07-02"])
+    monkeypatch.setattr(builder, "fetch_event_stage", lambda _session: _stage_records())
+    with caplog.at_level(logging.INFO, logger=builder.log.name):
+        assert builder.main(["--root-dir", str(tmp_path), "--dry-run"]) == 0
+    output = capsys.readouterr().out
+    assert len(output.strip().splitlines()) == 1
+    assert json.loads(output)["ok"] is True
+    assert _episode_phase_edges(caplog, builder)
