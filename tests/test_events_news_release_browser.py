@@ -10,7 +10,10 @@ from pathlib import Path
 import shutil
 import sys
 import pytest
-from playwright.sync_api import sync_playwright, expect
+# Keep ordinary repository test collection independent of optional browser tooling.
+# The recorded browser proof installs Playwright and runs these tests without skips.
+_pw = pytest.importorskip("playwright.sync_api", reason="optional browser proof requires Playwright")
+sync_playwright, expect = _pw.sync_playwright, _pw.expect
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
