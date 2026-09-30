@@ -491,3 +491,41 @@ def test_coverage_assessment_keeps_primary_floor_and_marks_comparator_partial() 
         "identity_coverage_below_floor",
         "price_coverage_below_floor",
     ]
+
+
+def test_entity_panel_preserves_case_distinct_massive_tickers() -> None:
+    idx = pd.bdate_range("2026-01-05", periods=3)
+    prices = {
+        "TPC": pd.Series([90.0, 91.0, 92.0], index=idx),
+        "TpC": pd.Series([20.0, 20.5, 21.0], index=idx),
+    }
+    intervals = pd.DataFrame(
+        [
+            {
+                "universe_key": eb.UNIVERSE_ALL_ISSUES,
+                "entity_key": "SEC:TUTOR-PERINI",
+                "ticker": "TPC",
+                "valid_from_session": idx[0],
+                "valid_to_session": idx[-1],
+            },
+            {
+                "universe_key": eb.UNIVERSE_ALL_ISSUES,
+                "entity_key": "SEC:ATT-PREFERRED-C",
+                "ticker": "TpC",
+                "valid_from_session": idx[0],
+                "valid_to_session": idx[-1],
+            },
+        ]
+    )
+
+    result = eb.assemble_entity_close_panel(
+        prices,
+        intervals,
+        split_events=pd.DataFrame(),
+        observation_session=idx[-1],
+        universe_key=eb.UNIVERSE_ALL_ISSUES,
+    )
+
+    assert result.excluded_entities == {}
+    assert result.closes["SEC:TUTOR-PERINI"].tolist() == [90.0, 91.0, 92.0]
+    assert result.closes["SEC:ATT-PREFERRED-C"].tolist() == [20.0, 20.5, 21.0]

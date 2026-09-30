@@ -391,7 +391,7 @@ def assemble_entity_close_panel(
     work = work[work["valid_from_session"] <= asof]
     work["valid_to_session"] = work["valid_to_session"].clip(upper=asof)
     prices: dict[str, pd.Series] = {
-        str(ticker).strip().upper(): _series(series)
+        str(ticker).strip(): _series(series)
         for ticker, series in price_by_ticker.items()
     }
     indexes = [s.index[s.index <= asof] for s in prices.values()]
@@ -409,7 +409,7 @@ def assemble_entity_close_panel(
         for row in group.sort_values(
             ["valid_from_session", "ticker"]
         ).itertuples(index=False):
-            source = prices.get(str(row.ticker).strip().upper())
+            source = prices.get(str(row.ticker).strip())
             if source is None:
                 continue
             end = min(pd.Timestamp(row.valid_to_session), asof)
