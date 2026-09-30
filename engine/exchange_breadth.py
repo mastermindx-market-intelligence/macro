@@ -51,6 +51,75 @@ class EntityPanelResult:
     excluded_entities: dict[str, dict[str, Any]]
 
 
+def assess_universe_coverage(
+    universe_key: str,
+    *,
+    listed_n: int,
+    resolved_identity_n: int,
+    priced_n: int | None,
+    min_identity_coverage: float,
+    min_price_coverage: float,
+) -> dict[str, Any]:
+    """Return transparent primary/comparator coverage status.
+
+    ``nyse_operating`` is the required headline universe.  ``nyse_all_issues``
+    is a comparator: it carries the same floors as disclosure thresholds, but
+    falling below them marks that comparator partial rather than invalidating a
+    healthy primary generation.
+    """
+    if universe_key not in {UNIVERSE_OPERATING, UNIVERSE_ALL_ISSUES}:
+        raise ValueError(f"unsupported exchange-breadth universe: {universe_key}")
+    listed = int(listed_n)
+    resolved = int(resolved_identity_n)
+    priced = None if priced_n is None else int(priced_n)
+    identity_floor = float(min_identity_coverage)
+    price_floor = float(min_price_coverage)
+    if listed < 0 or resolved < 0 or (priced is not None and priced < 0):
+        raise ValueError("coverage counts must be non-negative")
+    if resolved > listed or (priced is not None and priced > resolved):
+        raise ValueError("coverage numerators cannot exceed their denominators")
+    if not 0.0 <= identity_floor <= 1.0 or not 0.0 <= price_floor <= 1.0:
+        raise ValueError("coverage floors must be between zero and one")
+
+    identity_ratio = resolved / listed if listed else 0.0
+    price_ratio = priced / listed if priced is not None and listed else None
+    reasons: list[str] = []
+    if listed == 0:
+        reasons.append("empty_universe")
+    elif identity_ratio < identity_floor:
+        reasons.append("identity_coverage_below_floor")
+    if (
+        priced is not None
+        and listed
+        and price_ratio is not None
+        and price_ratio < price_floor
+    ):
+        reasons.append("price_coverage_below_floor")
+
+    price_complete = priced is not None
+    usable = price_complete and not reasons
+    status = "accepted" if usable else ("partial" if reasons else "pending_price")
+    return {
+        "required": universe_key == UNIVERSE_OPERATING,
+        "status": status,
+        "usable": usable,
+        "confirmation_eligible": usable,
+        "identity_coverage_pct": round(identity_ratio * 100.0, 4),
+        "price_coverage_pct": (
+            round(price_ratio * 100.0, 4) if price_ratio is not None else None
+        ),
+        "identity_floor_pct": round(identity_floor * 100.0, 4),
+        "price_floor_pct": round(price_floor * 100.0, 4),
+        "meets_identity_floor": listed > 0 and identity_ratio >= identity_floor,
+        "meets_price_floor": (
+            None
+            if priced is None
+            else listed > 0 and price_ratio is not None and price_ratio >= price_floor
+        ),
+        "coverage_reasons": reasons,
+    }
+
+
 def _session(value: object) -> pd.Timestamp:
     ts = pd.Timestamp(value)
     if ts.tzinfo is not None:

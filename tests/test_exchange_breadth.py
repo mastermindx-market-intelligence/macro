@@ -454,3 +454,40 @@ def test_normalize_roster_keeps_massive_case_as_security_identity() -> None:
     assert all_issues.set_index("ticker").loc["TpC", "entity_key"] == "SEC:ATT-PREFERRED-C"
     assert ("massive", "TPC", date(2026, 9, 29)) in aliases.calls
     assert ("massive", "TpC", date(2026, 9, 29)) in aliases.calls
+
+
+def test_coverage_assessment_keeps_primary_floor_and_marks_comparator_partial() -> None:
+    operating = eb.assess_universe_coverage(
+        eb.UNIVERSE_OPERATING,
+        listed_n=1930,
+        resolved_identity_n=1767,
+        priced_n=1700,
+        min_identity_coverage=0.90,
+        min_price_coverage=0.85,
+    )
+    comparator = eb.assess_universe_coverage(
+        eb.UNIVERSE_ALL_ISSUES,
+        listed_n=2919,
+        resolved_identity_n=2167,
+        priced_n=2100,
+        min_identity_coverage=0.90,
+        min_price_coverage=0.85,
+    )
+
+    assert operating["required"] is True
+    assert operating["status"] == "accepted"
+    assert operating["usable"] is True
+    assert operating["confirmation_eligible"] is True
+    assert operating["identity_coverage_pct"] == 91.5544
+    assert operating["price_coverage_pct"] == 88.0829
+
+    assert comparator["required"] is False
+    assert comparator["status"] == "partial"
+    assert comparator["usable"] is False
+    assert comparator["confirmation_eligible"] is False
+    assert comparator["identity_coverage_pct"] == 74.2378
+    assert comparator["price_coverage_pct"] == 71.9424
+    assert comparator["coverage_reasons"] == [
+        "identity_coverage_below_floor",
+        "price_coverage_below_floor",
+    ]

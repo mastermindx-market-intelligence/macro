@@ -50,6 +50,7 @@ from engine.exchange_breadth import (
     SOURCE_RULES_VERSION,
     UNIVERSE_ALL_ISSUES,
     UNIVERSE_OPERATING,
+    assess_universe_coverage,
     normalize_roster,
     update_membership_intervals,
 )
@@ -329,11 +330,23 @@ class GroupedDailyPriceClient:
         session: date,
         wanted: Iterable[str],
         *,
+        required: Iterable[str] | None = None,
         min_coverage: float = 0.85,
     ) -> GroupedSessionEvidence:
         wanted_set = {str(ticker).strip() for ticker in wanted if str(ticker).strip()}
         if not wanted_set:
             raise BackfillRefused(f"{session}: no grouped-daily tickers requested")
+        required_set = (
+            wanted_set
+            if required is None
+            else {str(ticker).strip() for ticker in required if str(ticker).strip()}
+        )
+        if not required_set:
+            raise BackfillRefused(f"{session}: no required grouped-daily tickers")
+        if not required_set.issubset(wanted_set):
+            raise BackfillRefused(
+                f"{session}: required grouped-daily tickers are outside requested set"
+            )
         url = f"{self.base_url}{GROUPED_PATH.format(session=session.isoformat())}"
         params: dict[str, Any] = {
             "adjusted": "false",
@@ -374,10 +387,12 @@ class GroupedDailyPriceClient:
             if math.isfinite(close) and close > 0:
                 closes[ticker] = close
         coverage = len(closes) / len(wanted_set)
-        if coverage < float(min_coverage):
+        required_matched = len(required_set.intersection(closes))
+        required_coverage = required_matched / len(required_set)
+        if required_coverage < float(min_coverage):
             raise BackfillRefused(
-                f"{session}: grouped daily price coverage {coverage:.3f} below "
-                f"{float(min_coverage):.3f}"
+                f"{session}: grouped daily required price coverage "
+                f"{required_coverage:.3f} below {float(min_coverage):.3f}"
             )
         observed_at = datetime.now(timezone.utc).isoformat()
         receipt = {
@@ -392,6 +407,9 @@ class GroupedDailyPriceClient:
             "wanted_n": len(wanted_set),
             "matched_n": len(closes),
             "coverage_pct": round(coverage * 100.0, 4),
+            "required_wanted_n": len(required_set),
+            "required_matched_n": required_matched,
+            "required_coverage_pct": round(required_coverage * 100.0, 4),
             "observed_at": observed_at,
             "request_id": payload.get("request_id"),
         }
@@ -442,7 +460,7 @@ def compute_backfill_frames(
     prices: dict[str, pd.Series],
     observation_session: date,
     state: dict[str, Any],
-    counts: dict[str, dict[str, int]],
+    counts: dict[str, dict[str, Any]],
 ) -> dict[str, pd.DataFrame]:
     """Backfill seam into the same split-adjusted collector/core calculation."""
     frames, _diagnostics = _build_frames(
@@ -527,6 +545,7 @@ class HybridPriceHistory:
         self.min_coverage = float(min_coverage)
         self._grouped_cache: dict[date, GroupedSessionEvidence] = {}
         self._grouped_wanted: dict[date, frozenset[str]] = {}
+        self._grouped_required: dict[date, frozenset[str]] = {}
 
     def _inside_r2(self, session: date) -> bool:
         return self.r2_first_session <= session <= self.r2_last_session
@@ -555,12 +574,26 @@ class HybridPriceHistory:
         self,
         tickers: Iterable[str],
         *,
+        required_tickers: Iterable[str] | None = None,
         start: date,
         end: date,
     ) -> PriceHistoryEvidence:
         wanted = sorted({str(t).strip() for t in tickers if str(t).strip()})
         if not wanted:
             raise BackfillRefused(f"{end}: no price histories requested")
+        required = (
+            wanted
+            if required_tickers is None
+            else sorted(
+                {str(t).strip() for t in required_tickers if str(t).strip()}
+            )
+        )
+        if not required:
+            raise BackfillRefused(f"{end}: no required price histories requested")
+        if not set(required).issubset(wanted):
+            raise BackfillRefused(
+                f"{end}: required price histories are outside requested set"
+            )
         if start > end:
             raise ValueError("price history start must not be after end")
         prices: dict[str, pd.Series] = {}
@@ -588,18 +621,26 @@ class HybridPriceHistory:
                 f"{self.r2_first_session}..{self.r2_last_session}"
             )
         requested_set = frozenset(wanted)
+        required_set = frozenset(required)
         for session in grouped_days:
             cached = self._grouped_cache.get(session)
             cached_wanted = self._grouped_wanted.get(session, frozenset())
-            if cached is None or not requested_set.issubset(cached_wanted):
+            cached_required = self._grouped_required.get(session, frozenset())
+            if (
+                cached is None
+                or not requested_set.issubset(cached_wanted)
+                or not required_set.issubset(cached_required)
+            ):
                 assert self.grouped_client is not None
                 cached = self.grouped_client.fetch(
                     session,
                     wanted,
+                    required=required,
                     min_coverage=self.min_coverage,
                 )
                 self._grouped_cache[session] = cached
                 self._grouped_wanted[session] = requested_set
+                self._grouped_required[session] = required_set
             grouped_maps[session] = dict(cached.closes)
         grouped_history = grouped_session_maps_to_history(grouped_maps)
         for ticker, series in grouped_history.items():
@@ -708,8 +749,8 @@ class ExchangeBreadthSessionProcessor:
             min_coverage=self.min_price_coverage,
         )
 
-    def _counts(self, observed: pd.DataFrame) -> dict[str, dict[str, int]]:
-        counts: dict[str, dict[str, int]] = {}
+    def _counts(self, observed: pd.DataFrame) -> dict[str, dict[str, Any]]:
+        counts: dict[str, dict[str, Any]] = {}
         for universe_key in (UNIVERSE_OPERATING, UNIVERSE_ALL_ISSUES):
             rows = observed[observed["universe_key"] == universe_key]
             listed_n = int(len(rows))
@@ -717,6 +758,14 @@ class ExchangeBreadthSessionProcessor:
             counts[universe_key] = {
                 "listed_n": listed_n,
                 "resolved_identity_n": resolved_n,
+                **assess_universe_coverage(
+                    universe_key,
+                    listed_n=listed_n,
+                    resolved_identity_n=resolved_n,
+                    priced_n=None,
+                    min_identity_coverage=self.min_identity_coverage,
+                    min_price_coverage=self.min_price_coverage,
+                ),
             }
         if counts[UNIVERSE_OPERATING]["listed_n"] < self.min_operating_rows:
             raise BackfillRefused(
@@ -724,14 +773,18 @@ class ExchangeBreadthSessionProcessor:
                 f"{counts[UNIVERSE_OPERATING]['listed_n']} < "
                 f"{self.min_operating_rows}"
             )
-        for universe_key, values in counts.items():
-            listed_n = values["listed_n"]
-            coverage = values["resolved_identity_n"] / listed_n if listed_n else 0.0
-            if coverage < self.min_identity_coverage:
-                raise BackfillRefused(
-                    f"{universe_key} identity coverage {coverage:.3f} below "
-                    f"{self.min_identity_coverage:.3f}"
-                )
+        operating_counts = counts[UNIVERSE_OPERATING]
+        if not operating_counts["meets_identity_floor"]:
+            listed_n = int(operating_counts["listed_n"])
+            coverage = (
+                int(operating_counts["resolved_identity_n"]) / listed_n
+                if listed_n
+                else 0.0
+            )
+            raise BackfillRefused(
+                f"{UNIVERSE_OPERATING} identity coverage {coverage:.3f} below "
+                f"{self.min_identity_coverage:.3f}"
+            )
         return counts
 
     def _reconcile_existing_generation(self, session: date) -> SessionAcceptance:
@@ -830,8 +883,18 @@ class ExchangeBreadthSessionProcessor:
             )
         ]
         tickers = sorted(set(relevant["ticker"].dropna().astype(str)))
+        required_tickers = sorted(
+            set(
+                relevant.loc[
+                    relevant["universe_key"] == UNIVERSE_OPERATING, "ticker"
+                ]
+                .dropna()
+                .astype(str)
+            )
+        )
         price_evidence = self.price_history.load(
             tickers,
+            required_tickers=required_tickers,
             start=self.first_session,
             end=session,
         )
@@ -854,11 +917,20 @@ class ExchangeBreadthSessionProcessor:
             priced_n = int(latest.get("priced_n", 0) or 0)
             price_coverage = priced_n / listed_n if listed_n else 0.0
             counts[universe_key]["priced_n"] = priced_n
-            counts[universe_key]["price_coverage_pct"] = round(
-                price_coverage * 100.0, 4
+            counts[universe_key].update(
+                assess_universe_coverage(
+                    universe_key,
+                    listed_n=listed_n,
+                    resolved_identity_n=int(
+                        counts[universe_key]["resolved_identity_n"]
+                    ),
+                    priced_n=priced_n,
+                    min_identity_coverage=self.min_identity_coverage,
+                    min_price_coverage=self.min_price_coverage,
+                )
             )
             counts[universe_key]["seasoned_n"] = int(latest.get("seasoned_n", 0) or 0)
-            if price_coverage < self.min_price_coverage:
+            if counts[universe_key]["required"] and not counts[universe_key]["usable"]:
                 raise BackfillRefused(
                     f"{session}: {universe_key} price coverage "
                     f"{price_coverage:.3f} below {self.min_price_coverage:.3f}"

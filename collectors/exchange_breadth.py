@@ -29,6 +29,7 @@ from engine.exchange_breadth import (
     SOURCE_RULES_VERSION,
     UNIVERSE_ALL_ISSUES,
     UNIVERSE_OPERATING,
+    assess_universe_coverage,
     assemble_entity_close_panel,
     compute_breadth_history,
     normalize_roster,
@@ -667,7 +668,7 @@ def _listed_series(
     index: pd.DatetimeIndex,
     state: dict[str, Any],
     current_session: date,
-    current_counts: dict[str, dict[str, int]],
+    current_counts: dict[str, dict[str, Any]],
     universe_key: str,
 ) -> pd.Series:
     values = pd.Series(float("nan"), index=index, dtype=float)
@@ -699,7 +700,7 @@ def _build_frames(
     prices: dict[str, pd.Series],
     observation_session: date,
     state: dict[str, Any],
-    counts: dict[str, dict[str, int]],
+    counts: dict[str, dict[str, Any]],
 ) -> tuple[dict[str, pd.DataFrame], dict[str, dict[str, Any]]]:
     if prices:
         all_index = pd.DatetimeIndex([])
@@ -819,7 +820,7 @@ def collect_exchange_breadth(
     if observed.empty:
         raise CollectionRefused("normalized XNYS roster is empty")
 
-    counts: dict[str, dict[str, int]] = {}
+    counts: dict[str, dict[str, Any]] = {}
     for universe_key in (UNIVERSE_OPERATING, UNIVERSE_ALL_ISSUES):
         rows = observed[observed["universe_key"] == universe_key]
         listed_n = int(len(rows))
@@ -827,20 +828,30 @@ def collect_exchange_breadth(
         counts[universe_key] = {
             "listed_n": listed_n,
             "resolved_identity_n": resolved_n,
+            **assess_universe_coverage(
+                universe_key,
+                listed_n=listed_n,
+                resolved_identity_n=resolved_n,
+                priced_n=None,
+                min_identity_coverage=min_identity_coverage,
+                min_price_coverage=min_price_coverage,
+            ),
         }
     if counts[UNIVERSE_OPERATING]["listed_n"] < int(min_operating_rows):
         raise CollectionRefused(
             "operating-company row floor not met: "
             f"{counts[UNIVERSE_OPERATING]['listed_n']} < {int(min_operating_rows)}"
         )
-    for universe_key, values in counts.items():
-        listed_n = values["listed_n"]
-        coverage = values["resolved_identity_n"] / listed_n if listed_n else 0.0
-        if coverage < float(min_identity_coverage):
-            raise CollectionRefused(
-                f"{universe_key} identity coverage {coverage:.3f} below "
-                f"{float(min_identity_coverage):.3f}"
-            )
+    operating_counts = counts[UNIVERSE_OPERATING]
+    if not operating_counts["meets_identity_floor"]:
+        listed_n = int(operating_counts["listed_n"])
+        coverage = (
+            int(operating_counts["resolved_identity_n"]) / listed_n if listed_n else 0.0
+        )
+        raise CollectionRefused(
+            f"{UNIVERSE_OPERATING} identity coverage {coverage:.3f} below "
+            f"{float(min_identity_coverage):.3f}"
+        )
 
     output = root / OUTPUT_DIR
     existing_state = _read_json(
@@ -900,13 +911,22 @@ def collect_exchange_breadth(
         priced_n = int(latest.get("priced_n", 0) or 0)
         price_coverage = priced_n / listed_n if listed_n else 0.0
         counts[universe_key]["priced_n"] = priced_n
-        counts[universe_key]["price_coverage_pct"] = round(price_coverage * 100.0, 4)
-        if price_coverage < float(min_price_coverage):
+        counts[universe_key].update(
+            assess_universe_coverage(
+                universe_key,
+                listed_n=listed_n,
+                resolved_identity_n=int(counts[universe_key]["resolved_identity_n"]),
+                priced_n=priced_n,
+                min_identity_coverage=min_identity_coverage,
+                min_price_coverage=min_price_coverage,
+            )
+        )
+        counts[universe_key]["seasoned_n"] = int(latest.get("seasoned_n", 0) or 0)
+        if counts[universe_key]["required"] and not counts[universe_key]["usable"]:
             raise CollectionRefused(
                 f"{universe_key} price coverage {price_coverage:.3f} below "
                 f"{float(min_price_coverage):.3f}"
             )
-        counts[universe_key]["seasoned_n"] = int(latest.get("seasoned_n", 0) or 0)
 
     unresolved_rows = observed[~observed["identity_resolved"].fillna(False)]
     unresolved_examples = sorted(set(unresolved_rows["ticker"].astype(str)))[:10]

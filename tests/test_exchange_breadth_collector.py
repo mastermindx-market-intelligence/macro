@@ -566,3 +566,96 @@ def test_split_preserves_case_exact_massive_ticker_identity() -> None:
     bundle = client.fetch_splits(date(2025, 1, 1), SESSION)
 
     assert bundle.rows[0]["ticker"] == "TpC"
+
+
+def test_partial_all_issues_comparator_does_not_block_primary_generation(
+    tmp_path: Path,
+) -> None:
+    _write_store(tmp_path, files=2)
+    _write_aliases(tmp_path)
+    pages = [
+        _ok(
+            [
+                _roster_row("AAA", ticker_type="CS"),
+                _roster_row("BBB", ticker_type="ADRC"),
+                _roster_row("PREF", ticker_type="PFD"),
+                _roster_row("FUND", ticker_type="FUND"),
+            ],
+            request_id="roster-partial-comparator",
+        ),
+        _ok([], request_id="splits-quiet"),
+    ]
+    client = MassiveReferenceClient(
+        api_key="secret-key",
+        base_url="https://api.example.test",
+        request_json=lambda _url, _params: pages.pop(0),
+    )
+
+    result = collect_exchange_breadth(
+        client=client,
+        data_root=tmp_path,
+        now=NOW_AFTER_CLOSE,
+        min_store_files=2,
+        min_roster_rows=4,
+        min_operating_rows=2,
+        min_identity_coverage=0.90,
+        min_price_coverage=0.90,
+        price_loader=_price_loader,
+    )
+
+    operating = result.receipt["universes"]["nyse_operating"]
+    comparator = result.receipt["universes"]["nyse_all_issues"]
+    assert operating["status"] == "accepted"
+    assert operating["required"] is True
+    assert operating["usable"] is True
+    assert operating["listed_n"] == 2
+    assert operating["resolved_identity_n"] == 2
+    assert operating["priced_n"] == 2
+
+    assert comparator["status"] == "partial"
+    assert comparator["required"] is False
+    assert comparator["usable"] is False
+    assert comparator["confirmation_eligible"] is False
+    assert comparator["listed_n"] == 4
+    assert comparator["resolved_identity_n"] == 2
+    assert comparator["priced_n"] == 2
+    assert comparator["coverage_reasons"] == [
+        "identity_coverage_below_floor",
+        "price_coverage_below_floor",
+    ]
+    latest = result.frames["nyse_all_issues"].loc[pd.Timestamp(SESSION)]
+    assert int(latest["listed_n"]) == 4
+    assert int(latest["priced_n"]) == 2
+
+
+def test_primary_identity_coverage_still_fails_closed(tmp_path: Path) -> None:
+    _write_store(tmp_path, files=2)
+    _write_aliases(tmp_path)
+    pages = [
+        _ok(
+            [
+                _roster_row("AAA", ticker_type="CS"),
+                _roster_row("MISSING", ticker_type="CS"),
+            ],
+            request_id="roster-primary-low-identity",
+        ),
+        _ok([], request_id="splits-quiet"),
+    ]
+    client = MassiveReferenceClient(
+        api_key="secret-key",
+        base_url="https://api.example.test",
+        request_json=lambda _url, _params: pages.pop(0),
+    )
+
+    with pytest.raises(CollectionRefused, match="nyse_operating identity coverage"):
+        collect_exchange_breadth(
+            client=client,
+            data_root=tmp_path,
+            now=NOW_AFTER_CLOSE,
+            min_store_files=2,
+            min_roster_rows=2,
+            min_operating_rows=2,
+            min_identity_coverage=0.90,
+            min_price_coverage=0.90,
+            price_loader=_price_loader,
+        )

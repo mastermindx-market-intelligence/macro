@@ -668,3 +668,312 @@ def test_grouped_daily_preserves_case_and_punctuation_exact_vendor_keys() -> Non
         "TpC": 16.98,
         "BRK.B": 500.0,
     }
+
+
+def test_backfill_publishes_primary_when_all_issues_comparator_is_partial(
+    tmp_path: Path,
+) -> None:
+    from collectors.exchange_breadth import PageBundle
+    from scripts.backfill_exchange_breadth import ExchangeBreadthSessionProcessor
+
+    session = date(2026, 1, 5)
+    reference = tmp_path / "reference"
+    reference.mkdir(parents=True)
+    pd.DataFrame(
+        [
+            {
+                "vendor": "massive",
+                "vendor_symbol": "AAA",
+                "security_id": "SEC:AAA",
+                "valid_from": None,
+                "valid_to": None,
+            },
+            {
+                "vendor": "massive",
+                "vendor_symbol": "BBB",
+                "security_id": "SEC:BBB",
+                "valid_from": None,
+                "valid_to": None,
+            },
+        ]
+    ).to_parquet(reference / "vendor_aliases.parquet", index=False)
+
+    def roster_row(ticker: str, ticker_type: str) -> dict:
+        return {
+            "ticker": ticker,
+            "name": f"{ticker} Corp",
+            "market": "stocks",
+            "locale": "us",
+            "primary_exchange": "XNYS",
+            "type": ticker_type,
+            "active": True,
+            "currency_name": "usd",
+            "share_class_figi": None,
+            "composite_figi": None,
+        }
+
+    rows = (
+        roster_row("AAA", "CS"),
+        roster_row("BBB", "ADRC"),
+        roster_row("PREF", "PFD"),
+        roster_row("FUND", "FUND"),
+    )
+
+    class ReferenceClient:
+        def fetch_roster(self, requested: date, *, min_rows: int) -> PageBundle:
+            assert requested == session
+            assert min_rows == 4
+            return PageBundle(
+                rows=rows,
+                receipt={
+                    "requested_session": requested.isoformat(),
+                    "row_count": 4,
+                    "request_ids": ["roster-partial-comparator"],
+                },
+            )
+
+        def fetch_splits(self, start: date, end: date) -> PageBundle:
+            assert start == session
+            assert end == session
+            return PageBundle(
+                rows=(),
+                receipt={
+                    "execution_date_gte": start.isoformat(),
+                    "execution_date_lte": end.isoformat(),
+                    "row_count": 0,
+                    "request_ids": ["splits-quiet"],
+                },
+            )
+
+    prices = {
+        "AAA": pd.DataFrame(
+            {"close": [100.0]},
+            index=pd.DatetimeIndex([session], name="date"),
+        ),
+        "BBB": pd.DataFrame(
+            {"close": [50.0]},
+            index=pd.DatetimeIndex([session], name="date"),
+        ),
+    }
+    processor = ExchangeBreadthSessionProcessor(
+        target_sessions=[session],
+        reference_client=ReferenceClient(),
+        grouped_client=None,
+        data_root=tmp_path,
+        r2_first_session=session,
+        r2_last_session=session,
+        price_loader=lambda ticker: prices.get(ticker, pd.DataFrame()),
+        min_roster_rows=4,
+        min_operating_rows=2,
+        min_identity_coverage=0.90,
+        min_price_coverage=0.90,
+    )
+    checkpoint = tmp_path / "exchange_breadth" / "_backfill_state.json"
+
+    report = run_backfill(
+        [session],
+        processor=processor,
+        state_path=checkpoint,
+        resume=True,
+    )
+
+    assert report.processed_sessions == (session,)
+    receipt = json.loads((tmp_path / "exchange_breadth" / "_receipt.json").read_text())
+    operating = receipt["universes"][UNIVERSE_OPERATING]
+    comparator = receipt["universes"][UNIVERSE_ALL_ISSUES]
+    assert operating["status"] == "accepted"
+    assert operating["usable"] is True
+    assert comparator["status"] == "partial"
+    assert comparator["usable"] is False
+    assert comparator["confirmation_eligible"] is False
+    assert comparator["coverage_reasons"] == [
+        "identity_coverage_below_floor",
+        "price_coverage_below_floor",
+    ]
+
+
+def test_grouped_daily_coverage_gate_uses_required_primary_subset() -> None:
+    client = GroupedDailyPriceClient(
+        api_key="k",
+        base_url="https://api.example.test",
+        request_json=lambda _url, _params: {
+            "status": "OK",
+            "queryCount": 2,
+            "resultsCount": 2,
+            "results": [
+                {"T": "AAA", "c": 100.0},
+                {"T": "BBB", "c": 50.0},
+            ],
+        },
+    )
+
+    evidence = client.fetch(
+        END,
+        {"AAA", "BBB", "PREF", "FUND"},
+        required={"AAA", "BBB"},
+        min_coverage=1.0,
+    )
+
+    assert evidence.closes == {"AAA": 100.0, "BBB": 50.0}
+    assert evidence.receipt["coverage_pct"] == 50.0
+    assert evidence.receipt["required_wanted_n"] == 2
+    assert evidence.receipt["required_matched_n"] == 2
+    assert evidence.receipt["required_coverage_pct"] == 100.0
+
+
+def test_grouped_daily_refuses_when_required_primary_subset_is_incomplete() -> None:
+    client = GroupedDailyPriceClient(
+        api_key="k",
+        base_url="https://api.example.test",
+        request_json=lambda _url, _params: {
+            "status": "OK",
+            "queryCount": 1,
+            "resultsCount": 1,
+            "results": [{"T": "AAA", "c": 100.0}],
+        },
+    )
+
+    with pytest.raises(BackfillRefused, match="required price coverage 0.500 below 1.000"):
+        client.fetch(
+            END,
+            {"AAA", "BBB", "PREF", "FUND"},
+            required={"AAA", "BBB"},
+            min_coverage=1.0,
+        )
+
+
+def test_grouped_backfill_accepts_primary_with_partial_comparator_prices(
+    tmp_path: Path,
+) -> None:
+    from collectors.exchange_breadth import PageBundle
+    from scripts.backfill_exchange_breadth import ExchangeBreadthSessionProcessor
+
+    session = date(2026, 1, 5)
+    reference = tmp_path / "reference"
+    reference.mkdir(parents=True)
+    pd.DataFrame(
+        [
+            {
+                "vendor": "massive",
+                "vendor_symbol": ticker,
+                "security_id": f"SEC:{ticker}",
+                "valid_from": None,
+                "valid_to": None,
+            }
+            for ticker in ("AAA", "BBB")
+        ]
+    ).to_parquet(reference / "vendor_aliases.parquet", index=False)
+
+    rows = (
+        {
+            "ticker": "AAA",
+            "name": "AAA Corp",
+            "market": "stocks",
+            "locale": "us",
+            "primary_exchange": "XNYS",
+            "type": "CS",
+            "active": True,
+            "currency_name": "usd",
+            "share_class_figi": None,
+            "composite_figi": None,
+        },
+        {
+            "ticker": "BBB",
+            "name": "BBB ADR",
+            "market": "stocks",
+            "locale": "us",
+            "primary_exchange": "XNYS",
+            "type": "ADRC",
+            "active": True,
+            "currency_name": "usd",
+            "share_class_figi": None,
+            "composite_figi": None,
+        },
+        {
+            "ticker": "PREF",
+            "name": "Preferred Issue",
+            "market": "stocks",
+            "locale": "us",
+            "primary_exchange": "XNYS",
+            "type": "PFD",
+            "active": True,
+            "currency_name": "usd",
+            "share_class_figi": "BBG00PREF000",
+            "composite_figi": None,
+        },
+        {
+            "ticker": "FUND",
+            "name": "Closed End Fund",
+            "market": "stocks",
+            "locale": "us",
+            "primary_exchange": "XNYS",
+            "type": "FUND",
+            "active": True,
+            "currency_name": "usd",
+            "share_class_figi": "BBG00FUND000",
+            "composite_figi": None,
+        },
+    )
+
+    class ReferenceClient:
+        def fetch_roster(self, requested: date, *, min_rows: int) -> PageBundle:
+            assert requested == session
+            assert min_rows == 4
+            return PageBundle(
+                rows=rows,
+                receipt={
+                    "requested_session": requested.isoformat(),
+                    "row_count": 4,
+                    "request_ids": ["roster-grouped-partial-comparator"],
+                },
+            )
+
+        def fetch_splits(self, start: date, end: date) -> PageBundle:
+            assert start == session
+            assert end == session
+            return PageBundle(rows=(), receipt={"row_count": 0})
+
+    grouped = GroupedDailyPriceClient(
+        api_key="k",
+        base_url="https://api.example.test",
+        request_json=lambda _url, _params: {
+            "status": "OK",
+            "queryCount": 2,
+            "resultsCount": 2,
+            "results": [
+                {"T": "AAA", "c": 100.0},
+                {"T": "BBB", "c": 50.0},
+            ],
+        },
+    )
+    processor = ExchangeBreadthSessionProcessor(
+        target_sessions=[session],
+        reference_client=ReferenceClient(),
+        grouped_client=grouped,
+        data_root=tmp_path,
+        r2_first_session=date(2026, 1, 6),
+        r2_last_session=date(2026, 1, 6),
+        price_loader=lambda _ticker: pd.DataFrame(),
+        min_roster_rows=4,
+        min_operating_rows=2,
+        min_identity_coverage=1.0,
+        min_price_coverage=1.0,
+    )
+
+    report = run_backfill(
+        [session],
+        processor=processor,
+        state_path=tmp_path / "exchange_breadth" / "_backfill_state.json",
+        resume=True,
+    )
+
+    assert report.processed_sessions == (session,)
+    receipt = json.loads((tmp_path / "exchange_breadth" / "_receipt.json").read_text())
+    assert receipt["backfill"]["price_source"] == "massive_grouped"
+    grouped_receipt = receipt["backfill"]["price_history"]["grouped_receipts"][0]
+    assert grouped_receipt["coverage_pct"] == 50.0
+    assert grouped_receipt["required_coverage_pct"] == 100.0
+    assert receipt["universes"][UNIVERSE_OPERATING]["status"] == "accepted"
+    comparator = receipt["universes"][UNIVERSE_ALL_ISSUES]
+    assert comparator["status"] == "partial"
+    assert comparator["coverage_reasons"] == ["price_coverage_below_floor"]
