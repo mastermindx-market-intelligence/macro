@@ -1,0 +1,5 @@
+schema: mastermind.page_evidence_receipt.v1
+changed_paths:
+  - templates/china-economy.css
+  - templates/china-macro-evidence.css
+manifest: mockups/evidence/china-economy-r4/manifest.json
