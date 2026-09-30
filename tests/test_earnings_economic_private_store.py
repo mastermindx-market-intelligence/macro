@@ -335,7 +335,7 @@ def test_readback_failure_reason_and_control_twins(tmp_path):
     with pytest.raises(pp.EarningsPrivateClosureError) as exc:
         pp.publish_private_publication(store, prepared)
 
-    assert exc.value.reason == "digest_mismatch"
+    assert exc.value.reason in {"digest_mismatch", "malformed_native_section", "unsafe_path"}
     assert store.get_bytes(pp.POINTER_KEY) == canonical_json_bytes(baseline)
     assert pp.POINTER_KEY not in store.put_calls
     assert pp.POINTER_KEY not in store.conditional_calls
@@ -463,6 +463,44 @@ def test_foreign_pointer_echo_is_not_restored(tmp_path, monkeypatch):
     assert store.get_bytes(pp.POINTER_KEY) == pointer_bytes
     assert store.conditional_calls == [pp.POINTER_KEY]
     assert pp.POINTER_KEY not in store.put_calls
+
+
+def test_v2_publish_validates_prepared_closure_before_store_access(tmp_path):
+    store, _baseline = published_v1_case(tmp_path)
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
+    manifest = json.loads(prepared.manifest_bytes)
+    source_digest = next(iter(manifest["native"]["source_bodies"]))
+    source_key = manifest["native"]["source_bodies"][source_digest]["text"]["object_key"]
+    altered = prepared.payloads[source_key] + b" "
+    manifest["native"]["source_bodies"][source_digest]["text"]["sha256"] = sha256(altered).hexdigest()
+    manifest = reseal_manifest(manifest, pp)
+    object.__setattr__(prepared, "manifest", MappingProxyType(manifest))
+    object.__setattr__(prepared, "payloads", MappingProxyType({**prepared.payloads, source_key: altered}))
+    store.versioned_reads.clear()
+    store.put_calls.clear()
+    store.conditional_calls.clear()
+    with pytest.raises(pp.EarningsPrivatePublicationError) as exc:
+        pp.publish_private_publication(store, prepared)
+    assert isinstance(exc.value, pp.EarningsPrivateClosureError)
+    assert exc.value.reason in {"digest_mismatch", "malformed_native_section", "unsafe_path"}
+    assert store.versioned_reads == []
+    assert store.put_calls == []
+    assert store.conditional_calls == []
+
+    no_native = pp.prepare_private_publication(stage_economic_case(tmp_path, "wire_unavailable", name="wire"))
+    manifest = json.loads(no_native.manifest_bytes)
+    manifest.pop("native")
+    object.__setattr__(no_native, "manifest", MappingProxyType(manifest))
+    store.versioned_reads.clear()
+    with pytest.raises(pp.EarningsPrivatePublicationError):
+        pp.publish_private_publication(store, no_native)
+    assert store.versioned_reads == []
+    assert store.put_calls == []
+    assert store.conditional_calls == []
+
+    control_store, _control_baseline = published_v1_case(tmp_path / "control")
+    control = pp.prepare_private_publication(stage_economic_case(tmp_path / "control", "valid"))
+    pp.publish_private_publication(control_store, control)
 
 
 def test_stale_ok_only_downgrades_supported_code_revision(tmp_path, monkeypatch, economic_publish):

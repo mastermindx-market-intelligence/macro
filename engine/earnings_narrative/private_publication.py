@@ -1882,10 +1882,17 @@ def publish_private_publication(
                 raise EarningsPrivatePublishConflict("conditional_write_unavailable")
             try:
                 store.validate_strict_conditional_write_capability()
-            except EarningsPrivatePublicationError:
-                raise
             except Exception as exc:
                 raise EarningsPrivatePublishConflict("conditional_write_unavailable") from exc
+            try:
+                validate_private_manifest(dict(prepared.manifest))
+                validated_payloads = _validated_prepared_payloads(prepared)
+                validate_native_closure(
+                    dict(prepared.manifest),
+                    {artifact.object_key: body for artifact, body in validated_payloads},
+                )
+            except EarningsPrivatePublicationError:
+                raise
         verified_payloads = _validated_prepared_payloads(prepared)
         if prepared_schema == MANIFEST_SCHEMA_V2 and prepared.manifest["native"]["selections"]:
             try:
