@@ -341,18 +341,20 @@ def _validate_pair(
 def compare_eps(
     current: Any, prior: Any, *, precision: int | None, uncertainty: Any = None
 ) -> dict[str, Any]:
-    current_value = _decimal(current)
-    prior_value = _decimal(prior)
-    if precision is not None and (isinstance(precision, bool) or not isinstance(precision, int) or precision < 0):
-        raise EconomicInterpretationError("precision must be a nonnegative integer or None")
+    current_value = _parse_decimal(current, "current")
+    prior_value = _parse_decimal(prior, "prior")
+    precision_value = _parse_precision(precision)
+    if uncertainty is None:
+        uncertainty_value = None
+    else:
+        uncertainty_value = _parse_decimal(uncertainty, "uncertainty")
+        if uncertainty_value < 0:
+            raise EconomicInterpretationError("uncertainty must be a finite nonnegative half-width")
     if prior_value <= 0:
         return {
             "state": "not_comparable", "value": None,
             "reason": "nonpositive_prior", "formula": "(current / prior - 1) * 100",
         }
-    uncertainty_value = _decimal(uncertainty) if uncertainty is not None else None
-    if uncertainty_value is not None and uncertainty_value < 0:
-        raise EconomicInterpretationError("uncertainty must be a finite nonnegative half-width")
     if uncertainty_value is not None and prior_value - uncertainty_value <= 0:
         return {
             "state": "not_comparable", "value": None,
@@ -361,9 +363,9 @@ def compare_eps(
         }
     try:
         rate = (current_value / prior_value - Decimal("1")) * Decimal("100")
-    except (ArithmeticError, InvalidOperation) as exc:
+        rounded = rate if precision_value is None else rate.quantize(Decimal(1).scaleb(-precision_value))
+    except ArithmeticError as exc:
         raise EconomicInterpretationError("EPS growth arithmetic is not defined") from exc
-    rounded = rate if precision is None else rate.quantize(Decimal(1).scaleb(-precision))
     return {
         "state": "comparable", "value": _json_number(rounded), "reason": None,
         "formula": "(current / prior - 1) * 100",

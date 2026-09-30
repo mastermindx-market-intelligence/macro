@@ -299,6 +299,33 @@ def test_compare_eps_uncertainty_is_provided():
             compare_eps(Decimal('1'), Decimal('.01'), precision=None, uncertainty=uncertainty)
 
 
+@pytest.mark.parametrize('prior', ['0', '-1'])
+@pytest.mark.parametrize('bad_uncertainty', [True, 'x', '-1', [1]])
+def test_compare_eps_parses_uncertainty_before_outcomes(bad_uncertainty, prior):
+    with pytest.raises(EconomicInterpretationError):
+        compare_eps('1.64', prior, precision=2, uncertainty=bad_uncertainty)
+
+
+@pytest.mark.parametrize('prior', ['0', '-1'])
+@pytest.mark.parametrize('bad_precision', [-1, True, 2.0, '2'])
+def test_compare_eps_parses_precision_before_outcomes(bad_precision, prior):
+    with pytest.raises(EconomicInterpretationError):
+        compare_eps('1.64', prior, precision=bad_precision)
+
+
+@pytest.mark.parametrize('prior', ['0', '-1'])
+@pytest.mark.parametrize('bad_current', [True, None, float('nan')])
+def test_compare_eps_parses_current_before_outcomes(bad_current, prior):
+    with pytest.raises(EconomicInterpretationError):
+        compare_eps(bad_current, prior, precision=2)
+
+
+@pytest.mark.parametrize('current,prior', [('1.64', '1.52'), ('1e400', '1')])
+def test_compare_eps_arithmetic_stays_guarded(current, prior):
+    with pytest.raises(EconomicInterpretationError):
+        compare_eps(current, prior, precision=40 if current == '1.64' else 2)
+
+
 def test_trusted_boundary_rejects_display_and_currentness_edits():
     payload = build_case_interpretation(
         'identical_inputs',
