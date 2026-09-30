@@ -13,8 +13,8 @@ One integrated vertical shipped as one PR per plan task, each branched from fres
 | 1 native PG profile + strict scoped facts | `cdv1_t1_pg_facts` (rounds r1 m1, r2–r3 mini2, r4 mini2, r5 mini2/MiniMax; envelope rounds 2026-09-25 → 09-29) | `claude/cdv1-t1-pg-profile-facts` | **MERGED** #7905 on 2026-09-30 01:42:52Z: squash `cdce3023` of the exact head `1c3e2215`, released by Sol 5902318060 after the R11 ACCEPT |
 | 2 source selection + native preparation | `cdv1_t2_source_currentness_r3` (mb), then r4 (mb); rounds 5–6 seat commits | `claude/cdv1-t2-source-currentness` | **MERGED** #8234 on 2026-09-30 16:22:30Z: squash `b1b2ea3b` of the exact head `5f33a5a2`, after the round-6 review's ACCEPT |
 | 3 deterministic interpretation | `cdv1_t3_interpretation_r4`, then r5 (mini2); round 6 seat commits | `claude/cdv1-t3-economic-interpretation` | **MERGED** #8232 on 2026-09-30 12:20:22Z: squash `ddf03116` of the exact head `47441f3b`, after the fourth review's ACCEPT |
-| 4 private publication v2 + readers | `cdv1_t4_private_publication_r2a` (mini2) | `claude/cdv1-t4-private-publication-v2` | round A dispatched 2026-09-30 17:32Z: `packets/CDV1_T4_R2A_PACKET_2026-09-30.md`. Round B follows on the same PR |
-| 5 normal refresh integration (flag off) | `cdv1_t5_refresh_integration` | `claude/cdv1-t5-refresh-integration` | packet ready (after T4) |
+| 4 private publication v2 + readers | `cdv1_t4_private_publication_r2a`, then `_r2b` (mini2) | `claude/cdv1-t4-private-publication-v2` | PR #8245 (DRAFT). Round A (`packets/CDV1_T4_R2A_PACKET_2026-09-30.md`) seat-verified at `12da187d`; round B (`packets/CDV1_T4_R2B_PACKET_2026-09-30.md`) dispatched 2026-09-30 19:29Z on the same PR |
+| 5 normal refresh integration (flag off) | `cdv1_t5_refresh_integration` | `claude/cdv1-t5-refresh-integration` | packet written 2026-09-30 (rulings R5.1–R5.12); dispatched once T4 merges |
 | 6 API current selector + pinned evidence | `cdv1_t6_api_evidence` | `claude/cdv1-t6-api-evidence` | packet ready (after T4) + T7 contract binding + Q6 fold |
 | 7 shared dossier display | `cdv1_t7_design_spec` (r1–r3 mb/mini2) | `claude/cdv1-t7-design-spec` | RE-SCOPED to CONTENT + CONTRACT: spec MERGED #7904; UI build waits for the foundation host slot (#7870) |
 | 8 qualification + release | `cdv1_t8_census` + seat | `claude/cdv1-t8-release-census` | release-readiness census MERGED #7910; readers first, producer enable last |
@@ -100,8 +100,26 @@ Gates: G1 exercised by the seat as delegated owner; G2 (real source admission), 
   - Round B adds the v2 publish transaction, the readers, the rights seam, the CI job and the deploy restart wiring.
   - Until round B lands, the PR's CI-manifest and restart checks are expected to be red. The PR is not merged between rounds.
   - The seat checked the packet against `main`'s code with its own probes before dispatch. Round A was dispatched at 17:32Z on mini2, with a CPython 3.12 venv to match CI.
+- **T3 R6a → MERGED.**
+  - PR #8246 implemented rulings R6a.1–R6a.7 (`packets/CDV1_T3_R6A_PACKET_2026-09-30.md`).
+  - The independent Opus review accepted head `20b2facd` with no blocking finding (`reviews/OPUS_T3_R6A_PR_REVIEW_2026-09-30.md`). Its EPS oracle and clock sweeps found 0 mismatches.
+  - The seat squash-merged it at the exact head at 19:47:29Z as `26b0908e2bb7`, and verified it in `main`'s bytes (`reviews/SEAT_RULING_T3_R6A_2026-09-30.md`). That record also covers the lane-report corrections (m3 is killed; the floors are 77 and 39) and the erratum to R6.6.
+  - `CODE_REVISION` moved with it, so Task 4 reads stored interpretations in the stale-carry mode (R-B9) and Task 5 re-derives them (R5.5).
+  - The standing `ci-authority/codex/merge-queue-pilot` red was named, and was neither rerun nor worked around.
+- **T4 round A verified; round B running.**
+  - The seat verified round A at `12da187d`.
+  - The round-B packet (`packets/CDV1_T4_R2B_PACKET_2026-09-30.md`, rulings R-B1–R-B14) was dispatched at 19:29Z on mini2, on the same PR. It covers the v2 publish transaction, the readers, the rights seam, the CI job and the deploy restart wiring.
+  - Before dispatch, the packet gained the stale-carry reader mode (R-B9) and the round-A validators.
+- **T5 packet written.** Rulings R5.1–R5.12 cover:
+  - the refresh inside the private publisher, behind a default-off `--economic-refresh` flag;
+  - carry-forward as the rollback;
+  - a decision table for every collection outcome;
+  - no clock renewal on an unchanged rerun;
+  - an issuer-keyed public admission guard at both publication boundaries;
+  - a real-builder fixture driver.
+
+  It is dispatched once T4 merges. The workflow is not edited; Task 8 turns the flag on after the readers and the safe UI are deployed.
 - **Next:**
-  1. Seat verification of round A, then the round-B packet and its ruling record.
-  2. An independent read-only Opus review of the integrated T4 head, then concluded CI and a merge with `--match-head-commit`.
-  3. The T3 R6a follow-up.
-  4. Then T5 ∥ T6. The T7 UI and the T8 release still wait for the foundation host edge (#7870).
+  1. Seat verification of round B.
+  2. An independent read-only Opus review of the integrated T4 head, then concluded CI and a merge with `--match-head-commit`, and the Task 4 ruling record.
+  3. Then T5 ∥ T6. The T7 UI and the T8 release still wait for the foundation host edge (#7870).

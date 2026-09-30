@@ -1,7 +1,8 @@
-from decimal import Decimal
+from decimal import Context, Decimal, ROUND_CEILING, ROUND_DOWN, localcontext
 from fractions import Fraction
 import ast
 import copy
+from datetime import date, datetime
 import hashlib
 import json
 import math
@@ -381,6 +382,29 @@ def test_each_lookup_tests_the_type_before_it_reads_the_value(lookup, admitted, 
     }[kind]
     with pytest.raises(EconomicInterpretationError, match='is absent from the closed'):
         lookup(value)
+
+
+@pytest.mark.parametrize('kind', ['list', 'raiser', 'liar', 'str_subclass'])
+def test_owner_lookup_tests_the_metric_type_before_it_reads_the_value(kind):
+    metric = {
+        'list': ['pg_core_reconciliation_context'], 'raiser': _Raiser(),
+        'liar': _Liar('pg_core_reconciliation_context'),
+        'str_subclass': _Str('pg_core_reconciliation_context'),
+    }[kind]
+    assert owner_lookup('demand', metric) == owner_lookup('demand')
+    assert owner_lookup('demand', metric) != 'reconciliation'
+    assert owner_lookup('demand', 'pg_core_reconciliation_context') == 'reconciliation'
+
+
+@pytest.mark.parametrize('kind', ['list', 'raiser', 'liar', 'str_subclass'])
+def test_format_value_and_unit_tests_the_value_type_before_it_reads_the_value(kind):
+    value = {
+        'list': [Decimal('1')], 'raiser': _Raiser(), 'liar': _Liar('1'),
+        'str_subclass': _Str('1'),
+    }[kind]
+    with pytest.raises(EconomicInterpretationError, match='numeric input is not a decimal-compatible value'):
+        format_value_and_unit(value, 'percent')
+    assert format_value_and_unit(Decimal('1'), 'percent') is not None
 
 
 def test_compare_eps_uncertainty_is_provided():
@@ -1382,7 +1406,103 @@ def test_every_other_argument_is_refused_when_it_is_not_exact():
         ))
     failures = [f'{label}: {outcome}' for label, call in calls for outcome in [_outcome(call)[0]] if outcome != 'typed']
     assert not failures, failures[:20]
-    assert len(calls) >= 50
+    assert len(calls) >= 77
+
+
+def _exact_eps_value(current, prior, precision):
+    exact = (Fraction(Decimal(current)) / Fraction(Decimal(prior)) - 1) * 100
+    return format(round(exact, precision), f'.{precision}f')
+
+
+def test_compare_eps_is_independent_of_the_callers_decimal_context():
+    contexts = [
+        None,
+        Context(prec=5, rounding=ROUND_DOWN),
+        Context(prec=50, rounding=ROUND_CEILING),
+        Context(prec=9, Emax=999999, Emin=-999999, traps=[]),
+    ]
+    for context in contexts:
+        if context is None:
+            assert compare_eps('3.07', '2.93', precision=2)['value'] == '4.78'
+            assert compare_eps('1.64', '1.50', precision=2)['value'] == '9.33'
+            assert compare_eps('1', '0', precision=2)['reason'] == 'nonpositive_prior'
+            with pytest.raises(EconomicInterpretationError, match='EPS growth arithmetic is not defined'):
+                compare_eps('1E+999999', '1E-999999', precision=2)
+            continue
+        with localcontext(context):
+            assert compare_eps('3.07', '2.93', precision=2)['value'] == '4.78'
+            assert compare_eps('1.64', '1.50', precision=2)['value'] == '9.33'
+            assert compare_eps('1', '0', precision=2)['reason'] == 'nonpositive_prior'
+            with pytest.raises(EconomicInterpretationError, match='EPS growth arithmetic is not defined'):
+                compare_eps('1E+999999', '1E-999999', precision=2)
+
+
+def _fuzzed_eps_pairs(count):
+    generator = random.Random(0xC0FFEE)
+    pairs = []
+    for _ in range(count):
+        current_digits = ''.join(generator.choice('0123456789') for _ in range(generator.randint(1, 30))).lstrip('0') or '1'
+        prior_digits = ''.join(generator.choice('0123456789') for _ in range(generator.randint(1, 30))).lstrip('0') or '1'
+        current = Decimal(f"{current_digits}E{generator.randint(-10, 10)}")
+        prior = Decimal(f"{prior_digits}E{generator.randint(-10, 10)}")
+        if prior <= 0:
+            prior = abs(prior)
+        pairs.append((current, prior, generator.randint(0, 6)))
+    return pairs
+
+
+def test_compare_eps_matches_an_exact_oracle_on_a_fixed_fuzz():
+    pairs = _fuzzed_eps_pairs(2500)
+    mismatches = []
+    for current, prior, precision in pairs:
+        try:
+            actual = compare_eps(current, prior, precision=precision)['value']
+        except EconomicInterpretationError as exc:
+            if str(exc) != 'EPS growth arithmetic is not defined':
+                raise
+            continue
+        expected = _exact_eps_value(current, prior, precision)
+        if actual != expected:
+            mismatches.append((current, prior, precision, actual, expected))
+    assert not mismatches, f'{len(pairs)} fuzzed pairs; {len(mismatches)} differed from the oracle; first={mismatches[:3]}'
+
+
+def test_compare_eps_pins_the_known_default_context_double_rounding():
+    # This pair was verified against a copy of the old implementation beside the exact oracle.
+    current = '86599450252.21717677831864229'
+    prior = '7.86759076908354901062539863897E-8'
+    assert compare_eps(current, prior, precision=6)['value'] == '110071116805563916092.505877'
+    assert _exact_eps_value(current, prior, 6) == '110071116805563916092.505877'
+
+
+def test_compare_eps_keeps_guard_digits_below_the_result_precision():
+    current = '1.0844295548122237704991540414179152200291362974111E+57'
+    prior = '9.4424836711881716913965898127193877E+35'
+    assert compare_eps(current, prior, precision=3)['value'] == '114845796145895505333900.479'
+    assert compare_eps('86599450252.21717677831864229', '7.86759076908354901062539863897E-8', precision=None)['value'] == '110071116805563916092.5058775'
+
+
+def test_compare_eps_still_refuses_a_result_with_too_many_digits():
+    with pytest.raises(EconomicInterpretationError, match='EPS growth arithmetic is not defined'):
+        compare_eps('1E+40', '1', precision=2)
+
+
+def test_clock_helpers_format_short_years_with_zero_padding():
+    assert economic_interpretation._format_instant(datetime(999, 1, 2, 3, 4, 5)) == '0999-01-02T03:04:05Z'
+    assert economic_interpretation._format_date(date(999, 1, 2)) == '0999-01-02'
+
+
+def test_parsers_accept_short_years_but_keep_the_canonical_forms():
+    instant = datetime(999, 1, 2, 3, 4, 5)
+    day = date(999, 1, 2)
+    assert economic_interpretation._parse_instant('0999-01-02T03:04:05Z', 'x') == instant
+    assert economic_interpretation._parse_date('0999-01-02', 'x') == day
+    for value in (
+        '2026-9-30T00:00:00Z', '2026-09-30T00:00:00+00:00', '2026-02-30T00:00:00Z',
+        '0000-01-01T00:00:00Z',
+    ):
+        with pytest.raises(EconomicInterpretationError):
+            economic_interpretation._parse_instant(value, 'x')
 
 
 def test_compare_eps_refuses_every_unreadable_argument():
@@ -1411,7 +1531,7 @@ def test_compare_eps_refuses_every_unreadable_argument():
     ]
     failures = [f'{label}: {outcome}' for label, call in calls for outcome in [_outcome(call)[0]] if outcome != 'typed']
     assert not failures, failures[:20]
-    assert len(calls) >= 35
+    assert len(calls) >= 39
 
 
 _UNREADABLE_ERRORS = [
@@ -1792,6 +1912,51 @@ def test_validate_accepts_a_workspace_a_build_accepts_whatever_its_keys(key):
     assert built['quality']['supported'] is True and _is_exact_json(built)
     for workspaces in (workspace, {'generation_b': workspace}):
         validate_economic_interpretation(built, workspaces=workspaces, source_texts=texts, fiscal_scope=FISCAL_SCOPE)
+
+
+@pytest.mark.parametrize('kind', ['none', 'int', 'list', 'tuple', 'subclass', 'liar', 'opaque', 'raiser'])
+def test_unavailable_payload_hides_both_revisions_when_both_are_inexact(kind):
+    hostile = {
+        'none': None, 'int': 5, 'list': ['x'], 'tuple': ('x',), 'subclass': _Str('wrong'),
+        'liar': _Liar('x'), 'opaque': _opaque(str, 'wrong'), 'raiser': _Raiser(),
+    }[kind]
+    workspace, texts, _payload = _baseline(ABSENT)
+    payload = build_economic_interpretation(
+        workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE,
+        selection={'facts': None, 'currentness': None},
+        semantic_revision=hostile, code_revision=hostile,
+    )
+    assert payload['quality'] == {
+        'supported': False, 'state': 'unavailable', 'reason': 'unsupported interpretation version',
+    }
+    assert payload['build']['semantic_revision'] is None
+    assert payload['build']['code_revision'] is None
+    assert _is_exact_json(payload)
+
+
+def test_validate_ignores_nested_key_order_but_requires_exact_top_level_order():
+    workspace, texts, payload = _baseline(ABSENT)
+    nested = {key: value for key, value in reversed(payload['quality'].items())}
+    reordered = {**payload, 'quality': nested}
+    validate_economic_interpretation(
+        reordered, workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE
+    )
+    reversed_payload = {key: payload[key] for key in reversed(payload)}
+    with pytest.raises(EconomicInterpretationError, match='interpretation top-level keys are not exact'):
+        validate_economic_interpretation(
+            reversed_payload, workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE
+        )
+
+
+def test_validate_refuses_empty_workspaces_with_the_exact_message():
+    workspace, texts, payload = _baseline(ABSENT)
+    with pytest.raises(
+        EconomicInterpretationError,
+        match=r'^workspaces must map generation ids to workspaces$',
+    ):
+        validate_economic_interpretation(
+            payload, workspaces={}, source_texts=texts, fiscal_scope=FISCAL_SCOPE
+        )
 
 
 @pytest.mark.parametrize('field', ['semantic_revision', 'code_revision'])
