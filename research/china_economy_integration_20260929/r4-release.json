@@ -1,0 +1,143 @@
+{
+  "schema": "mastermind.china_economy_release_receipt.r4",
+  "capability_state": "BUILT_NOT_PROVEN",
+  "mission_complete": false,
+  "operation": "china-macro-evidence-upgrade-20260929-sol-001",
+  "procedure": {
+    "mastermind_pin": "6b91339a3bd7553292068c72d11b4227d30e371b",
+    "index_blob": "94d1af402598894372858793a5b1931019c5fa77",
+    "skillpack_version": "1.0.1",
+    "bootstrap_major": 1
+  },
+  "source": {
+    "r3_remote_head": "9c842d195b8360ff80aad3d80a63d32b163e0406",
+    "r4_source_commit": "f71823b4ff73060caab44a9edba8fd0746cc8d3a",
+    "r4_evidence_commit": "bb318044e950216ac8ff6f076fa3c4e999ec9007",
+    "branch": "worktree-china-macro-evidence-20260929-sol-001",
+    "pr": 8196
+  },
+  "access_contract": {
+    "public_shell": "/china.html",
+    "public_presentation_assets": [
+      "/china-economy.css",
+      "/china-economy.js",
+      "/china-macro-evidence.css",
+      "/china-macro-evidence.js"
+    ],
+    "protected_payloads": [
+      "/china_economy_detail.json",
+      "/china_macro_evidence.json"
+    ],
+    "public_shell_contains_deep_library": false,
+    "public_interaction_projection_contains_metrics": false,
+    "public_glance_context": "state/direction/pace plus six fixed growth domains",
+    "deep_payload_metric_count": 128
+  },
+  "generated_readback": {
+    "china_html": {
+      "bytes": 817985,
+      "sha256": "0703b085aeb5897fcac27e46f6f314d0f3f5a834230b3686fcc531168f059569"
+    },
+    "china_stocks_html": {
+      "bytes": 1117111,
+      "sha256": "b4961d0705204aafe103487a2d28e7bdcb5efca2bd92ae4ea379df29c4e92d31"
+    },
+    "china_economy_detail_json": {
+      "bytes": 545481,
+      "sha256": "c06415d0c7305e82e5652f6c696c5f22e4a2112339c3b839d8d7aef93b68f07e",
+      "status": "ok",
+      "metrics": 128
+    },
+    "china_macro_evidence_json": {
+      "bytes": 1028448,
+      "sha256": "f6c80fc5926ea463fd5e42279c3b8c4046e6522fb8f4d1cde7b0a35120b088d4",
+      "catalog": 128,
+      "valid_current": 84
+    }
+  },
+  "tests": {
+    "china_and_evidence_focused": {
+      "passed": 379,
+      "failed": 0,
+      "seconds": 12.36
+    },
+    "access_receipt_research_screener": {
+      "passed": 48,
+      "failed": 0,
+      "seconds": 58.21
+    },
+    "p0b_receipt_closure_units": {
+      "passed": 21,
+      "failed": 0,
+      "seconds": 2.04
+    },
+    "design_ratchet": {
+      "blocking": 0,
+      "preexisting_nonblocking": 25434
+    },
+    "runtime_style_injection": "PASS",
+    "visual_evidence_guard": "PASS",
+    "p0b_receipt_closure": "PASS",
+    "p0b_negative_selftest": "PASS",
+    "template_site_sync": {
+      "pairs": 109,
+      "status": "PASS"
+    }
+  },
+  "visual_evidence": {
+    "receipt": "mockups/evidence/china-economy-r4/EVIDENCE.yml",
+    "manifest": "mockups/evidence/china-economy-r4/manifest.json",
+    "generated_at": "2026-09-30T08:54:43Z",
+    "source_sha": "f71823b4ff73060caab44a9edba8fd0746cc8d3a",
+    "normal_cells": 8,
+    "forced_interaction_cells": 16,
+    "themes": [
+      "dark",
+      "light"
+    ],
+    "locales": [
+      "en",
+      "zh"
+    ],
+    "viewports": {
+      "desktop": [
+        1440,
+        900
+      ],
+      "mobile": [
+        390,
+        844
+      ]
+    },
+    "console_error_count": 0,
+    "failed_responses": [],
+    "horizontal_overflow": false,
+    "screenshot_completion": 1.0,
+    "access": [
+      "anonymous"
+    ],
+    "authenticated_gaps": [
+      "free",
+      "essential",
+      "pro"
+    ]
+  },
+  "latest_base_compatibility": {
+    "observed_main": "a7e00a9af0f437a4907a32b4591d965e438ca42a",
+    "merge_base": "650e2ebbe08046bedf10e7eec39def3f62073103",
+    "overlap_paths": [
+      ".github/ci/legacy-jobs.yml"
+    ],
+    "synthetic_merge_tree": "2735a43a9bdfe723b85bfe1a9fe23183232d0822",
+    "merge_conflict_markers": 0,
+    "merged_ci_retains_china_registration": true,
+    "note": "Compatibility read only; not a GitHub merge-ref or acceptance receipt."
+  },
+  "unaccepted": [
+    "authenticated free/essential/pro browser and gateway proof",
+    "production collector enrollment/backfill",
+    "protected merge and non-Vercel deployment",
+    "installed production commit identity and live transport receipts",
+    "publishing-rights review and wider missing source histories"
+  ]
+}
