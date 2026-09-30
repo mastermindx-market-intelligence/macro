@@ -1475,6 +1475,12 @@ def test_compare_eps_pins_the_known_default_context_double_rounding():
     assert _exact_eps_value(current, prior, 6) == '110071116805563916092.505877'
 
 
+def test_compare_eps_keeps_guard_digits_below_the_result_precision():
+    current = '1.0844295548122237704991540414179152200291362974111E+57'
+    prior = '9.4424836711881716913965898127193877E+35'
+    assert compare_eps(current, prior, precision=3)['value'] == '114845796145895505333900.479'
+
+
 def test_compare_eps_still_refuses_a_result_with_too_many_digits():
     with pytest.raises(EconomicInterpretationError, match='EPS growth arithmetic is not defined'):
         compare_eps('1E+40', '1', precision=2)
