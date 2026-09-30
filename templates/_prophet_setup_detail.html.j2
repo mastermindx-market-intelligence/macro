@@ -1,5 +1,6 @@
 {# Display-only detail for one already-authorized source row. No cross-row lookup,
    gate, source request, strategy assignment, target calculation or plan creation. #}
+{% from '_us_prophet_plan_cards.html.j2' import life_label_en, life_label_zh %}
 {% macro t(en, zh) -%}<span class="l-en">{{ en|e }}</span><span class="l-zh">{{ zh|e }}</span>{%- endmacro %}
 {% macro value(v, money=false, boolean=false) -%}
 {%- if boolean and v is sameas true -%}{{ t('Yes','是') }}
@@ -19,7 +20,7 @@
 {%- if v is string and v|trim -%}{{ t(names[v][0],names[v][1]) if v in names else t('Unmapped status','状态未映射') }}
 {%- else -%}{{ value(none) }}{%- endif -%}
 {%- endmacro %}
-{% macro body(row, kind, as_of=none) -%}
+{% macro body(row, kind, as_of=none, plan_rel={'state': 'none', 'plans': []}) -%}
 {% set es = row.get('entry_signal') if kind == 'board' and row.get('entry_signal') is mapping else {} %}
 {% set sig = row.get('signal') if kind == 'board' and row.get('signal') is mapping else {} %}
 {% set hold = row.get('hold') if kind == 'board' and row.get('hold') is mapping else {} %}
@@ -32,6 +33,7 @@
         <h3>{{ t('Entry conditions','入场条件') if kind == 'board' else t('Research candidate','研究候选') }}</h3>
         {% if kind == 'board' %}
         <p class="pvs-read" data-entry-status="{{ (es.get('status') or '')|e }}"><span class="l-en">{{ es.get('headline')|e if es.get('headline') is string and es.get('headline')|trim else 'Entry read not supplied' }}</span><span class="l-zh">{% if es.get('headline_zh') is string and es.get('headline_zh')|trim %}{{ es.get('headline_zh')|e }}{% elif es.get('headline') is string and es.get('headline')|trim %}来源原文 · {{ es.get('headline')|e }}{% else %}未提供入场读数{% endif %}</span></p>
+        <p class="pvs-assessment-clock" data-assessment-asof="{{ row.get('signal_asof')|e if row.get('signal_asof') is string and row.get('signal_asof')|trim else '' }}"><span class="l-en">{% if row.get('signal_asof') is string and row.get('signal_asof')|trim %}Entry read as of {{ row.get('signal_asof') }}{% else %}Entry read date not supplied{% endif %} · quote time {% if row.get('price_as_of') is string and row.get('price_as_of')|trim %}{{ row.get('price_as_of') }}{% else %}not supplied{% endif %}</span><span class="l-zh">{% if row.get('signal_asof') is string and row.get('signal_asof')|trim %}入场判读截至 {{ row.get('signal_asof') }}{% else %}入场判读日期来源未提供{% endif %} · 报价时间 {% if row.get('price_as_of') is string and row.get('price_as_of')|trim %}{{ row.get('price_as_of') }}{% else %}来源未提供{% endif %}</span></p><p class="pvs-note">{{ t("The entry read is the owner's assessment at that date; a later quote inside the zone does not renew it.",'入场判读是所有者在该日期的评估；之后报价处于区间内并不会更新该判读。') }}</p>
         <div class="pvs-chart-slot" data-pvs-chart><p>{{ t('Chart available on the setup card.','可在形态卡片上查看图表。') }}</p></div>
         {% else %}
         <p class="pvs-read">{{ t('Research only · entry details unavailable','仅供研究 · 入场详情暂缺') }}</p>
@@ -69,7 +71,29 @@
           {{ field('Strategy sleeve','策略分组',none,'canonical strategy binding not supplied') }}
           {{ field('Holding horizon','持有周期',none,'holding duration not supplied') }}
         </dl><p class="pvs-note">{{ t('Selection is not entry permission. Setup type is not an assigned strategy.','精选不等于入场许可，形态类别不是已分配的策略。') }}</p></section>
-        <section class="pvs-section"><h3>{{ t('Plan connection','计划关联') }}</h3><p class="pvs-note">{{ t('No model-plan link is available for this candidate. No plan or position is created here.','此候选暂无模型计划关联，不在此创建计划或持仓。') }}</p></section>
+        <section class="pvs-section pvs-plan-relation" data-plan-relation="{{ ((plan_rel.get('state') if plan_rel is mapping else none) or 'none')|e }}" data-plan-exact="unavailable">
+          {% set _plan_state = (plan_rel.get('state') if plan_rel is mapping else none) or 'none' %}
+          {% if _plan_state == 'related_security' %}
+          <h3>{{ t('Related model record','相关模型记录') }}</h3>
+          {% for plan in (plan_rel.get('plans') or []) %}
+          <div class="pvs-plan-rec" data-plan-id="{{ (plan.get('id') or '')|e }}" data-plan-lifecycle="{{ (plan.get('lifecycle_state') or '')|e }}">
+            <p><code>{{ (plan.get('id') or '')|e }}</code></p>
+            <p>{{ t('Status','状态') }} {{ t(life_label_en(plan.get('lifecycle_state')),life_label_zh(plan.get('lifecycle_state'))) }}</p>
+            <p>{{ t('Formed','形成于') }} {{ value(plan.get('formation_date')) }}</p>
+            <p>{{ t('Signal date','信号日期') }} {{ value(plan.get('signal_date')) }}</p>
+            <p>{{ t('Plan as of','计划截至') }} {{ value(plan.get('plan_asof')) }}</p>
+            <button type="button" class="pvs-plan-link" data-pvs-plan-target="pv-{{ (plan.get('id') or '')|e }}"><span class="l-en">View in Plans</span><span class="l-zh">在计划中查看</span></button>
+          </div>
+          {% endfor %}
+          <p class="pvs-note">{{ t("A model record for the same security. It is not this candidate's plan and not a position you hold.",'这是同一证券的模型记录，不是此候选的计划，也不是您持有的仓位。') }}</p>
+          <p class="pvs-note">{{ t('Exact plan relation: not available from the source.','精确计划关联：来源未提供。') }}</p>
+          {% elif _plan_state == 'unknown' %}
+          <h3>{{ t('Plan connection','计划关联') }}</h3><p class="pvs-note">{{ t('Plan records could not be read for this candidate.','无法读取此候选的计划记录。') }}</p>
+          {% else %}
+          <h3>{{ t('Plan connection','计划关联') }}</h3><p class="pvs-note">{{ t('No open same-security model record found. No plan or position is created here.','未找到同一证券的未平仓模型记录，不在此创建计划或持仓。') }}</p>
+          <p class="pvs-note">{{ t('Exact plan relation: not available from the source.','精确计划关联：来源未提供。') }}</p>
+          {% endif %}
+        </section>
         <section class="pvs-section"><h3>{{ t('Source dates','来源时间') }}</h3><dl class="pvs-facts">
           {{ field('Source as-of','来源日期',as_of,'envelope.as_of') }}
           {{ field('Signal as-of','信号日期',row.get('signal_asof') if kind == 'board' else none,'signal_asof') }}
@@ -87,10 +111,10 @@
 
 {# Same one-row presenter, serialized only with an already-entitled table row.
    Chart text remains inert until the bounded display guard validates its geometry. #}
-{% macro table_action(row, as_of=none) -%}
+{% macro table_action(row, as_of=none, plan_rel={'state': 'none', 'plans': []}) -%}
 <details class="pv-setup-inline pv-setup-table" data-setup-ticker="{{ row.ticker|e }}" data-setup-asof="{{ as_of|e if as_of else '' }}">
 <summary>{{ t('Setup detail','形态详情') }}</summary>
-<template class="pvs-body-source">{{ body(row, 'board', as_of) }}</template>
+<template class="pvs-body-source">{{ body(row, 'board', as_of, plan_rel) }}</template>
 <p class="pvs-fallback-note">{{ t('If detail is unavailable, use the stock link in this row.','若详情不可用，请使用本行的个股链接。') }}</p>
 <template class="pvs-chart-source">{{ row.get('spark_svg')|e if row.get('spark_svg') is string else '' }}</template>
 </details>

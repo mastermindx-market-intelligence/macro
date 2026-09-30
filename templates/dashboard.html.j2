@@ -16862,7 +16862,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
         <p class="mx-sec-note">{{ t('A preview of the current board’s owner-Featured shelf in its existing order. Featured is not entry permission — the card’s Buy, Near or Wait state still controls timing.', '当前榜单「精选」层的预览，顺序保持不变。精选不等于获准入场——仍以卡片上的买入、接近或等待状态决定时机。') }}</p>
         {%- if _today_visible %}
         <div class="nbgrid" id="us-today-grid">
-          {% with items=_today_visible, sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh %}{% include "_us_board_cards.html.j2" %}{% endwith %}
+          {% with items=_today_visible, sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh, plan_rel=plan_rel if plan_rel is defined else none %}{% include "_us_board_cards.html.j2" %}{% endwith %}
         </div>
         {%- if _today_more > 0 %}
         <p class="mx-sec-note"><span class="l-en">{{ _today_more }} more Featured name{{ '' if _today_more == 1 else 's' }} remain in Screener; this three-card preview is not a pick quota.</span><span class="l-zh">另有 {{ _today_more }} 只精选股票保留在筛选器；三张卡只是预览容量，并非选股名额。</span></p>
@@ -16910,6 +16910,13 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
          and no shared id (invariant E2). Nothing inside changes. -#}
       <div id="us-plan-block">
       {{ pv.mx_ladder(_upb, error=_upb_err) }}
+      {%- set _upb_source_asof = (_upb.get('source_asof') if _upb and not _upb_err and _upb.get('source_asof') is string and _upb.get('source_asof')|trim else none) %}
+      {%- set _upb_published_asof = (_upb.get('asof') if _upb and not _upb_err and _upb.get('asof') is string and _upb.get('asof')|trim else none) %}
+      {%- set _upb_board_asof = (_upb.get('source_board_asof') if _upb and not _upb_err and _upb.get('source_board_asof') is string and _upb.get('source_board_asof')|trim else none) %}
+      {%- set _upb_day = _upb_source_asof if _upb_source_asof is string and _upb_source_asof|length == 10 and _upb_source_asof[4] == '-' and _upb_source_asof[7] == '-' and _upb_source_asof[0:4].isdigit() and _upb_source_asof[5:7].isdigit() and _upb_source_asof[8:10].isdigit() else none %}
+      {%- set _upb_published_day = _upb_published_asof if _upb_day and _upb_published_asof is string and _upb_published_asof|length == 10 and _upb_published_asof[4] == '-' and _upb_published_asof[7] == '-' and _upb_published_asof[0:4].isdigit() and _upb_published_asof[5:7].isdigit() and _upb_published_asof[8:10].isdigit() else none %}
+      {%- set _upb_source_day = _upb_board_asof if _upb_day and _upb_board_asof is string and _upb_board_asof|length == 10 and _upb_board_asof[4] == '-' and _upb_board_asof[7] == '-' and _upb_board_asof[0:4].isdigit() and _upb_board_asof[5:7].isdigit() and _upb_board_asof[8:10].isdigit() else none %}
+      <p class="mx-book-clock" id="us-plan-book-asof" data-plan-book-asof="{{ _upb_day if _upb_day is string else '' }}" data-plan-book-published="{{ _upb_published_day if _upb_published_day is string else '' }}" data-plan-book-source-asof="{{ _upb_source_day if _upb_source_day is string else '' }}"><span class="l-en">{% if _upb_day %}Plan records as of {{ _upb_day }}{% if _upb_source_day %} · source board {{ _upb_source_day }}{% endif %}{% if _upb_published_day %} · published {{ _upb_published_day }}{% endif %}{% else %}Plan record date unavailable{% endif %}</span><span class="l-zh">{% if _upb_day %}计划记录截至 {{ _upb_day }}{% if _upb_source_day %} · 来源榜单 {{ _upb_source_day }}{% endif %}{% if _upb_published_day %} · 发布于 {{ _upb_published_day }}{% endif %}{% else %}计划记录日期不可用{% endif %}</span></p>
       {%- if _upb and not _upb_err %}
       {%- if not _upb.get('plans') %}
       {#- Repair round, finding S4: theme.css:1983-1988 states the law —
@@ -17099,7 +17106,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
            WL1-PROVCARD-CONTRACT below, tests/test_wl1_lifecycle_
            neutralization.py) re-acquires this grid via that absence. -#}
       <div class="nbgrid" data-showmore-rows="3" id="us-cand-grid">
-      {% with items=_render_list.items, sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh %}{% include "_us_board_cards.html.j2" %}{% endwith %}
+      {% with items=_render_list.items, sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh, plan_rel=plan_rel if plan_rel is defined else none %}{% include "_us_board_cards.html.j2" %}{% endwith %}
       </div>{# end #us-cand-grid #}
         {#- P0 #6185 (B4) — restored CANDIDATE tier wall, keyed on `gate`
            (not `life_gate` — that key belongs to the plan wall inside
@@ -18980,17 +18987,32 @@ function _plvHm24(m){
   var h=Math.floor(m/60), mm=m%60;
   return (h<10?'0':'')+h+':'+(mm<10?'0':'')+mm;
 }
-/* An ISO stamp as ET minutes-of-day, or null. Never throws, never guesses. */
-function _plvTsMin(iso){
+/* An ISO stamp as ET minutes and calendar day, or null. Never throws, never guesses. */
+function _plvStamp(iso){
   if(!iso) return null;
   var ms=Date.parse(iso);
   if(!isFinite(ms)) return null;
   var et=_plvEt(new Date(ms));
-  return et?et.min:null;
+  return et?{min:et.min, ymd:et.ymd}:null;
 }
-/* "as of 3:41 pm ET" / "截至 美东 15:41" — ONE as-of for the whole panel (Law 4). */
-function _plvAsOf(m){
-  return L('as of '+_plvHm12(m)+' ET', '截至 美东 '+_plvHm24(m));
+function _plvTsMin(iso){
+  var stamp=_plvStamp(iso);
+  return stamp?stamp.min:null;
+}
+/* The panel's source-owned quote clock, in English and Chinese at once. */
+function _plvAsOfToday(m){
+  return L('quotes as of '+_plvHm12(m)+' ET', '报价截至 美东 '+_plvHm24(m));
+}
+function _plvAsOfPrior(m, ymd){
+  var month=Number(ymd.slice(5,7)), day=Number(ymd.slice(8,10));
+  return L('last read '+_plvMonth(month)+' '+day+', '+_plvHm12(m)+' ET',
+           '上次判读 '+ymd.slice(5,10)+' 美东 '+_plvHm24(m));
+}
+function _plvMonth(month){
+  return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][month-1]||'';
+}
+function _plvAsOfUnavailable(){
+  return L('quote time unavailable', '报价时间不可用');
 }
 function _plvNum(v){
   try{ return Number(v).toLocaleString('en-US'); }catch(e){ return String(v); }
@@ -19397,29 +19419,23 @@ function _plvRender(){
   /* The stamp is the ARTIFACT's own clock — meta.quote_asof, falling back to the pass
      time. Never the browser clock: a local Date.now() would print a fresh-looking time
      over a stale artifact, which is the exact lie the freshness gate exists to prevent. */
-  var stampMin=_plvTsMin(meta.quote_asof)||_plvTsMin(meta.pass_ts);
-  /* No stamp when the newest artifact is from ANOTHER DAY. The as-of is a bare
-     time-of-day, so a previous session's pass would print "as of 4:15 pm ET" at 11:20 in
-     the morning — a stamp that reads as today's. There is no current read to stamp here,
-     and the body line already says exactly that.
-     BUT THE BOX STILL HAS TO HOLD ITS LINE. This is the fourth mode-varying box and the
-     one the first reservation pass missed: at <=340px the header puts the as-of on line 2
-     beside the token, so emptying it collapsed that line and shoved the board 17.00px —
-     the honesty fix above paying for itself in exactly the layout thrash the reserver
-     exists to prevent. A reader on a 320-340px phone would watch the board jump the
-     instant the day's first pass landed. Same mechanism as the other three: reserve the
-     line, show nothing in it.
-     The reserver is a formatter-built stamp at 12:00 — the widest wall clock this box can
-     render (two-digit hour, and the pass window is 09:20-18:30 ET so nothing exceeds it),
-     exact because .plv-asof is tabular-nums. Built by _plvAsOf itself so it cannot drift
-     from the real thing's markup.
-     'on' is ALWAYS the active key: with no stamp it is the empty string, which _plvStack
-     drops, so the reserver holds the box with nothing visible and nothing announced. The
-     reserver must never be the active variant — a visible 12:00 would be a fabricated
-     stamp, which is the very thing the honesty fix removed. */
-  var stampOn=(stampMin!==null&&res.why!=='none_today');
-  _plvStack(asEl, ['on','rsv'],
-            {on:(stampOn?_plvAsOf(stampMin):''), rsv:_plvAsOf(720)}, 'on');
+  var stamp=_plvStamp(meta.quote_asof)||_plvStamp(meta.pass_ts);
+  var stampMin=stamp?stamp.min:null;
+  var stampToday=(stamp!==null&&stamp.ymd===et.ymd);
+  var stampVars={rsv:_plvAsOfToday(720)};
+  if(stamp===null){
+    asEl.dataset.plvAsofState='unavailable';
+    stampVars.unavailable=_plvAsOfUnavailable();
+    _plvStack(asEl, ['unavailable','rsv'], stampVars, 'unavailable');
+  }else if(stampToday){
+    asEl.dataset.plvAsofState='today';
+    stampVars.today=_plvAsOfToday(stampMin);
+    _plvStack(asEl, ['today','rsv'], stampVars, 'today');
+  }else{
+    asEl.dataset.plvAsofState='prior_day';
+    stampVars.prior_day=_plvAsOfPrior(stampMin, stamp.ymd);
+    _plvStack(asEl, ['prior_day','rsv'], stampVars, 'prior_day');
+  }
 
   /* the stance line changes ONLY on a mode change (spec §6.4 rule 5), and all four
      stance lines stay stacked so the box reserves the tallest one at this width */
@@ -19441,11 +19457,21 @@ function _plvRender(){
   }else if(!visRows.length){
     var lastMin=(stampMin===null)?null:stampMin;
     if(mode==='closed'){
-      _plvPaintNone(body, 'Nothing crossed today — last checked '+(lastMin===null?'—':_plvHm12(lastMin))+' ET.',
-                          '今日没有出现上穿 — 最近一次检查 美东 '+(lastMin===null?'—':_plvHm24(lastMin))+'。', null, false);
+      if(lastMin===null){
+        _plvPaintNone(body, 'Nothing crossed today — last check time unavailable.',
+                            '今日没有出现上穿 — 最近一次检查时间不可用。', null, false);
+      }else{
+        _plvPaintNone(body, 'Nothing crossed today — last checked '+_plvHm12(lastMin)+' ET.',
+                            '今日没有出现上穿 — 最近一次检查 美东 '+_plvHm24(lastMin)+'。', null, false);
+      }
     }else{
-      _plvPaintNone(body, 'Nothing crossing yet — last checked '+(lastMin===null?'—':_plvHm12(lastMin))+' ET.',
-                          '尚无新的上穿 — 最近一次检查 美东 '+(lastMin===null?'—':_plvHm24(lastMin))+'。', null, false);
+      if(lastMin===null){
+        _plvPaintNone(body, 'Nothing crossing yet — last check time unavailable.',
+                            '尚无新的上穿 — 最近一次检查时间不可用。', null, false);
+      }else{
+        _plvPaintNone(body, 'Nothing crossing yet — last checked '+_plvHm12(lastMin)+' ET.',
+                              '尚无新的上穿 — 最近一次检查 美东 '+_plvHm24(lastMin)+'。', null, false);
+      }
     }
   }else{
     _plvPaintRows(body, visRows, delay, mode==='closed');
@@ -20369,6 +20395,29 @@ if (document.readyState === 'loading') {
     if (b) setSrc(b.getAttribute('data-src'));
   });
   window.USProphetSource = { set: setSrc, get: function(){ return panel.getAttribute('data-prophet-src'); } };
+
+  document.addEventListener('click', function(event){
+    var button = event.target && event.target.closest ? event.target.closest('.pvs-plan-link[data-pvs-plan-target]') : null;
+    if (!button) return;
+    var target = button.getAttribute('data-pvs-plan-target');
+    var dialog = document.getElementById('pv-setup-dialog');
+    if (dialog && dialog.open) {
+      var close = dialog.querySelector('.pvs-close');
+      if (close) close.click();
+    }
+    if (window.USProphetSource) window.USProphetSource.set('plans');
+    var card = document.getElementById(target);
+    if (!card) {
+      document.body.dataset.pvsPlanLinkResult='missing';
+      return;
+    }
+    if (card.classList.contains('sm-hidden')) card.classList.remove('sm-hidden');
+    if (card.classList.contains('sm-reveal')) card.classList.remove('sm-reveal');
+    card.setAttribute('tabindex','-1');
+    card.scrollIntoView({block:'center'});
+    card.focus({preventScroll:true});
+    document.body.dataset.pvsPlanLinkResult='ok';
+  });
 })();
 </script>
 {% if gate or pgate or life_gate %}
