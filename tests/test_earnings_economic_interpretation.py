@@ -261,6 +261,10 @@ def test_currentness_contract_and_identity():
             assert result['clocks']['source_revision'] == baseline['clocks']['source_revision']
             assert result['clocks']['correction'] == baseline['clocks']['correction']
         baseline = result
+    default = build_case_interpretation('identical_inputs')
+    assert default['selection']['currentness'] == 'currentness_unverified'
+    assert default['selection']['currentness_observed_at'] is None
+    assert default['clocks']['source_currentness'] is None
     invalid = (
         {'facts': None, 'currentness': {'state': 'up_to_date', 'source_clock': None}},
         {'facts': None, 'currentness': {'state': 'currentness_unverified', 'source_clock': clock}},
@@ -406,6 +410,7 @@ def test_source_identity_is_bound_to_release_text():
         semantic_revision=SEMANTIC_REVISION, code_revision=CODE_REVISION,
     )
     source_text = next(iter(texts.values()))
+    assert changed['clocks']['source_revision'] != '0' * 64
     assert changed['interpretation_id'] == baseline['interpretation_id']
     assert changed['clocks']['source_revision'] == baseline['clocks']['source_revision']
     assert changed['clocks']['source_revision'] == hashlib.sha256(source_text.encode('utf-8')).hexdigest()
