@@ -259,17 +259,38 @@ def test_r3_paths_are_present_for_both_fixture_cases():
             assert key in result['clocks']
 
 
+SPEC_LABEL_TABLE = {
+    'pg_reported_sales_growth_pct': ('reported_sales_growth', 'demand', 'reported', 'current', 'Reported sales growth', '报告销售额增长'),
+    'pg_organic_sales_growth_pct': ('organic_sales_growth', 'demand', 'organic', 'current', 'Organic sales growth', '有机销售额增长'),
+    'pg_total_volume_growth_pct': ('total_volume_growth', 'demand', 'reported', 'current', 'Total volume growth', '总销量增长'),
+    'pg_organic_volume_growth_pct': ('organic_volume_growth', 'demand', 'organic', 'current', 'Organic volume growth', '有机销量增长'),
+    'pg_price_contribution_pp': ('price_contribution', 'demand', 'reported', 'current', 'Price contribution', '价格贡献'),
+    'pg_mix_contribution_pp': ('mix_contribution', 'demand', 'reported', 'current', 'Mix contribution', '结构贡献'),
+    'pg_fx_contribution_pp': ('fx_contribution', 'demand', 'reported', 'current', 'FX contribution', '汇率贡献'),
+    'pg_other_contribution_pp': ('other_contribution', 'demand', 'reported', 'current', 'Other contribution', '其他贡献'),
+    'pg_diluted_eps': ('reported_diluted_eps', 'earnings', 'reported', 'current', 'Reported diluted EPS', '报告稀释每股收益'),
+    'pg_prior_diluted_eps': ('prior_reported_diluted_eps', 'earnings', 'reported', 'prior', 'Prior reported diluted EPS', '上期报告稀释每股收益'),
+    'pg_reported_eps_growth_pct': ('reported_eps_growth', 'earnings', 'reported', 'current', 'Reported EPS growth', '报告每股收益增长'),
+    'pg_core_eps': ('core_eps', 'earnings', 'core', 'current', 'Core EPS', '核心每股收益'),
+    'pg_prior_core_eps': ('prior_core_eps', 'earnings', 'core', 'prior', 'Prior core EPS', '上期核心每股收益'),
+    'pg_core_eps_growth_pct': ('core_eps_growth', 'earnings', 'core', 'current', 'Core EPS growth', '核心每股收益增长'),
+    'pg_core_reconciliation_context': ('core_reconciliation_context', 'earnings', 'core', 'current', 'Core EPS reconciliation', '核心每股收益调节说明'),
+}
+
+
 def test_spec_strings_are_exact():
     result = build_case_interpretation('identical_inputs')
     labels = {item['metric']: item['label'] for item in result['observations']}
-    assert labels['pg_reported_sales_growth_pct'] == {
-        'en': 'Reported sales growth', 'zh': '报告销售额增长'
-    }
-    assert labels['pg_organic_volume_growth_pct'] == {
-        'en': 'Organic volume growth', 'zh': '有机销量增长'
-    }
-    assert labels['pg_core_eps'] == {'en': 'Core EPS', 'zh': '核心每股收益'}
-    assert labels['pg_beauty_organic_sales_growth_pct'] == {'en': 'Beauty', 'zh': 'Beauty'}
+    for metric, expected in SPEC_LABEL_TABLE.items():
+        assert family_lookup(metric) == expected
+        assert labels[metric] == {'en': expected[4], 'zh': expected[5]}
+    fixed, actual = set(SPEC_LABEL_TABLE), set()
+    for observation in result['observations']:
+        if observation['group'] == 'segment':
+            assert observation['label']['en'] == observation['label']['zh']
+        else:
+            actual.add(observation['metric'])
+    assert actual == fixed
     values = {item['metric']: item['value_and_unit'] for item in result['observations']}
     assert values['pg_reported_sales_growth_pct'] == {'en': '3.0%', 'zh': '3.0%'}
     assert values['pg_fx_contribution_pp'] == {'en': '-1.0 pp', 'zh': '-1.0个百分点'}
@@ -280,7 +301,6 @@ def test_spec_strings_are_exact():
     assert result['clocks']['source_accepted'] == {
         'en': 'Jul 29, 2026, 17:00 UTC', 'zh': '2026年7月29日 17:00 UTC'
     }
-
 
 def test_currentness_contract_and_identity():
     clock = '2026-07-29T17:01:00Z'
@@ -438,6 +458,64 @@ def test_finding_handles_are_selected_observations(case):
             assert set(handle) == {'workspace_generation_id', 'event_id', 'fact_id'}
             assert handle in observation_handles
             assert handle is not None
+
+
+def _selection_with_metrics(*metrics):
+    workspace, texts = _case('identical_inputs')
+    rows = validate_selected_facts(workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE)
+    handles = [
+        {
+            'workspace_generation_id': workspace['generation_id'],
+            'event_id': row['event_id'],
+            'fact_id': row['fact_id'],
+        }
+        for row in rows if row['metric'] in metrics
+    ]
+    return {'facts': handles, 'currentness': None}
+
+
+
+def test_unselected_comparison_never_invents_an_absence_reason():
+    selection = _selection_with_metrics('pg_reported_sales_growth_pct')
+    payload = build_case_interpretation('identical_inputs', selection=selection)
+    declined = [
+        item for item in payload['comparisons']
+        if all(input_['handle']['fact_id'] is None for input_ in item['inputs'])
+    ]
+    assert len(declined) == 2
+    assert all(
+        item['result']['reason'] == 'not_selected' and item['result']['detail'] is None
+        for item in declined
+    )
+
+
+def test_selected_typed_absent_comparison_uses_task_one_reason():
+    payload = build_case_interpretation('refused_document_outcome')
+    comparison = payload['comparisons'][0]
+    assert comparison['result']['reason'] == 'no_span_addressable_evidence'
+    assert comparison['result']['detail'] == 'envelope_refused:not_ex_99_1'
+
+
+def test_unavailable_payload_has_no_missing_context_items():
+    payload = build_case_interpretation('identical_inputs', code_revision='0' * 63)
+    assert payload['missing_context'] == []
+    assert payload['quality']['reason'] == 'unsupported interpretation version'
+
+
+@pytest.mark.parametrize('case', [
+    'identical_inputs', 'headline_positive_organic_flat',
+    'reported_core_opposite_direction', 'negative_prior_eps', 'zero_prior_eps',
+    'reported_negative_organic_positive', 'eps_flat_core_rises',
+    'missing_demand_context', 'unlocated_outcome',
+    'segment_and_reconciliation_absent', 'conflict_outcome',
+    'refused_document_outcome', 'combined_volume_mix',
+])
+def test_every_missing_context_item_has_an_owner(case):
+    payload = build_case_interpretation(case)
+    assert {item['owner'] for item in payload['missing_context']} <= {
+        'demand', 'segments', 'earnings', 'reconciliation', 'margin_to_cash', 'consensus',
+    }
+    assert all(item['owner'] for item in payload['missing_context'])
 
 
 def test_trusted_boundary_rejects_display_and_currentness_edits():

@@ -303,9 +303,9 @@ def _selection_input(rows: list[dict[str, Any]], workspace: Mapping[str, Any], s
 
 def _absence_reason(row: Mapping[str, Any]) -> str:
     absence = row.get("typed_absence")
-    if not isinstance(absence, Mapping):
-        return "no_span_addressable_evidence"
-    return str(absence.get("reason") or "no_span_addressable_evidence")
+    if not isinstance(absence, Mapping) or type(absence.get("reason")) is not str or not absence.get("reason"):
+        raise EconomicInterpretationError("typed absence reason is malformed")
+    return absence["reason"]
 
 
 def _handle(workspace: Mapping[str, Any], row: Mapping[str, Any]) -> dict[str, Any]:
@@ -390,10 +390,11 @@ def _comparison(
         _comparison_input(workspace, current),
         _comparison_input(workspace, prior),
     ]
-    if "value" not in current or "typed_absence" in current or "value" not in prior or "typed_absence" in prior:
-        absent = current if "typed_absence" in current else prior
-        reason = _absence_reason(absent)
-        detail = absent.get("typed_absence", {}).get("detail")
+    absent_sides = [side for side in (current, prior) if "value" not in side or "typed_absence" in side]
+    if absent_sides:
+        absent = absent_sides[0]
+        reason = _absence_reason(absent) if absent else "not_selected"
+        detail = absent.get("typed_absence", {}).get("detail") if absent else None
         return {
             "schema": "economic_comparison/v1", "formula": formula, "inputs": inputs,
             "result": {"state": "not_comparable", "value": None, "reason": reason, "detail": detail},
@@ -592,7 +593,7 @@ def _unavailable(reason: str, semantic_revision: Any, code_revision: Any) -> dic
         "schema": SCHEMA, "issuer": None, "event_id": None,
         "build": {"semantic_revision": semantic_revision, "code_revision": code_revision, "deterministic": False},
         "selection": {"state": "unavailable"}, "observations": [], "comparisons": [],
-        "findings": [], "missing_context": [{"subject": "interpretation", "reason": reason}],
+        "findings": [], "missing_context": [],
         "next_evidence": [], "quality": {"supported": False, "state": "unavailable", "reason": reason},
         "clocks": {
             "fiscal_scope": None, "fiscal_period": None,
