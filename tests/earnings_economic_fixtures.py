@@ -214,6 +214,8 @@ def fixture_accession(name: str) -> str:
         "non_results": "0000080424-26-000003",
         "amendment": "0000080424-26-000004",
         "malformed": "0000080424-26-000005",
+        "changed": "0000080424-26-000006",
+        "amended": "0000080424-26-000007",
     }
     try:
         return numbers[name]
@@ -325,6 +327,25 @@ def _acquisition_case(case: str):
             "items": "2.02",
             "primaryDocument": "malformed.htm",
         }, body=b"<html><body>\xff< /body></html>", filename="malformed.htm")
+    elif case == "changed_bytes":
+        changed_body = older_body.replace(b"$3.07", b"$3.17")
+        row = rows[0]
+        row["accessionNumber"] = fixture_accession("changed")
+        row["acceptanceDateTime"] = "2026-07-30T17:00:00Z"
+        row["filingDate"] = "2026-07-30"
+        archive = f"https://www.sec.gov/Archives/edgar/data/80424/{row['accessionNumber'].replace('-', '')}"
+        responses[f"{archive}/{row['accessionNumber']}-index-headers.html"] = (200, _sgml())
+        responses[f"{archive}/synthetic-exhibit-991.htm"] = (200, changed_body)
+    elif case == "amendment_sequence":
+        add_filing({
+            "accessionNumber": fixture_accession("amended"),
+            "form": "8-K/A",
+            "filingDate": "2026-07-30",
+            "acceptanceDateTime": "2026-07-30T18:00:00Z",
+            "reportDate": "2026-06-30",
+            "items": "2.02",
+            "primaryDocument": "amended.htm",
+        }, body=older_body)
     elif case in {"same_source_rebuild", "prior_unavailable"}:
         pass
     else:

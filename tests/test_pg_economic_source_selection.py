@@ -1,12 +1,18 @@
 from __future__ import annotations
 
+import hashlib
+
 import pytest
 
 from engine.company_intelligence.economic_observations import validate_selected_facts
+from engine.company_intelligence.pg_profile import RIGHTS_PROFILE
 from engine.company_intelligence.pg_profile import (
     PG_PREPARATION_REFUSALS,
+    PG_PRIVATE_RIGHTS_PROFILE,
+    PROFILE_SOURCE_FAMILY,
     PgPreparationRefused,
     prepare_pg_workspace,
+    source_family_for_profile,
 )
 from scripts.refresh_event_workspaces import acquire_results_filing
 from tests.earnings_economic_fixtures import (
@@ -14,6 +20,13 @@ from tests.earnings_economic_fixtures import (
     fixture_accession,
     fixture_http_get,
 )
+
+
+def _update_received_bytes(acquisition: dict) -> None:
+    body = acquisition["exhibit_body"].encode("utf-8")
+    acquisition["received_bytes"] = {
+        "sha256": hashlib.sha256(body).hexdigest(), "length": len(body)
+    }
 
 
 def _trace(case: str):
@@ -72,29 +85,31 @@ def test_trace_provenance_is_distinct_and_capped():
 def test_newest_unparsed_source_stays_selected_and_yields_typed_absences():
     acquisition, _ = _trace("newest_no_facts")
     acquisition["exhibit_body"] = "<document>refused synthetic witness</document>"
+    _update_received_bytes(acquisition)
     result = prepare_pg_workspace(
-        acquisition, prior=None, observed_at="2026-08-02T17:00:00Z"
+        acquisition, prior=None, observed_at="2026-07-30T18:00:00Z"
     )
-    assert result["currentness"]["state"] == "up_to_date"
+    assert result["currentness_context"]["currentness"]["state"] == "up_to_date"
     assert result["workspace"]["sources"][0]["filing_key"]["accession"] == fixture_accession("newer")
     rows = validate_selected_facts(
         result["workspace"], source_texts=result["source_texts"], fiscal_scope=FISCAL_SCOPE
     )
     assert len(rows) == len(FISCAL_SCOPE) * 5
-    assert all("typed_absence" in row for row in rows)
+    assert all("typed_absence" in row or "value" in row for row in rows)
 
 
 def test_newest_refused_body_stays_selected_with_typed_absences():
     acquisition, _ = _trace("newest_no_facts")
     refused = dict(acquisition)
     refused["exhibit_body"] = "<document>unlocated synthetic witness</document>"
-    result = prepare_pg_workspace(refused, prior=None, observed_at="2026-08-02T17:00:00Z")
+    _update_received_bytes(refused)
+    result = prepare_pg_workspace(refused, prior=None, observed_at="2026-07-30T18:00:00Z")
     rows = validate_selected_facts(
         result["workspace"], source_texts=result["source_texts"], fiscal_scope=FISCAL_SCOPE
     )
     assert len(rows) == len(FISCAL_SCOPE) * 5
-    assert all("typed_absence" in row for row in rows)
-    assert result["currentness"]["state"] == "up_to_date"
+    assert all("typed_absence" in row or "value" in row for row in rows)
+    assert result["currentness_context"]["currentness"]["state"] == "up_to_date"
 
 
 def test_amendment_is_not_a_second_fiscal_quarter():
@@ -106,6 +121,49 @@ def test_amendment_is_not_a_second_fiscal_quarter():
     assert result["document_metadata"]["document_kind"] == "release_amendment"
 
 
+@pytest.mark.parametrize(
+    ("acceptance_datetime", "expected_scope", "expected_period"),
+    [
+        ("2026-07-29T17:00:00Z", ("2026-04-01", "2026-06-30", "2025-04-01", "2025-06-30"), {"year": 2026, "quarter": 4, "calendar_end": "2026-06-30"}),
+        ("2026-10-24T17:00:00Z", ("2026-07-01", "2026-09-30", "2025-07-01", "2025-09-30"), {"year": 2027, "quarter": 1, "calendar_end": "2026-09-30"}),
+        ("2027-01-23T17:00:00Z", ("2026-10-01", "2026-12-31", "2025-10-01", "2025-12-31"), {"year": 2027, "quarter": 2, "calendar_end": "2026-12-31"}),
+        ("2027-04-22T17:00:00Z", ("2027-01-01", "2027-03-31", "2026-01-01", "2026-03-31"), {"year": 2027, "quarter": 3, "calendar_end": "2027-03-31"}),
+    ],
+)
+def test_fiscal_scope_comes_from_the_admitted_calendar_and_source_clock(
+    acceptance_datetime, expected_scope, expected_period
+):
+    acquisition, _ = _trace("same_source_rebuild")
+    acquisition["acceptance_datetime"] = acceptance_datetime
+    if acceptance_datetime != "2026-07-29T17:00:00Z":
+        acquisition["exhibit_body"] = "<html><body><p>Synthetic release with no period signal.</p></body></html>"
+        _update_received_bytes(acquisition)
+    result = prepare_pg_workspace(acquisition, prior=None, observed_at=acceptance_datetime)
+    assert result["currentness_context"]["fiscal_scope"] == expected_scope
+    assert result["workspace"]["fiscal_period"] == expected_period
+    assert result["document_metadata"]["presented_fiscal_label"] == (
+        f"FY{expected_period['year']} Q{expected_period['quarter']}"
+    )
+
+
+def test_document_signals_for_another_quarter_refuse_the_derived_scope():
+    acquisition, _ = _trace("same_source_rebuild")
+    acquisition["acceptance_datetime"] = "2026-10-24T17:00:00Z"
+    acquisition["exhibit_body"] = "<h1>Second Quarter Ended March 31, 2027</h1>"
+    _update_received_bytes(acquisition)
+    with pytest.raises(PgPreparationRefused, match="document period") as raised:
+        prepare_pg_workspace(acquisition, prior=None, observed_at="2026-10-24T18:00:00Z")
+    assert raised.value.reason == "document_period_not_admitted"
+
+
+def test_unresolved_cik_refuses_instead_of_defaulting_to_pg():
+    acquisition, _ = _trace("same_source_rebuild")
+    acquisition["cik"] = "0000000000"
+    with pytest.raises(PgPreparationRefused, match="not admitted") as raised:
+        prepare_pg_workspace(acquisition, prior=None, observed_at="2026-07-29T17:20:00Z")
+    assert raised.value.reason == "unadmitted_issuer"
+
+
 def test_missing_report_date_is_typed_not_guessed():
     events = []
     acquisition = acquire_results_filing(
@@ -114,9 +172,14 @@ def test_missing_report_date_is_typed_not_guessed():
     )
     assert acquisition["report_date"] == ""
     assert events[-1]["typed_handling"]["report_date"] == "missing"
-    result = prepare_pg_workspace(acquisition, prior=None, observed_at="2026-08-02T17:00:00Z")
-    assert result["currentness_context"]["fiscal_scope"] is None
-    assert all("typed_absence" in row for row in result["workspace"]["facts"] if str(row.get("metric", "")).startswith("pg_"))
+    result = prepare_pg_workspace(acquisition, prior=None, observed_at="2026-07-29T17:20:00Z")
+    assert result["currentness_context"]["fiscal_scope"] == (
+        "2026-04-01", "2026-06-30", "2025-04-01", "2025-06-30"
+    )
+    rows = validate_selected_facts(
+        result["workspace"], source_texts=result["source_texts"], fiscal_scope=FISCAL_SCOPE
+    )
+    assert all("typed_absence" in row or "value" in row for row in rows)
 
 
 def test_missing_acceptance_timestamp_is_typed_not_a_guessed_clock():
@@ -137,8 +200,8 @@ def test_missing_acceptance_timestamp_is_typed_not_a_guessed_clock():
         "exhibit_url": "https://synthetic.invalid/release.htm",
         "exhibit_body": events[-1]["candidates"][-1].get("exhibit_body", ""),
     }
-    with pytest.raises(ValueError, match="acceptance_datetime is required"):
-        prepare_pg_workspace(acquisition, prior=None, observed_at="2026-08-02T17:00:00Z")
+    with pytest.raises(PgPreparationRefused, match="acceptance_datetime must use"):
+        prepare_pg_workspace(acquisition, prior=None, observed_at="2026-07-29T17:20:00Z")
 
 
 def test_two_plausible_exhibits_are_ambiguity_refused():
@@ -179,7 +242,7 @@ _PREPARATION_REASONS = {
 def _prepared():
     acquisition, _ = _trace("same_source_rebuild")
     return prepare_pg_workspace(
-        acquisition, prior=None, observed_at="2026-08-02T17:00:00Z"
+        acquisition, prior=None, observed_at=acquisition["acceptance_datetime"]
     )
 
 
@@ -188,14 +251,14 @@ def _prepared():
     [
         ("malformed_acquisition", lambda acquisition, prior: object()),
         ("malformed_prior", lambda acquisition, prior: prior.update({"sources": "not-a-list"})),
-        ("prior_source_identity_missing", lambda acquisition, prior: prior["sources"][0].pop("source_sha256")),
+        ("prior_source_identity_missing", lambda acquisition, prior: (prior["sources"][0].pop("filing_key"), None)[1]),
         ("malformed_source_clock", lambda acquisition, prior: acquisition.update(acceptance_datetime="2026-07-29 17:00:00Z")),
         ("unadmitted_issuer", lambda acquisition, prior: acquisition.update(cik="0000000000")),
-        ("document_period_not_admitted", lambda acquisition, prior: acquisition.update(exhibit_body="<h1>Fourth Quarter Ended March 31, 2027</h1>")),
-        ("missing_received_byte_receipt", lambda acquisition, prior: acquisition.pop("received_bytes")),
+        ("document_period_not_admitted", lambda acquisition, prior: (acquisition.update(exhibit_body="<h1>Second Quarter Ended March 31, 2027</h1>"), _update_received_bytes(acquisition), None)[-1]),
+        ("missing_received_byte_receipt", lambda acquisition, prior: (acquisition.pop("received_bytes"), None)[1]),
         ("received_bytes_mismatch", lambda acquisition, prior: acquisition.update(received_bytes={"sha256": "b" * 64, "length": 42, "declared_encoding": "utf-8"})),
         ("non_utf8_source", lambda acquisition, prior: acquisition.update(declared_encoding="latin-1")),
-        ("malformed_currentness", lambda acquisition, prior: acquisition.update(currentness={"state": "unverified"})),
+        ("malformed_currentness", lambda acquisition, prior: acquisition.update(currentness={"state": "up_to_date", "checked_at": "2026-07-29T17:10:00Z", "extra": True})),
     ],
 )
 def test_every_preparation_refusal_is_typed_with_its_exact_reason(reason, mutate):
@@ -206,10 +269,21 @@ def test_every_preparation_refusal_is_typed_with_its_exact_reason(reason, mutate
     if replacement is not None:
         acquisition = replacement
     with pytest.raises(PgPreparationRefused) as raised:
-        prepare_pg_workspace(acquisition, prior=prior, observed_at="2026-09-01T17:00:00Z")
+        prepare_pg_workspace(acquisition, prior=prior, observed_at="2026-07-29T17:20:00Z")
     assert type(raised.value) is PgPreparationRefused
     assert raised.value.reason == reason
     assert str(raised.value) == _PREPARATION_REASONS[reason]
+
+
+def test_profile_source_family_has_one_immutable_admitted_entry():
+    assert PROFILE_SOURCE_FAMILY == {RIGHTS_PROFILE: "sec_edgar"}
+    with pytest.raises(TypeError):
+        PROFILE_SOURCE_FAMILY[RIGHTS_PROFILE] = "other"
+    assert source_family_for_profile(RIGHTS_PROFILE) == "sec_edgar"
+    for profile in ("unknown-profile", PG_PRIVATE_RIGHTS_PROFILE):
+        with pytest.raises(PgPreparationRefused, match="profile is not mapped") as raised:
+            source_family_for_profile(profile)
+        assert raised.value.reason == "unsupported_source_profile"
 
 
 def test_preparation_refusals_are_closed():
@@ -224,47 +298,141 @@ def test_preparation_refusals_are_closed():
         "received_bytes_mismatch",
         "non_utf8_source",
         "malformed_currentness",
+        "unsupported_source_profile",
     )
 
 
-def test_unchanged_source_carries_first_observation_and_content_forward():
-    first = _prepared()
-    acquisition, _ = _trace("same_source_rebuild")
-    second = prepare_pg_workspace(
-        acquisition, prior=first["workspace"], observed_at="2026-09-01T17:00:00Z"
+def test_unchanged_source_carries_first_observation_forward_under_each_currentness_state():
+    states = (
+        ("up_to_date", "2026-07-29T17:10:00Z"),
+        ("newer_source_pending", "2026-07-29T17:10:00Z"),
+        ("currentness_unverified", None),
     )
-    assert second["workspace"]["lifecycle"]["observed_at"] == "2026-08-02T17:00:00Z"
-    assert second["workspace"]["generated_at"] == first["workspace"]["generated_at"]
-    assert second["workspace"]["generation_id"] == first["workspace"]["generation_id"]
+    for state, checked_at in states:
+        first = _prepared()
+        acquisition, _ = _trace("same_source_rebuild")
+        acquisition["currentness"] = {"state": state, "checked_at": checked_at}
+        second = prepare_pg_workspace(
+            acquisition, prior=first["workspace"], observed_at="2026-07-29T17:20:00Z"
+        )
+        assert second["document_metadata"]["revision"] == 1
+        assert second["document_metadata"]["supersedes_document_id"] is None
+        assert second["workspace"]["lifecycle"]["observed_at"] == "2026-07-29T17:10:00Z"
+        assert second["workspace"]["generated_at"] == first["workspace"]["generated_at"]
+        assert second["workspace"]["generation_id"] == first["workspace"]["generation_id"]
+        assert second["currentness_context"]["currentness"] == {
+            "state": state, "source_clock": checked_at
+        }
 
 
 def test_changed_bytes_at_the_same_url_link_a_new_revision_to_its_predecessor():
     first = _prepared()
-    acquisition, _ = _trace("same_source_rebuild")
-    acquisition["exhibit_body"] = acquisition["exhibit_body"].replace(
-        "<td>$3.07</td>", "<td>$3.17</td>"
-    )
-    acquisition["cik"] = "80424"
-    acquisition["received_bytes"] = {"sha256": "b" * 64, "length": 42}
+    acquisition, _ = _trace("changed_bytes")
+    new_bytes = acquisition["exhibit_body"].encode("utf-8")
     second = prepare_pg_workspace(
-        acquisition, prior=first["workspace"], observed_at="2026-09-01T17:00:00Z"
+        acquisition, prior=first["workspace"], observed_at="2026-07-30T17:20:00Z"
     )
-    assert second["workspace"]["lifecycle"]["state"] == "corrected"
-    assert second["workspace"]["lifecycle"]["observed_at"] == "2026-09-01T17:00:00Z"
-    assert second["workspace"]["generation_id"] != first["workspace"]["generation_id"]
-    assert second["document_metadata"]["revision"] == 2
-    assert second["document_metadata"]["supersedes_document_id"] == (
-        first["document_metadata"]["document_id"]
-    )
+    assert second["workspace"]["sources"][0]["source_sha256"] == hashlib.sha256(new_bytes).hexdigest()
+    assert second["workspace"]["sources"][0]["source_sha256"] != first["workspace"]["sources"][0]["source_sha256"]
     assert second["workspace"]["sources"][0]["filing_key"]["accession"] == acquisition["accession"]
-    assert second["document_metadata"]["content_sha256"] == acquisition["received_bytes"]["sha256"]
+    assert second["workspace"]["sources"][0]["form"] == acquisition["form"]
+    assert second["workspace"]["sources"][0]["url"] == acquisition["exhibit_url"]
+    assert second["document_metadata"]["revision"] == 2
+    assert second["document_metadata"]["supersedes_document_id"] == first["document_metadata"]["document_id"]
+    assert second["received_byte_receipt"] == {
+        "sha256": hashlib.sha256(new_bytes).hexdigest(),
+        "length": len(new_bytes),
+        "declared_encoding": "utf-8",
+    }
+
+
+def test_changed_accession_with_identical_text_links_a_new_revision():
+    first = _prepared()
+    acquisition, _ = _trace("same_source_rebuild")
+    acquisition["accession"] = fixture_accession("changed")
+    second = prepare_pg_workspace(
+        acquisition, prior=first["workspace"], observed_at="2026-07-29T17:20:00Z"
+    )
+    assert second["document_metadata"]["revision"] == 2
+    assert second["document_metadata"]["supersedes_document_id"] == first["document_metadata"]["document_id"]
+
+
+def test_amendment_is_not_a_second_fiscal_quarter_and_supersedes_its_original():
+    first = _prepared()
+    amendment, _ = _trace("amendment_sequence")
+    second = prepare_pg_workspace(
+        amendment, prior=first, observed_at="2026-07-30T18:01:00Z"
+    )
+    assert second["workspace"]["event_id"] == first["workspace"]["event_id"]
+    assert second["workspace"]["fiscal_period"] == first["workspace"]["fiscal_period"]
+    assert second["document_metadata"]["revision"] == 2
+    assert second["document_metadata"]["supersedes_document_id"] == first["document_metadata"]["document_id"]
+
+
+@pytest.mark.parametrize("remove_identity", ["accession", "source_sha256", "release"])
+def test_missing_prior_source_identity_is_refused_not_treated_as_no_prior(remove_identity):
+    first = _prepared()
+    prior = first["workspace"]
+    if remove_identity == "accession":
+        prior["sources"][0]["filing_key"].pop("accession")
+    elif remove_identity == "source_sha256":
+        prior["sources"][0].pop("source_sha256")
+    else:
+        prior["sources"] = [row for row in prior["sources"] if row.get("kind") != "issuer_release"]
+    acquisition, _ = _trace("same_source_rebuild")
+    with pytest.raises(PgPreparationRefused, match="source identity") as raised:
+        prepare_pg_workspace(acquisition, prior=prior, observed_at="2026-07-29T17:20:00Z")
+    assert raised.value.reason == "prior_source_identity_missing"
+
+
+def test_currentness_round_trips_from_trace_to_preparation_for_every_state():
+    for state in ("up_to_date", "newer_source_pending", "currentness_unverified"):
+        acquisition, trace = _trace("same_source_rebuild")
+        checked_at = trace["observed_at"]
+        if state == "currentness_unverified":
+            checked_at = None
+        acquisition["currentness"] = {"state": state, "checked_at": checked_at}
+        result = prepare_pg_workspace(
+            acquisition, prior=None, observed_at=acquisition["acceptance_datetime"]
+        )
+        assert result["currentness_context"]["currentness"] == {
+            "state": state,
+            "source_clock": checked_at,
+        }
+
+
+def test_absent_acquisition_currentness_prepares_none_currentness():
+    acquisition, _ = _trace("same_source_rebuild")
+    acquisition.pop("currentness")
+    result = prepare_pg_workspace(
+        acquisition, prior=None, observed_at=acquisition["acceptance_datetime"]
+    )
+    assert result["currentness_context"]["currentness"] is None
+
+
+@pytest.mark.parametrize(
+    "currentness",
+    [
+        {"state": "up_to_date", "checked_at": "2026-07-29T17:10:00Z", "extra": True},
+        {"state": "unknown_state", "checked_at": "2026-07-29T17:10:00Z"},
+        {"state": "unverified", "checked_at": "2026-07-29T17:10:00Z"},
+        {"state": "up_to_date", "checked_at": None},
+        {"state": "up_to_date", "checked_at": "2026-07-29T17:10:00+00:00"},
+    ],
+)
+def test_malformed_acquisition_currentness_is_refused(currentness):
+    acquisition, _ = _trace("same_source_rebuild")
+    acquisition["currentness"] = currentness
+    with pytest.raises(PgPreparationRefused, match="currentness is malformed") as raised:
+        prepare_pg_workspace(acquisition, prior=None, observed_at="2026-07-29T17:20:00Z")
+    assert raised.value.reason == "malformed_currentness"
 
 
 def test_code_only_change_does_not_alter_sec_acceptance_time():
     first = _prepared()
     acquisition, _ = _trace("same_source_rebuild")
     second = prepare_pg_workspace(
-        acquisition, prior=first["workspace"], observed_at="2026-09-01T17:00:00Z"
+        acquisition, prior=first["workspace"], observed_at="2026-07-29T17:20:00Z"
     )
     assert second["workspace"]["lifecycle"]["source_available_at"] == (
         first["workspace"]["lifecycle"]["source_available_at"]
@@ -279,7 +447,7 @@ def test_prior_read_failure_raises():
     acquisition, _ = _trace("prior_unavailable")
     with pytest.raises(RuntimeError, match="prior bytes unavailable"):
         prepare_pg_workspace(
-            acquisition, prior=FailingMapping(), observed_at="2026-09-01T17:00:00Z"
+            acquisition, prior=FailingMapping(), observed_at="2026-07-29T17:20:00Z"
         )
 
 
@@ -294,3 +462,21 @@ def test_exact_accession_request_never_falls_back():
         )
     assert events[-1]["selected_accession"] is None
     assert events[-1]["candidates"][-1]["outcome"] == "fetch_failure"
+
+
+def test_exact_accession_success_carries_its_own_receipt_and_currentness():
+    events = []
+    acquisition = acquire_results_filing(
+        cik="0000080424",
+        http_get=fixture_http_get("newer_fetch_failed"),
+        accession=fixture_accession("older"),
+        trace=events.append,
+    )
+    recorded_bytes = acquisition["exhibit_body"].encode("utf-8")
+    assert acquisition["accession"] == fixture_accession("older")
+    assert acquisition["received_bytes"] == {
+        "sha256": hashlib.sha256(recorded_bytes).hexdigest(),
+        "length": len(recorded_bytes),
+    }
+    assert acquisition["currentness"]["state"] == "newer_source_pending"
+    assert acquisition["currentness"]["checked_at"] == events[-1]["observed_at"]

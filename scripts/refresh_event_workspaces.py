@@ -403,7 +403,8 @@ def _trace_row(row: Mapping[str, Any], *, exhibit_url: str | None, outcome: str,
 
 
 def _selected_acquisition(row: Mapping[str, Any], exhibit_url: str, exhibit_body: bytes,
-                          exhibit_text: str) -> dict[str, Any]:
+                          exhibit_text: str, *, currentness: str | None = None,
+                          checked_at: str | None = None) -> dict[str, Any]:
     receipt = {"sha256": sha256(exhibit_body).hexdigest(), "length": len(exhibit_body)}
     acquisition = {
         "cik": str(row.get("cik") or ""),
@@ -418,6 +419,8 @@ def _selected_acquisition(row: Mapping[str, Any], exhibit_url: str, exhibit_body
         "received_bytes": receipt,
         "declared_encoding": "utf-8",
     }
+    if currentness is not None:
+        acquisition["currentness"] = {"state": currentness, "checked_at": checked_at}
     return acquisition
 
 
@@ -444,6 +447,7 @@ def _acquire_results_filing_traced(*, cik: str, http_get: HttpGet,
     selected_target_accession: str | None = None
     typed_handling: dict[str, str] = {}
 
+    pending = False
     if accession is not None:
         submissions_status, submissions_body = recorder(
             _SUBMISSIONS_URL.format(cik=int(cik))
@@ -464,11 +468,25 @@ def _acquire_results_filing_traced(*, cik: str, http_get: HttpGet,
                 )
             except Exception as exc:
                 last_error = str(exc)
-            row = {"accession": accession, "cik": cik}
         else:
             resolved = _resolve_exhibit_for_row(row, cik=cik, http_get=recorder)
             if resolved is not None:
                 row = _archived_row(resolved)
+        newer_rows = [
+            item for item in _select_newest_results_rows(submissions_rows(submissions, block="recent"))
+            if str(item.get("accessionNumber") or item.get("accession") or "") != accession
+            and str(item.get("acceptanceDateTime") or item.get("acceptance_datetime") or "")
+            >= str(row.get("acceptance_datetime") or row.get("acceptanceDateTime") or "")
+        ]
+        for newer in newer_rows:
+            newer_row = _archived_row(newer)
+            newer_accession = newer_row["accession"]
+            newer_archive = f"{_ARCHIVES}/{int(cik)}/{newer_accession.replace('-', '')}"
+            newer_header_url = f"{newer_archive}/{newer_accession}-index-headers.html"
+            newer_status, newer_header = recorder(newer_header_url)
+            if newer_status == 200 and _select_exhibit_99_1(_parse_sgml_manifest(newer_header.decode("utf-8", errors="replace"))) is not None:
+                pending = True
+                break
     else:
         candidates = list(reversed(_fetch_submissions_candidates(cik, http_get=recorder)))
         submissions_url = _SUBMISSIONS_URL.format(cik=int(cik))
@@ -567,7 +585,12 @@ def _acquire_results_filing_traced(*, cik: str, http_get: HttpGet,
                 failure = "filing acceptance_datetime is required as the source clock"
                 last_error = fatal_error = failure
                 break
-            selected = _selected_acquisition(row, exhibit_url, exhibit_body, exhibit_text)
+            selected = _selected_acquisition(
+                row, exhibit_url, exhibit_body, exhibit_text,
+                currentness="up_to_date", checked_at=datetime.now(
+                    timezone.utc
+                ).isoformat(timespec="seconds").replace("+00:00", "Z"),
+            )
             selected["cik"] = cik
             break
 
@@ -618,20 +641,30 @@ def _acquire_results_filing_traced(*, cik: str, http_get: HttpGet,
             row, exhibit_url=exhibit_url or header_url, outcome=outcome, failure=failure,
             receipt=receipt, decode=decode_label, declared_encoding=declared,
         ))
-        if selected is not None and outcome != "selected":
+        if outcome != "selected":
             selected = None
         if outcome == "selected":
             selected_target_accession = row_accession
+            selected = _selected_acquisition(
+                row, exhibit_url or header_url, exhibit_body, exhibit_body.decode("utf-8"),
+                currentness="newer_source_pending" if pending else "up_to_date",
+                checked_at=datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
+            )
         fatal_error = fatal_error or failure or last_error
 
     newest_relevant = next((item["accession"] for item in trace_rows if item["outcome"] != "excluded_non_results"), None)
     selected_accession = None if selected is None else str(selected["accession"])
     if selected is None and selected_target_accession is not None:
         selected_accession = selected_target_accession
-    pending = any(item["outcome"] not in {"selected", "excluded_non_results"} and item["accession"] != selected_accession for item in trace_rows)
-    currentness = "newer_source_pending" if selected is not None and pending else ("up_to_date" if selected is not None else "unverified")
+    if accession is None:
+        pending = any(item["outcome"] not in {"selected", "excluded_non_results"} and item["accession"] != selected_accession for item in trace_rows)
+    currentness = (
+        "newer_source_pending" if selected is not None and pending
+        else "up_to_date" if selected is not None
+        else "currentness_unverified"
+    )
     if selected is not None:
-        selected["currentness"] = {"state": currentness}
+        selected["currentness"] = {"state": currentness, "checked_at": selected["currentness"]["checked_at"]}
     decoded_digest = None if selected is None else {"sha256": sha256(selected["exhibit_body"].encode("utf-8")).hexdigest(), "length": len(selected["exhibit_body"].encode("utf-8"))}
     selected_receipt = None if selected is None else selected["received_bytes"]
     terminal = next((item for item in reversed(trace_rows) if item["outcome"] != "excluded_non_results"), None)

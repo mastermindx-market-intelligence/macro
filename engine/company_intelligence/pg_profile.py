@@ -2197,7 +2197,9 @@ __all__ = ["PG_BOUNDED_TEXT_MAX", "PG_COMBINED_VOLUME_MIX_METRICS", "PG_DEFINITI
 
 
 # ---- Task 2: private native preparation ----
+from calendar import monthrange
 from datetime import datetime
+from types import MappingProxyType
 
 from .documents import FilingKey, SourceDocument
 from .event_workspace import preview_generation_identity
@@ -2205,6 +2207,7 @@ from .event_workspace_build import build_event_workspace
 from .events import FiscalPeriod
 
 
+PROFILE_SOURCE_FAMILY = MappingProxyType({RIGHTS_PROFILE: "sec_edgar"})
 PG_PROFILE_VERSION = "pg_profile.v1"
 PG_PREPARATION_REFUSALS = (
     "malformed_acquisition",
@@ -2217,6 +2220,7 @@ PG_PREPARATION_REFUSALS = (
     "received_bytes_mismatch",
     "non_utf8_source",
     "malformed_currentness",
+    "unsupported_source_profile",
 )
 _PREPARATION_MESSAGES = {
     "malformed_acquisition": "acquisition must be a mapping",
@@ -2229,6 +2233,7 @@ _PREPARATION_MESSAGES = {
     "received_bytes_mismatch": "acquisition received bytes do not match the decoded source text",
     "non_utf8_source": "acquisition source was not cleanly decoded as utf-8",
     "malformed_currentness": "acquisition currentness is malformed",
+    "unsupported_source_profile": "profile is not mapped to a source family",
 }
 
 
@@ -2240,7 +2245,46 @@ class PgPreparationRefused(ValueError):
         self.reason = reason
 
 
-_PREPARED_FISCAL_SCOPE = ("2026-04-01", "2026-06-30", "2025-04-01", "2025-06-30")
+def source_family_for_profile(profile: str) -> str:
+    try:
+        return PROFILE_SOURCE_FAMILY[profile]
+    except KeyError as exc:
+        raise PgPreparationRefused("unsupported_source_profile") from exc
+
+
+def _admitted_fiscal_scope(acquisition: dict[str, Any], acceptance: str) -> tuple[tuple[date, date, date, date], tuple[int, int, date]]:
+    acquisition_cik = acquisition.get("cik")
+    acquisition_cik = acquisition_cik if isinstance(acquisition_cik, str) else ""
+    issuer = pg_private_registry().get(company_id_for_cik(acquisition_cik))
+    if issuer is None:
+        raise PgPreparationRefused("unadmitted_issuer")
+    try:
+        acceptance_clock = datetime.strptime(acceptance, "%Y-%m-%dT%H:%M:%SZ")
+    except ValueError as exc:
+        raise PgPreparationRefused("malformed_source_clock") from exc
+    fiscal_month = issuer.fiscal_year_end_month
+    candidates = []
+    for quarter in range(-2, 5):
+        start_month_number = fiscal_month + 3 * quarter + 1
+        end_month_number = fiscal_month + 3 * (quarter + 1)
+        start_year, start_month = divmod(start_month_number - 1, 12)
+        end_year, end_month = divmod(end_month_number - 1, 12)
+        current_start = date(start_year + acceptance_clock.year - 1, start_month + 1, 1)
+        current_end = date(
+            end_year + acceptance_clock.year - 1, end_month + 1,
+            monthrange(end_year + acceptance_clock.year - 1, end_month + 1)[1],
+        )
+        if current_end < acceptance_clock.date():
+            candidates.append((current_start, current_end))
+    current_start, current_end = max(candidates, key=lambda item: item[1])
+    prior_start = date(
+        current_start.year - 1, current_start.month, current_start.day
+    )
+    prior_end = date(current_end.year - 1, current_end.month, current_end.day)
+    scope = (current_start, current_end, prior_start, prior_end)
+    _scope(scope)
+    fiscal_year, quarter = _fiscal_identity(current_start, current_end)
+    return scope, (fiscal_year, quarter, current_end)
 
 
 def _prior_release(workspace: Any) -> dict[str, Any] | None:
@@ -2255,8 +2299,51 @@ def _prior_release(workspace: Any) -> dict[str, Any] | None:
 
 
 def _source_text_sha256(value: str) -> str:
-    import hashlib
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def _prior_source_identity(release: dict[str, Any]) -> tuple[str, str]:
+    filing_key = release.get("filing_key")
+    accession = filing_key.get("accession") if isinstance(filing_key, dict) else None
+    source_sha256 = release.get("source_sha256")
+    if not isinstance(accession, str) or not accession or not isinstance(source_sha256, str) or not source_sha256:
+        raise PgPreparationRefused("prior_source_identity_missing")
+    return accession, source_sha256
+
+
+def _validated_currentness(acquisition: dict[str, Any]) -> dict[str, Any] | None:
+    if "currentness" not in acquisition:
+        return None
+    currentness = acquisition.get("currentness")
+    if not isinstance(currentness, dict) or set(currentness) != {"state", "checked_at"}:
+        raise PgPreparationRefused("malformed_currentness")
+    state = currentness.get("state")
+    clock = currentness.get("checked_at")
+    if state not in {"up_to_date", "newer_source_pending", "currentness_unverified"}:
+        raise PgPreparationRefused("malformed_currentness")
+    if clock is not None and not isinstance(clock, str):
+        raise PgPreparationRefused("malformed_currentness")
+    if state != "currentness_unverified":
+        if not isinstance(clock, str):
+            raise PgPreparationRefused("malformed_currentness")
+        try:
+            datetime.strptime(clock, "%Y-%m-%dT%H:%M:%SZ")
+        except ValueError as exc:
+            raise PgPreparationRefused("malformed_currentness") from exc
+    elif clock is not None:
+        raise PgPreparationRefused("malformed_currentness")
+    return currentness
+
+
+def _received_byte_receipt(acquisition: dict[str, Any]) -> tuple[str, int]:
+    receipt = acquisition.get("received_bytes")
+    if not isinstance(receipt, dict):
+        raise PgPreparationRefused("missing_received_byte_receipt")
+    digest = receipt.get("sha256")
+    length = receipt.get("length")
+    if not isinstance(digest, str) or len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest) or not isinstance(length, int) or isinstance(length, bool) or length < 0:
+        raise PgPreparationRefused("missing_received_byte_receipt")
+    return digest, length
 
 
 def prepare_pg_workspace(
@@ -2275,48 +2362,49 @@ def prepare_pg_workspace(
         raise PgPreparationRefused("malformed_prior")
 
     prior_row = None if prior is None else _prior_release(prior)
-    prior_workspace = prior if prior is None or "generated_at" in prior else prior.get("workspace")
+    if prior is None:
+        prior_workspace = None
+    elif isinstance(prior.get("workspace"), dict):
+        prior_workspace = prior["workspace"]
+    else:
+        prior_workspace = prior
+    acquisition_currentness = _validated_currentness(acquisition)
     decoded_digest = _source_text_sha256(body)
-    transport = acquisition.get("received_bytes") or {}
-    received_digest = str(transport.get("sha256") or decoded_digest)
-    native_source_digest = decoded_digest
-    if prior is not None and received_digest != decoded_digest:
-        native_source_digest = received_digest
+    received_digest, received_length = _received_byte_receipt(acquisition)
+    decoded_bytes = body.encode("utf-8")
+    if acquisition.get("declared_encoding") != "utf-8":
+        raise PgPreparationRefused("non_utf8_source")
+    if received_digest != hashlib.sha256(decoded_bytes).hexdigest() or received_length != len(decoded_bytes):
+        raise PgPreparationRefused("received_bytes_mismatch")
 
-    report_date = str(acquisition.get("report_date") or "")
-    fiscal_scope = _PREPARED_FISCAL_SCOPE
-    if not report_date:
-        fiscal_scope = ("2026-01-01", "2026-03-31", "2025-01-01", "2025-03-31")
-    elif report_date != "2026-06-30":
-        raise PgPreparationRefused("document_period_not_admitted")
+    fiscal_scope, identity = _admitted_fiscal_scope(acquisition, acceptance)
+    acceptance_clock = datetime.strptime(acceptance, "%Y-%m-%dT%H:%M:%SZ")
     fiscal_period = FiscalPeriod(
-        year=date.fromisoformat(fiscal_scope[1]).year,
-        quarter=4 if fiscal_scope[1].endswith("-06-30") else 1,
-        calendar_end=date.fromisoformat(fiscal_scope[1]),
+        year=identity[0], quarter=identity[1], calendar_end=identity[2]
     )
     blocks = parse_release_blocks(body)
-    identity = (2026, 4 if fiscal_scope[1].endswith("-06-30") else 1, date.fromisoformat(fiscal_scope[1]))
-    if document_period_verdict(blocks, identity) == "annual":
+    if document_period_verdict(blocks, identity) not in {None, "scope"}:
         raise PgPreparationRefused("document_period_not_admitted")
 
-    prior_digest = None if prior_row is None else str(prior_row.get("source_sha256") or "")
-    if prior is not None and not prior_digest:
-        raise PgPreparationRefused("prior_source_identity_missing")
+    prior_digest = None if prior_row is None else _prior_source_identity(prior_row)[1]
     context = {
         "profile_version": PG_PROFILE_VERSION,
-        "fiscal_scope": fiscal_scope,
-        "currentness": acquisition.get("currentness") or {"state": "unverified"},
+        "fiscal_scope": tuple(item.isoformat() for item in fiscal_scope),
+        "currentness": None if acquisition_currentness is None else {
+            "state": acquisition_currentness["state"],
+            "source_clock": acquisition_currentness["checked_at"],
+        },
         "source_available_at": acceptance,
     }
     prior_generated = None if prior_workspace is None else str(prior_workspace.get("generated_at") or "")
     prior_generation = None if prior_workspace is None else str(prior_workspace.get("generation_id") or "")
     prior_observed = None if prior_workspace is None else str((prior_workspace.get("lifecycle") or {}).get("observed_at") or "")
     prior_state = None if prior_workspace is None else str((prior_workspace.get("lifecycle") or {}).get("state") or "")
+    prior_accession = None if prior_row is None else _prior_source_identity(prior_row)[0]
     unchanged = (
         prior_digest == decoded_digest
         and prior_row is not None
-        and prior_row.get("filing_key", {}).get("accession") == acquisition.get("accession")
-        and context.get("currentness") == {"state": "up_to_date"}
+        and prior_accession == acquisition.get("accession")
     )
     generated_at = prior_generated if unchanged and prior_generated else str(observed_at)
     previous_generation_id = None if unchanged or prior_generation == "" else prior_generation
@@ -2326,21 +2414,18 @@ def prepare_pg_workspace(
     workspace = build_event_workspace(
         registry=pg_private_registry(),
         ticker="PG",
-        asof=date.fromisoformat(str(acquisition.get("filing_date") or report_date or "2026-06-30")),
+        asof=acceptance_clock.date(),
         fiscal_period=fiscal_period,
         exhibit_body=body,
         filing=filing,
         transcript=None,
         observed_at=observed_at,
         source_available_at=acceptance,
-        prior_source_sha256=prior_digest,
+        prior_source_sha256=prior_digest if unchanged else None,
         prior_lifecycle_state=prior_state,
         prior_observed_at=prior_observed,
         profile=pg_profile(fiscal_scope=fiscal_scope),
     )
-    if native_source_digest != decoded_digest:
-        workspace["sources"][0]["source_sha256"] = native_source_digest
-        workspace["_source_sha256"] = native_source_digest
     generation_id = preview_generation_identity(
         {workspace["event_id"]: workspace}, generated_at,
         previous_generation_id=previous_generation_id,
@@ -2352,9 +2437,7 @@ def prepare_pg_workspace(
 
     source_row = workspace["sources"][0]
     prior_metadata_id = None if prior_row is None else str(prior_row.get("document_id") or "")
-    changed_revision = prior is not None and (
-        prior_digest != native_source_digest or received_digest != prior_row.get("content_sha256")
-    )
+    changed_revision = prior is not None and not unchanged
     metadata_revision = 2 if changed_revision else 1
     available = datetime.fromisoformat(acceptance.replace("Z", "+00:00"))
     document_metadata = SourceDocument(
@@ -2364,7 +2447,7 @@ def prepare_pg_workspace(
         source_class="issuer_release",
         content_sha256=received_digest,
         revision=metadata_revision,
-        content_bytes=int(transport.get("length") or len(body.encode("utf-8"))),
+        content_bytes=received_length,
         filing_key=FilingKey(
             cik=str(acquisition.get("cik") or PG_CIK),
             accession=str(acquisition.get("accession") or ""),
@@ -2386,13 +2469,8 @@ def prepare_pg_workspace(
         "source_texts": {source_row["document_id"]: body},
         "received_byte_receipt": {
             "sha256": received_digest,
-            "length": int(transport.get("length") or len(body.encode("utf-8"))),
-            "declared_encoding": acquisition.get("declared_encoding") or "utf-8",
+            "length": received_length,
+            "declared_encoding": "utf-8",
         },
-        "currentness_context": {**context, "fiscal_scope": None if not report_date else fiscal_scope},
-        "currentness": acquisition.get("currentness") or context["currentness"],
+        "currentness_context": context,
     }
-
-
-def _acquisition_currentness(acquisition: dict[str, Any]) -> dict[str, Any]:
-    return acquisition.get("currentness") or {"state": "unverified"}
