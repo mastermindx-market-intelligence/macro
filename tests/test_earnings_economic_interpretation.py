@@ -377,6 +377,28 @@ def test_duplicate_selection_is_refused(case):
         })
 
 
+@pytest.mark.parametrize('case', [
+    'identical_inputs', 'headline_positive_organic_flat',
+    'reported_core_opposite_direction', 'negative_prior_eps', 'zero_prior_eps',
+    'reported_negative_organic_positive', 'eps_flat_core_rises',
+    'missing_demand_context', 'unlocated_outcome',
+    'segment_and_reconciliation_absent', 'conflict_outcome',
+    'refused_document_outcome', 'combined_volume_mix',
+])
+def test_finding_handles_are_selected_observations(case):
+    payload = build_case_interpretation(case)
+    observation_handles = [item['handle'] for item in payload['observations']]
+    for finding in payload['findings']:
+        if finding['rule_id'] in {'incomplete_margin_to_cash_bridge', 'missing_consensus'}:
+            assert finding['input_handles'] == []
+            continue
+        assert finding['input_handles']
+        for handle in finding['input_handles']:
+            assert set(handle) == {'workspace_generation_id', 'event_id', 'fact_id'}
+            assert handle in observation_handles
+            assert handle is not None
+
+
 def test_trusted_boundary_rejects_display_and_currentness_edits():
     payload = build_case_interpretation(
         'identical_inputs',

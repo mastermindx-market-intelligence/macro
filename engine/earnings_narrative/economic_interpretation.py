@@ -531,16 +531,21 @@ def _rules(rows: list[dict[str, Any]], workspace: Mapping[str, Any]) -> tuple[li
     by_metric = {row.get("metric"): row for row in rows}
     findings: list[dict[str, Any]] = []
     missing: list[dict[str, Any]] = []
-    rules: dict[str, list[dict[str, Any]]] = {rule: [] for rule in FINDING_ORDER[:-1]}
+    fired: list[str] = []
+    rule_handles: dict[str, list[dict[str, Any]]] = {}
+
+    def fire(rule_id: str, handles: list[dict[str, Any]]) -> None:
+        fired.append(rule_id)
+        rule_handles[rule_id] = handles
     reported_sales = by_metric.get("pg_reported_sales_growth_pct", {})
     organic_sales = by_metric.get("pg_organic_sales_growth_pct", {})
     pure_volume = by_metric.get("pg_organic_volume_growth_pct", {})
     if "value" in reported_sales and "value" in organic_sales and _direction(reported_sales["value"]) != _direction(organic_sales["value"]):
-        rules["reported_vs_organic_difference"].extend([
+        fire("reported_vs_organic_difference", [
             _handle(workspace, reported_sales), _handle(workspace, organic_sales)
         ])
     if "value" in organic_sales and "value" in pure_volume and _direction(organic_sales["value"]) > 0 >= _direction(pure_volume["value"]):
-        rules["positive_organic_nonpositive_pure_volume"].extend([
+        fire("positive_organic_nonpositive_pure_volume", [
             _handle(workspace, organic_sales), _handle(workspace, pure_volume)
         ])
     eps_changes: list[int] = []
@@ -552,23 +557,23 @@ def _rules(rows: list[dict[str, Any]], workspace: Mapping[str, Any]) -> tuple[li
             eps_changes.append(_direction(_decimal(current["value"]) - _decimal(prior["value"])))
             eps_handles.extend([_handle(workspace, current), _handle(workspace, prior)])
     if len(eps_changes) == 2 and eps_changes[0] != eps_changes[1]:
-        rules["reported_vs_core_earnings_disagreement"].extend(eps_handles)
+        fire("reported_vs_core_earnings_disagreement", eps_handles)
     present_margin_or_cash = [
         row for row in rows
         if row and "value" in row and "typed_absence" not in row
         and family_lookup(row.get("metric"))[0] in _MARGIN_OR_CASH_FAMILIES
     ]
     if not present_margin_or_cash:
-        rules["incomplete_margin_to_cash_bridge"].append(None)
+        fire("incomplete_margin_to_cash_bridge", [])
     segments = [by_metric.get(metric, {}) for metric in _SEGMENT_METRICS]
     present_segments = [
         row for row in segments
         if row and "value" in row and "typed_absence" not in row
     ]
     if present_segments:
-        rules["segment_scope_limitation"].extend([_handle(workspace, row) for row in present_segments])
-    findings.extend(_finding(rule, handles) for rule, handles in rules.items() if handles)
-    findings.append(_finding("missing_consensus", []))
+        fire("segment_scope_limitation", [_handle(workspace, row) for row in present_segments])
+    fire("missing_consensus", [])
+    findings.extend(_finding(rule, rule_handles[rule]) for rule in fired)
     for row in rows:
         if "typed_absence" in row:
             _family, group, *_ = family_lookup(row.get("metric"))
