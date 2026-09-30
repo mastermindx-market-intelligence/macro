@@ -62,6 +62,12 @@ Gates: G1 exercised by the seat as delegated owner; G2 (real source admission), 
   Both became obligations in the r3 packets. T2 produces that metadata from the actual acquisition. T3 takes the fiscal pair from `fiscal_scope` plus the facts' `period` fields, and never uses entry metadata.
 - **Runtime note (Sol 5902318060).** In teardown, the frozen R9 100,000-level nested-deque probe can SIGSEGV under CPython 3.12 with an 8 MiB stack, after the validator has already refused correctly. It is not a product crash, and the frozen witness is not mutated to hide it. Lanes run dossier commands under `ulimit -s hard`.
 - **T2 ∥ T3 (r3).** Dispatched 2026-09-30 on disjoint file grants: `reviews/SEAT_RULING_T2_T3_R3_2026-09-30.md` (T2 R5, T3 R2, and the fourteen-key correction). The only shared file is `.github/ci/legacy-jobs.yml`, edited at non-adjacent anchors.
+- **r3 erratum.** The r3 packets were rewritten rather than derived from r2, and the rewrite dropped binding sections. `reviews/SEAT_RULING_T2_T3_R3_ERRATUM_2026-09-30.md` restores them:
+  - T2 R6: the `PROFILE_SOURCE_FAMILY` constant (FOUNDATION MAP Q6);
+  - T3 R3: the §6.2 payload paths (R13 on #7904);
+  - a common anti-collapse and exact-venv ruling.
+
+  They bind at acceptance: seat verification, each PR's review bar and the next fix round. Every later re-based packet is diffed paragraph by paragraph against its predecessor before dispatch.
 - **Next:**
   1. For each T2/T3 PR, the seat verifies:
      - RED, then GREEN;

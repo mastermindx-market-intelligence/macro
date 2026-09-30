@@ -60,6 +60,7 @@ unverified:
 unresolved:
   - "The T2 (mb) and T3 (mini2) lanes are running with a 3 h fix timeout. The seat's background dispatchers print ADMISSION_WAIT_EXIT when each returns."
   - "Contract notes n-B1 (fiscal_period is typed text) and n-B2 (the validator never reads release-entry metadata) are now obligations in the r3 packets, discharged by the T2/T3 tests."
+  - "The r3 packets dropped binding r2 sections. reviews/SEAT_RULING_T2_T3_R3_ERRATUM_2026-09-30.md restores them as T2 R6 (PROFILE_SOURCE_FAMILY), T3 R3 (the §6.2 payload paths) and a common anti-collapse ruling. They bind at acceptance: seat verification, the review bar (c5/c6) and the next fix round."
   - "T7 UI and T8 release wait for the shared foundation host edge (#7870). Production PG publication stays refused until #7870 lands the sec_edgar rights row (DEC:CDV1-FOUNDATION-INTEGRATION)."
   - "Real PG source admission through earnings-public-wire.yml may need operator-held credentials at T8 (carried from the 09-24 handoff)."
 next_actions:
@@ -69,6 +70,7 @@ next_actions:
   - "Before the second merge, run `git merge-tree --write-tree` on the two heads. Merge each on concluded CI with `--match-head-commit`, then verify it landed against a freshly fetched origin/main."
   - "Re-base the T4 packet (private publication v2, which owns private_publication edits exclusively) on main after T2 and T3 merge, then dispatch it. After T4: T5 ∥ T6."
   - "Before T7 or T8, re-census #7870's head."
+  - "Before dispatching any re-based packet (T4, T5, T6), diff it paragraph by paragraph against the packet it replaces, and name the ruling that supersedes each dropped paragraph. Add the erratum's common anti-collapse ruling to each; none of the three carries it today."
 do_not_redo:
   - "Do not reopen Task 1. It is ACCEPTED / STOP at 1c3e2215 (Sol 5902318060), with no R12 and no literal repair. Frozen witnesses, including the R9 nested-deque probe, are never mutated to hide the CPython 3.12 teardown limitation."
   - "Do not re-derive the T2/T3 grant split or the CI placement. It is SEAT_RULING_T2_T3_R3_2026-09-30 (T2 R5, T3 R2)."
