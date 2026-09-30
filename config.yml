@@ -571,6 +571,22 @@ cboe:
     strike_window_pct: 0.25      # ignore strikes >25% from spot
     max_expiry_days: 365
 
+exchange_breadth:
+  # XNYS-only point-in-time participation plane. This adapter consumes the existing
+  # raw Massive daily-bar store and canonical Data OS aliases; it does not create a
+  # second price, identity, calendar, live-poll, or trade-authority plane.
+  base_url: https://api.polygon.io
+  api_key_env: POLYGON_API_KEY
+  max_pages: 50
+  timeout_s: 60
+  min_store_files: 100
+  roster_min_rows: 1000
+  operating_min_rows: 500
+  min_identity_coverage: 0.90
+  min_price_coverage: 0.85
+  split_lookback_days: 550
+  history_lookback_days: 800
+
 polygon:
   # Polygon.io / massive.com options-OI accrual (GEX FOUNDATION) — the per-strike
   # open interest the free Cboe feed's history discards and that CANNOT be backfilled

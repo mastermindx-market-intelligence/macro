@@ -181,6 +181,10 @@ class Adapter:
     overwrite_overlap: bool = False  # True for dividend/split-ADJUSTED series (yfinance
     # auto_adjust=True): the fresh pull fully overwrites its own date span so a re-adjusted
     # history leaves no combine_first basis seam. See lib.store.upsert / masterplan §W6-CN.
+    # Opt-in only for adapters that checkpoint-promote their own staged multi-file generation.
+    # The generic runner still validates and reports their frames, but MUST NOT upsert
+    # them again or it would create a second writer and break generation acceptance.
+    manages_persistence: bool = False
 
     # Opt-in per-COLUMN freshness contracts: {series_name: {column: ColumnContract}}.
     # Empty = no column-grain checking (every existing adapter is unaffected). See
@@ -567,12 +571,19 @@ def run_adapter(adapter: Adapter, full_history: bool = False,
         rows, last = 0, None
         today = datetime.now(timezone.utc).date()
         dark_found: list[dict] = []
+        manages_persistence = bool(getattr(adapter, "manages_persistence", False))
         for series_name, df in frames.items():
             df = adapter.validate(series_name, df)
-            merged = store.upsert(adapter.group, series_name, df,
-                                  outlier_col=df.columns[0] if len(df.columns) == 1 else None,
-                                  normalize_index=getattr(adapter, "normalize_index", True),
-                                  overwrite_overlap=getattr(adapter, "overwrite_overlap", False))
+            if manages_persistence:
+                # The adapter already promoted one reconciled generation.  Re-upserting
+                # here would create a second writer and could advance frames after the
+                # adapter's receipt/checkpoint no longer describes their exact bytes.
+                merged = df
+            else:
+                merged = store.upsert(adapter.group, series_name, df,
+                                      outlier_col=df.columns[0] if len(df.columns) == 1 else None,
+                                      normalize_index=getattr(adapter, "normalize_index", True),
+                                      overwrite_overlap=getattr(adapter, "overwrite_overlap", False))
             rows += len(df)
             last = max(filter(None, [last, merged.index.max()]))
             # Column-grain contract check on the MERGED frame (store ground truth —

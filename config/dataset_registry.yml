@@ -36,9 +36,93 @@
 # conflict_policy  ∈ PRIMARY_ONLY | FALLBACK | DOMAIN_AUTHORITY | CROSS_VALIDATE | COMPOSITE
 # ─────────────────────────────────────────────────────────────────────────────
 schema: dataset_registry.v1
-updated: "2026-09-20"
+updated: "2026-09-29"
 
 datasets:
+
+  # ── Exchange breadth / participation ───────────────────────────────────────
+  - dataset_id: breadth.exchange.xnys.operating
+    layer: L3
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: collectors/exchange_breadth.py::ExchangeBreadthAdapter
+    storage: data/exchange_breadth/nyse_operating.parquet
+    format: parquet
+    grain: [session]
+    temporal_profile: DERIVED
+    timezone: America/New_York
+    frequency: nightly
+    conflict_policy: DOMAIN_AUTHORITY
+    quality_checks: [uniqueness, completeness, freshness, temporal_integrity, referential]
+    version: "0.1.0"
+    inputs: [equity.bars.daily.massive, reference.vendor_aliases]
+    schema:
+      listed_n: {dtype: int64, nullable: false, unit: issues}
+      resolved_identity_n: {dtype: int64, nullable: false, unit: issues}
+      priced_n: {dtype: int64, nullable: false, unit: issues}
+      seasoned_n: {dtype: int64, nullable: false, unit: issues}
+      adv: {dtype: int64, nullable: false, unit: issues}
+      dec: {dtype: int64, nullable: false, unit: issues}
+      unch: {dtype: int64, nullable: false, unit: issues}
+      pct_above_20: {dtype: float64, nullable: true, unit: percent}
+      pct_above_50: {dtype: float64, nullable: true, unit: percent}
+      pct_above_200: {dtype: float64, nullable: true, unit: percent}
+      nh: {dtype: int64, nullable: false, unit: issues, note: "close-confirmed against the prior 252 valid sessions; current session excluded"}
+      nl: {dtype: int64, nullable: false, unit: issues, note: "close-confirmed against the prior 252 valid sessions; current session excluded"}
+      high_low_index: {dtype: float64, nullable: true, unit: percent}
+      ad_line: {dtype: int64, nullable: false, unit: net_issues}
+      high_low_line: {dtype: int64, nullable: false, unit: net_issues}
+      coverage_pct: {dtype: float64, nullable: true, unit: percent}
+      seasoned_pct: {dtype: float64, nullable: true, unit: percent}
+    code_consumers: [engine/breadth_command_center.py, scripts/build_site.py]
+    notes: >
+      Stable contract for active XNYS operating equities (CS and ADRC). Raw Massive
+      closes are normalized with dated point-in-time split observations. Identity,
+      coverage, denominator, basis, and source-clock disclosure are load-bearing.
+      Display/research context only; no rank, forecast, allocation, or trade authority.
+      Status remains PROPOSED until a natural nightly writer and real-path receipt are proven.
+
+  - dataset_id: breadth.exchange.xnys.all_issues
+    layer: L3
+    status: PROPOSED
+    owner: macro-dashboard
+    producer: collectors/exchange_breadth.py::ExchangeBreadthAdapter
+    storage: data/exchange_breadth/nyse_all_issues.parquet
+    format: parquet
+    grain: [session]
+    temporal_profile: DERIVED
+    timezone: America/New_York
+    frequency: nightly
+    conflict_policy: DOMAIN_AUTHORITY
+    quality_checks: [uniqueness, completeness, freshness, temporal_integrity, referential]
+    version: "0.1.0"
+    inputs: [equity.bars.daily.massive, reference.vendor_aliases]
+    schema:
+      listed_n: {dtype: int64, nullable: false, unit: issues}
+      resolved_identity_n: {dtype: int64, nullable: false, unit: issues}
+      priced_n: {dtype: int64, nullable: false, unit: issues}
+      seasoned_n: {dtype: int64, nullable: false, unit: issues}
+      adv: {dtype: int64, nullable: false, unit: issues}
+      dec: {dtype: int64, nullable: false, unit: issues}
+      unch: {dtype: int64, nullable: false, unit: issues}
+      pct_above_20: {dtype: float64, nullable: true, unit: percent}
+      pct_above_50: {dtype: float64, nullable: true, unit: percent}
+      pct_above_200: {dtype: float64, nullable: true, unit: percent}
+      nh: {dtype: int64, nullable: false, unit: issues, note: "close-confirmed against the prior 252 valid sessions; current session excluded"}
+      nl: {dtype: int64, nullable: false, unit: issues, note: "close-confirmed against the prior 252 valid sessions; current session excluded"}
+      high_low_index: {dtype: float64, nullable: true, unit: percent}
+      ad_line: {dtype: int64, nullable: false, unit: net_issues}
+      high_low_line: {dtype: int64, nullable: false, unit: net_issues}
+      coverage_pct: {dtype: float64, nullable: true, unit: percent}
+      seasoned_pct: {dtype: float64, nullable: true, unit: percent}
+    code_consumers: [engine/breadth_command_center.py, scripts/build_site.py]
+    notes: >
+      Comparator contract for all active XNYS stock-market issues, including funds,
+      ETPs, preferreds, units, warrants, rights, and structured products. It must never
+      be relabeled as operating-company breadth. Display/research context only; no rank,
+      forecast, allocation, or trade authority. Status remains PROPOSED until natural
+      nightly production and a real-path receipt are proven.
+
 
   # ── Equity bars ────────────────────────────────────────────────────────────
   - dataset_id: equity.bars.daily.stocks
