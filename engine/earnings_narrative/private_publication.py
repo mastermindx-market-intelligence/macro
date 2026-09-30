@@ -2068,11 +2068,19 @@ def _native_objects_for_slug(
         document_body = _bounded_read(store, document["object_key"], maximum=document["bytes"])
         if document_body is None:
             return {}
-        source_digest = _native_json(
+        if (
+            len(document_body) != document["bytes"]
+            or sha256(document_body).hexdigest() != document["sha256"]
+        ):
+            continue
+        parsed_document = _native_json(
             document_body,
             maximum=document["bytes"],
             name="native document",
-        )["content_sha256"]
+        )
+        source_digest = parsed_document.get("content_sha256")
+        if source_digest not in native["source_bodies"]:
+            continue
         receipts.extend((
             native["workspaces"][entry["workspace"]],
             document,

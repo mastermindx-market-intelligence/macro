@@ -326,7 +326,7 @@ def test_v1_downgrade_and_retirement_are_refused_before_writes(tmp_path):
     assert exc.value.reason == "retirement_invalid"
 
 
-def test_pointer_does_not_move_when_required_source_readback_fails(tmp_path):
+def test_readback_failure_reason_and_control_twins(tmp_path):
     store, baseline = published_v1_case(tmp_path)
     prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
     fail_source_readback(store, prepared)
@@ -345,6 +345,51 @@ def test_pointer_does_not_move_when_required_source_readback_fails(tmp_path):
     pp.publish_private_publication(control_store, control)
     assert control_store.get_bytes(pp.POINTER_KEY) != canonical_json_bytes(control_baseline)
     assert pp.POINTER_KEY in control_store.conditional_calls
+
+
+def test_verify_before_parse_keeps_hostile_documents_typed(tmp_path):
+    store, _baseline = published_v1_case(tmp_path)
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
+    pp.publish_private_publication(store, prepared)
+    manifest = pp.load_private_manifest(store)
+    slug = "pg-synthetic-economic-dossier"
+    document_digest = manifest["native"]["selections"][slug]["chain"][0]["document"]
+    document_receipt = manifest["native"]["documents"][document_digest]
+    document_path = store.root / Path(document_receipt["object_key"])
+    original = document_path.read_bytes()
+    hostile = original[:-1] + bytes([original[-1] ^ 1])
+
+    for corruption in (
+        hostile,
+        original[: len(original) // 2],
+        b"",
+        b"[]\n",
+        canonical_json_bytes({**json.loads(original), "content_sha256": "0" * 64}),
+    ):
+        document_path.write_bytes(corruption)
+        current = pp.load_private_manifest(store)
+        manifest_digest = sha256(store.get_bytes(prepared.manifest_key)).hexdigest()
+        for reader in (
+            lambda: pp.load_economic_closure(store, manifest=current, slug=slug),
+            lambda: pp.load_economic_closure(
+                store, manifest=current, slug=slug, interpretation="stale_ok"
+            ),
+            lambda: pp.load_current_economic_view(store, "PG", manifest=current),
+            lambda: pp.load_economic_evidence(
+                store,
+                generation_id=current["generation_id"],
+                manifest_digest=manifest_digest,
+                record_digest=current["records"][slug]["sha256"],
+                slug=slug,
+                fact_id="fact_id",
+            ),
+        ):
+            try:
+                reader()
+            except Exception as exc:
+                assert isinstance(exc, pp.EarningsPrivatePublicationError), type(exc)
+
+        document_path.write_bytes(original)
 
 
 @pytest.fixture
