@@ -765,7 +765,9 @@ def test_chain_and_cutoff_rules(tmp_path):
     assert exc.value.reason == "chain_not_extended"
     assert store.get_bytes(pp.POINTER_KEY) == pointer
     short = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid", name="short"))
-    assert len(short.manifest["native"]["selections"][next(iter(short.manifest["native"]["selections"]))]["chain"]) < 2
+    installed_selection = next(iter(pp.load_private_manifest(store)["native"]["selections"].values()))
+    short_selection = next(iter(short.manifest["native"]["selections"].values()))
+    assert len(short_selection["chain"]) < len(installed_selection["chain"])
     with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
         pp.publish_private_publication(store, short)
     assert exc.value.reason == "chain_not_extended"
