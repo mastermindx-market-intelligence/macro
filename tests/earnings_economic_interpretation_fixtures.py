@@ -1,11 +1,13 @@
 """Synthetic cases for the bounded economic interpretation builder."""
 from __future__ import annotations
 
-import hashlib
-
 from engine.company_intelligence.event_workspace_build import build_event_workspace
-from engine.company_intelligence.pg_profile import PG_DEFINITIONS, PG_METRIC_KEYS, pg_private_registry, pg_profile
-from engine.earnings_narrative.economic_interpretation import build_economic_interpretation
+from engine.company_intelligence.pg_profile import PG_METRIC_KEYS, pg_private_registry, pg_profile
+from engine.earnings_narrative.economic_interpretation import (
+    CODE_REVISION,
+    SEMANTIC_REVISION,
+    build_economic_interpretation,
+)
 from tests.earnings_economic_fixtures import (
     ACCEPTANCE,
     FISCAL_PERIOD,
@@ -13,16 +15,6 @@ from tests.earnings_economic_fixtures import (
     _filing,
     pg_bound_case,
 )
-
-
-SEMANTIC_REVISION = "synthetic-semantic-revision-v1"
-CODE_REVISION = "synthetic-code-revision-v1"
-
-
-def _absent_fact_id(event_id: str, metric: str, basis: str) -> str:
-    identity = f"{event_id}|{metric}|{metric}|{basis}"
-    digest = hashlib.sha256(identity.encode("utf-8")).hexdigest()[:16]
-    return f"fact_{digest}"
 
 
 _EPS_ROW = "<tr><td>Diluted Net Earnings per Common Share</td><td>$3.07</td><td>$2.93</td></tr>"
@@ -45,8 +37,14 @@ def _body(case: str) -> str:
         return body.replace(_EPS_ROW, "<tr><td>Diluted Net Earnings per Common Share</td><td>$3.07</td><td>($2.93)</td></tr>")
     if case == "zero_prior_eps":
         return body.replace(_EPS_ROW, "<tr><td>Diluted Net Earnings per Common Share</td><td>$3.07</td><td>$0.00</td></tr>")
-    if case == "uncertain_prior_eps":
-        return body.replace(_EPS_ROW, "<tr><td>Diluted Net Earnings per Common Share</td><td>$3.07</td><td>$2.00</td></tr>")
+    if case == "reported_negative_organic_positive":
+        return body.replace("<td>3.0%</td><td>1.0%</td>", "<td>(2.0)%</td><td>3.0%</td>", 1)
+    if case == "eps_flat_core_rises":
+        return body.replace(_EPS_ROW, "<tr><td>Diluted Net Earnings per Common Share</td><td>$2.93</td><td>$2.93</td></tr>")
+    if case == "missing_demand_context":
+        return body.replace("<td>Price</td>", "<td>Unrecognized</td>", 1)
+    if case == "unlocated_outcome":
+        return body.replace("<p>全球品牌 demand was stable before 3.07 units of synthetic EPS.</p>", "<p>全球品牌 demand was stable before synthetic EPS.</p>")
     if case == "refused_document_outcome":
         return "<DOCUMENT>\n<TYPE>EX-99.2\n<TITLE>synthetic refused document\n<TEXT>\n</TEXT>\n</DOCUMENT>\n"
     if case == "segment_and_reconciliation_absent":
@@ -65,7 +63,8 @@ def _workspace(
     if body is None:
         body = _body(case) if case in {
             "headline_positive_organic_flat", "reported_core_opposite_direction",
-            "negative_prior_eps", "zero_prior_eps", "uncertain_prior_eps",
+            "negative_prior_eps", "zero_prior_eps", "reported_negative_organic_positive",
+            "eps_flat_core_rises", "missing_demand_context", "unlocated_outcome",
             "segment_and_reconciliation_absent", "conflict_outcome", "refused_document_outcome",
         } else pg_bound_case(kind).source if kind in {
             "annual_first", "combined_volume_only", "columns_reordered", "hostile_markup",
@@ -90,9 +89,10 @@ def _workspace(
 
 def _case_body(case: str) -> str:
     return _body(case) if case in {
-        "headline_positive_organic_flat", "reported_core_opposite_direction",
-        "negative_prior_eps", "zero_prior_eps", "uncertain_prior_eps",
-        "segment_and_reconciliation_absent", "conflict_outcome", "refused_document_outcome",
+            "headline_positive_organic_flat", "reported_core_opposite_direction",
+            "negative_prior_eps", "zero_prior_eps", "reported_negative_organic_positive",
+            "eps_flat_core_rises", "missing_demand_context", "unlocated_outcome",
+            "segment_and_reconciliation_absent", "conflict_outcome", "refused_document_outcome",
     } else pg_bound_case("combined_volume_only" if case == "combined_volume_mix" else "annual_first").source
 
 
@@ -106,35 +106,12 @@ def _texts(case: str, body: str | None = None) -> dict[str, str]:
     return {document_id: actual}
 
 
-def _decline(workspace: dict, metric: str, reason: str = "no_span_addressable_evidence", *, absent: bool = False) -> None:
-    workspace["_release_document_id"] = next(
-        source["document_id"]
-        for source in workspace["sources"]
-        if source.get("kind") == "issuer_release"
-    )
-    row = next(row for row in workspace["facts"] if row.get("metric") == metric)
-    if absent:
-        workspace["_release_document_id"] = None
-    row["typed_absence"] = {
-        "schema": "typed_absence.v1", "authority": "context_only", "reason": reason,
-        "subject": metric, "detail": f"synthetic typed refusal: {reason}",
-        "missing_fields": [], "event_id": row["event_id"],
-        "document_id": workspace.get("_release_document_id"),
-    }
-    for key in ("value", "unit", "period", "basis", "source_span"):
-        row.pop(key, None)
-    definition = next(
-        definition for definition in PG_DEFINITIONS if definition.metric == metric
-    )
-    row["fact_id"] = _absent_fact_id(row["event_id"], metric, definition.basis)
-
-
 def _selection(case: str):
     if case == "fake_fact_selector":
-        return [{"workspace_generation_id": "0" * 24, "event_id": "evt_wrong", "fact_id": "fact_wrong"}]
+        return {"facts": [{"workspace_generation_id": "0" * 24, "event_id": "evt_wrong", "fact_id": "fact_wrong"}], "currentness": None}
     if case == "twenty_five_comparisons":
-        return [{"metric": metric, "include": True} for metric in (*PG_METRIC_KEYS, *(PG_METRIC_KEYS[:5]))]
-    return None
+        return {"facts": [{"metric": metric, "include": True} for metric in (*PG_METRIC_KEYS, *(PG_METRIC_KEYS[:5]))], "currentness": None}
+    return {"facts": None, "currentness": None}
 
 
 def _case(case: str, *, fiscal_period=FISCAL_PERIOD, body: str | None = None):
@@ -146,8 +123,6 @@ def _case(case: str, *, fiscal_period=FISCAL_PERIOD, body: str | None = None):
         for source in workspace["sources"]
         if source.get("kind") == "issuer_release"
     )
-    if case == "unlocated_outcome":
-        _decline(workspace, "pg_reported_eps_growth_pct")
     texts = {document_id: body}
     return workspace, texts
 
@@ -158,7 +133,7 @@ def build_case_interpretation(case: str, **overrides):
         workspace,
         source_texts=texts,
         fiscal_scope=FISCAL_SCOPE,
-        selection=_selection(case),
+        selection=overrides.pop("selection", _selection(case)),
         semantic_revision=SEMANTIC_REVISION,
         code_revision=overrides.pop("code_revision", CODE_REVISION),
         **overrides,

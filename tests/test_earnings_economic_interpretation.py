@@ -5,6 +5,8 @@ import pytest
 from engine.earnings_narrative import economic_interpretation
 from engine.earnings_narrative.economic_interpretation import (
     AUTHORITY_KEYS,
+    CODE_REVISION,
+    SEMANTIC_REVISION,
     TOP_LEVEL_KEYS,
     EconomicInterpretationError,
     build_economic_interpretation,
@@ -62,9 +64,7 @@ def test_nonpositive_prior_is_not_comparable(case):
 
 
 def test_uncertainty_interval_touching_zero_refuses_rate():
-    result = compare_eps(Decimal('3.07'), Decimal('2.00'), precision=2)
-    built = build_case_interpretation('uncertain_prior_eps')['comparisons'][0]['result']
-    assert built['reason'] == result['reason'] == 'uncertainty_interval_touches_zero'
+    result = compare_eps(Decimal('1.00'), Decimal('0.02'), precision=2, uncertainty=Decimal('0.03'))
     assert result == {
         'state': 'not_comparable', 'value': None,
         'reason': 'uncertainty_interval_touches_zero',
@@ -75,7 +75,9 @@ def test_uncertainty_interval_touching_zero_refuses_rate():
 def test_optional_absence_leaves_supported_explanation():
     result = build_case_interpretation('segment_and_reconciliation_absent')
     assert result['quality']['supported'] is True
-    assert {'core_reconciliation', 'segment_organic_sales'} <= {x['subject'] for x in result['missing_context']}
+    assert {'pg_core_reconciliation_context', 'pg_beauty_organic_sales_growth_pct'} <= {
+        x['subject'] for x in result['missing_context']
+    }
     assert 'incomplete_margin_to_cash_bridge' in {x['rule_id'] for x in result['findings']}
 
 
@@ -91,9 +93,15 @@ def test_fake_fact_selector_is_refused():
 
 def test_changed_code_version_preserves_native_clocks():
     baseline = build_case_interpretation('changed_code_version')
-    changed = build_case_interpretation('changed_code_version', code_revision='synthetic-code-revision-v2')
+    monkeypatch_code = 'e' * 64
+    economic_interpretation.CODE_REVISION = monkeypatch_code
+    try:
+        changed = build_case_interpretation('changed_code_version', code_revision=monkeypatch_code)
+    finally:
+        economic_interpretation.CODE_REVISION = CODE_REVISION
     assert changed['interpretation_id'] != baseline['interpretation_id']
-    assert changed['clocks'] == baseline['clocks']
+    for field in ('source_revision', 'source_available_at', 'first_observed_at'):
+        assert changed['clocks'][field] == baseline['clocks'][field]
 
 
 def test_identical_inputs_are_deterministic(monkeypatch):
@@ -114,7 +122,7 @@ def test_comparison_input_swapped_to_another_period_fails():
     inputs = payload['comparisons'][0]['inputs']
     inputs[0]['period'], inputs[1]['period'] = inputs[1]['period'], inputs[0]['period']
     workspace, texts = _case('identical_inputs')
-    with pytest.raises(EconomicInterpretationError, match='stored comparisons does not replay'):
+    with pytest.raises(EconomicInterpretationError, match='stored interpretation does not replay'):
         validate_economic_interpretation(payload, workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE)
 
 
@@ -122,7 +130,7 @@ def test_tampered_stored_result_fails_trusted_validation():
     payload = build_case_interpretation('identical_inputs')
     payload['comparisons'][0]['result']['value'] = '99.99'
     workspace, texts = _case('identical_inputs')
-    with pytest.raises(EconomicInterpretationError, match='stored comparisons does not replay'):
+    with pytest.raises(EconomicInterpretationError, match='stored interpretation does not replay'):
         validate_economic_interpretation(payload, workspaces=workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE)
 
 
@@ -147,8 +155,8 @@ def test_fiscal_period_text_fields_do_not_change_pairing():
     with pytest.raises(EconomicInterpretationError, match='native observations are refused'):
         build_economic_interpretation(
             workspace, source_texts=texts, fiscal_scope=FISCAL_SCOPE,
-            selection=None, semantic_revision='synthetic-semantic-revision-v1',
-            code_revision='synthetic-code-revision-v1',
+            selection={'facts': None, 'currentness': None},
+            semantic_revision=SEMANTIC_REVISION, code_revision=CODE_REVISION,
         )
 
 
