@@ -62,7 +62,8 @@ def main() -> int:
     gate = cal.get("scored_gate") or {}
     as_of = tx.get("asof", str(f.index[-1].date()))
     span = f"{f.index.min().date()} → {f.index.max().date()}"
-    built = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    captured_at = datetime.now(timezone.utc)
+    built = captured_at.strftime("%Y-%m-%d %H:%M UTC")
 
     # DOLLAR CHANNEL + hero verdict + day-over-day change feed (engine/transmission_context).
     # All three are additive display context: any failure leaves them None and the page
@@ -70,6 +71,14 @@ def main() -> int:
     # so data/forex/latest.json is fresh at this point.
     dx = hero = changes = prev_state = None
     outdir = config.data_dir() / "transmission"
+    old = None
+    old_path = outdir / "latest.json"
+    try:
+        if old_path.exists():
+            old = json.loads(old_path.read_text(encoding="utf-8"))
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.error("prior transmission contract unreadable: %s", e)
+        old = None
     try:
         from engine import transmission_context as txc
         dx = txc.compose_dollar_channel()
@@ -86,12 +95,26 @@ def main() -> int:
         contract["dollar_channel"] = dx
     if hero is not None:
         contract["hero"] = hero
+
+    # Prospective daily real-yield receipt.  This stays inside the existing
+    # transmission owner and contract; no second rates store or authority plane.
+    previous_bundle = (
+        old.get("real_yield_5session") if isinstance(old, dict) else None
+    )
+    try:
+        from engine.rate_inflation_receipt import build_dfii10_owner_bundle
+        contract["real_yield_5session"] = build_dfii10_owner_bundle(
+            config.data_dir(),
+            captured_at=captured_at,
+            previous_bundle=previous_bundle,
+        )
+    except Exception as e:  # noqa: BLE001 — additive, never fatal
+        log.error("DFII10 owner receipt failed: %s", e)
+        if isinstance(previous_bundle, dict):
+            contract["real_yield_5session"] = previous_bundle
+
     try:
         from engine import transmission_context as txc
-        old = None
-        old_path = outdir / "latest.json"
-        if old_path.exists():
-            old = json.loads(old_path.read_text())
         changes, prev_state = txc.build_changes(old, contract, dx, as_of)
         contract["changes"] = changes
         contract["prev_state"] = prev_state
