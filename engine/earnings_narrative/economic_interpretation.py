@@ -3,7 +3,10 @@ from __future__ import annotations
 
 from dataclasses import asdict
 from datetime import date, datetime
-from decimal import Decimal, InvalidOperation
+from decimal import (
+    Context, Decimal, DivisionByZero, InvalidOperation, Overflow,
+    localcontext, ROUND_HALF_EVEN,
+)
 import hashlib
 import json
 import math
@@ -145,6 +148,15 @@ def _digest(value: Any) -> str:
 
 SEMANTIC_REVISION = _digest([asdict(definition) for definition in PG_DEFINITIONS])
 CODE_REVISION = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+_EPS_TRAPS = [InvalidOperation, DivisionByZero, Overflow]
+_EPS_WORK_CONTEXT = Context(
+    prec=100, rounding=ROUND_HALF_EVEN,
+    Emax=999999, Emin=-999999, traps=_EPS_TRAPS,
+)
+_EPS_RESULT_CONTEXT = Context(
+    prec=28, rounding=ROUND_HALF_EVEN,
+    Emax=999999, Emin=-999999, traps=_EPS_TRAPS,
+)
 
 
 def _decimal(value: Any) -> Decimal:
@@ -207,6 +219,15 @@ _INSTANT_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 _DATE_FORMAT = "%Y-%m-%d"
 
 
+def _format_instant(value: datetime) -> str:
+    return f"{value.year:04d}-{value.month:02d}-{value.day:02d}T{value.hour:02d}:{value.minute:02d}:{value.second:02d}Z"
+
+
+def _format_date(value: date) -> str:
+    return f"{value.year:04d}-{value.month:02d}-{value.day:02d}"
+
+
+
 def _parse_instant(value: Any, name: str) -> datetime:
     if type(value) is not str or _INSTANT_PATTERN.fullmatch(value) is None:
         raise EconomicInterpretationError(f"{name} is not a canonical UTC instant")
@@ -214,7 +235,7 @@ def _parse_instant(value: Any, name: str) -> datetime:
         parsed = datetime.strptime(value, _INSTANT_FORMAT)
     except ValueError as exc:
         raise EconomicInterpretationError(f"{name} is not a canonical UTC instant") from exc
-    if parsed.strftime(_INSTANT_FORMAT) != value:
+    if _format_instant(parsed) != value:
         raise EconomicInterpretationError(f"{name} is not a canonical UTC instant")
     return parsed
 
@@ -226,7 +247,7 @@ def _parse_date(value: Any, name: str) -> date:
         parsed = date.fromisoformat(value)
     except ValueError as exc:
         raise EconomicInterpretationError(f"{name} is not a canonical date") from exc
-    if parsed.strftime(_DATE_FORMAT) != value:
+    if _format_date(parsed) != value:
         raise EconomicInterpretationError(f"{name} is not a canonical date")
     return parsed
 
@@ -431,8 +452,16 @@ def _compare_eps(
             "formula": "(current / prior - 1) * 100",
         }
     try:
-        rate = (current_value / prior_value - Decimal("1")) * Decimal("100")
-        rounded = rate if precision_value is None else rate.quantize(Decimal(1).scaleb(-precision_value))
+        with localcontext(_EPS_WORK_CONTEXT):
+            rate = (current_value / prior_value - Decimal("1")) * Decimal("100")
+        with localcontext(_EPS_RESULT_CONTEXT):
+            if precision_value is None:
+                rounded = _EPS_RESULT_CONTEXT.plus(rate)
+            else:
+                rounded = rate.quantize(
+                    Decimal(1).scaleb(-precision_value, context=_EPS_RESULT_CONTEXT),
+                    context=_EPS_RESULT_CONTEXT,
+                )
     except ArithmeticError as exc:
         raise EconomicInterpretationError("EPS growth arithmetic is not defined") from exc
     return {
@@ -699,7 +728,7 @@ def _build(
     if semantic_revision != SEMANTIC_REVISION or code_revision != CODE_REVISION:
         return _unavailable("unsupported interpretation version", semantic_revision, code_revision)
     fiscal_dates = _parse_fiscal_scope(fiscal_scope)
-    fiscal_scope = tuple(item.strftime(_DATE_FORMAT) for item in fiscal_dates)
+    fiscal_scope = tuple(_format_date(item) for item in fiscal_dates)
     _exact(selection, "selection")
     if type(selection) is not dict or set(selection) != {"facts", "currentness"}:
         raise EconomicInterpretationError("selection keys are not exact")
@@ -752,7 +781,7 @@ def _build(
             "state": currentness["state"],
             "source_clock": (
                 None if currentness["source_clock"] is None
-                else currentness["source_clock"].strftime(_INSTANT_FORMAT)
+                else _format_instant(currentness["source_clock"])
             ),
         },
     }
@@ -765,7 +794,7 @@ def _build(
             "comparison_count": len(comparisons), "currentness": currentness["state"],
             "currentness_observed_at": (
                 None if currentness["source_clock"] is None
-                else currentness["source_clock"].strftime(_INSTANT_FORMAT)
+                else _format_instant(currentness["source_clock"])
             ),
             "selector_version": None,
         },
@@ -780,10 +809,10 @@ def _build(
             "fiscal_scope": list(fiscal_scope),
             "fiscal_period": _fiscal_clock(fiscal_dates[1]),
             "source_available_at": (
-                None if source_available_at is None else source_available_at.strftime(_INSTANT_FORMAT)
+                None if source_available_at is None else _format_instant(source_available_at)
             ),
             "source_accepted": None if source_available_at is None else _clock_text(source_available_at),
-            "first_observed_at": None if observed_at is None else observed_at.strftime(_INSTANT_FORMAT),
+            "first_observed_at": None if observed_at is None else _format_instant(observed_at),
             "source_currentness": (
                 None if currentness["source_clock"] is None
                 else _clock_text(currentness["source_clock"])
@@ -882,7 +911,7 @@ def _validate(
         raise EconomicInterpretationError("interpretation schema or authority is refused")
     build = _validate_payload_shape(stored_payload)
     fiscal_dates = _parse_fiscal_scope(fiscal_scope)
-    fiscal_scope = tuple(item.strftime(_DATE_FORMAT) for item in fiscal_dates)
+    fiscal_scope = tuple(_format_date(item) for item in fiscal_dates)
     available = _workspaces(workspaces)
     observations = stored_payload.get("observations")
     handles = [observation.get("handle") for observation in observations]
