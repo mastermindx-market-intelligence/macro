@@ -1,43 +1,31 @@
 {
   "schema_version": 1,
   "produced_by": "sentinel",
-  "produced_at": "2026-09-29T16:35:37Z",
-  "as_of": "2026-09-29",
+  "produced_at": "2026-09-30T06:12:29Z",
+  "as_of": "2026-09-30",
   "plan_status": "pass",
   "publish_enabled": false,
   "auditor_strict": true,
   "counts": {
-    "items": 30,
-    "passed": 28,
-    "quarantined": 2,
-    "quarantined_policy": 2,
+    "items": 26,
+    "passed": 25,
+    "quarantined": 1,
+    "quarantined_policy": 1,
     "quarantined_overflow": 0,
     "warnings": 0,
     "exceptions_applied": 0
   },
   "reasons_histogram": {
-    "near_dup": 2
+    "near_dup": 1
   },
   "quarantined": [
     {
-      "id": "post-sophia-012",
-      "account": "sophia",
-      "slot": "D1-S12",
+      "id": "post-meagan-013",
+      "account": "meagan",
+      "slot": "D1-S13",
       "type": "macro",
       "cashtag": "",
       "headline": "",
-      "class": "policy",
-      "reasons": [
-        "near_dup:post-founder-016"
-      ]
-    },
-    {
-      "id": "post-cici-003",
-      "account": "cici",
-      "slot": "D1-S3",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "While New York slept, the US growth scare lost another data point.",
       "class": "policy",
       "reasons": [
         "near_dup:post-flagship-020"
@@ -46,27 +34,19 @@
   ],
   "passed": [
     {
+      "id": "post-flagship-015",
+      "account": "flagship",
+      "slot": "D1-S15",
+      "type": "receipt",
+      "cashtag": "$CARR",
+      "headline": "$CARR's green streak"
+    },
+    {
       "id": "post-flagship-016",
       "account": "flagship",
       "slot": "D1-S16",
       "type": "chart",
-      "cashtag": "$AMKR",
-      "headline": "$AMKR at the decision point"
-    },
-    {
-      "id": "post-flagship-017",
-      "account": "flagship",
-      "slot": "D1-S17",
-      "type": "signal",
-      "cashtag": "$TNDM",
-      "headline": ""
-    },
-    {
-      "id": "post-flagship-019",
-      "account": "flagship",
-      "slot": "D1-S19",
-      "type": "chart",
-      "cashtag": "$COHU",
+      "cashtag": "$RPM",
       "headline": ""
     },
     {
@@ -75,7 +55,23 @@
       "slot": "D1-S20",
       "type": "macro",
       "cashtag": "",
-      "headline": "Claims still point to a firm labor market"
+      "headline": ""
+    },
+    {
+      "id": "post-flagship-022",
+      "account": "flagship",
+      "slot": "D1-S22",
+      "type": "chart",
+      "cashtag": "$REX",
+      "headline": ""
+    },
+    {
+      "id": "post-flagship-028",
+      "account": "flagship",
+      "slot": "D1-S28",
+      "type": "chart",
+      "cashtag": "$COHU",
+      "headline": "$COHU buyers returned at 49"
     },
     {
       "id": "post-conf-flagship-001",
@@ -91,87 +87,63 @@
       "slot": "D1-S2",
       "type": "theme_list",
       "cashtag": "$ZS",
-      "headline": "Cybersecurity selling off, -3.4% avg on Monday"
+      "headline": "Cybersecurity selling off, -3.4% avg on Tuesday"
     },
     {
-      "id": "post-founder-006",
+      "id": "post-founder-010",
       "account": "founder",
-      "slot": "D1-S6",
+      "slot": "D1-S10",
       "type": "chart",
-      "cashtag": "$SHO",
+      "cashtag": "$FIX",
+      "headline": "$FIX keeps meeting the same ceiling"
+    },
+    {
+      "id": "post-founder-029",
+      "account": "founder",
+      "slot": "D1-S29",
+      "type": "watchlist",
+      "cashtag": "$COHU",
       "headline": ""
     },
     {
-      "id": "post-founder-009",
+      "id": "post-founder-041",
       "account": "founder",
-      "slot": "D1-S9",
-      "type": "chart",
-      "cashtag": "$ELF",
-      "headline": ""
-    },
-    {
-      "id": "post-founder-016",
-      "account": "founder",
-      "slot": "D1-S16",
-      "type": "macro",
-      "cashtag": "",
-      "headline": ""
-    },
-    {
-      "id": "post-founder-032",
-      "account": "founder",
-      "slot": "D1-S32",
-      "type": "receipt",
-      "cashtag": "$WING",
-      "headline": ""
-    },
-    {
-      "id": "post-founder-034",
-      "account": "founder",
-      "slot": "D1-S34",
+      "slot": "D1-S41",
       "type": "signal",
-      "cashtag": "$QDEL",
+      "cashtag": "$KMT",
       "headline": ""
     },
     {
-      "id": "post-founder-045",
+      "id": "post-founder-053",
       "account": "founder",
-      "slot": "D1-S45",
-      "type": "chart",
-      "cashtag": "$VTRS",
-      "headline": "$VTRS closes at 17.8"
-    },
-    {
-      "id": "post-founder-046",
-      "account": "founder",
-      "slot": "D1-S46",
-      "type": "chart",
-      "cashtag": "$GAP",
-      "headline": ""
-    },
-    {
-      "id": "post-meagan-013",
-      "account": "meagan",
-      "slot": "D1-S13",
-      "type": "macro",
-      "cashtag": "",
-      "headline": "The labor market still isn't confirming a growth scare."
-    },
-    {
-      "id": "post-meagan-051",
-      "account": "meagan",
-      "slot": "D1-S51",
-      "type": "chart",
-      "cashtag": "$ALGT",
-      "headline": ""
-    },
-    {
-      "id": "post-meagan-053",
-      "account": "meagan",
       "slot": "D1-S53",
       "type": "signal",
-      "cashtag": "$AEIS",
-      "headline": "$AEIS gained ground last week, but 290 still held."
+      "cashtag": "$SHW",
+      "headline": ""
+    },
+    {
+      "id": "post-meagan-011",
+      "account": "meagan",
+      "slot": "D1-S11",
+      "type": "chart",
+      "cashtag": "$GATX",
+      "headline": ""
+    },
+    {
+      "id": "post-meagan-017",
+      "account": "meagan",
+      "slot": "D1-S17",
+      "type": "watchlist",
+      "cashtag": "$XLF",
+      "headline": "Financials are drawing attention again"
+    },
+    {
+      "id": "post-meagan-022",
+      "account": "meagan",
+      "slot": "D1-S22",
+      "type": "chart",
+      "cashtag": "$NVDA",
+      "headline": ""
     },
     {
       "id": "post-theme-004",
@@ -179,30 +151,46 @@
       "slot": "D1-S5",
       "type": "theme_list",
       "cashtag": "$TWLO",
-      "headline": "Cloud Computing selling off, -1.5% avg on Monday"
+      "headline": "Cloud Computing selling off, -1.5% avg on Tuesday"
     },
     {
-      "id": "post-housepick-003",
-      "account": "meagan",
-      "slot": "D1-S6",
-      "type": "watchlist",
-      "cashtag": "$JCI",
-      "headline": ""
-    },
-    {
-      "id": "post-sophia-006",
+      "id": "post-sophia-005",
       "account": "sophia",
-      "slot": "D1-S6",
+      "slot": "D1-S5",
       "type": "chart",
-      "cashtag": "$AMKR",
+      "cashtag": "$WS",
+      "headline": "$WS has met the same ceiling 5 times in a year."
+    },
+    {
+      "id": "post-sophia-010",
+      "account": "sophia",
+      "slot": "D1-S10",
+      "type": "chart",
+      "cashtag": "$LMAT",
       "headline": ""
     },
     {
-      "id": "post-sophia-008",
+      "id": "post-sophia-012",
       "account": "sophia",
-      "slot": "D1-S8",
+      "slot": "D1-S12",
+      "type": "macro",
+      "cashtag": "",
+      "headline": ""
+    },
+    {
+      "id": "post-sophia-026",
+      "account": "sophia",
+      "slot": "D1-S26",
       "type": "receipt",
-      "cashtag": "$DAL",
+      "cashtag": "$CMS",
+      "headline": ""
+    },
+    {
+      "id": "post-sophia-035",
+      "account": "sophia",
+      "slot": "D1-S35",
+      "type": "chart",
+      "cashtag": "$SHO",
       "headline": ""
     },
     {
@@ -210,47 +198,31 @@
       "account": "sophia",
       "slot": "D1-S39",
       "type": "chart",
-      "cashtag": "$TNDM",
+      "cashtag": "$PBH",
       "headline": ""
     },
     {
-      "id": "post-sophia-054",
+      "id": "post-sophia-042",
       "account": "sophia",
-      "slot": "D1-S54",
-      "type": "receipt",
-      "cashtag": "$WING",
-      "headline": ""
+      "slot": "D1-S42",
+      "type": "chart",
+      "cashtag": "$OTTR",
+      "headline": "$OTTR found buyers at the same long-term line 3 times in the past year"
     },
     {
       "id": "post-kelly-006",
       "account": "kelly",
       "slot": "D1-S6",
       "type": "chart",
-      "cashtag": "$CNM",
+      "cashtag": "$KMT",
       "headline": ""
     },
     {
-      "id": "post-kelly-016",
+      "id": "post-kelly-052",
       "account": "kelly",
-      "slot": "D1-S16",
+      "slot": "D1-S52",
       "type": "chart",
-      "cashtag": "$IPGP",
-      "headline": ""
-    },
-    {
-      "id": "post-kelly-017",
-      "account": "kelly",
-      "slot": "D1-S17",
-      "type": "chart",
-      "cashtag": "$VTRS",
-      "headline": ""
-    },
-    {
-      "id": "post-kelly-040",
-      "account": "kelly",
-      "slot": "D1-S40",
-      "type": "chart",
-      "cashtag": "$CLH",
+      "cashtag": "$PBH",
       "headline": ""
     },
     {
@@ -259,21 +231,13 @@
       "slot": "D1-S3",
       "type": "theme_list",
       "cashtag": "$ACLS",
-      "headline": "Semiconductors ripping, +2.0% avg on Monday"
-    },
-    {
-      "id": "post-cici-024",
-      "account": "cici",
-      "slot": "D1-S24",
-      "type": "receipt",
-      "cashtag": "$XRAY",
-      "headline": ""
+      "headline": "Semiconductors ripping, +2.0% avg on Tuesday"
     }
   ],
   "checks": {
     "near_dup": {
-      "pairs_checked": 329,
-      "hits": 2,
+      "pairs_checked": 246,
+      "hits": 1,
       "shared_media_hits": 0
     },
     "cadence": {
@@ -315,7 +279,7 @@
       "cherry_pick_detected": false
     },
     "stale_receipts": {
-      "age_days": 4,
+      "age_days": 5,
       "max": 7
     },
     "kill_switch": {
@@ -346,7 +310,7 @@
       "graduate_after_days": 21,
       "weeks_1_2_days": 5,
       "weeks_3_4_days": 10,
-      "as_of": "2026-09-29",
+      "as_of": "2026-09-30",
       "as_of_usable": true,
       "base": {
         "max_posts_per_account_per_day": null,
@@ -362,7 +326,7 @@
       "accounts": {
         "flagship": {
           "created": "2026-07-24",
-          "age_days": 67,
+          "age_days": 68,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -475,7 +439,7 @@
         },
         "founder": {
           "created": "2026-07-27",
-          "age_days": 64,
+          "age_days": 65,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -497,7 +461,7 @@
         },
         "meagan": {
           "created": "2026-07-28",
-          "age_days": 63,
+          "age_days": 64,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -519,7 +483,7 @@
         },
         "sophia": {
           "created": "2026-07-28",
-          "age_days": 63,
+          "age_days": 64,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -541,7 +505,7 @@
         },
         "kelly": {
           "created": "2026-07-28",
-          "age_days": 63,
+          "age_days": 64,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -563,7 +527,7 @@
         },
         "cici": {
           "created": "2026-07-28",
-          "age_days": 63,
+          "age_days": 64,
           "tier": "graduated",
           "enabled": true,
           "caps": {
@@ -585,7 +549,7 @@
         },
         "mastermind_news": {
           "created": "2026-08-02",
-          "age_days": 58,
+          "age_days": 59,
           "tier": "graduated",
           "enabled": true,
           "caps": {
