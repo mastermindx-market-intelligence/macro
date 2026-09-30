@@ -156,9 +156,28 @@ where `outcome_end_session_i` is the H-th eligible trading session under the can
 
 ### 5.3 Purge
 
-For an evaluation block, remove every training row whose label interval intersects any session in the evaluation block.
+For every held-out observation `j`, use the **actual grader-bound label interval**
+`[fill_session_j, outcome_end_session_j]`, not just its event or decision session.
+Remove a training observation `i` whenever its label interval overlaps any of those
+held-out intervals. Equivalently, purge against their full union:
 
-This is the binding leakage rule. It is stronger and more exact than comparing calendar-day distances around block boundaries.
+```text
+purge i iff there exists held-out j such that
+max(fill_session_i, fill_session_j) <= min(outcome_end_session_i, outcome_end_session_j)
+```
+
+The endpoints are inclusive, matching §5.2; a shared endpoint is an overlap.
+Use canonical NYSE session positions for these comparisons. The grader's registered
+horizon-counting convention is unchanged. Missing or unresolved fill/end boundaries
+make the affected split non-evaluable; do not infer them from event date, array order,
+a wrapper timestamp, or an arbitrary calendar-day constant.
+
+Event/decision-session separation alone does not satisfy this rule. Delayed entry or
+publication can move a held-out label beyond its event-session block. Root-disjoint
+folds and the separate horizon embargo remain mandatory but do not replace this
+interval-intersection test. Apply the same disjoint-label requirement at the
+model-selection, calibration-fit/evaluation, and final-OOS boundaries already defined
+in this amendment. No outcome value is needed to test the geometry.
 
 ### 5.4 Embargo
 
@@ -172,6 +191,36 @@ Minimum embargo by primary bucket:
 - 90p secondary verdict: 126.
 
 The implementation may use a more conservative fixed geometry only if it is frozen before outcome inspection and is not chosen by result.
+
+The embargo is additional to §5.3, not an alternative. An implementation using
+an event-session block as its embargo anchor must still prove that no admitted
+training label interval overlaps a held-out label interval. Preserve the registered
+minimum for the relevant primary or secondary horizon; do not tune a larger gap
+against observed returns to compensate for a missing interval check.
+
+### 5.5 Fit-free delayed-fill falsifier
+
+The following are **synthetic session ordinals**, not market dates, trades, returns,
+or an empirical sample. Endpoints stand for already-receipted grader intervals;
+the example does not redefine the grader's horizon convention.
+
+| Observation | Root | Event session | Actual fill | Outcome end |
+| --- | --- | ---: | ---: | ---: |
+| Held out | A | 100 | 104 | 109 |
+| Training | B | 108 | 108 | 113 |
+
+For an event block containing session 100 and a five-session event-clock embargo,
+the training event is eight sessions away and its interval does not contain 100.
+That event-block-only interpretation admits it. Nevertheless, the actual label
+intervals overlap at sessions 108–109, so §5.3 must purge it. A control training
+interval 115–120 remains admissible under these two temporal tests; all other
+population/root/source gates still apply. An interval beginning at 109 is also
+purged because the endpoints are closed.
+
+The implementation acceptance tests must cover delayed fills, shared endpoints,
+missing boundaries, a non-overlapping control, and the separately retained embargo.
+This is a specification falsifier, not proof of a defect in the current trainer or
+of predictive performance. No model or calibrator is fit by this amendment.
 
 ## 6. Preserve the registered root-generalization claim or fail closed
 
@@ -351,7 +400,7 @@ The implementation child must add discriminating tests that fail on the current 
 5. one NYSE session cannot be split across time blocks.
 6. missing/invalid session date cannot fall back to row ordering.
 7. five **trading-session** embargo differs correctly from five calendar days across a weekend/holiday.
-8. a training label interval overlapping an evaluation block is purged.
+8. a training label interval overlapping any actual held-out label interval is purged, including delayed-fill and shared-endpoint cases; event-block separation alone cannot pass.
 9. single-root data does not disable root exclusion; it produces an insufficient-root state.
 10. calibrator-fit and calibration-evaluation are disjoint and chronologically ordered.
 11. a one-class calibration-fit slice fails closed without fitting on evaluation rows.

@@ -13,8 +13,11 @@ answer: >
   SPY-only tape_recon cohort is structurally ineligible for a SPY-excess target because benchmark-
   self excess is zero by construction; it remains measurement/diagnostic evidence only unless a
   future non-SPY tape cohort satisfies this contract. Preserve the registered no-eod_proxy verdict
-  law. Replace row/calendar approximations with fail-closed NYSE-session partitions, exact label-
-  interval purging, trading-session embargoes and the registered root-disjoint evaluation claim.
+  law. Replace row/calendar approximations with fail-closed NYSE-session partitions and purge
+  against the full union of actual held-out label intervals, using grader-bound fill/end sessions
+  and inclusive endpoints. Delayed fills cannot be reduced to event-session block membership;
+  missing boundaries fail evaluability. Preserve separate trading-session embargoes and the
+  registered root-disjoint evaluation claim.
   Remove the current positive monotonic constraints on at_ask_share and vol_gt_oi_ratio for this
   target: "stronger attention/conviction" does not establish monotonic SPY outperformance. Do not
   compare constrained vs unconstrained variants and select the winner; the amended construction
