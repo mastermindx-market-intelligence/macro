@@ -2198,7 +2198,7 @@ __all__ = ["PG_BOUNDED_TEXT_MAX", "PG_COMBINED_VOLUME_MIX_METRICS", "PG_DEFINITI
 
 # ---- Task 2: private native preparation ----
 from calendar import monthrange
-from datetime import datetime
+from datetime import datetime, timezone
 from types import MappingProxyType
 
 from .documents import FilingKey, SourceDocument
@@ -2221,10 +2221,13 @@ PG_PREPARATION_REFUSALS = (
     "non_utf8_source",
     "malformed_currentness",
     "unsupported_source_profile",
+    "malformed_observation_clock",
+    "source_precedes_prior_event",
+    "workspace_build_refused",
 )
 _PREPARATION_MESSAGES = {
-    "malformed_acquisition": "acquisition must be a mapping",
-    "malformed_prior": "prior must be a mapping",
+    "malformed_acquisition": "acquisition is malformed",
+    "malformed_prior": "prior is malformed",
     "prior_source_identity_missing": "prior issuer release lacks source identity",
     "malformed_source_clock": "acceptance_datetime must use YYYY-MM-DDTHH:MM:SSZ",
     "unadmitted_issuer": "acquisition CIK is not admitted by the issuer registry",
@@ -2234,228 +2237,371 @@ _PREPARATION_MESSAGES = {
     "non_utf8_source": "acquisition source was not cleanly decoded as utf-8",
     "malformed_currentness": "acquisition currentness is malformed",
     "unsupported_source_profile": "profile is not mapped to a source family",
+    "malformed_observation_clock": "observed_at must use YYYY-MM-DDTHH:MM:SSZ and must not precede the source",
+    "source_precedes_prior_event": "acquisition belongs to an earlier fiscal period than the prior workspace",
+    "workspace_build_refused": "native workspace build refused the acquisition",
 }
+_CURRENTNESS_STATES = ("up_to_date", "newer_source_pending", "currentness_unverified")
+_PRIOR_LIFECYCLE_STATES = ("complete", "corrected")
+_PREPARATION_BACKSTOP = (TypeError, ValueError, ArithmeticError, LookupError, AttributeError, RecursionError)
+_CLOCK_RE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z")
+_DATE_RE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}")
+_CIK_RE = re.compile(r"[0-9]{10}")
+_ACCESSION_RE = re.compile(r"[0-9]{10}-[0-9]{2}-[0-9]{6}")
+_SHA256_RE = re.compile(r"[0-9a-f]{64}")
+_TOKEN_RE = re.compile(r"[!-~]{1,128}")
+_URL_RE = re.compile(r"[!-~]{1,2048}")
 
 
 class PgPreparationRefused(ValueError):
-    def __init__(self, reason: str) -> None:
+    def __init__(self, reason: str, detail: str | None = None) -> None:
         if reason not in PG_PREPARATION_REFUSALS:
             raise ValueError(f"unknown preparation refusal: {reason}")
         super().__init__(_PREPARATION_MESSAGES[reason])
         self.reason = reason
+        self.detail = detail
 
 
-def source_family_for_profile(profile: str) -> str:
+def source_family_for_profile(profile: Any) -> str:
+    if type(profile) is not str or profile not in PROFILE_SOURCE_FAMILY:
+        raise PgPreparationRefused("unsupported_source_profile", "profile")
+    return PROFILE_SOURCE_FAMILY[profile]
+
+
+def _exact_mapping(value: Any) -> bool:
+    """An exact ``dict`` whose keys are all exact ``str``: safe to read by a string key."""
+    if type(value) is not dict:
+        return False
+    for key in value:
+        if type(key) is not str:
+            return False
+    return True
+
+
+def _exact_text(value: Any, pattern: "re.Pattern[str]") -> bool:
+    return type(value) is str and pattern.fullmatch(value) is not None
+
+
+def _canonical_clock(value: Any) -> datetime | None:
+    """The UTC instant a canonical ``YYYY-MM-DDTHH:MM:SSZ`` string names, else ``None``."""
+    if not _exact_text(value, _CLOCK_RE):
+        return None
     try:
-        return PROFILE_SOURCE_FAMILY[profile]
-    except KeyError as exc:
-        raise PgPreparationRefused("unsupported_source_profile") from exc
-
-
-def _admitted_fiscal_scope(acquisition: dict[str, Any], acceptance: str) -> tuple[tuple[date, date, date, date], tuple[int, int, date]]:
-    acquisition_cik = acquisition.get("cik")
-    acquisition_cik = acquisition_cik if isinstance(acquisition_cik, str) else ""
-    issuer = pg_private_registry().get(company_id_for_cik(acquisition_cik))
-    if issuer is None:
-        raise PgPreparationRefused("unadmitted_issuer")
-    try:
-        acceptance_clock = datetime.strptime(acceptance, "%Y-%m-%dT%H:%M:%SZ")
-    except ValueError as exc:
-        raise PgPreparationRefused("malformed_source_clock") from exc
-    fiscal_month = issuer.fiscal_year_end_month
-    candidates = []
-    for quarter in range(-2, 5):
-        start_month_number = fiscal_month + 3 * quarter + 1
-        end_month_number = fiscal_month + 3 * (quarter + 1)
-        start_year, start_month = divmod(start_month_number - 1, 12)
-        end_year, end_month = divmod(end_month_number - 1, 12)
-        current_start = date(start_year + acceptance_clock.year - 1, start_month + 1, 1)
-        current_end = date(
-            end_year + acceptance_clock.year - 1, end_month + 1,
-            monthrange(end_year + acceptance_clock.year - 1, end_month + 1)[1],
+        return datetime(
+            int(value[0:4]), int(value[5:7]), int(value[8:10]),
+            int(value[11:13]), int(value[14:16]), int(value[17:19]),
+            tzinfo=timezone.utc,
         )
-        if current_end < acceptance_clock.date():
-            candidates.append((current_start, current_end))
-    current_start, current_end = max(candidates, key=lambda item: item[1])
-    prior_start = date(
-        current_start.year - 1, current_start.month, current_start.day
-    )
-    prior_end = date(current_end.year - 1, current_end.month, current_end.day)
-    scope = (current_start, current_end, prior_start, prior_end)
-    _scope(scope)
-    fiscal_year, quarter = _fiscal_identity(current_start, current_end)
+    except ValueError:
+        return None
+
+
+def _canonical_date(value: Any) -> bool:
+    """True for ``""`` (a typed absence) or a real ``YYYY-MM-DD`` calendar date."""
+    if type(value) is not str:
+        return False
+    if value == "":
+        return True
+    if _DATE_RE.fullmatch(value) is None:
+        return False
+    try:
+        date(int(value[0:4]), int(value[5:7]), int(value[8:10]))
+    except ValueError:
+        return False
+    return True
+
+
+def _admitted_acquisition(acquisition: Any) -> dict[str, Any]:
+    """Read every acquisition field the preparation uses; the first failing check decides."""
+    if not _exact_mapping(acquisition):
+        raise PgPreparationRefused("malformed_acquisition", "acquisition")
+    acceptance = acquisition.get("acceptance_datetime")
+    acceptance_clock = _canonical_clock(acceptance)
+    if acceptance_clock is None:
+        raise PgPreparationRefused("malformed_source_clock", "acquisition.acceptance_datetime")
+    body = acquisition.get("exhibit_body")
+    if type(body) is not str or not body.strip():
+        raise PgPreparationRefused("malformed_acquisition", "acquisition.exhibit_body")
+    try:
+        body_bytes = body.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise PgPreparationRefused("non_utf8_source", "acquisition.exhibit_body") from exc
+    cik = acquisition.get("cik")
+    if not _exact_text(cik, _CIK_RE):
+        raise PgPreparationRefused("unadmitted_issuer", "acquisition.cik")
+    accession = acquisition.get("accession")
+    if not _exact_text(accession, _ACCESSION_RE):
+        raise PgPreparationRefused("malformed_acquisition", "acquisition.accession")
+    form = acquisition.get("form")
+    if type(form) is not str or form not in ("8-K", "8-K/A"):
+        raise PgPreparationRefused("malformed_acquisition", "acquisition.form")
+    for name in ("filing_date", "report_date"):
+        if not _canonical_date(acquisition.get(name)):
+            raise PgPreparationRefused("malformed_acquisition", f"acquisition.{name}")
+    exhibit_url = acquisition.get("exhibit_url")
+    if not _exact_text(exhibit_url, _URL_RE):
+        raise PgPreparationRefused("malformed_acquisition", "acquisition.exhibit_url")
+    currentness = None
+    if "currentness" in acquisition:
+        held = acquisition["currentness"]
+        if not _exact_mapping(held) or len(held) != 2 or "state" not in held or "checked_at" not in held:
+            raise PgPreparationRefused("malformed_currentness", "acquisition.currentness")
+        state = held["state"]
+        if type(state) is not str or state not in _CURRENTNESS_STATES:
+            raise PgPreparationRefused("malformed_currentness", "acquisition.currentness.state")
+        checked_at = held["checked_at"]
+        if state == "currentness_unverified":
+            if checked_at is not None:
+                raise PgPreparationRefused("malformed_currentness", "acquisition.currentness.checked_at")
+        elif _canonical_clock(checked_at) is None:
+            raise PgPreparationRefused("malformed_currentness", "acquisition.currentness.checked_at")
+        currentness = {"state": state, "source_clock": checked_at}
+    receipt = acquisition.get("received_bytes")
+    if not _exact_mapping(receipt):
+        raise PgPreparationRefused("missing_received_byte_receipt", "acquisition.received_bytes")
+    received_digest = receipt.get("sha256")
+    if not _exact_text(received_digest, _SHA256_RE):
+        raise PgPreparationRefused("missing_received_byte_receipt", "acquisition.received_bytes.sha256")
+    received_length = receipt.get("length")
+    if type(received_length) is not int or received_length < 0:
+        raise PgPreparationRefused("missing_received_byte_receipt", "acquisition.received_bytes.length")
+    declared = acquisition.get("declared_encoding")
+    if type(declared) is not str or declared != "utf-8":
+        raise PgPreparationRefused("non_utf8_source", "acquisition.declared_encoding")
+    return {
+        "acceptance": acceptance,
+        "acceptance_clock": acceptance_clock,
+        "body": body,
+        "body_bytes": body_bytes,
+        "cik": cik,
+        "accession": accession,
+        "form": form,
+        "filing_date": acquisition["filing_date"],
+        "report_date": acquisition["report_date"],
+        "exhibit_url": exhibit_url,
+        "currentness": currentness,
+        "received_digest": received_digest,
+        "received_length": received_length,
+    }
+
+
+def _admitted_prior(prior: Any) -> dict[str, Any] | None:
+    """Read the positions of a prior result the preparation uses; nothing else is touched."""
+    if prior is None:
+        return None
+    if not _exact_mapping(prior):
+        raise PgPreparationRefused("malformed_prior", "prior")
+    workspace = prior.get("workspace")
+    if not _exact_mapping(workspace):
+        raise PgPreparationRefused("malformed_prior", "prior.workspace")
+    document = prior.get("document_metadata")
+    if not _exact_mapping(document):
+        raise PgPreparationRefused("malformed_prior", "prior.document_metadata")
+    event_id = workspace.get("event_id")
+    if not _exact_text(event_id, _TOKEN_RE):
+        raise PgPreparationRefused("malformed_prior", "prior.workspace.event_id")
+    period = workspace.get("fiscal_period")
+    if (
+        not _exact_mapping(period)
+        or type(period.get("year")) is not int
+        or type(period.get("quarter")) is not int
+        or not 1 <= period["quarter"] <= 4
+    ):
+        raise PgPreparationRefused("malformed_prior", "prior.workspace.fiscal_period")
+    lifecycle = workspace.get("lifecycle")
+    if not _exact_mapping(lifecycle):
+        raise PgPreparationRefused("malformed_prior", "prior.workspace.lifecycle")
+    observed_at = lifecycle.get("observed_at")
+    observed_clock = _canonical_clock(observed_at)
+    if observed_clock is None:
+        raise PgPreparationRefused("malformed_prior", "prior.workspace.lifecycle.observed_at")
+    state = lifecycle.get("state")
+    if type(state) is not str or state not in _PRIOR_LIFECYCLE_STATES:
+        raise PgPreparationRefused("malformed_prior", "prior.workspace.lifecycle.state")
+    sources = workspace.get("sources")
+    if type(sources) is not list:
+        raise PgPreparationRefused("malformed_prior", "prior.workspace.sources")
+    release = None
+    for source in sources:
+        if _exact_mapping(source) and type(source.get("kind")) is str and source["kind"] == "issuer_release":
+            release = source
+            break
+    if release is None:
+        raise PgPreparationRefused("prior_source_identity_missing", "prior.workspace.sources")
+    filing_key = release.get("filing_key")
+    if not _exact_mapping(filing_key):
+        raise PgPreparationRefused("prior_source_identity_missing", "prior.workspace.sources.filing_key")
+    if not _exact_text(filing_key.get("cik"), _CIK_RE):
+        raise PgPreparationRefused("prior_source_identity_missing", "prior.workspace.sources.filing_key.cik")
+    if not _exact_text(filing_key.get("accession"), _ACCESSION_RE):
+        raise PgPreparationRefused("prior_source_identity_missing", "prior.workspace.sources.filing_key.accession")
+    if not _exact_text(release.get("source_sha256"), _SHA256_RE):
+        raise PgPreparationRefused("prior_source_identity_missing", "prior.workspace.sources.source_sha256")
+    document_id = release.get("document_id")
+    if not _exact_text(document_id, _TOKEN_RE):
+        raise PgPreparationRefused("prior_source_identity_missing", "prior.workspace.sources.document_id")
+    if type(document.get("document_id")) is not str or document["document_id"] != document_id:
+        raise PgPreparationRefused("malformed_prior", "prior.document_metadata.document_id")
+    if type(document.get("event_id")) is not str or document["event_id"] != event_id:
+        raise PgPreparationRefused("malformed_prior", "prior.document_metadata.event_id")
+    revision = document.get("revision")
+    if type(revision) is not int or revision < 1:
+        raise PgPreparationRefused("malformed_prior", "prior.document_metadata.revision")
+    supersedes = document.get("supersedes_document_id")
+    if revision == 1:
+        if supersedes is not None:
+            raise PgPreparationRefused("malformed_prior", "prior.document_metadata.supersedes_document_id")
+    elif not _exact_text(supersedes, _TOKEN_RE) or supersedes == document_id:
+        raise PgPreparationRefused("malformed_prior", "prior.document_metadata.supersedes_document_id")
+    return {
+        "event_id": event_id,
+        "period": (period["year"], period["quarter"]),
+        "observed_at": observed_at,
+        "observed_clock": observed_clock,
+        "state": state,
+        "cik": filing_key["cik"],
+        "accession": filing_key["accession"],
+        "source_sha256": release["source_sha256"],
+        "document_id": document_id,
+        "revision": revision,
+        "supersedes": supersedes,
+    }
+
+
+def _admitted_fiscal_scope(cik: str, acceptance_clock: datetime) -> tuple[tuple[date, date, date, date], tuple[int, int, date]]:
+    issuer = pg_private_registry().get(company_id_for_cik(cik))
+    if issuer is None:
+        raise PgPreparationRefused("unadmitted_issuer", "acquisition.cik")
+    fiscal_month = issuer.fiscal_year_end_month
+    try:
+        candidates = []
+        for quarter in range(-2, 5):
+            start_month_number = fiscal_month + 3 * quarter + 1
+            end_month_number = fiscal_month + 3 * (quarter + 1)
+            start_year, start_month = divmod(start_month_number - 1, 12)
+            end_year, end_month = divmod(end_month_number - 1, 12)
+            current_start = date(start_year + acceptance_clock.year - 1, start_month + 1, 1)
+            current_end = date(
+                end_year + acceptance_clock.year - 1, end_month + 1,
+                monthrange(end_year + acceptance_clock.year - 1, end_month + 1)[1],
+            )
+            if current_end < acceptance_clock.date():
+                candidates.append((current_start, current_end))
+        current_start, current_end = max(candidates, key=lambda item: item[1])
+        prior_start = date(current_start.year - 1, current_start.month, current_start.day)
+        prior_end = date(current_end.year - 1, current_end.month, current_end.day)
+        scope = (current_start, current_end, prior_start, prior_end)
+        _scope(scope)
+        fiscal_year, quarter = _fiscal_identity(current_start, current_end)
+    except (ValueError, OverflowError) as exc:
+        raise PgPreparationRefused("malformed_source_clock", "acquisition.acceptance_datetime") from exc
     return scope, (fiscal_year, quarter, current_end)
-
-
-def _prior_release(workspace: Any) -> dict[str, Any] | None:
-    if isinstance(workspace, dict) and "sources" not in workspace and "workspace" in workspace:
-        workspace = workspace["workspace"]
-    if not isinstance(workspace, dict) or not isinstance(workspace.get("sources") or [], list):
-        raise PgPreparationRefused("malformed_prior")
-    for source in workspace["sources"] or []:
-        if isinstance(source, dict) and source.get("kind") == "issuer_release":
-            return source
-    raise PgPreparationRefused("prior_source_identity_missing")
 
 
 def _source_text_sha256(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
-def _prior_source_identity(release: dict[str, Any]) -> tuple[str, str]:
-    filing_key = release.get("filing_key")
-    accession = filing_key.get("accession") if isinstance(filing_key, dict) else None
-    source_sha256 = release.get("source_sha256")
-    if not isinstance(accession, str) or not accession or not isinstance(source_sha256, str) or not source_sha256:
-        raise PgPreparationRefused("prior_source_identity_missing")
-    return accession, source_sha256
+def _prepare_pg_workspace(acquisition: Any, prior: Any, observed_at: Any) -> dict[str, Any]:
+    fields = _admitted_acquisition(acquisition)
+    observed_clock = _canonical_clock(observed_at)
+    if observed_clock is None:
+        raise PgPreparationRefused("malformed_observation_clock", "observed_at")
+    held = _admitted_prior(prior)
 
-
-def _validated_currentness(acquisition: dict[str, Any]) -> dict[str, Any] | None:
-    if "currentness" not in acquisition:
-        return None
-    currentness = acquisition.get("currentness")
-    if not isinstance(currentness, dict) or set(currentness) != {"state", "checked_at"}:
-        raise PgPreparationRefused("malformed_currentness")
-    state = currentness.get("state")
-    clock = currentness.get("checked_at")
-    if state not in {"up_to_date", "newer_source_pending", "currentness_unverified"}:
-        raise PgPreparationRefused("malformed_currentness")
-    if clock is not None and not isinstance(clock, str):
-        raise PgPreparationRefused("malformed_currentness")
-    if state != "currentness_unverified":
-        if not isinstance(clock, str):
-            raise PgPreparationRefused("malformed_currentness")
-        try:
-            datetime.strptime(clock, "%Y-%m-%dT%H:%M:%SZ")
-        except ValueError as exc:
-            raise PgPreparationRefused("malformed_currentness") from exc
-    elif clock is not None:
-        raise PgPreparationRefused("malformed_currentness")
-    return currentness
-
-
-def _received_byte_receipt(acquisition: dict[str, Any]) -> tuple[str, int]:
-    receipt = acquisition.get("received_bytes")
-    if not isinstance(receipt, dict):
-        raise PgPreparationRefused("missing_received_byte_receipt")
-    digest = receipt.get("sha256")
-    length = receipt.get("length")
-    if not isinstance(digest, str) or len(digest) != 64 or any(char not in "0123456789abcdef" for char in digest) or not isinstance(length, int) or isinstance(length, bool) or length < 0:
-        raise PgPreparationRefused("missing_received_byte_receipt")
-    return digest, length
-
-
-def prepare_pg_workspace(
-    acquisition: Any, *, prior: Any, observed_at: Any
-) -> dict[str, Any]:
-    if not isinstance(acquisition, dict):
-        raise PgPreparationRefused("malformed_acquisition")
-    acceptance_value = acquisition.get("acceptance_datetime")
-    acceptance = acceptance_value if isinstance(acceptance_value, str) else ""
-    if not acceptance:
-        raise PgPreparationRefused("malformed_source_clock")
-    body = str(acquisition.get("exhibit_body") or "")
-    if not body.strip():
-        raise PgPreparationRefused("malformed_acquisition")
-    if prior is not None and not isinstance(prior, dict):
-        raise PgPreparationRefused("malformed_prior")
-
-    prior_row = None if prior is None else _prior_release(prior)
-    if prior is None:
-        prior_workspace = None
-    elif isinstance(prior.get("workspace"), dict):
-        prior_workspace = prior["workspace"]
-    else:
-        prior_workspace = prior
-    acquisition_currentness = _validated_currentness(acquisition)
-    decoded_digest = _source_text_sha256(body)
-    received_digest, received_length = _received_byte_receipt(acquisition)
-    decoded_bytes = body.encode("utf-8")
-    if acquisition.get("declared_encoding") != "utf-8":
-        raise PgPreparationRefused("non_utf8_source")
-    if received_digest != hashlib.sha256(decoded_bytes).hexdigest() or received_length != len(decoded_bytes):
-        raise PgPreparationRefused("received_bytes_mismatch")
-
-    fiscal_scope, identity = _admitted_fiscal_scope(acquisition, acceptance)
-    acceptance_clock = datetime.strptime(acceptance, "%Y-%m-%dT%H:%M:%SZ")
-    fiscal_period = FiscalPeriod(
-        year=identity[0], quarter=identity[1], calendar_end=identity[2]
-    )
+    acceptance_clock = fields["acceptance_clock"]
+    if observed_clock < acceptance_clock:
+        raise PgPreparationRefused("malformed_observation_clock", "observed_at")
+    body = fields["body"]
+    decoded_digest = hashlib.sha256(fields["body_bytes"]).hexdigest()
+    if fields["received_digest"] != decoded_digest or fields["received_length"] != len(fields["body_bytes"]):
+        raise PgPreparationRefused("received_bytes_mismatch", "acquisition.received_bytes")
+    fiscal_scope, identity = _admitted_fiscal_scope(fields["cik"], acceptance_clock)
     blocks = parse_release_blocks(body)
     if document_period_verdict(blocks, identity) not in {None, "scope"}:
-        raise PgPreparationRefused("document_period_not_admitted")
+        raise PgPreparationRefused("document_period_not_admitted", "acquisition.exhibit_body")
 
-    prior_digest = None if prior_row is None else _prior_source_identity(prior_row)[1]
-    context = {
-        "profile_version": PG_PROFILE_VERSION,
-        "fiscal_scope": tuple(item.isoformat() for item in fiscal_scope),
-        "currentness": None if acquisition_currentness is None else {
-            "state": acquisition_currentness["state"],
-            "source_clock": acquisition_currentness["checked_at"],
-        },
-        "source_available_at": acceptance,
-    }
-    prior_generated = None if prior_workspace is None else str(prior_workspace.get("generated_at") or "")
-    prior_generation = None if prior_workspace is None else str(prior_workspace.get("generation_id") or "")
-    prior_observed = None if prior_workspace is None else str((prior_workspace.get("lifecycle") or {}).get("observed_at") or "")
-    prior_state = None if prior_workspace is None else str((prior_workspace.get("lifecycle") or {}).get("state") or "")
-    prior_accession = None if prior_row is None else _prior_source_identity(prior_row)[0]
-    unchanged = (
-        prior_digest == decoded_digest
-        and prior_row is not None
-        and prior_accession == acquisition.get("accession")
-    )
-    generated_at = prior_generated if unchanged and prior_generated else str(observed_at)
-    previous_generation_id = None if unchanged or prior_generation == "" else prior_generation
-    filing = {key: acquisition.get(key) for key in (
-        "cik", "accession", "form", "filing_date", "acceptance_datetime", "report_date", "exhibit_url"
-    )}
+    # The chain is scoped to one event.  A prior of an earlier event has no part in this one.
+    predecessor = None
+    if held is not None:
+        if held["cik"] != fields["cik"]:
+            raise PgPreparationRefused("malformed_prior", "prior.workspace.sources.filing_key.cik")
+        if held["period"] > (identity[0], identity[1]):
+            raise PgPreparationRefused("source_precedes_prior_event", "prior.workspace.fiscal_period")
+        if held["period"] == (identity[0], identity[1]):
+            predecessor = held
+    same_text = predecessor is not None and predecessor["source_sha256"] == decoded_digest
+    same_filing = predecessor is not None and predecessor["accession"] == fields["accession"]
+    carried = same_text and same_filing
+    if carried and predecessor["observed_clock"] < acceptance_clock:
+        raise PgPreparationRefused("malformed_prior", "prior.workspace.lifecycle.observed_at")
+    if predecessor is not None and not carried and observed_clock < predecessor["observed_clock"]:
+        raise PgPreparationRefused("malformed_observation_clock", "observed_at")
+
     workspace = build_event_workspace(
         registry=pg_private_registry(),
         ticker="PG",
         asof=acceptance_clock.date(),
-        fiscal_period=fiscal_period,
+        fiscal_period=FiscalPeriod(year=identity[0], quarter=identity[1], calendar_end=identity[2]),
         exhibit_body=body,
-        filing=filing,
+        filing={
+            "cik": fields["cik"],
+            "accession": fields["accession"],
+            "form": fields["form"],
+            "filing_date": fields["filing_date"],
+            "acceptance_datetime": fields["acceptance"],
+            "report_date": fields["report_date"],
+            "exhibit_url": fields["exhibit_url"],
+        },
         transcript=None,
         observed_at=observed_at,
-        source_available_at=acceptance,
-        prior_source_sha256=prior_digest if unchanged else None,
-        prior_lifecycle_state=prior_state,
-        prior_observed_at=prior_observed,
+        source_available_at=fields["acceptance"],
+        # Native law: a new hash on the same event is a correction; the same hash in the same
+        # filing keeps its first observation.  The same text under another accession is a new
+        # filing of unchanged text: neither a correction nor the same observation.
+        prior_source_sha256=None if predecessor is None or (same_text and not same_filing) else predecessor["source_sha256"],
+        prior_lifecycle_state=None if predecessor is None else predecessor["state"],
+        prior_observed_at=predecessor["observed_at"] if carried else None,
         profile=pg_profile(fiscal_scope=fiscal_scope),
     )
-    generation_id = preview_generation_identity(
-        {workspace["event_id"]: workspace}, generated_at,
-        previous_generation_id=previous_generation_id,
-    )
-    workspace["generation_id"] = generation_id
-    workspace["generated_at"] = generated_at
     workspace.pop("_source_sha256", None)
     workspace.pop("_aliases", None)
+    event_id = workspace["event_id"]
+    if held is not None and (held["event_id"] == event_id) != (predecessor is not None):
+        raise PgPreparationRefused("malformed_prior", "prior.workspace.event_id")
+    # The generation id is the content address of the workspace as returned: no predecessor, no
+    # run clock.  Re-preparing an unchanged source therefore reproduces it exactly.
+    workspace["generation_id"] = preview_generation_identity(
+        {event_id: workspace}, workspace["generated_at"], previous_generation_id=None
+    )
 
     source_row = workspace["sources"][0]
-    prior_metadata_id = None if prior_row is None else str(prior_row.get("document_id") or "")
-    changed_revision = prior is not None and not unchanged
-    metadata_revision = 2 if changed_revision else 1
-    available = datetime.fromisoformat(acceptance.replace("Z", "+00:00"))
+    document_id = source_row["document_id"]
+    first_observed = _canonical_clock(workspace["lifecycle"]["observed_at"])
+    if first_observed is None:
+        raise PgPreparationRefused("workspace_build_refused", "workspace.lifecycle.observed_at")
+    # The document chain follows the native document id.
+    if predecessor is None:
+        revision, supersedes = 1, None
+    elif document_id == predecessor["document_id"]:
+        if not carried:
+            raise PgPreparationRefused("malformed_prior", "prior.workspace.sources.document_id")
+        revision, supersedes = predecessor["revision"], predecessor["supersedes"]
+    else:
+        revision, supersedes = predecessor["revision"] + 1, predecessor["document_id"]
     document_metadata = SourceDocument(
-        document_id=str(source_row["document_id"]),
-        event_id=workspace["event_id"],
-        document_kind="release_amendment" if str(acquisition.get("form") or "").upper().endswith("/A") else "release",
+        document_id=document_id,
+        event_id=event_id,
+        document_kind="release_amendment" if fields["form"] == "8-K/A" else "release",
         source_class="issuer_release",
-        content_sha256=received_digest,
-        revision=metadata_revision,
-        content_bytes=received_length,
-        filing_key=FilingKey(
-            cik=str(acquisition.get("cik") or PG_CIK),
-            accession=str(acquisition.get("accession") or ""),
-        ),
-        fetched_at=datetime.fromisoformat(str(observed_at).replace("Z", "+00:00")),
-        published_at=available,
-        available_at=available,
-        supersedes_document_id=prior_metadata_id if metadata_revision > 1 else None,
+        content_sha256=fields["received_digest"],
+        revision=revision,
+        content_bytes=fields["received_length"],
+        filing_key=FilingKey(cik=fields["cik"], accession=fields["accession"]),
+        fetched_at=first_observed,
+        published_at=acceptance_clock,
+        available_at=acceptance_clock,
+        supersedes_document_id=supersedes,
         superseded_by_document_id=None,
         rights_profile=PG_PRIVATE_RIGHTS_PROFILE,
         rights_state="internal_only",
@@ -2466,11 +2612,31 @@ def prepare_pg_workspace(
         "workspace": workspace,
         "document_metadata": document_metadata.to_payload(),
         "decoded_source": body,
-        "source_texts": {source_row["document_id"]: body},
+        "source_texts": {document_id: body},
         "received_byte_receipt": {
-            "sha256": received_digest,
-            "length": received_length,
+            "sha256": fields["received_digest"],
+            "length": fields["received_length"],
             "declared_encoding": "utf-8",
         },
-        "currentness_context": context,
+        "currentness_context": {
+            "profile_version": PG_PROFILE_VERSION,
+            "fiscal_scope": tuple(item.isoformat() for item in fiscal_scope),
+            "currentness": fields["currentness"],
+            "source_available_at": fields["acceptance"],
+        },
     }
+
+
+def prepare_pg_workspace(acquisition: Any, *, prior: Any, observed_at: Any) -> dict[str, Any]:
+    """Prepare the private PG workspace for one acquisition, or refuse with a closed reason.
+
+    ``prior`` is ``None`` or the previous result (its ``workspace`` and ``document_metadata``).
+    Re-preparing the same source with its own result as ``prior`` returns the same workspace,
+    document metadata, source text and receipt at any later ``observed_at``.
+    """
+    try:
+        return _prepare_pg_workspace(acquisition, prior, observed_at)
+    except PgPreparationRefused:
+        raise
+    except _PREPARATION_BACKSTOP as exc:
+        raise PgPreparationRefused("workspace_build_refused", type(exc).__name__) from exc

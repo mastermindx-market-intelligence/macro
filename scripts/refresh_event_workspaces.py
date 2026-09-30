@@ -692,15 +692,25 @@ def _acquire_results_filing_traced(*, cik: str, http_get: HttpGet,
     return selected, trace
 
 
+_TRACED_ACQUISITION_BACKSTOP = (TypeError, ValueError, ArithmeticError, LookupError, AttributeError, RecursionError)
+
+
 def acquire_results_filing(
     *, cik: str, http_get: HttpGet = _http_get, accession: str | None = None,
     trace: Callable[[dict[str, Any]], None] | None = None,
 ) -> dict[str, Any]:
     if trace is None:
         return _acquire_results_filing_legacy(cik=cik, http_get=http_get, accession=accession)
-    selected, completed_trace = _acquire_results_filing_traced(
-        cik=cik, http_get=http_get, accession=accession
-    )
+    try:
+        selected, completed_trace = _acquire_results_filing_traced(
+            cik=cik, http_get=http_get, accession=accession
+        )
+    except RefreshError:
+        raise
+    except _TRACED_ACQUISITION_BACKSTOP as exc:
+        raise RefreshError(
+            f"results filing acquisition met a malformed response ({type(exc).__name__})"
+        ) from exc
     trace(completed_trace)
     if selected is None:
         raise RefreshError(completed_trace.get("failure") or f"no results filing with an EX-99.1 exhibit is available for CIK {cik}")
