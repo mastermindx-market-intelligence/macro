@@ -45,7 +45,10 @@ waves:
       episode/outcome generation, but narrow publication was rejected when the monolithic
       session-outcome blob exceeded GitHub's 100 MB limit; campaign-v2 runtime and
       source-receipt integrity remain nonterminal. Preserve the existing recovery owners:
-      #7265 for bounded session-outcome durability, #7263 for shared publisher recovery,
+      #7265 for bounded session-outcome durability -- whose bounded-parts capability LANDED
+      2026-09-29 as #8205, squash fd04137075019a471a78ffc6374051c942417489, and is
+      DO_NOT_REDO: do not rebuild it, and note acceptance still needs two nightlies whose
+      `engine` JOB survives (zero such observations as of 2026-09-30) --, #7263 for shared publisher recovery,
       #7193 for broad-writer exclusion, and the existing campaign owner for historical
       mixed-generation reconciliation. Then require one normal scheduled nightly plus
       protected-main readback with the measured Flow cohort present, owned
@@ -188,7 +191,9 @@ next_action: >
   OA-1T-MACRO remains BUILT_NOT_PROVEN. Natural measured source->Flow consumer proof is
   DO_NOT_REDO, #7279 source-clock repair is merged as fc4efb9fd9ec97cc3e65f9ff9ee157626be5683f,
   and #7263 shared publisher recovery is merged as its accepted release. The critical remaining
-  publication/history chain is #7265 bounded session durability + campaign runtime, #7193
+  publication/history chain is #7265 campaign runtime -- its bounded session-outcome durability
+  half LANDED 2026-09-29 as #8205 (squash fd04137075019a) and is DO_NOT_REDO, with acceptance
+  pending two nightlies whose `engine` JOB survives -- plus #7193
   broad-writer exclusion, and the repaired-but-unmerged #7398 quarantine law followed by its
   owner-native effective-view implementation. Require one normal scheduled nightly plus
   protected-main readback proving valid effective episode/campaign/outcome receipts,

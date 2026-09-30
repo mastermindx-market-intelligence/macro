@@ -169,11 +169,17 @@ unverified:
       logical ledger with the historical prefix unchanged, on two natural append
       observations.
     what_would_verify: >
-      Two consecutive scheduled nightly runs after merge showing
-      outcomes_session.jsonl byte-unchanged, outcomes_session_parts/part-*.jsonl
-      extending contiguously, and the campaign consuming them as one logical
-      ledger without a prefix error. This is a scheduled event; it cannot be
-      replayed or fabricated in-session.
+      Two nightly runs after merge whose `engine` JOB concluded success --
+      NOT two runs whose run-level conclusion is success: daily.yml is
+      DST-paired and the wrong-DST run reports run-level SUCCESS with every job
+      skipped (DSC:NIGHTLY-ARTIFACT-ATTRIBUTION-NEEDS-THE-ENGINE-JOB) --
+      showing outcomes_session.jsonl byte-unchanged,
+      outcomes_session_parts/part-*.jsonl extending contiguously, and the
+      campaign consuming them as one logical ledger without a prefix error.
+      This is a scheduled event; it cannot be replayed or fabricated
+      in-session. Measured at closeout: ZERO such observations exist yet; see
+      the acceptance section for the two post-merge runs and why neither
+      counts.
   - claim: >
       The mechanism behind the locked-index flake — whether a real TOCTOU window
       exists in oip_commit_locked_roots or only in its test harness.
@@ -311,11 +317,63 @@ base blob : c73ec6998a03b193e219dffa62f668e9eb426420   <-- MUST NOT CHANGE, ever
 parts dir : 0 entries at merge time
 ```
 
-Observation #1 = the 22:30Z `daily.yml` firing on 2026-09-29 (the merge landed ~75 min ahead of it),
-which performs the **first rollover**. Observation #2 = the next firing, the first append into an
-*existing* part — a different code path. Check both with:
+**An observation is an `engine` JOB, never a run.** `daily.yml` is DST-paired, so each night
+produces TWO scheduled runs: the wrong-DST one exits in seconds reporting run-level **SUCCESS** with
+every job skipped, while the run that actually builds can report run-level CANCELLED/FAILURE from a
+late job hours after `engine` already succeeded and pushed. The session-outcome publisher lives
+inside the `engine` job (`daily.yml:3358-3426`, build → publish-episode → publish-campaign;
+`assert-integrity` at :4861), so a run whose `engine` is `skipped` is **not an observation at all**
+whatever its run-level colour, and `parts/ == 0` after such a run says nothing about maturation.
+Canonical method and receipts: `DSC:NIGHTLY-ARTIFACT-ATTRIBUTION-NEEDS-THE-ENGINE-JOB`.
+
+Observation #1 = the first post-merge nightly whose `engine` job concludes `success` **and appends**.
+Because the frozen base is already 1.996× the 48 MiB part ceiling, that first append necessarily
+creates `part-000001.jsonl` — the **first rollover**. Observation #2 = the next such run, the first
+append into an *existing* part, a different code path. An `engine success` night that matures no rows
+is a legitimate null, not a failure, and is not one of the two.
+
+**Status at closeout: ZERO observations, cause external — a cancelled engine job.** The only two
+`daily.yml` runs created after the merge (2026-09-29T21:40:32Z):
+
+| run | created | run level | `engine` job | counts? |
+|---|---|---|---|---|
+| `36658978247` | 02:15:12Z | completed/**success** | **skipped** | no — the DST decoy |
+| `36655184116` | 01:27:15Z | **still in progress** (3 queued, 2 running) | **cancelled**, 03:42:27Z → 05:38:15Z | no — killed before any append landed |
+
+`daily.yml` is the only workflow that can append these rows, so no alternative observation source
+exists, and `36655184116` can no longer produce one: its `engine` job is terminally `cancelled`.
+That sole-appender claim is verified three deep, because a name grep over `.github/workflows/` is too
+narrow to establish it — a workflow can reach the writer through a script. (1) Exactly one production
+caller: `scripts/build_options_signal_episode.py:861`. (2) Two workflows reference that script, but
+`ci.yml`'s is a **path-filter entry** listing files that trigger the adversarial suite, not an
+invocation. (3) `ci.yml` never sets `COLLECT_LANE`/`US_LANE`, so even a hypothetical invocation hits
+`nightly_advance_enabled()` and returns `-1` without touching a byte.
+Run-level status is misleading in BOTH directions here — the decoy reads SUCCESS having done nothing,
+and the real firing reads `queued` while its engine job had already run for two hours and been
+cancelled. This session made exactly that second error before correcting it, which is why this
+section attributes by the job and not by the run.
+
+**That produced real fail-closed evidence, though not an acceptance observation.** Inside the
+cancelled engine job, step 53 "OIP PIT — durable episodes + H+60 and declared-session-close proxy
+accrual" — the session-outcome publisher, `daily.yml:3358-3400` — is `cancelled`, and step 154 "OIP
+PIT — fail closed after unrelated rendering completes" (`assert-integrity`, `:4861`) is `failure`:
+it failed CLOSED rather than reporting green. The ledger after that abrupt termination, in the newly
+installed generation, is base blob `c73ec6998a03…` **byte-identical**, `parts` **0**, no orphan part
+and no torn artifact — the designed behaviour under precisely the abrupt-termination scenario this
+durability work targets, observed in production rather than in a test.
+
+**Honest limit on that evidence:** whether the writer had *begun* an append cannot be determined. The
+engine job's log is not retrievable while the run is still in progress (`gh run view --job … --log`
+answers "run is still in progress; logs will be available when it is complete"), so an empty grep for
+`append_session_outcomes` / `part-0000` is a harness result and NOT evidence of absence. What is
+certain is that no append LANDED, because the base blob and parts count are unchanged.
+
+Attribute first, then read the ledger. The path is `options_signal_episode`, not `options_signal`; a
+wrong prefix returns a false `0` rather than an error:
 
 ```bash
+gh api "repos/mastermindx-market-intelligence/macro/actions/runs/<id>/jobs?per_page=100" \
+  --jq '.jobs[]|select(.name=="engine")|"\(.conclusion) \(.started_at) \(.completed_at)"'
 git fetch origin
 git rev-parse origin/main:data/options_signal_episode/outcomes_session.jsonl   # must equal c73ec6998a03…
 git ls-tree -r origin/main -- data/options_signal_episode/outcomes_session_parts/
