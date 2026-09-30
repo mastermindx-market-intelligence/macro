@@ -44,8 +44,8 @@ FINDING_TEXT = {
         "报告与有机增长不同——先核对来源再行动。",
     ),
     "positive_organic_nonpositive_pure_volume": (
-        "Positive organic sales growth is separated from pricing and mix because pure volume did not grow.",
-        "由于纯销量没有增长，正的有机销售额增长与定价和组合分开解释。",
+        "Organic rose but pure volume did not — watch — don't chase.",
+        "有机增长而纯销量未增——先观察，不追入。",
     ),
     "reported_vs_core_earnings_disagreement": (
         "Reported and core EPS differed — read the receipt first.",
@@ -111,7 +111,8 @@ def _definitions() -> dict[str, Any]:
 
 _DEFINITIONS = {definition.metric: definition for definition in PG_DEFINITIONS}
 _SEGMENT_METRICS = tuple(
-    metric for metric in PG_METRIC_KEYS if metric.endswith("_organic_sales_growth_pct")
+    metric for metric in PG_METRIC_KEYS
+    if metric.endswith("_organic_sales_growth_pct") and metric != "pg_organic_sales_growth_pct"
 )
 _DISPLAY = {
     "pg_reported_sales_growth_pct": ("reported_sales_growth", "demand", "reported", "current", "Reported sales growth", "报告销售额增长"),
@@ -504,7 +505,10 @@ def _rules(rows: list[dict[str, Any]], workspace: Mapping[str, Any]) -> tuple[li
         rules["reported_vs_core_earnings_disagreement"].extend(eps_handles)
     rules["incomplete_margin_to_cash_bridge"].append(None)
     segments = [by_metric.get(metric, {}) for metric in _SEGMENT_METRICS]
-    present_segments = [row for row in segments if "value" in row and "typed_absence" not in row]
+    present_segments = [
+        row for row in segments
+        if row and "value" in row and "typed_absence" not in row
+    ]
     if present_segments:
         rules["segment_scope_limitation"].extend([_handle(workspace, row) for row in present_segments])
     findings.extend(_finding(rule, handles) for rule, handles in rules.items() if handles)
@@ -662,16 +666,22 @@ def validate_economic_interpretation(
     payload = _plain_mapping(payload, "payload")
     if tuple(payload.keys()) != TOP_LEVEL_KEYS:
         raise EconomicInterpretationError("interpretation top-level keys are not exact")
-    if payload.get("schema") != SCHEMA or payload.get("authority") != AUTHORITY:
+    stored_payload = dict(payload)
+    if stored_payload.get("schema") != SCHEMA or stored_payload.get("authority") != AUTHORITY:
         raise EconomicInterpretationError("interpretation schema or authority is refused")
-    build = _validate_payload_shape(payload)
+    build = _validate_payload_shape(stored_payload)
     available = _workspaces(workspaces)
-    handles = [observation.get("handle") for observation in payload.get("observations", [])]
+    observations = stored_payload.get("observations")
+    handles = [
+        observation.get("handle")
+        for observation in observations
+        if isinstance(observation, Mapping)
+    ]
     generation_ids = {handle.get("workspace_generation_id") for handle in handles}
     if len(generation_ids) != 1 or next(iter(generation_ids)) not in available:
         raise EconomicInterpretationError("interpretation handles do not resolve to one supplied workspace")
     workspace = available[next(iter(generation_ids))]
-    stored_selection = payload.get("selection")
+    stored_selection = stored_payload.get("selection")
     selection = {
         "facts": [
             {"workspace_generation_id": handle.get("workspace_generation_id"), "event_id": handle.get("event_id"), "fact_id": handle.get("fact_id")}
@@ -687,9 +697,9 @@ def validate_economic_interpretation(
         selection=selection, semantic_revision=build.get("semantic_revision"),
         code_revision=build.get("code_revision"),
     )
-    if payload.get("interpretation_id") != rebuilt.get("interpretation_id"):
+    if stored_payload.get("interpretation_id") != rebuilt.get("interpretation_id"):
         raise EconomicInterpretationError("stored interpretation identity does not replay")
-    if dict(payload) != rebuilt:
+    if stored_payload != rebuilt:
         raise EconomicInterpretationError("stored interpretation does not replay")
 
 
