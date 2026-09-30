@@ -4,14 +4,24 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from types import MappingProxyType
+import time
+
 import pytest
 from hashlib import sha256
 
+from engine.earnings_narrative.private_publication import (
+    EarningsPrivatePublicationError,
+    MAX_POINTER_BYTES,
+    POINTER_KEY,
+    prepare_private_publication,
+    publish_private_publication,
+)
 from engine.earnings_narrative import private_publication as pp
 from engine.earnings_narrative.context_packets import canonical_json_bytes
 from tests.earnings_economic_private_fixtures import (
     ConditionalCountingStore,
     NoConditionalStore,
+    fail_manifest_readback,
     fail_source_readback,
     published_v1_case,
     reseal_manifest,
@@ -347,6 +357,37 @@ def test_readback_failure_reason_and_control_twins(tmp_path):
     assert pp.POINTER_KEY in control_store.conditional_calls
 
 
+def test_pointer_does_not_move_when_required_source_readback_fails(tmp_path):
+    store, baseline = published_v1_case(tmp_path)
+    before = store.get_bytes_strict_bounded(POINTER_KEY, MAX_POINTER_BYTES)
+    stage = stage_economic_case(tmp_path, 'valid')
+    prepared = prepare_private_publication(stage)
+    fail_source_readback(store, prepared)
+    with pytest.raises(EarningsPrivatePublicationError):
+        publish_private_publication(store, prepared)
+    assert store.get_bytes_strict_bounded(POINTER_KEY, MAX_POINTER_BYTES) == before
+
+
+def test_manifest_readback_digest_mismatch_and_control_twins(tmp_path):
+    store, baseline = published_v1_case(tmp_path)
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
+    fail_manifest_readback(store, prepared)
+    store.put_calls.clear()
+    store.conditional_calls.clear()
+    with pytest.raises(pp.EarningsPrivateClosureError) as exc:
+        pp.publish_private_publication(store, prepared)
+    assert exc.value.reason == "digest_mismatch"
+    assert store.get_bytes(pp.POINTER_KEY) == canonical_json_bytes(baseline)
+    assert pp.POINTER_KEY not in store.put_calls
+    assert pp.POINTER_KEY not in store.conditional_calls
+
+    control_store, control_baseline = published_v1_case(tmp_path / "control")
+    control = pp.prepare_private_publication(stage_economic_case(tmp_path / "control", "valid"))
+    pp.publish_private_publication(control_store, control)
+    assert control_store.get_bytes(pp.POINTER_KEY) == canonical_json_bytes(pp._pointer_for(control))
+    assert control_store.get_bytes(pp.POINTER_KEY) != canonical_json_bytes(control_baseline)
+
+
 def test_verify_before_parse_keeps_hostile_documents_typed(tmp_path):
     store, _baseline = published_v1_case(tmp_path)
     prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
@@ -559,7 +600,7 @@ def test_predecessor_race_hooks_and_control(tmp_path):
         with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
             pp.publish_private_publication(store, prepared)
         assert exc.value.reason == "predecessor_conflict"
-        assert store.get_bytes(pp.POINTER_KEY) == b'{"foreign":true}\n'
+        assert store.get_bytes(pp.POINTER_KEY) == store._foreign_pointer
         assert pp.POINTER_KEY not in store.put_calls
         expected_conditionals = (
             before_conditional_calls
@@ -572,6 +613,70 @@ def test_predecessor_race_hooks_and_control(tmp_path):
     control = pp.prepare_private_publication(stage_economic_case(tmp_path / "control", "valid"))
     pp.publish_private_publication(control_store, control)
     assert control_store.get_bytes(pp.POINTER_KEY) == canonical_json_bytes(pp._pointer_for(control))
+
+
+def test_closure_reader_matrix_and_plain_interpretation_argument(tmp_path, economic_publish):
+    store, _prepared, _baseline, _patch = economic_publish
+    manifest = pp.load_private_manifest(store)
+    slug = manifest["native"]["economic_slots"]["cik:0000080424"]["slug"]
+    entry = pp.load_economic_closure(store, manifest=manifest, slug=slug)
+    assert set(entry) == {"record", "selection", "interpretation", "chain"}
+    assert entry["record"]["economic_interpretation"] == entry["interpretation"]
+    wire_slug = next(value for value in manifest["records"] if value != slug)
+    for unknown_slug in ("unknown-slug", wire_slug):
+        with pytest.raises(pp.EarningsEconomicNotFound) as unknown_error:
+            pp.load_economic_closure(store, manifest=manifest, slug=unknown_slug)
+        assert unknown_error.value.reason == "unknown_record"
+
+    source_digest = next(iter(manifest["native"]["source_bodies"]))
+    source_path = store.root / Path(manifest["native"]["source_bodies"][source_digest]["text"]["object_key"])
+    original_source = source_path.read_bytes()
+    source_path.write_bytes(bytes([original_source[0] ^ 1]) + original_source[1:])
+    with pytest.raises(pp.EarningsPrivateClosureError) as source_error:
+        pp.load_economic_closure(store, manifest=manifest, slug=slug, interpretation="stale_ok")
+    assert source_error.value.reason == "digest_mismatch"
+    source_path.write_bytes(original_source)
+
+    record_path = store.root / Path(manifest["records"][slug]["object_key"])
+    original_record = record_path.read_bytes()
+    record = json.loads(original_record)
+    record["economic_interpretation"]["observations"][0]["value"] = "999"
+    altered_record = canonical_json_bytes(record)
+    digest = sha256(altered_record).hexdigest()
+    rebuilt = json.loads(json.dumps(manifest))
+    rebuilt["records"][slug].update({"sha256": digest, "bytes": len(altered_record)})
+    object_key = f"{pp.PRIVATE_PREFIX}/objects/sha256/{digest[:2]}/{digest}.json"
+    rebuilt["records"][slug]["object_key"] = object_key
+    rebuilt = reseal_manifest(rebuilt, pp)
+    new_record_path = store.root / Path(object_key)
+    new_record_path.parent.mkdir(parents=True, exist_ok=True)
+    new_record_path.write_bytes(altered_record)
+    pointer_path = store.root / Path(pp.POINTER_KEY)
+    pointer = json.loads(pointer_path.read_bytes())
+    pointer.update(
+        generation_id=rebuilt["generation_id"],
+        manifest_key=f"{pp.PRIVATE_PREFIX}/manifests/{rebuilt['generation_id']}.json",
+        manifest_sha256=sha256(canonical_json_bytes(rebuilt)).hexdigest(),
+        manifest_bytes=len(canonical_json_bytes(rebuilt)),
+    )
+    rebuilt_manifest_path = store.root / Path(
+        f"{pp.PRIVATE_PREFIX}/manifests/{rebuilt['generation_id']}.json"
+    )
+    rebuilt_manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    rebuilt_manifest_path.write_bytes(canonical_json_bytes(rebuilt))
+    pointer_path.write_bytes(canonical_json_bytes(pointer))
+    with pytest.raises(pp.EarningsPrivateClosureError) as interpretation_error:
+        pp.load_economic_closure(store, manifest=rebuilt, slug=slug, interpretation="stale_ok")
+    assert interpretation_error.value.reason == "interpretation_mismatch"
+
+    class StringValue(str):
+        pass
+
+    for interpretation in ("STALE_OK", None, StringValue("stale_ok")):
+        with pytest.raises(ValueError):
+            pp.load_economic_closure(store, manifest=rebuilt, slug=slug, interpretation=interpretation)
+
+    record_path.write_bytes(original_record)
 
 
 def test_stale_ok_only_downgrades_supported_code_revision(tmp_path, monkeypatch, economic_publish):
@@ -616,7 +721,9 @@ def test_predecessor_and_slot_rules(tmp_path):
     empty_store.put_calls.clear()
 
     none_bound = pp.prepare_private_publication(stage_economic_case(tmp_path, "corrected", name="none"))
-    object.__setattr__(none_bound, "manifest", MappingProxyType({**none_bound.manifest, "previous_manifest": None}))
+    manifest = {**none_bound.manifest, "previous_manifest": None}
+    manifest = reseal_manifest(manifest, pp)
+    object.__setattr__(none_bound, "manifest", MappingProxyType(manifest))
     with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
         pp.publish_private_publication(empty_store, none_bound)
     assert exc.value.reason == "predecessor_conflict"
@@ -630,7 +737,8 @@ def test_predecessor_and_slot_rules(tmp_path):
         "published_at": installed["previous_manifest"]["published_at"],
     }
     other_bound = pp.prepare_private_publication(stage_economic_case(tmp_path, "corrected", name="other"))
-    object.__setattr__(other_bound, "manifest", MappingProxyType({**other_bound.manifest, "previous_manifest": foreign}))
+    other_manifest = reseal_manifest({**other_bound.manifest, "previous_manifest": foreign}, pp)
+    object.__setattr__(other_bound, "manifest", MappingProxyType(other_manifest))
     store.put_calls.clear()
     store.conditional_calls.clear()
     with pytest.raises(pp.EarningsPrivatePublishConflict) as exc:
@@ -736,6 +844,128 @@ def test_current_view_and_pinned_evidence(tmp_path, economic_publish):
     assert retired_error.value.reason == "evidence_retired"
 
 
+def test_corrupt_immutable_source_object_is_fail_closed(tmp_path):
+    manifest_key = None
+    store, baseline = published_v1_case(tmp_path)
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
+    pp.publish_private_publication(store, prepared)
+    manifest = pp.load_private_manifest(store)
+    slug = manifest["native"]["economic_slots"]["cik:0000080424"]["slug"]
+    digest = next(iter(manifest["native"]["source_bodies"]))
+    source_key = manifest["native"]["source_bodies"][digest]["text"]["object_key"]
+    path = store.root / Path(source_key)
+    original = path.read_bytes()
+    pointer = store.get_bytes(pp.POINTER_KEY)
+    corrupt = bytes([original[0] ^ 1]) + original[1:]
+
+    def assert_fail_closed(error):
+        assert isinstance(error, pp.EarningsPrivatePublicationError)
+        assert str(error) in {
+            "immutable private earnings object differs",
+            "immutable private earnings object collision",
+        }
+        assert path.read_bytes() == corrupt
+        assert store.get_bytes(pp.POINTER_KEY) == pointer
+        assert source_key not in store.put_calls
+        assert pp.POINTER_KEY not in store.put_calls
+        assert pp.POINTER_KEY not in store.conditional_calls
+
+    store.put_calls.clear()
+    store.conditional_calls.clear()
+    path.write_bytes(corrupt)
+    with pytest.raises(pp.EarningsPrivatePublicationError) as same_error:
+        pp.publish_private_publication(store, prepared)
+    assert_fail_closed(same_error.value)
+
+    newer = pp.prepare_private_publication(stage_economic_case(tmp_path, "corrected", name="corrected"))
+    store.put_calls.clear()
+    store.conditional_calls.clear()
+    with pytest.raises(pp.EarningsPrivatePublicationError) as newer_error:
+        pp.publish_private_publication(store, newer)
+    assert_fail_closed(newer_error.value)
+    path.write_bytes(original)
+
+    pp.publish_private_publication(store, prepared)
+    pp.publish_private_publication(store, newer)
+
+
+def test_manifest_version_reader_matrix(tmp_path):
+    store, baseline = published_v1_case(tmp_path)
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
+    pp.publish_private_publication(store, prepared)
+    baseline_manifest = pp.load_private_manifest_version(
+        store,
+        generation_id=baseline["generation_id"],
+        expected_digest=baseline["manifest_sha256"],
+    )
+    current_manifest = pp.load_private_manifest_version(
+        store,
+        generation_id=prepared.generation_id,
+        expected_digest=sha256(prepared.manifest_bytes).hexdigest(),
+    )
+    assert baseline_manifest == pp.validate_private_manifest(json.loads(store.get_bytes(baseline["manifest_key"])))
+    assert current_manifest == dict(prepared.manifest)
+
+    class StringValue(str):
+        pass
+
+    malformed_ids = (
+        StringValue(baseline["generation_id"]),
+        baseline["generation_id"].upper(),
+        baseline["generation_id"] + "\n",
+        baseline["generation_id"][:-1],
+    )
+    malformed_digests = (
+        StringValue(baseline["manifest_sha256"]),
+        baseline["manifest_sha256"].upper(),
+        baseline["manifest_sha256"] + "\n",
+        baseline["manifest_sha256"][:-1],
+        "0" * 63,
+    )
+    for generation_id in malformed_ids:
+        with pytest.raises(pp.EarningsEconomicNotFound) as error:
+            pp.load_private_manifest_version(
+                store, generation_id=generation_id, expected_digest=baseline["manifest_sha256"]
+            )
+        assert error.value.reason == "unknown_generation"
+    for expected_digest in malformed_digests:
+        with pytest.raises(pp.EarningsEconomicNotFound) as error:
+            pp.load_private_manifest_version(
+                store, generation_id=baseline["generation_id"], expected_digest=expected_digest
+            )
+        assert error.value.reason == "unknown_generation"
+
+
+def test_cross_generation_manifest_bytes_are_refused(tmp_path):
+    store, baseline = published_v1_case(tmp_path)
+    prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
+    pp.publish_private_publication(store, prepared)
+    path = store.root / Path(f"{pp.PRIVATE_PREFIX}/manifests/{prepared.generation_id}.json")
+    original = path.read_bytes()
+
+    invalid = b'{"schema":"unsupported"}\n'
+    path.write_bytes(invalid)
+    with pytest.raises(pp.EarningsPrivatePublicationError) as invalid_error:
+        pp.load_private_manifest_version(
+            store,
+            generation_id=prepared.generation_id,
+            expected_digest=sha256(invalid).hexdigest(),
+        )
+    assert not isinstance(invalid_error.value, pp.EarningsEconomicNotFound)
+
+    other = canonical_json_bytes(dict(baseline))
+    path.write_bytes(other)
+    with pytest.raises(pp.EarningsPrivatePublicationError) as cross_error:
+        pp.load_private_manifest_version(
+            store,
+            generation_id=prepared.generation_id,
+            expected_digest=sha256(other).hexdigest(),
+        )
+    assert not isinstance(cross_error.value, pp.EarningsEconomicNotFound)
+    path.write_bytes(original)
+
+
+
 def test_reader_rights_are_checked(tmp_path, monkeypatch, economic_publish):
     store, _prepared, _baseline, _patch = economic_publish
     current = pp.load_private_manifest(store)
@@ -748,6 +978,30 @@ def test_reader_rights_are_checked(tmp_path, monkeypatch, economic_publish):
     with pytest.raises(pp.EarningsEconomicUnavailable) as evidence_error:
         pp.load_economic_evidence(store, generation_id=view["generation_id"], manifest_digest=view["manifest_sha256"], record_digest=view["record_sha256"], slug=view["slug"], fact_id=fact["fact_id"])
     assert evidence_error.value.reason == "rights_refused"
+
+
+def test_predecessor_reader_deletion_twin_and_chain_shortening(tmp_path):
+    empty = ConditionalCountingStore(tmp_path / "empty")
+    assert pp.load_private_predecessor(empty) is None
+    store, baseline = published_v1_case(tmp_path)
+    predecessor = pp.load_private_predecessor(store)
+    assert predecessor == {key: baseline[key] for key in predecessor}
+
+    manifest_path = store.root / Path(baseline["manifest_key"])
+    original_manifest = manifest_path.read_bytes()
+    manifest_path.unlink()
+    with pytest.raises(pp.EarningsPrivatePublishConflict) as unreadable:
+        pp.load_private_predecessor(store)
+    assert unreadable.value.reason == "installed_unreadable"
+    manifest_path.write_bytes(original_manifest)
+    assert pp.load_private_predecessor(store) == predecessor
+
+    pp.publish_private_publication(store, pp.prepare_private_publication(stage_economic_case(tmp_path, "corrected", name="corrected")))
+    pointer = store.get_bytes(pp.POINTER_KEY)
+    with pytest.raises(pp.EarningsPrivatePublishConflict) as shortened:
+        pp.publish_private_publication(store, pp.prepare_private_publication(stage_economic_case(tmp_path, "valid", name="short")))
+    assert shortened.value.reason == "chain_not_extended"
+    assert store.get_bytes(pp.POINTER_KEY) == pointer
 
 
 def test_mixed_v2_generation_publishes_and_reads(tmp_path):
@@ -771,6 +1025,130 @@ def test_mixed_v2_generation_publishes_and_reads(tmp_path):
     baseline_manifest = pp.validate_v1_manifest(json.loads(baseline_body))
     baseline_record = pp.load_private_record(store, wire_slug, manifest=baseline_manifest)
     assert pp.load_private_record(store, wire_slug) == baseline_record
+
+def test_surface_validators_refuse_exact_types_without_leaking_values():
+    generation_id = "earnpriv_" + "1" * 32
+    digest = "a" * 64
+
+    class StringValue(str):
+        pass
+
+    assert pp.validate_generation_id(generation_id) == generation_id
+    assert pp.validate_digest(digest) == digest
+    invalid_ids = (
+        StringValue(generation_id), generation_id.encode(), None,
+        generation_id.upper(), generation_id + "\n", generation_id[:-1],
+    )
+    invalid_digests = (
+        StringValue(digest), digest.encode(), None, digest.upper(),
+        digest + "\n", digest[:-1], digest[:63] + "A",
+    )
+    for value in invalid_ids:
+        with pytest.raises(pp.EarningsPrivatePublicationError) as error:
+            pp.validate_generation_id(value)
+        assert str(error.value) == "invalid earnings generation id"
+        assert not (isinstance(value, str) and value in str(error.value))
+    for value in invalid_digests:
+        with pytest.raises(pp.EarningsPrivatePublicationError) as error:
+            pp.validate_digest(value)
+        assert str(error.value) == "invalid earnings digest"
+        assert not (isinstance(value, str) and value in str(error.value))
+
+
+def test_empty_and_v1_retirement_cases_are_refused(tmp_path):
+    empty = ConditionalCountingStore(tmp_path / "empty")
+    retired = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"), retire_slots=("cik:0000080424",))
+    empty.put_calls.clear()
+    with pytest.raises(pp.EarningsPrivatePublishConflict) as retired_error:
+        pp.publish_private_publication(empty, retired)
+    assert retired_error.value.reason == "retirement_invalid"
+    assert empty.put_calls == []
+
+    store, _baseline = published_v1_case(tmp_path / "v1")
+    _public, v1_path, _slug = _staged_publication(tmp_path / "v1-public")
+    v1_retired = pp.prepare_private_publication(v1_path, retire_slots=("cik:0000080424",))
+    store.put_calls.clear()
+    with pytest.raises(pp.EarningsPrivatePublishConflict) as v1_error:
+        pp.publish_private_publication(store, v1_retired)
+    assert v1_error.value.reason == "retirement_invalid"
+    assert store.put_calls == []
+
+
+@pytest.mark.parametrize("label", ["dossier-sweep"], indirect=False)
+def test_permanent_hostile_object_sweep(tmp_path, label, economic_publish):
+    started = time.monotonic()
+    store, prepared, _baseline, _patch = economic_publish
+    manifest = pp.load_private_manifest(store)
+    slug = manifest["native"]["economic_slots"]["cik:0000080424"]["slug"]
+    selection = manifest["native"]["selections"][slug]
+    receipts = [manifest["records"][slug], manifest["records"][next(iter(manifest["records"]))]]
+    for entry in selection["chain"]:
+        document = manifest["native"]["documents"][entry["document"]]
+        source_digest = json.loads(store.get_bytes(document["object_key"]))["content_sha256"]
+        receipts.extend((
+            manifest["native"]["workspaces"][entry["workspace"]], document,
+            manifest["native"]["source_bodies"][source_digest]["text"],
+        ))
+    keys = [prepared.manifest_key]
+    keys.extend(receipt["object_key"] for receipt in receipts)
+    keys = list(dict.fromkeys(keys))
+    pointer_path = store.root / Path(pp.POINTER_KEY)
+    pointer_bytes = pointer_path.read_bytes()
+    untyped = []
+
+    def hostile_states(original):
+        states = [
+            bytes([original[0] ^ 1]) + original[1:],
+            original[: max(1, len(original) // 2)],
+            b"",
+            b"[]\n",
+        ]
+        if original and original.lstrip().startswith(b"{"):
+            value = json.loads(original)
+            for key in list(value):
+                states.append(canonical_json_bytes({item: item_value for item, item_value in value.items() if item != key}))
+                states.append(canonical_json_bytes({item: [] for item in value}))
+        else:
+            states.append(original[:-1] + bytes([original[-1] ^ 1]) if original else b"x")
+        states.append(b"0" * 64 + original[64:] if len(original) > 64 else original + b"0")
+        return states
+
+    for key in keys:
+        path = store.root / Path(key)
+        original = path.read_bytes()
+        refused = False
+        for hostile in hostile_states(original):
+            path.write_bytes(hostile)
+            manifest_digest = sha256(store.get_bytes(prepared.manifest_key) or b"").hexdigest()
+            for reader in (
+                lambda: pp.load_economic_closure(store, manifest=manifest, slug=slug),
+                lambda: pp.load_economic_closure(store, manifest=manifest, slug=slug, interpretation="stale_ok"),
+                lambda: pp.load_current_economic_view(store, "PG", manifest=manifest),
+                lambda: pp.load_economic_evidence(
+                    store,
+                    generation_id=manifest["generation_id"],
+                    manifest_digest=manifest_digest,
+                    record_digest=manifest["records"][slug]["sha256"],
+                    slug=slug,
+                    fact_id="fact_id",
+                ),
+                lambda: pp.load_private_record(store, slug),
+                lambda: pp.load_private_record(store, "aapl-2026q1-call-record"),
+            ):
+                try:
+                    reader()
+                except ValueError:
+                    pass
+                except Exception as exc:
+                    if not isinstance(exc, pp.EarningsPrivatePublicationError):
+                        untyped.append((key, type(exc).__name__, str(exc)))
+                    refused = True
+            assert pointer_path.read_bytes() == pointer_bytes
+            path.write_bytes(original)
+        assert refused, key
+    assert len(untyped) == 0
+    print(f"C11 runtime={time.monotonic() - started:.3f}s")
+
 
 def _rename_one_directory_member(directory, suffix):
     path = next(iter(directory.glob(f"*{suffix}")))

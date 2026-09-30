@@ -276,9 +276,19 @@ class ConditionalCountingStore(CountingLocalStore):
         self.race_after_key: str | None = None
         self.race_when: str = "after_next_versioned_read"
         self._race_armed = False
-        self._foreign_pointer = b'{"foreign":true}\n'
+        self._foreign_pointer = canonical_json_bytes({
+            "schema": private_module.POINTER_SCHEMA,
+            "generation_id": "earnpriv_" + ("1" * 32),
+            "manifest_key": f"{private_module.PRIVATE_PREFIX}/manifests/earnpriv_{('1' * 32)}.json",
+            "manifest_sha256": "1" * 64,
+            "manifest_bytes": 2,
+            "published_at": "2000-01-01T00:00:00Z",
+        })
         self._lock = threading.Lock()
         self.fail_source_readback_after_manifest: str | None = None
+        self.fail_manifest_readback_after_key: str | None = None
+        self._fail_manifest_readback_seen = False
+        self._fail_manifest_readback_reads = 0
         self.fail_source_readback_keys: dict[str, bytes] = {}
         self._manifest_written = False
         self.versioned_reads: list[str] = []
@@ -294,6 +304,15 @@ class ConditionalCountingStore(CountingLocalStore):
             if self._manifest_written and key in self.fail_source_readback_keys:
                 return self.fail_source_readback_keys[key]
             result = super().get_bytes_strict_bounded(key, maximum_bytes)
+            if (
+                self.fail_manifest_readback_after_key == key
+                and self._fail_manifest_readback_seen
+            ):
+                self._fail_manifest_readback_reads += 1
+                if self._fail_manifest_readback_reads == 1:
+                    return result
+                self.fail_manifest_readback_after_key = None
+                return bytes([result[0] ^ 1]) + result[1:]
         return result
 
     def get_bytes_strict_bounded_versioned(self, key: str, maximum_bytes: int):
@@ -305,7 +324,10 @@ class ConditionalCountingStore(CountingLocalStore):
         return result
 
     def put_bytes(self, key: str, data: bytes, content_type: str = "application/octet-stream"):
+        self.put_calls.append(key)
         result = super().put_bytes(key, data, content_type=content_type)
+        if key == self.fail_manifest_readback_after_key:
+            self._fail_manifest_readback_seen = True
         if key == self.race_after_key and data != self._foreign_pointer:
             self._race_armed = True
             if self.race_when == "after_key_write":
@@ -350,6 +372,10 @@ class ConditionalCountingStore(CountingLocalStore):
 
     def _foreign_path(self) -> Path:
         return self._p(private_module.POINTER_KEY)
+
+
+def fail_manifest_readback(store: ConditionalCountingStore, prepared) -> None:
+    store.fail_manifest_readback_after_key = prepared.manifest_key
 
 
 def fail_source_readback(store: ConditionalCountingStore, prepared) -> None:

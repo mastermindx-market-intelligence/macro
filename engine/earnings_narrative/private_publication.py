@@ -2134,6 +2134,7 @@ def load_economic_closure(
             raise
         if stale["interpretation_state"] == "stale":
             return stale
+        return stale
     try:
         return validate_native_closure(value, objects, slugs=[slug])[slug]
     except EarningsPrivateClosureError as exc:
