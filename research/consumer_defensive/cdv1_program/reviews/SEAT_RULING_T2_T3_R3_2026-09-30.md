@@ -1,5 +1,7 @@
 # Seat ruling — CDV-1 Tasks 2 and 3, parallel dispatch (r3), 2026-09-30
 
+> Corrected by `SEAT_RULING_T2_T3_R3_ERRATUM_2026-09-30.md`. The r3 packets dropped binding r2 sections (FOUNDATION MAP Q6, the Task 7 contract binding, anti-collapse). That record restores them as T2 R6, T3 R3 and a common ruling.
+
 Seat: CDV-1 Meta-CEO, session `251f88c8`. Authority: Sol release ruling on #7905, comment 5902318060 (2026-09-30T01:33:57Z): "T2 source-currentness and T3 deterministic interpretation may advance under their existing packets and dependency law." Task 1 merged as squash `cdce3023fbbac95b1d2f3c51cd04903ecb2db1dc` at the released head `1c3e2215ee395217f2d8349b4e9e41eb028bd497`.
 
 The binding lane commissions are committed next to this record:
