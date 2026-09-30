@@ -3161,7 +3161,7 @@ html.mmx-tools-open { overflow: hidden; scrollbar-gutter: stable; }
 .mmx-tools-aside h3 { margin: 0 0 12px; font-size: var(--fs-num-lg); line-height: 1.2; font-weight: 600; letter-spacing: -.02em; }
 .mmx-tools-aside p:not(.mmx-tools-eyebrow) { margin: 0 0 18px; font-size: var(--fs-sm); color: var(--muted); line-height: 1.6; }
 .mmx-tools-context { color: var(--text); padding-top: 18px; border-top: 1px solid var(--nr-line); }
-.mmx-tools-footer { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; padding: 12px 28px max(12px,env(safe-area-inset-bottom)); border-top: 1px solid var(--nr-line); background: var(--bg); }
+.mmx-tools-footer { display: flex; width: 100%; max-width: none; margin: 0; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; padding: 12px 28px max(12px,env(safe-area-inset-bottom)); border-top: 1px solid var(--nr-line); background: var(--bg); }
 .mmx-tools-footer button, .mmx-tools-action { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 12px; border: 1px solid var(--nr-line-strong); border-radius: 9px; background: var(--nr-soft); color: var(--text); font: 600 var(--fs-sm)/1.5 var(--font-ui); cursor: pointer; }
 .mmx-tools-footer span { color: var(--muted); font-size: var(--fs-sm); }
 .mmx-tools-status { margin: 0; padding: 0 28px 12px; color: var(--muted); font-size: var(--fs-sm); }

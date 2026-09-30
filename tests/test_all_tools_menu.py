@@ -5,6 +5,7 @@ They do not claim browser, visual, accessibility, or production acceptance.
 """
 from __future__ import annotations
 
+import hashlib
 import os
 import re
 import shutil
@@ -88,6 +89,17 @@ def test_material_is_owned_by_navigation_refresh() -> None:
     assert not re.search(r"#[0-9a-fA-F]{3,8}\\b", block)
 
 
+def test_footer_is_isolated_from_host_page_footer_rules() -> None:
+    """Generic page-level ``footer`` rules must not shrink or offset the dialog footer."""
+    block = _between(NAV_CSS.read_text(), CSS_START, CSS_END)
+    match = re.search(r"\.mmx-tools-footer\s*\{([^}]*)\}", block)
+    assert match, "missing .mmx-tools-footer rule"
+    declarations = match.group(1)
+    assert "width: 100%" in declarations
+    assert "max-width: none" in declarations
+    assert "margin: 0" in declarations
+
+
 def test_shared_header_mount_is_default_off_and_single() -> None:
     source = SITE_NAV.read_text()
     assert source.count('{% include "_all_tools_menu.html.j2" %}') == 1
@@ -128,6 +140,14 @@ def test_existing_asset_owner_serves_the_component() -> None:
     assert (ROOT / "site" / "nav_market.js").read_bytes() == NAV_JS.read_bytes()
     assert not (ROOT / "site" / "all_tools.css").exists()
     assert not (ROOT / "site" / "all_tools.js").exists()
+
+
+def test_committed_pilots_bust_the_current_navigation_css_payload() -> None:
+    css_digest = hashlib.sha256((ROOT / "site" / "navigation-refresh.css").read_bytes()).hexdigest()[:8]
+    expected = f"navigation-refresh.css?v={css_digest}"
+    for name in ("macro.html", "sector_central.html", "reports.html"):
+        rendered = (ROOT / "site" / name).read_text()
+        assert rendered.count(expected) == 2, name
 
 
 def test_committed_pilot_pages_have_one_host_and_stocks_stays_off() -> None:
