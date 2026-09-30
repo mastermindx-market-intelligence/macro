@@ -1,10 +1,17 @@
 {
   "schema": "wh_health.v1",
-  "as_of": "2026-09-30T06:42:29.438337+00:00",
-  "posts_seen": 13,
-  "seen_total": 245,
-  "evaluated": 0,
+  "as_of": "2026-09-30T13:42:42.525185+00:00",
+  "posts_seen": 14,
+  "seen_total": 246,
+  "evaluated": 1,
   "activated": 0,
   "provider": "Claude claude-opus-4-8 (subscription)",
-  "gate_scores": []
+  "gate_scores": [
+    {
+      "id": "wh-2026-09-30-adobe-amazon-intel-starlink-google-and-zoom-partner-with-first-lady-melania-trum",
+      "importance": 15,
+      "activated": false,
+      "degraded_reason": "served_by:deepseek"
+    }
+  ]
 }
