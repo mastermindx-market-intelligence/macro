@@ -227,7 +227,7 @@ def write_economic_stage(stage_dir: Path, parts: dict) -> Path:
         slug_selection["chain"] = chain_catalogs[0] if slug_selection["event_id"] else []
     for chain_catalog in chain_catalogs[1:]:
         for slug, slug_selection in parts["selections"].items():
-            if slug_selection["event_id"] == chain_catalog[-1]["workspace"].get("event_id"):
+            if slug_selection["event_id"] == chain_catalog[-1]["workspace"]["event_id"]:
                 slug_selection["chain"] = chain_catalog
     if "interpretation_id" in parts["wire_interpretation"]:
         old_slug = dossier["slug"]
