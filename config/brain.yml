@@ -81,6 +81,24 @@ lanes:
     # MASTERMIND_WEEKLY_CEILING_PCT.
     weekly_ceiling_pct: 95
 
+# ── Vision-only continuity rung ───────────────────────────────────────────────
+# Uploaded screenshots use the frontier chain first (Codex -> Claude). If every
+# remote account is unavailable, a private Qwen model on the tailnet gets one final
+# attempt. This block is deliberately OUTSIDE lanes: Ollama must never enter normal
+# text routing, research authority, signal origination, or scoring.
+vision:
+  local_fallback:
+    enabled: true
+    # The reviewed service unit already loads /etc/macro-ollama.env. Keep the
+    # private tailnet address out of tracked config. Pin a known vision-capable
+    # default here; a dedicated env may supply it only when this key is absent.
+    base_url_env: OLLAMA_BASE_URL
+    model_env: OLLAMA_VISION_MODEL
+    model: qwen3.5:9b
+    timeout_s: 180
+    num_ctx: 32768
+    keep_alive: 5m
+
 # ── Phase-2 token streaming (Contract S, W5 latency wave 2026-08-01) ──────────
 # The synthesis answer is forwarded to the widget AS IT IS WRITTEN instead of being
 # held back for one buffered delta.  Absent block, or any absent key, = the module
