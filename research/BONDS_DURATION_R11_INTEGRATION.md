@@ -25,7 +25,7 @@ The existing `scripts/build_bonds.py` remains the route builder. It already rend
 | `templates/_bonds_duration.mjs.j2` | Reused R11 calculation/projection, strict DOM input adapter, native-dialog lifecycle and local draft rendering. |
 | `tests/test_bonds_duration_workflow.py` | Actual-route wiring, fail-closed markup, identity, styling, Node invocation and real page-writer/asset-sweep integration. |
 | `tests/bonds_duration_workflow.test.mjs` | Model and DOM-port tests against the unmodified production module. |
-| `.github/ci/legacy-jobs.yml` | Existing `ccw-w4-credit-desk` job runs the duration suite with Node22 and tracks all four component/test paths. No waiver or new workflow. |
+| `.github/ci/legacy-jobs.yml` | Existing `ccw-w4-credit-desk` job runs the duration suite with Node20 and tracks all four component/test paths. No waiver or new workflow. |
 | `research/BONDS_DURATION_R11_INTEGRATION.md` | This implementation and verification receipt. |
 
 No generated `site/` or runtime `data/` file is part of this candidate. A production release still needs the existing admitted render/publish path; changing a template does not prove the served page has changed.
@@ -99,11 +99,29 @@ Original-head CI run `36700334712` concluded failure, not a green result. Eleven
 1. `contract-delta` job `109838012440` found the duration pytest suite was not named by a workflow run step.
 2. `ci-pack-9` job `109839134033` failed only its `design-governance` job: four component-local colour functions on newly added lines.
 
-The suite is now wired into the existing `ccw-w4-credit-desk` job, with Node22 and explicit component/test dependencies. No suite is waived and no checker or workflow gate is weakened. The component now uses the existing glass backdrop/border and panel/health tokens instead of defining new colour mixes. This is a scoped material change; visual conformance must still be checked in a real browser.
+The suite is now wired into the existing `ccw-w4-credit-desk` job, with Node20 and explicit component/test dependencies. No suite is waived and no checker or workflow gate is weakened. The component now uses the existing glass backdrop/border and panel/health tokens instead of defining new colour mixes. This is a scoped material change; visual conformance must still be checked in a real browser.
 
 Fresh scoped run (Studio PID32837, exit0): **127 passed, 2 deselected** across the complete owning job's four Python suites, with only the same two committed-site tests excluded. The duration suite invokes the existing36 Node cases. The actual forward-only design checker reports **0 introduced blockers**, and `gated_unrun_suites()` reports **0 orphaned suites**. The regression forbidding component-local colour functions was observed failing before correction (PID25723).
 
 These local results repair the observed failures but do not stand in for the next exact-head hosted CI result, an independent review, generated-site proof or browser acceptance. The Executive V2 read preflight currently reports `mode=readonly`; no reviewer job was submitted or claimed. Browser administrator denial is unchanged and is not retried or delegated around.
+
+## Complete runner and page-path qualification
+
+The first CI repair at `768ff5d9aece4ebc9c3c01bf861d7510b0b033f4` declared Node22. The shared pack runner accepts only its existing Node20 action contract, so current-run contract-delta job `109850983984` correctly refused the manifest. This follow-on changes the one declaration to Node20; it does not upgrade the shared runtime or change a checker.
+
+The exact failure was reproduced with `scripts.run_ci_pack.load_legacy_jobs()`, then the corrected complete manifest was accepted (239 jobs). The full real command was then run against the corrected working tree:
+
+```sh
+python3 scripts/check_contract_delta.py --base a7e00a9af0f437a4907a32b4591d965e438ca42a
+```
+
+**Studio PID70436, exit0: 0 introduced and 0 inherited contract findings.** Full probe ceilings stayed satisfied: index134 jobs /5,524 estimated seconds /10 packs; free-content132 /5,293 /9; Prophet plan-book127 /5,242 /9. Total observed checker wall time204.7 seconds. These are the existing checker measurements, not product performance claims. The next exact-head CI run still owns hosted qualification, including actual execution under Node20. A local Homebrew Node20 binary was not present at the inspected standard path; no dependency was installed or an alternate provider used.
+
+On the unchanged product-source blob set at768ff…, **PID59344 exit0** exercised complete Jinja→`write_page`→externalize→asset optimizer in temporary output. A second optimizer pass changed0 bytes; the module body/type survived unchanged and Node's ES-module parser accepted it. All7 component IDs were unique and all7 control/ARIA references resolved. Exactly one component stylesheet and its one matching preload were emitted, with CSS SHA256 `1820ffed2ebbf317745be951261d72109cad9d52c83887386780b16d06d97df0`. Served owner-fixture bytes103,723; SHA256 `53f6cef73577af84c8f7f0e3f82583970a531bfc07e8febde181defc71d87571`. The first diagnostic had counted the preload as a second stylesheet; classifying link `rel` corrected that test-only assertion, with no product changes.
+
+**PID71841 exit0** additionally ran the two previously deselected inherited committed-page/stylesheet tests against the exact768ff… repository blobs, materialized only into temporary test output. Both passed. That committed page does not yet contain the new component: these two checks prove preservation of its existing contract, not a regeneration, deployment or live proof for the new workflow. No worktree `site/` files were written.
+
+The three product-source files and the36-case Node controller suite remain unchanged by this one-line environment correction. Independent source/visual review, real browser proof, the new exact-head hosted CI result and production publication remain outstanding. Do not call the temporary output a deployed dashboard.
 
 ## Release gates and rollback
 

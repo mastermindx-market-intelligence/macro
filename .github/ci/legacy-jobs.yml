@@ -8342,7 +8342,7 @@ jobs:
           python-version: "3.12"
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "20"
       - name: install deps
         # plotly: test file imports scripts.build_bonds, which imports plotly.graph_objects
         run: pip install pytest pandas numpy pyarrow pyyaml jinja2 plotly
