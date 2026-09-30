@@ -1,0 +1,4 @@
+R13_RECEIPTS_VERIFIED: 112 browser cells, 16 canonical image states, 14 inspected-state snapshots, hero geometry and canonical font identities.
+R13_SOURCE_SCOPE: existing builder restored exactly after removing only added pure projection/vm wiring; old tests are byte-prefix intact; engine/collector/house styles unchanged.
+R13_HISTORY: 57 input identities,18 gates,137 prior artifacts and absent live receipt stores unchanged. 439 regression tests recorded; separate held optional tests are not counted.
+Controlled fixture, initial expanded desk/CSP for canonical capture, remaining resource gaps and no independent-review/deployment claims remain explicit.

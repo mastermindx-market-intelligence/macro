@@ -1,0 +1,8 @@
+R13_BROWSER_SCENARIO current 16 cells verified
+R13_BROWSER_SCENARIO stale 16 cells verified
+R13_BROWSER_SCENARIO gap 16 cells verified
+R13_BROWSER_SCENARIO no_activity 16 cells verified
+R13_BROWSER_SCENARIO only_24h 16 cells verified
+R13_BROWSER_SCENARIO zero_share 16 cells verified
+R13_BROWSER_SCENARIO unavailable 16 cells verified
+R13_BROWSER_PASS 112 cases
