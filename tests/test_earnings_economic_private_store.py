@@ -520,8 +520,6 @@ def test_v2_publish_validates_prepared_closure_before_store_access(tmp_path):
         "object_key": altered_key,
     })
     manifest = reseal_manifest(manifest, pp)
-    manifest["native"]["source_bodies"][source_digest]["text"]["object_key"] = altered_key
-    manifest = reseal_manifest(manifest, pp)
     artifacts = tuple(
         artifact if artifact.object_key != source_key else pp.PrivateArtifact(
             role=artifact.role,
