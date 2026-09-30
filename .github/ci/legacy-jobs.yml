@@ -2250,6 +2250,32 @@ jobs:
       - name: cycles payload split contract tests (lossless recombine, no-mutate, family rules)
         run: python -m pytest tests/test_cycles_payload_split.py -q
 
+  options-matrix-code:
+    if: ${{ false }}
+    gate: code
+    # Hermetic source-contract gate for the matrix producer/publisher repair.
+    # The broader flow-surface lane stays gate:data for nightly/data health,
+    # but source/session/publication invariants must also be able to block a PR.
+    paths:
+      - "engine/options_matrix.py"
+      - "engine/options_structure.py"
+      - "engine/thetadata_store.py"
+      - "engine/greeks.py"
+      - "lib/nyse_calendar.py"
+      - "scripts/build_options_matrix.py"
+      - "tests/test_options_matrix.py"
+      - "site/options_structure/examples/matrix.json"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: install matrix-test deps
+        run: pip install pytest pyyaml numpy pandas scipy pyarrow jsonschema
+      - name: options matrix source/session/publication contracts
+        run: python -m pytest tests/test_options_matrix.py -q
+
   flow-surface:
     if: ${{ false }}
     gate: data
@@ -2629,6 +2655,7 @@ jobs:
       - "scripts/build_flow_surface.py"
       - "scripts/build_options_focused_quote.py"
       - "scripts/build_options_issue_desk.py"
+      - "scripts/build_options_matrix.py"
       - "scripts/build_options_prophet.py"
       - "scripts/build_options_screener.py"
       - "scripts/build_options_signal_campaign.py"

@@ -83,7 +83,7 @@ scripts/build_options_flow.py	12	• data/options_flow/summary_<KEY>.parquet —
 scripts/build_options_hub_nightly.py	70	R2_PREFIX = "options_hub/"
 scripts/build_options_hub_nightly.py	345	_upload_r2(s3, bucket, oi_path,  f"{R2_PREFIX}oi_movers.json")
 scripts/build_options_hub_nightly.py	592	I/O per root is the prior OI year(s) needed for the 18-month oi_time window
-scripts/build_options_matrix.py	55	R2_PREFIX = "options_structure/matrix/"
+scripts/build_options_matrix.py	59	R2_PREFIX = "options_structure/matrix/"
 scripts/build_options_prophet.py	1171	def _default_paths() -> dict[str, Path]:
 scripts/build_options_structure_intraday.py	1	#!/usr/bin/env python3
 scripts/build_prophet.py	267	# Landing showcase slice — public teaser payload for the marketing landing

@@ -53,6 +53,7 @@ from engine.thetadata_store import (
     eod_sessions_before,
     eod_volume_history_before,
 )
+from lib.nyse_calendar import sessions_apart
 
 log = logging.getLogger(__name__)
 
@@ -84,6 +85,13 @@ _MIN_CONFIDENCE = 0.15          # spec explicit
 _UNUSUAL_LOOKBACK_SESSIONS = 30
 _UNUSUAL_MIN_SAMPLES = 10
 _UNUSUAL_RATIO_THRESHOLD = 3.0
+
+# Automatic source-session selection is recovery from small publication skew,
+# not permission to relabel arbitrarily old structure as current.  Five NYSE
+# session steps covers ordinary vendor lag/holiday repair while refusing stale
+# roots such as the observed multi-week INTC gap.
+_AUTO_SESSION_MAX_LAG = 5
+_AUTO_SESSION_PROBE_LIMIT = 16
 
 
 # ============================================================================ #
@@ -606,8 +614,9 @@ def build_matrix(
         Path to the ThetaData EOD store root (string or Path), or None to use
         the env-default from thetadata_store.store_root().
     asof:
-        Reference date "YYYY-MM-DD".  When None, the most recent date with OI
-        data is used.
+        Reference date "YYYY-MM-DD". When None, choose the latest common
+        OI/EOD/underlying-price session no more than five NYSE sessions behind
+        the latest OI publication. An explicit date is never silently substituted.
 
     Returns
     -------
@@ -629,16 +638,83 @@ def build_matrix(
     asof_ts = datetime.now(tz=timezone.utc).isoformat()
 
     # ── resolve asof date ────────────────────────────────────────────────────
-    # Load all OI to find the most recent date if asof not provided.
+    # Load all OI to find the most recent valid publication date if asof is not
+    # provided.  Invalid/NaT labels never become a plausible "latest" string.
     oi_all = _load_parquets("oi", root, None, store)
     if not oi_all.empty:
         oi_all = _normalise_date(oi_all)
 
+    def _valid_sessions(values) -> set[str]:
+        out: set[str] = set()
+        for value in values:
+            try:
+                stamp = pd.Timestamp(value)
+            except Exception:  # noqa: BLE001
+                continue
+            if pd.isna(stamp):
+                continue
+            out.add(stamp.date().isoformat())
+        return out
+
+    oi_dates = (
+        _valid_sessions(oi_all["date"])
+        if not oi_all.empty and "date" in oi_all.columns else set()
+    )
+    latest_oi_date = max(oi_dates) if oi_dates else None
+    requested_date = asof
+    selection_greeks_by_year: dict[int, pd.DataFrame] = {}
     if asof is None:
-        if oi_all.empty or "date" not in oi_all.columns:
+        if latest_oi_date is None:
             log.warning("options_matrix: no OI data for %s — returning thin-chain null", root)
             return _null_payload(root, asof_ts, "no OI data in store")
-        asof = str(sorted(oi_all["date"].unique())[-1])
+        # OPRA's next publication can exist before that day's EOD/Greeks. Select
+        # a same-session tuple through the existing narrow EOD-session reader;
+        # never splice newer OI into an older, relabelled price snapshot.  The
+        # recovery is bounded by NYSE SESSION distance, not by "number of rows
+        # available in a stale store", so a multi-week gap is refused.
+        cutoff = (pd.Timestamp(latest_oi_date) + pd.Timedelta(days=1)).date().isoformat()
+        eod_dates = eod_sessions_before(
+            cutoff, root, limit=_AUTO_SESSION_PROBE_LIMIT, store=store
+        )
+        latest_oi_session = pd.Timestamp(latest_oi_date).date()
+        candidates = []
+        for candidate in sorted(set(eod_dates) & oi_dates, reverse=True):
+            lag = sessions_apart(pd.Timestamp(candidate).date(), latest_oi_session)
+            if lag is not None and lag <= _AUTO_SESSION_MAX_LAG:
+                candidates.append(candidate)
+
+        # Load/normalise each candidate YEAR once.  The previous loop rebuilt a
+        # full-year Greeks frame for every candidate and made the unhealthy path
+        # the most expensive one.
+        greek_sessions_with_spot: set[str] = set()
+        for candidate_year in sorted({pd.Timestamp(d).year for d in candidates}):
+            greek_frame = _load_parquets("greeks", root, [candidate_year], store)
+            if greek_frame.empty or "date" not in greek_frame.columns:
+                continue
+            greek_frame = _normalise_date(greek_frame)
+            selection_greeks_by_year[candidate_year] = greek_frame
+            if "underlying_price" not in greek_frame.columns:
+                continue
+            spot_values = pd.to_numeric(greek_frame["underlying_price"], errors="coerce")
+            valid_spot = np.isfinite(spot_values) & (spot_values > 0)
+            greek_sessions_with_spot.update(
+                _valid_sessions(greek_frame.loc[valid_spot, "date"])
+            )
+
+        for candidate in candidates:
+            if candidate in greek_sessions_with_spot:
+                asof = candidate
+                break
+        if asof is None:
+            return _null_payload(
+                root,
+                asof_ts,
+                (
+                    "no common OI/EOD/underlying-price session within "
+                    f"{_AUTO_SESSION_MAX_LAG} NYSE sessions of latest OI publication "
+                    f"{latest_oi_date}"
+                ),
+            )
 
     # ── OI[t-1]: the parquet dated `asof` ───────────────────────────────────
     oi_t1 = _load_oi(root, asof, store)
@@ -660,9 +736,11 @@ def build_matrix(
     eod_t1 = eod_matrix_for_date(asof, root, store)
 
     # ── greeks for IV ───────────────────────────────────────────────────────
-    greeks_all = _load_parquets("greeks", root, [year], store)
-    if not greeks_all.empty:
-        greeks_all = _normalise_date(greeks_all)
+    greeks_all = selection_greeks_by_year.get(year)
+    if greeks_all is None:
+        greeks_all = _load_parquets("greeks", root, [year], store)
+        if not greeks_all.empty:
+            greeks_all = _normalise_date(greeks_all)
     greeks_t1 = greeks_all[greeks_all["date"] == asof].copy() if not greeks_all.empty else pd.DataFrame()
 
     # ── spot ─────────────────────────────────────────────────────────────────
@@ -780,6 +858,9 @@ def build_matrix(
     # computed by re-pricing the book on a spot grid (gex_engine.gamma_profile)
     # instead of the retired cumulative-by-strike walk — see _compute_levels.
     chain_rows: list[tuple[float, float, float, float, bool]] = []
+    # Normalize and index this immutable root/session frame once. Re-scanning it
+    # per contract made the restored SPY path quadratic (5,056 Greek rows).
+    contract_ivs = _contract_iv_lookup(greeks_w)
     for _, row in oi_t1_w.iterrows():
         k   = float(row["strike"])
         exp = _to_iso_date(row.get("expiration", ""))
@@ -790,7 +871,7 @@ def build_matrix(
             continue
 
         # IV for this contract: prefer greeks, else median_iv
-        iv_contract = _lookup_iv(greeks_w, k, exp, right)
+        iv_contract = _lookup_iv(greeks_w, k, exp, right, lookup=contract_ivs)
         dte_days    = _dte(exp, asof)
         T_years     = dte_days / 365.0
         gamma       = _bs_gamma_scalar(spot, k, T_years, iv_contract, median_iv)
@@ -983,6 +1064,7 @@ def build_matrix(
     payload = {
         "schema":   "options_structure.matrix/v1",
         "asof":     asof_ts,
+        "session":  asof,
         "root":     root,
         "spot":     _f(spot),
         "expiries": sorted(expiry_set),
@@ -1009,6 +1091,14 @@ def build_matrix(
         },
         "_build_meta": {
             "asof_date":    asof,
+            "session_selection": "explicit_date" if requested_date is not None else "latest_common_session",
+            "source_dates": {
+                "eod": asof if not eod_t1.empty else None,
+                "greeks": asof if not greeks_t1.empty else None,
+                "oi_publication": asof,
+                "previous_oi_publication": t2_date,
+                "latest_oi_publication": latest_oi_date,
+            },
             "t2_date":      t2_date,
             "n_cells":      len(cells_out),
             "n_expiries":   len(expiry_set),
@@ -1084,6 +1174,7 @@ def _null_payload(root: str, asof_ts: str, reason: str) -> dict:
     payload = {
         "schema":   "options_structure.matrix/v1",
         "asof":     asof_ts,
+        "session":  None,
         "root":     root,
         "spot":     None,
         "expiries": [],
@@ -1119,30 +1210,39 @@ def _null_payload(root: str, asof_ts: str, reason: str) -> dict:
 
 
 def _extract_spot(greeks_df: pd.DataFrame, eod_df: pd.DataFrame) -> float | None:
-    """Extract spot price from greeks (underlying_price) or EOD close."""
-    if not greeks_df.empty and "underlying_price" in greeks_df.columns:
-        v = greeks_df["underlying_price"].dropna()
-        if not v.empty:
-            return float(v.iloc[0])
-    if not eod_df.empty and "close" in eod_df.columns:
-        # Use ATM close as proxy — pick highest-OI strike's close
-        v = eod_df["close"].dropna()
-        if not v.empty:
-            return float(v.median())
-    return None
+    """Only an observed underlying reference is spot; option close is premium.
+
+    Keep the two-argument interface for existing callers. The EOD matrix reader
+    does not publish underlying prices, so its close column is never a fallback.
+    """
+    if greeks_df.empty or "underlying_price" not in greeks_df.columns:
+        return None
+    values = pd.to_numeric(greeks_df["underlying_price"], errors="coerce")
+    values = values[np.isfinite(values) & (values > 0)]
+    return float(values.iloc[0]) if not values.empty else None
 
 
-def _lookup_iv(greeks_df: pd.DataFrame, strike: float, expiry: str, right: str) -> float:
-    """Return IV for (strike, expiry, right) from greeks, or 0.0 if not found.
+def _contract_iv_lookup(greeks_df: pd.DataFrame) -> dict[tuple[float, str, str], object]:
+    """First nonmissing IV per exact contract, matching the scalar reader.
 
-    Both sides normalized to plain ISO date to match regardless of parquet storage type.
+    This is a per-build index of the already loaded frame, not another cache or
+    source reader. Keep numeric conversion at lookup time: an invalid IV in an
+    unused contract must not change the behavior of a valid contract's query.
     """
     if greeks_df.empty or "implied_vol" not in greeks_df.columns:
-        return 0.0
-    mask = (
-        (greeks_df["strike"].astype(float) == strike) &
-        (greeks_df["expiration"].apply(_to_iso_date) == expiry) &
-        (greeks_df["right"].astype(str).str.upper().str[:1] == right[:1])
-    )
-    sub = greeks_df[mask]["implied_vol"].dropna()
-    return float(sub.iloc[0]) if not sub.empty else 0.0
+        return {}
+    strikes = greeks_df["strike"].astype(float)
+    expiries = greeks_df["expiration"].apply(_to_iso_date)
+    rights = greeks_df["right"].astype(str).str.upper().str[:1]
+    result: dict[tuple[float, str, str], object] = {}
+    for strike, expiry, right, iv in zip(strikes, expiries, rights, greeks_df["implied_vol"]):
+        if pd.notna(iv):
+            result.setdefault((strike, expiry, right), iv)
+    return result
+
+
+def _lookup_iv(greeks_df: pd.DataFrame, strike: float, expiry_str: str, right: str,
+               *, lookup: dict[tuple[float, str, str], object] | None = None) -> float:
+    """IV for (strike, expiry, right), or zero when absent; duplicates keep the first nonmissing value."""
+    values = _contract_iv_lookup(greeks_df) if lookup is None else lookup
+    return float(values.get((strike, expiry_str, right[:1]), 0.0))
