@@ -263,7 +263,7 @@ class MassiveReferenceClient:
         seen: set[str] = set()
         validated: list[dict[str, Any]] = []
         for row in bundle.rows:
-            ticker = _normal_text(row.get("ticker"), upper=True)
+            ticker = _normal_text(row.get("ticker"))
             if not ticker:
                 raise CollectionRefused("roster row missing ticker")
             if ticker in seen:
@@ -301,7 +301,7 @@ class MassiveReferenceClient:
         seen: set[str] = set()
         validated: list[dict[str, Any]] = []
         for row in bundle.rows:
-            ticker = _normal_text(row.get("ticker"), upper=True)
+            ticker = _normal_text(row.get("ticker"))
             if not ticker:
                 raise CollectionRefused("split row missing ticker")
             event_date = _coerce_date(

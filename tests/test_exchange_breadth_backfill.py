@@ -639,3 +639,32 @@ def test_completed_cli_rerun_needs_no_vendor_key_or_source_access(
     assert payload["processed_sessions"] == []
     assert payload["remaining_sessions"] == []
     assert payload["completed_total"] == 2
+
+
+def test_grouped_daily_preserves_case_and_punctuation_exact_vendor_keys() -> None:
+    client = GroupedDailyPriceClient(
+        api_key="k",
+        base_url="https://api.example.test",
+        request_json=lambda _url, _params: {
+            "status": "OK",
+            "queryCount": 3,
+            "resultsCount": 3,
+            "results": [
+                {"T": "TPC", "c": 94.67},
+                {"T": "TpC", "c": 16.98},
+                {"T": "BRK.B", "c": 500.0},
+            ],
+        },
+    )
+
+    evidence = client.fetch(
+        END,
+        {"TPC", "TpC", "BRK.B"},
+        min_coverage=1.0,
+    )
+
+    assert evidence.closes == {
+        "TPC": 94.67,
+        "TpC": 16.98,
+        "BRK.B": 500.0,
+    }

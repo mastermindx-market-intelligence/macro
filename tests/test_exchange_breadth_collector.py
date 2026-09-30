@@ -537,3 +537,32 @@ def test_splits_accept_a_legitimate_quiet_window() -> None:
     assert bundle.rows == ()
     assert bundle.receipt["row_count"] == 0
     assert bundle.receipt["request_ids"] == ["quiet"]
+
+
+def test_roster_preserves_case_distinct_massive_ticker_identities() -> None:
+    client = MassiveReferenceClient(
+        api_key="k",
+        base_url="https://api.example.test",
+        request_json=lambda _url, _params: _ok(
+            [
+                _roster_row("TPC", ticker_type="CS"),
+                _roster_row("TpC", ticker_type="PFD"),
+            ]
+        ),
+    )
+
+    bundle = client.fetch_roster(SESSION, min_rows=2)
+
+    assert [row["ticker"] for row in bundle.rows] == ["TPC", "TpC"]
+
+
+def test_split_preserves_case_exact_massive_ticker_identity() -> None:
+    client = MassiveReferenceClient(
+        api_key="k",
+        base_url="https://api.example.test",
+        request_json=lambda _url, _params: _ok([_split_row("TpC")]),
+    )
+
+    bundle = client.fetch_splits(date(2025, 1, 1), SESSION)
+
+    assert bundle.rows[0]["ticker"] == "TpC"

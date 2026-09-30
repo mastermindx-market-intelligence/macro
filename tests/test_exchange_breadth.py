@@ -430,3 +430,27 @@ def test_state_classification_is_causal_at_requested_asof():
     assert at_day_25["state"] == "broad_confirmation"
     assert at_day_25["authority"] == "display_research_context_only"
     assert at_day_25["reasons"]
+
+
+def test_normalize_roster_keeps_massive_case_as_security_identity() -> None:
+    aliases = _AliasTable(
+        {
+            ("massive", "TPC"): "SEC:TUTOR-PERINI",
+            ("massive", "TpC"): "SEC:ATT-PREFERRED-C",
+        }
+    )
+    rows = [
+        _row("TPC", "CS"),
+        _row("TpC", "PFD"),
+    ]
+
+    out = eb.normalize_roster(rows, "2026-09-29", alias_table=aliases)
+    operating = out[out["universe_key"] == eb.UNIVERSE_OPERATING]
+    all_issues = out[out["universe_key"] == eb.UNIVERSE_ALL_ISSUES]
+
+    assert operating["ticker"].tolist() == ["TPC"]
+    assert all_issues["ticker"].tolist() == ["TPC", "TpC"]
+    assert all_issues.set_index("ticker").loc["TPC", "entity_key"] == "SEC:TUTOR-PERINI"
+    assert all_issues.set_index("ticker").loc["TpC", "entity_key"] == "SEC:ATT-PREFERRED-C"
+    assert ("massive", "TPC", date(2026, 9, 29)) in aliases.calls
+    assert ("massive", "TpC", date(2026, 9, 29)) in aliases.calls

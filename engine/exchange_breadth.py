@@ -76,7 +76,7 @@ def _active(value: object) -> bool:
 def resolve_entity_identity(
     row: Mapping[str, Any], session: object, *, alias_table: Any | None = None,
 ) -> IdentityResolution:
-    ticker = _text(row.get("ticker"), upper=True)
+    ticker = _text(row.get("ticker"))
     on: date = _session(session).date()
     if ticker and alias_table is not None:
         for vendor in ("massive", "membership"):
@@ -103,7 +103,7 @@ def normalize_roster(
     asof = _session(session)
     normalized: list[dict[str, Any]] = []
     for raw in rows or ():
-        ticker = _text(raw.get("ticker"), upper=True)
+        ticker = _text(raw.get("ticker"))
         exchange = _text(raw.get("primary_exchange"), upper=True)
         market = (_text(raw.get("market")) or "").lower()
         ticker_type = _text(raw.get("type"), upper=True) or "UNKNOWN"

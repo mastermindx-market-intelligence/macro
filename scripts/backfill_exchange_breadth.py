@@ -44,7 +44,6 @@ from collectors.exchange_breadth import (
 from engine.close_pass.massive_close import (
     GROUPED_PATH,
     SOURCE_GROUPED,
-    universe_ticker,
 )
 from engine.exchange_breadth import (
     AUTHORITY,
@@ -362,7 +361,7 @@ class GroupedDailyPriceClient:
             if not isinstance(row, Mapping):
                 continue
             raw = str(row.get("T") or "").strip()
-            ticker = universe_ticker(raw)
+            ticker = raw
             if ticker not in wanted_set or ticker in closes:
                 continue
             value = row.get("c")
