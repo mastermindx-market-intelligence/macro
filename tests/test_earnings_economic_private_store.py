@@ -893,12 +893,10 @@ def test_current_view_and_pinned_evidence(tmp_path, economic_publish):
 
 
 def test_corrupt_immutable_source_object_is_fail_closed(tmp_path):
-    manifest_key = None
-    store, baseline = published_v1_case(tmp_path)
+    store, _baseline = published_v1_case(tmp_path)
     prepared = pp.prepare_private_publication(stage_economic_case(tmp_path, "valid"))
     pp.publish_private_publication(store, prepared)
     manifest = pp.load_private_manifest(store)
-    slug = manifest["native"]["economic_slots"]["cik:0000080424"]["slug"]
     digest = next(iter(manifest["native"]["source_bodies"]))
     source_key = manifest["native"]["source_bodies"][digest]["text"]["object_key"]
     path = store.root / Path(source_key)
