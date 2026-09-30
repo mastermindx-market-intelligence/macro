@@ -5950,7 +5950,7 @@
    },
    {
     "t": "600188.SS",
-    "nm": "Yankuang Energy Group Company Limited / XD兖矿能",
+    "nm": "Yankuang Energy Group Company Limited / 兖矿能源",
     "sec": "Energy",
     "grp": null,
     "d": "2026-07-29",
@@ -8106,8 +8106,8 @@
    },
    {
     "t": "000034.SZ",
-    "nm": "Digital China Group Co., Ltd. / 神州数码",
-    "sec": "Technology",
+    "nm": null,
+    "sec": null,
     "grp": null,
     "d": "2026-07-23",
     "e": 27.25,
@@ -8590,7 +8590,7 @@
    },
    {
     "t": "600941.SS",
-    "nm": "China Mobile Limited / 中国移动",
+    "nm": "China Mobile Limited / XD中国移",
     "sec": "Communication Services",
     "grp": null,
     "d": "2026-07-23",
@@ -14818,7 +14818,7 @@
    },
    {
     "t": "600028.SS",
-    "nm": "China Petroleum & Chemical Corporation / 中国石化",
+    "nm": "China Petroleum & Chemical Corporation / XD中国石",
     "sec": "Energy",
     "grp": null,
     "d": "2026-07-07",
@@ -15302,8 +15302,8 @@
    },
    {
     "t": "000034.SZ",
-    "nm": "Digital China Group Co., Ltd. / 神州数码",
-    "sec": "Technology",
+    "nm": null,
+    "sec": null,
     "grp": null,
     "d": "2026-07-03",
     "e": 27.85,
@@ -17282,8 +17282,8 @@
    },
    {
     "t": "000034.SZ",
-    "nm": "Digital China Group Co., Ltd. / 神州数码",
-    "sec": "Technology",
+    "nm": null,
+    "sec": null,
     "grp": null,
     "d": "2026-06-30",
     "e": 27.69,
@@ -18162,8 +18162,8 @@
    },
    {
     "t": "600732.SS",
-    "nm": null,
-    "sec": null,
+    "nm": "Shanghai Aiko Solar Energy Co.,Ltd. / 爱旭股份",
+    "sec": "Technology",
     "grp": null,
     "d": "2026-06-30",
     "e": 13.76,
@@ -25141,8 +25141,8 @@
     },
     {
      "t": "002430.SZ",
-     "nm": null,
-     "sec": null,
+     "nm": "Hangzhou Oxygen Plant Group Co., Ltd. / 杭氧股份",
+     "sec": "Industrials",
      "grp": null,
      "d": "2026-08-28",
      "e": 26.9,
@@ -25603,8 +25603,8 @@
     },
     {
      "t": "000932.SZ",
-     "nm": null,
-     "sec": null,
+     "nm": "Hunan Valin Steel Co., Ltd. / 华菱钢铁",
+     "sec": "Basic Materials",
      "grp": null,
      "d": "2026-08-26",
      "e": 3.73,
@@ -26901,7 +26901,7 @@
     },
     {
      "t": "601577.SS",
-     "nm": "Bank of Changsha Co., Ltd. / 长沙银行",
+     "nm": "Bank of Changsha Co., Ltd. / XD长沙银",
      "sec": "Financial Services",
      "grp": null,
      "d": "2026-08-19",
@@ -27759,7 +27759,7 @@
     },
     {
      "t": "600188.SS",
-     "nm": "Yankuang Energy Group Company Limited / XD兖矿能",
+     "nm": "Yankuang Energy Group Company Limited / 兖矿能源",
      "sec": "Energy",
      "grp": null,
      "d": "2026-08-12",
@@ -28089,8 +28089,8 @@
     },
     {
      "t": "002266.SZ",
-     "nm": null,
-     "sec": null,
+     "nm": "Zhefu Holding Group Co., Ltd. / 浙富控股",
+     "sec": "Industrials",
      "grp": null,
      "d": "2026-08-10",
      "e": 5.16,
@@ -28221,7 +28221,7 @@
     },
     {
      "t": "600188.SS",
-     "nm": "Yankuang Energy Group Company Limited / XD兖矿能",
+     "nm": "Yankuang Energy Group Company Limited / 兖矿能源",
      "sec": "Energy",
      "grp": null,
      "d": "2026-08-10",
@@ -37267,7 +37267,7 @@
     },
     {
      "t": "600777.SS",
-     "nm": "Shandong Xinchao Energy Corporation Limited / 新潮能源",
+     "nm": "Shandong Xinchao Energy Corporation Limited / XD新潮能",
      "sec": "Energy",
      "grp": null,
      "d": "2026-08-26",
@@ -37949,7 +37949,7 @@
     },
     {
      "t": "600777.SS",
-     "nm": "Shandong Xinchao Energy Corporation Limited / 新潮能源",
+     "nm": "Shandong Xinchao Energy Corporation Limited / XD新潮能",
      "sec": "Energy",
      "grp": null,
      "d": "2026-08-21",
@@ -38653,7 +38653,7 @@
     },
     {
      "t": "601577.SS",
-     "nm": "Bank of Changsha Co., Ltd. / 长沙银行",
+     "nm": "Bank of Changsha Co., Ltd. / XD长沙银",
      "sec": "Financial Services",
      "grp": null,
      "d": "2026-08-19",
@@ -39027,7 +39027,7 @@
     },
     {
      "t": "600777.SS",
-     "nm": "Shandong Xinchao Energy Corporation Limited / 新潮能源",
+     "nm": "Shandong Xinchao Energy Corporation Limited / XD新潮能",
      "sec": "Energy",
      "grp": null,
      "d": "2026-08-18",
@@ -45640,7 +45640,7 @@
     },
     {
      "t": "600777.SS",
-     "nm": "Shandong Xinchao Energy Corporation Limited / 新潮能源",
+     "nm": "Shandong Xinchao Energy Corporation Limited / XD新潮能",
      "sec": "Energy",
      "grp": null,
      "d": "2026-08-26",
@@ -46322,7 +46322,7 @@
     },
     {
      "t": "600777.SS",
-     "nm": "Shandong Xinchao Energy Corporation Limited / 新潮能源",
+     "nm": "Shandong Xinchao Energy Corporation Limited / XD新潮能",
      "sec": "Energy",
      "grp": null,
      "d": "2026-08-21",
@@ -47026,7 +47026,7 @@
     },
     {
      "t": "601577.SS",
-     "nm": "Bank of Changsha Co., Ltd. / 长沙银行",
+     "nm": "Bank of Changsha Co., Ltd. / XD长沙银",
      "sec": "Financial Services",
      "grp": null,
      "d": "2026-08-19",
@@ -47400,7 +47400,7 @@
     },
     {
      "t": "600777.SS",
-     "nm": "Shandong Xinchao Energy Corporation Limited / 新潮能源",
+     "nm": "Shandong Xinchao Energy Corporation Limited / XD新潮能",
      "sec": "Energy",
      "grp": null,
      "d": "2026-08-18",
@@ -47670,8 +47670,8 @@
     "mae_p10_pct": -10.47,
     "n_logged": 296,
     "n_locked_excluded": 0,
-    "n_skipped_awaiting_t1": 36,
-    "n_skipped_total": 36,
+    "n_skipped_awaiting_t1": 38,
+    "n_skipped_total": 38,
     "board_definition": "cn_prophet_v4_more_actionable"
    },
    "rows": [
@@ -54196,8 +54196,8 @@
     "survivorship": {
      "n_locked_excluded": 0,
      "n_skipped_no_price": 0,
-     "n_skipped_awaiting_t1": 36,
-     "n_skipped_total": 36,
+     "n_skipped_awaiting_t1": 38,
+     "n_skipped_total": 38,
      "note": "locked-limit T+1 rows are unfillable — flagged, excluded from stats; n_skipped_no_price counts store misses only, awaiting-T+1 episodes are in flight"
     },
     "exit_rule": "10-session forced verdict · T+1 open fill · no oscillator target (3D thresholds not yet refit for A-shares)",
