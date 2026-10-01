@@ -2,6 +2,31 @@
   "schema": "marketing.radar_plan_history/v1",
   "plans": [
     {
+      "as_of": "2026-10-01",
+      "tickers": [
+        "AEIS",
+        "AEP",
+        "ALGT",
+        "CDNS",
+        "CNM",
+        "EGBN",
+        "HAFC",
+        "IPGP",
+        "IVV",
+        "LMAT",
+        "LUV",
+        "LZB",
+        "MAR",
+        "PANW",
+        "PLAB",
+        "QDEL",
+        "REX",
+        "STRL",
+        "TTD",
+        "WS"
+      ]
+    },
+    {
       "as_of": "2026-09-30",
       "tickers": [
         "ALGT",
@@ -145,21 +170,6 @@
         "QCOM",
         "WBD",
         "WFC"
-      ]
-    },
-    {
-      "as_of": "2026-09-24",
-      "tickers": [
-        "ALHC",
-        "AMKR",
-        "APOG",
-        "CLH",
-        "EBAY",
-        "HAFC",
-        "KRMN",
-        "MATW",
-        "REX",
-        "ROL"
       ]
     }
   ]

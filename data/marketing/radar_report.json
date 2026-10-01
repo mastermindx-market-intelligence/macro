@@ -2,7 +2,7 @@
   "schema": "marketing.radar_report/v1",
   "schema_version": 1,
   "produced_by": "engine/marketing/radar_internal.py",
-  "produced_at": "2026-09-30T13:22:25Z",
+  "produced_at": "2026-10-01T06:00:28Z",
   "tier": "display",
   "as_of": "2026-09-30",
   "feeds": [
@@ -38,7 +38,7 @@
     }
   ],
   "posted_recent": {
-    "n_tickers": 1568,
+    "n_tickers": 1601,
     "window_plans": 7
   },
   "surplus": [
@@ -211,76 +211,76 @@
       "opportunity_id": "radar-earnings-VRAX-2026-09-30"
     },
     {
-      "ticker": "ABCL",
+      "ticker": "AAOX",
       "feed": "movers",
-      "why": "S&P mover +9.6% 1D ()",
+      "why": "S&P mover +8.0% 1D ()",
       "as_of": "2026-09-25",
       "staleness_days": 5,
-      "opportunity_id": "radar-movers-ABCL-2026-09-25"
+      "opportunity_id": "radar-movers-AAOX-2026-09-25"
     },
     {
-      "ticker": "ADMA",
+      "ticker": "AIR",
       "feed": "movers",
-      "why": "S&P mover +7.9% 1D ()",
+      "why": "S&P mover -7.2% 1D ()",
       "as_of": "2026-09-25",
       "staleness_days": 5,
-      "opportunity_id": "radar-movers-ADMA-2026-09-25"
-    },
-    {
-      "ticker": "ARMG",
-      "feed": "movers",
-      "why": "S&P mover -17.5% 1D ()",
-      "as_of": "2026-09-25",
-      "staleness_days": 5,
-      "opportunity_id": "radar-movers-ARMG-2026-09-25"
-    },
-    {
-      "ticker": "AUR",
-      "feed": "movers",
-      "why": "S&P mover -12.4% 1D ()",
-      "as_of": "2026-09-25",
-      "staleness_days": 5,
-      "opportunity_id": "radar-movers-AUR-2026-09-25"
-    },
-    {
-      "ticker": "BB",
-      "feed": "movers",
-      "why": "S&P mover +7.2% 1D ()",
-      "as_of": "2026-09-25",
-      "staleness_days": 5,
-      "opportunity_id": "radar-movers-BB-2026-09-25"
+      "opportunity_id": "radar-movers-AIR-2026-09-25"
     },
     {
       "ticker": "BEX",
       "feed": "movers",
-      "why": "S&P mover -17.8% 1D ()",
+      "why": "S&P mover +21.4% 1D ()",
       "as_of": "2026-09-25",
       "staleness_days": 5,
       "opportunity_id": "radar-movers-BEX-2026-09-25"
     },
     {
-      "ticker": "BWET",
+      "ticker": "CAMT",
       "feed": "movers",
-      "why": "S&P mover +11.0% 1D ()",
+      "why": "S&P mover +7.2% 1D ()",
       "as_of": "2026-09-25",
       "staleness_days": 5,
-      "opportunity_id": "radar-movers-BWET-2026-09-25"
+      "opportunity_id": "radar-movers-CAMT-2026-09-25"
     },
     {
-      "ticker": "CYPH",
+      "ticker": "IOVA",
       "feed": "movers",
-      "why": "S&P mover -19.7% 1D ()",
+      "why": "S&P mover +31.5% 1D ()",
       "as_of": "2026-09-25",
       "staleness_days": 5,
-      "opportunity_id": "radar-movers-CYPH-2026-09-25"
+      "opportunity_id": "radar-movers-IOVA-2026-09-25"
     },
     {
-      "ticker": "GFI",
+      "ticker": "NESR",
       "feed": "movers",
-      "why": "S&P mover -12.9% 1D ()",
+      "why": "S&P mover -11.1% 1D ()",
       "as_of": "2026-09-25",
       "staleness_days": 5,
-      "opportunity_id": "radar-movers-GFI-2026-09-25"
+      "opportunity_id": "radar-movers-NESR-2026-09-25"
+    },
+    {
+      "ticker": "ORCU",
+      "feed": "movers",
+      "why": "S&P mover +8.2% 1D ()",
+      "as_of": "2026-09-25",
+      "staleness_days": 5,
+      "opportunity_id": "radar-movers-ORCU-2026-09-25"
+    },
+    {
+      "ticker": "PS",
+      "feed": "movers",
+      "why": "S&P mover -9.5% 1D ()",
+      "as_of": "2026-09-25",
+      "staleness_days": 5,
+      "opportunity_id": "radar-movers-PS-2026-09-25"
+    },
+    {
+      "ticker": "PWP",
+      "feed": "movers",
+      "why": "S&P mover +11.8% 1D ()",
+      "as_of": "2026-09-25",
+      "staleness_days": 5,
+      "opportunity_id": "radar-movers-PWP-2026-09-25"
     },
     {
       "ticker": "SHW",
@@ -364,17 +364,17 @@
     }
   ],
   "queue": {
-    "added": 11,
+    "added": 0,
     "expired": 10,
-    "total": 566,
-    "open": 288,
+    "total": 536,
+    "open": 278,
     "doa_skipped": 9
   },
   "tiers_summary": {
     "as_of": "2026-09-25",
     "t1": 28,
-    "t2": 507,
-    "t3": 2174
+    "t2": 366,
+    "t3": 2326
   },
   "cadence": {
     "available": true,
