@@ -20,8 +20,8 @@ MACRO_HTML = (ROOT / "site" / "macro.html").read_text(encoding="utf-8")
 # The cache-buster the theme.js -> account.js -> nav_market.js chain is pinned
 # to, and a digest of the payload that key is responsible for busting. They MUST
 # move together -- see test_nav_release_key_moves_with_the_payload_it_busts.
-NAV_RELEASE_KEY = "20260929-all-tools-menu"
-NAV_PAYLOAD_DIGEST = "52711a9a"
+NAV_RELEASE_KEY = "20260930-all-tools-reconcile"
+NAV_PAYLOAD_DIGEST = "9dd8d493"
 
 
 def _payload_digest() -> str:
