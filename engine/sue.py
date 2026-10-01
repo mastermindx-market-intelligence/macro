@@ -704,6 +704,7 @@ def factual_dossier(
     per_share: Mapping[str, Any] | None = None,
     entry: Mapping[str, Any] | None = None,
     source_contract_refs: Sequence[str] = (),
+    guidance_results: Sequence[Mapping[str, Any]] = (),
 ) -> dict[str, Any]:
     """Assemble factual evidence while preserving every downstream authority boundary."""
     required_text(event_id, "event_id")
@@ -760,6 +761,16 @@ def factual_dossier(
             raise EvidenceError("revision evidence is from the future")
         no_child_authority(item)
 
+    for item in guidance_results:
+        if not isinstance(item, Mapping) or item.get("schema") != SCHEMA or item.get("kind") != "ISSUER_GUIDANCE_DELIVERY":
+            raise EvidenceError("invalid issuer-guidance evidence")
+        basis = item.get("basis")
+        if not isinstance(basis, Mapping) or basis.get("issuer_id") != issuer_id or item.get("event_id") != event_id:
+            raise EvidenceError("guidance evidence identity mismatch")
+        if aware_utc(str(item.get("decision_at"))) > decision:
+            raise EvidenceError("guidance evidence is from the future")
+        no_child_authority(item)
+
     if per_share is not None:
         if not isinstance(per_share, Mapping) or per_share.get("schema") != SCHEMA or per_share.get("kind") != "PER_SHARE_BRIDGE":
             raise EvidenceError("invalid per-share evidence")
@@ -787,6 +798,8 @@ def factual_dossier(
         "per_share_bridge": None if per_share is None else deepcopy(dict(per_share)),
         "entry_economics": None if entry is None else deepcopy(dict(entry)),
         "source_contract_refs": refs,
+        **({"issuer_guidance_delivery": [deepcopy(dict(item)) for item in guidance_results]}
+           if guidance_results else {}),
         "limitations": limitations,
         "authority": {
             "rank": False,
@@ -796,3 +809,207 @@ def factual_dossier(
             "trade": False,
         },
     }
+
+
+@dataclass(frozen=True)
+class IssuerGuidance:
+    """One source-qualified management forecast revision, not analyst consensus.
+
+    Its range is management's stated interval, NOT a confidence interval. The
+    existing source owner supplies comparable basis, clocks and history coverage.
+    """
+    basis: MetricBasis
+    low: float | None
+    high: float | None
+    public_at: str
+    available_at: str
+    revision_id: str
+    source_ref: str
+    state: str = "ACTIVE"
+    valid_until: str | None = None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.basis, MetricBasis):
+            raise EvidenceError("invalid guidance basis")
+        if self.state not in {"ACTIVE", "WITHDRAWN"}:
+            raise EvidenceError("invalid guidance state")
+        if self.state == "ACTIVE":
+            low, high = finite(self.low), finite(self.high)
+            if low is None or high is None or low > high:
+                raise EvidenceError("invalid guidance range")
+        elif self.low is not None or self.high is not None:
+            raise EvidenceError("withdrawn guidance must not retain a numeric range")
+        issued = aware_utc(self.public_at, "guidance public_at")
+        available = aware_utc(self.available_at, "guidance available_at")
+        if available < issued:
+            raise EvidenceError("guidance available before publication")
+        if self.valid_until is not None and aware_utc(self.valid_until) <= available:
+            raise EvidenceError("guidance validity must follow availability")
+        required_text(self.revision_id, "guidance revision_id")
+        required_text(self.source_ref, "guidance source_ref")
+
+
+def guidance_delivery(
+    actual: Actual, revisions: Sequence[IssuerGuidance], *, decision_at: str,
+    source_history_complete: bool,
+) -> dict[str, Any]:
+    """Compare the actual with the latest comparable pre-release issuer guidance.
+
+    Initial-to-latest guidance change is earlier information; only the residual
+    against the latest qualified forecast belongs to the eventual results event.
+    A later withdrawal/expiry never falls back to an older optimistic forecast.
+    Incomplete history cannot certify that the retained record was the latest.
+    """
+    if not isinstance(actual, Actual) or not isinstance(source_history_complete, bool):
+        raise EvidenceError("actual and explicit guidance history state required")
+    decision = aware_utc(decision_at, "decision_at")
+    event_cut = aware_utc(actual.public_at)
+    if aware_utc(actual.available_at) > decision:
+        raise EvidenceError("actual unavailable at guidance-delivery decision")
+    rows = tuple(revisions)
+    if any(not isinstance(row, IssuerGuidance) for row in rows):
+        raise EvidenceError("invalid guidance revision")
+    if len({row.revision_id for row in rows}) != len(rows):
+        raise EvidenceError("duplicate guidance revision")
+    visible = []
+    excluded = []
+    for row in rows:
+        reason = None
+        if row.basis != actual.basis:
+            reason = "incomparable_basis_or_period"
+        elif aware_utc(row.public_at) >= event_cut:
+            reason = "published_at_or_after_result"
+        elif aware_utc(row.available_at) >= event_cut:
+            reason = "not_usable_before_result"
+        if reason is None:
+            visible.append(row)
+        else:
+            excluded.append({"revision_id": row.revision_id, "reason": reason})
+    visible.sort(key=lambda row: (aware_utc(row.public_at), aware_utc(row.available_at), row.revision_id))
+    result = {
+        "schema": SCHEMA, "kind": "ISSUER_GUIDANCE_DELIVERY",
+        "basis": asdict(actual.basis), "event_id": actual.event_id,
+        "actual": float(actual.value), "actual_source_ref": actual.source_ref,
+        "actual_public_at": actual.public_at, "actual_available_at": actual.available_at,
+        "decision_at": decision_at,
+        "history_scope": "COMPLETE_FOR_METRIC_PERIOD" if source_history_complete else "INCOMPLETE",
+        "visible_revision_ids": [row.revision_id for row in visible],
+        "excluded_revisions": excluded,
+        "selected_revision_id": None, "selected_source_ref": None,
+        "latest_range": None, "range_position": None,
+        "signed_gap_to_latest_midpoint": None, "distance_outside_latest_range": None,
+        "initial_to_latest_midpoint_change": None, "earlier_revision_public_at": None,
+        "initial_guidance_midpoint": None, "signed_gap_to_initial_midpoint": None,
+        "analyst_consensus_beat": None, "estimated_return": None,
+        "range_interpretation": "ISSUER_STATED_RANGE_NOT_PROBABILITY_INTERVAL",
+        "rank_authority": False, "entry_authority": False,
+    }
+    if not source_history_complete:
+        return {**result, "status": "GUIDANCE_HISTORY_UNAVAILABLE"}
+    if not visible:
+        return {**result, "status": "GUIDANCE_UNAVAILABLE"}
+    newest_public = max(aware_utc(row.public_at) for row in visible)
+    tied = [row for row in visible if aware_utc(row.public_at) == newest_public]
+    signatures = {(row.state, finite(row.low), finite(row.high), row.valid_until) for row in tied}
+    if len(signatures) != 1:
+        raise EvidenceError("ambiguous equal-publication guidance")
+    latest = max(tied, key=lambda row: (aware_utc(row.available_at), row.revision_id))
+    result.update(selected_revision_id=latest.revision_id, selected_source_ref=latest.source_ref)
+    if latest.state == "WITHDRAWN":
+        return {**result, "status": "GUIDANCE_WITHDRAWN"}
+    if latest.valid_until is not None and event_cut >= aware_utc(latest.valid_until):
+        return {**result, "status": "GUIDANCE_EXPIRED"}
+    low, high = float(latest.low), float(latest.high)
+    midpoint = low / 2 + high / 2
+    value = float(actual.value)
+    diff = value - midpoint
+    distance = value - high if value > high else value - low if value < low else 0.0
+    if not isfinite(diff) or not isfinite(distance):
+        raise EvidenceError("guidance arithmetic overflow")
+    result.update(status="COMPARABLE_TO_ISSUER_GUIDANCE",
+        latest_range={"low": low, "midpoint": midpoint, "high": high},
+        range_position="ABOVE_RANGE" if value > high else "BELOW_RANGE" if value < low else "WITHIN_RANGE",
+        signed_gap_to_latest_midpoint=diff, distance_outside_latest_range=distance)
+    # The earlier-change decomposition is withheld across a withdrawal/restart;
+    # do not present a broken forecasting episode as one continuous promise.
+    if all(row.state == "ACTIVE" for row in visible):
+        oldest_public = min(aware_utc(row.public_at) for row in visible)
+        firsts = [row for row in visible if aware_utc(row.public_at) == oldest_public]
+        signatures = {(finite(row.low), finite(row.high), row.valid_until) for row in firsts}
+        if len(signatures) == 1:
+            first = min(firsts, key=lambda row: (aware_utc(row.available_at), row.revision_id))
+            initial = float(first.low) / 2 + float(first.high) / 2
+            earlier = midpoint - initial
+            total = value - initial
+            if not all(isfinite(x) for x in (earlier, total)):
+                raise EvidenceError("guidance decomposition overflow")
+            result.update(initial_guidance_midpoint=initial,
+                signed_gap_to_initial_midpoint=total,
+                initial_to_latest_midpoint_change=earlier,
+                earlier_revision_public_at=latest.public_at)
+    return result
+
+
+
+def guidance_change(
+    previous: IssuerGuidance, current: IssuerGuidance, *,
+    decision_at: str, source_pair_is_adjacent: bool,
+) -> dict[str, Any]:
+    """A source-known forecast change BEFORE the eventual results are available.
+
+    No actual result is an input. The source owner must qualify the adjacent
+    revision pair; nonadjacent records cannot stand in for the latest change.
+    Midpoint movement and range uncertainty are distinct observations.
+    """
+    if not isinstance(previous, IssuerGuidance) or not isinstance(current, IssuerGuidance):
+        raise EvidenceError("issuer guidance pair required")
+    if not isinstance(source_pair_is_adjacent, bool):
+        raise EvidenceError("explicit adjacent guidance-pair state required")
+    if previous.basis != current.basis:
+        raise EvidenceError("guidance revision basis mismatch")
+    decision = aware_utc(decision_at)
+    if aware_utc(previous.public_at) >= aware_utc(current.public_at):
+        raise EvidenceError("guidance revision publication order invalid")
+    if max(aware_utc(previous.available_at), aware_utc(current.available_at)) > decision:
+        raise EvidenceError("guidance revision unavailable at decision")
+    result = {
+        "schema": SCHEMA, "kind": "ISSUER_GUIDANCE_CHANGE",
+        "basis": asdict(current.basis), "previous_revision_id": previous.revision_id,
+        "current_revision_id": current.revision_id,
+        "previous_source_ref": previous.source_ref, "current_source_ref": current.source_ref,
+        "current_public_at": current.public_at, "current_available_at": current.available_at,
+        "decision_at": decision_at, "actual_result_used": False,
+        "midpoint_change": None, "lower_bound_change": None, "upper_bound_change": None,
+        "width_change": None, "interval_relationship": None,
+        "consensus_revision": None, "return_forecast": None,
+        "rank_authority": False, "entry_authority": False,
+    }
+    if not source_pair_is_adjacent:
+        return {**result, "status": "ADJACENT_REVISION_PAIR_UNAVAILABLE"}
+    if current.state == "WITHDRAWN":
+        return {**result, "status": "GUIDANCE_WITHDRAWN"}
+    if current.valid_until is not None and decision >= aware_utc(current.valid_until):
+        return {**result, "status": "GUIDANCE_EXPIRED"}
+    if previous.state == "WITHDRAWN" or (
+        previous.valid_until is not None and aware_utc(current.public_at) >= aware_utc(previous.valid_until)
+    ):
+        return {**result, "status": "GUIDANCE_REINTRODUCED_NO_CONTINUOUS_COMPARISON"}
+    pl, ph = float(previous.low), float(previous.high)
+    cl, ch = float(current.low), float(current.high)
+    lower, upper = cl - pl, ch - ph
+    midpoint = (cl / 2 + ch / 2) - (pl / 2 + ph / 2)
+    width = (ch - cl) - (ph - pl)
+    if not all(isfinite(x) for x in [lower, upper, midpoint, width]):
+        raise EvidenceError("guidance revision arithmetic overflow")
+    relationship = (
+        "ENTIRE_RANGE_ABOVE_PREVIOUS" if cl > ph else
+        "ENTIRE_RANGE_BELOW_PREVIOUS" if ch < pl else
+        "UNCHANGED_RANGE" if cl == pl and ch == ph else
+        "BOTH_BOUNDS_RAISED" if lower > 0 and upper > 0 else
+        "BOTH_BOUNDS_LOWERED" if lower < 0 and upper < 0 else
+        "OVERLAPPING_MIXED_BOUND_CHANGE"
+    )
+    return {**result, "status": "COMPARABLE_ISSUER_OUTLOOK_CHANGE",
+            "midpoint_change": midpoint, "lower_bound_change": lower,
+            "upper_bound_change": upper, "width_change": width,
+            "interval_relationship": relationship}

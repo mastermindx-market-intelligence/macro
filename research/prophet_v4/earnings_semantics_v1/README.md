@@ -135,3 +135,20 @@ Local exact-head verification after this extension:
 The new facts remain research/explanation inputs. A separate B10/B15 empirical
 comparison must establish incremental selection value on a common eligible population
 before any live score, forecast, entry, holding or portfolio authority changes.
+
+
+## R3 — actual authenticated D5 earnings detail
+
+The pure calculations now have a source-qualified native HTTP consumer. See
+`D5_CONSUMER_2026-09-30.md` for its exact Q06 dependency, 196-test combined proof,
+original-source-vintage limits, deployment state and remaining UI/release work.
+The unchanged D5 endpoint and live C1 default remain intact. This is not model
+promotion or production acceptance.
+
+
+## R4 — issuer outlook changes before results
+
+`ISSUER_GUIDANCE_2026-09-30.md` records the added pre-result revision and
+latest-forecast delivery mechanisms in the existing earnings engine, the actual
+Micron source-vintage counterexample and the combined231-test qualification.
+Issuer guidance remains distinct from analyst consensus and a stock-price model.

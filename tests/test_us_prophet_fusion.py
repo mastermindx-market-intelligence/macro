@@ -1206,3 +1206,216 @@ class TestEarningsEvidenceEngine:
                 revisions=[revision],
                 source_contract_refs=["fixture"],
             )
+
+
+class TestIssuerGuidanceDelivery:
+    """Chronology/basis math: synthetic timestamps, not a historical ingestion replay."""
+    @staticmethod
+    def basis(**overrides):
+        values=dict(issuer_id="cik:0000723125",issuer_name="Micron Technology, Inc.",
+            metric="revenue",fiscal_period="FY2025 Q4",period_role="QUARTER",
+            period_start="2025-05-30",period_end="2025-08-28",currency="USD",
+            unit="USD_millions",accounting_basis="GAAP",share_basis="NOT_APPLICABLE")
+        values.update(overrides);return sue_engine.MetricBasis(**values)
+
+    @classmethod
+    def actual(cls,value=11315,**kwargs):
+        values=dict(basis=cls.basis(),value=value,public_at="2025-09-23T20:00:00Z",
+            available_at="2025-09-23T20:01:00Z",event_id="evt_fixture_mu_q4",
+            source_ref="fixture:reported-value:clocks-synthetic")
+        values.update(kwargs);return sue_engine.Actual(**values)
+
+    @classmethod
+    def guide(cls,revision="initial",low=10400,high=11000,**kwargs):
+        values=dict(basis=cls.basis(),low=low,high=high,public_at="2025-06-25T20:00:00Z",
+            available_at="2025-06-25T20:01:00Z",revision_id=revision,
+            source_ref="fixture:guidance:clocks-synthetic")
+        values.update(kwargs);return sue_engine.IssuerGuidance(**values)
+
+    @classmethod
+    def updated(cls,**kwargs):
+        return cls.guide("update",11100,11300,public_at="2025-08-11T12:00:00Z",
+            available_at="2025-08-11T12:01:00Z",**kwargs)
+
+    def evaluate(self,rows,**kwargs):
+        return sue_engine.guidance_delivery(self.actual(),rows,
+            decision_at="2025-09-23T21:00:00Z",source_history_complete=True,**kwargs)
+
+    def test_latest_revision_separates_earlier_upgrade_from_results_news(self):
+        out=self.evaluate([self.guide(),self.updated()])
+        assert out["selected_revision_id"]=="update"
+        assert out["latest_range"]=={"low":11100.,"midpoint":11200.,"high":11300.}
+        assert out["signed_gap_to_initial_midpoint"]==615
+        assert out["initial_to_latest_midpoint_change"]==500
+        assert out["signed_gap_to_latest_midpoint"]==115
+        assert out["distance_outside_latest_range"]==15
+        assert out["range_position"]=="ABOVE_RANGE"
+        assert out["analyst_consensus_beat"] is None
+        assert out["estimated_return"] is None
+        assert out["rank_authority"] is False
+        assert out["entry_authority"] is False
+        assert out["signed_gap_to_initial_midpoint"]==(
+            out["initial_to_latest_midpoint_change"]+out["signed_gap_to_latest_midpoint"])
+
+    def test_input_order_does_not_change_the_selected_forecast(self):
+        assert self.evaluate([self.guide(),self.updated()])==self.evaluate([self.updated(),self.guide()])
+
+    def test_post_release_update_cannot_rewrite_pre_release_forecast(self):
+        late=self.guide("late",12000,13000,public_at="2025-09-23T20:05:00Z",
+            available_at="2025-09-23T20:06:00Z")
+        out=self.evaluate([self.guide(),self.updated(),late])
+        assert out["selected_revision_id"]=="update"
+        assert out["excluded_revisions"]==[{"revision_id":"late","reason":"published_at_or_after_result"}]
+
+    def test_late_ingestion_is_not_credited_to_the_earlier_decision(self):
+        from dataclasses import replace
+        late=replace(self.updated(),available_at="2025-09-23T20:00:00Z")
+        out=self.evaluate([self.guide(),late])
+        assert out["selected_revision_id"]=="initial"
+        assert out["excluded_revisions"][0]["reason"]=="not_usable_before_result"
+
+    def test_withdrawal_never_falls_back_to_old_guidance(self):
+        withdraw=self.guide("withdrawal",None,None,public_at="2025-09-01T12:00:00Z",
+            available_at="2025-09-01T12:01:00Z",state="WITHDRAWN")
+        out=self.evaluate([self.guide(),self.updated(),withdraw])
+        assert out["status"]=="GUIDANCE_WITHDRAWN"
+        assert out["latest_range"] is None and out["range_position"] is None
+
+    def test_expired_forecast_does_not_reactivate_old_range(self):
+        out=self.evaluate([self.guide(),self.updated(valid_until="2025-09-20T00:00:00Z")])
+        assert out["status"]=="GUIDANCE_EXPIRED"
+        assert out["latest_range"] is None
+
+    def test_missing_history_cannot_claim_the_latest_guidance(self):
+        out=sue_engine.guidance_delivery(self.actual(),[self.guide()],
+            decision_at="2025-09-23T21:00:00Z",source_history_complete=False)
+        assert out["status"]=="GUIDANCE_HISTORY_UNAVAILABLE"
+        assert out["selected_revision_id"] is None and out["range_position"] is None
+
+    def test_no_qualified_forecast_is_missing_not_a_miss(self):
+        out=self.evaluate([])
+        assert out["status"]=="GUIDANCE_UNAVAILABLE" and out["range_position"] is None
+
+    @pytest.mark.parametrize("basis",[
+        basis.__func__(accounting_basis="NON_GAAP"),basis.__func__(fiscal_period="FY2026 Q1"),
+        basis.__func__(metric="EPS",unit="USD_per_share",share_basis="DILUTED"),
+        basis.__func__(issuer_id="cik:other"),basis.__func__(currency="EUR"),
+    ])
+    def test_incomparable_forecast_does_not_become_a_beat(self,basis):
+        out=self.evaluate([self.guide(basis=basis)])
+        assert out["status"]=="GUIDANCE_UNAVAILABLE"
+        assert out["excluded_revisions"][0]["reason"]=="incomparable_basis_or_period"
+
+    @pytest.mark.parametrize("value,position,distance",[
+        (11000,"BELOW_RANGE",-100),(11100,"WITHIN_RANGE",0),(11200,"WITHIN_RANGE",0),
+        (11300,"WITHIN_RANGE",0),(11301,"ABOVE_RANGE",1),
+    ])
+    def test_stated_range_boundaries_are_inclusive_not_probabilities(self,value,position,distance):
+        out=sue_engine.guidance_delivery(self.actual(value),[self.updated()],
+            decision_at="2025-09-23T21:00:00Z",source_history_complete=True)
+        assert out["range_position"]==position
+        assert out["distance_outside_latest_range"]==distance
+        assert out["range_interpretation"]=="ISSUER_STATED_RANGE_NOT_PROBABILITY_INTERVAL"
+
+    def test_equal_publication_disagreement_refused(self):
+        from dataclasses import replace
+        other=replace(self.updated(),low=11000,revision_id="conflicting")
+        with pytest.raises(sue_engine.EvidenceError,match="ambiguous equal-publication"):
+            self.evaluate([self.guide(),self.updated(),other])
+
+    def test_duplicate_revision_refused(self):
+        with pytest.raises(sue_engine.EvidenceError,match="duplicate guidance revision"):
+            self.evaluate([self.guide(),self.guide()])
+
+    @pytest.mark.parametrize("low,high",[(float("nan"),2),(1,float("inf")),(True,2),(3,2)])
+    def test_invalid_range_refused(self,low,high):
+        with pytest.raises(sue_engine.EvidenceError,match="invalid guidance range"):
+            self.guide(low=low,high=high)
+
+    def test_result_is_not_available_before_actual_source(self):
+        with pytest.raises(sue_engine.EvidenceError,match="actual unavailable"):
+            sue_engine.guidance_delivery(self.actual(),[self.guide()],
+                decision_at="2025-09-23T20:00:00Z",source_history_complete=True)
+
+    def test_explicit_history_state_not_truthy_string(self):
+        with pytest.raises(sue_engine.EvidenceError):
+            sue_engine.guidance_delivery(self.actual(),[self.guide()],
+                decision_at="2025-09-23T21:00:00Z",source_history_complete="true")
+
+    def test_guidance_reaches_existing_dossier_as_separate_evidence(self):
+        observation=self.evaluate([self.guide(),self.updated()])
+        dossier=sue_engine.factual_dossier(event_id="evt_fixture_mu_q4",issuer_id="cik:0000723125",
+            decision_at="2025-09-23T21:00:00Z",source_contract_refs=["fixture:source-contract"],
+            guidance_results=[observation])
+        assert dossier["issuer_guidance_delivery"][0]["selected_revision_id"]=="update"
+        assert dossier["expectation_surprises"]==[]
+        observation["latest_range"]["low"]=0
+        assert dossier["issuer_guidance_delivery"][0]["latest_range"]["low"]==11100
+        assert all(x is False for x in dossier["authority"].values())
+
+    def test_wrong_event_guidance_does_not_enter_dossier(self):
+        with pytest.raises(sue_engine.EvidenceError,match="guidance evidence identity"):
+            sue_engine.factual_dossier(event_id="wrong",issuer_id="cik:0000723125",
+                decision_at="2025-09-23T21:00:00Z",source_contract_refs=["fixture:source-contract"],
+                guidance_results=[self.evaluate([self.guide()])])
+
+    def test_legacy_dossier_does_not_silently_add_guidance_field(self):
+        out=sue_engine.factual_dossier(event_id="fixture",issuer_id="cik:0000723125",
+            decision_at="2025-09-23T21:00:00Z",source_contract_refs=["fixture"])
+        assert "issuer_guidance_delivery" not in out
+
+
+class TestPreResultGuidanceChange:
+    def test_upgrade_is_computable_before_final_results(self):
+        h=TestIssuerGuidanceDelivery()
+        result=sue_engine.guidance_change(h.guide(),h.updated(),
+            decision_at="2025-08-11T12:02:00Z",source_pair_is_adjacent=True)
+        assert result["status"]=="COMPARABLE_ISSUER_OUTLOOK_CHANGE"
+        assert result["midpoint_change"]==500
+        assert result["lower_bound_change"]==700
+        assert result["upper_bound_change"]==300
+        assert result["width_change"]==-400
+        assert result["interval_relationship"]=="ENTIRE_RANGE_ABOVE_PREVIOUS"
+        assert result["actual_result_used"] is False
+        assert result["return_forecast"] is None
+
+    def test_wider_uncertainty_does_not_masquerade_as_unambiguous_upgrade(self):
+        h=TestIssuerGuidanceDelivery()
+        result=sue_engine.guidance_change(h.guide(),h.guide("mixed",10000,12000,
+            public_at="2025-08-11T12:00:00Z",available_at="2025-08-11T12:01:00Z"),
+            decision_at="2025-08-11T12:02:00Z",source_pair_is_adjacent=True)
+        assert result["midpoint_change"]>0
+        assert result["lower_bound_change"]<0 and result["upper_bound_change"]>0
+        assert result["interval_relationship"]=="OVERLAPPING_MIXED_BOUND_CHANGE"
+        assert result["width_change"]>0
+
+    def test_no_early_use_of_guidance_update(self):
+        h=TestIssuerGuidanceDelivery()
+        with pytest.raises(sue_engine.EvidenceError,match="unavailable at decision"):
+            sue_engine.guidance_change(h.guide(),h.updated(),
+                decision_at="2025-08-11T12:00:00Z",source_pair_is_adjacent=True)
+
+    def test_nonadjacent_pair_is_not_a_latest_revision(self):
+        h=TestIssuerGuidanceDelivery()
+        result=sue_engine.guidance_change(h.guide(),h.updated(),
+            decision_at="2025-08-11T12:02:00Z",source_pair_is_adjacent=False)
+        assert result["status"]=="ADJACENT_REVISION_PAIR_UNAVAILABLE"
+        assert result["midpoint_change"] is None
+
+    def test_withdrawn_outlook_not_implicitly_restored(self):
+        h=TestIssuerGuidanceDelivery()
+        withdraw=h.guide("withdraw",None,None,state="WITHDRAWN",
+            public_at="2025-07-01T12:00:00Z",available_at="2025-07-01T12:01:00Z")
+        result=sue_engine.guidance_change(h.guide(),withdraw,
+            decision_at="2025-07-02T00:00:00Z",source_pair_is_adjacent=True)
+        assert result["status"]=="GUIDANCE_WITHDRAWN"
+        result=sue_engine.guidance_change(withdraw,h.updated(),
+            decision_at="2025-08-11T12:02:00Z",source_pair_is_adjacent=True)
+        assert result["status"]=="GUIDANCE_REINTRODUCED_NO_CONTINUOUS_COMPARISON"
+        assert result["midpoint_change"] is None
+
+    def test_reversed_revision_order_is_rejected(self):
+        h=TestIssuerGuidanceDelivery()
+        with pytest.raises(sue_engine.EvidenceError,match="publication order"):
+            sue_engine.guidance_change(h.updated(),h.guide(),
+                decision_at="2025-08-11T12:02:00Z",source_pair_is_adjacent=True)
