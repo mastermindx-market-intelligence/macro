@@ -424,8 +424,8 @@
     }
   ],
   "banner": null,
-  "cbbc_total_contracts": 35633,
-  "dw_total_contracts": 41963,
+  "cbbc_total_contracts": 29129,
+  "dw_total_contracts": 34169,
   "sld_call_levels_in_store": 3985,
   "sld_max_issue_date": "2026-09-30",
   "sld_freshness": "fresh",

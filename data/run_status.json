@@ -3843,40 +3843,40 @@
       "valuation": {
         "table": "valuation",
         "asof": "2026-09-30",
-        "lag_days": 0,
+        "lag_days": 1,
         "state": "fresh"
       },
       "margin": {
         "table": "margin",
-        "asof": "2026-09-29",
+        "asof": "2026-09-30",
         "lag_days": 1,
         "state": "fresh"
       },
       "moneyflow": {
         "table": "moneyflow",
         "asof": "2026-09-30",
-        "lag_days": 0,
+        "lag_days": 1,
         "state": "fresh"
       },
       "chips": {
         "table": "chips",
         "asof": "2026-09-30",
-        "lag_days": 0,
+        "lag_days": 1,
         "state": "fresh"
       },
       "broker": {
         "table": "broker",
-        "asof": "2026-09-30",
+        "asof": "2026-10-01",
         "lag_days": 0,
         "state": "fresh"
       },
       "forecast": {
         "table": "forecast",
         "asof": "2026-09-29",
-        "lag_days": 1,
+        "lag_days": 2,
         "state": "fresh"
       }
     },
-    "asof": "2026-09-30 15:15:27.914043+00:00"
+    "asof": "2026-10-01 17:26:00.048310+00:00"
   }
 }
