@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
+import pyarrow.parquet as pq
 
 from engine import us_context_vector as ucv
 
@@ -46,6 +47,18 @@ FORBIDDEN = {
     "predicted_return", "score_after_fit", "rank_after_fit",
 }
 assert not (set(READ_COLUMNS) & FORBIDDEN)
+
+# S0 is a *prospective Context Vector* capture, not merely any historical
+# candidate row.  These physical Parquet columns are the minimum schema witness
+# that #8091's prospective capture contract has actually reached the monthly
+# store.  Row values may still be null/typed unavailable; absence of the columns
+# themselves means this is a legacy pre-contract part and cannot start S0.
+PROSPECTIVE_SCHEMA_WITNESS = frozenset({
+    "security_id", "issuer_id", "identity_epoch", "identity_capture_state",
+    "cycle_state", "cycle_label", "cycle_label_vocab_sha256",
+    "theme_membership_source_sha256", "theme_capture_group_state",
+    "theme_capture_group_weighting", "theme_capture_member_set_sha256",
+})
 
 
 def _present(series: pd.Series) -> pd.Series:
@@ -111,6 +124,14 @@ def inspect(*, expected_session: str, board_definition: str,
     if not part.is_file():
         return {**base, "status": STATUS_CANDIDATE_CAPTURE_DARK,
                 "reason": "EXPECTED_MONTH_PART_ABSENT"}
+
+    physical_columns = frozenset(pq.ParquetFile(part).schema_arrow.names)
+    missing_schema = sorted(PROSPECTIVE_SCHEMA_WITNESS - physical_columns)
+    if missing_schema:
+        return {**base, "status": STATUS_CANDIDATE_CAPTURE_DARK,
+                "reason": "PROSPECTIVE_SCHEMA_NOT_PRESENT",
+                "source_receipt": _receipt(part),
+                "missing_required_columns": missing_schema}
 
     frame = ucv.load_candidates(root, months=[month], columns=READ_COLUMNS)
     if frame.empty:

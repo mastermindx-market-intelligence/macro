@@ -51,6 +51,23 @@ def test_month_without_expected_session_is_dark(tmp_path):
     assert r["source_receipt"]["sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def test_legacy_month_without_prospective_schema_does_not_start_s0(tmp_path):
+    path = tmp_path / "data" / "us_prophet_rank" / "candidates" / "2026-09.parquet"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame([{
+        "stamp_date": SESSION, "ticker": "AAA", "board_definition": BOARD,
+        "lane": "scan", "context_dims": "regime|theme",
+        "theme_membership_ids": "basket-x",
+    }]).to_parquet(path, index=False)
+    r = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
+    assert r["status"] == chk.STATUS_CANDIDATE_CAPTURE_DARK
+    assert r["reason"] == "PROSPECTIVE_SCHEMA_NOT_PRESENT"
+    assert "security_id" in r["missing_required_columns"]
+    assert "theme_capture_group_state" in r["missing_required_columns"]
+    assert r["source_receipt"]["sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
+    assert r["h1_admitted"] is False
+
+
 def test_nonempty_native_capture_produces_s0_receipt_and_coverage(tmp_path):
     path = _write(tmp_path, [_row("AAA"), _row("BBB")])
     r = chk.inspect(expected_session=SESSION, board_definition=BOARD, root=tmp_path)
