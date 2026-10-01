@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 import requests
 from collectors.china_economy_acquisition import (
-    article_identity, parse_acquisition, checked_url, collect_releases, discover_release,
+    article_identity, parse_acquisition, checked_url, check_robots, collect_releases, discover_release,
     CollectionBatch, qualify_against_owner, MAX_BYTES,
 )
 from collectors.china_economy_adapter import enrich_existing_frames, configured_targets
@@ -125,6 +125,18 @@ def test_missing_robots_means_no_explicit_disallow_not_no_check():
     assert b.status=='ok' and calls[0].endswith('/robots.txt')
     assert b.receipts['industry']['robots']['policy']=='not_published'
     assert b.receipts['industry']['robots']['http_status']==404
+
+def test_adapter_http_get_raised_404_has_same_not_published_semantics():
+    robots_url='https://www.stats.gov.cn/robots.txt'
+    def get(url,**kwargs):
+        if url==robots_url:
+            r=requests.Response();r.status_code=404;r.url=url;r._content=b'missing'
+            raise requests.HTTPError('fixture 404',response=r)
+        return response(url=url)
+    rr=check_robots(URL,get,{})
+    assert rr['http_status']==404 and rr['policy']=='not_published' and rr['allowed'] is True
+    b=collect_releases({'industry':URL},'2026-08',get,CAT,lambda:datetime.fromisoformat(NOW))
+    assert b.status=='ok' and b.receipts['industry']['robots']['policy']=='not_published'
 
 def test_robots_disallow_blocks_article_before_fetch():
     calls=[]

@@ -113,8 +113,28 @@ def check_robots(url: str, http_get: Callable, cache: dict | None = None) -> dic
             else:
                 raise ValueError(f'robots_http_status_{status}')
         except Exception as exc:
-            reason = str(exc)[:100] if isinstance(exc, ValueError) else 'robots_acquisition_failed'
-            cache[host] = {'error': reason}
+            # Adapter.http_get raises HTTPError on 404/410 before returning the
+            # response. Preserve the same "robots not published" semantics as a
+            # non-raising HTTP client, but only when the exception carries the
+            # exact same-origin robots response.
+            failed = getattr(exc, 'response', None)
+            failed_status = getattr(failed, 'status_code', None)
+            failed_url = (getattr(failed, 'url', None) or robots_url) if failed is not None else None
+            if failed is not None and failed_status in {404, 410} and failed_url == robots_url:
+                body = bytes(getattr(failed, 'content', b'') or b'')
+                cache[host] = {
+                    'receipt': {
+                        'url': robots_url,
+                        'http_status': int(failed_status),
+                        'response_sha256': hashlib.sha256(body).hexdigest(),
+                        'response_bytes': len(body),
+                        'policy': 'not_published',
+                    },
+                    'parser': None,
+                }
+            else:
+                reason = str(exc)[:100] if isinstance(exc, ValueError) else 'robots_acquisition_failed'
+                cache[host] = {'error': reason}
     state = cache[host]
     if state.get('error'):
         raise ValueError(state['error'])
