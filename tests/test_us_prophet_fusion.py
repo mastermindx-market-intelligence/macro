@@ -1782,3 +1782,196 @@ class TestProfitabilityBridge:
         out=sue_engine.earnings_evidence_brief(d)
         assert len(out["counterevidence"])==3
         assert "score" not in out and all(v is False for v in out["authority"].values())
+
+
+class TestReportedChangeChronology:
+    """A restatement, reversed pair or overlapping period is not operating growth."""
+    @staticmethod
+    def actual(value, start, end, *, event="fixture-release", metric="revenue"):
+        basis=sue_engine.MetricBasis(
+            issuer_id="cik:fixture", issuer_name="Fictional statement issuer",
+            metric=metric, fiscal_period=start+":"+end,
+            period_role="QUARTER", period_start=start, period_end=end,
+            currency="USD", unit="USD_millions", accounting_basis="GAAP")
+        return sue_engine.Actual(basis=basis,value=value,
+            public_at="2026-09-28T12:00:00Z",available_at="2026-09-28T12:01:00Z",
+            source_ref="fixture:comparative-statement",event_id=event)
+
+    @pytest.mark.parametrize("current_dates,prior_dates", [
+        (("2025-04-01","2025-06-30"),("2026-04-01","2026-06-30")),
+        (("2026-04-01","2026-06-30"),("2026-04-01","2026-06-30")),
+        (("2026-05-01","2026-07-31"),("2026-04-01","2026-06-30")),
+        (("2026-06-30","2026-09-28"),("2026-04-01","2026-06-30")),
+    ])
+    def test_reversed_identical_overlapping_and_shared_boundary_refused(self,current_dates,prior_dates):
+        with pytest.raises(sue_engine.EvidenceError,match="periods must be nonoverlapping and chronological"):
+            sue_engine.reported_change(self.actual(120,*current_dates),
+                self.actual(100,*prior_dates),decision_at="2026-09-28T13:00:00Z")
+
+    def test_sequential_periods_remain_comparable(self):
+        out=sue_engine.reported_change(self.actual(120,"2026-04-01","2026-06-30"),
+            self.actual(100,"2026-01-01","2026-03-31"),decision_at="2026-09-28T13:00:00Z")
+        assert out["change_pct"]==pytest.approx(20)
+        assert out["current_event_id"]==out["prior_event_id"]=="fixture-release"
+
+    def test_same_table_prior_year_remains_source_bound(self):
+        out=sue_engine.reported_change(self.actual(120,"2026-04-01","2026-06-30"),
+            self.actual(100,"2025-04-01","2025-06-30"),decision_at="2026-09-28T13:00:00Z")
+        d=sue_engine.factual_dossier(event_id="fixture-release",issuer_id="cik:fixture",
+            decision_at="2026-09-28T13:00:00Z",reported_changes=[out],
+            source_contract_refs=["fixture:comparative-statement"])
+        assert d["reported_changes"][0]["change_pct"]==pytest.approx(20)
+        assert out["current_available_at"]==out["prior_available_at"]
+        assert all(x is False for x in d["authority"].values())
+
+    def test_changed_source_identity_cannot_turn_restatement_into_growth(self):
+        with pytest.raises(sue_engine.EvidenceError,match="periods must be nonoverlapping and chronological"):
+            sue_engine.reported_change(self.actual(120,"2026-04-01","2026-06-30",event="revision2"),
+                self.actual(100,"2026-04-01","2026-06-30",event="revision1"),
+                decision_at="2026-09-28T13:00:00Z")
+
+    def test_loss_reduction_preserves_signed_economic_change(self):
+        out=sue_engine.reported_change(self.actual(-80,"2026-04-01","2026-06-30",metric="net_income"),
+            self.actual(-100,"2025-04-01","2025-06-30",metric="net_income"),decision_at="2026-09-28T13:00:00Z")
+        assert out["signed_difference"]==20
+        assert out["change_pct"]==pytest.approx(20)
+
+    def test_difference_overflow_does_not_produce_nonfinite_evidence(self):
+        with pytest.raises(sue_engine.EvidenceError,match="reported-change difference overflow"):
+            sue_engine.reported_change(self.actual(1e308,"2026-04-01","2026-06-30",metric="net_income"),
+                self.actual(-1e308,"2025-04-01","2025-06-30",metric="net_income"),
+                decision_at="2026-09-28T13:00:00Z")
+
+
+class TestEarningsValuationScenario:
+    """Explicit scenario economics, never a forecast or observed live quote."""
+    @staticmethod
+    def actual(value=5, *, role="ANNUAL", unit="USD_per_share", share_basis="DILUTED", available="2026-01-30T13:00:00Z"):
+        basis=sue_engine.MetricBasis(issuer_id="cik:scenario",issuer_name="Fictional annual issuer",
+            metric="EPS",fiscal_period="FY2025",period_role=role,
+            period_start="2025-01-01",period_end="2025-12-31",currency="USD",
+            unit=unit,accounting_basis="GAAP",share_basis=share_basis)
+        return sue_engine.Actual(basis=basis,value=value,public_at="2026-01-30T12:00:00Z",
+            available_at=available,source_ref="fixture:annual-eps",event_id="fixture:annual")
+
+    def scenario(self, actual=None, **changes):
+        args=dict(reference_price=100,terminal_eps=7,terminal_pe=14,cash_distributions=4,
+                  horizon_years=3,required_annual_return=.1,decision_at="2026-09-28T13:00:00Z")
+        args.update(changes)
+        return sue_engine.earnings_valuation_scenario(actual or self.actual(),**args)
+
+    def dossier(self,scenario):
+        return sue_engine.factual_dossier(event_id="fixture:annual",issuer_id="cik:scenario",
+            decision_at="2026-09-28T13:00:00Z",source_contract_refs=["fixture:annual-eps"],
+            valuation_case=scenario)
+
+    def test_earnings_growth_does_not_hide_multiple_compression(self):
+        out=self.scenario()
+        assert out["terminal_price_assumption"]==98
+        assert out["scenario_total_return_before_costs"]==pytest.approx(.02)
+        assert out["eps_change_price_component"]==pytest.approx(34)
+        assert out["multiple_change_price_component"]==pytest.approx(-36)
+        assert out["cash_distribution_price_component"]==4
+        assert out["within_scenario_price_ceiling"] is False
+        assert out["estimated_win_probability"] is None
+        assert out["entry_permission"] is False
+
+    def test_hurdle_is_earnings_required_not_forecast(self):
+        out=self.scenario()
+        assert out["required_terminal_eps_for_hurdle"]==pytest.approx((100*1.1**3-4)/14)
+        assert out["required_terminal_eps_change_fraction"]==pytest.approx(((100*1.1**3-4)/14)/5-1)
+        assert out["maximum_reference_price_for_hurdle"]==pytest.approx(102/1.1**3)
+        assert out["forecast_origin"]=="SUPPLIED_SCENARIO_NOT_MODEL_PREDICTION"
+
+    def test_higher_price_lowers_scenario_return_not_terminal_value(self):
+        a=self.scenario();b=self.scenario(reference_price=110)
+        assert b["scenario_total_return_before_costs"]<a["scenario_total_return_before_costs"]
+        assert b["maximum_reference_price_for_hurdle"]==a["maximum_reference_price_for_hurdle"]
+        assert b["required_terminal_eps_for_hurdle"]>a["required_terminal_eps_for_hurdle"]
+
+    def test_twice_eps_half_multiple_does_not_double_share_price(self):
+        out=self.scenario(terminal_eps=10,terminal_pe=10,cash_distributions=0)
+        assert out["terminal_price_assumption"]==100
+        assert out["scenario_total_return_before_costs"]==0
+        assert out["eps_change_price_component"]+out["multiple_change_price_component"]==pytest.approx(0)
+
+    def test_common_per_share_currency_rescaling_preserves_return(self):
+        a=self.scenario();b=self.scenario(self.actual(5000),reference_price=100000,terminal_eps=7000,cash_distributions=4000)
+        for key in ["reference_price_to_annual_eps","scenario_total_return_before_costs","scenario_annualized_return_before_costs","required_terminal_eps_change_fraction"]:
+            assert b[key]==pytest.approx(a[key])
+        assert b["maximum_reference_price_for_hurdle"]==pytest.approx(1000*a["maximum_reference_price_for_hurdle"])
+
+    @pytest.mark.parametrize("actual_eps,terminal_eps",[(0,7),(-5,7),(5,0),(5,-7)])
+    def test_nonpositive_earnings_do_not_create_a_pe_valuation(self,actual_eps,terminal_eps):
+        out=self.scenario(self.actual(actual_eps),terminal_eps=terminal_eps)
+        assert out["status"]=="PE_MODEL_NOT_APPLICABLE_NONPOSITIVE_EARNINGS"
+        assert "required_terminal_eps_for_hurdle" not in out
+
+    @pytest.mark.parametrize("change",[
+        {"reference_price":0},{"terminal_pe":0},{"cash_distributions":-1},
+        {"horizon_years":0},{"required_annual_return":-1},{"reference_price":True},
+        {"terminal_eps":float("nan")},{"terminal_pe":float("inf")},
+    ])
+    def test_invalid_scenario_assumptions_refused(self,change):
+        with pytest.raises(sue_engine.EvidenceError):self.scenario(**change)
+
+    def test_quarterly_earnings_cannot_be_implicitly_annualized(self):
+        with pytest.raises(sue_engine.EvidenceError,match="annual or TTM"):
+            self.scenario(self.actual(role="QUARTER"))
+
+    def test_total_dollars_cannot_be_treated_as_per_share_eps(self):
+        with pytest.raises(sue_engine.EvidenceError,match="currency/per-share unit"):
+            self.scenario(self.actual(unit="USD_millions"))
+
+    def test_basic_and_diluted_share_bases_are_not_interchangeable(self):
+        with pytest.raises(sue_engine.EvidenceError,match="diluted EPS"):
+            self.scenario(self.actual(share_basis="BASIC"))
+
+    def test_future_source_eps_cannot_enter_the_current_scenario(self):
+        with pytest.raises(sue_engine.EvidenceError,match="unavailable at decision"):
+            self.scenario(self.actual(available="2026-09-29T13:00:00Z"))
+
+    def test_large_assumptions_fail_without_nonfinite_json(self):
+        with pytest.raises(sue_engine.EvidenceError,match="overflow"):
+            self.scenario(terminal_eps=1e308,terminal_pe=1e308)
+
+    def test_assumed_cash_hurdle_does_not_require_negative_earnings(self):
+        out=self.scenario(cash_distributions=200)
+        assert out["required_terminal_eps_for_hurdle"]==0
+        assert out["hurdle_covered_by_assumed_distributions"] is True
+        assert out["entry_permission"] is False
+
+    def test_existing_dossier_and_brief_preserve_scenario_identity(self):
+        case=self.scenario();d=self.dossier(case);brief=sue_engine.earnings_evidence_brief(d)
+        assert brief["valuation_scenario"]==case
+        assert brief["valuation_scenario"]["price_origin"]=="SUPPLIED_SCENARIO_NOT_VERIFIED_QUOTE"
+        assert all(x is False for x in d["authority"].values())
+        case["terminal_eps_assumption"]=999
+        assert d["valuation_scenario"]["terminal_eps_assumption"]==7
+        assert brief["valuation_scenario"]["terminal_eps_assumption"]==7
+
+    @pytest.mark.parametrize("field,value",[("issuer_id","cik:other"),("event_id","other"),("decision_at","2026-10-01T00:00:00Z"),("entry_permission",True),("price_origin","OBSERVED_LIVE_QUOTE")])
+    def test_wrong_binding_or_false_permission_refused(self,field,value):
+        x=self.scenario();x[field]=value
+        with pytest.raises(sue_engine.EvidenceError):self.dossier(x)
+
+    def test_original_dossier_without_valuation_remains_unchanged(self):
+        d=sue_engine.factual_dossier(event_id="fixture:annual",issuer_id="cik:scenario",
+            decision_at="2026-09-28T13:00:00Z",source_contract_refs=["fixture:annual-eps"])
+        assert "valuation_scenario" not in d
+        assert "valuation_scenario" not in sue_engine.earnings_evidence_brief(d)
+
+
+    @pytest.mark.parametrize("field,value",[("within_scenario_price_ceiling",True),
+        ("scenario_total_return_before_costs",1.0),("estimated_win_probability",.99),
+        ("maximum_reference_price_for_hurdle",1000)])
+    def test_altered_arithmetic_or_invented_probability_cannot_enter_brief(self,field,value):
+        case=self.scenario();case[field]=value
+        with pytest.raises(sue_engine.EvidenceError,match="arithmetic or shape mismatch"):
+            self.dossier(case)
+
+    def test_unavailable_pe_case_remains_unavailable_through_brief(self):
+        case=self.scenario(self.actual(-1));d=self.dossier(case)
+        brief=sue_engine.earnings_evidence_brief(d)
+        assert brief["valuation_scenario"]["status"]=="PE_MODEL_NOT_APPLICABLE_NONPOSITIVE_EARNINGS"
+        assert "maximum_reference_price_for_hurdle" not in brief["valuation_scenario"]

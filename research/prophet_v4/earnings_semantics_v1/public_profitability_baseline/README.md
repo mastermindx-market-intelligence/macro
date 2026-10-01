@@ -125,3 +125,14 @@ CIZ-format methodological changes are inherited, not repaired by this analysis.
 No new native price adapter, collector, registry, experiment grader or model-owner
 plane was created. A public diagnostic is not a replacement for the existing
 native financial evaluation gates.
+
+
+## Source-method precision amendment — subsequent source review
+
+The Data Library's main methodology history specifies that the August2018 update
+adds minority interest to OP's book-equity denominator. The detail pages use the
+shorter book-equity wording. This qualifies the earlier description above; the
+captured return archive, calculations and results are unchanged. OP remains
+distinct from operating-margin growth and gross profits/assets. No data vintage
+was silently replaced. See the official Data Library methodology history and the
+companion public_value_quality/ source note.

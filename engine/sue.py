@@ -354,9 +354,16 @@ def reported_change(
         raise EvidenceError("reported observation unavailable at decision")
     if not _same_reported_change_basis(current.basis, prior.basis):
         raise EvidenceError("reported-change basis mismatch")
+    # Same-period revisions are correction evidence, not time-series growth.
+    # Comparative values can share one release/availability clock, but their
+    # reporting intervals must still be chronological and disjoint.
+    if date.fromisoformat(current.basis.period_start) <= date.fromisoformat(prior.basis.period_end):
+        raise EvidenceError("reported-change periods must be nonoverlapping and chronological")
     now = float(current.value)
     before = float(prior.value)
     diff = now - before
+    if not isfinite(diff):
+        raise EvidenceError("reported-change difference overflow")
     pct = None if before == 0 else diff / abs(before)
     if pct is not None and not isfinite(pct):
         pct = None
@@ -710,6 +717,7 @@ def factual_dossier(
     guidance_results: Sequence[Mapping[str, Any]] = (),
     guidance_updates: Sequence[Mapping[str, Any]] = (),
     profit_bridges: Sequence[Mapping[str, Any]] = (),
+    valuation_case: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Assemble factual evidence while preserving every downstream authority boundary."""
     required_text(event_id, "event_id")
@@ -809,6 +817,10 @@ def factual_dossier(
             raise EvidenceError("invalid entry evidence")
         no_child_authority(entry)
 
+    if valuation_case is not None:
+        _validate_valuation_case(valuation_case, issuer_id=issuer_id,
+                                 event_id=event_id, decision_at=decision_at)
+
     limitations: list[str] = []
     if not reported_changes:
         limitations.append("no comparable reported change")
@@ -827,6 +839,7 @@ def factual_dossier(
         "per_share_bridge": None if per_share is None else deepcopy(dict(per_share)),
         "entry_economics": None if entry is None else deepcopy(dict(entry)),
         "source_contract_refs": refs,
+        **({"valuation_scenario": deepcopy(dict(valuation_case))} if valuation_case is not None else {}),
         **({"issuer_guidance_delivery": [deepcopy(dict(item)) for item in guidance_results]}
            if guidance_results else {}),
         **({"issuer_guidance_updates": [deepcopy(dict(item)) for item in guidance_updates]}
@@ -842,6 +855,7 @@ def factual_dossier(
             "trade": False,
         },
     }
+
 
 
 @dataclass(frozen=True)
@@ -1271,6 +1285,10 @@ def earnings_evidence_brief(dossier: Mapping[str, Any]) -> dict[str, Any]:
             for flag in ("rank_authority", "entry_authority", "policy_authority", "trade_authority"):
                 if flag in child and child[flag] is not False:
                     raise EvidenceError("brief contains authoritative child")
+    valuation = dossier.get("valuation_scenario")
+    if valuation is not None:
+        _validate_valuation_case(valuation, issuer_id=dossier["issuer_id"],
+                                 event_id=dossier["event_id"], decision_at=dossier["decision_at"])
     return {
         "schema": "prophet.earnings_evidence_brief/v1",
         "issuer_id": issuer, "event_id": event, "decision_at": dossier["decision_at"],
@@ -1280,6 +1298,7 @@ def earnings_evidence_brief(dossier: Mapping[str, Any]) -> dict[str, Any]:
         "next_step": "Review the unresolved evidence and obtain current entry, market and portfolio permission before treating this research as a trade.",
         "interpretation": "Evidence explanation only; fact count and agreement are not conviction, expected return or buy permission.",
         "authority": {"rank": False, "entry": False, "size": False, "execution": False, "trade": False},
+        **({"valuation_scenario": deepcopy(dict(valuation))} if valuation is not None else {}),
     }
 
 
@@ -1364,3 +1383,130 @@ def profitability_bridge(
         "decision_at": decision_at,
         "rank_authority": False, "entry_authority": False,
     }
+
+
+def earnings_valuation_scenario(
+    actual_eps: Actual, *, reference_price: float, terminal_eps: float,
+    terminal_pe: float, cash_distributions: float, horizon_years: float,
+    required_annual_return: float, decision_at: str,
+) -> dict[str, Any]:
+    """Explain the price paid for an explicit earnings/multiple scenario.
+
+    Annual/TTM diluted EPS is a source-qualified fact. Price, terminal earnings,
+    terminal P/E and distributions are supplied assumptions, NOT a live quote,
+    forecast, fair-value estimate, calibrated return or native entry permission.
+    Distributions are held as cash without reinvestment through the horizon.
+    """
+    if not isinstance(actual_eps, Actual):
+        raise EvidenceError("source-qualified annual diluted EPS required")
+    b = actual_eps.basis
+    if b.metric != "EPS" or b.share_basis != "DILUTED":
+        raise EvidenceError("valuation requires diluted EPS, not total profit")
+    if b.period_role.upper() not in {"ANNUAL", "YEAR", "FULL_YEAR", "TTM", "TRAILING_TWELVE_MONTHS"} or not 350 <= b.days <= 380:
+        raise EvidenceError("valuation requires annual or TTM EPS; quarterly extrapolation is not allowed")
+    if b.unit != b.currency + "_per_share":
+        raise EvidenceError("valuation EPS currency/per-share unit mismatch")
+    decision = aware_utc(decision_at, "decision_at")
+    if aware_utc(actual_eps.available_at) > decision:
+        raise EvidenceError("valuation EPS unavailable at decision")
+    values = [finite(v) for v in [reference_price, terminal_eps, terminal_pe,
+                                cash_distributions, horizon_years, required_annual_return]]
+    if any(v is None for v in values):
+        raise EvidenceError("finite valuation scenario assumptions required")
+    price, future_eps, multiple, distributions, years, hurdle = values
+    if price <= 0 or multiple <= 0 or distributions < 0 or years <= 0 or hurdle <= -1:
+        raise EvidenceError("invalid valuation scenario geometry")
+    eps = float(actual_eps.value)
+    result = {
+        "schema": SCHEMA, "kind": "EARNINGS_VALUATION_SCENARIO",
+        "issuer_id": b.issuer_id, "event_id": actual_eps.event_id,
+        "basis": asdict(b), "actual_eps": eps,
+        "actual_source_ref": actual_eps.source_ref,
+        "actual_public_at": actual_eps.public_at,
+        "actual_available_at": actual_eps.available_at,
+        "decision_at": decision_at, "reference_price": price,
+        "terminal_eps_assumption": future_eps, "terminal_pe_assumption": multiple,
+        "cash_distributions_assumption": distributions, "horizon_years": years,
+        "required_annual_return_assumption": hurdle,
+        "price_origin": "SUPPLIED_SCENARIO_NOT_VERIFIED_QUOTE",
+        "forecast_origin": "SUPPLIED_SCENARIO_NOT_MODEL_PREDICTION",
+        "distribution_convention": "CASH_HELD_WITHOUT_REINVESTMENT_TO_HORIZON",
+        "costs_and_taxes_included": False,
+        "estimated_win_probability": None,
+        "rank_authority": False, "entry_authority": False,
+        "sizing_authority": False, "trade_authority": False,
+        "entry_permission": False,
+    }
+    if eps <= 0 or future_eps <= 0:
+        return {**result, "status": "PE_MODEL_NOT_APPLICABLE_NONPOSITIVE_EARNINGS"}
+    try:
+        reference_multiple = price / eps
+        future_price = future_eps * multiple
+        wealth = future_price + distributions
+        discount = (1.0 + hurdle) ** years
+        total_return = wealth / price - 1.0
+        annualized_return = (wealth / price) ** (1.0 / years) - 1.0
+        price_ceiling = wealth / discount
+        required_eps_raw = (price * discount - distributions) / multiple
+        required_eps = max(0.0, required_eps_raw)
+        eps_component = (future_eps-eps) * (multiple/2.0+reference_multiple/2.0)
+        multiple_component = (multiple-reference_multiple) * (future_eps/2.0+eps/2.0)
+    except (ArithmeticError, ValueError):
+        raise EvidenceError("valuation scenario arithmetic overflow") from None
+    computed = [reference_multiple,future_price,wealth,discount,total_return,
+                annualized_return,price_ceiling,required_eps,eps_component,multiple_component]
+    if not all(isfinite(v) for v in computed) or discount <= 0:
+        raise EvidenceError("valuation scenario arithmetic overflow")
+    if abs(eps_component+multiple_component-(future_price-price)) > 1e-9 * max(1.0,abs(future_price),abs(price)):
+        raise EvidenceError("valuation scenario price identity failed")
+    return {**result, "status": "AVAILABLE_SCENARIO_ONLY",
+        "reference_price_to_annual_eps": reference_multiple,
+        "terminal_price_assumption": future_price,
+        "terminal_wealth_assumption": wealth,
+        "scenario_total_return_before_costs": total_return,
+        "scenario_annualized_return_before_costs": annualized_return,
+        "eps_change_price_component": eps_component,
+        "multiple_change_price_component": multiple_component,
+        "cash_distribution_price_component": distributions,
+        "maximum_reference_price_for_hurdle": price_ceiling,
+        "required_terminal_eps_for_hurdle": required_eps,
+        "required_terminal_eps_change_fraction": required_eps/eps-1.0,
+        "hurdle_covered_by_assumed_distributions": required_eps_raw <= 0,
+        "within_scenario_price_ceiling": price <= price_ceiling,
+        "interpretation": "Scenario price/earnings hurdle, not a forecast, intrinsic value or permission to buy",
+    }
+
+
+def _validate_valuation_case(item: Mapping[str, Any], *, issuer_id: str, event_id: str,
+                             decision_at: str) -> None:
+    if not isinstance(item, Mapping) or item.get("schema") != SCHEMA or item.get("kind") != "EARNINGS_VALUATION_SCENARIO":
+        raise EvidenceError("invalid valuation scenario evidence")
+    if item.get("issuer_id") != issuer_id or item.get("event_id") != event_id:
+        raise EvidenceError("valuation scenario identity mismatch")
+    if max(aware_utc(str(item.get("decision_at"))), aware_utc(str(item.get("actual_available_at")))) > aware_utc(decision_at):
+        raise EvidenceError("valuation scenario evidence is from the future")
+    for field in ("rank_authority", "entry_authority", "sizing_authority", "trade_authority", "entry_permission"):
+        if item.get(field) is not False:
+            raise EvidenceError("authoritative valuation scenario refused")
+    if item.get("price_origin") != "SUPPLIED_SCENARIO_NOT_VERIFIED_QUOTE" or item.get("forecast_origin") != "SUPPLIED_SCENARIO_NOT_MODEL_PREDICTION":
+        raise EvidenceError("valuation scenario cannot claim observed quote or prediction")
+
+    # Recompute the pure case before it reaches an explanation. Matching names,
+    # clocks and false flags alone do not establish the arithmetic. This does not
+    # authenticate the source fact or convert assumed prices into observed quotes.
+    try:
+        basis = MetricBasis(**dict(item["basis"]))
+        actual = Actual(basis=basis, value=item["actual_eps"],
+            public_at=item["actual_public_at"], available_at=item["actual_available_at"],
+            source_ref=item["actual_source_ref"], event_id=item["event_id"])
+        expected = earnings_valuation_scenario(actual,
+            reference_price=item["reference_price"], terminal_eps=item["terminal_eps_assumption"],
+            terminal_pe=item["terminal_pe_assumption"], cash_distributions=item["cash_distributions_assumption"],
+            horizon_years=item["horizon_years"], required_annual_return=item["required_annual_return_assumption"],
+            decision_at=item["decision_at"])
+        import json
+        encode = lambda value: json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
+        if encode(dict(item)) != encode(expected):
+            raise EvidenceError("valuation scenario arithmetic or shape mismatch")
+    except (KeyError, TypeError):
+        raise EvidenceError("valuation scenario fields are incomplete") from None
