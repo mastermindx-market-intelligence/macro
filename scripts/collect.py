@@ -144,6 +144,11 @@ def _run_one(key: str, cls, full_history: bool):
     return res, round(dt, 1)
 
 
+
+def _current_result_status(results: list[FetchResult], source: str) -> str | None:
+    """Status for one adapter in THIS invocation; never an older store receipt."""
+    return next((result.status for result in results if result.source == source), None)
+
 def all_adapters() -> dict:
     """Import lazily so one module's import-time failure can't kill the run."""
     registry = {}
@@ -1038,7 +1043,8 @@ def main() -> int:
         # crash is non-fatal like any audit's.
         from scripts import reconcile_membership
         try:
-            reconcile_membership.run()
+            _breadth_status = _current_result_status(results, "breadth")
+            reconcile_membership.run(us_sector_reference_status=_breadth_status)
         except reconcile_membership.PruneGuardError:
             raise
         except Exception as e:  # noqa: BLE001 — a safety net's crash must not abort the run
