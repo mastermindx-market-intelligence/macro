@@ -1698,3 +1698,223 @@ def test_r14_pair_annotation_must_be_present_for_every_selected_return(identity)
     row = next(r for r in view['rows'] if r['ccy'] == 'JPY')
     assert row['residual_adjustment']['status'] == 'unverified'
     assert row['values']['residual_return'] is not None
+
+
+# R14 phase 2: the sign of a standardized deviation is not the sign of price return.
+def test_r14_sign_meanings_are_scoped_to_each_kind_of_measure():
+    got = _r12_project(_r13_clock_table())
+    assert got.get('positive_direction_scope') == 'literal_returns_only'
+    metrics = got['metrics']
+    for key in ['return_short', 'return_medium', 'return_long']:
+        assert metrics[key]['positive_means'] == 'currency_appreciation_vs_usd'
+    assert metrics['velocity_z']['positive_means'] == 'above_prior_risk_adjusted_momentum_baseline'
+    assert metrics['acceleration_z']['positive_means'] == 'above_prior_momentum_change_baseline'
+    assert metrics['volatility_percentile']['positive_means'] == 'higher_volatility_rank_not_price_direction'
+    assert metrics['residual_return']['positive_means'] == 'upstream_residual_index_increase'
+    assert metrics['acceleration_z']['change_window_observations'] == 1
+    assert metrics['acceleration_z']['window_observations'] == 5
+    for key in ['velocity_z', 'acceleration_z']:
+        assert metrics[key]['comparison_basis'] == 'prior_observations_only'
+        assert metrics[key]['display_clip_abs'] == 8
+
+
+@pytest.mark.parametrize('direction', [-1, 1])
+def test_r14_actual_declining_currency_can_have_positive_relative_momentum_and_vice_versa(direction):
+    from engine.forex_regime import fx_kinematics_table
+    from bs4 import BeautifulSoup
+    cfg = _r12_cfg(); cfg['assets'] = {'USDJPY': {'base': 'JPY'}}
+    idx = pd.date_range('2022-01-03', periods=760, freq='B')
+    returns = np.full(len(idx), -.003) + .0001 * np.sin(np.arange(len(idx)) / 3)
+    returns[-60:] = -.0004 + .0001 * np.sin(np.arange(60) / 3)
+    price = pd.Series(np.exp(np.cumsum(returns * -direction)), index=idx)
+    raw = fx_kinematics_table({'USDJPY': pd.DataFrame({'close': price})}, {}, cfg)
+    got = _r12_project(raw, cfg); row = got['rows'][0]
+    assert np.sign(row['values']['return_medium']) == direction
+    assert np.sign(row['values']['velocity_z']) == -direction
+    assert got.get('positive_direction_scope') == 'literal_returns_only'
+    html = BeautifulSoup(_r13_evidence_html(got), 'html.parser')
+    momentum = html.select_one('[data-metric="velocity_z"]').get_text(' ', strip=True)
+    assert 'Relative momentum' in momentum and 'not price direction' in momentum
+    assert 'relative to its prior baseline' in momentum
+    assert 'currency appreciation' not in momentum
+    assert 'accelerating up' not in html.get_text()
+    assert got['freshness'] == 'unknown'
+
+
+@pytest.mark.parametrize('value', [-1.3, 0, 1.3])
+def test_r14_signed_standardized_values_carry_interpretation_in_both_languages(value):
+    from bs4 import BeautifulSoup
+    table = _r13_clock_table()
+    table['rows'][0].update(vel_z=value, accel_z=value)
+    got = _r12_project(table)
+    html = BeautifulSoup(_r13_evidence_html(got), 'html.parser')
+    for key in ['velocity_z', 'acceleration_z']:
+        row = html.select_one(f'[data-metric="{key}"]')
+        assert 'not price direction' in row.get_text()
+        assert '不表示价格方向' in row.get_text()
+        assert '%' not in row.select_one('.fx-me-value').get_text()
+        assert row.select_one('.fx-me-note')
+    assert '1-observation change in 5-observation momentum' in html.select_one('[data-metric="acceleration_z"]').get_text()
+    assert 'bounded at ±8 z' in html.select_one('[data-metric="velocity_z"]').get_text()
+    assert 'positive means currency appreciation' not in html.select_one('.fx-me-currency > summary').get_text()
+
+
+def test_r14_literal_return_sign_guidance_does_not_spill_into_residual_or_volatility():
+    from bs4 import BeautifulSoup
+    html = BeautifulSoup(_r13_evidence_html(_r12_project(_r13_clock_table())), 'html.parser')
+    for key in ['return_short', 'return_medium', 'return_long']:
+        text = html.select_one(f'[data-metric="{key}"]').get_text()
+        assert 'Positive = appreciation versus USD' in text
+        assert '正值表示相对美元升值' in text
+    for key in ['volatility_percentile', 'residual_return']:
+        text = html.select_one(f'[data-metric="{key}"]').get_text()
+        assert 'Positive = appreciation versus USD' not in text
+    assert 'Not a price-direction signal' in html.select_one('[data-metric="volatility_percentile"]').get_text()
+    assert 'Index direction depends on the method evidence' in html.select_one('[data-metric="residual_return"]').get_text()
+
+
+def test_r14_custom_return_windows_do_not_change_the_momentum_difference_horizon():
+    cfg = _r12_cfg(); cfg['regime']['kinematics']['lit_windows_d'] = [2, 7, 30]
+    got = _r12_project(_r13_clock_table(), cfg)
+    assert got['metrics']['return_medium']['window_observations'] == 7
+    assert got['metrics']['velocity_z']['window_observations'] == 5
+    assert got['metrics']['acceleration_z']['change_window_observations'] == 1
+    assert got['rows'][0]['values'] == _r12_project(_r13_clock_table())['rows'][0]['values']
+
+
+def test_r14_builder_forwards_the_same_sign_definitions_without_mutating_market_verdict(tmp_path, monkeypatch):
+    snapshot, contexts = _r12_build_fixture(tmp_path, monkeypatch, _r13_clock_table())
+    got = snapshot['kinematics']
+    assert got.get('positive_direction_scope') == 'literal_returns_only'
+    assert contexts[0]['kinematics_view']['metrics'] == got['metrics']
+    assert snapshot['regime_radar']['active'] == []
+
+
+# R14: a useful joint reading must preserve the two meanings and time basis.
+@pytest.mark.parametrize('move,momentum,return_state,momentum_state', [
+    (-0.19, 1.51, 'fell', 'above_baseline'),
+    (0.19, -1.51, 'rose', 'below_baseline'),
+    (0.19, 1.51, 'rose', 'above_baseline'),
+    (-0.19, -1.51, 'fell', 'below_baseline'),
+    (0.0, 0.0, 'flat_at_display_precision', 'at_baseline_at_display_precision'),
+])
+def test_r14_joint_read_keeps_price_direction_separate_from_relative_momentum(move, momentum, return_state, momentum_state):
+    table = _r13_clock_table(); table['rows'][0].update(lit_5d_pct=move, vel_z=momentum)
+    got = _r12_project(table); row = got['rows'][0]
+    comparison = row.get('movement_comparison', {})
+    assert comparison.get('status') == 'calculation_dates_match'
+    assert comparison['return_metric'] == 'return_medium'
+    assert comparison['window_observations'] == 5
+    assert comparison['return_state'] == return_state
+    assert comparison['momentum_state'] == momentum_state
+    assert comparison['calculated_through'] == '2026-09-25'
+    assert comparison['value_basis'] == 'displayed_producer_values'
+    assert got['freshness'] == 'unknown'
+    assert not {'score', 'confidence', 'probability', 'trade', 'action', 'signal'} & comparison.keys()
+
+
+@pytest.mark.parametrize('stamp,reason', [('2026-09-22', 'different_calculation_dates'), (None, 'calculation_date_unknown'), ('2026-09-26', 'calculation_date_unknown')])
+def test_r14_joint_read_withholds_dated_consensus_without_erasing_individual_metrics(stamp, reason):
+    table = _r13_clock_table(); table['rows'][0]['calculation_clock']['selected_index_dates']['vel_z'] = stamp
+    row = _r12_project(table)['rows'][0]
+    comparison = row.get('movement_comparison', {})
+    assert comparison.get('status') == 'withheld' and comparison.get('reason') == reason
+    assert comparison['return_state'] is None and comparison['momentum_state'] is None
+    assert comparison['calculated_through'] is None
+    assert row['values']['velocity_z'] == 1.3 and row['values']['return_medium'] == 1.2
+
+
+@pytest.mark.parametrize('field,value', [('vel_z', None), ('lit_5d_pct', True), ('vel_z', float('inf'))])
+def test_r14_joint_read_requires_both_valid_measures(field, value):
+    table = _r13_clock_table(); table['rows'][0][field] = value
+    comparison = _r12_project(table)['rows'][0].get('movement_comparison', {})
+    assert comparison.get('status') == 'withheld'
+    assert comparison['reason'] == 'value_unavailable'
+    assert comparison['return_state'] is None and comparison['momentum_state'] is None
+
+
+@pytest.mark.parametrize('windows,metric', [([1, 5, 20], 'return_medium'), ([5, 10, 20], 'return_short'), ([1, 2, 5], 'return_long')])
+def test_r14_joint_read_matches_actual_horizons_not_legacy_field_spelling(windows, metric):
+    cfg = _r12_cfg(); cfg['regime']['kinematics']['lit_windows_d'] = windows
+    comparison = _r12_project(_r13_clock_table(), cfg)['rows'][0].get('movement_comparison', {})
+    assert comparison.get('return_metric') == metric
+    assert comparison['window_observations'] == 5
+    assert comparison['status'] == 'calculation_dates_match'
+
+
+def test_r14_joint_read_does_not_compare_a_seven_observation_return_to_five_observation_momentum():
+    cfg = _r12_cfg(); cfg['regime']['kinematics']['lit_windows_d'] = [2, 7, 30]
+    row = _r12_project(_r13_clock_table(), cfg)['rows'][0]
+    assert row.get('movement_comparison', {}).get('reason') == 'matching_return_window_unavailable'
+    assert row['movement_comparison']['return_state'] is None
+    assert row['values']['return_medium'] == 1.2
+
+
+def test_r14_duplicate_identity_cannot_gain_a_joint_read_or_accept_injected_conclusions():
+    import copy
+    table = _r13_clock_table(); row = table['rows'][0]
+    row['movement_comparison'] = {'status': 'calculation_dates_match', 'signal': 'buy'}
+    table['rows'].append(copy.deepcopy(row))
+    comparison = _r12_project(table)['rows'][0].get('movement_comparison', {})
+    assert comparison.get('status') == 'withheld'
+    assert comparison['reason'] == 'value_unavailable' and 'signal' not in comparison
+
+
+def test_r14_plain_language_joint_read_is_bilingual_and_not_a_reversal_or_current_market_call():
+    from bs4 import BeautifulSoup
+    table = _r13_clock_table(); table['rows'][0].update(lit_5d_pct=-0.19, vel_z=1.51)
+    html = BeautifulSoup(_r13_evidence_html(_r12_project(table)), 'html.parser')
+    summary = html.select_one('[data-movement-comparison="calculation_dates_match"]')
+    assert summary, 'No row-specific explanation reaches the real component'
+    text = summary.get_text(' ', strip=True)
+    assert 'currency fell' in text and 'above its prior baseline' in text
+    assert '货币下跌' in text and '高于自身历史基准' in text
+    assert 'not a reversal' in text and 'source freshness remains unknown' in text
+    assert '5 observations' in text and '2026-09-25' in text
+    assert summary.find_previous('summary') and summary.find_next('dl')
+
+
+@pytest.mark.parametrize('change', ['missing', 'mismatched', 'window'])
+def test_r14_unqualified_joint_read_has_a_local_explanation_without_old_combined_copy(change):
+    from bs4 import BeautifulSoup
+    table, cfg = _r13_clock_table(), _r12_cfg()
+    if change == 'missing': table['rows'][0]['vel_z'] = None
+    elif change == 'mismatched': table['rows'][0]['calculation_clock']['selected_index_dates']['vel_z'] = '2026-09-22'
+    else: cfg['regime']['kinematics']['lit_windows_d'] = [2, 7, 30]
+    html = BeautifulSoup(_r13_evidence_html(_r12_project(table, cfg)), 'html.parser')
+    summary = html.select_one('[data-movement-comparison="withheld"]')
+    assert summary and 'Read these values separately' in summary.get_text()
+    assert '分别查看这些数值' in summary.get_text()
+    assert 'currency rose' not in summary.get_text() and 'currency fell' not in summary.get_text()
+    assert html.select_one('[data-metric="return_medium"] .fx-me-value').get_text() == '+1.20%'
+
+
+def test_r14_real_builder_exposes_identical_joint_read_to_page_and_snapshot(tmp_path, monkeypatch):
+    table = _r13_clock_table(); table['rows'][0].update(lit_5d_pct=-0.19, vel_z=1.51)
+    snapshot, contexts = _r12_build_fixture(tmp_path, monkeypatch, table)
+    comparison = snapshot['kinematics']['rows'][0].get('movement_comparison')
+    assert comparison and comparison['return_state'] == 'fell'
+    assert contexts[0]['kinematics_view']['rows'][0]['movement_comparison'] == comparison
+    assert snapshot['regime_radar']['active'] == []
+
+
+@pytest.mark.parametrize('field', ['vel_z', 'accel_z'])
+@pytest.mark.parametrize('value', [-8.01, 8.01])
+def test_r14_outside_producer_z_bound_is_invalid_not_silently_clipped(field, value):
+    from bs4 import BeautifulSoup
+    table = _r13_clock_table(); table['rows'][0][field] = value
+    got = _r12_project(table); row = got['rows'][0]
+    key = 'velocity_z' if field == 'vel_z' else 'acceleration_z'
+    assert row['availability'][key] == 'invalid' and row['values'][key] is None
+    assert row['values']['return_medium'] == 1.2
+    html = BeautifulSoup(_r13_evidence_html(got), 'html.parser')
+    assert html.select_one(f'[data-metric="{key}"] .fx-me-value').get_text() == 'Unavailable不可用'
+    assert table['rows'][0][field] == value
+
+
+@pytest.mark.parametrize('value', [-8.0, 8.0])
+def test_r14_producer_z_bound_endpoints_remain_actual_values(value):
+    table = _r13_clock_table(); table['rows'][0].update(vel_z=value, accel_z=value)
+    row = _r12_project(table)['rows'][0]
+    assert row['values']['velocity_z'] == row['values']['acceleration_z'] == value
+    assert row['availability']['velocity_z'] == row['availability']['acceleration_z'] == 'available'

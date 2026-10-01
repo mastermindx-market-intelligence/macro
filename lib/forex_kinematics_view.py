@@ -57,21 +57,31 @@ def _metric_definitions(cfg: object) -> dict[str, dict] | None:
     definitions = {}
     for key, window in zip(('return_short', 'return_medium', 'return_long'), windows):
         definitions[key] = {'source_field': _FIELDS[key], 'unit': 'percent',
-                            'basis': 'currency_vs_usd', 'window_observations': window}
+                            'basis': 'currency_vs_usd', 'window_observations': window,
+                            'positive_means': 'currency_appreciation_vs_usd'}
     for key in ('velocity_z', 'acceleration_z'):
         definitions[key] = {'source_field': _FIELDS[key], 'unit': 'z_score',
                             'basis': 'currency_vs_usd', 'window_observations': 5,
                             'z_lookback_observations': named['z_lookback_d'],
                             'z_min_periods': named['z_min_periods'],
-                            'ewma_halflife_observations': named['ewma_halflife_d']}
+                            'ewma_halflife_observations': named['ewma_halflife_d'],
+                            'comparison_basis': 'prior_observations_only',
+                            'display_clip_abs': 8,
+                            'positive_means': ('above_prior_risk_adjusted_momentum_baseline'
+                                               if key == 'velocity_z' else 'above_prior_momentum_change_baseline')}
+    # _accel is a one-index-step difference of five-observation momentum.
+    # A positive z-value says above its prior baseline, not that price rose.
+    definitions['acceleration_z']['change_window_observations'] = 1
     definitions['volatility_percentile'] = {
         'source_field': _FIELDS['volatility_percentile'], 'unit': 'fraction',
         'basis': 'currency_vs_usd', 'window_observations': named['rvol_window_d'],
-        'percentile_lookback_observations': named['rvol_pctile_lookback_d']}
+        'percentile_lookback_observations': named['rvol_pctile_lookback_d'],
+        'positive_means': 'higher_volatility_rank_not_price_direction'}
     definitions['residual_return'] = {
         'source_field': _FIELDS['residual_return'], 'unit': 'percent',
         'basis': 'upstream_residual_index', 'window_observations': 5,
-        'adjustment_evidence_field': 'residual_adjustment'}
+        'adjustment_evidence_field': 'residual_adjustment',
+        'positive_means': 'upstream_residual_index_increase'}
     return definitions
 
 
@@ -94,6 +104,7 @@ def _value(raw: object, key: str) -> tuple[float | None, str]:
     except (OverflowError, ValueError, TypeError):
         return None, 'invalid'
     if (not math.isfinite(number)
+            or (key in ('velocity_z', 'acceleration_z') and abs(number) > 8)
             or (key == 'volatility_percentile' and not 0 <= number <= 1)
             or (key in ('return_short', 'return_medium', 'return_long', 'residual_return') and number < -100)):
         return None, 'invalid'
@@ -176,6 +187,43 @@ def _project_residual_adjustment(source: Mapping, row: dict) -> dict[str, Any]:
     return out
 
 
+def _movement_comparison(row: dict, definitions: dict) -> dict:
+    """Describe displayed signs only after matching calculation windows/dates.
+
+    This is not a direction forecast, source-synchronization test or freshness
+    decision. Inputs were already qualified by this same projection owner.
+    """
+    window = definitions['velocity_z']['window_observations']
+    matches = [key for key in ('return_short', 'return_medium', 'return_long')
+               if definitions[key]['window_observations'] == window]
+    out = {'status': 'withheld', 'reason': None, 'return_metric': None,
+           'window_observations': window, 'calculated_through': None,
+           'return_state': None, 'momentum_state': None,
+           'value_basis': 'displayed_producer_values'}
+    if len(matches) != 1:
+        out['reason'] = 'matching_return_window_unavailable'
+        return out
+    key = matches[0]
+    out['return_metric'] = key
+    if any(row['availability'][name] != 'available' for name in (key, 'velocity_z')):
+        out['reason'] = 'value_unavailable'
+        return out
+    return_date = row['calculated_through'][key]
+    momentum_date = row['calculated_through']['velocity_z']
+    if return_date is None or momentum_date is None:
+        out['reason'] = 'calculation_date_unknown'
+        return out
+    if return_date != momentum_date:
+        out['reason'] = 'different_calculation_dates'
+        return out
+    move, momentum = row['values'][key], row['values']['velocity_z']
+    out.update(status='calculation_dates_match', calculated_through=return_date,
+               return_state=('rose' if move > 0 else 'fell' if move < 0 else 'flat_at_display_precision'),
+               momentum_state=('above_baseline' if momentum > 0 else 'below_baseline' if momentum < 0
+                               else 'at_baseline_at_display_precision'))
+    return out
+
+
 def project_kinematics(table: object, cfg: object) -> dict[str, Any]:
     """Return JSON-safe values, definitions and limitations without mutating inputs.
 
@@ -187,6 +235,7 @@ def project_kinematics(table: object, cfg: object) -> dict[str, Any]:
         'display_only': True, 'value_status': 'unavailable',
         'basis': 'currency_vs_usd',
         'positive_direction': 'currency_appreciation_vs_usd',
+        'positive_direction_scope': 'literal_returns_only',
         'table_as_of': None, 'date_basis': 'producer_max_index',
         'freshness': 'unknown', 'metric_dates_available': False,
         'calculation_date_status': 'unavailable',
@@ -249,6 +298,7 @@ def project_kinematics(table: object, cfg: object) -> dict[str, Any]:
             available += status == 'available'
         dated += _project_calculation_clock(source, row, out['table_as_of'])
         row['residual_adjustment'] = _project_residual_adjustment(source, row)
+        row['movement_comparison'] = _movement_comparison(row, definitions)
         out['rows'].append(row)
     expected = len(out['rows']) * len(_FIELDS)
     if available:

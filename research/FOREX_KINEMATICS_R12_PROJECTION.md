@@ -181,3 +181,42 @@ Verification during this phase:
 All previously recorded browser, native-Paper-adapter, independent-review and release gates remain. This source candidate is not deployed and does not prove predictive advantage.
 
 Final R14 method-phase verification, PID46299 exit0: **229 tests passed** (the195 prior checks plus34 new method/identity cases). The existing two NumPy warnings and unrelated protected pytest-temp cleanup warning remain disclosed. Four temporary in-memory mutations were detected: raw promoted to adjusted, zero beta discarded, nullable pair identity accepted, and mismatched window accepted. Those probes changed no source files and are not independent review. Full contract coverage/probe ceilings remained as recorded above; real browser evidence is still absent.
+
+
+## R14 continuation — price direction, relative momentum and a usable comparison
+
+The interrupted continuation was recovered without resetting its three owned dirty files. Its earlier method repair is already published at `cb644708a85f10d2b14ea23987bf69fe149c60da`; that source remains the immutable comparison baseline for this change. No separate branch, prototype or market engine was created.
+
+### The interpretation defect
+
+The actual producer can emit a falling five-observation currency return together with a positive velocity z-score. A deterministic synthetic reproduction gave a −0.19% return alongside +1.51 z relative momentum. This is not contradictory: `_velocity` is mean log return over five observations divided by EWMA volatility, and `_z_causal` compares that measure with its own strictly earlier rolling mean/standard deviation. A positive standardized deviation can accompany a still-negative return. `_accel` is the one-observation change in that underlying momentum measure; its z-score likewise is not a price-direction sign.
+
+The former blanket caption, “positive means currency appreciation,” is now restricted to literal returns. Metric definitions publish their distinct `positive_means` values; acceleration names its one-observation change horizon; z-scores name the earlier-observation comparison and existing ±8 bound. The existing UI labels become **Relative momentum** and **Relative change in momentum**, with bilingual explanations. Volatility rank is not a direction signal, and the residual-index sign must be read with its adjustment-method evidence. The legacy top-level direction field remains for compatibility, but `positive_direction_scope=literal_returns_only` makes its scope explicit. Financial calculations and source scenario/weight rules do not change.
+
+Malformed z-score payloads outside the actual producer's ±8 bound now remain unavailable. They are not clamped into apparent valid readings. Real endpoint values −8 and +8 are preserved.
+
+### From definitions to useful reading
+
+The existing projector now derives one bounded, descriptive `movement_comparison` per currency. It matches the configured literal-return window to the momentum measure's five-observation window instead of assuming the fixed producer field name determines the horizon. It requires two valid values and matching, qualified selected calculation dates. It then describes the literal return direction and relative-momentum baseline separately.
+
+The existing inspector uses that same projection for **How to read this combination**, for example:
+
+> The currency fell versus USD over 5 observations. Relative momentum is above its prior baseline.
+
+The selected calculation date, unknown source freshness and “not a reversal signal or independent confirmation” boundary remain alongside the explanation. Displayed zero is qualified as flat/at-baseline **at displayed precision**, not an exact assertion about unrounded market measurements. The combined text is not a predictive model, trade recommendation, independent confluence vote, current-market status or synchronized-source guarantee.
+
+If the windows differ, calculation dates differ or are unknown, or a value/identity is invalid, the UI instead says **Read these values separately** and names the local reason. The independently valid metrics are preserved. Injected upstream comparison narratives are ignored; only this projector's validated values and definitions supply the descriptive state. No new JavaScript, CSS, interaction, storage, collector or API is added. The single existing builder projection still supplies both HTML and `latest.json`.
+
+### Verification on the repaired candidate
+
+- Recovery PID58960 exited0 with238 scoped passes (229 previously published cases plus9 recovered sign-meaning cases).
+- New comparison tests were written before implementation: PID66066 failed21/21 on the absent comparison/consumer. After implementation, PID67466 passed259 scoped checks.
+- Six bounded-z cases then exposed four actual failures at PID69257 (out-of-bound values wrongly available), with two positive endpoint controls passing. `_value` now rejects that invalid payload without clamping.
+- **Final PID70801 exited0:265 scoped tests passed**, Python compilation and diff check clean, followed by the complete canonical contract-delta check: **0 introduced /0 inherited findings**, all existing workload probes within their ceilings. The same2 inherited NumPy divide warnings and1 unrelated protected pytest temporary-directory cleanup warning remain disclosed; that directory was not modified or used for browser execution.
+- PID75005 exited0:60 combinations of windows/signs/calculation-date mismatch compared against the exact cb644 projector. Every pre-existing value, date, adjustment receipt and key remained equal for valid producer-range inputs; input objects were unchanged. The new intentional rejection of malformed out-of-bound z payloads is not represented as legacy parity.
+- Four in-memory mutations (ignore date disagreement, reverse price direction, treat momentum as price, accept invalid z bound) were distinguished by the targeted semantic checks. These are local adversarial checks, not independent review or a whole-program mutation score.
+- PID80658 exited0: complete actual Forex template → real page writer → existing asset extractor passed for BOTH the matching-date interpretation and the withheld mismatched-date interpretation. Existing pair content, both languages, selected dates, unknown source freshness and one inspector survived; zero component scripts. Second extraction was byte-identical. Component CSS remains `b9b73065256ea260677d35b1212d6a37f8453cee4923e4aefeeb5adb93dffd90`, unchanged by this sign/summary work. Actual design enforce-added returned0 introduced violations.
+
+All render examples use bounded synthetic fixtures and temporary output, not a live nightly build. No browser pixel, focus, keyboard, screen-reader, full contrast or production acceptance is inferred. The original cb644 CI36805101838 passed its contract and11packs, but pack7/design-governance failed for the missing owning browser EVIDENCE.yml. Fences36805101494 passed. Those are prior-head results, not proof for the next published head.
+
+Current source remains Draft/HOLD, with both registered source-review requests still awaiting a submitted review. The Paper connector's last exact write-admission mismatch and the historical browser administrator refusal remain unresolved; no alternate browser, host, profile or Paper carrier was used to get around them. Existing accepted designs, source/collector owners, other PRs, trading state and production outputs are untouched.

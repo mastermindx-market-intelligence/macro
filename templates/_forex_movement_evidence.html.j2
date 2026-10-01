@@ -8,8 +8,8 @@
   'return_short': ('Short-window move', '短窗口涨跌'),
   'return_medium': ('Medium-window move', '中窗口涨跌'),
   'return_long': ('Long-window move', '长窗口涨跌'),
-  'velocity_z': ('Movement speed', '变动速度'),
-  'acceleration_z': ('Change in speed', '速度变化'),
+  'velocity_z': ('Relative momentum', '相对动量'),
+  'acceleration_z': ('Relative change in momentum', '相对动量变化'),
   'volatility_percentile': ('Realized-volatility rank', '已实现波动率分位'),
   'residual_return': ('Residual-index move', '残差指数涨跌')
 } %}
@@ -75,8 +75,23 @@
     {% for row in _rows %}
     {% set _conflict = 'identity_conflict' in row.availability.values() %}
     <details class="fx-me-currency" data-currency="{{ row.ccy }}"{% if loop.first %} open{% endif %}>
-      <summary>{{ row.ccy }}<span class="fx-me-basis">{{ me_t('Currency versus USD · positive means currency appreciation', '该货币相对美元 · 正值表示该货币升值') }}</span></summary>
+      <summary>{{ row.ccy }}<span class="fx-me-basis">{{ me_t('Returns versus USD · standardized measures compare with their own baselines', '相对美元的涨跌 · 标准化指标与各自历史基准比较') }}</span></summary>
       {% if _conflict %}<p class="fx-me-unavailable">{{ me_t('Ambiguous currency identity. Conflicting values and dates are withheld.', '货币标识有歧义。冲突数值与日期均不展示。') }}</p>{% endif %}
+      {% set _comparison = row.get('movement_comparison', {}) %}
+      {% if _comparison.get('status') == 'calculation_dates_match' %}
+      {% set _price_words = {'rose': ('The currency rose', '货币上涨'), 'fell': ('The currency fell', '货币下跌'), 'flat_at_display_precision': ('The displayed currency return is flat', '货币收益在显示精度下持平')} %}
+      {% set _momentum_words = {'above_baseline': ('Relative momentum is above its prior baseline.', '相对动量高于自身历史基准。'), 'below_baseline': ('Relative momentum is below its prior baseline.', '相对动量低于自身历史基准。'), 'at_baseline_at_display_precision': ('Relative momentum is at its baseline at displayed precision.', '相对动量在显示精度下处于自身历史基准。')} %}
+      {% set _pw = _price_words[_comparison.return_state] %}{% set _mw = _momentum_words[_comparison.momentum_state] %}
+      <p class="fx-me-input-dates" data-movement-comparison="calculation_dates_match"><strong>{{ me_t('How to read this combination', '如何理解这组读数') }}</strong><br>{{ me_t(_pw[0] ~ ' versus USD over ' ~ _comparison.window_observations ~ ' observations. ' ~ _mw[0], _comparison.window_observations ~ ' 个观测窗口内，' ~ _pw[1] ~ '（相对美元）。' ~ _mw[1]) }}<span class="fx-me-note">{{ me_t('Both calculations end', '两项计算均截至') }} <time datetime="{{ _comparison.calculated_through }}">{{ _comparison.calculated_through }}</time>. {{ me_t('Different measures, not a reversal signal or independent confirmation; source freshness remains unknown.', '两项指标含义不同，不是反转信号或独立确认；来源新鲜度仍未知。') }}</span></p>
+      {% else %}
+      {% set _reason = _comparison.get('reason') %}
+      <p class="fx-me-input-dates" data-movement-comparison="withheld"><strong>{{ me_t('Read these values separately.', '分别查看这些数值。') }}</strong>
+        {% if _reason == 'different_calculation_dates' %}{{ me_t('The return and relative momentum end on different calculation dates. No combined reading is shown.', '涨跌幅与相对动量的计算结束日期不同，因此不展示合并解读。') }}
+        {% elif _reason == 'matching_return_window_unavailable' %}{{ me_t('No displayed return uses the momentum window. Do not treat different windows as the same move.', '所展示的涨跌幅窗口与动量窗口不匹配，不应将不同窗口当作同一段走势。') }}
+        {% elif _reason == 'value_unavailable' %}{{ me_t('One or both required values are unavailable. Other valid evidence remains below.', '合并解读所需数值至少一项不可用；其他有效证据仍在下方展示。') }}
+        {% else %}{{ me_t('A matching calculation date has not been established. No combined reading is shown.', '尚未确认计算日期一致，因此不展示合并解读。') }}{% endif %}
+      </p>
+      {% endif %}
       <dl class="fx-me-facts">
       {% for key, names in _labels.items() %}
       {% set metric = _definitions.get(key, {}) %}
@@ -88,12 +103,18 @@
       {% set method = adjustment.get('status', 'unverified') %}
       {% if key == 'residual_return' %}{% set names = _adjustment_labels.get(method, _labels.residual_return) %}{% endif %}
       <div class="fx-me-metric" data-metric="{{ key }}">
-        <dt>{{ me_t(names[0], names[1]) }}<span class="fx-me-note">{% if metric.get('window_observations') %}{{ me_t(metric.window_observations ~ ' observations', metric.window_observations ~ ' 个观测') }}{% elif key == 'velocity_z' or key == 'acceleration_z' %}{{ me_t('Standardized · not a probability', '标准化数值 · 非概率') }}{% endif %}</span></dt>
+        <dt>{{ me_t(names[0], names[1]) }}<span class="fx-me-note">{% if key == 'acceleration_z' and metric.get('change_window_observations') %}{{ me_t(metric.change_window_observations ~ '-observation change in ' ~ metric.window_observations ~ '-observation momentum', metric.window_observations ~ ' 个观测窗口动量的 ' ~ metric.change_window_observations ~ ' 步变化') }}{% elif metric.get('window_observations') %}{{ me_t(metric.window_observations ~ ' observations', metric.window_observations ~ ' 个观测') }}{% endif %}</span></dt>
         <dd>
           {% if available %}
           <span class="fx-me-value">{% if metric.get('unit') == 'fraction' %}{{ '%.1f'|format(value * 100) }} / 100{% elif metric.get('unit') == 'z_score' %}{{ (('%+.2f'|format(value)) if value != 0 else '0.00')|replace('-', '−') }} z{% else %}{{ (('%+.2f'|format(value)) if value != 0 else '0.00')|replace('-', '−') }}%{% endif %}</span>
           {% else %}<span class="fx-me-value fx-me-invalid">{{ me_t('Unavailable', '不可用') }}</span>{% endif %}
-          {% if key == 'volatility_percentile' %}<span class="fx-me-note">{{ me_t('Percentile rank, not a probability', '分位排名，非概率') }}</span>{% endif %}
+          {% if key in ['return_short', 'return_medium', 'return_long'] %}<span class="fx-me-note">{{ me_t('Positive = appreciation versus USD; negative = depreciation.', '正值表示相对美元升值；负值表示贬值。') }}</span>{% endif %}
+          {% if key in ['velocity_z', 'acceleration_z'] %}
+          <span class="fx-me-note">{{ me_t('Value is relative to its prior baseline, not price direction. A positive reading can coexist with a falling currency.', '数值是相对自身历史基准的偏离，不表示价格方向。读数为正时，货币仍可能在下跌。') }}</span>
+          {% if metric.get('display_clip_abs') %}<span class="fx-me-note">{{ me_t('Standardized, bounded at ±' ~ metric.display_clip_abs ~ ' z · not a probability.', '标准化数值，限制为 ±' ~ metric.display_clip_abs ~ ' z；非概率。') }}</span>{% endif %}
+          {% endif %}
+          {% if key == 'volatility_percentile' %}<span class="fx-me-note">{{ me_t('Percentile rank, not a probability. Not a price-direction signal.', '分位排名，非概率，也不是价格方向信号。') }}</span>{% endif %}
+          {% if key == 'residual_return' %}<span class="fx-me-note">{{ me_t('Index direction depends on the method evidence below, not a separate currency-price signal.', '指数方向需结合下方方法证据解读，并非独立的货币价格信号。') }}</span>{% endif %}
           {% if key == 'residual_return' and available %}
           <span class="fx-me-note" data-adjustment-status="{{ method }}">
             {% if method == 'adjusted' %}{{ me_t('All 5 return observations used a fitted dollar adjustment. This does not establish causation.', '5 个收益观测均使用拟合的美元调整；这不证明因果关系。') }}
