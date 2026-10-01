@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.theme_state.v1",
-  "as_of": "2026-09-30",
-  "generated_at": "2026-09-30T12:41:34Z",
+  "as_of": "2026-10-01",
+  "generated_at": "2026-10-01T05:17:19Z",
   "authority": {
     "is_context_only": true,
     "may_rank": false,
@@ -51,7 +51,7 @@
           "basket_id": "ai_infra",
           "name_en": "AI Infrastructure",
           "name_zh": "AI 基础设施",
-          "score": 64,
+          "score": 65,
           "label": "dominant",
           "label_en": "DOMINANT",
           "label_zh": "主导",
@@ -199,10 +199,10 @@
       },
       "divergence_board": {
         "quadrant": "hidden-opportunity",
-        "divergence": -0.2059,
-        "narrative_pct": 0.4412,
-        "money_pct": 0.6471,
-        "asof": "2026-09-24",
+        "divergence": -0.5,
+        "narrative_pct": 0.5,
+        "money_pct": 1.0,
+        "asof": "2026-10-01",
         "source": "data/foresight/divergence_log.jsonl"
       },
       "basket_ids": [
@@ -229,7 +229,7 @@
           "basket_id": "semicap_equipment",
           "name_en": "Semiconductor Equipment (WFE)",
           "name_zh": "半导体设备（晶圆厂设备）",
-          "score": 59,
+          "score": 62,
           "label": "emerging",
           "label_en": "EMERGING",
           "label_zh": "新兴",
@@ -310,7 +310,7 @@
           "basket_id": "data_center_power",
           "name_en": "Data-Center Power & Cooling",
           "name_zh": "数据中心电力与散热",
-          "score": 47,
+          "score": 46,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -424,7 +424,7 @@
           "basket_id": "uranium_miners",
           "name_en": "Uranium & Nuclear Fuel",
           "name_zh": "铀矿与核燃料",
-          "score": 26,
+          "score": 28,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -709,7 +709,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 45.0,
+        "score": 39.4,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -893,7 +893,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 35.6,
+        "score": 45.0,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1259,7 +1259,7 @@
       "foresight": {
         "stage": "PRECIPICE (fingerprint)",
         "tier": "P",
-        "score": 59.9,
+        "score": 49.5,
         "entry_ready": false,
         "bottleneck_band": "TIGHTENING (fingerprint)",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1269,7 +1269,7 @@
           "basket_id": "managed_care",
           "name_en": "Managed Care & Insurers",
           "name_zh": "管理式医疗与保险",
-          "score": 40,
+          "score": 39,
           "label": "deteriorating",
           "label_en": "DETERIORATING",
           "label_zh": "走弱",
@@ -1325,7 +1325,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 36.2,
+        "score": 45.0,
         "entry_ready": false,
         "bottleneck_band": "NEUTRAL",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1374,7 +1374,7 @@
       "foresight": {
         "stage": "WATCH",
         "tier": "P",
-        "score": 34.1,
+        "score": 35.3,
         "entry_ready": false,
         "bottleneck_band": "LOOSE",
         "source": "site/basketdata/foresight_cascade.json"
@@ -1418,10 +1418,12 @@
     "divergence_log[cybersecurity]: stale (as_of=2026-08-27)",
     "divergence_log[robotics_automation]: stale (as_of=2026-09-25)",
     "divergence_log[ai_semiconductors]: stale (as_of=2026-09-22)",
+    "divergence_log[glp1_obesity]: stale (as_of=2026-09-26)",
+    "divergence_log[semicap_equipment]: stale (as_of=2026-09-26)",
     "divergence_log[fintech_payments]: stale (as_of=2026-08-28)",
-    "divergence_log[memory_storage]: stale (as_of=2026-09-24)",
     "divergence_log[diagnostics_lifesci]: stale (as_of=2026-09-25)",
-    "divergence_log[space_satellite]: stale (as_of=2026-08-08)"
+    "divergence_log[space_satellite]: stale (as_of=2026-08-08)",
+    "divergence_log[data_center_power]: stale (as_of=2026-09-26)"
   ],
   "sources": {
     "theme_crosswalk": "config/theme_crosswalk.yml",
@@ -1435,7 +1437,7 @@
   },
   "schema_version": 1,
   "produced_by": "scripts/build_thematic_state.py",
-  "produced_at": "2026-09-30T12:41:34Z",
-  "inputs_hash": "sha256:730c3d915c8ef5c5d7e0fc0bf76c45bc6545a2320dcf4658f9a357d2a981924f",
+  "produced_at": "2026-10-01T05:17:19Z",
+  "inputs_hash": "sha256:93f722a073c4bab8f1c84990726d3763259ec743b73a86fc71ca6090bf19adb8",
   "tier": "display"
 }
