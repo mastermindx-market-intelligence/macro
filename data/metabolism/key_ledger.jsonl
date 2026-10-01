@@ -2540,3 +2540,4 @@
 {"schema":"metabolism.key_ledger.v1","ts":"2026-09-30T12:14:43+00:00","key_id":"codex_account","cycle_id":"","stage":"master_brain","est_tokens":18607,"outcome":"ok"}
 {"schema":"metabolism.key_ledger.v1","ts":"2026-09-30T12:14:48+00:00","key_id":"codex_account","cycle_id":"","stage":"master_brain","est_tokens":18748,"outcome":"ok"}
 {"schema":"metabolism.key_ledger.v1","ts":"2026-09-30T12:15:23+00:00","key_id":"codex_account","cycle_id":"","stage":"master_brain","est_tokens":21312,"outcome":"ok"}
+{"schema":"metabolism.key_ledger.v1","ts":"2026-10-01T03:32:21+00:00","key_id":"codex_account","cycle_id":"","stage":"altdata_brain","est_tokens":16398,"outcome":"ok"}

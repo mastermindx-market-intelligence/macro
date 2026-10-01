@@ -4584,3 +4584,5 @@
 {"date":"2026-09-30","ticker":"GOOG","departed":true,"left_desk":"2026-09-30","last_rank":null,"last_score":20}
 {"date":"2026-09-30","ticker":"HIMS","departed":true,"left_desk":"2026-09-30","last_rank":null,"last_score":3}
 {"date":"2026-09-30","ticker":"HPE","departed":true,"left_desk":"2026-09-30","last_rank":29,"last_score":30}
+{"date":"2026-09-30","ticker":"WDAY","rank":18,"score":37,"lean":1,"broken":false}
+{"date":"2026-09-30","ticker":"BAC","rank":null,"score":27,"lean":1,"broken":true}

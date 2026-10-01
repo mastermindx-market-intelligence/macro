@@ -1,1 +1,1 @@
-{"status":"ok","violations":[],"collector_checked":"2026-09-27","latest_filing_date":"2026-08-17","expected_period":"2026-06-30","canonical_period":"2026-06-30","filed_count":49,"active_count":50,"receipt_count":3384,"generated_at":"2026-09-30T23:49:39.142421+00:00"}
+{"status":"warning","violations":["collector heartbeat is 4d old"],"collector_checked":"2026-09-27","latest_filing_date":"2026-08-17","expected_period":"2026-06-30","canonical_period":"2026-06-30","filed_count":49,"active_count":50,"receipt_count":3384,"generated_at":"2026-10-01T03:37:12.522223+00:00"}
