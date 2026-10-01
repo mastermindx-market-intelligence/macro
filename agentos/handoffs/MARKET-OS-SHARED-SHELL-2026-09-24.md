@@ -7,105 +7,102 @@ mission: >
   Deliver instantly understandable shared navigation with advanced depth and long-page
   reading. All tools is mega-menu first; full directory browsing remains available.
 state_before: >
-  R33 had exact-tree local Chrome proof, but exact-head CI run 36687772518 on
-  5b5cfbb6dbffcf2fb201c89b5f38b84ffced1367 failed in two branch-owned jobs:
-  the validated-claims source guard mistook an internal helper name for user-facing copy,
-  and site/ontology.html had drifted from the current shared-navigation template render.
+  R34 repaired the first exact-head blockers, but hosted CI still exposed branch-owned
+  default-off template loading, design-token, receipt-closure, test-registration and
+  late-session assertion failures. The R33 browser proof was no longer bound to the
+  changed CSS payload.
 changed:
-  - path: "templates/nav_market.js + site/nav_market.js"
+  - path: "implementation commit 02793e6d59df0d377a15366b0d92370789f1e3a4"
     what: >
-      Renamed the internal helper validateDestinations to reconcileDestinations without
-      changing behavior. The paired source/emitted assets remain byte-identical.
-  - path: "templates/theme.js + site/theme.js + templates/account.js + site/account.js"
+      Closed the remaining known exact-head source/test gates on the same PR branch:
+      strict default-off shared-nav loading, incumbent radius-token use, current CSS
+      cache stamp, current-main credit fixture join, honest sign-out event assertion,
+      existing CI-owner registration, P0B receipt remint and refreshed browser evidence.
+  - path: "templates/_site_nav.html.j2 + tests/test_macro_command_shell.py"
     what: >
-      Moved the immutable dynamic asset chain to release key
-      20260930-all-tools-reconcile so returning visitors cannot retain the prior cached
-      nav payload. The paired account/nav assets remain byte-identical.
-  - path: "tests/test_nav_hover_bridge.py + tests/test_account_actions.py"
+      The All tools helper is loaded only for the exact boolean opt-in. The false path
+      preserves the historical rendered newline exactly. The Macro Command G7 guard
+      permits only that one reviewed additive host and still requires every other shared
+      chrome byte to match current origin/main.
+  - path: "templates/site navigation-refresh.css + three pilot pages"
     what: >
-      Updated the release-key assertions and payload digest to 9dd8d493, after the
-      release-contract test correctly failed red against the changed nav payload.
-  - path: "site/ontology.html"
+      Replaced eleven literal All tools corner decisions with existing r-btn, r-card and
+      r-ctl tokens. Template/site CSS remain byte-identical at cache digest cdac6d7c;
+      exactly macro, Sector Central and Reports carry that digest in preload and stylesheet.
+  - path: "mockups/evidence/prophet-p0b-zero-fouc"
     what: >
-      Synchronized only the two missing shared-nav boundary newlines required by the
-      ontology render-drift guard. Existing render-public cache stamps, preload hints and
-      defer attributes were preserved.
-  - path: "implementation commit 4347f6f4d9eb86820dbbb5c8cff5d5f0e9e84185"
+      Re-rendered the exact HK/Canada fixtures and reminted both seven-state browser
+      receipts against the changed shared chrome. The closure gate now passes.
+  - path: "research/market_os/all_tools_adoption/evidence/r35-browser"
     what: >
-      Published the bounded nine-file exact-head CI repair locally on the same branch;
-      no route catalogue, preference store, account semantics, lifecycle plane or pilot
-      scope changed.
+      Added a new exact-tree six-screenshot browser evidence epoch instead of rewriting
+      historical R33 evidence. The accompanying receipt binds implementation, environment,
+      source checks, hashes and explicit non-production limits.
+  - path: ".github/ci/legacy-jobs.yml"
+    what: >
+      Registered tests/test_all_tools_menu.py under the incumbent unrun-nav-chrome owner;
+      no new workflow, job, catalogue, router or navigation owner was created.
 verified:
-  - claim: Both exact hosted failures reproduced before repair and clear after repair.
+  - claim: The final changed-source contracts are green.
     command: >
-      python3 scripts/check_validated_claims.py --scope source; python3 -m pytest
-      tests/test_ontology_explorer_identity.py tests/test_ontology_explorer_transport.py
-      tests/test_ontology_explorer_shell.py -q
+      diff check; validated-claims source; design-system enforce-added; template/site sync;
+      P0B closure; changed-contract pytest; production-controller Node suite; mutation suite.
     result: >
-      Red first: four false-positive validated-claim hits and one stale ontology render.
-      Green after repair: source guard PASS; ontology suite 66 passed.
-  - claim: The changed immutable asset chain and account/navigation contracts are coherent.
+      All commands passed. Controller 97/97; mutations 12/12; template/site 105 pairs;
+      HK and Canada P0B receipts report pass=true; changed-contract tests pass.
+  - claim: Current CI registration introduces no differential control-plane defect.
     command: >
-      python3 -m pytest tests/test_nav_hover_bridge.py tests/test_account_actions.py -q;
-      compare template/site account and nav payloads.
-    result: "130 passed; account and nav source/emitted pairs match."
-  - claim: The All tools component retains its complete source-driven behavior.
-    command: >
-      python3 -m pytest tests/test_all_tools_menu.py -q; node --test
-      research/market_os/all_tools_adoption/tests/*.test.cjs
-    result: "10 Python integration tests passed; 97 Node controller tests passed."
-  - claim: Template/static synchronization and source hygiene remain intact.
-    command: "python3 scripts/check_template_site_sync.py; git diff --check"
-    result: "105 pairs checked / PASS; diff check PASS."
-  - claim: The admitted pilots still work in a real browser with the new release key.
-    command: >
-      Serve the exact committed site tree on 127.0.0.1:8877 and run
-      research/market_os/all_tools_adoption/browser/run.sh in Chrome/Playwright.
+      scripts/run_ci_pack.py --validate-only; scripts/check_contract_delta.py --base origin/main.
     result: >
-      8 passed, 0 failed. HTTP reads confirmed account.js and nav_market.js at
-      20260930-all-tools-reconcile. The first harness invocation without its required
-      local server failed connection-only; the corrected preconditioned rerun passed.
-  - claim: Current protected-base movement was reconciled without ancestry-only churn.
+      Manifest validated 166 jobs. Contract delta against base 3c3f31909661 reported
+      0 introduced / 0 inherited; all three packing probes remained at their ceilings or below.
+  - claim: The admitted pilots remain usable after the token/cache repair.
     command: >
-      Fetch origin/main; compare merge-base candidate/main path sets; inspect overlapping
-      diffs; run git merge-tree.
+      Serve the exact local site tree and run the bounded Chrome 154 / Playwright 1.62 matrix.
     result: >
-      origin/main 6e7ef32c1ee53f1f559035cbdd35bcdab1364d81; only site/macro.html,
-      site/sector_central.html and templates/dashboard.html.j2 intersect the historical
-      candidate path set, with no merge-tree conflict. The R34 repair paths are disjoint.
+      8 passed / 0 failed across desktop dark EN and mobile light ZH on all three pilots,
+      plus modal-stacking refusal and live source-withdrawal fail-closed behavior. Six new
+      R35 screenshots were visually reviewed.
+  - claim: Macro Command compatibility is closed without hiding sparse evidence requirements.
+    command: >
+      Materialize only macro-command-p3/p4/p5 evidence; run the full owning group, then
+      the exact remaining copy-law module after its allowlist became available.
+    result: >
+      Full group reached 514 passed / 1 evidence-path failure / 39 skipped; the owning
+      copy-law module then passed 108 / skipped 34 after the existing P5 allowlist was
+      materialized. A duplicate full-group rerun was platform-blocked before dispatch,
+      so no fabricated one-shot 515-pass claim is made.
 unverified:
-  - claim: Hosted exact-head CI and independent review on the final pushed PR head.
+  - claim: Hosted exact-head merge-ref CI and independent review for the final pushed head.
     what_would_verify: >
-      Push the same branch after expected-head reread, verify remote identity, consume the
-      new CI/fences runs and an independent reviewer verdict for that exact head.
+      Verify remote identity, consume the new fences/CI runs and an independent reviewer
+      verdict. Repair only branch-owned failures while preserving Draft/HOLD.
   - claim: Deployment, CDN immutable-cache, physical-device and assistive-technology acceptance.
     what_would_verify: >
-      Only after exact-head CI/review and release authorization, merge through the normal
-      owner and verify the served release identity plus any owed browser/device/AT paths.
+      Only after source admission and release authorization, verify served asset identities
+      plus any owed Safari/Firefox, physical-device, screen-reader and 200-percent-text paths.
   - claim: Permanent resolution of the historical Paper capacity warning.
     what_would_verify: >
-      Supported provider/file diagnostics identify the actual saved-state condition and
-      applicable limit; successful later writes alone do not prove permanent resolution.
+      Supported provider/file diagnostics establish saved-state health and the applicable
+      limit; later successful writes do not independently root-cause the earlier warning.
 unresolved:
-  - PR7949 remains Draft/HOLD. Hosted exact-head CI, independent review and deployed-edge acceptance are owed.
-  - The earlier R33 full product-chrome sweep had one then-current-main-identical baseline assertion red. If it reappears, re-prove current-main identity before classifying it; do not absorb build_vector.py into this repair by default.
-  - Three historical candidate paths overlap current-main render/source movement. Local merge-tree is conflict-free, but the latest hosted merge-ref/integration receipt is still required before release.
+  - PR7949 remains Draft/HOLD; exact final-head hosted CI, review and deployed-edge proof are owed.
+  - Current main c62a4e08128c07b29c2dc4a12aa9f79cc23ebd4b intersects five historical candidate paths. Merge-tree is conflict-free; the test fixture is byte-identical to main, while generated pages and manifest movement still require hosted merge-ref proof.
+  - The full Macro Command group was not rerun a fourth time after the sole evidence-path failure cleared because an equivalent command was explicitly blocked before dispatch. Module and changed-path evidence are green.
   - R18/R19 and PR7129 persistence-before-rebind obligations remain separate.
 next_actions:
-  - Re-read the remote branch head, push the two same-carrier commits without force and verify exact remote identity.
-  - Update PR7949 with the repair and current-base evidence, then consume exact-head CI/fences and independent review while preserving Draft/HOLD.
-  - Repair only branch-owned failures. Do not merge, deploy or widen pilots until every release gate passes under current authority.
+  - Verify the final remote branch identity and consume exact-head CI/fences plus independent review.
+  - Repair only final-head branch-owned failures; keep PR7949 Draft/HOLD and do not merge or deploy.
+  - If source admission passes, proceed through the normal deployment/edge owner and then close any owed cross-browser, physical-device, accessibility and authenticated-path proof.
 do_not_redo:
   - Keep PR7949, branch sol/market-os-shared-shell-design-20260924 and the existing source workspace.
-  - Preserve the incumbent navigation catalogue, common header, route owners and default-OFF three-pilot boundary; create no replacement registry/header/assets.
-  - Do not restore validateDestinations, the stale ontology render boundary, release key 20260929-all-tools-menu or payload digest 52711a9a unless the actual payload is deliberately reverted.
-  - Do not merge protected main merely to make behind_by zero, create a replacement PR/branch or force-push over the carrier.
-  - Preserve Paper boards 45–50, the R33 browser harness/evidence, full-directory fallback, stock search, native anchors and exact regional/deep links.
-  - Do not treat the Paper capacity warning as a generic concurrency or machine issue.
+  - Preserve the incumbent catalogue/header/assets, strict default-OFF three-pilot boundary, Paper boards 45–50 and historical R33 evidence.
+  - Do not replace the guarded include with unconditional helper loading, restore literal radii, overwrite historical browser evidence, create a parallel CI job, or replay settled P0B receipts without an input change.
+  - Do not merge protected main merely to reduce ancestry distance, create a replacement PR/branch, force-push, widen pilots or treat local Chrome proof as production acceptance.
 danger_areas:
-  - Local tests and Chrome proof do not substitute for hosted exact-head integration, independent review or a deployed release.
-  - The browser harness requires a local HTTP server; connection-refused output from an absent server is a harness-precondition failure, not product evidence.
-  - Full builders can emit extensive live-data churn. Restore unrelated output and keep this repair bounded if further proof invokes them.
+  - Main moves frequently through generated/data publication. Latest-base integration proof is distinct from semantic source proof.
+  - Sparse evidence paths were deliberately materialized only for tests; sparse configuration is worktree-local and not a product change.
+  - The duplicate full-suite command was refused before dispatch; EFFECT_NONE, not an unknown test/source effect.
 ---
 
 # R27 — source-fed mega menu joined to the shared product header
@@ -345,3 +342,42 @@ Exact next action: re-read the original remote branch head, push the same carrie
 force, verify the exact remote head, update the PR projection,
 and consume exact-head CI/fences plus independent review. Only branch-owned failures may
 reopen implementation. A green phase boundary alone does not authorize merge or release.
+
+# R35 — exact-head gate closure and refreshed browser evidence
+
+FINALIZATION_CLASSIFICATION: CHECKPOINTED_CONTINUATION
+MISSION_COMPLETE: false
+EFFECT_UNKNOWN: none
+ACTIVE_PHASE: Final remote CI/review and release-boundary adjudication.
+
+Protected procedure was pinned to Mastermind
+`ed95002d60d8c0370fae40760a3c21fc8d3fd48f`, INDEX blob
+`94d1af402598894372858793a5b1931019c5fa77`, compatible Skillpack 1.0.1 /
+bootstrap major 1. The current INDEX does not enroll SESSION_RELIABILITY.
+
+Implementation commit `02793e6d59df0d377a15366b0d92370789f1e3a4` closes the remaining
+known failures from CI run 36687772518 without changing the route catalogue, personal state,
+watchlist/Portfolio semantics, pilot ceiling or release authority. The shared host is now truly
+strict default-OFF; All tools presentation uses existing radius tokens; exactly three pilots carry
+CSS digest `cdac6d7c`; the shipped controller remains 97/97 with 12/12 deliberate mutations killed.
+
+The existing P0B closure owner was satisfied by actual HK and Canada remints, not an allowlist edit.
+Both seven-state receipts report pass=true. The bounded Chrome matrix was rerun against the exact
+changed static tree and returned 8/0. New evidence lives at
+`research/market_os/all_tools_adoption/evidence/r35-browser/`; R33 evidence is unchanged.
+
+Local control-plane proof is green: 166-job manifest validation, 0-introduced contract delta,
+validated-source PASS, design ratchet PASS, 105 template/site pairs, P0B closure PASS and all changed
+contract tests PASS. Macro Command reached one sparse evidence-path failure after 514 passes; after
+materializing the existing P5 allowlist, its complete copy-law module passed 108 with 34 intentional
+skips. The equivalent full-group replay was blocked before dispatch and is not mislabeled as green.
+
+Current main was observed at `c62a4e08128c07b29c2dc4a12aa9f79cc23ebd4b`. Candidate/main
+intersection is five paths with no merge-tree conflict. `tests/test_macro_command_p4_copy.py` is
+byte-identical to main; generated/static and CI-manifest movement remains an integration-proof question,
+not permission for an ancestry-only merge.
+
+Capability remains `BUILT_NOT_PROVEN`. PR7949 stays Draft/HOLD. No merge, deployment, automatic merge,
+account/watchlist/Portfolio/alert/order effect, worker or watcher was created. Exact continuation is to
+verify the pushed head, consume hosted merge-ref CI and independent review, repair only branch-owned
+failures, then use the normal release and deployed-edge owners if authorization is present.
