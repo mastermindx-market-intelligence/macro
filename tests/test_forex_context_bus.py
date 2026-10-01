@@ -1918,3 +1918,36 @@ def test_r14_producer_z_bound_endpoints_remain_actual_values(value):
     row = _r12_project(table)['rows'][0]
     assert row['values']['velocity_z'] == row['values']['acceleration_z'] == value
     assert row['availability']['velocity_z'] == row['availability']['acceleration_z'] == 'available'
+
+
+# R15: a data-health owner is not proof these hermetic tests execute on a PR.
+def test_r15_context_bus_has_one_code_gated_run_owner():
+    import shlex
+    import yaml
+    manifest = Path(__file__).resolve().parents[1] / '.github/ci/legacy-jobs.yml'
+    jobs = yaml.safe_load(manifest.read_text())['jobs']
+    suite = 'tests/test_forex_context_bus.py'
+    owners = [(name, job) for name, job in jobs.items()
+              if any(suite in shlex.split(step.get('run', ''))
+                     for step in job.get('steps', []))]
+    assert [(name, job.get('gate', 'code')) for name, job in owners] == [('data-base-shim', 'code')]
+    runs = [step['run'] for step in owners[0][1]['steps'] if suite in step.get('run', '')]
+    assert len(runs) == 1 and '-k' not in shlex.split(runs[0])
+    assert jobs['unrun-macro-panels']['gate'] == 'data'
+    assert any('tests/test_forex.py' in step.get('run', '')
+               for step in jobs['unrun-macro-panels']['steps'])
+
+
+def test_r15_code_owner_declares_fixture_builder_and_inspector_dependencies():
+    import shlex
+    import yaml
+    manifest = Path(__file__).resolve().parents[1] / '.github/ci/legacy-jobs.yml'
+    job = yaml.safe_load(manifest.read_text())['jobs']['data-base-shim']
+    installed = set()
+    for step in job['steps']:
+        run = step.get('run', '')
+        if 'pip install' in run:
+            installed.update(token.split('==', 1)[0] for token in shlex.split(run))
+    assert {'pytest', 'pyyaml', 'jinja2', 'pandas', 'numpy', 'pyarrow', 'plotly',
+            'requests', 'beautifulsoup4', 'openpyxl', 'scikit-learn'} <= installed
+    assert any('tests/test_builder_shim_writes.py' in step.get('run', '') for step in job['steps'])

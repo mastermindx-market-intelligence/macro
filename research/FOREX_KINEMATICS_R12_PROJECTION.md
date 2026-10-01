@@ -220,3 +220,29 @@ If the windows differ, calculation dates differ or are unknown, or a value/ident
 All render examples use bounded synthetic fixtures and temporary output, not a live nightly build. No browser pixel, focus, keyboard, screen-reader, full contrast or production acceptance is inferred. The original cb644 CI36805101838 passed its contract and11packs, but pack7/design-governance failed for the missing owning browser EVIDENCE.yml. Fences36805101494 passed. Those are prior-head results, not proof for the next published head.
 
 Current source remains Draft/HOLD, with both registered source-review requests still awaiting a submitted review. The Paper connector's last exact write-admission mismatch and the historical browser administrator refusal remain unresolved; no alternate browser, host, profile or Paper carrier was used to get around them. Existing accepted designs, source/collector owners, other PRs, trading state and production outputs are untouched.
+
+
+## R15 — source-review correction: the actual pull-request gate must execute the tests
+
+Review comment5926367177 on exact `1a3635f0a2060d38e0b3c7e2ba30e95cb6e864ad` correctly found that the only run owner of `tests/test_forex_context_bus.py` was `unrun-macro-panels`, classified `gate: data`. The PR planner loads `gate: code` and filters that job before selection. The R12–R14 local results remain real, but earlier all-gates ownership/dependency checks did **not** prove these regressions ran on a pull request. This section supersedes that inference, not their source/test results or browser HOLD.
+
+The suite now runs in the **existing `data-base-shim` code-gated job**, next to its real-builder/temporary-root tests. All context-bus cases are synthetic, temporary-output or source-contract checks; no live-data case is being moved to the code plane. The old data job retains its other panel/calibration tests and remains `gate: data`. Exactly two existing job definitions change. There is no new job, planner, authority, skip, waiver or runtime version. The code owner declares the full existing Forex-test dependency set rather than relying on host-installed packages. Scope inference remains with the canonical planner; no broad global path glob or `scope: exclusive` is added.
+
+Two new regressions require exactly one code-gated run owner for the entire context-bus suite, no test-name filter, retention of the existing builder suite, preservation of the data-health job, and declared test dependencies. Initial Studio PID69753:2 expected assertion failures; both pass after the manifest repair.
+
+### Local execution and sparse-input boundary
+
+- Initial combined owner run PID70446:195 passed/2 failed. Both failures were existing free-content builder tests requiring committed `site/` URLs omitted by the sparse checkout, not Forex assertions. The shell's trailing diff check returned0 despite pytest's failures; the pytest result is recorded here as **failed**, not green.
+- First exact-site restoration PID72576 fixed `related.live` paths but exposed a separate omitted `/chat.html` CTA target:195 passed/2 failed. No test/source was weakened to ignore the paths.
+- Final PID74241 rebuilt the missing *frontmatter HTML references*, including CTA targets, from exact reviewed-head Git blobs in a temporary directory and redirected only `build_free_content._LIVE_SITE_DIR` during the test process. No production checkout/site/source data was changed. **276 passed** across the existing builder-shim/context-bus/stance/Forex/B3 suites:267 scoped Forex-related cases (265 prior+2 R15) and9 builder-owner cases. All cases ran; none was deselected. Two inherited NumPy warnings and the unrelated protected pytest-temp cleanup warning remain disclosed.
+- Restored exact HEAD paths: site/chat.html, congress_trades.html, crypto.html, markets.html, options.html, research/index.html, stocks/index.html, us_stocks.html and vector.html. These supply the existing link-existence validator, not browser acceptance or new live market inputs.
+
+### Real planner and contract proof
+
+Studio PID70975 executed the canonical `load_legacy_jobs(gate='code')` → `infer_job_scopes` → `select_jobs` path. **`data-base-shim` is selected** separately for changes to each of7 paths: context-bus tests, kinematics projector, forex_regime producer, forex_signals adjustment owner, build_forex, the movement inspector, and the parent Forex template. No tested path is reported unowned; the data-only macro-panel job is absent from code selection. A test-only change selects2/167 jobs, not a fabricated full-run workaround.
+
+The same process ran the complete `scripts/check_contract_delta.py --base 7502eac2d65e4adc6bbc134de5474d6f56ae117e`: **0 introduced/0 inherited findings**, all existing workload ceilings preserved. The displayed build_free_content and prophet probes retain job/pack counts and each increase the estimate by1second. Process exit0, contract wall202.4seconds. No scope/budget/authority rule changed.
+
+Current-main comparison at `b1a85f89b2f7d2f678f828087adcf59616f836a3` found no change to the relevant source/law/planner/test paths or either owning job since this candidate's base. No ancestry-only merge/rebase was made. Financial source, templates, the source-data contract and the Bonds carrier are unchanged by R15.
+
+**Acceptance still owed:** a new exact pushed head; real hosted planner selection and execution of the moved suite; follow-up review of the bounded CI repair; and the independent existing browser/visual-evidence requirement. The current Paper app still advertises0.5.14 but refuses writes under an expected0.5.12 receipt; source procedure has corrected the version-only rule, but source publication is not this connection's runtime installation. No Paper write, browser-policy retry, screenshot substitution or EVIDENCE waiver occurred.
