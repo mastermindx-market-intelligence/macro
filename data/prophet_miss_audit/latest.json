@@ -283,7 +283,7 @@
   "n_scored": 49,
   "n_misses": 0,
   "n_top_decile": 1,
-  "n_unrepresented": 9,
+  "n_unrepresented": 11,
   "misses": [],
   "baskets": [
    {
@@ -631,8 +631,8 @@
      "WDC"
     ],
     "present_counts": {
-     "buy": 5,
-     "watch": 5,
+     "buy": 6,
+     "watch": 4,
      "leaders": 1,
      "ran": 1
     },
@@ -714,8 +714,8 @@
      "UCTT"
     ],
     "present_counts": {
-     "buy": 3,
-     "watch": 3,
+     "buy": 2,
+     "watch": 4,
      "leaders": 0,
      "ran": 0
     },
@@ -782,12 +782,13 @@
     "n_members": 14,
     "n_members_live": 14,
     "n_members_read": 14,
-    "n_members_on_board": 1,
+    "n_members_on_board": 2,
     "members_on_board": [
-     "PFE"
+     "PFE",
+     "SRRK"
     ],
     "present_counts": {
-     "buy": 1,
+     "buy": 2,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -903,12 +904,10 @@
     "n_members": 11,
     "n_members_live": 11,
     "n_members_read": 11,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "SGML"
-    ],
+    "n_members_on_board": 0,
+    "members_on_board": [],
     "present_counts": {
-     "buy": 1,
+     "buy": 0,
      "watch": 0,
      "leaders": 0,
      "ran": 0
@@ -1026,12 +1025,10 @@
     "n_members": 10,
     "n_members_live": 10,
     "n_members_read": 10,
-    "n_members_on_board": 1,
-    "members_on_board": [
-     "EU"
-    ],
+    "n_members_on_board": 0,
+    "members_on_board": [],
     "present_counts": {
-     "buy": 1,
+     "buy": 0,
      "watch": 0,
      "leaders": 0,
      "ran": 0
