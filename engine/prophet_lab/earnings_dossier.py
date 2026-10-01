@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from engine.prophet_lab.intelligence_vector import validate_intelligence_vector
-from engine.sue import aware_utc, factual_dossier
+from engine.sue import aware_utc, factual_dossier, earnings_evidence_brief
 
 SCHEMA = "prophet.episode_earnings_detail/v1"
 Q06_CONTRACT_PATH = "research/prophet_v4/r6_program/wave3/q06_sec_comparable_revenue_source_contract.v0_2.json"
@@ -176,8 +176,16 @@ def project_earnings_detail(
             reported_changes=changes,
             source_contract_refs=([Q06_CONTRACT_REF] if changes else [vector["projection_id"]]),
         )
+    growth_headline = None
+    if change is not None:
+        pct = change["change_pct"]
+        growth_headline = (
+            f"Revenue grew {pct:.1f}% against the comparable prior-year quarter" if pct > 0 else
+            f"Revenue fell {abs(pct):.1f}% against the comparable prior-year quarter" if pct < 0 else
+            "Revenue was unchanged against the comparable prior-year quarter"
+        )
     headline = (
-        f"Revenue grew {change['change_pct']:.1f}% against the comparable prior-year quarter"
+        growth_headline
         if change is not None else
         "Reported revenue available; comparable growth is not yet verified"
         if revenue is not None else "Earnings evidence is unavailable for this decision"
@@ -196,6 +204,7 @@ def project_earnings_detail(
         "comparison_state": comparison_state,
         "current_observations": observations,
         "dossier": dossier,
+        "evidence_brief": earnings_evidence_brief(dossier) if dossier is not None else None,
         "missing": ["QUALIFIED_PRE_RELEASE_EXPECTATION", "MATCHED_FORECAST_REVISIONS",
                     "CURRENT_ENTRY_AND_MARKET_PERMISSION"],
         "authority": dict(AUTHORITY),

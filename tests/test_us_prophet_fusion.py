@@ -1419,3 +1419,366 @@ class TestPreResultGuidanceChange:
         with pytest.raises(sue_engine.EvidenceError,match="publication order"):
             sue_engine.guidance_change(h.updated(),h.guide(),
                 decision_at="2025-08-11T12:02:00Z",source_pair_is_adjacent=True)
+
+
+class TestEarningsEvidenceBrief:
+    """Actual native calculations -> factual dossier -> deterministic explanation."""
+    H = TestEarningsEvidenceEngine
+    cut = "2026-07-30T20:35:00Z"
+
+    def dossier(self, **kwargs):
+        return sue_engine.factual_dossier(
+            event_id=self.H._actual().event_id,
+            issuer_id=self.H._basis().issuer_id,
+            decision_at=self.cut,
+            source_contract_refs=["synthetic-reviewed-input"], **kwargs)
+
+    def change(self, now=120, prior=100):
+        from dataclasses import replace
+        a=self.H._actual(now)
+        old=replace(a,value=prior,basis=self.H._basis(fiscal_period="FY2025 Q3",start="2025-03-30",end="2025-06-28"))
+        return sue_engine.reported_change(a,old,decision_at=self.cut)
+
+    def guidance(self,low,high,day,id):
+        return sue_engine.IssuerGuidance(
+            self.H._basis(),low,high,day,day,id,"fixture:"+id)
+
+    def codes(self,brief,key):
+        return [item["code"] for item in brief[key]]
+
+    def test_growth_is_an_operating_fact_not_a_buy_recommendation(self):
+        dossier=self.dossier(reported_changes=[self.change()])
+        b=sue_engine.earnings_evidence_brief(dossier)
+        assert b["supporting_facts"][0]["text"]=="Revenue rose 20.0% against the comparable period."
+        assert "QUALIFIED_PRE_RELEASE_EXPECTATION" in b["not_established"]
+        assert "CURRENT_MARKET_AND_PORTFOLIO_PERMISSION" in b["not_established"]
+        assert all(v is False for v in b["authority"].values())
+        assert "score" not in b and "probability" not in b
+
+    def test_decline_is_counterevidence_not_negative_growth_headline(self):
+        b=sue_engine.earnings_evidence_brief(self.dossier(reported_changes=[self.change(80)]))
+        assert b["counterevidence"][0]["text"]=="Revenue fell 20.0% against the comparable period."
+        assert b["summary_state"]=="CAUTIONARY_FACTS"
+
+    def test_unchanged_is_not_an_upgrade(self):
+        b=sue_engine.earnings_evidence_brief(self.dossier(reported_changes=[self.change(100)]))
+        assert b["context_facts"][0]["code"]=="REPORTED_UNCHANGED"
+        assert "unchanged" in b["context_facts"][0]["text"]
+
+    def test_empty_dossier_explicitly_remains_incomplete(self):
+        b=sue_engine.earnings_evidence_brief(self.dossier())
+        assert b["summary_state"]=="EVIDENCE_INCOMPLETE"
+        assert b["supporting_facts"]==b["counterevidence"]==[]
+
+    def test_missing_expectation_object_is_not_a_qualified_beat(self):
+        surprise=sue_engine.surprise(self.H._actual(),None,decision_at=self.cut)
+        b=sue_engine.earnings_evidence_brief(self.dossier(surprises=[surprise]))
+        assert "QUALIFIED_PRE_RELEASE_EXPECTATION" in b["not_established"]
+        assert "ABOVE_EXPECTATION" not in self.codes(b,"supporting_facts")
+
+    def test_seasonal_expectation_not_called_consensus(self):
+        x=sue_engine.surprise(self.H._actual(),self.H._expectation(kind="SEASONAL_MODEL"),decision_at=self.cut)
+        b=sue_engine.earnings_evidence_brief(self.dossier(surprises=[x]))
+        assert "seasonal-model" in b["supporting_facts"][0]["text"]
+        assert "analyst expectation" not in b["supporting_facts"][0]["text"]
+
+    def test_eps_beat_does_not_hide_revenue_miss(self):
+        epsb=self.H._basis(metric="EPS",unit="USD_per_share",share_basis="DILUTED")
+        eps=sue_engine.surprise(self.H._actual(2,basis=epsb),self.H._expectation(1.8,basis=epsb),decision_at=self.cut)
+        rev=sue_engine.surprise(self.H._actual(90000),self.H._expectation(100000),decision_at=self.cut)
+        b=sue_engine.earnings_evidence_brief(self.dossier(surprises=[eps,rev]))
+        assert "ABOVE_EXPECTATION" in self.codes(b,"supporting_facts")
+        assert "BELOW_EXPECTATION" in self.codes(b,"counterevidence")
+        assert b["summary_state"]=="MIXED_FACTS"
+
+    def test_matched_roster_change_cannot_create_upgrade(self):
+        f=self.H._forecast
+        revision=sue_engine.matched_revisions([
+            f("A",100,"2026-07-01T00:00:00Z","a"),f("B",100,"2026-07-01T00:00:00Z","b"),
+            f("C",200,"2026-07-15T00:00:00Z","c")],basis=self.H._basis(),
+            before="2026-07-02T00:00:00Z",after="2026-07-16T00:00:00Z")
+        b=sue_engine.earnings_evidence_brief(self.dossier(revisions=[revision]))
+        assert "ROSTER_CHANGE_NOT_UPGRADE" in self.codes(b,"counterevidence")
+        assert "did not change" in b["context_facts"][0]["text"]
+
+    def test_negative_matched_revision_is_counterevidence(self):
+        f=self.H._forecast
+        revision=sue_engine.matched_revisions([f("A",100,"2026-07-01T00:00:00Z","a0"),
+            f("A",80,"2026-07-15T00:00:00Z","a1")],basis=self.H._basis(),
+            before="2026-07-02T00:00:00Z",after="2026-07-16T00:00:00Z")
+        b=sue_engine.earnings_evidence_brief(self.dossier(revisions=[revision]))
+        assert "MATCHED_FORECAST_REVISION" in self.codes(b,"counterevidence")
+
+    def test_pre_result_guidance_upgrade_has_no_actual_input(self):
+        before=self.guidance(90,100,"2026-07-01T00:00:00Z","old")
+        after=self.guidance(110,120,"2026-07-15T00:00:00Z","new")
+        update=sue_engine.guidance_change(before,after,decision_at="2026-07-15T00:01:00Z",source_pair_is_adjacent=True)
+        d=self.dossier(guidance_updates=[update]);b=sue_engine.earnings_evidence_brief(d)
+        assert "ISSUER_RANGE_CHANGE" in self.codes(b,"supporting_facts")
+        assert d["expectation_surprises"]==[]
+        assert update["actual_result_used"] is False
+        assert update["previous_range"]["midpoint"]==95
+        assert update["current_range"]["midpoint"]==115
+
+    def test_higher_midpoint_with_weaker_lower_bound_is_mixed(self):
+        old=self.guidance(90,100,"2026-07-01T00:00:00Z","old")
+        new=self.guidance(80,130,"2026-07-15T00:00:00Z","new")
+        update=sue_engine.guidance_change(old,new,decision_at=self.cut,source_pair_is_adjacent=True)
+        b=sue_engine.earnings_evidence_brief(self.dossier(guidance_updates=[update]))
+        assert update["midpoint_change"]==10
+        assert "ISSUER_RANGE_CHANGE" in self.codes(b,"counterevidence")
+        assert b["supporting_facts"]==[]
+
+    def test_earlier_upgrade_is_not_counted_again_as_new_result(self):
+        first=self.guidance(10400,11000,"2026-06-25T00:00:00Z","initial")
+        updated=self.guidance(11100,11300,"2026-07-20T00:00:00Z","updated")
+        # Deliberately synthetic timeline; only the amounts illustrate the historical decomposition.
+        delivery=sue_engine.guidance_delivery(self.H._actual(11315),[first,updated],
+            decision_at=self.cut,source_history_complete=True)
+        b=sue_engine.earnings_evidence_brief(self.dossier(guidance_results=[delivery]))
+        assert "EARLIER_GUIDANCE_ALREADY_KNOWN" in self.codes(b,"counterevidence")
+        counter=next(x for x in b["counterevidence"] if x["code"]=="EARLIER_GUIDANCE_ALREADY_KNOWN")
+        assert counter["values"]["earlier_midpoint_change"]==500
+        assert counter["values"]["new_result_residual"]==115
+        assert "not analyst consensus" in b["supporting_facts"][0]["text"]
+
+    def test_incomplete_guidance_history_does_not_get_delivery_claim(self):
+        delivery=sue_engine.guidance_delivery(self.H._actual(),[],decision_at=self.cut,source_history_complete=False)
+        b=sue_engine.earnings_evidence_brief(self.dossier(guidance_results=[delivery]))
+        assert "COMPLETE_PRE_RELEASE_ISSUER_GUIDANCE_HISTORY" in b["not_established"]
+        assert not b["supporting_facts"]
+
+    def test_dilution_scenario_is_not_promoted_to_verified_company_fact(self):
+        bridge=sue_engine.per_share_bridge(old_income=100,new_income=120,old_shares=100,new_shares=150)
+        b=sue_engine.earnings_evidence_brief(self.dossier(per_share=bridge))
+        assert "INCOME_GROWTH_NOT_PER_SHARE_GROWTH" in self.codes(b,"counterevidence")
+        assert "supplied per-share scenario" in b["counterevidence"][0]["text"]
+        assert "not a source-qualified company fact" in b["counterevidence"][0]["text"]
+
+    def test_price_ceiling_is_scenario_not_live_buy_permission(self):
+        e=sue_engine.entry_economics(price=108,target=112,stop=96,win_cost=.4,loss_cost=.4,required_reward_risk=2)
+        b=sue_engine.earnings_evidence_brief(self.dossier(entry=e))
+        assert "PRICE_ABOVE_SCENARIO_CEILING" in self.codes(b,"counterevidence")
+        assert "not a live quote" in b["counterevidence"][0]["text"]
+        assert "CURRENT_MARKET_AND_PORTFOLIO_PERMISSION" in b["not_established"]
+
+    def test_no_fact_count_can_change_authority(self):
+        d=self.dossier(reported_changes=[self.change() for _ in range(30)])
+        b=sue_engine.earnings_evidence_brief(d)
+        assert len(b["supporting_facts"])==30
+        assert all(v is False for v in b["authority"].values())
+        assert "conviction" in b["interpretation"]
+
+    def test_output_deepcopy_does_not_mutate_evidence(self):
+        from copy import deepcopy
+        d=self.dossier(reported_changes=[self.change()]);before=deepcopy(d)
+        b=sue_engine.earnings_evidence_brief(d);b["supporting_facts"][0]["values"]["change_pct"]=999
+        assert d==before
+
+    def test_guidance_updates_reject_wrong_issuer(self):
+        from dataclasses import replace
+        x=self.guidance(90,100,"2026-07-01T00:00:00Z","old")
+        y=self.guidance(110,120,"2026-07-15T00:00:00Z","new")
+        update=sue_engine.guidance_change(x,y,decision_at=self.cut,source_pair_is_adjacent=True)
+        update["basis"]["issuer_id"]="cik:other"
+        with pytest.raises(sue_engine.EvidenceError,match="identity"):
+            self.dossier(guidance_updates=[update])
+
+    def test_guidance_update_after_decision_is_refused(self):
+        x=self.guidance(90,100,"2026-07-01T00:00:00Z","old")
+        y=self.guidance(110,120,"2026-07-15T00:00:00Z","new")
+        update=sue_engine.guidance_change(x,y,decision_at="2026-08-01T00:00:00Z",source_pair_is_adjacent=True)
+        with pytest.raises(sue_engine.EvidenceError,match="future"):
+            self.dossier(guidance_updates=[update])
+
+    def test_dossier_cannot_accept_update_that_used_future_actual(self):
+        x=self.guidance(90,100,"2026-07-01T00:00:00Z","old")
+        y=self.guidance(110,120,"2026-07-15T00:00:00Z","new")
+        update=sue_engine.guidance_change(x,y,decision_at=self.cut,source_pair_is_adjacent=True)
+        update["actual_result_used"]=True
+        with pytest.raises(sue_engine.EvidenceError,match="future actual"):
+            self.dossier(guidance_updates=[update])
+
+    @pytest.mark.parametrize("value",[True,1,"false",None])
+    def test_authority_cannot_be_smuggled_as_a_dossier_value(self,value):
+        d=self.dossier();d["authority"]["entry"]=value
+        with pytest.raises(sue_engine.EvidenceError,match="authoritative"):
+            sue_engine.earnings_evidence_brief(d)
+
+    def test_wrong_schema_is_not_an_earnings_case(self):
+        with pytest.raises(sue_engine.EvidenceError,match="dossier required"):
+            sue_engine.earnings_evidence_brief({"schema":"other"})
+
+    def test_corrupted_child_authority_is_not_a_fact(self):
+        d=self.dossier(reported_changes=[self.change()]);d["reported_changes"][0]["rank_authority"]=True
+        with pytest.raises(sue_engine.EvidenceError,match="authoritative child"):
+            sue_engine.earnings_evidence_brief(d)
+
+    def test_corrupted_scenario_does_not_grant_buy_permission(self):
+        d=self.dossier(entry=sue_engine.entry_economics(price=100,target=112,stop=96,win_cost=.4,loss_cost=.4,required_reward_risk=2))
+        d["entry_economics"]["entry_permission"]=True
+        with pytest.raises(sue_engine.EvidenceError,match="grant permission"):
+            sue_engine.earnings_evidence_brief(d)
+
+
+
+    def test_higher_cost_measure_is_not_treated_as_favorable_evidence(self):
+        from dataclasses import replace
+        change=self.change();change["metric"]="operating_expenses"
+        b=sue_engine.earnings_evidence_brief(self.dossier(reported_changes=[change]))
+        assert not b["supporting_facts"] and not b["counterevidence"]
+        assert len(b["context_facts"])==1
+        assert "DIRECTION_FOR_UNSUPPORTED_METRIC" in b["not_established"]
+
+    def test_above_expected_costs_do_not_create_a_bullish_beat(self):
+        basis=self.H._basis(metric="operating_expenses")
+        x=sue_engine.surprise(self.H._actual(120,basis=basis),self.H._expectation(100,basis=basis),decision_at=self.cut)
+        assert x["analyst_consensus_beat"] is None
+        b=sue_engine.earnings_evidence_brief(self.dossier(surprises=[x]))
+        assert not b["supporting_facts"]
+        assert b["context_facts"][0]["code"]=="ABOVE_EXPECTATION"
+        assert "DIRECTION_FOR_UNSUPPORTED_METRIC" in b["not_established"]
+
+
+class TestProfitabilityBridge:
+    H=TestEarningsEvidenceEngine
+    cut="2026-07-30T20:35:00Z"
+
+    def inputs(self,cr=1200,pr=1000,cp=108,pp=100,metric="operating_income"):
+        from dataclasses import replace
+        now=self.H._actual(cr)
+        prior_basis=self.H._basis(fiscal_period="FY2025 Q3",start="2025-03-30",end="2025-06-28")
+        prior=replace(now,value=pr,basis=prior_basis)
+        now_profit=replace(now,value=cp,basis=replace(now.basis,metric=metric))
+        prior_profit=replace(prior,value=pp,basis=replace(prior.basis,metric=metric))
+        return [now,prior,now_profit,prior_profit]
+
+    def compute(self,items=None):
+        return sue_engine.profitability_bridge(*(items or self.inputs()),decision_at=self.cut)
+
+    def test_profit_growth_can_hide_margin_compression(self):
+        b=self.compute()
+        assert b["revenue_change_fraction"]==pytest.approx(.2)
+        assert b["profit_change"]==8
+        assert b["margin_change_bps"]==pytest.approx(-100)
+        assert b["revenue_component"]==pytest.approx(19)
+        assert b["margin_component"]==pytest.approx(-11)
+        assert b["revenue_component"]+b["margin_component"]==pytest.approx(8)
+        assert "NOT_CAUSAL" in b["decomposition"]
+
+    def test_constant_margin_has_only_revenue_component(self):
+        b=self.compute(self.inputs(cp=120))
+        assert b["margin_component"]==0
+        assert b["revenue_component"]==20
+
+    def test_flat_revenue_has_only_margin_component(self):
+        b=self.compute(self.inputs(cr=1000,cp=120))
+        assert b["revenue_component"]==0
+        assert b["margin_component"]==pytest.approx(20)
+
+    def test_loss_narrowing_does_not_require_positive_profit(self):
+        b=self.compute(self.inputs(cp=-50,pp=-100))
+        assert b["profit_change"]==50
+        assert b["margin_change_bps"]>0
+        assert b["current_profit"]<0
+        assert "profit_growth_pct" not in b
+
+    def test_crossing_break_even_is_preserved(self):
+        b=self.compute(self.inputs(cp=50,pp=-100))
+        assert b["profit_change"]==150
+        assert b["current_margin"]>0 and b["prior_margin"]<0
+
+    @pytest.mark.parametrize("metric",["gross_profit","operating_income","net_income"])
+    def test_named_profit_measures_remain_separate(self,metric):
+        b=self.compute(self.inputs(metric=metric));assert b["profit_metric"]==metric
+
+    @pytest.mark.parametrize("field,value",[("unit","USD"),("currency","EUR"),
+        ("accounting_basis","ADJUSTED"),("fiscal_period","FY2026 9M"),
+        ("issuer_id","cik:other"),("share_basis","DILUTED")])
+    def test_within_period_basis_mismatch_refused(self,field,value):
+        from dataclasses import replace
+        items=self.inputs();items[2]=replace(items[2],basis=replace(items[2].basis,**{field:value}))
+        with pytest.raises(sue_engine.EvidenceError,match="basis mismatch"):
+            self.compute(items)
+
+    def test_different_source_event_refused(self):
+        from dataclasses import replace
+        items=self.inputs();items[2]=replace(items[2],event_id="other-event")
+        with pytest.raises(sue_engine.EvidenceError,match="event mismatch"):
+            self.compute(items)
+
+    def test_same_period_reused_as_prior_is_not_a_comparison(self):
+        from dataclasses import replace
+        items=self.inputs();items[1]=replace(items[1],basis=items[0].basis)
+        items[3]=replace(items[3],basis=items[2].basis)
+        with pytest.raises(sue_engine.EvidenceError,match="overlap"):
+            self.compute(items)
+
+    def test_ytd_profit_cannot_be_divided_by_quarter_revenue(self):
+        from dataclasses import replace
+        items=self.inputs();items[2]=replace(items[2],basis=replace(items[2].basis,
+            period_role="NINE_MONTHS",period_start="2025-09-28"))
+        with pytest.raises(sue_engine.EvidenceError,match="basis mismatch"):
+            self.compute(items)
+
+    def test_future_available_comparator_is_not_usable(self):
+        from dataclasses import replace
+        items=self.inputs();items[3]=replace(items[3],available_at="2026-07-31T00:00:00Z")
+        with pytest.raises(sue_engine.EvidenceError,match="unavailable"):
+            self.compute(items)
+
+    @pytest.mark.parametrize("value",[0,-1])
+    def test_nonpositive_revenue_is_not_a_valid_margin_base(self,value):
+        with pytest.raises(sue_engine.EvidenceError,match="denominators"):
+            self.compute(self.inputs(pr=value))
+
+    def test_income_and_revenue_scales_cannot_silently_mix(self):
+        from dataclasses import replace
+        items=self.inputs();items[2]=replace(items[2],basis=replace(items[2].basis,unit="USD_thousands"))
+        with pytest.raises(sue_engine.EvidenceError,match="basis mismatch"):
+            self.compute(items)
+
+    def test_symmetric_identity_and_scale_invariance(self):
+        from dataclasses import replace
+        import random
+        rng=random.Random(20261001)
+        for _ in range(120):
+            items=self.inputs(cr=rng.uniform(10,10000),pr=rng.uniform(10,10000),
+                cp=rng.uniform(-500,3000),pp=rng.uniform(-500,3000))
+            b=self.compute(items)
+            assert b["revenue_component"]+b["margin_component"]==pytest.approx(b["profit_change"])
+            scaled=self.compute([replace(x,value=float(x.value)*1000) for x in items])
+            assert scaled["current_margin"]==pytest.approx(b["current_margin"])
+            assert scaled["margin_change_bps"]==pytest.approx(b["margin_change_bps"])
+            assert scaled["revenue_component"]==pytest.approx(b["revenue_component"]*1000)
+            assert scaled["margin_component"]==pytest.approx(b["margin_component"]*1000)
+
+    def test_comparable_same_release_prior_clock_is_not_fabricated(self):
+        b=self.compute()
+        assert b["current_event_id"]==b["prior_event_id"]
+        assert len(set(b["source_available_at"]))==1
+
+    def test_bridge_reaches_dossier_and_user_explanation(self):
+        b=self.compute()
+        d=sue_engine.factual_dossier(event_id=b["current_event_id"],issuer_id=b["issuer_id"],
+            decision_at=self.cut,profit_bridges=[b],source_contract_refs=["fixture-qualified"])
+        out=sue_engine.earnings_evidence_brief(d)
+        c=next(x for x in out["counterevidence"] if x["code"]=="MARGIN_COMPRESSION")
+        assert c["values"]["margin_change_bps"]==pytest.approx(-100)
+        assert c["values"]["profit_change"]==8
+        assert "Operating margin" in c["text"]
+        assert all(v is False for v in out["authority"].values())
+
+    def test_foreign_bridge_cannot_be_put_in_another_dossier(self):
+        b=self.compute()
+        with pytest.raises(sue_engine.EvidenceError,match="identity mismatch"):
+            sue_engine.factual_dossier(event_id="other",issuer_id=b["issuer_id"],
+                decision_at=self.cut,profit_bridges=[b],source_contract_refs=["fixture"])
+
+    def test_three_profit_metrics_are_not_three_independent_confidence_votes(self):
+        bridges=[self.compute(self.inputs(metric=x)) for x in ["gross_profit","operating_income","net_income"]]
+        d=sue_engine.factual_dossier(event_id=bridges[0]["current_event_id"],issuer_id=bridges[0]["issuer_id"],
+            decision_at=self.cut,profit_bridges=bridges,source_contract_refs=["same-financial-statement"])
+        out=sue_engine.earnings_evidence_brief(d)
+        assert len(out["counterevidence"])==3
+        assert "score" not in out and all(v is False for v in out["authority"].values())

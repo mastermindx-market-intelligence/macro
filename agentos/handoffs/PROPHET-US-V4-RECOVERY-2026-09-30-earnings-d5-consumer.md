@@ -5,78 +5,80 @@ model: sol
 ended_because: blocked
 prs:
 - 8189
-mission: Advance Prophet investment quality through connected factual D5 detail and
-  pre-result issuer-guidance revision/delivery algorithms. MISSION_COMPLETE:false.
-state_before: 'The versioned earnings calculations existed on #8189 but the existing
-  episode API did not present their source-qualified comparison.'
+mission: Deliver the connected earnings evidence brief and comparable profitability
+  mechanism; repair exact CI blockers. MISSION_COMPLETE:false; no live rank/policy
+  promotion.
+state_before: The D5/API delivered source-qualified revenue and the earnings engine
+  had guidance math, but no integrated support/counterevidence explanation or comparable
+  profit-margin bridge.
 changed:
-- path: engine/prophet_lab/earnings_dossier.py
-  what: Exact native-vector/Q06-source-bound explanation, no ranking, new store or
-    second reader.
-- path: app/prophet_lab.py
-  what: New authenticated earnings-detail resource reuses one existing B1/D5 read.
-- path: tests/test_intelligence_vector_units.py
-  what: Real-source span replay and selected-vintage comparison tests.
-- path: tests/test_prophet_lab_api.py
-  what: Actual API pipeline/auth/kill/absence and unchanged-native-endpoint proofs.
-- path: tests/fixtures/prophet/q06_source_contract.v0_2.json
-  what: Byte-identical test-only source record; production never loads the test path.
-- path: research/prophet_v4/earnings_semantics_v1/D5_CONSUMER_2026-09-30.md
-  what: Capability, exact proof and held deployment/source/UI gates.
 - path: engine/sue.py
-  what: Source-known issuer-guidance revision and latest-pre-release delivery, separate
-    from consensus; existing dossier integration.
+  what: Source-known guidance updates in existing dossier; deterministic evidence
+    brief; source-qualified symmetric revenue/margin decomposition.
+- path: engine/prophet_lab/earnings_dossier.py
+  what: Existing authenticated detail includes native evidence brief; no second source
+    read.
 - path: tests/test_us_prophet_fusion.py
-  what: 35 additional source-clock, guidance-vintage, range-change and dossier cases.
-- path: research/prophet_v4/earnings_semantics_v1/ISSUER_GUIDANCE_2026-09-30.md
-  what: Primary-source research, actual-vs-updated-guidance decomposition, limits
-    and next experiment.
-- path: research/prophet_v4/earnings_semantics_v1/MICRON_GUIDANCE_VINTAGE_CASE_2026-09-30.json
-  what: Three verified public sources with exact amounts/dates and raw-capture hashes;
-    historical system ingestion remains unknown.
+  what: 55 additional brief and profitability cases, including incompatible bases,
+    retrospective information and future-source refusal.
+- path: tests/test_prophet_lab_api.py
+  what: Existing actual HTTP-chain test now requires the explanation and explicit
+    unestablished permissions.
+- path: .github/ci/legacy-jobs.yml
+  what: Six named existing jobs include the exact rights source; unrelated parsed
+    job values preserved.
+- path: app/deploy/update.sh
+  what: Existing API restart trigger covers newly cached engine/sue.py; no actual
+    deploy or restart.
+- path: research/prophet_v4/earnings_semantics_v1/EVIDENCE_BRIEF_AND_PROFITABILITY_2026-09-30.md
+  what: Investment mechanism, public-source example, tests, specific refusal and remaining
+    outcome/release boundaries.
+- path: research/prophet_v4/earnings_semantics_v1/PROFITABILITY_CASE_2026-09-30.json
+  what: Historical Micron GAAP statement figures and exact rational arithmetic; historical
+    system clocks remain unknown.
 verified:
-- claim: Native earnings and D5/API tests pass with one-reader factual consumption.
+- claim: Actual native earnings/D5/API and entire deploy-update tests pass.
   command: python3.12 -m pytest tests/test_us_prophet_fusion.py tests/test_intelligence_vector_units.py
-    tests/test_prophet_lab_api.py -q
-  result: 231 passed /12 warnings/0 skips; native earnings,D5/API with synthetic chronology
-    and raw SEC/source-contract fixtures; logSHA256 9ee831836454bec19c58d2b2b56a79c30f5a2e530496a5fe7e6cd1d8d1ac43b1.
-- claim: The tests distinguish wrong revision acceptance and a disconnected result
-    path.
-  command: python3 /Volumes/Mastermind/evidence/prophet-earnings-d5-20260930/fault_controls.py
-  result: Two intended assertion failures; original bytes restored.
-- claim: Issuer-guidance tests distinguish obsolete-forecast use and false history
-    completeness.
-  command: python3 /Volumes/Mastermind/evidence/prophet-earnings-d5-20260930/guidance_faults.py
-  result: Two intended assertion failures; original source restored.
+    tests/test_prophet_lab_api.py tests/test_deploy_update_self_heal.py -q
+  result: 536passed/12warnings/0skips:284earnings/D5/API plus252deployment fixtures.
+    LogSHA256 99200a023e695e8d17c4c28f57ea0eb2bacd3814e8728ce07179dbf3f2f43bf1.
+- claim: Native brief is connected and discriminates economic misinterpretation.
+  command: decision-brief-r2/fault_checks.py plus bounded log reconciliation
+  result: Three intended assertion failures; original code restored; prior completed
+    faults not rerun.
+- claim: The public-source profitability example reconciles arithmetically.
+  command: Exact Fraction calculation on declared SEC quarterly GAAP values.
+  result: 2132USDmillion change =925.6901369863 symmetric revenue term +1206.3098630137
+    margin term; not causal attribution or financial performance.
 unverified:
-- claim: Exact new-head CI/current-base release and ordinary served/UI proof.
-  what_would_verify: Required concluded checks, Q06 source release, actual deployment,
-    signed-in UI/read and ordinary refresh.
-- claim: Improved selection/return/risk performance.
-  what_would_verify: Separately accepted source and registered same-population experiment;
-    none opened here.
+- claim: Exact new-head/current-base hosted acceptance and ordinary paid-user UI/read/refresh.
+  what_would_verify: Concluded required checks, native source-release prerequisites
+    and actual served/browser evidence.
+- claim: Improved candidate selection, calibrated conviction or market protection.
+  what_would_verify: Existing source-qualified, registered same-population scientific
+    evaluation; no outcomes accessed in this change.
 unresolved:
-- Q06 source method accepted but its existing CI registration/release remains outstanding.
-- Frontend/CI-owner combined inspection and release-binding source inspection were
-  refused before dispatch; no retry/proxy.
-- 'Native clock/index #7426 and workspace feature #7870 remain incumbent work, untouched.'
-- The new factual reconstruction is not an original as-run recommendation and cannot
-  be backfilled into old grades.
-- Public Micron source dates/amounts are verified; historical system ingestion/market
-  execution and financial predictive value remain unproven.
+- Q06 source CI/release remains with its original carrier; no source custody transfer.
+- Current compound Q06 worktree/process/collision inspection refused before dispatch;
+  not split or retried.
+- Previously refused frontend/general release-binding and fixed-risk-study actions
+  remain held; no proxy.
+- Profitability input coverage is not added to D5 by this arithmetic/brief; unavailable
+  inputs remain explicit.
 next_actions:
-- 'Consume exact-head CI on existing #8189; resolve only actual findings.'
-- 'Close the existing #8069 source-release dependency and permitted ordinary frontend
-  integration; prove paid read and refresh.'
-- Continue earnings/sector/risk scientific units under existing source/outcome owners
-  without new policy/identity/price stores.
-- Qualify issuer-guidance source history and the existing B15 incremental experiment;
-  do not count prior-public upgrades as new earnings surprises.
+- Consume new-head CI and resolve actual remaining source-release failures without
+  new unrelated work.
+- Complete native upstream-source and ordinary earnings UI/paid-browser/refresh proof
+  when the exact held actions can lawfully resume.
+- Qualify profitability/guidance source coverage and its accepted price/sector-controlled
+  selection test; preserve H1/Cycle and prior trial history.
 do_not_redo:
 - 'Do not recreate #8069 source records or #7426 clock/index work.'
 - Do not regrade prior C1/H1/Cycle outcomes or enable a ranking/entry policy.
 - Do not retry the refused frontend/CI inspection or release-binding source read through
   another route.
+- Do not recount old test totals, replay completed fault controls or infer return
+  predictability from margin arithmetic.
 danger_areas:
 - Original source-vintage reconstruction must not be mislabeled an original as-run
   recommendation.
@@ -84,8 +86,11 @@ danger_areas:
   is not yet installed on this base.
 - D5 current-manifest event coverage and existing clock/index production limits are
   inherited, not repaired by this consumer.
+- Scenario per-share/price inputs must not appear as source-qualified company facts
+  or live quotes.
+- Six correlated accounting observations are not six independent confidence votes.
 ---
 
-# Earnings/D5 source checkpoint
+# Connected earnings evidence continuation
 
-MISSION_COMPLETE:false. User-selected Pro; served identity unverified. No new child, automatic wake, source-writer transfer or live financial authority. This checkpoint saves the current unit; it does not complete Prophet.
+MISSION_COMPLETE:false. Primary assignment and original source carrier preserved. No live release, financial authority or background execution is claimed.

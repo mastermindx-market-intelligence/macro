@@ -22,7 +22,7 @@ from __future__ import annotations
 from copy import deepcopy
 from dataclasses import asdict, dataclass
 from datetime import date, datetime, timezone
-from math import isfinite
+from math import isfinite, isclose
 from statistics import mean, median, stdev
 from typing import Any, Iterable, Mapping, Sequence
 
@@ -103,6 +103,8 @@ SUE_COMPAT_VERSION = "numeric-sue-compat-v1.1"
 
 EXPECTATION_KINDS = frozenset({"ANALYST_CONSENSUS", "SEASONAL_MODEL"})
 FORECAST_STATES = frozenset({"ACTIVE", "WITHDRAWN"})
+# A numerical value above expectation is not automatically a favorable earnings result.
+HIGHER_IS_IMPROVEMENT_METRICS = frozenset({"revenue", "total_net_sales", "gross_profit", "operating_income", "net_income", "EPS", "eps_diluted"})
 
 
 class EvidenceError(ValueError):
@@ -482,7 +484,8 @@ def surprise(
         "expectation_available_at": expected.available_at,
         "signed_difference": diff,
         "direction_vs_expectation": direction,
-        "analyst_consensus_beat": diff > 0 if expected.kind == "ANALYST_CONSENSUS" else None,
+        "analyst_consensus_beat": (diff > 0 if expected.kind == "ANALYST_CONSENSUS"
+                                   and actual.basis.metric in HIGHER_IS_IMPROVEMENT_METRICS else None),
         "percent_beat": None,
         "percent_reason": "absolute difference plus past-only error scaling; no unstable denominator",
         "standardized": standardized,
@@ -705,6 +708,8 @@ def factual_dossier(
     entry: Mapping[str, Any] | None = None,
     source_contract_refs: Sequence[str] = (),
     guidance_results: Sequence[Mapping[str, Any]] = (),
+    guidance_updates: Sequence[Mapping[str, Any]] = (),
+    profit_bridges: Sequence[Mapping[str, Any]] = (),
 ) -> dict[str, Any]:
     """Assemble factual evidence while preserving every downstream authority boundary."""
     required_text(event_id, "event_id")
@@ -771,6 +776,30 @@ def factual_dossier(
             raise EvidenceError("guidance evidence is from the future")
         no_child_authority(item)
 
+    for item in guidance_updates:
+        if (not isinstance(item, Mapping) or item.get("schema") != SCHEMA
+                or item.get("kind") != "ISSUER_GUIDANCE_CHANGE"):
+            raise EvidenceError("invalid issuer-guidance update")
+        basis = item.get("basis")
+        if not isinstance(basis, Mapping) or basis.get("issuer_id") != issuer_id:
+            raise EvidenceError("guidance update identity mismatch")
+        if (aware_utc(str(item.get("decision_at"))) > decision
+                or aware_utc(str(item.get("current_available_at"))) > decision):
+            raise EvidenceError("guidance update is from the future")
+        if item.get("actual_result_used") is not False:
+            raise EvidenceError("guidance update cannot use future actual result")
+        no_child_authority(item)
+
+    for item in profit_bridges:
+        if (not isinstance(item, Mapping) or item.get("schema") != SCHEMA
+                or item.get("kind") != "COMPARABLE_PROFITABILITY_BRIDGE"):
+            raise EvidenceError("invalid profitability bridge")
+        if item.get("issuer_id") != issuer_id or item.get("current_event_id") != event_id:
+            raise EvidenceError("profitability bridge identity mismatch")
+        if aware_utc(str(item.get("decision_at"))) > decision:
+            raise EvidenceError("profitability bridge is from the future")
+        no_child_authority(item)
+
     if per_share is not None:
         if not isinstance(per_share, Mapping) or per_share.get("schema") != SCHEMA or per_share.get("kind") != "PER_SHARE_BRIDGE":
             raise EvidenceError("invalid per-share evidence")
@@ -800,6 +829,10 @@ def factual_dossier(
         "source_contract_refs": refs,
         **({"issuer_guidance_delivery": [deepcopy(dict(item)) for item in guidance_results]}
            if guidance_results else {}),
+        **({"issuer_guidance_updates": [deepcopy(dict(item)) for item in guidance_updates]}
+           if guidance_updates else {}),
+        **({"profitability_bridges": [deepcopy(dict(item)) for item in profit_bridges]}
+           if profit_bridges else {}),
         "limitations": limitations,
         "authority": {
             "rank": False,
@@ -1010,6 +1043,324 @@ def guidance_change(
         "OVERLAPPING_MIXED_BOUND_CHANGE"
     )
     return {**result, "status": "COMPARABLE_ISSUER_OUTLOOK_CHANGE",
+            "previous_range": {"low": pl, "midpoint": pl / 2 + ph / 2, "high": ph},
+            "current_range": {"low": cl, "midpoint": cl / 2 + ch / 2, "high": ch},
             "midpoint_change": midpoint, "lower_bound_change": lower,
             "upper_bound_change": upper, "width_change": width,
             "interval_relationship": relationship}
+
+
+
+def earnings_evidence_brief(dossier: Mapping[str, Any]) -> dict[str, Any]:
+    """Bounded, deterministic explanation of the existing factual dossier.
+
+    No weights, votes, confidence probability or buy permission are inferred.
+    The same evidence can support an operating improvement while contradicting
+    per-share improvement or an attractive entry at the supplied scenario price.
+    References address the input dossier; this neither fetches nor authenticates
+    documents and creates no second source or signal owner.
+    """
+    if (not isinstance(dossier, Mapping)
+            or dossier.get("schema") != "prophet.earnings_dossier/v1"):
+        raise EvidenceError("earnings dossier required")
+    authority = dossier.get("authority")
+    if (not isinstance(authority, Mapping) or not authority
+            or any(value is not False for value in authority.values())):
+        raise EvidenceError("brief cannot promote authoritative dossier")
+    decision = aware_utc(dossier.get("decision_at"), "dossier decision_at")
+    issuer = required_text(dossier.get("issuer_id"), "dossier issuer_id")
+    event = required_text(dossier.get("event_id"), "dossier event_id")
+    facts: list[dict[str, Any]] = []
+    counters: list[dict[str, Any]] = []
+    context: list[dict[str, Any]] = []
+    higher_is_improvement = HIGHER_IS_IMPROVEMENT_METRICS
+
+    def direction_bucket(metric: str, direction: float):
+        if metric not in higher_is_improvement:
+            missing.append("DIRECTION_FOR_UNSUPPORTED_METRIC")
+            return context
+        return counters if direction < 0 else facts if direction > 0 else context
+    missing: list[str] = []
+
+    def item(code: str, text: str, ref: str, values: Mapping[str, Any] | None = None):
+        return {"code": code, "text": text, "evidence_ref": ref,
+                "values": deepcopy(dict(values or {}))}
+
+    def number(value: Any, label: str) -> float:
+        out = finite(value)
+        if out is None:
+            raise EvidenceError("brief has invalid " + label)
+        return out
+
+    def rows(key: str) -> list[Mapping[str, Any]]:
+        value = dossier.get(key, [])
+        if not isinstance(value, (list, tuple)) or len(value) > 128:
+            raise EvidenceError("brief evidence population invalid")
+        if any(not isinstance(row, Mapping) for row in value):
+            raise EvidenceError("brief evidence must be mappings")
+        return list(value)
+
+    for index, change in enumerate(rows("reported_changes")):
+        if (change.get("issuer_id") != issuer or change.get("current_event_id") != event
+                or aware_utc(change.get("decision_at")) > decision):
+            raise EvidenceError("brief reported change identity or clock mismatch")
+        ref = f"reported_changes[{index}]"
+        metric = str(change.get("metric") or "reported measure")
+        diff = number(change.get("signed_difference"), "reported difference")
+        pct = finite(change.get("change_pct"))
+        # A positive comparison is an operating fact, not a positive stock forecast.
+        verb = "rose" if diff > 0 else "fell" if diff < 0 else "was unchanged"
+        label = "Revenue" if metric in {"revenue", "total_net_sales"} else "Reported measure"
+        magnitude = f" {abs(pct):.1f}%" if pct is not None and diff != 0 else ""
+        entry = item("REPORTED_INCREASE" if diff > 0 else "REPORTED_DECREASE" if diff < 0 else "REPORTED_UNCHANGED",
+                     f"{label} {verb}{magnitude} against the comparable period.", ref,
+                     {"metric": metric, "change_pct": pct, "signed_difference": diff})
+        direction_bucket(metric, diff).append(entry)
+    if not rows("reported_changes"):
+        missing.append("COMPARABLE_OPERATING_CHANGE")
+
+    comparable = []
+    for index, surprise_row in enumerate(rows("expectation_surprises")):
+        if surprise_row.get("status") != "COMPARABLE":
+            continue
+        basis = surprise_row.get("basis", {})
+        if (basis.get("issuer_id") != issuer or surprise_row.get("event_id") != event
+                or aware_utc(surprise_row.get("decision_at")) > decision):
+            raise EvidenceError("brief surprise identity or clock mismatch")
+        diff = number(surprise_row.get("signed_difference"), "surprise difference")
+        kind = surprise_row.get("expectation_kind")
+        if kind not in EXPECTATION_KINDS:
+            raise EvidenceError("brief expectation kind invalid")
+        metric = str(basis.get("metric") or "measure")
+        noun = "analyst expectation" if kind == "ANALYST_CONSENSUS" else "seasonal-model expectation"
+        direction = "above" if diff > 0 else "below" if diff < 0 else "in line with"
+        entry = item("ABOVE_EXPECTATION" if diff > 0 else "BELOW_EXPECTATION" if diff < 0 else "IN_LINE_EXPECTATION",
+                     f"{metric} was {direction} the comparable pre-release {noun}.",
+                     f"expectation_surprises[{index}]", {"expectation_kind": kind, "signed_difference": diff})
+        direction_bucket(metric, diff).append(entry)
+        comparable.append(surprise_row)
+    if not comparable:
+        missing.append("QUALIFIED_PRE_RELEASE_EXPECTATION")
+    if not any(row.get("expectation_kind") == "ANALYST_CONSENSUS" for row in comparable):
+        missing.append("ANALYST_CONSENSUS_COMPARISON")
+    if not any(row.get("matched_count", 0) for row in rows("matched_revisions")):
+        missing.append("MATCHED_CONTRIBUTOR_REVISIONS")
+    if not rows("profitability_bridges"):
+        missing.append("COMPARABLE_PROFITABILITY")
+
+    for index, revision in enumerate(rows("matched_revisions")):
+        if revision.get("basis", {}).get("issuer_id") != issuer or aware_utc(revision.get("after")) > decision:
+            raise EvidenceError("brief forecast revision identity or clock mismatch")
+        count = revision.get("matched_count")
+        if not isinstance(count, int) or isinstance(count, bool) or count < 0:
+            raise EvidenceError("brief matched count invalid")
+        if count == 0:
+            missing.append("MATCHED_CONTRIBUTOR_REVISIONS")
+            continue
+        delta = number(revision.get("matched_mean_change"), "matched revision")
+        naive = finite(revision.get("naive_changing_roster_mean_change"))
+        text = f"The same {count} contributors {'raised' if delta > 0 else 'lowered' if delta < 0 else 'did not change'} their mean forecast for the same period."
+        direction_bucket(str(revision.get("basis", {}).get("metric")), delta).append(item("MATCHED_FORECAST_REVISION", text,
+            f"matched_revisions[{index}]", {"matched_count": count, "matched_mean_change": delta}))
+        if delta == 0 and naive is not None and naive != 0:
+            counters.append(item("ROSTER_CHANGE_NOT_UPGRADE",
+                "The aggregate forecast moved, but the matched contributors did not revise; roster change is not an upgrade.",
+                f"matched_revisions[{index}]", {"naive_mean_change": naive}))
+
+    for index, change in enumerate(rows("issuer_guidance_updates")):
+        if (change.get("basis", {}).get("issuer_id") != issuer
+                or aware_utc(change.get("decision_at")) > decision
+                or change.get("actual_result_used") is not False):
+            raise EvidenceError("brief guidance update identity or clock mismatch")
+        ref = f"issuer_guidance_updates[{index}]"
+        status = change.get("status")
+        if status != "COMPARABLE_ISSUER_OUTLOOK_CHANGE":
+            missing.append("CONTINUOUS_COMPARABLE_ISSUER_OUTLOOK")
+            continue
+        relationship = change.get("interval_relationship")
+        labels = {
+            "ENTIRE_RANGE_ABOVE_PREVIOUS": "The new issuer outlook range is entirely above the prior range.",
+            "ENTIRE_RANGE_BELOW_PREVIOUS": "The new issuer outlook range is entirely below the prior range.",
+            "BOTH_BOUNDS_RAISED": "Both bounds of the issuer outlook rose; the ranges still overlap.",
+            "BOTH_BOUNDS_LOWERED": "Both bounds of the issuer outlook fell; the ranges still overlap.",
+            "UNCHANGED_RANGE": "The issuer outlook range is unchanged.",
+            "OVERLAPPING_MIXED_BOUND_CHANGE": "The issuer outlook changed unevenly; a higher midpoint alone does not establish a stronger range.",
+        }
+        if relationship not in labels:
+            raise EvidenceError("brief guidance range relationship invalid")
+        is_counter = relationship in {"ENTIRE_RANGE_BELOW_PREVIOUS", "BOTH_BOUNDS_LOWERED", "OVERLAPPING_MIXED_BOUND_CHANGE"}
+        guidance_metric = str(change.get("basis", {}).get("metric"))
+        target = (counters if is_counter else context if relationship == "UNCHANGED_RANGE" else facts)
+        if guidance_metric not in higher_is_improvement:
+            missing.append("DIRECTION_FOR_UNSUPPORTED_METRIC")
+            target = context
+        target.append(item("ISSUER_RANGE_CHANGE", labels[relationship], ref,
+            {"interval_relationship": relationship, "midpoint_change": change.get("midpoint_change")}))
+
+    for index, delivered in enumerate(rows("issuer_guidance_delivery")):
+        if (delivered.get("basis", {}).get("issuer_id") != issuer or delivered.get("event_id") != event
+                or aware_utc(delivered.get("decision_at")) > decision):
+            raise EvidenceError("brief guidance delivery identity or clock mismatch")
+        if delivered.get("status") != "COMPARABLE_TO_ISSUER_GUIDANCE":
+            missing.append("COMPLETE_PRE_RELEASE_ISSUER_GUIDANCE_HISTORY")
+            continue
+        ref = f"issuer_guidance_delivery[{index}]"
+        position = delivered.get("range_position")
+        residual = number(delivered.get("signed_gap_to_latest_midpoint"), "guidance residual")
+        description = {"ABOVE_RANGE": "above", "WITHIN_RANGE": "within", "BELOW_RANGE": "below"}.get(position)
+        if description is None:
+            raise EvidenceError("brief guidance range position invalid")
+        direction_bucket(str(delivered.get("basis", {}).get("metric")),
+                         -1 if position == "BELOW_RANGE" else 1 if position == "ABOVE_RANGE" else 0).append(item("DELIVERY_VS_LATEST_ISSUER_RANGE",
+            f"The result was {description} the latest qualified issuer range, not analyst consensus.", ref,
+            {"signed_gap_to_latest_midpoint": residual, "range_position": position}))
+        earlier = finite(delivered.get("initial_to_latest_midpoint_change"))
+        if earlier is not None and earlier != 0:
+            counters.append(item("EARLIER_GUIDANCE_ALREADY_KNOWN",
+                "Part of the difference from the initial outlook was disclosed before results; do not count that revision again as new earnings information.",
+                ref, {"earlier_midpoint_change": earlier, "new_result_residual": residual,
+                      "signed_gap_to_initial_midpoint": delivered.get("signed_gap_to_initial_midpoint")}))
+
+    for index, bridge in enumerate(rows("profitability_bridges")):
+        if (bridge.get("issuer_id") != issuer or bridge.get("current_event_id") != event
+                or aware_utc(bridge.get("decision_at")) > decision):
+            raise EvidenceError("brief profitability identity or clock mismatch")
+        delta = number(bridge.get("margin_change_bps"), "margin change")
+        sales = number(bridge.get("revenue_change_fraction"), "sales change")
+        metric = bridge.get("profit_metric")
+        name = {"gross_profit": "Gross margin", "operating_income": "Operating margin", "net_income": "Net margin"}.get(metric)
+        if name is None:
+            raise EvidenceError("brief profit metric invalid")
+        ref = f"profitability_bridges[{index}]"
+        text = f"{name} {'expanded' if delta > 0 else 'compressed' if delta < 0 else 'was unchanged'}"
+        if delta != 0:
+            text += f" by {abs(delta):.1f} basis points"
+        text += ". Revenue growth and margin improvement are separate facts."
+        (counters if delta < 0 else facts).append(item("MARGIN_COMPRESSION" if delta < 0 else "MARGIN_EXPANSION" if delta > 0 else "MARGIN_UNCHANGED",text,ref,
+            {"margin_change_bps": delta, "revenue_change_fraction": sales,
+             "profit_change": bridge.get("profit_change"),
+             "revenue_component": bridge.get("revenue_component"),
+             "margin_component": bridge.get("margin_component")}))
+
+    for scenario_key, expected_kind in (("per_share_bridge", "PER_SHARE_BRIDGE"), ("entry_economics", "ENTRY_ECONOMICS")):
+        scenario_child = dossier.get(scenario_key)
+        if scenario_child is not None:
+            if (not isinstance(scenario_child, Mapping) or scenario_child.get("schema") != SCHEMA
+                    or scenario_child.get("kind") != expected_kind):
+                raise EvidenceError("brief scenario evidence invalid")
+            for flag in ("rank_authority", "entry_authority", "entry_permission", "trade_authority"):
+                if flag in scenario_child and scenario_child[flag] is not False:
+                    raise EvidenceError("brief scenario cannot grant permission")
+    bridge = dossier.get("per_share_bridge")
+    if isinstance(bridge, Mapping) and bridge.get("income_grew") is True and bridge.get("eps_grew") is False:
+        counters.append(item("INCOME_GROWTH_NOT_PER_SHARE_GROWTH",
+            "In the supplied per-share scenario, total profit rose but earnings per diluted share did not; this calculation is not a source-qualified company fact.",
+            "per_share_bridge", {"old_eps": bridge.get("old_eps"), "new_eps": bridge.get("new_eps")}))
+    scenario = dossier.get("entry_economics")
+    if isinstance(scenario, Mapping):
+        if scenario.get("within_scenario_ceiling") is False:
+            counters.append(item("PRICE_ABOVE_SCENARIO_CEILING",
+                "The supplied price exceeds the maximum entry for the stated net reward/risk scenario; this is not a live quote or an entry decision.",
+                "entry_economics", {"price_ceiling": scenario.get("price_ceiling_for_required_reward_risk")}))
+    else:
+        missing.append("PRICE_SENSITIVE_ENTRY_SCENARIO")
+    # This earnings-only function never reads market, portfolio, or B4 permissions.
+    missing.append("CURRENT_MARKET_AND_PORTFOLIO_PERMISSION")
+    for key in ("reported_changes", "expectation_surprises", "matched_revisions", "issuer_guidance_updates", "issuer_guidance_delivery", "profitability_bridges"):
+        for child in rows(key):
+            for flag in ("rank_authority", "entry_authority", "policy_authority", "trade_authority"):
+                if flag in child and child[flag] is not False:
+                    raise EvidenceError("brief contains authoritative child")
+    return {
+        "schema": "prophet.earnings_evidence_brief/v1",
+        "issuer_id": issuer, "event_id": event, "decision_at": dossier["decision_at"],
+        "summary_state": "MIXED_FACTS" if facts and counters else "CAUTIONARY_FACTS" if counters else "FACTS_AVAILABLE" if facts or context else "EVIDENCE_INCOMPLETE",
+        "supporting_facts": facts, "counterevidence": counters, "context_facts": context,
+        "not_established": sorted(set(missing)),
+        "next_step": "Review the unresolved evidence and obtain current entry, market and portfolio permission before treating this research as a trade.",
+        "interpretation": "Evidence explanation only; fact count and agreement are not conviction, expected return or buy permission.",
+        "authority": {"rank": False, "entry": False, "size": False, "execution": False, "trade": False},
+    }
+
+
+
+def profitability_bridge(
+    current_revenue: Actual, prior_revenue: Actual,
+    current_profit: Actual, prior_profit: Actual, *, decision_at: str,
+) -> dict[str, Any]:
+    """Exact revenue/margin arithmetic on comparable, source-qualified actuals.
+
+    P = R*m; the symmetric decomposition is
+    delta_P = delta_R * average(m) + delta_m * average(R).
+    It is a bookkeeping identity, not evidence that pricing, volume, management
+    decisions or any stock-return mechanism caused those components. No quantity,
+    mix, asset denominator, quality premium or price target is inferred.
+    """
+    inputs = (current_revenue, prior_revenue, current_profit, prior_profit)
+    if any(not isinstance(value, Actual) for value in inputs):
+        raise EvidenceError("profitability requires source-qualified actuals")
+    decision = aware_utc(decision_at, "profitability decision_at")
+    if any(aware_utc(value.available_at) > decision for value in inputs):
+        raise EvidenceError("profitability evidence unavailable at decision")
+    if any(date.fromisoformat(value.basis.period_end) > aware_utc(value.public_at).date() for value in inputs):
+        raise EvidenceError("profitability actual precedes completed reporting period")
+    if (current_revenue.basis.metric not in {"revenue", "total_net_sales"}
+            or current_profit.basis.metric not in {"gross_profit", "operating_income", "net_income"}):
+        raise EvidenceError("profitability requires revenue and a declared profit measure")
+    if (current_revenue.basis.metric != prior_revenue.basis.metric
+            or current_profit.basis.metric != prior_profit.basis.metric):
+        raise EvidenceError("profitability current/prior metric mismatch")
+
+    def period_identity(basis: MetricBasis) -> tuple[str, ...]:
+        return (basis.issuer_id,basis.fiscal_period,basis.period_role,basis.period_start,
+                basis.period_end,basis.currency,basis.unit,basis.accounting_basis,basis.share_basis)
+
+    if (period_identity(current_revenue.basis) != period_identity(current_profit.basis)
+            or period_identity(prior_revenue.basis) != period_identity(prior_profit.basis)):
+        raise EvidenceError("profitability within-period basis mismatch")
+    if (not _same_reported_change_basis(current_revenue.basis, prior_revenue.basis)
+            or not _same_reported_change_basis(current_profit.basis, prior_profit.basis)):
+        raise EvidenceError("profitability current/prior basis mismatch")
+    if (date.fromisoformat(prior_revenue.basis.period_end) >= date.fromisoformat(current_revenue.basis.period_start)):
+        raise EvidenceError("profitability periods overlap or are reversed")
+    if (current_revenue.event_id != current_profit.event_id
+            or prior_revenue.event_id != prior_profit.event_id):
+        raise EvidenceError("profitability source event mismatch")
+    if current_revenue.basis.share_basis != "NOT_APPLICABLE":
+        raise EvidenceError("profitability revenue/profit must not be per share")
+    cr, pr = float(current_revenue.value), float(prior_revenue.value)
+    cp, pp = float(current_profit.value), float(prior_profit.value)
+    if cr <= 0 or pr <= 0:
+        raise EvidenceError("profitability revenue denominators must be positive")
+    cm, pm = cp/cr, pp/pr
+    revenue_change = cr-pr
+    margin_change = cm-pm
+    profit_change = cp-pp
+    revenue_component = revenue_change * (cm/2 + pm/2)
+    margin_component = margin_change * (cr/2 + pr/2)
+    output_numbers=(cm,pm,revenue_change,margin_change,profit_change,revenue_component,margin_component,
+                    margin_change*10000,revenue_change/pr)
+    if not all(isfinite(value) for value in output_numbers):
+        raise EvidenceError("profitability calculation overflow")
+    if not isclose(revenue_component+margin_component,profit_change,rel_tol=1e-10,
+                   abs_tol=1e-10*max(1.0,abs(revenue_component),abs(margin_component))):
+        raise EvidenceError("profitability arithmetic failed to reconcile")
+    return {
+        "schema": SCHEMA, "kind": "COMPARABLE_PROFITABILITY_BRIDGE",
+        "issuer_id": current_revenue.basis.issuer_id,
+        "profit_metric": current_profit.basis.metric,
+        "current_fiscal_period": current_revenue.basis.fiscal_period,
+        "prior_fiscal_period": prior_revenue.basis.fiscal_period,
+        "currency": current_revenue.basis.currency, "unit": current_revenue.basis.unit,
+        "accounting_basis": current_revenue.basis.accounting_basis,
+        "current_event_id": current_revenue.event_id, "prior_event_id": prior_revenue.event_id,
+        "current_revenue": cr, "prior_revenue": pr, "current_profit": cp, "prior_profit": pp,
+        "current_margin": cm, "prior_margin": pm, "margin_change_bps": margin_change*10000,
+        "revenue_change_fraction": revenue_change/pr, "profit_change": profit_change,
+        "revenue_component": revenue_component, "margin_component": margin_component,
+        "decomposition": "SYMMETRIC_REVENUE_MARGIN_IDENTITY_NOT_CAUSAL_ATTRIBUTION",
+        "source_refs": [value.source_ref for value in inputs],
+        "source_available_at": [value.available_at for value in inputs],
+        "decision_at": decision_at,
+        "rank_authority": False, "entry_authority": False,
+    }
