@@ -89,3 +89,11 @@
 {"date":"2026-09-25","theme":"Healthcare & Biotech","donor":"healthcaretelemedicine","receiver":"healthcaremetabolic","confidence":0.325,"both_confirmed":false}
 {"date":"2026-09-28","theme":"Transportation & Logistics","donor":"transportationmaritime","receiver":"transportationairtravel","confidence":0.635,"both_confirmed":false}
 {"date":"2026-09-28","theme":"Healthcare & Biotech","donor":"healthcaretelemedicine","receiver":"healthcaremetabolic","confidence":0.32,"both_confirmed":false}
+{"date":"2026-10-01","theme":"Nanotechnology","donor":"nanotechmedicine","receiver":"nanotechenergy","confidence":0.55,"both_confirmed":false}
+{"date":"2026-10-01","theme":"FinTech","donor":"fintechblockchain","receiver":"fintechinsurance","confidence":0.416,"both_confirmed":false}
+{"date":"2026-10-01","theme":"Crypto & Blockchain","donor":"blockchainmining","receiver":"blockchainenterprise","confidence":0.409,"both_confirmed":false}
+{"date":"2026-10-01","theme":"Energy Renewable","donor":"energycleanbiofuels","receiver":"energycleansolar","confidence":0.379,"both_confirmed":false}
+{"date":"2026-10-01","theme":"Robotics","donor":"roboticsavmobility","receiver":"roboticsmedical","confidence":0.341,"both_confirmed":false}
+{"date":"2026-10-01","theme":"Energy Traditional","donor":"energybaseoilrefining","receiver":"energybaseutilities","confidence":0.341,"both_confirmed":false}
+{"date":"2026-10-01","theme":"Commodities Agriculture","donor":"commagribiofuels","receiver":"commagrilivestock","confidence":0.324,"both_confirmed":false}
+{"date":"2026-10-01","theme":"Semiconductors","donor":"semiscompute","receiver":"semislithography","confidence":0.315,"both_confirmed":false}

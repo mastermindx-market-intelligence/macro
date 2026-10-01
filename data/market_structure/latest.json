@@ -1,18 +1,18 @@
 {
   "schema": "market_structure_context.v1",
   "asof": "2026-09-30",
-  "built_at": "2026-10-01T03:43:12.595740+00:00",
+  "built_at": "2026-10-01T16:18:56.506686+00:00",
   "is_context_only": true,
   "display_only": true,
   "gamma": {
     "regime": "short",
-    "net_gex_bn": -7.246814,
-    "net_gex_pctile": 25.4,
-    "gamma_flip": 7660.602243,
+    "net_gex_bn": -5.916402,
+    "net_gex_pctile": 26.7,
+    "gamma_flip": 7659.235452,
     "spot": 7651.54,
-    "dist_to_flip_pct": -0.118437,
-    "days_in_regime": 1,
-    "days_in_regime_observed": 1,
+    "dist_to_flip_pct": -0.100574,
+    "days_in_regime": 2,
+    "days_in_regime_observed": 2,
     "series_start": "2026-06-15",
     "history": [
       {
@@ -427,10 +427,17 @@
         "regime": "short",
         "flip": 7660.602243,
         "spot": 7651.54
+      },
+      {
+        "date": "2026-10-01",
+        "net_gex_bn": -5.916402,
+        "regime": "short",
+        "flip": 7659.235452,
+        "spot": 7651.54
       }
     ],
     "coverage": {
-      "last_obs": "2026-09-30",
+      "last_obs": "2026-10-01",
       "expected_last_session": "2026-09-30",
       "sessions_behind": 0,
       "window_sessions": 20,
@@ -4475,61 +4482,49 @@
     "vix_curve": [
       {
         "tenor": "M1",
-        "settle": 17.5046,
-        "dte": 26
+        "settle": 17.8681,
+        "dte": 21
       },
       {
         "tenor": "M2",
-        "settle": 18.3843,
-        "dte": 54
+        "settle": 18.4532,
+        "dte": 49
       },
       {
         "tenor": "M3",
-        "settle": 18.7539,
-        "dte": 82
+        "settle": 18.7994,
+        "dte": 77
       },
       {
         "tenor": "M4",
-        "settle": 19.5362,
-        "dte": 117
+        "settle": 19.521,
+        "dte": 112
       },
       {
         "tenor": "M5",
-        "settle": 19.9996,
-        "dte": 145
+        "settle": 19.9651,
+        "dte": 140
       },
       {
         "tenor": "M6",
-        "settle": 20.2394,
-        "dte": 173
+        "settle": 20.1667,
+        "dte": 168
       }
     ],
-    "vix_curve_slope": 2.7348,
+    "vix_curve_slope": 2.2986,
     "series_start_curve": "2026-04-16"
   },
   "dispersion": {
-    "cor1m": 8.01,
-    "cor1m_regime": "dispersion",
-    "cor1m_1y_delta": -5.46,
-    "cor1m_pctile_2y": 11.3,
+    "cor1m": 9.09,
+    "cor1m_regime": "normal",
+    "cor1m_1y_delta": -0.73,
+    "cor1m_pctile_2y": 20.0,
     "cor1m_pctile_lo": 20,
     "cor1m_pctile_hi": 80,
     "cor1m_available": true,
-    "cor3m": 10.32,
-    "dspx": 35.49,
+    "cor3m": 11.17,
+    "dspx": 36.25,
     "history": [
-      {
-        "date": "2024-09-27",
-        "cor1m": 12.36
-      },
-      {
-        "date": "2024-09-30",
-        "cor1m": 10.92
-      },
-      {
-        "date": "2024-10-01",
-        "cor1m": 14.68
-      },
       {
         "date": "2024-10-02",
         "cor1m": 13.85
@@ -6517,6 +6512,18 @@
       {
         "date": "2026-09-25",
         "cor1m": 8.01
+      },
+      {
+        "date": "2026-09-28",
+        "cor1m": 9.03
+      },
+      {
+        "date": "2026-09-29",
+        "cor1m": 9.28
+      },
+      {
+        "date": "2026-09-30",
+        "cor1m": 9.09
       }
     ]
   },
@@ -6529,7 +6536,7 @@
     "band_1sigma_hi": 7873.03,
     "band_2sigma_lo": 7484.18,
     "band_2sigma_hi": 8002.64,
-    "gamma_flip": 7660.602243,
+    "gamma_flip": 7659.235452,
     "implied_weekly_pct": 1.67,
     "source": "spx_iv30_scaled_5d"
   },
@@ -6550,6 +6557,14 @@
         "to": "adding",
         "note_en": "Vol-control funds: pausing → adding",
         "note_zh": "波动率控制基金：暂停 → 加仓",
+        "display_only": true
+      },
+      {
+        "key": "cor1m_regime",
+        "from": "dispersion",
+        "to": "normal",
+        "note_en": "Correlation regime: Dispersion (stock-picker's market) → Normal correlation",
+        "note_zh": "相关性机制：分散（选股市场） → 正常相关性",
         "display_only": true
       }
     ]

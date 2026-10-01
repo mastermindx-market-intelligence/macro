@@ -164,7 +164,7 @@
         },
         "null_reason": null,
         "required": false,
-        "source_asof": "2026-07-01",
+        "source_asof": "2026-08-01",
         "status": "PRESENT"
       },
       {
@@ -176,7 +176,7 @@
         },
         "null_reason": null,
         "required": false,
-        "source_asof": "2026-07-01",
+        "source_asof": "2026-08-01",
         "status": "PRESENT"
       },
       {
@@ -215,7 +215,7 @@
         "components": [
           {
             "component_id": "retail_sales_yoy_leg",
-            "contribution": 18.8,
+            "contribution": 16.76,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -225,14 +225,14 @@
             "null_reason": null,
             "owner_field": "fred.RSAFS.retail_sales",
             "owner_ref": "data/fred/RSAFS.parquet",
-            "raw_value": 6.0148,
+            "raw_value": 5.3619,
             "sign": 1,
-            "standardized_value": 87.59,
+            "standardized_value": 83.51,
             "weight": 0.5
           },
           {
             "component_id": "real_disposable_income_yoy_leg",
-            "contribution": 1.88,
+            "contribution": 5.42,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -242,9 +242,9 @@
             "null_reason": null,
             "owner_field": "fred.DSPIC96.real_disposable_income",
             "owner_ref": "data/fred/DSPIC96.parquet",
-            "raw_value": 0.4523,
+            "raw_value": 1.3013,
             "sign": 1,
-            "standardized_value": 53.77,
+            "standardized_value": 60.84,
             "weight": 0.5
           }
         ],
@@ -275,7 +275,7 @@
           }
         },
         "transformation": "YoY percent changes mapped 50+clamp(v/scale,-1,1)*50; prior-only owner reads, no in-composer estimation",
-        "value": 70.68,
+        "value": 72.18,
         "value_status": "PRESENT",
         "weights_law": "weighted mean of standardized components, BOTH legs required present (coverage_floor=1.0, judgment call 6); retail sales YoY 0.50, real disposable income YoY 0.50"
       },
@@ -302,7 +302,7 @@
           },
           {
             "component_id": "saving_rate_level_leg",
-            "contribution": 6.25,
+            "contribution": 3.96,
             "coverage_state": "PRESENT",
             "freshness": "CURRENT",
             "label": {
@@ -312,9 +312,9 @@
             "null_reason": null,
             "owner_field": "fred.PSAVERT.personal_saving_rate",
             "owner_ref": "data/fred/PSAVERT.parquet",
-            "raw_value": 3.0,
+            "raw_value": 4.1,
             "sign": -1,
-            "standardized_value": 75.0,
+            "standardized_value": 65.83,
             "weight": 0.25
           },
           {
@@ -379,7 +379,7 @@
           }
         },
         "transformation": "revolving-credit YoY mapped 50+clamp(v/scale,-1,1)*50 (sign=+1); saving rate mapped 50-clamp((v-neutral)/scale,-1,1)*50 (sign=-1, judgment call 9); delinquency rates mapped linearly floor->ceil (disclosed anchors, judgment call 8)",
-        "value": 50.83,
+        "value": 48.54,
         "value_status": "PRESENT",
         "weights_law": "weighted mean of standardized components, weights renormalized over present components (min 2 of 4, coverage_floor=0.5, judgment call 7); revolving-credit YoY 0.30, saving rate (inverted) 0.25, cc delinquency 0.25, mortgage delinquency 0.20"
       }
@@ -389,15 +389,15 @@
     "comparability": "COMPARABLE",
     "deltas": [
       {
-        "current_value": 773947.0,
-        "delta": 10345.0,
+        "current_value": 737763.0,
+        "delta": -25839.0,
         "metric_id": "retail_sales_level",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 763602.0
       },
       {
-        "current_value": 6.0148,
-        "delta": 1.0056,
+        "current_value": 5.3619,
+        "delta": 0.3527,
         "metric_id": "retail_sales_yoy",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 5.0092
@@ -417,15 +417,15 @@
         "prior_value": -10.5348
       },
       {
-        "current_value": 70.68,
-        "delta": 3.14,
+        "current_value": 72.18,
+        "delta": 4.64,
         "metric_id": "cash_flow_momentum",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 67.54
       },
       {
-        "current_value": 50.83,
-        "delta": 0.0,
+        "current_value": 48.54,
+        "delta": -2.29,
         "metric_id": "credit_stress",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 50.83
@@ -438,10 +438,20 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [],
-    "correction_state": "none",
-    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "consumer_payments-US-15623805dc916ea3"
+    "changed_fingerprints": [
+      "cash_flow_momentum:cash_flow_momentum:eacf90d82578a2a8",
+      "credit_stress:credit_stress:a0f98038edf26183",
+      "personal_saving_rate_change_3m:personal_saving_rate_change_3m:78f51be780871e14",
+      "personal_saving_rate_level:personal_saving_rate_level:667c18e49e4d0b6f",
+      "real_disposable_income_level:real_disposable_income_level:efcf29afa9f2bb43",
+      "real_disposable_income_yoy:real_disposable_income_yoy:7e15be281667b817",
+      "retail_sales_level:retail_sales_level:c11d4c1511d39e9f",
+      "retail_sales_mom:retail_sales_mom:869658aa50100696",
+      "retail_sales_yoy:retail_sales_yoy:7da7acd708d24284"
+    ],
+    "correction_state": "superseded",
+    "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
+    "predecessor_generation_id": "consumer_payments-US-955d64da6da14ce7"
   },
   "drivers": {
     "balance_sheet": [
@@ -462,7 +472,7 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "personal_saving_rate_level",
-        "impact_magnitude": 3.0,
+        "impact_magnitude": 4.1,
         "impact_sign": 1,
         "label": {
           "en": "Personal saving rate",
@@ -471,7 +481,7 @@
         "note": "bucket reuse: see consumer_credit_revolving_yoy's note; higher saving rate lowers credit stress (inverted leg, judgment call 9)",
         "owner_field": "fred.PSAVERT.personal_saving_rate",
         "unit": "percent",
-        "value": 3.0
+        "value": 4.1
       },
       {
         "coverage_state": "PRESENT",
@@ -506,7 +516,7 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "retail_sales_yoy",
-        "impact_magnitude": 6.0148,
+        "impact_magnitude": 5.3619,
         "impact_sign": 1,
         "label": {
           "en": "Retail sales YoY",
@@ -515,12 +525,12 @@
         "note": "bucket reuse: published under drivers.rate_side because the contract's driver bucket pair is fixed as rate_side/balance_sheet and Consumer has no dedicated spending bucket -- see the driver_bucket_naming_note implication",
         "owner_field": "fred.RSAFS.retail_sales",
         "unit": "percent",
-        "value": 6.0148
+        "value": 5.3619
       },
       {
         "coverage_state": "PRESENT",
         "driver_id": "real_disposable_income_yoy",
-        "impact_magnitude": 0.4523,
+        "impact_magnitude": 1.3013,
         "impact_sign": 1,
         "label": {
           "en": "Real disposable income YoY",
@@ -529,16 +539,16 @@
         "note": "bucket reuse: see retail_sales_yoy's note",
         "owner_field": "fred.DSPIC96.real_disposable_income",
         "unit": "percent",
-        "value": 0.4523
+        "value": 1.3013
       }
     ]
   },
   "generation": {
-    "built_at": "2026-10-01T03:43:17Z",
+    "built_at": "2026-10-01T16:19:01Z",
     "calculation_as_of": "2026-08-01",
-    "code_version": "8c9627625c195cf01426e1be473bf6e5465e8a26",
-    "content_sha256": "955d64da6da14ce767d6f23836758fd10d74d7b850b1b5092eca8ca260ee1801",
-    "generation_id": "consumer_payments-US-955d64da6da14ce7",
+    "code_version": "8485e34f2bd28fbab72f56c9968b14ee6760e1d1",
+    "content_sha256": "12569226d50c731edcae2aa0b33bf05637b9668e9aab28642ffa61087cd766d9",
+    "generation_id": "consumer_payments-US-12569226d50c731e",
     "producer": "engine.market_os.macro_workspaces.consumer_payments",
     "rendered_at": null
   },
@@ -547,20 +557,20 @@
     "hysteresis": {
       "applied": true,
       "band": 5.0,
-      "held_prior": false,
-      "note": "raw classification already matches the prior print; no boundary crossing, hysteresis not engaged"
+      "held_prior": true,
+      "note": "prior quadrant held: credit_stress crossed the 50 boundary since the prior print but stayed within the 5.0-pt hysteresis band of ITS OWN boundary"
     },
     "method_version": "consumer_payments.compose.v1",
     "movement_state": null,
     "nearest_boundary": {
       "axis": "credit_stress",
-      "distance": 0.83,
+      "distance": 1.46,
       "null_reason": null
     },
     "null_reason": null,
     "one_month_vector": {
-      "dx": 3.14,
-      "dy": 0.0,
+      "dx": 4.64,
+      "dy": -2.29,
       "null_reason": null,
       "status": "PRESENT",
       "x_axis_id": "cash_flow_momentum",
@@ -572,9 +582,9 @@
       "state_id": "B"
     },
     "quadrant": {
-      "x": 70.68,
+      "x": 72.18,
       "x_status": "PRESENT",
-      "y": 50.83,
+      "y": 48.54,
       "y_status": "PRESENT"
     },
     "state_id": "B",
@@ -587,7 +597,7 @@
       "en": "Cash-flow/spending momentum x consumer credit stress",
       "zh": "现金流/支出动能 × 消费信贷压力"
     },
-    "transition_distance": 3.14
+    "transition_distance": 5.17
   },
   "implications": {
     "items": [
@@ -610,8 +620,8 @@
         "horizon": "current",
         "implication_id": "headline_computed",
         "text": {
-          "en": "Consumer & Payments reads B - Strong cash-flow momentum / High credit stress (cash-flow momentum 70.7, credit stress 50.8, boundary 50).",
-          "zh": "消费与支付读数为 B - 现金流动能强 / 信贷压力高（现金流动能 70.7，信贷压力 50.8，分界 50）。"
+          "en": "Consumer & Payments reads B - Strong cash-flow momentum / High credit stress (cash-flow momentum 72.2, credit stress 48.5, boundary 50).",
+          "zh": "消费与支付读数为 B - 现金流动能强 / 信贷压力高（现金流动能 72.2，信贷压力 48.5，分界 50）。"
         },
         "trace_ref": "engine.market_os.macro_workspaces.consumer_payments#headline"
       },
@@ -632,8 +642,8 @@
         "horizon": "current",
         "implication_id": "retail_sales_read",
         "text": {
-          "en": "Retail sales read +6.0% YoY (+1.2% MoM).",
-          "zh": "零售销售读数为同比+6.0%（环比+1.2%）。"
+          "en": "Retail sales read +5.4% YoY (+1.1% MoM).",
+          "zh": "零售销售读数为同比+5.4%（环比+1.1%）。"
         },
         "trace_ref": "data/fred/RSAFS.parquet"
       },
@@ -798,7 +808,7 @@
           "value": null
         },
         "unit": "usd_millions_sa",
-        "value": 773947.0,
+        "value": 737763.0,
         "value_type": "number"
       },
       {
@@ -834,7 +844,7 @@
           "value": null
         },
         "unit": "percent",
-        "value": 1.2407,
+        "value": 1.1274,
         "value_type": "percent"
       },
       {
@@ -870,7 +880,7 @@
           "value": null
         },
         "unit": "percent",
-        "value": 6.0148,
+        "value": 5.3619,
         "value_type": "percent"
       },
       {
@@ -1165,7 +1175,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-07-01",
+        "calculation_as_of": "2026-08-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.PSAVERT.personal_saving_rate",
@@ -1176,10 +1186,10 @@
         "metric_id": "personal_saving_rate_level",
         "model_version": "consumer_payments.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-07-01",
+        "observed_at": "2026-08-01",
         "owner_ref": "data/fred/PSAVERT.parquet",
         "reference_id": "mastermind.market_reference/v1#personal_saving_rate_level",
-        "reference_period": "2026-07-01",
+        "reference_period": "2026-08-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1194,14 +1204,14 @@
           "value": null
         },
         "unit": "percent",
-        "value": 3.0,
+        "value": 4.1,
         "value_type": "percent"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "trailing_3m_level_change",
-        "calculation_as_of": "2026-07-01",
+        "calculation_as_of": "2026-08-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.PSAVERT.personal_saving_rate",
@@ -1212,10 +1222,10 @@
         "metric_id": "personal_saving_rate_change_3m",
         "model_version": "consumer_payments.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-07-01",
+        "observed_at": "2026-08-01",
         "owner_ref": "data/fred/PSAVERT.parquet",
         "reference_id": "mastermind.market_reference/v1#personal_saving_rate_change_3m",
-        "reference_period": "2026-07-01",
+        "reference_period": "2026-08-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1230,14 +1240,14 @@
           "value": null
         },
         "unit": "pct_pts",
-        "value": 0.1,
+        "value": -0.3,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-07-01",
+        "calculation_as_of": "2026-08-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DSPIC96.real_disposable_income",
@@ -1248,10 +1258,10 @@
         "metric_id": "real_disposable_income_level",
         "model_version": "consumer_payments.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-07-01",
+        "observed_at": "2026-08-01",
         "owner_ref": "data/fred/DSPIC96.parquet",
         "reference_id": "mastermind.market_reference/v1#real_disposable_income_level",
-        "reference_period": "2026-07-01",
+        "reference_period": "2026-08-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1266,14 +1276,14 @@
           "value": null
         },
         "unit": "usd_billions_chained_saar",
-        "value": 18122.5,
+        "value": 18410.5,
         "value_type": "number"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "yoy_pct_change",
-        "calculation_as_of": "2026-07-01",
+        "calculation_as_of": "2026-08-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.DSPIC96.real_disposable_income",
@@ -1284,10 +1294,10 @@
         "metric_id": "real_disposable_income_yoy",
         "model_version": "consumer_payments.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-07-01",
+        "observed_at": "2026-08-01",
         "owner_ref": "data/fred/DSPIC96.parquet",
         "reference_id": "mastermind.market_reference/v1#real_disposable_income_yoy",
-        "reference_period": "2026-07-01",
+        "reference_period": "2026-08-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -1302,7 +1312,7 @@
           "value": null
         },
         "unit": "percent",
-        "value": 0.4523,
+        "value": 1.3013,
         "value_type": "percent"
       },
       {
@@ -1482,7 +1492,7 @@
           "value": null
         },
         "unit": "score",
-        "value": 70.68,
+        "value": 72.18,
         "value_type": "score_0_100"
       },
       {
@@ -1518,7 +1528,7 @@
           "value": null
         },
         "unit": "score",
-        "value": 50.83,
+        "value": 48.54,
         "value_type": "score_0_100"
       }
     ]
@@ -2531,7 +2541,7 @@
         },
         "owner_ref": "collectors.fred[PSAVERT]",
         "provider": "US Bureau of Economic Analysis / FRED",
-        "reference_period": "2026-07-01",
+        "reference_period": "2026-08-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -2552,7 +2562,7 @@
         },
         "owner_ref": "collectors.fred[DSPIC96]",
         "provider": "US Bureau of Economic Analysis / FRED",
-        "reference_period": "2026-07-01",
+        "reference_period": "2026-08-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",

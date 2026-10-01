@@ -140,7 +140,7 @@
         },
         "null_reason": null,
         "required": true,
-        "source_asof": "2026-06-01",
+        "source_asof": "2026-07-01",
         "status": "PRESENT"
       },
       {
@@ -187,8 +187,8 @@
         "prior_value": 3.4892
       },
       {
-        "current_value": 1.5237,
-        "delta": 0.0,
+        "current_value": 1.9304,
+        "delta": 0.4067,
         "metric_id": "case_shiller_national_hpi_yoy",
         "note": "same method version; numeric comparison permitted",
         "prior_value": 1.5237
@@ -201,10 +201,13 @@
     "status": "PRESENT"
   },
   "corrections": {
-    "changed_fingerprints": [],
-    "correction_state": "none",
-    "note": "Same reference period as the predecessor print; no tracked metric changed value (no-change republication).",
-    "predecessor_generation_id": "housing_real_estate-US-2b37bd756f7c0529"
+    "changed_fingerprints": [
+      "case_shiller_national_hpi_level:case_shiller_national_hpi_level:0dfbf348d4059b61",
+      "case_shiller_national_hpi_yoy:case_shiller_national_hpi_yoy:9469484a8d35452e"
+    ],
+    "correction_state": "superseded",
+    "note": "Same reference period as the predecessor print, but one or more owner-native metrics changed value: this print supersedes the prior one as a revision.",
+    "predecessor_generation_id": "housing_real_estate-US-a7ee1b386ec49367"
   },
   "drivers": {
     "balance_sheet": [
@@ -253,7 +256,7 @@
       {
         "coverage_state": "PRESENT",
         "driver_id": "case_shiller_national_hpi_yoy",
-        "impact_magnitude": 1.5237,
+        "impact_magnitude": 1.9304,
         "impact_sign": 1,
         "label": {
           "en": "Case-Shiller US National HPI YoY",
@@ -262,7 +265,7 @@
         "note": "bucket reuse: see housing_starts_yoy's note",
         "owner_field": "fred.CSUSHPISA.case_shiller_sa",
         "unit": "percent",
-        "value": 1.5237
+        "value": 1.9304
       },
       {
         "coverage_state": "PRESENT",
@@ -311,11 +314,11 @@
     ]
   },
   "generation": {
-    "built_at": "2026-10-01T03:43:17Z",
+    "built_at": "2026-10-01T16:19:01Z",
     "calculation_as_of": "2026-09-24",
-    "code_version": "8c9627625c195cf01426e1be473bf6e5465e8a26",
-    "content_sha256": "a7ee1b386ec4936714772d68af84d24db8133d3d82d445d740297c6d13a647a9",
-    "generation_id": "housing_real_estate-US-a7ee1b386ec49367",
+    "code_version": "8485e34f2bd28fbab72f56c9968b14ee6760e1d1",
+    "content_sha256": "893e5954a8c47afd6f4d5c66cd39cb56e605ebb50d4ff98cd28ece5d1c5faed8",
+    "generation_id": "housing_real_estate-US-893e5954a8c47afd",
     "producer": "engine.market_os.macro_workspaces.housing",
     "rendered_at": null
   },
@@ -453,8 +456,8 @@
         "horizon": "current",
         "implication_id": "home_price_read",
         "text": {
-          "en": "Case-Shiller US National home prices (via FRED) read +1.5% year-over-year; this print is a roughly 2-month-lagged 3-month moving average by the publisher's own construction.",
-          "zh": "凯斯-席勒美国全国房价指数（经FRED）同比读数为+1.5%；该数值本身是发布方按其自身方法构建的约滞后2个月的3个月移动平均值。"
+          "en": "Case-Shiller US National home prices (via FRED) read +1.9% year-over-year; this print is a roughly 2-month-lagged 3-month moving average by the publisher's own construction.",
+          "zh": "凯斯-席勒美国全国房价指数（经FRED）同比读数为+1.9%；该数值本身是发布方按其自身方法构建的约滞后2个月的3个月移动平均值。"
         },
         "trace_ref": "data/fred/CSUSHPISA.parquet"
       },
@@ -865,7 +868,7 @@
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "level",
-        "calculation_as_of": "2026-06-01",
+        "calculation_as_of": "2026-07-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.CSUSHPISA.case_shiller_sa",
@@ -876,10 +879,10 @@
         "metric_id": "case_shiller_national_hpi_level",
         "model_version": "housing_real_estate.compose.v1",
         "null_reason": null,
-        "observed_at": "2026-06-01",
+        "observed_at": "2026-07-01",
         "owner_ref": "data/fred/CSUSHPISA.parquet",
         "reference_id": "mastermind.market_reference/v1#case_shiller_national_hpi_level",
-        "reference_period": "2026-06-01",
+        "reference_period": "2026-07-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -894,14 +897,14 @@
           "value": null
         },
         "unit": "index_pt_jan2000_100",
-        "value": 331.893,
+        "value": 333.235,
         "value_type": "index"
       },
       {
         "authority_ceiling": "DESCRIPTIVE",
         "available_at": null,
         "basis": "yoy_pct_change",
-        "calculation_as_of": "2026-06-01",
+        "calculation_as_of": "2026-07-01",
         "collected_at": null,
         "coverage": null,
         "definition_id": "fred.CSUSHPISA.case_shiller_sa",
@@ -912,10 +915,10 @@
         "metric_id": "case_shiller_national_hpi_yoy",
         "model_version": "housing_real_estate.compose.v1",
         "null_reason": "INSUFFICIENT_HISTORY",
-        "observed_at": "2026-06-01",
+        "observed_at": "2026-07-01",
         "owner_ref": "data/fred/CSUSHPISA.parquet",
         "reference_id": "mastermind.market_reference/v1#case_shiller_national_hpi_yoy",
-        "reference_period": "2026-06-01",
+        "reference_period": "2026-07-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",
@@ -930,7 +933,7 @@
           "value": null
         },
         "unit": "percent",
-        "value": 1.5237,
+        "value": 1.9304,
         "value_type": "percent"
       },
       {
@@ -2137,7 +2140,7 @@
         },
         "owner_ref": "collectors.fred[CSUSHPISA]",
         "provider": "S&P CoreLogic Case-Shiller / FRED",
-        "reference_period": "2026-06-01",
+        "reference_period": "2026-07-01",
         "released_at": null,
         "revised_at": null,
         "rights_state": "OPEN",

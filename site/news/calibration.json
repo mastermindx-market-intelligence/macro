@@ -1,9 +1,9 @@
 {
   "schema": "news_event_calibration.v1",
   "is_context_only": true,
-  "asof": "2026-09-30",
-  "n_events_logged": 995,
-  "n_events_graded": 640,
+  "asof": "2026-10-01",
+  "n_events_logged": 1009,
+  "n_events_graded": 659,
   "classes": [
     {
       "event_type": "activist_campaign",
@@ -25,7 +25,7 @@
       "n_graded": 9,
       "hit_5d": 0.3333333333333333,
       "hit_21d": 0.6666666666666666,
-      "avg_rel_5d": 0.0029965303030303034,
+      "avg_rel_5d": -0.0004938863636363634,
       "avg_rel_21d": -0.0031449303030303024,
       "wilson_low_5d": 0.120582,
       "wilson_high_5d": 0.645803,
@@ -38,7 +38,7 @@
       "n_graded": 5,
       "hit_5d": 0.2,
       "hit_21d": 0.0,
-      "avg_rel_5d": -0.0122717,
+      "avg_rel_5d": -0.012670442857142857,
       "avg_rel_21d": -0.045195416666666675,
       "wilson_low_5d": 0.036223,
       "wilson_high_5d": 0.624472,
@@ -77,8 +77,8 @@
       "n_graded": 5,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
-      "avg_rel_5d": 0.0010973999999999995,
-      "avg_rel_21d": 0.017974375,
+      "avg_rel_5d": 0.004783742857142856,
+      "avg_rel_21d": -0.02440225,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "insufficient"
@@ -86,12 +86,12 @@
     {
       "event_type": "earnings_result",
       "direction": "mixed",
-      "n": 339,
-      "n_graded": 244,
+      "n": 343,
+      "n_graded": 260,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
-      "avg_rel_5d": 0.003307663452667551,
-      "avg_rel_21d": -0.0038957782828282833,
+      "avg_rel_5d": 0.0032296386504521123,
+      "avg_rel_21d": -0.003344367106643357,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "context_only"
@@ -112,12 +112,12 @@
     {
       "event_type": "guidance_cut",
       "direction": "bearish",
-      "n": 28,
+      "n": 29,
       "n_graded": 19,
       "hit_5d": 0.3684210526315789,
-      "hit_21d": 0.16666666666666666,
-      "avg_rel_5d": -0.0020198508771929824,
-      "avg_rel_21d": 0.0307205,
+      "hit_21d": 0.3076923076923077,
+      "avg_rel_5d": -0.0012436929824561401,
+      "avg_rel_21d": 0.018692128205128205,
       "wilson_low_5d": 0.191493,
       "wilson_high_5d": 0.589608,
       "verdict": "insufficient"
@@ -128,9 +128,9 @@
       "n": 42,
       "n_graded": 26,
       "hit_5d": 0.7307692307692307,
-      "hit_21d": 0.3888888888888889,
-      "avg_rel_5d": 0.010348641025641026,
-      "avg_rel_21d": -0.004818625000000001,
+      "hit_21d": 0.3684210526315789,
+      "avg_rel_5d": 0.010424153846153845,
+      "avg_rel_21d": -0.00550051754385965,
       "wilson_low_5d": 0.539166,
       "wilson_high_5d": 0.862957,
       "verdict": "insufficient"
@@ -138,28 +138,28 @@
     {
       "event_type": "litigation",
       "direction": "bearish",
-      "n": 220,
+      "n": 221,
       "n_graded": 189,
-      "hit_5d": 0.5238095238095238,
-      "hit_21d": 0.423841059602649,
-      "avg_rel_5d": -0.0008026587301587305,
-      "avg_rel_21d": 0.016150900110375278,
-      "wilson_low_5d": 0.452843,
-      "wilson_high_5d": 0.593828,
+      "hit_5d": 0.5185185185185185,
+      "hit_21d": 0.42105263157894735,
+      "avg_rel_5d": -0.0010745718694885366,
+      "avg_rel_21d": 0.016396930372807015,
+      "wilson_low_5d": 0.447626,
+      "wilson_high_5d": 0.588673,
       "verdict": "context_only"
     },
     {
       "event_type": "macro_release",
       "direction": "informational",
-      "n": 100,
-      "n_graded": 29,
+      "n": 106,
+      "n_graded": 32,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
-      "avg_rel_5d": -0.008213208045977012,
-      "avg_rel_21d": -0.02361494642857143,
+      "avg_rel_5d": -0.005028903124999999,
+      "avg_rel_21d": -0.02476075,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
-      "verdict": "insufficient"
+      "verdict": "context_only"
     },
     {
       "event_type": "management_change",
@@ -207,8 +207,8 @@
       "n_graded": 34,
       "hit_5d": 0.0,
       "hit_21d": 0.0,
-      "avg_rel_5d": 0.00019857689712248562,
-      "avg_rel_21d": 0.025765926653439155,
+      "avg_rel_5d": 0.0007614799719887957,
+      "avg_rel_21d": 0.0264742006984127,
       "wilson_low_5d": null,
       "wilson_high_5d": null,
       "verdict": "context_only"
@@ -242,7 +242,7 @@
     {
       "event_type": "product_launch",
       "direction": "bullish",
-      "n": 20,
+      "n": 22,
       "n_graded": 7,
       "hit_5d": 0.14285714285714285,
       "hit_21d": 0.0,
@@ -280,7 +280,7 @@
     }
   ],
   "reject_audit": {
-    "n_sampled": 1479,
+    "n_sampled": 1500,
     "n_graded": 0,
     "classes": []
   }

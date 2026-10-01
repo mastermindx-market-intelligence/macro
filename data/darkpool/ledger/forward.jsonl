@@ -462,3 +462,10 @@
 {"asof":"2026-09-25","ticker":"COHR","pattern":"heavy_into_weakness","participation":0.4925,"participation_z":1.58,"streak":5,"price_change_pct":-6.78,"ats_frac":0.42,"short_trend_pp":8.04}
 {"asof":"2026-09-25","ticker":"HBAN","pattern":"heavy_into_weakness","participation":0.5608,"participation_z":1.77,"streak":1,"price_change_pct":-1.51,"ats_frac":0.2744,"short_trend_pp":-11.0}
 {"asof":"2026-09-25","ticker":"ABNB","pattern":"heavy_into_weakness","participation":0.4275,"participation_z":1.64,"streak":4,"price_change_pct":-5.26,"ats_frac":0.5758,"short_trend_pp":-4.04}
+{"asof":"2026-09-30","ticker":"HL","pattern":"heavy_into_weakness","participation":0.792,"participation_z":3.34,"streak":8,"price_change_pct":-6.79,"ats_frac":0.1015,"short_trend_pp":-2.36}
+{"asof":"2026-09-30","ticker":"WDC","pattern":"heavy_into_weakness","participation":0.569,"participation_z":2.97,"streak":3,"price_change_pct":-4.06,"ats_frac":0.4514,"short_trend_pp":-2.4}
+{"asof":"2026-09-30","ticker":"TOL","pattern":"heavy_price_flat","participation":0.5549,"participation_z":2.91,"streak":1,"price_change_pct":-0.38,"ats_frac":0.6976,"short_trend_pp":-20.84}
+{"asof":"2026-09-30","ticker":"KEY","pattern":"heavy_price_flat","participation":0.5059,"participation_z":1.78,"streak":8,"price_change_pct":-0.84,"ats_frac":0.3975,"short_trend_pp":-7.78}
+{"asof":"2026-09-30","ticker":"DELL","pattern":"heavy_into_weakness","participation":0.5032,"participation_z":1.59,"streak":8,"price_change_pct":-2.16,"ats_frac":0.4868,"short_trend_pp":-4.68}
+{"asof":"2026-09-30","ticker":"OKTA","pattern":"heavy_into_strength","participation":0.4996,"participation_z":1.64,"streak":8,"price_change_pct":1.83,"ats_frac":0.5025,"short_trend_pp":2.34}
+{"asof":"2026-09-30","ticker":"BJ","pattern":"heavy_into_strength","participation":0.4919,"participation_z":1.78,"streak":2,"price_change_pct":2.24,"ats_frac":0.7232,"short_trend_pp":-1.1}
