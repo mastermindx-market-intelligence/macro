@@ -1,0 +1,23 @@
+{
+  "observed_at": "2026-09-17T07:38:59.348832+00:00",
+  "results": [
+    {
+      "name": "recorded_seven_source_integration",
+      "base_commit": "3f41c92e98eb6d536ae20534c70aedb626996baf",
+      "candidate_commit": "6af030bdd7777901b00c170d4014a168cf787731",
+      "returncode": 0,
+      "result_tree": "68e785e61c7778a2e7dbe464c89f044f1fef6078",
+      "details": "",
+      "stderr": ""
+    },
+    {
+      "name": "fresh_main",
+      "base_commit": "eef4e872f287c266e43247426d286ebc85af499f",
+      "candidate_commit": "6af030bdd7777901b00c170d4014a168cf787731",
+      "returncode": 0,
+      "result_tree": "f4365213f6044b4ccc58dc6692b10c0c89325385",
+      "details": "",
+      "stderr": ""
+    }
+  ]
+}

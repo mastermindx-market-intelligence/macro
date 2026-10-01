@@ -1,0 +1,20 @@
+{
+  "returncode": 0,
+  "summary": "279 passed in 7.72s",
+  "command": [
+    "/Users/chriswong/.cache/mm-venv-mac-builder-3/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--basetemp=/Users/chriswong/.cache/mastermind-proof/prophet-protective-geometry-20260917-sol-001/final-source-suite",
+    "tests/test_prophet_bridge.py",
+    "tests/test_prophet_arena.py",
+    "tests/test_prophet_integrity.py",
+    "tests/test_prophet_arena_clock_parity.py"
+  ],
+  "mutations": {
+    "zone_call_removed": "3 failed",
+    "boolean_as_price": "4 failed",
+    "rounded_stop_safety_removed": "initially survived; after explicit valid-risk rounded-equality cases, 2 failed"
+  }
+}

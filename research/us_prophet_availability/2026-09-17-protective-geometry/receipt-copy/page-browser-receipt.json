@@ -1,0 +1,217 @@
+{
+  "proof_class": "actual_dashboard_template_fixture_with_recorded_real_receipt_and_shared_theme",
+  "production": false,
+  "authenticated_delivery": false,
+  "existing_user_profiles": false,
+  "javascript_enabled": false,
+  "template": "/Users/chriswong/Documents/Cluade/macro-main/.claude/worktrees/prophet-protective-geometry-20260917-sol-001/templates/_prophet_receipts.html.j2",
+  "template_sha256": "53227df0fe8806c3da6efe76354cf8c594b2f15722fc29e8c5d499268f5aad2d",
+  "browser": "153.0.8010.48",
+  "verifier_sha256": "2259c9d415a18feb35b4748891eef4644e783a3afb8995f3a2664672e9dcabb4",
+  "cases": [
+    {
+      "theme": "dark",
+      "locale": "en",
+      "width": 390,
+      "text": "No entry plan is available — stand aside",
+      "names": [
+        "HON",
+        "TRN",
+        "RBA"
+      ],
+      "count": 3,
+      "layout": {
+        "width": 316,
+        "scroll": 316
+      },
+      "screenshot": "page-receipt-dark-en-390.png",
+      "sha256": "51834186bc7644d059c0b638db08e1432b75231dd572b3c1f8c3e6775358b744",
+      "external_requests_completed": 0,
+      "refused_optional_paths": [
+        "/fonts/Inter-600.woff2",
+        "/fonts/Inter-700.woff2",
+        "/favicon.svg"
+      ],
+      "page_errors": [],
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "locale": "en",
+      "width": 1440,
+      "text": "No entry plan is available — stand aside",
+      "names": [
+        "HON",
+        "TRN",
+        "RBA"
+      ],
+      "count": 3,
+      "layout": {
+        "width": 1322,
+        "scroll": 1322
+      },
+      "screenshot": "page-receipt-dark-en-1440.png",
+      "sha256": "cb0dc6f5a60a2c15420eea83a0a3c6c6ace3f2bff7d5f9fa0d806ef04271b6da",
+      "external_requests_completed": 0,
+      "refused_optional_paths": [
+        "/fonts/Inter-600.woff2",
+        "/fonts/Inter-700.woff2"
+      ],
+      "page_errors": [],
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "locale": "zh",
+      "width": 390,
+      "text": "暂无入场计划 — 暂时观望",
+      "names": [
+        "HON",
+        "TRN",
+        "RBA"
+      ],
+      "count": 3,
+      "layout": {
+        "width": 316,
+        "scroll": 316
+      },
+      "screenshot": "page-receipt-dark-zh-390.png",
+      "sha256": "eac15965ccac6a02e8bec037685d83f3e1cdf7d69afbf841f4ffd35609a6ad5a",
+      "external_requests_completed": 0,
+      "refused_optional_paths": [
+        "/fonts/Inter-600.woff2",
+        "/fonts/Inter-700.woff2"
+      ],
+      "page_errors": [],
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "locale": "zh",
+      "width": 1440,
+      "text": "暂无入场计划 — 暂时观望",
+      "names": [
+        "HON",
+        "TRN",
+        "RBA"
+      ],
+      "count": 3,
+      "layout": {
+        "width": 1322,
+        "scroll": 1322
+      },
+      "screenshot": "page-receipt-dark-zh-1440.png",
+      "sha256": "351ff311f3924b9ef70c7fd96dfa380e4d62bfe0c1c1f503d27456d5c5a2b248",
+      "external_requests_completed": 0,
+      "refused_optional_paths": [
+        "/fonts/Inter-600.woff2",
+        "/fonts/Inter-500.woff2",
+        "/fonts/Inter-700.woff2"
+      ],
+      "page_errors": [],
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "locale": "en",
+      "width": 390,
+      "text": "No entry plan is available — stand aside",
+      "names": [
+        "HON",
+        "TRN",
+        "RBA"
+      ],
+      "count": 3,
+      "layout": {
+        "width": 316,
+        "scroll": 316
+      },
+      "screenshot": "page-receipt-light-en-390.png",
+      "sha256": "82259ea6ec9c645339e7de35ce99fab89b5914668a8a9ac1328f7c1f129221c8",
+      "external_requests_completed": 0,
+      "refused_optional_paths": [
+        "/fonts/Inter-600.woff2",
+        "/fonts/Inter-700.woff2"
+      ],
+      "page_errors": [],
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "locale": "en",
+      "width": 1440,
+      "text": "No entry plan is available — stand aside",
+      "names": [
+        "HON",
+        "TRN",
+        "RBA"
+      ],
+      "count": 3,
+      "layout": {
+        "width": 1322,
+        "scroll": 1322
+      },
+      "screenshot": "page-receipt-light-en-1440.png",
+      "sha256": "1ef7e43e3a6f12e0473198c4e5018f11835588e87af84aa45b1b990ce952977b",
+      "external_requests_completed": 0,
+      "refused_optional_paths": [
+        "/fonts/Inter-600.woff2",
+        "/fonts/Inter-700.woff2"
+      ],
+      "page_errors": [],
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "locale": "zh",
+      "width": 390,
+      "text": "暂无入场计划 — 暂时观望",
+      "names": [
+        "HON",
+        "TRN",
+        "RBA"
+      ],
+      "count": 3,
+      "layout": {
+        "width": 316,
+        "scroll": 316
+      },
+      "screenshot": "page-receipt-light-zh-390.png",
+      "sha256": "e048f6a676b01b1b8d4d5516ed342bf4e1bf0bdad556f6aa21d1cf1e4ffd3ab6",
+      "external_requests_completed": 0,
+      "refused_optional_paths": [
+        "/fonts/Inter-600.woff2",
+        "/fonts/Inter-700.woff2"
+      ],
+      "page_errors": [],
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "locale": "zh",
+      "width": 1440,
+      "text": "暂无入场计划 — 暂时观望",
+      "names": [
+        "HON",
+        "TRN",
+        "RBA"
+      ],
+      "count": 3,
+      "layout": {
+        "width": 1322,
+        "scroll": 1322
+      },
+      "screenshot": "page-receipt-light-zh-1440.png",
+      "sha256": "bfecc9521abbc024f2ac7974a251c9a5c64f86da40cc32c5471a533b3313ae05",
+      "external_requests_completed": 0,
+      "refused_optional_paths": [
+        "/fonts/Inter-600.woff2",
+        "/fonts/Inter-500.woff2",
+        "/fonts/Inter-700.woff2"
+      ],
+      "page_errors": [],
+      "pass": true
+    }
+  ],
+  "pass": true
+}

@@ -1,0 +1,11 @@
+{
+  "seam_candidate": "196e0731b30d6b8c303302eff98954e32079856c",
+  "seam_published_head": "c000267b16dd45f0848634453aa1de9a2bc6ba70",
+  "geometry_candidate": "ff4edc2ba9023887617ddec75aca5ea6a387dca5",
+  "chronology_candidate": "b4cdb12cf0f046ce2759ab531b00030458d03243",
+  "prior_tree": "9446623a23ead3a3b7597a06c96ab66c7562a998",
+  "integrated_tree": "c748468aebd81340a241b97035f67327d9f9a5f7",
+  "current_main": "148746b8e3c8c723b955b7b8796f8567f3833378",
+  "current_main_geometry_tree": "352f5303946ff1ba1c9d84d3d6bb70035be6c092",
+  "production": false
+}
