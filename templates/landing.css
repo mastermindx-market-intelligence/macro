@@ -1390,6 +1390,14 @@ footer{background:#04070c;border-top:1px solid #10161f;padding:56px 0 48px;color
   .mx td.feat.has-tip.tip-open .tipbox{opacity:1;visibility:visible}
 }
 @media (max-width:680px){
+  /* Reflow the real contents: footer columns and the longest situation status
+     must fit 320px without concealing text or adding document-level scrolling. */
+  .f-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--gutter);width:100%;min-width:0}
+  .f-col{min-width:0}
+  .f-col a{overflow-wrap:anywhere}
+  .sits,.sit{min-width:0}
+  .sit .meter{flex-wrap:wrap}
+  .sit .early{white-space:normal;max-width:100%}
   .nav-right>a:not(.btn):not(.gearbtn){display:none}
   .nav-right{gap:10px}
   .tri3{grid-template-columns:1fr}
