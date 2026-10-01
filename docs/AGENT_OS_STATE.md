@@ -2,14 +2,14 @@
 
 # Agent OS state
 
-Generated: 2026-09-30T10:48:24Z  |  76 workstreams (55 active · 1 awaiting_ci · 2 awaiting_review · 6 blocked · 8 done · 4 parked)
+Generated: 2026-10-01T03:23:11Z  |  76 workstreams (55 active · 1 awaiting_ci · 2 awaiting_review · 6 blocked · 8 done · 4 parked)
 
 | Input | Value |
 |---|---|
-| active_builds | data/governance/active_builds.json@2026-09-30T10:48:24.395602+00:00 |
+| active_builds | data/governance/active_builds.json@2026-10-01T03:23:11.117082+00:00 |
 | active_builds age | 0.0h |
 | worktrees | 1 |
-| records | 76 WS · 383 DEC · 419 DSC · 545 handoffs |
+| records | 76 WS · 383 DEC · 419 DSC · 546 handoffs |
 
 ## Degraded inputs
 
@@ -140,9 +140,7 @@ Generated: 2026-09-30T10:48:24Z  |  76 workstreams (55 active · 1 awaiting_ci �
 - WS:RATES-INFLATION-COMMAND — record_disagrees_with_execution: wave F0 cites PR #6543, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)
 - WS:TEMPORAL-GRAIN-INTELLIGENCE — record_disagrees_with_execution: wave W0 cites PR #6790, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)
 - WS:TERMINAL-GITHUB-CANONICALIZATION — record_disagrees_with_execution: wave W1 cites PR #484, absent from active_builds.v1 (may predate the 14d merged window — fail-open, verify by hand)
-- agentos/workstreams/WS-CONSUMER-DEFENSIVE-CDV1.md: [phantom-owns-path] owns_paths entry 'engine/earnings_narrative/economic_interpretation.py' does not exist in repo 'macro'
 - agentos/workstreams/WS-CONSUMER-DEFENSIVE-CDV1.md: [phantom-owns-path] owns_paths entry 'engine/earnings_narrative/private_economic_stage.py' does not exist in repo 'macro'
-- agentos/workstreams/WS-CONSUMER-DEFENSIVE-CDV1.md: [phantom-owns-path] owns_paths entry 'tests/earnings_economic_interpretation_fixtures.py' does not exist in repo 'macro'
 - agentos/workstreams/WS-CONSUMER-DEFENSIVE-CDV1.md: [phantom-owns-path] owns_paths entry 'templates/earnings_wire/earnings-economic.js' does not exist in repo 'macro'
 - agentos/workstreams/WS-CONSUMER-DEFENSIVE-CDV1.md: [phantom-owns-path] owns_paths entry 'templates/earnings_wire/_economic_dossier.html.j2' does not exist in repo 'macro'
 - agentos/workstreams/WS-CYCLE-PATTERN-ISSUER-MECHANISM.md: [active-but-complete] status is 'active' but every wave is done/dropped
