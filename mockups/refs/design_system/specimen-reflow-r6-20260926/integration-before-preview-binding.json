@@ -1,0 +1,2238 @@
+{
+  "scope": "unmodified pinned specimen; local file transport; external http(s) blocked; actual keyboard activation; not production/assistive-tech proof",
+  "cells": [
+    {
+      "viewport": 320,
+      "documentWidth": 569,
+      "clientWidth": 309,
+      "theme": "dark",
+      "locale": "en",
+      "documentLanguage": "en",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 239,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 239,
+          "content": 296,
+          "reachedEnd": true
+        },
+        {
+          "width": 277,
+          "content": 420,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "MOVED",
+          "right": 332.90625
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "WHAT TO DO",
+          "right": 514.90625
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "WHAT TO DO",
+          "right": 421.90625
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "←\n−6",
+          "right": 386.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "tnum",
+          "text": "−6",
+          "right": 344.703125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Protect gains",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "Protect gains",
+          "right": 508.03125
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Protect gains",
+          "right": 496.03125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "→\n+5",
+          "right": 386.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "tnum",
+          "text": "+5",
+          "right": 344.703125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Watch — don’t chase",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "Watch — don’t chase",
+          "right": 555.03125
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Watch — don’t chase",
+          "right": 543.03125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "→\n+9",
+          "right": 386.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "tnum",
+          "text": "+9",
+          "right": 344.703125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Get ready",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--ok",
+          "text": "Get ready",
+          "right": 485.546875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Get ready",
+          "right": 473.546875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "←\n−4",
+          "right": 386.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "tnum",
+          "text": "−4",
+          "right": 344.703125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Stand aside",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "Stand aside",
+          "right": 498.171875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Stand aside",
+          "right": 486.171875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "—",
+          "right": 386.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "muted",
+          "text": "—",
+          "right": 322.0625
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Read being updated",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "Read being updated",
+          "right": 549.34375
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Read being updated",
+          "right": 537.34375
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Get ready",
+          "right": 473
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance",
+          "text": "Get ready",
+          "right": 389.859375
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "Get ready",
+          "right": 377.859375
+        }
+      ],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": false
+    },
+    {
+      "viewport": 320,
+      "documentWidth": 503,
+      "clientWidth": 309,
+      "theme": "dark",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 239,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 239,
+          "content": 292,
+          "reachedEnd": true
+        },
+        {
+          "width": 277,
+          "content": 420,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "该怎么做",
+          "right": 483
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "该怎么做",
+          "right": 355
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "保护收益",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "保护收益",
+          "right": 409
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "保护收益",
+          "right": 397
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "观察，勿追",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "观察，勿追",
+          "right": 421.5
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "观察，勿追",
+          "right": 409.5
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "准备行动",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--ok",
+          "text": "准备行动",
+          "right": 409
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "准备行动",
+          "right": 397
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "暂时观望",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "暂时观望",
+          "right": 409
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "暂时观望",
+          "right": 397
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "判读更新中",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "判读更新中",
+          "right": 421.5
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "判读更新中",
+          "right": 409.5
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Get ready",
+          "right": 473
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance",
+          "text": "Get ready",
+          "right": 387.25
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "Get ready",
+          "right": 375.25
+        }
+      ],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": false
+    },
+    {
+      "viewport": 320,
+      "documentWidth": 569,
+      "clientWidth": 309,
+      "theme": "light",
+      "locale": "en",
+      "documentLanguage": "en",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 239,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 239,
+          "content": 296,
+          "reachedEnd": true
+        },
+        {
+          "width": 277,
+          "content": 420,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "MOVED",
+          "right": 332.90625
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "WHAT TO DO",
+          "right": 514.90625
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "WHAT TO DO",
+          "right": 421.90625
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "←\n−6",
+          "right": 386.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "tnum",
+          "text": "−6",
+          "right": 344.703125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Protect gains",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "Protect gains",
+          "right": 508.03125
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Protect gains",
+          "right": 496.03125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "→\n+5",
+          "right": 386.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "tnum",
+          "text": "+5",
+          "right": 344.703125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Watch — don’t chase",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "Watch — don’t chase",
+          "right": 555.03125
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Watch — don’t chase",
+          "right": 543.03125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "→\n+9",
+          "right": 386.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "tnum",
+          "text": "+9",
+          "right": 344.703125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Get ready",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--ok",
+          "text": "Get ready",
+          "right": 485.546875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Get ready",
+          "right": 473.546875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "←\n−4",
+          "right": 386.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "tnum",
+          "text": "−4",
+          "right": 344.703125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Stand aside",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "Stand aside",
+          "right": 498.171875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Stand aside",
+          "right": 486.171875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "—",
+          "right": 386.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "muted",
+          "text": "—",
+          "right": 322.0625
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Read being updated",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "Read being updated",
+          "right": 549.34375
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Read being updated",
+          "right": 537.34375
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Get ready",
+          "right": 473
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance",
+          "text": "Get ready",
+          "right": 389.859375
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "Get ready",
+          "right": 377.859375
+        }
+      ],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": false
+    },
+    {
+      "viewport": 320,
+      "documentWidth": 503,
+      "clientWidth": 309,
+      "theme": "light",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 239,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 239,
+          "content": 292,
+          "reachedEnd": true
+        },
+        {
+          "width": 277,
+          "content": 420,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "该怎么做",
+          "right": 483
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "该怎么做",
+          "right": 355
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "保护收益",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "保护收益",
+          "right": 409
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "保护收益",
+          "right": 397
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "观察，勿追",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "观察，勿追",
+          "right": 421.5
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "观察，勿追",
+          "right": 409.5
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "准备行动",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--ok",
+          "text": "准备行动",
+          "right": 409
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "准备行动",
+          "right": 397
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "暂时观望",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "暂时观望",
+          "right": 409
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "暂时观望",
+          "right": 397
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "判读更新中",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "判读更新中",
+          "right": 421.5
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "判读更新中",
+          "right": 409.5
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Get ready",
+          "right": 473
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance",
+          "text": "Get ready",
+          "right": 387.25
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "Get ready",
+          "right": 375.25
+        }
+      ],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": false
+    },
+    {
+      "viewport": 360,
+      "documentWidth": 569,
+      "clientWidth": 349,
+      "theme": "dark",
+      "locale": "en",
+      "documentLanguage": "en",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 279,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 279,
+          "content": 296,
+          "reachedEnd": true
+        },
+        {
+          "width": 317,
+          "content": 420,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "WHAT TO DO",
+          "right": 514.90625
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "WHAT TO DO",
+          "right": 421.90625
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "←\n−6",
+          "right": 386.6875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Protect gains",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "Protect gains",
+          "right": 508.03125
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Protect gains",
+          "right": 496.03125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "→\n+5",
+          "right": 386.6875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Watch — don’t chase",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "Watch — don’t chase",
+          "right": 555.03125
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Watch — don’t chase",
+          "right": 543.03125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "→\n+9",
+          "right": 386.6875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Get ready",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--ok",
+          "text": "Get ready",
+          "right": 485.546875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Get ready",
+          "right": 473.546875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "←\n−4",
+          "right": 386.6875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Stand aside",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "Stand aside",
+          "right": 498.171875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Stand aside",
+          "right": 486.171875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "—",
+          "right": 386.6875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Read being updated",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "Read being updated",
+          "right": 549.34375
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Read being updated",
+          "right": 537.34375
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Get ready",
+          "right": 473
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance",
+          "text": "Get ready",
+          "right": 389.859375
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "Get ready",
+          "right": 377.859375
+        }
+      ],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": false
+    },
+    {
+      "viewport": 360,
+      "documentWidth": 503,
+      "clientWidth": 349,
+      "theme": "dark",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 279,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 279,
+          "content": 292,
+          "reachedEnd": true
+        },
+        {
+          "width": 317,
+          "content": 420,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "该怎么做",
+          "right": 483
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "保护收益",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "保护收益",
+          "right": 409
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "保护收益",
+          "right": 397
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "观察，勿追",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "观察，勿追",
+          "right": 421.5
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "观察，勿追",
+          "right": 409.5
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "准备行动",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--ok",
+          "text": "准备行动",
+          "right": 409
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "准备行动",
+          "right": 397
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "暂时观望",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "暂时观望",
+          "right": 409
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "暂时观望",
+          "right": 397
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "判读更新中",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "判读更新中",
+          "right": 421.5
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "判读更新中",
+          "right": 409.5
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Get ready",
+          "right": 473
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance",
+          "text": "Get ready",
+          "right": 387.25
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "Get ready",
+          "right": 375.25
+        }
+      ],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": false
+    },
+    {
+      "viewport": 360,
+      "documentWidth": 569,
+      "clientWidth": 349,
+      "theme": "light",
+      "locale": "en",
+      "documentLanguage": "en",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 279,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 279,
+          "content": 296,
+          "reachedEnd": true
+        },
+        {
+          "width": 317,
+          "content": 420,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "WHAT TO DO",
+          "right": 514.90625
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "WHAT TO DO",
+          "right": 421.90625
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "←\n−6",
+          "right": 386.6875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Protect gains",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "Protect gains",
+          "right": 508.03125
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Protect gains",
+          "right": 496.03125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "→\n+5",
+          "right": 386.6875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Watch — don’t chase",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "Watch — don’t chase",
+          "right": 555.03125
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Watch — don’t chase",
+          "right": 543.03125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "→\n+9",
+          "right": 386.6875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Get ready",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--ok",
+          "text": "Get ready",
+          "right": 485.546875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Get ready",
+          "right": 473.546875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "←\n−4",
+          "right": 386.6875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Stand aside",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "Stand aside",
+          "right": 498.171875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Stand aside",
+          "right": 486.171875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-travel",
+          "text": "—",
+          "right": 386.6875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Read being updated",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "Read being updated",
+          "right": 549.34375
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Read being updated",
+          "right": 537.34375
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Get ready",
+          "right": 473
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance",
+          "text": "Get ready",
+          "right": 389.859375
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "Get ready",
+          "right": 377.859375
+        }
+      ],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": false
+    },
+    {
+      "viewport": 360,
+      "documentWidth": 503,
+      "clientWidth": 349,
+      "theme": "light",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 279,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 279,
+          "content": 292,
+          "reachedEnd": true
+        },
+        {
+          "width": 317,
+          "content": 420,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "该怎么做",
+          "right": 483
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "保护收益",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "保护收益",
+          "right": 409
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "保护收益",
+          "right": 397
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "观察，勿追",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "观察，勿追",
+          "right": 421.5
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "观察，勿追",
+          "right": 409.5
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "准备行动",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--ok",
+          "text": "准备行动",
+          "right": 409
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "准备行动",
+          "right": 397
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "暂时观望",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "暂时观望",
+          "right": 409
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "暂时观望",
+          "right": 397
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "判读更新中",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "判读更新中",
+          "right": 421.5
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "判读更新中",
+          "right": 409.5
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Get ready",
+          "right": 473
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance",
+          "text": "Get ready",
+          "right": 387.25
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "Get ready",
+          "right": 375.25
+        }
+      ],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": false
+    },
+    {
+      "viewport": 390,
+      "documentWidth": 569,
+      "clientWidth": 379,
+      "theme": "dark",
+      "locale": "en",
+      "documentLanguage": "en",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 309,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 309,
+          "content": 309,
+          "reachedEnd": true
+        },
+        {
+          "width": 347,
+          "content": 420,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "WHAT TO DO",
+          "right": 514.90625
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "WHAT TO DO",
+          "right": 421.90625
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Protect gains",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "Protect gains",
+          "right": 508.03125
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Protect gains",
+          "right": 496.03125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Watch — don’t chase",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "Watch — don’t chase",
+          "right": 555.03125
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Watch — don’t chase",
+          "right": 543.03125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Get ready",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--ok",
+          "text": "Get ready",
+          "right": 485.546875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Get ready",
+          "right": 473.546875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Stand aside",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "Stand aside",
+          "right": 498.171875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Stand aside",
+          "right": 486.171875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Read being updated",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "Read being updated",
+          "right": 549.34375
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Read being updated",
+          "right": 537.34375
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Get ready",
+          "right": 473
+        }
+      ],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": false
+    },
+    {
+      "viewport": 390,
+      "documentWidth": 503,
+      "clientWidth": 379,
+      "theme": "dark",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 309,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 309,
+          "content": 309,
+          "reachedEnd": true
+        },
+        {
+          "width": 347,
+          "content": 420,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "该怎么做",
+          "right": 483
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "保护收益",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "保护收益",
+          "right": 409
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "保护收益",
+          "right": 397
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "观察，勿追",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "观察，勿追",
+          "right": 421.5
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "观察，勿追",
+          "right": 409.5
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "准备行动",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--ok",
+          "text": "准备行动",
+          "right": 409
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "准备行动",
+          "right": 397
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "暂时观望",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "暂时观望",
+          "right": 409
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "暂时观望",
+          "right": 397
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "判读更新中",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "判读更新中",
+          "right": 421.5
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "判读更新中",
+          "right": 409.5
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Get ready",
+          "right": 473
+        }
+      ],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": false
+    },
+    {
+      "viewport": 390,
+      "documentWidth": 569,
+      "clientWidth": 379,
+      "theme": "light",
+      "locale": "en",
+      "documentLanguage": "en",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 309,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 309,
+          "content": 309,
+          "reachedEnd": true
+        },
+        {
+          "width": 347,
+          "content": 420,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "WHAT TO DO",
+          "right": 514.90625
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "WHAT TO DO",
+          "right": 421.90625
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Protect gains",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "Protect gains",
+          "right": 508.03125
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Protect gains",
+          "right": 496.03125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Watch — don’t chase",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "Watch — don’t chase",
+          "right": 555.03125
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Watch — don’t chase",
+          "right": 543.03125
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Get ready",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--ok",
+          "text": "Get ready",
+          "right": 485.546875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Get ready",
+          "right": 473.546875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Stand aside",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "Stand aside",
+          "right": 498.171875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Stand aside",
+          "right": 486.171875
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Read being updated",
+          "right": 568.6875
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "Read being updated",
+          "right": 549.34375
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-en",
+          "text": "Read being updated",
+          "right": 537.34375
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Get ready",
+          "right": 473
+        }
+      ],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": false
+    },
+    {
+      "viewport": 390,
+      "documentWidth": 503,
+      "clientWidth": 379,
+      "theme": "light",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 309,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 309,
+          "content": 309,
+          "reachedEnd": true
+        },
+        {
+          "width": 347,
+          "content": 420,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "该怎么做",
+          "right": 483
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "保护收益",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "保护收益",
+          "right": 409
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "保护收益",
+          "right": 397
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "观察，勿追",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--warn",
+          "text": "观察，勿追",
+          "right": 421.5
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "观察，勿追",
+          "right": 409.5
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "准备行动",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--ok",
+          "text": "准备行动",
+          "right": 409
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "准备行动",
+          "right": 397
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "暂时观望",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "暂时观望",
+          "right": 409
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "暂时观望",
+          "right": 397
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "判读更新中",
+          "right": 503
+        },
+        {
+          "tag": "SPAN",
+          "cls": "mx-stance mx-stance--muted",
+          "text": "判读更新中",
+          "right": 421.5
+        },
+        {
+          "tag": "SPAN",
+          "cls": "l-zh",
+          "text": "判读更新中",
+          "right": 409.5
+        },
+        {
+          "tag": "DIV",
+          "cls": "mx-spine-stance",
+          "text": "Get ready",
+          "right": 473
+        }
+      ],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": false
+    },
+    {
+      "viewport": 768,
+      "documentWidth": 757,
+      "clientWidth": 757,
+      "theme": "dark",
+      "locale": "en",
+      "documentLanguage": "en",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 316,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 316,
+          "content": 316,
+          "reachedEnd": true
+        },
+        {
+          "width": 725,
+          "content": 725,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": true
+    },
+    {
+      "viewport": 768,
+      "documentWidth": 757,
+      "clientWidth": 757,
+      "theme": "dark",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 316,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 316,
+          "content": 316,
+          "reachedEnd": true
+        },
+        {
+          "width": 725,
+          "content": 725,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": true
+    },
+    {
+      "viewport": 768,
+      "documentWidth": 757,
+      "clientWidth": 757,
+      "theme": "light",
+      "locale": "en",
+      "documentLanguage": "en",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 316,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 316,
+          "content": 316,
+          "reachedEnd": true
+        },
+        {
+          "width": 725,
+          "content": 725,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": true
+    },
+    {
+      "viewport": 768,
+      "documentWidth": 757,
+      "clientWidth": 757,
+      "theme": "light",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 316,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 316,
+          "content": 316,
+          "reachedEnd": true
+        },
+        {
+          "width": 725,
+          "content": 725,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": true
+    },
+    {
+      "viewport": 1440,
+      "documentWidth": 1429,
+      "clientWidth": 1429,
+      "theme": "dark",
+      "locale": "en",
+      "documentLanguage": "en",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 343,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 343,
+          "content": 343,
+          "reachedEnd": true
+        },
+        {
+          "width": 1180,
+          "content": 1180,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": true
+    },
+    {
+      "viewport": 1440,
+      "documentWidth": 1429,
+      "clientWidth": 1429,
+      "theme": "dark",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 343,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 343,
+          "content": 343,
+          "reachedEnd": true
+        },
+        {
+          "width": 1180,
+          "content": 1180,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": true
+    },
+    {
+      "viewport": 1440,
+      "documentWidth": 1429,
+      "clientWidth": 1429,
+      "theme": "light",
+      "locale": "en",
+      "documentLanguage": "en",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 343,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 343,
+          "content": 343,
+          "reachedEnd": true
+        },
+        {
+          "width": 1180,
+          "content": 1180,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": true
+    },
+    {
+      "viewport": 1440,
+      "documentWidth": 1429,
+      "clientWidth": 1429,
+      "theme": "light",
+      "locale": "zh",
+      "documentLanguage": "zh-CN",
+      "open": true,
+      "focus": true,
+      "disclosureOverflow": false,
+      "tables": [
+        {
+          "width": 343,
+          "content": 420,
+          "reachedEnd": true
+        },
+        {
+          "width": 343,
+          "content": 343,
+          "reachedEnd": true
+        },
+        {
+          "width": 1180,
+          "content": 1180,
+          "reachedEnd": true
+        }
+      ],
+      "lastLadderVisible": true,
+      "offending": [],
+      "displayFont": "46px",
+      "closed": true,
+      "pass": true
+    }
+  ],
+  "exceptions": []
+}

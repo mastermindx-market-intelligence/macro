@@ -1,0 +1,7 @@
+{
+  "warning_old": 3.6127648191562294,
+  "warning_applied": 6.317604300809724,
+  "dark_enabled_button": 11.564707876147061,
+  "light_enabled_button": 13.79666080871845,
+  "limits": "arithmetic on read-back resting/hover/focus text/background pairs; disabled opacity and browser interactions not certified"
+}

@@ -1,0 +1,11 @@
+..F.                                                                     [100%]
+=================================== FAILURES ===================================
+_______ test_evidence_rate_static_trigger_does_not_pretend_runtime_works _______
+tests/test_design_system_foundations.py:1049: in test_evidence_rate_static_trigger_does_not_pretend_runtime_works
+    assert trigger.get('type') == 'button' and 'disabled' in trigger
+E   AssertionError: assert ('button' == 'button'
+E     
+E       button and 'disabled' in {'aria-describedby': 'spec-lens-limit', 'class': 'gbtn gbtn-sm lens-trigger', 'data-tip-en': 'In this fictional sample...ot. This historical frequency is not a forecast.', 'data-tip-rc-en': '26 scored examples · 2021–2026 · fictional', ...})
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_evidence_rate_static_trigger_does_not_pretend_runtime_works
+1 failed, 3 passed, 95 deselected in 0.04s

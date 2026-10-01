@@ -1,0 +1,10 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_specimen_complete_breakdown_reconciles_the_participation_count ______
+tests/test_design_system_foundations.py:846: in test_specimen_complete_breakdown_reconciles_the_participation_count
+    assert sum(Decimal(a['data-spec-change']) > 0 for a in rows) == 3
+E   assert 2 == 3
+E    +  where 2 = sum(<generator object test_specimen_complete_breakdown_reconciles_the_participation_count.<locals>.<genexpr> at 0x1065d3d60>)
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_specimen_complete_breakdown_reconciles_the_participation_count
+1 failed, 75 deselected in 0.03s

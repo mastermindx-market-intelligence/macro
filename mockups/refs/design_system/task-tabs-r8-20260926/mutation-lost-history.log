@@ -1,0 +1,9 @@
+......F..                                                                [100%]
+=================================== FAILURES ===================================
+________ test_specimen_tabs_restore_history_without_rebuilding_content _________
+tests/test_design_system_foundations.py:778: in test_specimen_tabs_restore_history_without_rebuilding_content
+    assert 'hashchange' in scripts and 'popstate' in scripts
+E   assert ('hashchange' in "\n/* Specimen-only toggles — mirrors theme.js attribute mechanics without importing it. */\nvar root = document.docum...\n    });\n  });\n  window.addEventListener('hashchange', restoreFromLocation);\n  \n  restoreFromLocation();\n})();\n" and 'popstate' in "\n/* Specimen-only toggles — mirrors theme.js attribute mechanics without importing it. */\nvar root = document.docum...\n    });\n  });\n  window.addEventListener('hashchange', restoreFromLocation);\n  \n  restoreFromLocation();\n})();\n")
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_specimen_tabs_restore_history_without_rebuilding_content
+1 failed, 8 passed, 58 deselected in 0.04s

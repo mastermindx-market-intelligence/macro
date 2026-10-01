@@ -1,0 +1,2180 @@
+{
+  "scope": "unmodified pinned specimen; local file transport; external http(s) blocked; actual keyboard activation; not production/assistive-tech proof",
+  "cells": [
+    {
+      "viewport": 390,
+      "documentWidth": 453,
+      "bodyWidth": 453,
+      "overflow": [
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "",
+          "text": "EXPANSION",
+          "x": 201,
+          "right": 452.78125,
+          "width": 251.78125,
+          "scrollWidth": 252,
+          "clientWidth": 252,
+          "display": "block",
+          "minWidth": "auto",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "EXPANSION",
+          "x": 201,
+          "right": 452.78125,
+          "width": 251.78125,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "",
+          "text": "Aging\n6",
+          "x": 340.828125,
+          "right": 401.109375,
+          "width": 60.28125,
+          "scrollWidth": 59,
+          "clientWidth": 59,
+          "display": "block",
+          "minWidth": "auto",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-ladder"
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "",
+          "text": "More…\n6",
+          "x": 401.109375,
+          "right": 467.484375,
+          "width": 66.375,
+          "scrollWidth": 66,
+          "clientWidth": 66,
+          "display": "block",
+          "minWidth": "auto",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-ladder"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "More…",
+          "x": 413.109375,
+          "right": 455.484375,
+          "width": 42.375,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-ladder"
+          ]
+        },
+        {
+          "tag": "B",
+          "id": "",
+          "cls": "tnum",
+          "text": "6",
+          "x": 413.109375,
+          "right": 455.484375,
+          "width": 42.375,
+          "scrollWidth": 42,
+          "clientWidth": 42,
+          "display": "block",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-ladder"
+          ]
+        },
+        {
+          "tag": "TABLE",
+          "id": "",
+          "cls": "mx-tbl",
+          "text": "NAME\tSTAGE\tΔ5D\nNVDA\tConfirmed\t+4.2%\nASML\tConfirming\t+1.1%\nCOST\tEarly\t−0.6%",
+          "x": 35,
+          "right": 455,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table",
+          "minWidth": "420px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "THEAD",
+          "id": "",
+          "cls": "",
+          "text": "NAME\tSTAGE\tΔ5D\n",
+          "x": 35,
+          "right": 455,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-header-group",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "NAME\tSTAGE\tΔ5D",
+          "x": 35,
+          "right": 455,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TH",
+          "id": "",
+          "cls": "",
+          "text": "Δ5D",
+          "x": 330.421875,
+          "right": 455,
+          "width": 124.578125,
+          "scrollWidth": 125,
+          "clientWidth": 125,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TBODY",
+          "id": "",
+          "cls": "",
+          "text": "NVDA\tConfirmed\t+4.2%\nASML\tConfirming\t+1.1%\nCOST\tEarly\t−0.6%",
+          "x": 35,
+          "right": 455,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row-group",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "NVDA\tConfirmed\t+4.2%",
+          "x": 35,
+          "right": 455,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "pos",
+          "text": "+4.2%",
+          "x": 330.421875,
+          "right": 455,
+          "width": 124.578125,
+          "scrollWidth": 125,
+          "clientWidth": 125,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "ASML\tConfirming\t+1.1%",
+          "x": 35,
+          "right": 455,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "pos",
+          "text": "+1.1%",
+          "x": 330.421875,
+          "right": 455,
+          "width": 124.578125,
+          "scrollWidth": 125,
+          "clientWidth": 125,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "COST\tEarly\t−0.6%",
+          "x": 35,
+          "right": 455,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "neg",
+          "text": "−0.6%",
+          "x": 330.421875,
+          "right": 455,
+          "width": 124.578125,
+          "scrollWidth": 125,
+          "clientWidth": 125,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TABLE",
+          "id": "",
+          "cls": "mx-tbl",
+          "text": "\tARCHETYPE (REGISTRY ID)\tDEVICE\nA\tCommand Center · command_center\ttwo-colum",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table",
+          "minWidth": "420px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "THEAD",
+          "id": "",
+          "cls": "",
+          "text": "\tARCHETYPE (REGISTRY ID)\tDEVICE\n",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-header-group",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "\tARCHETYPE (REGISTRY ID)\tDEVICE",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TH",
+          "id": "",
+          "cls": "",
+          "text": "DEVICE",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TBODY",
+          "id": "",
+          "cls": "",
+          "text": "A\tCommand Center · command_center\ttwo-column command layout + stance rows\nB",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row-group",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "A\tCommand Center · command_center\ttwo-column command layout + stance rows",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "two-column command layout + stance rows",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "two-column command layout + stance rows",
+          "x": 252.5625,
+          "right": 422.53125,
+          "width": 169.96875,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "B\tDiscovery Board · discovery_board\tthe count ladder",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "the count ladder",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "C\tInstrument Analyzer · instrument_analyzer (C-signal / C-company)\tC-signal",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "C-signal: dated lifecycle rail · C-company: task tabset",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "C-signal: dated lifecycle rail · C-company: task tabset",
+          "x": 252.5625,
+          "right": 422.546875,
+          "width": 169.984375,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "D\tRegime Dashboard · regime_dashboard\tregime VerdictHero with capped-dial c",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "regime VerdictHero with capped-dial caveat discipline",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "regime VerdictHero with capped-dial caveat discipline",
+          "x": 252.5625,
+          "right": 423.6875,
+          "width": 171.125,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "E\tIntelligence Desk · intelligence_desk\tdated brief cards with graded sourc",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "dated brief cards with graded source chips (source class + date + grade wor",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "dated brief cards with graded source chips (source class + date + grade wor",
+          "x": 252.5625,
+          "right": 425.734375,
+          "width": 173.171875,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "F\tResearch / Editorial · editorial\tmeasure-limited column + TOC rail",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "measure-limited column + TOC rail",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "measure-limited column + TOC rail",
+          "x": 252.5625,
+          "right": 405.453125,
+          "width": 152.890625,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "G\tMonitor · monitor\tthe change-log timeline",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "the change-log timeline",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "the change-log timeline",
+          "x": 252.5625,
+          "right": 391.484375,
+          "width": 138.921875,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "H\tMarketing · marketing (H-landing / H-plans / H-product)\tH-landing: live d",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "H-landing: live dated proof · H-plans: single-claim plan cards",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "H-landing: live dated proof · H-plans: single-claim plan cards",
+          "x": 252.5625,
+          "right": 416.46875,
+          "width": 163.90625,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "I\tUtility · utility\tsingle-card focus",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "single-card focus",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "documentWidth": 453,
+      "bodyWidth": 453,
+      "overflow": [
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "",
+          "text": "EXPANSION",
+          "x": 201,
+          "right": 452.78125,
+          "width": 251.78125,
+          "scrollWidth": 252,
+          "clientWidth": 252,
+          "display": "block",
+          "minWidth": "auto",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "EXPANSION",
+          "x": 201,
+          "right": 452.78125,
+          "width": 251.78125,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "gbtn gbtn-cta l-en",
+          "text": "Primary CTA — the one breathing element",
+          "x": 35,
+          "right": 324.34375,
+          "width": 289.34375,
+          "scrollWidth": 287,
+          "clientWidth": 287,
+          "display": "inline-flex",
+          "minWidth": "0px",
+          "whiteSpace": "nowrap",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "",
+          "text": "Confirmed\n14",
+          "x": 251.3125,
+          "right": 340.828125,
+          "width": 89.515625,
+          "scrollWidth": 89,
+          "clientWidth": 89,
+          "display": "block",
+          "minWidth": "auto",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-ladder"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "Confirmed",
+          "x": 263.3125,
+          "right": 327.828125,
+          "width": 64.515625,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-ladder"
+          ]
+        },
+        {
+          "tag": "B",
+          "id": "",
+          "cls": "tnum",
+          "text": "14",
+          "x": 263.3125,
+          "right": 327.828125,
+          "width": 64.515625,
+          "scrollWidth": 65,
+          "clientWidth": 65,
+          "display": "block",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-ladder"
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "",
+          "text": "Aging\n6",
+          "x": 340.828125,
+          "right": 401.109375,
+          "width": 60.28125,
+          "scrollWidth": 59,
+          "clientWidth": 59,
+          "display": "block",
+          "minWidth": "auto",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-ladder"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "Aging",
+          "x": 352.828125,
+          "right": 388.109375,
+          "width": 35.28125,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-ladder"
+          ]
+        },
+        {
+          "tag": "B",
+          "id": "",
+          "cls": "tnum",
+          "text": "6",
+          "x": 352.828125,
+          "right": 388.109375,
+          "width": 35.28125,
+          "scrollWidth": 35,
+          "clientWidth": 35,
+          "display": "block",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-ladder"
+          ]
+        },
+        {
+          "tag": "BUTTON",
+          "id": "",
+          "cls": "",
+          "text": "More…\n6",
+          "x": 401.109375,
+          "right": 467.484375,
+          "width": 66.375,
+          "scrollWidth": 66,
+          "clientWidth": 66,
+          "display": "block",
+          "minWidth": "auto",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-ladder"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "More…",
+          "x": 413.109375,
+          "right": 455.484375,
+          "width": 42.375,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-ladder"
+          ]
+        },
+        {
+          "tag": "B",
+          "id": "",
+          "cls": "tnum",
+          "text": "6",
+          "x": 413.109375,
+          "right": 455.484375,
+          "width": 42.375,
+          "scrollWidth": 42,
+          "clientWidth": 42,
+          "display": "block",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-ladder"
+          ]
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "lens-pop-demo",
+          "text": "In 26 past cases, about 6 in 10 of these early signs faded within a day.\nre",
+          "x": 35,
+          "right": 341,
+          "width": 306,
+          "scrollWidth": 304,
+          "clientWidth": 304,
+          "display": "block",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "l-en",
+          "text": "In 26 past cases, about 6 in 10 of these early signs faded within a day.",
+          "x": 48,
+          "right": 328,
+          "width": 280,
+          "scrollWidth": 280,
+          "clientWidth": 280,
+          "display": "block",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "DIV",
+          "id": "",
+          "cls": "rc l-en",
+          "text": "receipt: n=26 · window 2021–2026 · display tier",
+          "x": 48,
+          "right": 328,
+          "width": 280,
+          "scrollWidth": 280,
+          "clientWidth": 280,
+          "display": "block",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "TABLE",
+          "id": "",
+          "cls": "mx-tbl",
+          "text": "NAME\tSTAGE\tΔ5D\nNVDA\tConfirmed\t+4.2%\nASML\tConfirming\t+1.1%\nCOST\tEarly\t−0.6%",
+          "x": 35,
+          "right": 455,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table",
+          "minWidth": "420px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "THEAD",
+          "id": "",
+          "cls": "",
+          "text": "NAME\tSTAGE\tΔ5D\n",
+          "x": 35,
+          "right": 455,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-header-group",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "NAME\tSTAGE\tΔ5D",
+          "x": 35,
+          "right": 455,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TH",
+          "id": "",
+          "cls": "",
+          "text": "STAGE",
+          "x": 150.890625,
+          "right": 330.421875,
+          "width": 179.53125,
+          "scrollWidth": 180,
+          "clientWidth": 180,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TH",
+          "id": "",
+          "cls": "",
+          "text": "Δ5D",
+          "x": 330.421875,
+          "right": 455,
+          "width": 124.578125,
+          "scrollWidth": 125,
+          "clientWidth": 125,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TBODY",
+          "id": "",
+          "cls": "",
+          "text": "NVDA\tConfirmed\t+4.2%\nASML\tConfirming\t+1.1%\nCOST\tEarly\t−0.6%",
+          "x": 35,
+          "right": 455,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row-group",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "NVDA\tConfirmed\t+4.2%",
+          "x": 35,
+          "right": 455,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "Confirmed",
+          "x": 150.890625,
+          "right": 330.421875,
+          "width": 179.53125,
+          "scrollWidth": 180,
+          "clientWidth": 180,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "pos",
+          "text": "+4.2%",
+          "x": 330.421875,
+          "right": 455,
+          "width": 124.578125,
+          "scrollWidth": 125,
+          "clientWidth": 125,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "ASML\tConfirming\t+1.1%",
+          "x": 35,
+          "right": 455,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "Confirming",
+          "x": 150.890625,
+          "right": 330.421875,
+          "width": 179.53125,
+          "scrollWidth": 180,
+          "clientWidth": 180,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "pos",
+          "text": "+1.1%",
+          "x": 330.421875,
+          "right": 455,
+          "width": 124.578125,
+          "scrollWidth": 125,
+          "clientWidth": 125,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "COST\tEarly\t−0.6%",
+          "x": 35,
+          "right": 455,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "Early",
+          "x": 150.890625,
+          "right": 330.421875,
+          "width": 179.53125,
+          "scrollWidth": 180,
+          "clientWidth": 180,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "neg",
+          "text": "−0.6%",
+          "x": 330.421875,
+          "right": 455,
+          "width": 124.578125,
+          "scrollWidth": 125,
+          "clientWidth": 125,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TABLE",
+          "id": "",
+          "cls": "mx-tbl",
+          "text": "SignalCard\ttemplates/_prophet_card.html.j2 (.pvcard + pv_css())\nQuality blo",
+          "x": 35,
+          "right": 330.796875,
+          "width": 295.796875,
+          "scrollWidth": 296,
+          "clientWidth": 296,
+          "display": "table",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "TBODY",
+          "id": "",
+          "cls": "",
+          "text": "SignalCard\ttemplates/_prophet_card.html.j2 (.pvcard + pv_css())\nQuality blo",
+          "x": 35,
+          "right": 330.796875,
+          "width": 295.796875,
+          "scrollWidth": 296,
+          "clientWidth": 296,
+          "display": "table-row-group",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "SignalCard\ttemplates/_prophet_card.html.j2 (.pvcard + pv_css())",
+          "x": 35,
+          "right": 330.796875,
+          "width": 295.796875,
+          "scrollWidth": 296,
+          "clientWidth": 296,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "l-en",
+          "text": "templates/_prophet_card.html.j2 (.pvcard + pv_css())",
+          "x": 118.765625,
+          "right": 330.796875,
+          "width": 212.03125,
+          "scrollWidth": 212,
+          "clientWidth": 212,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "Quality block\t.qual2 — two columns, no total row (packet §C; DNR:KILL-FUSED",
+          "x": 35,
+          "right": 330.796875,
+          "width": 295.796875,
+          "scrollWidth": 296,
+          "clientWidth": 296,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "l-en",
+          "text": ".qual2 — two columns, no total row (packet §C; DNR:KILL-FUSED-COMPOSITE)",
+          "x": 118.765625,
+          "right": 330.796875,
+          "width": 212.03125,
+          "scrollWidth": 212,
+          "clientWidth": 212,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "Plan claim\t.plan-claim — exactly one savings/entitlement line per plan card",
+          "x": 35,
+          "right": 330.796875,
+          "width": 295.796875,
+          "scrollWidth": 296,
+          "clientWidth": 296,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "l-en",
+          "text": ".plan-claim — exactly one savings/entitlement line per plan card (packet §D",
+          "x": 118.765625,
+          "right": 330.796875,
+          "width": 212.03125,
+          "scrollWidth": 212,
+          "clientWidth": 212,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "PageShell\t_site_nav family (product) · _public_nav family (anonymous) — the",
+          "x": 35,
+          "right": 330.796875,
+          "width": 295.796875,
+          "scrollWidth": 296,
+          "clientWidth": 296,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "l-en",
+          "text": "_site_nav family (product) · _public_nav family (anonymous) — the only two",
+          "x": 118.765625,
+          "right": 330.796875,
+          "width": 212.03125,
+          "scrollWidth": 212,
+          "clientWidth": 212,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "Live charts\tlib/illus.py + illus.css/js",
+          "x": 35,
+          "right": 330.796875,
+          "width": 295.796875,
+          "scrollWidth": 296,
+          "clientWidth": 296,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "l-en",
+          "text": "lib/illus.py + illus.css/js",
+          "x": 118.765625,
+          "right": 330.796875,
+          "width": 212.03125,
+          "scrollWidth": 212,
+          "clientWidth": 212,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        },
+        {
+          "tag": "TABLE",
+          "id": "",
+          "cls": "mx-tbl",
+          "text": "\tARCHETYPE (REGISTRY ID)\tDEVICE\nA\tCommand Center · command_center\ttwo-colum",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table",
+          "minWidth": "420px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "THEAD",
+          "id": "",
+          "cls": "",
+          "text": "\tARCHETYPE (REGISTRY ID)\tDEVICE\n",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-header-group",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "\tARCHETYPE (REGISTRY ID)\tDEVICE",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TH",
+          "id": "",
+          "cls": "",
+          "text": "DEVICE",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TBODY",
+          "id": "",
+          "cls": "",
+          "text": "A\tCommand Center · command_center\ttwo-column command layout + stance rows\nB",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row-group",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "A\tCommand Center · command_center\ttwo-column command layout + stance rows",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "two-column command layout + stance rows",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "two-column command layout + stance rows",
+          "x": 252.5625,
+          "right": 422.53125,
+          "width": 169.96875,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "B\tDiscovery Board · discovery_board\tthe count ladder",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "the count ladder",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "the count ladder",
+          "x": 252.5625,
+          "right": 348.875,
+          "width": 96.3125,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "C\tInstrument Analyzer · instrument_analyzer (C-signal / C-company)\tC-signal",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "C-signal: dated lifecycle rail · C-company: task tabset",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "C-signal: dated lifecycle rail · C-company: task tabset",
+          "x": 252.5625,
+          "right": 422.546875,
+          "width": 169.984375,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "D\tRegime Dashboard · regime_dashboard\tregime VerdictHero with capped-dial c",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "regime VerdictHero with capped-dial caveat discipline",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "regime VerdictHero with capped-dial caveat discipline",
+          "x": 252.5625,
+          "right": 423.6875,
+          "width": 171.125,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "E\tIntelligence Desk · intelligence_desk\tdated brief cards with graded sourc",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "dated brief cards with graded source chips (source class + date + grade wor",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "dated brief cards with graded source chips (source class + date + grade wor",
+          "x": 252.5625,
+          "right": 425.734375,
+          "width": 173.171875,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "F\tResearch / Editorial · editorial\tmeasure-limited column + TOC rail",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "measure-limited column + TOC rail",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "measure-limited column + TOC rail",
+          "x": 252.5625,
+          "right": 405.453125,
+          "width": 152.890625,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "G\tMonitor · monitor\tthe change-log timeline",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "the change-log timeline",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "the change-log timeline",
+          "x": 252.5625,
+          "right": 391.484375,
+          "width": 138.921875,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "H\tMarketing · marketing (H-landing / H-plans / H-product)\tH-landing: live d",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "H-landing: live dated proof · H-plans: single-claim plan cards",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "H-landing: live dated proof · H-plans: single-claim plan cards",
+          "x": 252.5625,
+          "right": 416.46875,
+          "width": 163.90625,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TR",
+          "id": "",
+          "cls": "",
+          "text": "I\tUtility · utility\tsingle-card focus",
+          "x": 16,
+          "right": 436,
+          "width": 420,
+          "scrollWidth": 420,
+          "clientWidth": 420,
+          "display": "table-row",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "TD",
+          "id": "",
+          "cls": "",
+          "text": "single-card focus",
+          "x": 242.5625,
+          "right": 436,
+          "width": 193.4375,
+          "scrollWidth": 193,
+          "clientWidth": 193,
+          "display": "table-cell",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "single-card focus",
+          "x": 252.5625,
+          "right": 354.8125,
+          "width": 102.25,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": [
+            "mx-tblbox"
+          ]
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "cls": "l-en",
+          "text": "MOCKUP TIER · WAVE 0 · GOVERNED BY RESEARCH/MASTER_PRODUCT_DESIGN_SYSTEM_V1",
+          "x": 16,
+          "right": 329.703125,
+          "width": 313.703125,
+          "scrollWidth": 0,
+          "clientWidth": 0,
+          "display": "inline",
+          "minWidth": "0px",
+          "whiteSpace": "normal",
+          "flexShrink": "1",
+          "scrollAncestors": []
+        }
+      ]
+    },
+    {
+      "viewport": 1440,
+      "documentWidth": 1429,
+      "bodyWidth": 1429,
+      "overflow": []
+    }
+  ],
+  "exceptions": []
+}

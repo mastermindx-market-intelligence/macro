@@ -1,0 +1,28 @@
+.....F.......FF.                                                         [100%]
+=================================== FAILURES ===================================
+_______ test_prepared_recovery_state_is_bilingual_and_explicit[partial] ________
+tests/test_design_system_foundations.py:673: in test_prepared_recovery_state_is_bilingual_and_explicit
+    body = _prepared_case(specimen, "state", state)
+tests/test_design_system_foundations.py:667: in _prepared_case
+    assert block, f"Missing existing-component example: {kind}/{name}"
+E   AssertionError: Missing existing-component example: state/partial
+E   assert None
+________ test_prepared_recovery_denominators_and_caveats_are_not_hidden ________
+tests/test_design_system_foundations.py:691: in test_prepared_recovery_denominators_and_caveats_are_not_hidden
+    partial = _prepared_case(specimen, "state", "partial")
+tests/test_design_system_foundations.py:667: in _prepared_case
+    assert block, f"Missing existing-component example: {kind}/{name}"
+E   AssertionError: Missing existing-component example: state/partial
+E   assert None
+_______ test_prepared_recovery_uses_native_inspection_not_nested_modals ________
+tests/test_design_system_foundations.py:704: in test_prepared_recovery_uses_native_inspection_not_nested_modals
+    body = _prepared_case(specimen, "state", state)
+tests/test_design_system_foundations.py:667: in _prepared_case
+    assert block, f"Missing existing-component example: {kind}/{name}"
+E   AssertionError: Missing existing-component example: state/partial
+E   assert None
+=========================== short test summary info ============================
+FAILED tests/test_design_system_foundations.py::test_prepared_recovery_state_is_bilingual_and_explicit[partial]
+FAILED tests/test_design_system_foundations.py::test_prepared_recovery_denominators_and_caveats_are_not_hidden
+FAILED tests/test_design_system_foundations.py::test_prepared_recovery_uses_native_inspection_not_nested_modals
+3 failed, 13 passed, 41 deselected in 0.05s

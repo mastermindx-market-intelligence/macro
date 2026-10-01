@@ -219,7 +219,9 @@ def _env_for(css: str, lang: str, theme: str) -> dict:
         for sel in (s.strip() for s in selector.split(",")):
             if sel == ":root":
                 rank = 0
-            elif sel.startswith("html["):
+            # Only unconditional html theme/lang selectors enter this global model.
+            # A widget descendant or additional pseudo/class condition is not global.
+            elif re.fullmatch(r'html(?:\[[a-z-]+="[a-z]+"\])+', sel):
                 attrs = re.findall(r'\[([a-z-]+)="([a-z]+)"\]', sel)
                 if len(attrs) != sel.count("["):
                     continue                       # not a plain attribute selector
@@ -453,3 +455,65 @@ def test_known_gap_entries_are_still_failing(theme_css, verbs, surfaces):
             f"{lang}/{theme} .pv-{verb} .{consumer} now measures {got:.2f}:1 and "
             f"clears AA — delete its KNOWN_GAP entry (pinned at {pinned})."
         )
+
+
+# These controls qualify the existing theme-only parser, not widget-scoped CSS.
+@pytest.mark.parametrize("selector", [
+    'html[data-lang="zh"] .rrx',
+    'html[data-lang="zh"] :is(.igx, .igs)',
+    'html[data-lang="zh"] > .rrx',
+    'html[data-lang="zh"] + .rrx',
+    'html[data-lang="zh"] ~ .rrx',
+    'html[data-lang="zh"].rrx',
+    'html[data-lang="zh"]::before',
+    'html[data-lang="zh"]:not(.rrx)',
+])
+def test_env_for_does_not_promote_scoped_selector(selector):
+    css = (
+        ':root { --ok: #3da564; --up: #45b873; } '
+        'html[data-lang="zh"] { --up: #e06464; } '
+        + selector + ' { --ok: var(--up); }'
+    )
+    env = _env_for(css, "zh", "dark")
+    assert env["--up"] == "#e06464"   # The real global locale rule still applies.
+    assert env["--ok"] == "#3da564"   # The widget/pseudo-state rule does not.
+
+
+@pytest.mark.parametrize("theme", ["dark", "light"])
+def test_env_for_retains_locale_health_roles(theme_css, theme):
+    english = _env_for(theme_css, "en", theme)
+    chinese = _env_for(theme_css, "zh", theme)
+    for role in ("--ok", "--act", "--warn"):
+        assert chinese[role] == english[role], (theme, role)
+    assert chinese["--up"] == english["--down"]
+    assert chinese["--down"] == english["--up"]
+
+
+def test_env_for_specificity_precedes_source_order():
+    css = (
+        'html[data-theme="light"][data-lang="zh"] { --ink: #111111; } '
+        'html[data-theme="light"] { --ink: #222222; } '
+        ':root { --ink: #333333; }'
+    )
+    assert _env_for(css, "zh", "light")["--ink"] == "#111111"
+    assert _env_for(css, "en", "light")["--ink"] == "#222222"
+    assert _env_for(css, "en", "dark")["--ink"] == "#333333"
+
+
+def test_env_for_equal_specificity_uses_source_order():
+    css = (
+        ':root { --ink: #333333; } '
+        'html[data-theme="light"] { --ink: #222222; } '
+        'html[data-lang="zh"] { --ink: #111111; }'
+    )
+    assert _env_for(css, "zh", "light")["--ink"] == "#111111"
+
+
+def test_env_for_handles_plain_global_selector_lists():
+    css = (
+        ':root { --ink: #333333; } '
+        'html[data-theme="light"], html[data-lang="zh"] { --ink: #111111; }'
+    )
+    assert _env_for(css, "zh", "dark")["--ink"] == "#111111"
+    assert _env_for(css, "en", "light")["--ink"] == "#111111"
+    assert _env_for(css, "en", "dark")["--ink"] == "#333333"
