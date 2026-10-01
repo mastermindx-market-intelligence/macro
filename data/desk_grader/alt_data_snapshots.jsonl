@@ -4655,3 +4655,5 @@
 {"date":"2026-10-01","ticker":"PINS","departed":true,"left_desk":"2026-10-01","last_rank":null,"last_score":13}
 {"date":"2026-10-01","ticker":"PWR","departed":true,"left_desk":"2026-10-01","last_rank":22,"last_score":35}
 {"date":"2026-10-01","ticker":"TDG","departed":true,"left_desk":"2026-10-01","last_rank":null,"last_score":17}
+{"date":"2026-10-01","ticker":"AMAT","rank":7,"score":57,"lean":1,"broken":false}
+{"date":"2026-10-01","ticker":"NOVT","rank":null,"score":14,"lean":1,"broken":true}

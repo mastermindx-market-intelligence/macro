@@ -25,12 +25,180 @@
   },
   "pathways": [
     {
-      "family": "real_rate_shock",
-      "driver": "real_rate_shock",
+      "family": "credit",
+      "driver": "credit_stress",
       "pathway_role": "primary",
       "as_of": "2026-10-01",
-      "direction_en": "Rates / inflation shock",
-      "direction_zh": "利率/通胀冲击",
+      "direction_en": "credit spreads widening — stress",
+      "direction_zh": "信用利差走阔 — 承压",
+      "confidence_ceiling": "context_only",
+      "coverage_score": 1.0,
+      "coherence": "supported",
+      "stale_legs": [],
+      "nodes": [
+        {
+          "node_id": "driver_credit_stress",
+          "as_of": "2026-10-01",
+          "domain": "market_drivers",
+          "source_artifact": "data/regime/latest.json#market_drivers",
+          "entity": "credit_stress",
+          "observation": {
+            "en": "credit spreads widening — stress",
+            "zh": "信用利差走阔 — 承压"
+          },
+          "direction": 1,
+          "value": 1.21,
+          "z_or_percentile": 1.35,
+          "source_tier": "display",
+          "lag_class": "same_day",
+          "pathway_role": "trigger",
+          "evidence_refs": [
+            "market_drivers.primary"
+          ]
+        },
+        {
+          "node_id": "leg_credit_stress_0",
+          "as_of": "2026-10-01",
+          "domain": "market_drivers",
+          "source_artifact": "data/regime/latest.json#market_drivers",
+          "entity": "HY spread",
+          "observation": {
+            "en": "HY spread (+3.1σ)",
+            "zh": "高收益利差 (+3.1σ)"
+          },
+          "direction": "positive",
+          "value": 3.1,
+          "z_or_percentile": 3.1,
+          "source_tier": "display",
+          "lag_class": "same_day",
+          "pathway_role": "required_leg",
+          "evidence_refs": [
+            "market_drivers.evidence_legs[0]"
+          ]
+        },
+        {
+          "node_id": "leg_credit_stress_1",
+          "as_of": "2026-10-01",
+          "domain": "market_drivers",
+          "source_artifact": "data/regime/latest.json#market_drivers",
+          "entity": "IG spread",
+          "observation": {
+            "en": "IG spread (+2.5σ)",
+            "zh": "投资级利差 (+2.5σ)"
+          },
+          "direction": "positive",
+          "value": 2.5,
+          "z_or_percentile": 2.5,
+          "source_tier": "display",
+          "lag_class": "same_day",
+          "pathway_role": "required_leg",
+          "evidence_refs": [
+            "market_drivers.evidence_legs[1]"
+          ]
+        },
+        {
+          "node_id": "leg_credit_stress_2",
+          "as_of": "2026-10-01",
+          "domain": "market_drivers",
+          "source_artifact": "data/regime/latest.json#market_drivers",
+          "entity": "HY vs IG",
+          "observation": {
+            "en": "HY vs IG (+0.9σ)",
+            "zh": "高收益对投资级 (+0.9σ)"
+          },
+          "direction": "positive",
+          "value": 0.9,
+          "z_or_percentile": 0.9,
+          "source_tier": "display",
+          "lag_class": "same_day",
+          "pathway_role": "required_leg",
+          "evidence_refs": [
+            "market_drivers.evidence_legs[2]"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "src_node": "driver_credit_stress",
+          "dst_node": "leg_credit_stress_0",
+          "mechanism_type": "evidence_leg",
+          "expected_lag": "same_day",
+          "expected_sign": "positive",
+          "observed_sign": "positive",
+          "status": "measured",
+          "evidence_refs": [
+            "market_drivers.evidence_legs[0]"
+          ]
+        },
+        {
+          "src_node": "driver_credit_stress",
+          "dst_node": "leg_credit_stress_1",
+          "mechanism_type": "evidence_leg",
+          "expected_lag": "same_day",
+          "expected_sign": "positive",
+          "observed_sign": "positive",
+          "status": "measured",
+          "evidence_refs": [
+            "market_drivers.evidence_legs[1]"
+          ]
+        },
+        {
+          "src_node": "driver_credit_stress",
+          "dst_node": "leg_credit_stress_2",
+          "mechanism_type": "evidence_leg",
+          "expected_lag": "same_day",
+          "expected_sign": "positive",
+          "observed_sign": "positive",
+          "status": "measured",
+          "evidence_refs": [
+            "market_drivers.evidence_legs[2]"
+          ]
+        }
+      ]
+    },
+    {
+      "family": "china",
+      "driver": "china_stimulus",
+      "pathway_role": "alternate",
+      "as_of": "2026-10-01",
+      "direction_en": "China risk-off — A-shares/HK & copper lead down",
+      "direction_zh": "",
+      "confidence_ceiling": "context_only",
+      "coverage_score": null,
+      "coherence": "partial",
+      "stale_legs": [],
+      "nodes": [
+        {
+          "node_id": "driver_china_stimulus",
+          "as_of": "2026-10-01",
+          "domain": "market_drivers",
+          "source_artifact": "data/regime/latest.json#market_drivers",
+          "entity": "china_stimulus",
+          "observation": {
+            "en": "China risk-off — A-shares/HK & copper lead down",
+            "zh": ""
+          },
+          "direction": "",
+          "value": 0.9,
+          "z_or_percentile": null,
+          "source_tier": "display",
+          "lag_class": "same_day",
+          "pathway_role": "trigger",
+          "evidence_refs": [
+            "market_drivers.primary"
+          ]
+        }
+      ],
+      "edges": [],
+      "coverage_basis": "scare_trigger"
+    },
+    {
+      "family": "rates",
+      "driver": "real_rate_shock",
+      "pathway_role": "alternate",
+      "as_of": "2026-10-01",
+      "direction_en": "real yields rising — restrictive, gold & duration hit",
+      "direction_zh": "",
       "confidence_ceiling": "context_only",
       "coverage_score": null,
       "coherence": "partial",
@@ -43,11 +211,11 @@
           "source_artifact": "data/regime/latest.json#market_drivers",
           "entity": "real_rate_shock",
           "observation": {
-            "en": "Rates / inflation shock",
-            "zh": "利率/通胀冲击"
+            "en": "real yields rising — restrictive, gold & duration hit",
+            "zh": ""
           },
           "direction": "",
-          "value": 93.0,
+          "value": 0.77,
           "z_or_percentile": null,
           "source_tier": "display",
           "lag_class": "same_day",
@@ -155,80 +323,6 @@
           ]
         }
       ],
-      "coverage_basis": "scare_trigger",
-      "source_trigger": "risk_radar",
-      "scare": "rates"
-    },
-    {
-      "family": "china",
-      "driver": "china_stimulus",
-      "pathway_role": "alternate",
-      "as_of": "2026-10-01",
-      "direction_en": "China risk-off — A-shares/HK & copper lead down",
-      "direction_zh": "",
-      "confidence_ceiling": "context_only",
-      "coverage_score": null,
-      "coherence": "partial",
-      "stale_legs": [],
-      "nodes": [
-        {
-          "node_id": "driver_china_stimulus",
-          "as_of": "2026-10-01",
-          "domain": "market_drivers",
-          "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "china_stimulus",
-          "observation": {
-            "en": "China risk-off — A-shares/HK & copper lead down",
-            "zh": ""
-          },
-          "direction": "",
-          "value": 0.85,
-          "z_or_percentile": null,
-          "source_tier": "display",
-          "lag_class": "same_day",
-          "pathway_role": "trigger",
-          "evidence_refs": [
-            "market_drivers.primary"
-          ]
-        }
-      ],
-      "edges": [],
-      "coverage_basis": "scare_trigger"
-    },
-    {
-      "family": "fx",
-      "driver": "usd_shock",
-      "pathway_role": "alternate",
-      "as_of": "2026-10-01",
-      "direction_en": "dollar surging — squeeze, commodities & EM pressured",
-      "direction_zh": "",
-      "confidence_ceiling": "context_only",
-      "coverage_score": null,
-      "coherence": "partial",
-      "stale_legs": [],
-      "nodes": [
-        {
-          "node_id": "driver_usd_shock",
-          "as_of": "2026-10-01",
-          "domain": "market_drivers",
-          "source_artifact": "data/regime/latest.json#market_drivers",
-          "entity": "usd_shock",
-          "observation": {
-            "en": "dollar surging — squeeze, commodities & EM pressured",
-            "zh": ""
-          },
-          "direction": "",
-          "value": 0.76,
-          "z_or_percentile": null,
-          "source_tier": "display",
-          "lag_class": "same_day",
-          "pathway_role": "trigger",
-          "evidence_refs": [
-            "market_drivers.primary"
-          ]
-        }
-      ],
-      "edges": [],
       "coverage_basis": "scare_trigger"
     }
   ]

@@ -1,6 +1,6 @@
 {
   "schema": "release_forecast_scoreboard.v2",
-  "asof": "2026-09-27T08:47:49Z",
+  "asof": "2026-10-01T20:23:27Z",
   "forward_accrual_began": "2026-07-07",
   "note": "Forward-only: no backtest rows enter this scoreboard (MRI-R8). Primary metrics use evaluation-eligible rows only; all_forward preserves the immutable raw record.",
   "evaluation_basis": "clean_structured_defect_epochs_v1",
@@ -252,14 +252,14 @@
       "mae_ours": null
     },
     "pce_core:champion": {
-      "n": 2,
-      "excluded_n": 2,
-      "mae_ours": 0.0654
+      "n": 3,
+      "excluded_n": 3,
+      "mae_ours": 0.0541
     },
     "pce_headline:champion": {
-      "n": 2,
-      "excluded_n": 2,
-      "mae_ours": 0.1419
+      "n": 3,
+      "excluded_n": 3,
+      "mae_ours": 0.095
     },
     "ppi_finaldemand:champion": {
       "n": 3,
@@ -268,17 +268,17 @@
     }
   },
   "evaluation_exclusions": {
-    "n": 33,
+    "n": 35,
     "by_defect": {
       "DN-001": 4,
       "DN-002": 1,
-      "DN-004": 33
+      "DN-004": 35
     }
   },
   "score_receipts": {
-    "raw_n": 437,
-    "canonical_n": 49,
-    "superseded_n": 388,
+    "raw_n": 459,
+    "canonical_n": 51,
+    "superseded_n": 408,
     "note": "Official actual receipts supersede same-vintage proxies and legacy calculations for evaluation; every receipt remains in the ledger."
   },
   "defect_notices": [

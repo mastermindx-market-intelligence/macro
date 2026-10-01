@@ -3,7 +3,7 @@
   "spec_version": "v1",
   "session_date": "2026-09-25",
   "asof": "2026-10-01",
-  "generated_utc": "2026-10-01T05:12:23Z",
+  "generated_utc": "2026-10-01T19:36:29Z",
   "horizon_days": 63,
   "source": {
     "events": "r2:live_flow/events/2026-09-25.jsonl",
@@ -14,7 +14,7 @@
   "counts": {
     "events": 2544,
     "dropped_malformed": 0,
-    "known_symbols": 247,
+    "known_symbols": 248,
     "candidates_earnings": 6,
     "candidates_macro": 1,
     "by_state": {

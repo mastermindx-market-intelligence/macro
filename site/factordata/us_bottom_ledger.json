@@ -1,15 +1,15 @@
 {
  "schema": "bottom_ledger/v1",
- "as_of": "2026-09-27",
+ "as_of": "2026-10-01",
  "ledger_born": "2026-06-30",
  "advance": {
   "status": "advanced",
-  "as_of": "2026-09-27",
-  "n_new_flags": 1,
-  "n_newly_graded": 0,
+  "as_of": "2026-10-01",
+  "n_new_flags": 77,
+  "n_newly_graded": 44,
   "error": null,
   "clock_contract": "ledger dates are civil calendar dates (YYYY-MM-DD, no clock, no timezone) — engine/ledger_clock.py",
-  "n_rows": 2818,
+  "n_rows": 2895,
   "store_repairs": {
    "renormalized": 0,
    "unreadable": []
@@ -17,30 +17,54 @@
   "unreadable_flag_dates": []
  },
  "maturity_state": "maturing",
- "n_accruing": 2745,
- "n_matured": 73,
+ "n_accruing": 2778,
+ "n_matured": 117,
  "first_maturity_est": null,
  "accrual_by_source": {
-  "board_buy": 2452,
-  "prophet_plan": 366
+  "board_buy": 2514,
+  "prophet_plan": 381
  },
  "summary": {
-  "pin5": 0.1781,
-  "held_pct": 0.4932,
-  "prox_med": 0.1041
+  "pin5": 0.1282,
+  "held_pct": 0.4957,
+  "prox_med": 0.1096
  },
  "cohorts": [
   {
    "source": "board_buy",
+   "lane": "bottoming",
+   "n": 8,
+   "prox_med": 0.08967201236697542,
+   "pin5": 0.125,
+   "held_pct": 0.5,
+   "broke_pct": 0.375,
+   "mfe60_med": 0.07807702289907725,
+   "fwd60_med": -0.0775949723430927,
+   "undercut_med": 0.018775355686708517
+  },
+  {
+   "source": "board_buy",
+   "lane": "continuation",
+   "n": 12,
+   "prox_med": 0.10084019133696187,
+   "pin5": 0.0,
+   "held_pct": 0.6666666666666666,
+   "broke_pct": 0.08333333333333333,
+   "mfe60_med": 0.14897834188060977,
+   "fwd60_med": 0.002753506790372784,
+   "undercut_med": 0.0
+  },
+  {
+   "source": "board_buy",
    "lane": "unknown",
-   "n": 73,
-   "prox_med": 0.10410765016048718,
-   "pin5": 0.1780821917808219,
-   "held_pct": 0.4931506849315068,
-   "broke_pct": 0.1506849315068493,
-   "mfe60_med": 0.08508478468744252,
-   "fwd60_med": -0.04705980367851981,
-   "undercut_med": 0.010536986316181052
+   "n": 97,
+   "prox_med": 0.11036461829794231,
+   "pin5": 0.14432989690721648,
+   "held_pct": 0.4742268041237113,
+   "broke_pct": 0.14432989690721648,
+   "mfe60_med": 0.08229951712050343,
+   "fwd60_med": -0.0534585763317702,
+   "undercut_med": 0.0214224619073341
   }
  ],
  "baseline_ref": "calibration/bottom_ruler_baseline.json",
@@ -51,8 +75,8 @@
   "one_grader_law": "grades are computed once at maturity and never recomputed (SA-R14)"
  },
  "integrity_projection": {
-  "raw_rows": 2818,
-  "effective_rows": 2818,
+  "raw_rows": 2895,
+  "effective_rows": 2895,
   "excluded_prophet_rows": 0,
   "error": null,
   "effect": "raw learning rows remain append-only; Prophet rows require a stable plan source_ref and the current canonical signal-family date, and correction/quarantine authority excludes superseded claims from grades and cohorts"

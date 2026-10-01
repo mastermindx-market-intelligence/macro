@@ -1,6 +1,6 @@
 {
   "schema": "risk_radar_scorecard.v1",
-  "generated_at": "2026-10-01T16:09:27+00:00",
+  "generated_at": "2026-10-01T19:43:50+00:00",
   "markets": {
     "us": {
       "asof_last_row": "2026-09-30",
@@ -555,14 +555,14 @@
       }
     },
     "ca": {
-      "asof_last_row": "2026-09-25",
+      "asof_last_row": "2026-09-30",
       "monitoring": {
-        "log_fresh": false,
-        "last_logged_days_ago": 6,
+        "log_fresh": true,
+        "last_logged_days_ago": 1,
         "ungraded_backlog": 0,
-        "awaiting_maturity": 15,
+        "awaiting_maturity": 13,
         "backlog_cutoff_bd": 28,
-        "graded_n": 30
+        "graded_n": 33
       },
       "windows": {
         "full": {
@@ -573,15 +573,15 @@
             "hit_rate": null
           },
           "watch_caution": {
-            "n": 21,
+            "n": 22,
             "tp": 0,
-            "tn": 21,
+            "tn": 22,
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 9,
+            "n": 11,
             "dd_missed": 0,
-            "quiet": 9,
+            "quiet": 11,
             "quiet_rate": 1.0
           },
           "by_scare": {},
@@ -595,15 +595,15 @@
             "hit_rate": null
           },
           "watch_caution": {
-            "n": 21,
+            "n": 22,
             "tp": 0,
-            "tn": 21,
+            "tn": 22,
             "precursor_rate": 0.0
           },
           "calm": {
-            "n": 9,
+            "n": 11,
             "dd_missed": 0,
-            "quiet": 9,
+            "quiet": 11,
             "quiet_rate": 1.0
           },
           "by_scare": {},

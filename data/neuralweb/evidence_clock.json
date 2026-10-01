@@ -1,7 +1,7 @@
 {
   "schema": "neuralweb.evidence_clock.v1",
   "as_of": "2026-10-01",
-  "generated_utc": "2026-10-01T05:18:09Z",
+  "generated_utc": "2026-10-01T20:28:12Z",
   "authority": "display_only",
   "summary": {
     "n_rows": 319,
@@ -465,7 +465,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 5742,
+        "n_open": 5804,
         "n_past_check_by": 4382
       },
       "allowed_actions": [
@@ -2607,7 +2607,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 52,
+        "n_open": 53,
         "n_past_check_by": 2
       },
       "allowed_actions": [
@@ -2639,7 +2639,7 @@
       "state": "overdue",
       "date_state": "overdue",
       "readiness": {
-        "n_open": 125,
+        "n_open": 128,
         "n_past_check_by": 7
       },
       "allowed_actions": [
@@ -4285,12 +4285,10 @@
       "readiness": {
         "as_of": "2026-09-01",
         "stale_chips": [
+          "market",
           "reliability",
           "contradictions",
           "bottom_sensors",
-          "options_entry",
-          "macro_weather",
-          "inflation_intelligence",
           "government_revenue"
         ]
       },
@@ -4374,8 +4372,8 @@
       "state": "blocked",
       "date_state": "accruing",
       "readiness": {
-        "n_claims": 115722,
-        "n_with_falsifier": 1081,
+        "n_claims": 115788,
+        "n_with_falsifier": 1085,
         "falsifier_coverage": "0.9%",
         "blocking_reason": "falsifier coverage 0.9%; not a promotion-grade substrate"
       },
