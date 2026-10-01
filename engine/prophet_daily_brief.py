@@ -46,6 +46,9 @@ _FORBIDDEN_KEYS = frozenset({
     "position", "retry", "polling",
 })
 _RECEIPT_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
+_TIMESTAMP_RE = re.compile(
+    r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]{1,6})?Z$"
+)
 
 _AUTHORITY = {
     "can_rank": False,
@@ -72,7 +75,7 @@ def _canonical_json(value: object) -> str:
 
 
 def _timestamp(value: object, field: str) -> datetime:
-    if not isinstance(value, str) or not value.endswith("Z"):
+    if not isinstance(value, str) or not _TIMESTAMP_RE.fullmatch(value):
         raise DailyBriefContractError(f"{field} must be RFC3339 UTC")
     try:
         parsed = datetime.fromisoformat(value[:-1] + "+00:00")
@@ -213,10 +216,20 @@ def compose_daily_brief(
         relation = plan_rec.get("relation_state")
         exact_relation = plan_rec.get("exact_relation")
         plan_ids = plan_rec.get("plan_ids")
-        if (plan_rec.get("state") not in _PLAN_STATES or relation not in _PLAN_RELATIONS
-                or exact_relation not in {"unavailable", "available"}
-                or not isinstance(plan_ids, list)
-                or any(not isinstance(item, str) or not item for item in plan_ids)):
+        plan_state = plan_rec.get("state")
+        valid_ids = (isinstance(plan_ids, list)
+                     and all(isinstance(item, str) and item.strip() == item and item for item in plan_ids)
+                     and len(plan_ids) == len(set(plan_ids)))
+        expected_relation = {
+            "RELATED_SECURITY": "related_security", "NONE": "none", "UNAVAILABLE": "unavailable",
+        }.get(plan_state)
+        # This v1 receipt has no exact candidate-to-plan linkage proof. A related
+        # security record therefore cannot promote itself into an exact plan.
+        if (plan_state not in _PLAN_STATES or relation not in _PLAN_RELATIONS
+                or relation != expected_relation or exact_relation != "unavailable"
+                or not valid_ids
+                or (plan_state == "RELATED_SECURITY" and not plan_ids)
+                or (plan_state in {"NONE", "UNAVAILABLE"} and bool(plan_ids))):
             issues.add("OWNER_INPUT_UNAVAILABLE")
     if assess is not None and assess.get("state") not in _ASSESSMENT_STATES:
         issues.add("OWNER_INPUT_UNAVAILABLE")
@@ -241,6 +254,7 @@ def compose_daily_brief(
     clocks: dict[str, str | None] = {
         "candidate": str(cand.get("asof")),
         "quote": None,
+        "entry_availability": None,
         "plan": str(plan_rec.get("asof")) if plan_rec is not None else None,
         "assessment": str(assess.get("asof")) if assess is not None else None,
         "evidence": str(evid.get("asof")) if evid is not None else None,
@@ -272,6 +286,9 @@ def compose_daily_brief(
         }
         if b4_binding != identity:
             issues.add("OWNER_BINDING_MISMATCH")
+        clocks["entry_availability"] = str(b4.get("evaluated_at"))
+        if _clock_is_future(clocks["entry_availability"], now_dt, "clocks.entry_availability"):
+            issues.add("FUTURE_OWNER_CLOCK")
         clocks["quote"] = str(b4.get("quote_asof"))
         if _clock_is_future(clocks["quote"], now_dt, "clocks.quote"):
             issues.add("FUTURE_OWNER_CLOCK")
@@ -312,7 +329,7 @@ def compose_daily_brief(
 
     if issues & {
         "OWNER_BINDING_MISMATCH", "FUTURE_OWNER_CLOCK", "SELECTION_UNAVAILABLE",
-        "OWNER_INPUT_UNAVAILABLE",
+        "OWNER_INPUT_UNAVAILABLE", "ASSEMBLY_UNAVAILABLE",
     }:
         decision_state = "UNAVAILABLE"
 
@@ -327,15 +344,17 @@ def compose_daily_brief(
         "OWNER_INPUT_UNAVAILABLE", "ASSEMBLY_UNAVAILABLE",
     }:
         health_state = "UNAVAILABLE"
-    elif b4 is not None and b4.get("state") == "UNAVAILABLE_DATA" and "QUOTE_STALE" in blockers:
-        health_state = "STALE_QUOTE"
-    elif evidence_state == "PARTIAL":
-        health_state = "PARTIAL"
-    elif evidence_state == "UNAVAILABLE" or assessment_state == "UNAVAILABLE":
+    elif (evidence_state == "UNAVAILABLE" or assessment_state == "UNAVAILABLE"
+          or (plan_rec is not None and plan_rec.get("state") == "UNAVAILABLE")):
+        # An unavailable required owner must not be masked by a softer health state.
         health_state = "UNAVAILABLE"
         decision_state = "UNAVAILABLE"
+    elif b4 is not None and b4.get("state") == "UNAVAILABLE_DATA" and "QUOTE_STALE" in blockers:
+        health_state = "STALE_QUOTE"
     elif b4 is None or b4.get("state") == "UNAVAILABLE_DATA":
         health_state = "UNAVAILABLE"
+    elif evidence_state == "PARTIAL":
+        health_state = "PARTIAL"
     else:
         health_state = "CURRENT"
 
@@ -376,6 +395,8 @@ def compose_daily_brief(
         ),
     }
     _reject_forbidden(presentation, path="presentation")
+    # Freeze nested JSON values; returned views must not alias mutable owner input.
+    presentation = json.loads(_canonical_json(presentation))
 
     fallback = _previous_fallback(previous, identity) if health_state == "UNAVAILABLE" else None
 

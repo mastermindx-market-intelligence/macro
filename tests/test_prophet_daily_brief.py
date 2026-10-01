@@ -332,3 +332,132 @@ def test_view_is_deterministic_content_receipted_and_mutation_detected():
     tampered["health_state"] = "PARTIAL"
     with pytest.raises(DailyBriefContractError, match="view_id"):
         validate_daily_brief_view(tampered)
+
+
+@pytest.mark.parametrize("overrides", [
+    {"schema": "wrong"},
+    {"source_receipts": []},
+    {"source_receipts": ["not-a-receipt"]},
+    {"owner_ref": ""},
+])
+def test_invalid_assembly_cannot_leave_entry_cleared(overrides):
+    out = _compose(assembly=_assembly(**overrides))
+    assert "ASSEMBLY_UNAVAILABLE" in out["issues"]
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["decision_state"] == "UNAVAILABLE"
+
+
+@pytest.mark.parametrize("assessment_state,evidence_state,quote_stale", [
+    ("UNAVAILABLE", "PARTIAL", False),
+    ("UNAVAILABLE", "CURRENT", True),
+    ("UNAVAILABLE", "PARTIAL", True),
+    ("CURRENT", "UNAVAILABLE", True),
+    ("UNAVAILABLE", "UNAVAILABLE", True),
+])
+def test_partial_or_stale_health_cannot_mask_unavailable_required_owner(
+    assessment_state, evidence_state, quote_stale
+):
+    b4 = (_b4("UNAVAILABLE_DATA", blockers=["QUOTE_STALE"])
+          if quote_stale else _b4())
+    out = _compose(
+        assessment=_assessment(state=assessment_state),
+        evidence=_evidence(state=evidence_state),
+        entry_availability=b4,
+    )
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert out["owners"]["assessment"]["state"] == assessment_state
+    assert out["owners"]["evidence"]["state"] == evidence_state
+    assert out["clocks"]["assessment"] == "2026-09-30T19:58:00Z"
+
+
+@pytest.mark.parametrize("value", [
+    "2026-09-30Z", "2026-09-30 19:58:00Z", "20260930T195800Z",
+    "2026-09-30T19:58Z",
+])
+def test_non_rfc3339_owner_clock_is_not_presented_as_current(value):
+    out = _compose(assessment=_assessment(asof=value))
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["decision_state"] == "UNAVAILABLE"
+
+
+def test_future_b4_assessment_clock_cannot_hide_behind_fresh_quote():
+    b4 = _b4()
+    b4["evaluated_at"] = "2026-10-01T00:00:01Z"
+    material = {k: v for k, v in b4.items() if k != "availability_id"}
+    b4["availability_id"] = "pea:" + hashlib.sha256(_canon(material).encode()).hexdigest()
+    validate_entry_availability(b4)
+    out = _compose(entry_availability=b4)
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert "FUTURE_OWNER_CLOCK" in out["issues"]
+
+
+def test_composition_does_not_mutate_owner_receipts():
+    inputs = {
+        "candidate": _candidate(), "plan": _plan(), "assessment": _assessment(),
+        "evidence": _evidence(), "assembly": _assembly(), "entry_availability": _b4(),
+    }
+    before = copy.deepcopy(inputs)
+    _compose(**inputs)
+    assert inputs == before
+
+
+@pytest.mark.parametrize("missing_b4", [None, {"schema": "invalid"}])
+def test_missing_entry_owner_is_not_masked_by_partial_evidence(missing_b4):
+    out = _compose(entry_availability=missing_b4, evidence=_evidence(state="PARTIAL"))
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["decision_state"] == "UNAVAILABLE"
+
+
+def test_view_does_not_alias_mutable_owner_presentation():
+    candidate = _candidate()
+    assessment = _assessment()
+    evidence = _evidence()
+    out = _compose(candidate=candidate, assessment=assessment, evidence=evidence)
+    frozen = copy.deepcopy(out)
+    candidate["display"]["ticker"] = "OTHER"
+    assessment["summary"]["headline"] = "Changed after composition"
+    evidence["coverage"]["available"] = 0
+    assert out == frozen
+    validate_daily_brief_view(out)
+
+
+def test_editing_returned_view_does_not_edit_owner_receipt():
+    candidate = _candidate()
+    before = copy.deepcopy(candidate)
+    out = _compose(candidate=candidate)
+    out["presentation"]["candidate"]["ticker"] = "OTHER"
+    assert candidate == before
+
+
+def test_entry_assessment_clock_is_independent_and_shape_stable():
+    present = _compose()
+    missing = _compose(entry_availability=None)
+    assert present["clocks"]["entry_availability"] == "2026-09-30T20:00:00Z"
+    assert missing["clocks"]["entry_availability"] is None
+    assert set(present["clocks"]) == set(missing["clocks"])
+
+
+@pytest.mark.parametrize("overrides", [
+    {"state": "NONE"},
+    {"state": "RELATED_SECURITY", "relation_state": "none"},
+    {"plan_ids": []},
+    {"plan_ids": ["AAPL-BULL-1", "AAPL-BULL-1"]},
+    {"plan_ids": [" "]},
+    {"exact_relation": "available"},
+    {"state": "UNAVAILABLE", "relation_state": "unavailable", "plan_ids": []},
+])
+def test_plan_relation_never_promotes_same_security_or_unavailable_to_exact_plan(overrides):
+    out = _compose(plan=_plan(**overrides))
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["decision_state"] == "UNAVAILABLE"
+
+
+def test_explicit_no_related_plan_is_not_a_data_failure_or_entry_veto():
+    out = _compose(plan=_plan(state="NONE", relation_state="none", plan_ids=[]))
+    assert out["health_state"] == "CURRENT"
+    assert out["decision_state"] == "ENTRY_CLEARED"
+    assert out["presentation"]["plan"] == {
+        "relation_state": "none", "exact_relation": "unavailable", "plan_ids": [],
+    }
