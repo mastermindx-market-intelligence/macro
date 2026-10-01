@@ -96,7 +96,17 @@ wrapper's exact conda interpreter has pandas 3.0.5 / pyarrow 25.0.0. Its real bu
 under a no-write/no-network audit guard reached a 180-second diagnostic budget
 without completing, with zero forbidden actions and unchanged source hashes.
 No staleness override, collector, publication, model or production write was used.
-The next diagnostic should identify phase cost rather than repeat a silent timeout.
+The subsequent phase-traced, guarded diagnostic reached the existing scoring
+function and stopped at its own 600-second research budget. Measured phase cost:
+184 tier/session digests = 301.001 s, 61 chain assemblies = 159.118 s,
+three projected tier reads = 49.425 s, and scoring was still running at 60.239 s.
+This narrows the work cost; it does not prove a production timeout, speedup or
+complete AD-1 board. Exact source hashes stayed unchanged and the audit guard
+observed zero forbidden file/network/subprocess actions. The diagnostic process
+completed and no remote worker or untracked write remains. Do not start another
+identical timeout-only loop or recreate the source store. Future optimization
+must preserve every canonical digest byte and obtain the existing source owner’s
+path/custody admission; the denied #7889/runner-service inspection remains held.
 
 A compound current #7889/runner-service inspection was safety-refused before dispatch
 and remains held. Do not replay it through another carrier. The separate refused
@@ -108,7 +118,25 @@ Evidence: research/options_estate/options_source_host_recovery_20260930.json;
 Terminal's committed parser-integrity-closure receipt; and the existing evidence
 root's parser-integrity-closure/ directory. Protected procedure is now Mastermind
 3c99f440dc65c2cc06054d47711c4cbc2dd99808 (compatible; relevant companions unchanged).
-This is a save during continuation, not mission completion or a custody transfer.
+Independent source-contract review also closed on Macro #7405 exact head
+780c215d89ad2679beee2ef8fe22758022d7b54c: **APPROVED review 5374633275** posted and
+read back. Five actual prereg tests passed; 61 leaf mutations plus 12 required-field
+deletions were rejected; 15 synthetic checks of the existing generic quote mechanics
+and fee arithmetic passed. These are not an OA-3 wrapper, quote capture, prospective
+outcomes or statistical evidence. Source and activation remain held. The obsolete
+separate test filename in the PR body was resolved to the actual existing
+`tests/test_options_nbbo_cohort.py`; no test or source was edited in that PR.
+
+Current next effects remain gated: independent review/release for #667; unchanged
+#8201/#7401 source-owner approvals; held #7398 correction custody; M1 runner/service
+admission; and the still-refused episode duplicate-validation edit. Do not turn
+this source observation into AD-1T2 production acceptance. Existing hosted Terminal
+CI run 36809461781 owns full repository checks: unit/typecheck, serial e2e, ingest and
+Quote Hub had completed successfully; other responsive shards were still running
+at the last read, and Vercel failure statuses were not waived. No merge or deploy.
+
+The parser source closure, host recovery, completed bounded diagnostic and exact-head
+review are saved; this is not mission completion, a worker START or a custody transfer.
 
 ## Previous nightly source frontier (preserved)
 

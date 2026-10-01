@@ -154,11 +154,65 @@
   "notes": [
     "Default interactive python3 lacks a Parquet engine; its degraded output does not establish file corruption. The launchd wrapper identifies the existing conda Python used by the corrected diagnostic.",
     "The corrected native build timed out at the diagnostic budget. This is not evidence that its production budget fails, nor a completed board.",
-    "The combined #7889/runner-service metadata read was refused before execution and was not retried. No service or source-store mutation occurred."
+    "The combined #7889/runner-service metadata read was refused before execution and was not retried. No service or source-store mutation occurred.",
+    "Phase tracing reached the actual scoring function after source materialization. The 600-second diagnostic deadline is not a measured production failure or a new configured production timeout. No speedup is claimed."
   ],
   "log_sha256": {
     "ad1-native-readonly.log": "5a4d85215f6c24df6c24675c77ebbedd0eba2e7ecc8afb346eb65c0e6e6de50d",
     "ad1-canonical-runtime-readonly.log": "19ee1a2216aae8257b9ba0d1265271dcc95da163c8ad32e55dfafac19817e4fb",
     "ad1-parquet-metadata.jsonl": "e49fd8297ff33183e27100df7057c1c36c3c66d090ea90126b0922bf4d5ff8b7"
-  }
+  },
+  "phase_traced_diagnostic": {
+    "dependencies": {
+      "pandas": "3.0.5",
+      "pyarrow": "25.0.0"
+    },
+    "elapsed_seconds": 600.092,
+    "error": {
+      "message": "600-second phase-traced diagnostic budget",
+      "type": "TimeoutError"
+    },
+    "forbidden_attempts": [],
+    "last_started_phase": "build_intel_brief",
+    "mode": "installed AD-1 consumer, actual store, no-write/no-network audit guard, no staleness override",
+    "observed_utc": "2026-10-01T03:21:41.221131+00:00",
+    "phase_costs": {
+      "_assemble_chain_frame": {
+        "calls": 61,
+        "seconds": 159.118
+      },
+      "_build_chain_next": {
+        "calls": 1,
+        "seconds": 1.728
+      },
+      "_latest_known_date": {
+        "calls": 1,
+        "seconds": 3.397
+      },
+      "_read_universe_tier_range": {
+        "calls": 3,
+        "seconds": 49.425
+      },
+      "_select_committed_sessions": {
+        "calls": 1,
+        "seconds": 0.001
+      },
+      "_tier_session_digest": {
+        "calls": 184,
+        "seconds": 301.001
+      },
+      "build_intel_brief": {
+        "calls": 1,
+        "seconds": 60.239
+      }
+    },
+    "python": "/opt/homebrew/Caskroom/miniconda/base/bin/python",
+    "source_sha256": {
+      "engine/options_intel_brief.py": "d4de4fc61823445c4194291ea42d29bacd1da5899ee32e5cec7461dc6a95d71c",
+      "engine/thetadata_store.py": "6f2e7f5da7b75949fb3cd6735b790cdbbb92175104191e0d157cbc5575cd4f26",
+      "scripts/build_options_intel_brief.py": "9dbe7151d81f56979c4af4283aae3e68e1643dae5a5b60f964f81fd58292b176"
+    },
+    "source_unchanged": true
+  },
+  "phase_trace_log_sha256": "f6cb93b1ac88517b4b1b35b663a7bd6d7c71084da7d9e73a26fceb8ffa75a14c"
 }
