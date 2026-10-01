@@ -14,7 +14,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-from dataclasses import asdict, dataclass
+from datetime import date
+from io import BytesIO
 from pathlib import Path
 from typing import Any
 
@@ -58,7 +59,11 @@ PROSPECTIVE_SCHEMA_WITNESS = frozenset({
     "cycle_state", "cycle_label", "cycle_label_vocab_sha256",
     "theme_membership_source_sha256", "theme_capture_group_state",
     "theme_capture_group_weighting", "theme_capture_member_set_sha256",
+    *KEY,
 })
+# Every new producer row stamps these even when source facts are unavailable.
+# Schema union alone can add columns to old rows but cannot supply these values.
+PROSPECTIVE_ROW_WITNESS = ("identity_capture_state", "theme_capture_group_state")
 
 
 def _present(series: pd.Series) -> pd.Series:
@@ -75,8 +80,7 @@ def _part_path(expected_session: str, root: Path | None) -> Path:
     return Path(ucv._part_path(expected_session, root))  # noqa: SLF001
 
 
-def _receipt(path: Path) -> dict[str, Any]:
-    raw = path.read_bytes()
+def _receipt(path: Path, raw: bytes) -> dict[str, Any]:
     return {
         "relative_part": f"candidates/{path.name}",
         "sha256": hashlib.sha256(raw).hexdigest(),
@@ -107,6 +111,11 @@ def _cycle_pair_mismatch(rows: pd.DataFrame) -> int:
 
 def inspect(*, expected_session: str, board_definition: str,
             root: Path | None = None) -> dict[str, Any]:
+    if (not isinstance(expected_session, str) or len(expected_session) != 10
+            or date.fromisoformat(expected_session).isoformat() != expected_session):
+        raise ValueError("expected_session must be a valid YYYY-MM-DD date")
+    if not isinstance(board_definition, str) or not board_definition.strip():
+        raise ValueError("board_definition must be nonempty text")
     month = expected_session[:7]
     part = _part_path(expected_session, root)
     base = {
@@ -125,18 +134,31 @@ def inspect(*, expected_session: str, board_definition: str,
         return {**base, "status": STATUS_CANDIDATE_CAPTURE_DARK,
                 "reason": "EXPECTED_MONTH_PART_ABSENT"}
 
-    physical_columns = frozenset(pq.ParquetFile(part).schema_arrow.names)
+    raw: bytes | None = None
+    try:
+        raw = part.read_bytes()
+        source_receipt = _receipt(part, raw)
+        physical_columns = frozenset(pq.ParquetFile(BytesIO(raw)).schema_arrow.names)
+    except (OSError, ValueError):
+        return {**base, "status": STATUS_SOURCE_CONFLICT,
+                "reason": "CANDIDATE_PART_UNREADABLE",
+                "source_receipt": _receipt(part, raw) if raw is not None else None}
     missing_schema = sorted(PROSPECTIVE_SCHEMA_WITNESS - physical_columns)
     if missing_schema:
         return {**base, "status": STATUS_CANDIDATE_CAPTURE_DARK,
                 "reason": "PROSPECTIVE_SCHEMA_NOT_PRESENT",
-                "source_receipt": _receipt(part),
+                "source_receipt": source_receipt,
                 "missing_required_columns": missing_schema}
 
-    frame = ucv.load_candidates(root, months=[month], columns=READ_COLUMNS)
+    try:
+        frame = ucv.load_candidates(root, months=[month], columns=READ_COLUMNS,
+                                    snapshot_parts={month: raw})
+    except (OSError, ValueError, TypeError):
+        return {**base, "status": STATUS_SOURCE_CONFLICT,
+                "reason": "CANDIDATE_PART_UNREADABLE", "source_receipt": source_receipt}
     if frame.empty:
         return {**base, "status": STATUS_CANDIDATE_CAPTURE_DARK,
-                "reason": "MONTH_PART_HAS_NO_READABLE_ROWS", "source_receipt": _receipt(part)}
+                "reason": "MONTH_PART_HAS_NO_READABLE_ROWS", "source_receipt": source_receipt}
 
     rows = frame[
         (frame["stamp_date"].astype("string") == expected_session)
@@ -145,12 +167,26 @@ def inspect(*, expected_session: str, board_definition: str,
     if rows.empty:
         return {**base, "status": STATUS_CANDIDATE_CAPTURE_DARK,
                 "reason": "NO_ROWS_FOR_EXPECTED_SESSION_AND_DEFINITION",
-                "source_receipt": _receipt(part), "month_rows": int(len(frame))}
+                "source_receipt": source_receipt, "month_rows": int(len(frame))}
+
+    invalid_keys = ~_present(rows["ticker"])
+    if invalid_keys.any():
+        return {**base, "status": STATUS_SOURCE_CONFLICT,
+                "reason": "INVALID_NATIVE_KEYS", "source_receipt": source_receipt,
+                "rows": int(len(rows)), "invalid_key_rows": int(invalid_keys.sum())}
+    row_witness = pd.Series(True, index=rows.index)
+    for column in PROSPECTIVE_ROW_WITNESS:
+        row_witness &= _present(rows[column])
+    if not row_witness.all():
+        return {**base, "status": STATUS_CANDIDATE_CAPTURE_DARK,
+                "reason": "PROSPECTIVE_ROW_WITNESS_NOT_PRESENT",
+                "source_receipt": source_receipt, "rows": int(len(rows)),
+                "rows_missing_prospective_witness": int((~row_witness).sum())}
 
     conflicts = _conflicting_keys(rows)
     if conflicts:
         return {**base, "status": STATUS_SOURCE_CONFLICT,
-                "reason": "CONFLICTING_NATIVE_KEYS", "source_receipt": _receipt(part),
+                "reason": "CONFLICTING_NATIVE_KEYS", "source_receipt": source_receipt,
                 "rows": int(len(rows)), "conflicting_keys": conflicts}
 
     n = int(len(rows))
@@ -169,7 +205,7 @@ def inspect(*, expected_session: str, board_definition: str,
         **base,
         "status": STATUS_S0_CAPTURE_PRESENT,
         "reason": "NONEMPTY_NATIVE_CANDIDATE_CAPTURE",
-        "source_receipt": _receipt(part),
+        "source_receipt": source_receipt,
         "rows": n,
         "unique_tickers": int(rows["ticker"].astype("string").nunique()),
         "duplicate_key_rows": int(rows.duplicated(list(KEY), keep=False).sum()),

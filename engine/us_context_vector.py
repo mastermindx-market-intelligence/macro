@@ -233,7 +233,8 @@ def _part_path(stamp_date: str, root: Any = None):
 
 
 def load_candidates(root: Any = None, *, months: Iterable[str] | None = None,
-                    columns: Iterable[str] | None = None):
+                    columns: Iterable[str] | None = None,
+                    snapshot_parts: Mapping[str, bytes] | None = None):
     """Read the store as ONE frame — the only supported way to consume it.
 
     The monthly parts are a storage detail; nothing outside this module should
@@ -244,6 +245,12 @@ def load_candidates(root: Any = None, *, months: Iterable[str] | None = None,
     Columns unify across parts: a column introduced in a later month reads back
     null for earlier months, which is the same forward-only self-healing the
     schema-union append gives within a part.
+
+    ``snapshot_parts`` is an opt-in evidence path: immutable encoded bytes keyed
+    by exactly the requested months, with mandatory explicit columns. It never
+    reopens the store or falls back to an unrestricted read. Missing projected
+    fields remain null, and pandas index metadata cannot widen the projection.
+    The default path below retains its existing compatibility behavior.
 
     ``months`` optionally restricts to ``YYYY-MM`` keys, so a study that only
     needs one quarter never reads the whole store.
@@ -261,6 +268,53 @@ def load_candidates(root: Any = None, *, months: Iterable[str] | None = None,
     module for its literal name to pin its zero-authority fence, so a mention
     here would read as a dependency.)
     """
+    # Strict opt-in evidence seam: the caller supplies the encoded bytes it
+    # receipted. Decode through this native owner without reopening storage,
+    # consulting pandas index metadata, or using the legacy full-read fallback.
+    if snapshot_parts is not None:
+        from io import BytesIO
+        import re
+        import pyarrow as arrow
+        import pyarrow.parquet as parquet
+
+        if not isinstance(snapshot_parts, Mapping) or not snapshot_parts:
+            raise ValueError("candidate snapshots must be a nonempty month mapping")
+        if months is None or isinstance(months, (str, bytes)):
+            raise ValueError("candidate snapshots require explicit months")
+        selected_months = list(months)
+        if (any(not isinstance(m, str) for m in selected_months)
+                or len(selected_months) != len(set(selected_months))
+                or set(selected_months) != set(snapshot_parts)):
+            raise ValueError("candidate snapshot months must match exactly")
+        if columns is None or isinstance(columns, (str, bytes)):
+            raise ValueError("candidate snapshots require explicit projected columns")
+        projected = list(columns)
+        if (not projected or any(not isinstance(c, str) or not c.strip() for c in projected)
+                or len(projected) != len(set(projected))):
+            raise ValueError("candidate snapshot columns must be nonempty and unique")
+        frames = []
+        for month in sorted(selected_months):
+            if (re.fullmatch(r"[0-9]{4}-[0-9]{2}", month) is None
+                    or not 1 <= int(month[5:]) <= 12 or int(month[:4]) == 0):
+                raise ValueError("candidate snapshot month is invalid")
+            raw = snapshot_parts[month]
+            if not isinstance(raw, bytes) or not raw:
+                raise ValueError("candidate snapshot must contain immutable encoded bytes")
+            part = parquet.ParquetFile(BytesIO(raw))
+            physical = part.schema_arrow.names
+            if len(physical) != len(set(physical)):
+                raise ValueError("candidate snapshot has ambiguous physical columns")
+            present = [c for c in projected if c in physical]
+            for column in present:
+                dtype = part.schema_arrow.field(column).type
+                if (arrow.types.is_nested(dtype) or arrow.types.is_dictionary(dtype)
+                        or isinstance(dtype, arrow.ExtensionType)):
+                    raise ValueError("candidate snapshot projected fields must be scalar")
+            table = part.read(columns=present, use_pandas_metadata=False)
+            frame = table.to_pandas(ignore_metadata=True)
+            frames.append(frame.reindex(columns=projected))
+        return pd.concat(frames, ignore_index=True)
+
     store = _store_dir(root)
     if not store.exists():
         return pd.DataFrame()
