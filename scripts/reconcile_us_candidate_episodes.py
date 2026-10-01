@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from hashlib import sha256
 import json
 import os
@@ -46,9 +46,11 @@ from engine.us_candidate_episode import (
     validate_suppressions,
 )
 from engine.us_candidate_episode_intake import (
+    IdentitySpine,
     IntakeBatch,
+    _unanchored_batch,
+    _timestamp as _intake_timestamp,
     candidate_observations,
-    door_observations,
     load_identity_spine,
     radar_observations,
     turn_watch_observations,
@@ -125,7 +127,142 @@ def _latest_turn_watch(data_root: Path) -> Path:
     return paths[-1] if paths else data_root / "us_prophet_rank" / "episode_inputs" / "turn_watch" / "missing.json"
 
 
-def _load_intakes(data_root: Path, *, allow_degraded_identity: bool):
+# Bounded traversal of the existing immutable Door ledger, never a new cursor/store.
+_DOOR_LEDGER_MAX_BYTES = 8 * 1024 * 1024
+_DOOR_LEDGER_MAX_ROWS = 25_000
+
+
+def _door_backlog_intake(
+    path: Path,
+    spine: IdentitySpine,
+    *,
+    recorded_at: str,
+    existing_events: Sequence[Mapping[str, object]],
+    existing_suppressions: Sequence[Mapping[str, object]],
+) -> IntakeBatch:
+    """Account for all completed Door sightings through the existing B1 owners.
+
+    Source dates are occurrence dates, NOT proof of earlier ingestion. New rows
+    are first known at this invocation's recorded_at; consumed rows retain their
+    original knowledge time. Existing source IDs, raw-row digests, identity
+    normalization, anchor requirements and immutable suppression ownership remain
+    unchanged. Reading all completed rows lets the core enforce idempotence and
+    detect changed older evidence without inventing another progress cursor.
+    """
+    from engine.session_digest import session_window_et
+    from lib.nyse_calendar import is_session
+
+    clock = _canonical_recorded_at(recorded_at)
+    now = datetime.fromisoformat(clock[:-1] + "+00:00")
+    try:
+        with path.open("rb") as stream:
+            payload = stream.read(_DOOR_LEDGER_MAX_BYTES + 1)
+    except FileNotFoundError:
+        return IntakeBatch((), (), ({"source": "doors", "status": "degraded",
+                                      "reason": "MISSING_SOURCE_FILE"},))
+    if len(payload) > _DOOR_LEDGER_MAX_BYTES:
+        raise EpisodeContractError("Door ledger byte limit exceeded; no partial intake")
+    rows = _jsonl_from_bytes(payload, source=path)
+    if len(rows) > _DOOR_LEDGER_MAX_ROWS:
+        raise EpisodeContractError("Door ledger row limit exceeded; no partial intake")
+
+    events, suppressions = validate_ordinary_source_ownership(
+        existing_events, existing_suppressions
+    )
+    owners = {_ordinary_source_key(row): row for row in (*events, *suppressions)}
+    unique: dict[str, tuple[dict[str, object], str]] = {}
+    for row in rows:
+        if (row.get("schema") != "prophet_doors/v1"
+                or row.get("door") not in ("T", "R", "W")
+                or not isinstance(row.get("ticker"), str)
+                or not row["ticker"].strip()):
+            raise EpisodeContractError("Door source schema or identity is invalid")
+        day_text = row.get("date")
+        try:
+            day = date.fromisoformat(day_text) if isinstance(day_text, str) else None
+        except ValueError:
+            day = None
+        if day is None or day.isoformat() != day_text or not is_session(day):
+            raise EpisodeContractError("Door observation session is not an exchange session")
+        event_id = f"doors:{day_text}:{row['door']}:{row['ticker']}"
+        digest = _sha_receipt(canonical_json(row).encode("utf-8"))
+        old = unique.get(event_id)
+        if old is not None:
+            if old[1] != digest:
+                raise EpisodeContractError("Door source identity has conflicting receipts")
+            continue
+        unique[event_id] = (row, digest)
+        committed = owners.get(("doors", "prophet_doors/v1", event_id))
+        if committed is not None and committed.get("source_receipt") != digest:
+            raise EpisodeContractError("Door source receipt changed after it was committed")
+
+    selected: list[dict[str, object]] = []
+    for row, _digest in unique.values():
+        close = session_window_et(date.fromisoformat(str(row["date"])))[1]
+        clocks = [close.astimezone(timezone.utc)]
+        for field in ("signal_ts", "signal_known_ts", "observed_at"):
+            value = row.get(field)
+            if value is None:
+                continue
+            normalized_clock = _intake_timestamp(value, row["date"]) if isinstance(value, str) else None
+            if normalized_clock is None:
+                raise EpisodeContractError("Door explicit clock is invalid")
+            # The incumbent normalizer validates the source contract but emits
+            # whole seconds. Admission compares the original instant: rounding
+            # a future fractional timestamp down would consume it too early.
+            # Date-only inputs still use the owner-resolved exchange close.
+            precise_clock = normalized_clock if len(value) == 10 else value
+            clocks.append(datetime.fromisoformat(precise_clock.replace("Z", "+00:00")))
+        # Decide this before identity normalization: a future row must not become
+        # an irreversible identity suppression simply because it arrived early.
+        if all(value <= now for value in clocks):
+            selected.append(row)
+
+    # Reuse the original source-specific normalization. Do not edit raw rows to
+    # add a clock: that would change their immutable source_receipt fingerprints.
+    normalized = _unanchored_batch(
+        "doors", "prophet_doors/v1", selected, spine, session_key="date",
+        source_id=lambda row: f"doors:{row['date']}:{row['door']}:{row['ticker']}",
+        file_receipts=[{"path": str(path), "sha256": _sha_receipt(payload)}],
+    )
+    observations: list[dict[str, object]] = []
+    intake_suppressions = list(normalized.suppressions)
+    for observation in normalized.observations:
+        occurred = datetime.fromisoformat(str(observation["occurred_at"]).replace("Z", "+00:00"))
+        source_known = datetime.fromisoformat(str(observation["known_at"]).replace("Z", "+00:00"))
+        if occurred > now or source_known > now:
+            continue
+        committed = owners.get(_ordinary_source_key(observation))
+        if committed is not None and "suppression_id" in committed:
+            # Suppressions do not carry a precise known_at. Reuse their original
+            # immutable receipt instead of inventing one or reopening the source.
+            if any(committed.get(field) != observation.get(field)
+                   for field in ("security_id", "ticker_at_observation")):
+                raise EpisodeContractError("Door committed suppression identity changed")
+            intake_suppressions.append(dict(committed))
+            continue
+        first_known = committed.get("known_at") if committed is not None else None
+        if first_known is not None:
+            if datetime.fromisoformat(str(first_known).replace("Z", "+00:00")) > now:
+                raise EpisodeContractError("Door committed knowledge exceeds the intake clock")
+        else:
+            first_known = clock
+        observations.append({**observation, "known_at": first_known})
+
+    # Keep the existing closed receipt schema. The raw file digest still binds
+    # deferred rows; a later eligible clock changes the processed row count.
+    # An unchanged-input retry must not mint another generation just because
+    # the same source rows are already consumed.
+    receipt = dict(normalized.source_receipts[0])
+    receipt["rows"] = len(observations) + len(intake_suppressions)
+    return IntakeBatch(tuple(observations), tuple(intake_suppressions), (receipt,))
+
+
+def _load_intakes(
+    data_root: Path, *, allow_degraded_identity: bool, recorded_at: str,
+    existing_events: Sequence[Mapping[str, object]],
+    existing_suppressions: Sequence[Mapping[str, object]],
+):
     try:
         spine = load_identity_spine(data_root)
     except OSError:
@@ -141,7 +278,11 @@ def _load_intakes(data_root: Path, *, allow_degraded_identity: bool):
     batches = (
         turn_watch_observations(_latest_turn_watch(data_root), spine),
         candidate_observations(data_root, spine),
-        door_observations(data_root / "prophet_doors" / "flags.jsonl", spine),
+        _door_backlog_intake(
+            data_root / "prophet_doors" / "flags.jsonl", spine,
+            recorded_at=recorded_at, existing_events=existing_events,
+            existing_suppressions=existing_suppressions,
+        ),
         radar_observations(data_root / "entry_radar" / "forward.parquet", spine),
     )
     return spine.source_receipts, batches
@@ -405,7 +546,10 @@ def _load_and_build(*, repo_root: Path, recorded_at: str, correction_path: Path 
     episode_root = data_root / "us_prophet_rank" / "episodes"
     (existing_events, existing_suppressions, current_generation,
      previous_receipt) = _load_existing_ledgers(episode_root)
-    identity_receipts, batches = _load_intakes(data_root, allow_degraded_identity=mode != "nightly")
+    identity_receipts, batches = _load_intakes(
+        data_root, allow_degraded_identity=mode != "nightly", recorded_at=recorded_at,
+        existing_events=existing_events, existing_suppressions=existing_suppressions,
+    )
     observations = [row for batch in batches for row in batch.observations]
     intake_suppressions = [row for batch in batches for row in batch.suppressions]
     reconciled = reconcile_observations(

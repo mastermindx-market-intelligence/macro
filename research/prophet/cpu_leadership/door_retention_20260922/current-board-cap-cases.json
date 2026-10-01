@@ -1,0 +1,35 @@
+{
+  "source_ref": "668237947e016f679782e41e61c91c9133a5ea99",
+  "path": "site/factordata/us_standouts.json",
+  "sha256": "f97e95ed2c5b377b58c247a52ce0d769d2839183b1b550608123feb21404e7df",
+  "as_of": "2026-09-21",
+  "cases": [
+    {
+      "ticker": "MU",
+      "name": "Micron Technology Inc",
+      "lane": "more_actionable",
+      "headline_reason": "sector_cap_overflow",
+      "lane_reasons": [
+        "sector_cap_overflow"
+      ],
+      "pool_rank": 26,
+      "in_buy_lane": false,
+      "tier_cascade": "T1",
+      "prophet": null
+    },
+    {
+      "ticker": "ARM",
+      "name": "Arm Holdings (ADR)",
+      "lane": "more_actionable",
+      "headline_reason": "sector_cap_overflow",
+      "lane_reasons": [
+        "sector_cap_overflow"
+      ],
+      "pool_rank": 45,
+      "in_buy_lane": false,
+      "tier_cascade": null,
+      "prophet": null
+    }
+  ],
+  "scope": "current committed candidate pool; not live entry or final rank"
+}

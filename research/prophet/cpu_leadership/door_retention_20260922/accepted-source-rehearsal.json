@@ -1,0 +1,310 @@
+{
+  "source_ref": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+  "ingestion_clock": "2026-09-22T09:37:06Z",
+  "source_generation": "peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd",
+  "implementation_sources_sha256": {
+    "scripts/reconcile_us_candidate_episodes.py": "efedde5a4599e6c22ee829ee0e472464b9a66fbcc00d552992c843a5a674074b",
+    "engine/us_candidate_episode.py": "1b36e2612c1b367436f19705bbb233c85518848dd5561fdfde0fc6782d342070",
+    "engine/us_candidate_episode_intake.py": "c08addea7f08a19ceff17ecf6d9aa7bedabc1c6faf3222d893db8a3e816577ed",
+    "engine/session_digest.py": "25ae25d29f1a1e6ce7d38372bbfaaf03e18925072e41aaea8bc3c1c730a14191",
+    "engine/ledger_lane.py": "7462536242fc9563f4037c87927c4e5524fd9b6ecbe0b3275528d8ce67d88bf0",
+    "lib/nyse_calendar.py": "7c9167fd416babb64c3067ae7e6237615011ad79e26d826e57005486496410ce"
+  },
+  "full_writer": {
+    "status": "passed",
+    "receipt": {
+      "schema": "prophet.candidate_episode_reconcile_receipt/v1",
+      "mode": "report",
+      "gate": {
+        "nightly_requested": false,
+        "nightly_advance_enabled": false
+      },
+      "durable_write": false,
+      "recorded_at": "2026-09-22T09:37:06Z",
+      "definition_era": "candidate-episode-v1-2026-08-25",
+      "source_hashes": {
+        "data/prophet_doors/flags.jsonl": "sha256:b2a6a45bf9122fc22132b3827ef5ab551ff247dd4ea638b5d6c7070fb2d3614d",
+        "data/reference/security_master.parquet": "sha256:ba7a5f21c9e77fcc61b7f17163c85b067c6d08ddc38d6853c2079db3f12234d2",
+        "data/reference/vendor_aliases.parquet": "sha256:7cd88634d2b3538067af6f8bd018b656f7b053bc34aa783e5f0f82d1430286ad",
+        "data/us_prophet_rank/candidates/2026-07.parquet": "sha256:1890fed2039d86203f4557c324912a429c729c713444c6ddb4e5fb1be984cf33",
+        "data/us_prophet_rank/candidates/2026-08.parquet": "sha256:690aa6c02961743217e767758dc0e525d3dd4fa4a0895dc58213589a860ccdc0",
+        "data/us_prophet_rank/candidates/2026-09.parquet": "sha256:ef1d83416254890e1e51b020c9b8fd42ee64b001582bdae5e74342892dd42bab",
+        "data/us_prophet_rank/episode_inputs/turn_watch/2026-09-17.json": "sha256:a8cf92af1d6429ae30dc9ab2592d67da8c51d18b4c7d2dec5b93e84fc832beb9"
+      },
+      "source_counts": {
+        "candidate": {
+          "input": 2932,
+          "mapped": 892,
+          "suppressed": 2040
+        },
+        "doors": {
+          "input": 167,
+          "mapped": 125,
+          "suppressed": 42
+        },
+        "entry_radar": {
+          "input": 0,
+          "mapped": 0,
+          "suppressed": 0
+        },
+        "turn_watch": {
+          "input": 3047,
+          "mapped": 244,
+          "suppressed": 2803
+        }
+      },
+      "counts": {
+        "input": 6146,
+        "mapped": 1261,
+        "suppressed": 4885,
+        "ledger_suppressions": 28382,
+        "old_events": 4977,
+        "new_events": 5092,
+        "appended_events": 115
+      },
+      "ledger_sha256": "sha256:3d9f3abf4ff73e35649ddb93feeb8bc9921bd862764b89f0c1e45465395528ef",
+      "projection_hashes": {
+        "all_candidates.json": "sha256:b6a752a23dd5dfc2df20e8d23f9f80c824b73c16fd634e2e1d733adc0c8a5f75",
+        "current.parquet": "sha256:458a8b6e609a743229c90b2e6f0e952e095dd30b03aecce1e7eb855bb9596ef6"
+      },
+      "source_receipts": [
+        {
+          "source": "turn_watch",
+          "status": "ok",
+          "rows": 3047,
+          "files": [
+            {
+              "path": "data/us_prophet_rank/episode_inputs/turn_watch/2026-09-17.json",
+              "sha256": "sha256:a8cf92af1d6429ae30dc9ab2592d67da8c51d18b4c7d2dec5b93e84fc832beb9"
+            }
+          ]
+        },
+        {
+          "source": "candidate",
+          "status": "ok",
+          "rows": 2932,
+          "files": [
+            {
+              "path": "data/us_prophet_rank/candidates/2026-07.parquet",
+              "sha256": "sha256:1890fed2039d86203f4557c324912a429c729c713444c6ddb4e5fb1be984cf33"
+            },
+            {
+              "path": "data/us_prophet_rank/candidates/2026-08.parquet",
+              "sha256": "sha256:690aa6c02961743217e767758dc0e525d3dd4fa4a0895dc58213589a860ccdc0"
+            },
+            {
+              "path": "data/us_prophet_rank/candidates/2026-09.parquet",
+              "sha256": "sha256:ef1d83416254890e1e51b020c9b8fd42ee64b001582bdae5e74342892dd42bab"
+            }
+          ]
+        },
+        {
+          "source": "doors",
+          "status": "ok",
+          "rows": 167,
+          "files": [
+            {
+              "path": "data/prophet_doors/flags.jsonl",
+              "sha256": "sha256:b2a6a45bf9122fc22132b3827ef5ab551ff247dd4ea638b5d6c7070fb2d3614d"
+            }
+          ]
+        },
+        {
+          "source": "entry_radar",
+          "status": "degraded",
+          "reason": "MISSING_SOURCE_FILE"
+        }
+      ]
+    },
+    "fixture_unchanged": true
+  },
+  "accepted_source_control": {
+    "input_ref": "4b2928bdf02ea181d8f28ea411370b9c8922b058",
+    "hash_matched_sources": {
+      "data/prophet_doors/flags.jsonl": "sha256:fd07874fbf2ce305c222cdfa152a7de1685bb133a0ee8c9e2358194353634448",
+      "data/reference/security_master.parquet": "sha256:ba7a5f21c9e77fcc61b7f17163c85b067c6d08ddc38d6853c2079db3f12234d2",
+      "data/reference/vendor_aliases.parquet": "sha256:7cd88634d2b3538067af6f8bd018b656f7b053bc34aa783e5f0f82d1430286ad",
+      "data/us_prophet_rank/candidates/2026-07.parquet": "sha256:1890fed2039d86203f4557c324912a429c729c713444c6ddb4e5fb1be984cf33",
+      "data/us_prophet_rank/candidates/2026-08.parquet": "sha256:690aa6c02961743217e767758dc0e525d3dd4fa4a0895dc58213589a860ccdc0",
+      "data/us_prophet_rank/candidates/2026-09.parquet": "sha256:ef1d83416254890e1e51b020c9b8fd42ee64b001582bdae5e74342892dd42bab",
+      "data/us_prophet_rank/episode_inputs/turn_watch/2026-09-17.json": "sha256:a8cf92af1d6429ae30dc9ab2592d67da8c51d18b4c7d2dec5b93e84fc832beb9"
+    },
+    "baseline_matches": {
+      "ledger_sha256": true,
+      "projection_hashes": true,
+      "source_hashes": true
+    },
+    "baseline_appended_events": 0,
+    "scope": "historical accepted-source control, NOT current-source acceptance"
+  },
+  "source_generation_recorded_at": "2026-09-18T09:08:31Z",
+  "baseline_latest_only": 6,
+  "candidate_completed_unique": 167,
+  "previously_owned": 21,
+  "newly_accounted": 146,
+  "new_event_count": 115,
+  "new_suppression_count": 31,
+  "new_suppression_reasons": {
+    "IDENTITY_UNRESOLVED": 20,
+    "MISSING_STRUCTURAL_ANCHOR": 11
+  },
+  "motivating_cases": [
+    {
+      "source_event_id": "doors:2026-09-10:T:INTC",
+      "source_receipt": "sha256:e63bc5548d10092ee7f8cb747b9639ed7270b8e7093081efc1fd2eaa1d6edb07",
+      "event_type": "OBSERVED",
+      "known_at": "2026-09-22T09:37:06Z",
+      "occurred_at": "2026-09-10T20:00:00Z",
+      "recorded_at": "2026-09-22T09:37:06Z",
+      "observation_session": null,
+      "reason": null,
+      "episode_id": "pe:SEC:US-XNAS-INTC:epoch_0:sa:bf66a0f3a6de6be82f076d7b:1"
+    },
+    {
+      "source_event_id": "doors:2026-09-10:T:MU",
+      "source_receipt": "sha256:643a5660144f19b7a6bbd4d3f7ef7e467ceadd43d0913e4a0f1cae85657c5d03",
+      "event_type": "OBSERVED",
+      "known_at": "2026-09-22T09:37:06Z",
+      "occurred_at": "2026-09-10T20:00:00Z",
+      "recorded_at": "2026-09-22T09:37:06Z",
+      "observation_session": null,
+      "reason": null,
+      "episode_id": "pe:SEC:US-XNAS-MU:epoch_0:sa:a3d9222b5339e5e8e2994499:1"
+    },
+    {
+      "source_event_id": "doors:2026-09-18:T:AMD",
+      "source_receipt": "sha256:5edf9b7b24aeaf3625b59f19568f6ba0ba98a7e4711224a44126beb83f749ff6",
+      "event_type": "OBSERVED",
+      "known_at": "2026-09-22T09:37:06Z",
+      "occurred_at": "2026-09-18T20:00:00Z",
+      "recorded_at": "2026-09-22T09:37:06Z",
+      "observation_session": null,
+      "reason": null,
+      "episode_id": "pe:SEC:US-XNAS-AMD:epoch_0:sa:3387a9e95425cbe74f4f489a:1"
+    }
+  ],
+  "repeat_new_events": 0,
+  "all_submitted_have_owner": true,
+  "original_events_and_suppressions_unchanged": true,
+  "all_input_files_unchanged": true,
+  "canonical_writes": false,
+  "provider_requests": false,
+  "plan_or_trade_authority_changed": false,
+  "performance_validation": false,
+  "limitations": [
+    "Nonwriting intake/core proof only; not a scheduled production run.",
+    "Stored event dates are not first publication timestamps.",
+    "Existing TURN WATCH and candidate sources are not rebuilt."
+  ],
+  "sources": [
+    {
+      "source_ref": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+      "path": "data/us_prophet_rank/episodes/HEAD.json",
+      "sha256": "d7d67e582af3ddf629efd0567fed217de1f860fede1943d0ade3900cd4530206",
+      "bytes": 310
+    },
+    {
+      "source_ref": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/manifest.json",
+      "sha256": "e325bbe39f352521d17a96007f8a8f60149d338cd52cfb648900efa9910e0b31",
+      "bytes": 1112
+    },
+    {
+      "source_ref": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/all_candidates.json",
+      "sha256": "0d595a2a7534594a1439214cad7ea3f9c3319ad3f0d97ab0af64af8a1753655f",
+      "bytes": 1263888
+    },
+    {
+      "source_ref": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/current.parquet",
+      "sha256": "1eff933949dab5236c919e78532eb546f9e9ce604d5a0e2679a5e4dd7328b639",
+      "bytes": 74379
+    },
+    {
+      "source_ref": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/events/2026-08.jsonl",
+      "sha256": "b47a60f891e1e8e8a512e29e88758fdd5394e6882d81c146d167d159cbc5eb06",
+      "bytes": 1493097
+    },
+    {
+      "source_ref": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/events/2026-09.jsonl",
+      "sha256": "29054d16c64b689f50761f4f1115e19c60cbfd6b7fef8d6eedd0dbba932a57c0",
+      "bytes": 3659964
+    },
+    {
+      "source_ref": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/latest_receipt.json",
+      "sha256": "1c49be944acae2f07cb3330e6a6b304642e4f925b51031527f973d8aa15b0066",
+      "bytes": 2767
+    },
+    {
+      "source_ref": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/suppressions/2026-08.jsonl",
+      "sha256": "ef459116e5dc8d89b110f374c81d2bb7e27ff0c3185a646557e636cc96de2565",
+      "bytes": 5808248
+    },
+    {
+      "source_ref": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+      "path": "data/us_prophet_rank/episodes/generations/peg:81cd578b9e4a5413b3fffe63506d4913691f7b0b0816334568f6b749fd4a1cfd/suppressions/2026-09.jsonl",
+      "sha256": "a9564b7e1546ffe32b049d2286aadd62ea486831f3ba1c1b2b7d974708508a00",
+      "bytes": 11875719
+    },
+    {
+      "source_ref": "4b2928bdf02ea181d8f28ea411370b9c8922b058",
+      "path": "data/prophet_doors/flags.jsonl",
+      "sha256": "fd07874fbf2ce305c222cdfa152a7de1685bb133a0ee8c9e2358194353634448",
+      "bytes": 125131
+    },
+    {
+      "source_ref": "4b2928bdf02ea181d8f28ea411370b9c8922b058",
+      "path": "data/reference/security_master.parquet",
+      "sha256": "ba7a5f21c9e77fcc61b7f17163c85b067c6d08ddc38d6853c2079db3f12234d2",
+      "bytes": 79259
+    },
+    {
+      "source_ref": "4b2928bdf02ea181d8f28ea411370b9c8922b058",
+      "path": "data/reference/vendor_aliases.parquet",
+      "sha256": "7cd88634d2b3538067af6f8bd018b656f7b053bc34aa783e5f0f82d1430286ad",
+      "bytes": 43850
+    },
+    {
+      "source_ref": "4b2928bdf02ea181d8f28ea411370b9c8922b058",
+      "path": "data/us_prophet_rank/candidates/2026-07.parquet",
+      "sha256": "1890fed2039d86203f4557c324912a429c729c713444c6ddb4e5fb1be984cf33",
+      "bytes": 702725
+    },
+    {
+      "source_ref": "4b2928bdf02ea181d8f28ea411370b9c8922b058",
+      "path": "data/us_prophet_rank/candidates/2026-08.parquet",
+      "sha256": "690aa6c02961743217e767758dc0e525d3dd4fa4a0895dc58213589a860ccdc0",
+      "bytes": 6541018
+    },
+    {
+      "source_ref": "4b2928bdf02ea181d8f28ea411370b9c8922b058",
+      "path": "data/us_prophet_rank/candidates/2026-09.parquet",
+      "sha256": "ef1d83416254890e1e51b020c9b8fd42ee64b001582bdae5e74342892dd42bab",
+      "bytes": 5658443
+    },
+    {
+      "source_ref": "4b2928bdf02ea181d8f28ea411370b9c8922b058",
+      "path": "data/us_prophet_rank/episode_inputs/turn_watch/2026-09-17.json",
+      "sha256": "a8cf92af1d6429ae30dc9ab2592d67da8c51d18b4c7d2dec5b93e84fc832beb9",
+      "bytes": 4666253
+    },
+    {
+      "source_ref": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+      "path": "scripts/reconcile_us_candidate_episodes.py",
+      "sha256": "f469c4fac8302b71e48865dd89cec0d59199ae3a6f6fded2e50530135589e1ba",
+      "bytes": 27893
+    },
+    {
+      "source_ref": "d0a5ca2e717e9bc85744f551687bf47f7c7a6f34",
+      "path": "data/prophet_doors/flags.jsonl",
+      "sha256": "b2a6a45bf9122fc22132b3827ef5ab551ff247dd4ea638b5d6c7070fb2d3614d",
+      "bytes": 131452
+    }
+  ],
+  "elapsed_seconds": 188.626
+}
