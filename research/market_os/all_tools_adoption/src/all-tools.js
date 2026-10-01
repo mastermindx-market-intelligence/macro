@@ -177,7 +177,7 @@
         });
       }
       status.textContent = searching ? say(items.length+' matching destinations. Search includes every category.',items.length+' 个匹配目的地，范围涵盖所有分类。') : '';
-      validateDestinations();
+      reconcileDestinations();
       if (focusedHref && live) {
         var replacement = Array.from(list.querySelectorAll('a[data-tools-href]')).find(function(a){return a.dataset.toolsHref===focusedHref && a.hasAttribute('href');});
         (replacement || title).focus({preventScroll:true});
@@ -212,7 +212,7 @@
       a.setAttribute('aria-disabled','true');
       a.setAttribute('tabindex','-1');
     }
-    function validateDestinations() {
+    function reconcileDestinations() {
       if (!snapshot) return;
       var links = Array.from(list.querySelectorAll('a[data-tools-href]'));
       var invalid = 0;
@@ -232,7 +232,7 @@
       if (!a || !list.contains(a) || !snapshot) return;
       var source=snapshot.refs[a.dataset.toolsHref];
       if (withdrawn[a.dataset.toolsHref] || !sourceEnabled(source,root) || !sameSourceLink(a,source)) {
-        e.preventDefault(); rejectDestination(a); validateDestinations();
+        e.preventDefault(); rejectDestination(a); reconcileDestinations();
         status.textContent=say('This destination changed. Close and reopen tools to refresh.','此目的地已变化，请关闭并重新打开工具菜单。');
       }
       // Valid links retain native click, auxiliary-button and context-menu behavior.
@@ -251,7 +251,7 @@
       if(typeof win.MutationObserver==='function') {
         observer=new win.MutationObserver(function(){
           if(!live||!snapshot)return;
-          validateDestinations();
+          reconcileDestinations();
         });
         observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['href','target','hidden','aria-disabled','data-nav-disabled']});
       }

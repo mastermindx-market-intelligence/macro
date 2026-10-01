@@ -51,7 +51,7 @@ test('late ownership result is discarded after account change',async()=>{
  const e=boot(),h=holdNext(e.db,'watchlists');const p=inspect(e);await h.seen;e.ws.onAuthUser(null);h.release();const r=await p;assert.equal(r.state,'stale-session');assert.equal(r.listName,null);assert.equal(r.listId,null);assert.equal(e.db.ops.length,1);
 });
 test('late membership result is discarded after account change',async()=>{
- const e=boot(),h=holdNext(e.db,'watchlist_symbols');const p=inspect(e);await h.seen;e.ws.onAuthUser(null);h.release();const r=await p;assert.equal(r.state,'stale-session');assert.equal(r.listName,null);assert.equal(r.observedAt,null);assert.deepEqual(e.events,[]);
+ const e=boot(),h=holdNext(e.db,'watchlist_symbols');const p=inspect(e);await h.seen;e.ws.onAuthUser(null);const signOutEvents=e.events.slice();h.release();const r=await p;assert.equal(r.state,'stale-session');assert.equal(r.listName,null);assert.equal(r.observedAt,null);assert.deepEqual(signOutEvents,['local']);assert.deepEqual(e.events,signOutEvents);
 });
 function overrideRead(e,table,resolve){const from=e.db.client.from;e.db.client.from=function(t){const q=from(t),run=q.__run;q.__run=function(){return t===table?resolve():run();};return q;};}
 test('ownership read failure is unavailable and reveals no list name',async()=>{const e=boot();overrideRead(e,'watchlists',()=>Promise.reject(new Error('secret SQL detail')));const r=await inspect(e);assert.equal(r.state,'unavailable');assert.equal(r.listName,null);assert.equal(JSON.stringify(r).includes('secret'),false);});

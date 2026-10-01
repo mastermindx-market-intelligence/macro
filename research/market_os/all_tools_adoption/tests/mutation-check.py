@@ -4,7 +4,7 @@ import os, json, subprocess, tempfile, hashlib
 ROOT=Path(__file__).resolve().parents[1]
 s=(ROOT/'src/all-tools.js').read_text()
 cases={
- 'redraw_revalidation_removed':('      validateDestinations();\n      if (focusedHref && live)', '      /* broken redraw check */\n      if (focusedHref && live)'),
+ 'redraw_revalidation_removed':('      reconcileDestinations();\n      if (focusedHref && live)', '      /* broken redraw check */\n      if (focusedHref && live)'),
  'auxclick_guard_removed':("    list.addEventListener('auxclick',guardDestination);",'/* broken auxiliary-click guard */'),
  'contextmenu_guard_removed':("    list.addEventListener('contextmenu',guardDestination);",'/* broken context-menu guard */'),
  'destination_focus_removed':('        (replacement || title).focus({preventScroll:true});','        /* broken focus restoration */'),
@@ -22,7 +22,7 @@ with tempfile.TemporaryDirectory(prefix='mmx-r23-mutants-') as tmp:
  for name,(a,b) in cases.items():
   assert s.count(a)==1,(name,s.count(a))
   mutant=Path(tmp)/(name+'.js');mutant.write_text(s.replace(a,b))
-  p=subprocess.run(['node','--test']+[str(ROOT/'tests'/n) for n in ('navigation.test.cjs','controller.test.cjs','refresh-boundaries.test.cjs')],env={**os.environ,'ALL_TOOLS_SOURCE':str(mutant)},text=True,capture_output=True,timeout=15)
+  p=subprocess.run(['node','--test','--test-reporter=tap']+[str(ROOT/'tests'/n) for n in ('navigation.test.cjs','controller.test.cjs','refresh-boundaries.test.cjs')],env={**os.environ,'ALL_TOOLS_SOURCE':str(mutant)},text=True,capture_output=True,timeout=15)
   failures=[line for line in p.stdout.splitlines() if line.startswith('not ok ')]
   detected=p.returncode==1 and bool(failures) and 'SIGKILL' not in p.stdout
   results.append({'name':name,'detected':detected,'exit':p.returncode,'failures':failures,'sha256':hashlib.sha256(mutant.read_bytes()).hexdigest()})

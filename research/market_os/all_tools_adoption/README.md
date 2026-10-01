@@ -48,7 +48,9 @@ python tests/mutation-check.py
 python tests/template-contract.py
 ```
 
-The last command requires Jinja2; it is retained from R22 and was not rerun here. The updated mutation script uses only Python standard library and Node. These research-package tests are not yet registered in production CI. Use the existing navigation/product-chrome owner when adopting them; do not add a parallel workflow.
+The last command requires Jinja2; it is retained from R22 and was not rerun in that research phase. The updated mutation script uses only Python standard library and Node.
+
+Adoption update (2026-10-01): `tests/test_all_tools_menu.py` now extracts the shipped controller from `templates/nav_market.js`, executes the 97-case Node behavior contract, and checks the Jinja/template/site integration under the existing `unrun-nav-chrome` product-navigation owner in `.github/ci/legacy-jobs.yml`. No parallel workflow, job, catalogue, router, store, or navigation owner was added. Historical R22/R23 evidence below remains historical rather than being rewritten as current release proof.
 
 ## Recovery and source identity
 
