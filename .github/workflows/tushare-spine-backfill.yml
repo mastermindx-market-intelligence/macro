@@ -6,16 +6,17 @@ name: tushare-spine-backfill
 # trigger — so it can never enter the nightly render budget. It writes only to the
 # private store below and never to `data/`, `site/`, or the repo.
 #
-# THE THREE MODES AND WHICH ONE IS GATED
-# `plan` is network-free. `canary` is a REAL but hard-bounded window that
-# `collect(canary=True)` permits while `BULK_HISTORICAL_BACKFILL_READY` is still
-# `False` — at most 12 requests over at most 5 calendar days, never with
-# --allow-bulk, and a documented row cap REFUSES rather than starting the unproven
-# ticker-range campaign. `backfill` is the full range campaign and stays refused:
-# `collect()` raises SpineError before any store or network use until that gate is
-# promoted in a SEPARATE reviewed change citing canary receipts.
-# A red `backfill` run here is therefore the gate working, not a broken lane — do
-# not "fix" it by touching the gate constant.
+# THE THREE MODES AND THE TECHNICAL GATE
+# `plan` is network-free. `canary` is always a REAL hard-bounded window — at most
+# 12 requests over at most 5 calendar days, never with --allow-bulk. Before the
+# readiness promotion, a documented row cap refused rather than starting the
+# range campaign. `backfill` is the full resumable range campaign and is permitted
+# only when the CHECKED-OUT collector has `BULK_HISTORICAL_BACKFILL_READY=True`.
+# That flag was promoted only by the separate reviewed 2026-09-12 change citing
+# exact-head canary run 33043190487 and the unchanged #5523 adversarial range
+# suite. The workflow never flips or bypasses the flag itself. Run the first
+# bounded `backfill` from the reviewed/promoted main ref; that execution is the
+# range path's production proof, not evidence retroactively assumed by this lane.
 # The gate is purely TECHNICAL (canary parity, throughput, range/completeness
 # correctness) and is never a licensing gate: TuShare compliance is
 # CHAIRMAN_VERIFIED_PRIVATE / SATISFIED, settled outside this repository
@@ -30,7 +31,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "plan = network-free dry run; canary = real HARD-BOUNDED window (<=12 requests, <=5 days); backfill = full range campaign (refused while BULK_HISTORICAL_BACKFILL_READY is False)"
+        description: "plan = network-free dry run; canary = real HARD-BOUNDED window (<=12 requests, <=5 days); backfill = full range campaign (requires BULK_HISTORICAL_BACKFILL_READY=True in checked-out ref)"
         type: choice
         options: [plan, canary, backfill]
         default: plan
@@ -106,7 +107,7 @@ jobs:
           case "$MODE" in
             plan)     ARGS+=(--dry-run) ;;
             canary)   ARGS+=(--canary) ;;
-            backfill) : ;;  # gated: collect() refuses until the bulk gate is promoted
+            backfill) : ;;  # technical gate is enforced inside collect(); this lane has no bypass
             *) echo "::error title=tushare-spine-mode::unknown mode '$MODE'"; exit 2 ;;
           esac
           python -m collectors.china_tushare_spine "${ARGS[@]}"
