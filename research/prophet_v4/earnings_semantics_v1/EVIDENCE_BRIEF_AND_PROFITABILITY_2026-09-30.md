@@ -123,7 +123,7 @@ pass with this repair; hosted differential/current-base acceptance remains owed.
 
 **538 tests PASS /12 warnings /0 skips** in the four-file battery: the three
 prior earnings/D5/API suites plus all252 native deploy-update tests. The earnings
-portion now has284cases, including53new brief/profitability cases. Old counts
+portion now has286cases, including55new brief/profitability cases. Old counts
 are subsets, not additional tests or market observations.
 
 ```

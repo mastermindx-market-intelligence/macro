@@ -5,9 +5,9 @@ model: sol
 ended_because: blocked
 prs:
 - 8189
-mission: Deliver the connected earnings evidence brief and comparable profitability
-  mechanism; repair exact CI blockers. MISSION_COMPLETE:false; no live rank/policy
-  promotion.
+mission: Advance connected earnings explanation and profitability, then test a public
+  profitability-selection baseline. MISSION_COMPLETE:false; production and native
+  model promotion remain unproven.
 state_before: The D5/API delivered source-qualified revenue and the earnings engine
   had guidance math, but no integrated support/counterevidence explanation or comparable
   profit-margin bridge.
@@ -36,11 +36,14 @@ changed:
 - path: research/prophet_v4/earnings_semantics_v1/PROFITABILITY_CASE_2026-09-30.json
   what: Historical Micron GAAP statement figures and exact rational arithmetic; historical
     system clocks remain unknown.
+- path: research/prophet_v4/earnings_semantics_v1/public_profitability_baseline
+  what: Outcome-blind fixed public profitability comparison, exact raw-source/reproduction
+    identities and derived aggregate results; no native outcome/model changes.
 verified:
 - claim: Actual native earnings/D5/API and entire deploy-update tests pass.
   command: python3.12 -m pytest tests/test_us_prophet_fusion.py tests/test_intelligence_vector_units.py
     tests/test_prophet_lab_api.py tests/test_deploy_update_self_heal.py -q
-  result: 536passed/12warnings/0skips:284earnings/D5/API plus252deployment fixtures.
+  result: 536passed/12warnings/0skips:286earnings/D5/API plus252deployment fixtures.
     LogSHA256 99200a023e695e8d17c4c28f57ea0eb2bacd3814e8728ce07179dbf3f2f43bf1.
 - claim: Native brief is connected and discriminates economic misinterpretation.
   command: decision-brief-r2/fault_checks.py plus bounded log reconciliation
@@ -50,6 +53,12 @@ verified:
   command: Exact Fraction calculation on declared SEC quarterly GAAP values.
   result: 2132USDmillion change =925.6901369863 symmetric revenue term +1206.3098630137
     margin term; not causal attribution or financial performance.
+- claim: The public profitability baseline is complete and exactly reproducible.
+  command: public_profitability_baseline.py --output-dir <owned-fresh-directory> --archive
+    <exact-retained-public-archive>
+  result: 758monthly observations; high-minus-low mean2.8650percentagepoints annualized.
+    Exact resultSHA256777d9ff1e83bce61f962e6a9ec6aa876691da0451e2380d79e36132a7aefc209;
+    no executable trade/cost or native alpha claim.
 unverified:
 - claim: Exact new-head/current-base hosted acceptance and ordinary paid-user UI/read/refresh.
   what_would_verify: Concluded required checks, native source-release prerequisites
@@ -65,6 +74,8 @@ unresolved:
   remain held; no proxy.
 - Profitability input coverage is not added to D5 by this arithmetic/brief; unavailable
   inputs remain explicit.
+- The public baseline does not supply issuer point-in-time profitability fields, source
+  permissions, executable returns or model promotion.
 next_actions:
 - Consume new-head CI and resolve actual remaining source-release failures without
   new unrelated work.
@@ -72,6 +83,9 @@ next_actions:
   when the exact held actions can lawfully resume.
 - Qualify profitability/guidance source coverage and its accepted price/sector-controlled
   selection test; preserve H1/Cycle and prior trial history.
+- Native selection work should distinguish profitability level/change and valuation,
+  retain price/sector baseline, and qualify risk independently rather than assigning
+  an automatic quality bonus.
 do_not_redo:
 - 'Do not recreate #8069 source records or #7426 clock/index work.'
 - Do not regrade prior C1/H1/Cycle outcomes or enable a ranking/entry policy.
@@ -79,6 +93,8 @@ do_not_redo:
   another route.
 - Do not recount old test totals, replay completed fault controls or infer return
   predictability from margin arithmetic.
+- Do not rerun the fixed public baseline as another independent trial; exact code/input/result
+  is retained. A different vintage or hypothesis must be explicitly distinguished.
 danger_areas:
 - Original source-vintage reconstruction must not be mislabeled an original as-run
   recommendation.
@@ -89,8 +105,10 @@ danger_areas:
 - Scenario per-share/price inputs must not appear as source-qualified company facts
   or live quotes.
 - Six correlated accounting observations are not six independent confidence votes.
+- Highest-profitability public portfolios are not universally best or safest; do not
+  select a winning bin or scoring weight from this diagnostic after seeing results.
 ---
 
-# Connected earnings evidence continuation
+# Earnings implementation and public baseline continuation
 
-MISSION_COMPLETE:false. Primary assignment and original source carrier preserved. No live release, financial authority or background execution is claimed.
+MISSION_COMPLETE:false. Three material phases saved; original source carrier and financial gates preserved. No background reasoning, new worker or live deployment.
