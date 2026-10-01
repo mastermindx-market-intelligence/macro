@@ -11,9 +11,27 @@
     {
       "clusters": [
         {
-          "n_events": 6,
+          "n_events": 44,
+          "source": "prophet_ledger",
+          "theme": null,
+          "top_events": []
+        },
+        {
+          "n_events": 11,
           "source": "earnings_call",
           "theme": "earnings",
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "macro_release",
+          "theme": "pce_core",
+          "top_events": []
+        },
+        {
+          "n_events": 1,
+          "source": "macro_release",
+          "theme": "pce_headline",
           "top_events": []
         },
         {
@@ -423,7 +441,7 @@
     {
       "clusters": [
         {
-          "n_events": 1189,
+          "n_events": 1190,
           "source": "earnings_call",
           "theme": "earnings",
           "top_events": []
@@ -545,16 +563,6 @@
           "source": "research_vault",
           "theme": null,
           "top_events": [
-            {
-              "date": "2026-07-24",
-              "id": "cev-research_vault-16f61baeb104",
-              "kind": "report",
-              "source": "research_vault",
-              "source_ref": "marketdesk-srwcvprptla-0a320e",
-              "tickers": [],
-              "title": "Goldman Sachs: Global Rates Trader Priced For Surprise",
-              "weight_hint": 3
-            },
             {
               "date": "2026-07-26",
               "id": "cev-research_vault-1b1a30ca03e5",

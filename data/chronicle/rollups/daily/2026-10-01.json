@@ -1,12 +1,20 @@
 {
   "as_of": "2026-10-01",
   "coverage": {
-    "end": "2026-09-28",
-    "note": "daily rollup covers 10 session-date(s) from 2026-09-17 to 2026-09-28; chronicle event store begins 2013-04-02; trimmed lowest-salience events to fit the display budget",
-    "start": "2026-09-17"
+    "end": "2026-09-30",
+    "note": "daily rollup covers 10 session-date(s) from 2026-09-19 to 2026-09-30; chronicle event store begins 2013-04-02; trimmed lowest-salience events to fit the display budget",
+    "start": "2026-09-19"
   },
   "schema": "chronicle.rollup.daily/v1",
   "sessions": [
+    {
+      "date": "2026-09-30",
+      "events": []
+    },
+    {
+      "date": "2026-09-29",
+      "events": []
+    },
     {
       "date": "2026-09-28",
       "events": [
@@ -70,184 +78,195 @@
     },
     {
       "date": "2026-09-19",
-      "events": []
-    },
-    {
-      "date": "2026-09-18",
       "events": [
         {
-          "date": "2026-09-18",
-          "id": "cev-research_vault-5afdefc17403",
+          "date": "2026-09-19",
+          "id": "cev-research_vault-a998a82c550c",
           "kind": "report",
           "source": "research_vault",
-          "source_ref": "marketdesk-fip581gs8cw-ae1704",
+          "source_ref": "marketdesk-o8rze9rq7rc-9def93",
           "tickers": [],
-          "title": "S&T: GS Mourad post Fed what's working what's not working 17 Sep 2026",
-          "weight_hint": 3
-        }
-      ]
-    },
-    {
-      "date": "2026-09-17",
-      "events": [
-        {
-          "date": "2026-09-17",
-          "id": "cev-research_vault-cf288ca2fb96",
-          "kind": "report",
-          "source": "research_vault",
-          "source_ref": "marketdesk-g3bugkjjgib-77331c",
-          "tickers": [],
-          "title": "J.P. Morgan: JPM International Market Intelligence | Morning Briefing",
-          "weight_hint": 3
-        },
-        {
-          "date": "2026-09-17",
-          "id": "cev-research_vault-c35869c61219",
-          "kind": "report",
-          "source": "research_vault",
-          "source_ref": "marketdesk-aybb3ogdul2-c7adbf",
-          "tickers": [],
-          "title": "S&T: Daily ShortActivity16Sept2026 US CLEARED",
+          "title": "UBS: Emerging markets bonds for all investors",
           "weight_hint": 2
         },
         {
-          "date": "2026-09-17",
-          "id": "cev-research_vault-c74cb728e2d2",
+          "date": "2026-09-19",
+          "id": "cev-research_vault-ac45d0b9b057",
           "kind": "report",
           "source": "research_vault",
-          "source_ref": "marketdesk-e8bh0pdjlpm-ce870e",
+          "source_ref": "marketdesk-rff9ysonlha-7c366d",
           "tickers": [],
-          "title": "S&T: GS Johnstone GS TMT SPEC SALES EU Communacopia Day 2 wrap Nebius raises GPU prices Allegro OnSemi CMD PUB raise Ai Security 17 Sep 2026",
+          "title": "UBS: Listed real estate",
           "weight_hint": 2
         },
         {
-          "date": "2026-09-17",
-          "id": "cev-research_vault-cbeb6afffdc6",
+          "date": "2026-09-19",
+          "id": "cev-research_vault-b4b979673c1f",
           "kind": "report",
           "source": "research_vault",
-          "source_ref": "marketdesk-yisfnkw53ht-c99833",
+          "source_ref": "marketdesk-wxscncdv00q-d14faa",
           "tickers": [],
-          "title": "J.P. Morgan: JPM Europe Equity Research | Today’s Morning Meeting",
+          "title": "UBS: Opportunities emerging in fixed income",
           "weight_hint": 2
         },
         {
-          "date": "2026-09-17",
-          "id": "cev-research_vault-ce94230c9e10",
+          "date": "2026-09-19",
+          "id": "cev-research_vault-b6927a7d88e0",
           "kind": "report",
           "source": "research_vault",
-          "source_ref": "marketdesk-dumk753cf2w-385ca6",
+          "source_ref": "marketdesk-rmr6otor5t1-6a4076",
+          "tickers": [],
+          "title": "UBS: Chinese government bonds",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-b7cf64f3b130",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-xeganueolpu-b1b69d",
+          "tickers": [],
+          "title": "UBS: Weekly - Regional View Italian",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-bd878e0042f8",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-jtewlvpnwsc-fb278b",
+          "tickers": [],
+          "title": "UBS: China A-shares",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-c0855ecb49c0",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-yhuefzqqomd-51dec6",
+          "tickers": [],
+          "title": "UBS: High grade",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-c8413e5896a3",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-34j7wqdxwcn-3fae93",
+          "tickers": [],
+          "title": "UBS: At a Glance",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-d9c48ef812f1",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-wqqqu8shu3u-cd8796",
+          "tickers": [],
+          "title": "UBS: Position for a commodity upcycle",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-dbe4c01e2324",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-wrczpkxknwa-d33fee",
+          "tickers": [],
+          "title": "UBS: Investing in China (onshore)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-e264bac9c764",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-hv77u8vrz6v-192585",
+          "tickers": [],
+          "title": "UBS: Private debt",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-e436965c2a1d",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-tqf3g8jusrd-f2b69d",
+          "tickers": [],
+          "title": "UBS: Asia Pacific equities",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-e4fc43ccbf8b",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-g8bwnwzqplk-c4eb26",
+          "tickers": [],
+          "title": "UBS: Transformational Innovation Opportunities (TRIO)",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-edcf3684122d",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-fdbolpd0jhx-1b9510",
+          "tickers": [],
+          "title": "Nordea: Macro & Markets forecast edition",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-f038b74ad4cd",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ljicgz8fa0m-3ce64c",
+          "tickers": [],
+          "title": "UBS: Put cash to work",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-f0878a0f24b4",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-oq6xctrd633-ec2fd7",
+          "tickers": [],
+          "title": "UBS: Silver",
+          "weight_hint": 2
+        },
+        {
+          "date": "2026-09-19",
+          "id": "cev-research_vault-f421fadd7d80",
+          "kind": "report",
+          "source": "research_vault",
+          "source_ref": "marketdesk-ao7xgvlrtqg-89fe4a",
           "tickers": [],
           "title": "UBS: Bond markets",
           "weight_hint": 2
         },
         {
-          "date": "2026-09-17",
-          "id": "cev-research_vault-d69cacc87e22",
+          "date": "2026-09-19",
+          "id": "cev-research_vault-f4fdd84df5cc",
           "kind": "report",
           "source": "research_vault",
-          "source_ref": "marketdesk-vby8jjpvg7b-d3855b",
+          "source_ref": "marketdesk-3h88sk9mtku-b95e4a",
           "tickers": [],
-          "title": "Goldman Sachs: Taiwan CBC on Hold as Expected on Benign Inflation Outlook",
+          "title": "UBS: Senior loans",
           "weight_hint": 2
         },
         {
-          "date": "2026-09-17",
-          "id": "cev-research_vault-dd9860d84ae9",
+          "date": "2026-09-19",
+          "id": "cev-research_vault-fc1212021412",
           "kind": "report",
           "source": "research_vault",
-          "source_ref": "marketdesk-jiygtqokz2z-5087e2",
+          "source_ref": "marketdesk-encjyakps8i-b1273c",
           "tickers": [],
-          "title": "Other: Equity Beat September 2026",
-          "weight_hint": 2
-        },
-        {
-          "date": "2026-09-17",
-          "id": "cev-research_vault-e6d57ce0b2ce",
-          "kind": "report",
-          "source": "research_vault",
-          "source_ref": "marketdesk-ya9wdhgz1c6-a265c0",
-          "tickers": [],
-          "title": "Goldman Sachs: European Daily BoE Recap—Opening the Door to a November Hike",
-          "weight_hint": 2
-        },
-        {
-          "date": "2026-09-17",
-          "id": "cev-research_vault-e9946d029bfd",
-          "kind": "report",
-          "source": "research_vault",
-          "source_ref": "marketdesk-xocchdticsi-edb564",
-          "tickers": [],
-          "title": "Wolfe Research: Wolfe Research A Brief History of the End of the World",
-          "weight_hint": 2
-        },
-        {
-          "date": "2026-09-17",
-          "id": "cev-research_vault-ed06f315ca22",
-          "kind": "report",
-          "source": "research_vault",
-          "source_ref": "marketdesk-4pi9a20t0sx-49da66",
-          "tickers": [],
-          "title": "Goldman Sachs: Unite Group (UTG.L) Trading update 95 of beds booked for AY26 27, FY26 EPS guidance reaffirmed",
-          "weight_hint": 2
-        },
-        {
-          "date": "2026-09-17",
-          "id": "cev-research_vault-f1ca42017975",
-          "kind": "report",
-          "source": "research_vault",
-          "source_ref": "marketdesk-gwetpnjg75e-a4b97d",
-          "tickers": [],
-          "title": "Goldman Sachs: AeroVironment Inc",
-          "weight_hint": 2
-        },
-        {
-          "date": "2026-09-17",
-          "id": "cev-research_vault-f7d0f96eac2c",
-          "kind": "report",
-          "source": "research_vault",
-          "source_ref": "marketdesk-pmdrhkxkvax-652422",
-          "tickers": [],
-          "title": "S&T: GS Ratra Hedge Funds Crowding Monitor US 17 Sep 2026",
-          "weight_hint": 2
-        },
-        {
-          "date": "2026-09-17",
-          "id": "cev-research_vault-f807d84dc6b4",
-          "kind": "report",
-          "source": "research_vault",
-          "source_ref": "marketdesk-jedpyqnprym-8ba43c",
-          "tickers": [],
-          "title": "S&T: GS MidDay Color US Equities Mid Day Color 17 Sep 2026",
-          "weight_hint": 2
-        },
-        {
-          "date": "2026-09-17",
-          "id": "cev-research_vault-fb7a43e41ce5",
-          "kind": "report",
-          "source": "research_vault",
-          "source_ref": "marketdesk-dspexrpttyq-e99b46",
-          "tickers": [],
-          "title": "Goldman Sachs: China in Transition China's great Go Global expansion From peripheral to core Sept 14, 2026",
-          "weight_hint": 2
-        },
-        {
-          "date": "2026-09-17",
-          "id": "cev-research_vault-fee31f5c8c9a",
-          "kind": "report",
-          "source": "research_vault",
-          "source_ref": "marketdesk-zsz18m2j10k-205255",
-          "tickers": [],
-          "title": "Deutsche Bank: DB Early Morning Reid Macro Strategy",
-          "weight_hint": 2
-        },
-        {
-          "date": "2026-09-17",
-          "id": "cev-risk_band-bb90c6513891",
-          "kind": "state_flip",
-          "source": "risk_band",
-          "source_ref": "risk_radar_forward_log#2026-09-17",
-          "tickers": [],
-          "title": "Risk radar: caution → calm",
+          "title": "Raymond James: Weekly economics thoughts of the week",
           "weight_hint": 2
         }
       ]
