@@ -35,6 +35,12 @@ _BOUND_FIELDS = {
     "security_id", "episode_id", "candidate_generation_id", "market_session",
 }
 _NON_ENTRY_B4 = AVAILABILITY_STATES - {"ENTRY_OPEN", "UNAVAILABLE_DATA"}
+_CANDIDATE_STATES = frozenset({"SELECTED"})
+_PLAN_STATES = frozenset({"RELATED_SECURITY", "NONE", "UNAVAILABLE"})
+_PLAN_RELATIONS = frozenset({"related_security", "none", "unavailable"})
+_ASSESSMENT_STATES = frozenset({"CURRENT", "REVIEW_REQUIRED", "SUPERSEDED", "UNAVAILABLE"})
+_EVIDENCE_STATES = frozenset({"CURRENT", "PARTIAL", "UNAVAILABLE"})
+_ASSEMBLY_STATES = frozenset({"OK", "UNAVAILABLE", "EFFECT_UNKNOWN"})
 _FORBIDDEN_KEYS = frozenset({
     "score", "probability", "weight", "size", "order", "broker", "fill",
     "position", "retry", "polling",
@@ -201,6 +207,21 @@ def compose_daily_brief(
     evid = _bound_record(evidence, _EVIDENCE_SCHEMA, "evidence")
     if cand is None:
         raise DailyBriefContractError("candidate selection receipt is malformed")
+    if cand.get("state") not in _CANDIDATE_STATES:
+        issues.add("SELECTION_UNAVAILABLE")
+    if plan_rec is not None:
+        relation = plan_rec.get("relation_state")
+        exact_relation = plan_rec.get("exact_relation")
+        plan_ids = plan_rec.get("plan_ids")
+        if (plan_rec.get("state") not in _PLAN_STATES or relation not in _PLAN_RELATIONS
+                or exact_relation not in {"unavailable", "available"}
+                or not isinstance(plan_ids, list)
+                or any(not isinstance(item, str) or not item for item in plan_ids)):
+            issues.add("OWNER_INPUT_UNAVAILABLE")
+    if assess is not None and assess.get("state") not in _ASSESSMENT_STATES:
+        issues.add("OWNER_INPUT_UNAVAILABLE")
+    if evid is not None and evid.get("state") not in _EVIDENCE_STATES:
+        issues.add("OWNER_INPUT_UNAVAILABLE")
     if cand.get("state") != "SELECTED" or not isinstance(cand.get("selection_receipt"), str):
         issues.add("SELECTION_UNAVAILABLE")
     else:
@@ -263,6 +284,8 @@ def compose_daily_brief(
             decision_state = "UNAVAILABLE"
 
     assembly_state = assembly.get("state") if isinstance(assembly, Mapping) else None
+    if assembly_state not in _ASSEMBLY_STATES:
+        issues.add("ASSEMBLY_UNAVAILABLE")
     if not isinstance(assembly, Mapping) or assembly.get("schema") != _ASSEMBLY_SCHEMA:
         issues.add("ASSEMBLY_UNAVAILABLE")
     else:
@@ -287,7 +310,10 @@ def compose_daily_brief(
         issues.add("ASSEMBLY_UNAVAILABLE")
         decision_state = "UNAVAILABLE"
 
-    if "OWNER_BINDING_MISMATCH" in issues or "FUTURE_OWNER_CLOCK" in issues or "SELECTION_UNAVAILABLE" in issues:
+    if issues & {
+        "OWNER_BINDING_MISMATCH", "FUTURE_OWNER_CLOCK", "SELECTION_UNAVAILABLE",
+        "OWNER_INPUT_UNAVAILABLE",
+    }:
         decision_state = "UNAVAILABLE"
 
     evidence_state = evid.get("state") if evid is not None else None

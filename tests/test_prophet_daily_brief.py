@@ -107,23 +107,20 @@ def _candidate(**extra):
 
 
 def _plan(**extra):
-    return _bound(
-        "prophet.daily_brief_plan_input/v1",
-        state="RELATED_SECURITY",
-        relation_state="related_security",
-        exact_relation="unavailable",
-        plan_ids=["AAPL-BULL-1"],
-        **extra,
-    )
+    args = {
+        "state": "RELATED_SECURITY",
+        "relation_state": "related_security",
+        "exact_relation": "unavailable",
+        "plan_ids": ["AAPL-BULL-1"],
+    }
+    args.update(extra)
+    return _bound("prophet.daily_brief_plan_input/v1", **args)
 
 
 def _assessment(**extra):
-    return _bound(
-        "prophet.daily_brief_assessment_input/v1",
-        state="CURRENT",
-        summary={"headline": "Assessment remains current"},
-        **extra,
-    )
+    args = {"state": "CURRENT", "summary": {"headline": "Assessment remains current"}}
+    args.update(extra)
+    return _bound("prophet.daily_brief_assessment_input/v1", **args)
 
 
 def _evidence(**extra):
@@ -280,6 +277,27 @@ def test_future_owner_clock_fails_unavailable():
     out = _compose(assessment=_assessment(asof="2026-10-01T00:00:01Z"))
     assert out["health_state"] == "UNAVAILABLE"
     assert "FUTURE_OWNER_CLOCK" in out["issues"]
+
+
+def test_unknown_owner_schema_or_state_fails_closed():
+    bad_schema = _assessment()
+    bad_schema["schema"] = "prophet.unknown/v99"
+    out = _compose(assessment=bad_schema)
+    assert out["health_state"] == "UNAVAILABLE"
+    assert "OWNER_INPUT_UNAVAILABLE" in out["issues"]
+
+    bad_state = _assessment(state="MAGIC_CURRENT")
+    out = _compose(assessment=bad_state)
+    assert out["health_state"] == "UNAVAILABLE"
+    assert "OWNER_INPUT_UNAVAILABLE" in out["issues"]
+
+
+def test_unknown_plan_relation_fails_closed_without_minting_plan_authority():
+    bad = _plan(relation_state="candidate_specific_plan")
+    out = _compose(plan=bad)
+    assert out["health_state"] == "UNAVAILABLE"
+    assert out["decision_state"] == "UNAVAILABLE"
+    assert "OWNER_INPUT_UNAVAILABLE" in out["issues"]
 
 
 def test_forbidden_authority_fields_are_rejected_before_composition():
