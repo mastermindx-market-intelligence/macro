@@ -106,6 +106,326 @@ The route and latency programs share authority files, so they are serialized:
 9. Recompute hosted-minute projection, ordinary-PR p50/p95, simultaneous-PR queueing, and
    render/native contention. Only then assemble the private-cutover packet.
 
+
+## 2026-09-18 horizontal-agent scaling hardening amendment
+
+This amendment is the capacity and queueing contract for the horizontal-agent era. It
+does not replace GitHub Actions, the existing semantic planner/gate, runner policy,
+merge controller, Agent OS, or any active repair carrier. It makes the scaling objective
+explicit:
+
+> Increasing the number of coding sessions must not require a near-linear increase in
+> runner count, and waiting for CI must not consume principal reasoning turns.
+
+The governing optimization order is **eliminate avoidable runner-minutes -> recover
+leaked effective capacity -> preserve fair admission -> add measured capacity -> add
+elastic burst capacity**. Hardware is never accepted as a substitute for a demand-slope
+repair.
+
+### Fresh evidence that changes the capacity model
+
+The September 18 incident is not one failure mode:
+
+- #7276 sampled 50 queued trusted-CI runs: **47 selected all twelve packs**, two
+  selected two packs, and the bounded census contained **405 queued trusted-pack jobs**.
+  A separate live census observed **73 queued runs / 4 in progress** while all three
+  production PC listeners were doing real work. This proves saturation plus cross-run
+  admission fragmentation, not simply dead runners.
+- #7296 found 51 queued PR CI runs; 21 touched
+  `.github/ci/legacy-jobs.yml`, and 17 touched that manifest without changing
+  `ci.yml` or `run_ci_pack.py`. Exact base/head replay classified **17/17** of those
+  manifest-only PRs as mechanically boundable instead of requiring the historical
+  full-suite invalidation. This is direct evidence that avoidable demand amplification
+  is a first-order capacity problem.
+- #7315 proved a separate effective-capacity leak: GitHub had already terminalized three
+  jobs while their local Runner.Worker/systemd trees continued executing for roughly
+  another fifty minutes, consuming the entire three-slot pool. Registered listeners are
+  therefore not equivalent to usable slots.
+- #7222 measured the root-owned shared-cache updater consuming 70-120 seconds and
+  peaking at **14.2 GiB** while scanning the whole ~93-GiB / ~7.4-million-object cache.
+  The bounded incremental candidate reduced representative cycles to roughly 1-2
+  seconds and about 120-247 MiB. Shared host maintenance can therefore erase nominal
+  capacity even when every runner remains online.
+- #7313 measured one repo-wide import guard at about **6.24 GiB peak RSS**; the bounded
+  lifetime repair reduced it to about **189 MiB** without narrowing coverage.
+- #7323 measured a repeated Agent OS validation subset improving from 165.68 seconds to
+  37.08 seconds (**4.47x**) by replacing a parser hotspot without dropping tests.
+
+These are different levers. Queue policy cannot repair wasteful execution, another
+runner cannot repair a ghost-worker lifecycle, and test optimization cannot by itself
+provide burst headroom.
+
+### Capacity is runner-minutes, not runner names
+
+Every capacity decision must use one common model. For a bounded observation window:
+
+```text
+lambda = admitted PR generations per hour
+W      = runner-minutes consumed per admitted generation
+C      = nominal admitted execution slots
+A      = observed slot availability fraction after offline/ghost/refusal loss
+
+usable_slots = C * A
+rho = lambda * W / (60 * usable_slots)
+```
+
+A **PR generation** is an exact proof-producing head admitted to trusted execution. A
+new synchronize event is another generation; counting only PR numbers materially
+understates AI-driven load.
+
+The same receipt plane must also derive:
+
+```text
+queued_runner_minutes = sum(predicted remaining runner-minutes for pending work)
+estimated_drain_minutes = queued_runner_minutes / usable_slots
+```
+
+Do not size from queued-job count alone: a two-minute structural pack and a thirty-minute
+tail pack are not equal demand.
+
+Operating targets after the current repair wave:
+
+| Capacity signal | Hardened target |
+|---|---:|
+| steady-state runner-minute utilization `rho` | <= 0.65 |
+| rolling 15-minute burst utilization | <= 0.80 |
+| ordinary PR queue pickup p95 | < 60 seconds |
+| ordinary final-head push -> `ci-gate` p95 | < 10 minutes |
+| heavy PR final-head push -> `ci-gate` p95 | < 15-20 minutes |
+| stale/superseded generation runner-minutes | near zero |
+| GitHub-terminal job retaining a local CI slot | zero tolerated |
+| same-SHA green -> red nondeterminism | zero tolerated |
+
+The 0.65 steady-state target is deliberate headroom for bursty agent completions. A
+fleet that looks "efficient" only at 90-100% utilization is a queueing system optimized
+for server occupancy rather than company throughput.
+
+### Admission V1 is containment, not the end-state scheduler
+
+#7276 remains the existing owner of the immediate cross-run starvation repair. Its
+GitHub-native `queue: max` concurrency group is useful because it prevents hundreds of
+pack jobs from many runs competing for three labels simultaneously. It does **not**
+increase service rate.
+
+The contract is narrower than the word "FIFO" can imply:
+
+- GitHub owns the queue; no second scheduler/lease/priority database is created.
+- `queue: max` admits at most **100 pending workflow/job instances per concurrency
+  group**. The capacity plan must never depend on approaching that ceiling; overflow
+  cancellation is an incident, not backpressure working as designed.
+- GitHub documents ordering by the time an item begins waiting on the concurrency group,
+  while also warning that actual start ordering is not guaranteed. Acceptance therefore
+  measures **absence of material leapfrogging/starvation**, not a fictional total-order
+  guarantee.
+- A superseded PR head must vacate the pending queue and consume no later pack
+  runner-minutes. A queued obsolete generation that survives its caller cancellation is
+  a blocker.
+- Direct diagnostics remain outside the production admission group.
+
+Run-level serialization can become a head-of-line blocker after scoping improves. Once
+the natural corpus contains mostly 1-4-pack ordinary PRs, measure **idle eligible slot
+time while trusted work is pending**. If that exceeds 5% of queued intervals or pushes
+ordinary pickup above the SLO, strict whole-run admission has become the bottleneck.
+
+Only then may a separate carrier evaluate a GitHub-native **slot-lane admission** shape:
+three lanes while production capacity is three, four after an accepted C3P promotion,
+with each semantic pack deterministically mapped to one main-owned lane and
+`queue: max` providing the queue. That experiment must preserve the existing runner
+group, semantic plan, fragment law, stable check contexts, and GitHub as the sole
+scheduler. No custom priority service is authorized by this amendment.
+
+### Demand-slope law: full-suite execution is exceptional
+
+#7296 is the incumbent carrier for the manifest-global-invalidator class. Do not create
+another manifest classifier. Its post-merge natural proof must record, for every admitted
+generation, one reason family:
+
+- `GLOBAL_INVALIDATOR`
+- `NO_TRUSTWORTHY_CHANGED_SET`
+- `UNSCOPED_ALWAYS_ON`
+- `OPAQUE_DEPENDENCY_FALLBACK`
+- `BOUNDED_CHANGED_OWNER_SET`
+- `NO_WORK`
+
+A reason is diagnostic metadata, not another selection authority.
+
+The existing latency-plan population definitions remain binding: **ordinary** means one
+to four selected packs without a global invalidator; **heavy** means eight or more packs
+or a declared full-suite path. After #7296 and the next ownership-splitting carriers,
+the program is not considered demand-stable if more than 20% of natural product/maintenance
+PR generations that do not intentionally change a global authority surface still widen
+to eight or more packs.
+
+Every narrowing must continue to pass closure/representative-diff/unrun-suite guards and
+must name what it dropped. "Fewer tests" is never the optimization goal; **fewer
+unaffected validations** is.
+
+### Optimize the runner-minute tail, not the median command
+
+Timing receipts must decompose each logical job into:
+
+```text
+queue_wait
+checkout_materialization
+runtime_tool_setup
+dependency_preparation
+useful_execution
+base_replay_or_proof_reconciliation
+artifact_publication
+teardown
+```
+
+Performance work is selected by **runner-minute contribution and tail effect**. A job in
+the top decile of aggregate runner-minutes or repeatedly on the critical p95 tail is a
+candidate for profiling; a fast job that merely runs often is not automatically a
+priority.
+
+The current #7313 and #7323 repairs are examples of the intended method: retain the
+semantic contract, profile the actual resource sink, remove the sink, and prove exact
+behavioral parity.
+
+Do not prematurely collapse multiple semantic packs into one physical job. Physical
+multi-pack batching is eligible for experiment only if, after the checkout/environment
+waves, repeated setup + teardown still consumes at least 20% of trusted runner-minutes
+on the natural corpus. Otherwise preserve the current per-pack failure isolation and
+parallel scheduling.
+
+### Fleet tiers and failure domains
+
+Treat execution profiles as capabilities, not interchangeable CPUs:
+
+| Tier | Role | Initial authority |
+|---|---|---|
+| hosted control | planner, fences, anchors, merge control, forks/untrusted | preserve |
+| local Linux/x86 | ordinary trusted pack execution | PC pool |
+| elastic Linux/x86 | measured overflow / heavy-run capacity | future bounded wave |
+| macOS/ARM | native compatibility/browser/tool validation | separate validation only |
+
+The current fourth-slot sequence (#7269 -> #6732 -> #6733) remains the only authorized
+PC capacity promotion path. Four-slot source/host/prod proof must complete before a fifth
+local slot is discussed.
+
+A future bare-metal Linux boot on the PC is a **new execution-profile qualification**,
+not free capacity. It must A/B the accepted WSL profile on exact packs, re-prove runner
+identity, cgroup/resource law, cache cleanliness, render coexistence, reboot/rollback,
+and semantic parity. Full physical RAM/CPU visibility is a hypothesis to measure, not
+permission to register extra listeners.
+
+Incoming Apple-silicon Mac minis are not counted as `ci-linux` capacity. Their first CI
+role, if used, is the existing device-independent `macos-arm-validation` contract or
+other explicitly Mac-native proof. Emulated x86 success cannot silently satisfy the
+Linux/x86 merge proof.
+
+### Elastic capacity comes after four-slot proof, but before more permanent boxes
+
+If natural traffic remains above the queue SLO after demand reduction and accepted
+four-slot production, compare **one exact heavy-pack corpus** across:
+
+1. the accepted local Linux/x86 profile;
+2. a GitHub-hosted larger Linux/x64 runner pool with a prebuilt/custom image when
+   available; and
+3. only if the native hosted option is materially inferior, an ephemeral self-hosted
+   GitHub scale-set/ARC-style profile.
+
+Compare pickup p50/p95, wall p50/p95, semantic parity, setup time, failure rate,
+runner-minutes and direct cost. The cheapest accepted result wins; do not assume
+self-hosting is cheaper after operator/maintenance failure cost.
+
+Prefer a deterministic first burst policy over a home-grown autoscaler: for example,
+main-owned plan classes that are already known to be heavy/full-suite may be benchmarked
+on an autoscaling hosted pool while ordinary narrow PRs remain local. If residual demand
+later requires true elastic ordinary-PR capacity, use GitHub's existing runner/scale-set
+control substrate; do not create a second scheduler or runner registry.
+
+Permanent x86 hardware becomes justified only when a 14-day accepted corpus still shows
+steady `rho > 0.65` or sustained paid-burst duty high enough that measured amortized
+hardware + power + operator cost wins. A queue spike by itself is an elastic-capacity
+signal, not a hardware-purchase proof.
+
+### Agent waiting is a CI defect when it burns reasoning turns
+
+After the final source push for an exact head, an agent may perform the required immediate
+readback and then must not remain active merely to poll unchanged CI state.
+
+- Merge-eligible work uses the existing merge-on-green path after its normal release
+  gates; a green run does not need a principal watching it.
+- A red return is routed by the existing/future W7 classification path to the exact
+  producing owner with the failed logical job and evidence.
+- HOLD-FOR-SOL / reviewer / worker dialogues use their existing durable watcher/return
+  path. If no production-proven return path exists for a required decision, that missing
+  bridge is the capability gap; repeated chat polling is not the substitute.
+- No session may cancel/rerun another generation merely to improve its queue position.
+- Fable and other scarce principals should spend waiting periods only on independent
+  principal work. If none exists and durable execution is genuinely running, they yield.
+
+Track **CI polls after final push** as avoidable work. The steady-state target is zero
+principal polling loops.
+
+### Incident matrix
+
+| Failure class | Detection | Correct owner/action |
+|---|---|---|
+| full-suite amplification | plan reason + selected-pack distribution | existing scope/ownership program |
+| cross-run starvation | queue wait / older eligible work bypassed | #7276 admission owner |
+| `queue: max` occupancy pressure | concurrency-group pending count | demand reduction / approved capacity; never a second queue |
+| GitHub-terminal + local worker live | job status joined to Listener PID/start identity | #7315 lifecycle owner |
+| cache updater host blast | service CPU/RSS/elapsed + runner pressure | #7222 cache owner |
+| one test/job dominates memory/time | logical-job timing/RSS receipt | bounded owning-job optimization |
+| Windows/WSL reboot leaves fleet dark | host + GitHub live identity | existing boot-recovery owner |
+| PC physical-host loss | live fleet failure-domain receipt | derate `A`; do not count registrations as slots |
+| ARM/x86 mismatch | execution-profile identity | separate validation; no semantic substitution |
+| stale/superseded head still executing | caller/head/run identity | cancellation contract; zero later runner-minutes |
+| main/base red | existing semantic proof + contract-delta | main owner, never feature-author blame |
+
+### Acceptance gauntlet for the horizontal-agent era
+
+Do not declare the program scaled from one quiet successful PR. After the current repair
+carriers merge, freeze a natural 14-day acceptance population with at least the existing
+20 ordinary green final heads and five heavy heads, plus at least one real burst containing
+multiple near-simultaneous PR generations.
+
+The corpus must prove all of:
+
+1. ordinary pickup and final-gate SLOs above;
+2. no semantic/coverage regression and zero same-SHA nondeterminism;
+3. obsolete generations consume near-zero post-supersession runner-minutes;
+4. no terminal GitHub job retains a local slot;
+5. no admission queue overflow/cancellation from the 100-pending ceiling;
+6. no material starvation of older eligible work;
+7. no sustained idle eligible slot while trusted work is pending unless the active
+   execution profile intentionally cannot consume that slot;
+8. accepted render/nightly coexistence remains intact;
+9. exact per-generation runner-minutes and selected-pack distribution are published;
+10. principal polling loops are absent from the accepted ship path.
+
+A separate canary/chaos carrier may prove loss of one CI slot and host restart behavior;
+do not manufacture destructive failure on production traffic merely to satisfy the
+corpus.
+
+### Revised critical path from 2026-09-18
+
+Preserve every existing carrier and its custody. The order of **capabilities**, not a
+license to absorb their source, is now:
+
+1. release/prove the incumbent waste and leakage repairs (#7296 manifest bounding,
+   #7222 cache updater, #7315 ghost-listener reclamation, and already-landed/local
+   hot-tail repairs);
+2. release/prove #7276 native admission containment without claiming it raises throughput;
+3. complete #7269 -> C3R-B #6732 -> C3P #6733 and prove exactly four local production
+   slots;
+4. finish measured ownership splitting, immutable dependency/setup work, result reuse
+   and empirical balancing under the existing W2-W6 owners;
+5. measure whether run-level admission now causes idle-slot head-of-line blocking; only
+   then evaluate native slot-lane admission;
+6. if the four-slot + demand-reduced fleet still misses SLO, qualify elastic Linux/x86
+   burst capacity;
+7. qualify Mac minis only for explicit macOS/ARM or other device-native roles;
+8. close the loop with event-driven red routing/return so no principal is paid to watch CI.
+
+The parent outcome is not complete when the backlog happens to drain. It is complete when
+additional coding sessions can be added without recreating a month-long CI traffic jam,
+and the accepted natural corpus proves both low latency and bounded compute amplification.
+
 ---
 
 ## §0 ACCEPTANCE GATES
