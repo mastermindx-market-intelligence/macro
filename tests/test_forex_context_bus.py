@@ -895,7 +895,9 @@ def test_r12_kinematics_preserves_existing_values_with_explicit_units():
     assert got['metrics']['return_medium']['window_observations'] == 5
     assert got['metrics']['velocity_z']['unit'] == 'z_score'
     assert got['metrics']['volatility_percentile']['unit'] == 'fraction'
-    assert got['metrics']['residual_return']['basis'] == 'ex_dollar_residual'
+    # R14 narrows the old unconditional label: the index can contain raw fallback.
+    assert got['metrics']['residual_return']['basis'] == 'upstream_residual_index'
+    assert got['rows'][0]['residual_adjustment']['status'] == 'unverified'
     assert got['metrics']['residual_return']['window_observations'] == 5
     json.dumps(got, allow_nan=False)
 
@@ -1376,7 +1378,8 @@ def test_r13_evidence_keeps_metric_units_distinct_and_preserves_true_zero():
     vol = soup.select_one('[data-metric="volatility_percentile"]').get_text()
     assert '91.0 / 100' in vol and 'not a probability' in vol
     residual = soup.select_one('[data-metric="residual_return"]').get_text()
-    assert 'Broad-dollar-adjusted' in residual and '+0.70%' in residual
+    assert 'Residual-index move' in residual and '+0.70%' in residual
+    assert 'Adjustment unverified' in residual  # no method receipt in this old fixture
     assert len(soup.select('[data-metric]')) == 7
 
 
@@ -1507,3 +1510,191 @@ def test_r13_currency_data_cannot_inject_markup_into_evidence_disclosure():
     html = _r13_evidence_html(_r12_project(table))
     assert '<script>' not in html and 'alert(1)' not in html
     assert 'Movement evidence unavailable' in html
+
+
+# R14: a residual-index field is not proof a dollar adjustment was actually fitted.
+def _r14_asset(mode='adjusted', n=760):
+    import copy
+    from lib import config
+    from engine import forex_signals as fs
+    cfg = copy.deepcopy(config.load()['forex'])
+    idx = pd.date_range('2022-01-03', periods=n, freq='B')
+    rng = np.random.default_rng(824314)
+    price = pd.Series(np.exp(np.cumsum(rng.normal(.0001, .006, n))), index=idx)
+    dollar = pd.Series(100 * np.exp(np.cumsum(rng.normal(.0001, .003, n))), index=idx)
+    cfg['dollar']['beta_window_d'] = 60
+    cfg['dollar']['beta_min_train_d'] = 60
+    if mode == 'zero_beta':
+        price[:] = 1.0
+    elif mode == 'gap':
+        price.iloc[-2] = np.nan
+    elif mode == 'carried':
+        dollar.iloc[-2:] = np.nan
+    drivers = {} if mode == 'raw' else {'broad_dollar': dollar}
+    px = pd.DataFrame({'close': price, 'open': price, 'high': price, 'low': price})
+    ai = {'pair': 'USDJPY', 'meta': cfg['assets']['USDJPY'], 'price': px, 'drivers': drivers}
+    result = fs.compute_asset(ai, cfg=cfg)
+    return result, drivers, cfg, idx
+
+
+def _r14_project_asset(mode='adjusted', n=760):
+    from engine.forex_regime import fx_kinematics_table
+    result, drivers, cfg, idx = _r14_asset(mode, n)
+    raw = fx_kinematics_table({'USDJPY': result}, drivers, cfg)
+    got = _r12_project(raw, cfg)
+    row = next(r for r in got['rows'] if r['ccy'] == 'JPY')
+    return result, raw, got, row, idx
+
+
+def _r14_receipt_table(counts=None):
+    table = _r13_clock_table()
+    table['rows'][0]['residual_adjustment'] = {
+        'version': 1, 'producer': 'engine.forex_signals.orthogonalize',
+        'ccy': 'JPY', 'pair': 'USDJPY', 'window_observations': 5,
+        'window_start': '2026-09-21', 'window_end': '2026-09-25',
+        'counts': counts or {'adjusted': 5, 'raw_fallback': 0, 'zero_filled': 0, 'unavailable': 0},
+        'carried_driver_observations': 0,
+    }
+    return table
+
+
+def test_r14_legacy_receipt_cannot_claim_every_residual_index_is_dollar_adjusted():
+    from bs4 import BeautifulSoup
+    got = _r12_project(_r13_clock_table())
+    assert got['metrics']['residual_return']['basis'] == 'upstream_residual_index'
+    assert got['rows'][0]['residual_adjustment']['status'] == 'unverified'
+    html = BeautifulSoup(_r13_evidence_html(got), 'html.parser')
+    row = html.select_one('[data-metric="residual_return"]')
+    assert 'Adjustment unverified' in row.get_text()
+    assert 'Broad-dollar-adjusted move' not in row.get_text()
+
+
+def test_r14_no_dollar_input_is_raw_fallback_in_the_actual_producer_and_page():
+    from bs4 import BeautifulSoup
+    result, raw, got, row, idx = _r14_project_asset('raw')
+    assert 'residual_method' in result.columns
+    assert set(result['residual_method'].iloc[-5:]) == {'raw_fallback'}
+    assert result['dollar_beta'].notna().sum() == 0
+    assert row['residual_adjustment']['status'] == 'raw_fallback'
+    assert row['residual_adjustment']['counts']['raw_fallback'] == 5
+    assert row['values']['residual_return'] == round(100 * (result['close'].iloc[-1] / result['close'].iloc[-6] - 1), 2)
+    metric = BeautifulSoup(_r13_evidence_html(got), 'html.parser').select_one('[data-metric="residual_return"]')
+    assert 'Unadjusted fallback move' in metric.get_text()
+    assert 'No dollar effect was removed' in metric.get_text()
+    assert 'Broad-dollar-adjusted move' not in metric.get_text()
+    assert got['freshness'] == 'unknown'
+
+
+def test_r14_actual_fitted_adjustment_can_be_named_but_not_called_fresh_or_causal():
+    result, raw, got, row, idx = _r14_project_asset()
+    assert 'residual_method' in result
+    assert set(result['residual_method'].iloc[-5:]) == {'adjusted'}
+    method = row['residual_adjustment']
+    assert method['status'] == 'adjusted'
+    assert method['counts'] == {'adjusted': 5, 'raw_fallback': 0, 'zero_filled': 0, 'unavailable': 0}
+    assert method['window_end'] == row['calculated_through']['residual_return']
+    assert all(v is None for v in row['observed_at'].values())
+    assert got['freshness'] == 'unknown'
+
+
+def test_r14_zero_beta_is_a_valid_fitted_coefficient_not_a_missing_model():
+    result, raw, got, row, idx = _r14_project_asset('zero_beta')
+    assert (result['dollar_beta'].iloc[-5:] == 0).all()
+    assert row['values']['residual_return'] == 0
+    assert row['residual_adjustment']['status'] == 'adjusted'
+
+
+def test_r14_warmup_transition_cannot_be_presented_as_fully_adjusted():
+    result, raw, got, row, idx = _r14_project_asset(n=64)
+    method = row.get('residual_adjustment', {})
+    assert method.get('status') == 'mixed'
+    assert 0 < method['counts']['adjusted'] < 5
+    assert method['counts']['adjusted'] + method['counts']['raw_fallback'] == 5
+
+
+def test_r14_zero_filled_residual_returns_are_not_new_independent_observations():
+    result, raw, got, row, idx = _r14_project_asset('gap')
+    method = row.get('residual_adjustment', {})
+    assert method.get('status') == 'input_gaps'
+    assert method['counts']['zero_filled'] >= 1
+    assert row['values']['residual_return'] is not None
+    assert 'Input gaps in residual index' in _r13_evidence_html(got)
+
+
+def test_r14_carried_dollar_input_is_disclosed_separately_from_adjustment_and_freshness():
+    result, raw, got, row, idx = _r14_project_asset('carried')
+    method = row.get('residual_adjustment', {})
+    assert method.get('status') == 'adjusted'
+    assert method['carried_driver_observations'] == 2
+    assert 'Carried dollar input' in _r13_evidence_html(got)
+    assert got['freshness'] == 'unknown'
+
+
+@pytest.mark.parametrize('counts,status', [
+    ({'adjusted': 5, 'raw_fallback': 0, 'zero_filled': 0, 'unavailable': 0}, 'adjusted'),
+    ({'adjusted': 0, 'raw_fallback': 5, 'zero_filled': 0, 'unavailable': 0}, 'raw_fallback'),
+    ({'adjusted': 3, 'raw_fallback': 2, 'zero_filled': 0, 'unavailable': 0}, 'mixed'),
+    ({'adjusted': 3, 'raw_fallback': 0, 'zero_filled': 2, 'unavailable': 0}, 'input_gaps'),
+    ({'adjusted': 0, 'raw_fallback': 0, 'zero_filled': 0, 'unavailable': 5}, 'unverified'),
+])
+def test_r14_method_status_is_derived_from_all_return_observations(counts, status):
+    got = _r12_project(_r14_receipt_table(counts))
+    method = got['rows'][0].get('residual_adjustment', {})
+    assert method.get('status') == status
+    assert method['counts'] == counts
+    assert got['rows'][0]['values']['residual_return'] == .7
+
+
+@pytest.mark.parametrize('key,bad', [
+    ('version', True), ('version', 2), ('producer', 'unknown'),
+    ('ccy', 'EUR'), ('ccy', ['JPY']), ('window_observations', 4),
+    ('window_observations', True), ('window_start', '2026-10-01'),
+    ('window_end', '2026-09-24'), ('window_end', '2026-09-26'),
+    ('counts', None), ('counts', {'adjusted': True, 'raw_fallback': 4, 'zero_filled': 0, 'unavailable': 0}),
+    ('counts', {'adjusted': 6, 'raw_fallback': 0, 'zero_filled': 0, 'unavailable': 0}),
+    ('carried_driver_observations', -1), ('carried_driver_observations', 6),
+    ('carried_driver_observations', True), ('pair', None),
+])
+def test_r14_malformed_method_receipt_cannot_relabel_a_separate_valid_value(key, bad):
+    table = _r14_receipt_table(); table['rows'][0]['residual_adjustment'][key] = bad
+    got = _r12_project(table)
+    row = got['rows'][0]
+    assert row.get('residual_adjustment', {}).get('status') == 'unverified'
+    assert row['values']['residual_return'] == .7
+    assert got['freshness'] == 'unknown'
+    json.dumps(got, allow_nan=False)
+
+
+def test_r14_missing_or_conflicting_value_cannot_be_rescued_by_method_receipt():
+    import copy
+    for conflict in (False, True):
+        table = _r14_receipt_table()
+        if conflict:
+            table['rows'].append(copy.deepcopy(table['rows'][0]))
+        else:
+            table['rows'][0]['resid_5d_pct'] = None
+        got = _r12_project(table)
+        assert got['rows'][0].get('residual_adjustment', {}).get('status') == 'unavailable'
+        assert got['rows'][0]['values']['residual_return'] is None
+
+
+def test_r14_actual_builder_serves_the_same_method_receipt_to_ui_and_snapshot(tmp_path, monkeypatch):
+    table = _r14_receipt_table({'adjusted': 0, 'raw_fallback': 5, 'zero_filled': 0, 'unavailable': 0})
+    got, contexts = _r12_build_fixture(tmp_path, monkeypatch, table)
+    assert got['kinematics']['rows'][0].get('residual_adjustment', {}).get('status') == 'raw_fallback'
+    assert contexts[0]['kinematics_view'] == got['kinematics']
+    assert got['regime_radar']['active'] == []
+
+
+@pytest.mark.parametrize('identity', [None, pd.NA, 'EURUSD'])
+def test_r14_pair_annotation_must_be_present_for_every_selected_return(identity):
+    from engine.forex_regime import fx_kinematics_table
+    frame, drivers, cfg, idx = _r14_asset()
+    frame['pair'] = pd.Series(identity, index=frame.index, dtype='string')
+    raw = fx_kinematics_table({'USDJPY': frame}, drivers, cfg)
+    original = next(r for r in raw['rows'] if r['ccy'] == 'JPY')
+    assert original.get('residual_adjustment') is None
+    view = _r12_project(raw, cfg)
+    row = next(r for r in view['rows'] if r['ccy'] == 'JPY')
+    assert row['residual_adjustment']['status'] == 'unverified'
+    assert row['values']['residual_return'] is not None

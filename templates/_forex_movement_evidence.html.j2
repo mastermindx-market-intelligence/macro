@@ -11,7 +11,15 @@
   'velocity_z': ('Movement speed', '变动速度'),
   'acceleration_z': ('Change in speed', '速度变化'),
   'volatility_percentile': ('Realized-volatility rank', '已实现波动率分位'),
-  'residual_return': ('Broad-dollar-adjusted move', '广义美元调整后涨跌')
+  'residual_return': ('Residual-index move', '残差指数涨跌')
+} %}
+{% set _adjustment_labels = {
+  'adjusted': ('Broad-dollar-adjusted move', '广义美元调整后涨跌'),
+  'raw_fallback': ('Unadjusted fallback move', '未调整回退涨跌'),
+  'mixed': ('Partly adjusted move', '部分调整的涨跌'),
+  'input_gaps': ('Residual index with input gaps', '输入有缺口的残差指数'),
+  'unverified': ('Residual-index move', '残差指数涨跌'),
+  'unavailable': ('Residual-index move', '残差指数涨跌')
 } %}
 <style>
 .fx-movement-evidence{font-family:var(--font-ui,Inter,sans-serif);color:var(--text);font-size:var(--fs-body,14px);border:1px solid var(--line,var(--grid));border-radius:var(--r-card,12px);background:var(--card);margin:var(--sp-5,20px) 0;overflow-wrap:anywhere}
@@ -76,6 +84,9 @@
       {% set available = row.availability.get(key) == 'available' and value is not none %}
       {% set stamp = row.get('calculated_through', {}).get(key) %}
       {% set relation = row.get('index_relation', {}).get(key, 'unknown') %}
+      {% set adjustment = row.get('residual_adjustment', {}) %}
+      {% set method = adjustment.get('status', 'unverified') %}
+      {% if key == 'residual_return' %}{% set names = _adjustment_labels.get(method, _labels.residual_return) %}{% endif %}
       <div class="fx-me-metric" data-metric="{{ key }}">
         <dt>{{ me_t(names[0], names[1]) }}<span class="fx-me-note">{% if metric.get('window_observations') %}{{ me_t(metric.window_observations ~ ' observations', metric.window_observations ~ ' 个观测') }}{% elif key == 'velocity_z' or key == 'acceleration_z' %}{{ me_t('Standardized · not a probability', '标准化数值 · 非概率') }}{% endif %}</span></dt>
         <dd>
@@ -83,6 +94,16 @@
           <span class="fx-me-value">{% if metric.get('unit') == 'fraction' %}{{ '%.1f'|format(value * 100) }} / 100{% elif metric.get('unit') == 'z_score' %}{{ (('%+.2f'|format(value)) if value != 0 else '0.00')|replace('-', '−') }} z{% else %}{{ (('%+.2f'|format(value)) if value != 0 else '0.00')|replace('-', '−') }}%{% endif %}</span>
           {% else %}<span class="fx-me-value fx-me-invalid">{{ me_t('Unavailable', '不可用') }}</span>{% endif %}
           {% if key == 'volatility_percentile' %}<span class="fx-me-note">{{ me_t('Percentile rank, not a probability', '分位排名，非概率') }}</span>{% endif %}
+          {% if key == 'residual_return' and available %}
+          <span class="fx-me-note" data-adjustment-status="{{ method }}">
+            {% if method == 'adjusted' %}{{ me_t('All 5 return observations used a fitted dollar adjustment. This does not establish causation.', '5 个收益观测均使用拟合的美元调整；这不证明因果关系。') }}
+            {% elif method == 'raw_fallback' %}{{ me_t('No dollar effect was removed. All 5 returns used the raw fallback.', '未剔除美元影响；5 个收益均回退为原始收益。') }}
+            {% elif method == 'mixed' %}{{ me_t('Partly adjusted: ' ~ adjustment.counts.adjusted ~ ' of 5 returns used a fitted adjustment; the rest used raw returns.', '仅部分调整：5 个收益中有 ' ~ adjustment.counts.adjusted ~ ' 个使用拟合调整，其余为原始收益。') }}
+            {% elif method == 'input_gaps' %}{{ me_t('Input gaps in residual index: missing returns were filled with zero by the existing producer. This is not a fully observed move.', '残差指数存在输入缺口：原计算器用零填充缺失收益；这并非完整观测到的涨跌。') }}
+            {% else %}{{ me_t('Adjustment unverified. The residual-index name alone does not establish that a dollar effect was removed.', '调整方法未经核实。残差指数的名称本身不能证明已剔除美元影响。') }}{% endif %}
+          </span>
+          {% if adjustment.get('carried_driver_observations') %}<span class="fx-me-note">{{ me_t('Carried dollar input: ' ~ adjustment.carried_driver_observations ~ ' of 5 returns. Calculation dates are not proof of fresh source quotes.', '5 个收益中有 ' ~ adjustment.carried_driver_observations ~ ' 个沿用前值美元输入；计算日期不证明源报价新鲜。') }}</span>{% endif %}
+          {% endif %}
           {% if available and stamp %}<span class="fx-me-date"><time datetime="{{ stamp }}">{{ stamp }}</time></span><span class="fx-me-note">{{ me_t('Earlier calculation', '较早的计算') if relation == 'before_table_date' else me_t('At table date', '与表格日期一致') }}</span>{% else %}<span class="fx-me-note">{{ me_t('Calculation date unknown', '计算日期未知') }}</span>{% endif %}
         </dd>
       </div>

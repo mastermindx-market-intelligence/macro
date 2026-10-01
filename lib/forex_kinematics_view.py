@@ -70,7 +70,8 @@ def _metric_definitions(cfg: object) -> dict[str, dict] | None:
         'percentile_lookback_observations': named['rvol_pctile_lookback_d']}
     definitions['residual_return'] = {
         'source_field': _FIELDS['residual_return'], 'unit': 'percent',
-        'basis': 'ex_dollar_residual', 'window_observations': 5}
+        'basis': 'upstream_residual_index', 'window_observations': 5,
+        'adjustment_evidence_field': 'residual_adjustment'}
     return definitions
 
 
@@ -135,6 +136,44 @@ def _project_calculation_clock(source: Mapping, row: dict, table_date: str) -> i
             if stamp is not None and stamp <= table_date:
                 row['normalized_input_dates'][key] = stamp
     return dated
+
+
+def _project_residual_adjustment(source: Mapping, row: dict) -> dict[str, Any]:
+    """Describe how this selected value was constructed, not its market direction."""
+    out = {'status': 'unverified', 'window_observations': 5, 'window_start': None,
+           'window_end': None, 'counts': None, 'carried_driver_observations': None}
+    if row['availability']['residual_return'] != 'available':
+        out['status'] = 'unavailable'
+        return out
+    receipt = source.get('residual_adjustment')
+    if not isinstance(receipt, Mapping):
+        return out
+    producer, ccy, pair = (receipt.get(k) for k in ('producer', 'ccy', 'pair'))
+    if (type(receipt.get('version')) is not int or receipt['version'] != 1
+            or not isinstance(producer, str) or producer != 'engine.forex_signals.orthogonalize'
+            or not isinstance(ccy, str) or ccy != row['ccy']
+            or not isinstance(pair, str) or pair not in (ccy + 'USD', 'USD' + ccy)
+            or type(receipt.get('window_observations')) is not int
+            or receipt['window_observations'] != 5):
+        return out
+    start, end = (_calendar_date(receipt.get(k)) for k in ('window_start', 'window_end'))
+    if not start or not end or start >= end or end != row['calculated_through']['residual_return']:
+        return out
+    counts = receipt.get('counts')
+    names = {'adjusted', 'raw_fallback', 'zero_filled', 'unavailable'}
+    carried = receipt.get('carried_driver_observations')
+    if (not isinstance(counts, Mapping) or set(counts) != names
+            or any(type(v) is not int or not 0 <= v <= 5 for v in counts.values())
+            or sum(counts.values()) != 5 or type(carried) is not int
+            or not 0 <= carried <= counts['adjusted']):
+        return out
+    status = ('unverified' if counts['unavailable'] else
+              'input_gaps' if counts['zero_filled'] else
+              'adjusted' if counts['adjusted'] == 5 else
+              'raw_fallback' if counts['raw_fallback'] == 5 else 'mixed')
+    out.update(status=status, window_start=start, window_end=end,
+               counts=dict(counts), carried_driver_observations=carried)
+    return out
 
 
 def project_kinematics(table: object, cfg: object) -> dict[str, Any]:
@@ -209,6 +248,7 @@ def project_kinematics(table: object, cfg: object) -> dict[str, Any]:
             row['availability'][key] = status
             available += status == 'available'
         dated += _project_calculation_clock(source, row, out['table_as_of'])
+        row['residual_adjustment'] = _project_residual_adjustment(source, row)
         out['rows'].append(row)
     expected = len(out['rows']) * len(_FIELDS)
     if available:
