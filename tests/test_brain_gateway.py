@@ -3879,8 +3879,10 @@ def test_run_brain_loop_accepts_user_id_kwarg(tmp_path):
     client = _MockClient([tool_resp, text_resp])
     seen = {}
 
-    def _spy_dispatch(name, params, root_, tdd, thu, user_id="", internals_ok=False, chart_client=""):
+    def _spy_dispatch(name, params, root_, tdd, thu, user_id="", internals_ok=False,
+                      chart_client="", mode="chat"):
         seen["user_id"] = user_id
+        seen["mode"] = mode
         return {"available": False, "note": "stub"}
 
     with patch.object(gw, "_dispatch_brain_tool", side_effect=_spy_dispatch):
@@ -3889,6 +3891,7 @@ def test_run_brain_loop_accepts_user_id_kwarg(tmp_path):
             client, "deepseek-chat", 2000, 5, user_id="user-77",
         )
     assert seen.get("user_id") == "user-77"
+    assert seen.get("mode") == "chat"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
