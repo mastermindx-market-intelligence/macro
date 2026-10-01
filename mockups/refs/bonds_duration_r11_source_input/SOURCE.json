@@ -1,0 +1,324 @@
+{
+  "assets": {
+    "account.js": {
+      "bytes": 60911,
+      "sha256": "647354a0a53d12648142a44a23b799788919535e2760c581bb6476590a9830be",
+      "source_path": "templates/account.js"
+    },
+    "assets/css/080bfc12.css": {
+      "bytes": 2298,
+      "sha256": "080bfc127fb8001ac95886c154fb716179e0a1407190cdc4f35236f994e2f3e6",
+      "source_path": "generated_by_existing_writer_or_extractor"
+    },
+    "assets/css/1820ffed.css": {
+      "bytes": 8307,
+      "sha256": "1820ffed2ebbf317745be951261d72109cad9d52c83887386780b16d06d97df0",
+      "source_path": "generated_by_existing_writer_or_extractor"
+    },
+    "assets/css/c45789fd.css": {
+      "bytes": 23542,
+      "sha256": "c45789fd45b1faa2c1653af4e7471ddfd85f8e7984525eb435559ffd0cb245aa",
+      "source_path": "generated_by_existing_writer_or_extractor"
+    },
+    "assets/css/ebe31e14.css": {
+      "bytes": 30254,
+      "sha256": "ebe31e1495cecbd47daf8c8c0f07ad95c461826d99b812be603e1017c3884906",
+      "source_path": "generated_by_existing_writer_or_extractor"
+    },
+    "assets/css/fa07e99a.css": {
+      "bytes": 7786,
+      "sha256": "fa07e99a6e84eef9c856700b10a24e88ea18b9c7ef674a1aed42db4fd1798189",
+      "source_path": "generated_by_existing_writer_or_extractor"
+    },
+    "data_base.js": {
+      "bytes": 2367,
+      "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a",
+      "source_path": "generated_by_existing_writer_or_extractor"
+    },
+    "favicon.ico": {
+      "bytes": 6597,
+      "sha256": "36e823310b67e3c0e12c189e613b31e96b04c4e2ef19fcae8e79810fd3b37c24",
+      "source_path": "site/favicon.ico"
+    },
+    "favicon.svg": {
+      "bytes": 2043,
+      "sha256": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9",
+      "source_path": "templates/favicon.svg"
+    },
+    "illus.css": {
+      "bytes": 14335,
+      "sha256": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07",
+      "source_path": "templates/illus.css"
+    },
+    "illus.js": {
+      "bytes": 2752,
+      "sha256": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620",
+      "source_path": "templates/illus.js"
+    },
+    "landing.css": {
+      "bytes": 120213,
+      "sha256": "a44e4256ea9195c0b7055f69c488d3909733ae890c2fc94c3a3243cb5be91d6a",
+      "source_path": "templates/landing.css"
+    },
+    "live.js": {
+      "bytes": 29564,
+      "sha256": "4c6fe392850ea770bc43fb8cb3f44b4e9d00d15666db41d4375117f188d3cac6",
+      "source_path": "templates/live.js"
+    },
+    "live_config.js": {
+      "bytes": 367,
+      "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10",
+      "source_path": "site/live_config.js"
+    },
+    "logo_config.js": {
+      "bytes": 202,
+      "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215",
+      "source_path": "templates/logo_config.js"
+    },
+    "mm_brain.js": {
+      "bytes": 256822,
+      "sha256": "2a93db87caf50914a82024a985fd20adb6757e36cc05bd005f6b014bfafb7828",
+      "source_path": "templates/mm_brain.js"
+    },
+    "nav_market.js": {
+      "bytes": 75071,
+      "sha256": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497",
+      "source_path": "templates/nav_market.js"
+    },
+    "navigation-refresh.css": {
+      "bytes": 93481,
+      "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c",
+      "source_path": "templates/navigation-refresh.css"
+    },
+    "onboard.css": {
+      "bytes": 64745,
+      "sha256": "74613ad9bd018842089750af1af720e4aecf1cd41f65d79b986989a5e0ea9979",
+      "source_path": "templates/onboard.css"
+    },
+    "onboard.js": {
+      "bytes": 181445,
+      "sha256": "c3718f20974d883a65ccee5e241f15d36dd03a9932a63264f89ac0608b8a3cf2",
+      "source_path": "templates/onboard.js"
+    },
+    "product-nav-icons.css": {
+      "bytes": 40320,
+      "sha256": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93",
+      "source_path": "templates/product-nav-icons.css"
+    },
+    "stock-logos.js": {
+      "bytes": 16539,
+      "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49",
+      "source_path": "templates/stock-logos.js"
+    },
+    "supabase.js": {
+      "bytes": 110797,
+      "sha256": "8596965fe918e656600a1b568d3a168f5c0d3d22a600886bb6f44a6555db01e7",
+      "source_path": "templates/supabase.js"
+    },
+    "terminal_overlay.js": {
+      "bytes": 32753,
+      "sha256": "d630e0f3d10106de71375b5a27c6c636997c19c6ae16db388db1c9b367aeb53a",
+      "source_path": "templates/terminal_overlay.js"
+    },
+    "theme.css": {
+      "bytes": 218393,
+      "sha256": "4a7e32977b2ccfe6776748d2b4c680b46727a156514de9da428e00c76449911f",
+      "source_path": "templates/theme.css"
+    },
+    "theme.js": {
+      "bytes": 368258,
+      "sha256": "d08efe725ef9050bcecf3c55621238efd6a93441b059392572a822d443e7d504",
+      "source_path": "templates/theme.js"
+    }
+  },
+  "browser_admission_restored": false,
+  "browser_navigation_performed": false,
+  "build_path": [
+    "existing Jinja full bonds.html.j2",
+    "lib.pages.write_page",
+    "scripts.externalize_css.externalize"
+  ],
+  "existing_external_script_literals_not_requested": [
+    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js",
+    "https://cloud.umami.is/script.js"
+  ],
+  "fixture": {
+    "as_of": "Sep 10, 2026",
+    "financial_data": "existing bounded synthetic owner fixture; not live holdings or current market data",
+    "function": "tests/test_bonds_divergence_gate.py::_base_ctx",
+    "scope": "duration-dialog states and surrounding existing route; empty fixture panels are not product completeness proof",
+    "source_sha256": "12f4673a78dd90048137ab1d6b5c215acc0046718c8e54194fa195c26b33298a"
+  },
+  "font_assets_not_bundled": {
+    "fonts/Inter-400.woff2": {
+      "bytes": 23664,
+      "sha256": "8909904ab6c872eb994093482a88a28eca2cd95912d7b6fecd72103b0dc07edc",
+      "source_path": "templates/fonts/Inter-400.woff2"
+    },
+    "fonts/Inter-500.woff2": {
+      "bytes": 24272,
+      "sha256": "f3779f1efccc4bdcdf9c0a02ab95bf6bd092ed09c48c08cedc725889edd1d19f",
+      "source_path": "templates/fonts/Inter-500.woff2"
+    },
+    "fonts/Inter-600.woff2": {
+      "bytes": 24452,
+      "sha256": "f9a06e79cd3a2a20951c0f0e28f66dd0e6d3fda73911d640a2125c8fcb78f21a",
+      "source_path": "templates/fonts/Inter-600.woff2"
+    },
+    "fonts/Inter-700.woff2": {
+      "bytes": 24356,
+      "sha256": "6f56409fd3d64bb85f7d070bce20749db2d66b6d63cec586cc22d1c761be2491",
+      "source_path": "templates/fonts/Inter-700.woff2"
+    },
+    "fonts/Inter-800.woff2": {
+      "bytes": 24400,
+      "sha256": "a7d0a50f15d389cad679238466bdb5fc9787aa0715719064ce25abaff042820d",
+      "source_path": "templates/fonts/Inter-800.woff2"
+    },
+    "fonts/Inter-900.woff2": {
+      "bytes": 23900,
+      "sha256": "d5c0ed7b8b5dde97d48b97947d740bbd8ad3ba9f2c5cc6b8280f16acba2d828e",
+      "source_path": "templates/fonts/Inter-900.woff2"
+    }
+  },
+  "html_sha256": "6f99fcb52332dd57ed78b1b8477e8e977ca78370806a7615fe41da41d8614d3d",
+  "native_paper_change": false,
+  "permissions": "Receiving this input does not authorize bypassing the existing browser administrator restriction.",
+  "production_deployment": false,
+  "purpose": "Synthetic browser-review INPUT, not acceptance EVIDENCE",
+  "rendered_files": {
+    "site/account.js": {
+      "bytes": 60911,
+      "sha256": "647354a0a53d12648142a44a23b799788919535e2760c581bb6476590a9830be"
+    },
+    "site/assets/css/080bfc12.css": {
+      "bytes": 2298,
+      "sha256": "080bfc127fb8001ac95886c154fb716179e0a1407190cdc4f35236f994e2f3e6"
+    },
+    "site/assets/css/1820ffed.css": {
+      "bytes": 8307,
+      "sha256": "1820ffed2ebbf317745be951261d72109cad9d52c83887386780b16d06d97df0"
+    },
+    "site/assets/css/c45789fd.css": {
+      "bytes": 23542,
+      "sha256": "c45789fd45b1faa2c1653af4e7471ddfd85f8e7984525eb435559ffd0cb245aa"
+    },
+    "site/assets/css/ebe31e14.css": {
+      "bytes": 30254,
+      "sha256": "ebe31e1495cecbd47daf8c8c0f07ad95c461826d99b812be603e1017c3884906"
+    },
+    "site/assets/css/fa07e99a.css": {
+      "bytes": 7786,
+      "sha256": "fa07e99a6e84eef9c856700b10a24e88ea18b9c7ef674a1aed42db4fd1798189"
+    },
+    "site/bonds.html": {
+      "bytes": 103450,
+      "sha256": "6f99fcb52332dd57ed78b1b8477e8e977ca78370806a7615fe41da41d8614d3d"
+    },
+    "site/data_base.js": {
+      "bytes": 2367,
+      "sha256": "2aaceaf98a0f534aa342bdc6e64c831a2261a04fafebab4becf50f2d7c82620a"
+    },
+    "site/favicon.ico": {
+      "bytes": 6597,
+      "sha256": "36e823310b67e3c0e12c189e613b31e96b04c4e2ef19fcae8e79810fd3b37c24"
+    },
+    "site/favicon.svg": {
+      "bytes": 2043,
+      "sha256": "a717b918f423c0c3f7c4988cfbf70d4b3c21fc03614800bfb423762cc0fb9aa9"
+    },
+    "site/illus.css": {
+      "bytes": 14335,
+      "sha256": "cbe6a0b4f83095ed300ee49a5d9f4d03e88005170a4792a7a9f41805a67e5f07"
+    },
+    "site/illus.js": {
+      "bytes": 2752,
+      "sha256": "8e0a3779784525f15bb4a1b20e50f39ef4d0ddf243827f5ab609cfb08a69c620"
+    },
+    "site/landing.css": {
+      "bytes": 120213,
+      "sha256": "a44e4256ea9195c0b7055f69c488d3909733ae890c2fc94c3a3243cb5be91d6a"
+    },
+    "site/live.js": {
+      "bytes": 29564,
+      "sha256": "4c6fe392850ea770bc43fb8cb3f44b4e9d00d15666db41d4375117f188d3cac6"
+    },
+    "site/live_config.js": {
+      "bytes": 367,
+      "sha256": "52943e92422103557d94066ceb65f4402816322281f95e8bd376293fe14d9c10"
+    },
+    "site/logo_config.js": {
+      "bytes": 202,
+      "sha256": "b37d33d3194c191b1bb64db3f5c33d17c7dc06a74892e4aa8ea4d50320aae215"
+    },
+    "site/mm_brain.js": {
+      "bytes": 256822,
+      "sha256": "2a93db87caf50914a82024a985fd20adb6757e36cc05bd005f6b014bfafb7828"
+    },
+    "site/nav_market.js": {
+      "bytes": 75071,
+      "sha256": "24985e3240b509bfa197a5203b7bd28bb039b82b77a624481393203c74463497"
+    },
+    "site/navigation-refresh.css": {
+      "bytes": 93481,
+      "sha256": "ef068fe19adab3779512462c40ab67b3e75a997a2dc6edfae2d5a36dd604eb5c"
+    },
+    "site/onboard.css": {
+      "bytes": 64745,
+      "sha256": "74613ad9bd018842089750af1af720e4aecf1cd41f65d79b986989a5e0ea9979"
+    },
+    "site/onboard.js": {
+      "bytes": 181445,
+      "sha256": "c3718f20974d883a65ccee5e241f15d36dd03a9932a63264f89ac0608b8a3cf2"
+    },
+    "site/product-nav-icons.css": {
+      "bytes": 40320,
+      "sha256": "093ad1ea5ed74b16894c3939d971db3e957aba3476a7bf8aab2ccd7b3d044d93"
+    },
+    "site/stock-logos.js": {
+      "bytes": 16539,
+      "sha256": "cc29be531bc08e655464b6c0d384e1a46041aeb31caf7d982e926681fda7cb49"
+    },
+    "site/supabase.js": {
+      "bytes": 110797,
+      "sha256": "8596965fe918e656600a1b568d3a168f5c0d3d22a600886bb6f44a6555db01e7"
+    },
+    "site/terminal_overlay.js": {
+      "bytes": 32753,
+      "sha256": "d630e0f3d10106de71375b5a27c6c636997c19c6ae16db388db1c9b367aeb53a"
+    },
+    "site/theme.css": {
+      "bytes": 218393,
+      "sha256": "4a7e32977b2ccfe6776748d2b4c680b46727a156514de9da428e00c76449911f"
+    },
+    "site/theme.js": {
+      "bytes": 368258,
+      "sha256": "d08efe725ef9050bcecf3c55621238efd6a93441b059392572a822d443e7d504"
+    }
+  },
+  "rendered_module_sha256": "8a08d88580ab811c45e1773ae73c69cffc9ba56f547daf979eb66222e5450dad",
+  "runtime_dynamic_network_closure": "NOT_PROVEN; static inventory is not a browser network trace",
+  "screenshot_acceptance": false,
+  "server_started": false,
+  "source_commit": "d3b11fe9be0e67e56ecff40bf25d5e09e85d3d1e",
+  "source_dependency_sha256": {
+    "lib/pages.py": "2673025c9729d5665936dbe6cafd461e8dff200feacc3e0081f0f378df2fd28b",
+    "scripts/externalize_css.py": "fa4fb1e4d7f141694143711f8886bb0add138d76b9dad19e083a2eb3a6f75b3c",
+    "templates/_bonds_duration.html.j2": "dba8f0ff6d972db808cecccbd72ae35c1c68484880809a05ce0db6a7ea909a96",
+    "templates/_bonds_duration.mjs.j2": "3d44053d71710a53d3af00cc89f69084286a3b21098eaf1e4e20c9adff7433ec",
+    "templates/_interfonts.html.j2": "40ba62a3d1efa51de70993bedd5fb7ec96fcc1190f58515d765b267b2afd32cd",
+    "templates/_navlinks.html.j2": "5318e6f11db80e225707cd02b0776f590c3defcaf6aaca81085e9bd956981242",
+    "templates/_seo_head.html.j2": "eda59eeb5f7cf0fb83a1a6430ff523939ee43cd214fe2b4aebba7ca4561bbbee",
+    "templates/_site_nav.html.j2": "164f3119fd04b8886d2d29703dc9c017e13bceeae1ecc49a36f9842353d9e482",
+    "templates/_state_inks.html.j2": "58e8e0700a66e90fa1b8408bf8eaa0a43b69206af7f30f334ad3706567fc204b",
+    "templates/_vector_polish.html.j2": "356f7ebc8f3da8a6957d7fc4affe416d051d3fd4669e93aa175a6b4d941fbb5e",
+    "templates/bonds.html.j2": "a07c5b2b3fefc756332558df4726a490a5a4b431bd3ee46913f97b437548c5dd",
+    "tests/test_bonds_divergence_gate.py": "12f4673a78dd90048137ab1d6b5c215acc0046718c8e54194fa195c26b33298a"
+  },
+  "source_pr": 8241,
+  "source_repo": "mastermindx-market-intelligence/macro",
+  "static_local_dependency_status": "all parsed direct/CSS local resources are present or explicitly listed as required unbundled fonts",
+  "unresolved_nonstatic_javascript_literal_candidates": [
+    ".supabase.js"
+  ]
+}
