@@ -109,7 +109,11 @@ must preserve every canonical digest byte and obtain the existing source ownerâ€
 path/custody admission; the denied #7889/runner-service inspection remains held.
 
 A compound current #7889/runner-service inspection was safety-refused before dispatch
-and remains held. Do not replay it through another carrier. The separate refused
+and remains held. Do not replay it through another carrier. The subsequent additive
+#7889 owner-return comment was also refused before dispatch: **NOT_DELIVERED**,
+no comment ID and no uncertain modifying effect. Do not send it through Slack or
+another tool to obtain the refused delivery. Its facts are preserved only in this
+missionâ€™s canonical evidence/continuity, not represented as consumed by AD-1T2. The separate refused
 Macro duplicate-validation edit also remains unapplied. No new runtime worker or
 watcher is claimed. All parser edits/pushes are reconciled; the read-only diagnostic
 completed its timeout handling and its local SSH process was no longer present.
