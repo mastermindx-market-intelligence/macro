@@ -1,9 +1,11 @@
 """Project the existing FX kinematics table; never compute or score market moves.
 
 This is an additive display member of the existing forex/latest.json publication.
-The producer chooses each metric's last non-null reading independently and returns
-only its maximum index date. That date is NOT an observation date for every field.
-Value completeness below says nothing about freshness, tradability or confidence.
+The producer chooses each metric's last non-null reading independently. R13 also
+supplies those derived-series index dates; older producers supply only the table's
+maximum index date. Neither is a vendor observation or publication timestamp.
+Value and calculation-date completeness say nothing about source freshness,
+tradability, synchronized source observations or confidence.
 """
 from __future__ import annotations
 
@@ -97,6 +99,44 @@ def _value(raw: object, key: str) -> tuple[float | None, str]:
     return number, 'available'
 
 
+def _project_calculation_clock(source: Mapping, row: dict, table_date: str) -> int:
+    """Copy validated selected-index dates; never turn them into source freshness.
+
+    Clock defects are separate from numeric completeness. A date cannot rescue a
+    missing value, and a bad date cannot erase a separately valid numeric value.
+    """
+    row['calculated_through'] = {key: None for key in _FIELDS}
+    row['index_relation'] = {key: 'unknown' for key in _FIELDS}
+    row['normalized_input_dates'] = {'close': None, 'residual_return': None}
+    row['clock_issues'] = []
+    clock = source.get('calculation_clock')
+    if (not isinstance(clock, Mapping) or type(clock.get('version')) is not int
+            or clock['version'] != 1 or not isinstance(clock.get('basis'), str)
+            or clock['basis'] != 'derived_series_index'
+            or not isinstance(clock.get('selected_index_dates'), Mapping)):
+        row['clock_issues'].append('calculation_clock_unavailable')
+        return 0
+    selected = clock['selected_index_dates']
+    dated = 0
+    for key, field in _FIELDS.items():
+        if row['availability'][key] != 'available':
+            continue
+        stamp = _calendar_date(selected.get(field))
+        if stamp is None or stamp > table_date:
+            row['clock_issues'].append('invalid_or_missing_calculation_date:' + key)
+            continue
+        row['calculated_through'][key] = stamp
+        row['index_relation'][key] = 'at_table_date' if stamp == table_date else 'before_table_date'
+        dated += 1
+    inputs = clock.get('normalized_input_dates')
+    if isinstance(inputs, Mapping) and any(value == 'available' for value in row['availability'].values()):
+        for key in row['normalized_input_dates']:
+            stamp = _calendar_date(inputs.get(key))
+            if stamp is not None and stamp <= table_date:
+                row['normalized_input_dates'][key] = stamp
+    return dated
+
+
 def project_kinematics(table: object, cfg: object) -> dict[str, Any]:
     """Return JSON-safe values, definitions and limitations without mutating inputs.
 
@@ -110,7 +150,11 @@ def project_kinematics(table: object, cfg: object) -> dict[str, Any]:
         'positive_direction': 'currency_appreciation_vs_usd',
         'table_as_of': None, 'date_basis': 'producer_max_index',
         'freshness': 'unknown', 'metric_dates_available': False,
+        'calculation_date_status': 'unavailable',
+        'calculation_date_basis': 'derived_series_index',
         'limitations': ['last_non_null', 'per_metric_dates_unavailable',
+                        'calculation_index_is_not_source_observation_or_availability',
+                        'normalized_inputs_can_contain_filled_values',
                         'observation_windows_not_calendar_days',
                         'coincident_not_a_forecast', 'correlated_metrics_not_independent_votes'],
         'metrics': {}, 'rows': [], 'issues': [], 'reference_rows_excluded': [],
@@ -148,6 +192,7 @@ def project_kinematics(table: object, cfg: object) -> dict[str, Any]:
     counts = Counter(row['ccy'] for row in candidates)
     seen = set()
     available = 0
+    dated = 0
     for source in candidates:
         ccy = source['ccy']
         if ccy in seen:
@@ -163,8 +208,11 @@ def project_kinematics(table: object, cfg: object) -> dict[str, Any]:
             row['values'][key] = value
             row['availability'][key] = status
             available += status == 'available'
+        dated += _project_calculation_clock(source, row, out['table_as_of'])
         out['rows'].append(row)
     expected = len(out['rows']) * len(_FIELDS)
     if available:
         out['value_status'] = 'complete' if available == expected and not out['issues'] else 'partial'
+    if dated:
+        out['calculation_date_status'] = 'complete' if dated == expected and not out['issues'] else 'partial'
     return out

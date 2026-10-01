@@ -771,6 +771,21 @@ _CCY_ZH = {"USD": "美元", "EUR": "欧元", "JPY": "日元", "GBP": "英镑", "
 _CCY_ORDER = ["USD", "EUR", "JPY", "GBP", "CHF", "AUD", "CAD", "CNH", "MXN", "BRL"]
 
 
+def _selected_index_date(series: pd.Series | None) -> str | None:
+    """Date of the selected derived/input-series value, NOT a vendor timestamp.
+
+    Keep the existing last-non-null selection. Do not forward-fill a clock or use
+    today's/build time. Normalized input values may themselves already be filled.
+    """
+    if not isinstance(series, pd.Series) or not isinstance(series.index, pd.DatetimeIndex):
+        return None
+    selected = series.dropna()
+    if selected.empty or not np.isfinite(selected.iloc[-1]):
+        return None
+    stamp = selected.index[-1]
+    return None if pd.isna(stamp) else stamp.strftime("%Y-%m-%d")
+
+
 def fx_kinematics_table(results: dict, drivers: dict, cfg: dict) -> dict:
     """Per-currency move kinematics: literal 1d/5d/20d % move, velocity-z, acceleration-z,
     realized-vol percentile, and the idiosyncratic (ex-dollar) 5d move. COINCIDENT,
@@ -793,9 +808,13 @@ def fx_kinematics_table(results: dict, drivers: dict, cfg: dict) -> dict:
                 continue
             lg = strength[ccy].reindex(idx)
             level = np.exp(lg)
-            def pct(w):
+            selected_dates = {field: None for field in (
+                "lit_1d_pct", "lit_5d_pct", "lit_20d_pct", "vel_z", "accel_z",
+                "rvol_pctile", "resid_5d_pct")}
+            def pct(w, field):
                 v = lg.diff(w)
                 vv = v.dropna()
+                selected_dates[field] = _selected_index_date(vv)
                 return round(100 * (np.exp(float(vv.iloc[-1])) - 1), 2) if len(vv) else None
             vel = _velocity(level, 5, hl)
             vz = _z_causal(vel, zw, zmp).dropna()
@@ -810,15 +829,31 @@ def fx_kinematics_table(results: dict, drivers: dict, cfg: dict) -> dict:
                 rr = resid_ret[ccy].reindex(idx).rolling(5).sum().dropna()
                 if len(rr):
                     resid5 = round(100 * (np.exp(float(rr.iloc[-1])) - 1), 2)
+                selected_dates["resid_5d_pct"] = _selected_index_date(rr)
+            selected_dates.update(vel_z=_selected_index_date(vz),
+                                  accel_z=_selected_index_date(az),
+                                  rvol_pctile=_selected_index_date(rvp))
             state_en, state_zh = _kin_state(vel_z, acc_z)
             rows.append({
                 "ccy": ccy, "label_en": ccy, "label_zh": _CCY_ZH.get(ccy, ccy),
-                "lit_1d_pct": pct(lw[0]), "lit_5d_pct": pct(lw[1]), "lit_20d_pct": pct(lw[2]),
+                "lit_1d_pct": pct(lw[0], "lit_1d_pct"),
+                "lit_5d_pct": pct(lw[1], "lit_5d_pct"),
+                "lit_20d_pct": pct(lw[2], "lit_20d_pct"),
                 "vel_z": round(vel_z, 2) if vel_z is not None else None,
                 "accel_z": round(acc_z, 2) if acc_z is not None else None,
                 "rvol_pctile": round(float(rvp.iloc[-1]), 2) if len(rvp) else None,
                 "resid_5d_pct": resid5,
                 "state_en": state_en, "state_zh": state_zh,
+                "calculation_clock": {
+                    "version": 1, "basis": "derived_series_index",
+                    "selected_index_dates": selected_dates,
+                    "normalized_input_dates": {
+                        "close": _selected_index_date(lg),
+                        "residual_return": _selected_index_date(resid_ret.get(ccy)),
+                    },
+                    # The normalized frames do not carry source release/ingestion clocks.
+                    "source_observed_at": None, "source_available_at": None,
+                },
             })
         if not rows:
             return {}

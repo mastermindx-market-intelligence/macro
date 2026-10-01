@@ -1114,3 +1114,211 @@ def test_r12_non_scalar_currency_identity_cannot_crash_optional_projection():
     got = _r12_project(table)
     assert got['value_status'] == 'unavailable'
     assert 'invalid_currency_row' in got['issues']
+
+
+# R13: retain each selected derived-series date without inventing vendor clocks.
+_R13_FIELDS = ['lit_1d_pct', 'lit_5d_pct', 'lit_20d_pct', 'vel_z', 'accel_z',
+               'rvol_pctile', 'resid_5d_pct']
+
+
+def _r13_series_fixture(close_lag=0, residual_lag=0):
+    cfg = _r12_cfg(); cfg['assets'] = {'USDJPY': {'base': 'JPY'}}
+    idx = pd.date_range('2022-01-03', periods=760, freq='B')
+    rng = np.random.default_rng(13013)
+    close = pd.Series(np.exp(np.cumsum(rng.normal(0.0001, 0.005, len(idx)))), index=idx)
+    residual = pd.Series(np.exp(np.cumsum(rng.normal(0.0, 0.003, len(idx)))), index=idx)
+    broad = pd.Series(np.exp(np.cumsum(rng.normal(0.0001, 0.002, len(idx)))) * 100, index=idx)
+    if close_lag:
+        close.iloc[-close_lag:] = np.nan
+    if residual_lag:
+        residual.iloc[-residual_lag:] = np.nan
+    return {'USDJPY': pd.DataFrame({'close': close, 'resid_close': residual})}, {'broad_dollar': broad}, cfg, idx
+
+
+def _r13_clock_table():
+    table = _r12_table()
+    table['rows'][0]['calculation_clock'] = {
+        'version': 1, 'basis': 'derived_series_index',
+        'selected_index_dates': {field: '2026-09-25' for field in _R13_FIELDS},
+        'normalized_input_dates': {'close': '2026-09-25', 'residual_return': '2026-09-24'},
+        'source_observed_at': None, 'source_available_at': None,
+    }
+    return table
+
+
+def test_r13_producer_dates_belong_to_each_selected_metric_not_build_time():
+    from engine.forex_regime import fx_kinematics_table
+    results, drivers, cfg, idx = _r13_series_fixture()
+    original = results['USDJPY'].copy(deep=True)
+    raw = fx_kinematics_table(results, drivers, cfg)
+    row = next(r for r in raw['rows'] if r['ccy'] == 'JPY')
+    assert 'calculation_clock' in row, 'producer still discards selected-series dates'
+    clock = row['calculation_clock']
+    assert clock['version'] == 1 and clock['basis'] == 'derived_series_index'
+    assert clock['selected_index_dates'] == {field: idx[-1].strftime('%Y-%m-%d') for field in _R13_FIELDS}
+    assert clock['source_observed_at'] is None and clock['source_available_at'] is None
+    pd.testing.assert_frame_equal(results['USDJPY'], original)
+
+
+def test_r13_lagged_price_and_residual_keep_their_own_dates_under_newer_table():
+    from engine import forex_regime as fr
+    results, drivers, cfg, idx = _r13_series_fixture(close_lag=3, residual_lag=9)
+    raw = fr.fx_kinematics_table(results, drivers, cfg)
+    row = next(r for r in raw['rows'] if r['ccy'] == 'JPY')
+    assert 'calculation_clock' in row
+    clock = row['calculation_clock']; dates = clock['selected_index_dates']
+    assert raw['as_of'] == idx[-1].strftime('%Y-%m-%d')
+    assert dates['lit_1d_pct'] == dates['lit_5d_pct'] == dates['lit_20d_pct'] == idx[-4].strftime('%Y-%m-%d')
+    assert dates['resid_5d_pct'] == idx[-10].strftime('%Y-%m-%d')
+    assert clock['normalized_input_dates']['close'] == idx[-4].strftime('%Y-%m-%d')
+    assert clock['normalized_input_dates']['residual_return'] == idx[-10].strftime('%Y-%m-%d')
+    # A rolling statistic can be computable after the last input (depending on
+    # the installed pandas fill semantics). Its own SERIES date must survive.
+    strength, _, calendar = fr._strength_panel(results, drivers, cfg)
+    level = np.exp(strength['JPY'].reindex(calendar))
+    expected = {
+        'vel_z': fr._z_causal(fr._velocity(level, 5, 20), 252, 60),
+        'accel_z': fr._z_causal(fr._accel(fr._velocity(level, 5, 20)), 252, 60),
+        'rvol_pctile': fr._pctile_causal(level.pct_change().rolling(20).std(), 504),
+    }
+    for field, series in expected.items():
+        selected = series.dropna()
+        assert dates[field] == selected.index[-1].strftime('%Y-%m-%d')
+
+
+def test_r13_each_literal_window_selects_its_actual_endpoint_when_history_has_a_hole():
+    from engine.forex_regime import fx_kinematics_table
+    results, drivers, cfg, idx = _r13_series_fixture()
+    results['USDJPY'].loc[idx[-6], 'close'] = np.nan
+    raw = fx_kinematics_table(results, drivers, cfg)
+    row = next(r for r in raw['rows'] if r['ccy'] == 'JPY')
+    assert 'calculation_clock' in row
+    dates = row['calculation_clock']['selected_index_dates']
+    assert dates['lit_1d_pct'] == dates['lit_20d_pct'] == idx[-1].strftime('%Y-%m-%d')
+    assert dates['lit_5d_pct'] == idx[-2].strftime('%Y-%m-%d')
+
+
+def test_r13_absent_residual_never_borrows_price_or_table_date():
+    from engine.forex_regime import fx_kinematics_table
+    results, drivers, cfg, idx = _r13_series_fixture()
+    results['USDJPY'].drop(columns='resid_close', inplace=True)
+    row = next(r for r in fx_kinematics_table(results, drivers, cfg)['rows'] if r['ccy'] == 'JPY')
+    assert 'calculation_clock' in row
+    assert row['resid_5d_pct'] is None
+    assert row['calculation_clock']['selected_index_dates']['resid_5d_pct'] is None
+    assert row['calculation_clock']['normalized_input_dates']['residual_return'] is None
+
+
+def test_r13_projector_forwards_calculation_dates_but_not_as_source_observation():
+    import copy
+    table = _r13_clock_table(); original = copy.deepcopy(table)
+    got = _r12_project(table)
+    assert got.get('calculation_date_status') == 'complete'
+    row = got['rows'][0]
+    assert row['calculated_through']['return_medium'] == '2026-09-25'
+    assert set(row['index_relation'].values()) == {'at_table_date'}
+    assert got['calculation_date_basis'] == 'derived_series_index'
+    assert got['freshness'] == 'unknown' and got['metric_dates_available'] is False
+    assert set(row['observed_at'].values()) == {None}
+    assert row['normalized_input_dates']['residual_return'] == '2026-09-24'
+    assert table == original
+    json.dumps(got, allow_nan=False)
+
+
+def test_r13_mixed_dates_are_preserved_not_upgraded_by_the_newest_value():
+    table = _r13_clock_table()
+    table['rows'][0]['calculation_clock']['selected_index_dates']['lit_5d_pct'] = '2026-09-22'
+    got = _r12_project(table); row = got['rows'][0]
+    assert row.get('calculated_through', {}).get('return_medium') == '2026-09-22'
+    assert row['index_relation']['return_medium'] == 'before_table_date'
+    assert row['index_relation']['return_short'] == 'at_table_date'
+    assert got['calculation_date_status'] == 'complete'
+    assert got['freshness'] == 'unknown'
+
+
+@pytest.mark.parametrize('bad', [None, '', True, [], {}, '2026-02-30', '2026-09-26',
+                               '2026-09-25T12:00:00Z', '09/25/2026'])
+def test_r13_missing_invalid_or_future_metric_date_stays_unknown_without_erasing_value(bad):
+    table = _r13_clock_table()
+    table['rows'][0]['calculation_clock']['selected_index_dates']['vel_z'] = bad
+    got = _r12_project(table); row = got['rows'][0]
+    assert got.get('calculation_date_status') == 'partial'
+    assert row['values']['velocity_z'] == 1.3
+    assert row['calculated_through']['velocity_z'] is None
+    assert row['index_relation']['velocity_z'] == 'unknown'
+    assert row['clock_issues']
+    assert got['value_status'] == 'complete' and got['freshness'] == 'unknown'
+
+
+@pytest.mark.parametrize('clock', [None, True, [], 'clock', {},
+    {'version': True, 'basis': 'derived_series_index'},
+    {'version': '1', 'basis': 'derived_series_index'},
+    {'version': 1, 'basis': 'vendor_observation'},
+    {'version': 1, 'basis': 'derived_series_index', 'selected_index_dates': []}])
+def test_r13_malformed_or_unrecognized_clock_does_not_crash_or_create_freshness(clock):
+    table = _r12_table(); table['rows'][0]['calculation_clock'] = clock
+    got = _r12_project(table)
+    assert got.get('calculation_date_status') == 'unavailable'
+    assert got['value_status'] == 'complete' and got['freshness'] == 'unknown'
+    assert set(got['rows'][0]['calculated_through'].values()) == {None}
+    json.dumps(got, allow_nan=False)
+
+
+def test_r13_a_timestamp_cannot_validate_a_missing_value_or_duplicate_identity():
+    import copy
+    table = _r13_clock_table(); table['rows'][0]['lit_5d_pct'] = None
+    row = _r12_project(table)['rows'][0]
+    assert row.get('calculated_through', {}).get('return_medium', 'missing') is None
+    assert row['index_relation']['return_medium'] == 'unknown'
+    table['rows'].append(copy.deepcopy(table['rows'][0]))
+    got = _r12_project(table)
+    assert got['value_status'] == 'unavailable' and got['calculation_date_status'] == 'unavailable'
+    assert set(got['rows'][0]['calculated_through'].values()) == {None}
+
+
+def test_r13_real_producer_and_real_json_writer_preserve_selected_dates(tmp_path, monkeypatch):
+    from engine.forex_regime import fx_kinematics_table
+    results, drivers, cfg, idx = _r13_series_fixture(close_lag=4, residual_lag=7)
+    raw = fx_kinematics_table(results, drivers, cfg)
+    got, contexts = _r12_build_fixture(tmp_path, monkeypatch, raw)
+    row = next(r for r in got['kinematics']['rows'] if r['ccy'] == 'JPY')
+    assert row.get('calculated_through', {}).get('return_medium') == idx[-5].strftime('%Y-%m-%d')
+    assert row['calculated_through']['residual_return'] == idx[-8].strftime('%Y-%m-%d')
+    assert contexts[0]['kinematics'] == raw
+    assert got['fx_state']['active_scenarios'] == []
+    assert got['kinematics']['freshness'] == 'unknown'
+
+
+def test_r13_legacy_clockless_table_is_still_usable_but_not_dated():
+    got = _r12_project()
+    assert got.get('calculation_date_status') == 'unavailable'
+    assert got['value_status'] == 'complete'
+    assert got['rows'][0]['values']['return_medium'] == 1.2
+    assert set(got['rows'][0]['calculated_through'].values()) == {None}
+
+
+@pytest.mark.parametrize('basis', [np.array(['derived_series_index', 'vendor']), ['derived_series_index'], True])
+def test_r13_non_scalar_clock_basis_is_rejected_without_an_exception(basis):
+    table = _r13_clock_table(); table['rows'][0]['calculation_clock']['basis'] = basis
+    got = _r12_project(table)
+    assert got['calculation_date_status'] == 'unavailable'
+    assert got['value_status'] == 'complete'
+    json.dumps(got, allow_nan=False)
+
+
+def test_r13_upstream_clock_cannot_claim_vendor_release_or_fill_an_observation_date():
+    table = _r13_clock_table(); clock = table['rows'][0]['calculation_clock']
+    clock['source_observed_at'] = clock['source_available_at'] = '2026-09-25T12:00:00Z'
+    got = _r12_project(table)
+    assert got['freshness'] == 'unknown' and got['metric_dates_available'] is False
+    assert set(got['rows'][0]['observed_at'].values()) == {None}
+    assert 'source_available_at' not in got['rows'][0]
+
+
+def test_r13_input_clock_after_table_is_not_retained_as_valid_lineage():
+    table = _r13_clock_table()
+    table['rows'][0]['calculation_clock']['normalized_input_dates'] = {'close': '2026-09-26', 'residual_return': True}
+    got = _r12_project(table)
+    assert got['rows'][0]['normalized_input_dates'] == {'close': None, 'residual_return': None}
+    assert got['rows'][0]['calculated_through']['return_short'] == '2026-09-25'
+    assert got['freshness'] == 'unknown'

@@ -107,3 +107,27 @@ Tested source SHA-256s:
 | `.github/ci/legacy-jobs.yml` | `f5f42a678f67e4b18984d90234e693566a89ba4325ad9eeecae30e344b5eddf7` |
 
 No full-repository local test pass, production consumer activation, source-age validation, browser proof or independent review is claimed. Exact-head hosted CI and review are still owed before release.
+
+
+## R13 continuation — calculation-index dates, not vendor clocks
+
+This section supersedes only the statement that no per-metric **calculation** dates exist. Source observation and release/ingestion clocks remain unavailable. The R12 numeric field definitions, missing-value policy and display-only fence remain unchanged.
+
+The existing `engine.forex_regime.fx_kinematics_table` now attaches a versioned `calculation_clock` to each output row. Its `selected_index_dates` map names the exact derived-series index selected for each legacy numeric field. The unchanged literal-return formulas, velocity/acceleration, volatility percentile and residual calculations still use their original last-non-null selection and rounding. `normalized_input_dates` separately records the last finite close/residual-return input index when available.
+
+These are not real-time source observations. In the existing normalization chain, broad-dollar drivers can be forward-filled and residual returns can be zero-filled or equal raw returns before the rolling beta is estimable. A recent derived-series date therefore does not prove a recent vendor observation, available-at timestamp, fitted residual, or tradable synchronized state. This change does not modify that chain or its numerical behavior.
+
+The existing projector forwards validated dates as `rows[].calculated_through`, with `index_relation` equal to `at_table_date`, `before_table_date`, or `unknown`. Top-level `calculation_date_status` describes only date coverage; complete coverage can still contain multiple different dates. Source `observed_at` entries remain null, `metric_dates_available` remains false, and `freshness` remains unknown. Unrecognized/malformed date receipts never supply an observation date or overwrite valid numeric values. Dates after the table date are rejected; unknown vendor timestamps are not copied through. Duplicate/missing-value rows cannot acquire a valid clock simply because a timestamp was supplied. Legacy clockless tables retain numeric compatibility with unknown calculation dates.
+
+### R13 proof before publication
+
+- Initial R13 tests: **27 failed** before implementation (Studio PID75466), specifically because selected dates were absent.
+- A further malformed array-valued basis regression failed at PID85188; a string-type check now rejects it before comparison.
+- Final scoped run PID87189 exited0: **184 tests passed** across the existing context-bus/stance/Forex/B3 suites (32 added R13 cases). Two existing NumPy divide warnings remained in the calibration-sign fixture; a separate pytest cleanup warning referred to an unrelated protected old temporary Chromium fixture. That folder was not modified or used for browser execution.
+- The exact old producer from commit `043d4fc527a69b5ddd6a4d5829f5a93b2efabd3e` and the candidate were executed with15 deterministic synthetic missing-tail combinations. Across30 output rows, **every pre-existing numeric/label/key value was unchanged** when the additive clock was removed.
+- AST/function-body comparison confirmed only the existing `fx_kinematics_table` body changed, plus one `_selected_index_date` helper. Shared scenario, intensity, state-label and feature functions remained unchanged.
+- Tests cover holes affecting different return horizons, currencies lagging a newer broad-dollar table, separately older residual values, absent residuals, invalid/future dates, fake source clocks, legacy payloads and actual builder JSON write-through. The actual writer fixture still substitutes external input/state/render boundaries; no live nightly build or browser proof is implied.
+
+The same PR and worktree retain source custody. No parallel clock service, scoring rule, readiness owner, source collection, template, trading or deployment change is introduced by this date-only phase. A UI may expose calculation-date disagreement but must not convert it into a freshness verdict.
+
+R13 final contract check: Studio PID380 exit0, full `scripts/check_contract_delta.py --base 7502eac2d65e4adc6bbc134de5474d6f56ae117e` returned **0 introduced / 0 inherited**; all existing workload probes stayed within their ceilings. Current-main comparison at0c7ec71ba502aca98bfd03c851ea22fa75f4e5e2 found no affected source/producer/test changes; the existing `unrun-macro-panels` job was byte-equivalent as a parsed object. No ancestry-only merge/rebase was performed. PID9910 detected5/5 in-memory mutations (future date accepted, table date replacing the selected date, invented source observation, boolean clock version, date rescuing a missing value); no source files were changed by those probes and no independent review is implied.
