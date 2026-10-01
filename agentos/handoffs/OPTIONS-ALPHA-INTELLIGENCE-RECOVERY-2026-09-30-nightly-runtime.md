@@ -48,6 +48,8 @@ unresolved:
   - 667, 8201 and 7401 still had no current-head independent approval in this turn's read. Do not self-approve through another connector login.
   - 7398 correction and AD-1T2 acceptance remain prerequisites; no campaign, model, recommendation or trade activation occurred.
 next_actions:
+  - Consume the parser closure on Terminal 667 head 6cb393642d21b3849eff28ad9a20c1b34ef7f950; do not rebuild the accepted investigation workflow.
+  - Continue bounded read-only AD-1 diagnosis on the now-responsive M1 using the installed conda runtime; the store is no longer supported as empty by current evidence. Runner admission and production acceptance remain held.
   - Consume independent review of the phase-only 7265 delta and deliver it through the existing release owner when gates clear.
   - After actual permission recovery, remove only the proved duplicate pre-join validation; retain public join validation and under-lock writer revalidation, then compare exact outputs and runtime.
   - Obtain ordinary natural append/publication proof and continue the registered candidate-through-outcome sleeve after its specific source/correction/AD-1T2 gates clear.
@@ -65,7 +67,50 @@ danger_areas:
 prs: [7265, 7417]
 ---
 
-## Exact continuation
+## Continuation update — parser closure and M1 source recovery
+
+Terminal #667 is now **6cb393642d21b3849eff28ad9a20c1b34ef7f950**. The same-carrier
+source return **5923999838** was posted and read back. Reviews 5355848878 and
+5374424452 supplied the exact parser repair: calendar/fractional chronology,
+zero-valid-quote consistency/safe counts, and same-ID duplicate/conflict handling.
+The parser postimage equals reference SHA256 602d8857064376cfd2c41459122f76aa72bd461c4330d5107997d1500b84573f.
+The old source yields 12 failures / 16 passes; the repair yields 28/28. Current-master
+integration has **6,747 passing tests in 415 files, four existing todo, 54 native
+responsive browser passes, TypeScript and scoped ESLint PASS**. Source view,
+investigation and CSS are byte-identical to the accepted 81c increment. Its new
+published head still requires independent acceptance and release; the first observed
+hosted shards were running and Vercel statuses were red, not waived.
+
+The previously recorded M1 cannot-fork/emergency-disk and empty-store conditions do
+not describe the new read-only observation. SSH executes normally, the data volume
+has 159,837,128 KiB available, and the canonical resolver path has 381 root directories
+in each EOD/OI/Greeks tier. Exact SPY/NVDA 2026 Parquet footers report nonzero row
+counts, EOD/Greeks through 2026-09-29 and OI through 2026-09-30. These two metadata
+samples do not establish full-universe eligibility, immutable source receipts or a
+production-accepted AD-1 consumer. The current runner registry still has **zero
+m1-theta** carriers; theta-m1 is the distinct M2 label and was not repurposed.
+
+A default-interpreter diagnostic lacked pyarrow and emitted a degraded board; this
+is an environment mismatch, not proof of corrupt Parquets. The installed launchd
+wrapper's exact conda interpreter has pandas 3.0.5 / pyarrow 25.0.0. Its real build()
+under a no-write/no-network audit guard reached a 180-second diagnostic budget
+without completing, with zero forbidden actions and unchanged source hashes.
+No staleness override, collector, publication, model or production write was used.
+The next diagnostic should identify phase cost rather than repeat a silent timeout.
+
+A compound current #7889/runner-service inspection was safety-refused before dispatch
+and remains held. Do not replay it through another carrier. The separate refused
+Macro duplicate-validation edit also remains unapplied. No new runtime worker or
+watcher is claimed. All parser edits/pushes are reconciled; the read-only diagnostic
+completed its timeout handling and its local SSH process was no longer present.
+
+Evidence: research/options_estate/options_source_host_recovery_20260930.json;
+Terminal's committed parser-integrity-closure receipt; and the existing evidence
+root's parser-integrity-closure/ directory. Protected procedure is now Mastermind
+3c99f440dc65c2cc06054d47711c4cbc2dd99808 (compatible; relevant companions unchanged).
+This is a save during continuation, not mission completion or a custody transfer.
+
+## Previous nightly source frontier (preserved)
 
 MISSION_COMPLETE: false. The previous complete product checkpoint remains Terminal #599
 comment 5907623588. Preserve Terminal #667 at 81c2946732d55ffbaa1262cc6f84b491b2f99eb3,
