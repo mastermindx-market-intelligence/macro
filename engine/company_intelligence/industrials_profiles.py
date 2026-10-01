@@ -6,9 +6,9 @@ financial extraction and does not place either issuer into the #7870 discovery
 population.
 
 Listing validity starts are evidence bounds, not incorporation/history claims:
-the selected SEC cover pages establish EXPO on Nasdaq at 2026-01-02 and PNR on
-NYSE at 2025-12-31. Earlier symbol history remains unbound rather than falling
-back to the identity owner's ALIAS_EPOCH default.
+the selected SEC filings establish EXPO/Nasdaq no later than their 2026-02-27
+filing and PNR/NYSE no later than its 2026-02-24 filing. Earlier symbol history
+remains unbound rather than falling back to the identity owner's ALIAS_EPOCH default.
 """
 from __future__ import annotations
 
@@ -22,8 +22,8 @@ from .issuer_profiles import IssuerProfile, _no_guidance
 EXPO_CIK = "0000851520"
 PNR_CIK = "0000077360"
 
-EXPO_LISTING_VALID_FROM = date(2026, 1, 2)
-PNR_LISTING_VALID_FROM = date(2025, 12, 31)
+EXPO_LISTING_VALID_FROM = date(2026, 2, 27)
+PNR_LISTING_VALID_FROM = date(2026, 2, 24)
 
 
 def expo_issuer() -> IssuerIdentity:
