@@ -14814,6 +14814,8 @@ jobs:
       - "tests/test_forex.py"
       - "tests/test_forex_context_bus.py"
       - "lib/forex_kinematics_view.py"
+      - "templates/_forex_movement_evidence.html.j2"
+      - "templates/forex.html.j2"
       - "tests/test_news_event_ledger.py"
       - "tests/test_phase_buildout.py"
       - "tests/test_policy_lever.py"

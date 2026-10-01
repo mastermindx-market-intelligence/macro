@@ -1,0 +1,101 @@
+{# R13: read-only projection of the same object published in forex/latest.json.
+   Preserve Paper R11's dated-value / unknown-evidence hierarchy. No market verdict. #}
+{% macro me_t(en, zh) -%}<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh }}</span>{%- endmacro %}
+{% set _me = kinematics_view | default({}, true) %}
+{% set _rows = _me.get('rows', []) %}
+{% set _definitions = _me.get('metrics', {}) %}
+{% set _labels = {
+  'return_short': ('Short-window move', '短窗口涨跌'),
+  'return_medium': ('Medium-window move', '中窗口涨跌'),
+  'return_long': ('Long-window move', '长窗口涨跌'),
+  'velocity_z': ('Movement speed', '变动速度'),
+  'acceleration_z': ('Change in speed', '速度变化'),
+  'volatility_percentile': ('Realized-volatility rank', '已实现波动率分位'),
+  'residual_return': ('Broad-dollar-adjusted move', '广义美元调整后涨跌')
+} %}
+<style>
+.fx-movement-evidence{font-family:var(--font-ui,Inter,sans-serif);color:var(--text);font-size:var(--fs-body,14px);border:1px solid var(--line,var(--grid));border-radius:var(--r-card,12px);background:var(--card);margin:var(--sp-5,20px) 0;overflow-wrap:anywhere}
+.fx-movement-evidence>summary{min-height:44px;padding:var(--sp-5,20px) var(--sp-6,24px);cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4,16px)}
+.fx-movement-evidence>summary::-webkit-details-marker{display:none}
+.fx-movement-evidence .fx-me-title{display:block;font-size:var(--fs-h2,17px);font-weight:600;line-height:1.4;color:var(--text)}
+.fx-movement-evidence .fx-me-subtitle{display:block;font-size:var(--fs-sm,12.5px);line-height:1.6;margin-top:var(--sp-1,4px);color:var(--muted)}
+.fx-movement-evidence .fx-me-chevron{font-size:var(--fs-num-lg,22px);line-height:1;flex-shrink:0;transition:transform .15s}
+.fx-movement-evidence[open]>summary .fx-me-chevron{transform:rotate(90deg)}
+.fx-movement-evidence .fx-me-body{padding:0 var(--sp-6,24px) var(--sp-6,24px)}
+.fx-movement-evidence .fx-me-scope{display:flex;gap:var(--sp-6,24px);justify-content:space-between;align-items:flex-start;padding:var(--sp-4,16px) 0 var(--sp-5,20px);border-top:1px solid var(--line,var(--grid))}
+.fx-movement-evidence .fx-me-scope p{margin:0;max-width:66ch;color:var(--muted);font-size:var(--fs-sm,12.5px);line-height:1.65}
+.fx-movement-evidence .fx-me-table-clock{flex-shrink:0;font-family:var(--font-mono,monospace);font-size:var(--fs-sm,12.5px);font-variant-numeric:tabular-nums;color:var(--text)}
+.fx-movement-evidence .fx-me-source-limit{display:flex;gap:var(--sp-5,20px);padding:var(--sp-4,16px);border:1px solid var(--line,var(--grid));background:var(--panel2,var(--bg));border-radius:var(--r-ctl,8px);margin-bottom:var(--sp-5,20px)}
+.fx-movement-evidence .fx-me-source-limit>div{flex:1;min-width:0}
+.fx-movement-evidence .fx-me-source-limit strong{display:block;font-size:var(--fs-sm,12.5px);font-weight:600;line-height:1.6}
+.fx-movement-evidence .fx-me-source-limit p{font-size:var(--fs-sm,12.5px);color:var(--muted);line-height:1.65;margin:var(--sp-1,4px) 0 0}
+.fx-movement-evidence .fx-me-currency{border-top:1px solid var(--line,var(--grid));padding-top:var(--sp-5,20px);margin-top:var(--sp-5,20px)}
+.fx-movement-evidence .fx-me-currency>summary{min-height:44px;cursor:pointer;font-weight:600;line-height:1.65;color:var(--text)}
+.fx-movement-evidence .fx-me-basis{font-size:var(--fs-sm,12.5px);font-weight:400;color:var(--muted);margin-inline-start:var(--sp-3,12px)}
+.fx-movement-evidence .fx-me-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--sp-6,24px);margin:var(--sp-4,16px) 0 0}
+.fx-movement-evidence .fx-me-metric{padding:var(--sp-4,16px) 0;min-width:0;border-top:1px solid var(--line,var(--grid))}
+.fx-movement-evidence dt{font-size:var(--fs-sm,12.5px);line-height:1.5;color:var(--muted)}
+.fx-movement-evidence dd{margin:var(--sp-2,8px) 0 0}
+.fx-movement-evidence .fx-me-value{display:block;color:var(--text);font-family:var(--font-mono,monospace);font-size:var(--fs-num-lg,22px);line-height:1.4;font-variant-numeric:tabular-nums}
+.fx-movement-evidence .fx-me-note{display:block;margin-top:var(--sp-1,4px);font-size:var(--fs-sm,12.5px);line-height:1.6;color:var(--muted)}
+.fx-movement-evidence .fx-me-date{display:block;font-size:var(--fs-sm,12.5px);line-height:1.6;margin-top:var(--sp-3,12px);color:var(--text);font-variant-numeric:tabular-nums}
+.fx-movement-evidence .fx-me-invalid{font-size:var(--fs-body,14px);font-weight:500;font-family:var(--font-ui,Inter,sans-serif);color:var(--muted)}
+.fx-movement-evidence .fx-me-unavailable{padding:var(--sp-4,16px) 0;line-height:1.65;color:var(--muted)}
+.fx-movement-evidence .fx-me-input-dates{font-size:var(--fs-sm,12.5px);line-height:1.65;color:var(--muted);margin:var(--sp-4,16px) 0 0}
+.fx-movement-evidence .fx-me-footer{padding-top:var(--sp-5,20px);margin-top:var(--sp-5,20px);border-top:1px solid var(--line,var(--grid));color:var(--muted);font-size:var(--fs-sm,12.5px);line-height:1.7}
+.fx-movement-evidence .fx-me-footer p{margin:0 0 var(--sp-3,12px)}
+.fx-movement-evidence .fx-me-footer a{display:inline-flex;align-items:center;min-height:44px;color:var(--ink-link,var(--link,var(--blue)));text-decoration:underline;text-underline-offset:3px}
+.fx-movement-evidence :focus-visible{outline:2px solid var(--link,var(--blue));outline-offset:4px;border-radius:var(--r-ctl,8px)}
+@media(max-width:900px){.fx-movement-evidence .fx-me-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.fx-movement-evidence .fx-me-scope{flex-direction:column;gap:var(--sp-3,12px)}}
+@media(max-width:640px){.fx-movement-evidence>summary{padding:var(--sp-4,16px)}.fx-movement-evidence .fx-me-body{padding:0 var(--sp-4,16px) var(--sp-4,16px)}.fx-movement-evidence .fx-me-source-limit{flex-direction:column;gap:var(--sp-3,12px)}.fx-movement-evidence .fx-me-facts{grid-template-columns:minmax(0,1fr)}.fx-movement-evidence .fx-me-metric{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--sp-3,12px);align-items:start}.fx-movement-evidence dd{margin:0;text-align:end}.fx-movement-evidence .fx-me-value{font-size:var(--fs-h2,17px)}.fx-movement-evidence .fx-me-basis{display:block;margin-inline-start:0}}
+@media(prefers-reduced-motion:reduce){.fx-movement-evidence .fx-me-chevron{transition:none}.fx-movement-evidence{scroll-behavior:auto}}
+</style>
+<details id="fx-movement-evidence" class="fx-movement-evidence">
+  <summary><span><span class="fx-me-title">{{ me_t('Movement evidence', '货币变动证据') }}</span><span class="fx-me-subtitle">{{ me_t('Inspect the values, their windows and their calculation dates.', '查看数值、计算窗口与计算日期。') }}</span></span><span class="fx-me-chevron" aria-hidden="true">›</span></summary>
+  <div class="fx-me-body">
+    <div class="fx-me-scope">
+      <p>{{ me_t('Compare the evidence, not just the headline. These are selected historical calculations—not a forecast or a live quote.', '不只看标题，还要核对证据。这些是所选历史计算结果，不是预测或实时报价。') }}</p>
+      <span class="fx-me-table-clock">{{ me_t('Table index', '表格索引') }} {% if _me.get('table_as_of') %}<time datetime="{{ _me.table_as_of }}">{{ _me.table_as_of }}</time>{% else %}{{ me_t('Unknown', '未知') }}{% endif %}</span>
+    </div>
+    <div class="fx-me-source-limit">
+      <div><strong>{{ me_t('Source freshness unknown', '来源新鲜度未知') }}</strong><p>{{ me_t('A calculation date is not the time a vendor observed or released its inputs. Different measures may use different dates.', '计算日期并不等于供应商观测或发布输入数据的时间。各指标可能使用不同日期。') }}</p></div>
+      <div><strong>{{ me_t('Vendor observation time', '供应商观测时间') }} · {{ me_t('Unknown', '未知') }}</strong><p>{{ me_t('Release and ingestion timestamps are not supplied. Normalized inputs may contain filled values.', '未提供发布时间与入库时间。标准化输入可能含填充值。') }}</p></div>
+    </div>
+    {% if not _rows %}
+      <div class="fx-me-unavailable"><strong>{{ me_t('Movement evidence unavailable', '货币变动证据不可用') }}</strong><p>{{ me_t('No zero or prior reading is substituted. Other rate, price and scenario evidence keeps its own status.', '不会用零或旧读数替代。其他利率、价格与情景证据保留各自状态。') }}</p></div>
+    {% endif %}
+    {% for row in _rows %}
+    {% set _conflict = 'identity_conflict' in row.availability.values() %}
+    <details class="fx-me-currency" data-currency="{{ row.ccy }}"{% if loop.first %} open{% endif %}>
+      <summary>{{ row.ccy }}<span class="fx-me-basis">{{ me_t('Currency versus USD · positive means currency appreciation', '该货币相对美元 · 正值表示该货币升值') }}</span></summary>
+      {% if _conflict %}<p class="fx-me-unavailable">{{ me_t('Ambiguous currency identity. Conflicting values and dates are withheld.', '货币标识有歧义。冲突数值与日期均不展示。') }}</p>{% endif %}
+      <dl class="fx-me-facts">
+      {% for key, names in _labels.items() %}
+      {% set metric = _definitions.get(key, {}) %}
+      {% set value = row['values'].get(key) %}
+      {% set available = row.availability.get(key) == 'available' and value is not none %}
+      {% set stamp = row.get('calculated_through', {}).get(key) %}
+      {% set relation = row.get('index_relation', {}).get(key, 'unknown') %}
+      <div class="fx-me-metric" data-metric="{{ key }}">
+        <dt>{{ me_t(names[0], names[1]) }}<span class="fx-me-note">{% if metric.get('window_observations') %}{{ me_t(metric.window_observations ~ ' observations', metric.window_observations ~ ' 个观测') }}{% elif key == 'velocity_z' or key == 'acceleration_z' %}{{ me_t('Standardized · not a probability', '标准化数值 · 非概率') }}{% endif %}</span></dt>
+        <dd>
+          {% if available %}
+          <span class="fx-me-value">{% if metric.get('unit') == 'fraction' %}{{ '%.1f'|format(value * 100) }} / 100{% elif metric.get('unit') == 'z_score' %}{{ (('%+.2f'|format(value)) if value != 0 else '0.00')|replace('-', '−') }} z{% else %}{{ (('%+.2f'|format(value)) if value != 0 else '0.00')|replace('-', '−') }}%{% endif %}</span>
+          {% else %}<span class="fx-me-value fx-me-invalid">{{ me_t('Unavailable', '不可用') }}</span>{% endif %}
+          {% if key == 'volatility_percentile' %}<span class="fx-me-note">{{ me_t('Percentile rank, not a probability', '分位排名，非概率') }}</span>{% endif %}
+          {% if available and stamp %}<span class="fx-me-date"><time datetime="{{ stamp }}">{{ stamp }}</time></span><span class="fx-me-note">{{ me_t('Earlier calculation', '较早的计算') if relation == 'before_table_date' else me_t('At table date', '与表格日期一致') }}</span>{% else %}<span class="fx-me-note">{{ me_t('Calculation date unknown', '计算日期未知') }}</span>{% endif %}
+        </dd>
+      </div>
+      {% endfor %}
+      </dl>
+      {% set inputs = row.get('normalized_input_dates', {}) %}
+      <p class="fx-me-input-dates">{{ me_t('Normalized input indices', '标准化输入索引') }} — {{ me_t('price', '价格') }}: {{ inputs.get('close') or me_t('Unknown', '未知') }}; {{ me_t('residual return', '残差收益') }}: {{ inputs.get('residual_return') or me_t('Unknown', '未知') }}. {{ me_t('These also are not vendor observation times.', '这些日期同样不是供应商观测时间。') }}</p>
+    </details>
+    {% endfor %}
+    <div class="fx-me-footer">
+      <p>{{ me_t('Windows follow the producer’s indexed observation grid, not calendar days or a guarantee of fresh quotes. Speed, acceleration and volatility can share inputs; they are not independent confirmations. A broad-dollar-adjusted return is not proof of economic cause.', '窗口沿用计算器的观测索引，并非日历天数，也不保证报价新鲜。速度、加速度与波动率可能共享输入，并非独立确认。广义美元调整后的收益也不能证明经济因果。') }}</p>
+      <p>{{ me_t('This inspector cannot activate a carry-unwind diagnosis or declare funding normal. Direct USD cross-currency basis is not supplied by this table.', '本面板不会激活套息平仓判断，也不会宣告融资正常。本表不提供直接美元跨币种基差。') }}</p>
+      <a href="#fx-movement-evidence">{{ me_t('Back to evidence header', '返回证据标题') }}</a>
+    </div>
+  </div>
+</details>

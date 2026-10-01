@@ -1322,3 +1322,188 @@ def test_r13_input_clock_after_table_is_not_retained_as_valid_lineage():
     assert got['rows'][0]['normalized_input_dates'] == {'close': None, 'residual_return': None}
     assert got['rows'][0]['calculated_through']['return_short'] == '2026-09-25'
     assert got['freshness'] == 'unknown'
+
+
+# R13 consumer: the existing live-route template, not a standalone preview.
+def _r13_evidence_html(view):
+    from jinja2 import Environment, FileSystemLoader, StrictUndefined
+    templates = Path(__file__).resolve().parents[1] / 'templates'
+    partial = templates / '_forex_movement_evidence.html.j2'
+    assert partial.is_file(), 'the actual movement-evidence component is missing'
+    env = Environment(loader=FileSystemLoader(templates), autoescape=True, undefined=StrictUndefined)
+    return env.get_template(partial.name).render(kinematics_view=view)
+
+
+def test_r13_evidence_source_is_reached_by_actual_forex_template():
+    root = Path(__file__).resolve().parents[1]
+    template = (root / 'templates/forex.html.j2').read_text()
+    include = '{% include "_forex_movement_evidence.html.j2" %}'
+    assert template.count(include) == 1
+    assert template.index('§3 — Stress watch') < template.index(include) < template.index('§4 — The pairs')
+    builder = (root / 'scripts/build_forex.py').read_text()
+    assert builder.count('project_kinematics(kinematics, cfg)') == 1
+    assert 'kinematics_view=kinematics_view' in builder
+    assert '"kinematics": kinematics_view' in builder
+
+
+def test_r13_evidence_shows_mixed_calculation_dates_without_a_freshness_claim():
+    table = _r13_clock_table()
+    table['rows'][0]['calculation_clock']['selected_index_dates']['lit_5d_pct'] = '2026-09-22'
+    html = _r13_evidence_html(_r12_project(table))
+    from bs4 import BeautifulSoup
+    soup = BeautifulSoup(html, 'html.parser')
+    evidence = soup.select_one('#fx-movement-evidence')
+    assert evidence and evidence.name == 'details'
+    assert evidence.select_one(':scope > summary')
+    assert 'Source freshness unknown' in evidence.get_text(' ', strip=True)
+    assert '来源新鲜度未知' in evidence.get_text(' ', strip=True)
+    medium = evidence.select_one('[data-currency="JPY"] [data-metric="return_medium"]')
+    assert '+1.20%' in medium.get_text() and '5 observations' in medium.get_text()
+    assert medium.select_one('time')['datetime'] == '2026-09-22'
+    assert 'Earlier calculation' in medium.get_text()
+    assert 'Vendor observation time' in evidence.get_text()
+    assert 'Unknown' in evidence.get_text() and 'not a forecast' in evidence.get_text()
+    assert not soup.select('script, input, button, [role="alert"]')
+
+
+def test_r13_evidence_keeps_metric_units_distinct_and_preserves_true_zero():
+    from bs4 import BeautifulSoup
+    table = _r13_clock_table(); table['rows'][0]['lit_1d_pct'] = 0
+    soup = BeautifulSoup(_r13_evidence_html(_r12_project(table)), 'html.parser')
+    assert '0.00%' in soup.select_one('[data-metric="return_short"]').get_text()
+    velocity = soup.select_one('[data-metric="velocity_z"]').get_text()
+    assert '+1.30 z' in velocity and '%' not in velocity
+    vol = soup.select_one('[data-metric="volatility_percentile"]').get_text()
+    assert '91.0 / 100' in vol and 'not a probability' in vol
+    residual = soup.select_one('[data-metric="residual_return"]').get_text()
+    assert 'Broad-dollar-adjusted' in residual and '+0.70%' in residual
+    assert len(soup.select('[data-metric]')) == 7
+
+
+def test_r13_evidence_missing_values_do_not_inherit_zeros_or_a_different_metrics_date():
+    from bs4 import BeautifulSoup
+    table = _r13_clock_table(); table['rows'][0]['vel_z'] = None
+    row = BeautifulSoup(_r13_evidence_html(_r12_project(table)), 'html.parser').select_one('[data-metric="velocity_z"]')
+    assert 'Unavailable' in row.get_text() and '不可用' in row.get_text()
+    assert '0.00' not in row.get_text() and row.select_one('time') is None
+    assert 'Calculation date unknown' in row.get_text()
+
+
+def test_r13_evidence_identity_conflict_and_missing_section_are_not_current_market_reads():
+    import copy
+    from bs4 import BeautifulSoup
+    table = _r13_clock_table(); table['rows'].append(copy.deepcopy(table['rows'][0]))
+    soup = BeautifulSoup(_r13_evidence_html(_r12_project(table)), 'html.parser')
+    assert 'Ambiguous currency identity' in soup.get_text()
+    assert not soup.select('time') or all(t.parent.get('class') == ['fx-me-table-clock'] for t in soup.select('time'))
+    missing = _r13_evidence_html(_r12_project(table={}))
+    assert 'Movement evidence unavailable' in missing
+    assert 'No zero or prior reading is substituted' in missing
+    assert 'All clear' not in missing and 'Nothing flashing' not in missing
+
+
+def test_r13_evidence_markup_is_scoped_token_based_and_progressively_disclosed():
+    import re
+    source = (Path(__file__).resolve().parents[1] / 'templates/_forex_movement_evidence.html.j2')
+    assert source.is_file()
+    html = source.read_text()
+    css = re.search(r'<style>(.*?)</style>', html, re.S).group(1)
+    assert ':root' not in css and 'color-mix(' not in css
+    assert not re.search(r'#[0-9A-Fa-f]{3,8}\b', css)
+    assert 'var(--font-ui' in css and 'var(--line' in css
+    assert 'max-width:640px' in css and 'max-width:900px' in css
+    assert 'prefers-reduced-motion' in css and ':focus-visible' in css
+    assert 'min-height:44px' in css
+    assert '<script' not in html and '|safe' not in html and 'onclick=' not in html
+    assert 'data-state=' not in html and 'prepare_watch' not in html
+
+
+def test_r13_builder_passes_the_same_validated_projection_to_template_and_snapshot(tmp_path, monkeypatch):
+    got, contexts = _r12_build_fixture(tmp_path, monkeypatch, _r13_clock_table())
+    assert contexts[0].get('kinematics_view') == got['kinematics']
+    assert contexts[0]['kinematics_view']['freshness'] == 'unknown'
+    assert contexts[0]['kinematics'] == _r13_clock_table()
+
+
+def test_r13_complete_forex_template_contains_inspector_without_changing_market_context(tmp_path, monkeypatch):
+    from jinja2 import Environment, FileSystemLoader
+    from scripts import build_forex as BF
+    from engine.i18n import tr, td
+    from bs4 import BeautifulSoup
+    # Capture the actual production converter before the existing builder fixture
+    # substitutes its market inputs. No dataset/credentials/collection is used.
+    actual_dollar_vm = BF.dollar_vm
+    got, contexts = _r12_build_fixture(tmp_path, monkeypatch, _r13_clock_table())
+    context = contexts[0]
+    context['dollar'] = actual_dollar_vm(_dol_frame())
+    # The older JSON fixture omits this numeric display field; the existing full
+    # pair template requires it. Complete the fixture, not the production model.
+    for section in context['sections']:
+        for pair in section['pairs']:
+            for factor in pair['conviction']['factors']:
+                factor['value'] = 0.4
+    env = Environment(loader=FileSystemLoader(Path(__file__).resolve().parents[1] / 'templates'), autoescape=True)
+    env.globals.update(tr=tr, td=td)
+    html = env.get_template('forex.html.j2').render(**context)
+    soup = BeautifulSoup(html, 'html.parser')
+    assert len(soup.select('#fx-movement-evidence')) == 1
+    assert 'Forex Vector' in soup.title.get_text()
+    assert soup.select_one('[data-currency="JPY"]')
+    assert 'The pairs' in soup.get_text() and 'EUR/USD' in soup.get_text()
+    assert got['regime_radar']['active'] == []
+    assert context['kinematics_view'] == got['kinematics']
+    assert '<script' not in str(soup.select_one('#fx-movement-evidence'))
+
+
+def test_r13_evidence_survives_existing_page_writer_and_css_extraction(tmp_path, monkeypatch):
+    import hashlib
+    from bs4 import BeautifulSoup
+    from lib import pages
+    from scripts.externalize_css import externalize
+    # Real component markup through the actual page-writing and extraction owners.
+    # The complete route render is qualified separately immediately above.
+    table = _r13_clock_table()
+    table['rows'][0]['calculation_clock']['selected_index_dates']['lit_5d_pct'] = '2026-09-22'
+    partial = _r13_evidence_html(_r12_project(table))
+    html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Forex evidence fixture</title></head><body>' + partial + '</body></html>'
+    site = tmp_path / 'site'; site.mkdir()
+    monkeypatch.setattr(pages, '_site_root', lambda: site)
+    monkeypatch.setattr(pages, '_shim_checked', False)
+    output = site / 'forex.html'
+    pages.write_page(output, html, encoding='utf-8')
+    externalize(site)
+    soup = BeautifulSoup(output.read_text(), 'html.parser')
+    evidence = soup.select_one('#fx-movement-evidence')
+    assert len(soup.select('#fx-movement-evidence')) == 1
+    assert evidence.select_one('[data-metric="return_medium"] time')['datetime'] == '2026-09-22'
+    assert 'Source freshness unknown' in evidence.get_text() and '来源新鲜度未知' in evidence.get_text()
+    assert evidence.select_one('script') is None
+    styles = []
+    for link in soup.select('link[rel="stylesheet"][href^="assets/css/"]'):
+        relative = link['href'].split('?')[0]; css = (site / relative).read_bytes()
+        if b'.fx-movement-evidence' in css:
+            styles.append(css)
+            assert hashlib.sha256(css).hexdigest()[:8] == Path(relative).stem
+    assert len(styles) == 1
+    assert b'max-width:640px' in styles[0] and b'max-width:900px' in styles[0]
+
+
+def test_r13_empty_legacy_and_custom_window_ui_preserve_known_unknown_distinctions():
+    from bs4 import BeautifulSoup
+    legacy = BeautifulSoup(_r13_evidence_html(_r12_project()), 'html.parser')
+    assert 'Calculation date unknown' in legacy.select_one('[data-metric="return_medium"]').get_text()
+    assert '+1.20%' in legacy.get_text()
+    cfg = _r12_cfg(); cfg['regime']['kinematics']['lit_windows_d'] = [2, 7, 30]
+    custom = BeautifulSoup(_r13_evidence_html(_r12_project(_r13_clock_table(), cfg)), 'html.parser')
+    assert '7 observations' in custom.select_one('[data-metric="return_medium"]').get_text()
+    assert '5 observations' not in custom.select_one('[data-metric="return_medium"]').get_text()
+    unavailable = BeautifulSoup(_r13_evidence_html({}), 'html.parser')
+    assert unavailable.select('[data-currency]') == []
+    assert 'Movement evidence unavailable' in unavailable.get_text()
+
+
+def test_r13_currency_data_cannot_inject_markup_into_evidence_disclosure():
+    table = _r13_clock_table(); table['rows'][0]['ccy'] = '<script>alert(1)</script>'
+    html = _r13_evidence_html(_r12_project(table))
+    assert '<script>' not in html and 'alert(1)' not in html
+    assert 'Movement evidence unavailable' in html
