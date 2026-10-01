@@ -1,14 +1,14 @@
 {
   "appended": 0,
-  "asof": "2026-09-25",
+  "asof": "2026-09-30",
   "candidates": {
     "R": 0,
-    "T": 19,
+    "T": 5,
     "W": 4
   },
   "deduped": {
     "R": 0,
-    "T": 19,
+    "T": 5,
     "W": 4
   },
   "dry_run": false,
@@ -80,47 +80,47 @@
     "T": [],
     "W": []
   },
-  "n_universe": 1492,
+  "n_universe": 1493,
   "overflow": {
     "R": 0,
     "T": 0,
     "W": 0
   },
-  "run_utc": "2026-10-01 06:01:43",
-  "runtime_s": 106.0,
+  "run_utc": "2026-10-01 21:45:17",
+  "runtime_s": 94.5,
   "schema": "prophet_doors/v1",
   "theme_source": {
-    "age_days": -3,
-    "asof": "2026-09-28",
-    "n_members": 129,
+    "age_days": -1,
+    "asof": "2026-10-01",
+    "n_members": 142,
     "ok": true,
     "reason": null,
     "source": "site/marketdata/subsector_rotation.json",
     "top_themes": [
       {
-        "emerging_score": 4.214,
+        "emerging_score": 3.253,
         "rank": 1,
         "theme": "Semiconductors"
       },
       {
-        "emerging_score": 2.367,
+        "emerging_score": 2.946,
         "rank": 2,
-        "theme": "Quantum Computing"
+        "theme": "Biometrics"
       },
       {
-        "emerging_score": 2.084,
+        "emerging_score": 1.583,
         "rank": 3,
-        "theme": "Space Tech"
-      },
-      {
-        "emerging_score": 1.559,
-        "rank": 4,
         "theme": "Industrial Automation"
       },
       {
-        "emerging_score": 1.55,
+        "emerging_score": 1.5,
+        "rank": 4,
+        "theme": "Robotics"
+      },
+      {
+        "emerging_score": 1.086,
         "rank": 5,
-        "theme": "Nanotechnology"
+        "theme": "Electric Vehicles"
       }
     ]
   },
@@ -130,15 +130,15 @@
       "3B"
     ],
     "aligned": 4,
-    "asof_max": "2026-09-25",
+    "asof_max": "2026-09-30",
     "asof_mismatch": 0,
-    "asof_run": "2026-09-25",
+    "asof_run": "2026-09-30",
     "evaluated": 713,
     "fresh": 4,
     "fresh_weeks_max": 2,
     "ok": true,
     "reason": null,
-    "runtime_s": 20.9,
+    "runtime_s": 20.4,
     "skipped": 4,
     "source": "baskets/membership.json",
     "state_turn": 67,
