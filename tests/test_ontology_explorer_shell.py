@@ -240,6 +240,32 @@ def test_the_client_uses_the_house_sign_in_return_convention():
     assert '"/?signin=1"' not in client
 
 
+def test_selected_path_uses_the_existing_brain_host_seam_and_exact_return():
+    """The ontology page may add context to the shared Brain, never a second chat.
+
+    The context is bounded to the current chain/revision/leg through the existing
+    ``MM_BRAIN_CFG.getAiContext`` hook.  Closing the shared Brain must return
+    focus to the exact invoking control; no browser store becomes a fifth state
+    object or a substitute return plane.
+    """
+    client = (ROOT / "templates" / "ontology.js").read_text(encoding="utf-8")
+    assert "var selectedPathRef = null" in client
+    assert "var returnFocusRef = null" in client
+    assert "window.MM_BRAIN_CFG = window.MM_BRAIN_CFG || {}" in client
+    assert "window.MM_BRAIN_CFG.getAiContext = function ()" in client
+    assert 'schema: "ai_context_client.v1"' in client
+    assert "page: selectedPathRef.chain" in client
+    assert "panel: selectedPathRef.leg" in client
+    assert "window.MM_BRAIN_CFG.onClose = function ()" in client
+    assert "returnFocusRef.focus({ preventScroll: true })" in client
+    assert "var restored = document.activeElement === returnFocusRef" in client
+    assert "returnFocusRef = null;\n      selectedPathRef = null;" in client
+    assert "window.MMBrain.open()" in client
+    assert 'document.getElementById("mmb-boot")' in client
+    assert 'localStorage.setItem("ontology' not in client
+    assert 'sessionStorage.setItem("ontology' not in client
+
+
 def test_the_canonical_transmission_continuation_is_offered_in_every_state():
     """It used to be reachable only from the one action branch that fires when
     nothing blocks and nothing is unobserved — a rare case — leaving the ordinary

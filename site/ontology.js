@@ -25,6 +25,13 @@
   if (!root) return;
   var LEG_DETAIL_ID = "ox-steps";
   var legDetail = null;
+  /* Selected-path context is transient page state, not a fifth F04 object and
+     not browser persistence. It binds the current chain/leg to the existing
+     Mastermind Brain and remembers the exact control that should regain focus. */
+  var selectedPathRef = null;
+  var returnFocusRef = null;
+  var brainContextRevision = 0;
+  var brainContextOrigin = mintBrainOrigin();
 
   function el(tag, cls, text) {
     var node = document.createElement(tag);
@@ -46,6 +53,109 @@
   }
 
   function say(en, zh) { return bi({ en: en, zh: zh }); }
+
+  function mintBrainOrigin() {
+    try {
+      if (window.crypto && window.crypto.randomUUID) {
+        return "ox" + window.crypto.randomUUID().replace(/-/g, "").slice(0, 30);
+      }
+    } catch (e) { /* use the bounded local fallback below */ }
+    return "ox" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+  }
+
+  function brainLabel(value, fallback) {
+    var text = String(value == null || value === "" ? fallback : value)
+      .replace(/_/g, "-");
+    return text.slice(0, 32);
+  }
+
+  /* Reuse the shared Brain host seam that already owns context receipts,
+     permissions, threads, retry and persistence. Only bounded references ride
+     here: chain, revision and selected leg. No source bytes or values are copied
+     into a second state object. */
+  function configureBrainHost() {
+    window.MM_BRAIN_CFG = window.MM_BRAIN_CFG || {};
+    window.MM_BRAIN_CFG.page = "ontology";
+    window.MM_BRAIN_CFG.getAiContext = function () {
+      var ambient = selectedPathRef ? {
+        symbol: null,
+        timeframe: selectedPathRef.revision == null
+          ? null : brainLabel("rev-" + selectedPathRef.revision, "revision"),
+        page: selectedPathRef.chain,
+        panel: selectedPathRef.leg
+      } : { symbol: null, timeframe: null, page: "ontology", panel: null };
+      return {
+        schema: "ai_context_client.v1",
+        origin_id: brainContextOrigin,
+        context_revision: brainContextRevision,
+        captured_at: new Date().toISOString(),
+        pinned: [],
+        active: null,
+        ambient: ambient
+      };
+    };
+    window.MM_BRAIN_CFG.onClose = function () {
+      if (!returnFocusRef) return false;
+      if (!document.contains(returnFocusRef)) {
+        returnFocusRef = null;
+        selectedPathRef = null;
+        brainContextRevision += 1;
+        return false;
+      }
+      try { returnFocusRef.focus({ preventScroll: true }); }
+      catch (e) { try { returnFocusRef.focus(); } catch (ignored) {} }
+      var restored = document.activeElement === returnFocusRef;
+      if (restored) {
+        var box = returnFocusRef.getBoundingClientRect();
+        var height = window.innerHeight || document.documentElement.clientHeight;
+        if (box.top < 0 || box.bottom > height) {
+          returnFocusRef.scrollIntoView({ block: "center" });
+        }
+      }
+      returnFocusRef = null;
+      selectedPathRef = null;
+      brainContextRevision += 1;
+      return restored;
+    };
+  }
+  configureBrainHost();
+
+  function selectBrainPath(snapshot, leg, trigger) {
+    var source = snapshot && snapshot.source ? snapshot.source : {};
+    var next = {
+      chain: brainLabel(source.chain, "ontology"),
+      revision: source.rev == null ? null : source.rev,
+      leg: brainLabel(leg && leg.node_id, "path")
+    };
+    var previousKey = selectedPathRef
+      ? selectedPathRef.chain + "|" + selectedPathRef.revision + "|" + selectedPathRef.leg
+      : "";
+    var nextKey = next.chain + "|" + next.revision + "|" + next.leg;
+    if (nextKey !== previousKey) brainContextRevision += 1;
+    selectedPathRef = next;
+    returnFocusRef = trigger;
+    try {
+      window.history.replaceState(window.history.state, "",
+        window.location.pathname + window.location.search
+        + "#ox-leg-" + encodeURIComponent(leg.node_id));
+    } catch (e) { /* exact context still works when URL replacement is unavailable */ }
+  }
+
+  function openBrainForLeg(snapshot, leg, trigger) {
+    selectBrainPath(snapshot, leg, trigger);
+    if (window.MMBrain && typeof window.MMBrain.open === "function") {
+      window.MMBrain.open();
+      return true;
+    }
+    /* theme.js owns the shared widget's lazy loader. Clicking its accessible
+       stub preserves one loader and one Brain rather than mounting another. */
+    var boot = document.getElementById("mmb-boot");
+    if (boot) {
+      boot.click();
+      return true;
+    }
+    return false;
+  }
 
   function withAuth(headers) {
     headers = headers || {};
@@ -634,6 +744,19 @@
         kv.appendChild(dd2);
       }
       box.appendChild(kv);
+      var ask = el("button", "ox-action ox-brain-action");
+      ask.type = "button";
+      ask.appendChild(say("Ask Mastermind about this step",
+        "向 Mastermind 询问此环节"));
+      ask.addEventListener("click", function () {
+        if (!openBrainForLeg(snapshot, leg, ask)) {
+          ask.disabled = true;
+          ask.textContent = "";
+          ask.appendChild(say("Mastermind is unavailable right now",
+            "Mastermind 当前不可用"));
+        }
+      });
+      box.appendChild(ask);
       d.appendChild(box);
     });
 

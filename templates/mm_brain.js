@@ -22,6 +22,9 @@
  *         `context_receipt` reply either way.
  *   getCompanySourceSpan: fn()->closed company_source_span reference for the next
  *         explicit turn only. The widget never stores or serializes source bytes.
+ *   onClose: fn()->true when the host restored focus to the exact invoking object.
+ *         Called only when focus was inside the Brain at close; returning true keeps
+ *         the widget from replacing the host's focus return with launcher focus.
  * Public API: window.MMBrain = { open, close, toggle, expand, mounted:true }
  * ========================================================================== */
 (function () {
@@ -2245,13 +2248,11 @@
     /* lang travels with every turn: the server pins the reply AND the follow-up chips to
        it, so a Chinese thread history can never drag an English turn's buttons into
        Chinese. A message typed in the other language still wins (server-side). */
-    var ctx = { page: (ANCHOR === 'top' ? 'terminal' : 'dashboard'), lang: (zh() ? 'zh' : 'en') }; if (ctxSymbol) ctx.symbol = ctxSymbol;
-    /* W1-C: the compiled envelope's client block rides alongside the legacy fields
-       above (never replacing them — the deep lane still reads context.symbol/page/
-       panel exactly as before). Built while `explainPanel` still holds its value. */
-    ctx.ai_context = buildAiContext();
-    /* an "explain this panel" request carries the panel key once, then clears */
-    if (explainPanel) { ctx.panel = explainPanel; explainPanel = null; }
+    /* Build the legacy page/panel hint and the typed context receipt from the
+       same host snapshot. An "explain this panel" request still clears its
+       one-turn panel after the shared context has captured it. */
+    var ctx = buildTurnContext();
+    if (explainPanel) explainPanel = null;
     var sourceSpan = captureCompanySourceSpan();
     var payload = { text: text, imgs: imgs, lane: researchMode ? 'pro' : lane, mode: researchMode ? 'research' : 'chat', ctx: ctx, sourceSpan: sourceSpan };
     priorTurn = lastTurn;   /* retracting this turn must not leave Regenerate replaying it */
@@ -2268,7 +2269,7 @@
     if (streaming || !lastTurn) return;
     refreshCtx();
     runStream({ text: lastTurn.text, imgs: (lastTurn.imgs || []).slice(), lane: lastTurn.lane, mode: lastTurn.mode, sourceSpan: lastTurn.sourceSpan || null,
-                ctx: (function () { var c = { page: (ANCHOR === 'top' ? 'terminal' : 'dashboard'), lang: (zh() ? 'zh' : 'en') }; if (ctxSymbol) c.symbol = ctxSymbol; c.ai_context = buildAiContext(); return c; })() }, false);
+                ctx: buildTurnContext() }, false);
   }
   /* ── durable turns ───────────────────────────────────────────────────────────
      A turn is owned by the SERVER (app/brain_runs.py), not by the socket that
@@ -3092,12 +3093,18 @@
        way out, and the browser blurs whatever was focused inside it the moment it does. */
     var wasInside = root.contains(DOC.activeElement);
     scrim.classList.remove('open', 'max'); panel.classList.remove('open', 'max', 'show-side');
+    var hostReturnedFocus = false;
+    if (wasInside && typeof CFG.onClose === 'function') {
+      try { hostReturnedFocus = CFG.onClose() === true; } catch (e) {}
+    }
     if (launch) {
       launch.classList.remove('mmb-hide'); launch.setAttribute('aria-expanded', 'false');
       /* Hand focus back to the control that opened it — otherwise a keyboard user who
          closes with Esc is stranded on <body> and tabs from the top of the page again.
-         Only when focus was ours to begin with, so a scrim click never steals it. */
-      if (wasInside) { try { launch.focus(); } catch (e) {} }
+         A host-selected research object may own the more exact return; the launcher is
+         still the fallback. Only when focus was ours to begin with, so a scrim click
+         never steals it. */
+      if (wasInside && !hostReturnedFocus && launch) { try { launch.focus(); } catch (e) {} }
     }
   }
   function toggle() { panel.classList.contains('open') ? close() : open(); }
@@ -3505,6 +3512,24 @@
       ambient: { page: (ANCHOR === 'top' ? 'terminal' : 'dashboard'), panel: explainPanel || null }
     };
   }
+
+  /* Build the legacy page/panel fields and the typed client block from one
+     host snapshot. This keeps the existing answer lane and the visible context
+     receipt on the same selected object instead of letting a host integration
+     decorate the receipt while the model still sees only "dashboard". */
+  function buildTurnContext() {
+    var aiContext = buildAiContext();
+    var ambient = aiContext && aiContext.ambient && typeof aiContext.ambient === 'object'
+      ? aiContext.ambient : null;
+    var page = ambient && ambient.page;
+    if (!page) page = CFG.page || (ANCHOR === 'top' ? 'terminal' : 'dashboard');
+    var panelName = explainPanel || (ambient && ambient.panel) || null;
+    var ctx = { page: page, lang: (zh() ? 'zh' : 'en'), ai_context: aiContext };
+    if (ctxSymbol) ctx.symbol = ctxSymbol;
+    if (panelName) ctx.panel = panelName;
+    return ctx;
+  }
+
   /* Review repair (NB-1): esc() escapes <, >, & (via the textContent -> innerHTML
      round trip) but NOT the double quote, so a value landing inside an
      ATTRIBUTE value (rather than as element text) can still break out of it
