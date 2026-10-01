@@ -1,0 +1,68 @@
+[
+  {
+    "job": "flow-surface",
+    "uncovered": [],
+    "input_count": 701,
+    "seconds": 39.16
+  },
+  {
+    "job": "intelligence-registry",
+    "uncovered": [],
+    "input_count": 567,
+    "seconds": 7.4
+  },
+  {
+    "job": "cn-standout-audit",
+    "uncovered": [],
+    "input_count": 216,
+    "seconds": 1.43
+  },
+  {
+    "job": "vintage-pin-fence",
+    "uncovered": [],
+    "input_count": 2,
+    "seconds": 0.07
+  },
+  {
+    "job": "biocatalyst-serving",
+    "uncovered": [],
+    "input_count": 769,
+    "seconds": 1.19
+  },
+  {
+    "job": "biocatalyst-history",
+    "uncovered": [],
+    "input_count": 576,
+    "seconds": 0.31
+  },
+  {
+    "job": "options-estate-guards",
+    "uncovered": [],
+    "input_count": 99,
+    "seconds": 1.86
+  },
+  {
+    "job": "defense-rail-laws",
+    "uncovered": [],
+    "input_count": 575,
+    "seconds": 0.45
+  },
+  {
+    "job": "coiled-mtf-anchor-era",
+    "uncovered": [],
+    "input_count": 213,
+    "seconds": 0.1
+  },
+  {
+    "job": "unrun-picks-boards",
+    "uncovered": [],
+    "input_count": 812,
+    "seconds": 7.7
+  },
+  {
+    "job": "unrun-government-revenue-grader",
+    "uncovered": [],
+    "input_count": 586,
+    "seconds": 0.98
+  }
+]
