@@ -61,8 +61,8 @@ def test_ind_r210() -> None:
     """No default alias epoch or legacy symbol automatically proves history."""
     expo, pnr = _required_issuers()
     expected = {
-        "EXPO": (expo, date(2026, 1, 2), "xnas:EXPO"),
-        "PNR": (pnr, date(2025, 12, 31), "xnys:PNR"),
+        "EXPO": (expo, date(2026, 2, 27), "xnas:EXPO"),
+        "PNR": (pnr, date(2026, 2, 24), "xnys:PNR"),
     }
     registry = IssuerRegistry([expo, pnr])
 
