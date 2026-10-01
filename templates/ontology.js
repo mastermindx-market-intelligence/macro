@@ -70,15 +70,17 @@
     root.classList.remove("ox-skeleton");
   }
 
-  /* The house sign-in convention carries the page to come back to:
+  /* The house sign-in convention carries the exact page state to come back to:
      `?signin=1&ret=<root-relative path>`, consumed by onboard.js:retTarget(),
-     which accepts same-origin "/..." only. Without it a reader who came here
-     for one specific trace is dropped on the hub after signing in and has to
-     find their way back — the bounce is the product's, so the return is too. */
+     which accepts same-origin "/..." only. The selected ontology leg lives in
+     `location.hash`, so omitting it returns the reader to the route but silently
+     loses the first blocker they were inspecting. Preserve path + query + hash
+     inside the same guarded, root-relative carrier; do not create another return
+     store just for this page. */
   function signinHref() {
     var here = "/ontology.html";
     try {
-      var path = location.pathname + location.search;
+      var path = location.pathname + location.search + location.hash;
       if (path.charAt(0) === "/" && path.slice(0, 2) !== "//") here = path;
     } catch (e) { /* keep the static fallback */ }
     return "/?signin=1&ret=" + encodeURIComponent(here);
