@@ -102,7 +102,7 @@ def observe(rows: Iterable[tuple[str, float]], *, expected_session: date,
                   "calendar_disagreement_count": len(calendar_disagreements),
                   "last_calendar_disagreement": max(calendar_disagreements).isoformat() if calendar_disagreements else None,
                   "history_basis": "reconstructed_current_source_vintage"}
-    if len(records) < RULES.reference_closes + 1:
+    if len(records) < RULES.reference_closes:
         return _empty(expected_session, "insufficient_history", **provenance)
     result = _replay(records, is_session)
     evidence_start = min(date.fromisoformat(result["peak_session"]),
@@ -144,7 +144,7 @@ def _replay(records: list[tuple[date, float]], is_session: Callable[[date], bool
         ma5 = fmean(prices[max(0, i - 4):i + 1])
         ma20 = fmean(prices[max(0, i - 19):i + 1])
         above20 = above20 + 1 if i >= 19 and price > ma20 else 0
-        if i < RULES.reference_closes:
+        if i < RULES.reference_closes - 1:
             continue
         # Exact trailing window: RULES.reference_closes includes today's
         # settled close. Keeping i-reference_closes would retain a 64th close
