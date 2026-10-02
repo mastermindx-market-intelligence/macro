@@ -5,6 +5,11 @@
       "sha256": "647354a0a53d12648142a44a23b799788919535e2760c581bb6476590a9830be",
       "source_path": "templates/account.js"
     },
+    "apple-touch-icon.png": {
+      "bytes": 23722,
+      "sha256": "68ad76b7347d7302cea0a8c395c8315714f5972ac021f1fd54726044f3115da6",
+      "source_path": "site/apple-touch-icon.png"
+    },
     "assets/css/080bfc12.css": {
       "bytes": 2298,
       "sha256": "080bfc127fb8001ac95886c154fb716179e0a1407190cdc4f35236f994e2f3e6",
@@ -186,10 +191,22 @@
   "permissions": "Receiving this input does not authorize bypassing the existing browser administrator restriction.",
   "production_deployment": false,
   "purpose": "Synthetic browser-review INPUT, not acceptance EVIDENCE",
+  "rebuild_command": "python3 mockups/refs/bonds_duration_r11_source_input/rebuild.py --repo . --output /path/to/new-bonds-review-input",
+  "rebuild_environment_observed": {
+    "Jinja2": "3.1.6",
+    "PyYAML": "6.0.3",
+    "numpy": "2.5.2",
+    "pandas": "3.0.5",
+    "pytest": "9.1.1"
+  },
   "rendered_files": {
     "site/account.js": {
       "bytes": 60911,
       "sha256": "647354a0a53d12648142a44a23b799788919535e2760c581bb6476590a9830be"
+    },
+    "site/apple-touch-icon.png": {
+      "bytes": 23722,
+      "sha256": "68ad76b7347d7302cea0a8c395c8315714f5972ac021f1fd54726044f3115da6"
     },
     "site/assets/css/080bfc12.css": {
       "bytes": 2298,
@@ -297,6 +314,7 @@
     }
   },
   "rendered_module_sha256": "8a08d88580ab811c45e1773ae73c69cffc9ba56f547daf979eb66222e5450dad",
+  "review_input_amendment": "R16: include the exact referenced apple-touch-icon and executable offline rebuild; original HTML, controller and component CSS unchanged.",
   "runtime_dynamic_network_closure": "NOT_PROVEN; static inventory is not a browser network trace",
   "screenshot_acceptance": false,
   "server_started": false,
@@ -318,7 +336,9 @@
   "source_pr": 8241,
   "source_repo": "mastermindx-market-intelligence/macro",
   "static_local_dependency_status": "all parsed direct/CSS local resources are present or explicitly listed as required unbundled fonts",
+  "static_resource_scope": "Direct HTML resource attributes and CSS url references, with explicit excluded-font metadata; dynamic scripts/navigation/session/network closure remains NOT_PROVEN.",
   "unresolved_nonstatic_javascript_literal_candidates": [
     ".supabase.js"
-  ]
+  ],
+  "verification_command": "python3 /path/to/new-bonds-review-input/verify_input.py"
 }
