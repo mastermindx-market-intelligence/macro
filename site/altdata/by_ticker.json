@@ -1,7 +1,7 @@
 {
   "schema": "altdata.by_ticker.v2",
   "as_of": "2026-10-02",
-  "generated_utc": "2026-10-02T03:53:11.882141+00:00",
+  "generated_utc": "2026-10-02T05:11:22.213059+00:00",
   "n_tickers": 2788,
   "n_dropped_invalid": 0,
   "dropped_invalid_examples": [],
@@ -1336,7 +1336,18 @@
         "material_8k"
       ],
       "weighted_score": 0.55,
-      "material_8k_30d": 19,
+      "material_8k_30d": 20,
+      "convergence_score": 1,
+      "trump_linked": false,
+      "affiliated": false
+    },
+    "CTVA": {
+      "ticker": "CTVA",
+      "channels": [
+        "material_8k"
+      ],
+      "weighted_score": 0.55,
+      "material_8k_30d": 9,
       "convergence_score": 1,
       "trump_linked": false,
       "affiliated": false
@@ -3645,30 +3656,6 @@
       "trump_linked": false,
       "affiliated": false
     },
-    "AXP": {
-      "ticker": "AXP",
-      "channels": [
-        "affiliation"
-      ],
-      "weighted_score": 0.5,
-      "days_to_earnings": 21,
-      "next_earnings": "2026-10-23",
-      "earnings_surprise_pct": 2.7,
-      "convergence_score": 1,
-      "trump_linked": false,
-      "affiliated": true
-    },
-    "ITW": {
-      "ticker": "ITW",
-      "channels": [],
-      "weighted_score": 0,
-      "days_to_earnings": 21,
-      "next_earnings": "2026-10-23",
-      "earnings_surprise_pct": 1.4,
-      "convergence_score": 0,
-      "trump_linked": false,
-      "affiliated": false
-    },
     "KLAC": {
       "ticker": "KLAC",
       "channels": [
@@ -4978,15 +4965,6 @@
       "channels": [],
       "weighted_score": 0,
       "congress_position_usd": 55814000.0,
-      "convergence_score": 0,
-      "trump_linked": false,
-      "affiliated": false
-    },
-    "NKE": {
-      "ticker": "NKE",
-      "channels": [],
-      "weighted_score": 0,
-      "congress_position_usd": 55165000.0,
       "convergence_score": 0,
       "trump_linked": false,
       "affiliated": false
