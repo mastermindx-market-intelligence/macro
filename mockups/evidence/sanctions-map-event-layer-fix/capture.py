@@ -16,8 +16,26 @@ TWO cells per matrix point (16 PNGs total):
     `.l-<locale>` nodes only (≤600 chars), sorted distinct YYYY-MM-DD dates.
 
 State applied AFTER first paint so localStorage + setTheme/setLang agree
-(R4 idiom). The page bytes are served byte-identical from origin/main
-(measured 2026-10-02T19:47:52Z, sha256 314a8a00ceba02160414355dc38aab9cbe4c87a1ed9ebbf5dec814489daa5b35).
+(R4 idiom). The tool materializes the origin/main page bytes into a scratch
+directory and serves them from 127.0.0.1 — that is what `materialize()`
+does. Served-copy verification (HTTP fetch of the production URL, observed
+`page_sha256` matching the materialized blob) is the commissioning seat's
+receipt and is recorded in `SERVED_RECEIPT.json`; the tool reads that file
+verbatim and embeds it as the manifest's `served_receipt` field. The tool
+never fabricates a served observation itself. If `SERVED_RECEIPT.json` is
+absent, `served_receipt` is `null` and the reviewer is told.
+
+Public-news state is classified from the rendered DOM, not from a row
+count. `state_inferred` = `ok` iff `figure.sm-map` carries
+`data-news-gbr="1"` (the template-only mechanism introduced by #8281;
+see `templates/sanctions_map.html.j2:135-142`). Otherwise the tool reads
+the `#event-pins .sm-null` empty-state element rendered by the template at
+lines 208-214: the "no European official press in the last two days /
+近两日无欧洲官方新闻" sentence maps to `none_recent`; the "We could not
+read today's European official press / 今日未能读取欧洲官方新闻" sentence
+maps to `unavailable`; anything else (or no `.sm-null` element present)
+maps to `unknown`. The `<li>` count is kept as a separate `rows` field.
+
 Run from the repo root::
 
     python3 mockups/evidence/sanctions-map-event-layer-fix/capture.py
@@ -100,8 +118,9 @@ _APPLY_STATE = """
 }
 """
 
-# Locale-keyed null-sentences used to classify `state_inferred`. The applied
-# locale wins; if its `.l-<locale>` node is empty we fall back to element text.
+# Locale-keyed null-sentences used to classify `state_inferred` from the
+# rendered `#event-pins .sm-null` element. Substring match against the
+# element text wins (template lines 208-214 of sanctions_map.html.j2).
 _NULL_NONE_RECENT_EN = "last two days"
 _NULL_NONE_RECENT_ZH = "近两日"
 _NULL_UNAVAILABLE_EN = "could not read"
@@ -175,15 +194,30 @@ def _bbox_contains(outer, inner):
     )
 
 
-def _classify_state(rows, sm_null_text, locale):
-    """Compute `state_inferred` per F02 spec.
+def _classify_state(data_news_gbr, sm_null_text, locale):
+    """Compute `state_inferred` from the rendered DOM (S2 of O21b R2).
 
-    ok           = at least one <li> in #event-pins
-    none_recent  = .sm-null text matches the "last two days" / "近两日" sentence
-    unavailable  = .sm-null text matches the "could not read" / "无法读取" sentence
-    unknown      = anything else (a FAILED cell per S2)
+    ok           = `figure.sm-map` carries `data-news-gbr="1"` (template
+                   lines 134-142 of sanctions_map.html.j2 — the #8281
+                   mechanism; set ONLY when state == 'ok' AND a GBR
+                   event exists, so a missing attribute is a non-`ok`
+                   state, NOT an `ok` with no rows).
+    none_recent  = `#event-pins .sm-null` text matches the
+                   "last two days" / "近两日" sentence (template line 209).
+    unavailable  = `#event-pins .sm-null` text matches the
+                   "could not read today's European official press" /
+                   "今日未能读取欧洲官方新闻" sentence (template line 212).
+    unknown      = anything else (a FAILED cell per S2; e.g. an absent
+                   `.sm-null` element, a null element with neither sentence,
+                   or — for legacy reasons — a row count ≥ 1 with no
+                   `data-news-gbr` attribute).
+
+    The `<li>` count is kept as a separate `rows` field and is NOT used
+    to classify state (the reviewer's D9 finding: a non-empty list with a
+    missing attribute is not `ok`, and a populated `.sm-null` with no
+    list is not `unknown`).
     """
-    if rows >= 1:
+    if data_news_gbr == "1":
         return "ok"
     if not sm_null_text:
         return "unknown"
@@ -208,7 +242,6 @@ def _capture_one(browser, base, *, width, height, locale, theme):
     state and a single source of truth for `data-news-gbr` / `gbr_data_news` /
     panel rows / panel text / dates.
     """
-    from playwright.sync_api import sync_playwright  # noqa: PLC0415
     state = {"theme": theme, "locale": locale}
     context = browser.new_context(
         viewport={"width": width, "height": height},
@@ -369,10 +402,15 @@ def _capture_one(browser, base, *, width, height, locale, theme):
             type="png", full_page=True, clip=panel_clip
         )
 
-        # Compute `state_inferred` once for both cells. Apply locale nodes
-        # first; fall back to element text if `.l-<locale>` is empty.
+        # Compute `state_inferred` once for both cells from the rendered
+        # DOM (S2 of O21b R2): ok iff `figure.sm-map[data-news-gbr="1"]`,
+        # otherwise read the `#event-pins .sm-null` text and map it to
+        # `none_recent` / `unavailable` / `unknown`. Row count is
+        # preserved as `rows` and is NOT the classifier.
         null_for_state = info["null_text"] or info["panel_text"]
-        state_inferred = _classify_state(info["rows"], null_for_state, locale)
+        state_inferred = _classify_state(
+            info["data_news_gbr"], null_for_state, locale
+        )
 
         return {
             "applied": applied,
@@ -504,17 +542,32 @@ def main():
         )
     public_news_state_observed = next(iter(panel_states))
 
+    # Read the commissioning seat's SERVED_RECEIPT.json verbatim and embed
+    # it as `served_receipt` (null when absent). The tool does NOT verify
+    # the production URL itself — the seat does that once and records the
+    # observation here.
+    served_receipt_path = OUT_DIR / "SERVED_RECEIPT.json"
+    if served_receipt_path.is_file():
+        with served_receipt_path.open() as _f:
+            served_receipt = json.load(_f)
+    else:
+        served_receipt = None
+
     manifest = {
         "page_id": "sanctions_map",
         "route": "sanctions_map.html",
         "registry_route": "macro:sanctions_map",
         "route_kind": "intelligence_desk",
         "subject": "public-news event layer after #8281 — freshness bound, honest null, single GBR mark mechanism (F02 O21b)",
-        "source": "origin/main site/sanctions_map.html (render d2c6171bf0b30200fec972d08a1497ec534fd6ab) — served byte-identical 2026-10-02T19:47:52Z",
+        "source": (
+            "origin/main bytes materialized locally and served from 127.0.0.1; "
+            "served-copy verification is the seat's receipt in SERVED_RECEIPT.json"
+        ),
         "source_commit": source_commit,
         "page_sha256": page_sha256,
         "generated_at": captured_iso,
         "capture_tool_module_sha256": capture_tool_sha,
+        "served_receipt": served_receipt,
         "public_news_state_observed": public_news_state_observed,
         "cells": cells,
     }
@@ -524,7 +577,8 @@ def main():
     ok = sum(1 for c in cells if c.get("sha256"))
     print(
         f"\n{ok}/{len(cells)} cells captured → {OUT_DIR} "
-        f"(state={public_news_state_observed})",
+        f"(state={public_news_state_observed}, "
+        f"served_receipt={'present' if served_receipt else 'null'})",
         flush=True,
     )
 
