@@ -11543,3 +11543,5 @@
 {"date":"2026-10-02","ticker":"WAT","departed":true,"left_desk":"2026-10-02","last_rank":138,"last_score":45.8}
 {"date":"2026-10-02","ticker":"WDAY","departed":true,"left_desk":"2026-10-02","last_rank":139,"last_score":43.3}
 {"date":"2026-10-02","ticker":"XOM","departed":true,"left_desk":"2026-10-02","last_rank":142,"last_score":41.2}
+{"date":"2026-10-02","ticker":"HURN","rank":28,"score":44.7,"lean":1,"gate_tier":"T1","covered":true,"unconfirmed":false}
+{"date":"2026-10-02","ticker":"FIGS","rank":45,"score":36.6,"lean":1,"gate_tier":"T3","covered":true,"unconfirmed":false}

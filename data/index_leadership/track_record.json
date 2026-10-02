@@ -1,10 +1,10 @@
 {
   "schema": "index_leadership.track_record.v1",
-  "as_of": "2026-09-30",
-  "generated_at": "2026-10-02T08:04:08.000013+00:00",
+  "as_of": "2026-10-01",
+  "generated_at": "2026-10-02T12:46:44.948917+00:00",
   "is_context_only": true,
-  "n_snapshots": 1021,
-  "n_days": 35,
+  "n_snapshots": 1052,
+  "n_days": 36,
   "horizons": {
     "5": {
       "n_matured": 976,
@@ -55,12 +55,12 @@
       "coiling_ic_t_hac": null
     },
     "21": {
-      "n_matured": 662,
+      "n_matured": 688,
       "by_stage": {
         "running": {
-          "n": 589,
-          "mean_fwd_rel": -0.0243,
-          "hit_rate": 0.324
+          "n": 615,
+          "mean_fwd_rel": -0.0252,
+          "hit_rate": 0.319
         },
         "coiling": {
           "n": 36,
@@ -73,8 +73,8 @@
           "hit_rate": 0.622
         }
       },
-      "running_ic": -0.0186,
-      "running_ic_t_hac": -0.492,
+      "running_ic": -0.0118,
+      "running_ic_t_hac": -0.309,
       "coiling_ic": null,
       "coiling_ic_t_hac": null
     },
@@ -111,67 +111,67 @@
   "note": "Accruing forward observations; no horizon clears the Newey-West significance bar yet. Early numbers are provisional, context-only.",
   "recent_misses": [
     {
-      "date": "2026-09-09",
-      "id": "russell:waste-management",
-      "name": "Waste Management",
+      "date": "2026-09-10",
+      "id": "baskets:managed-care",
+      "name": "Managed Care & Insurers",
       "stage": "running",
-      "fwd_rel": -0.1758,
+      "fwd_rel": -0.1197,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-09",
-      "id": "baskets:pgm-miners",
-      "name": "PGM Miners",
+      "date": "2026-09-10",
+      "id": "subsectors:banks-diversified",
+      "name": "Banks - Diversified",
       "stage": "running",
-      "fwd_rel": -0.1743,
+      "fwd_rel": -0.1068,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-09",
-      "id": "baskets:silver-miners",
-      "name": "Silver Miners",
-      "stage": "running",
-      "fwd_rel": -0.1568,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-09-09",
-      "id": "baskets:gold-miners",
-      "name": "Gold Miners",
-      "stage": "running",
-      "fwd_rel": -0.1311,
-      "horizon_d": 21
-    },
-    {
-      "date": "2026-09-09",
+      "date": "2026-09-10",
       "id": "russell:oil-gas-equipment-services",
       "name": "Oil & Gas Equipment & Services",
       "stage": "running",
-      "fwd_rel": -0.1231,
+      "fwd_rel": -0.1059,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-09",
+      "date": "2026-09-10",
+      "id": "russell:oil-gas-e-p",
+      "name": "Oil & Gas E&P",
+      "stage": "running",
+      "fwd_rel": -0.1046,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-10",
       "id": "russell:insurance-life",
       "name": "Insurance - Life",
       "stage": "running",
-      "fwd_rel": -0.0984,
+      "fwd_rel": -0.0974,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-09",
-      "id": "russell:farm-heavy-construction-machinery",
-      "name": "Farm & Heavy Construction Machinery",
+      "date": "2026-09-10",
+      "id": "subsectors:auto-manufacturers",
+      "name": "Auto Manufacturers",
       "stage": "running",
-      "fwd_rel": -0.0926,
+      "fwd_rel": -0.0843,
       "horizon_d": 21
     },
     {
-      "date": "2026-09-09",
-      "id": "subsectors:oil-gas-midstream",
-      "name": "Oil & Gas Midstream",
+      "date": "2026-09-10",
+      "id": "russell:reit-healthcare-facilities",
+      "name": "REIT - Healthcare Facilities",
       "stage": "running",
-      "fwd_rel": -0.0807,
+      "fwd_rel": -0.0687,
+      "horizon_d": 21
+    },
+    {
+      "date": "2026-09-10",
+      "id": "russell:utilities-regulated-water",
+      "name": "Utilities - Regulated Water",
+      "stage": "running",
+      "fwd_rel": -0.0656,
       "horizon_d": 21
     }
   ],

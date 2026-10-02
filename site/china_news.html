@@ -312,18 +312,687 @@
   <header class="cn-hero">
     <p class="cn-eyebrow"><span class="cn-live"></span><span class="cn-brand">📡 <span class="gn"><span class="l-en">China Tape</span><span class="l-zh">中国快讯</span></span></span></p>
     
-      <p class="cn-lead"><span class="l-en">The China macro tape is quiet right now.</span><span class="l-zh">当前中国宏观新闻流较安静。</span></p>
+      
+      
+      
+      
+      <p class="cn-lead">
+        <span class="l-en"><b>24</b> stories cleared the macro filter; official policy tone leans cautious. <b>9</b> rated high-impact, led by <b>tech policy</b>.</span>
+        <span class="l-zh"><b>24</b> 条通过宏观筛选；官方政策基调偏谨慎。其中 <b>9</b> 条高影响，主导<b>科技政策</b>。</span>
+      </p>
       <p class="cn-asof"><span class="l-en">As of</span><span class="l-zh">截至</span>  · <span class="l-en">context, not trade calls</span><span class="l-zh">仅供参考，非交易信号</span></p>
+      <div class="cn-glance">
+        
+        
+        <span class="cn-gchip st-cautious"><span class="dot"></span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span> <b><span class="l-en">leans cautious</span><span class="l-zh">偏谨慎</span></b></span>
+        
+        <span class="cn-gchip hot"><span class="dot"></span><b>9</b> <span class="l-en">high-impact</span><span class="l-zh">高影响</span></span>
+        <span class="cn-gchip led th-markets"><span class="dot"></span><span class="l-en">Led by</span><span class="l-zh">主导</span> <b><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></b></span>
+        <span class="cn-gchip"><b>24</b> <span class="l-en">on the tape</span><span class="l-zh">条在流</span></span>
+        <span class="cn-gchip hidden" id="fresh"><span class="dot" style="background:var(--up)"></span><span id="fresh-t"></span></span>
+      </div>
     
   </header>
 
   
-  <!-- ===================== EMPTY STATE ===================== -->
-  <div class="cn-empty">
-    <h2><span class="l-en">No filtered China headlines on this pull.</span><span class="l-zh">本次抓取暂无筛选中国头条。</span></h2>
-    <p><span class="l-en">This can happen when official pages are quiet, the flash-wire fetch is unavailable, or no macro-relevant item cleared the gate. Policy tone and scheduled catalysts remain live.</span><span class="l-zh">当官方页面安静、快讯抓取不可用，或没有宏观相关条目通过筛选时会出现这种情况。政策基调与排定催化仍保持更新。</span></p>
-  </div>
-  <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+  <!-- ===================== OVERVIEW 3-UP ===================== -->
+  <section class="cn-rail3">
+
+    <!-- policy tone -->
+    <article class="ov-card ov-tone st-cautious" style="--ac:var(--warn)">
+      <p class="ov-h"><span class="ic">🏛️</span><span class="l-en">Policy tone</span><span class="l-zh">政策基调</span></p>
+      
+      
+      <div class="tg-top">
+        <div class="tg-state"><span class="l-en">leans cautious</span><span class="l-zh">偏谨慎</span></div>
+        <div class="tg-z">-1.5</div>
+      </div>
+      
+      
+      <div class="tg-track"><span class="mid"></span>
+        <span class="tg-fill" style="right:50%;width:30.6%"></span>
+      </div>
+      <div class="tg-scale"><span><span class="l-en">cautious</span><span class="l-zh">谨慎</span></span><span><span class="l-en">neutral</span><span class="l-zh">中性</span></span><span><span class="l-en">supportive</span><span class="l-zh">积极</span></span></div>
+      <p class="ov-foot"><span class="l-en">CCTV 新闻联播 tone · against the last</span><span class="l-zh">央视《新闻联播》基调 · 对比过去</span> 112<span class="l-en">d baseline</span><span class="l-zh">天基线</span> · 2026-10-02</p>
+      
+    </article>
+
+    <!-- what's on the tape -->
+    <article class="ov-card ov-mix">
+      <p class="ov-h"><span class="ic">🌡️</span><span class="l-en">What's on the tape</span><span class="l-zh">快讯结构</span></p>
+      
+        
+        
+        
+        
+        <div class="mx-row th-markets">
+          <span class="mx-name"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+          <span class="mx-bar"><i style="width:100%"></i></span>
+          <span class="mx-n">10</span>
+        </div>
+        
+        
+        <div class="mx-row th-monetary">
+          <span class="mx-name"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+          <span class="mx-bar"><i style="width:50%"></i></span>
+          <span class="mx-n">5</span>
+        </div>
+        
+        
+        <div class="mx-row th-growth">
+          <span class="mx-name"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+          <span class="mx-bar"><i style="width:40%"></i></span>
+          <span class="mx-n">4</span>
+        </div>
+        
+        
+        <div class="mx-row th-credit">
+          <span class="mx-name"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+          <span class="mx-bar"><i style="width:20%"></i></span>
+          <span class="mx-n">2</span>
+        </div>
+        
+        
+        <div class="mx-row th-tech">
+          <span class="mx-name"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+          <span class="mx-bar"><i style="width:10%"></i></span>
+          <span class="mx-n">1</span>
+        </div>
+        
+      
+      
+      <p class="ov-foot"><span class="l-en">Sources</span><span class="l-zh">来源</span>: <span class="l-en">Chinese financial press</span><span class="l-zh">中国财经媒体</span> 18 · <span class="l-en">global wire</span><span class="l-zh">国际通讯社</span> 3 · <span class="l-en">official releases</span><span class="l-zh">官方发布</span> 2 · <span class="l-en">domestic wire</span><span class="l-zh">国内财经快讯</span> 1</p>
+      
+    </article>
+
+    <!-- next catalyst -->
+    <article class="ov-card ov-next">
+      <p class="ov-h"><span class="ic">📅</span><span class="l-en">Next catalyst</span><span class="l-zh">下一催化</span></p>
+      
+      
+      <div class="nx-when">
+        
+          <span class="nx-days" style="color:#d0554f"><span class="l-en">Today</span><span class="l-zh">今日</span></span>
+          
+        
+      </div>
+      <p class="nx-name"><span class="l-en">NBS PMI (mfg + non-mfg)</span><span class="l-zh">国家统计局 PMI（制造业＋非制造业）</span></p>
+      <p class="nx-date"><span class="l-en">Sep 30</span><span class="l-zh">9月30日</span> · <span style="color:#d0554f;font-weight:700"><span class="l-en">high-impact print</span><span class="l-zh">高影响数据</span></span></p>
+      
+    </article>
+  </section>
+
+  <!-- ===================== THE TAPE + RAIL ===================== -->
+  <section class="cn-main">
+    <div class="cn-feed-col">
+      <div class="cn-toolbar">
+        <div class="cn-search"><span class="mag">⌕</span><input id="q" type="search" autocomplete="off" placeholder="Search headlines, channels or tickers…" data-ph-en="Search headlines, channels or tickers…" data-ph-zh="搜索头条、通道或标的…"></div>
+        <div class="cn-filters" id="filters">
+          <button class="fbtn on" data-theme="all"><span class="l-en">All</span><span class="l-zh">全部</span></button>
+          <button class="fbtn" data-importance="high"><span class="l-en">High impact</span><span class="l-zh">高影响</span></button>
+          <button class="fbtn" data-theme="monetary"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span><span class="fc" data-fc="monetary"></span></button><button class="fbtn" data-theme="inflation"><span class="l-en">Inflation</span><span class="l-zh">物价</span><span class="fc" data-fc="inflation"></span></button><button class="fbtn" data-theme="growth"><span class="l-en">Growth</span><span class="l-zh">增长</span><span class="fc" data-fc="growth"></span></button><button class="fbtn" data-theme="credit"><span class="l-en">Credit</span><span class="l-zh">信用</span><span class="fc" data-fc="credit"></span></button><button class="fbtn" data-theme="fiscal"><span class="l-en">Fiscal/Trade</span><span class="l-zh">财政/贸易</span><span class="fc" data-fc="fiscal"></span></button><button class="fbtn" data-theme="policy"><span class="l-en">Policy</span><span class="l-zh">政策</span><span class="fc" data-fc="policy"></span></button><button class="fbtn" data-theme="politics"><span class="l-en">Politics</span><span class="l-zh">政治/地缘</span><span class="fc" data-fc="politics"></span></button><button class="fbtn" data-theme="tech"><span class="l-en">Tech</span><span class="l-zh">科技</span><span class="fc" data-fc="tech"></span></button><button class="fbtn" data-theme="markets"><span class="l-en">Markets</span><span class="l-zh">市场</span><span class="fc" data-fc="markets"></span></button><button class="fbtn" data-theme="macro"><span class="l-en">Macro</span><span class="l-zh">宏观</span><span class="fc" data-fc="macro"></span></button>
+        </div>
+        <span class="cn-count" id="count"></span>
+      </div>
+
+      <div class="tp-feed" id="feed">
+        
+        
+        <a class="tp-item th-tech lead" href="https://wallstreetcn.com/livenews/3173731" target="_blank" rel="noopener"
+           data-theme="tech" data-importance="medium"
+           data-search="假期入境消费活力拉满 inbound consumption vitality during the holiday period is at full capacity 假期入境消费活力拉满 连日来，深圳华强北商圈热度攀升。丰富的电子产品、快速迭代的新品，吸引多国游客前来选购。在华强北，为了迎接国庆假期，很多商家提前上新，新款机器人、ai翻译机吸引很多海外游客驻足。无论是多次到访华强北的熟客，还是初次前来的游客，都感受到了这里火热的消费氛围。 不仅是华强北，深圳围绕入境游客“吃住行游购娱”全场景，全面提升“中国游、中国购”体验。据深圳市统计局数据，2026年1—8月，全市社会消费品零售总额6832.48亿元，同比增长1.6%，其中通讯器材类零售额增长53.8%；深圳边检数据显示，同期口岸出入境外国人突破500万人次，入境消费活力持续提升。（央 in recent days, the shenzhen huaqiangbei commercial area has seen rising activity. a rich array of electronic products and rapidly iterating new releases have attracted tourists from many countries to shop. in huaqiangbei, to welcome the national day holiday, many merchants stocked new products in advance, and new robots and ai translation devices drew many overseas visitors to stop and look. whether regulars who have visited huaqiangbei many times or first-time tourists, all have felt the bustling consumption atmosphere here. not only huaqiangbei, shenzhen has comprehensively improved the "china travel, china shopping" experience around the full range of inbound tourists' needs in dining, accommodation, transportation, sightseeing, shopping and entertainment. according to data from the shenzhen statistics bureau, from january to august 2026, the city's total retail sales of consumer goods reached 683.248 billion yuan, up 1.6% year on year, of which retail sales of communication equipment rose 53.8%; data from the shenzhen border inspection authorities show that during the same period, the number of foreign nationals entering and exiting at ports exceeded 5 million, and the vitality of inbound consumption continued to increase. (cctv 连日来，深圳华强北商圈热度攀升。丰富的电子产品、快速迭代的新品，吸引多国游客前来选购。在华强北，为了迎接国庆假期，很多商家提前上新，新款机器人、ai翻译机吸引很多海外游客驻足。无论是多次到访华强北的熟客，还是初次前来的游客，都感受到了这里火热的消费氛围。 不仅是华强北，深圳围绕入境游客“吃住行游购娱”全场景，全面提升“中国游、中国购”体验。据深圳市统计局数据，2026年1—8月，全市社会消费品零售总额6832.48亿元，同比增长1.6%，其中通讯器材类零售额增长53.8%；深圳边检数据显示，同期口岸出入境外国人突破500万人次，入境消费活力持续提升。（央 华尔街见闻 consumer tech_policy consumer 消费 tech policy 科技政策 ">
+          <time class="tp-when" data-t="2026-10-02T15:19:15+00:00" datetime="2026-10-02T15:19:15+00:00">10-02<br>15:19</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-02T15:19:15+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Tech</span><span class="l-zh">科技</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>58</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Inbound consumption vitality during the holiday period is at full capacity</span><span class="l-zh">假期入境消费活力拉满</span></h2>
+            <p class="tp-sum"><span class="l-en">In recent days, the Shenzhen Huaqiangbei commercial area has seen rising activity. A rich array of electronic products and rapidly iterating new releases have attracted tourists from many countries to shop. In Huaqiangbei, to welcome the National Day holiday, many merchants stocked new products in advance, and new robots and AI translation devices drew many overseas visitors to stop and look. Whether regulars who have visited Huaqiangbei many times or first-time tourists, all have felt the bustling consumption atmosphere here. Not only Huaqiangbei, Shenzhen has comprehensively improved the "China Travel, China Shopping" experience around the full range of inbound tourists' needs in dining, accommodation, transportation, sightseeing, shopping and entertainment. According to data from the Shenzhen Statistics Bureau, from January to August 2026, the city's total retail sales of consumer goods reached 683.248 billion yuan, up 1.6% year on year, of which retail sales of communication equipment rose 53.8%; data from the Shenzhen border inspection authorities show that during the same period, the number of foreign nationals entering and exiting at ports exceeded 5 million, and the vitality of inbound consumption continued to increase. (CCTV</span><span class="l-zh">连日来，深圳华强北商圈热度攀升。丰富的电子产品、快速迭代的新品，吸引多国游客前来选购。在华强北，为了迎接国庆假期，很多商家提前上新，新款机器人、AI翻译机吸引很多海外游客驻足。无论是多次到访华强北的熟客，还是初次前来的游客，都感受到了这里火热的消费氛围。 不仅是华强北，深圳围绕入境游客“吃住行游购娱”全场景，全面提升“中国游、中国购”体验。据深圳市统计局数据，2026年1—8月，全市社会消费品零售总额6832.48亿元，同比增长1.6%，其中通讯器材类零售额增长53.8%；深圳边检数据显示，同期口岸出入境外国人突破500万人次，入境消费活力持续提升。（央</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.scmp.com/economy/china-economy/article/3369550/china-seen-doing-just-enough-targeted-fiscal-support-defend-gdp-growth?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="china seen doing ‘just enough’ with targeted fiscal support to defend gdp growth  中国被视为以定向财政支持做到‘恰到好处’以捍卫gdp增长 china’s finance minister has pledged to roll out incremental and targeted fiscal policies to help achieve leadership’s full-year growth target for the country, following a freshly announced package of supportive measures. however, analysts expect beijing to stop short of a major stimulus, providing only “just enough” support to meet the target.
+lan foan made the pledge in an article published on thursday in the communist party’s leading theoretical journal, qiushi, calling for the broadened...  中国财政部长承诺推出增量、有针对性的财政政策，以帮助实现领导层设定的全年增长目标，此前刚宣布了一系列支持性措施。然而，分析师预计北京不会推出大规模刺激，只会提供“恰好足够”的支持来实现目标。
+蓝佛安作出 scmp - china economy growth growth 增长 ">
+          <time class="tp-when" data-t="2026-10-02T09:00:06+00:00" datetime="2026-10-02T09:00:06+00:00">10-02<br>09:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-02T09:00:06+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>84</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China seen doing ‘just enough’ with targeted fiscal support to defend GDP growth</span><span class="l-zh">中国被视为以定向财政支持做到‘恰到好处’以捍卫GDP增长</span></h2>
+            <p class="tp-sum"><span class="l-en">China’s finance minister has pledged to roll out incremental and targeted fiscal policies to help achieve leadership’s full-year growth target for the country, following a freshly announced package of supportive measures. However, analysts expect Beijing to stop short of a major stimulus, providing only “just enough” support to meet the target.
+Lan Foan made the pledge in an article published on Thursday in the Communist Party’s leading theoretical journal, Qiushi, calling for the broadened...</span><span class="l-zh">中国财政部长承诺推出增量、有针对性的财政政策，以帮助实现领导层设定的全年增长目标，此前刚宣布了一系列支持性措施。然而，分析师预计北京不会推出大规模刺激，只会提供“恰好足够”的支持来实现目标。
+蓝佛安作出</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Growth</span><span class="l-zh">增长</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.cnstock.com/topicDetail/356068" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="重返扩张区间！9月制造业pmi升至50.1% back to expansion! september manufacturing pmi rises to 50.1% 重返扩张区间！9月制造业pmi升至50.1%    上海证券报 industrial industry & manufacturing 工业与制造业 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>74</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Back to expansion! September manufacturing PMI rises to 50.1%</span><span class="l-zh">重返扩张区间！9月制造业PMI升至50.1%</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-credit" href="https://www.stcn.com/article/detail/4205837.html" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="high"
+           data-search="银行对公集体盯上“六张网”，ai产业链成信贷主战场 banks collectively target the "six networks" for corporate lending, with the ai industry chain becoming the main battlefield for credit 银行对公集体盯上“六张网”，ai产业链成信贷主战场    证券时报 credit_impulse tech_policy credit & financing 信贷与社融 tech policy 科技政策 512800.ss 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Banks collectively target the "six networks" for corporate lending, with the AI industry chain becoming the main battlefield for credit</span><span class="l-zh">银行对公集体盯上“六张网”，AI产业链成信贷主战场</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">credit & financing</span><span class="l-zh">信贷与社融</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512800.SS</span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.scmp.com/economy/china-economy/article/3369296/chinas-rd-spending-hits-record-28-gdp-beating-oecd-average-first-time?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="high"
+           data-search="china’s r&d spending hits record 2.8% of gdp, beating oecd average for the first time  中国研发支出占gdp比重达到创纪录的2.8%，首次超过oecd平均水平 for the first time, china’s spending on research and development as a share of gross domestic product has surpassed the average for organisation for economic cooperation and development (oecd) members – a trend one analyst expects to continue as beijing seeks to strengthen technological self-reliance amid intensifying global competition.
+r&d expenditure exceeded 3.92 trillion yuan (us$584.8 billion) in 2025, accounting for 2.8 per cent of gdp, science and technology minister yin hejun said at a...  中国的研发支出占国内生产总值的比重首次超过经济合作与发展组织（oecd）成员国的平均水平——一位分析师预计，随着北京在日益激烈的全球竞争中寻求加强技术自立自强，这一趋势还将持续。
+研发支出超过 scmp - china economy yuan tech_policy yuan & fx 人民币与汇率 tech policy 科技政策 cny">
+          <time class="tp-when" data-t="2026-09-30T06:01:56+00:00" datetime="2026-09-30T06:01:56+00:00">09-30<br>06:01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-30T06:01:56+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">SCMP - China Economy</span>
+              <span class="cn-imp imp-high"><b>70</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">China’s R&D spending hits record 2.8% of GDP, beating OECD average for the first time</span><span class="l-zh">中国研发支出占GDP比重达到创纪录的2.8%，首次超过OECD平均水平</span></h2>
+            <p class="tp-sum"><span class="l-en">For the first time, China’s spending on research and development as a share of gross domestic product has surpassed the average for Organisation for Economic Cooperation and Development (OECD) members – a trend one analyst expects to continue as Beijing seeks to strengthen technological self-reliance amid intensifying global competition.
+R&D expenditure exceeded 3.92 trillion yuan (US$584.8 billion) in 2025, accounting for 2.8 per cent of GDP, Science and Technology Minister Yin Hejun said at a...</span><span class="l-zh">中国的研发支出占国内生产总值的比重首次超过经济合作与发展组织（OECD）成员国的平均水平——一位分析师预计，随着北京在日益激烈的全球竞争中寻求加强技术自立自强，这一趋势还将持续。
+研发支出超过</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">yuan & FX</span><span class="l-zh">人民币与汇率</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">CNY</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.cnstock.com/topicDetail/797461" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="专题 | “十五五”资本市场高质量发展座谈会 special topic | symposium on high-quality development of the capital market during the 15th five-year plan 专题 | “十五五”资本市场高质量发展座谈会    上海证券报 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">上海证券报</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Special topic | Symposium on high-quality development of the capital market during the 15th Five-Year Plan</span><span class="l-zh">专题 | “十五五”资本市场高质量发展座谈会</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.pbc.gov.cn/en/3688110/3688172/2026/2026093015565447786/index.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="pbocâ adjusts and improvesâ several monetary policy tools  中国人民银行调整和完善多项货币政策工具    pboc pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="2026-09-29" datetime="2026-09-29">09-29</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-29"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">PBoC</span>
+              <span class="cn-imp imp-high"><b>76</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">PBOCÂ Adjusts and ImprovesÂ Several Monetary Policy Tools</span><span class="l-zh">中国人民银行调整和完善多项货币政策工具</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://www.yicai.com/news/103383837.html" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="high"
+           data-search="全球央行艰难重启加息周期，这次有什么不同|海外市场月报 许多机构实际上在减少美元资产配置的同时，增加对新兴市场资产的配置。 global central banks struggle to restart the rate hike cycle, what is different this time | overseas market monthly report many institutions are actually reducing us dollar asset allocations while increasing allocations to emerging market assets. 全球央行艰难重启加息周期，这次有什么不同|海外市场月报 许多机构实际上在减少美元资产配置的同时，增加对新兴市场资产的配置。    第一财经 pboc_liquidity pboc & liquidity 央行与流动性 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Global central banks struggle to restart the rate hike cycle, what is different this time | Overseas Market Monthly Report Many institutions are actually reducing US dollar asset allocations while increasing allocations to emerging market assets.</span><span class="l-zh">全球央行艰难重启加息周期，这次有什么不同|海外市场月报 许多机构实际上在减少美元资产配置的同时，增加对新兴市场资产的配置。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.yicai.com/news/103383834.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="high"
+           data-search="程实：全球变局中的中国机遇 | 国庆大咖谈 2026年，ai逐渐从资本市场叙事转化为真实的资本形成。 cheng shi: china's opportunities amid global changes | national day expert talk in 2026, ai will gradually transform from a capital market narrative into real capital formation. 程实：全球变局中的中国机遇 | 国庆大咖谈 2026年，ai逐渐从资本市场叙事转化为真实的资本形成。    第一财经 tech_policy tech policy 科技政策 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Cheng Shi: China's opportunities amid global changes | National Day Expert Talk In 2026, AI will gradually transform from a capital market narrative into real capital formation.</span><span class="l-zh">程实：全球变局中的中国机遇 | 国庆大咖谈 2026年，AI逐渐从资本市场叙事转化为真实的资本形成。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.scmp.com/business/companies/article/3369587/mcdonalds-sells-hong-kong-shop-us153-million-old-money-returns-retail?utm_source=rss_feed" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="mcdonald’s sells hong kong shop for us$15.3 million as ‘old money’ returns to retail  麦当劳以1530万美元出售香港商铺，随着‘老钱’回流零售业 as “long-dormant old money” steps back into hong kong’s retail property market, mcdonald’s has sold the property housing its first new territories restaurant for hk$120 million (us$15.3 million), extending its year-long sell-down of self-owned shops.
+the property at 10-22 tsuen wan market street, spanning the ground floor to the second floor, was sold to keen charm holdings (hk) limited, with the agreement for sale signed on august 31, according to the land registry.
+company registry listed ngan...  随着“沉寂已久的旧资金”重新进入香港零售物业市场，麦当劳以1.2亿港元（1530万美元）出售了其在新界首家餐厅所在的物业，延续了其长达一年的自持商铺减持行动。
+位于荃湾街市街10-22号的该物业，涵盖地下至二楼，已出售给kee scmp - business property consumer property 房地产 consumer 消费 512200.ss">
+          <time class="tp-when" data-t="2026-10-02T12:00:19+00:00" datetime="2026-10-02T12:00:19+00:00">10-02<br>12:00</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-02T12:00:19+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">SCMP - Business</span>
+              <span class="cn-imp imp-medium"><b>62</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">McDonald’s sells Hong Kong shop for US$15.3 million as ‘old money’ returns to retail</span><span class="l-zh">麦当劳以1530万美元出售香港商铺，随着‘老钱’回流零售业</span></h2>
+            <p class="tp-sum"><span class="l-en">As “long-dormant old money” steps back into Hong Kong’s retail property market, McDonald’s has sold the property housing its first New Territories restaurant for HK$120 million (US$15.3 million), extending its year-long sell-down of self-owned shops.
+The property at 10-22 Tsuen Wan Market Street, spanning the ground floor to the second floor, was sold to Keen Charm Holdings (HK) Limited, with the agreement for sale signed on August 31, according to the Land Registry.
+Company Registry listed Ngan...</span><span class="l-zh">随着“沉寂已久的旧资金”重新进入香港零售物业市场，麦当劳以1.2亿港元（1530万美元）出售了其在新界首家餐厅所在的物业，延续了其长达一年的自持商铺减持行动。
+位于荃湾街市街10-22号的该物业，涵盖地下至二楼，已出售给Kee</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://finance.sina.com.cn/jjxw/2026-10-01/doc-inittekc1202103.shtml" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="亚洲科技股涨疯了：美光业绩提振市场情绪 美联储本月加息概率下调 韩国芯片出口暴增263% asian tech stocks surge: micron earnings boost market sentiment, fed rate hike odds for this month lowered, south korea chip exports jump 263% 亚洲科技股涨疯了：美光业绩提振市场情绪 美联储本月加息概率下调 韩国芯片出口暴增263%    新浪财经股票 fiscal_trade tech_policy fiscal & trade 财政与贸易 tech policy 科技政策 ">
+          <time class="tp-when" data-t="2026-10-01" datetime="2026-10-01">10-01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-01"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Asian tech stocks surge: Micron earnings boost market sentiment, Fed rate hike odds for this month lowered, South Korea chip exports jump 263%</span><span class="l-zh">亚洲科技股涨疯了：美光业绩提振市场情绪 美联储本月加息概率下调 韩国芯片出口暴增263%</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-policy" href="https://finance.eastmoney.com/a/202610023888414297.html" target="_blank" rel="noopener"
+           data-theme="policy" data-importance="medium"
+           data-search="港股ipo：基汇资本房地产私募债务开放式基金型公司递表港交所 hong kong ipo: gaw capital real estate private debt open-ended fund company files with hkex 港股ipo：基汇资本房地产私募债务开放式基金型公司递表港交所 【港股ipo：基汇资本房地产私募债务开放式基金型公司递表港交所】利弗莫尔证券显示，基汇资本房地产私募债务开放式基金型公司向港交所提交上市申请书，独家保荐人为jefferies。 [hong kong stock ipo: gaw capital real estate private debt open-ended fund company files with hkex] according to livermore securities, gaw capital real estate private debt open-ended fund company has submitted an application for listing to the hong kong stock exchange, with jefferies as sole sponsor. 【港股ipo：基汇资本房地产私募债务开放式基金型公司递表港交所】利弗莫尔证券显示，基汇资本房地产私募债务开放式基金型公司向港交所提交上市申请书，独家保荐人为jefferies。 eastmoney property markets property 房地产 equity market 股票市场 512880.ss 512200.ss">
+          <time class="tp-when" data-t="2026-10-02 22:46:52" datetime="2026-10-02 22:46:52">10-02<br>22:46</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-02 22:46:52"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Policy</span><span class="l-zh">政策</span></span>
+              <span class="cn-src">Eastmoney</span>
+              <span class="cn-imp imp-medium"><b>51</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Hong Kong IPO: Gaw Capital Real Estate Private Debt Open-Ended Fund Company files with HKEX</span><span class="l-zh">港股IPO：基汇资本房地产私募债务开放式基金型公司递表港交所</span></h2>
+            <p class="tp-sum"><span class="l-en">[Hong Kong Stock IPO: Gaw Capital Real Estate Private Debt Open-Ended Fund Company Files with HKEX] According to Livermore Securities, Gaw Capital Real Estate Private Debt Open-Ended Fund Company has submitted an application for listing to the Hong Kong Stock Exchange, with Jefferies as sole sponsor.</span><span class="l-zh">【港股IPO：基汇资本房地产私募债务开放式基金型公司递表港交所】利弗莫尔证券显示，基汇资本房地产私募债务开放式基金型公司向港交所提交上市申请书，独家保荐人为Jefferies。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span><span class="cn-tk">512200.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-growth" href="https://www.yicai.com/news/103383775.html" target="_blank" rel="noopener"
+           data-theme="growth" data-importance="medium"
+           data-search="美股10月开局小幅收涨，存储、光通信走强，原油、黄金齐涨 美国供应管理协会公布，9月制造业采购经理人指数为54.5，略低于8月的54.6，连续第九个月处于扩张区间。 us stocks opened october slightly higher, with storage and optical communications strengthening, while crude oil and gold rose together. the us institute for supply management reported that the september manufacturing pmi was 54.5, slightly below august's 54.6, remaining in expansion territory for a ninth consecutive month. 美股10月开局小幅收涨，存储、光通信走强，原油、黄金齐涨 美国供应管理协会公布，9月制造业采购经理人指数为54.5，略低于8月的54.6，连续第九个月处于扩张区间。    第一财经 industrial commodities industry & manufacturing 工业与制造业 commodities 大宗商品 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Growth</span><span class="l-zh">增长</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">US stocks opened October slightly higher, with storage and optical communications strengthening, while crude oil and gold rose together. The US Institute for Supply Management reported that the September manufacturing PMI was 54.5, slightly below August's 54.6, remaining in expansion territory for a ninth consecutive month.</span><span class="l-zh">美股10月开局小幅收涨，存储、光通信走强，原油、黄金齐涨 美国供应管理协会公布，9月制造业采购经理人指数为54.5，略低于8月的54.6，连续第九个月处于扩张区间。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.yicai.com/news/103383721.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="十年煤控步入深水区，“十五五”煤炭消费如何平稳达峰 煤控不能简单“一刀切”，要走结构优化、渐进替代、区域协同的路径。 a decade of coal control enters deep waters: how can coal consumption peak smoothly during the 15th five-year plan? coal control cannot be a simple one-size-fits-all approach; it must follow a path of structural optimization, gradual substitution and regional coordination. 十年煤控步入深水区，“十五五”煤炭消费如何平稳达峰 煤控不能简单“一刀切”，要走结构优化、渐进替代、区域协同的路径。    第一财经 consumer commodities consumer 消费 commodities 大宗商品 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">A decade of coal control enters deep waters: how can coal consumption peak smoothly during the 15th Five-Year Plan? Coal control cannot be a simple one-size-fits-all approach; it must follow a path of structural optimization, gradual substitution and regional coordination.</span><span class="l-zh">十年煤控步入深水区，“十五五”煤炭消费如何平稳达峰 煤控不能简单“一刀切”，要走结构优化、渐进替代、区域协同的路径。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span><span class="cn-cchip"><span class="l-en">commodities</span><span class="l-zh">大宗商品</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-credit" href="https://wallstreetcn.com/livenews/3173761" target="_blank" rel="noopener"
+           data-theme="credit" data-importance="medium"
+           data-search="两年期德债收益率非农日涨超1个基点，本周累跌20个基点 two-year german bond yield rises more than 1 basis point on nonfarm payrolls day, down 20 basis points for the week 两年期德债收益率非农日涨超1个基点，本周累跌20个基点 周五（10月2日）欧市尾盘，德国10年期国债收益率跌4.6个基点，报3.462%，整体呈现出v形走势、北京时间20:30发布美国非农就业报告之前持续扩大跌幅、20:32刷新日低至3.374%、随后逐步收复失地，本周累计下跌14.0个基点，9月28-30日高位窄幅震荡于3.6%附近，10月1-2日持续下挫。 两年期德债收益率涨1.2个基点，报3.076%，低位震荡行情中、20:32刷新日低至2.949%，随后持续反弹，本周累跌20.2个基点，整体持续下跌；30年期德债收益率跌7.5个基点，报3.819%，本周累跌9个基点。 2/10年期德债收益率利差跌5. friday (october 2) late in the european session, the yield on the 10-year german government bond fell 4.6 basis points to 3.462%, showing an overall v-shaped trend, continuously widening losses before the u.s. nonfarm payrolls report was released at 20:30 beijing time, refreshing a daily low of 3.374% at 20:32, and then gradually recovering losses; for the week, it fell 14.0 basis points cumulatively, fluctuating narrowly at high levels around 3.6% from september 28-30, and continuing to decline from october 1-2. the yield on the 2-year german government bond rose 1.2 basis points to 3.076%, fluctuating at low levels, refreshing a daily low of 2.949% at 20:32, then continuing to rebound; for the week, it fell 20.2 basis points cumulatively, declining continuously overall; the yield on the 30-year german government bond fell 7.5 basis points to 3.819%, down 9 basis points cumulatively for the week. the 2/10-year german government bond yield spread fell 5. 周五（10月2日）欧市尾盘，德国10年期国债收益率跌4.6个基点，报3.462%，整体呈现出v形走势、北京时间20:30发布美国非农就业报告之前持续扩大跌幅、20:32刷新日低至3.374%、随后逐步收复失地，本周累计下跌14.0个基点，9月28-30日高位窄幅震荡于3.6%附近，10月1-2日持续下挫。 两年期德债收益率涨1.2个基点，报3.076%，低位震荡行情中、20:32刷新日低至2.949%，随后持续反弹，本周累跌20.2个基点，整体持续下跌；30年期德债收益率跌7.5个基点，报3.819%，本周累跌9个基点。 2/10年期德债收益率利差跌5. 华尔街见闻 credit credit 信用 cbon">
+          <time class="tp-when" data-t="2026-10-02T16:45:04+00:00" datetime="2026-10-02T16:45:04+00:00">10-02<br>16:45</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-02T16:45:04+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Credit</span><span class="l-zh">信用</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Two-year German bond yield rises more than 1 basis point on nonfarm payrolls day, down 20 basis points for the week</span><span class="l-zh">两年期德债收益率非农日涨超1个基点，本周累跌20个基点</span></h2>
+            <p class="tp-sum"><span class="l-en">Friday (October 2) late in the European session, the yield on the 10-year German government bond fell 4.6 basis points to 3.462%, showing an overall V-shaped trend, continuously widening losses before the U.S. nonfarm payrolls report was released at 20:30 Beijing time, refreshing a daily low of 3.374% at 20:32, and then gradually recovering losses; for the week, it fell 14.0 basis points cumulatively, fluctuating narrowly at high levels around 3.6% from September 28-30, and continuing to decline from October 1-2. The yield on the 2-year German government bond rose 1.2 basis points to 3.076%, fluctuating at low levels, refreshing a daily low of 2.949% at 20:32, then continuing to rebound; for the week, it fell 20.2 basis points cumulatively, declining continuously overall; the yield on the 30-year German government bond fell 7.5 basis points to 3.819%, down 9 basis points cumulatively for the week. The 2/10-year German government bond yield spread fell 5.</span><span class="l-zh">周五（10月2日）欧市尾盘，德国10年期国债收益率跌4.6个基点，报3.462%，整体呈现出V形走势、北京时间20:30发布美国非农就业报告之前持续扩大跌幅、20:32刷新日低至3.374%、随后逐步收复失地，本周累计下跌14.0个基点，9月28-30日高位窄幅震荡于3.6%附近，10月1-2日持续下挫。 两年期德债收益率涨1.2个基点，报3.076%，低位震荡行情中、20:32刷新日低至2.949%，随后持续反弹，本周累跌20.2个基点，整体持续下跌；30年期德债收益率跌7.5个基点，报3.819%，本周累跌9个基点。 2/10年期德债收益率利差跌5.</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">Credit</span><span class="l-zh">信用</span></span><span class="cn-tk">CBON</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.yicai.com/news/103383607.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="大连首条欧式沉浸式消费街区开业 投资8000余万元打造文商旅融合新地标 2026年10月1日，正值国庆佳节，大连市金普新区迎来文旅商业领域的重磅事件——由大连建华集团投资8000余万元建设运营的栖栖里艺术街区正式开门迎客。 dalian's first european-style immersive consumer street opens, built with over rmb 80 million investment as a new landmark integrating culture, commerce and tourism. on october 1, 2026, during the national day holiday, dalian's jinpu new area welcomed a major event in the cultural tourism and commercial sector — qiqili art street, built and operated by dalian jianhua group with an investment of over rmb 80 million, officially opened to the public. 大连首条欧式沉浸式消费街区开业 投资8000余万元打造文商旅融合新地标 2026年10月1日，正值国庆佳节，大连市金普新区迎来文旅商业领域的重磅事件——由大连建华集团投资8000余万元建设运营的栖栖里艺术街区正式开门迎客。    第一财经 consumer consumer 消费 ">
+          <time class="tp-when" data-t="2026-10-01" datetime="2026-10-01">10-01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-01"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Dalian's first European-style immersive consumer street opens, built with over RMB 80 million investment as a new landmark integrating culture, commerce and tourism. On October 1, 2026, during the National Day holiday, Dalian's Jinpu New Area welcomed a major event in the cultural tourism and commercial sector — Qiqili Art Street, built and operated by Dalian Jianhua Group with an investment of over RMB 80 million, officially opened to the public.</span><span class="l-zh">大连首条欧式沉浸式消费街区开业 投资8000余万元打造文商旅融合新地标 2026年10月1日，正值国庆佳节，大连市金普新区迎来文旅商业领域的重磅事件——由大连建华集团投资8000余万元建设运营的栖栖里艺术街区正式开门迎客。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3173762" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="法国财政困局冲击债市，欧洲央行的噩梦场景日益逼近 france's fiscal dilemma hits the bond market, the european central bank's nightmare scenario is drawing closer 法国财政困局冲击债市，欧洲央行的噩梦场景日益逼近 随着法国国债收益率飙升，给欧洲央行带来了越来越大的被迫采取行动的压力，该行面临着被卷入法国债券市场困境的风险。投资者持有法国国债相对于同期限德国国债所要求的溢价已升至欧洲债务危机以来的最高水平，市场越来越多地猜测，动荡需要恶化到何种程度，欧洲央行才会动用其迄今尚未使用的救市工具。这正是欧洲央行希望避免的局面。 as french government bond yields surge, pressure is mounting on the european central bank to act, and the bank faces the risk of being dragged into the turmoil in the french bond market. the premium investors demand to hold french government bonds relative to german government bonds of the same maturity has risen to the highest level since the european debt crisis, and the market is increasingly speculating on how much worse the turmoil would need to become before the ecb uses its so-far-unused rescue tool. this is exactly the situation the ecb wants to avoid. 随着法国国债收益率飙升，给欧洲央行带来了越来越大的被迫采取行动的压力，该行面临着被卷入法国债券市场困境的风险。投资者持有法国国债相对于同期限德国国债所要求的溢价已升至欧洲债务危机以来的最高水平，市场越来越多地猜测，动荡需要恶化到何种程度，欧洲央行才会动用其迄今尚未使用的救市工具。这正是欧洲央行希望避免的局面。 华尔街见闻 pboc_liquidity fiscal_trade pboc & liquidity 央行与流动性 fiscal & trade 财政与贸易 cbon">
+          <time class="tp-when" data-t="2026-10-02T16:45:49+00:00" datetime="2026-10-02T16:45:49+00:00">10-02<br>16:45</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-02T16:45:49+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>49</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">France's fiscal dilemma hits the bond market, the European Central Bank's nightmare scenario is drawing closer</span><span class="l-zh">法国财政困局冲击债市，欧洲央行的噩梦场景日益逼近</span></h2>
+            <p class="tp-sum"><span class="l-en">As French government bond yields surge, pressure is mounting on the European Central Bank to act, and the bank faces the risk of being dragged into the turmoil in the French bond market. The premium investors demand to hold French government bonds relative to German government bonds of the same maturity has risen to the highest level since the European debt crisis, and the market is increasingly speculating on how much worse the turmoil would need to become before the ECB uses its so-far-unused rescue tool. This is exactly the situation the ECB wants to avoid.</span><span class="l-zh">随着法国国债收益率飙升，给欧洲央行带来了越来越大的被迫采取行动的压力，该行面临着被卷入法国债券市场困境的风险。投资者持有法国国债相对于同期限德国国债所要求的溢价已升至欧洲债务危机以来的最高水平，市场越来越多地猜测，动荡需要恶化到何种程度，欧洲央行才会动用其迄今尚未使用的救市工具。这正是欧洲央行希望避免的局面。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-tk">CBON</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-monetary" href="https://wallstreetcn.com/livenews/3173683" target="_blank" rel="noopener"
+           data-theme="monetary" data-importance="medium"
+           data-search="周五美股盘前你需要了解的全球要闻 global key news to know before friday's us stock market open 周五美股盘前你需要了解的全球要闻 美国9月非农大幅低于预期，美债收益率下行，美股期货上涨。 马克龙呼吁g7协调联合抛储，油价应声跳水，10年德债收益率跌至三周低位。 核心通胀2.8%粘性未消、出口1209亿美元创纪录，韩国央行11月加息预期升温。 东芝豪掷600亿日元扩产hdd、产能拟翻倍，希捷科技盘前跌超10%。 三星hbm4报价为hbm3e三倍，押注ai算力军备竞赛重塑定价权。 美光首次明确2027-2028年供应更紧，四大基地同步扩产hbm。 特斯拉下调 ai5/ai6 存储规格，为 optimus 量产让路。 博通联手黑石筹资600亿美元，为anthropic等ai公司铺路算力。 u.s. september nonfarm payrolls came in far below expectations, u.s. treasury yields fell, and u.s. stock index futures rose. macron called on the g7 to coordinate a joint release of reserves, oil prices plunged in response, and the 10-year german government bond yield fell to a three-week low. with core inflation at 2.8% still sticky and exports at a record $120.9 billion, expectations for a bank of korea rate hike in november are heating up. toshiba splurged 60 billion yen to expand hdd production, with capacity planned to double, and seagate technology fell more than 10% in premarket trading. samsung priced hbm4 at three times hbm3e, betting that the ai computing arms race will reshape pricing power. micron explicitly stated for the first time that supply will be tighter in 2027-2028, with four major bases simultaneously expanding hbm production. tesla lowered ai5/ai6 memory specifications to make way for optimus mass production. broadcom teamed up with blackstone to raise $60 billion, paving the way for computing power for ai companies such as anthropic. 美国9月非农大幅低于预期，美债收益率下行，美股期货上涨。 马克龙呼吁g7协调联合抛储，油价应声跳水，10年德债收益率跌至三周低位。 核心通胀2.8%粘性未消、出口1209亿美元创纪录，韩国央行11月加息预期升温。 东芝豪掷600亿日元扩产hdd、产能拟翻倍，希捷科技盘前跌超10%。 三星hbm4报价为hbm3e三倍，押注ai算力军备竞赛重塑定价权。 美光首次明确2027-2028年供应更紧，四大基地同步扩产hbm。 特斯拉下调 ai5/ai6 存储规格，为 optimus 量产让路。 博通联手黑石筹资600亿美元，为anthropic等ai公司铺路算力。 华尔街见闻 pboc_liquidity fiscal_trade tech_policy pboc & liquidity 央行与流动性 fiscal & trade 财政与贸易 tech policy 科技政策 cbon">
+          <time class="tp-when" data-t="2026-10-02T12:56:01+00:00" datetime="2026-10-02T12:56:01+00:00">10-02<br>12:56</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-02T12:56:01+00:00"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Monetary policy</span><span class="l-zh">货币政策</span></span>
+              <span class="cn-src">华尔街见闻</span>
+              <span class="cn-imp imp-medium"><b>49</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Global Key News to Know Before Friday's US Stock Market Open</span><span class="l-zh">周五美股盘前你需要了解的全球要闻</span></h2>
+            <p class="tp-sum"><span class="l-en">U.S. September nonfarm payrolls came in far below expectations, U.S. Treasury yields fell, and U.S. stock index futures rose. Macron called on the G7 to coordinate a joint release of reserves, oil prices plunged in response, and the 10-year German government bond yield fell to a three-week low. With core inflation at 2.8% still sticky and exports at a record $120.9 billion, expectations for a Bank of Korea rate hike in November are heating up. Toshiba splurged 60 billion yen to expand HDD production, with capacity planned to double, and Seagate Technology fell more than 10% in premarket trading. Samsung priced HBM4 at three times HBM3E, betting that the AI computing arms race will reshape pricing power. Micron explicitly stated for the first time that supply will be tighter in 2027-2028, with four major bases simultaneously expanding HBM production. Tesla lowered AI5/AI6 memory specifications to make way for Optimus mass production. Broadcom teamed up with Blackstone to raise $60 billion, paving the way for computing power for AI companies such as Anthropic.</span><span class="l-zh">美国9月非农大幅低于预期，美债收益率下行，美股期货上涨。 马克龙呼吁G7协调联合抛储，油价应声跳水，10年德债收益率跌至三周低位。 核心通胀2.8%粘性未消、出口1209亿美元创纪录，韩国央行11月加息预期升温。 东芝豪掷600亿日元扩产HDD、产能拟翻倍，希捷科技盘前跌超10%。 三星HBM4报价为HBM3E三倍，押注AI算力军备竞赛重塑定价权。 美光首次明确2027-2028年供应更紧，四大基地同步扩产HBM。 特斯拉下调 AI5/AI6 存储规格，为 Optimus 量产让路。 博通联手黑石筹资600亿美元，为Anthropic等AI公司铺路算力。</span></p>
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">PBOC & liquidity</span><span class="l-zh">央行与流动性</span></span><span class="cn-cchip"><span class="l-en">fiscal & trade</span><span class="l-zh">财政与贸易</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">CBON</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.stcn.com/article/detail/4205906.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="盘前暴跌！史上最大ipo，突传大动作！四大变数冲击ai plunge before market open! the largest ipo in history, sudden major move! four major variables impact ai 盘前暴跌！史上最大ipo，突传大动作！四大变数冲击ai    证券时报 markets tech_policy equity market 股票市场 tech policy 科技政策 512880.ss">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">证券时报</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Plunge before market open! The largest IPO in history, sudden major move! Four major variables impact AI</span><span class="l-zh">盘前暴跌！史上最大IPO，突传大动作！四大变数冲击AI</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-cchip"><span class="l-en">tech policy</span><span class="l-zh">科技政策</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-inflation" href="https://www.stats.gov.cn/english/PressRelease/202609/t20260910_1965274.html" target="_blank" rel="noopener"
+           data-theme="inflation" data-importance="high"
+           data-search="industrial producer price indexes in august 2026  2026年8月工业生产者价格指数    nbs industrial industry & manufacturing 工业与制造业 ">
+          <time class="tp-when" data-t="2026-09-10" datetime="2026-09-10">09-10</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-09-10"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Inflation</span><span class="l-zh">物价</span></span>
+              <span class="cn-src">NBS</span>
+              <span class="cn-imp imp-high"><b>68</b> <span class="l-en">high</span><span class="l-zh">高</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Industrial Producer Price Indexes in August 2026</span><span class="l-zh">2026年8月工业生产者价格指数</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">industry & manufacturing</span><span class="l-zh">工业与制造业</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://www.yicai.com/news/103383702.html" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="国庆假期首日文旅消费券热度增4倍，中国游客入住全球超2000个城市的酒店 国庆假期首日出游需求集中释放，国内景区门票、境外游及自然风光类体验订单量显著增长，多城串游、反向旅游及智能出行等新模式成为推动文旅消费的新动力。 on the first day of the national day holiday, cultural tourism consumption voucher热度 rises 4x; chinese tourists check into hotels in over 2,000 cities worldwide. travel demand was concentratedly released on the first day of the national day holiday, with domestic scenic spot tickets, overseas travel and natural scenery experience orders growing significantly; new models such as multi-city travel, reverse tourism and smart travel have become new drivers of cultural tourism consumption. 国庆假期首日文旅消费券热度增4倍，中国游客入住全球超2000个城市的酒店 国庆假期首日出游需求集中释放，国内景区门票、境外游及自然风光类体验订单量显著增长，多城串游、反向旅游及智能出行等新模式成为推动文旅消费的新动力。    第一财经 consumer consumer 消费 ">
+          <time class="tp-when" data-t="" >—</time>
+          <div class="tp-spine"><span class="tp-node" data-t=""></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">第一财经</span>
+              <span class="cn-imp imp-medium"><b>60</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">On the first day of the National Day holiday, cultural tourism consumption voucher热度 rises 4x; Chinese tourists check into hotels in over 2,000 cities worldwide. Travel demand was concentratedly released on the first day of the National Day holiday, with domestic scenic spot tickets, overseas travel and natural scenery experience orders growing significantly; new models such as multi-city travel, reverse tourism and smart travel have become new drivers of cultural tourism consumption.</span><span class="l-zh">国庆假期首日文旅消费券热度增4倍，中国游客入住全球超2000个城市的酒店 国庆假期首日出游需求集中释放，国内景区门票、境外游及自然风光类体验订单量显著增长，多城串游、反向旅游及智能出行等新模式成为推动文旅消费的新动力。</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">consumer</span><span class="l-zh">消费</span></span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/roll/2026-10-01/doc-inittkrz1102637.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="券商10月金股出炉，涉及医药、信息技术等领域，药明康德、中际旭创获推荐较多（名单） brokerages' october top picks unveiled, spanning pharma, information technology and other sectors; wuxi apptec and zhongji innolight receive more recommendations (list) 券商10月金股出炉，涉及医药、信息技术等领域，药明康德、中际旭创获推荐较多（名单）    新浪财经股票 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-10-01" datetime="2026-10-01">10-01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-01"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Brokerages' October top picks unveiled, spanning pharma, information technology and other sectors; WuXi AppTec and Zhongji Innolight receive more recommendations (list)</span><span class="l-zh">券商10月金股出炉，涉及医药、信息技术等领域，药明康德、中际旭创获推荐较多（名单）</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/stock/relnews/cn/2026-10-01/doc-initteki6717194.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="国盛证券1.5亿卖梅花天使股权，谁接盘？ guosheng securities sells meihua angel equity for rmb 150 million — who is the buyer? 国盛证券1.5亿卖梅花天使股权，谁接盘？    新浪财经股票 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-10-01" datetime="2026-10-01">10-01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-01"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Guosheng Securities sells Meihua Angel equity for RMB 150 million — who is the buyer?</span><span class="l-zh">国盛证券1.5亿卖梅花天使股权，谁接盘？</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+        
+        <a class="tp-item th-markets" href="https://finance.sina.com.cn/stock/marketresearch/2026-10-01/doc-inittqyc6518586.shtml" target="_blank" rel="noopener"
+           data-theme="markets" data-importance="medium"
+           data-search="退休两年后被查：西南证券原董事长吴坚的“晚节”，没能保住 investigated two years after retirement: former southwest securities chairman wu jian's 'late integrity' could not be preserved 退休两年后被查：西南证券原董事长吴坚的“晚节”，没能保住    新浪财经股票 markets equity market 股票市场 512880.ss">
+          <time class="tp-when" data-t="2026-10-01" datetime="2026-10-01">10-01</time>
+          <div class="tp-spine"><span class="tp-node" data-t="2026-10-01"></span></div>
+          <div class="tp-body">
+            <div class="tp-top">
+              
+              <span class="cn-tag"><span class="l-en">Markets</span><span class="l-zh">市场</span></span>
+              <span class="cn-src">新浪财经股票</span>
+              <span class="cn-imp imp-medium"><b>54</b> <span class="l-en">medium</span><span class="l-zh">中</span></span>
+            </div>
+            <h2 class="tp-title"><span class="l-en">Investigated two years after retirement: former Southwest Securities chairman Wu Jian's 'late integrity' could not be preserved</span><span class="l-zh">退休两年后被查：西南证券原董事长吴坚的“晚节”，没能保住</span></h2>
+            
+            <div class="tp-chips"><span class="cn-cchip"><span class="l-en">equity market</span><span class="l-zh">股票市场</span></span><span class="cn-tk">512880.SS</span></div>
+          </div>
+        </a>
+        
+      </div>
+      <div class="cn-none hidden" id="none"><h3><span class="l-en">No stories match that view.</span><span class="l-zh">没有符合当前视图的新闻。</span></h3><p><span class="l-en">Clear the search or switch back to All.</span><span class="l-zh">清空搜索或切回全部。</span></p></div>
+
+      <p class="cn-disc"><span class="l-en">Context only — not a signal. The policy-tone read is a z-score of a crude lexicon proxy on the CCTV 新闻联播 broadcast (relative, never an absolute sentiment); the headlines are deterministically filtered (macro themes only, each tagged) Eastmoney flash-wire items. Nothing here is an input to any score, signal, regime or allocation, and the mechanical model never sees it.</span><span class="l-zh">仅作背景，非信号。政策基调读数是对央视《新闻联播》文本的粗略词典代理的 z 标准化（相对值，并非绝对情绪）；头条为东方财富快讯经确定性筛选（仅宏观主题，逐条标注）的条目。这里没有任何内容会进入任何评分、信号、区制或配置，机械模型也从不读取它们。</span></p>
+    </div>
+
+    <aside class="cn-side">
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Scheduled catalysts</span><span class="l-zh">排定催化</span></h2>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">·</span><span class="cu"><span class="l-en">today</span><span class="l-zh">今</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">PMI</span><span class="l-en">NBS PMI (mfg + non-mfg)</span><span class="l-zh">国家统计局 PMI（制造业＋非制造业）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when soon">
+            <span class="cd">1</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">CAIXIN M</span><span class="l-en">Caixin Manufacturing PMI</span><span class="l-zh">财新制造业 PMI</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">5</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">CAIXIN S</span><span class="l-en">Caixin Services PMI</span><span class="l-zh">财新服务业 PMI</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">7</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">TRADE</span><span class="l-en">Customs trade (exports/imports)</span><span class="l-zh">海关进出口数据</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">7</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag ">FXRES</span><span class="l-en">FX reserves (SAFE)</span><span class="l-zh">外汇储备（外管局）</span></div>
+        </div>
+        
+        
+        <div class="cal-row">
+          <div class="cal-when ">
+            <span class="cd">12</span><span class="cu"><span class="l-en">days</span><span class="l-zh">天</span></span>
+          </div>
+          <div class="cal-name"><span class="cal-tag hi">CREDIT</span><span class="l-en">Money supply, RMB loans & TSF</span><span class="l-zh">货币供应、人民币贷款与社融</span></div>
+        </div>
+        
+      </section>
+
+      
+      <section class="side-card">
+        <h2 class="sc-h"><span class="l-en">Exposures on the tape</span><span class="l-zh">相关标的</span></h2>
+        <div class="exp-pills">
+          
+          
+          <span class="exp-pill"><span class="tk">512880.SS</span><span class="nm"><span class="l-en">brokers</span><span class="l-zh">券商</span></span><span class="ct">×8</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">CBON</span><span class="nm"><span class="l-en">China bonds</span><span class="l-zh">中国债券</span></span><span class="ct">×3</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512200.SS</span><span class="nm"><span class="l-en">property</span><span class="l-zh">房地产</span></span><span class="ct">×2</span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">512800.SS</span><span class="nm"><span class="l-en">banks</span><span class="l-zh">银行</span></span></span>
+          
+          
+          <span class="exp-pill"><span class="tk">CNY</span><span class="nm"><span class="l-en">yuan</span><span class="l-zh">人民币</span></span></span>
+          
+        </div>
+      </section>
+      
+    </aside>
+  </section>
+
   
 </main>
 
