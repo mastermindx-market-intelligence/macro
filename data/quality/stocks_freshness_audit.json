@@ -47,7 +47,7 @@
    ]
   }
  ],
- "expected_session": "2026-09-30",
+ "expected_session": "2026-10-01",
  "threshold_calendar_days": 7,
  "totals": {
   "fresh": 246,

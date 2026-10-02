@@ -4,7 +4,7 @@
  "index": "Russell-2000",
  "benchmark": "IWM",
  "benchmark_label": "Russell-2000 (IWM)",
- "as_of": "2026-10-01",
+ "as_of": "2026-10-02",
  "source": "finviz idx_rut (1889 names); sub-industry subsectors + sector amalgamations",
  "subsectors": {
   "advertising-agencies": {
@@ -4354,6 +4354,10 @@
     {
      "ticker": "DIBS",
      "name": "1stdibs.com Inc"
+    },
+    {
+     "ticker": "WSHP",
+     "name": "WeShop Holdings Ltd"
     }
    ]
   },
@@ -8434,6 +8438,10 @@
     {
      "ticker": "CABO",
      "name": "Cable One Inc"
+    },
+    {
+     "ticker": "WSHP",
+     "name": "WeShop Holdings Ltd"
     },
     {
      "ticker": "GDC",
