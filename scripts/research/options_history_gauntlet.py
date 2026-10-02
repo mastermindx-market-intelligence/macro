@@ -29,6 +29,9 @@ import warnings
 from pathlib import Path
 from typing import Any
 
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_REPO_ROOT))
+
 import numpy as np
 import pandas as pd
 from scipy import stats
@@ -1281,9 +1284,14 @@ def _print_summary(results: dict, elapsed: float,
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="W-E1 Options History Gauntlet")
-    parser.add_argument("--study", choices=["gexr", "skew", "cwiv", "doi", "all"],
+    parser.add_argument("--study", choices=["gexr", "skew", "cwiv", "doi", "retrospective-v1", "retrospective-v1.1", "all"],
                         default="all", help="Which study to run")
-    args = parser.parse_args()
+    args, study_args = parser.parse_known_args()
+    if args.study in {"retrospective-v1", "retrospective-v1.1"}:
+        from scripts.research.options_history_retrospective import main as retrospective_main
+        return retrospective_main(study_args)
+    if study_args:
+        parser.error("unrecognized arguments: " + " ".join(study_args))
 
     if not _store_check():
         print("SKIP: ThetaData EOD store not found at", _STORE)
