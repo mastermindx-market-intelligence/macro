@@ -358,6 +358,7 @@ jobs:
       - "tests/fixtures/am_edition_fixture/site/master_brief.json"
       - "tests/fixtures/am_edition_legacy_snapshot_dd20710c.json"
       - "tests/test_am_edition_producer.py"
+      - "tests/test_capture_am_edition_evidence.py"
       # 2026-09-24 A-MOR-2b lane B (VPS premarket owner): the live lane wraps
       # the producer and shares its import graph (scripts.build_am_edition) so
       # it rides the producer gate. The contract-delta differential gate refuses
@@ -2857,7 +2858,7 @@ jobs:
       - name: private operator-reviewed Options Issue Desk (R6.2-A)
         run: python -m pytest tests/test_options_issue_desk.py tests/test_options_issue_desk_api.py -q
       - name: morning edition page + producer (MO-B F01-1)
-        run: python -m pytest tests/test_am_edition_page.py tests/test_am_edition_producer.py -q
+        run: python -m pytest tests/test_am_edition_page.py tests/test_am_edition_producer.py tests/test_capture_am_edition_evidence.py -q
 
   cycle-grading-stats:
     if: ${{ false }}
