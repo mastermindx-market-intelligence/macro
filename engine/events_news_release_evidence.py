@@ -483,10 +483,11 @@ def _future_expectation_metric(
         return result
 
     point = _forecast_point(row, unit)
+    benchmarks = _clean_benchmark_set(row.get("benchmark_set"), unit)
     result.update(point)
     result.update({
         "period": period,
-        "benchmarks": _clean_benchmark_set(row.get("benchmark_set"), unit),
+        "benchmarks": benchmarks,
         "market_implied_status": (
             "unit_basis_unqualified"
             if unit == "thousands"
@@ -501,6 +502,8 @@ def _future_expectation_metric(
         "basis_warning": row.get("basis_warning") if isinstance(row.get("basis_warning"), str) else None,
         "input_completeness": row.get("input_completeness") if _finite_number(row.get("input_completeness")) else None,
     })
+    if result["status"] == "model_point_unavailable" and benchmarks:
+        result["status"] = "benchmark_context"
     return result
 
 
@@ -726,7 +729,7 @@ def event_expectation_context(
     useful = [
         metric for metric in projected
         if metric.get("status") in {
-            "experimental_model_context", "benchmark_only",
+            "experimental_model_context", "benchmark_only", "benchmark_context",
             "historical_model_comparison",
         }
     ]
