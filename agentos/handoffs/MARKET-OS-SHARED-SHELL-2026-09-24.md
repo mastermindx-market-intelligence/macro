@@ -7,11 +7,14 @@ mission: >
   Deliver instantly understandable shared navigation with advanced depth and long-page
   reading. All tools is mega-menu first; full directory browsing remains available.
 state_before: >
-  R34 repaired the first exact-head blockers, but hosted CI still exposed branch-owned
-  default-off template loading, design-token, receipt-closure, test-registration and
-  late-session assertion failures. The R33 browser proof was no longer bound to the
-  changed CSS payload.
+  Recovered R35 source and later R37 native work after interrupted turns. Hosted
+  CI on 74e12471 still fails packs 3 and 6. No new source/CSS behavior was adopted.
 changed:
+  - path: "research/market_os/all_tools_adoption/browser/pilot.spec.cjs"
+    what: >
+      Added nine R38 narrow-screen, landscape and double-typography scenarios while
+      preserving the original eight cases. The new invocation was blocked before
+      dispatch; these scenarios are authored but NOT EXECUTED or accepted.
   - path: "implementation commit 02793e6d59df0d377a15366b0d92370789f1e3a4"
     what: >
       Closed the remaining known exact-head source/test gates on the same PR branch:
@@ -43,7 +46,7 @@ changed:
       Registered tests/test_all_tools_menu.py under the incumbent unrun-nav-chrome owner;
       no new workflow, job, catalogue, router or navigation owner was created.
 verified:
-  - claim: The final changed-source contracts are green.
+  - claim: Historical R35 changed-source checks passed; later hosted failures remain unresolved.
     command: >
       diff check; validated-claims source; design-system enforce-added; template/site sync;
       P0B closure; changed-contract pytest; production-controller Node suite; mutation suite.
@@ -73,6 +76,14 @@ verified:
       materialized. A duplicate full-group rerun was platform-blocked before dispatch,
       so no fabricated one-shot 515-pass claim is made.
 unverified:
+  - claim: R38 narrow-screen browser behavior.
+    what_would_verify: >
+      The nine authored scenarios must run through a permitted recovery. Node syntax
+      and unchanged-prefix checks do not prove clipping, scrolling or focus behavior.
+  - claim: Native Paper write compatibility with the new full catalog.
+    what_would_verify: >
+      Existing Mastermind 1129/1110 owners qualify and release the exact catalog;
+      current ac18857 differs from accepted 8cd2748 and writes remain unqualified.
   - claim: Hosted exact-head merge-ref CI and independent review for the final pushed head.
     what_would_verify: >
       Verify remote identity, consume the new fences/CI runs and an independent reviewer
@@ -86,14 +97,18 @@ unverified:
       Supported provider/file diagnostics establish saved-state health and the applicable
       limit; later successful writes do not independently root-cause the earlier warning.
 unresolved:
+  - CI36820246152 fails packs3 and6; fences succeeds. Two stock receipt assertions reproduced red locally.
+  - Research Screener cache/bake mismatch and stale stock fixture/manifest bindings remain release blockers.
+  - Three R38 action-specific platform refusals remain held; no alternate-carrier replay is permitted.
   - PR7949 remains Draft/HOLD; exact final-head hosted CI, review and deployed-edge proof are owed.
   - Current main c62a4e08128c07b29c2dc4a12aa9f79cc23ebd4b intersects five historical candidate paths. Merge-tree is conflict-free; the test fixture is byte-identical to main, while generated pages and manifest movement still require hosted merge-ref proof.
   - The full Macro Command group was not rerun a fourth time after the sole evidence-path failure cleared because an equivalent command was explicitly blocked before dispatch. Module and changed-path evidence are green.
   - R18/R19 and PR7129 persistence-before-rebind obligations remain separate.
 next_actions:
-  - Verify the final remote branch identity and consume exact-head CI/fences plus independent review.
-  - Repair only final-head branch-owned failures; keep PR7949 Draft/HOLD and do not merge or deploy.
-  - If source admission passes, proceed through the normal deployment/edge owner and then close any owed cross-browser, physical-device, accessibility and authenticated-path proof.
+  - Qualify the nine R38 scenarios only after the action-specific permission boundary is recovered.
+  - Resolve existing receipt and Research Screener gates through permitted owner recovery; preserve assertions and historical evidence.
+  - Consume the existing Paper 1129/1110 catalog return before native edits; preserve boards54-58 and their map.
+  - Keep PR7949 Draft/HOLD until exact-head CI and independent review conclude; no merge or deployment claim.
 do_not_redo:
   - Keep PR7949, branch sol/market-os-shared-shell-design-20260924 and the existing source workspace.
   - Preserve the incumbent catalogue/header/assets, strict default-OFF three-pilot boundary, Paper boards 45–50 and historical R33 evidence.
@@ -381,3 +396,81 @@ Capability remains `BUILT_NOT_PROVEN`. PR7949 stays Draft/HOLD. No merge, deploy
 account/watchlist/Portfolio/alert/order effect, worker or watcher was created. Exact continuation is to
 verify the pushed head, consume hosted merge-ref CI and independent review, repair only branch-owned
 failures, then use the normal release and deployed-edge owners if authorization is present.
+
+## R38 — same-carrier recovery and pending narrow-screen qualification
+
+MISSION_COMPLETE:false. No source behavior, CSS, pilot enablement, merge or
+production effect in this wave. R35 source74e12471e9fa3e5b45e2f80a2c3563c8e9a06095
+was recovered clean in the original shared-shell-r27 worktree. Old process98318
+was no longer in the RDC process registry; no replay of its obsolete R34 repair.
+Current protected procedure is Mastermindfb78a964748836c4c0e0a966369690b8fef33be1;
+INDEX/ACTIVE_EXECUTION/COLD_START/WEB_CEO_DELEGATION and relevant same-pin
+reconciliation, Paper and closeout procedures loaded. No SESSION_RELIABILITY
+file is enrolled by this INDEX. Direct source/test judgment retained for
+LOWER_TOTAL_OVERHEAD; user-selected Astra Pro is historical UI intent, not
+served-model telemetry. No child or watcher was dispatched.
+
+### Actual delta and verification
+
+Added nine narrowly scoped scenarios to the existing pilot.spec.cjs: each of
+macro, Sector Central and Reports at320×568,844×390 landscape, and320×844
+with menu typography tokens doubled. They check real bounds, clipped scroll
+containers, reachability of close/search/rows/footer, no-match recovery and
+focus return. The original eight browser cases remain byte-for-byte unchanged.
+Node syntax and git diff --check passed. The new browser/server invocation was
+platform-blocked before dispatch: zero new browser runs, screenshots or passes.
+The doubled-token case is a browser layout stress test, not physical-device,
+screen-reader or native browser text-zoom acceptance. No speculative CSS fix.
+
+The two stock-first-frame receipt assertions reproduced locally:2failed and
+113deselected. Their full module was not rerun. The failures remain visible,
+not baseline-excused or waived: fixture inputs differ from the current source,
+and the visual repair extension binds an older fixture-receipt hash.
+
+### Native recovery, not recreation
+
+R37 return5928678739 supersedes older native-only continuation descriptions.
+Original file01M2WGNCX9475G79JRKJTCM08P / pagep-D-0 now has57artboards.
+Existing54–58Research family is preserved. Fresh screenshot of58/5MXE-1 confirms
+expanded light Research content, five Find-the-edge destinations and complete
+footer. The map21H2-0 already contains the Research implementation contract
+5N0T-1. These are recovered earlier effects, not R38-created designs. No new
+canvas mutation or marker release was attempted; prior marker state is not
+inferred cleared. All R38 actions have known effects; no EFFECT_UNKNOWN.
+
+Paper is CONNECTED and exact-file reads succeed. Its actual catalogac18857df0aa
+now differs from accepted8cd27488a3ad; accepted_for_write:false. Version0.5.14
+is diagnostic, not the cause. No capacity warning appeared in this read, which
+does not settle the historical file-limit question. Do not install a new host,
+copy the file, force focus, swap modes or weaken the catalog guard.
+Existing compatibility recovery is Mastermind#1129 / #1110, latest observed
+return5944948953: C2 schema comparison and C4 guard/runtime review. It explicitly
+requires complete canonical old/new catalog evidence before changing the pin;
+filtered catalogs do not prove that equivalence. No competing repair branch.
+
+### Exact source/permission frontier
+
+CI36820246152 remains failed: packs3and6 fail; ten pass. Fences36820245803 passes.
+R37 already records pack6's Research Screener bake/cache mismatch and both stock
+receipt assertions, with original hosted logs on M2. No need to reacquire logs.
+The newly attempted hosted-log acquisition, receipt/source diagnostic batch,
+and nine-case browser invocation were separately platform-blocked before
+dispatch. No retries or alternate-carrier execution followed. These action
+holds are not a claim that all RDC or GitHub operations are unavailable.
+Preserve R37's earlier denied three-test/fixture-regeneration operation and
+all other exact denials. A new chat or model selection is not recovery proof.
+
+Next useful actions, after the relevant permission/compatibility evidence changes:
+1. Qualify the prepared nine-case browser expansion through a permitted recovery;
+   repair only any genuinely reproduced layout bug, then rerun affected evidence.
+2. Complete existing-owner receipt regeneration/dependency closure and Research
+   Screener output synchronization without weakening assertions or touching the
+   preserved historical visual baseline. Consume new exact-head CI and review.
+3. After #1129's reviewed catalog is accepted/deployed, continue the existing
+   Paper targets and outstanding journey states; preserve54–58 and map5N0T-1.
+
+Do not redo R35's accepted token/asset changes, recreate R36/R37 native boards,
+claim the nine scenarios ran, broaden pilot opt-in, mark Ready, merge or deploy.
+R18/R19/PR7129 obligations and independent review remain separate and unwaived.
+This checkpoint is a recoverable incomplete boundary, not user/product
+acceptance. No background work or automatic wake is claimed.

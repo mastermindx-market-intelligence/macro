@@ -28,3 +28,33 @@ Covered real-browser behaviors:
 - fail-closed behavior when a projected source destination is withdrawn while open.
 
 This harness does not prove deployment, CDN cache headers, authenticated/personal state, Safari/Firefox, assistive-technology output, 200% text or physical-device behavior. Those remain separate release evidence where owed.
+
+## R38 narrow-screen resilience plan
+
+Goal: keep the existing menu readable, scrollable and dismissible at 320px,
+in landscape, and with application typography enlarged to twice its normal size.
+Architecture: extend the existing pilot harness and repair only the incumbent
+navigation CSS if a real clipping/scroll failure is reproduced. No new overlay,
+route catalogue, account state or test workflow. The original eight cases stay.
+
+1. Add reachability checks for the close control, search, destination rows and
+   footer on all three pilots; use actual element bounds after scrolling.
+2. Run the added cases against unchanged production assets and retain failures.
+3. Repair only the demonstrated shared-layout cause, preserving tokens and
+   dark/light parity. Keep template/site copies and pilot cache stamps coherent.
+4. Rerun the new cases and original browser suite; inspect changed-state images.
+5. Publish source, tests and exact evidence on PR7949; keep Draft/HOLD.
+
+The enlarged-text case doubles the existing --fs-* application tokens in the
+browser. It is a text-layout stress test, not physical-device or screen-reader
+certification, and not evidence of native browser text-zoom behavior.
+Review emphasis: long translated labels, clipping at 320px, short-height scroll,
+keyboard focus/return, and preserving the complete source-driven directory.
+
+R38 status: nine additional scenarios are authored (three pilots × three
+conditions). Node syntax and unchanged-original-suite-prefix checks pass.
+The new browser invocation was platform-blocked before dispatch; none of these
+nine scenarios has executed and there are no R38 browser screenshots/results.
+Do not count them as passes, retry the held invocation through another carrier,
+or infer a CSS repair from an unexecuted test. Existing R35 evidence remains
+historical exact-tree evidence, not proof of these additional cases.

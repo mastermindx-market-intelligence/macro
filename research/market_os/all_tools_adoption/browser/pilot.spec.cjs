@@ -150,3 +150,83 @@ test('live source withdrawal disables the projected destination before navigatio
   await expect(projectedForHref).not.toHaveAttribute('href', /.+/);
   await expect(page.locator('[data-tools-status]')).toContainText(/changed|unavailable/i);
 });
+
+// R38: layout stress is not a substitute for physical-device or AT acceptance.
+async function enlargeMenuType(dialog) {
+  return dialog.evaluate((element) => {
+    const keys = ['micro', 'label', 'sm', 'body', 'h3', 'md', 'h2',
+      'num-lg', 'h1', 'num-xl', 'display'].map((key) => '--fs-' + key);
+    const source = getComputedStyle(element);
+    const values = keys.map((key) => [key, source.getPropertyValue(key).trim()]);
+    const changed = [];
+    for (const [key, value] of values) {
+      if (/^[\d.]+px$/.test(value)) {
+        element.style.setProperty(key, (parseFloat(value) * 2) + 'px');
+        changed.push(key);
+      }
+    }
+    return changed;
+  });
+}
+
+async function expectReachable(control, dialog) {
+  await control.scrollIntoViewIfNeeded();
+  const box = await control.boundingBox();
+  const viewport = await dialog.boundingBox();
+  expect(box).toBeTruthy();
+  expect(viewport).toBeTruthy();
+  expect(box.x).toBeGreaterThanOrEqual(viewport.x - 1);
+  expect(box.x + box.width).toBeLessThanOrEqual(viewport.x + viewport.width + 1);
+  expect(box.y).toBeGreaterThanOrEqual(viewport.y - 1);
+  expect(box.y + box.height).toBeLessThanOrEqual(viewport.y + viewport.height + 1);
+}
+
+const resilienceCases = [
+  { name: '320-short', width: 320, height: 568, theme: 'dark', lang: 'en' },
+  { name: '320-double-type', width: 320, height: 844, theme: 'light', lang: 'zh', doubleType: true },
+  { name: 'landscape', width: 844, height: 390, theme: 'dark', lang: 'en' },
+];
+for (const route of pages) for (const scenario of resilienceCases) {
+  test(`R38 ${route}: ${scenario.name} preserves reachable content and return`, async ({ page }) => {
+    const { trigger } = await openPage(page, route, scenario);
+    const dialog = await openTools(page, trigger);
+    if (scenario.doubleType) expect((await enlargeMenuType(dialog)).length).toBeGreaterThan(5);
+    await page.evaluate(() => document.fonts.ready);
+    const layout = await dialog.evaluate((element) => {
+      const nodes = [element, ...element.querySelectorAll('.mmx-tools-shell,.mmx-tools-body')];
+      return nodes.map((node) => ({
+        name: node.className, overflow: getComputedStyle(node).overflowY,
+        clientHeight: node.clientHeight, scrollHeight: node.scrollHeight,
+        clientWidth: node.clientWidth, scrollWidth: node.scrollWidth,
+      }));
+    });
+    const trapped = layout.filter((node) => /hidden|clip/.test(node.overflow)
+      && node.scrollHeight > node.clientHeight + 1);
+    expect(trapped, JSON.stringify(layout)).toEqual([]);
+    expect(layout.filter((node) => node.scrollWidth > node.clientWidth + 1)).toEqual([]);
+    const scrollers = layout.filter((node) => /auto|scroll/.test(node.overflow)
+      && node.scrollHeight > node.clientHeight + 1);
+    expect(scrollers.length).toBeLessThanOrEqual(1);
+    await expectReachable(page.locator('[data-tools-close]'), dialog);
+    await page.screenshot({ path: path.join(evidenceDir,
+      `${route.replace('.html', '')}-${scenario.name}-top.png`) });
+    const links = page.locator('[data-tools-results] a[href]');
+    for (let i = 0; i < await links.count(); i++) await expectReachable(links.nth(i), dialog);
+    await expectReachable(page.locator('[data-tools-all]'), dialog);
+    const query = page.locator('[data-tools-query]');
+    await expectReachable(query, dialog);
+    await query.fill('tax-loss planner');
+    const reset = page.locator('[data-tools-reset]');
+    await expectReachable(reset, dialog);
+    await reset.click();
+    await expect(query).toHaveValue('');
+    await expect(page.locator('[data-tools-results] a[href]')).not.toHaveCount(0);
+    await expectReachable(page.locator('[data-tools-all]'), dialog);
+    await page.screenshot({ path: path.join(evidenceDir,
+      `${route.replace('.html', '')}-${scenario.name}-footer.png`) });
+    await page.keyboard.press('Escape');
+    await expect(dialog).not.toHaveAttribute('open', '');
+    await expect(trigger).toBeFocused();
+    await expect(page.locator('html')).not.toHaveClass(/mmx-tools-open/);
+  });
+}
