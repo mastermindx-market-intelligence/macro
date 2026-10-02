@@ -490,6 +490,12 @@ def normalize_publication(
     period, resolution = period_resolution
     observed_at, source_released_at, verified_at = timestamps
     parser = publication.get("parser") if isinstance(publication.get("parser"), dict) else {}
+    estimate_vintage = None
+    if event_type == "GDP":
+        raw_vintage = str(actual.get("vintage") or "").strip().lower()
+        estimate_vintage = "advance" if raw_vintage == "initial" else raw_vintage
+        if estimate_vintage not in {"advance", "second", "third"}:
+            return []
 
     rows: list[dict[str, Any]] = []
     for release, value_key, metric_id, unit, scale in specs:
@@ -510,6 +516,8 @@ def normalize_publication(
             "value": value,
             "source_sha256": source_sha,
         }
+        if estimate_vintage is not None:
+            identity["estimate_vintage"] = estimate_vintage
         rows.append(
             {
                 "schema": "release_actual.v1",
@@ -525,6 +533,7 @@ def normalize_publication(
                 "actual_raw": raw_float,
                 "unit": unit,
                 "published_precision": 0 if event_type in ("NFP", "CLAIMS") else 1,
+                **({"estimate_vintage": estimate_vintage} if estimate_vintage is not None else {}),
                 "actual_basis": "official_published_metric",
                 "actual_source": "official_release_document",
                 "source_url": str(source_url),
@@ -585,6 +594,8 @@ def receipt_integrity_errors(
         errors.append("exact_target_id_mismatch")
     if row.get("unit") != unit:
         errors.append("unit_mismatch")
+    if event_type == "GDP" and row.get("estimate_vintage") not in {"advance", "second", "third"}:
+        errors.append("estimate_vintage_invalid")
 
     parser_name, parser_version = contract["parser"]
     if row.get("publisher") != contract["publisher"]:
@@ -680,6 +691,8 @@ def receipt_integrity_errors(
             "value": actual,
             "source_sha256": source_sha,
         }
+        if event_type == "GDP":
+            identity["estimate_vintage"] = row.get("estimate_vintage")
         if row.get("receipt_id") != _receipt_id(identity):
             errors.append("receipt_id_mismatch")
     errors.extend(_known_receipt_defect_errors(row, defects_path=defects_path))
@@ -745,17 +758,27 @@ def reconcile_receipts(
     """
     existing_rows = [row for row in existing if isinstance(row, dict)]
     existing_ids = {str(row.get("receipt_id")) for row in existing_rows}
-    first_by_key: dict[tuple[str, str, str], dict[str, Any]] = {}
+    first_by_key: dict[tuple[str, str, str, str], dict[str, Any]] = {}
     for row in existing_rows:
         if is_scoring_truth_eligible(row, defects_path=defects_path):
-            key = (str(row.get("release")), str(row.get("period")), str(row.get("sequence") or "first"))
+            key = (
+                str(row.get("release")),
+                str(row.get("period")),
+                str(row.get("sequence") or "first"),
+                str(row.get("estimate_vintage") or ""),
+            )
             first_by_key.setdefault(key, row)
 
     novel: list[dict[str, Any]] = []
     for row in receipts_from_payload(payload, defects_path=defects_path):
         if row["receipt_id"] in existing_ids:
             continue
-        key = (row["release"], row["period"], row["sequence"])
+        key = (
+            row["release"],
+            row["period"],
+            row["sequence"],
+            str(row.get("estimate_vintage") or ""),
+        )
         prior = first_by_key.get(key)
         if prior is not None:
             row = {
