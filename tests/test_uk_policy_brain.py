@@ -511,3 +511,186 @@ def test_collect_window_false_returns_all_items_newest_first(monkeypatch):
     ]
     windowed = brain.collect(4.0, window=True)
     assert [it["title"] for it in windowed] == [inside["title"]]
+
+
+# --------------------------------------------------------------------------- #
+# MO-PAID-023_FIX_R1 T1-T4 — provider waterfall + retry-on-failure + R2 pin.
+# These tests run with `call=None` so the real waterfall path
+# (engine.llm_auth.build_providers + make_call) executes against fake providers
+# monkeypatched into `engine.llm_auth.build_providers`. The fixture idiom mirrors
+# tests/test_llm_auth.py:71-105 — provider dicts carry name/env_var/cred/client
+# where `client` is a stub whose `.messages.create(**kw)` raises or replies.
+# --------------------------------------------------------------------------- #
+
+_WATERFALL_OK_REPLY_JSON = (
+    '{"summary_en": "The Chancellor set out updated fiscal rules to support growth.",'
+    ' "summary_zh": "财政大臣公布了支持增长的新财政规则。",'
+    ' "stance": "supportive",'
+    ' "watch_en": "Watch the debt path against the new rule.",'
+    ' "watch_zh": "关注债务路径与新规则的关系。"}'
+)
+
+
+class _WaterfallBlock:
+    """One text content block in a fake model response."""
+
+    def __init__(self, text: str) -> None:
+        self.type = "text"
+        self.text = text
+
+
+class _WaterfallResp:
+    def __init__(self, text: str) -> None:
+        self.content = [_WaterfallBlock(text)]
+        self.stop_reason = "end_turn"
+
+
+class _WaterfallMessages:
+    def __init__(self, *, raise_msg: str | None, reply_text: str | None) -> None:
+        self.last_kwargs: dict | None = None
+        self._raise_msg = raise_msg
+        self._reply_text = reply_text
+
+    def create(self, **kw) -> _WaterfallResp:
+        self.last_kwargs = kw
+        if self._raise_msg is not None:
+            raise Exception(self._raise_msg)
+        return _WaterfallResp(self._reply_text or "")
+
+
+class _WaterfallClient:
+    """Fake llm_auth client. `.messages.create(**kw)` is controllable per-rung."""
+
+    def __init__(self, name: str, *, raise_msg: str | None = None,
+                 reply_text: str | None = None) -> None:
+        self.name = name
+        self.messages = _WaterfallMessages(raise_msg=raise_msg, reply_text=reply_text)
+
+
+def _waterfall_providers(*, raise_first: str | None = None,
+                         raise_second: str | None = None,
+                         reply_text: str = _WATERFALL_OK_REPLY_JSON,
+                         ) -> list[dict]:
+    """Build the two-rung provider list spec'd in T1/T2/T3."""
+    return [
+        {"name": "oauth", "env_var": "CLAUDE_CODE_OAUTH_TOKEN", "cred": "tok-fake",
+         "client": _WaterfallClient("oauth", raise_msg=raise_first), "model": "claude-opus-4-8"},
+        {"name": "deepseek", "env_var": "DEEPSEEK_API_KEY", "cred": "ds-fake",
+         "client": _WaterfallClient("deepseek", raise_msg=raise_second, reply_text=reply_text),
+         "model": "deepseek-v4-pro"},
+    ]
+
+
+def test_waterfall_falls_back_when_first_rung_401s(tmp_path, monkeypatch):
+    """T1 — rung 1 raises 401; rung 2 succeeds; record ok/stale; item IS seen."""
+    _clear_env(monkeypatch)
+    monkeypatch.setenv(brain.GATE_ENV, "1")
+    items = brain._parse_search_results(FIXTURE.read_bytes())
+    monkeypatch.setattr(brain, "collect", lambda *a, **k: items)
+    monkeypatch.setattr(brain, "_in_window", lambda item, cutoff: True)
+    monkeypatch.setattr(brain, "fetch_body", lambda url: items[0]["body_text"])
+    monkeypatch.setattr(brain, "fetch_version", lambda url: None)
+    providers = _waterfall_providers(
+        raise_first="401 authentication_error: Invalid bearer token",
+        raise_second=None,
+    )
+    monkeypatch.setattr("engine.llm_auth.build_providers", lambda *a, **kw: providers)
+
+    record = brain.run(root=tmp_path, force=True)
+
+    assert record is not None
+    assert record["state"] in {"ok", "stale"}, record["state"]
+    assert record["stance"] in {"supportive", "restrictive", "mixed", "routine"}
+    saved = brain.load_processed(tmp_path)
+    assert items[0]["id"] in saved["seen"], (
+        "a successful evaluate must mark the item seen"
+    )
+
+
+def test_all_rungs_fail_is_model_unavailable_and_item_stays_unseen(
+        tmp_path, monkeypatch, caplog):
+    """T2 — both rungs 401; state=model_unavailable; stance None; NOT seen; WARNING logged."""
+    _clear_env(monkeypatch)
+    monkeypatch.setenv(brain.GATE_ENV, "1")
+    items = brain._parse_search_results(FIXTURE.read_bytes())
+    monkeypatch.setattr(brain, "collect", lambda *a, **k: items)
+    monkeypatch.setattr(brain, "_in_window", lambda item, cutoff: True)
+    monkeypatch.setattr(brain, "fetch_body", lambda url: items[0]["body_text"])
+    monkeypatch.setattr(brain, "fetch_version", lambda url: None)
+    providers = _waterfall_providers(
+        raise_first="401 authentication_error: Invalid bearer token",
+        raise_second="401 authentication_error: Invalid bearer token",
+    )
+    monkeypatch.setattr("engine.llm_auth.build_providers", lambda *a, **kw: providers)
+
+    with caplog.at_level(logging.WARNING, logger=brain.log.name):
+        record = brain.run(root=tmp_path, force=True)
+
+    assert record is not None
+    assert record["state"] == "model_unavailable"
+    assert record["stance"] is None
+    saved = brain.load_processed(tmp_path)
+    assert items[0]["id"] not in saved["seen"], (
+        "a failed evaluate must leave the item UNSEEN so the next cycle retries it"
+    )
+    assert "uk_policy model call failed" in caplog.text, caplog.text
+
+
+def test_failed_item_is_retried_next_cycle(tmp_path, monkeypatch):
+    """T3 — T2 cycle fails; flip rung 2 to succeed; second run() produces ok/stale + stance."""
+    _clear_env(monkeypatch)
+    monkeypatch.setenv(brain.GATE_ENV, "1")
+    items = brain._parse_search_results(FIXTURE.read_bytes())
+    monkeypatch.setattr(brain, "collect", lambda *a, **k: items)
+    monkeypatch.setattr(brain, "_in_window", lambda item, cutoff: True)
+    monkeypatch.setattr(brain, "fetch_body", lambda url: items[0]["body_text"])
+    monkeypatch.setattr(brain, "fetch_version", lambda url: None)
+
+    # Cycle 1 — both rungs fail.
+    providers_fail = _waterfall_providers(
+        raise_first="401 authentication_error: Invalid bearer token",
+        raise_second="401 authentication_error: Invalid bearer token",
+    )
+    monkeypatch.setattr("engine.llm_auth.build_providers", lambda *a, **kw: providers_fail)
+    first = brain.run(root=tmp_path, force=True)
+    assert first["state"] == "model_unavailable"
+    assert first["stance"] is None
+    assert items[0]["id"] not in brain.load_processed(tmp_path)["seen"]
+
+    # Cycle 1 marked BOTH providers dead in the process-global dead set (the
+    # 401-fallback contract). Clear that between cycles so the second run sees
+    # rung 1 fail with 401 → rung 2 attempt it. Without this the second run
+    # short-circuits to no_provider and the test does not exercise the retry.
+    from engine import llm_auth
+    llm_auth.clear_dead()
+
+    # Cycle 2 — same item, rung 2 now succeeds. If the failed cycle had marked
+    # the item seen, new_items() would short-circuit to no_new and the model
+    # would never run again. A successful second cycle proves the retry.
+    providers_ok = _waterfall_providers(raise_first="401 authentication_error: Invalid bearer token",
+                                        raise_second=None)
+    monkeypatch.setattr("engine.llm_auth.build_providers", lambda *a, **kw: providers_ok)
+    second = brain.run(root=tmp_path, force=True)
+
+    assert second is not None
+    assert second["state"] in {"ok", "stale"}, second["state"]
+    assert second["stance"] is not None
+    assert items[0]["id"] in brain.load_processed(tmp_path)["seen"]
+
+
+def test_no_module_level_llm_auth_or_anthropic_import():
+    """T4 — R2 pin. No `from engine import llm_auth` / `import anthropic` /
+    `from anthropic` at column 0 (module level). Lazy import inside _call_model
+    is required because the minimal-deps CI job A-F02-W2-4 installs only
+    pytest/pyyaml/jinja2 — no anthropic SDK."""
+    src = Path(brain.__file__).read_text()
+    bad = re.compile(r"^(?:from engine import llm_auth|import anthropic|from anthropic)")
+    matches = []
+    for i, raw_line in enumerate(src.splitlines(), start=1):
+        if bad.match(raw_line):
+            matches.append((i, raw_line))
+    assert not matches, (
+        "uk_policy_brain.py must not import llm_auth or anthropic at module "
+        f"level — module-level imports break the minimal-deps CI job "
+        f"A-F02-W2-4. Found: {matches}"
+    )

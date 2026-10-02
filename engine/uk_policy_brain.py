@@ -436,7 +436,19 @@ Reply with strict JSON only:
 def _call_model(item: dict, excerpt: str, cfg: dict, call=None) -> dict:
     """Runs the model call (or the injected `call` stub) and returns a raw dict.
     Never raises — any failure returns an empty dict, which evaluate() treats as
-    model_unavailable (stance stays None; no fabricated routine)."""
+    model_unavailable (stance stays None; no fabricated routine).
+
+    MO-PAID-023_FIX_R1: the real model path now goes through engine.llm_auth
+    (build_providers + make_call) — the SAME waterfall engine.whitehouse_brain
+    uses — so a 401 on the first provider is marked cold and the call falls
+    through to the next rung (e.g. DEEPSEEK_API_KEY after ANTHROPIC_API_KEY).
+    The bespoke urllib call to one Anthropic-compatible endpoint is gone; the
+    only bespoke urllib calls left in this module are the GOV.UK fetch helpers
+    (SEARCH_URL / CONTENT_URL_BASE / FALLBACK_ATOM_URL) which are unrelated.
+    llm_auth is imported LAZILY here so the minimal-deps `A-F02-W2-4` CI job
+    (which installs only pytest/pyyaml/jinja2) can still import this module
+    and run the gate-off test without anthropic on disk.
+    """
     prompt = _PROMPT_TEMPLATE.format(
         title=item.get("title", ""), excerpt=excerpt,
         sum_en=cfg.get("summary_max_en", 150), sum_zh=cfg.get("summary_max_zh", 70),
@@ -444,48 +456,54 @@ def _call_model(item: dict, excerpt: str, cfg: dict, call=None) -> dict:
     try:
         if call is not None:
             raw = call(prompt)
-        else:
-            prov = _provider(cfg)
-            if prov is None:
-                return {}
-            raw = _call_anthropic_like(prov, prompt, cfg)
-        if isinstance(raw, dict):
-            return raw
-        text = str(raw or "")
+            if isinstance(raw, dict):
+                return raw
+            text = str(raw or "")
+            m = re.search(r"\{.*\}", text, re.S)
+            return json.loads(m.group(0)) if m else {}
+        # Real waterfall path. Lazy import keeps anthropic out of the minimal-deps
+        # import surface (see R2 in MO-PAID-023_FIX_R1).
+        from engine import llm_auth
+
+        providers = llm_auth.build_providers(
+            cfg,
+            opus_model=cfg.get("model", _DEFAULTS["model"]),
+            deepseek_model="deepseek-v4-pro",
+        )
+        if not providers:
+            return {}
+
+        max_tokens = int(cfg.get("max_tokens", 600))
+
+        def _do_call(client, model):
+            # MUST NOT catch exceptions — make_call catches them and routes
+            # 401/rate_limit to the next rung.
+            resp = client.messages.create(
+                model=model,
+                max_tokens=max_tokens,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            text = "".join(
+                b.text for b in resp.content if getattr(b, "type", "") == "text"
+            )
+            if text:
+                return text, None
+            return None, "empty_reply"
+
+        text, reason, used = llm_auth.make_call(
+            providers, _do_call, context="uk_policy_brain"
+        )
+        if not text:
+            log.warning("uk_policy model call failed (%s)", reason or "no_text")
+            return {}
+        if used and used != providers[0]["name"]:
+            log.info("uk_policy served_by:%s", used)
+        # Parse the text exactly as before: re.search r"\{.*\}" then json.loads.
         m = re.search(r"\{.*\}", text, re.S)
         return json.loads(m.group(0)) if m else {}
     except Exception as e:  # noqa: BLE001
-        log.debug("uk_policy model call failed (%s)", e)
+        log.warning("uk_policy model call failed (%s)", e)
         return {}
-
-
-def _call_anthropic_like(prov: tuple[str, str, str], prompt: str, cfg: dict) -> str:
-    """Minimal HTTP call to an Anthropic-compatible endpoint. Degrades to '' on
-    any failure — the caller treats an unparseable/empty result as no summary."""
-    import urllib.request
-
-    name, cred, model = prov
-    try:
-        if name == "deepseek":
-            url = "https://api.deepseek.com/anthropic/v1/messages"
-        else:
-            url = "https://api.anthropic.com/v1/messages"
-        headers = {"content-type": "application/json", "x-api-key": cred, "anthropic-version": "2023-06-01"}
-        if name == "oauth":
-            headers = {"content-type": "application/json", "authorization": f"Bearer {cred}",
-                       "anthropic-beta": "oauth-2025-04-20", "anthropic-version": "2023-06-01"}
-        payload = json.dumps({
-            "model": model, "max_tokens": 600,
-            "messages": [{"role": "user", "content": prompt}],
-        }).encode()
-        req = urllib.request.Request(url, data=payload, headers=headers, method="POST")
-        with urllib.request.urlopen(req, timeout=cfg.get("timeout", 15)) as r:
-            data = json.loads(r.read())
-        parts = data.get("content") or []
-        return "".join(p.get("text", "") for p in parts if isinstance(p, dict))
-    except Exception as e:  # noqa: BLE001
-        log.debug("uk_policy llm http call failed (%s)", e)
-        return ""
 
 
 def _base_record(item: dict, cfg: dict | None = None) -> dict:
@@ -638,9 +656,16 @@ def run(persist: bool = True, root=None, force: bool = False, call=None) -> dict
             record["state"] = _typed_state(
                 "stale" if record.get("age_days", 0.0) > stale_after else "ok"
             )
-        mark_seen(state, item)
+        # MO-PAID-023_FIX_R1 S4 — only mark the item SEEN when evaluate produced a
+        # stance (i.e. the model call succeeded). A model_unavailable item stays
+        # UNSEEN so the next cycle retries it instead of relabelling the cached
+        # failure. The model_unavailable record is still persisted (R5) so the
+        # page continues to show the honest state.
+        if record.get("stance") is not None:
+            mark_seen(state, item)
+            if persist:
+                save_processed(root, state)
         if persist:
-            save_processed(root, state)
             _persist(record, root)
         _log_verdict(record)
         return record
