@@ -1,57 +1,9 @@
 {
-  "kind": "cn_pullback_semantic_boundary_repair",
-  "operation": "cn-pullback-lifecycle-20260929-sol-001",
-  "pr": 8188,
-  "semantic_source_commit": "3bb6c856a78385c81868bcea884df4beca3cb9c7",
-  "previous_tested_implementation": "0d518d026630c47d817ff2a1813fee56d9d1f5a1",
-  "defect": "The onset reference retained a 64th close for one extra session although the contract and display specify a 63-close reference.",
-  "repair": "The trailing onset window is exactly RULES.reference_closes including the current settled close: i-reference_closes+1 through i.",
-  "boundary_discriminator": {
-    "input": "110, then sixty-two 100 closes, then 98",
-    "before": "underway / -10.9091% from the 64th-close-old high",
-    "after": "developing / -2.0% from the exact 63-close high",
-    "test": "test_reference_window_is_exactly_63_closes_not_64"
-  },
-  "historical_real_input_stability": {
-    "asof": "2026-09-29",
-    "phase": "underway",
-    "active": true,
-    "drawdown_pct": -10.0276,
-    "recent_63_drawdown_pct": -5.6013,
-    "peak_session": "2026-05-13",
-    "low_session": "2026-07-17",
-    "loss_recovered_pct": 11.08,
-    "source_digest": "441bc90dbc43d9d7d53dea5f2afb4137110bf9e87d5e5599c227578e579dd024",
-    "headline": "Pullback underway",
-    "display_value": "-10.0%"
-  },
-  "focused_regression": {
-    "passed": 55,
-    "seconds": 3.93,
-    "exit_code": 0
-  },
-  "owning_regression": {
-    "passed": 277,
-    "seconds": 10.43,
-    "exit_code": 0
-  },
-  "current_branch_data_degraded_browser": {
-    "reason": "The frozen branch data ends 2026-09-29 while the current calendar expects the later settled session; fail-closed delayed/unavailable behavior is therefore correct.",
-    "variants_passed": 8,
-    "phase": "unavailable",
-    "asof": "2026-09-29",
-    "tmp_receipt_sha256": "38b2c9d165f94053503222a6fd3c272aa50dc41ce20743433876d38534346afa"
-  },
-  "source_sha256": {
-    "lib/pullback_observation.py": "ff8ece096063f01c907dc8ee0c35daa8455b3cb3e926994262802b716bdc0fe6",
-    "tests/test_pullback_observation.py": "49dc042b452da022db9ed1bd4339a395f458b454bd92043a3f545febc06ab710"
-  },
-  "ui_evidence_reuse": {
-    "basis": "All adapter, builder, template, JS, CSS, dialog and browser-verifier blobs are byte-identical to tested implementation 0d518d026630; Sep-29 observed output and source digest are unchanged.",
-    "visual_proof": "mockups/refs/cn-pullback-20260929/release-proof.json",
-    "requires_independent_semantic_review": true
-  },
-  "production_proven": false,
-  "independent_review": "outstanding",
-  "effect_unknown": null
+  "kind": "cn_pullback_semantic_boundary_repair_attempt",
+  "status": "superseded",
+  "source_commit": "3bb6c856a78385c81868bcea884df4beca3cb9c7",
+  "superseded_by_source": "d0e6199dc6fa3b5e700ef4612ced6477ab12aa41",
+  "superseded_by_receipt": "mockups/refs/cn-pullback-20260929/semantic-v3.json",
+  "reason": "The first discriminator treated a 64th-close-old high as if it could simply age out, but with a 63-close warm-up that high had already triggered a real episode one session earlier. Frozen-episode persistence must keep that high. The v3 discriminator prevents any prior episode before isolating the 63-vs-64 boundary.",
+  "do_not_use_for_acceptance": true
 }
