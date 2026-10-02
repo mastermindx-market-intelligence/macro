@@ -200,7 +200,7 @@
     states[mode].scroll = scroll;
     item.before(anchor);
     origin = {item: item, opener: opener, anchor: anchor, scroll: scroll, disclosures: Array.from(item.querySelectorAll('details')).map(function (node) { return [node, node.open]; })};
-    origin.disclosures.forEach(function (entry) { if (!entry[0].hasAttribute('data-nd-provenance')) entry[0].open = true; });
+    origin.disclosures.forEach(function (entry) { if (!entry[0].hasAttribute('data-nd-provenance') && !entry[0].hasAttribute('data-nd-deep')) entry[0].open = true; });
     detailRecord.appendChild(item);
     item.hidden = false; item.classList.add('nd-detail-selected'); opener.hidden = true;
     grid.hidden = true; following.hidden = true; empty.hidden = true; footer.hidden = true;
