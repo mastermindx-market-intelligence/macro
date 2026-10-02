@@ -142,3 +142,18 @@ def test_thousands_label_preserves_the_measured_quantity(tmp_path,family,label):
     s=BeautifulSoup(render_component(**data),'html.parser')
     assert label in s.select_one('.nd-official-unit').get_text()
     assert 'Thousands of people' not in s.get_text()
+
+
+def test_recent_result_only_row_uses_honest_generic_release_label():
+    import json
+    from engine.events_news_release_evidence import attach_recent_event_actual_evidence
+    rows=json.loads((ROOT/'tests/fixtures/events_news_official_receipts.json').read_text())['rows']
+    events=attach_recent_event_actual_evidence(
+        [],rows,as_of='2026-08-12T13:00:00Z',lookback_days=1,
+        defects_path=ROOT/'tests/fixtures/events_news_actual_defects.json')
+    data={'alerts':[],'macro_news':{'headlines':[]},'latest':None,
+          'generated_utc':'2026-08-12T13:00:00Z','macro_catalysts':events}
+    s=BeautifulSoup(render_component(**data),'html.parser')
+    assert 'Recent official release' in s.get_text()
+    assert len(s.select('.nd-official-value'))==2
+    assert 'Scheduled event' not in s.get_text()
