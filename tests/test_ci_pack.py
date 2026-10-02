@@ -5364,6 +5364,29 @@ def test_deliberately_unscoped_gates_stay_always_on(real_manifest_scopes) -> Non
     assert not problems, problems
 
 
+def test_evidence_corpus_edits_select_design_governance(real_manifest_scopes) -> None:
+    """An evidence-only PR must run the receipt-corpus gate (2026-10-02, #8278).
+
+    ``test_committed_evidence_corpus_has_zero_findings`` discovers EVERY committed
+    ``EVIDENCE.yml`` under mockups/evidence + mockups/refs at RUNTIME, so the
+    static closure inference never owned those trees: PR #8278 (evidence-only)
+    planned ``1/168 jobs … did not widen`` and merged a malformed receipt that
+    reddened main. The job now declares the two trees as an additive floor
+    (unioned with inference — NOT ``scope: exclusive``). Pin both directions.
+    """
+    jobs = {job.job_id: job for job in PACK.load_legacy_jobs(MANIFEST)}
+    job = jobs["design-governance"]
+    assert not job.exclusive, "design-governance must stay non-exclusive (floor, not ceiling)"
+    assert set(job.paths) >= {"mockups/evidence/**", "mockups/refs/**"}, job.paths
+    assert len(job.paths) == 9, job.paths  # 2 corpora globs + the 7 files the steps name (loader coverage audit)
+    scoped_jobs, _ = real_manifest_scopes
+    for probe in ("mockups/evidence/sanctions-map-event-mark/EVIDENCE.yml",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+                  "mockups/refs/onboarding/EVIDENCE.yml",  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+                  "mockups/evidence/some-capture/manifest.json"):  # ci-trigger-closure: data — file NAME handed to the planner, not read by this test
+        sel, reason = PACK.select_jobs(scoped_jobs, [probe])
+        assert "design-governance" in {j.job_id for j in sel}, (probe, reason)
+
+
 def test_inline_js_owns_the_rendered_tree_it_lints() -> None:
     """`check_inline_js.py site templates` names both trees as BARE argv.
 

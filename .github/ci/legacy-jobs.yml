@@ -6856,6 +6856,16 @@ jobs:
   design-governance:
     if: ${{ false }}  # executed inside ci-pack — NOT a disabled gate; see the ci-pack job.
     gate: code
+    paths:
+      - "mockups/evidence/**"
+      - "mockups/refs/**"
+      - "scripts/check_design_system.py"
+      - "scripts/check_runtime_style_injection.py"
+      - "scripts/check_ui_visual_evidence.py"
+      - "tests/test_check_design_system.py"
+      - "tests/test_check_runtime_style_injection.py"
+      - "tests/test_check_ui_visual_evidence.py"
+      - "tests/test_freshness_chips_language_invariant.py"
     # TP-0 theme-parity governance (research/THEME_PARITY_RATCHET_PRESENTATION_CONVERGENCE_ARCHITECTURE.md).
     # Three forward-only gates so NEW user-facing presentation debt fails closed
     # without reddening the ~19k inherited findings in templates/:
@@ -6870,8 +6880,18 @@ jobs:
     # so they are NOT render-lane output), the committed allowlist, and committed
     # receipts. No nightly data commit moves it.
     #
-    # Deliberately UNSCOPED (no `paths:`): a scoping bug on a governance gate fails
-    # silently open, which is the exact class of defect this job exists to prevent.
+    # Deliberately NOT `scope: exclusive`: a curated scope on a governance gate fails
+    # silently open, which is the exact class of defect this job exists to prevent;
+    # inference still derives the template/site-builder owners (pinned by
+    # tests/test_ci_pack.py::test_deliberately_unscoped_gates_stay_always_on).
+    # The `paths:` above are an ADDITIVE FLOOR, unioned with inference for a
+    # non-exclusive job (the loader's coverage audit also requires the floor to
+    # name the seven scripts/tests the steps below run — run_ci_pack.py
+    # `_scope_coverage_findings`): `discover_receipts()` walks mockups/evidence + mockups/refs
+    # at RUNTIME, which the static import closure cannot see — so an evidence-only
+    # PR (#8278, 2026-10-02) planned `1/168 jobs … did not widen` and merged a
+    # malformed receipt that reddened main. Pinned by
+    # tests/test_ci_pack.py::test_evidence_corpus_edits_select_design_governance.
     # All three guards are stdlib/PyYAML and run in seconds.
     #
     # fetch-depth 0 + explicit base fetch is load-bearing: the two changed-line
