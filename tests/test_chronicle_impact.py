@@ -1149,19 +1149,21 @@ def test_glance_fair_share_three_families_cap_break_3_3_2():
     a 3/3/2 split.
 
     Bucket order = newest head event_time desc; ties broken by
-    ``schema.SOURCES`` index asc. earnings_call has the larger
-    ``SOURCES.index`` (4 vs earnings=3), so on the D-7 tie it wins
-    bucket order and leads the water-fill pass. macro_release falls to
-    D-5 (later date → lower bucket order).
+    ``schema.SOURCES`` index ASC, so ``earnings`` (index 3) leads
+    ``earnings_call`` (index 4) on the D-7 tie. With 3/3/3 events and
+    cap=8 the single cut always falls on the D-5 family, so THIS fixture
+    does not observe the tie — the cap=7 test below pins it (seat
+    positive control 2026-10-02: a flipped tie-break left this test
+    green). macro_release falls to D-5 (later date → lower bucket order).
 
     Mid-pass cap break is exercised at slot 8: pass 3 produces
     ``earnings_call[2] + earnings[2]`` (macro_release has no third
     row, so it stops contributing after pass 2).
 
-    The literal expected row-id order pins every property at once:
-    the family counts (3/3/2), the bucket tie-break (earnings_call
-    before earnings on D-7), the per-family ``shown``, and the
-    post-fill event_time desc / event_id desc sort.
+    The literal expected row-id order pins the family counts (3/3/2),
+    the per-family ``shown``, the cap break at slot 8 and the post-fill
+    event_time desc / event_id desc sort. It does NOT pin bucket order:
+    the post-fill sort erases it — see the cap=7 test below.
     """
     # Two families SHARE head D-7 — the tie that exercises the
     # schema.SOURCES tie-break (earnings_call index=4 > earnings index=3).
@@ -1209,15 +1211,14 @@ def test_glance_fair_share_three_families_cap_break_3_3_2():
     assert all_tally["earnings_call"]["shown"] == 3
     assert all_tally["earnings"]["shown"] == 3
     assert all_tally["macro_release"]["shown"] == 2
-    # Literal row-id order — pins bucket_order (earnings_call leads),
-    # per-pass choice (one slot per family per pass), the cap break at
-    # slot 8, AND the post-fill (event_time desc, event_id desc) sort.
+    # Literal row-id order — pins per-pass choice (one slot per family
+    # per pass), the cap break at slot 8, AND the post-fill (event_time
+    # desc, event_id desc) sort. Bucket order is NOT observable here.
     # Derived from engine/chronicle/schema.py:45 make_id hash recipe
     # ("cev-<source>-<sha256(source|source_ref|date)[:12]>"). The
     # asymmetric input (9 events, cap=8) means the bucket order picks
-    # which family's third event gets excluded — earnings_call wins the
-    # head-date tie on D-7 (SOURCES.index=4 > earnings index=3), so
-    # macro_release[2] loses the pass-3 slot.
+    # which family's third event gets excluded — whichever D-7 family
+    # leads the tie, macro_release[2] (D-5) loses the pass-3 slot.
     expected_ids = [
         "cev-earnings_call-5fa160d3c6f2",
         "cev-earnings_call-0c54a4dea4c6",
@@ -1232,6 +1233,72 @@ def test_glance_fair_share_three_families_cap_break_3_3_2():
     assert actual_ids == expected_ids, (actual_ids, expected_ids)
     # Deterministic — same input, same order.
     again = impact.glance_consequence_surface(events, limit=8)
+    assert [r["event_id"] for r in again["rows"]] == actual_ids
+
+
+def test_glance_fair_share_tie_decides_the_cut_cap_7():
+    """A head-date tie that DECIDES the cut — the case the cap=8 fixture
+    above cannot observe.
+
+    earnings=3 and earnings_call=3 both head on D-7; macro_release=3 heads
+    on D-5. Under cap=7 the water-fill takes one slot per family for two
+    passes (6 rows) and then exactly ONE third slot, which goes to the
+    family that leads the bucket order. Ties are broken by
+    ``schema.SOURCES`` index ASC, so ``earnings`` (index 3) leads
+    ``earnings_call`` (index 4) and keeps its third event.
+
+    Seat positive controls (2026-10-02): this fixture turns red under
+    (a) an inverted bucket sort (macro_release would keep its third),
+    (b) a swapped tie-break (earnings_call would keep its third), and
+    (c) a removed mid-pass cap break (9 rows instead of 7).
+    """
+    earnings_calls = [
+        _ev(f"fs7t-c-{i}", "2026-09-07", source="earnings_call",
+            tickers=[f"C{i}"]) for i in range(3)
+    ]
+    for c in earnings_calls:
+        c["title"] = f"Earnings call: {c['tickers'][0]} Q3 FY2026 — neutral"
+    earnings = [
+        _ev(f"fs7t-e-{i}", "2026-09-07", source="earnings",
+            tickers=[f"E{i}"]) for i in range(3)
+    ]
+    macros = [
+        _ev(f"fs7t-m-{i}", "2026-09-05", source="macro_release",
+            tickers=[f"M{i}"]) for i in range(3)
+    ]
+    for m in macros:
+        m["title"] = f"Macro print {m['tickers'][0]}: claims = +200"
+    events = earnings_calls + earnings + macros
+    surface = impact.glance_consequence_surface(events, limit=7)
+    assert surface["empty_kind"] is None
+    assert len(surface["rows"]) == 7
+    fam_counts: dict[str, int] = {}
+    for row in surface["rows"]:
+        fam_counts[row["family"]] = fam_counts.get(row["family"], 0) + 1
+    # The ONE third slot goes to the tie leader: earnings (SOURCES idx 3).
+    assert fam_counts == {"earnings": 3, "earnings_call": 2,
+                          "macro_release": 2}, fam_counts
+    assert surface["families"] == {
+        "earnings": 3, "earnings_call": 2, "macro_release": 2,
+    }
+    all_tally = {ft["family"]: ft for ft in surface["family_tally"]}
+    assert all_tally["earnings"]["shown"] == 3
+    assert all_tally["earnings_call"]["shown"] == 2
+    assert all_tally["macro_release"]["shown"] == 2
+    # Literal row-id order (post-fill event_time desc / event_id desc);
+    # ids from schema.make_id("<source>", "<source_ref>", "<date>").
+    expected_ids = [
+        "cev-earnings_call-8c9e2113f6a4",
+        "cev-earnings_call-7e7603596fb6",
+        "cev-earnings-bb0ed35bf2f4",
+        "cev-earnings-80e296a2e8a9",
+        "cev-earnings-7b5f19591715",
+        "cev-macro_release-e09d29c96289",
+        "cev-macro_release-451fe1fc2a8e",
+    ]
+    actual_ids = [r["event_id"] for r in surface["rows"]]
+    assert actual_ids == expected_ids, (actual_ids, expected_ids)
+    again = impact.glance_consequence_surface(events, limit=7)
     assert [r["event_id"] for r in again["rows"]] == actual_ids
 
 
