@@ -1486,6 +1486,8 @@ jobs:
       - "engine/grading.py"
       - "engine/grading_stats.py"
       - "engine/group_flow.py"
+      # Prophet independent peer evidence lives in the same pure source owner.
+      - "tests/test_group_flow.py"
       - "engine/hazard_score.py"
       - "engine/hold.py"
       - "engine/holdings_signals.py"
@@ -1979,6 +1981,11 @@ jobs:
       # returns on the first non-zero step).
       - name: ticker<->CIK collision census + C5 renderer robustness (W7B F06-5)
         run: python -m pytest tests/test_ticker_cik_collision_census.py -q
+      # Prophet Early Leadership uses these outcome-blind peer observations. Keep
+      # the focused contract executable on ordinary code PRs; the larger display
+      # owner remains in its existing gate:data lane.
+      - name: Prophet independent peer continuity research contract
+        run: python -m pytest tests/test_group_flow.py -q
 
   chronicle-suite:
     if: ${{ false }}
