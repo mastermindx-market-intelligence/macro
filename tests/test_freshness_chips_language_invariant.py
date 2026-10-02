@@ -87,15 +87,7 @@ KNOWN_OFFENDERS: dict[str, str] = {
     "templates/_cn_theme_tape.html.j2::body.page-china-stocks .ctt-v.is-live": "L5 cn tape (new EVIDENCE.yml receipt)",
     "templates/_theme_tape.html.j2::#theme-tape .tt-gist .tt-gf.is-live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
     "templates/_theme_tape.html.j2::#theme-tape .tt-v.is-live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
-    "templates/china_news.html.j2::.cn-live": "L3 unflagged surfaces (source-only swap)",
-    "templates/committee.html.j2::.ask-mode-live": "L3 unflagged surfaces (source-only swap)",
-    "templates/committee.html.j2::.nw-hero-eyebrow .live i": "L3 unflagged surfaces (source-only swap)",
-    "templates/dashboard.html.j2::.tm-state-tag.is-live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
-    "templates/dashboard.html.j2::body.page-macro .cb-live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
-    "templates/heatmap.js::' + '.hm-dot.live": "L3 unflagged surfaces (source-only swap)",
-    "templates/news.html.j2::.nx-eyebrow .live": "L3 unflagged surfaces (source-only swap)",
-    "templates/news.html.j2::.nx-kick .live": "L3 unflagged surfaces (source-only swap)",
-    "templates/sector_central.html.j2::.ftr-strip-token.live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
+        "templates/sector_central.html.j2::.ftr-strip-token.live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
 }
 SET_VAR_RE = re.compile(
     r"\{%-?\s*set\s+(\w+)\s*=\s*'var\((--[A-Za-z0-9_-]+)\)'",
