@@ -89,6 +89,47 @@ def test_event_identity_is_typed_not_inferred(policy,ev,reason):
 @pytest.mark.parametrize('cutoff',['2026-09-30','2026-09-30 13:00','invalid',None,'2026-09-30T25:00:00Z'])
 
 
+
+def test_gdp_second_estimate_is_not_demoted_to_correction(policy):
+    advance=publication(
+        'GDP',
+        date='2026-07-30',
+        first_seen_at='2026-07-30T12:30:30Z',
+        source_released_at='2026-07-30T12:30:00Z',
+        verified_at='2026-07-30T12:31:00Z',
+        source_sha256='a'*64,
+    )
+    advance['actual']['vintage']='advance'
+    advance_rows=official.normalize_publication(advance,defects_path=policy)
+    assert len(advance_rows)==1
+
+    second=publication(
+        'GDP',
+        date='2026-08-27',
+        first_seen_at='2026-08-27T12:30:30Z',
+        source_released_at='2026-08-27T12:30:00Z',
+        verified_at='2026-08-27T12:31:00Z',
+        source_sha256='b'*64,
+    )
+    second['actual']['vintage']='second'
+    second['actual']['real_gdp_annualized']=3.2
+    second_rows=official.reconcile_receipts(
+        {'schema':'release_publications.v2','publications':[second]},
+        advance_rows,defects_path=policy)
+    assert len(second_rows)==1
+    assert second_rows[0]['row_type']=='actual'
+    assert second_rows[0]['estimate_vintage']=='second'
+    assert second_rows[0].get('supersedes_receipt_id') is None
+
+    evidence=view.event_actual_evidence(
+        {'type':'GDP','date':'2026-08-27','reference_period':'Q2 2026'},
+        advance_rows+second_rows,
+        as_of='2026-08-27T13:00:00Z',defects_path=policy)
+    assert evidence['status']=='available'
+    assert evidence['metrics'][0]['actual']==3.2
+    assert evidence['metrics'][0]['estimate_vintage']=='second'
+
+
 def test_gdp_watcher_parser_shape_flows_into_canonical_result(policy):
     from scripts.official_release_parsers import parse_gdp_actual
 
