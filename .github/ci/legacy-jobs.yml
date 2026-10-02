@@ -13326,6 +13326,10 @@ jobs:
     # the declared-scope coverage audit re-checks them on every load.
     scope: exclusive
     paths:
+      # MO-PAID-006 closure widening 2026-10-02 (#8276): engine/international_macro_dashboard.py
+      # now reads the optional UK stance through engine.uk_policy_brain (lazy, degrade-never-raise),
+      # so the dossier plane pulls that module into this job's closure.
+      - "engine/uk_policy_brain.py"
       - scripts/build_ticker_pages.py
       - scripts/capture_debt_maturity_evidence.py
       - scripts/capture_hk_tier1_shell.py
