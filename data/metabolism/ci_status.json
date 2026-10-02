@@ -1,49 +1,49 @@
 {
-  "ts": "2026-10-02T00:16:22+00:00",
-  "main_sha": "c3f481cb8f9667bc0ebc95b6eb6f2d05092cc0e9",
+  "ts": "2026-10-02T06:00:56+00:00",
+  "main_sha": "ffe25c5e5fd89cc225b19110c0ebe289285fc5c6",
   "red_required": [
-    {
-      "name": "engine-render-guards",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36936727807/job/110618611378"
-    },
-    {
-      "name": "template-site-sync",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36936727807/job/110618611329"
-    },
     {
       "name": "free-content-estate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36936727807/job/110618611328"
-    },
-    {
-      "name": "contract-drift",
-      "conclusion": "failure",
-      "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36936727807/job/110618611300"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36970120565/job/110722151924"
     },
     {
       "name": "tier-gate",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36936727807/job/110618611232"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36970120565/job/110722151868"
     },
     {
-      "name": "calibrate",
+      "name": "engine-render-guards",
       "conclusion": "failure",
       "status": "completed",
-      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36934739525/job/110612235025"
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36970120565/job/110722151743"
+    },
+    {
+      "name": "template-site-sync",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36970120565/job/110722151714"
+    },
+    {
+      "name": "contract-drift",
+      "conclusion": "failure",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36970120565/job/110722151563"
+    },
+    {
+      "name": "sweep",
+      "conclusion": "cancelled",
+      "status": "completed",
+      "url": "https://github.com/mastermindx-market-intelligence/macro/actions/runs/36969781204/job/110721138839"
     }
   ],
   "green": false,
-  "consecutive_failures": 196,
+  "consecutive_failures": 197,
   "sensed_shas": [
-    "c3f481cb8f9667bc0ebc95b6eb6f2d05092cc0e9",
-    "912c06cd84f8461c8b449520fac32b4b18cb82da"
+    "ffe25c5e5fd89cc225b19110c0ebe289285fc5c6",
+    "c78c005bd2839268541aeacf42590f22cc1a3a5f"
   ],
   "heartbeat_degraded": false
 }
