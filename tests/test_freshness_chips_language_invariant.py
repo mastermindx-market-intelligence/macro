@@ -85,14 +85,6 @@ LIVE_NOT_FRESHNESS_SELECTORS: dict[str, str] = {
 # offending (delete the entry in the same PR that fixed the surface).
 KNOWN_OFFENDERS: dict[str, str] = {
     "templates/basket_detail.html.j2::.ftr-ls-pill.live": "L4 basket (fingerprinted site/basket*/ stylesheet projection)",
-    "templates/china_news.html.j2::.cn-live": "L3 unflagged surfaces (source-only swap)",
-    "templates/committee.html.j2::.ask-mode-live": "L3 unflagged surfaces (source-only swap)",
-    "templates/committee.html.j2::.nw-hero-eyebrow .live i": "L3 unflagged surfaces (source-only swap)",
-    "templates/dashboard.html.j2::.tm-state-tag.is-live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
-    "templates/dashboard.html.j2::body.page-macro .cb-live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
-    "templates/heatmap.js::' + '.hm-dot.live": "L3 unflagged surfaces (source-only swap)",
-    "templates/news.html.j2::.nx-eyebrow .live": "L3 unflagged surfaces (source-only swap)",
-    "templates/news.html.j2::.nx-kick .live": "L3 unflagged surfaces (source-only swap)",
 }
 SET_VAR_RE = re.compile(
     r"\{%-?\s*set\s+(\w+)\s*=\s*'var\((--[A-Za-z0-9_-]+)\)'",
