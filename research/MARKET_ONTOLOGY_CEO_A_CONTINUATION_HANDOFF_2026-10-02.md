@@ -33,7 +33,7 @@ the row says so), or an explicitly accepted exclusion. `MISSION_COMPLETE: false`
 | wave | lanes | gate (written before launch) | status |
 |---|---|---|---|
 | W0 bind + reconcile | ACK/START; verify A0 writer; verify A1 contract; census; F05 spec | ACK+START on #6819; A1 defects named with file:line; 3 lanes launched with watchers | DONE 06:30Z (lanes RUNNING) |
-| W1 R23/R24 independent review | REVIEW_8260_R1 | verdict ACCEPT/REQUEST_REPAIR/REJECT with numbered defects posted on #8260; 8 unrun gateway cases run | RUNNING |
+| W1 R23/R24 independent review | REVIEW_8260_R1 (re-pinned to head `b5951927bef3`, pushed 06:20Z) | verdict ACCEPT/REQUEST_REPAIR/REJECT with numbered defects posted on #8260; 8 unrun gateway cases run | RUNNING |
 | W1 F00 reconciliation | F00A_CENSUS_R1 → seat ruling | 51/51 rows with receipts; seat rules stale/ready/blocked; ledger edit only by seat | RUNNING |
 | W1 A1 publisher fix | (pending B accept) build lane on `engine/transmission_company_continuation.py` + tests | `mo_security` + `mo_from=transmission`; tests RED→GREEN; contract-delta green; PR merged + served | NOT STARTED (spec frozen A-side; enum widening is B-side) |
 | W2 F05 consequences | F05_017_SPEC_R1 → seat freeze → build lane | spec with 3 candidates + acceptance ≤10 items; then build | SPEC RUNNING |
@@ -41,11 +41,11 @@ the row says so), or an explicitly accepted exclusion. `MISSION_COMPLETE: false`
 
 ## 3 Lane matrix
 
-| lane | tier/model | worktree (SSD policy root) | base | sentinel | budget | state |
+| lane | tier/model | worktree (SSD policy root) | base | sentinel / record | budget | state |
 |---|---|---|---|---|---|---|
-| REVIEW_8260_R1 | glm-codex / glm-5.3 | `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/ceo-a-r8260-review-4a64755e14b48662` (detached `82cdd9bf`, site materialized) | merge-base `8c297aa73e39` | `REVIEW_8260_R1: <V> 82cdd9bf` in scratchpad `out/REVIEW_8260_R1.out`; record `.lane/REVIEW_8260_R1.md` | 100 min | RUNNING 06:21Z |
-| F00A_CENSUS_R1 | glm-codex / glm-5.3-flash | `…/ceo-a-f00-census-f7d84e4452460f5e` (main `32d22a9b2f68`) | — | `F00A_CENSUS_R1: <V> 32d22a9b`; `.lane/F00A_RECONCILIATION_2026-10-02.csv` | 90 min | RUNNING 06:21Z |
-| F05_017_SPEC_R1 | glm-codex / glm-5.3 | `…/ceo-a-f05-analysis-14c08a6b113f0ee0` (main `32d22a9b2f68`) | — | `F05_017_SPEC_R1: <V> 32d22a9b`; `.lane/F05_017_SPEC_R1.md` | 75 min | RUNNING 06:21Z |
+| REVIEW_8260_R1 | native Opus `reviewer` (Chairman authorized Opus subagents 06:32Z) | `/Volumes/Mastermind/agent-workspaces/claude/14851c4656838a3b/ceo-a-r8260-review-4a64755e14b48662` (detached **`b5951927bef3`**, site materialized) | merge-base `8c297aa73e39` | `.lane/REVIEW_8260_R1.md`; verdict line `REVIEW_8260_R1: <V> b5951927` | ~24 turns | RUNNING 06:36Z |
+| F00A_CENSUS_R1 | `oc-free` local lane (mimo-v2.6-flash-free), task_class census | `…/ceo-a-f00-census-f7d84e4452460f5e` (main `32d22a9b2f68`) | — | `F00A_CENSUS_R1: <V> 32d22a9b` in scratchpad `out/F00A_CENSUS_R1.out`; `.lane/F00A_RECONCILIATION_2026-10-02.csv` | 90 min | LAUNCHED 06:44Z (procs alive=0); fallback = grok with `POOL_ESCALATION_REASON` |
+| F05_017_SPEC_R1 | native Opus `orchestrator` (+fable-mode) | `…/ceo-a-f05-analysis-14c08a6b113f0ee0` (main `32d22a9b2f68`) | — | `.lane/F05_017_SPEC_R1.md`; `F05_017_SPEC_R1: <V> 32d22a9b` | ~1 run | RUNNING 06:40Z |
 
 Packets are in the seat scratchpad `pkts/` (copied here only if a successor needs them). Lanes never
 post, label, ready or merge; the seat does. Kit: `~/.claude/projects/-Users-chriswong-Documents-Cluade-Macro-Dashboard/handoff_kits/meta-ceo-b-2026-09-08/ext/sub.sh`.
@@ -74,8 +74,12 @@ FACTS (verified this session, command named)
 - Pools 06:17Z: grok 6/6, cursor 3/3, bailian 9/9, minimax 7/7 armed; glm PASS; placement admitted
   for all three lane trees.
 
+- Lane surface 06:31Z: `ext/sub.sh` refuses every GLM/MiniMax family on this host (`LOCAL_SEAT_REMOTE_REQUIRED host=m2 … local_only=grok,ocfree`, hosts.json); grok refuses leaf labor without `POOL_ESCALATION_REASON` (`leaf_labor_requires_escalation`); `oc-free` is outside the economic filter. Chairman 06:32Z: "You are authorized to use Opus subagents" → review/analysis lanes run natively on Opus (`reviewer`, `orchestrator`+fable-mode); census stays on the free local lane.
+- #8260 head MOVED 06:20Z: `82cdd9bf` → `b5951927bef3` ("fix(ontology): distinguish readings from requirements and results"; +93/−29 in site/templates ontology.js, site/ontology.html, tests/test_ontology_explorer_brain_browser.py). Checks 06:31Z: 8 success, 4 skipped, 13 pending, 1 FAILURE = `ci-authority/codex/merge-queue-pilot` (run 110731868589) — classification pending in review.
+- Terminal #763 (`gh pr view 763`): OPEN draft, head `cf8ddbbf25dc`, branch `claude/mo-b-j1b-2-context-strip-20260927`; files = AnalysisWorkspace/ThesisWorkspace/MarketOntologyContextStrip(+css,+test)/e2e spec — does NOT touch `terminal/lib/marketOntologyContext.ts`, so the D3 flip condition is NOT triggered.
+
 OPEN
-- O1 CEO B binding/ACK not yet observed; A1 ruling awaits B.
+- O1 CEO B binding/ACK not yet observed; A1 ruling awaits B (flip condition cleared by #763 file list).
 - O2 #8260 pack results pending; independent review pending.
 - O3 Which F01–F05 rows are ready bounded tasks (census).
 - O4 MO-PAID-017 spec freeze.
