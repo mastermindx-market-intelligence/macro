@@ -30,6 +30,8 @@
      Mastermind Brain and remembers the exact control that should regain focus. */
   var selectedPathRef = null;
   var returnFocusRef = null;
+  var returnScrollX = null;
+  var returnScrollY = null;
   var brainContextRevision = 0;
   var brainContextOrigin = mintBrainOrigin();
 
@@ -81,7 +83,7 @@
         symbol: null,
         timeframe: selectedPathRef.revision == null
           ? null : brainLabel("rev-" + selectedPathRef.revision, "revision"),
-        page: selectedPathRef.chain,
+        page: "ontology",
         panel: selectedPathRef.leg
       } : { symbol: null, timeframe: null, page: "ontology", panel: null };
       return {
@@ -98,14 +100,23 @@
       if (!returnFocusRef) return false;
       if (!document.contains(returnFocusRef)) {
         returnFocusRef = null;
+        returnScrollX = null;
+        returnScrollY = null;
         selectedPathRef = null;
         brainContextRevision += 1;
         return false;
       }
       try { returnFocusRef.focus({ preventScroll: true }); }
       catch (e) { try { returnFocusRef.focus(); } catch (ignored) {} }
+      if (returnScrollY != null) {
+        try {
+          window.scrollTo({ left: returnScrollX || 0, top: returnScrollY, behavior: "auto" });
+        } catch (e) {
+          try { window.scrollTo(returnScrollX || 0, returnScrollY); } catch (ignored) {}
+        }
+      }
       var restored = document.activeElement === returnFocusRef;
-      if (restored) {
+      if (restored && returnScrollY == null) {
         var box = returnFocusRef.getBoundingClientRect();
         var height = window.innerHeight || document.documentElement.clientHeight;
         if (box.top < 0 || box.bottom > height) {
@@ -113,12 +124,23 @@
         }
       }
       returnFocusRef = null;
+      returnScrollX = null;
+      returnScrollY = null;
       selectedPathRef = null;
       brainContextRevision += 1;
       return restored;
     };
   }
   configureBrainHost();
+
+  function replaceFocusHash(nodeId) {
+    if (!nodeId) return;
+    try {
+      window.history.replaceState(window.history.state, "",
+        window.location.pathname + window.location.search
+        + "#ox-leg-" + encodeURIComponent(nodeId));
+    } catch (e) { /* selection remains usable when URL replacement is unavailable */ }
+  }
 
   function selectBrainPath(snapshot, leg, trigger) {
     var source = snapshot && snapshot.source ? snapshot.source : {};
@@ -134,11 +156,9 @@
     if (nextKey !== previousKey) brainContextRevision += 1;
     selectedPathRef = next;
     returnFocusRef = trigger;
-    try {
-      window.history.replaceState(window.history.state, "",
-        window.location.pathname + window.location.search
-        + "#ox-leg-" + encodeURIComponent(leg.node_id));
-    } catch (e) { /* exact context still works when URL replacement is unavailable */ }
+    returnScrollX = window.scrollX || window.pageXOffset || 0;
+    returnScrollY = window.scrollY || window.pageYOffset || 0;
+    replaceFocusHash(leg.node_id);
   }
 
   function openBrainForLeg(snapshot, leg, trigger) {
@@ -196,8 +216,10 @@
     return "/?signin=1&ret=" + encodeURIComponent(here);
   }
 
-  function gate(titleEn, titleZh, bodyEn, bodyZh, ctaEn, ctaZh, href) {
+  function gate(titleEn, titleZh, bodyEn, bodyZh, ctaEn, ctaZh, href,
+                gateCode, retry) {
     var box = el("section", "ox-gate");
+    if (gateCode) box.setAttribute("data-gate-code", gateCode);
     var h = el("h2");
     h.appendChild(say(titleEn, titleZh));
     var p = el("p");
@@ -209,34 +231,144 @@
       a.href = href;
       a.appendChild(say(ctaEn, ctaZh));
       box.appendChild(a);
+    } else if (typeof retry === "function") {
+      var button = el("button", "ox-cta");
+      button.type = "button";
+      button.appendChild(say(ctaEn || "Retry current reading",
+        ctaZh || "重试当前读数"));
+      button.addEventListener("click", function () {
+        if (button.disabled) return;
+        button.disabled = true;
+        button.textContent = "";
+        button.appendChild(say("Retrying…", "正在重试…"));
+        root.setAttribute("aria-busy", "true");
+        retry();
+      });
+      box.appendChild(button);
     }
     root.textContent = "";
     root.appendChild(box);
     settle();
   }
 
-  /* A separate line under the state, because "the owners are not running this"
-     and "the conditions do not currently hold" are different claims and the
-     reader needs both. */
-  function conditionsLine(snapshot) {
-    var conditions = snapshot.state.conditions;
-    if (!conditions) return null;
-    var p = el("p", "ox-note");
-    if (conditions.all_current_met === true) {
-      p.appendChild(say("All current conditions met \u00b7 describes today's readings only",
-        "当前条件均已满足 \u00b7 仅描述当日读数"));
-    } else if (conditions.all_current_met === false) {
-      p.appendChild(say("Not all current conditions are met",
-        "当前条件未全部满足"));
-    } else {
-      p.appendChild(say("Current conditions could not be read in full",
-        "当前条件无法完整读取"));
+  function gateForFailure(code) {
+    if (code === "source_incoherent") {
+      gate("The current sources disagree", "当前来源相互矛盾",
+        "The owner artifacts could not be trusted together, so no partial or earlier reading is shown as current.",
+        "所有者产物无法被共同信任，因此不会把部分或既往读数当作当前读数展示。",
+        "Retry current reading", "重试当前读数", null, code, load);
+      return;
     }
-    return p;
+    if (code === "source_unavailable") {
+      gate("A required owner source is unavailable", "必要的所有者来源不可用",
+        "The current path cannot be read completely. No remembered value is substituted.",
+        "当前路径无法完整读取，且不会用记忆中的数值替代。",
+        "Retry current reading", "重试当前读数", null, code, load);
+      return;
+    }
+    gate("The current reading cannot be safely shown", "当前读数无法安全展示",
+      "The request ended without a trustworthy current snapshot. Nothing stale or partial is shown in its place.",
+      "本次请求未得到可信的当前快照，因此不会以过时或部分数据替代。",
+      "Retry current reading", "重试当前读数", null, code || "request_failed", load);
+  }
+
+  function conditionCounts(snapshot) {
+    var legs = snapshot && snapshot.path && snapshot.path.legs || [];
+    var coverage = snapshot && snapshot.state && snapshot.state.coverage || {};
+    var total = Number(coverage.legs_declared);
+    if (!Number.isFinite(total) || total < legs.length) total = legs.length;
+    var met = 0;
+    var observed = 0;
+    legs.forEach(function (leg) {
+      if (leg.observation !== "unobserved") observed += 1;
+      if (leg.confirmed === true) met += 1;
+    });
+    return { met: met, total: total, observed: observed };
+  }
+
+  function answerFlag(kind, en, zh, tone) {
+    var flag = el("span", "ox-answer-flag");
+    flag.setAttribute("data-kind", kind);
+    if (tone) flag.setAttribute("data-tone", tone);
+    flag.appendChild(say(en, zh));
+    return flag;
+  }
+
+  function renderAnswerSummary(snapshot) {
+    var counts = conditionCounts(snapshot);
+    var summary = el("section", "ox-answer-summary");
+    summary.setAttribute("aria-label", "Current path answer summary");
+
+    var count = el("div", "ox-answer-metric");
+    var countLabel = el("span", "ox-answer-label");
+    countLabel.appendChild(say("Current conditions", "当前条件"));
+    count.appendChild(countLabel);
+    count.appendChild(el("strong", "ox-answer-count", counts.met + " / " + counts.total));
+    var countNote = el("span", "ox-answer-note");
+    countNote.appendChild(say("met now", "当前满足"));
+    count.appendChild(countNote);
+    summary.appendChild(count);
+
+    var blocker = el("div", "ox-answer-metric ox-answer-blocker");
+    var blockerLabel = el("span", "ox-answer-label");
+    blockerLabel.appendChild(say("First blocker", "首个阻断环节"));
+    blocker.appendChild(blockerLabel);
+    var blockerValue = el("strong");
+    if (snapshot.first_blocking_leg) {
+      blockerValue.appendChild(bi(snapshot.first_blocking_leg.title));
+    } else {
+      blockerValue.appendChild(say("No current blocker", "当前无阻断环节"));
+    }
+    blocker.appendChild(blockerValue);
+    var blockerNote = el("span", "ox-answer-note");
+    blockerNote.appendChild(snapshot.first_blocking_leg
+      ? say("path order decides", "按路径顺序判定")
+      : say("owner episode still governs", "仍以所有者事件记录为准"));
+    blocker.appendChild(blockerNote);
+    summary.appendChild(blocker);
+
+    var flags = el("div", "ox-answer-flags");
+    if (snapshot.contradiction) {
+      flags.appendChild(answerFlag("contradiction", "Downstream contradiction",
+        "后段读数矛盾", "warn"));
+    }
+    var change = snapshot.what_changed && snapshot.what_changed.status;
+    if (change === "recorded_transition") {
+      flags.appendChild(answerFlag("comparison", "Prior transition available",
+        "已有既往状态转换", "ok"));
+    } else {
+      flags.appendChild(answerFlag("comparison", "Comparison unavailable",
+        "比较不可用", "muted"));
+    }
+    var freshness = snapshot.source && snapshot.source.freshness;
+    if (freshness && freshness.status === "verification_unavailable") {
+      flags.appendChild(answerFlag("verification", "Verification unavailable",
+        "核验不可用", "warn"));
+    }
+    summary.appendChild(flags);
+    return summary;
+  }
+
+  function renderHeroAction(snapshot) {
+    var blocking = snapshot.first_blocking_leg;
+    if (!blocking || !blocking.node_id) return null;
+    var button = el("button", "ox-action ox-hero-action");
+    button.type = "button";
+    button.setAttribute("aria-controls", LEG_DETAIL_ID);
+    button.appendChild(say("Inspect first blocker", "查看首个阻断环节"));
+    button.addEventListener("click", function () {
+      if (!focusLeg(blocking.node_id)) {
+        button.disabled = true;
+        button.textContent = "";
+        button.appendChild(say("That step is not available", "该环节不可用"));
+      }
+    });
+    return button;
   }
 
   function legVerdict(leg) {
     if (leg.observation === "unobserved") return say("No current reading", "暂无当前读数");
+    if (leg.observation === "unreadable") return say("Reading unreadable", "\u8bfb\u6570\u65e0\u6cd5\u8bfb\u53d6");
     if (leg.confirmed === true) return say("Met", "已满足");
     if (leg.confirmed === false) return say("Not met", "未满足");
     return say("Unresolved", "无法判定");
@@ -250,8 +382,10 @@
 
     snapshot.path.legs.forEach(function (leg) {
       var station = el("li", "station");
-      station.setAttribute("data-leg",
-        leg.observation === "unobserved" ? "unobserved" : String(leg.confirmed === true));
+      var legState = leg.observation === "unobserved" ? "unobserved"
+        : leg.observation === "unreadable" ? "unreadable"
+        : String(leg.confirmed === true);
+      station.setAttribute("data-leg", legState);
       if (leg.node_id === blockingId) station.setAttribute("data-blocking", "1");
       var hop = hopByFrom[leg.node_id];
       /* The terminal station has no outbound hop. Saying "true" would claim a
@@ -525,6 +659,7 @@
   function focusLeg(nodeId) {
     var target = document.getElementById("ox-leg-" + nodeId);
     if (!target) return false;
+    replaceFocusHash(nodeId);
     var wasClosed = !!(legDetail && !legDetail.open);
     if (wasClosed) legDetail.open = true;
     /* Opening a <details> reveals content that has not been laid out yet, so a
@@ -1150,10 +1285,11 @@
   function render(snapshot) {
     root.textContent = "";
 
-    var hero = el("header", "ox-hero");
+    var hero = el("header", "ox-hero ox-hero--answer");
+    var lead = el("div", "ox-hero-lead");
     var eyebrow = el("p", "ox-eyebrow");
     eyebrow.appendChild(bi(snapshot.path.title));
-    hero.appendChild(eyebrow);
+    lead.appendChild(eyebrow);
 
     var stateRow = el("div", "ox-state");
     stateRow.setAttribute("data-state", snapshot.state.code);
@@ -1162,16 +1298,19 @@
     stateRow.appendChild(word);
     var asof = el("span", "ox-asof", snapshot.source.asof || "");
     stateRow.appendChild(asof);
-    hero.appendChild(stateRow);
 
-    var stanceP = el("p", "ox-stance");
-    stanceP.appendChild(stance(snapshot));
-    hero.appendChild(stanceP);
-    var conditions = conditionsLine(snapshot);
-    if (conditions) hero.appendChild(conditions);
-    hero.appendChild(renderMeta(snapshot));
+    var answerTitle = el("h1", "ox-stance ox-answer-title");
+    answerTitle.appendChild(stance(snapshot));
+    lead.appendChild(answerTitle);
+    var heroAction = renderHeroAction(snapshot);
+    if (heroAction) lead.appendChild(heroAction);
+    lead.appendChild(renderMeta(snapshot));
     var revised = continuationNotice(snapshot);
-    if (revised) hero.appendChild(revised);
+    if (revised) lead.appendChild(revised);
+    hero.appendChild(lead);
+    var answerSummary = renderAnswerSummary(snapshot);
+    answerSummary.insertBefore(stateRow, answerSummary.firstChild);
+    hero.appendChild(answerSummary);
     root.appendChild(hero);
 
     root.appendChild(renderRail(snapshot));
@@ -1217,22 +1356,27 @@
           return null;
         }
         if (!response.ok) {
-          gate("The current reading is unavailable", "当前读数不可用",
-            "An upstream source could not be read, so there is nothing current to show. "
-            + "No earlier reading is shown in its place, because a stale state read as "
-            + "the current one is worse than none.",
-            "上游数据源无法读取，因此暂无可展示的当前内容。"
-            + "此处不会以既往读数替代——将过时状态当作当前状态更糟。",
-            null, null, null);
-          return null;
+          return response.json()
+            .catch(function () { return null; })
+            .then(function (body) {
+              var detail = body && body.detail && typeof body.detail === "object"
+                ? body.detail : {};
+              gateForFailure(detail.code || "request_failed");
+              return null;
+            });
         }
-        return response.json();
+        return response.json().then(function (snapshot) {
+          if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot)
+              || snapshot.schema !== "ontology_explorer_snapshot.v1") {
+            gateForFailure("invalid_snapshot");
+            return null;
+          }
+          return snapshot;
+        });
       })
       .then(function (snapshot) { if (snapshot) { render(snapshot); focusFromHash(); } })
       .catch(function () {
-        gate("The current reading is unavailable", "当前读数不可用",
-          "The request for the current reading did not complete.",
-          "获取当前读数的请求未能完成。", null, null, null);
+        gateForFailure("request_failed");
       });
   }
 

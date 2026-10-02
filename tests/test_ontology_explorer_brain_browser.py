@@ -17,11 +17,12 @@ from pathlib import Path
 import pytest
 
 from engine.ontology_explorer import compose_snapshot
-from tests.ontology_explorer_fixtures import SLUG, build_root
+from tests.ontology_explorer_fixtures import SLUG, build_root, chain_state
 
 ROOT = Path(__file__).resolve().parents[1]
 ONTOLOGY_JS = ROOT / "templates" / "ontology.js"
 ONTOLOGY_CSS = ROOT / "templates" / "ontology.css"
+THEME_CSS = ROOT / "site" / "theme.css"
 
 SHELL = """<!doctype html>
 <html lang="en" data-lang="en" data-theme="light">
@@ -79,7 +80,10 @@ def browser():
 
 @pytest.fixture()
 def synthetic_snapshot(tmp_path: Path) -> dict:
-    source_root = build_root(tmp_path)
+    source_root = build_root(
+        tmp_path,
+        state_doc=chain_state(confirmed=(False, False, True, True)),
+    )
     return compose_snapshot(
         source_root,
         chain=SLUG,
@@ -87,27 +91,53 @@ def synthetic_snapshot(tmp_path: Path) -> dict:
     )
 
 
-def _open(browser, snapshot: dict, *, width: int, height: int):
+def _open(
+    browser,
+    snapshot: dict,
+    *,
+    width: int,
+    height: int,
+    responses: list[dict] | None = None,
+    reading_expected: bool = True,
+):
     context = browser.new_context(
         viewport={"width": width, "height": height},
         reduced_motion="reduce",
     )
     page = context.new_page()
+    # The canonical theme imports the shared navigation-icon stylesheet.
+    # Serve that real paired asset locally: an unresolved import causes Chromium
+    # to reject add_style_tag before any product assertion can execute.
+    page.route(
+        "http://ontology.test/product-nav-icons.css*",
+        lambda route: route.fulfill(
+            status=200,
+            content_type="text/css",
+            path=str(ROOT / "site" / "product-nav-icons.css"),
+        ),
+    )
     page.route(
         "http://ontology.test/ontology.html",
         lambda route: route.fulfill(status=200, content_type="text/html", body=SHELL),
     )
     page.goto("http://ontology.test/ontology.html", wait_until="load")
+    page.add_style_tag(path=str(THEME_CSS))
     page.add_style_tag(path=str(ONTOLOGY_CSS))
     page.evaluate(
-        """snapshot => {
+        """config => {
           window.__brainBoots = 0;
           window.__brainOpens = 0;
-          window.fetch = () => Promise.resolve({
-            ok: true,
-            status: 200,
-            json: () => Promise.resolve(snapshot)
-          });
+          window.__fetchCount = 0;
+          const queue = (config.responses || [{status: 200, body: config.snapshot}]).slice();
+          window.fetch = () => {
+            const item = queue[Math.min(window.__fetchCount, queue.length - 1)];
+            window.__fetchCount += 1;
+            return Promise.resolve({
+              ok: item.status >= 200 && item.status < 300,
+              status: item.status,
+              json: () => Promise.resolve(item.body)
+            });
+          };
           document.getElementById('mmb-boot').addEventListener('click', () => {
             window.__brainBoots += 1;
             window.MMBrain = {
@@ -117,12 +147,13 @@ def _open(browser, snapshot: dict, *, width: int, height: int):
             window.MMBrain.open();
           });
         }""",
-        snapshot,
+        {"snapshot": snapshot, "responses": responses},
     )
     page.add_script_tag(path=str(ONTOLOGY_JS))
-    page.wait_for_selector("#ox-steps .ox-leg", state="attached")
-    page.evaluate("document.getElementById('ox-steps').open = true")
-    page.wait_for_selector("#ox-steps .ox-brain-action", state="visible")
+    if reading_expected and (responses is None or (responses and responses[0].get("status") == 200)):
+        page.wait_for_selector("#ox-steps .ox-leg", state="attached")
+        page.evaluate("document.getElementById('ox-steps').open = true")
+        page.wait_for_selector("#ox-steps .ox-brain-action", state="visible")
     return context, page
 
 
@@ -164,25 +195,30 @@ def test_selected_leg_opens_existing_brain_with_bounded_context_and_exact_return
         assert handoff["ctx"]["ambient"] == {
             "symbol": None,
             "timeframe": "rev-2",
-            "page": "synthetic-linear-probe",
+            "page": "ontology",
             "panel": "n1",
         }
         assert handoff["ctx"]["pinned"] == []
         assert handoff["ctx"]["active"] is None
 
+        return_scroll = page.evaluate("window.scrollY")
         returned = page.evaluate(
-            """() => {
+            """returnScroll => {
+              window.scrollTo(0, 0);
               document.getElementById('mock-brain').focus();
               const ok = window.MM_BRAIN_CFG.onClose();
               return {
                 ok,
                 focused: document.activeElement.classList.contains('ox-brain-action'),
+                scrollY: window.scrollY,
                 cleared: window.MM_BRAIN_CFG.getAiContext().ambient
               };
-            }"""
+            }""",
+            return_scroll,
         )
         assert returned["ok"] is True
         assert returned["focused"] is True
+        assert abs(returned["scrollY"] - return_scroll) <= 1
         assert returned["cleared"] == {
             "symbol": None,
             "timeframe": None,
@@ -228,5 +264,293 @@ def test_mounted_brain_is_reused_without_clicking_the_lazy_loader(
             "() => ({boots: window.__brainBoots, opens: window.__brainOpens})"
         )
         assert counts == {"boots": 0, "opens": 1}
+    finally:
+        context.close()
+
+
+def test_answer_first_summary_and_primary_blocker_action(
+    browser,
+    synthetic_snapshot: dict,
+) -> None:
+    """R23/R24 put the answer, coverage and exact first blocker before depth."""
+    for width, height in ((1440, 900), (390, 844)):
+        context, page = _open(
+            browser,
+            synthetic_snapshot,
+            width=width,
+            height=height,
+        )
+        try:
+            summary = page.locator(".ox-answer-summary")
+            assert summary.is_visible()
+            assert summary.locator(".ox-answer-count").inner_text().strip() == "2 / 4"
+            assert "Node one" in summary.locator(".ox-answer-blocker").inner_text()
+            assert "Downstream contradiction" in summary.locator(
+                '[data-kind="contradiction"]'
+            ).inner_text()
+            assert "Comparison unavailable" in summary.locator(
+                '[data-kind="comparison"]'
+            ).inner_text()
+            assert "Verification unavailable" in summary.locator(
+                '[data-kind="verification"]'
+            ).inner_text()
+
+            action = page.locator(".ox-hero-action")
+            action_box = action.bounding_box()
+            assert action_box is not None and action_box["height"] >= 44
+            if width == 390:
+                assert action_box["width"] >= 300
+            action.click()
+            page.wait_for_function(
+                "document.activeElement && document.activeElement.id === 'ox-leg-n1'"
+            )
+            assert page.locator("#ox-steps").get_attribute("open") is not None
+            assert page.evaluate("location.hash") == "#ox-leg-n1"
+
+            page.evaluate("document.documentElement.setAttribute('data-lang', 'zh')")
+            assert "节点一" in summary.locator(".ox-answer-blocker").inner_text()
+            metrics = page.evaluate(
+                """() => ({
+                  scrollWidth: document.documentElement.scrollWidth,
+                  clientWidth: document.documentElement.clientWidth
+                })"""
+            )
+            assert metrics["scrollWidth"] <= metrics["clientWidth"]
+        finally:
+            context.close()
+
+
+@pytest.mark.parametrize(
+    ("code", "expected"),
+    (
+        ("source_unavailable", "required owner source is unavailable"),
+        ("source_incoherent", "current sources disagree"),
+        ("internal_error", "cannot be safely shown"),
+    ),
+)
+def test_typed_503_states_remain_distinct_and_retry_on_the_same_route(
+    browser,
+    synthetic_snapshot: dict,
+    code: str,
+    expected: str,
+) -> None:
+    context, page = _open(
+        browser,
+        synthetic_snapshot,
+        width=390,
+        height=844,
+        responses=[
+            {"status": 503, "body": {"detail": {"code": code, "reason": "fixture"}}},
+            {"status": 200, "body": synthetic_snapshot},
+        ],
+    )
+    try:
+        gate = page.locator(f'.ox-gate[data-gate-code="{code}"]')
+        gate.wait_for(state="visible")
+        assert expected in gate.inner_text().lower()
+        retry = gate.locator("button.ox-cta")
+        box = retry.bounding_box()
+        assert box is not None and box["height"] >= 44
+        retry.click()
+        page.wait_for_selector(".ox-answer-summary", state="visible")
+        assert page.evaluate("window.__fetchCount") == 2
+        assert page.locator(".ox-gate").count() == 0
+    finally:
+        context.close()
+
+
+def test_unreadable_leg_is_not_collapsed_to_unresolved(
+    browser,
+    synthetic_snapshot: dict,
+) -> None:
+    import copy
+
+    snapshot = copy.deepcopy(synthetic_snapshot)
+    snapshot["path"]["legs"][1]["observation"] = "unreadable"
+    snapshot["path"]["legs"][1]["confirmed"] = None
+    context, page = _open(browser, snapshot, width=390, height=844)
+    try:
+        station = page.locator('.station[data-leg="unreadable"]')
+        assert station.count() == 1
+        assert "Reading unreadable" in station.locator(".st-verdict").inner_text()
+    finally:
+        context.close()
+
+
+@pytest.mark.parametrize(
+    ("width", "height", "zoom_contract"),
+    (
+        (1440, 900, "desktop"),
+        (768, 1024, "tablet"),
+        (390, 844, "mobile"),
+        # A 1440px desktop at 200% browser zoom exposes roughly a 720 CSS-pixel
+        # layout viewport. Reflow—not magnified horizontal scroll—is the contract.
+        (720, 900, "desktop-200-percent"),
+    ),
+)
+@pytest.mark.parametrize("theme", ("light", "dark"))
+@pytest.mark.parametrize("lang", ("en", "zh"))
+def test_r23_r24_cross_device_language_theme_and_focus_matrix(
+    browser,
+    synthetic_snapshot: dict,
+    width: int,
+    height: int,
+    zoom_contract: str,
+    theme: str,
+    lang: str,
+) -> None:
+    """Accepted R23/R24 meaning survives reflow, locale, theme and keyboard use."""
+    context, page = _open(browser, synthetic_snapshot, width=width, height=height)
+    try:
+        page.evaluate(
+            """({theme, lang}) => {
+              document.documentElement.setAttribute('data-theme', theme);
+              document.documentElement.setAttribute('data-lang', lang);
+            }""",
+            {"theme": theme, "lang": lang},
+        )
+        summary = page.locator(".ox-answer-summary")
+        action = page.locator(".ox-hero-action")
+        assert summary.is_visible()
+        assert action.is_visible()
+        assert page.locator("#ox-root").get_attribute("aria-busy") == "false"
+
+        expected_blocker = "节点一" if lang == "zh" else "Node one"
+        assert expected_blocker in summary.locator(".ox-answer-blocker").inner_text()
+        assert summary.locator(".ox-answer-count").inner_text().strip() == "2 / 4"
+
+        metrics = page.evaluate(
+            """() => {
+              const action = document.querySelector('.ox-hero-action');
+              const summary = document.querySelector('.ox-answer-summary');
+              const actionBox = action.getBoundingClientRect();
+              const summaryBox = summary.getBoundingClientRect();
+              const pageStyle = getComputedStyle(document.body);
+              return {
+                scrollWidth: document.documentElement.scrollWidth,
+                clientWidth: document.documentElement.clientWidth,
+                actionHeight: actionBox.height,
+                actionRight: actionBox.right,
+                summaryRight: summaryBox.right,
+                bodyBackground: pageStyle.backgroundColor,
+                visibleEn: [...document.querySelectorAll('.l-en')]
+                  .some(el => getComputedStyle(el).display !== 'none'),
+                visibleZh: [...document.querySelectorAll('.l-zh')]
+                  .some(el => getComputedStyle(el).display !== 'none')
+              };
+            }"""
+        )
+        assert metrics["scrollWidth"] <= metrics["clientWidth"]
+        assert metrics["actionHeight"] >= 44
+        assert metrics["actionRight"] <= metrics["clientWidth"] + 1
+        assert metrics["summaryRight"] <= metrics["clientWidth"] + 1
+        assert metrics["bodyBackground"] not in {"rgba(0, 0, 0, 0)", "transparent"}
+        assert metrics["visibleZh"] is (lang == "zh")
+        assert metrics["visibleEn"] is (lang == "en")
+
+        action.focus()
+        focus_style = action.evaluate(
+            """el => {
+              const style = getComputedStyle(el);
+              return {outlineStyle: style.outlineStyle, outlineWidth: style.outlineWidth};
+            }"""
+        )
+        assert focus_style["outlineStyle"] != "none"
+        assert focus_style["outlineWidth"] != "0px"
+        page.keyboard.press("Enter")
+        page.wait_for_function(
+            "document.activeElement && document.activeElement.id === 'ox-leg-n1'"
+        )
+        assert page.evaluate("location.hash") == "#ox-leg-n1"
+        assert zoom_contract in {"desktop", "tablet", "mobile", "desktop-200-percent"}
+    finally:
+        context.close()
+
+
+@pytest.mark.parametrize("theme", ("light", "dark"))
+def test_primary_blocker_action_keeps_its_fill_and_contrast(browser, synthetic_snapshot, theme):
+    """The generic action rule must not erase the Paper primary-action treatment."""
+    context, page = _open(browser, synthetic_snapshot, width=390, height=844)
+    try:
+        page.evaluate("theme => document.documentElement.dataset.theme = theme", theme)
+        action = page.locator(".ox-hero-action")
+        for hover in (False, True):
+            if hover:
+                action.hover()
+            measured = action.evaluate("""el => {
+                const style = getComputedStyle(el);
+                const sample = document.createElement('span');
+                sample.style.backgroundColor = 'var(--info)';
+                sample.style.color = 'var(--bg)';
+                el.appendChild(sample);
+                const expected = getComputedStyle(sample);
+                const result = {
+                    fill: style.backgroundColor, ink: style.color,
+                    expectedFill: expected.backgroundColor, expectedInk: expected.color,
+                    height: el.getBoundingClientRect().height
+                };
+                sample.remove();
+                return result;
+            }""")
+            assert measured["fill"] == measured["expectedFill"]
+            assert measured["ink"] == measured["expectedInk"]
+            assert measured["height"] >= 44
+    finally:
+        context.close()
+
+
+@pytest.mark.parametrize("body", (None, [], {}, {"schema": "unreviewed_snapshot.v9"}))
+def test_invalid_success_body_settles_and_can_recover(browser, synthetic_snapshot, body):
+    """HTTP 200 alone is not a readable snapshot or permission to keep loading."""
+    context, page = _open(
+        browser, synthetic_snapshot, width=390, height=844,
+        responses=[{"status": 200, "body": body},
+                   {"status": 200, "body": synthetic_snapshot}],
+        reading_expected=False,
+    )
+    try:
+        gate = page.locator('.ox-gate[data-gate-code="invalid_snapshot"]')
+        gate.wait_for(state="visible", timeout=2500)
+        assert page.locator("#ox-root").get_attribute("aria-busy") == "false"
+        assert page.locator(".ox-answer-summary").count() == 0
+        gate.locator("button.ox-cta").click()
+        page.locator(".ox-answer-summary").wait_for(state="visible")
+        assert page.evaluate("window.__fetchCount") == 2
+        assert page.locator("#ox-root").get_attribute("aria-busy") == "false"
+    finally:
+        context.close()
+
+
+@pytest.mark.parametrize("width", (1440, 390))
+@pytest.mark.parametrize("theme", ("light", "dark"))
+@pytest.mark.parametrize("lang", ("en", "zh"))
+def test_answer_heading_leads_the_owner_summary(browser, synthetic_snapshot, width, theme, lang):
+    """R23/R24 lead with the explanation, not an unexplained lifecycle label."""
+    context, page = _open(browser, synthetic_snapshot, width=width, height=900)
+    try:
+        page.evaluate("v => {document.documentElement.dataset.theme=v.theme;document.documentElement.dataset.lang=v.lang}", {"theme": theme, "lang": lang})
+        title = page.locator("h1.ox-answer-title")
+        assert title.count() == 1
+        assert title.is_visible()
+        assert ("Node one" if lang == "en" else "节点一") in title.inner_text()
+        layout = page.evaluate("""() => {
+            const title = document.querySelector('.ox-answer-title');
+            const state = document.querySelector('.ox-state-word');
+            const lead = document.querySelector('.ox-hero-lead').getBoundingClientRect();
+            const summary = document.querySelector('.ox-answer-summary').getBoundingClientRect();
+            return {
+                titleSize: parseFloat(getComputedStyle(title).fontSize),
+                stateSize: parseFloat(getComputedStyle(state).fontSize),
+                leadRight: lead.right, leadBottom: lead.bottom,
+                summaryLeft: summary.left, summaryTop: summary.top,
+                overflow: document.documentElement.scrollWidth > innerWidth
+            };
+        }""")
+        assert layout["titleSize"] > layout["stateSize"]
+        assert not layout["overflow"]
+        if width == 1440:
+            assert layout["leadRight"] <= layout["summaryLeft"]
+        else:
+            assert layout["leadBottom"] <= layout["summaryTop"]
     finally:
         context.close()

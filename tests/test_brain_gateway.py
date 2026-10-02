@@ -6657,3 +6657,271 @@ def test_resolve_tier_leaves_a_canonical_row_untouched():
             gw._TIER_CACHE.clear()
 
     assert result["tier"] == "essential"
+
+
+def test_ontology_grounding_digest_uses_current_snapshot_and_selected_leg(tmp_path, monkeypatch):
+    """The existing Brain receives current owner truth, never a client-copied value."""
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: True)
+    from tests.ontology_explorer_fixtures import SLUG, build_root, chain_state
+
+    root = build_root(
+        tmp_path,
+        state_doc=chain_state(confirmed=(False, False, True, True)),
+    )
+    digest = gw._ontology_grounding_digest(
+        root, selected_leg="n1", lang="en", chain=SLUG, user_id="paid-user"
+    )
+
+    assert "CURRENT ONTOLOGY OWNER RECEIPT" in digest
+    assert "Synthetic linear probe" in digest
+    assert "Owner state: dormant" in digest
+    assert "Current conditions met: 2 of 4" in digest
+    assert "First blocker: step 1, Node one" in digest
+    assert "Selected step: n1, Node one, not met" in digest
+    assert "SYN-N1" in digest
+    assert "value=0.0" in digest
+    assert "threshold=10.0" in digest
+    assert "comparison_unavailable" in digest
+    assert "downstream_true_without_upstream" in digest
+    assert "source_manifest_hash" in digest
+    assert "END CURRENT ONTOLOGY OWNER RECEIPT" in digest
+
+
+def test_ontology_grounding_digest_is_read_only_and_fails_closed(tmp_path, monkeypatch):
+    from tests.ontology_explorer_fixtures import SLUG, build_root
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: True)
+    import hashlib
+
+    root = build_root(tmp_path)
+    owned = [
+        root / "knowledge" / "transmission" / f"{SLUG}.yaml",
+        root / "data" / "transmission" / "chain_state.json",
+    ]
+    before = {path: hashlib.sha256(path.read_bytes()).hexdigest() for path in owned}
+    assert gw._ontology_grounding_digest(
+        root, selected_leg="missing-leg", lang="en", chain=SLUG, user_id="paid-user"
+    )
+    after = {path: hashlib.sha256(path.read_bytes()).hexdigest() for path in owned}
+    assert after == before
+    assert gw._ontology_grounding_digest(
+        root, selected_leg="n1", lang="en", chain="not_admitted", user_id="paid-user"
+    ) == ""
+
+
+def test_brain_loop_injects_ontology_owner_digest_for_ontology_page(tmp_path, monkeypatch):
+    from engine.ontology_explorer import DEFAULT_CHAIN
+    from tests.ontology_explorer_fixtures import build_root
+
+    root = build_root(tmp_path, slug=DEFAULT_CHAIN)
+    response = _MockResponse([_MockBlock("text", "Answer")], "end_turn")
+    client = _MockClient([response])
+    monkeypatch.setattr(gw, "_grounding_digest", lambda root, lang="en": "")
+    monkeypatch.setattr(gw, "_symbol_grounding_digest", lambda *args, **kwargs: "")
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: True)
+    gw._run_brain_loop(
+        "Why is this step blocked?",
+        "fast",
+        [],
+        {"page": "ontology", "panel": "n1", "timeframe": "rev-2"},
+        root,
+        root,
+        "http://127.0.0.1:3100",
+        client,
+        "deepseek-chat",
+        500,
+        1,
+        user_id="paid-user",
+    )
+    prompt = str(client.calls[0]["messages"][0]["content"])
+    assert "BEGIN CURRENT ONTOLOGY OWNER RECEIPT" in prompt
+    assert "Selected step: n1" in prompt
+    assert "page=ontology" in prompt
+    assert "panel=n1" in prompt
+
+
+def test_ontology_evidence_uses_the_existing_site_full_authority(monkeypatch):
+    from app import paywall
+
+    calls = []
+    monkeypatch.setattr(
+        paywall,
+        "_entitled",
+        lambda uid, feature: (calls.append((uid, feature)) or (True, "essential")),
+    )
+    assert gw._ontology_evidence_allowed("paid-user") is True
+    assert calls == [("paid-user", "site_full")]
+    assert gw._ontology_evidence_allowed("guest:abc") is False
+    assert gw._ontology_evidence_allowed("") is False
+
+
+def test_ontology_grounding_refuses_before_owner_read_when_not_entitled(tmp_path, monkeypatch):
+    from tests.ontology_explorer_fixtures import SLUG, build_root
+
+    root = build_root(tmp_path)
+    called = []
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: False)
+    monkeypatch.setattr(
+        "engine.ontology_explorer.compose_snapshot",
+        lambda *args, **kwargs: called.append((args, kwargs)),
+    )
+    assert gw._ontology_grounding_digest(
+        root, selected_leg="n1", lang="en", chain=SLUG, user_id="free-user"
+    ) == ""
+    assert called == []
+
+
+def test_brain_loop_does_not_inject_ontology_owner_data_without_site_full(
+    tmp_path, monkeypatch
+):
+    from engine.ontology_explorer import DEFAULT_CHAIN
+    from tests.ontology_explorer_fixtures import build_root
+
+    root = build_root(tmp_path, slug=DEFAULT_CHAIN)
+    response = _MockResponse([_MockBlock("text", "Answer")], "end_turn")
+    client = _MockClient([response])
+    monkeypatch.setattr(gw, "_grounding_digest", lambda root, lang="en": "")
+    monkeypatch.setattr(gw, "_symbol_grounding_digest", lambda *args, **kwargs: "")
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: False)
+    gw._run_brain_loop(
+        "Why is this step blocked?",
+        "fast",
+        [],
+        {"page": "ontology", "panel": "n1", "timeframe": "rev-2"},
+        root,
+        root,
+        "http://127.0.0.1:3100",
+        client,
+        "deepseek-chat",
+        500,
+        1,
+        user_id="free-user",
+    )
+    prompt = str(client.calls[0]["messages"][0]["content"])
+    assert "CURRENT ONTOLOGY OWNER RECEIPT" not in prompt
+    assert "page=ontology" in prompt
+    assert "panel=n1" in prompt
+
+
+@pytest.mark.parametrize(
+    "receipt, expected_fields",
+    [
+        (
+            {"series": "SYN-N1", "metric": "ret_bp", "window": 22,
+             "value": 0, "op": "gt", "threshold": 15, "passed": False},
+            ("series=SYN-N1", "metric=ret_bp", "window=22", "value=0"),
+        ),
+        (
+            {"series": "SYN-N1", "metric": "rs_pp", "vs": "SYN-B",
+             "window": 63, "value": -3, "op": "gt", "threshold": 0,
+             "passed": False},
+            ("series=SYN-N1", "metric=rs_pp", "vs=SYN-B", "value=-3"),
+        ),
+    ],
+)
+def test_ontology_receipt_preserves_measurement_context(
+    tmp_path, monkeypatch, receipt, expected_fields
+):
+    """A bare number must not lose the field and measurement that give it meaning."""
+    from tests.ontology_explorer_fixtures import SLUG, build_root, chain_state
+
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: True)
+    state = chain_state()
+    state["chains"][0]["nodes"][0]["receipts"] = [receipt]
+    root = build_root(tmp_path, state_doc=state)
+    digest = gw._ontology_grounding_digest(
+        root, selected_leg="n1", chain=SLUG, user_id="paid-user"
+    )
+    for field in expected_fields:
+        assert field in digest
+    assert "passed=False" in digest
+
+
+def test_ontology_grounding_withholds_unlabelled_measurements(tmp_path, monkeypatch):
+    """The composer omits private path/unit fields; Brain must not infer them."""
+    from tests.ontology_explorer_fixtures import SLUG, build_root, chain_state
+
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: True)
+    state = chain_state()
+    state["chains"][0]["nodes"][0]["receipts"] = [
+        {"path": "state.rates.synthetic_change_bp", "unit": "bp", "value": -3,
+         "op": "gt", "threshold": 30, "passed": False}
+    ]
+    root = build_root(tmp_path, state_doc=state)
+    digest = gw._ontology_grounding_digest(
+        root, selected_leg="n1", chain=SLUG, user_id="paid-user"
+    )
+    assert "measurement metadata unavailable" in digest
+    assert "Selected receipt: value=-3" not in digest
+    assert "value=-3" not in digest
+    assert "Selected step: n1, Node one, not met" in digest
+
+
+@pytest.mark.parametrize("revision", ("rev-999", "rev-invalid", "", "rev-2\n"))
+def test_ontology_selected_revision_never_silently_rebinds(tmp_path, monkeypatch, revision):
+    from tests.ontology_explorer_fixtures import SLUG, build_root
+
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: True)
+    root = build_root(tmp_path)
+    digest = gw._ontology_grounding_digest(
+        root, selected_leg="n1", selected_revision=revision,
+        chain=SLUG, user_id="paid-user"
+    )
+    assert "Selection not verified" in digest
+    assert "Selected receipt:" not in digest
+    assert "SYN-N1" not in digest
+    assert "value=" not in digest
+
+
+def test_ontology_matching_revision_discloses_current_reread(tmp_path, monkeypatch):
+    from tests.ontology_explorer_fixtures import SLUG, build_root
+
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: True)
+    root = build_root(tmp_path)
+    digest = gw._ontology_grounding_digest(
+        root, selected_leg="n1", selected_revision="rev-2",
+        chain=SLUG, user_id="paid-user"
+    )
+    assert "Selected receipt:" in digest
+    assert "current owner re-read" in digest
+    assert "not a frozen page snapshot" in digest
+
+
+@pytest.mark.parametrize("streaming", (False, True))
+@pytest.mark.parametrize("allowed", (False, True))
+@pytest.mark.parametrize("revision", ("rev-2", "rev-999"))
+def test_ontology_sync_stream_permission_and_revision_parity(
+    tmp_path, monkeypatch, streaming, allowed, revision
+):
+    """Both real loop entry points apply the same premium-evidence boundary."""
+    from engine.ontology_explorer import DEFAULT_CHAIN
+    from tests.ontology_explorer_fixtures import build_root
+
+    root = build_root(tmp_path, slug=DEFAULT_CHAIN)
+    client = _MockClient([_MockResponse([_MockBlock("text", "Synthetic answer.")])])
+    monkeypatch.setattr(gw, "_grounding_digest", lambda root, lang="en": "")
+    monkeypatch.setattr(gw, "_symbol_grounding_digest", lambda *args, **kwargs: "")
+    monkeypatch.setattr(gw, "_ontology_evidence_allowed", lambda user_id, root=None: allowed)
+    args = (
+        "Explain this selected step.", "fast", [],
+        {"page": "ontology", "panel": "n1", "timeframe": revision},
+        root, root, "http://127.0.0.1:3100", client, "deepseek-chat", 500, 1,
+    )
+    if streaming:
+        events = list(gw._run_brain_loop_stream(
+            *args, meta_event={"type": "meta"}, user_id="test-user"
+        ))
+        assert events
+    else:
+        gw._run_brain_loop(*args, user_id="test-user")
+    assert client.calls
+    prompt = str(client.calls[0]["messages"][0]["content"])
+    if not allowed:
+        assert "CURRENT ONTOLOGY OWNER RECEIPT" not in prompt
+        assert "SYN-N1" not in prompt
+    elif revision != "rev-2":
+        assert "Selection not verified" in prompt
+        assert "SYN-N1" not in prompt
+    else:
+        assert "Selected step: n1" in prompt
+        assert "metric=ret" in prompt
+        assert "current owner re-read" in prompt

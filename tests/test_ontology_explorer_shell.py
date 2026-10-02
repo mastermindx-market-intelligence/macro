@@ -251,15 +251,20 @@ def test_selected_path_uses_the_existing_brain_host_seam_and_exact_return():
     client = (ROOT / "templates" / "ontology.js").read_text(encoding="utf-8")
     assert "var selectedPathRef = null" in client
     assert "var returnFocusRef = null" in client
+    assert "var returnScrollY = null" in client
     assert "window.MM_BRAIN_CFG = window.MM_BRAIN_CFG || {}" in client
     assert "window.MM_BRAIN_CFG.getAiContext = function ()" in client
     assert 'schema: "ai_context_client.v1"' in client
-    assert "page: selectedPathRef.chain" in client
+    assert 'page: "ontology"' in client
+    assert "chain: brainLabel(source.chain" in client
     assert "panel: selectedPathRef.leg" in client
     assert "window.MM_BRAIN_CFG.onClose = function ()" in client
     assert "returnFocusRef.focus({ preventScroll: true })" in client
+    assert "top: returnScrollY" in client
     assert "var restored = document.activeElement === returnFocusRef" in client
-    assert "returnFocusRef = null;\n      selectedPathRef = null;" in client
+    assert "returnFocusRef = null;" in client
+    assert "returnScrollY = null;" in client
+    assert "selectedPathRef = null;" in client
     assert "window.MMBrain.open()" in client
     assert 'document.getElementById("mmb-boot")' in client
     assert 'localStorage.setItem("ontology' not in client
