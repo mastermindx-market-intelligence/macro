@@ -71,6 +71,8 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+from engine.neuralweb import regime_context as _regime_context
+
 log = logging.getLogger(__name__)
 
 PACKET_VERSION = 1
@@ -328,7 +330,7 @@ _REGIONS: tuple[_Region, ...] = (
 
 _SECTION_ORDER: tuple[str, ...] = (
     "HEADER", "TAPE", "CURVE", "FLAGS", "SHOCK", "EVENTS", "DRIVERS",
-    "RATES", "VOL", "BREADTH", "LEADERS", "REGIONAL", "CROSSASSET", "CNBOARD", "DESK", "WATCH",
+    "REGIME_DETAIL", "RATES", "VOL", "BREADTH", "LEADERS", "REGIONAL", "CROSSASSET", "CNBOARD", "DESK", "WATCH",
     # PRESSURE sits LAST on purpose: it is single-name display context, so it is
     # the first thing the char budget should drop. Appending here changes no
     # existing section's drop priority.
@@ -1143,9 +1145,12 @@ def _events_block(raw: object, now: datetime, gaps: list[str]) -> dict | None:
 # build_packet
 # ---------------------------------------------------------------------------
 
-def build_packet(root: Path, *, now: datetime | None = None) -> dict:
+def build_packet(root: Path, *, now: datetime | None = None,
+                 include_regime_detail: bool = False) -> dict:
     """Assemble the packet from whatever is on disk. Never raises.
 
+    Granular paid context is opt-in after the existing caller entitlement gate.
+    A boolean passed by a trusted server caller is not an HTTP access decision.
     Every block is independent: a missing or corrupt source removes THAT block
     and records a note in ``packet["gaps"]``; it never degrades a neighbour and
     never leaves a block rendered under a borrowed stamp.
@@ -1268,6 +1273,16 @@ def build_packet(root: Path, *, now: datetime | None = None) -> dict:
                 packet["watch"] = watch
         except Exception as exc:  # noqa: BLE001
             gaps.append(f"desk: build failed ({type(exc).__name__})")
+        # Source-dated, orthogonal context; never a new regime or risk verdict.
+        # Kept away from the separately owned calendar insertion after the source loop.
+        try:
+            if include_regime_detail is True:
+                detail = _regime_context.read_context(root, now=now)
+                if detail["coverage"]["populated_dimensions"]:
+                    packet["regime_detail"] = detail
+        except Exception as exc:  # noqa: BLE001 - one context failure is lane-local
+            gaps.append(f"regime_detail: build failed ({type(exc).__name__})")
+
         try:
             pressure = _pressure_block(root, gaps)
             if pressure:
@@ -1673,6 +1688,12 @@ def _render_drivers(p: dict) -> str:
     return head + body + (f" ({'; '.join(tail)})" if tail else "")
 
 
+def _render_regime_detail(p: dict) -> str:
+    return _regime_context.render_context(
+        p["regime_detail"], lang="zh" if _zh(p) else "en",
+    )
+
+
 def _render_rates(p: dict) -> str:
     r = p["rates"]
     parts: list[str] = []
@@ -1896,6 +1917,7 @@ _RENDERERS: dict[str, object] = {
     "SHOCK": ("shock", _render_shock),
     "EVENTS": ("events", _render_events),
     "DRIVERS": ("drivers", _render_drivers),
+    "REGIME_DETAIL": ("regime_detail", _render_regime_detail),
     "RATES": ("rates", _render_rates),
     "VOL": ("vol", _render_vol),
     "BREADTH": ("breadth", _render_breadth),
@@ -1996,6 +2018,7 @@ _ROOT_SOURCES: tuple[str, ...] = (
     "data/marketing/press/wires.json",
     *(p for r in _REGIONS for p in (r.basket_rel, r.regime_rel)),
     "site/factordata/china_standouts.json", "data/cn_prophet_audit/latest.json",
+    *_regime_context.SOURCE_PATHS.values(),
 )
 
 
@@ -2004,7 +2027,8 @@ def _clock() -> float:
     return time.monotonic()
 
 
-def _cache_key(root: Path, char_budget: int, lang: str = "en") -> tuple:
+def _cache_key(root: Path, char_budget: int, lang: str = "en",
+               include_regime_detail: bool = False) -> tuple:
     """(root, budget) plus the (path, mtime) pair of every source. A source that
     APPEARS or vanishes changes the key as surely as an edited one, because a
     missing file is keyed as None rather than skipped."""
@@ -2019,11 +2043,11 @@ def _cache_key(root: Path, char_budget: int, lang: str = "en") -> tuple:
                 pairs.append((str(p), None))
     except Exception:  # noqa: BLE001
         pass
-    return (str(root), int(char_budget), str(lang), tuple(pairs))
+    return (str(root), int(char_budget), str(lang), include_regime_detail is True, tuple(pairs))
 
 
 def digest(root: Path, char_budget: int = DEFAULT_CHAR_BUDGET,
-           lang: str = "en") -> str:
+           lang: str = "en", *, include_regime_detail: bool = False) -> str:
     """build_packet + render_digest behind a cache. Never raises.
 
     Cached on the source mtimes and the budget, with a 60 s ceiling so a clock-
@@ -2031,13 +2055,14 @@ def digest(root: Path, char_budget: int = DEFAULT_CHAR_BUDGET,
     when nothing on disk moved.
     """
     try:
-        key = _cache_key(root, char_budget, lang)
+        key = _cache_key(root, char_budget, lang, include_regime_detail)
         now = _clock()
         with _CACHE_LOCK:
             hit = _CACHE.get(key)
             if hit is not None and (now - hit[1]) < _CACHE_TTL_S:
                 return hit[0]
-        text = render_digest(build_packet(root), char_budget, lang=lang)
+        text = render_digest(build_packet(root, include_regime_detail=include_regime_detail),
+                             char_budget, lang=lang)
         with _CACHE_LOCK:
             if len(_CACHE) > 64:      # unbounded roots would leak; cheap to rebuild
                 _CACHE.clear()

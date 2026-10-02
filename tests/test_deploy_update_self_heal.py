@@ -246,6 +246,7 @@ def _triggers_press_restart(path: str) -> bool:
 
 # Import-cached by the macro-api process -> a change here MUST restart it.
 MUST_RESTART = [
+    "engine/neuralweb/regime_context.py",
     # app/ routers (all import-cached by uvicorn)
     "app/main.py",
     "app/research.py",
