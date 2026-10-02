@@ -60,6 +60,22 @@
     </details>
   </article>
 {% endmacro %}
+{% macro nd_calendar_event(e) %}
+  <article class="nd-event nd-item{% if e.get('result_only') %} nd-event-result{% endif %}" data-nd-item="calendar">
+    <div class="nd-event-date"{% if e.get('date') %} data-nd-calendar-date="{{ e.date }}"{% endif %}><span data-nd-month>{{ ((e.get('date') or '—')|string)[:7] }}</span><strong data-nd-day>{{ ((e.get('date') or '—')|string)[8:10] or '—' }}</strong></div>
+    <div class="nd-event-content">
+      <div class="nd-item-meta">
+        {% if e.get('result_only') %}<span class="nd-tag nd-tag-neutral">{{ nd_bi('Result','结果') }}</span>{% elif e.get('time_et') %}<span class="nd-event-time">{{ e.time_et }} ET</span>{% else %}<span>{{ nd_bi('Time unconfirmed', '时间待确认') }}</span>{% endif %}
+        {% if e.get('impact') == 'high' %}<span class="nd-tag nd-tag-calendar">{{ nd_bi('Major', '重要') }}</span>{% endif %}
+      </div>
+      <h4>{% if e.get('result_only') %}{{ nd_bi('Recent official release', '近期官方数据公布') }}{% else %}{{ nd_bi(e.get('label') or 'Scheduled event', e.get('label_zh') or e.get('label') or '已排期事件') }}{% endif %}</h4>
+      <div class="nd-event-full-date">{{ nd_date(e.get('date')) }}{% if not e.get('result_only') %}<span class="nd-past-date" hidden>{{ nd_bi('Date passed', '日期已过') }}</span>{% endif %}</div>
+      {% if e.get('note') %}<p>{{ nd_bi(e.note, e.get('note_zh')) }}</p>{% endif %}
+      {{ release_evidence(e, nd_bi, generated_utc|default(none)) }}
+      {{ release_expectation(e, nd_bi, generated_utc|default(none)) }}
+    </div>
+  </article>
+{% endmacro %}
 <div class="mx5-dlg nd-desk" id="dlg-news" role="dialog" aria-modal="true" aria-labelledby="nd-title" tabindex="-1">
   <div class="mx5-dlg-backdrop" onclick="mx5CloseDlg()"></div>
   <div class="mx5-dlg-panel nd-panel">
@@ -123,26 +139,30 @@
           <button type="button" class="nd-more" data-nd-more="review" hidden>{{ nd_bi('See all changes', '查看全部变化') }}{{ nd_arrow() }}</button>
         </section>
         <section class="nd-section nd-calendar-section" data-nd-section="calendar" data-nd-source-state="{{ 'unavailable' if not nd_events_known else ('loaded' if nd_events else 'empty') }}" aria-labelledby="nd-calendar-title">
-          <div class="nd-section-heading"><div><div class="nd-kicker">{{ nd_bi('02 / ON THE CALENDAR', '02 / 经济日历') }}</div><h3 id="nd-calendar-title">{{ nd_bi('Scheduled catalysts', '已排期事件') }}</h3></div><span class="nd-tag nd-tag-neutral">ET</span></div>
-          <p class="nd-section-note">{{ nd_bi('New York time · Schedule context, not a directional call.', '纽约时间 · 日程背景不代表方向判断。') }}</p>
+          {% set nd_event_groups = namespace(recent=[], scheduled=[]) %}
+          {% for e in nd_events %}{% if e.get('result_only') %}{% set nd_event_groups.recent = nd_event_groups.recent + [e] %}{% else %}{% set nd_event_groups.scheduled = nd_event_groups.scheduled + [e] %}{% endif %}{% endfor %}
+          <div class="nd-section-heading">
+            <div><div class="nd-kicker">{{ nd_bi('02 / RELEASES', '02 / 数据公布') }}</div><h3 id="nd-calendar-title">{{ nd_bi('Just released & on deck', '最新公布与即将发布') }}</h3></div>
+            <span class="nd-tag nd-tag-neutral">ET</span>
+          </div>
+          <p class="nd-section-note">{{ nd_bi('Official-result evidence and schedule context are kept separate. Neither is a directional call.', '官方结果证据与日程背景分开呈现，二者都不代表方向判断。') }}</p>
           <div class="nd-items nd-event-list">
-            {% for e in nd_events %}
-              <article class="nd-event nd-item" data-nd-item="calendar">
-                <div class="nd-event-date"{% if e.get('date') %} data-nd-calendar-date="{{ e.date }}"{% endif %}><span data-nd-month>{{ ((e.get('date') or '—')|string)[:7] }}</span><strong data-nd-day>{{ ((e.get('date') or '—')|string)[8:10] or '—' }}</strong></div>
-                <div class="nd-event-content">
-                  <div class="nd-item-meta">{% if e.get('time_et') %}<span class="nd-event-time">{{ e.time_et }} ET</span>{% else %}<span>{{ nd_bi('Time unconfirmed', '时间待确认') }}</span>{% endif %}{% if e.get('impact') == 'high' %}<span class="nd-tag nd-tag-calendar">{{ nd_bi('Major', '重要') }}</span>{% endif %}</div>
-                  <h4>{% if e.get('result_only') %}{{ nd_bi('Recent official release', '近期官方数据公布') }}{% else %}{{ nd_bi(e.get('label') or 'Scheduled event', e.get('label_zh') or e.get('label') or '已排期事件') }}{% endif %}</h4>
-                  <div class="nd-event-full-date">{{ nd_date(e.get('date')) }}<span class="nd-past-date" hidden>{{ nd_bi('Date passed', '日期已过') }}</span></div>
-                  {% if e.get('note') %}<p>{{ nd_bi(e.note, e.get('note_zh')) }}</p>{% endif %}
-                  {{ release_evidence(e, nd_bi, generated_utc|default(none)) }}
-                  {{ release_expectation(e, nd_bi, generated_utc|default(none)) }}
-                </div>
-              </article>
-            {% endfor %}
+            {% if nd_event_groups.recent %}
+              <div class="nd-release-group-heading">
+                <div><span class="nd-kicker">{{ nd_bi('JUST RELEASED','最新公布') }}</span><h4>{{ nd_bi('Official results available','官方结果可查看') }}</h4></div>
+                <p>{{ nd_bi('First-result evidence that passed the component’s source checks.','已通过组件来源检查的首次公布值证据。') }}</p>
+              </div>
+              {% for e in nd_event_groups.recent %}{{ nd_calendar_event(e) }}{% endfor %}
+            {% endif %}
+            <div class="nd-release-group-heading{% if nd_event_groups.recent %} nd-release-group-divider{% endif %}">
+              <div><span class="nd-kicker">{{ nd_bi('ON DECK','即将发布') }}</span><h4>{{ nd_bi('Scheduled catalysts','已排期事件') }}</h4></div>
+              <p>{{ nd_bi('New York time · a schedule is not proof that a result has published.','纽约时间 · 日程不代表结果已经公布。') }}</p>
+            </div>
+            {% for e in nd_event_groups.scheduled %}{{ nd_calendar_event(e) }}{% endfor %}
             {% for a in nd.calendar_alerts %}{{ nd_alert(a, 'calendar') }}{% endfor %}
           </div>
-          {% if not nd_events_known %}<div class="nd-empty nd-source-unavailable"><h4>{{ nd_bi('Calendar unavailable', '日历暂不可用') }}</h4><p>{{ nd_bi('The schedule was not supplied. This does not mean there are no events.', '未获取到日程，不代表没有已排期事件。') }}</p></div>{% elif not nd_events %}<div class="nd-empty"><h4>{{ nd_bi('No scheduled events in this snapshot', '此快照未列出已排期事件') }}</h4><p>{{ nd_bi('Unscheduled news can still move markets.', '突发新闻仍可能影响市场。') }}</p></div>{% endif %}
-          <button type="button" class="nd-more" data-nd-more="calendar" hidden>{{ nd_bi('See the full schedule', '查看完整日程') }}{{ nd_arrow() }}</button>
+          {% if not nd_events_known %}<div class="nd-empty nd-source-unavailable"><h4>{{ nd_bi('Calendar unavailable', '日历暂不可用') }}</h4><p>{{ nd_bi('The schedule was not supplied. This does not mean there are no events.', '未获取到日程，不代表没有已排期事件。') }}</p></div>{% elif not nd_event_groups.scheduled %}<div class="nd-empty"><h4>{{ nd_bi('No later scheduled events in this snapshot', '此快照未列出后续已排期事件') }}</h4><p>{{ nd_bi('Recent qualified results can still remain above. Unscheduled news can still move markets.', '上方仍可保留近期已核验结果；突发新闻仍可能影响市场。') }}</p></div>{% endif %}
+          <button type="button" class="nd-more" data-nd-more="calendar" hidden>{{ nd_bi('See the full release list', '查看完整数据公布列表') }}{{ nd_arrow() }}</button>
           <button type="button" class="nd-text-link nd-calendar-link" data-nd-open="dlg-events" onclick="if(window.mx5OpenDlg) window.mx5OpenDlg('dlg-events')">{{ nd_bi('Open event analysis', '打开事件分析') }}{{ nd_arrow() }}</button>
         </section>
         <section class="nd-section nd-news-section" data-nd-section="news" data-nd-source-state="{{ 'unavailable' if not nd_news else ('loaded' if nd.stories else 'empty') }}" aria-labelledby="nd-news-title">
