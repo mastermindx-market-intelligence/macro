@@ -171,7 +171,7 @@
           {% if m.get('status') == 'experimental_model_context' and m.get('display_value') is string %}
             <div class="nd-model-read">
               <span>{% if m.get('basis') == 'combined_v1_benchmark_augmented' %}{{ bi('Mastermind blended benchmark','Mastermind 混合基准') }}{% else %}{{ bi('Mastermind model benchmark','Mastermind 模型基准') }}{% endif %}</span>
-              <p class="nd-model-value">{{ m.display_value }}{% if m.get('unit') == 'percent' %}<span>%</span>{% endif %}</p>
+              <p class="nd-model-value">{{ m.display_value }}{% if m.get('unit') == 'percent' %}<span>%</span>{% elif m.get('unit') == 'thousands' %}<span>k</span>{% endif %}</p>
             </div>
             <p class="nd-official-period">{{ bi('Reference period','数据时期') }} · {{ m.get('period') or '—' }}</p>
             {% if m.get('p10') is number and m.get('p90') is number %}
@@ -181,7 +181,7 @@
           {% elif m.get('status') == 'historical_model_comparison' and m.get('display_value') is string %}
             <div class="nd-model-read">
               <span>{{ bi('Frozen model benchmark','冻结模型基准') }}</span>
-              <p class="nd-model-value">{{ m.display_value }}{% if m.get('unit') == 'percent' %}<span>%</span>{% endif %}</p>
+              <p class="nd-model-value">{{ m.display_value }}{% if m.get('unit') == 'percent' %}<span>%</span>{% elif m.get('unit') == 'thousands' %}<span>k</span>{% endif %}</p>
             </div>
             <p class="nd-model-difference">{{ bi('Difference vs model benchmark','相对模型基准的差值') }} · {{ m.get('difference_display') }}{% if m.get('unit') == 'percent' %} pp{% endif %}</p>
             <p class="nd-official-period">{{ bi('Frozen before release','发布前冻结') }} · {{ m.get('frozen_asof_night') or '—' }}</p>
@@ -197,7 +197,7 @@
           {% if benches %}
             <div class="nd-benchmark-grid">
               {% for key,blabel in bench_labels.items() %}{% if benches.get(key) is number %}
-                <div class="nd-benchmark-cell"><span>{{ bi(blabel[0],blabel[1]) }}</span><strong>{{ '%.2f'|format(benches.get(key)) }}{% if m.get('unit') == 'percent' %}%{% endif %}</strong></div>
+                <div class="nd-benchmark-cell"><span>{{ bi(blabel[0],blabel[1]) }}</span><strong>{% if m.get('unit') == 'thousands' %}{{ '%.0f'|format(benches.get(key)) }}k{% else %}{{ '%.2f'|format(benches.get(key)) }}{% if m.get('unit') == 'percent' %}%{% endif %}{% endif %}</strong></div>
               {% endif %}{% endfor %}
               {% set market = benches.get('market_implied') %}
               {% if market is mapping and market.get('implied_median') is number %}
@@ -205,6 +205,7 @@
               {% endif %}
             </div>
           {% endif %}
+          {% if m.get('market_implied_status') == 'unit_basis_unqualified' %}<p class="nd-evidence-cutoff">{{ bi('Market-implied payroll context is withheld because this artifact does not declare the same unit basis.','市场隐含的就业数据背景暂不展示，因为此工件未声明与模型一致的单位口径。') }}</p>{% endif %}
 
           <details class="nd-expectation-method" data-nd-deep>
             <summary>{{ bi('Method & limits','方法与限制') }}<span aria-hidden="true">＋</span></summary>
