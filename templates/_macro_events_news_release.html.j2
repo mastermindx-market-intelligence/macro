@@ -83,3 +83,143 @@
 {% endif %}
 {% endautoescape %}
 {%- endmacro %}
+
+
+{# Benchmark/model context from the existing Release Radar owner. UI wording
+   deliberately says benchmark, never street-survey equivalence. #}
+{% macro release_expectation(event, bi, snapshot_utc) -%}
+{% autoescape true %}
+{% set raw = event.get('expectation_context') %}
+{% set reference_binding = {'scheduled_reference_period':event.get('scheduled_reference_period'), 'expected_reference_period':event.get('expected_reference_period'), 'forecast_period':event.get('forecast_period'), 'reference_period':event.get('reference_period')} %}
+{% set ev = raw if raw is mapping and raw.get('schema') == 'release_event_expectations.v1' and raw.get('display_only') is sameas true and raw.get('authority') is sameas false and raw.get('event_type') == event.get('type') and raw.get('release_date') == event.get('date') and raw.get('reference_binding') == reference_binding and raw.get('street_survey_status') == 'unavailable' and raw.get('as_of_input') is string and raw.get('as_of_input') == snapshot_utc else none %}
+{% set labels = {
+  'cpi_headline_mom':['Headline CPI','整体 CPI'], 'cpi_core_mom':['Core CPI','核心 CPI'],
+  'ppi_headline_mom':['Producer prices','生产者价格'],
+  'pce_headline_mom':['Headline PCE','整体 PCE'], 'pce_core_mom':['Core PCE','核心 PCE'],
+  'nfp_payroll_change':['Payroll change','非农就业变化'], 'claims_initial':['Initial claims','初请失业金人数']
+} %}
+{% set reasons = {
+  'model_point_unavailable':['No model point is available for this measure.','此指标暂无模型点位。'],
+  'primary_model_context_invalid':['The declared primary model context did not pass its display contract.','声明的主要模型背景未通过显示契约。'],
+  'benchmark_only':['This release is benchmark-only; no model point is presented.','此数据仅展示基准，不提供模型点位。'],
+  'no_matching_forecast_context':['No exact model context matches this release and period.','没有与此次数据及所属时期精确匹配的模型背景。'],
+  'ambiguous_forecast_context':['More than one model context matches; none was selected.','匹配到多个模型背景，暂不选取。'],
+  'forecast_period_unavailable':['The model reference period is unavailable.','模型数据时期暂不可用。'],
+  'evaluation_ineligible':['The frozen model row is excluded from evaluation, so comparison is withheld.','该冻结模型记录不符合评估条件，因此暂不比较。'],
+  'no_matching_frozen_model_context':['No exact frozen model row matches this official result.','没有与此官方结果精确匹配的冻结模型记录。'],
+  'ambiguous_frozen_model_context':['Conflicting frozen model rows need review before comparison.','冻结模型记录存在冲突，需核查后再比较。'],
+  'model_point_unavailable':['The frozen model point is unavailable.','冻结模型点位不可用。'],
+  'official_result_required_for_historical_comparison':['An official result is required before showing a historical model comparison.','需要官方结果后才能展示历史模型比较。']
+} %}
+{% set bench_labels = {
+  'naive_prior':['Prior print benchmark','前值基准'],
+  'trailing_3m':['3-month average','3个月均值'],
+  'trailing_4w':['4-week average','4周均值'],
+  'ar_model':['AR benchmark','AR 基准'],
+  'cleveland_nowcast':['Cleveland benchmark','克利夫兰联储基准']
+} %}
+{% set ns = namespace(metrics=[],experimental=0,historical=0,benchonly=0) %}
+{% if ev and ev.get('metrics') is sequence and ev.get('metrics') is not string and ev.get('metrics') is not mapping %}
+  {% for m in ev.metrics %}
+    {% if m is mapping and m.get('metric_id') in labels %}
+      {% set ns.metrics = ns.metrics + [m] %}
+      {% if m.get('status') == 'experimental_model_context' %}{% set ns.experimental = ns.experimental + 1 %}{% endif %}
+      {% if m.get('status') == 'historical_model_comparison' %}{% set ns.historical = ns.historical + 1 %}{% endif %}
+      {% if m.get('status') == 'benchmark_only' %}{% set ns.benchonly = ns.benchonly + 1 %}{% endif %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+{% if raw is not none %}
+<details class="nd-expectation-context" data-nd-expectation>
+  <summary>
+    <span>{{ bi('Expectations & benchmarks','预期与基准') }}</span>
+    <span class="nd-expectation-status">
+      {% if ns.historical %}{{ bi('Model comparison','模型比较') }}
+      {% elif ns.experimental %}{{ bi('Experimental context','实验性背景') }}
+      {% elif ns.benchonly %}{{ bi('Benchmarks only','仅基准') }}
+      {% else %}{{ bi('Unavailable','暂不可用') }}{% endif %}
+      <span aria-hidden="true">＋</span>
+    </span>
+  </summary>
+  <div class="nd-expectation-body">
+    <div class="nd-survey-gap">
+      <div>
+        <span class="nd-eyebrow-mini">{{ bi('STREET SURVEY','市场机构调查') }}</span>
+        <strong>{{ bi('Not connected','尚未接入') }}</strong>
+      </div>
+      <p>{{ bi('No licensed, time-stamped street-survey source is wired here. Model and market benchmarks are kept separate.','尚未接入具备授权和时间戳的市场机构调查数据。模型基准与市场基准保持分开。') }}</p>
+    </div>
+    {% if not ev %}
+      <p class="nd-official-missing">{{ bi('The expectation context does not match this event or snapshot. No benchmark is shown.','预期背景与此事件或快照不匹配，暂不显示基准。') }}</p>
+    {% elif ev.get('reason') %}
+      <p class="nd-official-missing">{{ bi('Expectation context is unavailable for this release.','此次数据暂无可用的预期背景。') }}</p>
+    {% else %}
+      <p class="nd-expectation-intro">{{ bi('Use these as separate reference points, not as a market-survey substitute or trading instruction.','这些仅是彼此独立的参考点，不能替代市场机构调查，也不是交易指令。') }}</p>
+      <div class="nd-expectation-metrics">
+      {% for m in ns.metrics %}
+        {% set label = labels.get(m.get('metric_id'), ['Release measure','数据指标']) %}
+        <section class="nd-expectation-metric">
+          <div class="nd-expectation-heading">
+            <h5>{{ bi(label[0],label[1]) }}</h5>
+            {% if m.get('status') == 'experimental_model_context' %}<span class="nd-tag nd-tag-neutral">{{ bi('Experimental','实验性') }}</span>
+            {% elif m.get('status') == 'historical_model_comparison' %}<span class="nd-tag nd-tag-neutral">{{ bi('Frozen comparison','冻结比较') }}</span>
+            {% elif m.get('status') == 'comparison_withheld' %}<span class="nd-tag nd-tag-neutral">{{ bi('Withheld','暂不展示') }}</span>{% endif %}
+          </div>
+          {% if m.get('status') == 'experimental_model_context' and m.get('display_value') is string %}
+            <div class="nd-model-read">
+              <span>{{ bi('Mastermind model benchmark','Mastermind 模型基准') }}</span>
+              <p class="nd-model-value">{{ m.display_value }}{% if m.get('unit') == 'percent' %}<span>%</span>{% endif %}</p>
+            </div>
+            <p class="nd-official-period">{{ bi('Reference period','数据时期') }} · {{ m.get('period') or '—' }}</p>
+            {% if m.get('p10') is number and m.get('p90') is number %}
+              <p class="nd-model-range">{{ bi('Experimental model range','实验性模型区间') }} · {{ '%.2f'|format(m.p10) }}–{{ '%.2f'|format(m.p90) }}{% if m.get('unit') == 'percent' %}%{% endif %}</p>
+            {% endif %}
+            {% if m.get('cold_start') is sameas true %}<p class="nd-model-warning">{{ bi('Cold-start blend · no scored basis yet for this combination.','冷启动组合 · 此组合尚无已评分基础。') }}</p>{% endif %}
+          {% elif m.get('status') == 'historical_model_comparison' and m.get('display_value') is string %}
+            <div class="nd-model-read">
+              <span>{{ bi('Frozen model benchmark','冻结模型基准') }}</span>
+              <p class="nd-model-value">{{ m.display_value }}{% if m.get('unit') == 'percent' %}<span>%</span>{% endif %}</p>
+            </div>
+            <p class="nd-model-difference">{{ bi('Difference vs model benchmark','相对模型基准的差值') }} · {{ m.get('difference_display') }}{% if m.get('unit') == 'percent' %} pp{% endif %}</p>
+            <p class="nd-official-period">{{ bi('Frozen before release','发布前冻结') }} · {{ m.get('frozen_asof_night') or '—' }}</p>
+          {% elif m.get('status') == 'benchmark_only' %}
+            <p class="nd-official-missing">{{ bi('No model point is presented for this release. The available reference benchmarks are shown below.','此次数据不展示模型点位，仅显示下方可用参考基准。') }}</p>
+          {% else %}
+            {% set why = reasons.get(m.get('reason'), ['Model comparison is unavailable.','模型比较暂不可用。']) %}
+            <p class="nd-official-missing">{{ bi(why[0],why[1]) }}</p>
+            {% if m.get('excluded_defect_ids') %}<p class="nd-evidence-cutoff">{{ bi('Evaluation exclusions','评估排除项') }} · {{ m.get('excluded_defect_ids')|join(', ') }}</p>{% endif %}
+          {% endif %}
+
+          {% set benches = m.get('benchmarks') if m.get('benchmarks') is mapping else {} %}
+          {% if benches %}
+            <div class="nd-benchmark-grid">
+              {% for key,blabel in bench_labels.items() %}{% if benches.get(key) is number %}
+                <div class="nd-benchmark-cell"><span>{{ bi(blabel[0],blabel[1]) }}</span><strong>{{ '%.2f'|format(benches.get(key)) }}{% if m.get('unit') == 'percent' %}%{% endif %}</strong></div>
+              {% endif %}{% endfor %}
+              {% set market = benches.get('market_implied') %}
+              {% if market is mapping and market.get('implied_median') is number %}
+                <div class="nd-benchmark-cell"><span>{{ bi('Market-implied median','市场隐含中位数') }}</span><strong>{{ '%.2f'|format(market.implied_median) }}{% if m.get('unit') == 'percent' %}%{% endif %}</strong><small>{{ market.get('source') }}{% if market.get('asof') %} · {{ market.asof }}{% endif %}</small></div>
+              {% endif %}
+            </div>
+          {% endif %}
+
+          <details class="nd-expectation-method" data-nd-deep>
+            <summary>{{ bi('Method & limits','方法与限制') }}<span aria-hidden="true">＋</span></summary>
+            <dl>
+              <dt>{{ bi('Model epoch','模型版本') }}</dt><dd class="nd-proof-id">{{ m.get('model_epoch') or '—' }}</dd>
+              <dt>{{ bi('Target epoch','目标版本') }}</dt><dd class="nd-proof-id">{{ m.get('target_epoch') or '—' }}</dd>
+              <dt>{{ bi('Cutoff','截点') }}</dt><dd>{{ m.get('cutoff_label') or '—' }}</dd>
+              <dt>{{ bi('Forecast artifact','预测工件时间') }}</dt><dd>{{ ev.get('artifact_asof') or '—' }}</dd>
+              <dt>{{ bi('Accuracy claim','准确性声明') }}</dt><dd>{{ bi('Withheld pending clean aligned forward evidence','等待干净且对齐的前瞻证据，暂不声明') }}</dd>
+            </dl>
+            {% if m.get('basis_warning') %}<p class="nd-model-warning">{{ m.get('basis_warning') }}</p>{% endif %}
+          </details>
+        </section>
+      {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</details>
+{% endif %}
+{% endautoescape %}
+{%- endmacro %}
