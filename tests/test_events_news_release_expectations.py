@@ -524,7 +524,7 @@ def test_composer_binds_historical_model_row_to_exact_projected_receipt(policy):
 def test_composer_preserves_official_result_when_forecast_source_is_unavailable(policy):
     actuals = canonical_receipts(policy)
     out = view.compose_event_intelligence(
-        [dict(EVENT)], actuals, None, as_of=ASOF, defects_path=policy)
+        [dict(PCE_EVENT)], actuals, None, as_of=ASOF, defects_path=policy)
     assert out[0]["official_evidence"]["status"] == "available"
     assert out[0]["expectation_context"]["reason"] == "forecast_source_unavailable"
 
