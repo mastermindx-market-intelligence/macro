@@ -15,8 +15,10 @@ Important honesty boundaries:
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
+from pathlib import Path
 from typing import Any
 
 import pandas as pd
@@ -139,16 +141,32 @@ def _read_dossier_items(source_key: str, asof: date) -> tuple[list[dict[str, Any
     return (out, True)
 
 
-def _uk_stance() -> dict[str, Any] | None:
-    """Optional UK stance from the uk_policy_brain artifact (OGL v3.0). The
-    stance label is LLM-classified per engine/uk_policy_brain.py:9-10 / _STANCES
-    :50; the dossier always carries `authoritative: false` per the LLM-facing
-    rule. None when the artifact is missing, unreadable, or carries no stance.
+# The UK stance is a DATA contract, never a module import: the dossier reads
+# the artifact `engine/uk_policy_brain.py` publishes (`_artifact_path` ->
+# site/uk_policy.json) so the LLM desk keeps exactly ONE importer
+# (`scripts/build_whitehouse.py`; fence:
+# tests/test_uk_policy_brain.py::test_no_scoring_path_imports_this_desk —
+# measured red on #8276 ci-pack-5, 2026-10-02, when two lazy imports slipped in).
+_UK_POLICY_ARTIFACT = ("site", "uk_policy.json")
+
+# Display vocabulary for the UK stance — mirrors `engine/uk_policy_brain._STANCES`
+# WITHOUT importing the desk (fence above). The producer clamps every persisted
+# `stance` to that closed set (`_norm_stance`), so a label outside this mirror
+# degrades to None (no stance shown), never to a wrong label. Widen both together.
+_UK_STANCES_FROZEN = frozenset({"supportive", "restrictive", "mixed", "routine"})
+
+
+def _uk_stance(root: Path | None = None) -> dict[str, Any] | None:
+    """Optional UK stance from the uk_policy_brain ARTIFACT (OGL v3.0). The
+    stance label is LLM-classified by the desk (engine/uk_policy_brain.py
+    `_norm_stance` clamps it before persisting); the dossier always carries
+    `authoritative: false` per the LLM-facing rule. None when the artifact is
+    missing, unreadable, not a dict, or carries no stance inside the display
+    vocabulary. Read as DATA — never `from engine import uk_policy_brain`.
     """
     try:
-        from engine import uk_policy_brain as _uk
-
-        record = _uk.latest()
+        base = Path(root) if root else Path(config.ROOT)
+        record = json.loads(base.joinpath(*_UK_POLICY_ARTIFACT).read_text())
     except Exception:  # noqa: BLE001 — degrade, never raise
         return None
     if not isinstance(record, dict):
@@ -157,7 +175,7 @@ def _uk_stance() -> dict[str, Any] | None:
     if label is None:
         return None
     label = str(label).strip()
-    if label not in _uk._STANCES:
+    if label not in _UK_STANCES_FROZEN:
         return None
     provider = str(record.get("provider_label") or "").strip()
     return {
@@ -279,19 +297,6 @@ def validate_dossier(dossier: dict[str, Any]) -> None:
             f"leadership content is forbidden by the owner's data contract"
         )
 
-
-def _uk_stances_frozen() -> frozenset[str]:
-    """Lazy import of uk_policy_brain._STANCES — never a duplicate vocabulary.
-    Falls back to the frozen set known to the owner if the module is unavailable."""
-    try:
-        from engine import uk_policy_brain as _uk
-
-        return frozenset(_uk._STANCES)
-    except Exception:  # noqa: BLE001
-        return frozenset({"supportive", "restrictive", "mixed", "routine"})
-
-
-_UK_STANCES_FROZEN = _uk_stances_frozen()
 
 
 @dataclass(frozen=True)

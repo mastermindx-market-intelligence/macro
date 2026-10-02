@@ -301,3 +301,43 @@ def test_t5_no_coverage_with_europe_news_intel_unavailable(monkeypatch) -> None:
         # Restore sys.modules — these tests must not pollute later ones.
         for name, mod in real_modules.items():
             _sys.modules[name] = mod
+
+
+def test_uk_stance_reads_the_published_artifact_as_data(tmp_path) -> None:
+    """The dossier's UK stance is a DATA contract over the desk's published
+    artifact (site/uk_policy.json) — never a module import of the LLM desk."""
+    site = tmp_path / "site"
+    site.mkdir()
+    art = site / "uk_policy.json"
+    art.write_text(json.dumps({"stance": "restrictive", "provider_label": "anthropic:x"}))
+    assert imd._uk_stance(root=tmp_path) == {
+        "label": "restrictive",
+        "provider_label": "anthropic:x",
+        "authoritative": False,
+    }
+    # A label outside the display vocabulary degrades to None, never to a wrong label.
+    art.write_text(json.dumps({"stance": "bullish", "provider_label": "x"}))
+    assert imd._uk_stance(root=tmp_path) is None
+    # Malformed / missing artifact -> None (degrade, never raise).
+    art.write_text("[]")
+    assert imd._uk_stance(root=tmp_path) is None
+    art.unlink()
+    assert imd._uk_stance(root=tmp_path) is None
+
+
+def test_dossier_module_never_imports_the_uk_desk() -> None:
+    """Local pin of the desk's single-importer fence
+    (tests/test_uk_policy_brain.py::test_no_scoring_path_imports_this_desk):
+    the dossier reads the artifact as DATA. Measured red on #8276 ci-pack-5
+    (2026-10-02) when two lazy imports slipped in; this pin also closes the
+    `from engine.uk_policy_brain import ...` form the pack fence does not match."""
+    import re
+
+    src = (ROOT / "engine" / "international_macro_dashboard.py").read_text()
+    assert not re.search(
+        r"^\s*(from engine import uk_policy_brain|import engine\.uk_policy_brain"
+        r"|from engine\.uk_policy_brain import)",
+        src,
+        re.M,
+    )
+    assert imd._UK_STANCES_FROZEN == frozenset({"supportive", "restrictive", "mixed", "routine"})
