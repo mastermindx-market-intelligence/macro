@@ -29,6 +29,9 @@ import warnings
 from pathlib import Path
 from typing import Any
 
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_REPO_ROOT))
+
 import numpy as np
 import pandas as pd
 from scipy import stats

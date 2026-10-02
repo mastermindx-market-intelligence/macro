@@ -6,6 +6,10 @@ from __future__ import annotations
 import hashlib, importlib.util, json, platform
 from datetime import date, datetime
 from pathlib import Path
+import sys
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(_REPO_ROOT))
 import numpy, pandas, scipy, yaml, pyarrow as pa, pyarrow.compute as pc, pyarrow.parquet as pq
 
 PROTOCOL_SHA = "67011db3d3aed08827f027cafc5b5a2bf890289a1017b227cad15fc240826e68"
