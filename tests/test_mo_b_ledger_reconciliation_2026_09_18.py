@@ -22,6 +22,9 @@ INTEGRATION_BASE_SHA = "5332d876e75837c158c6f42a2862734451bb7158"
 # (the two-axis regime read is built but its only include is dead, dashboard.html.j2:15538);
 # MO-PAID-073 and MO-PAID-057 restamped (state unchanged). All three are union rows, so the
 # outside-union digest is unchanged; CEO B's F06-F13 census (#8264) confirmed 78/79 cells.
+# 2026-10-02 wave 3 (same writer, D17 as F03 owner): MO-PAID-073 PARTIAL->PROVEN_LIVE (freshness = designed T+1 cadence);
+# MO-PAID-077/008 carry served receipts (states unchanged); MO-PAID-006 child text corrected. All four are union rows,
+# so the outside-union digest is unchanged.
 OUTSIDE_UNION_SHA256 = "cb9c1bf581b30bbb75e9fa3fd1f7f953d01f313dff98601dddc45e37ba43ef3c"
 CAPABILITY_STATES = {"NOT_BUILT", "SPEC_ONLY", "PARTIAL", "BUILT_NOT_PROVEN", "PROVEN_LIVE"}
 
@@ -215,7 +218,7 @@ EXPECTED = {
   ],  # D7 2026-10-02: SPEC_ONLY->PARTIAL
   "MO-PAID-073": [
     "EXACT_EQUIVALENT",
-    "PARTIAL"
+    "PROVEN_LIVE"
   ],
   "MO-PAID-074": [
     "UPGRADE_EXISTING_OWNER",
