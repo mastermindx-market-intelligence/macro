@@ -7991,6 +7991,7 @@ jobs:
       - "templates/country_cycles.html.j2"
       - "templates/sanctions_map.html.j2"
       - "templates/theme.css"
+      - "tests/test_build_sanctions_map_no_path_stamp.py"
       - "tests/test_ofac_sdn_collector.py"
       - "tests/test_sanctions_map_engine.py"
       - "tests/test_sanctions_map_event_pins.py"
@@ -8010,8 +8011,9 @@ jobs:
         # W7-2 sanctions-map public-news layer 2026-09-19 (contract-delta): engine.europe_news_intel reads
         # data/europe_news_vector/events.parquet with pandas, so this job needs the pyarrow engine (seat fix, ci-pack-5 red at 2d5fdc60).
         run: pip install pytest pandas numpy pyyaml jinja2 requests pyarrow
+      # O21c 2026-10-02 (contract-delta unrun-suite): the builder-side no-post-render-stamp suite is wired here with its subject scripts/build_sanctions_map.py.
       - name: sanctions map engine + page + nav + worldmap + OFAC collector
-        run: python -m pytest tests/test_sanctions_map_engine.py tests/test_sanctions_map_page.py tests/test_sanctions_map_nav.py tests/test_worldmap_base.py tests/test_ofac_sdn_collector.py tests/test_sanctions_map_event_pins.py -q
+        run: python -m pytest tests/test_sanctions_map_engine.py tests/test_sanctions_map_page.py tests/test_sanctions_map_nav.py tests/test_worldmap_base.py tests/test_ofac_sdn_collector.py tests/test_sanctions_map_event_pins.py tests/test_build_sanctions_map_no_path_stamp.py
 
   itr-turn-rotation:
     if: ${{ false }}
