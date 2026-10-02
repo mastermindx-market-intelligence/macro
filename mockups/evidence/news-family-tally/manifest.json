@@ -4,371 +4,309 @@
   "registry_route": "/news.html",
   "route_kind": "news_family_tally_tip",
   "subject": ".lens-q (family_tally LENS trigger)",
-  "selector": "#nxConsequence",
-  "open_by": "keyboard_focus (Tab from page heading → direct focus() → focusin dispatch)",
-  "generated_at": "2026-10-02T11:20:00Z",
+  "selector": ".lens-pop",
+  "open_by": "keyboard_focus (focus .lens-q → dispatch focusin → theme.js shows .lens-pop)",
+  "generated_at": "2026-10-02T11:39:50Z",
   "fixture": {
     "type": "fixture-rendered news.html.j2",
-    "fixture_vm_summary": "non-trivial chronicle_impact family_tally (earnings named/shown 1/3, earnings_call named/shown 2/2, research_vault/macro_release/regime_flip/risk_band no_events)"
+    "fixture_vm_summary": "8 rows across earnings_call/research_vault/macro_release with non-trivial family_tally (earnings_call named 27/3 shown, research_vault named 12/8/3 shown, macro_release named 5/5/2 shown, regime_flip/risk_band none_named, earnings no_events)"
   },
   "cells": [
     {
-      "viewport": "desktop",
-      "locale": "en",
-      "theme": "dark",
-      "viewport_width": 1440,
-      "viewport_height": 900,
-      "open_by": "keyboard_focus",
-      "captured": true,
       "file": "cells/family-tally-tip-dark-en-desktop.png",
-      "alias": "family-tally-tip-dark-en-desktop.png",
-      "sha256": "2f70bc65a5241c2e14b3a6f3b6c9020012bac3ae43a215c71e327dd1ec560e33",
-      "bytes": 61678,
-      "width": 1008,
-      "height": 415,
-      "applied_theme": "dark",
-      "applied_locale": "en",
-      "overlay": "clean",
-      "bbox": {"x": 952, "y": 12, "w": 24, "h": 24},
-      "tip_text_prefix": "This week by event type — Research notes",
-      "focus_info": {
-        "activeIsLens": true,
-        "outline": "color(srgb 0.356863 0.607843 0.941176) none 3px",
-        "outlineWidth": "3px",
-        "boxShadow": "color(srgb 0.356863 0.607843 0.941176 / 0.12) 0px 0px 0px 3px",
-        "tabindex": null,
-        "type": "button",
-        "ariaLabel": "This week by event type — Research notes (0/0): no events this week; ...",
-        "hasDataTipEn": true,
-        "hasDataTipZh": true
-      }
-    },
-    {
-      "viewport": "desktop",
+      "theme": "dark",
       "locale": "en",
-      "theme": "light",
+      "viewport": "desktop",
       "viewport_width": 1440,
       "viewport_height": 900,
-      "open_by": "keyboard_focus",
-      "captured": true,
+      "open_by": "keyboard_focus (focus .lens-q → dispatch focusin → theme.js shows .lens-pop)",
+      "selector": ".lens-pop",
+      "applied_theme": "dark",
+      "applied_locale": "en",
+      "bbox": {
+        "x": 293.92626953125,
+        "y": 138.80088806152344,
+        "w": 300.1474609375,
+        "h": 205.1007843017578
+      },
+      "clip": {
+        "x": 269.92626953125,
+        "y": 114.80088806152344,
+        "w": 348.1474609375,
+        "h": 280.4759979248047
+      },
+      "trigger_box": {
+        "x": 434.28564453125,
+        "y": 352.1918640136719,
+        "w": 19.084991455078125,
+        "h": 19.08502197265625
+      },
+      "tip_is_sheet": false,
+      "tip_text": "This week by event type — Earnings reports (0/0): no events this week; Earnings calls (3/27): 27 events, 27 name a stock; Research notes (3/12): 12 events, 8 name a stock; Economic data (2/5): 5 events, 5 name a stock; Macro backdrop shifts (0/2): 2 events, none name a single stock; Risk radar shifts (0/1): 1 event, none name a single stock. Cards show only events that name a stock.",
+      "sha256": "a09e066d3cdd0078eba156d2c0c534a26c48510757a99dacf6f9915e3de74a2e",
+      "bytes": 60015,
+      "width": 348,
+      "height": 280,
+      "captured": "2026-10-02T11:39:50Z"
+    },
+    {
       "file": "cells/family-tally-tip-light-en-desktop.png",
-      "alias": "family-tally-tip-light-en-desktop.png",
-      "sha256": "153337142a2d41ad18a03e7b4b88ba3f91cff8f4487a830e2c2c7f5750ec4c81",
-      "bytes": 70261,
-      "width": 1008,
-      "height": 415,
-      "applied_theme": "light",
-      "applied_locale": "en",
-      "overlay": "clean",
-      "bbox": {"x": 952, "y": 12, "w": 24, "h": 24},
-      "tip_text_prefix": "This week by event type — Research notes",
-      "focus_info": {
-        "activeIsLens": true,
-        "outline": "color(srgb 0.159686 0.354667 0.917647) none 3px",
-        "outlineWidth": "3px",
-        "boxShadow": "color(srgb 0.156863 0.372549 1 / 0.12) 0px 0px 0px 3px",
-        "tabindex": null,
-        "type": "button",
-        "ariaLabel": "This week by event type — Research notes (0/0): no events this week; ...",
-        "hasDataTipEn": true,
-        "hasDataTipZh": true
-      }
-    },
-    {
+      "theme": "light",
+      "locale": "en",
       "viewport": "desktop",
-      "locale": "zh",
-      "theme": "dark",
       "viewport_width": 1440,
       "viewport_height": 900,
-      "open_by": "keyboard_focus",
-      "captured": true,
+      "open_by": "keyboard_focus (focus .lens-q → dispatch focusin → theme.js shows .lens-pop)",
+      "selector": ".lens-pop",
+      "applied_theme": "light",
+      "applied_locale": "en",
+      "bbox": {
+        "x": 294.008544921875,
+        "y": 139.0231170654297,
+        "w": 299.98291015625,
+        "h": 204.98829650878906
+      },
+      "clip": {
+        "x": 270.008544921875,
+        "y": 115.02311706542969,
+        "w": 347.98291015625,
+        "h": 280.25050354003906
+      },
+      "trigger_box": {
+        "x": 434.28887939453125,
+        "y": 352.1950988769531,
+        "w": 19.0784912109375,
+        "h": 19.078521728515625
+      },
+      "tip_is_sheet": false,
+      "tip_text": "This week by event type — Earnings reports (0/0): no events this week; Earnings calls (3/27): 27 events, 27 name a stock; Research notes (3/12): 12 events, 8 name a stock; Economic data (2/5): 5 events, 5 name a stock; Macro backdrop shifts (0/2): 2 events, none name a single stock; Risk radar shifts (0/1): 1 event, none name a single stock. Cards show only events that name a stock.",
+      "sha256": "407d667a2f567770be8e7831da39b3b8ec5317149968029f66b134f209fc4b67",
+      "bytes": 62516,
+      "width": 347,
+      "height": 280,
+      "captured": "2026-10-02T11:39:50Z"
+    },
+    {
       "file": "cells/family-tally-tip-dark-zh-desktop.png",
-      "alias": "family-tally-tip-dark-zh-desktop.png",
-      "sha256": "9f987d0859cf24f0223f1cbd21039a229d960554041f0bab7dafd680e1e127f1",
-      "bytes": 70562,
-      "width": 1008,
-      "height": 395,
-      "applied_theme": "dark",
-      "applied_locale": "zh",
-      "overlay": "clean",
-      "bbox": {"x": 952, "y": 12, "w": 24, "h": 24},
-      "tip_text_prefix": "本周按事件类型——研究纪要（0/0）：本周无事件；经济数据（0/0）：本周无事件",
-      "focus_info": {
-        "activeIsLens": true,
-        "outline": "color(srgb 0.356863 0.607843 0.941176) none 3px",
-        "outlineWidth": "3px",
-        "boxShadow": "color(srgb 0.356863 0.607843 0.941176 / 0.12) 0px 0px 0px 3px",
-        "tabindex": null,
-        "type": "button",
-        "ariaLabel": "本周按事件类型——研究纪要（0/0）：本周无事件；经济数据（0/0）：本周无事件； ...",
-        "hasDataTipEn": true,
-        "hasDataTipZh": true
-      }
-    },
-    {
-      "viewport": "desktop",
+      "theme": "dark",
       "locale": "zh",
-      "theme": "light",
+      "viewport": "desktop",
       "viewport_width": 1440,
       "viewport_height": 900,
-      "open_by": "keyboard_focus",
-      "captured": true,
+      "open_by": "keyboard_focus (focus .lens-q → dispatch focusin → theme.js shows .lens-pop)",
+      "selector": ".lens-pop",
+      "applied_theme": "dark",
+      "applied_locale": "zh",
+      "bbox": {
+        "x": 285.008544921875,
+        "y": 178.02078247070312,
+        "w": 299.98291015625,
+        "h": 164.9906005859375
+      },
+      "clip": {
+        "x": 261.008544921875,
+        "y": 154.02078247070312,
+        "w": 347.98291015625,
+        "h": 240.31536865234375
+      },
+      "trigger_box": {
+        "x": 425.94512939453125,
+        "y": 351.2575988769531,
+        "w": 19.0784912109375,
+        "h": 19.07855224609375
+      },
+      "tip_is_sheet": false,
+      "tip_text": "本周按事件类型——业绩公告（0/0）：本周无事件；业绩电话会（3/27）：27个事件，27个点名个股；研究纪要（3/12）：12个事件，8个点名个股；经济数据（2/5）：5个事件，5个点名个股；宏观环境转向（0/2）：2个事件，均未点名个股；风险雷达变化（0/1）：1个事件，均未点名个股。卡片仅展示点名的个股事件。",
+      "sha256": "4894fb77caeb2bda7f12302891cf041d4fab2a2b79dc25ea1723d224b668d1c9",
+      "bytes": 57680,
+      "width": 347,
+      "height": 240,
+      "captured": "2026-10-02T11:39:50Z"
+    },
+    {
       "file": "cells/family-tally-tip-light-zh-desktop.png",
-      "alias": "family-tally-tip-light-zh-desktop.png",
-      "sha256": "371d19b1af3524a38b30cec4fb2d51eea2b776501b981298f1b9d9048e4819a0",
-      "bytes": 80036,
-      "width": 1008,
-      "height": 395,
+      "theme": "light",
+      "locale": "zh",
+      "viewport": "desktop",
+      "viewport_width": 1440,
+      "viewport_height": 900,
+      "open_by": "keyboard_focus (focus .lens-q → dispatch focusin → theme.js shows .lens-pop)",
+      "selector": ".lens-pop",
       "applied_theme": "light",
       "applied_locale": "zh",
-      "overlay": "clean",
-      "bbox": {"x": 952, "y": 12, "w": 24, "h": 24},
-      "tip_text_prefix": "本周按事件类型——研究纪要（0/0）：本周无事件；经济数据（0/0）：本周无事件",
-      "focus_info": {
-        "activeIsLens": true,
-        "outline": "color(srgb 0.159686 0.354667 0.917647) none 3px",
-        "outlineWidth": "3px",
-        "boxShadow": "color(srgb 0.156863 0.372549 1 / 0.12) 0px 0px 0px 3px",
-        "tabindex": null,
-        "type": "button",
-        "ariaLabel": "本周按事件类型——研究纪要（0/0）：本周无事件；经济数据（0/0）：本周无事件； ...",
-        "hasDataTipEn": true,
-        "hasDataTipZh": true
-      }
+      "bbox": {
+        "x": 285.0083312988281,
+        "y": 178.02029418945312,
+        "w": 299.9833679199219,
+        "h": 164.99081420898438
+      },
+      "clip": {
+        "x": 261.0083312988281,
+        "y": 154.02029418945312,
+        "w": 347.9833679199219,
+        "h": 240.31585693359375
+      },
+      "trigger_box": {
+        "x": 425.9450988769531,
+        "y": 351.2575988769531,
+        "w": 19.07855224609375,
+        "h": 19.07855224609375
+      },
+      "tip_is_sheet": false,
+      "tip_text": "本周按事件类型——业绩公告（0/0）：本周无事件；业绩电话会（3/27）：27个事件，27个点名个股；研究纪要（3/12）：12个事件，8个点名个股；经济数据（2/5）：5个事件，5个点名个股；宏观环境转向（0/2）：2个事件，均未点名个股；风险雷达变化（0/1）：1个事件，均未点名个股。卡片仅展示点名的个股事件。",
+      "sha256": "ce9eaf178337b1d7ee128797347c6f43f6c9b64a5b73e4bb46e2b15ab86e4000",
+      "bytes": 56872,
+      "width": 347,
+      "height": 240,
+      "captured": "2026-10-02T11:39:50Z"
     },
     {
-      "viewport": "mobile",
-      "locale": "en",
-      "theme": "dark",
-      "viewport_width": 390,
-      "viewport_height": 844,
-      "open_by": "keyboard_focus",
-      "captured": true,
       "file": "cells/family-tally-tip-dark-en-mobile.png",
-      "alias": "family-tally-tip-dark-en-mobile.png",
-      "sha256": "5bdc3e7b3ec29d9806080fb7dae9f445ab61dada6bcac0b578fa660e59ba2709",
-      "bytes": 111910,
-      "width": 320,
-      "height": 883,
-      "applied_theme": "dark",
-      "applied_locale": "en",
-      "overlay": "clean",
-      "bbox": {"x": 280, "y": 12, "w": 20, "h": 20},
-      "tip_text_prefix": "This week by event type — Research notes",
-      "focus_info": {
-        "activeIsLens": true,
-        "outline": "color(srgb 0.356863 0.607843 0.941176) none 3px",
-        "outlineWidth": "3px",
-        "boxShadow": "color(srgb 0.356863 0.607843 0.941176 / 0.12) 0px 0px 0px 3px",
-        "tabindex": null,
-        "type": "button",
-        "ariaLabel": "This week by event type — Research notes (0/0): no events this week; ...",
-        "hasDataTipEn": true,
-        "hasDataTipZh": true
-      }
-    },
-    {
-      "viewport": "mobile",
+      "theme": "dark",
       "locale": "en",
-      "theme": "light",
+      "viewport": "mobile",
       "viewport_width": 390,
       "viewport_height": 844,
-      "open_by": "keyboard_focus",
-      "captured": true,
+      "open_by": "keyboard_focus (focus .lens-q → dispatch focusin → theme.js shows .lens-pop)",
+      "selector": ".lens-pop",
+      "applied_theme": "dark",
+      "applied_locale": "en",
+      "bbox": {
+        "x": 0,
+        "y": 654.4698486328125,
+        "w": 390,
+        "h": 189.578125
+      },
+      "clip": {
+        "x": 0.0,
+        "y": 14.991966247558594,
+        "w": 390.0,
+        "h": 829.0080337524414
+      },
+      "trigger_box": {
+        "x": 253.10134887695312,
+        "y": 38.991966247558594,
+        "w": 19.078582763671875,
+        "h": 19.078567504882812
+      },
+      "tip_is_sheet": false,
+      "tip_text": "✕\nThis week by event type — Earnings reports (0/0): no events this week; Earnings calls (3/27): 27 events, 27 name a stock; Research notes (3/12): 12 events, 8 name a stock; Economic data (2/5): 5 events, 5 name a stock; Macro backdrop shifts (0/2): 2 events, none name a single stock; Risk radar shifts (0/1): 1 event, none name a single stock. Cards show only events that name a stock.",
+      "sha256": "fa8b9b3390842828000e89782182e5f4593e9232373039c35ef7fce563107ea7",
+      "bytes": 113572,
+      "width": 390,
+      "height": 829,
+      "captured": "2026-10-02T11:39:50Z"
+    },
+    {
       "file": "cells/family-tally-tip-light-en-mobile.png",
-      "alias": "family-tally-tip-light-en-mobile.png",
-      "sha256": "76cd0920142d4ff001c3930a66957f6c548b9bcf6878170da720c3265cffa01e",
-      "bytes": 120988,
-      "width": 320,
-      "height": 883,
+      "theme": "light",
+      "locale": "en",
+      "viewport": "mobile",
+      "viewport_width": 390,
+      "viewport_height": 844,
+      "open_by": "keyboard_focus (focus .lens-q → dispatch focusin → theme.js shows .lens-pop)",
+      "selector": ".lens-pop",
       "applied_theme": "light",
       "applied_locale": "en",
-      "overlay": "clean",
-      "bbox": {"x": 280, "y": 12, "w": 20, "h": 20},
-      "tip_text_prefix": "This week by event type — Research notes",
-      "focus_info": {
-        "activeIsLens": true,
-        "outline": "color(srgb 0.159686 0.354667 0.917647) none 3px",
-        "outlineWidth": "3px",
-        "boxShadow": "color(srgb 0.156863 0.372549 1 / 0.12) 0px 0px 0px 3px",
-        "tabindex": null,
-        "type": "button",
-        "ariaLabel": "This week by event type — Research notes (0/0): no events this week; ...",
-        "hasDataTipEn": true,
-        "hasDataTipZh": true
-      }
+      "bbox": {
+        "x": 0,
+        "y": 654.47119140625,
+        "w": 390,
+        "h": 189.578125
+      },
+      "clip": {
+        "x": 0.0,
+        "y": 14.991985321044922,
+        "w": 390.0,
+        "h": 829.0080146789551
+      },
+      "trigger_box": {
+        "x": 253.1013641357422,
+        "y": 38.99198532104492,
+        "w": 19.078506469726562,
+        "h": 19.078529357910156
+      },
+      "tip_is_sheet": false,
+      "tip_text": "✕\nThis week by event type — Earnings reports (0/0): no events this week; Earnings calls (3/27): 27 events, 27 name a stock; Research notes (3/12): 12 events, 8 name a stock; Economic data (2/5): 5 events, 5 name a stock; Macro backdrop shifts (0/2): 2 events, none name a single stock; Risk radar shifts (0/1): 1 event, none name a single stock. Cards show only events that name a stock.",
+      "sha256": "90ccc72742bb0105584e95c48df182fe84c32ea1363d06e01d82f61e6b401ed9",
+      "bytes": 119807,
+      "width": 390,
+      "height": 829,
+      "captured": "2026-10-02T11:39:50Z"
     },
     {
-      "viewport": "mobile",
-      "locale": "zh",
+      "file": "cells/family-tally-tip-dark-zh-mobile.png",
       "theme": "dark",
+      "locale": "zh",
+      "viewport": "mobile",
       "viewport_width": 390,
       "viewport_height": 844,
-      "open_by": "keyboard_focus",
-      "captured": true,
-      "file": "cells/family-tally-tip-dark-zh-mobile.png",
-      "alias": "family-tally-tip-dark-zh-mobile.png",
-      "sha256": "e92cf7f87796d50fd009a73bb2ccf3ede4940c7c01d579142e74a9f6204efb53",
-      "bytes": 111054,
-      "width": 320,
-      "height": 863,
+      "open_by": "keyboard_focus (focus .lens-q → dispatch focusin → theme.js shows .lens-pop)",
+      "selector": ".lens-pop",
       "applied_theme": "dark",
       "applied_locale": "zh",
-      "overlay": "clean",
-      "bbox": {"x": 280, "y": 12, "w": 20, "h": 20},
-      "tip_text_prefix": "本周按事件类型——研究纪要（0/0）：本周无事件；经济数据（0/0）：本周无事件",
-      "focus_info": {
-        "activeIsLens": true,
-        "outline": "color(srgb 0.356863 0.607843 0.941176) none 3px",
-        "outlineWidth": "3px",
-        "boxShadow": "color(srgb 0.356863 0.607843 0.941176 / 0.12) 0px 0px 0px 3px",
-        "tabindex": null,
-        "type": "button",
-        "ariaLabel": "本周按事件类型——研究纪要（0/0）：本周无事件；经济数据（0/0）：本周无事件； ...",
-        "hasDataTipEn": true,
-        "hasDataTipZh": true
-      }
+      "bbox": {
+        "x": 0,
+        "y": 675.2691040039062,
+        "w": 390,
+        "h": 168.78125
+      },
+      "clip": {
+        "x": 0.0,
+        "y": 14.054500579833984,
+        "w": 390.0,
+        "h": 829.945499420166
+      },
+      "trigger_box": {
+        "x": 244.75762939453125,
+        "y": 38.054500579833984,
+        "w": 19.0784912109375,
+        "h": 19.07849884033203
+      },
+      "tip_is_sheet": false,
+      "tip_text": "✕\n本周按事件类型——业绩公告（0/0）：本周无事件；业绩电话会（3/27）：27个事件，27个点名个股；研究纪要（3/12）：12个事件，8个点名个股；经济数据（2/5）：5个事件，5个点名个股；宏观环境转向（0/2）：2个事件，均未点名个股；风险雷达变化（0/1）：1个事件，均未点名个股。卡片仅展示点名的个股事件。",
+      "sha256": "e5cf62184c3e5ca417ad950177026a364b5d3775968ab9a74a31f6b4ae83bfdf",
+      "bytes": 116660,
+      "width": 390,
+      "height": 829,
+      "captured": "2026-10-02T11:39:50Z"
     },
     {
-      "viewport": "mobile",
-      "locale": "zh",
+      "file": "cells/family-tally-tip-light-zh-mobile.png",
       "theme": "light",
+      "locale": "zh",
+      "viewport": "mobile",
       "viewport_width": 390,
       "viewport_height": 844,
-      "open_by": "keyboard_focus",
-      "captured": true,
-      "file": "cells/family-tally-tip-light-zh-mobile.png",
-      "alias": "family-tally-tip-light-zh-mobile.png",
-      "sha256": "33b166f4d5b3bb614f681958760f105a35a33863e612d4ac54ce8285d5a69cef",
-      "bytes": 118501,
-      "width": 320,
-      "height": 863,
+      "open_by": "keyboard_focus (focus .lens-q → dispatch focusin → theme.js shows .lens-pop)",
+      "selector": ".lens-pop",
       "applied_theme": "light",
       "applied_locale": "zh",
-      "overlay": "clean",
-      "bbox": {"x": 280, "y": 12, "w": 20, "h": 20},
-      "tip_text_prefix": "本周按事件类型——研究纪要（0/0）：本周无事件；经济数据（0/0）：本周无事件",
-      "focus_info": {
-        "activeIsLens": true,
-        "outline": "color(srgb 0.159686 0.354667 0.917647) none 3px",
-        "outlineWidth": "3px",
-        "boxShadow": "color(srgb 0.156863 0.372549 1 / 0.12) 0px 0px 0px 3px",
-        "tabindex": null,
-        "type": "button",
-        "ariaLabel": "本周按事件类型——研究纪要（0/0）：本周无事件；经济数据（0/0）：本周无事件； ...",
-        "hasDataTipEn": true,
-        "hasDataTipZh": true
-      }
-    }
-  ],
-  "keyboard_probes": [
-    {
-      "tabs_to_reach_lens": 1,
-      "tab_reached_lens": true,
-      "tip_state_on_focus": {
-        "activeIsLens": true,
-        "popoverExists": true,
-        "popoverIsOpen": true,
-        "popoverDisplay": "block",
-        "popoverVisibility": "visible",
-        "popoverOpacity": "0.852552",
-        "popoverRole": "tooltip"
+      "bbox": {
+        "x": 0,
+        "y": 675.269775390625,
+        "w": 390,
+        "h": 168.78125
       },
-      "after_esc": {
-        "popoverExists": true,
-        "popoverIsOpen": false,
-        "popoverDisplay": "block",
-        "popoverVisibility": "visible"
+      "clip": {
+        "x": 0.0,
+        "y": 14.054508209228516,
+        "w": 390.0,
+        "h": 829.9454917907715
       },
-      "focus_ring": {
-        "outline": "color(srgb 0.356863 0.607843 0.941176) none 3px",
-        "outlineWidth": "3px",
-        "outlineColor": "color(srgb 0.356863 0.607843 0.941176)",
-        "boxShadow": "color(srgb 0.356863 0.607843 0.941176 / 0.12) 0px 0px 0px 3px"
+      "trigger_box": {
+        "x": 244.75762939453125,
+        "y": 38.054508209228516,
+        "w": 19.0784912109375,
+        "h": 19.07848358154297
       },
-      "theme": "dark",
-      "locale": "en"
-    },
-    {
-      "tabs_to_reach_lens": 1,
-      "tab_reached_lens": true,
-      "tip_state_on_focus": {
-        "activeIsLens": true,
-        "popoverExists": true,
-        "popoverIsOpen": true,
-        "popoverDisplay": "block",
-        "popoverVisibility": "visible",
-        "popoverOpacity": "0.914883",
-        "popoverRole": "tooltip"
-      },
-      "after_esc": {
-        "popoverExists": true,
-        "popoverIsOpen": false,
-        "popoverDisplay": "block",
-        "popoverVisibility": "visible"
-      },
-      "focus_ring": {
-        "outline": "color(srgb 0.159686 0.354667 0.917647) none 3px",
-        "outlineWidth": "3px",
-        "outlineColor": "color(srgb 0.159686 0.354667 0.917647)",
-        "boxShadow": "color(srgb 0.159686 0.354667 0.917647 / 0.12) 0px 0px 0px 3px"
-      },
-      "theme": "light",
-      "locale": "en"
-    },
-    {
-      "tabs_to_reach_lens": 1,
-      "tab_reached_lens": true,
-      "tip_state_on_focus": {
-        "activeIsLens": true,
-        "popoverExists": true,
-        "popoverIsOpen": true,
-        "popoverDisplay": "block",
-        "popoverVisibility": "visible",
-        "popoverOpacity": "0.852287",
-        "popoverRole": "tooltip"
-      },
-      "after_esc": {
-        "popoverExists": true,
-        "popoverIsOpen": false,
-        "popoverDisplay": "block",
-        "popoverVisibility": "visible"
-      },
-      "focus_ring": {
-        "outline": "color(srgb 0.356863 0.607843 0.941176) none 3px",
-        "outlineWidth": "3px",
-        "outlineColor": "color(srgb 0.356863 0.607843 0.941176)",
-        "boxShadow": "color(srgb 0.356863 0.607843 0.941176 / 0.12) 0px 0px 0px 3px"
-      },
-      "theme": "dark",
-      "locale": "zh"
-    },
-    {
-      "tabs_to_reach_lens": 1,
-      "tab_reached_lens": true,
-      "tip_state_on_focus": {
-        "activeIsLens": true,
-        "popoverExists": true,
-        "popoverIsOpen": true,
-        "popoverDisplay": "block",
-        "popoverVisibility": "visible",
-        "popoverOpacity": "0.851919",
-        "popoverRole": "tooltip"
-      },
-      "after_esc": {
-        "popoverExists": true,
-        "popoverIsOpen": false,
-        "popoverDisplay": "block",
-        "popoverVisibility": "visible"
-      },
-      "focus_ring": {
-        "outline": "color(srgb 0.159686 0.354667 0.917647) none 3px",
-        "outlineWidth": "3px",
-        "outlineColor": "color(srgb 0.159686 0.354667 0.917647)",
-        "boxShadow": "color(srgb 0.159686 0.354667 0.917647 / 0.12) 0px 0px 0px 3px"
-      },
-      "theme": "light",
-      "locale": "zh"
+      "tip_is_sheet": false,
+      "tip_text": "✕\n本周按事件类型——业绩公告（0/0）：本周无事件；业绩电话会（3/27）：27个事件，27个点名个股；研究纪要（3/12）：12个事件，8个点名个股；经济数据（2/5）：5个事件，5个点名个股；宏观环境转向（0/2）：2个事件，均未点名个股；风险雷达变化（0/1）：1个事件，均未点名个股。卡片仅展示点名的个股事件。",
+      "sha256": "65a3a02d85f82c84cb42adff856568af952cf3407b0c5a38f928c46eb448e2d3",
+      "bytes": 128514,
+      "width": 390,
+      "height": 829,
+      "captured": "2026-10-02T11:39:50Z"
     }
   ]
 }
