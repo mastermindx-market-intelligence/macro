@@ -26,7 +26,7 @@ _NY = ZoneInfo("America/New_York")
 _BINDING_FIELDS = (
     "receipt_id", "actual", "unit", "period", "official_reference_period",
     "source_url", "source_sha256", "observed_at", "verified_at", "source_released_at",
-    "published_precision",
+    "published_precision", "estimate_vintage",
 )
 
 
