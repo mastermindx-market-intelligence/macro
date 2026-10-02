@@ -72,8 +72,8 @@
 3. Run `python3 -m scripts.build_ontology_explorer`.
 4. Run design-system and runtime-style-injection guards.
 5. Run production-shaped local browser proof for desktop, tablet, 390px, EN/ZH, dark/light, keyboard, reduced motion, and 200% zoom.
-6. Preserve an explicit human gate for signed-in production evidence if the operator-held entitlement token is unavailable; never acquire or copy it.
-7. Commit, push, open the single PR, request independent review, repair findings, wait for concluded CI, squash merge, and perform the owed live proof.
+6. Use an existing authorized browser session for production observation when available; never acquire or copy an entitlement token. On 2026-10-02 the Chairman waived waiting for an inaccessible signed-in journey, not the truthfulness of production claims or any authentication boundary. Mini2's existing Chrome session was observed to open the current WTI path without an access gate; that older served route does not prove this candidate.
+7. Commit, push and continue the single PR. The Chairman assigned self-review to the active Sol session on 2026-10-02; a separate independent reviewer is not a prerequisite for this commission. Repair concrete findings and consume concluded required CI. Actual repository-protected approvals, merge authority and production-deployment controls remain gates; no self-review is represented as independent approval and no unserved candidate is called live.
 
 ## Release blockers
 
