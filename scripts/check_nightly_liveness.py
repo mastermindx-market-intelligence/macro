@@ -1668,12 +1668,12 @@ def _selftest() -> int:
     _check("D/mainland-floor-is-not-always-on", r["ok"], False)
     assert any("STALE BOARD [China]" in f for f in r["fail_reasons"]), r
 
-    # Blindness, per market and independently: a missing artifact, an absent stamp
-    # (the live International shape — its as_of is None on every commit in history)
-    # and an unparseable stamp are all INDETERMINATE, and the other markets stay graded.
+    # Blindness, per market and independently: a missing artifact or an unparseable
+    # stamp is INDETERMINATE, and the other markets stay graded. A readable null stamp
+    # is a producer regression for every market now that International is stamped.
     r = evaluate(healthy_runs, d_index, d_now,
                  boards={"us": None, "cn": None, "hk": None,
-                         "ca": {"as_of": "2026-08-17"}, "intl": {"as_of": None}})
+                         "ca": {"as_of": "2026-08-17"}, "intl": None})
     _check("D/blind-markets-never-breach", r["ok"], True)
     # Canada is the one positively fresh row in this fixture. Every other registered
     # board/ledger — including the three Sector Intelligence generation artifacts —
@@ -1688,8 +1688,9 @@ def _selftest() -> int:
     _check("D/unstamped-board-is-a-breach", r["ok"], False)
     assert any("BOARD PUBLISHED WITHOUT A STAMP [Canada]" in f
                for f in r["fail_reasons"]), r
-    # and the one board that has NEVER carried a stamp stays a named warning
-    assert any("INDETERMINATE [International]" in w for w in r["warnings"]), r
+    # International is no longer exempt: its readable null stamp is a breach too.
+    assert any("BOARD PUBLISHED WITHOUT A STAMP [International]" in f
+               for f in r["fail_reasons"]), r
 
     # A market absent from the payload entirely must warn, never vanish quietly —
     # that is what a forgotten sparse-checkout path looks like.
