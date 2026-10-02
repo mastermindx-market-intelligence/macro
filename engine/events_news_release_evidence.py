@@ -546,6 +546,11 @@ def _scored_expectation_metric(
         result["reason"] = "ambiguous_frozen_model_context" if candidates else "no_matching_frozen_model_context"
         return result
     row = candidates[0]
+    frozen_day = official._parse_iso_date(row.get("frozen_asof_night"))
+    release_day = official._parse_iso_date(event_day)
+    if frozen_day is None or release_day is None or frozen_day >= release_day:
+        result["reason"] = "frozen_cutoff_invalid"
+        return result
     row_actual = row.get("actual")
     official_actual = official_metric.get("actual")
     if (
