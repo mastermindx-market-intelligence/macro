@@ -294,3 +294,51 @@ def test_a_number_is_not_rounded_into_a_different_observation(policy):
     v=project(policy,rows)
     assert v['metrics'][0]['reason']=='published_precision_mismatch'
     assert v['metrics'][0]['actual'] is None
+
+
+def test_recent_release_bridge_keeps_forward_calendar_and_adds_ledger_result(policy):
+    future={'type':'GDP','date':'2026-10-02','label':'GDP'}
+    rows=receipts(policy)
+    out=view.attach_recent_event_actual_evidence(
+        [future],rows,as_of=ASOF,lookback_days=7,defects_path=policy)
+    assert out[0]['type']=='GDP' and 'official_evidence' in out[0]
+    recent=[e for e in out if isinstance(e,dict) and e.get('result_only')]
+    assert len(recent)==1
+    assert recent[0]['type']=='PCE' and recent[0]['date']=='2026-09-30'
+    assert recent[0]['official_evidence']['status']=='available'
+    assert recent[0]['source']=='official_actual_ledger'
+    assert recent[0]['is_context_only'] is True
+
+
+def test_recent_release_bridge_deduplicates_existing_typed_event(policy):
+    rows=receipts(policy)
+    event={'type':'PCE','date':'2026-09-30','label':'scheduled row'}
+    out=view.attach_recent_event_actual_evidence(
+        [event],rows,as_of=ASOF,lookback_days=7,defects_path=policy)
+    assert len(out)==1 and out[0]['label']=='scheduled row'
+    assert out[0]['official_evidence']['status']=='available'
+
+
+def test_recent_release_bridge_ignores_old_correction_and_malformed_rows(policy):
+    rows=receipts(policy)
+    old=[dict(r,release_date='2026-09-01') for r in rows]
+    correction=dict(rows[0],row_type='correction_candidate',release_date='2026-09-30')
+    out=view.attach_recent_event_actual_evidence(
+        [],old+[correction,None,{'release':'made-up','release_date':'2026-09-30'}],
+        as_of=ASOF,lookback_days=7,defects_path=policy)
+    assert out==[]
+
+
+@pytest.mark.parametrize('lookback',[-1,32,True])
+def test_recent_release_bridge_invalid_lookback_falls_back_without_synthetic_rows(policy,lookback):
+    rows=receipts(policy)
+    out=view.attach_recent_event_actual_evidence(
+        [],rows,as_of=ASOF,lookback_days=lookback,defects_path=policy)
+    assert out==[]
+
+
+def test_recent_release_bridge_invalid_cutoff_does_not_invent_history(policy):
+    rows=receipts(policy)
+    out=view.attach_recent_event_actual_evidence(
+        [],rows,as_of='bad',lookback_days=7,defects_path=policy)
+    assert out==[]
