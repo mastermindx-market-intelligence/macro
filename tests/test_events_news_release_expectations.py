@@ -367,3 +367,35 @@ def test_capture_health_current_or_absent_does_not_create_false_staleness():
     payload.pop("capture_health")
     absent = view.event_expectation_context(cpi_event(), payload, as_of=ASOF)
     assert absent["status"] == "available"
+
+
+def test_payroll_market_implied_raw_count_is_withheld_without_explicit_unit_contract():
+    payload = forecast_payload()
+    payload["upcoming"] = [{
+        "release": "nfp",
+        "release_type": "nfp",
+        "period": "2026-09",
+        "release_date": "2026-10-02",
+        "projection": {"point": 100.0, "p10": 50.0, "p90": 150.0},
+        "benchmark_set": {
+            "naive_prior": 217.0,
+            "trailing_3m": 122.0,
+            "market_implied": {
+                "source": "kalshi",
+                "implied_median": 97000.0,
+                "asof": "2026-10-01",
+            },
+        },
+        "model_epoch": "champion_legacy_target_v1",
+        "target_epoch": "legacy_cross_vintage_initial_levels_v0",
+        "cutoff_label": "T-1",
+    }]
+    event = {"type": "NFP", "date": "2026-10-02", "reference_period": "2026-09"}
+    out = view.event_expectation_context(event, payload, as_of=ASOF)
+    metric = out["metrics"][0]
+    assert metric["status"] == "experimental_model_context"
+    assert metric["unit"] == "thousands"
+    assert metric["point"] == 100.0
+    assert metric["benchmarks"]["naive_prior"] == 217.0
+    assert "market_implied" not in metric["benchmarks"]
+    assert metric["market_implied_status"] == "unit_basis_unqualified"
