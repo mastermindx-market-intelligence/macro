@@ -20,7 +20,8 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT/'tests'))
 from events_news_release_fixture import historical_data
 from events_news_release_browser_support import fixture_page
-from engine.events_news_release_evidence import attach_event_actual_evidence
+from engine.events_news_release_evidence import attach_event_actual_evidence, attach_event_expectation_context
+from test_events_news_release_expectations import ASOF as EXPECT_ASOF, cpi_event, forecast_payload
 
 SIZES = [(1440,900),(768,1024),(390,844),(320,740),(844,390),(720,450)]
 APPEARANCES = [('dark','en'),('light','en'),('dark','zh'),('light','zh')]
@@ -179,3 +180,38 @@ def test_repaired_result_does_not_relabel_later_verification(browser):
         assert '2026-08-11T08:24:15.196500+00:00' in text
         assert p.locator('.nd-official-value').first.inner_text()=='-0.1%'
     finally: p.close()
+
+
+def test_expectation_detail_opens_summary_but_keeps_methodology_progressive(browser):
+    event = cpi_event()
+    event.update(time_et='08:30', impact='high', label='CPI · fixture release')
+    event = attach_event_expectation_context(
+        [event], forecast_payload(), as_of=EXPECT_ASOF)[0]
+    data = {
+        'alerts': [], 'latest': None, 'macro_news': {'headlines': []},
+        'macro_catalysts': [event], 'generated_utc': EXPECT_ASOF,
+    }
+    p = browser.new_page(viewport=dict(width=1440, height=900))
+    p.clock.set_fixed_time(datetime(2026,10,1,21,tzinfo=timezone.utc))
+    try:
+        p.set_content(
+            fixture_page(data, 'light', 'en', include_js=True),
+            wait_until='domcontentloaded')
+        expect(p.locator('#dlg-news')).to_have_attribute('data-nd-ready','true')
+        outer = p.locator('.nd-expectation-context')
+        assert not outer.evaluate('(n)=>n.open')
+        p.locator('[data-nd-mode="releases"]').click()
+        p.locator('[data-nd-inspect]:visible').first.click()
+        assert outer.evaluate('(n)=>n.open')
+        assert p.locator('.nd-expectation-method[open]').count() == 0
+        text = outer.inner_text()
+        assert 'Street survey' in text and 'Not connected' in text
+        assert 'Mastermind blended benchmark' in text
+        p.locator('.nd-expectation-method > summary').first.click()
+        assert p.locator('.nd-expectation-method[open]').count() == 1
+        assert 'Accuracy claim' in p.locator('.nd-expectation-method').first.inner_text()
+        p.locator('[data-nd-back]').click()
+        assert not outer.evaluate('(n)=>n.open')
+        assert p.locator('.nd-expectation-method[open]').count() == 0
+    finally:
+        p.close()
