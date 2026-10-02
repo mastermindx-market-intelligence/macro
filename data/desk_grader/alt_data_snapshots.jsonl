@@ -4657,3 +4657,9 @@
 {"date":"2026-10-01","ticker":"TDG","departed":true,"left_desk":"2026-10-01","last_rank":null,"last_score":17}
 {"date":"2026-10-01","ticker":"AMAT","rank":7,"score":57,"lean":1,"broken":false}
 {"date":"2026-10-01","ticker":"NOVT","rank":null,"score":14,"lean":1,"broken":true}
+{"date":"2026-10-01","ticker":"CAT","rank":22,"score":36,"lean":1,"broken":false}
+{"date":"2026-10-01","ticker":"NVT","rank":28,"score":32,"lean":1,"broken":false}
+{"date":"2026-10-01","ticker":"PSKY","rank":null,"score":31,"lean":1,"broken":true}
+{"date":"2026-10-01","ticker":"G","rank":null,"score":28,"lean":1,"broken":true}
+{"date":"2026-10-01","ticker":"DJT","rank":null,"score":25,"lean":1,"broken":true}
+{"date":"2026-10-01","ticker":"PINS","rank":null,"score":14,"lean":1,"broken":true}

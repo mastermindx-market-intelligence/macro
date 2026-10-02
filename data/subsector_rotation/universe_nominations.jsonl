@@ -97,3 +97,7 @@
 {"date":"2026-10-01","theme":"Energy Traditional","donor":"energybaseoilrefining","receiver":"energybaseutilities","confidence":0.341,"both_confirmed":false}
 {"date":"2026-10-01","theme":"Commodities Agriculture","donor":"commagribiofuels","receiver":"commagrilivestock","confidence":0.324,"both_confirmed":false}
 {"date":"2026-10-01","theme":"Semiconductors","donor":"semiscompute","receiver":"semislithography","confidence":0.315,"both_confirmed":false}
+{"date":"2026-10-01","theme":"Wearables","donor":"wearablessoftware","receiver":"wearablesimmersive","confidence":0.545,"both_confirmed":false}
+{"date":"2026-10-01","theme":"Semiconductors","donor":"semiscompute","receiver":"semisanalog","confidence":0.317,"both_confirmed":false}
+{"date":"2026-10-01","theme":"Electric Vehicles","donor":"evscharging","receiver":"evschips","confidence":0.307,"both_confirmed":false}
+{"date":"2026-10-01","theme":"Space Tech","donor":"spaceinfrastructure","receiver":"spacedataanalytics","confidence":0.231,"both_confirmed":false}
