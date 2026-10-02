@@ -227,6 +227,86 @@ def test_future_context_uses_declared_primary_and_never_calls_it_survey_data():
     assert core["basis"] == "champion_model"
 
 
+
+def test_release_anatomy_reuses_exact_event_quirks_and_policy_backdrop():
+    payload = forecast_payload()
+    policy = {
+        "fed_stance": "hawkish",
+        "gap_bp": 7,
+        "implied_cuts_12m": -4.0,
+        "next_fomc": "2026-10-28",
+        "guidance_direction": "on_hold",
+    }
+    quirks = [{
+        "code": "cpi_health_insurance_reset",
+        "en": "CPI health-insurance retained-earnings update",
+        "zh": "CPI医疗保险留存收益更新",
+        "cite": "https://www.bls.gov/opub/mlr/2023/article/incorporating-new-estimates-into-the-cpi.htm",
+    }]
+    for row in payload["upcoming"]:
+        row["policy_backdrop"] = dict(policy)
+        row["regime_axis"] = "inflation"
+        row["quirk_flags"] = deepcopy(quirks)
+    out = view.event_expectation_context(cpi_event(), payload, as_of=ASOF)
+    anatomy = out["release_anatomy"]
+    assert anatomy["status"] == "complete"
+    assert anatomy["regime_axis"] == "inflation"
+    assert anatomy["policy_backdrop"] == policy
+    assert anatomy["policy_reason"] is None
+    assert anatomy["quirk_flags"] == [{
+        "code": "cpi_health_insurance_reset",
+        "en": quirks[0]["en"],
+        "zh": quirks[0]["zh"],
+        "cite_url": quirks[0]["cite"],
+    }]
+
+
+def test_release_anatomy_withholds_conflicting_policy_and_unsafe_citation():
+    payload = forecast_payload()
+    payload["upcoming"][0]["policy_backdrop"] = {"fed_stance": "hawkish", "gap_bp": 7}
+    payload["upcoming"][1]["policy_backdrop"] = {"fed_stance": "dovish", "gap_bp": -7}
+    payload["upcoming"][0]["quirk_flags"] = [{
+        "code": "cpi_weight_update",
+        "en": "Annual weight update",
+        "zh": "年度权重更新",
+        "cite": "javascript:alert(1)",
+    }]
+    out = view.event_expectation_context(cpi_event(), payload, as_of=ASOF)
+    anatomy = out["release_anatomy"]
+    assert anatomy["policy_backdrop"] == {}
+    assert anatomy["policy_reason"] == "cross_metric_mismatch"
+    assert anatomy["quirk_flags"][0]["code"] == "cpi_weight_update"
+    assert "cite_url" not in anatomy["quirk_flags"][0]
+    assert "citation" not in anatomy["quirk_flags"][0]
+
+
+def test_release_anatomy_keeps_non_url_owner_citation_as_text():
+    payload = forecast_payload()
+    payload["upcoming"][0]["quirk_flags"] = [{
+        "code": "nfp_five_week_gap",
+        "en": "Five-week survey gap",
+        "zh": "五周调查间隔",
+        "cite": "BLS CES survey reference week definition",
+    }]
+    # Rebind the one row to NFP for a compact owner-citation test.
+    payload["upcoming"] = [{
+        **payload["upcoming"][0],
+        "release": "nfp",
+        "release_type": "nfp",
+        "release_date": "2026-10-02",
+        "period": "2026-09",
+        "projection": {"point": 100.0, "p10": 50.0, "p90": 150.0},
+    }]
+    out = view.event_expectation_context(
+        {"type": "NFP", "date": "2026-10-02", "reference_period": "2026-09"},
+        payload,
+        as_of=ASOF,
+    )
+    assert out["release_anatomy"]["quirk_flags"][0]["citation"] == (
+        "BLS CES survey reference week definition"
+    )
+
+
 def test_combined_block_never_silently_wins_without_owner_declaration():
     payload = forecast_payload()
     payload["upcoming"][0].pop("primary_forecast_basis")
