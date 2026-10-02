@@ -30,6 +30,9 @@ _TARGETS: dict[str, tuple[tuple[str, str, str, str, float], ...]] = {
         ("pce_headline", "headline_mom", "pce_headline_mom", "percent", 1.0),
         ("pce_core", "core_mom", "pce_core_mom", "percent", 1.0),
     ),
+    "GDP": (
+        ("gdp_real_annualized", "real_gdp_annualized", "gdp_real_annualized", "percent_annualized", 1.0),
+    ),
     "NFP": (
         ("nfp", "payroll_change", "nfp_payroll_change", "thousands", 1.0 / 1000.0),
     ),
@@ -65,6 +68,13 @@ _SOURCE_CONTRACTS: dict[str, dict[str, Any]] = {
         "publisher": "U.S. Bureau of Economic Analysis",
         "source_id": "bea_pce",
         "parser": ("pce", 1),
+        "raw_unit": "percent",
+    },
+    "GDP": {
+        "host": "bea.gov",
+        "publisher": "U.S. Bureau of Economic Analysis",
+        "source_id": "bea_gdp",
+        "parser": ("gdp", 1),
         "raw_unit": "percent",
     },
     "CLAIMS": {
@@ -192,6 +202,41 @@ def _parse_month_reference(value: Any) -> str | None:
     return f"{int(match.group(2)):04d}-{month:02d}"
 
 
+def _parse_quarter_reference(value: Any) -> str | None:
+    """Normalize GDP quarter references to YYYY-QN without inferring revisions."""
+    if not isinstance(value, str):
+        return None
+    token = " ".join(value.strip().split())
+    match = re.fullmatch(r"((?:19|20)\d{2})[- ]Q([1-4])", token, flags=re.IGNORECASE)
+    if match:
+        return f"{match.group(1)}-Q{match.group(2)}"
+    match = re.fullmatch(r"Q([1-4])\s+((?:19|20)\d{2})", token, flags=re.IGNORECASE)
+    if match:
+        return f"{match.group(2)}-Q{match.group(1)}"
+    match = re.fullmatch(
+        r"(first|second|third|fourth|1st|2nd|3rd|4th)\s+quarter(?:\s+of)?\s+((?:19|20)\d{2})",
+        token,
+        flags=re.IGNORECASE,
+    )
+    if not match:
+        return None
+    quarter = {
+        "first": 1, "1st": 1, "second": 2, "2nd": 2,
+        "third": 3, "3rd": 3, "fourth": 4, "4th": 4,
+    }[match.group(1).lower()]
+    return f"{match.group(2)}-Q{quarter}"
+
+
+def _previous_quarter(day: date) -> str:
+    quarter = (day.month - 1) // 3 + 1
+    year = day.year
+    quarter -= 1
+    if quarter == 0:
+        year -= 1
+        quarter = 4
+    return f"{year:04d}-Q{quarter}"
+
+
 def _parse_week_reference(value: Any) -> date | None:
     if not isinstance(value, str):
         return None
@@ -241,6 +286,25 @@ def _resolve_reference_period(
         for field in _EXPLICIT_REFERENCE_FIELDS
         if publication.get(field) not in (None, "")
     ]
+
+    if event_type == "GDP":
+        parsed = _parse_quarter_reference(raw_actual_period)
+        if parsed is None:
+            return None
+        for raw_expected in explicit_periods:
+            expected = _parse_quarter_reference(raw_expected)
+            if expected is None or expected != parsed:
+                return None
+        release_quarter = f"{release_day.year:04d}-Q{((release_day.month - 1) // 3) + 1}"
+        if parsed >= release_quarter:
+            return None
+        if not explicit_periods:
+            if parsed != _previous_quarter(release_day):
+                return None
+            resolution = "validated_parser_period_against_regular_release_schedule"
+        else:
+            resolution = "validated_parser_and_source_reference_period"
+        return parsed, resolution
 
     if event_type == "CLAIMS":
         parsed = _parse_week_reference(raw_actual_period)
@@ -543,6 +607,16 @@ def receipt_integrity_errors(
     reference = row.get("official_reference_period")
     if release_day is None:
         errors.append("release_date_invalid")
+    elif event_type == "GDP":
+        reference_quarter = _parse_quarter_reference(reference)
+        if reference_quarter is None:
+            errors.append("reference_period_invalid")
+        elif reference_quarter != period:
+            errors.append("reference_period_target_mismatch")
+        if not isinstance(period, str) or not re.fullmatch(r"(?:19|20)\d{2}-Q[1-4]", period):
+            errors.append("target_period_invalid")
+        elif period >= f"{release_day.year:04d}-Q{((release_day.month - 1) // 3) + 1}":
+            errors.append("target_period_not_pre_release")
     elif event_type == "CLAIMS":
         reference_day = _parse_week_reference(reference)
         if period != release_day.isoformat():
