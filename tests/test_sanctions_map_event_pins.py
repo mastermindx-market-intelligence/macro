@@ -504,7 +504,7 @@ def test_mobile_footprint_media_rule_present():
     """The @media (max-width:600px) rule that thickens the stroke in both
     themes is present in the rendered <style>."""
     text = (ROOT / "templates" / "sanctions_map.html.j2").read_text(encoding="utf-8")
-    assert "@media (max-width:600px){.sm-map[data-news-gbr=\"1\"] .wm-c[data-iso3=\"GBR\"]{stroke-width:1.8} html[data-theme=\"light\"] .sm-map[data-news-gbr=\"1\"] .wm-c[data-iso3=\"GBR\"]{stroke-width:2}}" in text
+    assert "@media (max-width:600px){.sm-map[data-news-gbr=\"1\"] .wm-c[data-iso3=\"GBR\"],html[data-theme=\"light\"] .sm-map[data-news-gbr=\"1\"] .wm-c[data-iso3=\"GBR\"]{stroke-width:1.5;stroke-dasharray:13 8}}" in text
 
 
 # --------------------------------------------------------------------------- #
