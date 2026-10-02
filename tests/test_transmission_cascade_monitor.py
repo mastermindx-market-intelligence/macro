@@ -150,14 +150,16 @@ def _enriched_subset():
 def test_cos_render_linked_anchor_and_not_ranked():
     html = _render(_enriched_subset())
     seg = _monitor_segment(html)
-    # Linked anchor href contains the Terminal analysis URL with the canonical six keys.
+    # Linked anchor href contains the Terminal analysis URL with the canonical seven keys.
     assert "https://app.mastermind-x.com/analysis" in seg
     assert "symbol=AAPL" in seg
     assert "page=intelligence" in seg
     assert "mo_chain=" in seg
     assert "mo_channel=" in seg
     assert "mo_asof=" in seg
-    assert "mo_security_id=" in seg
+    assert "mo_from=transmission" in seg
+    assert "mo_security=" in seg
+    assert "mo_security_id=" not in seg
     # "not ranked" + zh token surface in the page (Tier-1 plain-language).
     assert "not ranked" in seg
     assert "非排名" in seg

@@ -217,13 +217,33 @@ def test_continuation_for_happy_path_returns_continuation_link():
     assert parsed.netloc == "app.mastermind-x.com"
     assert parsed.path == "/analysis"
     qs = parse_qs(parsed.query)
-    assert set(qs.keys()) == {"symbol", "page", "mo_chain", "mo_channel", "mo_asof", "mo_security_id"}
+    assert set(qs.keys()) == {"symbol", "page", "mo_from", "mo_chain", "mo_channel", "mo_asof", "mo_security"}
     assert qs["symbol"] == ["AAPL"]
     assert qs["page"] == ["intelligence"]
     assert qs["mo_chain"] == ["dollar_ch"]
     assert qs["mo_channel"] == ["em_revenue"]
     assert qs["mo_asof"] == ["2026-09-25"]
-    assert qs["mo_security_id"] == [AAPL_ID]
+    assert qs["mo_security"] == [AAPL_ID]
+    # recorded contract: the hint key is mo_security (never mo_security_id) and
+    # the origin is the closed-enum value for the transmission page.
+    assert qs["mo_from"] == ["transmission"]
+    assert "mo_security_id" not in parsed.query
+
+
+def test_allowed_query_keys_is_live_and_equals_the_href_keys(monkeypatch):
+    """_ALLOWED_QUERY_KEYS is a live invariant: the href's key set must equal it,
+    and a drift between the two raises instead of shipping an unrecorded key."""
+    import engine.transmission_company_continuation as mod
+    aliases = _good_aliases()
+    result = continuation_for("AAPL", aliases, DECISION,
+                              chain_id="dollar_ch", channel_id="em_revenue",
+                              chain_asof="2026-09-25")
+    assert set(parse_qs(urlparse(result.href).query)) == set(mod._ALLOWED_QUERY_KEYS)
+    monkeypatch.setattr(mod, "_ALLOWED_QUERY_KEYS", frozenset({"symbol", "page"}))
+    with pytest.raises(RuntimeError, match="recorded allowlist"):
+        continuation_for("AAPL", aliases, DECISION,
+                         chain_id="dollar_ch", channel_id="em_revenue",
+                         chain_asof="2026-09-25")
 
 
 def test_continuation_href_never_carries_source_text_or_receipts():
@@ -234,8 +254,13 @@ def test_continuation_href_never_carries_source_text_or_receipts():
     assert isinstance(result, ContinuationLink)
     forbidden = ("receipt", "value_receipt", "passed", "threshold", "json",
                  "transmission", "blast", "unevaluable", "TXI", "FOO")
+    # The closed-enum origin pair is the ONE lawful occurrence of the word
+    # "transmission": it is a fixed constant, not source text. Scan the href
+    # with exactly that pair removed so any prose leak still trips the guard.
+    scan = result.href.lower().replace("mo_from=transmission", "", 1)
+    assert result.href.count("transmission") == 1
     for tok in forbidden:
-        assert tok.lower() not in result.href.lower(), f"href leaked {tok!r}: {result.href}"
+        assert tok.lower() not in scan, f"href leaked {tok!r}: {result.href}"
 
 
 def test_continuation_href_is_url_encoded():
@@ -439,8 +464,8 @@ def test_enrich_linked_href_carries_only_six_keys_and_no_chain_label():
     href = out["chains"][0]["companies"]["ch"]["linked"][0]["href"]
     parsed = urlparse(href)
     qs = parse_qs(parsed.query)
-    # exactly the six frozen keys, nothing else.
-    assert set(qs.keys()) == {"symbol", "page", "mo_chain", "mo_channel", "mo_asof", "mo_security_id"}
+    # exactly the seven frozen keys, nothing else.
+    assert set(qs.keys()) == {"symbol", "page", "mo_from", "mo_chain", "mo_channel", "mo_asof", "mo_security"}
     # the chain_id travels only as mo_chain, never leaks into the path.
     assert "c" not in parsed.path
     assert "c" in qs["mo_chain"][0] or qs["mo_chain"][0] == "c"
