@@ -50,9 +50,12 @@ changed:
       defaults.
   - path: .github/ci/legacy-jobs.yml
     what: >
-      New exclusive gate:code job prophet-w3-guardrail, 46 declared paths,
-      reader plus scorecard primitive tests. Capture/status owner stays on
-      its existing data-gated job.
+      Exclusive gate:code job prophet-w3-guardrail, now 50 declared paths:
+      reader plus scorecard primitive tests plus the four site/ literal
+      dependencies the hosted contract-delta job named on 2026-10-02
+      (site/basketdata/fear_greed.json, site/factordata/basket_washout_state.json,
+      site/factordata/stock_personality.json, site/factordata/us_standouts.json).
+      Capture/status owner stays on its existing data-gated job.
   - path: research/prophet_fusion/W3_GUARDRAIL_READER.md
     what: >
       Operator-facing reader contract: required --root, stdout JSON/no writes,
@@ -72,9 +75,12 @@ verified:
   - claim: "legacy-jobs.yml loads as a valid exclusive-aware pack manifest"
     command: "python3 scripts/run_ci_pack.py --workflow .github/ci/legacy-jobs.yml --validate-only"
     result: "Validated 241 legacy jobs; VALIDATE_ONLY_RC=0"
-  - claim: "prophet-w3-guardrail is a 46-path exclusive gate:code job with no closure misses"
+  - claim: "HISTORICAL receipt, predating the 2026-10-02 four-dependency repair: at source-delivery time the local narrow gate read prophet-w3-guardrail as a 46-path exclusive gate:code job with no closure misses (sparse local inference; site/ excluded — re-running this command now prints 50)"
     command: "python3 -c 'from pathlib import Path; from scripts.run_ci_pack import inferred_as_if_not_exclusive, curated_exclusive_closure_findings, load_legacy_jobs; m=Path(\".github/ci/legacy-jobs.yml\"); j={x.job_id:x for x in load_legacy_jobs(m)}[\"prophet-w3-guardrail\"]; f=curated_exclusive_closure_findings(m); print(j.gate, j.exclusive, len(j.paths), f.get(\"prophet-w3-guardrail\", ()))'"
     result: "code True 46 (); n_misses=0; inferred_n_paths=46; FINDINGS_FOR_JOB_OK True"
+  - claim: "After the four-dependency repair the manifest declares 50 sorted paths; gate:code, exclusive=True, curated_exclusive_closure_findings empty on this tree"
+    command: "python3 -c 'from pathlib import Path; from scripts.run_ci_pack import curated_exclusive_closure_findings, load_legacy_jobs; m=Path(\".github/ci/legacy-jobs.yml\"); j={x.job_id:x for x in load_legacy_jobs(m)}[\"prophet-w3-guardrail\"]; print(j.gate, j.exclusive, len(j.paths), j.paths==tuple(sorted(j.paths)), curated_exclusive_closure_findings(m).get(\"prophet-w3-guardrail\", ()))'"
+    result: "code True 50 True (); local inferred closure still cannot see site/ (this tree is sparse — missing dirs data, mockups, site, verify_shots), so local 46 vs declared 50 is a superset disclosure, not full hosted parity"
   - claim: "AgentOS store including this handoff is schema-valid"
     command: "python3 scripts/agentos.py validate"
     result: "1430 records (76 workstreams, 384 decisions, 419 discoveries, 551 handoffs) — 0 error(s), 117 warning(s); AGENTOS_RC=0"
@@ -89,6 +95,7 @@ unresolved:
   - "Independent root review of source is pending after this return."
 next_actions:
   - "Independent code review of the eight owned paths on this branch; required exclusive CI job prophet-w3-guardrail."
+  - "Hosted contract-delta rerun pending on the 50-path manifest. Its first run failed on four missing literal dependencies; the repair declares them. Native local initial inference read 46 because this tree is sparse and excludes site/, so local 46 is an incomplete inference under a declared-50 superset, not host parity — do not report local 50 and do not claim full hosted parity until the hosted job concludes."
   - "Source-only release of the reader. Do not treat software release as a scientific read."
   - "Wait for 20 distinct matured H=10 paired sessions in sessions metadata before any lawful comparison read."
   - "Existing owners handle held H1 integration. Do not take that ownership from this wave."
@@ -118,8 +125,22 @@ existing custody workspace on branch
 `claude/ssd-prophet-w3-guardrail-20261002-5167b974f63e6828`. The only new
 production-source edit in this continuation is the lexical accrual-only scan
 excluding the free-text `refusal` field. Required local gates on this tree:
-112 passed; `git diff --check` 0; legacy-jobs validate-only 0; exclusive job
-`prophet-w3-guardrail` 46 paths, 0 closure misses. Live metadata remains 1 of
+112 passed (source-delivery receipt; the suites were not re-run for the
+manifest-only repair below); `git diff --check` 0; legacy-jobs validate-only
+0; exclusive job `prophet-w3-guardrail` now declares 50 sorted paths with
+gate:code, exclusive, and 0 closure misses under the local narrow gate.
+
+Why 46 became 50: the native local initial inference read 46 declared paths
+because this worktree is sparse and excludes `site/` (missing dirs: data,
+mockups, site, verify_shots), so the four literal dependencies that live
+under `site/` were invisible to it. The hosted contract-delta job (full
+checkout) named exactly four missing literal dependencies —
+`site/basketdata/fear_greed.json`, `site/factordata/basket_washout_state.json`,
+`site/factordata/stock_personality.json`, `site/factordata/us_standouts.json`
+— and this repair declares them in sorted order. Local inference therefore
+still cannot reproduce the hosted walk (46 locally vs 50 declared, a
+superset disclosure); hosted contract-delta rerun on the 50-path manifest is
+pending and is the parity check. Live metadata remains 1 of
 20 matured H=10 paired sessions. Independent root review is pending. This is
 not a scientific read and not a merge.
 

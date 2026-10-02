@@ -18193,6 +18193,10 @@ jobs:
       - "lib/store.py"
       - "research/SIGNAL_EPISODE_ATLAS_MASTERPLAN_BY_FABLE.md"
       - "scripts/report_us_prophet_w3_guardrail.py"
+      - "site/basketdata/fear_greed.json"
+      - "site/factordata/basket_washout_state.json"
+      - "site/factordata/stock_personality.json"
+      - "site/factordata/us_standouts.json"
       - "tests/test_scorecard_primitives.py"
       - "tests/test_us_prophet_w3_guardrail.py"
     timeout-minutes: 10
