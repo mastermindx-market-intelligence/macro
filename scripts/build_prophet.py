@@ -59,7 +59,7 @@ import os
 import sys
 import tempfile
 from collections.abc import Iterable
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -1936,7 +1936,14 @@ def _load_futures_chg(asof: str) -> dict | None:
 # Main
 # ---------------------------------------------------------------------------
 
-def main() -> None:
+def main(*, new_long_restrictions: Any = None, policy_read_at: str | None = None,
+         new_long_policy_source: Any = None) -> None:
+    """Build native artifacts; an explicit internal policy read is opt-in only.
+
+    No CLI argument accepts a rule, hash allowlist or approval. The registered
+    owner must supply the already-bound read; ordinary nightly invocation remains
+    unchanged until an explicit native owner/adoption edge is installed.
+    """
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
@@ -1973,9 +1980,36 @@ def main() -> None:
             "checkpoint and conditional workflow publisher"
         )
 
+    if args.showcase_only and (new_long_restrictions is not None or policy_read_at is not None or new_long_policy_source is not None):
+        from engine.prophet_market_eligibility import MarketEligibilityError
+        raise MarketEligibilityError("POLICY_SHOWCASE_ONLY_UNSUPPORTED")
     if args.showcase_only:
         write_showcase()
         return None
+
+    if new_long_policy_source is not None:
+        from scripts.build_prophet_market_eligibility import RegisteredNewLongPolicySource
+        from engine.prophet_market_eligibility import MarketEligibilityError
+        if not isinstance(new_long_policy_source, RegisteredNewLongPolicySource):
+            raise MarketEligibilityError("POLICY_REGISTRY_SOURCE_TYPE_INVALID")
+        if new_long_restrictions is not None:
+            raise MarketEligibilityError("POLICY_MULTIPLE_SOURCES")
+
+    policy_kwargs: dict[str, Any] = {}
+    if new_long_restrictions is not None:
+        from engine.prophet_market_eligibility import NewLongRestrictionRead, MarketEligibilityError, _utc
+        if not isinstance(new_long_restrictions, NewLongRestrictionRead):
+            raise MarketEligibilityError("POLICY_READ_TYPE_INVALID")
+        if args.showcase_only:
+            raise MarketEligibilityError("POLICY_SHOWCASE_ONLY_UNSUPPORTED")
+        if policy_read_at is None:
+            from datetime import datetime as _pd, timezone as _ptz
+            policy_read_at = _pd.now(_ptz.utc).isoformat(timespec="microseconds").replace("+00:00", "Z")
+        _utc(policy_read_at, "POLICY_READ_CLOCK_INVALID")
+        policy_kwargs = {"new_long_restrictions": new_long_restrictions, "policy_read_at": policy_read_at}
+    elif policy_read_at is not None and new_long_policy_source is None:
+        from engine.prophet_market_eligibility import MarketEligibilityError
+        raise MarketEligibilityError("POLICY_CLOCK_WITHOUT_READ")
 
     asof: str = args.date
     log.info("build_prophet: starting — asof=%s publish=%s", asof, args.publish)
@@ -2007,6 +2041,23 @@ def main() -> None:
     source_mixed_vintage = bool(
         _source_panel.get("mixed_vintage")
     )
+
+    if new_long_policy_source is not None:
+        from datetime import datetime as _rpd, timezone as _rptz
+        from scripts.build_prophet_market_eligibility import _publication_window
+        from engine.prophet_market_eligibility import _utc
+        if policy_read_at is None:
+            policy_read_at = _rpd.now(_rptz.utc).isoformat(timespec="microseconds").replace("+00:00", "Z")
+        action_now = _utc(policy_read_at, "POLICY_READ_CLOCK_INVALID")
+        _, _, cutoff = _publication_window(action_now)
+        new_long_restrictions = new_long_policy_source.resolve(
+            _standouts_doc, observed_at=policy_read_at,
+            valid_until=cutoff.isoformat(timespec="seconds").replace("+00:00", "Z"))
+        policy_kwargs = {"new_long_restrictions": new_long_restrictions, "policy_read_at": policy_read_at}
+
+    if new_long_restrictions is not None:
+        # Verify the one frozen board before initializing/advancing native ledgers.
+        new_long_restrictions.bind_board(_standouts_doc)
 
     # ── 0. Initialize ledger ──────────────────────────────────────────────────
     _initialize_ledger()
@@ -2069,7 +2120,12 @@ def main() -> None:
         thetadata_store=thetadata_store,
         active_keys=active_keys,
         intake_stats=intake_stats,
+        **policy_kwargs,
     )
+    policy_projection: dict[str, Any] = {}
+    if new_long_restrictions is not None:
+        from engine.prophet_market_eligibility import project_new_long_intake
+        policy_projection = project_new_long_intake(intake_stats, new_long_restrictions, read_at=policy_read_at)
     log.info(
         "build_prophet: %d new plans originated (%d candidate(s) blocked by an open "
         "same-ticker plan: %s)",
@@ -2106,7 +2162,9 @@ def main() -> None:
             asof=asof,
             existing_ids=set(existing_plans.keys()),
             active_keys=active_keys,
-            live_plan_ids={p["id"] for p in new_plans},
+            # C0 remains the original policy-free counterfactual. A restricted
+            # live set is not a like-for-like mirror target; do not forge parity.
+            live_plan_ids=({p["id"] for p in new_plans} if not policy_kwargs else None),
             repo_root=_REPO,
         )
         log.info(
@@ -2877,6 +2935,17 @@ def main() -> None:
         log.warning("build_prophet: board read join failed (%s: %s)", type(e).__name__, e)
         print(f"::warning title=prophet board read::join failed ({type(e).__name__}) —"
               " index.json ships without the board-read block", flush=True)
+    # Additive GD-6A receipt; no sidecar row is fed into admission or management.
+    if policy_projection:
+        # Preserve the explicit mode even when its count is zero; absence retains
+        # its legacy meaning. No field is defaulted or projected from risk color.
+        index["intake"].update(policy_projection)
+        index["market_policy_counterfactual"] = {
+            "basis": "ORIGINAL_POLICY_FREE_ARENA",
+            "live_id_comparison": "NOT_COMPARABLE_UNDER_NAMED_POLICY",
+            "market_policy_changes_research": False,
+        }
+    index["market_eligibility_shadow"] = _write_market_eligibility_shadow(index)
     _write_json(INDEX_PATH, index)
     log.info("build_prophet: wrote index.json (%d active plans)", len(active_entries))
 
@@ -2903,6 +2972,41 @@ def main() -> None:
         )
 
     return active_entries
+
+
+
+def _write_market_eligibility_shadow(index: dict[str, Any], now: datetime | None = None) -> dict[str, Any]:
+    """Use this builder's frozen source and publication plane; zero live authority.
+
+    The old helper's name says board, but its contract snapshots any JSON object
+    under the existing content-addressed provenance root. Reuse it for the exact
+    envelope bytes; no second store or collector. Source gaps do not stop plans.
+    """
+    from scripts.build_prophet_market_eligibility import prepare_publication_shadow
+    path = INDEX_PATH.parent / "market_eligibility.json"
+    try:
+        root = LEDGER_DIR.parents[1]
+        sidecar, receipt = prepare_publication_shadow(
+            index, ledger_dir=LEDGER_DIR,
+            risk_envelope_path=root / "site" / "riskdata" / "risk_envelope.json",
+            observed_at=now if now is not None else datetime.now(timezone.utc),
+            freeze_source=_freeze_origination_source_board,
+        )
+        _write_json(path, sidecar)
+        expected = json.dumps(sidecar, allow_nan=False, default=str, indent=2).encode("utf-8")
+        if path.is_symlink() or path.read_bytes() != expected:
+            raise RuntimeError("SHADOW_ARTIFACT_WRITE_MISMATCH")
+        receipt["sha256"] = hashlib.sha256(expected).hexdigest()
+        receipt["artifact_status"] = "WRITTEN"
+        return receipt
+    except Exception as exc:  # additive shadow must not prevent native plans
+        print("::warning title=prophet market eligibility::"
+              "shadow publication unavailable; live recommendations unchanged", flush=True)
+        return {
+            "mode": "SHADOW_ONLY", "production_behavior": "UNCHANGED",
+            "source_state": "UNAVAILABLE", "artifact_status": "UNAVAILABLE",
+            "file": None, "error_type": type(exc).__name__,
+        }
 
 
 def _read_standouts_gate_go(standouts_doc: dict[str, Any] | None = None) -> bool:

@@ -64,6 +64,39 @@ READ_OK_ZERO = "READ_OK_ZERO"
 READ_NO_COVERAGE = "READ_NO_COVERAGE"
 READ_UNAVAILABLE = "READ_UNAVAILABLE"
 
+NEW_LONG_NOT_APPLICABLE = object()
+
+
+def _new_long_send_read(row: dict, resolver: Callable, clock: Callable | None) -> str:
+    """Fresh per-message source resolution just before delivery; no queue writes.
+
+    None, an exception or an invalid result WITHHOLDS an attempt. Only the exact
+    internal sentinel means the owner resolved a non-new-long alert. A current
+    constraint says nothing about whether an OLD SMTP attempt already happened.
+    """
+    from copy import deepcopy
+    from engine.prophet_market_eligibility import NewLongAlertRead
+    def stamp() -> str:
+        now = clock() if clock is not None else datetime.now(timezone.utc)
+        if not isinstance(now, datetime) or now.tzinfo is None or now.utcoffset() is None:
+            raise ValueError("policy clock must be timezone-aware")
+        return now.astimezone(timezone.utc).isoformat(timespec="microseconds").replace("+00:00", "Z")
+    try:
+        # Never hand the resolver the mutable row that delivery will use.
+        bound = resolver(deepcopy(row), stamp())
+        if bound is NEW_LONG_NOT_APPLICABLE:
+            return "NOT_APPLICABLE"
+        if not isinstance(bound, NewLongAlertRead):
+            return "UNAVAILABLE"
+        # Read the clock again: source resolution can cross expiry. Do not freeze
+        # permission at the batch start or at the earlier queue/fire timestamp.
+        decision = bound.decision(row, read_at=stamp())
+        state = decision.get("state")
+        return state if state in {"NO_POLICY_CONSTRAINT", "DENY_NEW_LONG", "UNAVAILABLE"} else "UNAVAILABLE"
+    except Exception:  # an unreadable permission does not license a send
+        return "UNAVAILABLE"
+
+
 LANE = "macro_delivery_drain"
 CADENCE_BUDGET_S = 300
 
@@ -660,6 +693,9 @@ class DrainResult:
     receipt_written: bool
     selector_state: str | None = None
 
+    policy_withheld_n: int = 0
+    policy_unavailable_n: int = 0
+
 
 def _selector_failure(state: str, *, read_state: str) -> DrainResult:
     """A canary selector failed cardinality/identity checks before any effect."""
@@ -672,7 +708,9 @@ def _selector_failure(state: str, *, read_state: str) -> DrainResult:
 
 def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None,
          limit: int = 200, dry_run: bool = False,
-         fire_event_id: str | None = None) -> DrainResult:
+         fire_event_id: str | None = None,
+          new_long_policy_resolver: Callable | None = None,
+          policy_clock: Callable | None = None) -> DrainResult:
     """Drain one batch. NEVER raises for a delivery reason.
 
     ``send_fn(fire_event_id=..., to_email=..., payload=..., lang=..., user_id=...,
@@ -694,6 +732,11 @@ def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None
     user state, preferences, SMTP, or an outbox row, the result must contain exactly
     one row whose returned identity exactly matches the requested value.
     """
+    if new_long_policy_resolver is not None and not callable(new_long_policy_resolver):
+        raise ValueError("new_long_policy_resolver must be an internal callable")
+    if policy_clock is not None and (new_long_policy_resolver is None or not callable(policy_clock)):
+        raise ValueError("policy_clock requires an adopted internal resolver")
+
     if fire_event_id is not None and not str(fire_event_id).strip():
         raise ValueError("fire_event_id selector must not be blank")
 
@@ -761,6 +804,7 @@ def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None
     effect_unknown_n = 0
     in_flight_n = 0
     fired_ats = []
+    policy_withheld_n = policy_unavailable_n = 0
 
     for row in rows:
         evaluated_n += 1
@@ -784,6 +828,18 @@ def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None
         if decision.action == "unevaluable":
             unevaluable_n += 1
             continue
+
+        if decision.action == "send" and new_long_policy_resolver is not None:
+            policy_state = _new_long_send_read(row, new_long_policy_resolver, policy_clock)
+            if policy_state in {"DENY_NEW_LONG", "UNAVAILABLE"}:
+                policy_withheld_n += 1
+                policy_unavailable_n += policy_state == "UNAVAILABLE"
+                unevaluable_n += 1
+                # NO send, NO outbox PATCH, NO new attempt/idempotency key. A
+                # current pause cannot settle or overwrite a prior delivery effect.
+                # Existing receipt records this as an action not deliverable now;
+                # the returned counters distinguish a known denial from no read.
+                continue
 
         if dry_run or send_fn is None:
             if decision.action == "send":
@@ -1111,4 +1167,4 @@ def drain(*, send_fn: Callable[..., str] | None, now_utc: datetime | None = None
                        duplicate_n=duplicate_n, effect_unknown_n=effect_unknown_n,
                        in_flight_n=in_flight_n,
                        read_state=outbox_read.state, error_class=None,
-                       run_id=run_id, receipt_written=receipt_written)
+                       run_id=run_id, receipt_written=receipt_written, policy_withheld_n=policy_withheld_n, policy_unavailable_n=policy_unavailable_n)

@@ -1541,6 +1541,10 @@ def test_end_to_end_smoke(tmp_path):
 
         assert bp.INDEX_PATH.exists()
         assert bp.LEDGER_PATH.exists()
+        published = json.loads(bp.INDEX_PATH.read_text())
+        assert "market_eligibility_shadow" in published
+        assert published["market_eligibility_shadow"]["mode"] == "SHADOW_ONLY"
+        assert published["market_eligibility_shadow"]["production_behavior"] == "UNCHANGED"
     finally:
         bp.STANDOUTS_PATH = orig_standouts
         bp.PLANS_DIR = orig_plans
@@ -2313,3 +2317,67 @@ class TestPriceFrameFreshness:
         fr = self._frame("2026-02-16", 11)
         out = price_frame_freshness(fr, "2026-03-06")
         assert out["max_lag"] == STALE_BASIS_MAX_SESSIONS == 3
+
+
+def test_gd6a_full_builder_preserves_plan_outputs_across_risk_availability(tmp_path, monkeypatch):
+    """Actual main publishes a qualified shadow; losing risk changes no native plans."""
+    from datetime import datetime, timezone
+    from engine.risk_envelope import SourceRead, compose_envelope, canonical_json
+    from scripts import build_prophet as bp
+
+    board = _make_standouts(buys=[_make_buy("AAPL", spot=150.0), _make_buy("MSFT", spot=420.0)])
+    board["board_definition"] = "us_prophet_v3"
+    envelope = compose_envelope(
+        sources=[
+            SourceRead(source_id="market-state-latest", role="measured_state", state="RISK_ON",
+                       score=77, as_of="2026-07-02", required=True),
+            SourceRead(source_id="leadership-crack-latest", role="hazard_evidence", state="BROKEN",
+                       hazard_stage="FRAGILE", as_of="2026-07-02", required=True),
+        ], market="US", source_session="2026-07-02",
+        observed_at="2026-07-02T21:00:00Z", produced_at="2026-07-02T21:00:00Z",
+    )
+    now = datetime(2026, 7, 3, 13, tzinfo=timezone.utc)
+    real_shadow_writer = bp._write_market_eligibility_shadow
+    real_showcase = bp.write_showcase
+    results = []
+    for name, present in (("fresh", True), ("missing", False)):
+        root = tmp_path / name
+        board_path = root / "site/factordata/us_standouts.json"
+        board_path.parent.mkdir(parents=True)
+        board_path.write_text(json.dumps(board))
+        if present:
+            path = root / "site/riskdata/risk_envelope.json"
+            path.parent.mkdir(parents=True)
+            path.write_text(canonical_json(envelope) + "\n")
+        with monkeypatch.context() as mp:
+            for key, value in {
+                "STANDOUTS_PATH": board_path, "PLANS_DIR": root / "site/prophet/plans",
+                "STATES_DIR": root / "site/prophet/states", "INDEX_PATH": root / "site/prophet/index.json",
+                "LEDGER_DIR": root / "data/prophet", "LEDGER_PATH": root / "data/prophet/ledger.jsonl",
+                "STOCKDATA_DIR": root / "site/stockdata",
+            }.items():
+                mp.setattr(bp, key, value)
+            mp.setattr(bp, "_write_market_eligibility_shadow", lambda index: real_shadow_writer(index, now))
+            mp.setattr(bp, "write_showcase", lambda: real_showcase(out_path=root / "site/prophet/showcase.json"))
+            mp.setattr(bp, "_load_price_history_for_management", lambda *a, **kw: _make_price_history(150.0))
+            mp.setattr(sys, "argv", ["build_prophet", "--date", "2026-07-03"])
+            bp.main()
+            index = json.loads(bp.INDEX_PATH.read_text())
+            shadow = index["market_eligibility_shadow"]
+            assert shadow["artifact_status"] == "WRITTEN"
+            assert shadow["source_state"] == ("AVAILABLE" if present else "UNAVAILABLE")
+            assert shadow["production_behavior"] == "UNCHANGED"
+            artifact = bp.INDEX_PATH.parent / shadow["file"]
+            assert hashlib.sha256(artifact.read_bytes()).hexdigest() == shadow["sha256"]
+            rows = json.loads(artifact.read_text())["rows"]
+            assert len(rows) == len(board["buy"]) == 2
+            results.append({
+                "plans": {x.name: x.read_bytes() for x in bp.PLANS_DIR.glob("*.json")},
+                "states": {x.name: x.read_bytes() for x in bp.STATES_DIR.glob("*.json")},
+                "ledger": bp.LEDGER_PATH.read_bytes(),
+                "native_intake": index["intake"],
+                "plan_ids": [x["id"] for x in index["plans"]],
+                "counts": (index["plan_count"], index["active_count"], index["open_count"]),
+            })
+    assert results[0]["counts"] == (2, 2, 2)
+    assert results[0] == results[1]
