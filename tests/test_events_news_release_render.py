@@ -144,6 +144,33 @@ def test_thousands_label_preserves_the_measured_quantity(tmp_path,family,label):
     assert 'Thousands of people' not in s.get_text()
 
 
+
+def test_gdp_official_result_uses_annualized_quarter_language(tmp_path):
+    import json
+    from engine import release_actuals as official
+    from engine.events_news_release_evidence import attach_event_actual_evidence
+    from test_events_news_release_evidence import publication
+
+    policy=tmp_path/'policy.json'
+    policy.write_text(json.dumps({'schema':'official_actual_defects.v1','defects_by_receipt':{}}))
+    rows=official.normalize_publication(publication('GDP'),defects_path=policy)
+    data={'alerts':[],'macro_news':{'headlines':[]},'latest':None,
+          'generated_utc':'2026-09-30T13:00:00Z'}
+    data['macro_catalysts']=attach_event_actual_evidence(
+        [{'type':'GDP','date':'2026-09-30','reference_period':'Q2 2026'}],
+        rows,as_of=data['generated_utc'],defects_path=policy)
+    s=BeautifulSoup(render_component(**data),'html.parser')
+    result=s.select_one('.nd-official-evidence')
+    assert result
+    text=result.get_text(' ',strip=True)
+    assert 'Real GDP' in text
+    assert '3.0%' in text
+    assert 'Annualized quarter-over-quarter rate' in text
+    assert '2026-Q2' in text
+    assert 'Month over month' not in text
+    assert result['data-nd-official-count']=='1'
+
+
 def test_recent_result_only_row_uses_honest_generic_release_label():
     import json
     from engine.events_news_release_evidence import attach_recent_event_actual_evidence
