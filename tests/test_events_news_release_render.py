@@ -166,6 +166,7 @@ def test_gdp_official_result_uses_annualized_quarter_language(tmp_path):
     assert 'Real GDP' in text
     assert '3.0%' in text
     assert 'Annualized quarter-over-quarter rate' in text
+    assert 'Advance estimate' in text
     assert '2026-Q2' in text
     assert 'Month over month' not in text
     assert result['data-nd-official-count']=='1'
