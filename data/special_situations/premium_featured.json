@@ -1,0 +1,33 @@
+{
+  "schema": "special_situations.premium.v1",
+  "parser_version": "special-situations-premium/1.0.0",
+  "scored": false,
+  "is_context_only": true,
+  "disclaimer": "Context only \u2014 an event-tracking display of public filings, not a signal, recommendation, or sizing input.",
+  "built": "2026-10-01 18:07 UTC",
+  "status": "computed",
+  "refusal": null,
+  "ticker": "ACVA",
+  "issuer_key": "cik:1637873",
+  "company": "ACV Auctions Inc.",
+  "category": "Tender Offers",
+  "currency": "USD",
+  "offer_price": 10.5,
+  "offer_accession": "0001193125-26-406039",
+  "offer_filing_date": "2026-09-29",
+  "offer_form_type": "SC TO-T/A",
+  "offer_price_provenance": "filing_terms_extracted",
+  "announcement_filing_date": "2026-09-17",
+  "unaffected_price": 7.21999979019165,
+  "unaffected_price_date": "2026-09-10",
+  "premium_pct": 45.4,
+  "amendment_vintage": {
+    "form_type": "SC TO-T/A",
+    "is_amendment": true,
+    "n_amendments": 2,
+    "filings_in_deal": 4
+  },
+  "source_url": "https://www.sec.gov/Archives/edgar/data/1637873/000119312526406039/0001193125-26-406039-index.htm",
+  "null_en": null,
+  "null_zh": null
+}

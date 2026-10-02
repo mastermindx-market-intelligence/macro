@@ -1,0 +1,509 @@
+{% macro t(en, zh='') -%}
+<span class="l-en">{{ en }}</span><span class="l-zh">{{ zh if zh else en }}</span>
+{%- endmacro %}
+{% macro help(en, zh='') -%}
+<span class="help">?<span class="tip">{{ t(en, zh) }}</span></span>
+{%- endmacro %}
+{# ── Plane slug → plain-word EN/ZH (BLOCKER 5 round 2). The producer emits
+   machine slugs (rates / dollar / credit / commodity / international /
+   rates_and_credit); we surface them as glance-tier labels with both
+   EN and ZH so the row reads as words, not internals. Reference rows
+   (plane=None) render without a tag — the link label alone is the read.
+   Implemented as a top-level {% set %} dict (NOT a Jinja macro) because
+   macros stringify their return value when assigned via {% set %}, which
+   would break the [0]/[1] tuple index the consumer uses below. #}
+{% set _PLANE_WORDS = {
+  'rates':             ('Rates',          '利率'),
+  'dollar':            ('Dollar',         '美元'),
+  'credit':            ('Credit',         '信用'),
+  'commodity':         ('Commodity',      '商品'),
+  'international':     ('International',  '国际'),
+  'rates_and_credit':  ('Rates & Credit', '利率与信用'),
+} %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var th=localStorage.getItem('theme');document.documentElement.setAttribute('data-theme',th||'dark');var l=localStorage.getItem('lang')||(function(){try{var L=navigator.languages||[navigator.language||navigator.userLanguage||''],i;for(i=0;i<L.length;i++)if((L[i]||'').toLowerCase().slice(0,2)==='zh')return'zh';if(/Shanghai|Hong_Kong|Macau|Urumqi|Chongqing|Harbin|Kashgar|Chungking/.test(Intl.DateTimeFormat().resolvedOptions().timeZone||''))return'zh';}catch(e){}return'';})();if(l)document.documentElement.setAttribute('data-lang',l);}catch(e){}</script>
+<title>{{ t('Morning Edition', '早间版') }} — {{ as_of }}</title>
+{% set seo_title = "Morning Edition — Mastermind" %}
+{% set seo_desc = "Before the US open: the tape, the session clock, the regime, and the prior-close brief — in plain words." %}
+{% set seo_path = "am_edition.html" %}
+{% include "_seo_head.html.j2" %}
+<link rel="stylesheet" href="theme.css">
+<style>
+  * { box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font:14px/1.5 -apple-system,
+         "Segoe UI",Roboto,Helvetica,sans-serif; margin:0; padding:18px; }
+  @media (min-width:1100px){ body{ padding:26px max(40px,calc((100vw - 1100px)/2)); } }
+  a { text-decoration:none; }
+  h1 { font-size:20px; margin:0; }
+  h2 { font-size:15px; margin:0 0 6px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:var(--r-card,10px);
+           padding:14px 16px; margin-bottom:14px; }
+  .muted { color:var(--muted); }
+  .sm { font-size:13px; }
+  .help { display:inline-flex; align-items:center; justify-content:center; width:15px;
+          height:15px; border-radius:var(--r-pill,999px); border:1px solid var(--muted); color:var(--muted);
+          font-size:10px; font-weight:600; cursor:help; position:relative;
+          vertical-align:middle; margin-left:5px; }
+  .help .tip { display:none; position:absolute; top:140%; left:50%;
+               transform:translateX(-50%); width:330px; max-width:78vw; background:var(--panel);
+               border:1px solid var(--line); padding:9px 11px; border-radius:var(--r-ctl,8px); z-index:60;
+               font-size:12px; line-height:1.45; color:var(--text); font-weight:400;
+               box-shadow:var(--popover-shadow); pointer-events:auto; cursor:auto;
+               max-height:min(60vh,420px); overflow-y:auto; overscroll-behavior:contain; }
+  .help:hover::before { content:''; position:absolute; top:100%; left:-30px; right:-30px; height:10px; }
+  .help:hover .tip { display:block; }
+  .ctx-strip { display:flex; flex-wrap:wrap; gap:10px 20px; align-items:flex-start; }
+  .ctx-chip { display:inline-flex; align-items:center; gap:5px; background:var(--panel);
+              border:1px solid var(--line); border-radius:var(--r-ctl,6px); padding:5px 10px;
+              font-size:13px; font-weight:600; }
+  .ctx-chip.regime { border-color:var(--link); color:var(--ink-link, var(--link)); }
+  .ctx-row { display:flex; align-items:center; gap:6px; font-size:13px; line-height:1.4; }
+  .ctx-label { color:var(--muted); font-size:11px; font-weight:600; text-transform:uppercase;
+               letter-spacing:.05em; white-space:nowrap; }
+  .brief-link-panel { display:flex; align-items:center; gap:10px; padding:10px 16px; }
+  .brief-link { display:inline-flex; align-items:center; gap:6px; background:var(--panel);
+                border:1px solid var(--link); border-radius:var(--r-ctl,6px); padding:7px 14px;
+                font-size:13px; font-weight:600; color:var(--ink-link, var(--link));
+                text-decoration:none; }
+  .brief-link:hover { opacity:0.8; }
+  .state-badge { display:inline-block; background:var(--panel); border:1px solid var(--line);
+                 border-radius:var(--r-pill,999px); padding:3px 10px; font-size:12px; font-weight:600; }
+  .state-open   { border-color:var(--up); color:var(--up); }
+  .state-closed { border-color:var(--muted); color:var(--muted); }
+  .state-pre    { border-color:var(--link); color:var(--ink-link, var(--link)); }
+  .feasibility-note { font-size:12px; color:var(--muted); margin-top:4px; }
+{% include "_mor2b_blocks_css.j2" %}
+</style>
+</head>
+<body>
+
+{% include "_site_nav.html.j2" %}
+
+{# ── Page header ─────────────────────────────────────────────────────────────── #}
+<div class="panel">
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px">
+    <h1>{{ t('Morning Edition', '早间版') }}</h1>
+    {% if payload.session_state %}
+      {% if payload.session_state == 'OPEN' %}
+        <span class="state-badge state-open">{{ t('US markets open', '美股正在交易') }}</span>
+      {% elif payload.session_state == 'CLOSED' %}
+        <span class="state-badge state-closed">{{ t('US markets closed', '美股已收盘') }}</span>
+      {% else %}
+        <span class="state-badge state-pre">{{ t('US markets not yet open', '美股尚未开盘') }}</span>
+      {% endif %}
+    {% endif %}
+  </div>
+  <p class="muted sm" style="margin:10px 0 0">
+    {{ t(
+      'Before the US open: tape since the prior close, the session clock, regime context, today\'s calendar, and a link to yesterday\'s brief. Refreshes once a day.',
+      '美股开盘前：自前一收盘以来的盘面走势、交易时段时钟、周期背景、今日日历，以及上一交易日简报链接。每日更新一次。'
+    ) }}
+  </p>
+  {% if payload.generated_at %}
+  <p class="muted sm" style="margin:4px 0 0">{{ t('Built at', '构建时间') }} {{ payload.generated_at }}</p>
+  {% endif %}
+</div>
+
+{# ── Feasibility notice (degraded / blocked morning source) ─────────────────── #}
+{% if payload.morning_source_feasibility != 'AVAILABLE' and payload.morning_source_feasibility %}
+<div class="panel" style="border-color:var(--link)">
+  <p class="muted sm" style="margin:0">
+    <strong>{{ t('Note:', '注意：') }}</strong>
+    {{ t(payload.morning_source_feasibility_cause_en or '',
+         payload.morning_source_feasibility_cause_zh or payload.morning_source_feasibility_cause_en or '') }}
+  </p>
+</div>
+{% endif %}
+
+{# ── Blocks ─────────────────────────────────────────────────────────────────── #}
+{% for block in payload.blocks %}
+
+{# ── Session clock ──────────────────────────────────────────────────────────── #}
+{% if block.key == 'session_clock' %}
+<div class="panel">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <h2 style="margin:0">{{ t('Session clock', '交易时段') }}</h2>
+    {{ help(
+      'US equity session phases: premarket (04:00–09:30 ET), regular (09:30–16:00 ET), after-hours (16:00–20:00 ET), and closed.',
+      '美股交易时段：盘前期（东部时间 04:00–09:30）、常规交易（09:30–16:00）、盘后期（16:00–20:00），以及休市。'
+    ) }}
+  </div>
+  <div class="ctx-strip">
+    {% if block.state == 'CURRENT' %}
+      <span class="ctx-chip" style="border-color:var(--up);color:var(--up)">
+        {{ t('Open', '交易中') }}
+        {% if block.rows %}
+          {% for row in block.rows %}
+            {% if row.phase_en or row.phase_zh %}
+              — {{ t(row.phase_en or '', row.phase_zh or row.phase_en or '') }}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      </span>
+    {% elif block.state == 'CLOSED' %}
+      <span class="ctx-chip" style="border-color:var(--muted);color:var(--muted)">
+        {{ t('Closed', '已收盘') }}
+      </span>
+    {% elif block.state == 'NOT_YET_OPEN' %}
+      <span class="ctx-chip regime">
+        {{ t('Not yet open', '尚未开盘') }}
+      </span>
+    {% elif block.state == 'STALE_WITH_LAST_KNOWN' %}
+      <span class="ctx-chip" style="border-color:var(--muted);color:var(--muted)">
+        {{ t('Stale — last known', '数据滞后') }}
+      </span>
+    {% else %}
+      <span class="ctx-chip">
+        {{ t('Unavailable', '不可用') }}
+      </span>
+    {% endif %}
+
+    {% if block.state_reason_en or block.state_reason_zh %}
+    <span class="muted sm">{{ t(block.state_reason_en or '',
+                                block.state_reason_zh or block.state_reason_en or '') }}</span>
+    {% endif %}
+  </div>
+
+  {% if block.rows and (block.state == 'CURRENT' or block.state == 'STALE_WITH_LAST_KNOWN') %}
+  <div style="margin-top:8px;font-size:13px;color:var(--muted)">
+    {% for row in block.rows %}
+      {{ t(row.phase_en or '', row.phase_zh or row.phase_en or '') }}
+      {% if row.next_event_en or row.next_event_zh %}
+        — {{ t(row.next_event_en or '', row.next_event_zh or row.next_event_en or '') }}
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+{# ── Tape since prior close ────────────────────────────────────────────────── #}
+{% if block.key == 'tape_since_prior_close' %}
+<div class="panel">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <h2 style="margin:0">{{ t('Tape since prior close', '自前一收盘') }}</h2>
+    {% if payload.prior_close_date %}
+    <span class="muted sm">{{ t('prior close:', '前一收盘：') }} {{ payload.prior_close_date }}</span>
+    {% endif %}
+    {{ help(
+      'Price change since the last regular-session close. Sources from the live quote feed at build time.',
+      '自最近一次常规交易收盘以来的价格变动。数据来源于构建时的实时行情。'
+    ) }}
+  </div>
+
+  {% if block.state == 'UNAVAILABLE' or block.state == 'NOT_COVERED' %}
+  <p class="muted sm">{{ t('Live tape unavailable right now.', '实时盘面当前不可用。') }}</p>
+  {% else %}
+  <div class="ctx-strip">
+    {% for row in block.rows %}
+    <span class="ctx-chip" style="{{ 'border-color:var(--up);color:var(--up)' if row.change_pct and row.change_pct > 0 else ('border-color:var(--down);color:var(--down)' if row.change_pct and row.change_pct < 0 else '') }}">
+      {{ row.symbol }}
+      {% if row.change_pct is not none %}
+        {{ '+' if row.change_pct > 0 else '' }}{{ "%.2f"|format(row.change_pct) }}%
+      {% endif %}
+    </span>
+    {% endfor %}
+  </div>
+  {% if block.state == 'STALE_WITH_LAST_KNOWN' and block.state_reason_en %}
+  <p class="feasibility-note">{{ t(block.state_reason_en or '',
+                                   block.state_reason_zh or block.state_reason_en or '') }}</p>
+  {% endif %}
+  {% endif %}
+</div>
+{% endif %}
+
+{# ── Market regime ─────────────────────────────────────────────────────────── #}
+{% if block.key == 'market_state' %}
+<div class="panel">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <h2 style="margin:0">{{ t('Market regime', '市场周期') }}</h2>
+    {{ help(
+      'Overall market regime: Risk-on (uptrend / positive momentum) or Risk-off (downtrend / negative momentum).',
+      '整体市场周期：风险偏好（上涨趋势/正向动能）或风险规避（下跌趋势/负向动能）。'
+    ) }}
+  </div>
+  {% if block.state == 'CURRENT' and block.rows %}
+    {% for row in block.rows %}
+    <div class="ctx-strip">
+      <span class="ctx-chip regime">
+        {{ t(row.label_en or 'Regime unavailable',
+             row.label_zh or row.label_en or '周期状态不可用') }}
+      </span>
+      {% if row.posture_en or row.posture_zh %}
+      <span class="ctx-row"><span class="ctx-label">{{ t('Posture', '姿态') }}</span>
+        {{ t(row.posture_en or '', row.posture_zh or row.posture_en or '') }}</span>
+      {% endif %}
+    </div>
+    {% if row.headline_en or row.headline_zh %}
+    <p class="muted sm" style="margin-top:6px">{{ t(row.headline_en or '',
+                                                     row.headline_zh or row.headline_en or '') }}</p>
+    {% endif %}
+    {% endfor %}
+  {% else %}
+  <p class="muted sm">{{ t('Regime data unavailable.', '周期数据不可用。') }}</p>
+  {% endif %}
+</div>
+{% endif %}
+
+{# ── Cross-asset plane ─────────────────────────────────────────────────────── #}
+{% if block.key == 'cross_asset_plane' %}
+<div class="panel">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <h2 style="margin:0">{{ t('Cross-asset view', '跨资产视角') }}</h2>
+    {{ help(
+      'Multi-asset consensus from the Neural Web plane: each lobe votes on direction and the aggregate verdict is shown.',
+      '神经 Web 全景的多资产共识：各脑叶对方向投票，汇总判断如下。'
+    ) }}
+  </div>
+  {% if block.state == 'CURRENT' and block.rows %}
+    {% for row in block.rows %}
+    <div class="ctx-strip" style="margin-bottom:6px">
+      <span class="ctx-chip regime">
+        {{ t(row.verdict.label_en or 'Cross-asset view unavailable',
+             row.verdict.label_zh or row.verdict.label_en or '跨资产视角不可用') }}
+      </span>
+    </div>
+    {% if row.contradictions_en or row.contradictions_zh %}
+    <p class="muted sm">{{ t(row.contradictions_en or '',
+                             row.contradictions_zh or row.contradictions_en or '') }}</p>
+    {% endif %}
+    {% if row.freshness_en or row.freshness_zh %}
+    <p class="muted sm">{{ t(row.freshness_en or '',
+                             row.freshness_zh or row.freshness_en or '') }}</p>
+    {% endif %}
+    {% endfor %}
+  {% else %}
+  <p class="muted sm">{{ t('Cross-asset plane unavailable.', '跨资产视角不可用。') }}</p>
+  {% endif %}
+</div>
+{% endif %}
+
+{# ── Context planes (MOR-2b Lane C) ─────────────────────────────────────────── #}
+{% if block.key == 'context_planes' %}
+{% set _cp_state_chip = (
+  ('live', t('Live', '实时')) if block.state == 'CURRENT'
+  else ('pre',  t('Not yet open', '尚未开始')) if block.state == 'NOT_YET_OPEN'
+  else ('stale', t('Stale — last known', '已滞后 — 最新已知')) if block.state == 'STALE_WITH_LAST_KNOWN'
+  else ('warn', t('Unavailable', '不可用')) if block.state == 'UNAVAILABLE'
+  else ('behind', t('Not covered', '未覆盖'))
+) %}
+<div class="panel">
+  <div class="mx-block-header">
+    <span class="eyebrow">{{ t('Context planes', '背景面') }}</span>
+    <h2>{{ t(block.title_en or 'Context planes', block.title_zh or '背景面') }}</h2>
+    <span class="mx-chip-slot">
+      <span class="dtp-chip dtp-chip--{{ _cp_state_chip[0] }}">
+        {% if block.state == 'CURRENT' %}<i class="dtp-dot"></i>{% endif %}
+        {{ _cp_state_chip[1] }}
+      </span>
+    </span>
+    {% if block.source_as_of %}
+    <span class="dtp-asof">{{ t('Built at', '构建时间') }} {{ block.source_as_of[:16] }}</span>
+    {% endif %}
+    {{ help(
+      'Five cross-asset planes (rates, dollar, credit, commodities, international) read from their own owner artifacts. Stale rows show last-known values with a dated reason.',
+      '五个跨资产背景面（利率、美元、信用、商品、国际），由各自的主理产出读取。滞后行展示最新已知值并给出日期原因。'
+    ) }}
+  </div>
+  {% if block.state in ('CURRENT', 'STALE_WITH_LAST_KNOWN') and block.rows %}
+  {% if block.state == 'STALE_WITH_LAST_KNOWN' and (block.state_reason_en or block.state_reason_zh) %}
+  <div class="mx-stale-why">{{ t(block.state_reason_en or '', block.state_reason_zh or block.state_reason_en or '') }}</div>
+  {% endif %}
+    {% for row in block.rows %}
+    {% set _plane_tag = _PLANE_WORDS.get(row.plane, ('', '')) %}
+    <div class="mx-cp-row">
+      <span class="ctx-row">
+        <span class="ctx-label">{{ t(_plane_tag[0], _plane_tag[1]) }}</span>
+        {% if row.label_en or row.label_zh %}
+        <span>{{ t(row.label_en or '', row.label_zh or row.label_en or '') }}</span>
+        {% endif %}
+      </span>
+      {% if row.read_en or row.read_zh %}
+      <div class="mx-cp-read">
+        {{ t(row.read_en or '', row.read_zh or row.read_en or '') }}
+      </div>
+      {% endif %}
+      <span class="mx-cp-meta">
+        {% if row.as_of %}{{ t('as of', '数据截至') }} {{ row.as_of[:16] }}{% endif %}
+        {% if row.state == 'STALE_WITH_LAST_KNOWN' and row.state_reason_en %} — {{ t(row.state_reason_en, row.state_reason_zh or row.state_reason_en) }}{% endif %}
+      </span>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="mx-empty">
+      <div class="mx-empty-line">{{ t('Context planes unavailable.', '背景面暂不可用。') }}</div>
+      {% if block.state_reason_en or block.state_reason_zh %}
+      <div class="mx-empty-why">{{ t(block.state_reason_en or '', block.state_reason_zh or block.state_reason_en or '') }}</div>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endif %}
+
+{# ── Research watch (MOR-2b Lane C) ─────────────────────────────────────────── #}
+{% if block.key == 'research_watch' %}
+{% set _rw_state_chip = (
+  ('live', t('Live', '实时')) if block.state == 'CURRENT'
+  else ('pre',  t('Not yet open', '尚未开始')) if block.state == 'NOT_YET_OPEN'
+  else ('stale', t('Stale — last known', '已滞后 — 最新已知')) if block.state == 'STALE_WITH_LAST_KNOWN'
+  else ('warn', t('Unavailable', '不可用')) if block.state == 'UNAVAILABLE'
+  else ('behind', t('Not covered', '未覆盖'))
+) %}
+<div class="panel">
+  <div class="mx-block-header">
+    <span class="eyebrow">{{ t('Research watch', '研究观察') }}</span>
+    <h2>{{ t(block.title_en or 'Research watch', block.title_zh or '研究观察') }}</h2>
+    <span class="mx-chip-slot">
+      <span class="dtp-chip dtp-chip--{{ _rw_state_chip[0] }}">
+        {% if block.state == 'CURRENT' %}<i class="dtp-dot"></i>{% endif %}
+        {{ _rw_state_chip[1] }}
+      </span>
+    </span>
+    {% if block.source_as_of %}
+    <span class="dtp-asof">{{ t('Built at', '构建时间') }} {{ block.source_as_of[:16] }}</span>
+    {% endif %}
+    {{ help(
+      'Conditions we are watching, in plain words. No direction, no magnitude, no order — only what would change the read.',
+      '我们正在观察的条件，以平实语言表达。不含方向、量级或指令——只列出会改变判断的条件。'
+    ) }}
+  </div>
+  {% if block.state in ('CURRENT', 'STALE_WITH_LAST_KNOWN') and block.rows %}
+  {% if block.state == 'STALE_WITH_LAST_KNOWN' and (block.state_reason_en or block.state_reason_zh) %}
+  <div class="mx-stale-why">{{ t(block.state_reason_en or '', block.state_reason_zh or block.state_reason_en or '') }}</div>
+  {% endif %}
+    {% for row in block.rows %}
+    <div class="mx-rw-row">
+      <div class="mx-rw-text">
+        {{ t(row.condition_en or '', row.condition_zh or row.condition_en or '') }}
+      </div>
+      <span class="mx-rw-meta">
+        {% if row.since %}{{ t('since', '起始') }} {{ row.since[:10] }}{% endif %}
+        {% if row.as_of %} · {{ t('as of', '数据截至') }} {{ row.as_of[:10] }}{% endif %}
+        {% if block.calibration_note_en %} · {{ t(block.calibration_note_en, block.calibration_note_zh or block.calibration_note_en) }}{% endif %}
+      </span>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="mx-empty">
+      <div class="mx-empty-line">{{ t('Research watch unavailable.', '研究观察暂不可用。') }}</div>
+      {% if block.state_reason_en or block.state_reason_zh %}
+      <div class="mx-empty-why">{{ t(block.state_reason_en or '', block.state_reason_zh or block.state_reason_en or '') }}</div>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endif %}
+
+{# ── Today's calendar ──────────────────────────────────────────────────────── #}
+{% if block.key == 'todays_calendar' %}
+<div class="panel">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <h2 style="margin:0">{{ t("Today's calendar", '今日日历') }}</h2>
+    {{ help(
+      'Scheduled US macroeconomic releases for today. All times in US Eastern Time.',
+      '今日发布的美国宏观经济数据。所有时间均为美国东部时间。'
+    ) }}
+  </div>
+  {% if block.rows %}
+  <ul style="list-style:none;margin:0;padding:0">
+    {% for row in block.rows %}
+    <li style="display:flex;align-items:baseline;gap:8px;padding:4px 0;border-bottom:1px solid var(--line)">
+      <span class="muted" style="font-size:12px;white-space:nowrap">{{ row.release_date }}</span>
+      <span>{{ t(row.title_en or '', row.title_zh or row.title_en or '') }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% elif block.state_reason_en or block.state_reason_zh %}
+  <p class="muted sm">{{ t(block.state_reason_en or '',
+                           block.state_reason_zh or block.state_reason_en or '') }}</p>
+  {% else %}
+  <p class="muted sm">{{ t('No scheduled US releases today.', '今日无美国经济数据发布。') }}</p>
+  {% endif %}
+</div>
+{% endif %}
+
+{# ── Prior-close brief reference ───────────────────────────────────────────── #}
+{% if block.key == 'prior_close_brief_ref' %}
+{% if block.rows and block.rows[0].link %}
+<div class="panel brief-link-panel">
+  <span class="muted sm">{{ t('Yesterday\'s brief:', '昨日简报：') }}</span>
+  <a class="brief-link" href="{{ block.rows[0].link }}">
+    {{ t('Read the AI Daily Brief →', '阅读 AI 每日简报 →') }}
+  </a>
+  {% if block.rows[0].generated_at %}
+  <span class="muted sm">{{ t('built', '构建于') }} {{ block.rows[0].generated_at }}</span>
+  {% endif %}
+</div>
+{% endif %}
+{% endif %}
+
+{# ── Owner links (MOR-2b Lane C) ───────────────────────────────────────────── #}
+{% if block.key == 'owner_links' %}
+{% set _ol_state_chip = (
+  ('live', t('Live', '实时')) if block.state == 'CURRENT'
+  else ('pre',  t('Not yet open', '尚未开始')) if block.state == 'NOT_YET_OPEN'
+  else ('stale', t('Stale — last known', '已滞后 — 最新已知')) if block.state == 'STALE_WITH_LAST_KNOWN'
+  else ('warn', t('Unavailable', '不可用')) if block.state == 'UNAVAILABLE'
+  else ('behind', t('Not covered', '未覆盖'))
+) %}
+<div class="panel">
+  <div class="mx-block-header">
+    <span class="eyebrow">{{ t('Owner pages', '主理页面') }}</span>
+    <h2>{{ t(block.title_en or 'Owner pages & references', block.title_zh or '主理页面与参考') }}</h2>
+    <span class="mx-chip-slot">
+      <span class="dtp-chip dtp-chip--{{ _ol_state_chip[0] }}">
+        {% if block.state == 'CURRENT' %}<i class="dtp-dot"></i>{% endif %}
+        {{ _ol_state_chip[1] }}
+      </span>
+    </span>
+    {% if block.source_as_of %}
+    <span class="dtp-asof">{{ t('Built at', '构建时间') }} {{ block.source_as_of[:16] }}</span>
+    {% endif %}
+    {{ help(
+      'Pages and references that own each plane — the canonical destinations for the dashboards behind the read.',
+      '每个背景面所属的主理页面与参考——读数背后的看板的标准入口。'
+    ) }}
+  </div>
+  {% if block.state in ('CURRENT', 'STALE_WITH_LAST_KNOWN') and block.rows %}
+  {% if block.state == 'STALE_WITH_LAST_KNOWN' and (block.state_reason_en or block.state_reason_zh) %}
+  <div class="mx-stale-why">{{ t(block.state_reason_en or '', block.state_reason_zh or block.state_reason_en or '') }}</div>
+  {% endif %}
+    {% for row in block.rows %}
+    {% set _plane_tag = _PLANE_WORDS.get(row.plane, ('', '')) %}
+    <div class="mx-ol-row">
+      <a class="brief-link" href="{{ row.href }}">
+        {{ t(row.label_en or '', row.label_zh or row.label_en or '') }}
+      </a>
+      {% if row.plane %}
+      <span class="mx-ol-label">{{ t(_plane_tag[0], _plane_tag[1]) }}</span>
+      {% endif %}
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="mx-empty">
+      <div class="mx-empty-line">{{ t('Owner links unavailable.', '主理页面链接暂不可用。') }}</div>
+      {% if block.state_reason_en or block.state_reason_zh %}
+      <div class="mx-empty-why">{{ t(block.state_reason_en or '', block.state_reason_zh or block.state_reason_en or '') }}</div>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endif %}
+
+{% endfor %}
+
+{# ── Null count footer ─────────────────────────────────────────────────────── #}
+{% if payload.null_count and payload.null_count > 0 %}
+<p class="muted sm" style="text-align:center;margin-top:8px">
+  {{ t('Some readings are unavailable —', '部分数据暂时不可用 —') }}
+  {{ payload.null_count }} {{ t('item(s) could not be loaded.', '项无法加载。') }}
+</p>
+{% endif %}
+
+<script src="theme.js"></script>
+</body>
+</html>

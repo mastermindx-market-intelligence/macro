@@ -13,6 +13,7 @@ The grade arithmetic pins here are derived independently by hand (see the module
 each test), so a drift in engine.bottom_ruler that still matched bottom_ruler_study.py would
 still break these — they anchor the yardstick to ground truth, not just to the study copy.
 """
+import datetime as dt
 import sys
 from pathlib import Path
 
@@ -448,3 +449,338 @@ def test_baseline_deterministic(monkeypatch, tmp_path):
     s2 = json.dumps(d2, ensure_ascii=False, indent=1, default=str, sort_keys=True)
     assert s1 == s2
     assert d1["schema"] == "bottom_ruler_baseline/v1"
+
+
+# ---------------------------------------------------------------------------
+# CLOCK CONTRACT (engine/ledger_clock.py)
+#
+# Regression home for the production failure of 2026-09-17: the nightly advancer derived
+# `as_of` with `pd.Timestamp.utcnow()` (tz-AWARE) and compared it against `pd.Timestamp(
+# flag_date)` (tz-naive, because every producer writes a plain YYYY-MM-DD), so
+# `mature_rows()` raised
+#     TypeError: Cannot compare tz-naive and tz-aware timestamps
+# on EVERY run since the instrument was born — before its first write. `|| true` in
+# daily.yml swallowed it, so the nightly reported success while neither
+# data/bottom_ledger/rows.parquet nor site/factordata/us_bottom_ledger.json ever existed.
+#
+# WHY THE SUITE DID NOT CATCH IT: every pre-existing pipeline test points the price readers
+# at EMPTY directories, so `_read_prices` returns None and every row is skipped BEFORE the
+# maturity comparison is ever reached. `_maturing_env` below closes that gap — it ships real
+# price parquets so rows actually mature, which is the only way this line gets executed.
+# ---------------------------------------------------------------------------
+import json as _json  # noqa: E402
+
+from engine import ledger_clock as LC  # noqa: E402
+
+
+def _write_prices(dirpath, tickers, *, start="2026-01-01", periods=200, tz=None):
+    """Write OHLC price parquets with a V-shaped path so grades are well-defined."""
+    dirpath.mkdir(parents=True, exist_ok=True)
+    idx = pd.bdate_range(start, periods=periods, tz=tz)
+    n = len(idx)
+    trough = n // 3
+    close = np.concatenate([np.linspace(120, 90, trough), np.linspace(90, 135, n - trough)])
+    for t in tickers:
+        pd.DataFrame({"close": close, "high": close * 1.01,
+                      "low": close * 0.99, "volume": 1_000_000.0},
+                     index=idx).to_parquet(dirpath / f"{t}.parquet")
+    return idx
+
+
+@pytest.fixture()
+def _maturing_env(tmp_path, monkeypatch):
+    """Like `_grader_env`, but with REAL price history so rows genuinely mature."""
+    snaps = tmp_path / "snapshots.jsonl"
+    plans = tmp_path / "plans"
+    plans.mkdir()
+    stocks = tmp_path / "stocks"
+    idx = _write_prices(stocks, ["AAA", "BBB"])
+    monkeypatch.setattr(G, "SNAPSHOTS_JSONL", snaps)
+    monkeypatch.setattr(G, "PROPHET_PLANS_DIR", plans)
+    monkeypatch.setattr(G, "STOCKS_DIR", stocks)
+    monkeypatch.setattr(G, "YAHOO_DIR", tmp_path / "yahoo_empty")
+    # a flag with >= H trading bars of history on both sides
+    flag = str(idx[G.BR.PRE + 5].date())
+    snaps.write_text(_snapshot_line(flag, buy=[{"ticker": "AAA", "lane": "bottom"},
+                                               {"ticker": "BBB", "lane": "bottom"}]) + "\n")
+    return snaps, plans, tmp_path / "rows.parquet", tmp_path / "us_bottom_ledger.json", flag
+
+
+# --- the contract itself ---------------------------------------------------
+def test_ledger_clock_is_date_only_tz_naive_and_midnight():
+    """Date-only, UTC-aware, offset-bearing and clock-bearing inputs all land on one form."""
+    for value in ["2026-09-17",
+                  dt.date(2026, 9, 17),
+                  pd.Timestamp("2026-09-17"),
+                  pd.Timestamp("2026-09-17 15:30"),            # naive + clock
+                  pd.Timestamp("2026-09-17", tz="UTC"),        # UTC-aware
+                  "2026-09-17T20:00:00-04:00",                 # offset-bearing
+                  np.datetime64("2026-09-17")]:
+        got = LC.to_ledger_date(value)
+        assert got.tz is None, f"{value!r} kept a timezone"
+        assert got == pd.Timestamp("2026-09-17"), f"{value!r} -> {got!r}"
+        assert LC.ledger_date_str(value) == "2026-09-17"
+
+
+def test_ledger_clock_reads_an_offset_at_its_own_wall_clock():
+    """A stamped offset states which civil day it belongs to in the zone that stamped it.
+
+    Converting to UTC first would file an Asian session a day early; this pins the rule.
+    """
+    assert LC.ledger_date_str(pd.Timestamp("2026-09-18 00:00", tz="Asia/Shanghai")) == "2026-09-18"
+    assert LC.ledger_date_str(pd.Timestamp("2026-09-17 16:00", tz="US/Eastern")) == "2026-09-17"
+
+
+def test_ledger_clock_today_is_tz_naive_and_equals_the_old_utcnow_default():
+    """`today_ledger_date()` must preserve the previous default's VALUE without its tz.
+
+    The old `pd.Timestamp.utcnow().normalize()` was the UTC civil date — correct in value,
+    fatal in type. This is the exact regression: a tz-aware `as_of` is what crashed
+    production, so the default must be tz-naive AND still the UTC civil date.
+    """
+    today = LC.today_ledger_date()
+    assert today.tz is None
+    assert today == today.normalize()
+    assert today == pd.Timestamp(pd.Timestamp.now("UTC").date())
+
+
+@pytest.mark.parametrize("wall,zone,ambiguous", [
+    ("2026-03-08 03:30", "US/Eastern", None),     # spring forward (gap edge)
+    ("2026-11-01 01:30", "US/Eastern", True),     # fall back, DST reading
+    ("2026-11-01 01:30", "US/Eastern", False),    # fall back, standard reading
+    ("2026-10-25 02:30", "Europe/Berlin", True),  # EU fall back
+])
+def test_ledger_clock_dst_boundaries_are_deterministic(wall, zone, ambiguous):
+    """A DST offset change can never move a ledger date.
+
+    Both readings of an ambiguous wall clock name the same civil day, so the ledger date is
+    single-valued across a transition.
+    """
+    ts = (pd.Timestamp(wall).tz_localize(zone) if ambiguous is None
+          else pd.Timestamp(wall).tz_localize(zone, ambiguous=ambiguous))
+    assert LC.ledger_date_str(ts) == wall.split()[0]
+
+
+def test_ledger_clock_rejects_rather_than_guesses():
+    """An unreadable date is REJECTED — never coerced into a plausible-looking one."""
+    for bad in [None, "", "   ", "not-a-date", pd.NaT, float("nan")]:
+        with pytest.raises(LC.ClockContractError):
+            LC.to_ledger_date(bad, field="flag_date")
+        assert LC.to_ledger_date_or_none(bad) is None
+
+
+# --- the exact production failure ------------------------------------------
+def test_production_mixed_tz_maturity_comparison_no_longer_raises(_maturing_env):
+    """THE production repro: a tz-aware `as_of` meeting a date-only `flag_date`.
+
+    Before the contract this raised `TypeError: Cannot compare tz-naive and tz-aware
+    timestamps` inside `mature_rows()` — the first statement after the price read — which is
+    exactly how the nightly died before writing anything.
+    """
+    snaps, plans, rows_path, emit_path, flag = _maturing_env
+    tz_aware_as_of = pd.Timestamp.now("UTC").normalize()      # what utcnow() produced
+    assert tz_aware_as_of.tz is not None                      # the fixture is the real shape
+    doc = G.run_pipeline(rows_path, emit_path, accrue=True, as_of=tz_aware_as_of, quiet=True)
+    assert doc["advance"]["status"] == G.ADVANCE_ADVANCED
+    assert doc["n_matured"] == 2                              # and it actually GRADED
+    assert rows_path.exists()
+
+
+def test_maturity_path_grades_and_freezes_with_real_prices(_maturing_env):
+    """The coverage gap that let the crash ship: rows that genuinely mature.
+
+    Every pre-existing pipeline test pointed the price readers at empty dirs, so the maturity
+    comparison was never executed. This exercises it end to end.
+    """
+    snaps, plans, rows_path, emit_path, flag = _maturing_env
+    doc = G.run_pipeline(rows_path, emit_path, accrue=True,
+                         as_of=pd.Timestamp("2027-01-01"), quiet=True)
+    assert doc["advance"]["n_newly_graded"] == 2
+    store = pd.read_parquet(rows_path)
+    assert bool(store["graded"].all())
+    assert set(store["grade_asof"]) == {"2027-01-01"}         # contract-shaped, date-only
+    for field in ("prox", "mfe60", "mae60", "fwd60", "undercut"):
+        assert store[field].notna().all()
+
+
+def test_grade_call_resolves_a_tz_aware_price_index_instead_of_silently_returning_none():
+    """The quiet twin of the crash.
+
+    A tz-mismatched price index matched NO bar and `grade_call` returned None — so a row
+    would accrue forever and never mature, with no error anywhere. All tz spellings must now
+    produce the identical frozen grade.
+    """
+    idx = pd.bdate_range("2024-01-01", periods=90)
+    close = np.linspace(100, 120, 90)
+    base = BR.grade_call(pd.Series(close, index=idx), pd.Series(close * 1.01, index=idx),
+                         pd.Series(close * 0.99, index=idx), "2024-01-22")
+    assert base is not None
+    for tz in ("America/New_York", "Asia/Shanghai", "UTC"):
+        aware = pd.bdate_range("2024-01-01", periods=90, tz=tz)
+        got = BR.grade_call(pd.Series(close, index=aware), pd.Series(close * 1.01, index=aware),
+                            pd.Series(close * 0.99, index=aware), "2024-01-22")
+        assert got == base, f"tz={tz} drifted from the naive grade"
+    # and a tz-aware flag_date against a naive index
+    assert BR.grade_call(pd.Series(close, index=idx), pd.Series(close * 1.01, index=idx),
+                         pd.Series(close * 0.99, index=idx),
+                         pd.Timestamp("2024-01-22", tz="UTC")) == base
+
+
+# --- persisted rows, replay, and explicit --as-of --------------------------
+def test_historical_persisted_dates_are_renormalized_without_touching_frozen_grades(_maturing_env):
+    """A store written with datetime64 / tz-aware / clock-bearing dates is re-spelled once.
+
+    Parquet preserves whatever the writer used, so a historical store can hold the SAME
+    session under several spellings. Left alone the accrual identity (flag_date, ticker,
+    source) would double-accrue it. Re-spelling is representation ONLY: no grade field and no
+    `graded` flag may move.
+    """
+    snaps, plans, rows_path, emit_path, flag = _maturing_env
+    G.run_pipeline(rows_path, emit_path, accrue=True,
+                   as_of=pd.Timestamp("2027-01-01"), quiet=True)
+    graded = pd.read_parquet(rows_path)
+    assert bool(graded["graded"].all())
+    frozen = graded.set_index("ticker")[G.GRADE_FIELDS].copy()
+
+    # rewrite the persisted store with drifted date spellings for the SAME sessions
+    drifted = graded.copy()
+    drifted.loc[drifted.index[0], "flag_date"] = f"{flag}T00:00:00+00:00"   # tz-aware string
+    drifted.loc[drifted.index[1], "flag_date"] = f"{flag} 09:30:00"        # clock-bearing
+    G._atomic_write_parquet(rows_path, drifted)
+
+    doc = G.run_pipeline(rows_path, emit_path, accrue=True,
+                         as_of=pd.Timestamp("2027-01-02"), quiet=True)
+    after = pd.read_parquet(rows_path)
+    assert doc["advance"]["store_repairs"]["renormalized"] == 2
+    assert set(after["flag_date"]) == {flag}          # one canonical spelling
+    assert len(after) == len(graded)                  # the drift did NOT double-accrue
+    assert doc["advance"]["n_newly_graded"] == 0      # nothing regraded
+    pd.testing.assert_frame_equal(after.set_index("ticker")[G.GRADE_FIELDS], frozen)
+    assert set(after["grade_asof"]) == {"2027-01-01"}  # original freeze stamp survives
+
+
+def test_replay_grade_is_independent_of_as_of(_maturing_env, tmp_path):
+    """Historical replay is deterministic: `as_of` gates ELIGIBILITY, never the grade.
+
+    `grade_call` reads only [flag-PRE, flag+H], so a row graded at any matured `as_of` must
+    produce identical numbers — which is what makes the one-grader freeze safe.
+    """
+    snaps, plans, rows_path, emit_path, flag = _maturing_env
+    grades = {}
+    for label, as_of in [("early", "2026-12-01"), ("late", "2028-06-15")]:
+        rp, ep = tmp_path / f"{label}.parquet", tmp_path / f"{label}.json"
+        G.run_pipeline(rp, ep, accrue=True, as_of=pd.Timestamp(as_of), quiet=True)
+        s = pd.read_parquet(rp)
+        assert bool(s["graded"].all())
+        grades[label] = s.set_index("ticker")[G.GRADE_FIELDS]
+    pd.testing.assert_frame_equal(grades["early"], grades["late"])
+
+
+def test_explicit_as_of_gates_eligibility_deterministically(_maturing_env, tmp_path):
+    """An `--as-of` before the maturity window grades nothing; after it, grades everything."""
+    snaps, plans, rows_path, emit_path, flag = _maturing_env
+    too_early = pd.Timestamp(flag) + pd.Timedelta(days=BR.H - 1)   # one day short of the gate
+    doc = G.run_pipeline(rows_path, emit_path, accrue=True, as_of=too_early, quiet=True)
+    assert doc["advance"]["n_newly_graded"] == 0
+    assert doc["as_of"] == too_early.strftime("%Y-%m-%d")
+    doc2 = G.run_pipeline(rows_path, emit_path, accrue=True,
+                          as_of=pd.Timestamp("2027-01-01"), quiet=True)
+    assert doc2["advance"]["n_newly_graded"] == 2
+
+
+def test_cli_rejects_an_unreadable_as_of_instead_of_grading_blind(monkeypatch, capsys):
+    """A run that cannot say WHEN it is must not grade anything."""
+    monkeypatch.setattr(sys, "argv", ["grade_bottom_calls", "--as-of", "not-a-date"])
+    with pytest.raises(SystemExit) as exc:
+        G.main()
+    assert exc.value.code == 2
+    line = capsys.readouterr().out.strip().splitlines()[-1]
+    assert line.startswith("::error title=bottom-ledger-bad-as-of::")   # annotation law
+
+
+# --- failure observability -------------------------------------------------
+def test_failed_advance_is_stamped_in_the_artifact_and_reraises(_maturing_env, monkeypatch, capsys):
+    """A dead advancer can never present as a fresh successful grading run.
+
+    This is the property `|| true` destroyed: the store must be left untouched, the display
+    artifact must say `advance.status == "failed"`, a line-start `::error` must be printed,
+    and the exception must propagate so the process exits non-zero.
+    """
+    snaps, plans, rows_path, emit_path, flag = _maturing_env
+    G.run_pipeline(rows_path, emit_path, accrue=True,
+                   as_of=pd.Timestamp("2027-01-01"), quiet=True)
+    good_store = rows_path.read_bytes()
+
+    boom = TypeError("Cannot compare tz-naive and tz-aware timestamps")
+    monkeypatch.setattr(G, "mature_rows", lambda *a, **k: (_ for _ in ()).throw(boom))
+    with pytest.raises(TypeError):
+        G.run_pipeline(rows_path, emit_path, accrue=True,
+                       as_of=pd.Timestamp("2027-02-01"), quiet=True)
+
+    assert rows_path.read_bytes() == good_store          # no partial advance, no regrade
+    doc = _json.loads(emit_path.read_text(encoding="utf-8"))
+    assert doc["advance"]["status"] == G.ADVANCE_FAILED
+    assert "Cannot compare tz-naive and tz-aware timestamps" in doc["advance"]["error"]
+    assert doc["advance"]["as_of"] == "2027-02-01"
+    assert doc["n_matured"] == 2                         # last good state still reported
+    errs = [l for l in capsys.readouterr().out.splitlines()
+            if l.startswith("::error title=bottom-ledger-advance-failed::")]
+    assert len(errs) == 1, "the failure must emit exactly one line-start ::error annotation"
+
+
+def test_read_only_run_is_labelled_read_only_not_advanced(_grader_env):
+    """A non-nightly re-emit must not look like a forward advance."""
+    snaps, plans, rows_path, emit_path = _grader_env
+    snaps.write_text(_snapshot_line("2026-06-30", buy=[{"ticker": "AAA"}]) + "\n")
+    doc = G.run_pipeline(rows_path, emit_path, accrue=False,
+                         as_of=pd.Timestamp("2026-07-01"), quiet=True)
+    assert doc["advance"]["status"] == G.ADVANCE_READ_ONLY
+    assert doc["advance"]["n_newly_graded"] is None
+
+
+def test_unreadable_store_never_silently_becomes_an_empty_one(_maturing_env):
+    """A corrupt store must NOT read as empty — that would re-accrue and regrade everything."""
+    snaps, plans, rows_path, emit_path, flag = _maturing_env
+    G.run_pipeline(rows_path, emit_path, accrue=True,
+                   as_of=pd.Timestamp("2027-01-01"), quiet=True)
+    rows_path.write_bytes(b"this is not a parquet file")
+    with pytest.raises(RuntimeError, match="store unreadable"):
+        G.run_pipeline(rows_path, emit_path, accrue=True,
+                       as_of=pd.Timestamp("2027-01-02"), quiet=True)
+
+
+def test_unreadable_capture_date_is_withheld_and_annotated(_grader_env, capsys):
+    """A producer date the contract cannot read is withheld + announced, never accrued.
+
+    Accruing it would create a row that can never mature and never explain why.
+    """
+    snaps, plans, rows_path, emit_path = _grader_env
+    snaps.write_text("\n".join([
+        _snapshot_line("2026-06-30", buy=[{"ticker": "AAA"}]),
+        _snapshot_line("not-a-date", buy=[{"ticker": "BBB"}]),
+    ]) + "\n")
+    doc = G.run_pipeline(rows_path, emit_path, accrue=True,
+                         as_of=pd.Timestamp("2026-07-01"), quiet=True)
+    assert doc["accrual_by_source"] == {"board_buy": 1}
+    warns = [l for l in capsys.readouterr().out.splitlines()
+             if l.startswith("::warning title=bottom-ledger-unreadable-capture-date::")]
+    assert len(warns) == 1
+
+
+def test_grade_call_keeps_ohlc_alignment_when_close_has_holes():
+    """`c.dropna()` can be SHORTER than high/low — the contract re-key must not mis-align.
+
+    Guards the alignment path introduced with the clock contract: a ragged close must still
+    resolve real high/low (basis "ohlc"), not silently degrade to the close_only fallback.
+    """
+    idx = pd.bdate_range("2024-01-01", periods=100)
+    close = np.linspace(100, 130, 100).astype(float)
+    close[5] = close[7] = np.nan
+    hi = pd.Series(close * 1.01, index=idx).ffill()
+    lo = pd.Series(close * 0.99, index=idx).ffill()
+    got = BR.grade_call(pd.Series(close, index=idx), hi, lo, "2024-01-25")
+    assert got is not None and got["basis"] == "ohlc"
+    aware = pd.bdate_range("2024-01-01", periods=100, tz="America/New_York")
+    assert BR.grade_call(pd.Series(close, index=aware),
+                         pd.Series(hi.to_numpy(), index=aware),
+                         pd.Series(lo.to_numpy(), index=aware), "2024-01-25") == got

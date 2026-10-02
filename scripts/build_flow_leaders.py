@@ -272,7 +272,17 @@ def _load_options_entry(data_root: Path) -> dict[str, str | None]:
         df = pd.read_parquet(p)
         if "ticker" not in df.columns or "gamma_regime" not in df.columns:
             return {}
-        return dict(zip(df["ticker"].astype(str), df["gamma_regime"].astype(object)))
+        regimes: dict[str, str | None] = {}
+        for ticker, raw in zip(df["ticker"].astype(str), df["gamma_regime"].astype(object)):
+            # Parquet missing string values arrive as plain float NaN.  Python's
+            # json encoder serialises those as the non-standard bare token NaN,
+            # which browser Response.json()/JSON.parse rejects.  Normalise at
+            # the typed source boundary: gamma_regime is string-or-null only.
+            if raw is None or pd.isna(raw):
+                regimes[ticker] = None
+            else:
+                regimes[ticker] = str(raw)
+        return regimes
     except Exception as e:  # noqa: BLE001
         log.debug("build_flow_leaders: options_entry/state.parquet unreadable: %s", e)
         return {}
@@ -1142,7 +1152,12 @@ def build(
 
     # ── Write leaders.json ────────────────────────────────────────────────────
     out_path = out_dir / "leaders.json"
-    out_path.write_text(json.dumps(payload, separators=(",", ":"), default=_json_default))
+    # RFC-8259 JSON only.  `allow_nan=False` is the publication tripwire:
+    # source loaders must normalise missing/non-finite values to null before this
+    # boundary rather than shipping JavaScript-unparseable NaN/Infinity tokens.
+    out_path.write_text(
+        json.dumps(payload, separators=(",", ":"), default=_json_default, allow_nan=False)
+    )
     log.info(
         "build_flow_leaders: wrote %s (%d board candidates, %d bytes)",
         out_path, len(board_names), out_path.stat().st_size,

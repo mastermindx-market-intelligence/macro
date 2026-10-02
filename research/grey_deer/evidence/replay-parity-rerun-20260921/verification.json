@@ -1,0 +1,94 @@
+{
+  "schema": "mastermind.risk_radar_replay_parity_rerun.v1",
+  "status": "verified_corrected_replay_evidence",
+  "rerun_protocol_commit": "e9ff3d234df1f50137bfa38a50995a70f06c1164",
+  "state_ladder_method_commit": "2d8e10039dfcbff341a11b8644963531a8b5bbe9",
+  "parity_fix_pr": 7632,
+  "parity_fix_merge": "7c6e35163c9f67087ffe174a7ab3810f47ce6a45",
+  "protected_skillpack": {
+    "repo": "mastermindx-market-intelligence/Mastermind",
+    "commit": "4ca1b97e65de9d4ba8c868b9d708fb7620a8a76f",
+    "version": "1.0.1",
+    "bootstrap_major": 1
+  },
+  "input_integrity": {
+    "same_committed_market_input_hashes_as_pre_parity_studies": true,
+    "collectors_run": false,
+    "data_files_modified": false,
+    "h21_full_outcomes_sha256": "68f48021c4ef9e1a4f07207775ff4701818770c78f9a111f9a7b3d91aeb5346c",
+    "h21_since_2020_outcomes_sha256": "7c04d5ee085c01bb5c514fc2602141cd01b83cf4745da745ad2dca6fa9ee73ec"
+  },
+  "corrected_findings": {
+    "gate_since_2020_h21": {
+      "precision": 0.420233,
+      "recall": 0.367347,
+      "fire_rate": 0.154262,
+      "median_latency_sessions": 3.0
+    },
+    "persistent_caution_since_2020": {
+      "event_rate": 0.23975588491717523,
+      "lift_vs_base": 1.3586166811973261,
+      "recall": 0.935374149659864,
+      "fire_rate": 0.6884753901560624,
+      "product_tier": "neutral_duration_context_only"
+    },
+    "state_ladder_since_2020_h21": {
+      "calm": 0.0,
+      "watch": 0.04591836734693878,
+      "caution": 0.16511194029850745,
+      "elevated": 0.30303030303030304,
+      "elevated_n": 33,
+      "risk_off": 0.4375,
+      "risk_off_n": 224,
+      "point_estimate_monotonic": true
+    },
+    "fixed_episode_material_change": {
+      "episode": "SVB March-2023",
+      "t_minus_1_old": "caution",
+      "t_minus_1_corrected": "watch",
+      "warning_sessions_21_old": 18,
+      "warning_sessions_21_corrected": 14,
+      "loud_sessions_21_old": 2,
+      "loud_sessions_21_corrected": 1,
+      "consecutive_warning_to_t0_old": 10,
+      "consecutive_warning_to_t0_corrected": 1
+    }
+  },
+  "artifact_hashes": {
+    "episode_result_sha256": "d6fc5fed1d946de243893b3dd1e81279b601ced8684f378762deb868421a90dd",
+    "episode_report_sha256": "22b26613d0b99fac3186987b107bc332b267608f879ce529d35211e9f2ec581e",
+    "gate_result_sha256": "927a7784ad1e248079b698ddfe1d452464fe7f422db7b364c8f648a12f9b991b",
+    "caution_result_sha256": "38893ded96b84da5d2ddbb3c96f766e2e626a56919ddf3b63577bc3c752b7e1e",
+    "state_ladder_result_sha256": "68589bee49f879e5dccb2d59a7064dc2ea1e6e6df4578c360de875afd4fc5d9f",
+    "rerun_report_sha256": "23f876eb89a9ae18f213ec6943b0e5fe3f217db562b6eb2fa5b6c104f39996f1",
+    "tests_log_sha256": "ce15ca51a20d3aa93785dc02c7496c7ed029a12d4d36e9440baa4b22435c1596",
+    "agentos_log_sha256": "e4dff7b7d21d4523cd8bb4075bb4a02616e8dd33330f2871f751947d53ec8f4c"
+  },
+  "verification": {
+    "focused_method_tests_before_outcome": {
+      "warning_and_gate": "11 passed",
+      "caution_persistence": "6 passed",
+      "state_ladder": "6 passed"
+    },
+    "owning_suites": "205 passed",
+    "py_compile": "pass",
+    "diff_check": "pass",
+    "agentos": "0 errors; inherited warnings only"
+  },
+  "superseded_evidence": {
+    "warning_path_pr": 7586,
+    "gate_latency_pr": 7599,
+    "caution_persistence_pr": 7608,
+    "state_ladder_pr": 7611
+  },
+  "authority": {
+    "live_model_changed": false,
+    "probability_changed": false,
+    "band_changed": false,
+    "weight_changed": false,
+    "gate_changed": false,
+    "policy_changed": false,
+    "capital_authority_changed": false
+  },
+  "next_falsifier": "Evaluate the complete displayed probability surface (state plus existing conjunction count) under corrected replay with a separately frozen no-fit diagnostic protocol; keep issued/prospective forecast evidence distinct."
+}

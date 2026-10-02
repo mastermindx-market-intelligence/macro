@@ -33,16 +33,36 @@ def _all_iso3(path: Path = WORLDMAP_TEMPLATE) -> set:
     return set(re.findall(r'data-iso3="([A-Z]{3})"', text))
 
 
+def _apply_public_news_path_marks(html: str, vm: dict) -> str:
+    """Stamp data-news=1 on the existing GBR path when a UK event is present.
+
+    Does not merge news into OFAC rungs, does not mint lat/lon, and does not
+    invent an ISO3 for EU/EA/EFTA.
+    """
+    has_gbr = any((row or {}).get("iso3") == "GBR" for row in (vm.get("public_news") or []))
+    if not has_gbr:
+        return html
+    if re.search(r'class="wm-c" data-iso3="GBR"[^>]*\bdata-news="1"', html):
+        return html
+    return html.replace(
+        'class="wm-c" data-iso3="GBR"',
+        'class="wm-c" data-iso3="GBR" data-news="1"',
+        1,
+    )
+
+
 def build() -> dict:
     vm = sanctions_map.build()
     LATEST_JSON.parent.mkdir(parents=True, exist_ok=True)
     LATEST_JSON.write_text(json.dumps(vm, indent=2, default=str), encoding="utf-8")
 
+    # OFAC rungs only — public-news is a path mark, never a rung overwrite.
     rungs = sanctions_map.rungs_for(vm, _all_iso3())
 
     env = Environment(loader=FileSystemLoader(str(config.ROOT / "templates")), autoescape=True)
     env.globals.update(tr=tr, td=td, t=t)
     html = env.get_template("sanctions_map.html.j2").render(vm=vm, rungs=rungs)
+    html = _apply_public_news_path_marks(html, vm)
 
     site = config.ROOT / config.load()["storage"]["site_dir"]
     write_page(site / "sanctions_map.html", html)

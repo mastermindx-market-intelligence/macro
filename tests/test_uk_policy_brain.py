@@ -7,7 +7,9 @@ is clamped to a closed set, and invented numbers/tickers are rejected in code.
 from __future__ import annotations
 
 import json
+import logging
 import re
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import pytest
@@ -276,6 +278,10 @@ def test_failed_model_stays_model_unavailable_through_view(tmp_path, monkeypatch
     monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
     items = brain._parse_search_results(FIXTURE.read_bytes())
     monkeypatch.setattr(brain, "collect", lambda *a, **k: items)
+    # Fixture dates are outside the live 4-day window. collect() is replaced
+    # wholesale, so treat that return as the already-windowed set this test
+    # was written against. Otherwise run() takes the quiet-window branch.
+    monkeypatch.setattr(brain, "_in_window", lambda item, cutoff: True)
     monkeypatch.setattr(brain, "fetch_body", lambda url: items[0]["body_text"])
     monkeypatch.setattr(brain, "fetch_version", lambda url: None)
 
@@ -305,6 +311,9 @@ def test_no_new_without_prior_does_not_call_model(tmp_path, monkeypatch):
     items = brain._parse_search_results(FIXTURE.read_bytes())
     brain.save_processed(tmp_path, {"seen": {items[0]["id"]: {"at": "2026-09-04T12:00:00+00:00"}}})
     monkeypatch.setattr(brain, "collect", lambda *a, **k: items[:1])
+    # Same fixture-date issue as the model-unavailable test: keep this on the
+    # already-seen branch rather than the new quiet-window branch.
+    monkeypatch.setattr(brain, "_in_window", lambda item, cutoff: True)
     calls = []
 
     def stub(prompt):
@@ -371,3 +380,134 @@ def test_doc_version_and_source_url_nulls_are_printed():
     assert "Read the official announcement" in html2
     assert "claude-opus" not in html2
     assert "claude-opus-4-8" not in html2
+
+
+def test_sentinel_activates_uk_policy_desk_on_credentialed_step():
+    """The real hourly publisher must switch on the already-shipped UK desk."""
+    text = (
+        Path(__file__).parent.parent / ".github" / "workflows" / "whitehouse-sentinel.yml"
+    ).read_text(encoding="utf-8")
+    marker = "- name: poll White House feed + Opus alert desk"
+    assert marker in text
+    step = text.split(marker, 1)[1].split("\n      - name:", 1)[0]
+    assert 'UK_POLICY_DESK_ENABLED: "1"' in step
+    assert "CLAUDE_CODE_OAUTH_TOKEN:" in step
+    assert "ANTHROPIC_API_KEY:" in step
+    assert "DEEPSEEK_API_KEY:" in step
+    assert "python -m scripts.build_whitehouse" in step
+
+
+def _aged_result(title: str, days_ago: float, slug: str) -> dict:
+    published = (datetime.now(timezone.utc) - timedelta(days=days_ago)).strftime(
+        "%Y-%m-%dT%H:%M:%S+00:00"
+    )
+    return {
+        "title": title,
+        "link": f"/government/news/{slug}",
+        "public_timestamp": published,
+        "description": "The Treasury published this note.",
+        "content_store_document_type": "news_story",
+    }
+
+
+def _fetch_search(raw: bytes):
+    def _fetch(url, timeout=15):
+        if url == brain.SEARCH_URL:
+            return raw
+        return None
+    return _fetch
+
+
+def test_quiet_window_without_prior_persists_no_new_from_newest_item(tmp_path, monkeypatch):
+    _clear_env(monkeypatch)
+    monkeypatch.setenv(brain.GATE_ENV, "1")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+    six = _aged_result("Chancellor sets out a six day old note", 6, "six-day-old-note")
+    nine = _aged_result("Treasury files a nine day old note", 9, "nine-day-old-note")
+    raw = json.dumps({"results": [nine, six]}).encode()
+    monkeypatch.setattr(brain, "_fetch", _fetch_search(raw))
+    calls = []
+
+    def stub(prompt):
+        calls.append(prompt)
+        return {"stance": "routine", "summary_en": "should not run"}
+
+    record = brain.run(persist=True, root=tmp_path, call=stub)
+    saved_path = tmp_path / "site" / "uk_policy.json"
+    assert saved_path.exists()
+    saved = json.loads(saved_path.read_text())
+    assert record["state"] == "no_new"
+    assert saved["state"] == "no_new"
+    assert record["headline"] == six["title"]
+    assert saved["headline"] == six["title"]
+    assert record["stance"] is None
+    assert calls == []
+
+
+def test_quiet_window_with_prior_keeps_prior_headline_as_no_new(tmp_path, monkeypatch):
+    _clear_env(monkeypatch)
+    monkeypatch.setenv(brain.GATE_ENV, "1")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+    six = _aged_result("Six day headline that must not replace the prior", 6, "six-day-prior")
+    nine = _aged_result("Nine day headline", 9, "nine-day-prior")
+    raw = json.dumps({"results": [nine, six]}).encode()
+    monkeypatch.setattr(brain, "_fetch", _fetch_search(raw))
+    site = tmp_path / "site"
+    site.mkdir()
+    prior = {
+        "state": "ok",
+        "stance": "restrictive",
+        "headline": "Prior headline stays on a quiet window",
+        "source_url": "https://www.gov.uk/government/news/prior",
+    }
+    (site / "uk_policy.json").write_text(json.dumps(prior))
+    calls = []
+
+    def stub(prompt):
+        calls.append(prompt)
+        return {"stance": "supportive", "summary_en": "should not run"}
+
+    record = brain.run(persist=True, root=tmp_path, call=stub)
+    saved = json.loads((site / "uk_policy.json").read_text())
+    assert record["state"] == "no_new"
+    assert saved["state"] == "no_new"
+    assert record["headline"] == prior["headline"]
+    assert saved["headline"] == prior["headline"]
+    assert record["stance"] == "restrictive"
+    assert calls == []
+
+
+def test_empty_feed_without_prior_logs_warning_and_writes_nothing(tmp_path, monkeypatch, caplog):
+    _clear_env(monkeypatch)
+    monkeypatch.setenv(brain.GATE_ENV, "1")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+    seen = []
+
+    def _fetch(url, timeout=15):
+        seen.append(url)
+        return None
+
+    monkeypatch.setattr(brain, "_fetch", _fetch)
+    with caplog.at_level(logging.WARNING, logger="engine.uk_policy_brain"):
+        result = brain.run(persist=True, root=tmp_path)
+    assert result is None
+    assert not (tmp_path / "site" / "uk_policy.json").exists()
+    assert "uk_policy: feed empty" in caplog.text
+    assert brain.SEARCH_URL in seen
+    assert brain.FALLBACK_ATOM_URL in seen
+
+
+def test_collect_window_false_returns_all_items_newest_first(monkeypatch):
+    older = _aged_result("Older nine day note", 9, "older-nine-day-note")
+    middle = _aged_result("Middle six day note", 6, "middle-six-day-note")
+    inside = _aged_result("Inside one day note", 1, "inside-one-day-note")
+    raw = json.dumps({"results": [older, middle, inside]}).encode()
+    monkeypatch.setattr(brain, "_fetch", _fetch_search(raw))
+    all_items = brain.collect(4.0, window=False)
+    assert [it["title"] for it in all_items] == [
+        inside["title"],
+        middle["title"],
+        older["title"],
+    ]
+    windowed = brain.collect(4.0, window=True)
+    assert [it["title"] for it in windowed] == [inside["title"]]

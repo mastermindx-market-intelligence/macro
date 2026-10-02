@@ -2114,7 +2114,10 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
   {% set _tc_tl   = _tc_lead.trailing_leader %}
   {% set _tc_st   = _tc_lead.state %}
   {% set _hero_cls = 'strain' if _tc_st == 'strain' else ('steady' if _tc_st == 'steady' else '') %}
-  <section class="rvx-hero rvx-reveal {{ _hero_cls }}">
+  <section class="rvx-hero rvx-reveal {{ _hero_cls }}"
+           data-si-as-of="{{ source_as_of | default('', true) }}"
+           data-si-baskets-sha256="{{ baskets_sha256 | default('', true) }}"
+           data-si-action-board-sha256="{{ action_board_sha256 | default('', true) }}">
     <div class="rvx-eyebrow">
       <span>{{ t('US Sector Intelligence 🇺🇸', '美国行业情报 🇺🇸') }}</span>
       <span class="rvx-mut" id="hero-count"></span>
@@ -2165,7 +2168,10 @@ html[data-theme="light"] .rvx-aurora b{opacity:.22}
   </section>
   {% else %}
   {# ── Fallback hero when theme_context absent ── #}
-  <section class="rvx-hero rvx-reveal">
+  <section class="rvx-hero rvx-reveal"
+           data-si-as-of="{{ source_as_of | default('', true) }}"
+           data-si-baskets-sha256="{{ baskets_sha256 | default('', true) }}"
+           data-si-action-board-sha256="{{ action_board_sha256 | default('', true) }}">
     <div class="rvx-eyebrow"><span>{{ t('US Sector Intelligence 🇺🇸', '美国行业情报 🇺🇸') }}</span><span class="rvx-mut" id="hero-count"></span><span class="as-of">{{ t('as of', '截至') }} <span id="asof">—</span></span></div>
     <div class="rvx-vword">{{ t('Thematic', '主题') }} <span class="ac">{{ t('baskets', '篮子') }}</span></div>
     <p class="rvx-vsub" id="story">{{ t('Equal-weight US theme baskets measured against the S&P 500. Use them to see which themes are leading or fading.', '等权重美国主题篮子，对标标普 500。用于观察哪些主题在走强或走弱。') }}</p>

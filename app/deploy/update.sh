@@ -1251,7 +1251,7 @@ fi
 API_RESTART_CONFIRMED=0
 API_RESTART_NEEDED=0
 # BEGIN MACRO_API_RESTART_TRIGGER
-if [ "$API_UNIT_UPDATED" -eq 1 ] || ! mm_api_fence_marker_ready || grep -qE '^(app/.*\.py|app/requirements\.txt|app/deploy/macro-api\.service|config\.yml|config/(site_access|dataset_registry|theme_sources)\.yml|config/intelligence_workspace/datapoints\.v1\.json|contracts/intelligence_workspace/(datapoint_(registry|value)|ai_context_envelope\.v1)\.schema\.json|collectors/equity_earnings\.py|engine/neuralweb/(ask_brain|cortex|brain_gateway|native_facts|chart_perception|chat_plain_words|company_intelligence_reader|earnings_context_reader|doctrine|analyst_doctrine|market_packet|market_memory|market_memory_pit|market_memory_playback|market_memory_projection|market_memory_trusted|brain_market_intel|brain_analogues|brain_curve|brain_user_memory|envelope|key_pool|synapse)\.py|engine/intelligence_workspace/.*\.py|engine/theme_graph/(store|rights)\.py|engine/earnings_catalyst\.py|engine/earnings_narrative/(__init__|context_packets|contracts|digest|private_publication|promotion|public_wire|story|story_packets)\.py|engine/press/(__init__|earnings_adapter)\.py|engine/(codex_provider|llm_auth|options_issue_desk|portfolio_brief|portfolio_changes|portfolio_vocab|live_quotes|quote_resolution|tushare_freshness)\.py|engine/codex_lane/runner\.py|engine/prophet_lab/.*\.py|engine/entry_radar/(__init__|contracts|spool)\.py|engine/prophet_live/(__init__|interval|live_states)\.py|engine/research_vault/.*\.py|engine/fundamental_forensics/.*\.py|engine/biocatalyst/.*\.py|engine/sector_intelligence/.*\.py|engine/company_intelligence/.*\.py|engine/seasonality/(__init__|contracts|event_clock|model|multiplicity|program_watch|prophet_bridge|regime|screener|universe)\.py|engine/capital_structure/(__init__|document_terms|event_spine|projection|source_identity)\.py|engine/government_revenue/(__init__|amount_semantics|award_events|budget_program|candidates|dossiers|entity_resolution|federation|fms_cases|freshness|idv_bridge|idv_dossiers|metrics|opportunities|point_in_time|subaward_dossiers|workspace)\.py|contracts/government_revenue/(government_entity_coverage\.v1|government_idv_bridge\.v1|government_idv_dossiers\.v1|government_procurement_(event|workspace)\.v2|government_recipient_resolution_coverage\.v1|government_revenue_candidate(_queue|_historical_suppressions|_issuance_corrections)?\.v1|government_revenue_dossiers\.v1|government_subaward_dossiers\.v1)\.schema\.json|contracts/options/options\.(issue_desk(_proposal|_decision)?|issue_receipt)\.v1\.schema\.json|engine/context_index/(packet|fusion|gitinfo|lexical|structured)\.py|engine/marketing/(__init__|authority|chart_render|charter|claims|cmo|confluence_source|departments|economics|events|ledgers|opportunity_bus|publication|state)\.py|lib/dataos/.*\.py|lib/(config|ai_costs|commercial_path|growth_registry|help_directory|mastermind_response_log|nyse_calendar|user_prefs|tiers|team_membership)\.py)$' <<<"$CHANGED" || \
+if [ "$API_UNIT_UPDATED" -eq 1 ] || ! mm_api_fence_marker_ready || grep -qE '^(app/.*\.py|app/requirements\.txt|app/deploy/macro-api\.service|config\.yml|config/(site_access|dataset_registry|theme_sources)\.yml|config/intelligence_workspace/datapoints\.v1\.json|contracts/intelligence_workspace/(datapoint_(registry|value)|ai_context_envelope\.v1)\.schema\.json|collectors/equity_earnings\.py|engine/neuralweb/(ask_brain|cortex|brain_gateway|native_facts|chart_perception|chat_plain_words|company_intelligence_reader|earnings_context_reader|doctrine|analyst_doctrine|market_packet|market_memory|market_memory_pit|market_memory_playback|market_memory_projection|market_memory_trusted|brain_market_intel|brain_analogues|brain_curve|brain_user_memory|envelope|key_pool|synapse)\.py|engine/intelligence_workspace/.*\.py|engine/theme_graph/(store|rights)\.py|engine/earnings_catalyst\.py|engine/earnings_narrative/(__init__|context_packets|contracts|digest|private_publication|promotion|public_wire|story|story_packets)\.py|engine/press/(__init__|earnings_adapter)\.py|engine/(codex_provider|llm_auth|ontology_explorer|prophet_integrity|options_issue_desk|portfolio_brief|portfolio_changes|portfolio_vocab|live_quotes|quote_resolution|tushare_freshness)\.py|engine/codex_lane/runner\.py|engine/prophet_lab/.*\.py|engine/entry_radar/(__init__|contracts|spool)\.py|engine/prophet_live/(__init__|interval|live_states)\.py|engine/research_vault/.*\.py|engine/fundamental_forensics/.*\.py|engine/biocatalyst/.*\.py|engine/sector_intelligence/.*\.py|engine/company_intelligence/.*\.py|engine/seasonality/(__init__|contracts|event_clock|model|multiplicity|program_watch|prophet_bridge|regime|screener|universe)\.py|engine/capital_structure/(__init__|document_terms|event_spine|projection|source_identity)\.py|engine/government_revenue/(__init__|amount_semantics|award_events|budget_program|candidates|dossiers|entity_resolution|federation|fms_cases|freshness|idv_bridge|idv_dossiers|metrics|opportunities|point_in_time|subaward_dossiers|workspace)\.py|contracts/government_revenue/(government_entity_coverage\.v1|government_idv_bridge\.v1|government_idv_dossiers\.v1|government_procurement_(event|workspace)\.v2|government_recipient_resolution_coverage\.v1|government_revenue_candidate(_queue|_historical_suppressions|_issuance_corrections)?\.v1|government_revenue_dossiers\.v1|government_subaward_dossiers\.v1)\.schema\.json|contracts/options/options\.(issue_desk(_proposal|_decision)?|issue_receipt)\.v1\.schema\.json|engine/context_index/(packet|fusion|gitinfo|lexical|structured)\.py|engine/marketing/(__init__|authority|chart_render|charter|claims|cmo|confluence_source|departments|economics|events|ledgers|opportunity_bus|publication|state)\.py|lib/dataos/.*\.py|lib/(config|ai_costs|commercial_path|growth_registry|help_directory|mastermind_response_log|nyse_calendar|user_prefs|tiers|team_membership)\.py)$' <<<"$CHANGED" || \
    [ "$API_DEPS_UPDATED" -eq 1 ]; then
 	API_RESTART_NEEDED=1
 
@@ -1997,6 +1997,96 @@ if systemctl is-enabled macro-live-fast.timer >/dev/null 2>&1; then
 			RECONCILED=1
 			echo "macro-update: entry-radar: disarmed — both timers disabled and stopped"
 		fi
+	fi
+fi
+
+# MORNING ORIENTATION PREMARKET EDITION — A-MOR-2b lane B
+# (DEC:MARKET-ONTOLOGY-MOR2B-PREMARKET-OWNER-AND-PLACEMENT-2026-09-24,
+# research/market_intelligence_productization/MARKET_ONTOLOGY_F01_MOR2B_BUILD_PACKET_2026-09-24.md
+# §3 B1–B3). The same producer that nightly `daily.yml` / `render.yml` already
+# runs for `site/am_edition.{json,html}`; this unit runs a SECOND, lighter
+# producer against the VPS live store during the ET premarket window so
+# visitors see a fresh read between the prior close and 09:30 ET. Two writers,
+# one overlay, freshest-wins (see scripts/am_edition_live.py:run decision (a)).
+#
+# NO ARM FLAG. The lane reads only files already on the box (`site/`, `data/`,
+# the live `quotes.json` snapshot, the existing `market_packet` ladder) and
+# writes only under the live store (`/var/lib/macro-live/public/am_edition.*`);
+# it does NOT touch `data/`, does NOT spawn a workflow, and does NOT run git.
+# A pre-open premarket refresh of the same page the nightly already writes is
+# the highest-trust passive lane on the box — the merge alone is enough to
+# install the timer. Stand-down is a separate operator act
+# (`AM_EDITION_LIVE_DISABLE=1` in /etc/macro-live.env), symmetric to the
+# entry-radar disarm: when the flag goes away the rollback removes the env
+# line, which touches no repo file, so a CHANGED-gated block would never
+# notice and the timer would run on forever. The disable side therefore
+# evaluates every pass, independent of CHANGED.
+#
+# AM_EDITION_LIVE_DISABLE is read by GREP, not by sourcing — same reasoning as
+# the entry-radar block above (update.sh reads no env file anywhere else and
+# runs under `set -euo pipefail` as root; sourcing an operator-edited file
+# here would execute whatever is in it, inside this script's shell, with its
+# `set -e` semantics). The `|| true` is load-bearing: under pipefail an
+# unmatched grep is exit 1, which `set -e` would take as a fatal error on the
+# ordinary armed path.
+#
+# The .service is NEVER restarted. It is a oneshot — `systemctl restart`
+# would RUN a premarket pass out of band: an evaluator pass outside the ET
+# window against a stale bake, or a build mid-session that the freshest-wins
+# gate would then have to refuse. Only the timer is (re)armed.
+if systemctl is-enabled macro-live-fast.timer >/dev/null 2>&1; then
+	AM_EDITION_DISABLE=$(grep -E '^AM_EDITION_LIVE_DISABLE=' /etc/macro-live.env 2>/dev/null \
+		| tail -1 | cut -d= -f2- | tr -d "\"'[:space:]" || true)
+	if [ "${AM_EDITION_DISABLE:-}" != "1" ]; then
+		if echo "$CHANGED" | grep -qE '^(app/deploy/macro-am-edition\.(service|timer)|scripts/am_edition_live\.py|scripts/build_am_edition\.py)$' || \
+		   [ ! -f /etc/systemd/system/macro-am-edition.timer ]; then
+			AM_EDITION_UNIT_SOURCES=(
+				"$APP_DIR/app/deploy/macro-am-edition.service"
+				"$APP_DIR/app/deploy/macro-am-edition.timer"
+			)
+			if systemd-analyze verify "${AM_EDITION_UNIT_SOURCES[@]}"; then
+				AM_EDITION_UNIT_UPDATED=0
+				for UNIT_SOURCE in "${AM_EDITION_UNIT_SOURCES[@]}"; do
+					UNIT=$(basename "$UNIT_SOURCE")
+					if ! cmp -s "$UNIT_SOURCE" "/etc/systemd/system/$UNIT"; then
+						install -m 0644 "$UNIT_SOURCE" "/etc/systemd/system/$UNIT"
+						AM_EDITION_UNIT_UPDATED=1
+					fi
+				done
+				if [ "$AM_EDITION_UNIT_UPDATED" -eq 1 ]; then
+					systemctl daemon-reload
+					systemctl restart macro-am-edition.timer 2>/dev/null || true
+					RECONCILED=1
+					echo "macro-update: macro-am-edition units updated"
+				fi
+				systemctl enable --now macro-am-edition.timer >/dev/null 2>&1 || \
+					echo "macro-update: macro-am-edition.timer could not be enabled" >&2
+			else
+				echo "macro-update: refusing macro-am-edition unit update — systemd-analyze verify failed" >&2
+			fi
+		fi
+	else
+		echo "macro-update: am-edition: staged, not armed (AM_EDITION_LIVE_DISABLE=1)"
+		# SYMMETRIC DISARM. Rollback is "set the env line", so the block that
+		# arms on a flag must also stand the lane down when the flag goes away —
+		# otherwise the only rollback is a manual systemctl call the deploy plan
+		# does not describe. `disable --now` both stops the running timer and
+		# removes the timers.target wants link, so a reboot does not resurrect it.
+		# The overlay files in the live store are removed in the same act so a
+		# disabled timer never leaves a stale AM-edition page sitting on the wire
+		# — the freshest-wins rule would re-publish on the next armed tick, but
+		# during a disarm the visitor should see the canonical site/ copy
+		# (the nightly's bake), not a VPS-only overlay the operator explicitly
+		# told us to take down.
+		if [ -f /etc/systemd/system/macro-am-edition.timer ]; then
+			systemctl disable --now macro-am-edition.timer >/dev/null 2>&1 || true
+			RECONCILED=1
+			echo "macro-update: am-edition: disarmed — timer disabled and stopped"
+		fi
+		# Best-effort overlay removal — the live store may not exist on dev /
+		# CI boxes; the || true keeps the block exit-0 on those paths.
+		rm -f /var/lib/macro-live/public/am_edition.json \
+		      /var/lib/macro-live/public/am_edition.html 2>/dev/null || true
 	fi
 fi
 

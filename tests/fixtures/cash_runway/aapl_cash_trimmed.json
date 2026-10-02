@@ -1,0 +1,119 @@
+{
+  "cik": 320193,
+  "facts": {
+    "us-gaap": {
+      "CashAndCashEquivalentsAtCarryingValue": {
+        "units": {
+          "USD": [
+            {
+              "end": "2024-09-28",
+              "val": 29943000000,
+              "accn": "0000320193-25-000079",
+              "fy": 2025,
+              "fp": "FY",
+              "form": "10-K",
+              "filed": "2025-10-31",
+              "frame": "CY2024Q3I"
+            },
+            {
+              "end": "2025-09-27",
+              "val": 35934000000,
+              "accn": "0000320193-25-000079",
+              "fy": 2025,
+              "fp": "FY",
+              "form": "10-K",
+              "filed": "2025-10-31"
+            }
+          ]
+        }
+      },
+      "NetCashProvidedByUsedInOperatingActivities": {
+        "units": {
+          "USD": [
+            {
+              "start": "2022-09-25",
+              "end": "2023-09-30",
+              "val": 110543000000,
+              "accn": "0000320193-25-000079",
+              "fy": 2025,
+              "fp": "FY",
+              "form": "10-K",
+              "filed": "2025-10-31",
+              "frame": "CY2023"
+            },
+            {
+              "start": "2023-10-01",
+              "end": "2024-09-28",
+              "val": 118254000000,
+              "accn": "0000320193-25-000079",
+              "fy": 2025,
+              "fp": "FY",
+              "form": "10-K",
+              "filed": "2025-10-31",
+              "frame": "CY2024"
+            },
+            {
+              "start": "2024-09-29",
+              "end": "2025-09-27",
+              "val": 111482000000,
+              "accn": "0000320193-25-000079",
+              "fy": 2025,
+              "fp": "FY",
+              "form": "10-K",
+              "filed": "2025-10-31",
+              "frame": "CY2025"
+            }
+          ]
+        }
+      },
+      "PaymentsToAcquirePropertyPlantAndEquipment": {
+        "units": {
+          "USD": [
+            {
+              "start": "2022-09-25",
+              "end": "2023-09-30",
+              "val": 10959000000,
+              "accn": "0000320193-25-000079",
+              "fy": 2025,
+              "fp": "FY",
+              "form": "10-K",
+              "filed": "2025-10-31",
+              "frame": "CY2023"
+            },
+            {
+              "start": "2023-10-01",
+              "end": "2024-09-28",
+              "val": 9447000000,
+              "accn": "0000320193-25-000079",
+              "fy": 2025,
+              "fp": "FY",
+              "form": "10-K",
+              "filed": "2025-10-31",
+              "frame": "CY2024"
+            },
+            {
+              "start": "2024-09-29",
+              "end": "2025-09-27",
+              "val": 12715000000,
+              "accn": "0000320193-25-000079",
+              "fy": 2025,
+              "fp": "FY",
+              "form": "10-K",
+              "filed": "2025-10-31",
+              "frame": "CY2025"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "_provenance": {
+    "source_urls": [
+      "https://data.sec.gov/api/xbrl/companyconcept/CIK0000320193/us-gaap/CashAndCashEquivalentsAtCarryingValue.json",
+      "https://data.sec.gov/api/xbrl/companyconcept/CIK0000320193/us-gaap/NetCashProvidedByUsedInOperatingActivities.json",
+      "https://data.sec.gov/api/xbrl/companyconcept/CIK0000320193/us-gaap/PaymentsToAcquirePropertyPlantAndEquipment.json"
+    ],
+    "fetched_at_utc": "2026-09-19T22:44:26.138066+00:00",
+    "trimmed_by": "cash_runway fixture builder"
+  }
+}
