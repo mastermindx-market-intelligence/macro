@@ -920,8 +920,8 @@ def evaluate_cell(panels, roots, calendar, era, h, contrast):
             if eligible[i]:
                 root_coverage[r] += 1
             reason = panels[r].at[t, f"label_reason_{h}"]
-            if reason:
-                target_reasons[reason] += 1
+            if pd.notna(reason) and reason:
+                target_reasons[str(reason)] += 1
         ic, n, reason = rank_ic(x, y)
         values.append(np.nan if ic is None else ic)
         if reason:

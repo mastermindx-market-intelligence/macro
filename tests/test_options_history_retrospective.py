@@ -440,8 +440,8 @@ def test_manifest_binds_actual_inputs_and_all_60_sparse_cells(tmp_path):
     td = tmp_path
     store, prices, day = td / "theta", td / "yahoo", date(2017, 1, 3)
     write_chain(store, "QQQ", day)
-    write_prices(prices, "QQQ", [day])
-    write_prices(prices, "SPY", [day])
+    write_prices(prices, "QQQ", r.study_sessions()[:50])
+    write_prices(prices, "SPY", r.study_sessions()[:50])
     manifest = r.prepare_manifest(store, prices, protocol, review)
     frozen = r.sha_bytes(r.canonical_bytes(manifest))
     assert manifest["expected_slot_count"] == 435 and len(manifest["entries"]) == 435
