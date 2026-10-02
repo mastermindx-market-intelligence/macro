@@ -88,6 +88,52 @@ def test_event_identity_is_typed_not_inferred(policy,ev,reason):
 
 @pytest.mark.parametrize('cutoff',['2026-09-30','2026-09-30 13:00','invalid',None,'2026-09-30T25:00:00Z'])
 
+
+def test_gdp_watcher_parser_shape_flows_into_canonical_result(policy):
+    from scripts.official_release_parsers import parse_gdp_actual
+
+    body=b'''<html><body>
+    <h1>GDP (Advance Estimate), Second Quarter 2026</h1>
+    <p>Real gross domestic product (GDP) increased at an annual rate of 3.0
+    percent in the second quarter of 2026, according to the advance estimate.</p>
+    <p>In the first quarter, real GDP decreased 0.5 percent.</p>
+    </body></html>'''
+    actual=parse_gdp_actual(body)
+    assert actual is not None
+    assert actual['real_gdp_annualized']==3.0
+    assert actual['vintage']=='advance'
+    assert actual['reference_period']=='Q2 2026'
+    assert actual['unit']=='percent'
+
+    source_url='https://www.bea.gov/news/2026/gdp-advance-estimate-2nd-quarter-2026'
+    publication={
+        'type':'GDP','date':'2026-07-30','reference_period':'Q2 2026',
+        'data_ready':True,'source_url':source_url,
+        'source_sha256':hashlib.sha256(body).hexdigest(),
+        'publisher':'U.S. Bureau of Economic Analysis','source_id':'bea_gdp',
+        'parser':{'name':'gdp','version':1},
+        'first_seen_at':'2026-07-30T12:30:30Z',
+        'source_released_at':'2026-07-30T12:30:00Z',
+        'verified_at':'2026-07-30T12:31:00Z',
+        'actual':{**actual,'source_url':source_url},
+    }
+    rows=official.normalize_publication(publication,defects_path=policy)
+    assert len(rows)==1
+    assert rows[0]['release']=='gdp_real_annualized'
+    assert rows[0]['period']=='2026-Q2'
+    assert rows[0]['estimate_vintage']=='advance'
+
+    evidence=view.event_actual_evidence(
+        {'type':'GDP','date':'2026-07-30','reference_period':'Q2 2026'},
+        rows,as_of='2026-07-30T13:00:00Z',defects_path=policy)
+    assert evidence['status']=='available'
+    assert evidence['available_count']==1
+    metric=evidence['metrics'][0]
+    assert metric['actual']==3.0
+    assert metric['display_value']=='3.0'
+    assert metric['estimate_vintage']=='advance'
+
+
 def test_gdp_reference_binding_uses_quarter_not_month_guessing(policy):
     rows=receipts(policy,'GDP')
     event={'type':'GDP','date':'2026-09-30','reference_period':'Q2 2026'}
