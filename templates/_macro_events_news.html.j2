@@ -176,7 +176,27 @@
                 <div class="nd-item-meta"><span class="nd-news-theme">{{ nd_bi(theme[0], theme[1]) }}</span>{% if h.get('importance') == 'high' %}<span class="nd-tag nd-tag-news">{{ nd_bi('High impact', '高影响') }}</span>{% endif %}{% set tickers = h.get('tickers') or [] %}{% if tickers is string %}{% set tickers = [tickers] %}{% elif tickers is not sequence %}{% set tickers = [] %}{% endif %}{% for ticker in tickers[:3] %}<span class="nd-ticker">{{ ticker }}</span>{% endfor %}</div>
                 <h4>{% if safe_url %}<a href="{{ safe_url }}" target="_blank" rel="noopener noreferrer">{{ nd_bi(h.title, h.get('title_zh')) }}<span class="nd-external" aria-hidden="true">↗</span><span class="nd-sr-only">{{ nd_bi('(opens in a new tab)', '（在新标签页打开）') }}</span></a>{% else %}{{ nd_bi(h.title, h.get('title_zh')) }}{% endif %}</h4>
                 <div class="nd-story-meta"><span class="nd-publisher">{{ h.get('source_name') or h.get('domain') or nd_bi('Publisher unavailable', '发布者未提供') }}</span><span class="nd-meta-dot" aria-hidden="true">·</span><span>{% if h.get('pub_date') %}{{ nd_bi('Published', '发布') }} {{ nd_date(h.pub_date) }}{% elif h.get('seendate') %}{{ nd_bi('Seen', '采集于') }} {{ nd_date(h.seendate) }}{% else %}{{ nd_bi('Date unavailable', '日期未提供') }}{% endif %}</span></div>
-                <details class="nd-evidence nd-story-detail"><summary>{{ nd_bi('Source summary & coverage', '来源摘要与覆盖范围') }}<span class="nd-disclosure" aria-hidden="true">+</span></summary><div class="nd-evidence-body">{% if h.get('summary') %}<p>{{ nd_bi(h.summary, h.get('summary_zh')) }}</p>{% else %}<p>{{ nd_bi('Only the headline and attribution were supplied. No full-report summary is available in this snapshot.', '此快照仅提供标题与来源，未提供完整报道摘要。') }}</p>{% endif %}</div></details>
+                <details class="nd-evidence nd-story-detail">
+                  <summary>{{ nd_bi('Source summary & coverage', '来源摘要与覆盖范围') }}<span class="nd-disclosure" aria-hidden="true">+</span></summary>
+                  <div class="nd-evidence-body">
+                    {% if h.get('summary') %}<p>{{ nd_bi(h.summary, h.get('summary_zh')) }}</p>{% else %}<p>{{ nd_bi('Only the headline and attribution were supplied. No full-report summary is available in this snapshot.', '此快照仅提供标题与来源，未提供完整报道摘要。') }}</p>{% endif %}
+                    <details class="nd-story-source-trail" data-nd-deep>
+                      <summary>{{ nd_bi('Inspect source trail & timing','核查来源链路与时间') }}<span class="nd-disclosure" aria-hidden="true">+</span></summary>
+                      <div class="nd-story-source-body">
+                        <dl>
+                          <dt>{{ nd_bi('Publisher','发布者') }}</dt><dd>{{ h.get('source_name') or h.get('domain') or nd_bi('Not supplied','未提供') }}</dd>
+                          <dt>{{ nd_bi('Published · source clock','发布时间 · 来源时钟') }}</dt><dd>{{ nd_date(h.get('pub_date')) if h.get('pub_date') else nd_bi('Not supplied','未提供') }}</dd>
+                          <dt>{{ nd_bi('Seen · source clock','采集时间 · 来源时钟') }}</dt><dd>{{ nd_date(h.get('seendate')) if h.get('seendate') else nd_bi('Not supplied','未提供') }}</dd>
+                          <dt>{{ nd_bi('First seen · ledger clock','首次采集 · 记录时钟') }}</dt><dd>{{ nd_date(h.get('first_seen_utc')) if h.get('first_seen_utc') else nd_bi('Not supplied','未提供') }}</dd>
+                          <dt>{{ nd_bi('Source event identity','来源事件标识') }}</dt><dd class="nd-proof-id">{{ h.get('event_id') or nd_bi('Not supplied','未提供') }}</dd>
+                          <dt>{{ nd_bi('Correction lineage','更正沿革') }}</dt><dd>{{ nd_bi('Not supplied to this component','此组件未收到此项数据') }}</dd>
+                        </dl>
+                        <p class="nd-limit">{{ nd_bi('Missing correction lineage does not mean the source has never changed. It means this component cannot prove a source-version chain.', '缺少更正沿革并不代表来源从未变化；这里只表示本组件无法证明来源版本链。') }}</p>
+                        {% if safe_url %}<a class="nd-text-link" href="{{ safe_url }}" target="_blank" rel="noopener noreferrer">{{ nd_bi('Open original source','打开原始来源') }} ↗<span class="nd-sr-only">{{ nd_bi('(opens in a new tab)','（在新标签页打开）') }}</span></a>{% endif %}
+                      </div>
+                    </details>
+                  </div>
+                </details>
                 {% if not safe_url %}<p class="nd-source-note">{{ nd_bi('Source link unavailable.', '来源链接未提供。') }}</p>{% endif %}
               </article>
             {% endfor %}
