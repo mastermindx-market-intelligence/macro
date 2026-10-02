@@ -147,3 +147,32 @@ def test_stale_forecast_context_explains_withholding_and_hides_numbers():
     assert "Release Radar context is stale" in text
     assert not panel.select(".nd-model-value")
     assert "0.48%" not in text
+
+
+def test_payroll_benchmark_units_are_readable_and_unqualified_market_count_is_hidden():
+    payload = forecast_payload()
+    payload["upcoming"] = [{
+        "release": "nfp",
+        "release_type": "nfp",
+        "period": "2026-09",
+        "release_date": "2026-10-02",
+        "projection": {"point": 100.0, "p10": 50.0, "p90": 150.0},
+        "benchmark_set": {
+            "naive_prior": 217.0,
+            "trailing_3m": 122.0,
+            "market_implied": {"source": "kalshi", "implied_median": 97000.0, "asof": "2026-10-01"},
+        },
+        "model_epoch": "champion_legacy_target_v1",
+        "target_epoch": "legacy_cross_vintage_initial_levels_v0",
+        "cutoff_label": "T-1",
+    }]
+    event = {"type": "NFP", "date": "2026-10-02", "reference_period": "2026-09"}
+    event["expectation_context"] = view.event_expectation_context(event, payload, as_of=ASOF)
+    s = soup_for(event)
+    panel = s.select_one(".nd-expectation-context")
+    text = panel.get_text(" ", strip=True)
+    assert "100k" in text
+    assert "217k" in text
+    assert "122k" in text
+    assert "97000" not in text
+    assert "unit basis" in text
