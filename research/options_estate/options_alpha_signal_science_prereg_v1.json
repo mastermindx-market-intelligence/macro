@@ -107,7 +107,7 @@
     "PROMOTION_ELIGIBLE": "requires_separate_explicit_existing_promotion_authority_decision",
     "deployable_boolean_ceiling": "ARTIFACT_HEALTHY",
     "newest_era_auc_kill": "preserve_registered_kill_criterion_not_locally_waivable",
-    "bh_fdr_family": "preserve_registered_family_accounting_amend_on_add",
+    "bh_fdr_policy": "preserve_registered_family_accounting_amend_on_add",
     "sample_floors": "preserve_existing_registered_floors_no_new_thresholds_in_this_prereg"
   },
   "source_repair_contract": {
