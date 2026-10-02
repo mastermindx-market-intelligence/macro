@@ -1,12 +1,51 @@
 """Events & News release expectation/benchmark projection — no fake street survey."""
 from copy import deepcopy
+import json
 
 import pytest
 
 from engine import events_news_release_evidence as view
+from engine import release_actuals as official
 
 ASOF = "2026-10-01T21:00:00Z"
 FORECAST_ASOF = "2026-10-01T20:21:25Z"
+PCE_EVENT = {"type": "PCE", "date": "2026-09-30", "reference_period": "2026-08"}
+
+
+@pytest.fixture
+def policy(tmp_path):
+    path = tmp_path / "defects.json"
+    path.write_text(json.dumps({
+        "schema": "official_actual_defects.v1",
+        "defects_by_receipt": {},
+    }))
+    return path
+
+
+def canonical_receipts(policy):
+    contract = official._SOURCE_CONTRACTS["PCE"]
+    publication = {
+        "type": "PCE",
+        "date": "2026-09-30",
+        "data_ready": True,
+        "source_url": f"https://www.{contract['host']}/fixture/not-live",
+        "source_sha256": "a" * 64,
+        "publisher": contract["publisher"],
+        "source_id": contract["source_id"],
+        "parser": {"name": contract["parser"][0], "version": contract["parser"][1]},
+        "first_seen_at": "2026-09-30T12:31:00Z",
+        "source_released_at": "2026-09-30T12:30:00Z",
+        "verified_at": "2026-09-30T12:32:00Z",
+        "actual": {
+            "reference_period": "August 2026",
+            "unit": contract["raw_unit"],
+            "headline_mom": 0.30,
+            "core_mom": 0.20,
+        },
+    }
+    rows = official.normalize_publication(publication, defects_path=policy)
+    assert rows
+    return rows
 
 
 def forecast_payload():
@@ -463,7 +502,7 @@ def test_composer_keeps_future_expectations_when_official_source_is_unavailable(
 
 
 def test_composer_binds_historical_model_row_to_exact_projected_receipt(policy):
-    actuals = receipts(policy)
+    actuals = canonical_receipts(policy)
     payload = forecast_payload()
     payload["upcoming"] = []
     scored = scored_pce(True)
@@ -472,7 +511,7 @@ def test_composer_binds_historical_model_row_to_exact_projected_receipt(policy):
         scored_row["actual"] = actual_row["actual"]
         scored_row["period"] = actual_row["period"]
     payload["last_scored_all_forward"] = scored
-    event = dict(EVENT)
+    event = dict(PCE_EVENT)
     out = view.compose_event_intelligence(
         [event], actuals, payload, as_of=ASOF, defects_path=policy)
     assert out[0]["official_evidence"]["status"] == "available"
@@ -483,7 +522,7 @@ def test_composer_binds_historical_model_row_to_exact_projected_receipt(policy):
 
 
 def test_composer_preserves_official_result_when_forecast_source_is_unavailable(policy):
-    actuals = receipts(policy)
+    actuals = canonical_receipts(policy)
     out = view.compose_event_intelligence(
         [dict(EVENT)], actuals, None, as_of=ASOF, defects_path=policy)
     assert out[0]["official_evidence"]["status"] == "available"
