@@ -102,15 +102,30 @@ waves:
     status: todo
     depends_on: [OA-1T-MACRO]
     next_action: >
-      CLOSED. Fit-free signal-science law remains on Macro #7395 pending protected acceptance,
-      and the later FS evaluation-contract clarification remains on #7401 pending independent
-      review/current-base acceptance. No trainer/evaluation repair or model/calibrator fit is
-      authorized yet. Preserve target Y_H=1[spy_excess_H>0] at the registered horizons, one
+      FIT-FREE REPAIR OPEN under the Chairman 2026-10-02 historical research assignment.
+      Evaluation contract #7401 is accepted/merged as dc4fd0766709188cba8d16a9fc16479c0e9c110f.
+      Signal-science #7395 retains its independently reviewed method after a normal current-main
+      update and awaits fresh delivery checks. Repair the accepted contracts now; new fitting
+      still requires frozen study specifications, eligible data and verified repairs.
+      Preserve target Y_H=1[spy_excess_H>0] at the registered horizons, one
       source/detector-version construction per fitted artifact, canonical NYSE trading-session
       purge/embargo, session-atomic splits and chronological disjoint calibrator-fit/eval.
       Local artifact health/deployable status is not statistical acceptance or promotion.
       Preserve existing newest-era discrimination, BH-FDR, N-floor, FS-5 and DNR gates.
-      Do not add OI/GEX/positioning fusion or resurrect killed families.
+      Research-only revival is scoped by DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY;
+      production fusion and promotion restrictions remain.
+  - id: OA-2R
+    title: Historical Options research revival and empirical evidence package
+    status: in_progress
+    next_action: >
+      Apply DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY: complete fit-free source/PIT
+      coverage and method repairs, freeze individual studies before outcome access,
+      then report actual supported historical findings and unsupported cells.
+      The pinned episode-only descriptive study is complete: 36 cells reproduced, all
+      observed labels are proxies and no aligned-true cell exists. See the 2026-10-02
+      report and DSC:OPTIONS-EPISODE-PROXY-COVERAGE-20261002. Broader validation still
+      needs archive access, known-at/aligned labels and a frozen OOS study.
+      Reuse the existing Options owners; no production or promotion authority.
   - id: OA-3
     title: Exact-option NBBO lifecycle and outcome contract under existing owners
     status: todo
@@ -135,9 +150,11 @@ waves:
       CLOSED. Reuse options.issue_desk/v1; do not create a parallel issue queue, trade manager,
       automatic portfolio authority or brokerage path.
 decisions:
+  - "DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY"
   - "DEC:OPTIONS-ALPHA-CAMPAIGN-CALIBRATION-ARCHITECTURE"
   - "DEC:AD-OPTIONS-CANONICAL-SOURCE-THETADATA"
 discoveries:
+  - "DSC:OPTIONS-EPISODE-PROXY-COVERAGE-20261002"
   - "DSC:OPTIONS-ALPHA-DEAD-UI-MASKS-LIVE-EVIDENCE-ESTATE"
 landmines:
   - >
@@ -161,6 +178,8 @@ landmines:
     Current DNR law remains binding: KILL-LLM-ORIGINATION, KILL-FUSED-COMPOSITE,
     KILL-POSITIONING-FUSION, HOLD-THETA-TAPE, KILL-DOI-FAMILY, KILL-SKEW-DECELERATION,
     KILL-CHARM-NARRATIVES and KILL-OFFHORIZON-VERDICTS. OA-0 created no implicit exception.
+    The later explicit Chairman 2026-10-02 research-only exception is precisely
+    DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY; original production restrictions remain.
   - >
     Terminal Options Workbench #603 is a complementary structural/replay/conditional-scenario
     workspace, not an Alpha or Tactical authority plane. #608 observed replay and #640/#661
@@ -177,6 +196,11 @@ do_not_redo:
   - "Deleting, truncating, restamping or regenerating the Sep-03 campaign-outcome incident as clean history; #7398 freezes quarantine-not-rewrite semantics."
   - "Collapsing Workbench scenario context, Alpha research candidates and Tactical setup timing into one Options confidence/super-score."
 artifacts:
+  - reports/artifacts/options_historical_signal_science_20261002.md
+  - reports/artifacts/options_historical_signal_science_20261002.json
+  - reports/artifacts/options_historical_signal_science_20261002_protocol.json
+  - agentos/decisions/DEC-OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY.md
+  - research/options_estate/OPTIONS_HISTORICAL_REVIVAL_CHARTER_V1.md
   - docs/superpowers/specs/2026-08-27-options-alpha-intelligence-recovery-design.md
   - docs/superpowers/plans/2026-08-27-oa1t-macro-measured-options-microstructure.md
   - research/momoedge/MOMOEDGE_COMPLETION_BENCHMARK_PREREG_2026-08-11.md
@@ -202,7 +226,9 @@ next_action: >
   AD-1T2 remains owned by WS:ADVANCED-DATA-OPTIONS and is currently blocked by the exact M1
   host's emergency disk floor plus shared runner-admission custody. OA-1T-TERMINAL #667 is
   BUILT_NOT_PROVEN and waits on independent review/release + real post-merge browser proof.
-  OA-2 records (#7395/#7401) remain no-fit gates pending their own acceptance.
+  OA-2 #7401 is accepted/merged; #7395 awaits fresh checks. OA-2R research scope is
+  Chairman-authorized, including immediate fit-free repairs. Preserve data eligibility,
+  preregistration and independent review before empirical acceptance or any promotion.
 ---
 
 ## Context
