@@ -5457,6 +5457,7 @@ def _plan_relation_for_row(
 def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
                        locked_rows: list[dict], us_standouts: "dict | None",
                        top_setups: "dict | None", built: str,
+                       today_rows: "list[dict] | None" = None,
                        pgate: "dict | None" = None,
                        panel_blocks: "dict | None" = None,
                        life_gate: "dict | None" = None,
@@ -5500,12 +5501,14 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
     path = site / US_PAYLOAD_DIR / US_PAYLOAD_NAME
     path.parent.mkdir(parents=True, exist_ok=True)
     panel_blocks = panel_blocks or {}
+    today_rows = list(today_rows or [])
     if gate is None:
         # The board itself is whole (ungated, or smaller than the preview cap) but
         # the ADJACENT panels can still be withholding rows, so the payload is not
         # necessarily empty here — `gated` reports the BOARD, `panels` the rest.
         payload = {"schema": "tier_payload.v1", "page": "us_stocks", "gated": False,
-                   "built": built, "cards_html": "", "rows": []}
+                   "built": built, "cards_html": "", "rows": [],
+                   "today_cards_html": "", "today_preview": 0, "today_total": 0}
     else:
         full_buy = (us_standouts or {}).get("buy") or []
         # sg_any/bs_adj/xu_allfeat/trg_map mirror dashboard.html.j2's own derivation
@@ -5534,6 +5537,26 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
         rw_zh = (("今晚无法检查"
                   + (("全部 " + str(_rw_n) + " 只股票") if _rw_n else "这些股票")
                   + "的上行空间，因此这一项不加分。") if _rw_dead else "")
+
+        # Today is a paid/full-access presentation shelf. Keep its extra rows in
+        # the already protected payload instead of baking them into anonymous HTML.
+        try:
+            today_cards_html = env.get_template("_us_board_cards.html.j2").render(
+                items=today_rows, sg_any=sg_any, bs_adj=bs_adj, xu_allfeat=xu_allfeat,
+                trg_map=trg_map, rw_en=rw_en, rw_zh=rw_zh,
+                setup_as_of=(us_standouts or {}).get("as_of"),
+                plan_rel={"state": plan_relations[0] if plan_relations else "none",
+                          "plans": []},
+                plan_rel_by_ticker=(plan_relations[1] if plan_relations else {}))
+        except Exception as e:  # noqa: BLE001 — front shelf fails soft to shell
+            log.error("us_stocks: Today card render failed (%s)", e)
+            today_cards_html = ""
+        _today_declared = ((us_standouts or {}).get("ranking") or {}).get("featured_count")
+        _today_total = (_today_declared
+                        if isinstance(_today_declared, int) and not isinstance(_today_declared, bool)
+                        and _today_declared >= len(feat)
+                        else len(feat))
+
         items = _us_board_group_items(locked_rows, sg_any, gate["stage_counts"])
         try:
             cards_html = env.get_template("_us_board_cards.html.j2").render(
@@ -5554,6 +5577,9 @@ def _write_us_payload(env: Environment, site: Path, gate: "dict | None", *,
             "locked": gate["locked"], "as_of": (us_standouts or {}).get("as_of") or "",
             "cards_html": cards_html,
             "rows": [_table_row(n) for n in locked_rows],
+            "today_cards_html": today_cards_html,
+            "today_preview": len(today_rows),
+            "today_total": _today_total,
         }
     if pgate:
         payload["panels"] = {k: v for k, v in pgate.items()
@@ -7367,6 +7393,7 @@ def main() -> int:
     _write_us_payload(env, site, _us_gate, locked_rows=_us_locked,
                        us_standouts=vm.get("us_standouts"),
                        top_setups=vm.get("top_setups"), built=generated,
+                       today_rows=_us_today_featured,
                        pgate=_us_pgate,
                        panel_blocks=_render_us_panel_payload(
                                        env, _us_pgate, _us_plocked, vm,
@@ -7381,7 +7408,6 @@ def main() -> int:
     write_page(out_st, env.get_template("dashboard.html.j2").render(
         **{**vm, **_us_pov, "us_standouts": _us_shell_su,
            "gate": _us_gate, "pgate": _us_pgate,
-           "us_today_featured": _us_today_featured,
            "us_prophet_book": _us_life_shell, "life_gate": _us_life_gate,
            "us_prophet_episodes": _us_life_episodes,
            "us_prophet_book_error": us_prophet_book_error,
@@ -7795,6 +7821,7 @@ def main() -> int:
                 _write_us_payload(env, site, _us_gate2, locked_rows=_us_locked2,
                                    us_standouts=vm.get("us_standouts"),
                                    top_setups=vm.get("top_setups"), built=generated,
+                                   today_rows=_us_today_featured2,
                                    pgate=_us_pgate2,
                                    panel_blocks=_render_us_panel_payload(
                                        env, _us_pgate2, _us_plocked2, vm,
@@ -7810,7 +7837,6 @@ def main() -> int:
                 write_page(site / "us_stocks.html", _dash.render(
                     **{**vm, **_us_pov2, "us_standouts": _us_shell_su2,
                        "gate": _us_gate2, "pgate": _us_pgate2,
-                       "us_today_featured": _us_today_featured2,
                        "us_prophet_book": _us_life_shell2, "life_gate": _us_life_gate2,
                        "us_prophet_episodes": _us_life_episodes2,
                        "us_prophet_book_error": us_prophet_book_error,
