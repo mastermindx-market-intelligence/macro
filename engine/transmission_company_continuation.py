@@ -117,6 +117,15 @@ def _build_href(
         ("mo_asof", chain_asof),
         ("mo_security", security_id),
     ]
+    keys = frozenset(k for k, _ in parts)
+    if keys != _ALLOWED_QUERY_KEYS:
+        # The allowlist is a live invariant, not documentation: a key added to
+        # the href without widening the recorded contract fails here, not at
+        # the Terminal helper (which silently ignores unknown mo_* keys).
+        raise RuntimeError(
+            f"continuation href keys {sorted(keys)} != recorded allowlist "
+            f"{sorted(_ALLOWED_QUERY_KEYS)}"
+        )
     qs = "&".join(f"{quote(k, safe='')}={quote(v, safe='')}" for k, v in parts)
     return f"{TERMINAL_ANALYSIS_URL}?{qs}"
 

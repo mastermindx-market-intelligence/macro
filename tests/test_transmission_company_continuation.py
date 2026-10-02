@@ -230,6 +230,22 @@ def test_continuation_for_happy_path_returns_continuation_link():
     assert "mo_security_id" not in parsed.query
 
 
+def test_allowed_query_keys_is_live_and_equals_the_href_keys(monkeypatch):
+    """_ALLOWED_QUERY_KEYS is a live invariant: the href's key set must equal it,
+    and a drift between the two raises instead of shipping an unrecorded key."""
+    import engine.transmission_company_continuation as mod
+    aliases = _good_aliases()
+    result = continuation_for("AAPL", aliases, DECISION,
+                              chain_id="dollar_ch", channel_id="em_revenue",
+                              chain_asof="2026-09-25")
+    assert set(parse_qs(urlparse(result.href).query)) == set(mod._ALLOWED_QUERY_KEYS)
+    monkeypatch.setattr(mod, "_ALLOWED_QUERY_KEYS", frozenset({"symbol", "page"}))
+    with pytest.raises(RuntimeError, match="recorded allowlist"):
+        continuation_for("AAPL", aliases, DECISION,
+                         chain_id="dollar_ch", channel_id="em_revenue",
+                         chain_asof="2026-09-25")
+
+
 def test_continuation_href_never_carries_source_text_or_receipts():
     aliases = _good_aliases()
     result = continuation_for("NVDA", aliases, DECISION,
