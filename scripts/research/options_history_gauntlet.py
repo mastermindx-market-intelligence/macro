@@ -123,17 +123,21 @@ def _load_oi_root(root: str, years: list[int]) -> pd.DataFrame | None:
 def _bh_fdr(pvals: dict[str, float], k_family: int = _BH_FAMILY_K,
             alpha: float = _BH_ALPHA) -> dict[str, dict]:
     """Benjamini-Hochberg FDR correction over a pre-stated family.
-    pvals: {label: p_value}. Returns {label: {raw_p, bh_p, reject, rank}}.
+    pvals: {label: p_value}. Returns {label: {raw_p, bh_adj_p, reject_h0, rank}}.
     k_family: the total pre-registered family size (cells with n<30 excluded but
     their "slot" still counts in denominator, per strict BH convention).
 
-    Rejection is derived from the FINAL monotone BH-adjusted p-values
-    (adj_p_i <= alpha), not the per-rank raw-p step-up threshold
-    (p_i <= (rank_i / k) * alpha). The per-rank check is the original 1995
-    step-up procedure and can yield non-monotone rejections — a test with a
-    smaller adjusted p than a larger-ranked neighbour can fail while the
-    neighbour passes. The adjusted-p form is monotone in rank and is the only
-    honest contract for the survivors this gauntlet feeds into the §4 gates.
+    Rejection derives from the canonical BH step-up: reject every rank through
+    the largest passing rank — equivalent to rejecting iff adj_p_i <= alpha,
+    where adj_p_i = min over j>=i of (k_family * p_(sorted_j) / j). The
+    adjusted p-values are non-decreasing with sorted rank, so the rejection
+    set is a downward initial segment of the rank ordering.
+
+    The defect removed by this contract was legacy independent per-rank
+    thresholding (compare each rank's raw p to (i/k) * alpha independently).
+    That form can produce non-monotone rejection sets — a higher rank can
+    reject while a lower rank does not — because each per-rank decision
+    ignores every larger-rank outcome.
     """
     labels = list(pvals.keys())
     pvs = np.array([pvals[l] for l in labels])
@@ -141,19 +145,18 @@ def _bh_fdr(pvals: dict[str, float], k_family: int = _BH_FAMILY_K,
     ranks = np.empty(len(pvs), dtype=int)
     ranks[order] = np.arange(1, len(pvs) + 1)
 
-    # BH-adjusted p-value = min over all j>=rank of (k_family * p_j / j).
-    # Monotone non-increasing in rank by construction; clipped to [0, 1] so it
-    # is directly thresholdable against alpha.
+    # BH-adjusted p-value = min over j>=rank of (k_family * p_j / j).
+    # Non-decreasing with sorted rank by construction; clipped to [0, 1]
+    # so it is directly thresholdable against alpha.
     adj_pvs = np.empty(len(pvs))
     for i, r in enumerate(ranks):
         future_ratios = [(k_family * pvs[order[j]] / (j + 1)) for j in range(r - 1, len(pvs))]
         adj_pvs[i] = min(future_ratios) if future_ratios else pvs[i]
     adj_pvs = np.clip(adj_pvs, 0, 1)
 
-    # Rejection from the FINAL monotone adjusted p: an item is rejected iff
-    # its BH-adjusted p-value clears alpha. The largest-rank passing threshold
-    # defines the BH step-up cut in monotone form, which is equivalent to the
-    # 1995 procedure in the monotone regime (the only regime relevant here).
+    # Rejection from the canonical step-up: an item is rejected iff its
+    # BH-adjusted p-value clears alpha. The largest rank whose adj_p clears
+    # alpha defines the cut; every rank at or below that rank is rejected.
     reject = adj_pvs <= alpha
 
     return {

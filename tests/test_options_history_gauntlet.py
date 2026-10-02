@@ -38,11 +38,12 @@ def test_bh_fdr_hand_example():
     #   i=3 (0.03):  min(0.1000, 0.1750, 0.1200)                  = 0.1000
     #   i=4 (0.07):  min(0.1750, 0.1200)                          = 0.1200
     #   i=5 (0.12):  0.1200
-    # All five adj_p <= alpha 0.10 → all five reject under MONOTONE rule.
-    # Legacy per-rank threshold (raw_p <= (i/k) * alpha) would have rejected
-    # only a/b/c (T/T/T/F/F). The OLD contract was wrong because it produced
-    # non-monotone rejections; the FIX derives reject from the final monotone
-    # adj_p, which is the only honest contract for the §4 gates.
+    # All five adj_p <= alpha 0.10 → all five reject under the canonical
+    # step-up rule (reject every rank through the largest passing rank).
+    # Legacy independent per-rank thresholding (raw_p <= (i/k) * alpha)
+    # happens to give the same T/T/T/F/F on THIS input — the defect it can
+    # produce (a non-monotone T/F/T) is shown separately in
+    # test_bh_fdr_legacy_stepup_per_rank_inconsistent.
     pvals = {"a": 0.001, "b": 0.01, "c": 0.03, "d": 0.07, "e": 0.12}
     result = g._bh_fdr(pvals, k_family=10, alpha=0.10)
 
@@ -76,8 +77,8 @@ def test_bh_fdr_empty():
 def test_bh_fdr_monotone_reject_k52_legacy_TFT():
     """Spec regression: p={'a':.0001,'b':.005,'c':.0055}, k_family=52, alpha=.10.
 
-    Under the OLD per-rank step-up (p_i <= (i/k) * alpha), the three cells would
-    have rejected as T/F/T:
+    Under legacy independent per-rank thresholding (raw_p <= (i/k) * alpha),
+    the three cells would have rejected as T/F/T:
       a rank 1: 0.0001 <= 1/52 * 0.10 = 0.00192 → T
       b rank 2: 0.005  <= 2/52 * 0.10 = 0.00385 → F (raw > threshold)
       c rank 3: 0.0055 <= 3/52 * 0.10 = 0.00577 → T
@@ -140,11 +141,11 @@ def test_bh_fdr_rejection_set_is_monotone_in_rank():
 
 
 def test_bh_fdr_legacy_stepup_per_rank_inconsistent():
-    """Edge coverage: assert the OLD per-rank raw-p threshold (p_i <= (i/k)*alpha)
-    would have given a non-monotone rejection for the spec input, demonstrating
-    the defect the fix removes. We re-derive the old rejection inline so the
-    test is self-contained and does not depend on the (corrected) production
-    function.
+    """Edge coverage: legacy independent per-rank thresholding
+    (raw_p <= (i/k) * alpha) would have given a non-monotone rejection for the
+    spec input, demonstrating the defect the fix removes. We re-derive the
+    legacy rejection inline so the test is self-contained and does not depend
+    on the (corrected) production function.
     """
     pvals = {"a": 0.0001, "b": 0.005, "c": 0.0055}
     k = 52
@@ -157,8 +158,8 @@ def test_bh_fdr_legacy_stepup_per_rank_inconsistent():
     # b rank 2 → 0.005  <= 0.00385 F
     # c rank 3 → 0.0055 <= 0.00577 T
     assert legacy == {"a": True, "b": False, "c": True}, (
-        "Sanity check: legacy per-rank threshold must yield T/F/T, which is "
-        "non-monotone and is the defect the spec fix removes."
+        "Sanity check: legacy independent per-rank thresholding must yield "
+        "T/F/T, which is non-monotone and is the defect the spec fix removes."
     )
     # The production function now returns T/T/T
     res = g._bh_fdr(pvals, k_family=k, alpha=alpha)

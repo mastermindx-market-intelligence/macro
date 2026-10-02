@@ -1093,40 +1093,18 @@ class TestSpyLabelWindowContract:
     """SPY label-window contract: spy_excess_h requires identical native fill
     AND identical native endpoint dates on the two series."""
 
-    @staticmethod
-    def _aligned_series(ticker_prices, spy_prices,
-                        ticker_dates=None, spy_dates=None,
-                        start: str = "2026-06-01") -> tuple[pd.Series, pd.Series]:
-        """Build ticker and SPY series with aligned OR deliberately misaligned
-        business-day calendars. If ticker_dates/spy_dates are None, both
-        use the same business-day calendar starting at `start`."""
-        n_t = len(ticker_prices)
-        n_s = len(spy_prices)
-        if ticker_dates is None:
-            ticker_dates = pd.date_range(start, periods=n_t, freq="B")
-        if spy_dates is None:
-            spy_dates = pd.date_range(start, periods=n_s, freq="B")
-        return (
-            pd.Series(ticker_prices, index=ticker_dates, dtype=float),
-            pd.Series(spy_prices, index=spy_dates, dtype=float),
-        )
-
     def test_matching_dates_positive_path(self):
         """When ticker and SPY share the same business-day calendar, the
         label-window contract is satisfied: spy_excess_h is the difference
         of the two forward returns."""
         from engine.flow_signals_grade import _grade_event
 
-        # Build a series where:
-        #   snap_loc("2026-06-02") lands at bar 1 (index=1)
-        #   fill = 2 (next bar)
-        #   fwd_ret_5 = close[fill+5-1+1] / close[fill] - 1 = close[7] / close[2] - 1
-        # We want ticker fwd_ret_5 = 0.05 and SPY fwd_ret_5 = 0.02 → excess 0.03.
-        # Set close[2] = 100 (entry), close[7] = 105 → ticker fwd_ret_5 = 0.05.
-        # Set spy[2]  = 200 (entry), spy[7]  = 204 → spy fwd_ret_5 = 0.02.
+        # snap_loc("2026-06-02") lands at bar 1, fill = 2.
+        # fwd_ret_5 = close[fill+5] / close[fill] - 1 = close[7] / close[2] - 1.
+        # Want ticker fwd_ret_5 = 0.05 (entry 100, exit 105) and SPY 0.02
+        # (entry 200, exit 204) → excess 0.03.
         n = 9
         dates = pd.date_range("2026-06-01", periods=n, freq="B")
-        #            h0  sig  fill f1   f2   f3   f4   f5(end)
         ticker_prices = [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 105.0, 105.0]
         spy_prices    = [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 204.0, 204.0]
         close = pd.Series(ticker_prices, index=dates, dtype=float)
@@ -1135,17 +1113,15 @@ class TestSpyLabelWindowContract:
         result = _grade_event(
             event_id="spy_match",
             ticker="AAPL",
-            session_date="2026-06-02",  # bar 1 (snap_loc), fill=2
-            dte_bucket="1_7d",           # horizon=5d
+            session_date="2026-06-02",
+            dte_bucket="1_7d",
             close=close,
             spy_close=spy,
         )
         assert result["graded_ok"] is True
         assert result["reason_code"] == "ok"
-        # Absolute metrics preserved
         assert result["fwd_ret_5"] is not None
         assert result["fwd_ret_5"] == pytest.approx(0.05, abs=1e-9)
-        # SPY excess populated: ticker 5%, SPY 2%, excess 3%
         assert result["spy_excess_5"] is not None
         assert result["spy_excess_5"] == pytest.approx(0.03, abs=1e-9)
 
@@ -1157,8 +1133,8 @@ class TestSpyLabelWindowContract:
         from engine.flow_signals_grade import _grade_event
 
         # Ticker has bars on 2026-06-01, 06-02 (signal), 06-03 (fill), 06-04, ...
-        # SPY is missing 2026-06-03 (its fill lands one bar later, on 06-04).
-        # Same length overall so len() checks do not save us — the dates
+        # SPY is missing 2026-06-03 — its fill lands one bar later, on 06-04.
+        # Same length overall so len() checks do not save us; the dates
         # themselves are the differentiator.
         ticker_dates = pd.date_range("2026-06-01", periods=9, freq="B")
         spy_dates = pd.DatetimeIndex([
@@ -1187,10 +1163,9 @@ class TestSpyLabelWindowContract:
             spy_close=spy,
         )
         assert result["graded_ok"] is True
-        # Absolute ticker metric is preserved
         assert result["fwd_ret_5"] is not None
-        # SPY excess MUST be null: the label windows no longer cover the
-        # same dates (ticker fill 06-03 → 06-08; SPY fill 06-04 → 06-09).
+        # Label windows differ: ticker fill 06-03 → endpoint 06-10; SPY fill
+        # 06-04 → endpoint 06-11. Both endpoints drift together.
         assert result["spy_excess_5"] is None, (
             "SPY excess must be None when SPY's native fill date does not "
             "match the ticker's native fill date — label-window mismatch "
@@ -1204,9 +1179,10 @@ class TestSpyLabelWindowContract:
         from engine.flow_signals_grade import _grade_event
 
         ticker_dates = pd.date_range("2026-06-01", periods=9, freq="B")
-        # SPY: bar at 2026-06-03 (fill) exists, but bar at 2026-06-04 (which
-        # would be ticker fill+1) is missing — so SPY's fill+5 endpoint lands
-        # on 2026-06-10 instead of the ticker's 2026-06-08.
+        # SPY: bar at 2026-06-03 (fill) exists, but bar at 2026-06-04 (the
+        # bar that would be ticker fill+1) is missing — so SPY's fill+5
+        # endpoint lands on 2026-06-11 instead of the ticker's 2026-06-10.
+        # June 3 + 5 business days = June 10.
         spy_dates = pd.DatetimeIndex([
             pd.Timestamp("2026-06-01"),
             pd.Timestamp("2026-06-02"),
@@ -1215,8 +1191,8 @@ class TestSpyLabelWindowContract:
             pd.Timestamp("2026-06-05"),
             pd.Timestamp("2026-06-08"),
             pd.Timestamp("2026-06-09"),
-            pd.Timestamp("2026-06-10"),  # SPY's fill+5
-            pd.Timestamp("2026-06-11"),
+            pd.Timestamp("2026-06-10"),  # ticker's fill+5
+            pd.Timestamp("2026-06-11"),  # SPY's fill+5 (one bar late)
             pd.Timestamp("2026-06-12"),
         ])
         ticker_prices = [100.0, 100.0, 100.0, 102.0, 103.0, 104.0, 105.0, 106.0, 107.0]
@@ -1233,10 +1209,8 @@ class TestSpyLabelWindowContract:
             spy_close=spy,
         )
         assert result["graded_ok"] is True
-        # Absolute ticker metric is preserved
         assert result["fwd_ret_5"] is not None
-        # SPY excess MUST be null: the endpoints differ
-        # (ticker 06-08, SPY 06-10)
+        # Endpoints differ: ticker 06-10, SPY 06-11.
         assert result["spy_excess_5"] is None, (
             "SPY excess must be None when SPY's native fill+h date differs "
             "from the ticker's — label-window mismatch is non-evaluable."
@@ -1250,14 +1224,11 @@ class TestSpyLabelWindowContract:
 
         # snap_loc("2026-06-02") lands at bar 1, fill = 2.
         # fwd_ret_21 = close[fill+21] / close[fill] - 1 = close[23] / close[2] - 1.
-        # We need n >= fill+21+1 = 24 bars. Use n=24 to keep things tight.
         n = 24
         dates = pd.date_range("2026-06-01", periods=n, freq="B")
-        # n=24: indices 0..23. Set ticker[2]=100, ticker[23]=115 → 0.15 return
         ticker_prices = [100.0] * 24
         ticker_prices[2] = 100.0
         ticker_prices[23] = 115.0
-        # Set spy[2] = 200, spy[23] = 210 → 0.05 return
         spy_prices = [200.0] * 24
         spy_prices[2] = 200.0
         spy_prices[23] = 210.0
@@ -1268,15 +1239,14 @@ class TestSpyLabelWindowContract:
         result = _grade_event(
             event_id="spy_21d_match",
             ticker="AAPL",
-            session_date="2026-06-02",  # snap_loc=1, fill=2
-            dte_bucket="8_30d",          # horizon=21d
+            session_date="2026-06-02",
+            dte_bucket="8_30d",
             close=close,
             spy_close=spy,
         )
         assert result["graded_ok"] is True
         assert result["fwd_ret_21"] is not None
         assert result["fwd_ret_21"] == pytest.approx(0.15, abs=1e-9)
-        # Ticker 21d return = 0.15, SPY 21d return = 0.05, excess = 0.10
         assert result["spy_excess_21"] is not None
         assert result["spy_excess_21"] == pytest.approx(0.10, abs=1e-9)
 
@@ -1300,6 +1270,5 @@ class TestSpyLabelWindowContract:
         assert result["graded_ok"] is True
         assert result["fwd_ret_5"] is not None
         assert result["spy_excess_5"] is None
-        # Same for every other horizon
         for h in (5, 21, 63, 126):
             assert result[f"spy_excess_{h}"] is None
