@@ -11,6 +11,7 @@ The DOM-measured test skips cleanly when Playwright/Chromium is unavailable.
 from __future__ import annotations
 
 import json
+import os
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -54,17 +55,23 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-ui)}
 """
 
 
+def _browser_unavailable(reason: str) -> None:
+    if os.environ.get("MM_REQUIRE_BROWSER") == "1":
+        pytest.fail(reason)
+    pytest.skip(reason)
+
+
 @pytest.fixture(scope="module")
 def browser():
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        pytest.skip("Playwright not installed")
+        _browser_unavailable("Playwright not installed")
     manager = sync_playwright()
     try:
         playwright = manager.__enter__()
     except Exception as exc:  # pragma: no cover - runtime-specific
-        pytest.skip(f"Playwright runtime unavailable: {exc}")
+        _browser_unavailable(f"Playwright runtime unavailable: {exc}")
     try:
         try:
             launched = playwright.chromium.launch(headless=True, channel="chrome")
@@ -72,7 +79,7 @@ def browser():
             launched = playwright.chromium.launch(headless=True)
     except Exception as exc:  # pragma: no cover - runtime-specific
         manager.__exit__(None, None, None)
-        pytest.skip(f"Chromium unavailable: {exc}")
+        _browser_unavailable(f"Chromium unavailable: {exc}")
     yield launched
     launched.close()
     manager.__exit__(None, None, None)
@@ -194,7 +201,7 @@ def test_selected_leg_opens_existing_brain_with_bounded_context_and_exact_return
         assert handoff["ctx"]["schema"] == "ai_context_client.v1"
         assert handoff["ctx"]["ambient"] == {
             "symbol": None,
-            "timeframe": "rev-2",
+            "timeframe": None,
             "page": "ontology",
             "panel": "n1",
         }
@@ -576,8 +583,10 @@ def test_shared_brain_turn_preserves_selected_revision_then_clears_it(browser, s
         payload = page.evaluate(run_builder)
         assert payload["page"] == "ontology"
         assert payload["panel"] == "n1"
-        assert payload.get("timeframe") == "rev-2"
-        assert payload["timeframe"] == payload["ai_context"]["ambient"]["timeframe"]
+        assert payload.get("timeframe") is None
+        assert payload["ontology_selection"]["revision"] == 2
+        assert payload["ontology_selection"]["manifest_hash"] == synthetic_snapshot["source"]["source_manifest_hash"]
+        assert payload.get("timeframe") == payload["ai_context"]["ambient"]["timeframe"]
         page.evaluate("window.MM_BRAIN_CFG.onClose()")
         cleared = page.evaluate(run_builder)
         assert not cleared.get("panel")
@@ -618,5 +627,37 @@ def test_receipt_separates_observation_requirement_and_owner_result(
         chinese = page.locator("#ox-leg-n1 .ox-kv dd").inner_text()
         assert "读数：" in chinese and "要求：" in chinese
         assert ("已满足" if passed else "未满足") in chinese
+    finally:
+        context.close()
+
+
+def test_required_browser_cannot_report_a_skip(monkeypatch):
+    """The hosted ontology job must fail if its browser cannot actually run."""
+    monkeypatch.setenv("MM_REQUIRE_BROWSER", "1")
+    with pytest.raises(pytest.fail.Exception, match="Chromium unavailable"):
+        _browser_unavailable("Chromium unavailable")
+    monkeypatch.delenv("MM_REQUIRE_BROWSER")
+    with pytest.raises(pytest.skip.Exception, match="Chromium unavailable"):
+        _browser_unavailable("Chromium unavailable")
+
+
+def test_selected_path_forwards_exact_evidence_reference_and_clears(browser, synthetic_snapshot):
+    """No node-id rewriting, market bytes, or revision masquerading as timeframe."""
+    import copy
+    snapshot = copy.deepcopy(synthetic_snapshot)
+    exact_node = "Oil-shock_long_name_01234567890123456789"
+    snapshot["path"]["legs"][0]["node_id"] = exact_node
+    context, page = _open(browser, snapshot, width=390, height=844)
+    try:
+        page.locator("#ox-steps .ox-brain-action").first.click()
+        ref = page.evaluate("window.MM_BRAIN_CFG.getOntologySelection()")
+        assert ref == {"chain": snapshot["source"]["chain"],
+                       "revision": snapshot["source"]["rev"],
+                       "asof": snapshot["source"]["asof"],
+                       "manifest_hash": snapshot["source"]["source_manifest_hash"],
+                       "node_id": exact_node}
+        assert page.evaluate("window.MM_BRAIN_CFG.getAiContext().ambient.timeframe") is None
+        page.evaluate("window.MM_BRAIN_CFG.onClose()")
+        assert page.evaluate("window.MM_BRAIN_CFG.getOntologySelection()") is None
     finally:
         context.close()

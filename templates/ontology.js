@@ -78,11 +78,18 @@
   function configureBrainHost() {
     window.MM_BRAIN_CFG = window.MM_BRAIN_CFG || {};
     window.MM_BRAIN_CFG.page = "ontology";
+    window.MM_BRAIN_CFG.getOntologySelection = function () {
+      if (!selectedPathRef) return null;
+      return {
+        chain: selectedPathRef.chain, revision: selectedPathRef.revision,
+        asof: selectedPathRef.asof, manifest_hash: selectedPathRef.manifest_hash,
+        node_id: selectedPathRef.node_id
+      };
+    };
     window.MM_BRAIN_CFG.getAiContext = function () {
       var ambient = selectedPathRef ? {
         symbol: null,
-        timeframe: selectedPathRef.revision == null
-          ? null : brainLabel("rev-" + selectedPathRef.revision, "revision"),
+        timeframe: null,
         page: "ontology",
         panel: selectedPathRef.leg
       } : { symbol: null, timeframe: null, page: "ontology", panel: null };
@@ -145,14 +152,15 @@
   function selectBrainPath(snapshot, leg, trigger) {
     var source = snapshot && snapshot.source ? snapshot.source : {};
     var next = {
-      chain: brainLabel(source.chain, "ontology"),
+      chain: source.chain,
       revision: source.rev == null ? null : source.rev,
+      asof: source.asof,
+      manifest_hash: source.source_manifest_hash,
+      node_id: leg && leg.node_id,
       leg: brainLabel(leg && leg.node_id, "path")
     };
-    var previousKey = selectedPathRef
-      ? selectedPathRef.chain + "|" + selectedPathRef.revision + "|" + selectedPathRef.leg
-      : "";
-    var nextKey = next.chain + "|" + next.revision + "|" + next.leg;
+    var previousKey = selectedPathRef ? JSON.stringify(selectedPathRef) : "";
+    var nextKey = JSON.stringify(next);
     if (nextKey !== previousKey) brainContextRevision += 1;
     selectedPathRef = next;
     returnFocusRef = trigger;

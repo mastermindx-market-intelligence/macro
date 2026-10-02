@@ -84,3 +84,14 @@
 - GET/request-time rendering must produce zero owner mutation.
 - `templates/` and `site/` paired assets must be byte-identical at acceptance.
 - Portfolio exposure remains out of this carrier until an accepted Graph-1 relationship owner exists.
+
+
+## 2026-10-02 — exact-generation repair of REVIEW_8260_R1
+
+The client now carries one transient `context.ontology_selection` reference through the existing Brain request. Its closed fields are `chain`, integer `revision`, `asof`, canonical `sha256:`-prefixed `manifest_hash`, and exact `node_id`. They are references, not source bytes, authorization or a fifth persisted F04 object. The host getter returns a copy; normal close clears it. Chart `timeframe` is no longer overloaded with an ontology revision.
+
+Before supplying selected evidence, the gateway applies the existing `site_full` permission and existing route `ACCEPTED_CHAINS`, then compares the current composer's chain, revision, as-of time, source manifest and exact selected node. Node identifiers are not transformed or truncated for matching. A missing, malformed, denied, unadmitted or changed reference stops that selected-evidence answer and returns a deterministic bilingual refresh notice through the existing reply/SSE channel without a model call or numerical fallback. Matching definition revisions alone do not suffice.
+
+The verified scope is the selected evidence read at that turn's start; it is not a claim that every later research tool or future turn uses a permanently frozen market state. No owner evaluation or mutation occurs. Frontend, shared widget and gateway must ship as the same accepted release, not independently copied into production.
+
+The existing ontology CI job must explicitly run the browser suite with Chromium installed and `MM_REQUIRE_BROWSER=1`; missing browser dependencies cannot silently pass as skips. A shared `site/theme.js` change also requires actual remint of the existing HK/Canada P0b mobile-layout receipts through their current renderer and verifier. Neither gate may be waived or repaired by merely substituting hash text.

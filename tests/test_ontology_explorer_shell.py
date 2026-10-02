@@ -256,7 +256,7 @@ def test_selected_path_uses_the_existing_brain_host_seam_and_exact_return():
     assert "window.MM_BRAIN_CFG.getAiContext = function ()" in client
     assert 'schema: "ai_context_client.v1"' in client
     assert 'page: "ontology"' in client
-    assert "chain: brainLabel(source.chain" in client
+    assert "chain: source.chain" in client
     assert "panel: selectedPathRef.leg" in client
     assert "window.MM_BRAIN_CFG.onClose = function ()" in client
     assert "returnFocusRef.focus({ preventScroll: true })" in client

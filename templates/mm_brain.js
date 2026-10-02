@@ -3527,8 +3527,19 @@
     var ctx = { page: page, lang: (zh() ? 'zh' : 'en'), ai_context: aiContext };
     if (ctxSymbol) ctx.symbol = ctxSymbol;
     if (panelName) ctx.panel = panelName;
-    /* The selected definition revision must reach the same legacy hint that
-       the current answer lane reads, not only the visible typed receipt. */
+    if (page === 'ontology' && typeof CFG.getOntologySelection === 'function') {
+      try {
+        var selection = CFG.getOntologySelection();
+        if (selection) {
+          ctx.ontology_selection = {
+            chain: selection.chain, revision: selection.revision, asof: selection.asof,
+            manifest_hash: selection.manifest_hash, node_id: selection.node_id
+          };
+        }
+      } catch (e) { ctx.ontology_selection = {}; }
+    }
+    /* Preserve ordinary host chart timeframes. Ontology generation identity
+       travels only in its bounded selection reference above. */
     if (ambient && typeof ambient.timeframe === 'string' && ambient.timeframe.length <= 32) {
       ctx.timeframe = ambient.timeframe;
     }
