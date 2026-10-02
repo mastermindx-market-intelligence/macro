@@ -126,6 +126,14 @@ def _bh_fdr(pvals: dict[str, float], k_family: int = _BH_FAMILY_K,
     pvals: {label: p_value}. Returns {label: {raw_p, bh_p, reject, rank}}.
     k_family: the total pre-registered family size (cells with n<30 excluded but
     their "slot" still counts in denominator, per strict BH convention).
+
+    Rejection is derived from the FINAL monotone BH-adjusted p-values
+    (adj_p_i <= alpha), not the per-rank raw-p step-up threshold
+    (p_i <= (rank_i / k) * alpha). The per-rank check is the original 1995
+    step-up procedure and can yield non-monotone rejections — a test with a
+    smaller adjusted p than a larger-ranked neighbour can fail while the
+    neighbour passes. The adjusted-p form is monotone in rank and is the only
+    honest contract for the survivors this gauntlet feeds into the §4 gates.
     """
     labels = list(pvals.keys())
     pvs = np.array([pvals[l] for l in labels])
@@ -133,16 +141,20 @@ def _bh_fdr(pvals: dict[str, float], k_family: int = _BH_FAMILY_K,
     ranks = np.empty(len(pvs), dtype=int)
     ranks[order] = np.arange(1, len(pvs) + 1)
 
-    # BH threshold: reject H0 if p_i <= (rank_i / k_family) * alpha
-    bh_thresholds = (ranks / k_family) * alpha
-    reject = pvs <= bh_thresholds
-
-    # BH-adjusted p-value = min over all j>=rank of (k_family * p_j / j)
+    # BH-adjusted p-value = min over all j>=rank of (k_family * p_j / j).
+    # Monotone non-increasing in rank by construction; clipped to [0, 1] so it
+    # is directly thresholdable against alpha.
     adj_pvs = np.empty(len(pvs))
     for i, r in enumerate(ranks):
         future_ratios = [(k_family * pvs[order[j]] / (j + 1)) for j in range(r - 1, len(pvs))]
         adj_pvs[i] = min(future_ratios) if future_ratios else pvs[i]
     adj_pvs = np.clip(adj_pvs, 0, 1)
+
+    # Rejection from the FINAL monotone adjusted p: an item is rejected iff
+    # its BH-adjusted p-value clears alpha. The largest-rank passing threshold
+    # defines the BH step-up cut in monotone form, which is equivalent to the
+    # 1995 procedure in the monotone regime (the only regime relevant here).
+    reject = adj_pvs <= alpha
 
     return {
         labels[i]: {
@@ -1132,8 +1144,14 @@ _CELL_KEY_FNS = {
     "DOI-H": lambda r: f"DOI.{r['era']}.{r['condition']}.{r['horizon']}",
 }
 
-# Only the OI-window study has genuinely pre-2016 eras (Era1 = 2012-15).
-_PRE2016_ERAS = {"DOI-H": {"Era1"}}
+# Only the OI-window study has genuinely pre-2016 eras (Era0 = 2012-2015).
+# Per _OI_ERAS above, Era0 spans 2012-01-01 to 2015-12-31 and is the only
+# pre-2016 era; Era1 (2016-01-01 to 2019-12-31) is post-2016 and the
+# era-amendment auto-death rule does NOT apply to it. SC-8 (fix-round-2
+# 2026-07-05) corrected this map; the prior {"DOI-H": {"Era1"}} mapping was
+# a labeling error and would have wrongly auto-killed any signal whose only
+# post-2016 early-era cell was Era1.
+_PRE2016_ERAS = {"DOI-H": {"Era0"}}
 
 
 def _fill_global_rejects_and_decay(results: dict, global_bh: dict[str, dict]) -> None:

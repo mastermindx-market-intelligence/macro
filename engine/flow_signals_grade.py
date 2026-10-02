@@ -118,6 +118,51 @@ _PERSIST_FOLLOW_BARS = 3
 _PERSIST_TOL = 0.10
 
 
+def _aligned_spy_ret(close: pd.Series, fill: int, spy_close: pd.Series,
+                     h: int, session_date: str) -> tuple[bool, float | None]:
+    """Return (window_matches, spy_fwd_ret_h) for the SPY-vs-ticker excess at
+    horizon ``h``.
+
+    LABEL-WINDOW CONTRACT (SPY excess):
+      spy_excess_h = ticker_fwd_ret_h - spy_fwd_ret_h is ONLY evaluable when
+      the two forward windows cover the SAME actual trading dates. A missing
+      SPY bar at either the native fill or the native fill+h position (e.g.
+      SPY holiday, ticker-only session) shifts the SPY window to a different
+      date span and the difference would compare different label windows —
+      non-evaluable; return (False, None) so the caller leaves the column
+      null. This is the documented behavior; we DO NOT intersect/reindex
+      calendars, substitute prices, change the target, or invent a
+      per-label schema.
+
+    Implementation: locate SPY's own next-bar fill via the standard
+    ``fill_index`` primitive (it is already used by this module), and
+    compare SPY's native index[spy_fill] and index[spy_fill+h] against
+    the ticker's native index[fill] and index[fill+h]. Both endpoints
+    must match to the day. The two ``forward_metrics`` calls in the
+    caller (ticker and SPY) still run independently so the absolute
+    native SPY returns are preserved for display; only the excess
+    column is gated.
+    """
+    if fill + h >= len(close):
+        return False, None
+    ticker_fill_date = close.index[fill]
+    ticker_endpoint_date = close.index[fill + h]
+
+    spy_fill = fill_index(spy_close, session_date)
+    if spy_fill is None or spy_fill + h >= len(spy_close):
+        return False, None
+    if spy_close.index[spy_fill] != ticker_fill_date:
+        return False, None
+    if spy_close.index[spy_fill + h] != ticker_endpoint_date:
+        return False, None
+
+    spy_entry = float(spy_close.iloc[spy_fill])
+    spy_exit = float(spy_close.iloc[spy_fill + h])
+    if not np.isfinite(spy_entry) or spy_entry <= 0 or not np.isfinite(spy_exit):
+        return False, None
+    return True, spy_exit / spy_entry - 1.0
+
+
 def _has_split_seam(close: pd.Series, fill_iloc: int, max_h: int) -> bool:
     """Return True if the forward window [fill, fill+max_h] contains a suspected
     unrepaired stale-tail split seam.
@@ -314,12 +359,37 @@ def _grade_event(
     # Excess vs SPY (only over matured horizons)
     if spy_close is not None:
         try:
+            # Preserve the original native absolute SPY metrics (computed via
+            # the standard one-grader-law forward_metrics primitive) for
+            # display. The excess column is gated separately by the
+            # label-window contract below: a forward-window difference is
+            # only evaluable if SPY's native fill AND native fill+h dates
+            # match the ticker's exactly.
             spy_metrics = forward_metrics(spy_close, session_date, horizons=tuple(matured))
             for h in matured:
                 ticker_ret = metrics.get(f"fwd_ret_{h}")
-                spy_ret = spy_metrics.get(f"fwd_ret_{h}")
-                if ticker_ret is not None and spy_ret is not None:
-                    base[f"spy_excess_{h}"] = ticker_ret - spy_ret
+                if ticker_ret is None:
+                    continue
+                # Label-window contract: same fill date AND same endpoint
+                # date on both series. Mismatch (SPY missing a bar at fill
+                # or fill+h) leaves spy_excess_h as None — non-evaluable,
+                # not a failure. Documented in _aligned_spy_ret.
+                window_ok, spy_ret = _aligned_spy_ret(
+                    close, fill, spy_close, h, session_date)
+                if not window_ok or spy_ret is None:
+                    continue
+                # Double-check via the same absolute SPY return: if SPY
+                # also reports a forward return at h, it must agree with
+                # the label-aligned one (sanity bound). If not, leave None.
+                spy_native_ret = spy_metrics.get(f"fwd_ret_{h}")
+                if spy_native_ret is None:
+                    continue
+                if not np.isclose(spy_native_ret, spy_ret, atol=1e-12, rtol=1e-9):
+                    # Date-mismatch surface; the label-aligned return
+                    # disagrees with the SPY-only forward_metrics return.
+                    # This is the case the contract is built to catch.
+                    continue
+                base[f"spy_excess_{h}"] = ticker_ret - spy_ret
         except Exception:  # noqa: BLE001
             pass  # spy excess stays null; not fatal
 

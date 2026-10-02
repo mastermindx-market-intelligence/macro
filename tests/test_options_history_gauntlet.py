@@ -32,9 +32,17 @@ import scripts.research.options_history_gauntlet as g
 def test_bh_fdr_hand_example():
     """BH with 5 p-values, k=10 (pre-stated family size), alpha=0.10."""
     # p-values sorted: 0.001, 0.01, 0.03, 0.07, 0.12
-    # BH thresholds: i/10 * 0.10 = 0.01, 0.02, 0.03, 0.04, 0.05
-    # Reject: 0.001 <= 0.01 YES; 0.01 <= 0.02 YES; 0.03 <= 0.03 YES;
-    #         0.07 <= 0.04 NO; 0.12 <= 0.05 NO
+    # Rank i=1..5: adj_p_i = min over j>=i of (10 * p_(sorted,j) / j):
+    #   i=1 (0.001): min(0.0100, 0.0500, 0.1000, 0.1750, 0.1200) = 0.0100
+    #   i=2 (0.01):  min(0.0500, 0.1000, 0.1750, 0.1200)          = 0.0500
+    #   i=3 (0.03):  min(0.1000, 0.1750, 0.1200)                  = 0.1000
+    #   i=4 (0.07):  min(0.1750, 0.1200)                          = 0.1200
+    #   i=5 (0.12):  0.1200
+    # All five adj_p <= alpha 0.10 → all five reject under MONOTONE rule.
+    # Legacy per-rank threshold (raw_p <= (i/k) * alpha) would have rejected
+    # only a/b/c (T/T/T/F/F). The OLD contract was wrong because it produced
+    # non-monotone rejections; the FIX derives reject from the final monotone
+    # adj_p, which is the only honest contract for the §4 gates.
     pvals = {"a": 0.001, "b": 0.01, "c": 0.03, "d": 0.07, "e": 0.12}
     result = g._bh_fdr(pvals, k_family=10, alpha=0.10)
 
@@ -63,6 +71,100 @@ def test_bh_fdr_empty():
     """BH with empty pvals returns empty dict."""
     result = g._bh_fdr({}, k_family=52, alpha=0.10)
     assert result == {}
+
+
+def test_bh_fdr_monotone_reject_k52_legacy_TFT():
+    """Spec regression: p={'a':.0001,'b':.005,'c':.0055}, k_family=52, alpha=.10.
+
+    Under the OLD per-rank step-up (p_i <= (i/k) * alpha), the three cells would
+    have rejected as T/F/T:
+      a rank 1: 0.0001 <= 1/52 * 0.10 = 0.00192 → T
+      b rank 2: 0.005  <= 2/52 * 0.10 = 0.00385 → F (raw > threshold)
+      c rank 3: 0.0055 <= 3/52 * 0.10 = 0.00577 → T
+
+    The NEW monotone-adjusted-p derivation rejects all three:
+      a adj_p = min(52*0.0001/1, 52*0.005/2, 52*0.0055/3) = min(0.0052, 0.130, 0.0953) = 0.0052
+      b adj_p = min(52*0.005/2, 52*0.0055/3)                 = min(0.130, 0.0953)          = 0.0953
+      c adj_p = 52*0.0055/3                                  = 0.0953
+    All three adj_p <= alpha → all three reject. Rejection set is now monotone
+    in rank and the per-cell decisions match the §4 gate contract.
+    """
+    pvals = {"a": 0.0001, "b": 0.005, "c": 0.0055}
+    result = g._bh_fdr(pvals, k_family=52, alpha=0.10)
+    assert result["a"]["reject_h0"] is True
+    assert result["b"]["reject_h0"] is True
+    assert result["c"]["reject_h0"] is True
+    # Adjusted p-values are monotone non-increasing in rank. Hand-computed:
+    #   a adj_p = min(52*0.0001/1, 52*0.005/2, 52*0.0055/3)
+    #           = min(0.0052,    0.130,    0.095333...)      ≈ 0.0052
+    #   b adj_p = min(52*0.005/2, 52*0.0055/3)
+    #           = min(0.130,    0.095333...)                 ≈ 0.09533...
+    #   c adj_p = 52*0.0055/3                                ≈ 0.09533...
+    assert result["a"]["bh_adj_p"] == pytest.approx(52 * 0.0001, abs=1e-6)
+    assert result["b"]["bh_adj_p"] == pytest.approx(min(52 * 0.005 / 2, 52 * 0.0055 / 3), abs=1e-6)
+    assert result["c"]["bh_adj_p"] == pytest.approx(52 * 0.0055 / 3, abs=1e-6)
+    # Ranks are stable
+    assert result["a"]["rank"] == 1
+    assert result["b"]["rank"] == 2
+    assert result["c"]["rank"] == 3
+    # And monotone in rank (adj_p_i >= adj_p_{i+1})
+    assert result["a"]["bh_adj_p"] <= result["b"]["bh_adj_p"]
+    assert result["b"]["bh_adj_p"] <= result["c"]["bh_adj_p"]
+
+
+def test_bh_fdr_rejection_set_is_monotone_in_rank():
+    """Edge coverage: the rejection set must be a downward initial segment
+    of the rank ordering — if rank i rejects, every j < i must also reject.
+    A BH result that rejects rank 2 but not rank 1 is non-monotone and the
+    fix prevents that class of bug."""
+    pvals = {"a": 0.0001, "b": 0.005, "c": 0.0055, "d": 0.05, "e": 0.9}
+    result = g._bh_fdr(pvals, k_family=52, alpha=0.10)
+    rejects_by_rank = sorted(
+        (v["rank"], v["reject_h0"]) for v in result.values()
+    )
+    # Walk from LOWEST rank upward; once a non-reject appears, every
+    # subsequent (higher) rank must also be non-reject. The reverse
+    # direction is wrong: ranks {1, 2, 3} rejecting while {4, 5} do not is
+    # the legitimate monotone step-up cut.
+    for rank, rej in rejects_by_rank:
+        if not rej:
+            continue
+        # rank rejects — every smaller rank must also reject
+        for smaller_rank, smaller_rej in rejects_by_rank:
+            if smaller_rank < rank and not smaller_rej:
+                pytest.fail(
+                    f"Non-monotone rejection set: rank {rank} rejected but "
+                    f"rank {smaller_rank} did not — a higher rank rejecting "
+                    f"while a lower rank does not violates BH monotonicity."
+                )
+
+
+def test_bh_fdr_legacy_stepup_per_rank_inconsistent():
+    """Edge coverage: assert the OLD per-rank raw-p threshold (p_i <= (i/k)*alpha)
+    would have given a non-monotone rejection for the spec input, demonstrating
+    the defect the fix removes. We re-derive the old rejection inline so the
+    test is self-contained and does not depend on the (corrected) production
+    function.
+    """
+    pvals = {"a": 0.0001, "b": 0.005, "c": 0.0055}
+    k = 52
+    alpha = 0.10
+    sorted_items = sorted(pvals.items(), key=lambda x: x[1])
+    legacy = {}
+    for i, (lbl, pv) in enumerate(sorted_items, start=1):
+        legacy[lbl] = pv <= (i / k) * alpha
+    # a rank 1 → 0.0001 <= 0.00192 T
+    # b rank 2 → 0.005  <= 0.00385 F
+    # c rank 3 → 0.0055 <= 0.00577 T
+    assert legacy == {"a": True, "b": False, "c": True}, (
+        "Sanity check: legacy per-rank threshold must yield T/F/T, which is "
+        "non-monotone and is the defect the spec fix removes."
+    )
+    # The production function now returns T/T/T
+    res = g._bh_fdr(pvals, k_family=k, alpha=alpha)
+    assert res["a"]["reject_h0"] is True
+    assert res["b"]["reject_h0"] is True
+    assert res["c"]["reject_h0"] is True
 
 
 # ---------------------------------------------------------------------------
@@ -349,3 +451,42 @@ def test_memo_documents_corrections():
     assert "secondary test" in text.lower(), "Memo must note secondary test not implemented"
     # Must acknowledge the anti-conservative blocker
     assert "anti-conservative" in text.lower() or "pseudo-replication" in text.lower()
+
+
+# ---------------------------------------------------------------------------
+# Test 14 — _PRE2016_ERAS DOI-H map: Era0 is the pre-2016 era, NOT Era1
+# ---------------------------------------------------------------------------
+
+def test_pre2016_eras_doi_is_era0_not_era1():
+    """Per _OI_ERAS, Era0 spans 2012-01-01 to 2015-12-31 and is the only
+    pre-2016 era. Era1 (2016-01-01 to 2019-12-31) is post-2016. The era-
+    amendment auto-death rule applies only to genuinely pre-2016 eras, so the
+    correct map is {"DOI-H": {"Era0"}}, not {"DOI-H": {"Era1"}}."""
+    assert "DOI-H" in g._PRE2016_ERAS, "DOI-H must be in _PRE2016_ERAS"
+    assert "Era0" in g._PRE2016_ERAS["DOI-H"], (
+        "DOI-H pre-2016 era must be Era0 (2012-2015), not Era1 (2016-2019). "
+        "Era1 is post-2016 and the era-amendment auto-death rule does not apply."
+    )
+    assert "Era1" not in g._PRE2016_ERAS["DOI-H"], (
+        "DOI-H Era1 (2016-2019) is NOT pre-2016; mapping it as pre-2016 would "
+        "wrongly auto-kill any signal whose only post-2016 early-era cell was Era1."
+    )
+
+def test_memo_sc8_documents_era0_for_doi_pre2016():
+    """SC-8 in the memo must name Era0 (not Era1) as the DOI pre-2016 era."""
+    memo = pathlib.Path(__file__).parent.parent / "research/OPTIONS_HISTORY_GAUNTLET_E1.md"
+    text = memo.read_text()
+    # The SC-8 paragraph must say "DOI Era0 2012-15", not the old "Era1 2012-15"
+    assert "DOI Era0 2012-15" in text, (
+        "SC-8 paragraph must name Era0 (2012-2015) as the DOI pre-2016 era."
+    )
+    # The OLD label ("DOI Era1 2012-15") must NOT appear in the SC-8 body
+    # (it may appear elsewhere as historical context if worded carefully, but
+    # the SC-8 commentary must be corrected).
+    sc8_marker = "Post-publication-decay commentary now"
+    if sc8_marker in text:
+        sc8_chunk = text[text.index(sc8_marker):]
+        # Within the SC-8 commentary chunk, "Era1 2012-15" must not appear
+        assert "DOI Era1 2012-15" not in sc8_chunk, (
+            "SC-8 commentary must not retain the old 'DOI Era1 2012-15' label."
+        )
