@@ -35,6 +35,24 @@ Example on four peers:
 
 That joint transition information is not algebraically recoverable from the two marginals.
 
+### Exact retention versus bounded continuity
+
+`known_prior_leader_retention` is an exact complete-transition statistic only when the independent
+peer roster is identity-qualified and every **known prior leader** has a current Boolean state.
+A known prior leader whose current observation is missing is never dropped from the denominator to
+make retention look stronger: the exact scalar becomes null with
+`retention_measurement_state=UNAVAILABLE_PRIOR_LEADER_TRANSITION`, while the existing fixed-roster
+lower/upper bounds widen.
+
+Missing current state for a known prior nonleader does not invalidate the exact prior-leader
+retention rate, because it cannot change whether a prior leader was retained. Unknown prior state
+also does not retroactively enlarge the known-prior-leader denominator. If peer identity itself is
+unresolved, the exact retention scalar is withheld as `UNAVAILABLE_IDENTITY`. If there were no
+known prior leaders, the scalar is null with `NO_KNOWN_PRIOR_LEADERS`, never a favorable zero.
+
+This distinction prevents missing data from manufacturing apparent persistence without collapsing
+the useful full-roster continuity bounds or changing the upstream leader definition.
+
 ## Do-not-redo / negative-study boundary
 
 This is **not** PSS-SR2 or PSS-SR3. Those frozen constructions conditioned on recovery after systemic fresh lows and used peer diffusion / synchronized short-horizon positive participation as a directional recovery label. They were rejected on the inspected history and remain closed.
@@ -53,10 +71,14 @@ Ticker strings are also not sufficient issuer identity for production independen
 
 Local exact-base affected suites:
 
-- `tests/test_group_flow.py`: **55 passed**;
-- group/theme/basket suite covering group flow, regional flow, group pulse, basket membership, theme leadership split, flow rollup, downside RS and catalyst binder: **269 passed**.
+- original reviewed head: `tests/test_group_flow.py` **55 passed**; the author's broader group/theme/basket run reported **269 passed**;
+- current repair head: `tests/test_group_flow.py` **63 passed**;
+- current directly imported group/theme set (group flow, regional flow, group pulse, downside RS, catalyst binder): **213 passed** after adding the retention regressions.
 
-The new tests prove same-marginal/different-continuity discrimination, focal issuer exclusion, missing/identity bounds, roster-drift refusal, immutable inputs and zero authority.
+The repair tests prove the B=False versus B=None discriminator, identity-qualified withholding,
+prior-nonleader missingness, no-known-prior-leader typing, same-marginal/different-continuity
+discrimination, focal issuer exclusion, missing/identity bounds, roster-drift refusal, immutable
+inputs and zero authority. Four deliberate source mutations of the new retention law are caught.
 
 Green software tests are not predictive validation.
 

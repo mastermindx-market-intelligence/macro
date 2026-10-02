@@ -350,6 +350,7 @@ def independent_peer_continuity(
     stable_nonleader: list[str] = []
     unknown_transition: list[str] = []
     possible_retained: list[str] = []
+    unresolved_prior_leader_current: list[str] = []
     prior_positive = current_positive = 0
     prior_unknown = current_unknown = 0
 
@@ -392,9 +393,27 @@ def independent_peer_continuity(
             # A retained leader is still possible iff neither observed state is False.
             if before is not False and now is not False:
                 possible_retained.append(ticker)
+            # The exact retention rate is defined over known prior leaders.  If one
+            # of those leaders has no current observation, dropping it from the
+            # denominator would mechanically improve the scalar.  Keep the full-roster
+            # bounds, but withhold the exact conditional rate until its transition is known.
+            if before is True and now is None:
+                unresolved_prior_leader_current.append(ticker)
 
     known_prior_leaders = len(retained) + len(exited)
     known_transitions = len(retained) + len(entered) + len(exited) + len(stable_nonleader)
+    if roster["independence_status"] != "AVAILABLE":
+        retention = None
+        retention_state = "UNAVAILABLE_IDENTITY"
+    elif unresolved_prior_leader_current:
+        retention = None
+        retention_state = "UNAVAILABLE_PRIOR_LEADER_TRANSITION"
+    elif known_prior_leaders:
+        retention = len(retained) / known_prior_leaders
+        retention_state = "EXACT"
+    else:
+        retention = None
+        retention_state = "NO_KNOWN_PRIOR_LEADERS"
     return {
         "schema": PEER_CONTEXT_SCHEMA,
         "kind": "INDEPENDENT_PEER_CONTINUITY",
@@ -424,6 +443,7 @@ def independent_peer_continuity(
         "exited": exited,
         "stable_nonleader": stable_nonleader,
         "unknown_transition": sorted(set(unknown_transition)),
+        "unresolved_prior_leader_current": sorted(unresolved_prior_leader_current),
         "retained_full_roster_lower": (
             len(retained) / denominator if denominator else None
         ),
@@ -431,9 +451,8 @@ def independent_peer_continuity(
             (len(retained) + len(set(possible_retained))) / denominator
             if denominator else None
         ),
-        "known_prior_leader_retention": (
-            len(retained) / known_prior_leaders if known_prior_leaders else None
-        ),
+        "known_prior_leader_retention": retention,
+        "retention_measurement_state": retention_state,
         "interpretation": (
             "joint membership continuity on a fixed leave-issuer-out roster; "
             "not capital flow, accumulation, forecast, or buy evidence"

@@ -1087,3 +1087,92 @@ def test_peer_continuity_has_no_threshold_or_directional_authority():
     assert all(out[key] is False for key in (
         "rank_authority", "entry_authority", "policy_authority",
         "sizing_authority", "trade_authority"))
+
+# ---- Independent peer continuity: exact prior-leader retention semantics ----
+
+def _retention_case(current_b):
+    return gf.independent_peer_continuity(
+        {"FOCAL": True, "A": True, "B": True},
+        {"FOCAL": True, "A": True, "B": current_b},
+        focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+
+
+def test_peer_retention_complete_data_is_exact():
+    exited = _retention_case(False)
+    retained = _retention_case(True)
+    assert exited["known_prior_leader_retention"] == pytest.approx(0.5)
+    assert retained["known_prior_leader_retention"] == pytest.approx(1.0)
+    assert exited["retention_measurement_state"] == "EXACT"
+    assert retained["retention_measurement_state"] == "EXACT"
+
+
+def test_peer_retention_withholds_when_known_prior_leader_current_state_is_missing():
+    missing = _retention_case(None)
+    assert missing["prior_positive_count"] == 2
+    assert missing["known_prior_leader_retention"] is None
+    assert missing["retention_measurement_state"] == "UNAVAILABLE_PRIOR_LEADER_TRANSITION"
+    assert missing["retained_full_roster_lower"] == pytest.approx(0.5)
+    assert missing["retained_full_roster_upper"] == pytest.approx(1.0)
+
+
+def test_peer_retention_missing_prior_nonleader_does_not_suppress_exact_prior_leader_rate():
+    out = gf.independent_peer_continuity(
+        {"FOCAL": True, "A": True, "B": False, "C": False},
+        {"FOCAL": True, "A": True, "B": False, "C": None},
+        focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+    assert out["known_prior_leader_retention"] == pytest.approx(1.0)
+    assert out["retention_measurement_state"] == "EXACT"
+    assert "C" in out["unknown_transition"]
+
+
+def test_peer_retention_unknown_prior_state_does_not_change_known_prior_leader_estimand():
+    out = gf.independent_peer_continuity(
+        {"FOCAL": True, "A": True, "B": None, "C": False},
+        {"FOCAL": True, "A": True, "B": True, "C": False},
+        focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+    assert out["known_prior_leader_retention"] == pytest.approx(1.0)
+    assert out["retention_measurement_state"] == "EXACT"
+
+
+def test_peer_retention_withholds_when_peer_identity_is_unresolved():
+    issuers = _issuer_map()
+    issuers.pop("B")
+    out = gf.independent_peer_continuity(
+        {"FOCAL": True, "A": True, "B": True},
+        {"FOCAL": True, "A": True, "B": True},
+        focal_ticker="FOCAL", issuer_by_ticker=issuers)
+    assert out["independence_status"] == "UNAVAILABLE"
+    assert out["known_prior_leader_retention"] is None
+    assert out["retention_measurement_state"] == "UNAVAILABLE_IDENTITY"
+
+
+def test_peer_retention_pair_discriminator_missing_cannot_improve_exact_scalar():
+    observed_exit = _retention_case(False)
+    missing = _retention_case(None)
+    assert observed_exit["known_prior_leader_retention"] == pytest.approx(0.5)
+    assert missing["known_prior_leader_retention"] is None
+    assert missing["retained_full_roster_lower"] == observed_exit["retained_full_roster_lower"]
+    assert missing["retained_full_roster_upper"] > observed_exit["retained_full_roster_upper"]
+
+
+def test_peer_retention_no_known_prior_leaders_is_typed_not_zero():
+    out = gf.independent_peer_continuity(
+        {"FOCAL": True, "A": False, "B": False},
+        {"FOCAL": True, "A": True, "B": False},
+        focal_ticker="FOCAL", issuer_by_ticker=_issuer_map())
+    assert out["known_prior_leader_retention"] is None
+    assert out["retention_measurement_state"] == "NO_KNOWN_PRIOR_LEADERS"
+
+
+def test_peer_continuity_repair_does_not_mutate_state_or_identity_inputs():
+    prior = {"FOCAL": True, "A": True, "B": True, "C": False}
+    current = {"FOCAL": True, "A": True, "B": None, "C": None}
+    issuers = _issuer_map()
+    prior_before = dict(prior)
+    current_before = dict(current)
+    issuers_before = dict(issuers)
+    gf.independent_peer_continuity(
+        prior, current, focal_ticker="FOCAL", issuer_by_ticker=issuers)
+    assert prior == prior_before
+    assert current == current_before
+    assert issuers == issuers_before
