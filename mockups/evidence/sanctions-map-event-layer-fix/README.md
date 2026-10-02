@@ -1,0 +1,6 @@
+# sanctions-map-event-layer-fix — ad-hoc browser capture (F02 / O21 proof, 2026-10-02T19:47:52Z)
+
+This directory is a **capture record**, not a TP-0 evidence receipt.
+
+- `capture.py` drove a real browser against the served `sanctions_map.html` (`source_commit` d2c6171bf0b30200fec972d08a1497ec534fd6ab, page sha256 314a8a00ceba02160414355dc38aab9cbe4c87a1ed9ebbf5dec814489daa5b35) after PR #8281 moved the public-news mark from a post-render path stamp to the template (`figure.sm-map[data-news-gbr]`, `section#event-pins`), and wrote 16 clip cells (`map-*`, `news-panel-*` × dark/light × en/zh × desktop/mobile) plus `manifest.json`, an ad-hoc record of those cells (bbox, data attributes, sha256, observed `public_news_state`).
+- `manifest.json` is **not** a `mastermind.p0_evidence.v2` manifest (that schema is emitted by `scripts/capture_page_evidence.py` as `pages[].states`), so no `EVIDENCE.yml` points at it — a receipt that did (PR #8278) was rejected by `scripts/check_ui_visual_evidence.py` rule 2 and retired. The TP-0 receipt owning `templates/sanctions_map.html.j2` is `mockups/evidence/sanctions_map/EVIDENCE.yml`; its canonical v2 refresh is a separate lane.
