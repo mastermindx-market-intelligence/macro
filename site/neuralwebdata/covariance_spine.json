@@ -1,26 +1,26 @@
 {
   "schema": "neuralweb.covariance_spine.v1",
-  "as_of": "2026-10-01",
+  "as_of": "2026-10-02",
   "display_only": true,
   "authority": "context",
   "descriptive_not_gauntleted": true,
   "blocks": {
     "rates": {
-      "dominant_pc_share": 0.8266,
+      "dominant_pc_share": 0.8264,
       "first3_var": 0.9635,
-      "effective_dimension_pr": 1.4403,
+      "effective_dimension_pr": 1.4407,
       "pc3_to_pc4_gap": null,
       "oos_pctile_vs_null": null,
       "curvature_stability_tag": "stable",
       "vol_match_multipliers": {
         "pc2": 2.95,
-        "pc3": 4.42
+        "pc3": 4.43
       },
       "source": "data/regime/latest.json#yield_curve"
     },
     "factors": {
-      "dominant_factor_pc_share": 0.5937,
-      "effective_factor_bets_pr": 2.519,
+      "dominant_factor_pc_share": 0.5893,
+      "effective_factor_bets_pr": 2.5467,
       "n_factors_used": 7,
       "n_obs_used": 252,
       "caveat": "~3y history, annual fundamentals; descriptive only",
@@ -29,10 +29,10 @@
     "dispersion": {
       "state": "lean_out",
       "dispersion_pctile": 0.28,
-      "avg_corr": 0.06,
-      "dominant_equity_pc_share": 0.1705,
-      "effective_universe_bets_pr": 23.58,
-      "idio_dispersion_share": 0.7391
+      "avg_corr": 0.07,
+      "dominant_equity_pc_share": 0.1708,
+      "effective_universe_bets_pr": 23.5,
+      "idio_dispersion_share": 0.7444
     },
     "lobes": {
       "effective_independent_lobes": 1.0,
@@ -65,10 +65,10 @@
           "cn_importance_v0_pit": 16,
           "demand_chain": 5,
           "desk:ai_desk": 11,
-          "desk:narrative_brain": 4,
+          "desk:narrative_brain": 5,
           "desk:policy_intent": 6,
-          "desk:radar": 2,
-          "desk:stock_desk": 13,
+          "desk:radar": 3,
+          "desk:stock_desk": 14,
           "desk:thematic_desk": 12,
           "hk_board": 14,
           "intel_hub": 13,
@@ -112,10 +112,10 @@
       "cn_importance_v0_pit": 16,
       "demand_chain": 5,
       "desk:ai_desk": 11,
-      "desk:narrative_brain": 4,
+      "desk:narrative_brain": 5,
       "desk:policy_intent": 6,
-      "desk:radar": 2,
-      "desk:stock_desk": 13,
+      "desk:radar": 3,
+      "desk:stock_desk": 14,
       "desk:thematic_desk": 12,
       "hk_board": 14,
       "intel_hub": 13,
