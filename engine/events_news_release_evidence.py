@@ -765,3 +765,31 @@ def attach_event_expectation_context(
         )
         out.append(copy)
     return out
+
+
+def compose_event_intelligence(
+    events: Any,
+    actual_rows: Any,
+    forecast: Any,
+    *,
+    as_of: str,
+    recent_lookback_days: int = 7,
+    defects_path: str | Path = official.DEFAULT_DEFECTS_PATH,
+) -> list[Any] | None:
+    """Compose the two read-only evidence layers in their safe dependency order.
+
+    Official receipts are projected first because a historical frozen-model
+    comparison is only admissible when it binds the exact accepted first-result
+    receipt. Future model/benchmark context may still render when the official
+    source is unavailable. The inputs are not mutated and no source is fetched.
+    """
+    with_actuals = attach_recent_event_actual_evidence(
+        events,
+        actual_rows,
+        as_of=as_of,
+        lookback_days=recent_lookback_days,
+        defects_path=defects_path,
+    )
+    if with_actuals is None:
+        return None
+    return attach_event_expectation_context(with_actuals, forecast, as_of=as_of)
