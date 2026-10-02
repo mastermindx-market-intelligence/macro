@@ -35,3 +35,14 @@ It is **not** a `mastermind.p0_evidence.v2` manifest (that schema is emitted by 
 - `manifest.json` — ad-hoc record of the 16 cells + served receipt
 - `SERVED_RECEIPT.json` — seat-held production URL observation (embedded verbatim into the manifest)
 - `cells/` — 16 PNGs (`map-*`, `news-panel-*`)
+
+## Independent review of this receipt (Opus read-only, 2026-10-02)
+
+Verdict **PARTIAL** — releasable as a record of the served state. What the review confirmed: one mark mechanism (`figure[data-news-gbr="1"]`, no `data-news` on the GBR path) in all 8 map cells; 7 rows in all 8 panel cells; the two themes are distinct art directions (borderless map on a dark panel vs a framed white card with lower rung opacities). Product defects it found are routed to a template lane (F02 O21d, `claude/f02-news-mark-legibility-r1`), not fixed here:
+
+- **D1 major — the UK mark is sub-pixel at 390 px.** The SVG `viewBox="0 0 1000 500"` renders at ≈0.31 scale on mobile, and the mark's stroke-width is in user units with no `vector-effect`, so the 1.8 / 2-unit mobile override paints ≈0.56 / 0.62 px. Blue-pixel census inside the UK box: desktop dark 164 / 3,249, desktop light 305 / 3,306, mobile dark **1 / 441**, mobile light 31 / 420.
+- **D4 minor — on the light map the mark outranks the data.** At ≈1.7 px rendered it is heavier than the 0.75-unit hairline borders, uses the same token and width as the hover stroke (`.is-hi`), and the legend has no key for it.
+- **D6 minor — zh rows show the official English titles with no marker; on mobile 欧盟 breaks across lines.**
+- **D7 minor — the heading says "today" over rows from two days; the template's empty state says "last two days".**
+
+The stills prove only the `ok` state; the `none_recent` / `unavailable` empty states were not captured. Device scale was 1 (no retina evidence). Horizontal overflow at 390 was judged from the 350 px clips, not from the document's scroll width.
