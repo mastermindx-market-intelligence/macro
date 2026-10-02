@@ -2,7 +2,7 @@
   "schema": "marketing.radar_report/v1",
   "schema_version": 1,
   "produced_by": "engine/marketing/radar_internal.py",
-  "produced_at": "2026-10-02T14:02:33Z",
+  "produced_at": "2026-10-02T18:00:54Z",
   "tier": "display",
   "as_of": "2026-10-02",
   "feeds": [
@@ -16,7 +16,7 @@
       "name": "confluence",
       "ok": true,
       "n_assets": 3,
-      "as_of": "2026-10-01"
+      "as_of": "2026-10-02"
     },
     {
       "name": "earnings",
@@ -38,7 +38,7 @@
     }
   ],
   "posted_recent": {
-    "n_tickers": 1674,
+    "n_tickers": 1685,
     "window_plans": 7
   },
   "surplus": [
@@ -123,92 +123,92 @@
       "opportunity_id": "radar-stage-GBTG-2026-10-02"
     },
     {
-      "ticker": "BEX",
-      "feed": "movers",
-      "why": "S&P mover -9.4% 1D ()",
-      "as_of": "2026-10-01",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-BEX-2026-10-01"
-    },
-    {
-      "ticker": "BLLN",
-      "feed": "movers",
-      "why": "S&P mover -9.9% 1D ()",
-      "as_of": "2026-10-01",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-BLLN-2026-10-01"
-    },
-    {
-      "ticker": "BRZE",
-      "feed": "movers",
-      "why": "S&P mover +8.4% 1D ()",
-      "as_of": "2026-10-01",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-BRZE-2026-10-01"
-    },
-    {
-      "ticker": "BWET",
-      "feed": "movers",
-      "why": "S&P mover +8.6% 1D ()",
-      "as_of": "2026-10-01",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-BWET-2026-10-01"
-    },
-    {
-      "ticker": "CBRG",
-      "feed": "movers",
-      "why": "S&P mover -17.7% 1D ()",
-      "as_of": "2026-10-01",
-      "staleness_days": 1,
-      "opportunity_id": "radar-movers-CBRG-2026-10-01"
-    },
-    {
-      "ticker": "DVN",
+      "ticker": "TRGP",
       "feed": "confluence",
-      "why": "confluence combo Weekly ribbon uptrend + weekly 50/200 golden cross + weekly RSI stack curls up + lower-band reclaim firing, test WR 70%",
-      "as_of": "2026-10-01",
-      "staleness_days": 1,
-      "opportunity_id": "radar-confluence-DVN-2026-10-01"
+      "why": "confluence combo Weekly short-term uptrend + RSI-14 washed out + POC retest holds firing, test WR 64%",
+      "as_of": "2026-10-02",
+      "staleness_days": 0,
+      "opportunity_id": "radar-confluence-TRGP-2026-10-02"
     },
     {
-      "ticker": "ETON",
+      "ticker": "APPN",
       "feed": "movers",
-      "why": "S&P mover -13.0% 1D ()",
+      "why": "S&P mover +7.1% 1D ()",
       "as_of": "2026-10-01",
       "staleness_days": 1,
-      "opportunity_id": "radar-movers-ETON-2026-10-01"
+      "opportunity_id": "radar-movers-APPN-2026-10-01"
     },
     {
-      "ticker": "FROG",
+      "ticker": "CNXC",
+      "feed": "movers",
+      "why": "S&P mover +8.3% 1D ()",
+      "as_of": "2026-10-01",
+      "staleness_days": 1,
+      "opportunity_id": "radar-movers-CNXC-2026-10-01"
+    },
+    {
+      "ticker": "CRDO",
+      "feed": "movers",
+      "why": "S&P mover +7.9% 1D ()",
+      "as_of": "2026-10-01",
+      "staleness_days": 1,
+      "opportunity_id": "radar-movers-CRDO-2026-10-01"
+    },
+    {
+      "ticker": "DXC",
+      "feed": "movers",
+      "why": "S&P mover +7.5% 1D ()",
+      "as_of": "2026-10-01",
+      "staleness_days": 1,
+      "opportunity_id": "radar-movers-DXC-2026-10-01"
+    },
+    {
+      "ticker": "FICO",
+      "feed": "movers",
+      "why": "S&P mover -8.7% 1D (Technology)",
+      "as_of": "2026-10-01",
+      "staleness_days": 1,
+      "opportunity_id": "radar-movers-FICO-2026-10-01"
+    },
+    {
+      "ticker": "HURN",
       "feed": "movers",
       "why": "S&P mover +7.4% 1D ()",
       "as_of": "2026-10-01",
       "staleness_days": 1,
-      "opportunity_id": "radar-movers-FROG-2026-10-01"
+      "opportunity_id": "radar-movers-HURN-2026-10-01"
+    },
+    {
+      "ticker": "LIND",
+      "feed": "movers",
+      "why": "S&P mover +7.0% 1D ()",
+      "as_of": "2026-10-01",
+      "staleness_days": 1,
+      "opportunity_id": "radar-movers-LIND-2026-10-01"
     },
     {
       "ticker": "LQDA",
       "feed": "movers",
-      "why": "S&P mover -57.2% 1D ()",
+      "why": "S&P mover -7.5% 1D ()",
       "as_of": "2026-10-01",
       "staleness_days": 1,
       "opportunity_id": "radar-movers-LQDA-2026-10-01"
     },
     {
-      "ticker": "MSOS",
+      "ticker": "PRCT",
       "feed": "movers",
-      "why": "S&P mover -11.2% 1D ()",
+      "why": "S&P mover -6.6% 1D ()",
       "as_of": "2026-10-01",
       "staleness_days": 1,
-      "opportunity_id": "radar-movers-MSOS-2026-10-01"
+      "opportunity_id": "radar-movers-PRCT-2026-10-01"
     },
     {
-      "ticker": "OMDA",
+      "ticker": "SHAZ",
       "feed": "movers",
-      "why": "S&P mover +7.4% 1D ()",
+      "why": "S&P mover -8.7% 1D ()",
       "as_of": "2026-10-01",
       "staleness_days": 1,
-      "opportunity_id": "radar-movers-OMDA-2026-10-01"
+      "opportunity_id": "radar-movers-SHAZ-2026-10-01"
     },
     {
       "ticker": "ACN",
@@ -275,14 +275,6 @@
       "opportunity_id": "radar-earnings-NKE-2026-09-30"
     },
     {
-      "ticker": "POWI",
-      "feed": "prophet",
-      "why": "active Prophet plan POWI-BULL-20260930, phase pre_trigger, conviction 12",
-      "as_of": "2026-09-30",
-      "staleness_days": 2,
-      "opportunity_id": "radar-prophet-POWI-2026-09-30"
-    },
-    {
       "ticker": "PRGS",
       "feed": "earnings",
       "why": "earnings 2026-09-30 after hours",
@@ -297,6 +289,14 @@
       "as_of": "2026-09-30",
       "staleness_days": 2,
       "opportunity_id": "radar-prophet-ROK-2026-09-30"
+    },
+    {
+      "ticker": "SBRA",
+      "feed": "prophet",
+      "why": "active Prophet plan SBRA-BULL-20260821, phase pre_trigger, conviction 8",
+      "as_of": "2026-09-30",
+      "staleness_days": 2,
+      "opportunity_id": "radar-prophet-SBRA-2026-09-30"
     },
     {
       "ticker": "VRAX",
@@ -364,17 +364,17 @@
     }
   ],
   "queue": {
-    "added": 11,
-    "expired": 22,
-    "total": 541,
-    "open": 275,
+    "added": 1,
+    "expired": 0,
+    "total": 542,
+    "open": 276,
     "doa_skipped": 10
   },
   "tiers_summary": {
     "as_of": "2026-10-01",
     "t1": 28,
-    "t2": 333,
-    "t3": 2362
+    "t2": 314,
+    "t3": 2384
   },
   "cadence": {
     "available": true,
