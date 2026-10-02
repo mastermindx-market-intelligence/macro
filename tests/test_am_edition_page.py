@@ -833,7 +833,15 @@ def test_mor2b_css_is_shared_by_both_pages_not_page_local():
     for cls in (".mx-block-header", ".mx-chip-slot", ".mx-band", ".mx-cp-row", ".mx-rw-row", ".mx-ol-row"):
         assert cls in include, f"{cls} must be defined in the shared include"
         assert cls not in brief_css, f"{cls} must not be defined in _aibrief_css.j2"
-        assert re.search(re.escape(cls) + r"\s*[{,]", am) is None, f"{cls} must not be page-local on am_edition"
+        # Page-local TOP-LEVEL rules are forbidden — the row layout is owned by
+        # the shared include. Compound selectors like `.mx-rw-zh-note +
+        # .mx-rw-row { ... }` are page-local only because the LEADING class
+        # itself is page-local (an adjacency rule on a page-local element), not
+        # because they re-define the row layout; anchor the check to start-of-
+        # line so such compound selectors stay legal.
+        assert re.search(r"^\s*" + re.escape(cls) + r"\s*[{,]", am, flags=re.MULTILINE) is None, (
+            f"{cls} must not be page-local on am_edition"
+        )
     # DARK: transparent chip fill inside the MOR-2b headers; LIGHT: token-only tint, no pulse.
     assert ".mx-block-header .dtp-chip { background:transparent;" in include
     light_tint = 'html[data-theme="light"] .mx-block-header .dtp-chip::before {'
@@ -941,3 +949,248 @@ def test_nav_icon_is_sunrise_line_not_clock():
     # The shape: vertical sun position with rays, NOT clock hands.
     # Block contains an M24 8 (top-of-circle sunrise origin) and M24 8l-7 7 / l7 7 rays.
     assert "M24 8" in block, "expected the sunrise line origin at M24 8"
+
+
+# ── F01 AM Edition minors (M1 brief strip / M2 research watch disclosed-null) ──
+
+
+# The producer's disclosed-null pair (verified by the commissioning seat against
+# origin/main). The contract is: condition_zh carries the literal "原文为英文条件。"
+# placeholder when no human ZH exists, and condition_zh_disclosed_why names the
+# reason. The consumer MUST render the EN condition verbatim (A7) and surface
+# the why via a single hoisted element.
+_F01_ZH_DISCLOSURE = "原文为英文条件。"
+_F01_ZH_DISCLOSURE_WHY = "观察条件以英文记录，此栏不提供中文译文。"
+_F01_EN_CONDITION = "Watch when the dollar breaks its 20-day range."
+_F01_ZH_TRANSLATION = "观察美元是否突破20日区间。"
+
+
+def _research_watch_block(tmp_path: Path, rows: list[dict], state: str = "CURRENT") -> dict:
+    """Build a single research_watch block with the supplied rows. Mirrors the
+    fixture shape in _make_fresh_blocks so it composes with _build_payload."""
+    return {
+        "key": "research_watch",
+        "title_en": "Research watch",
+        "title_zh": "研究观察",
+        "state": state,
+        "source_as_of": "2026-09-08T10:00:00+00:00",
+        "calibration_note_en": "Calibration summary covers through 2026-09-08.",
+        "calibration_note_zh": "校准汇总更新至 2026-09-08。",
+        "rows": rows,
+    }
+
+
+def test_f01_m2_t1_disclosed_row_renders_owner_english_with_hoisted_why(tmp_path):
+    """F01 M2 T1: a disclosed-null row must render the OWNER'S EN condition in
+    the ZH view (A7 verbatim), never "原文为英文条件。" — the producer's
+    placeholder must never reach visible copy. The why must appear ONCE in a
+    dedicated hoisted element scoped to the panel."""
+    blocks = _make_fresh_blocks(tmp_path)
+    blocks[1] = _research_watch_block(
+        tmp_path,
+        [{
+            "condition_en": _F01_EN_CONDITION,
+            "condition_zh": _F01_ZH_DISCLOSURE,
+            "condition_zh_disclosed_why": _F01_ZH_DISCLOSURE_WHY,
+            "since": "2026-09-08",
+            "as_of": "2026-09-08T10:00:00+00:00",
+            "source_ref": "data/master_brain/theses.jsonl",
+        }],
+    )
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    rw_panel = _panel_html(html, "Research watch")
+    # (a) The owner's EN condition is rendered in the ZH view verbatim.
+    assert (
+        '<span class="l-zh">Watch when the dollar breaks its 20-day range.</span>'
+        in rw_panel
+    ), "disclosed-null row's ZH view must render the owner's EN condition verbatim"
+    # (b) The producer's placeholder phrase must NEVER appear in visible copy.
+    assert _F01_ZH_DISCLOSURE not in _strip_html(html), (
+        "disclosed-null placeholder '原文为英文条件。' leaked into visible copy"
+    )
+    # (c) The why is hoisted ONCE inside the research-watch panel.
+    assert rw_panel.count('class="mx-rw-zh-note l-zh"') == 1, (
+        "expected one hoisted .mx-rw-zh-note l-zh element in the research-watch panel"
+    )
+    # (d) The hoisted element carries the why text.
+    m = re.search(
+        r'<div class="mx-rw-zh-note l-zh">([^<]*)</div>',
+        rw_panel,
+    )
+    assert m is not None, "hoisted .mx-rw-zh-note element missing"
+    assert m.group(1) == _F01_ZH_DISCLOSURE_WHY, (
+        f"hoisted element text mismatch (got {m.group(1)!r})"
+    )
+
+
+def test_f01_m2_t2_translated_row_keeps_zh_and_no_disclosure_note(tmp_path):
+    """F01 M2 T2: the existing human-translated fixture row must keep its ZH
+    twin and the panel must NOT carry a .mx-rw-zh-note element (no disclosed-
+    null rows means no why to render)."""
+    blocks = _make_fresh_blocks(tmp_path)  # fixture row is the translated one
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    rw_panel = _panel_html(html, "Research watch")
+    # (a) The ZH twin is preserved on the translated row.
+    assert (
+        '<span class="l-zh">观察美元是否突破20日区间。</span>'
+        in rw_panel
+    ), "translated row must keep its ZH twin"
+    # (b) No hoisted disclosure note is rendered when every row is translated.
+    assert 'class="mx-rw-zh-note l-zh"' not in rw_panel, (
+        "no .mx-rw-zh-note should render when no row carries a disclosed null"
+    )
+
+
+def test_f01_m2_t3_mixed_rows_render_one_hoisted_note(tmp_path):
+    """F01 M2 T3: a panel with one translated row + two disclosed rows
+    (same why) must render exactly ONE .mx-rw-zh-note element (Law 4: a
+    constant is said once, never per row). The disclosed rows' .l-zh spans
+    carry the owner's EN condition verbatim; the translated row keeps its ZH."""
+    blocks = _make_fresh_blocks(tmp_path)
+    blocks[1] = _research_watch_block(
+        tmp_path,
+        [
+            {
+                "condition_en": _F01_EN_CONDITION,
+                "condition_zh": _F01_ZH_TRANSLATION,
+                "condition_zh_disclosed_why": None,
+                "since": "2026-09-08",
+                "as_of": "2026-09-08T10:00:00+00:00",
+                "source_ref": "data/master_brain/theses.jsonl",
+            },
+            {
+                "condition_en": "Watch the dollar's reaction to the CPI print.",
+                "condition_zh": _F01_ZH_DISCLOSURE,
+                "condition_zh_disclosed_why": _F01_ZH_DISCLOSURE_WHY,
+                "since": "2026-09-08",
+                "as_of": "2026-09-08T10:00:00+00:00",
+                "source_ref": "data/master_brain/theses.jsonl",
+            },
+            {
+                "condition_en": "Watch a sustained break of the 200-day moving average.",
+                "condition_zh": _F01_ZH_DISCLOSURE,
+                "condition_zh_disclosed_why": _F01_ZH_DISCLOSURE_WHY,
+                "since": "2026-09-08",
+                "as_of": "2026-09-08T10:00:00+00:00",
+                "source_ref": "data/master_brain/theses.jsonl",
+            },
+        ],
+    )
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    rw_panel = _panel_html(html, "Research watch")
+    # Exactly one note regardless of how many disclosed rows share the same why.
+    assert rw_panel.count('class="mx-rw-zh-note l-zh"') == 1, (
+        f"expected ONE hoisted note for two disclosed rows sharing the same why; "
+        f"got {rw_panel.count('class=\"mx-rw-zh-note l-zh\"')}"
+    )
+    # Disclosed rows' .l-zh spans equal their EN condition (A7 verbatim).
+    assert (
+        '<span class="l-zh">Watch the dollar\'s reaction to the CPI print.</span>'
+        in rw_panel
+    )
+    assert (
+        '<span class="l-zh">Watch a sustained break of the 200-day moving average.</span>'
+        in rw_panel
+    )
+    # Translated row keeps its ZH twin.
+    assert (
+        '<span class="l-zh">观察美元是否突破20日区间。</span>' in rw_panel
+    )
+
+
+def test_f01_m1_t4_brief_strip_geometry_classes(tmp_path):
+    """F01 M1 T4: the prior-close brief strip CSS rules carry the geometry
+    additions (flex-wrap, white-space:nowrap on the link, the three new
+    helper classes with their responsive breakpoint). Markup uses the two
+    new classes when the built stamp is present (the existing aibrief-link
+    fixture renders the strip)."""
+    # (a) CSS changes — read the template as text.
+    src = Path("templates/am_edition.html.j2").read_text(encoding="utf-8")
+    # flex-wrap added to .brief-link-panel
+    assert re.search(
+        r"\.brief-link-panel\s*\{\s*display:flex;\s*flex-wrap:wrap;",
+        src,
+    ), "M1: .brief-link-panel must carry flex-wrap:wrap"
+    # white-space:nowrap on .brief-link (not just on the helper classes)
+    assert "white-space:nowrap;" in src, (
+        "M1: .brief-link must carry white-space:nowrap;"
+    )
+    # The three new CSS lines (helper classes + media query)
+    assert ".brief-link-label { white-space:nowrap; flex:0 0 auto; }" in src
+    assert (
+        ".brief-link-built { white-space:nowrap; font-variant-numeric:tabular-nums; }"
+        in src
+    )
+    assert (
+        "@media (max-width:600px){ .brief-link-built { flex-basis:100%; } }" in src
+    )
+    # (b) Markup uses the helper classes when the built stamp is present.
+    env_src = Path("templates/am_edition.html.j2").read_text(encoding="utf-8")
+    assert "muted sm brief-link-label" in env_src
+    assert "muted sm brief-link-built" in env_src
+    # (c) Render via the existing aibrief-link fixture (the brief-link-panel is
+    # populated when site/master_brief.json exists, see _fresh_tree).
+    from jinja2 import Environment, FileSystemLoader, select_autoescape
+    env = Environment(
+        loader=FileSystemLoader("templates"),
+        autoescape=select_autoescape(["html", "xml"]),
+    )
+    now = datetime(2026, 9, 8, 15, 0, tzinfo=timezone.utc)
+    site, data = _fresh_tree(
+        tmp_path, tape_asof="2026-09-08T13:00:00Z", session_date="2026-09-08"
+    )
+    payload = build_payload(site, data, now=now)
+    template = env.get_template("am_edition.html.j2")
+    html = template.render(payload=payload, as_of="2026-09-08T15:00Z")
+    assert 'class="muted sm brief-link-label"' in html, (
+        "rendered strip must carry the .brief-link-label helper class on the label"
+    )
+    assert 'class="muted sm brief-link-built"' in html, (
+        "rendered strip must carry the .brief-link-built helper class on the built stamp"
+    )
+
+
+def test_f01_m2_t5_balance_per_rw_text_one_en_one_zh(tmp_path):
+    """F01 M2 T5: every .mx-rw-text must contain exactly ONE l-en span and
+    exactly ONE l-zh span. The disclosed-null fix must NOT turn the rendered
+    twin into a twin-with-pair OR zero-pair — the l-zh leg just carries the
+    owner's EN verbatim, but it is still the second leg of a balanced pair."""
+    blocks = _make_fresh_blocks(tmp_path)
+    blocks[1] = _research_watch_block(
+        tmp_path,
+        [
+            {
+                "condition_en": _F01_EN_CONDITION,
+                "condition_zh": _F01_ZH_TRANSLATION,
+                "condition_zh_disclosed_why": None,
+                "since": "2026-09-08",
+                "as_of": "2026-09-08T10:00:00+00:00",
+                "source_ref": "data/master_brain/theses.jsonl",
+            },
+            {
+                "condition_en": "Watch the dollar's reaction to the CPI print.",
+                "condition_zh": _F01_ZH_DISCLOSURE,
+                "condition_zh_disclosed_why": _F01_ZH_DISCLOSURE_WHY,
+                "since": "2026-09-08",
+                "as_of": "2026-09-08T10:00:00+00:00",
+                "source_ref": "data/master_brain/theses.jsonl",
+            },
+        ],
+    )
+    payload = _build_payload(tmp_path, blocks)
+    html = _render_am_edition(payload)
+    rw_panel = _panel_html(html, "Research watch")
+    rw_texts = re.findall(r'<div class="mx-rw-text">(.*?)</div>', rw_panel, flags=re.DOTALL)
+    assert len(rw_texts) >= 2, f"expected >=2 .mx-rw-text rows; got {len(rw_texts)}"
+    for i, body in enumerate(rw_texts):
+        en_count = body.count('class="l-en"')
+        zh_count = body.count('class="l-zh"')
+        assert en_count == 1, (
+            f"row {i} carries {en_count} l-en spans inside .mx-rw-text; expected 1"
+        )
+        assert zh_count == 1, (
+            f"row {i} carries {zh_count} l-zh spans inside .mx-rw-text; expected 1"
+        )
