@@ -1511,6 +1511,36 @@
       "at": "2026-10-01T23:52:39.870295+00:00",
       "activated": false,
       "importance": 15
+    },
+    "https://www.whitehouse.gov/?p=52161": {
+      "id": "wh-2026-10-02-national-manufacturing-day-2026",
+      "at": "2026-10-02T22:57:47.885635+00:00",
+      "activated": false,
+      "importance": 10
+    },
+    "https://www.whitehouse.gov/?p=52159": {
+      "id": "wh-2026-10-02-presidential-message-on-national-cybersecurity-awareness-month",
+      "at": "2026-10-02T22:57:49.496639+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=52157": {
+      "id": "wh-2026-10-02-presidential-message-on-national-domestic-violence-awareness-month",
+      "at": "2026-10-02T22:57:50.769272+00:00",
+      "activated": false,
+      "importance": 5
+    },
+    "https://www.whitehouse.gov/?p=52151": {
+      "id": "wh-2026-10-02-presidential-message-on-national-breast-cancer-awareness-month-a680",
+      "at": "2026-10-02T22:57:52.802868+00:00",
+      "activated": false,
+      "importance": 10
+    },
+    "tw-2026-09-21-tga-release": {
+      "id": "tw-2026-09-21-tga-release",
+      "at": "2026-10-02T22:58:03.529675+00:00",
+      "activated": true,
+      "importance": 78
     }
   },
   "_note": "W5 baseline \u2014 no items evaluated yet; provider absent in build env (no CLAUDE_CODE_OAUTH_TOKEN / ANTHROPIC_API_KEY / DEEPSEEK_API_KEY). Created 2026-07-02 to make dark-vs-quiet distinguishable: an empty seen={} here means the desk ran but had no provider, not that it was never invoked."
