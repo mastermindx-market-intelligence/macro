@@ -554,3 +554,33 @@ def test_answer_heading_leads_the_owner_summary(browser, synthetic_snapshot, wid
             assert layout["leadBottom"] <= layout["summaryTop"]
     finally:
         context.close()
+
+
+def test_shared_brain_turn_preserves_selected_revision_then_clears_it(browser, synthetic_snapshot):
+    """Execute the real shared turn builder, not a consumer-only hand-authored context."""
+    source = (ROOT / "templates" / "mm_brain.js").read_text(encoding="utf-8")
+    start = source.index("  function buildTurnContext() {")
+    end = source.index("\n  /* Review repair (NB-1)", start)
+    turn_builder = source[start:end]
+    context, page = _open(browser, synthetic_snapshot, width=390, height=844)
+    try:
+        page.locator("#ox-steps .ox-brain-action").first.click()
+        run_builder = """() => {
+            const CFG = window.MM_BRAIN_CFG;
+            const ANCHOR = 'bottom';
+            const ctxSymbol = null;
+            const explainPanel = null;
+            const zh = () => false;
+            const buildAiContext = () => CFG.getAiContext();
+        """ + turn_builder + "\nreturn buildTurnContext();}"
+        payload = page.evaluate(run_builder)
+        assert payload["page"] == "ontology"
+        assert payload["panel"] == "n1"
+        assert payload.get("timeframe") == "rev-2"
+        assert payload["timeframe"] == payload["ai_context"]["ambient"]["timeframe"]
+        page.evaluate("window.MM_BRAIN_CFG.onClose()")
+        cleared = page.evaluate(run_builder)
+        assert not cleared.get("panel")
+        assert not cleared.get("timeframe")
+    finally:
+        context.close()

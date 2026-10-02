@@ -3527,6 +3527,11 @@
     var ctx = { page: page, lang: (zh() ? 'zh' : 'en'), ai_context: aiContext };
     if (ctxSymbol) ctx.symbol = ctxSymbol;
     if (panelName) ctx.panel = panelName;
+    /* The selected definition revision must reach the same legacy hint that
+       the current answer lane reads, not only the visible typed receipt. */
+    if (ambient && typeof ambient.timeframe === 'string' && ambient.timeframe.length <= 32) {
+      ctx.timeframe = ambient.timeframe;
+    }
     return ctx;
   }
 
