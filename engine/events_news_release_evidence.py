@@ -280,3 +280,59 @@ def attach_event_actual_evidence(
         if isinstance(event, dict) else event
         for event in events
     ]
+
+
+def attach_recent_event_actual_evidence(
+    events: Any,
+    rows: Any,
+    *,
+    as_of: str,
+    lookback_days: int = 7,
+    defects_path: str | Path = official.DEFAULT_DEFECTS_PATH,
+) -> list[Any] | None:
+    """Attach evidence to supplied events plus recent typed releases in the ledger.
+
+    This is a read-only bridge for a forward calendar: recently published releases
+    would otherwise disappear from macro_catalysts before their first-result
+    receipt can be inspected. It synthesizes only calendar-shaped rows whose
+    type/date are already encoded by the canonical receipt owner.
+    """
+    if not isinstance(events, Sequence) or isinstance(events, (str, bytes)):
+        return None
+    cutoff = official._parse_iso_timestamp(as_of)
+    if cutoff is None or type(lookback_days) is not int or lookback_days < 0 or lookback_days > 31:
+        return attach_event_actual_evidence(events, rows, as_of=as_of, defects_path=defects_path)
+    if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
+        return attach_event_actual_evidence(events, rows, as_of=as_of, defects_path=defects_path)
+
+    copied = [dict(event) if isinstance(event, dict) else event for event in events]
+    keys = {
+        (event.get("type"), event.get("date"))
+        for event in copied
+        if isinstance(event, dict)
+    }
+    recent: set[tuple[str, str]] = set()
+    cutoff_day = cutoff.astimezone(_NY).date()
+    for row in rows:
+        if not isinstance(row, dict) or row.get("row_type") != "actual":
+            continue
+        event_type = official._EVENT_BY_RELEASE.get(str(row.get("release") or ""))
+        day = official._parse_iso_date(row.get("release_date"))
+        if event_type is None or day is None:
+            continue
+        age = (cutoff_day - day).days
+        if 0 <= age <= lookback_days:
+            recent.add((event_type, day.isoformat()))
+
+    for event_type, day in sorted(recent, key=lambda item: item[1], reverse=True):
+        if (event_type, day) in keys:
+            continue
+        copied.append({
+            "type": event_type,
+            "date": day,
+            "is_context_only": True,
+            "source": "official_actual_ledger",
+            "result_only": True,
+        })
+        keys.add((event_type, day))
+    return attach_event_actual_evidence(copied, rows, as_of=as_of, defects_path=defects_path)
