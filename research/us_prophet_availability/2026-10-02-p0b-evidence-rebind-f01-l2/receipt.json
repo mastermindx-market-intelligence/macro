@@ -1,0 +1,150 @@
+{
+  "schema": "mastermind.prophet_p0b_evidence_rebind.v1",
+  "proof_class": "current_integrated_source_receipt_rebind",
+  "observed_at": "2026-10-02T07:45:00+00:00",
+  "source_base": "e6416bee9552e9c081c61bd5b9062b7c84300088",
+  "invalidator_commit": "44c52ce67480831beea42a0d596497fc7ec5ae63",
+  "invalidator": "PR #8291 (F01 O27 lane 2 source head) modified templates/theme.css (6 token lines + 2 chip swaps) and templates/hk.html.j2 (live-tag swap) without re-minting the P0B browser receipts; tests/test_stock_dashboard_first_frame.py would have gone red on main (ci-pack-9) and every fresh merge-ref inherited it. Lane 1 (#8293) split the test invariant; this slice (lane 2) lands the bytes + rebinds the receipts.",
+  "rendered_fixture_sha256": "747b63f0dfb9b98757cefb49d5d0efd7e9d6c43de2bf2222c279a54b94d69762",
+  "rendered_output_bytes_unchanged": true,
+  "rendered_fixture_unchanged_by_this_rebind": false,
+  "historical_evidence_preserved": {
+    "candidate_head": "3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86",
+    "candidate_tree": "b4dd8fd9b29b4eb769239d35df2a7911e793c7ec",
+    "historical_screenshots_changed": false
+  },
+  "product_runtime_changed": false,
+  "production": "none",
+  "browser": {
+    "engine": "chromium",
+    "playwright": "global node module"
+  },
+  "remint_commands": [
+    "python3 scripts/render_stock_dashboard_fixture.py --market all --out-dir DIR --receipt mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json",
+    "node scripts/verify_stock_dashboard_mobile_layout.cjs --html DIR/hk_stocks.html --site-dir site --fixture-receipt mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json --fixture-assets-dir mockups/evidence/prophet-p0b-zero-fouc/inputs/browser-data --out mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json --screenshot-dir mockups/evidence/prophet-p0b-zero-fouc --historical-head 3fb76ea810a8e9ef6a05fe808bb6eaee87eb1f86 --historical-tree b4dd8fd9b29b4eb769239d35df2a7911e793c7ec",
+    "node scripts/verify_stock_dashboard_mobile_layout.cjs --html DIR/canada_stocks.html ... --out mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json (same flags)",
+    "manifest.json::repair_extension re-bound to the new fixture/receipt/screenshot digests; historical_baseline, pages/states, target, totals untouched"
+  ],
+  "changed_files": {
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout.json": {
+      "before_sha256": "e0255697cd7b88404d4058423fe15d62b4b82585820a69e7bdf3b17219f337d1",
+      "after_sha256": "f5712d66671955e5b8d7bf76c5a61cdd72234153b04755568fab27646da4d6ef"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/mobile-layout-canada.json": {
+      "before_sha256": "48f776c6e1d68ecb5cb2ea5d4393256f557e6bd58809f80ef69514a4adec8f93",
+      "after_sha256": "ebbe84802bc97bd43d2f0c93757cc60c7df499cb036d1414ac280dd694f16ac9"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/manifest.json": {
+      "before_sha256": "4f78a361f5ce0bb6b3202d485e8bf2886d334fa38d1ce3cb5044f949d362f936",
+      "after_sha256": "57ac5b1c3bb6641e14d5192fb845f77ec321ce0df31880658adbf49da759f987"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/rendered-fixture.json": {
+      "before_sha256": "e41d36f998b827cc6a7533b6a712f80528b0e43de62c1a7646e9d2f28a8154a3",
+      "after_sha256": "747b63f0dfb9b98757cefb49d5d0efd7e9d6c43de2bf2222c279a54b94d69762"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-1440.png": {
+      "before_sha256": "c6f83251cc2a3221a398e4d8a3e10253896b73cfa0848c896489dae3fcc68abc",
+      "after_sha256": "5b10fd5ccd525b1315b3188658b4c0af8d814d48f6bd0fe5904b03507ac05410"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-dark-390.png": {
+      "before_sha256": "fbc0304e437b1f6e54656a362a7297d4c92f1be6cc8ab85d2c822d4fbf1c16ba",
+      "after_sha256": "889b7d5b52d3943398ef9f0564ca76d7e03008421d8b8f5befcc43c2560b32a5"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-1440.png": {
+      "before_sha256": "ae62a1f79570aff355c1115d304f43a818d85f42764cfbb65190cab16c179d7f",
+      "after_sha256": "d4a3afabba982f39805ed3b710b8cdf68121c7433ef53d2cf9e87449a6c54918"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-en-light-390.png": {
+      "before_sha256": "eb3159ccdfb84e858a4824614b3b787ae60dcb397410d2edffd9d748f997b282",
+      "after_sha256": "6dae30765ec064b1773ef4c5621d304debb0d06b3895aa417424267232873900"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-1440.png": {
+      "before_sha256": "b262fad71a2b33067e210393bee98fdc4842d05ce5f1aad86ccf76641d86722d",
+      "after_sha256": "a20e9a9ca2e2fc11252d0e6a9fa46be89793b2a707221330f8af4f888a96c939"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-dark-390.png": {
+      "before_sha256": "d6c70d7c7d2388adc682db6b43a6d2a78bfa4534d2276de0667bd76f66b4f51c",
+      "after_sha256": "88ade3033e4062cc62b835e236d921006a152b294ffae4e24bdfef9a31404766"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-1440.png": {
+      "before_sha256": "136fd5df3fb66114c10d2f97a9cc4fda88fadbe7a629196b383d75eb3f4a9360",
+      "after_sha256": "2d4379535c384b83ce282ecd88fb0208fe02ec4e859cdb9e89884eb3e6b01d5a"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-ca-watch-only-zh-light-390.png": {
+      "before_sha256": "a75c92b9672d00525f6dbe81819fcc8aa267b8a6423766e3fd2d75bb96ed96c6",
+      "after_sha256": "3a8c0df0651e4c6a16d96b5d3ce34c9714eecbc60a1bda5551ce73d5cb538cb5"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-1440.png": {
+      "before_sha256": "1222e1b8547642fc92588e16c505537fa2283d308869f242d8352d951efd3fe1",
+      "after_sha256": "fff64f1b5b0971d503711eccf0797faa3676c0036a5185de2d3c45613e97c13b"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-dark-390.png": {
+      "before_sha256": "4d9e6e32785c53dac873b5f9d3503ce7d72ac3d15281566617ceacf9d5f74d78",
+      "after_sha256": "c2013b3f8b960eb30467bd5aa96a12ebbb6136bc943bd54b99c7d0ebcfbea715"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-1440.png": {
+      "before_sha256": "f76afb32ca254ef1e63b92a3c5b58df73a5ca43ff3960f9a332de8355b1b1ecb",
+      "after_sha256": "736751b2ce069879b6bf9567d960d5ca811b804655f3c127a6811ece86f5f036"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-en-light-390.png": {
+      "before_sha256": "7da4ae947d84d33f2436a1552f50a973a785603567e16742efcd6d0dbfd3cc5e",
+      "after_sha256": "748b4e6c3f26d44ea1a56668921864d8fb611bf72ada18c9f8f94c9e202dd357"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-1440.png": {
+      "before_sha256": "a24354464e429498b28a5ca22371c9f988a2c08baa408db9376a8e11080dd00b",
+      "after_sha256": "35d31ec5356ef00aeeb01e582139fe10a90c86d25e1fb5490b8147da06aef713"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-dark-390.png": {
+      "before_sha256": "d3e052d64ce5c3a2a7536974dfcf4596e463e7d8c392b325f067714146d79d5f",
+      "after_sha256": "46a284d251978403abb559d72891c5783592957f652a139b9f0453c6bc47aa9f"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-1440.png": {
+      "before_sha256": "311a22b4bf879f91573555a049eed38e3e41c2851026c97b0967a2b35ce101f8",
+      "after_sha256": "fbe97d2a20c5c9540e6e3f18bfb54fbee3bc319cc6f64b3c05672ee26d22a950"
+    },
+    "mockups/evidence/prophet-p0b-zero-fouc/owner-empty-hk-watch-only-zh-light-390.png": {
+      "before_sha256": "d3a438987d3fab13a98a2dce1cee8c79553dc85bc7615fddad97551a9633ac87",
+      "after_sha256": "4900738b613943fff6b695146301febfc3e82216be82e876249f625da34f74d1"
+    }
+  },
+  "verification": {
+    "green": [
+      {
+        "command": "python3 scripts/check_p0b_receipt_closure.py --diff-file <file-list>",
+        "result": "closed (rc 0)"
+      },
+      {
+        "command": "python3 -m pytest -p no:cacheprovider -q tests/test_research_screener.py -k fresh_bake",
+        "result": "0 failed (after screener re-pin)"
+      },
+      {
+        "command": "python3 -m pytest -p no:cacheprovider -q tests/test_freshness_chips_language_invariant.py",
+        "result": "0 failed (after KNOWN_OFFENDERS deletions)"
+      },
+      {
+        "command": "python3 -m scripts.check_template_site_sync",
+        "result": "sync OK"
+      },
+      {
+        "command": "python3 scripts/check_runtime_style_injection.py",
+        "result": "rc 0"
+      },
+      {
+        "command": "python3 scripts/check_p0b_receipt_closure.py --selftest",
+        "result": "selftest OK"
+      }
+    ],
+    "gap_execution": [
+      {
+        "command": "python3 -m pytest -p no: -q tests/test_stock_dashboard_first_frame.py",
+        "result": "NOT executed: bs4 missing on this host; relies on closure gate + CI"
+      }
+    ],
+    "red_before": [
+      {
+        "command": "python3 scripts/check_p0b_receipt_closure.py --diff-file <file-list>",
+        "result": "PINNED PATH CHANGED WITHOUT RECEIPT (4 findings: site/theme.css + templates/hk.html.j2 x 2 receipts)"
+      }
+    ]
+  }
+}
