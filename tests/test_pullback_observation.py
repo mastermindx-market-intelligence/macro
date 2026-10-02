@@ -94,6 +94,20 @@ def test_confirmation_rebound_counts_as_first_session_without_new_low():
     assert stable["phase"] == "stabilizing"
 
 
+def test_failed_prior_dip_cannot_become_later_episode_low():
+    rows = rows_for([96.0, 100.0, 100.0, 100.0, 97.0, 98.0])
+    confirmed = result(rows)
+    assert confirmed["active"] is True
+    assert confirmed["phase"] == "underway"
+    assert confirmed["onset_session"] == rows[-1][0]
+    assert confirmed["low_session"] == rows[-2][0]
+    assert confirmed["low_close"] == 97.0
+    assert confirmed["no_new_low_closes"] == 1
+    assert confirmed["loss_recovered_pct"] == 33.33
+    # The old one-day 96 dip failed confirmation and must stay outside this episode.
+    assert confirmed["low_session"] != rows[-6][0]
+
+
 def test_stabilization_then_failed_repair_keeps_the_same_reference():
     rows = rows_for([95.0, 90.0, 91.0, 92.0, 93.0])
     stable = result(rows)
