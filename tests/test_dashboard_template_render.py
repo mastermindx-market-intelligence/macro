@@ -1290,3 +1290,138 @@ def test_strip_tables_mobile_column_contract():
     # scraping them from the page IS reading the hide list.
     hidden = set(re.findall(r"\.topsetups \.ts-tbl \.(c-[a-z]+)", html))
     assert hidden == (trigger | leaders) - _MOBILE_KEEP
+
+
+# --------------------------------------------------------------------------- #
+# MO-PAID-001_FIX_R1 — the two-axis "Regime — now & where it's headed" panel
+# is the labeled regime read served on us_stocks.html (F00C F01 ruling D15).
+# The OLD include lived INSIDE the macro-only `{% if mode == 'macro' %}` block
+# (~line 2622 → ~line 16081, no else) behind `mode != 'macro'`, so the guard
+# could never be true and the panel rendered on NO page. The new include sits
+# in the stocks block, immediately after `{% endif %}{# /market_state B4 #}`
+# and BEFORE `{% if action_board %}`. These four tests pin:
+#   T1 — stocks + base_effect fixture: panel renders with both axis labels.
+#   T2 — macro + SAME fixture: panel absent (the control — macro never hosts it).
+#   T3 — stocks with base_effect absent/partial: degrades silently, no crash.
+#   T4 — structural: exactly one include statement, on a line past the
+#   `{# /mode != 'stocks' #}` close (so a future move back into the dead
+#   macro-only section fails CI at detection).
+# --------------------------------------------------------------------------- #
+
+
+def _be_axis(q1: float, current_yoy: float, yoy_path: list[float] | None = None) -> dict:
+    """One base_effect axis (growth or inflation). Field census from
+    templates/_base_effect_strip.html.j2: q1/q2/q3 used in arithmetic + _iq
+    branches; yoy_path used by `_axnote` when current_yoy is set."""
+    return {
+        "q1": q1,
+        "q2": q1,            # shape-only; the template iterates ['q1','q2','q3']
+        "q3": q1,
+        "current_yoy": current_yoy,
+        "yoy_path": yoy_path if yoy_path is not None else [current_yoy, current_yoy, current_yoy],
+    }
+
+
+def _vm_with_base_effect(**overrides) -> dict:
+    """Base vm with both base_effect axes populated so the panel renders.
+    Pass growth_only=True / inflation_only=True to exercise the partial case."""
+    growth = overrides.pop("growth", _be_axis(0.5, 2.4))
+    inflation = overrides.pop("inflation", _be_axis(-0.3, 1.9))
+    if overrides.pop("growth_only", False):
+        inflation = None
+    if overrides.pop("inflation_only", False):
+        growth = None
+    base_effect = overrides.pop("base_effect", None)
+    vm = _base_vm()
+    if base_effect is not None:
+        vm["latest"]["base_effect"] = base_effect
+    else:
+        vm["latest"]["base_effect"] = {"growth": growth, "inflation": inflation}
+    vm.update(overrides)
+    return vm
+
+
+def _regime_read_section(html: str) -> str:
+    """The #regime-read panel slice (id="regime-read" ... </div> closing that
+    panel).  Pinning to the panel preserves bilingual parity: if the same
+    label appears elsewhere on the page, the assertions are still scoped."""
+    match = re.search(
+        r'<div class="panel span12 bfwd rr-combined" id="regime-read">.*?</div>\s*</div>',
+        html,
+        re.S,
+    )
+    assert match, "#regime-read panel missing — T1 / T2 / T3 assertions would be vacuous"
+    return match.group(0)
+
+
+def test_t1_stocks_renders_regime_read_panel_with_both_axes():
+    """T1: stocks mode + a populated base_effect (growth + inflation) renders
+    the #regime-read panel EXACTLY ONCE, with both EN and ZH axis labels."""
+    vm = _vm_with_base_effect()
+    html = _env().get_template("dashboard.html.j2").render(**vm, mode="stocks")
+    assert html.count('id="regime-read"') == 1
+    section = _regime_read_section(html)
+    # Axis labels (EN + ZH), scoped to the panel — neither token appears
+    # anywhere else on us_stocks, so an unscoped grep is also safe.
+    assert "Growth" in section and "增长" in section
+    assert "Inflation" in section and "通胀" in section
+
+
+def test_t2_macro_does_not_host_the_regime_read_panel():
+    """T2: macro mode + the SAME fixture — the panel is stocks-only, so macro
+    must NEVER carry #regime-read. This is the control test: stocks renders,
+    macro does not, on identical input."""
+    vm = _vm_with_base_effect()
+    html = _env().get_template("dashboard.html.j2").render(**vm, mode="macro")
+    assert 'id="regime-read"' not in html
+
+
+def test_t3_stocks_degrades_silently_when_base_effect_missing_or_partial():
+    """T3: stocks mode + an absent or partial base_effect must render without
+    exception and WITHOUT emitting #regime-read. Two shapes exercised:
+    latest.base_effect entirely missing, and one axis present / the other None
+    (the partial case the include's `_has_be` guard was built for)."""
+    env = _env()
+    # Case A: base_effect key absent on latest.
+    vm_absent = _base_vm()
+    html_absent = env.get_template("dashboard.html.j2").render(**vm_absent, mode="stocks")
+    assert 'id="regime-read"' not in html_absent
+    # Case B: only growth (inflation None) — the include's `_has_be` guard
+    # checks BOTH axes, so the panel stays absent.
+    vm_growth_only = _vm_with_base_effect(inflation_only=False, inflation=None)
+    html_growth_only = env.get_template("dashboard.html.j2").render(**vm_growth_only, mode="stocks")
+    assert 'id="regime-read"' not in html_growth_only
+
+
+def test_t4_structural_exactly_one_include_past_macro_block_close():
+    """T4: the template source carries exactly one INCLUDE statement of
+    _regime_read_panel.html.j2, and that include's line number is strictly
+    past the closing `{# /mode != 'stocks' #}` of the nested stocks-only
+    block (which sits inside the macro-only block at ~line 2622 → ~16081).
+    A future move back into the dead section would push the include's line
+    number back below that close and fail CI loudly."""
+    src_path = ROOT / "templates" / "dashboard.html.j2"
+    src = src_path.read_text(encoding="utf-8")
+    lines = src.splitlines()
+
+    # Exactly one include statement (NOT one literal occurrence — the spec'd
+    # comment also names the file, so a raw string grep would over-fire; this
+    # pattern matches only the actual Jinja include).
+    include_hits = [i + 1 for i, line in enumerate(lines)
+                    if re.search(r'\{%\s*include\s+["\']_regime_read_panel\.html\.j2["\']\s*%\}', line)]
+    assert len(include_hits) == 1, (
+        f"expected exactly one include of _regime_read_panel.html.j2, found {len(include_hits)} "
+        f"on lines {include_hits}"
+    )
+    include_line = include_hits[0]
+
+    # Find the closing `{# /mode != 'stocks' #}` (the nested stocks-only
+    # block that the macro-only section used to enclose). The new include
+    # must sit past it — the dead-block site (~15538) sat well before it.
+    close_lines = [i + 1 for i, line in enumerate(lines)
+                   if re.search(r"\{#\s*/mode\s*!=\s*['\"]stocks['\"]\s*#\}", line)]
+    assert close_lines, "the nested `{# /mode != 'stocks' #}` close marker is missing — the test assumes the macro block still has this structure"
+    assert include_line > close_lines[0], (
+        f"include at line {include_line} sits BEFORE the {{# /mode != 'stocks' #}} close "
+        f"at line {close_lines[0]} — the include is back inside the macro-only block"
+    )
