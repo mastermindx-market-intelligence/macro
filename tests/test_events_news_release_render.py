@@ -157,3 +157,44 @@ def test_recent_result_only_row_uses_honest_generic_release_label():
     assert 'Recent official release' in s.get_text()
     assert len(s.select('.nd-official-value'))==2
     assert 'Scheduled event' not in s.get_text()
+
+
+def test_release_section_separates_recent_results_from_forward_schedule():
+    import json
+    from engine.events_news_release_evidence import attach_recent_event_actual_evidence
+    rows=json.loads((ROOT/'tests/fixtures/events_news_official_receipts.json').read_text())['rows']
+    events=attach_recent_event_actual_evidence(
+        [{'type':'GDP','date':'2026-08-13','time_et':'08:30','label':'GDP · scheduled fixture'}],
+        rows,as_of='2026-08-12T13:00:00Z',lookback_days=1,
+        defects_path=ROOT/'tests/fixtures/events_news_actual_defects.json')
+    data={'alerts':[],'macro_news':{'headlines':[]},'latest':None,
+          'generated_utc':'2026-08-12T13:00:00Z','macro_catalysts':events}
+    s=BeautifulSoup(render_component(**data),'html.parser')
+    section=s.select_one('.nd-calendar-section')
+    text=section.get_text(' ',strip=True)
+    assert 'Just released & on deck' in text
+    assert 'Official results available' in text
+    assert 'Scheduled catalysts' in text
+    assert len(section.select('.nd-event-result'))==1
+    assert len(section.select('[data-nd-item="calendar"]'))==2
+    recent=section.select_one('.nd-event-result')
+    assert 'Recent official release' in recent.get_text(' ',strip=True)
+    assert 'Date passed' not in recent.get_text(' ',strip=True)
+    assert 'GDP · scheduled fixture' in text
+    assert text.index('Recent official release') < text.index('GDP · scheduled fixture')
+
+
+def test_recent_result_without_forward_event_does_not_claim_calendar_is_empty():
+    import json
+    from engine.events_news_release_evidence import attach_recent_event_actual_evidence
+    rows=json.loads((ROOT/'tests/fixtures/events_news_official_receipts.json').read_text())['rows']
+    events=attach_recent_event_actual_evidence(
+        [],rows,as_of='2026-08-12T13:00:00Z',lookback_days=1,
+        defects_path=ROOT/'tests/fixtures/events_news_actual_defects.json')
+    data={'alerts':[],'macro_news':{'headlines':[]},'latest':None,
+          'generated_utc':'2026-08-12T13:00:00Z','macro_catalysts':events}
+    text=BeautifulSoup(render_component(**data),'html.parser').select_one(
+        '.nd-calendar-section').get_text(' ',strip=True)
+    assert 'Recent official release' in text
+    assert 'No later scheduled events in this snapshot' in text
+    assert 'No scheduled events in this snapshot' not in text
