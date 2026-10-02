@@ -1,6 +1,8 @@
 """Events & News release expectation/benchmark projection — no fake street survey."""
 from copy import deepcopy
 
+import pytest
+
 from engine import events_news_release_evidence as view
 
 ASOF = "2026-10-01T21:00:00Z"
@@ -264,9 +266,9 @@ def test_historical_comparison_requires_exact_official_receipt_and_eligible_eval
     headline, core = out["metrics"]
     assert headline["status"] == "historical_model_comparison"
     assert headline["point"] == 0.31
-    assert headline["difference"] == -0.01
+    assert headline["difference"] == pytest.approx(-0.01)
     assert headline["frozen_asof_night"] == "2026-09-29"
-    assert core["difference"] == -0.03
+    assert core["difference"] == pytest.approx(-0.03)
 
 
 def test_ineligible_historical_evaluation_withholds_point_and_difference():
