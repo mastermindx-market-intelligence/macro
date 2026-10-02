@@ -87,7 +87,6 @@ KNOWN_OFFENDERS: dict[str, str] = {
     "templates/_cn_theme_tape.html.j2::body.page-china-stocks .ctt-v.is-live": "L5 cn tape (new EVIDENCE.yml receipt)",
     "templates/_theme_tape.html.j2::#theme-tape .tt-gist .tt-gf.is-live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
     "templates/_theme_tape.html.j2::#theme-tape .tt-v.is-live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
-    "templates/basket_detail.html.j2::.ftr-ls-pill.live": "L4 basket (fingerprinted site/basket*/ stylesheet projection)",
         "templates/sector_central.html.j2::.ftr-strip-token.live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
 }
 SET_VAR_RE = re.compile(
