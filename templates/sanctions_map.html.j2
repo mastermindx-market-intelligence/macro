@@ -46,7 +46,7 @@ html[data-theme="light"] .panel{box-shadow:var(--card-shadow)}
 #sm-hatch line{stroke:var(--muted);stroke-width:.6;stroke-opacity:.30}
 .sm-map[data-hi] .wm-c[data-iso3]{fill-opacity:.14}
 .sm-map[data-hi] .wm-c.is-hi{fill-opacity:.85;stroke:var(--ink-link);stroke-width:1}
-.sm-map[data-news-gbr="1"] .wm-c[data-iso3="GBR"]{stroke:var(--ink-link);stroke-width:1.2}
+.sm-map[data-news-gbr="1"] .wm-c[data-iso3="GBR"]{stroke:var(--ink-link);stroke-width:1.25;vector-effect:non-scaling-stroke;stroke-dasharray:4 2.5;stroke-linecap:round;stroke-linejoin:round}
 
 html[data-theme="light"] .wm-c{fill:color-mix(in srgb, var(--text) 6%, var(--panel));
   stroke:color-mix(in srgb, var(--text) 16%, transparent);stroke-width:.75}
@@ -59,7 +59,7 @@ html[data-theme="light"] .sm-map{border:1px solid var(--line);
   border-radius:var(--r-card,12px);box-shadow:var(--card-shadow)}
 html[data-theme="light"] .sm-map[data-hi] .wm-c.is-hi{fill-opacity:.52;
   stroke:var(--ink-link);stroke-width:1.5;filter:none}
-html[data-theme="light"] .sm-map[data-news-gbr="1"] .wm-c[data-iso3="GBR"]{stroke:var(--ink-link);stroke-width:1.5}
+html[data-theme="light"] .sm-map[data-news-gbr="1"] .wm-c[data-iso3="GBR"]{stroke:var(--ink-link);stroke-width:1.25;vector-effect:non-scaling-stroke;stroke-dasharray:4 2.5;stroke-linecap:round;stroke-linejoin:round}
 
 .sm-legend{display:flex;flex-wrap:wrap;gap:14px;list-style:none;padding:0;
   margin:12px 0 0;font-size:var(--fs-sm);color:var(--muted)}
@@ -76,6 +76,9 @@ html[data-theme="light"] .sm-legend [data-rung="1"] i{opacity:.16}
 html[data-theme="light"] .sm-legend [data-rung="2"] i{opacity:.30}
 html[data-theme="light"] .sm-legend [data-rung="3"] i{opacity:.48}
 html[data-theme="light"] .sm-legend [data-rung="x"] i{opacity:.45}
+.sm-legend .sm-legend-news i{background:transparent;border:1.25px dashed var(--ink-link);border-radius:0;box-sizing:border-box}
+.sm-orig{margin:4px 0 0;font-size:var(--fs-micro);color:var(--muted)}
+.sm-events .src,.sm-events li>span{white-space:nowrap}
 
 .sm-null{margin:10px 0 0;font-size:var(--fs-sm);color:var(--muted)}
 .sm-events{list-style:none;margin:0;padding:8px 18px 16px}
@@ -103,7 +106,7 @@ html[data-theme="light"] .sm-legend [data-rung="x"] i{opacity:.45}
   .sm-legend{gap:10px;font-size:var(--fs-micro)}
   .sm-cards{grid-template-columns:1fr}
 }
-@media (max-width:600px){.sm-map[data-news-gbr="1"] .wm-c[data-iso3="GBR"]{stroke-width:1.8} html[data-theme="light"] .sm-map[data-news-gbr="1"] .wm-c[data-iso3="GBR"]{stroke-width:2}}
+@media (max-width:600px){.sm-map[data-news-gbr="1"] .wm-c[data-iso3="GBR"],html[data-theme="light"] .sm-map[data-news-gbr="1"] .wm-c[data-iso3="GBR"]{stroke-width:1.5;stroke-dasharray:13 8}}
 </style>
 </head>
 <body>
@@ -149,6 +152,7 @@ html[data-theme="light"] .sm-legend [data-rung="x"] i{opacity:.45}
     <li data-rung="1"><i></i>{{ t('1 programme','1 项') }}</li>
     <li data-rung="0"><i></i>{{ t('Not named','未被点名') }}</li>
     <li data-rung="x"><i></i>{{ t('Coverage unknown','覆盖情况未知') }}</li>
+    {% if vm.public_news_state == 'ok' %}<li class="sm-legend-news"><i></i>{{ t('UK: official press, last 2 days','英国：近两日官方新闻') }}</li>{% endif %}
   </ul>
 
   {% if vm.coverage is none %}
@@ -174,9 +178,10 @@ html[data-theme="light"] .sm-legend [data-rung="x"] i{opacity:.45}
 
 <section id="event-pins" class="panel">
   <div class="sm-modhead">
-    <div class="mx-sec"><h2>{{ t('Official press today','今日官方新闻') }}</h2></div>
+    <div class="mx-sec"><h2>{{ t('Official press · last 2 days','官方新闻 · 近两日') }}</h2></div>
     <p class="sm-stance">{{ t('Public official press from Europe. UK items mark the map; EU, euro-area and EFTA items are listed only.',
                               '欧洲官方公开新闻。英国条目标注于地图；欧盟、欧元区及 EFTA 条目仅列出。') }}</p>
+    {% if vm.public_news %}<p class="sm-orig l-zh">标题为官方英文原文。</p>{% endif %}
     {% set _common = vm.public_news_common or {} %}
     {% if _common %}
     <p class="sm-common">{% if _common.source %}{{ t(_common.source, _common.source_zh or _common.source) }}{% endif %}{% if _common.jurisdiction %}{% if _common.source %} · {% endif %}{{ _juris_label(_common.jurisdiction) }}{% endif %}</p>
