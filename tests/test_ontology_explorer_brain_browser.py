@@ -584,3 +584,39 @@ def test_shared_brain_turn_preserves_selected_revision_then_clears_it(browser, s
         assert not cleared.get("timeframe")
     finally:
         context.close()
+
+
+@pytest.mark.parametrize(
+    "metric,value,threshold,passed,unit,verdict",
+    [
+        ("ret_pct", 6, 10, False, "%", "Not met"),
+        ("ret_pct", 10, 10, False, "%", "Not met"),
+        ("ret_bp", 0, 15, False, " bp", "Not met"),
+        ("rs_pp", -3, 0, True, " pp", "Met"),
+    ],
+)
+def test_receipt_separates_observation_requirement_and_owner_result(
+    browser, synthetic_snapshot, metric, value, threshold, passed, unit, verdict
+):
+    """Never print a failed test as a true mathematical assertion like '6 > 10'."""
+    import copy
+
+    snapshot = copy.deepcopy(synthetic_snapshot)
+    receipt = {"series": "SYN-N1", "metric": metric, "window": 60,
+               "value": value, "op": "lt" if metric == "rs_pp" else "gt",
+               "threshold": threshold, "passed": passed}
+    snapshot["path"]["legs"][0]["receipts"] = [receipt]
+    context, page = _open(browser, snapshot, width=390, height=844)
+    try:
+        text = page.locator("#ox-leg-n1 .ox-kv dd").inner_text()
+        glyph = "<" if metric == "rs_pp" else ">"
+        assert "Observed: " + str(value) + unit in text
+        assert "Requires: " + glyph + " " + str(threshold) + unit in text
+        assert verdict in text
+        assert str(value) + " " + glyph + " " + str(threshold) not in text
+        page.evaluate("document.documentElement.dataset.lang='zh'")
+        chinese = page.locator("#ox-leg-n1 .ox-kv dd").inner_text()
+        assert "读数：" in chinese and "要求：" in chinese
+        assert ("已满足" if passed else "未满足") in chinese
+    finally:
+        context.close()

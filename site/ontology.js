@@ -976,22 +976,36 @@
     var threshold = _present(receipt.threshold) ? _num(receipt.threshold) : "";
     var window = _present(receipt.window) ? String(receipt.window) : "";
 
-    var en, zh;
-    if (value && op && threshold && window) {
-      en = value + " " + op + " " + threshold + " on the " + window + "-day reading";
-      zh = "在 " + window + " 日读数中 " + value + " " + op + " " + threshold;
-    } else if (value && op && threshold) {
-      en = value + " " + op + " " + threshold;
-      zh = value + " " + op + " " + threshold;
-    } else if (value) {
-      en = "value " + value;
-      zh = "数值 " + value;
-    } else if (threshold) {
-      en = "threshold " + threshold;
-      zh = "阈值 " + threshold;
-    } else {
+    if (!value && !threshold) {
       return say("reading published without a value",
         "已发布读数，但未给出数值");
+    }
+    /* Never join a false test into a false mathematical assertion (6 > 10).
+       Name observed value, requirement and the owner's result separately.
+       Units come only from the closed, already-published metric vocabulary. */
+    var units = { ret: "%", ret_pct: "%", ret_bp: " bp", rs: " pp", rs_pp: " pp" };
+    var unit = Object.prototype.hasOwnProperty.call(units, receipt.metric)
+      ? units[receipt.metric] : "";
+    var en = value ? "Observed: " + value + unit : "Observed: not published";
+    var zh = value ? "读数：" + value + unit : "读数：未发布";
+    if (threshold) {
+      en += " · Requires: " + (op ? op + " " : "") + threshold + unit;
+      zh += " · 要求：" + (op ? op + " " : "") + threshold + unit;
+    }
+    if (receipt.passed === true) {
+      en += " · Met"; zh += " · 已满足";
+    } else if (receipt.passed === false) {
+      en += " · Not met"; zh += " · 未满足";
+    } else {
+      en += " · Result not published"; zh += " · 结果未发布";
+    }
+    if (_present(receipt.vs)) {
+      en += " · vs " + String(receipt.vs);
+      zh += " · 对比 " + String(receipt.vs);
+    }
+    if (window) {
+      en += " · " + window + "-day reading";
+      zh += " · " + window + " 日读数";
     }
     return say(en, zh);
   }
