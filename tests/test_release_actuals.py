@@ -64,7 +64,7 @@ _CASES = {
         "source_id": "bea_gdp",
         "source_url": "https://www.bea.gov/news/2026/gdp-advance-estimate-2nd-quarter-2026",
         "parser": "gdp",
-        "actual": {"real_gdp_annualized": 3.0, "unit": "percent"},
+        "actual": {"real_gdp_annualized": 3.0, "vintage": "advance", "unit": "percent"},
     },
     "CLAIMS": {
         "date": "2026-08-06",
@@ -227,6 +227,62 @@ def test_gdp_receipt_integrity_rejects_period_drift() -> None:
     errors = receipt_integrity_errors(drifted)
     assert "reference_period_target_mismatch" in errors
     assert "receipt_id_mismatch" in errors
+
+
+def _gdp_publication_for(date_text: str, vintage: str, value: float, sha_char: str) -> dict:
+    row = _publication("GDP")
+    row["date"] = date_text
+    row["event_id"] = f"gdp:{date_text}"
+    row["source_sha256"] = sha_char * 64
+    row["first_seen_at"] = f"{date_text}T12:30:01+00:00"
+    row["observed_at"] = f"{date_text}T12:30:01+00:00"
+    row["source_released_at"] = f"{date_text}T12:30:00+00:00"
+    row["verified_at"] = f"{date_text}T12:31:00+00:00"
+    row["actual"]["vintage"] = vintage
+    row["actual"]["real_gdp_annualized"] = value
+    return row
+
+
+def test_gdp_estimate_vintages_are_distinct_first_results_not_corrections() -> None:
+    advance = normalize_publication(_gdp_publication_for("2026-07-30", "advance", 3.0, "a"))[0]
+    second_pub = _gdp_publication_for("2026-08-27", "second", 3.2, "b")
+    payload = {"schema": "release_publications.v2", "publications": [second_pub]}
+    second = reconcile_receipts(payload, [advance])
+    assert len(second) == 1
+    assert second[0]["row_type"] == "actual"
+    assert second[0]["estimate_vintage"] == "second"
+    assert second[0].get("supersedes_receipt_id") is None
+    assert second[0]["receipt_id"] != advance["receipt_id"]
+
+    changed_second = _gdp_publication_for("2026-08-27", "second", 3.3, "c")
+    correction = reconcile_receipts(
+        {"schema": "release_publications.v2", "publications": [changed_second]},
+        [advance, second[0]],
+    )
+    assert len(correction) == 1
+    assert correction[0]["row_type"] == "correction_candidate"
+    assert correction[0]["estimate_vintage"] == "second"
+    assert correction[0]["supersedes_receipt_id"] == second[0]["receipt_id"]
+    assert correction[0]["automatic_scoring_eligible"] is False
+
+
+@pytest.mark.parametrize("vintage", [None, "", "preliminary", "fourth"])
+def test_gdp_requires_named_bea_estimate_vintage(vintage) -> None:
+    row = _publication("GDP")
+    if vintage is None:
+        row["actual"].pop("vintage")
+    else:
+        row["actual"]["vintage"] = vintage
+    assert normalize_publication(row) == []
+
+
+def test_gdp_initial_vintage_normalizes_to_advance() -> None:
+    row = _publication("GDP")
+    row["actual"]["vintage"] = "initial"
+    receipt = normalize_publication(row)[0]
+    assert receipt["estimate_vintage"] == "advance"
+    assert receipt_integrity_errors(receipt) == []
+
 
 def test_unofficial_domain_or_missing_hash_fails_closed() -> None:
     bad = _publication("CPI")
