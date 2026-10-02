@@ -84,9 +84,6 @@ LIVE_NOT_FRESHNESS_SELECTORS: dict[str, str] = {
 # a new offender appears (fix the rule — never add it here) AND when an entry stops
 # offending (delete the entry in the same PR that fixed the surface).
 KNOWN_OFFENDERS: dict[str, str] = {
-    "templates/_cn_theme_tape.html.j2::body.page-china-stocks .ctt-v.is-live": "L5 cn tape (new EVIDENCE.yml receipt)",
-    "templates/_theme_tape.html.j2::#theme-tape .tt-gist .tt-gf.is-live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
-    "templates/_theme_tape.html.j2::#theme-tape .tt-v.is-live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
     "templates/basket_detail.html.j2::.ftr-ls-pill.live": "L4 basket (fingerprinted site/basket*/ stylesheet projection)",
     "templates/china_news.html.j2::.cn-live": "L3 unflagged surfaces (source-only swap)",
     "templates/committee.html.j2::.ask-mode-live": "L3 unflagged surfaces (source-only swap)",
@@ -97,7 +94,6 @@ KNOWN_OFFENDERS: dict[str, str] = {
     "templates/hk.html.j2::.tm-state-tag.is-live": "L2 tokens + status ink (paired theme.css; P0B receipt remint + research_screener ?v= re-pin)",
     "templates/news.html.j2::.nx-eyebrow .live": "L3 unflagged surfaces (source-only swap)",
     "templates/news.html.j2::.nx-kick .live": "L3 unflagged surfaces (source-only swap)",
-    "templates/sector_central.html.j2::.ftr-strip-token.live": "L6 us-stocks-compression surfaces (hover/focus force-state recapture)",
     "templates/theme.css::.dtp-chip--live": "L2 tokens + status ink (paired theme.css; P0B receipt remint + research_screener ?v= re-pin)",
     "templates/theme.css::.dtp-token.live": "L2 tokens + status ink (paired theme.css; P0B receipt remint + research_screener ?v= re-pin)",
 }
