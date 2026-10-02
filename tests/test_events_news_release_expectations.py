@@ -338,3 +338,32 @@ def test_historical_model_row_must_bind_the_same_actual_value():
     assert out["metrics"][0]["status"] == "comparison_withheld"
     assert out["metrics"][0]["reason"] == "actual_binding_mismatch"
     assert out["metrics"][0]["point"] is None
+
+
+def test_stale_forecast_artifact_is_withheld_before_any_model_or_benchmark_values():
+    payload = forecast_payload()
+    payload["asof"] = "2026-09-28T20:21:25Z"
+    out = view.event_expectation_context(cpi_event(), payload, as_of=ASOF)
+    assert out["reason"] == "forecast_stale"
+    assert out["artifact_age_days"] == 3
+    assert out["freshness_max_age_days"] == 2
+    assert out["metrics"] == []
+
+
+def test_capture_health_nightly_gap_can_withhold_even_when_artifact_clock_is_recent():
+    payload = forecast_payload()
+    payload["capture_health"] = {"nightly_gap_days": 3}
+    out = view.event_expectation_context(cpi_event(), payload, as_of=ASOF)
+    assert out["reason"] == "forecast_stale"
+    assert out["nightly_gap_days"] == 3
+    assert out["metrics"] == []
+
+
+def test_capture_health_current_or_absent_does_not_create_false_staleness():
+    payload = forecast_payload()
+    payload["capture_health"] = {"nightly_gap_days": 0}
+    current = view.event_expectation_context(cpi_event(), payload, as_of=ASOF)
+    assert current["status"] == "available"
+    payload.pop("capture_health")
+    absent = view.event_expectation_context(cpi_event(), payload, as_of=ASOF)
+    assert absent["status"] == "available"
