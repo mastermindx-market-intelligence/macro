@@ -212,7 +212,7 @@
               <dt>{{ bi('Forecast artifact','预测工件时间') }}</dt><dd>{{ ev.get('artifact_asof') or '—' }}</dd>
               <dt>{{ bi('Accuracy claim','准确性声明') }}</dt><dd>{{ bi('Withheld pending clean aligned forward evidence','等待干净且对齐的前瞻证据，暂不声明') }}</dd>
             </dl>
-            {% if m.get('basis_warning') %}<p class="nd-model-warning">{{ m.get('basis_warning') }}</p>{% endif %}
+            {% if m.get('basis_warning') %}<p class="nd-model-warning">{{ bi('The displayed model basis and benchmark context use different inputs. Keep them separate when interpreting this release.','当前显示的模型基础与基准背景使用不同输入。解读此次数据时请保持区分。') }}</p>{% endif %}
           </details>
         </section>
       {% endfor %}
