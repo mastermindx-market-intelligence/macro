@@ -528,6 +528,15 @@ def _scored_expectation_metric(
         result["reason"] = "ambiguous_frozen_model_context" if candidates else "no_matching_frozen_model_context"
         return result
     row = candidates[0]
+    row_actual = row.get("actual")
+    official_actual = official_metric.get("actual")
+    if (
+        not _finite_number(row_actual)
+        or not _finite_number(official_actual)
+        or not math.isclose(row_actual, official_actual, rel_tol=0.0, abs_tol=1e-10)
+    ):
+        result["reason"] = "actual_binding_mismatch"
+        return result
     evaluation = row.get("evaluation")
     if not isinstance(evaluation, Mapping) or evaluation.get("eligible") is not True:
         result["reason"] = "evaluation_ineligible"
@@ -690,7 +699,7 @@ def event_expectation_context(
         metric for metric in projected
         if metric.get("status") in {
             "experimental_model_context", "benchmark_only",
-            "historical_model_comparison", "comparison_withheld",
+            "historical_model_comparison",
         }
     ]
     result["status"] = "available" if useful and len(useful) == len(projected) else "partial" if useful else "unavailable"
