@@ -105,3 +105,10 @@ Verification: 22 repair/closure tests passed in 93.81s; current-main contract-de
 Unrelated dev-render data/scorecard/stock/sector/history outputs and duplicate local evidence images remain excluded and must not be staged or cleaned by retrying the previously denied cleanup.
 Independent review remains `WAITING_CAPACITY / needs_placement`; no receiver/Job/Attempt/watcher exists. PR #8188 must remain Draft/HOLD. Exact next action: publish this existing branch checkpoint, then consume one new exact-head CI run and admitted independent review before any hold release/merge/publication.
 MISSION_COMPLETE: false. EFFECT_UNKNOWN: none.
+
+## 2026-10-01 semantic boundary correction
+A principal adversarial pass found a real source-contract defect before review: the onset reference held 64 closes at the boundary although the contract/display say 63. Source commit `3bb6c856a78385c81868bcea884df4beca3cb9c7` corrects the window and adds a synthetic discriminator that would have falsely escalated a 2% first-day decline into a 10.9% shock under the old code.
+Verification: 55 focused observer/view/integration tests pass; 277 owning China/shared tests pass. The Sep-29 real observation is unchanged (`underway`, -10.0276%, same May-13 peak and source digest). Adapter/builder/template/JS/CSS/dialog/browser-verifier blobs remain identical to `0d518d026630`, so existing visual evidence is UI-reusable but not claimed as independent semantic review.
+Current frozen branch data is now correctly withheld as delayed at the current clock; an exact-source browser check passed eight theme/language/viewport variants in that degraded state. Do not restamp it.
+Receipt: `mockups/refs/cn-pullback-20260929/semantic-v2.json`.
+The already-running CI for prior head 69da is superseded once this semantic source is published; do not treat its eventual result as proof of the newer source. New exact-head CI + independent review are required before hold release. MISSION_COMPLETE: false; EFFECT_UNKNOWN: none.
