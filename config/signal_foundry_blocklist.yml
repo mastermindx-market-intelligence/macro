@@ -747,7 +747,10 @@ entries:
       any_of:
         - 'signed.{0,30}charm.{0,30}charm'
     reason: >
-      KILLED — vol/size confound, trail-RV IC .5–.6
+      KILLED — vol/size confound, trail-RV IC .5–.6 **Chairman research
+      reopening 2026-10-02;
+      DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY:** Retain the
+      vol/size-confound finding as negative evidence. OPTIO
     source: 'OPEX vanna/charm adjudication (2026-07-06)'
 
   - id: BL-G046
@@ -755,7 +758,10 @@ entries:
       any_of:
         - 'options.{0,30}delta.{0,30}family'
     reason: >
-      DEAD
+      DEAD **Chairman research reopening 2026-10-02;
+      DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY:** Retain the tested
+      construction and result as negative evidence.
+      OPTIONS-HISTORICAL-REVIVAL-V1 permits pre
     source: 'Options→NW entry-intelligence W-E1 gauntlet'
 
   - id: BL-G047
@@ -763,7 +769,10 @@ entries:
       any_of:
         - 'skew.{0,30}deceleration'
     reason: >
-      UNSUPPORTED
+      UNSUPPORTED **Chairman research reopening 2026-10-02;
+      DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY:** Retain the
+      unsupported finding. OPTIONS-HISTORICAL-REVIVAL-V1 permits
+      preregistered replication, s
     source: 'Options→NW entry-intelligence W-E1 gauntlet'
 
   - id: BL-G048
@@ -1300,7 +1309,10 @@ entries:
       any_of:
         - 'theta.{0,30}tape'
     reason: >
-      SUSPENDED
+      SUSPENDED **Chairman research reopening 2026-10-02;
+      DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY:**
+      OPTIONS-HISTORICAL-REVIVAL-V1 may evaluate canonical recorded
+      tape in preregistered research, includ
     source: 'Final3-lobes program (2026-07-06)'
 
   - id: BL-G105
