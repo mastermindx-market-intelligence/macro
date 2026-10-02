@@ -16839,20 +16839,18 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           Today is a bounded preview of the board owner's existing buy[].featured
           shelf, never a new ranker or a positional pick rule. It preserves the
           candidate card's own entry chip/zone/trigger as the timing authority, so a
-          Featured bounce_wait row remains Wait. Production passes a separately
-          bounded Featured shelf from the FULL owner-ordered board; direct template
-          callers without that projection retain the old three-card safe fallback. -#}
-      {%- set _today_explicit = (us_today_featured if us_today_featured is defined else none) -%}
-      {%- set _today_source = (_today_explicit if _today_explicit is not none else _board) -%}
+          Featured bounce_wait row remains Wait. Three cards is shell capacity only;
+          paid/full access may hydrate a larger bounded Featured shelf from the
+          protected payload without widening these public bytes. -#}
       {%- set _today = namespace(rows=[]) -%}
-      {#- Filter the producer-ordered board directly. The Candidates render list is
-          stage-grouped and would therefore become an accidental Today reranker. -#}
-      {%- for _n in _today_source -%}
+      {#- Filter the producer-ordered SHELL board directly. The Candidates render list
+          is stage-grouped and would therefore become an accidental Today reranker. -#}
+      {%- for _n in _board -%}
         {%- if _n.get('featured') -%}
           {%- set _today.rows = _today.rows + [_n] -%}
         {%- endif -%}
       {%- endfor -%}
-      {%- set _today_visible = (_today.rows if _today_explicit is not none else _today.rows[:3]) -%}
+      {%- set _today_visible = _today.rows[:3] -%}
       {%- set _today_total = (_today_declared if (_today_declared is number and _today_declared is not boolean and _today_declared >= (_today.rows|length)) else (_today.rows|length)) -%}
       {%- set _today_more = [_today_total - (_today_visible|length), 0] | max -%}
       <section class="mx-sec" id="us-today" data-today-total="{{ _today_total }}" data-today-visible="{{ _today_visible|length }}">
@@ -16867,7 +16865,7 @@ body.page-macro .riskdlg-vw .sx-vw-row--young .sx-vw-tier{color:var(--ink-3,var(
           {% with items=_today_visible, sg_any=_sg.any, bs_adj=_bs_adj, xu_allfeat=_xu_allfeat, trg_map=_trg_map, rw_en=_rw_en, rw_zh=_rw_zh, plan_rel=plan_rel if plan_rel is defined else none %}{% include "_us_board_cards.html.j2" %}{% endwith %}
         </div>
         {%- if _today_more > 0 %}
-        <p class="mx-sec-note"><span class="l-en">{{ _today_more }} more Featured name{{ '' if _today_more == 1 else 's' }} remain in Screener; this {{ _today_visible|length }}-card preview is not a pick quota.</span><span class="l-zh">另有 {{ _today_more }} 只精选股票保留在筛选器；这 {{ _today_visible|length }} 张卡只是预览容量，并非选股名额。</span></p>
+        <p class="mx-sec-note us-today-remainder"><span class="l-en">{{ _today_more }} more Featured name{{ '' if _today_more == 1 else 's' }} remain in Screener; this three-card preview is not a pick quota.</span><span class="l-zh">另有 {{ _today_more }} 只精选股票保留在筛选器；三张卡只是预览容量，并非选股名额。</span></p>
         {%- endif %}
         {%- elif _today_total > 0 %}
         <div class="mx-empty"><div class="mx-empty-line">{{ t('Featured names exist, but none are visible in this access preview.', '存在精选股票，但当前访问预览中未显示。') }}</div><div class="mx-empty-why">{{ t('Open Screener after access is available; no hidden name is inferred here.', '获得访问权限后请打开筛选器；此处不会推断任何隐藏股票。') }}</div></div>
@@ -20535,7 +20533,61 @@ if (document.readyState === 'loading') {
     root.dispatchEvent(new Event('candidate-pool-hydrated'));
   }
 
+  function hydrateToday(html, preview, total){
+    if (!html) return;
+    var root = document.getElementById('us-today');
+    preview = Number(preview) || 0;
+    total = Number(total) || 0;
+    if (!root || preview < 1 || total < preview) return;
+
+    /* Parse and validate before touching the shell. The payload owns this bounded
+       shelf; an incomplete/malformed response leaves the honest shell untouched. */
+    var box = document.createElement('template');
+    box.innerHTML = html;
+    var cards = box.content.querySelectorAll('.pvcard[data-ticker]');
+    if (cards.length !== preview) return;
+
+    var grid = root.querySelector('#us-today-grid');
+    if (!grid){
+      grid = document.createElement('div');
+      grid.className = 'nbgrid';
+      grid.id = 'us-today-grid';
+      var intro = root.querySelector('.mx-sec-note');
+      if (intro) intro.insertAdjacentElement('afterend', grid);
+      else root.appendChild(grid);
+    }
+    grid.innerHTML = html;
+    root.querySelectorAll('.mx-empty').forEach(function(el){ el.remove(); });
+    root.setAttribute('data-today-visible', String(preview));
+    root.setAttribute('data-today-total', String(total));
+
+    var totalBox = root.querySelector('.mx-sec-total');
+    if (totalBox){
+      totalBox.innerHTML =
+        '<span class="l-en"><b>' + preview + '</b> of <b>' + total + '</b> Featured</span>' +
+        '<span class="l-zh">精选 <b>' + preview + '</b> / <b>' + total + '</b></span>';
+    }
+
+    var more = Math.max(0, total - preview);
+    var note = root.querySelector('.us-today-remainder');
+    if (more > 0){
+      if (!note){
+        note = document.createElement('p');
+        note.className = 'mx-sec-note us-today-remainder';
+        grid.insertAdjacentElement('afterend', note);
+      }
+      note.innerHTML =
+        '<span class="l-en">' + more + ' more Featured name' + (more === 1 ? '' : 's') +
+        ' remain in Screener; this ' + preview + '-card preview is not a pick quota.</span>' +
+        '<span class="l-zh">另有 ' + more + ' 只精选股票保留在筛选器；这 ' + preview +
+        ' 张卡只是预览容量，并非选股名额。</span>';
+    } else if (note){
+      note.remove();
+    }
+  }
+
   function hydratePanels(payload){
+    hydrateToday(payload.today_cards_html, payload.today_preview, payload.today_total);
     hydrateCandidatePool(payload.candidate_pool_html, payload.candidate_pool_source);
     hydrateLeaderObservations(payload.leader_observations_html);
     appendTo('#us-standouts .topsetups:not(.leaders-strip) .ts-tbl tbody', payload.setups_html);
