@@ -131,7 +131,7 @@
                 <div class="nd-event-date"{% if e.get('date') %} data-nd-calendar-date="{{ e.date }}"{% endif %}><span data-nd-month>{{ ((e.get('date') or '—')|string)[:7] }}</span><strong data-nd-day>{{ ((e.get('date') or '—')|string)[8:10] or '—' }}</strong></div>
                 <div class="nd-event-content">
                   <div class="nd-item-meta">{% if e.get('time_et') %}<span class="nd-event-time">{{ e.time_et }} ET</span>{% else %}<span>{{ nd_bi('Time unconfirmed', '时间待确认') }}</span>{% endif %}{% if e.get('impact') == 'high' %}<span class="nd-tag nd-tag-calendar">{{ nd_bi('Major', '重要') }}</span>{% endif %}</div>
-                  <h4>{{ nd_bi(e.get('label') or 'Scheduled event', e.get('label_zh') or e.get('label') or '已排期事件') }}</h4>
+                  <h4>{% if e.get('result_only') %}{{ nd_bi('Recent official release', '近期官方数据公布') }}{% else %}{{ nd_bi(e.get('label') or 'Scheduled event', e.get('label_zh') or e.get('label') or '已排期事件') }}{% endif %}</h4>
                   <div class="nd-event-full-date">{{ nd_date(e.get('date')) }}<span class="nd-past-date" hidden>{{ nd_bi('Date passed', '日期已过') }}</span></div>
                   {% if e.get('note') %}<p>{{ nd_bi(e.note, e.get('note_zh')) }}</p>{% endif %}
                   {{ release_evidence(e, nd_bi, generated_utc|default(none)) }}
