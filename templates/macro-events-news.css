@@ -265,7 +265,7 @@ html[data-theme="light"] #dlg-news .nd-tag-review{color:var(--ink-link,var(--lin
 #dlg-news .nd-official-metric h5{margin:0 0 12px;font-size:var(--fs-body);line-height:1.5;font-weight:600;color:var(--text)}
 #dlg-news .nd-official-metric p.nd-official-value{margin:0;font-size:var(--fs-h1);font-weight:650;line-height:1.2;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:var(--text)}
 #dlg-news .nd-official-value>span{font-size:var(--fs-h2);padding-left:3px;font-weight:500}
-#dlg-news .nd-official-unit,#dlg-news .nd-official-period{margin:6px 0 0;font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
+#dlg-news .nd-official-unit,#dlg-news .nd-official-period,#dlg-news .nd-official-vintage{margin:6px 0 0;font-size:var(--fs-sm);line-height:1.6;color:var(--muted)}
 #dlg-news .nd-official-provenance{margin-top:14px;border-top:1px solid var(--line)}
 #dlg-news .nd-official-provenance dl{display:flex;flex-direction:column;gap:4px;margin:6px 0 0;font-size:var(--fs-sm);line-height:1.6}
 #dlg-news .nd-official-provenance dt{color:var(--muted);margin-top:8px}
