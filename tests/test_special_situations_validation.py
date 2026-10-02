@@ -183,3 +183,19 @@ def test_guard_rejects_before_reading_any_outcome_prices():
                               end_before=pd.Timestamp("2024-01-15"))
     assert result is None
     assert reads == []
+
+
+def test_regressions_are_enrolled_in_pull_request_code_ci():
+    """A data-only job is invisible to the pull-request code plan."""
+    from pathlib import Path
+    import yaml
+
+    manifest = Path(__file__).resolve().parents[1] / ".github/ci/legacy-jobs.yml"
+    jobs = yaml.safe_load(manifest.read_text())["jobs"]
+    suite = "tests/test_special_situations_validation.py"
+    owners = [job for job in jobs.values()
+              if any(suite in step.get("run", "") for step in job.get("steps", []))]
+    assert len(owners) == 1
+    assert owners[0]["gate"] == "code"
+    assert suite in owners[0]["paths"]
+    assert "scripts/validate_special_situations.py" in owners[0]["paths"]
