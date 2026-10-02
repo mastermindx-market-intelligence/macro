@@ -42,3 +42,38 @@ test('source blueprint shapes survive but executable SVG nodes do not',()=>{cons
 test('closed native dropdown presentation is not confused with withdrawn access',()=>{const p=setup();p.a.parentElement.setAttribute('inert','');p.a.parentElement.setAttribute('aria-hidden','true');p.instance.open();assert.match(p.list.textContent,/Market Dashboard/);});
 test('explicitly hidden non-panel source sections are not projected',()=>{const p=setup();const section=p.d.createElement('section');section.hidden=true;p.a.parentElement.appendChild(section);section.appendChild(p.a);p.instance.open();assert.doesNotMatch(p.list.textContent,/Market Dashboard/);});
 test('new-tab destination explains that behavior accessibly',()=>{const p=setup();p.a.target='_blank';p.instance.open();const a=p.list.querySelector('a');assert.match(a.getAttribute('aria-label')||a.textContent,/new tab/);});
+
+function sourceTopic(p, anchor, en, zh) {
+ const menu=anchor.parentElement, section=p.d.createElement('section');
+ section.className='nav-mega-section';
+ const heading=p.d.createElement('h2');heading.className='nav-mega-h';
+ for(const [lang,value] of [['en',en],['zh',zh]]){
+  const label=p.d.createElement('span');label.className='l-'+lang;label.textContent=value;heading.appendChild(label);
+ }
+ section.appendChild(heading);menu.appendChild(section);section.appendChild(anchor);
+}
+test('source section topic reaches rendered results without a copied taxonomy',()=>{
+ const p=setup();sourceTopic(p,p.b,'Capital & regimes','资本与周期');
+ p.instance.open();p.query.value='capital regimes';p.query.fire('input');
+ assert.equal(p.list.querySelectorAll('a').length,1);
+ assert.equal(p.list.querySelector('a').href,'https://www.mastermind-x.com/reports.html');
+ assert.match(p.list.textContent,/Capital & regimes/);
+ p.d.documentElement.setAttribute('data-lang','zh');p.d.fire('langchange');
+ assert.equal(p.query.value,'capital regimes');assert.match(p.list.textContent,/资本与周期/);
+});
+test('Chinese topic composition keeps the unfinished query out of results',()=>{
+ const p=setup();sourceTopic(p,p.b,'Capital & regimes','资本与周期');
+ p.instance.open();p.query.fire('compositionstart');p.query.value='资本';p.query.fire('input');
+ assert.match(p.list.textContent,/Market Dashboard/);
+ p.query.fire('compositionend');assert.equal(p.list.querySelectorAll('a').length,1);
+ assert.equal(p.list.querySelector('a').href,'https://www.mastermind-x.com/reports.html');
+});
+test('topic redraw cannot revive a withdrawn destination',()=>{
+ const p=setup();sourceTopic(p,p.b,'Capital & regimes','资本与周期');
+ p.instance.open();p.query.value='capital';p.query.fire('input');p.b.remove();
+ p.query.value='regimes';p.query.fire('input');const link=p.list.querySelector('a');
+ assert.ok(link);assert.equal(link.hasAttribute('href'),false);
+ assert.equal(link.getAttribute('aria-disabled'),'true');
+ assert.equal(p.list.fire('click',{target:link}).prevented,true);
+ assert.equal(p.d.defaultView.location.pathname,'/macro.html');
+});

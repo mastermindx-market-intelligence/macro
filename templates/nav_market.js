@@ -1383,7 +1383,9 @@
     var query = normalize(options && options.query), group = options && options.group;
     return items.filter(function (item) {
       if (!query) return !group || group === 'all' || item.group === group;
-      var haystack = normalize([item.en, item.zh, item.descriptionEn, item.descriptionZh, item.group, item.groupZh].join(' '));
+      // Bound each public field independently; long bilingual copy must not hide later topics.
+      var haystack = [item.en, item.zh, item.descriptionEn, item.descriptionZh, item.group, item.groupZh,
+        item.section, item.sectionZh].map(normalize).join(' ');
       return query.split(' ').every(function (word) { return haystack.indexOf(word) >= 0; });
     });
   }

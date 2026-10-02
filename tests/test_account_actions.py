@@ -77,7 +77,7 @@ AUTHZ = f"Bearer {CALLER_TOKEN}"
 USER = {"id": "9c1f-user", "email": "reader@example.com",
         "user_metadata": {"display_name": "Ada"}}
 
-RELEASE_KEY = "20260930-all-tools-reconcile"
+RELEASE_KEY = "20261001-all-tools-topics"
 PASSWORD = "a-long-enough-secret"
 NEW_EMAIL = "new@example.com"
 FOUR_ROUTES = ("/api/account/password", "/api/account/email",

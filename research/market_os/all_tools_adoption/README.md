@@ -1,4 +1,28 @@
-# Shared Shell — source-fed All tools, R23
+# Shared Shell — source-fed All tools
+
+## Current adoption — R39 topic-search continuation
+
+The source owner is now the embedded All tools controller in
+`templates/nav_market.js`, paired with `site/nav_market.js`. Presentation remains
+in paired `navigation-refresh.css`; `_site_nav.html.j2` includes the strict
+opt-in host. Only Macro overview, Sector Central and Reports index opt in.
+This is built source on PR7949, not merged, deployed or production-accepted.
+
+R39 makes source-authored section headings searchable in English and Chinese.
+Each public field is normalized separately so long bilingual copy cannot hide
+later topic fields. URLs, badges, permissions, source ordering and market
+selection are not a search taxonomy and are not changed.
+
+The release key is `20261001-all-tools-topics`; nav/account payload digest is
+`28d0c024`. Before three later DOM scenarios were appended, the full three-module
+integration/release/account run passed 140 tests with four existing warnings.
+The three new DOM scenarios are authored but unexecuted. A subsequent reference
+component synchronization plus four-module validation was refused before dispatch;
+that exact action remains held, and `src/all-tools.js` still has the older search.
+Do not run its old default commands and mistake them for current source proof.
+R38's nine browser scenarios remain unexecuted; no new canvas or browser proof.
+
+## Historical R23 component record — retained, not current deployment state
 
 **BUILT_NOT_PROVEN / DEFAULT OFF / NOT INSTALLED / NOT APPLIED TO PAPER**
 

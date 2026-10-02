@@ -7,9 +7,25 @@ mission: >
   Deliver instantly understandable shared navigation with advanced depth and long-page
   reading. All tools is mega-menu first; full directory browsing remains available.
 state_before: >
-  Recovered R35 source and later R37 native work after interrupted turns. Hosted
-  CI on 74e12471 still fails packs 3 and 6. No new source/CSS behavior was adopted.
+  R38 preserved native work and added unexecuted browser checks. R39 found that
+  source section headings were omitted from topic search and long bilingual text
+  truncated later search fields. Paper catalog writes remain held.
 changed:
+  - path: "templates/nav_market.js + site/nav_market.js"
+    what: >
+      R39 includes source-authored English/Chinese section headings in topic search
+      and normalizes each public field separately. URL safety, source ordering,
+      selected market, persistence, pilot scope and CSS are unchanged.
+  - path: "paired theme/account assets + release-contract tests"
+    what: >
+      The source-only search change advances the existing dynamic asset key to
+      20261001-all-tools-topics and redacted nav/account digest to 28d0c024.
+  - path: "research/market_os/all_tools_adoption/tests"
+    what: >
+      Seven new projection/search regressions passed in the production-byte suite.
+      Three later DOM scenarios are authored but unexecuted. The historical
+      reference-source synchronization and four-module validation were refused
+      before dispatch; the reference remains unchanged and this exact action held.
   - path: "research/market_os/all_tools_adoption/browser/pilot.spec.cjs"
     what: >
       Added nine R38 narrow-screen, landscape and double-typography scenarios while
@@ -46,6 +62,18 @@ changed:
       Registered tests/test_all_tools_menu.py under the incumbent unrun-nav-chrome owner;
       no new workflow, job, catalogue, router or navigation owner was created.
 verified:
+  - claim: R39 section-topic search and its release stamp passed their owning contracts.
+    command: >
+      pytest tests/test_all_tools_menu.py tests/test_nav_hover_bridge.py
+      tests/test_account_actions.py -q --tb=short
+    result: >
+      Initial controller RED 99 passed/5 failed out of 104; integration 1 failed/9 passed.
+      After the source fix, only the release digest failed: 1 failed/139 passed.
+      After the key/digest change, 140 passed with four existing deprecation warnings.
+      This predates the three subsequently authored DOM cases and is not their proof.
+  - claim: R39 source and test files parse; changes contain no whitespace errors.
+    command: node --check on six paired assets and two test files; git diff --check
+    result: All eight syntax checks and the diff check returned zero.
   - claim: Historical R35 changed-source checks passed; later hosted failures remain unresolved.
     command: >
       diff check; validated-claims source; design-system enforce-added; template/site sync;
@@ -76,6 +104,11 @@ verified:
       materialized. A duplicate full-group rerun was platform-blocked before dispatch,
       so no fabricated one-shot 515-pass claim is made.
 unverified:
+  - claim: The R39 reference component and expanded 107-case controller qualification.
+    what_would_verify: >
+      Recover the exact refused R39 reference-source synchronization/four-module
+      validation through an approved permission recovery. No replay, split or
+      alternate carrier was used; no final 107-case or site-assets pass is claimed.
   - claim: R38 narrow-screen browser behavior.
     what_would_verify: >
       The nine authored scenarios must run through a permitted recovery. Node syntax
@@ -105,6 +138,7 @@ unresolved:
   - The full Macro Command group was not rerun a fourth time after the sole evidence-path failure cleared because an equivalent command was explicitly blocked before dispatch. Module and changed-path evidence are green.
   - R18/R19 and PR7129 persistence-before-rebind obligations remain separate.
 next_actions:
+  - Preserve R39 source/stamp changes and the exact refused reference-sync/validation action; recover permission before executing it.
   - Qualify the nine R38 scenarios only after the action-specific permission boundary is recovered.
   - Resolve existing receipt and Research Screener gates through permitted owner recovery; preserve assertions and historical evidence.
   - Consume the existing Paper 1129/1110 catalog return before native edits; preserve boards54-58 and their map.
@@ -119,6 +153,35 @@ danger_areas:
   - Sparse evidence paths were deliberately materialized only for tests; sparse configuration is worktree-local and not a product change.
   - The duplicate full-suite command was refused before dispatch; EFFECT_NONE, not an unknown test/source effect.
 ---
+
+# R39 — source topic discovery; native refinement frontier
+
+MISSION_COMPLETE:false. Same PR7949/branch/worktree and original Paper file/page.
+Protected procedure12ae50fa35254f99719bbeed82fde6e1f1423104, compatible1.0.1/bootstrap1;
+SESSION_RELIABILITY not enrolled. User-selected Astra Pro; served identity unknown.
+Direct source work: LOWER_TOTAL_OVERHEAD. No worker, watcher, merge or deployment.
+R38 head a52133f99bb3b2d3175b4363502ba7f5bbd12854 remains the pre-change base.
+
+R39 source nav SHA2564e9012bb4b463ff19c308263d0229112c345f72c2f4ada4496c55443a92bdb12.
+Dynamic asset key20261001-all-tools-topics; independent nav/account digest28d0c024.
+The all-fields-before-truncation bug and missing section fields are repaired in
+paired production nav only. The attempted historical-reference sync plus expanded
+validation was refused before dispatch: EFFECT_NONE, noPID, no retry/fallback.
+The reference src/all-tools.js remains unchanged. Three later DOM cases are unrun.
+Green log /private/tmp/shared-shell-r39-topic-green.log has SHA256
+c7d477a631955b738e9c80650aaf19ca0258da79d4a427de51e1527918fa240a.
+Its140-pass result precedes those three cases; historical R38/R37 refusals persist.
+A naive theme template/site byte-equality assertion was inapplicable: HEAD already
+differs by public-config baking and bundled Terminal code. Those bytes were retained,
+not overwritten. Current emitter-suite acceptance was not run after the refusal.
+
+Native read-only audit preserved01/TUD-0 and44/3MNS-0. The next incomplete journey
+is refinement:27/1NLR-1 supplies the desktop contract, while28/1NYN-1 is an empty
+390x120 frame (childCount0).29/1NZ0-1 is a500px-wide no-match composition, not a
+qualified390px phone. After the same app admits writes, complete existing28 with
+context-preserving search/sort/preview/Apply/Cancel; adapt existing29/30 to phone
+width and content-driven height. Keep one reachable scroll region, original
+market/theme/period and return focus. These are planned edits, NOT_APPLIED_TO_PAPER.
 
 # R27 — source-fed mega menu joined to the shared product header
 
