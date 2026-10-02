@@ -833,15 +833,7 @@ def test_mor2b_css_is_shared_by_both_pages_not_page_local():
     for cls in (".mx-block-header", ".mx-chip-slot", ".mx-band", ".mx-cp-row", ".mx-rw-row", ".mx-ol-row"):
         assert cls in include, f"{cls} must be defined in the shared include"
         assert cls not in brief_css, f"{cls} must not be defined in _aibrief_css.j2"
-        # Page-local TOP-LEVEL rules are forbidden — the row layout is owned by
-        # the shared include. Compound selectors like `.mx-rw-zh-note +
-        # .mx-rw-row { ... }` are page-local only because the LEADING class
-        # itself is page-local (an adjacency rule on a page-local element), not
-        # because they re-define the row layout; anchor the check to start-of-
-        # line so such compound selectors stay legal.
-        assert re.search(r"^\s*" + re.escape(cls) + r"\s*[{,]", am, flags=re.MULTILINE) is None, (
-            f"{cls} must not be page-local on am_edition"
-        )
+        assert re.search(re.escape(cls) + r"\s*[{,]", am) is None, f"{cls} must not be page-local on am_edition"
     # DARK: transparent chip fill inside the MOR-2b headers; LIGHT: token-only tint, no pulse.
     assert ".mx-block-header .dtp-chip { background:transparent;" in include
     light_tint = 'html[data-theme="light"] .mx-block-header .dtp-chip::before {'
@@ -1115,9 +1107,7 @@ def test_f01_m1_t4_brief_strip_geometry_classes(tmp_path):
         src,
     ), "M1: .brief-link-panel must carry flex-wrap:wrap"
     # white-space:nowrap on .brief-link (not just on the helper classes)
-    assert "white-space:nowrap;" in src, (
-        "M1: .brief-link must carry white-space:nowrap;"
-    )
+    assert re.search(r"\.brief-link\s*\{[^}]*white-space:nowrap;", src), "M1: .brief-link rule must carry white-space:nowrap;"
     # The three new CSS lines (helper classes + media query)
     assert ".brief-link-label { white-space:nowrap; flex:0 0 auto; }" in src
     assert (
