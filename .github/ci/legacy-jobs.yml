@@ -2695,8 +2695,10 @@ jobs:
       - "templates/am_edition.html.j2"
       - "scripts/build_am_edition.py"
       - "scripts/capture_am_edition_evidence.py"
+      - "scripts/capture_page_evidence.py"
       - "tests/test_am_edition_page.py"
       - "tests/test_am_edition_producer.py"
+      - "tests/test_capture_am_edition_evidence.py"
       # MOR-2b lane C seat round 2026-09-25 (contract-delta): the am_edition
       # page suite now renders the aibrief band through tests/test_aibrief_page
       # (its closure reaches the shared theme/nav/landing CSS), reads the shared
@@ -2857,7 +2859,7 @@ jobs:
       - name: private operator-reviewed Options Issue Desk (R6.2-A)
         run: python -m pytest tests/test_options_issue_desk.py tests/test_options_issue_desk_api.py -q
       - name: morning edition page + producer (MO-B F01-1)
-        run: python -m pytest tests/test_am_edition_page.py tests/test_am_edition_producer.py -q
+        run: python -m pytest tests/test_am_edition_page.py tests/test_am_edition_producer.py tests/test_capture_am_edition_evidence.py -q
 
   cycle-grading-stats:
     if: ${{ false }}
