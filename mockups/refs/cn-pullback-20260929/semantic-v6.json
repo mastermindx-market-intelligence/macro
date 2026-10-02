@@ -1,0 +1,157 @@
+{
+  "kind": "cn_pullback_semantic_false_start_isolation_v6",
+  "operation": "cn-pullback-lifecycle-20260929-sol-001",
+  "pr": 8188,
+  "semantic_source_commit": "2270b9f43dbc6b8e015adb1a00b950eb46533a5c",
+  "supersedes_final_candidate_receipt": "mockups/refs/cn-pullback-20260929/semantic-v5.json",
+  "superseded_receipt_sha256": "29fe7532039d20ff158fd4e8fc606c4363ecdd2129a7ba249cfb8dcec8008f1a",
+  "defect": {
+    "summary": "At episode confirmation, the trough search ran from the frozen reference high through confirmation. A prior one-day >=2% dip that failed confirmation could therefore become the low of a later separately confirmed episode.",
+    "consequences": [
+      "wrong episode low_session/low_close",
+      "wrong loss-recovered ruler",
+      "inflated no-new-low persistence and potentially early stabilization/recovery"
+    ],
+    "not_affected": "The frozen episode peak/reference itself was correct and remains unchanged."
+  },
+  "repair": {
+    "rule": "Episode low initialization is restricted to the current contiguous confirmation attempt: pending.first_index through confirmation inclusive.",
+    "gap_safety": "Pending confirmation resets across an unobserved expected session, so this interval cannot bridge a data gap.",
+    "discriminator": "96.0 one-day dip (fails confirmation), recover to 100,100,100, then 97.0 -> 98.0. The later episode confirms at 98 with low=97, no-new-low=1, loss-recovered=33.33%; the old 96 dip is excluded."
+  },
+  "frozen_lifecycle_contract": {
+    "rolling_reference": "exact trailing 63 settled closes including current",
+    "availability": "exactly 63 valid closes are sufficient",
+    "confirmed_peak": "frozen until explicit resolution",
+    "stabilization": "three observed sessions without a new low + close above five-close average",
+    "recovery": "five consecutive closes above rising 20-close average + ten observed sessions without new low",
+    "trend_repair": "20 consecutive closes above the 20-close average + rising 20-close average + current above preceding 19 closes + at least 21 observed sessions without new low",
+    "confirmation_rebound": "when first pending close is the trough and second qualifying close confirms while rebounding, confirmation counts as first no-new-low session",
+    "false_start_isolation": "unconfirmed prior dip cannot seed the low/recovery clock of a later episode"
+  },
+  "regression": {
+    "focused": {
+      "passed": 60,
+      "seconds": 3.01,
+      "exit_code": 0,
+      "scope": "observer + China view + integration"
+    },
+    "owning": {
+      "passed": 282,
+      "seconds": 10.22,
+      "exit_code": 0,
+      "scope": "11 China/shared owner suites"
+    },
+    "initial_discriminator_test_error": {
+      "result": "test initially used 98.5 as the second close, which is only 1.5% below a 100 reference and correctly does not confirm; fixture corrected to exact qualifying 98.0 without weakening production thresholds"
+    }
+  },
+  "historical_real_input_stability": {
+    "2026-09-29": {
+      "shanghai": {
+        "phase": "underway",
+        "drawdown_pct": -10.0276,
+        "recent_63_drawdown_pct": -5.6013,
+        "peak_session": "2026-05-13",
+        "low_session": "2026-07-17",
+        "loss_recovered_pct": 11.08,
+        "no_new_low_closes": 51,
+        "source_digest": "441bc90dbc43d9d7d53dea5f2afb4137110bf9e87d5e5599c227578e579dd024"
+      },
+      "csi300_etf": {
+        "phase": "underway",
+        "drawdown_pct": -12.1985,
+        "recent_63_drawdown_pct": -10.3946,
+        "low_session": "2026-09-29",
+        "loss_recovered_pct": 0.0,
+        "no_new_low_closes": 0
+      },
+      "shenzhen": {
+        "phase": "underway",
+        "drawdown_pct": -20.0733,
+        "recent_63_drawdown_pct": -17.4002,
+        "low_session": "2026-09-28",
+        "loss_recovered_pct": 0.76,
+        "no_new_low_closes": 1
+      }
+    },
+    "2026-09-30": {
+      "shanghai": {
+        "phase": "underway",
+        "drawdown_pct": -9.4371,
+        "recent_63_drawdown_pct": -4.9818,
+        "peak_session": "2026-05-13",
+        "low_session": "2026-07-17",
+        "loss_recovered_pct": 16.31,
+        "no_new_low_closes": 52,
+        "source_digest": "e93508d8e9af89f68e638c3173f845f242c81895b31f9e8a7afa194ce0725d87"
+      },
+      "csi300_etf": {
+        "phase": "underway",
+        "drawdown_pct": -11.6604,
+        "recent_63_drawdown_pct": -9.8454,
+        "low_session": "2026-09-29",
+        "loss_recovered_pct": 2.66,
+        "no_new_low_closes": 1
+      },
+      "shenzhen": {
+        "phase": "underway",
+        "drawdown_pct": -20.0479,
+        "recent_63_drawdown_pct": -17.3739,
+        "low_session": "2026-09-28",
+        "loss_recovered_pct": 0.89,
+        "no_new_low_closes": 2
+      }
+    }
+  },
+  "current_data_integration": {
+    "base": "acf8b442a8aa40621ea9c3f527ffd8884634a26d",
+    "v5_synthetic_merge": "8fd4e5b9b1c611c919b001fe50cff40d6cb4c819",
+    "v6_synthetic_proof_commit": "a957ac8546d764d3ff88e4dfb15d68a09171b48f",
+    "v6_synthetic_tree": "153bb800355475d3244a8fd416434f0e4da197da",
+    "expected_settled_session": "2026-09-30",
+    "raw_stores_through": "2026-09-30",
+    "builder": "RENDER_NO_DRIP=1 scripts.build_china using existing provisioned Macro venv",
+    "optional_local_gap": "hmmlearn unavailable; existing HMM leaf fail-open skipped, China page still rendered",
+    "page": {
+      "sha256": "3d762b7d6d193877e7ed0cbe336b09b4701d7b82c73010cddb6566a3810388bb",
+      "bytes": 474071,
+      "display": "Pullback underway / -9.4%",
+      "asof": "2026-09-30",
+      "source_digest": "e93508d8e9af89f68e638c3173f845f242c81895b31f9e8a7afa194ce0725d87"
+    },
+    "machine_artifact": {
+      "path": "data/china_market_state/latest.json",
+      "sha256": "c102be179cdfb312936d84c95a20a5330d160f2e89f83f1ce3bf889443a2bb54",
+      "bytes": 14769,
+      "phase": "underway",
+      "asof": "2026-09-30",
+      "source_digest": "e93508d8e9af89f68e638c3173f845f242c81895b31f9e8a7afa194ce0725d87"
+    },
+    "browser": {
+      "variants_passed": 8,
+      "normal_motion_and_no_script": true,
+      "source_digest": "e93508d8e9af89f68e638c3173f845f242c81895b31f9e8a7afa194ce0725d87"
+    },
+    "hash_note": "Whole page/machine hashes include fresh build/produced-at wrapper values; semantic identity is bound by settled asof + raw-source digest + phase/reference fields, not cross-run byte equality."
+  },
+  "current_base_compatibility": {
+    "base": "9ed7e31a4be9084a0f05b9d1002a7aba8d6d05ca",
+    "merge_tree": "4ab0bd49cad3d0fffbbf4b17c8695496c38f4dff",
+    "conflict_free": true,
+    "movement_since_integration_base_on_compared_material_paths": []
+  },
+  "source_sha256": {
+    "lib/pullback_observation.py": "4d3feffe453251ce7f25858738a4a2cdd31c63d00d2002d881ceb911d8482313",
+    "tests/test_pullback_observation.py": "09c7f7066374afa80d3c3895cc960ff53b97c83eca1a291e2719d1bf62329675"
+  },
+  "review": {
+    "independent": "outstanding",
+    "required_receipt": "this file",
+    "older_semantic_receipts": "v2-v5 remain historical/superseded for final acceptance"
+  },
+  "protected_procedure_commit": "b3627c580dd37ac1c167f59ac4b7555a4330edef",
+  "protected_index_blob": "4b0189a75d559d963365097485e8509a49c70e23",
+  "production_proven": false,
+  "effect_unknown": null
+}
