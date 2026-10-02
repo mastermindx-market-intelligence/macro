@@ -28,7 +28,9 @@ def publication(family='PCE', **changes):
          'headline_mom':.3,'core_mom':.2,'payroll_change':175000,'initial_claims':203000,
          'real_gdp_annualized':3.0}
     if family=='CLAIMS': raw['reference_period']='September 26, 2026'
-    if family=='GDP': raw['reference_period']='Q2 2026'
+    if family=='GDP':
+        raw['reference_period']='Q2 2026'
+        raw['vintage']='advance'
     p={'type':family,'date':'2026-09-30','data_ready':True,
        'source_url':f"https://www.{c['host']}/fixture/not-live",'source_sha256':'a'*64,
        'publisher':c['publisher'],'source_id':c['source_id'],
