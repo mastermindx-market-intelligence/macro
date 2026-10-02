@@ -126,7 +126,7 @@
       {% set ns.metrics = ns.metrics + [m] %}
       {% if m.get('status') == 'experimental_model_context' %}{% set ns.experimental = ns.experimental + 1 %}{% endif %}
       {% if m.get('status') == 'historical_model_comparison' %}{% set ns.historical = ns.historical + 1 %}{% endif %}
-      {% if m.get('status') == 'benchmark_only' %}{% set ns.benchonly = ns.benchonly + 1 %}{% endif %}
+      {% if m.get('status') in ['benchmark_only','benchmark_context'] %}{% set ns.benchonly = ns.benchonly + 1 %}{% endif %}
     {% endif %}
   {% endfor %}
 {% endif %}
@@ -166,6 +166,7 @@
             <h5>{{ bi(label[0],label[1]) }}</h5>
             {% if m.get('status') == 'experimental_model_context' %}<span class="nd-tag nd-tag-neutral">{{ bi('Experimental','实验性') }}</span>
             {% elif m.get('status') == 'historical_model_comparison' %}<span class="nd-tag nd-tag-neutral">{{ bi('Frozen comparison','冻结比较') }}</span>
+            {% elif m.get('status') in ['benchmark_only','benchmark_context'] %}<span class="nd-tag nd-tag-neutral">{{ bi('Benchmarks only','仅基准') }}</span>
             {% elif m.get('status') == 'comparison_withheld' %}<span class="nd-tag nd-tag-neutral">{{ bi('Withheld','暂不展示') }}</span>{% endif %}
           </div>
           {% if m.get('status') == 'experimental_model_context' and m.get('display_value') is string %}
@@ -185,7 +186,7 @@
             </div>
             <p class="nd-model-difference">{{ bi('Difference vs model benchmark','相对模型基准的差值') }} · {{ m.get('difference_display') }}{% if m.get('unit') == 'percent' %} pp{% endif %}</p>
             <p class="nd-official-period">{{ bi('Frozen before release','发布前冻结') }} · {{ m.get('frozen_asof_night') or '—' }}</p>
-          {% elif m.get('status') == 'benchmark_only' %}
+          {% elif m.get('status') in ['benchmark_only','benchmark_context'] %}
             <p class="nd-official-missing">{{ bi('No model point is presented for this release. The available reference benchmarks are shown below.','此次数据不展示模型点位，仅显示下方可用参考基准。') }}</p>
           {% else %}
             {% set why = reasons.get(m.get('reason'), ['Model comparison is unavailable.','模型比较暂不可用。']) %}
