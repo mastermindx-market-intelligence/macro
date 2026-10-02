@@ -819,25 +819,34 @@ def test_main_grades_every_market(tmp_path, capsys):
             assert line.startswith("::"), line
 
 
-def test_intl_board_is_a_known_blind_spot_today():
-    """site/factordata/intl_setups.json has carried ``as_of: null`` on every commit in
-    main's history — compute_intl_alpha stamps no as_of on any return path
-    (scripts/build_intl_library.py, adversarial review D1, PR #5674). The guard reports
-    that honestly rather than inventing a verdict.
-
-    This test pins the CURRENT state deliberately: the day the builder starts stamping,
-    this is what tells us International has become gradeable and the registry entry
-    should be re-derived against a real calendar rather than the weekday approximation.
-    """
+def test_intl_board_is_stamped_and_gradeable():
+    """International now publishes a real session anchor, so a readable null stamp is
+    a producer regression rather than accepted blindness. The weekday-union calendar
+    remains intentionally coarse because the board spans disjoint venues."""
     intl = next(s for s in MARKET_BOARDS if s["market"] == "intl")
     assert intl["calendar"] == "weekday"
     assert intl["max_sessions_behind"] == 3, (
         "the weekday approximation buys its +2 tolerance here; changing it needs the "
         "over-count argument in MARKET_BOARDS re-derived"
     )
+    assert intl["stamp_known_absent"] is False
     report = evaluate(D_RUNS, D_INDEX, D_NOW, boards=_boards(intl={"as_of": None}))
-    assert report["ok"] is True
-    assert any("INDETERMINATE [International]" in w for w in report["warnings"])
+    assert report["ok"] is False
+    assert any("BOARD PUBLISHED WITHOUT A STAMP [International]" in f
+               for f in report["fail_reasons"])
+
+
+def test_intl_board_with_session_stamp_is_graded():
+    """A stamped international board participates in ordinary check-D freshness."""
+    now = datetime(2026, 8, 24, 8, 0, tzinfo=timezone.utc)
+    report = evaluate(
+        [_run(created_at="2026-08-21T22:30:00Z")],
+        {"source_asof": "2026-08-21"},
+        now,
+        boards=_boards(intl={"as_of": "2026-08-17"}),
+    )
+    assert report["facts"]["boards"]["intl"]["behind"] == 4
+    assert any("STALE BOARD [International]" in f for f in report["fail_reasons"])
 
 
 # ── GD-4A.1: CN/HK risk-forward-ledger freshness ────────────────────────────
