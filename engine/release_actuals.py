@@ -3,7 +3,7 @@
 The live publication watcher already extracts deterministic facts from BLS,
 BEA, and DOL documents.  This module normalizes those facts into the exact
 forecast target units and an immutable, keep-first receipt contract.  It never
-derives a CPI, PPI, PCE, or payroll print by differencing unrelated vintages.
+derives a CPI, PPI, PCE, GDP, or payroll print by differencing unrelated vintages.
 """
 from __future__ import annotations
 
