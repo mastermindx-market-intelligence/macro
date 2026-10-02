@@ -13,3 +13,28 @@ Greeks and OI join one-to-one on `(date, expiration, strike, right)`. Exposures 
 Each cell is a date-level cross-root Spearman IC with at least five eligible scored roots. Inference requires 126 observed IC dates and 30 non-overlapping effective label blocks. HAC retains the full canonical calendar index: missing dates do not compress lags, covariance uses observed pairs at their true session separation, and the report includes a 95% HAC confidence interval and Student-t p-value with `df=n_observed-1`. Sparse cells remain visible and consume their registered BH slot.
 
 The package reports all cells, coverage denominators, exclusions, effects, HAC uncertainty, raw and BH-adjusted p-values, and an unsupported matrix. Daily EOD bid/ask cannot support executable option-cost or PnL claims. Intraday, trade-sign/NBBO, dark-pool, known-at/vintage, OOS, training, calibration, scoring, ranking, gating, sizing, alerts, portfolio use, and trading remain outside this study.
+
+## v1.1 pre-outcome determinism amendment (binding implementation)
+
+The implementation that this doc accompanies is frozen at the v1.1 pre-outcome determinism amendment. The amended protocol lives at `research/options_estate/theta_eod_retrospective_association_v1_1_protocol.json` (SHA-256 `67011db3d3aed08827f027cafc5b5a2bf890289a1017b227cad15fc240826e68`); the human-readable amendment memo is `research/options_estate/THETA_EOD_RETROSPECTIVE_ASSOCIATION_V1_1_AMENDMENT.md`. V1 JSON above is preserved unchanged.
+
+The amendment keeps the ten feature formulas and 60 registered cells unchanged. It fixes only deterministic selection, manifest identity, HAC computation, split-seam predicates, tied/constant rank statistics, and effective-block ordering. The canonical manifest uses source-relative identities and canonical compact JSON serialization; absolute host paths and filesystem stat metadata are not manifest identity. Prepare and analyze require identical selected slots and bytes.
+
+The implementation CLI is:
+
+```
+python -m scripts.research.options_history_retrospective \
+  prepare-manifest --store <theta-root> --price-store <price-root> \
+  --protocol research/options_estate/theta_eod_retrospective_association_v1_1_protocol.json \
+  --out manifest.json
+
+python -m scripts.research.options_history_retrospective \
+  analyze --store <theta-root> --price-store <price-root> \
+  --protocol research/options_estate/theta_eod_retrospective_association_v1_1_protocol.json \
+  --manifest manifest.json --manifest-sha <hex> \
+  --out result.json
+```
+
+Analyze does not accept a separate fixture directory: its inputs are fully bound to the bytes that prepare-manifest hashed, and any drift refuses the study. The store/price-store values must be byte-identical to those used at prepare-manifest time. The gauntlet's `--study retrospective-v1` only prints a usage banner pointing at the helper CLI above; real-data analysis is not run from the gauntlet.
+
+The empirical run has NOT yet occurred: every contract specified above is wired and verified, but no real-data, target, IC, p-value, or outcome summary has been accessed, and production authority remains unchanged.

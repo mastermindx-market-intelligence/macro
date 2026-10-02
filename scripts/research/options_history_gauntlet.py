@@ -1281,35 +1281,14 @@ def _print_summary(results: dict, elapsed: float,
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="W-E1 Options History Gauntlet")
-    parser.add_argument("--study", choices=["gexr", "skew", "cwiv", "doi", "retrospective-v1", "all"],
+    parser.add_argument("--study", choices=["gexr", "skew", "cwiv", "doi", "retrospective-v1", "retrospective-v1.1", "all"],
                         default="all", help="Which study to run")
-    args = parser.parse_args()
-
-    # retrospective-v1 has NO real-data dependency in the gauntlet itself —
-    # the helper is run from its own CLI with --fixture-root. Print a usage
-    # banner and exit before the legacy store check, so this opt-in does not
-    # depend on /Users/chriswong/theta-ops-wt being present.
-    if args.study == "retrospective-v1":
-        try:
-            from scripts.research.options_history_retrospective import (
-                EXPECTED_PROTOCOL_SHA, FDR_FAMILY as RETRO_FDR,
-            )
-        except ImportError as exc:
-            print(f"retrospective-v1 mode unavailable: {exc}")
-            return 0
-        _print_section("Retrospective v1 (frozen protocol helper)")
-        print(f"  fdr_family: {RETRO_FDR}")
-        print(f"  expected_protocol_sha: {EXPECTED_PROTOCOL_SHA}")
-        print("  Real-data analysis is not run from this CLI — invoke the helper")
-        print("  explicitly via:")
-        print("    python -m scripts.research.options_history_retrospective \\")
-        print("      prepare-manifest --store ... --price-store ... \\")
-        print("      --protocol ... --out manifest.json")
-        print("    python -m scripts.research.options_history_retrospective \\")
-        print("      analyze --manifest ... --manifest-sha ... --protocol ... \\")
-        print("      --fixture-root ...")
-        print("  See research/options_estate/THETA_EOD_RETROSPECTIVE_ASSOCIATION_V1.md.")
-        return 0
+    args, study_args = parser.parse_known_args()
+    if args.study in {"retrospective-v1", "retrospective-v1.1"}:
+        from scripts.research.options_history_retrospective import main as retrospective_main
+        return retrospective_main(study_args)
+    if study_args:
+        parser.error("unrecognized arguments: " + " ".join(study_args))
 
     if not _store_check():
         print("SKIP: ThetaData EOD store not found at", _STORE)

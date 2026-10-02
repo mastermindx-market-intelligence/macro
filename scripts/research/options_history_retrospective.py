@@ -1,82 +1,719 @@
-"""Theta EOD retrospective association v1 — frozen protocol helper.
-
-This module implements the two bounded modes described in
-``research/options_estate/theta_eod_retrospective_association_v1_protocol.json``:
-
-* ``prepare_manifest`` — scan and inventory every selected 2017..2025 greeks/OI
-  and adjusted-price file. Records relative path, size, SHA-256, schema columns,
-  min/max date, row count, known-at/vintage scan, and the protocol SHA. Does
-  NOT read numerical feature or outcome values. Writes an immutable manifest
-  JSON + a separate manifest SHA file. Caller may compute and freeze the
-  manifest SHA before invoking ``analyze``.
-* ``analyze`` — accept ONLY an exact byte-identical manifest and the frozen
-  protocol SHA. Refuse any protocol mutation, missing/changed/extra selected
-  path, duplicate manifest path, or root/year mismatch. Compute one
-  date-level Spearman IC per (contrast, era, horizon) across the 60 registered
-  cells (10 contrasts × 3 eras × 2 horizons), HAC t-test inference on the full
-  canonical calendar index, and one global BH step-up at k=60 alpha=0.10.
-
-The module is research-only and NEVER mutates the input archive, its locks, or
-its derived cache. Per the frozen protocol every result is ``PIT_UNPROVEN``
-retrospective association only; no fit, calibration, scoring, ranking, gating,
-sizing, alerts, portfolio or trading authority is implied.
-"""
+"""Frozen Theta retrospective association study; no PIT, alpha or execution claim."""
 
 from __future__ import annotations
 
+"""Proposal-only immutable input manifest; metadata/date scans never read feature values."""
+import hashlib, importlib.util, json, platform
+from datetime import date, datetime
+from pathlib import Path
+import numpy, pandas, scipy, yaml, pyarrow as pa, pyarrow.compute as pc, pyarrow.parquet as pq
+
+PROTOCOL_SHA = "67011db3d3aed08827f027cafc5b5a2bf890289a1017b227cad15fc240826e68"
+FAMILY = "options_theta_retrospective_association_v1"
+DATE_NAMES = (
+    "date",
+    "session_date",
+    "as_of_date",
+    "asof_date",
+    "quote_date",
+    "trade_date",
+)
+AVAIL_WORDS = (
+    "known",
+    "available",
+    "vintage",
+    "revision",
+    "received",
+    "ingest",
+    "publish",
+    "asof",
+    "as_of",
+)
+
+
+def canonical_bytes(value):
+    return (
+        json.dumps(
+            value,
+            sort_keys=True,
+            ensure_ascii=True,
+            allow_nan=False,
+            separators=(",", ":"),
+        ).encode()
+        + b"\n"
+    )
+
+
+def sha_bytes(b):
+    return hashlib.sha256(b).hexdigest()
+
+
+def sha_file(p):
+    h = hashlib.sha256()
+    with p.open("rb") as f:
+        for b in iter(lambda: f.read(8 * 1024 * 1024), b""):
+            h.update(b)
+    return h.hexdigest()
+
+
+def stat(p):
+    s = p.stat()
+    return (s.st_size, s.st_mtime_ns, s.st_ino, s.st_dev)
+
+
+def unique_object(pairs):
+    out = {}
+    for key, value in pairs:
+        if key in out:
+            raise ValueError("duplicate JSON key: " + key)
+        out[key] = value
+    return out
+
+
+def load_protocol(p):
+    raw = p.read_bytes()
+    if sha_bytes(raw) != PROTOCOL_SHA:
+        raise ValueError("frozen protocol SHA mismatch")
+    d = json.loads(raw, object_pairs_hook=unique_object)
+    if d.get("study_id") != "THETA-EOD-RETROSPECTIVE-ASSOCIATION-V1.1":
+        raise ValueError("unexpected protocol study")
+    return d
+
+
+def expected_slots(proto):
+    s = proto["source_snapshot"]["selection"]
+    t = s["theta_source_slots"]
+    slots = []
+    for root in t["roots"]:
+        for year in t["years"]:
+            for kind in ("greeks", "oi"):
+                slots.append(
+                    {
+                        "kind": kind,
+                        "root": root,
+                        "year": year,
+                        "relative_path": f"theta/{kind}/{root}/{year}.parquet",
+                    }
+                )
+    for root in s["price_source_slots"]["roots"]:
+        slots.append(
+            {
+                "kind": "price",
+                "root": root,
+                "year": None,
+                "relative_path": f"price/data/yahoo/{root}.parquet",
+            }
+        )
+    if len(slots) != 435 or len({x["relative_path"] for x in slots}) != 435:
+        raise ValueError("fixed selector is not 435 unique slots")
+    return sorted(slots, key=lambda x: x["relative_path"])
+
+
+def source_digest(root):
+    engine, lib = root / "engine", root / "lib"
+    if not engine.is_dir() or not lib.is_dir():
+        raise IOError("engine/lib source directories required")
+    ep, lp = list(engine.rglob("*.py")), list(lib.rglob("*.py"))
+    if not ep or not lp:
+        raise IOError("engine/lib source directories must be nonempty")
+    paths = sorted(
+        set(
+            ep
+            + lp
+            + [
+                root / "scripts/research/options_history_gauntlet.py",
+                root / "scripts/research/options_history_retrospective.py",
+                root / "config/ruling_graph.yml",
+            ]
+        ),
+        key=lambda p: p.as_posix(),
+    )
+    if any(not p.is_file() for p in paths):
+        raise IOError("required source digest path unavailable")
+    return [
+        {"relative_path": p.relative_to(root).as_posix(), "sha256": sha_file(p)}
+        for p in paths
+    ]
+
+
+def family_registered(root):
+    d = yaml.safe_load((root / "config/ruling_graph.yml").read_text()) or {}
+    if FAMILY not in d.get("meta", {}).get("known_fdr_families", []):
+        raise ValueError("registered FDR family token missing")
+
+
+def calendar(root):
+    p = root / "lib/nyse_calendar.py"
+    spec = importlib.util.spec_from_file_location("_frozen_nyse", p)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    dates = [
+        d.isoformat()
+        for d in mod.sessions_between(date(2016, 1, 1), date(2025, 12, 31))
+    ]
+    return {
+        "start": "2016-01-01",
+        "end": "2025-12-31",
+        "count": len(dates),
+        "sha256": sha_bytes(canonical_bytes(dates)),
+    }, mod
+
+
+def normalize(v):
+    if isinstance(v, datetime):
+        return v.date(), v.time().isoformat() != "00:00:00", False
+    if isinstance(v, date):
+        return v, False, False
+    try:
+        s = str(v).replace("Z", "+00:00")
+        dt = datetime.fromisoformat(s)
+        return dt.date(), dt.time().isoformat() != "00:00:00", False
+    except ValueError:
+        try:
+            return date.fromisoformat(str(v)[:10]), False, False
+        except ValueError:
+            return None, False, True
+
+
+def metadata(path, cal):
+    pf = pq.ParquetFile(path)
+    names = pf.schema_arrow.names
+    low = {x.lower(): x for x in names}
+    col = next((low[x] for x in DATE_NAMES if x in low), None)
+    out = {
+        "size": path.stat().st_size,
+        "sha256": sha_file(path),
+        "row_count": pf.metadata.num_rows,
+        "schema": str(pf.schema_arrow),
+        "columns": names,
+        "date_column": col,
+        "availability_or_vintage_columns": [
+            x for x in names if any(w in x.lower() for w in AVAIL_WORDS)
+        ],
+    }
+    if col is None:
+        out["date_scan"] = {"status": "NO_RECOGNIZED_DATE_COLUMN"}
+        return out
+    nulls = seen = invalid = nonmidnight = 0
+    dates = set()
+    for b in pf.iter_batches(columns=[col], batch_size=65536):
+        a = b.column(0)
+        nulls += a.null_count
+        seen += len(a) - a.null_count
+        pc.min_max(a)
+        pc.count_distinct(a)
+        for v in pc.unique(a).to_pylist():
+            if v is not None:
+                d, mid, bad = normalize(v)
+                invalid += bad
+                nonmidnight += mid
+                if d is not None:
+                    dates.add(d)
+    out["date_scan"] = {
+        "non_null": seen,
+        "null_count": nulls,
+        "min": min(dates).isoformat() if dates else None,
+        "max": max(dates).isoformat() if dates else None,
+        "unique_dates": len(dates),
+        "non_session_dates": sum(not cal.is_session(d) for d in dates),
+        "non_midnight_timestamp_count": nonmidnight,
+        "invalid_date_metadata_count": invalid,
+        "out_of_study_unique_dates": sum(
+            d < date(2017, 1, 1) or d > date(2025, 12, 31) for d in dates
+        ),
+    }
+    return out
+
+
+def resolve(slot, store, prices):
+    x = slot["relative_path"].split("/")
+    return store / x[1] / x[2] / x[3] if slot["kind"] != "price" else prices / x[-1]
+
+
+def prepare_manifest(
+    store: Path, price_store: Path, protocol_path: Path, source_root: Path
+) -> dict:
+    store, price_store, source_root = map(Path, (store, price_store, source_root))
+    proto = load_protocol(Path(protocol_path))
+    slots = expected_slots(proto)
+    code_before = source_digest(source_root)
+    family_registered(source_root)
+    calinfo, cal = calendar(source_root)
+    baseline = {
+        x["relative_path"]: (
+            stat(resolve(x, store, price_store))
+            if resolve(x, store, price_store).is_file()
+            else None
+        )
+        for x in slots
+    }
+    entries = []
+    for slot in slots:
+        p = resolve(slot, store, price_store)
+        entry = dict(slot)
+        if not p.is_file():
+            entry["state"] = "missing"
+        else:
+            entry.update(state="present", **metadata(p, cal))
+        if (stat(p) if p.is_file() else None) != baseline[slot["relative_path"]]:
+            raise IOError("input changed during prepare: " + slot["relative_path"])
+        entries.append(entry)
+    changed = [
+        x["relative_path"]
+        for x in slots
+        if (
+            stat(resolve(x, store, price_store))
+            if resolve(x, store, price_store).is_file()
+            else None
+        )
+        != baseline[x["relative_path"]]
+    ]
+    if changed:
+        raise IOError(
+            "input changed before manifest finalization: " + ",".join(changed)
+        )
+    code_after = source_digest(source_root)
+    family_registered(source_root)
+    if code_after != code_before:
+        raise IOError("source changed during prepare")
+    return {
+        "schema": "options.science.theta_eod_retrospective_association.manifest/v1",
+        "study_id": proto["study_id"],
+        "protocol_sha256": PROTOCOL_SHA,
+        "expected_slot_count": 435,
+        "entries": entries,
+        "source_code_digest": code_before,
+        "calendar": calinfo,
+        "runtime": {
+            "python": platform.python_version(),
+            "numpy": numpy.__version__,
+            "pandas": pandas.__version__,
+            "scipy": scipy.__version__,
+            "pyarrow": pa.__version__,
+        },
+    }
+
+
+def verify_manifest(
+    manifest, expected_sha, store, price_store, protocol_path, source_root
+) -> None:
+    if (
+        not isinstance(manifest, dict)
+        or sha_bytes(canonical_bytes(manifest)) != expected_sha
+    ):
+        raise ValueError("manifest hash mismatch")
+    if manifest.get("protocol_sha256") != PROTOCOL_SHA:
+        raise ValueError("manifest protocol mismatch")
+    rebuilt = prepare_manifest(
+        Path(store), Path(price_store), Path(protocol_path), Path(source_root)
+    )
+    if canonical_bytes(rebuilt) != canonical_bytes(manifest):
+        raise ValueError("manifest/input/source/runtime mismatch; refresh refused")
+
+
+"""Pure pre-outcome feature adapter proposal for Theta retrospective v1.1.
+No IO, d5, labels, returns, or outcome access occur here.
+"""
+from collections import Counter
+from typing import Any
+import numpy as np
+import pandas as pd
+from engine import exposure_math, options_dislocation, options_ivspread, options_skew
+from lib import nyse_calendar
+
+_ID = ["date", "expiration", "strike", "right"]
+_NUM = [
+    "net_gamma_norm",
+    "net_vanna_norm",
+    "net_charm_norm",
+    "cw_ivspread",
+    "skew",
+    "atm_iv",
+    "term_slope",
+    "oi_total",
+]
+_COUNTER_KEYS = (
+    "greeks_raw_input_rows",
+    "oi_raw_input_rows",
+    "greeks_root_mismatch_rows",
+    "oi_root_mismatch_rows",
+    "greeks_invalid_date_rows",
+    "oi_invalid_date_rows",
+    "greeks_non_session_rows",
+    "oi_non_session_rows",
+    "greeks_invalid_identity_rows",
+    "oi_invalid_identity_rows",
+    "greeks_duplicate_rows_removed",
+    "oi_duplicate_rows_removed",
+    "greeks_valid_rows",
+    "oi_valid_rows",
+    "greeks_empty_input",
+    "oi_empty_input",
+    "oi_total_dates",
+    "greeks_unmatched_rows",
+    "oi_unmatched_rows",
+    "joined_rows",
+    "joined_quote_excluded_rows",
+)
+
+
+def _require(df: pd.DataFrame, cols: list[str], name: str) -> None:
+    missing = [c for c in cols if c not in df.columns]
+    if missing:
+        raise ValueError(f"{name} missing required columns: {missing}")
+
+
+def _root_col(df: pd.DataFrame, name: str) -> str:
+    for col in ("underlying", "root"):
+        if col in df.columns:
+            return col
+    raise ValueError(f"{name} missing required underlying/root column")
+
+
+def _as_dates(s: pd.Series) -> pd.Series:
+    return pd.to_datetime(s, errors="coerce").dt.date
+
+
+def _empty(kind: str) -> pd.DataFrame:
+    cols = _ID + (
+        ["oi"]
+        if kind == "oi"
+        else ["bid", "ask", "iv", "spot", "delta", "gamma", "vanna", "charm"]
+    )
+    return pd.DataFrame(columns=cols)
+
+
+def _raw_dates(
+    df: pd.DataFrame | None, root: str, year: int, kind: str, q: Counter
+) -> set:
+    if df is None or df.empty:
+        return set()
+    _require(df, ["date"], kind)
+    rcol = _root_col(df, kind)  # root identity is required for both input planes.
+    dates = _as_dates(df["date"])
+    root_ok = df[rcol].astype(str).str.upper().eq(root.upper())
+    q[f"{kind}_raw_input_rows"] += len(df)
+    q[f"{kind}_root_mismatch_rows"] += int((~root_ok).sum())
+    invalid_date = dates.isna()
+    q[f"{kind}_invalid_date_rows"] += int(invalid_date.sum())
+    non_session = pd.Series(False, index=df.index)
+    for i, d in dates.items():
+        if pd.notna(d) and not nyse_calendar.is_session(d):
+            non_session.loc[i] = True
+    q[f"{kind}_non_session_rows"] += int(non_session.sum())
+    return {
+        d
+        for d, ok in zip(dates, root_ok)
+        if pd.notna(d) and d.year == year and nyse_calendar.is_session(d) and ok
+    }
+
+
+def _normalise_greeks(
+    greeks: pd.DataFrame | None, root: str, year: int, q: Counter
+) -> pd.DataFrame:
+    if greeks is None or greeks.empty:
+        q["greeks_empty_input"] += 1
+        return _empty("greeks")
+    _require(greeks, _ID + ["bid", "ask"], "greeks")
+    rcol = _root_col(greeks, "greeks")
+    ivcol = "iv" if "iv" in greeks else "implied_vol"
+    spotcol = "spot" if "spot" in greeks else "underlying_price"
+    _require(greeks, [ivcol, spotcol, "delta"], "greeks")
+    g = greeks.copy()
+    g["date"] = _as_dates(g["date"])
+    g["expiration"] = _as_dates(g["expiration"])
+    for c in (
+        "strike",
+        "bid",
+        "ask",
+        ivcol,
+        spotcol,
+        "delta",
+        "gamma",
+        "vanna",
+        "charm",
+    ):
+        if c in g:
+            g[c] = pd.to_numeric(g[c], errors="coerce")
+    g = g.rename(columns={ivcol: "iv", spotcol: "spot"})
+    g["right"] = g["right"].astype(str).str.upper()
+    valid = (
+        g["date"].notna()
+        & g["expiration"].notna()
+        & g["date"].map(lambda d: d.year == year and nyse_calendar.is_session(d))
+        & g[rcol].astype(str).str.upper().eq(root.upper())
+        & g["right"].isin(["C", "P"])
+        & np.isfinite(g["strike"])
+        & g["strike"].gt(0)
+        & g["expiration"].gt(g["date"])
+    )
+    q["greeks_invalid_identity_rows"] += int((~valid).sum())
+    g = g.loc[valid].copy()
+    dup = g.duplicated(_ID, keep=False)
+    q["greeks_duplicate_rows_removed"] += int(dup.sum())
+    return g.loc[~dup].copy()
+
+
+def _normalise_oi(
+    oi: pd.DataFrame | None, root: str, year: int, q: Counter
+) -> pd.DataFrame:
+    if oi is None or oi.empty:
+        q["oi_empty_input"] += 1
+        return _empty("oi")
+    _require(oi, _ID + ["open_interest"], "oi")
+    rcol = _root_col(oi, "oi")
+    o = oi.copy()
+    o["date"] = _as_dates(o["date"])
+    o["expiration"] = _as_dates(o["expiration"])
+    o["strike"] = pd.to_numeric(o["strike"], errors="coerce")
+    o["open_interest"] = pd.to_numeric(o["open_interest"], errors="coerce")
+    o["right"] = o["right"].astype(str).str.upper()
+    valid = (
+        o["date"].notna()
+        & o["expiration"].notna()
+        & o["date"].map(lambda d: d.year == year and nyse_calendar.is_session(d))
+        & o[rcol].astype(str).str.upper().eq(root.upper())
+        & o["right"].isin(["C", "P"])
+        & np.isfinite(o["strike"])
+        & o["strike"].gt(0)
+        & o["expiration"].gt(o["date"])
+    )
+    q["oi_invalid_identity_rows"] += int((~valid).sum())
+    o = o.loc[valid].copy()
+    dup = o.duplicated(_ID, keep=False)
+    q["oi_duplicate_rows_removed"] += int(dup.sum())
+    return o.loc[~dup].copy()
+
+
+def _nearest(frame: pd.DataFrame, target: float, lo: float, hi: float | None):
+    dte = (frame["expiration"] - frame["date"]).map(lambda x: x.days).astype(float)
+    m = dte.ge(lo) if hi is None else dte.ge(lo) & dte.lt(hi)
+    c = pd.DataFrame(
+        {"expiry": frame.loc[m, "expiration"], "dte": dte.loc[m]}
+    ).drop_duplicates()
+    if c.empty:
+        return None
+    c["dist"] = (c["dte"] - target).abs()
+    return c.sort_values(["dist", "expiry"], kind="stable").iloc[0]["expiry"]
+
+
+def _atm(frame: pd.DataFrame, target: float, lo: float, hi: float) -> float | None:
+    expiry = _nearest(frame, target, lo, hi)
+    if expiry is None:
+        return None
+    sub = frame[frame["expiration"].eq(expiry)].copy()
+    finite_delta = np.isfinite(pd.to_numeric(sub["delta"], errors="coerce"))
+    sub = sub.loc[finite_delta].copy()
+    if not (sub["right"].eq("C").any() and sub["right"].eq("P").any()):
+        return None
+    a = sub.rename(columns={"right": "_right"}).copy()
+    a["is_call"] = a["_right"].eq("C")
+    a["expiry"] = a["expiration"]
+    a["_days"] = (a["expiration"] - a["date"]).map(lambda x: x.days).astype(float)
+    v = options_dislocation._atm_iv(a, lo, hi)
+    return round(float(v), 6) if np.isfinite(v) else None
+
+
+def _cw(frame: pd.DataFrame) -> tuple[float | None, str]:
+    expiry = _nearest(frame, 30.0, 7.0, None)
+    if expiry is None:
+        return None, "CW_NO_TENOR"
+    a = (
+        frame[frame["expiration"].eq(expiry)]
+        .rename(columns={"right": "_right", "strike": "K"})
+        .copy()
+    )
+    a["is_call"] = a["_right"].eq("C")
+    a["expiry"] = a["expiration"]
+    a["T"] = (a["expiration"] - a["date"]).map(lambda x: x.days / 365.0)
+    a["underlying"] = a["root"]
+    a["asof"] = a["date"]
+    out = options_ivspread.compute_ivspread(a)
+    if not out or out.get("n_pairs", 0) < 3 or out.get("weight_kind") != "oi":
+        return None, "CW_INSUFFICIENT_STRICT_PAIRS"
+    return float(out["ivspread"]), "OK"
+
+
+def _skew(frame: pd.DataFrame) -> tuple[float | None, str]:
+    expiry = _nearest(frame, 30.0, 7.0, None)
+    if expiry is None:
+        return None, "SKEW_NO_TENOR"
+    sub = frame[frame["expiration"].eq(expiry)].copy()
+    d = pd.to_numeric(sub["delta"], errors="coerce")
+    call = sub["right"].eq("C") & np.isfinite(d) & d.between(0.02, 0.98)
+    put = sub["right"].eq("P") & np.isfinite(d) & d.between(-0.98, -0.02)
+    if not call.any() or not put.any():
+        return None, "SKEW_STRICT_DELTA_LEG_MISSING"
+    a = sub.loc[call | put].rename(columns={"right": "_right", "strike": "K"}).copy()
+    a["is_call"] = a["_right"].eq("C")
+    a["expiry"] = a["expiration"]
+    a["T"] = (a["expiration"] - a["date"]).map(lambda x: x.days / 365.0)
+    a["underlying"] = a["root"]
+    a["asof"] = a["date"]
+    out = options_skew.compute_skew(a)
+    return (float(out["skew"]), "OK") if out else (None, "SKEW_CANONICAL_REFUSAL")
+
+
+def _exposure(frame: pd.DataFrame, greek: str) -> tuple[float | None, str]:
+    if greek not in frame:
+        return None, f"{greek.upper()}_COLUMN_UNAVAILABLE"
+    usable = exposure_math.usable_quote(frame["iv"], frame["oi"])
+    book = frame.loc[usable]
+    if book.empty:
+        return None, f"{greek.upper()}_NO_USABLE_QUOTES"
+    values = pd.to_numeric(book[greek], errors="coerce").to_numpy(float)
+    if float(np.isfinite(values).mean()) < 0.90:
+        return None, f"{greek.upper()}_COVERAGE_LT_90"
+    x = exposure_math.dealer_exposures(
+        is_call=book["right"].eq("C").to_numpy(),
+        oi=book["oi"].to_numpy(float),
+        spot=book["spot"].to_numpy(float),
+        **{greek: values},
+    )[greek]
+    finite = np.isfinite(x)
+    denom = float(np.abs(x[finite]).sum())
+    return (
+        (float(x[finite].sum() / denom), "OK")
+        if finite.any() and denom > 0
+        else (None, f"{greek.upper()}_ZERO_DENOM")
+    )
+
+
+def features_for_year(
+    greeks: pd.DataFrame | None, oi: pd.DataFrame | None, root: str, year: int
+) -> tuple[pd.DataFrame, dict]:
+    """One row per canonical raw date; all feature values nullable with reason codes."""
+    q: Counter = Counter({key: 0 for key in _COUNTER_KEYS})
+    raw_dates = _raw_dates(greeks, root, year, "greeks", q) | _raw_dates(
+        oi, root, year, "oi", q
+    )
+    g = _normalise_greeks(greeks, root, year, q)
+    o = _normalise_oi(oi, root, year, q)
+    q["greeks_valid_rows"] = len(g)
+    q["oi_valid_rows"] = len(o)
+    if not o.empty:
+        o = o.rename(columns={"open_interest": "oi"})
+    totals = (
+        o[np.isfinite(o["oi"]) & o["oi"].gt(0)].groupby("date")["oi"].sum()
+        if not o.empty
+        else pd.Series(dtype=float)
+    )
+    q["oi_total_dates"] = len(totals)
+    if g.empty and o.empty:
+        merged = pd.DataFrame(columns=[*_ID, "oi", "_merge"])
+    elif o.empty:
+        merged = g.copy()
+        merged["oi"] = np.nan
+        merged["_merge"] = "left_only"
+    elif g.empty:
+        merged = o.copy()
+        merged["_merge"] = "right_only"
+    else:
+        merged = g.merge(
+            o[_ID + ["oi"]], on=_ID, how="outer", indicator=True, validate="one_to_one"
+        )
+    q["greeks_unmatched_rows"] = int(merged["_merge"].eq("left_only").sum())
+    q["oi_unmatched_rows"] = int(merged["_merge"].eq("right_only").sum())
+    q["joined_rows"] = int(merged["_merge"].eq("both").sum())
+    joined = merged[merged["_merge"].eq("both")].copy()
+    groups = {d: x for d, x in joined.groupby("date", sort=False)}
+    rows: list[dict[str, Any]] = []
+    for d in sorted(raw_dates):
+        row = {"date": pd.Timestamp(d), "root": root.upper(), **{c: None for c in _NUM}}
+        row["oi_total"] = float(totals[d]) if d in totals.index else None
+        row["oi_total_reason"] = (
+            "OK" if row["oi_total"] is not None else "OI_TOTAL_UNAVAILABLE"
+        )
+        gd = groups.get(d)
+        if gd is None or gd.empty:
+            for f in _NUM[:-1]:
+                row[f"{f}_reason"] = "NO_ONE_TO_ONE_JOINED_CONTRACTS"
+        else:
+            quote = (
+                np.isfinite(gd["bid"])
+                & gd["bid"].gt(0)
+                & np.isfinite(gd["ask"])
+                & gd["ask"].gt(0)
+                & gd["bid"].le(gd["ask"])
+                & np.isfinite(gd["spot"])
+                & gd["spot"].gt(0)
+                & np.isfinite(gd["iv"])
+                & gd["iv"].ge(0.005)
+                & np.isfinite(gd["oi"])
+                & gd["oi"].gt(0)
+            )
+            q["joined_quote_excluded_rows"] += int((~quote).sum())
+            good = gd.loc[quote].copy()
+            if good.empty:
+                for f in _NUM[:-1]:
+                    row[f"{f}_reason"] = "NO_VALID_UNCROSSED_QUOTE"
+            else:
+                good["spot"] = float(good["spot"].median())
+                good["root"] = root.upper()
+                for greek, col in (
+                    ("gamma", "net_gamma_norm"),
+                    ("vanna", "net_vanna_norm"),
+                    ("charm", "net_charm_norm"),
+                ):
+                    row[col], row[f"{col}_reason"] = _exposure(good, greek)
+                row["cw_ivspread"], row["cw_ivspread_reason"] = _cw(good)
+                row["skew"], row["skew_reason"] = _skew(good)
+                row["atm_iv"] = _atm(good, 30.0, 15.0, 45.0)
+                row["atm_iv_reason"] = (
+                    "OK" if row["atm_iv"] is not None else "ATM_NEAR_STRICT_REFUSAL"
+                )
+                back = _atm(good, 90.0, 60.0, 120.0)
+                row["term_slope"] = (
+                    round(row["atm_iv"] - back, 6)
+                    if row["atm_iv"] is not None and back is not None
+                    else None
+                )
+                row["term_slope_reason"] = (
+                    "OK" if row["term_slope"] is not None else "TERM_STRICT_REFUSAL"
+                )
+        for f in _NUM[:-1]:
+            q[f"{f}_reason:{row.get(f'{f}_reason', 'UNSET')}"] += 1
+        rows.append(row)
+    cols = ["root", *_NUM, "oi_total_reason"] + [f"{f}_reason" for f in _NUM[:-1]]
+    daily = (
+        pd.DataFrame(rows).set_index("date").sort_index()
+        if rows
+        else pd.DataFrame(columns=cols, index=pd.DatetimeIndex([], name="date"))
+    )
+    daily.index = pd.DatetimeIndex(daily.index, name="date")
+    quality = {
+        "root": root.upper(),
+        "year": year,
+        "counts": dict(q),
+        "per_date": {
+            str(d.date()): {k: r[k] for k in daily.columns if k.endswith("_reason")}
+            for d, r in daily.iterrows()
+        },
+    }
+    return daily, quality
+
+
+"""Research-only execution over the exact inputs bound by the frozen manifest."""
 import argparse
-import hashlib
+from collections import Counter
+from datetime import date
 import json
 import os
-import re
-import sys
-import warnings
-from dataclasses import dataclass, field
-from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Any, Iterable, Mapping as TMap
-
-if __name__ == "__main__":
-    warnings.filterwarnings("ignore", category=RuntimeWarning)
+import sys
+import tempfile
 
 import numpy as np
 import pandas as pd
 from scipy import stats
 
-# Local imports kept narrow so prepare mode can run without engine init.
+from engine.grading import fill_index, forward_metrics
+from engine.flow_signals_grade import _has_split_seam, _spy_window_matches
+from engine.options_dislocation import _d5_by_session
 from lib import nyse_calendar
-from scripts.research.options_history_gauntlet import _bh_fdr, _hac_ttest
+from scripts.research.options_history_gauntlet import _bh_fdr
 
-
-# ---------------------------------------------------------------------------
-# Protocol SHA + frozen meta
-# ---------------------------------------------------------------------------
-
-PROTOCOL_FILENAME = "theta_eod_retrospective_association_v1_protocol.json"
-
-# The expected, frozen-by-root protocol SHA. Any protocol mutation refuses
-# analyze mode (and the manifest's own protocol_sha is also validated).
-EXPECTED_PROTOCOL_SHA = (
-    "384d3da6539960cbd768dd1a98eb9bd7b3f87e838fad980caca5f153a9c0a0c3"
-)
-
-# Registered FDR family token (must match config/ruling_graph.yml).
-FDR_FAMILY = "options_theta_retrospective_association_v1"
-
-# 10 contrasts × 3 eras × 2 horizons = 60 cells, ALWAYS reported.
-CONTRAST_IDS = [
-    "GEX_NORM_TO_FWD_RV",
-    "VEX_NORM_TO_SPY_EXCESS",
-    "CEX_NORM_TO_SPY_EXCESS",
-    "VANNA_RELIEF_TO_SPY_EXCESS",
-    "CW_IVSPREAD_LEVEL_TO_SPY_EXCESS",
-    "D5_CW_IVSPREAD_TO_SPY_EXCESS",
-    "SKEW_ACCEL_TO_SPY_EXCESS",
-    "TERM_SLOPE_TO_SPY_EXCESS",
-    "DOI5_TO_SPY_EXCESS",
-    "MOM5_BASELINE_TO_SPY_EXCESS",
-]
-CONTRAST_FEATURES = {
+FEATURES = {
     "GEX_NORM_TO_FWD_RV": "net_gamma_norm",
     "VEX_NORM_TO_SPY_EXCESS": "net_vanna_norm",
     "CEX_NORM_TO_SPY_EXCESS": "net_charm_norm",
@@ -88,1563 +725,472 @@ CONTRAST_FEATURES = {
     "DOI5_TO_SPY_EXCESS": "doi5",
     "MOM5_BASELINE_TO_SPY_EXCESS": "mom5",
 }
-CONTRAST_TARGETS = {
-    "GEX_NORM_TO_FWD_RV": "volatility_target",
-    "VEX_NORM_TO_SPY_EXCESS": "primary_return_target",
-    "CEX_NORM_TO_SPY_EXCESS": "primary_return_target",
-    "VANNA_RELIEF_TO_SPY_EXCESS": "primary_return_target",
-    "CW_IVSPREAD_LEVEL_TO_SPY_EXCESS": "primary_return_target",
-    "D5_CW_IVSPREAD_TO_SPY_EXCESS": "primary_return_target",
-    "SKEW_ACCEL_TO_SPY_EXCESS": "primary_return_target",
-    "TERM_SLOPE_TO_SPY_EXCESS": "primary_return_target",
-    "DOI5_TO_SPY_EXCESS": "primary_return_target",
-    "MOM5_BASELINE_TO_SPY_EXCESS": "primary_return_target",
-}
-ERAS = [
-    ("Era1", "2017-01-01", "2019-12-31"),
-    ("Era2", "2020-01-01", "2022-12-31"),
-    ("Era3", "2023-01-01", "2025-12-31"),
+GREEK_COLUMNS = [
+    "root",
+    "date",
+    "expiration",
+    "strike",
+    "right",
+    "bid",
+    "ask",
+    "underlying_price",
+    "implied_vol",
+    "delta",
+    "gamma",
+    "vanna",
+    "charm",
 ]
-HORIZONS = (5, 21)
-
-# BH-FDR is registered at k=60 over the full 10x3x2 family.
-BH_K = 60
-BH_ALPHA = 0.10
-
-# Inferential support thresholds.
-MIN_IC_DATES = 126
-MIN_EFFECTIVE_BLOCKS = 30
-MIN_ROOTS_PER_IC_DATE = 5
-
-# Required greeks columns — listed by the protocol.
-GREEKS_REQUIRED_COLS = (
-    "root", "expiration", "strike", "right", "date",
-    "bid", "ask", "underlying_price", "delta", "theta", "vega",
-    "rho", "epsilon", "lambda", "implied_vol", "iv_error", "gamma",
-    "vanna", "charm", "vomma", "veta", "vera", "speed", "zomma",
-    "color", "ultima",
-)
-OI_REQUIRED_COLS = ("root", "expiration", "strike", "right", "date", "open_interest")
-PRICE_REQUIRED_COLS = ("close",)
-# Adjusted price parquets use a pandas Date index with close and close_price.
-PRICE_REQUIRED_ALIAS = ("close", "close_price")
-
-# Roots: 23 roots total — SPX/SPXW coverage-only, SPY benchmark-only, 20 scored
-# (DIA/ARKK lack adjusted-price forwardable and stay non-evaluable).
-ALL_ROOTS = [
-    "SPX", "SPXW", "SPY", "QQQ", "IWM", "DIA",
-    "XLB", "XLC", "XLE", "XLF", "XLI", "XLK", "XLP", "XLRE", "XLU", "XLV", "XLY",
-    "SMH", "SOXX", "XBI", "KRE", "ARKK", "NVDA",
-]
-COVERAGE_ONLY_ROOTS = ("SPX", "SPXW")
-BENCHMARK_ONLY_ROOT = "SPY"
-SCORED_ROOTS = [
-    "QQQ", "IWM", "DIA", "XLB", "XLC", "XLE", "XLF", "XLI", "XLK", "XLP",
-    "XLRE", "XLU", "XLV", "XLY", "SMH", "SOXX", "XBI", "KRE", "ARKK", "NVDA",
-]
-KNOWN_PRICE_NON_EVALUABLE_ROOTS = {"DIA", "ARKK"}
-
-YEARS = list(range(2017, 2026))  # 2017..2025 inclusive
-
-# Engine primitives' hashes are part of full source hash closure.
-_ENGINE_PRIMITIVE_RELATIVE_PATHS = (
-    "engine/exposure_math.py",
-    "engine/options_ivspread.py",
-    "engine/options_skew.py",
-    "engine/options_dislocation.py",
-    "engine/grading.py",
-    "engine/flow_signals_grade.py",
-    "lib/nyse_calendar.py",
-)
+OI_COLUMNS = ["root", "date", "expiration", "strike", "right", "open_interest"]
 
 
-# ---------------------------------------------------------------------------
-# Pure utilities (testable in isolation)
-# ---------------------------------------------------------------------------
-
-def sha256_bytes(data: bytes) -> str:
-    return hashlib.sha256(data).hexdigest()
+def study_sessions():
+    return pd.DatetimeIndex(
+        nyse_calendar.sessions_between(date(2017, 1, 1), date(2025, 12, 31))
+    )
 
 
-def sha256_file(path: Path) -> str:
-    h = hashlib.sha256()
-    with open(path, "rb") as fh:
-        for chunk in iter(lambda: fh.read(1 << 20), b""):
-            h.update(chunk)
-    return h.hexdigest()
-
-
-def file_or_empty_sha(path: Path) -> str:
-    """sha256 of the file's bytes, or sha256(b'') when the file is absent."""
+def read_prices(path):
+    """Keep the native index and missing bars; never repair or substitute prices."""
     if not path.exists():
-        return sha256_bytes(b"")
-    return sha256_file(path)
-
-
-def _safe_read_parquet_metadata(path: Path) -> dict[str, Any]:
-    """Read ONLY schema + row count + min/max date — no feature/outcome values.
-
-    Uses ``pyarrow`` to read the schema and row count directly without materialising
-    row data. To recover min/max date we MUST read the date column; per the protocol
-    contract this is permitted (the date column is metadata, not a numerical
-    feature/outcome value). Reading the date column does not count as reading a
-    numerical column.
-    """
-    import pyarrow.parquet as pq
-    pf = pq.ParquetFile(str(path))
-    schema = pf.schema_arrow
-    cols = [schema.field(i).name for i in range(len(schema))]
-    md: dict[str, Any] = {
-        "columns": cols,
-        "row_count": int(pf.metadata.num_rows) if pf.metadata else 0,
-    }
-    if "date" in cols:
-        try:
-            df = pd.read_parquet(path, columns=["date"])
-            d = pd.to_datetime(df["date"], errors="coerce").dropna()
-            if not d.empty:
-                md["min_date"] = str(d.min().date())
-                md["max_date"] = str(d.max().date())
-            else:
-                md["min_date"] = None
-                md["max_date"] = None
-        except Exception:
-            md["min_date"] = None
-            md["max_date"] = None
-    else:
-        md["min_date"] = None
-        md["max_date"] = None
-    return md
-
-
-def _scan_known_at_columns(path: Path) -> list[str]:
-    """Return the list of column names that look like known-at/vintage fields.
-
-    Per protocol, the audited 240-file sample contained ZERO such fields; the
-    manifest inventory re-scans each selected file for the same vocabulary so a
-    genuine known-at column would surface. Names matching these patterns count
-    as 'vintage-like' and are reported back. A vintage column appearing is news,
-    not a routine.
-    """
-    vocab = (
-        "known_at", "known_at_utc", "knownat", "known_at_unix", "first_known",
-        "first_known_at", "first_seen", "ingested_at", "as_of_utc",
-        "vendor_known_at", "vendor_revision", "revised_at", "revision_ts",
-        "vintage", "trade_date_received", "feed_timestamp", "last_modified",
+        return None, "PRICE_FILE_MISSING"
+    table = pd.read_parquet(path, columns=["close"])
+    index = pd.DatetimeIndex(table.index)
+    if index.hasnans or index.has_duplicates or index.tz is not None:
+        return None, "PRICE_INDEX_INVALID"
+    if not index.equals(index.normalize()):
+        return None, "PRICE_INDEX_NOT_DAILY"
+    series = pd.Series(
+        pd.to_numeric(table["close"], errors="coerce").to_numpy(), index=index
     )
-    try:
-        import pyarrow.parquet as pq
-        pf = pq.ParquetFile(str(path))
-        schema = pf.schema_arrow
-        found = []
-        for i in range(len(schema)):
-            name = schema.field(i).name
-            if name.lower() in vocab:
-                found.append(name)
-        return found
-    except Exception:
-        return []
+    return series.sort_index(), None
 
 
-def _is_session_str(s: str) -> bool:
-    try:
-        return nyse_calendar.is_session(datetime.strptime(s, "%Y-%m-%d").date())
-    except Exception:
-        return False
+def native_window(prices, t, h, expected):
+    if prices is None:
+        return None, None, "PRICE_UNAVAILABLE"
+    fill = fill_index(prices, t)
+    if fill is None:
+        return None, None, "FILL_UNAVAILABLE"
+    window = prices.iloc[fill : fill + h + 1]
+    if not window.index.equals(expected):
+        return None, None, "NATIVE_SESSION_WINDOW_MISMATCH"
+    if not np.isfinite(window.to_numpy()).all() or (window <= 0).any():
+        return None, None, "INVALID_WINDOW_PRICE"
+    if _has_split_seam(prices, fill, h):
+        return None, None, "SPLIT_SEAM"
+    return fill, window, None
 
 
-def _manifest_duplicate_paths(records: list[dict]) -> list[str]:
-    seen: set[str] = set()
-    dups: list[str] = []
-    for rec in records:
-        p = rec.get("rel_path", "")
-        if p in seen:
-            dups.append(p)
-        seen.add(p)
-    return dups
-
-
-# ---------------------------------------------------------------------------
-# Protocol + manifest I/O
-# ---------------------------------------------------------------------------
-
-@dataclass
-class FrozenProtocol:
-    """A verified copy of the frozen protocol JSON."""
-
-    raw: dict[str, Any]
-    sha256: str
-    path: Path
-
-
-def load_frozen_protocol(path: Path) -> FrozenProtocol:
-    """Read the protocol JSON and verify its bytes match EXPECTED_PROTOCOL_SHA.
-
-    Analyzes any record-changing protocol mutation. The raw dict is returned
-    so callers can read contract constants — but only the bytes matter for
-    authorization.
-    """
-    if not path.exists():
-        raise FileNotFoundError(f"protocol JSON not found: {path}")
-    sha = sha256_file(path)
-    raw = json.loads(path.read_text())
-    if sha != EXPECTED_PROTOCOL_SHA:
-        raise ValueError(
-            f"protocol SHA mismatch: got {sha!r}, expected "
-            f"{EXPECTED_PROTOCOL_SHA!r} — protocol mutation refused (frozen)"
-        )
-    return FrozenProtocol(raw=raw, sha256=sha, path=path)
-
-
-@dataclass
-class SourceManifest:
-    """An immutable inventory of every selected input file."""
-
-    results: list[dict[str, Any]] = field(default_factory=list)
-    protocol_sha: str = ""
-    generated_utc: str = ""
-
-    def to_jsonable(self) -> dict[str, Any]:
-        return {
-            "schema": "options.science.theta_eod_retrospective_association.v1_manifest",
-            "study_id": "THETA-EOD-RETROSPECTIVE-ASSOCIATION-V1",
-            "fdr_family": FDR_FAMILY,
-            "protocol_sha256": self.protocol_sha,
-            "generated_utc": self.generated_utc,
-            "n_records": len(self.results),
-            "results": self.results,
-        }
-
-
-def write_manifest(manifest: SourceManifest, out_path: Path) -> str:
-    """Serialize manifest deterministically and return its SHA-256.
-
-    Sort_keys + separators=(",", ":") makes the JSON byte-stable across runs
-    (the protocol requires this — a re-emit of the same input bytes must hash
-    identically). Atomic write: dump to tmp then replace, so a concurrent
-    reader never sees a half-written file.
-    """
-    payload = json.dumps(manifest.to_jsonable(), sort_keys=True,
-                         separators=(",", ":")).encode("utf-8")
-    sha = sha256_bytes(payload)
-    tmp = out_path.with_suffix(out_path.suffix + ".tmp")
-    tmp.write_bytes(payload)
-    os.replace(tmp, out_path)
-    # Also write the SHA to a sibling file so the root can freeze it.
-    sha_path = out_path.with_suffix(out_path.suffix + ".sha256")
-    sha_path.write_text(sha + "\n")
-    return sha
-
-
-def load_manifest(manifest_path: Path, expected_sha: str) -> SourceManifest:
-    """Load a manifest and verify it matches the frozen expected SHA.
-
-    Refuses any byte mutation. The root freezes the actual SHA before invoking
-    analyze, so the caller passes it in.
-    """
-    if not manifest_path.exists():
-        raise FileNotFoundError(f"manifest not found: {manifest_path}")
-    raw_bytes = manifest_path.read_bytes()
-    sha = sha256_bytes(raw_bytes)
-    if expected_sha and sha != expected_sha:
-        raise ValueError(
-            f"manifest SHA mismatch: got {sha!r}, expected {expected_sha!r} — "
-            "manifest mutation refused (frozen)"
-        )
-    data = json.loads(raw_bytes.decode("utf-8"))
-    return SourceManifest(
-        results=list(data.get("results", [])),
-        protocol_sha=str(data.get("protocol_sha256", "")),
-        generated_utc=str(data.get("generated_utc", "")),
-    )
-
-
-# ---------------------------------------------------------------------------
-# Prepare mode
-# ---------------------------------------------------------------------------
-
-def _inventory_root_year(
-    *, store: Path, root: str, year: int, kind: str,
-) -> dict[str, Any] | None:
-    """Inventory one greeks/oi file. Reads metadata + bytes only.
-
-    Returns None when the file is absent (the prepared manifest records the
-    absence via a record of the same rel_path and sha256(b'')).
-    """
-    rel = f"{kind}/{root}/{year}.parquet"
-    path = store / kind / root / f"{year}.parquet"
-    if not path.exists():
-        return {
-            "kind": kind, "root": root, "year": year, "rel_path": rel,
-            "abs_path": str(path),
-            "exists": False,
-            "size": 0,
-            "sha256": sha256_bytes(b""),
-            "row_count": 0,
-            "columns": [],
-            "min_date": None, "max_date": None,
-            "known_at_vintage_columns": [],
-        }
-    size = path.stat().st_size
-    sha = sha256_file(path)
-    md = _safe_read_parquet_metadata(path)
+def label_at(prices, spy, t, h, era_end, expected):
+    """Both targets use the same complete, native calendar window and seam gates."""
+    empty = {"excess": np.nan, "rv": np.nan, "reason": None}
+    if len(expected) != h + 1 or expected[-1] > era_end:
+        return {**empty, "reason": "ERA_BOUNDARY_PURGE"}
+    fill, window, reason = native_window(prices, t, h, expected)
+    if reason:
+        return {**empty, "reason": "ROOT_" + reason}
+    spy_fill, _, reason = native_window(spy, t, h, expected)
+    if reason:
+        return {**empty, "reason": "SPY_" + reason}
+    if not _spy_window_matches(prices, fill, spy, h, t.date().isoformat()):
+        return {**empty, "reason": "SPY_WINDOW_MISMATCH"}
+    root_return = forward_metrics(prices, t, horizons=(h,))[f"fwd_ret_{h}"]
+    spy_return = forward_metrics(spy, t, horizons=(h,))[f"fwd_ret_{h}"]
+    if root_return is None or spy_return is None:
+        return {**empty, "reason": "CANONICAL_RETURN_UNAVAILABLE"}
     return {
-        "kind": kind, "root": root, "year": year, "rel_path": rel,
-        "abs_path": str(path),
-        "exists": True,
-        "size": size,
-        "sha256": sha,
-        "row_count": md["row_count"],
-        "columns": md["columns"],
-        "min_date": md["min_date"], "max_date": md["max_date"],
-        "known_at_vintage_columns": _scan_known_at_columns(path),
-    }
-
-
-def _inventory_price_root(
-    *, price_store: Path, root: str,
-) -> dict[str, Any]:
-    """Inventory one adjusted-price parquet. Reads metadata + bytes only."""
-    rel = f"{root}.parquet"
-    # Spec mentions both shapes:
-    #   flow-ops-wt/data/yahoo/{ROOT}.parquet   (direct under price_store)
-    # We honour the price_store root and look one level deep too.
-    candidates = [price_store / rel, price_store / root / rel]
-    chosen: Path | None = None
-    for c in candidates:
-        if c.exists():
-            chosen = c
-            break
-    if chosen is None:
-        # DIA/ARKK are KNOWN PRICE NON-EVALUABLE per the protocol — the
-        # manifest records the absence.
-        chosen = candidates[0]
-        return {
-            "kind": "adjusted_price", "root": root, "year": None,
-            "rel_path": rel,
-            "abs_path": str(chosen),
-            "exists": False, "size": 0,
-            "sha256": sha256_bytes(b""),
-            "row_count": 0, "columns": [],
-            "min_date": None, "max_date": None,
-            "known_at_vintage_columns": [],
-        }
-    # The actual rel path is the one that exists.
-    rel_used = str(chosen.relative_to(price_store))
-    size = chosen.stat().st_size
-    sha = sha256_file(chosen)
-    md = _safe_read_parquet_metadata(chosen)
-    return {
-        "kind": "adjusted_price", "root": root, "year": None,
-        "rel_path": rel_used,
-        "abs_path": str(chosen),
-        "exists": True, "size": size, "sha256": sha,
-        "row_count": md["row_count"], "columns": md["columns"],
-        "min_date": md["min_date"], "max_date": md["max_date"],
-        "known_at_vintage_columns": _scan_known_at_columns(chosen),
-    }
-
-
-def prepare_manifest(
-    *,
-    store: Path,
-    price_store: Path,
-    protocol_path: Path,
-    roots: list[str] = ALL_ROOTS,
-    price_population: list[str] = SCORED_ROOTS + [BENCHMARK_ONLY_ROOT],
-    years: list[int] = YEARS,
-) -> SourceManifest:
-    """Inventory every selected greeks/oi/price file and return it.
-
-    Pure IO: bytes, sizes, schema columns, min/max dates. NEVER reads numerical
-    feature or outcome values (the date column is metadata and is the only
-    non-metadata column touched, exactly as the protocol specifies).
-    """
-    proto = load_frozen_protocol(protocol_path)
-    results: list[dict[str, Any]] = []
-    # 1) greeks + OI per root × year.
-    for root in roots:
-        for yr in years:
-            results.append(_inventory_root_year(
-                store=store, root=root, year=yr, kind="greeks"))
-            results.append(_inventory_root_year(
-                store=store, root=root, year=yr, kind="oi"))
-    # 2) adjusted-price parquets for 21 roots (20 scored + SPY benchmark).
-    for root in price_population:
-        results.append(_inventory_price_root(
-            price_store=price_store, root=root))
-    # 3) engine primitive + calendar closure hashes (full source closure).
-    repo_root = Path(__file__).resolve().parents[2]
-    for rel in _ENGINE_PRIMITIVE_RELATIVE_PATHS:
-        p = repo_root / rel
-        results.append({
-            "kind": "engine_primitive", "root": None, "year": None,
-            "rel_path": rel,
-            "abs_path": str(p),
-            "exists": p.exists(),
-            "size": p.stat().st_size if p.exists() else 0,
-            "sha256": file_or_empty_sha(p),
-            "row_count": 0, "columns": [],
-            "min_date": None, "max_date": None,
-            "known_at_vintage_columns": [],
-        })
-    return SourceManifest(
-        results=results,
-        protocol_sha=proto.sha256,
-        generated_utc=datetime.utcnow().isoformat() + "Z",
-    )
-
-
-# ---------------------------------------------------------------------------
-# Manifest verification gate
-# ---------------------------------------------------------------------------
-
-class ManifestVerificationError(Exception):
-    """Raised when the manifest fails the frozen-input gate."""
-
-
-def verify_manifest_against_inputs(
-    manifest: SourceManifest, store: Path, price_store: Path,
-) -> None:
-    """Re-hash every selected file and refuse any mismatch.
-
-    Per spec: any changed, missing, extra, unreadable or schema-drifted file
-    refuses the study. The set of expected paths is derived from the manifest
-    itself (the manifest enumerates them); we recompute their hashes and
-    schema/date facts and check.
-
-    Duplicate manifest paths are caught via ``_manifest_duplicate_paths``.
-    Root/year mismatch is caught via manifest record inspection.
-    """
-    seen_rel: set[str] = set()
-    root_year: set[tuple[str, str, str]] = set()
-    expected_set: set[str] = set()
-    extras: list[str] = []
-    # Pass 1: dedup + schema only (so duplicate-path refusal fires regardless
-    # of whether subsequent records have valid content).
-    for rec in manifest.results:
-        rel = rec.get("rel_path", "")
-        if not rel:
-            raise ManifestVerificationError(
-                "manifest record has empty rel_path")
-        if rel in seen_rel:
-            raise ManifestVerificationError(
-                f"duplicate manifest path: {rel!r}")
-        seen_rel.add(rel)
-        kind = rec.get("kind")
-        root = rec.get("root")
-        year = rec.get("year")
-        if kind in ("greeks", "oi") and (root is None or year is None):
-            raise ManifestVerificationError(
-                f"greeks/oi record missing root/year: {rec}")
-        if kind in ("greeks", "oi"):
-            key = (kind, str(root), str(year))
-            if key in root_year:
-                raise ManifestVerificationError(
-                    f"duplicate manifest root/year: {key}")
-            root_year.add(key)
-        expected_set.add(rel)
-    # Pass 2: schema + hash checks.
-    for rec in manifest.results:
-        # Allowed schemas.
-        cols = set(rec.get("columns", []))
-        if kind == "greeks":
-            missing = [c for c in GREEKS_REQUIRED_COLS if c not in cols]
-            if missing:
-                raise ManifestVerificationError(
-                    f"greeks schema drift on {rel}: missing {missing}")
-        elif kind == "oi":
-            missing = [c for c in OI_REQUIRED_COLS if c not in cols]
-            if missing:
-                raise ManifestVerificationError(
-                    f"oi schema drift on {rel}: missing {missing}")
-        elif kind == "adjusted_price":
-            if not any(c in cols for c in PRICE_REQUIRED_ALIAS):
-                raise ManifestVerificationError(
-                    f"adjusted-price schema drift on {rel}: "
-                    f"missing any of {PRICE_REQUIRED_ALIAS}")
-        elif kind == "engine_primitive":
-            pass
-        else:
-            raise ManifestVerificationError(
-                f"unknown manifest kind {kind!r} for {rel}")
-        # Hash recheck.
-        p = Path(rec.get("abs_path", ""))
-        if not p.exists():
-            # An absent selected file with sha256(b'') and exists=False is
-            # allowed for the known non-evaluable roots (DIA/ARKK price) and
-            # for genuinely missing roots/years. We accept those records
-            # exactly as the manifest carries them; any mutation here would
-            # be caught by the manifest SHA itself.
-            if not (rec.get("exists") is False and rec.get("sha256") == sha256_bytes(b"")):
-                raise ManifestVerificationError(
-                    f"manifest says exists=True but file absent: {rel}")
-            continue
-        size_now = p.stat().st_size
-        sha_now = sha256_file(p)
-        if size_now != rec.get("size", -1) or sha_now != rec.get("sha256", ""):
-            raise ManifestVerificationError(
-                f"file hash mismatch for {rel}: "
-                f"size {size_now} vs {rec.get('size')}, "
-                f"sha {sha_now[:8]}… vs {str(rec.get('sha256', ''))[:8]}…")
-        # Re-verify the schema by re-reading the metadata.
-        try:
-            md = _safe_read_parquet_metadata(p)
-            if md["columns"] != rec.get("columns"):
-                raise ManifestVerificationError(
-                    f"schema drift on {rel}: columns changed since manifest")
-        except ManifestVerificationError:
-            raise
-        except Exception:
-            # Non-parquet engine primitive files don't have a pyarrow schema
-            # to compare; that branch is for engine_primitive records.
-            if kind in ("greeks", "oi", "adjusted_price"):
-                raise ManifestVerificationError(
-                    f"could not re-read parquet schema for {rel}")
-
-
-# ---------------------------------------------------------------------------
-# Synthetic-fixture IO used by tests (and analyze mode if --fixture-root is
-# given). NEVER touches the real archive.
-# ---------------------------------------------------------------------------
-
-def _load_fixture_root_year(fixture_root: Path, root: str, year: int,
-                            kind: str) -> pd.DataFrame | None:
-    """Read a greeks/oi fixture file from the synthetic-fixture root.
-
-    Returns None when the file is absent. Tests build these fixtures; analyze
-    mode would only be invoked against them in CI. Real-archive research is
-    the root's responsibility on M1.
-    """
-    p = fixture_root / kind / root / f"{year}.parquet"
-    if not p.exists():
-        return None
-    return pd.read_parquet(p)
-
-
-def _load_fixture_price(fixture_root: Path, root: str) -> pd.Series | None:
-    """Read a synthetic adjusted-price parquet. Returns close column with a
-    pandas Date index — matches the data/yahoo contract.
-    """
-    p = fixture_root / "adjusted_price" / f"{root}.parquet"
-    if not p.exists():
-        return None
-    df = pd.read_parquet(p)
-    if "close" in df.columns:
-        s = df["close"]
-    elif "close_price" in df.columns:
-        s = df["close_price"]
-    else:
-        return None
-    s.index = pd.to_datetime(s.index)
-    return s.dropna().sort_index()
-
-
-# ---------------------------------------------------------------------------
-# Feature builders (per protocol primitives)
-# ---------------------------------------------------------------------------
-
-@dataclass
-class FeatureRow:
-    """One feature value at one (date, root)."""
-
-    root: str
-    date: pd.Timestamp
-    feature: str
-    value: float | None
-    reason: str | None = None  # set when value is None
-
-
-def _quote_greek_coverage(g: pd.DataFrame, greeks: list[str]) -> float:
-    """Fraction of rows with finite values for every required greek + bid/ask."""
-    if g.empty:
-        return 0.0
-    required = ["bid", "ask"] + greeks
-    mask = pd.Series(True, index=g.index)
-    for c in required:
-        if c not in g.columns:
-            return 0.0
-        v = pd.to_numeric(g[c], errors="coerce")
-        mask &= np.isfinite(v)
-        if c in ("bid", "ask"):
-            mask &= (v > 0)
-    return float(mask.mean())
-
-
-def _build_gex_features(fixture_root: Path, root: str, year: int,
-                         greeks: pd.DataFrame, oi: pd.DataFrame
-                         ) -> tuple[list[FeatureRow], int, int]:
-    """Per (date) net-gamma/vanna/charm normalized by sum-abs.
-
-    Requires >= 90% finite coverage on (bid, ask, gamma/vanna/charm, open_interest)
-    among usable joined contracts (per protocol). Requires valid cross contract
-    screens (positive bid/ask, positive strike, 0DTE excluded, finite positive
-    spot).
-    """
-    rows: list[FeatureRow] = []
-    if greeks is None or oi is None or greeks.empty or oi.empty:
-        return rows, 0, 0
-    g = greeks.copy()
-    o = oi.copy()
-    # Identity join: (date, expiration, strike, right).
-    on = ["date", "expiration", "strike", "right"]
-    merged = g.merge(o, on=on, how="inner", suffixes=("", "_oi"))
-    if merged.empty:
-        return rows, 0, 0
-    # Strict quality gates.
-    merged["right"] = merged["right"].astype(str).str.upper()
-    merged["is_call"] = merged["right"] == "C"
-    merged["strike"] = pd.to_numeric(merged["strike"], errors="coerce")
-    merged["bid"] = pd.to_numeric(merged["bid"], errors="coerce")
-    merged["ask"] = pd.to_numeric(merged["ask"], errors="coerce")
-    merged["underlying_price"] = pd.to_numeric(
-        merged["underlying_price"], errors="coerce")
-    merged["open_interest"] = pd.to_numeric(
-        merged["open_interest"], errors="coerce")
-    merged["expiration"] = pd.to_datetime(merged["expiration"], errors="coerce")
-    merged["date"] = pd.to_datetime(merged["date"], errors="coerce")
-    ok = (
-        merged["right"].isin(["C", "P"])
-        & (merged["expiration"] > merged["date"])  # 0DTE excluded
-        & (merged["strike"] > 0)
-        & (merged["underlying_price"] > 0)
-        & (merged["bid"] > 0)
-        & (merged["ask"] > 0)
-        & (merged["bid"] <= merged["ask"])
-        & (merged["open_interest"] > 0)
-    )
-    merged = merged[ok].copy()
-    if merged.empty:
-        return rows, 0, 0
-    n_total = 0
-    n_dropped = 0
-    for date_, gdf in merged.groupby("date"):
-        n_total += 1
-        for greek, feat_name in (("gamma", "net_gamma_norm"),
-                                 ("vanna", "net_vanna_norm"),
-                                 ("charm", "net_charm_norm")):
-            cov = _quote_greek_coverage(gdf, [greek])
-            if cov < 0.90:
-                n_dropped += 1
-                rows.append(FeatureRow(
-                    root=root, date=pd.Timestamp(date_), feature=feat_name,
-                    value=None, reason="quote_greek_coverage"))
-                continue
-            v = pd.to_numeric(gdf[greek], errors="coerce")
-            oi_v = gdf["open_interest"].astype(float)
-            spot = float(pd.to_numeric(gdf["underlying_price"], errors="coerce")
-                         .iloc[0])
-            sign = np.where(gdf["is_call"], 1.0, -1.0)
-            base = sign * oi_v.values * 100.0
-            if greek == "gamma":
-                expo = base * v.values * (spot ** 2) * 0.01
-            elif greek == "vanna":
-                expo = base * v.values * spot * 0.01
-            elif greek == "charm":
-                expo = base * (v.values / 365.0) * spot
-            else:
-                continue
-            net = float(np.nansum(expo))
-            denom = float(np.nansum(np.abs(expo)))
-            if denom <= 0 or not np.isfinite(net) or not np.isfinite(denom):
-                rows.append(FeatureRow(
-                    root=root, date=pd.Timestamp(date_), feature=feat_name,
-                    value=None, reason="zero_denominator"))
-                continue
-            rows.append(FeatureRow(
-                root=root, date=pd.Timestamp(date_), feature=feat_name,
-                value=net / denom))
-    return rows, n_total, n_dropped
-
-
-def _build_cw_ivspread_features(fixture_root: Path, root: str, year: int,
-                                greeks: pd.DataFrame, oi: pd.DataFrame
-                                ) -> tuple[list[FeatureRow], int, int]:
-    """OI-weighted matched-pair CW ivspread, strict preferences.
-
-    Per spec, the ivspread builder uses the SAME-session unadjusted Greek median
-    spot (NOT adjusted close), exact >=7D expiry nearest 30 calendar days (ties
-    earlier), strict matched-pair IV spread <= 0.50, >=3 pairs, OI-weighted,
-    5-decimal rounding. No fallback.
-
-    OI is merged in via the (date, expiration, strike, right) identity; the same
-    identity that the GEX primitive uses.
-    """
-    rows: list[FeatureRow] = []
-    if greeks is None or greeks.empty:
-        return rows, 0, 0
-    g = greeks.copy()
-    if oi is not None and not oi.empty:
-        o = oi[["date", "expiration", "strike", "right", "open_interest"]].copy()
-        g = g.merge(o, on=["date", "expiration", "strike", "right"],
-                    how="left")
-    g["date"] = pd.to_datetime(g["date"], errors="coerce")
-    g["expiration"] = pd.to_datetime(g["expiration"], errors="coerce")
-    g["strike"] = pd.to_numeric(g["strike"], errors="coerce")
-    g["implied_vol"] = pd.to_numeric(g["implied_vol"], errors="coerce")
-    g["open_interest"] = pd.to_numeric(g.get("open_interest"), errors="coerce")
-    g["is_call"] = g["right"].astype(str).str.upper() == "C"
-    g["dte"] = (g["expiration"] - g["date"]).dt.days
-    n_total = 0
-    n_dropped = 0
-    for date_, gdf in g.groupby("date"):
-        n_total += 1
-        # Spot: same-session UNADJUSTED Greek median.
-        spot = float(pd.to_numeric(gdf["underlying_price"], errors="coerce").median())
-        if not np.isfinite(spot) or spot <= 0:
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(date_),
-                                   feature="cw_ivspread",
-                                   value=None, reason="no_quote_spot"))
-            continue
-        # Expiry selection: nearest 30d, >= 7d, ties earlier.
-        dte_table = gdf[gdf["dte"] >= 7]
-        if dte_table.empty:
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(date_),
-                                   feature="cw_ivspread",
-                                   value=None, reason="no_tenor"))
-            continue
-        dte_pick = dte_table.assign(
-            diff30=(dte_table["dte"] - 30).abs()).sort_values(
-                ["diff30", "dte"]).iloc[0]
-        target_exp = dte_pick["expiration"]
-        sub = gdf[gdf["expiration"] == target_exp]
-        sub = sub[(sub["implied_vol"] > 0) & (sub["strike"] > 0)]
-        if sub.empty:
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(date_),
-                                   feature="cw_ivspread",
-                                   value=None, reason="no_tenor"))
-            continue
-        # Matched pairs at same strike.
-        calls = sub[sub["is_call"]][["strike", "implied_vol", "open_interest"]].rename(
-            columns={"implied_vol": "iv_c", "open_interest": "oi_c"})
-        puts = sub[~sub["is_call"]][["strike", "implied_vol", "open_interest"]].rename(
-            columns={"implied_vol": "iv_p", "open_interest": "oi_p"})
-        m = calls.merge(puts, on="strike", how="inner")
-        if m.empty:
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(date_),
-                                   feature="cw_ivspread",
-                                   value=None, reason="no_quote_pair"))
-            continue
-        m["spread"] = m["iv_c"] - m["iv_p"]
-        m = m[m["spread"].abs() <= 0.50]
-        m = m[(m["oi_c"] > 0) & (m["oi_p"] > 0)]
-        if len(m) < 3:
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(date_),
-                                   feature="cw_ivspread",
-                                   value=None, reason="no_quote_pairs"))
-            n_dropped += 1
-            continue
-        # OI weight = call_OI + put_OI (sum, NOT min).
-        m["w"] = m["oi_c"] + m["oi_p"]
-        v = float((m["spread"] * m["w"]).sum() / m["w"].sum())
-        rows.append(FeatureRow(root=root, date=pd.Timestamp(date_),
-                               feature="cw_ivspread",
-                               value=round(v, 5)))
-    return rows, n_total, n_dropped
-
-
-def _build_skew_features(fixture_root: Path, root: str, year: int,
-                          greeks: pd.DataFrame
-                          ) -> tuple[list[FeatureRow], int, int]:
-    """Strict-delta skew: put delta in [-0.98, -0.02] nearest -0.25, call delta
-    in [0.02, 0.98] nearest +0.50; NO moneyness fallback; 4-decimal rounding.
-    """
-    rows: list[FeatureRow] = []
-    if greeks is None or greeks.empty:
-        return rows, 0, 0
-    g = greeks.copy()
-    g["date"] = pd.to_datetime(g["date"], errors="coerce")
-    g["expiration"] = pd.to_datetime(g["expiration"], errors="coerce")
-    g["dte"] = (g["expiration"] - g["date"]).dt.days
-    g["delta"] = pd.to_numeric(g["delta"], errors="coerce")
-    g["implied_vol"] = pd.to_numeric(g["implied_vol"], errors="coerce")
-    g["is_call"] = g["right"].astype(str).str.upper() == "C"
-    n_total = 0
-    n_dropped = 0
-    for date_, gdf in g.groupby("date"):
-        n_total += 1
-        # Exact >=7D expiry nearest 30, ties earlier.
-        dte_table = gdf[gdf["dte"] >= 7]
-        if dte_table.empty:
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(date_),
-                                   feature="skew",
-                                   value=None, reason="no_tenor"))
-            continue
-        dte_pick = dte_table.assign(
-            diff30=(dte_table["dte"] - 30).abs()).sort_values(
-                ["diff30", "dte"]).iloc[0]
-        target_exp = dte_pick["expiration"]
-        sub = gdf[gdf["expiration"] == target_exp]
-        sub = sub[sub["implied_vol"] > 0]
-        if sub.empty:
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(date_),
-                                   feature="skew",
-                                   value=None, reason="no_tenor"))
-            continue
-        # Put: delta in [-0.98, -0.02] nearest -0.25.
-        puts = sub[~sub["is_call"]].dropna(subset=["delta"])
-        puts = puts[puts["delta"].between(-0.98, -0.02)]
-        if puts.empty:
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(date_),
-                                   feature="skew",
-                                   value=None, reason="no_valid_delta_put"))
-            n_dropped += 1
-            continue
-        put_best = puts.assign(_d=(puts["delta"] - (-0.25)).abs()).sort_values(
-            "_d").iloc[0]
-        # Call: delta in [0.02, 0.98] nearest +0.50.
-        calls = sub[sub["is_call"]].dropna(subset=["delta"])
-        calls = calls[calls["delta"].between(0.02, 0.98)]
-        if calls.empty:
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(date_),
-                                   feature="skew",
-                                   value=None, reason="no_valid_delta_call"))
-            n_dropped += 1
-            continue
-        call_best = calls.assign(_d=(calls["delta"] - 0.50).abs()).sort_values(
-            "_d").iloc[0]
-        skew_v = round(
-            float(put_best["implied_vol"]) - float(call_best["implied_vol"]), 4)
-        rows.append(FeatureRow(root=root, date=pd.Timestamp(date_),
-                               feature="skew", value=skew_v))
-    return rows, n_total, n_dropped
-
-
-def _build_atm_iv_features(fixture_root: Path, root: str, year: int,
-                           greeks: pd.DataFrame
-                           ) -> tuple[list[FeatureRow], int, int]:
-    """BOTH call/put ATM IV at near (15<=DTE<45, target 30) and back (60<=DTE<120,
-    target 90) buckets. Rounded 6dp. Term slope = near - back, requires BOTH legs.
-    """
-    rows: list[FeatureRow] = []
-    if greeks is None or greeks.empty:
-        return rows, 0, 0
-    g = greeks.copy()
-    g["date"] = pd.to_datetime(g["date"], errors="coerce")
-    g["expiration"] = pd.to_datetime(g["expiration"], errors="coerce")
-    g["dte"] = (g["expiration"] - g["date"]).dt.days
-    g["delta"] = pd.to_numeric(g["delta"], errors="coerce")
-    g["implied_vol"] = pd.to_numeric(g["implied_vol"], errors="coerce")
-    g["is_call"] = g["right"].astype(str).str.upper() == "C"
-    n_total = 0
-    n_dropped = 0
-    for date_, gdf in g.groupby("date"):
-        n_total += 1
-        for tag, lo, hi, target in (("near", 15, 45, 30),
-                                    ("back", 60, 120, 90)):
-            bucket = gdf[(gdf["dte"] >= lo) & (gdf["dte"] < hi)
-                         & (gdf["implied_vol"] > 0)
-                         & gdf["delta"].notna()
-                         & gdf["delta"].between(-0.98, 0.98)]
-            if bucket.empty:
-                rows.append(FeatureRow(root=root, date=pd.Timestamp(date_),
-                                       feature=f"atm_{tag}",
-                                       value=None, reason="no_tenor"))
-                continue
-            exp_pick = bucket.assign(_d=(bucket["dte"] - target).abs()).sort_values(
-                "_d").iloc[0]
-            exp = exp_pick["expiration"]
-            sub = bucket[bucket["expiration"] == exp]
-            legs = []
-            for want_call in (True, False):
-                leg = sub[sub["is_call"] == want_call]
-                if leg.empty:
-                    continue
-                dd = leg["delta"].abs()
-                if dd.isna().all():
-                    continue
-                legs.append(float(leg.loc[dd.idxmin(), "implied_vol"]))
-            if len(legs) < 2:
-                rows.append(FeatureRow(root=root, date=pd.Timestamp(date_),
-                                       feature=f"atm_{tag}",
-                                       value=None, reason="no_atm_both_legs"))
-                n_dropped += 1
-                continue
-            v = round(float(np.mean(legs)), 6)
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(date_),
-                                   feature=f"atm_{tag}", value=v))
-    return rows, n_total, n_dropped
-
-
-def _build_oi_features(fixture_root: Path, root: str, year: int,
-                       greeks: pd.DataFrame, oi: pd.DataFrame
-                       ) -> tuple[list[FeatureRow], int, int]:
-    """DOI5 = sumOI(t)/sumOI(t-5 sessions)-1; both endpoints required, valid
-    identity, OI>0, expiry>date (0DTE excluded).
-    """
-    rows: list[FeatureRow] = []
-    if oi is None or oi.empty:
-        return rows, 0, 0
-    o = oi.copy()
-    o["date"] = pd.to_datetime(o["date"], errors="coerce")
-    o["expiration"] = pd.to_datetime(o["expiration"], errors="coerce")
-    o["open_interest"] = pd.to_numeric(o["open_interest"], errors="coerce")
-    o = o[(o["open_interest"] > 0) & (o["expiration"] > o["date"])]
-    if o.empty:
-        return rows, 0, 0
-    daily = o.groupby("date")["open_interest"].sum().sort_index()
-    n_total = 0
-    n_dropped = 0
-    date_lookup = {ts.date(): ts for ts in daily.index}
-    for d in daily.index:
-        n_total += 1
-        d_back = nyse_calendar.session_n_back(d.date(), 5)
-        if d_back is None or d_back not in date_lookup:
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(d),
-                                   feature="doi5",
-                                   value=None, reason="unavailable_window"))
-            continue
-        a = float(daily.loc[d])
-        b = float(daily.loc[pd.Timestamp(d_back)])
-        if not (np.isfinite(a) and np.isfinite(b)) or b <= 0:
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(d),
-                                   feature="doi5",
-                                   value=None, reason="zero_denominator"))
-            continue
-        rows.append(FeatureRow(root=root, date=pd.Timestamp(d),
-                               feature="doi5", value=a / b - 1.0))
-    return rows, n_total, n_dropped
-
-
-def _build_mom5_features(root: str, prices: pd.Series
-                         ) -> tuple[list[FeatureRow], int, int]:
-    """MOM5 = adjusted_close(t)/adjusted_close(t-5 sessions)-1; both endpoints
-    required. Uses the protocol-adjusted close (NOT the merged swing series)."""
-    rows: list[FeatureRow] = []
-    if prices is None or prices.empty:
-        return rows
-    s = prices.dropna()
-    s = s[s > 0]
-    if s.empty:
-        return rows
-    n_total = 0
-    date_list = [ts.date() for ts in s.index]
-    date_lookup = {d: i for i, d in enumerate(date_list)}
-    for i, d in enumerate(s.index):
-        n_total += 1
-        d_back = nyse_calendar.session_n_back(d.date(), 5)
-        if d_back is None or d_back not in date_lookup:
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(d),
-                                   feature="mom5",
-                                   value=None, reason="unavailable_window"))
-            continue
-        idx = date_lookup[d_back]
-        a = float(s.iloc[i])
-        b = float(s.iloc[idx])
-        if not (np.isfinite(a) and np.isfinite(b)) or b <= 0:
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(d),
-                                   feature="mom5",
-                                   value=None, reason="zero_denominator"))
-            continue
-        rows.append(FeatureRow(root=root, date=pd.Timestamp(d),
-                               feature="mom5", value=a / b - 1.0))
-    return rows, n_total, 0
-
-
-# ---------------------------------------------------------------------------
-# Label construction (per protocol)
-# ---------------------------------------------------------------------------
-
-def _build_label_target(fixture_root: Path, root: str, prices: pd.Series,
-                        spy_prices: pd.Series, horizon: int,
-                        era_end: pd.Timestamp) -> tuple[
-                            list[FeatureRow], int, int]:
-    """Primary return target = underlying_return(e0..eh) - spy_return(e0..eh)
-    OR volatility target = annualized std of one-session log returns on the
-    canonical window e0..eh. Endpoints must be canonical NYSE sessions after
-    feature date t; eh <= era_end; no era seam crossing.
-    """
-    rows: list[FeatureRow] = []
-    if prices is None or prices.empty or spy_prices is None or spy_prices.empty:
-        return rows, 0, 0
-    p = prices.dropna()
-    p = p[p > 0]
-    s = spy_prices.dropna()
-    s = s[s > 0]
-    if p.empty or s.empty:
-        return rows, 0, 0
-    p_dates = {ts.date(): float(val) for ts, val in p.items()}
-    s_dates = {ts.date(): float(val) for ts, val in s.items()}
-    n_total = 0
-    for d, val in p.items():
-        n_total += 1
-        d_d = d.date()
-        e0 = nyse_calendar.session_n_forward(d_d, 1)
-        if e0 is None:
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(d),
-                                   feature=f"fwd_ret_{horizon}",
-                                   value=None, reason="outside_calendar"))
-            continue
-        eh = nyse_calendar.session_n_forward(e0, horizon)
-        if eh is None or eh > era_end.date():
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(d),
-                                   feature=f"fwd_ret_{horizon}",
-                                   value=None, reason="era_purge"))
-            continue
-        # Native dates on price series.
-        path = []
-        cur = e0
-        for _ in range(horizon + 1):
-            if cur is None:
-                break
-            path.append(cur)
-            nxt = nyse_calendar.session_n_forward(cur, 1)
-            cur = nxt
-        # Path should have horizon+1 entries.
-        if len(path) < horizon + 1 or path[-1] != eh:
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(d),
-                                   feature=f"fwd_ret_{horizon}",
-                                   value=None, reason="missing_price"))
-            continue
-        if not all((d_e in p_dates) for d_e in path):
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(d),
-                                   feature=f"fwd_ret_{horizon}",
-                                   value=None, reason="missing_price"))
-            continue
-        if not all((d_e in s_dates) for d_e in path):
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(d),
-                                   feature=f"fwd_ret_{horizon}",
-                                   value=None, reason="missing_price"))
-            continue
-        p0 = p_dates[e0]
-        ph = p_dates[eh]
-        s0 = s_dates[e0]
-        sh = s_dates[eh]
-        if p0 <= 0 or s0 <= 0:
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(d),
-                                   feature=f"fwd_ret_{horizon}",
-                                   value=None, reason="missing_price"))
-            continue
-        ret = (ph / p0) - 1.0
-        sret = (sh / s0) - 1.0
-        rows.append(FeatureRow(root=root, date=pd.Timestamp(d),
-                               feature=f"fwd_ret_{horizon}",
-                               value=ret - sret))
-    return rows, n_total, 0
-
-
-def _build_vol_target(fixture_root: Path, root: str, prices: pd.Series,
-                      era_end: pd.Timestamp
-                      ) -> tuple[list[FeatureRow], int, int]:
-    """Annualized std of one-session log returns on the canonical window e0..eh.
-
-    Spec: annualized standard deviation (ddof=1) of the h log adjusted-close
-    one-session returns whose endpoints span e0 through eh. No option PnL.
-    """
-    rows: list[FeatureRow] = []
-    if prices is None or prices.empty:
-        return rows, 0, 0
-    p = prices.dropna()
-    p = p[p > 0]
-    if p.empty:
-        return rows, 0, 0
-    p_dates = {ts.date(): float(val) for ts, val in p.items()}
-    # Two horizons produce two windows; this builder reuses _build_label_target's
-    # path construction logic by mirroring it inline.
-    n_total = 0
-    for d in p.index:
-        n_total += 1
-        d_d = d.date()
-        e0 = nyse_calendar.session_n_forward(d_d, 1)
-        # We accept the era_end constraint via the caller; here we treat h=5 (near)
-        # and h=21 (back) as the two separate horizon RV targets; this function
-        # emits ONE feature 'rv_5' to mirror the IC convention.
-        for horizon, feat in ((5, "rv_5"), (21, "rv_21")):
-            eh = nyse_calendar.session_n_forward(e0, horizon) if e0 else None
-            if eh is None or eh > era_end.date():
-                rows.append(FeatureRow(root=root, date=pd.Timestamp(d),
-                                       feature=feat,
-                                       value=None, reason="era_purge"))
-                continue
-            path = []
-            cur = e0
-            while cur is not None and len(path) < horizon + 1:
-                path.append(cur)
-                cur = nyse_calendar.session_n_forward(cur, 1)
-            if len(path) < horizon + 1 or path[-1] != eh:
-                rows.append(FeatureRow(root=root, date=pd.Timestamp(d),
-                                       feature=feat,
-                                       value=None, reason="missing_price"))
-                continue
-            if not all((de in p_dates) for de in path):
-                rows.append(FeatureRow(root=root, date=pd.Timestamp(d),
-                                       feature=feat,
-                                       value=None, reason="missing_price"))
-                continue
-            rets = []
-            for i in range(1, len(path)):
-                a, b = p_dates[path[i - 1]], p_dates[path[i]]
-                if a <= 0:
-                    continue
-                rets.append(np.log(b / a))
-            if len(rets) < 2:
-                rows.append(FeatureRow(root=root, date=pd.Timestamp(d),
-                                       feature=feat,
-                                       value=None, reason="missing_price"))
-                continue
-            rv = float(np.std(rets, ddof=1) * np.sqrt(252))
-            rows.append(FeatureRow(root=root, date=pd.Timestamp(d),
-                                   feature=feat, value=rv))
-    return rows, n_total, 0
-
-
-# ---------------------------------------------------------------------------
-# Assemble features per contrast + era + horizon (synthetic-fixture path).
-# ---------------------------------------------------------------------------
-
-def _features_dataframe(root: str, fixture_root: Path,
-                       year: int, spy_prices: pd.Series
-                       ) -> tuple[pd.DataFrame, dict[str, int]]:
-    """Build one root-year feature frame (in-memory). For tests."""
-    greeks = _load_fixture_root_year(fixture_root, root, year, "greeks")
-    oi = _load_fixture_root_year(fixture_root, root, year, "oi")
-    prices = _load_fixture_price(fixture_root, root)
-    all_rows: list[FeatureRow] = []
-    counts: dict[str, int] = {}
-    # GEX/VEX/CEX.
-    g_rows, g_total, g_drop = _build_gex_features(
-        fixture_root, root, year, greeks, oi)
-    counts["gex_total"] = counts.get("gex_total", 0) + g_total
-    counts["gex_dropped"] = counts.get("gex_dropped", 0) + g_drop
-    all_rows.extend(g_rows)
-    # CW ivspread level.
-    iv_rows, iv_total, iv_drop = _build_cw_ivspread_features(
-        fixture_root, root, year, greeks, oi)
-    counts["iv_total"] = counts.get("iv_total", 0) + iv_total
-    counts["iv_dropped"] = counts.get("iv_dropped", 0) + iv_drop
-    all_rows.extend(iv_rows)
-    # Skew.
-    sk_rows, sk_total, sk_drop = _build_skew_features(
-        fixture_root, root, year, greeks)
-    counts["sk_total"] = counts.get("sk_total", 0) + sk_total
-    counts["sk_dropped"] = counts.get("sk_dropped", 0) + sk_drop
-    all_rows.extend(sk_rows)
-    # ATM IV.
-    atm_rows, atm_total, atm_drop = _build_atm_iv_features(
-        fixture_root, root, year, greeks)
-    counts["atm_total"] = counts.get("atm_total", 0) + atm_total
-    counts["atm_dropped"] = counts.get("atm_dropped", 0) + atm_drop
-    all_rows.extend(atm_rows)
-    # DOI5.
-    oi_rows, oi_total, oi_drop = _build_oi_features(
-        fixture_root, root, year, greeks, oi)
-    counts["oi_total"] = counts.get("oi_total", 0) + oi_total
-    counts["oi_dropped"] = counts.get("oi_dropped", 0) + oi_drop
-    all_rows.extend(oi_rows)
-    # MOM5.
-    m_rows, m_total, _ = _build_mom5_features(root, prices)
-    counts["mom_total"] = counts.get("mom_total", 0) + m_total
-    all_rows.extend(m_rows)
-    df = pd.DataFrame([
-        {"root": r.root, "date": r.date, "feature": r.feature,
-         "value": r.value, "reason": r.reason}
-        for r in all_rows
-    ])
-    # Derived feature: VANNA_RELIEF = vex_norm * (-d5_atm_near). Per protocol,
-    # both inputs use the EXACT same root/date intersection. No new primitives
-    # are introduced — we multiply two existing per-frame values at the
-    # available overlap.
-    if not df.empty:
-        for tag in ("near", "back"):
-            base = df[df["feature"] == "net_vanna_norm"].rename(
-                columns={"value": "_vex"})
-            d5 = df[df["feature"] == "atm_near"].rename(
-                columns={"value": "_atm"}) if tag == "near" else df[
-                    df["feature"] == "atm_back"].rename(
-                        columns={"value": "_atm"})
-            joined = base.merge(
-                d5[["root", "date", "_atm"]], on=["root", "date"], how="inner")
-            joined = joined.dropna(subset=["_vex", "_atm"])
-            for _, row in joined.iterrows():
-                if not (np.isfinite(row["_vex"]) and np.isfinite(row["_atm"])):
-                    continue
-                all_rows.append(FeatureRow(
-                    root=row["root"], date=row["date"],
-                    feature="vanna_relief",
-                    value=float(row["_vex"]) * (-float(row["_atm"])),
-                ))
-    # Derived feature: D5 cw ivspread change.
-    if not df.empty:
-        iv = df[df["feature"] == "cw_ivspread"][
-            ["root", "date", "value"]].rename(columns={"value": "_iv"})
-        iv_sorted = iv.sort_values(["root", "date"]).reset_index(drop=True)
-        iv_sorted["_d5"] = iv_sorted.groupby("root")["_iv"].diff(5)
-        for _, row in iv_sorted.iterrows():
-            v = row["_d5"]
-            if np.isfinite(v):
-                all_rows.append(FeatureRow(
-                    root=row["root"], date=row["date"],
-                    feature="d5_cw_ivspread", value=float(v)))
-    # Derived feature: skew acceleration = d5_skew(t) - d5_skew(t-5).
-    if not df.empty:
-        sk = df[df["feature"] == "skew"][
-            ["root", "date", "value"]].rename(columns={"value": "_sk"})
-        sk_sorted = sk.sort_values(["root", "date"]).reset_index(drop=True)
-        sk_sorted["_d5"] = sk_sorted.groupby("root")["_sk"].diff(5)
-        sk_sorted["_acc"] = sk_sorted.groupby("root")["_d5"].diff(5)
-        for _, row in sk_sorted.iterrows():
-            v = row["_acc"]
-            if np.isfinite(v):
-                all_rows.append(FeatureRow(
-                    root=row["root"], date=row["date"],
-                    feature="skew_accel", value=float(v)))
-    # Derived feature: term_slope = atm_near - atm_back (requires BOTH legs).
-    if not df.empty:
-        near = df[df["feature"] == "atm_near"][
-            ["root", "date", "value"]].rename(columns={"value": "_n"})
-        back = df[df["feature"] == "atm_back"][
-            ["root", "date", "value"]].rename(columns={"value": "_b"})
-        joined = near.merge(back, on=["root", "date"], how="inner")
-        joined = joined.dropna(subset=["_n", "_b"])
-        for _, row in joined.iterrows():
-            if not (np.isfinite(row["_n"]) and np.isfinite(row["_b"])):
-                continue
-            all_rows.append(FeatureRow(
-                root=row["root"], date=row["date"],
-                feature="term_slope", value=float(row["_n"]) - float(row["_b"]),
-            ))
-    df = pd.DataFrame([
-        {"root": r.root, "date": r.date, "feature": r.feature,
-         "value": r.value, "reason": r.reason}
-        for r in all_rows
-    ])
-    return df, counts
-
-
-def _build_panel(fixture_root: Path, era_name: str, era_start: pd.Timestamp,
-                 era_end: pd.Timestamp, spy_prices: pd.Series,
-                 scored_roots: list[str],
-                 ) -> tuple[pd.DataFrame, dict[str, int]]:
-    """Build the per-(root, date) feature + target panel for one era."""
-    counts: dict[str, int] = {}
-    frames: list[pd.DataFrame] = []
-    for root in scored_roots:
-        if root in KNOWN_PRICE_NON_EVALUABLE_ROOTS:
-            # Stay visible: emit a single null row per (date, feature) so the
-            # coverage matrix reflects the root but contributes zero IC.
-            continue
-        prices = _load_fixture_price(fixture_root, root)
-        if prices is None:
-            continue
-        years_in_era = list(range(era_start.year, era_end.year + 1))
-        for year in years_in_era:
-            df, c = _features_dataframe(root, fixture_root, year, spy_prices)
-            counts[root] = counts.get(root, 0) + sum(c.values())
-            frames.append(df)
-        # Labels (per horizon).
-        for horizon in HORIZONS:
-            lbl_rows, _, _ = _build_label_target(
-                fixture_root, root, prices, spy_prices, horizon, era_end)
-            frames.append(pd.DataFrame([
-                {"root": r.root, "date": r.date, "feature": r.feature,
-                 "value": r.value, "reason": r.reason} for r in lbl_rows]))
-        # RV target.
-        rv_rows, _, _ = _build_vol_target(fixture_root, root, prices, era_end)
-        frames.append(pd.DataFrame([
-            {"root": r.root, "date": r.date, "feature": r.feature,
-             "value": r.value, "reason": r.reason} for r in rv_rows]))
-    if not frames:
-        return pd.DataFrame(), counts
-    panel = pd.concat(frames, ignore_index=True)
-    # Era mask.
-    panel["date"] = pd.to_datetime(panel["date"], errors="coerce")
-    panel = panel[(panel["date"] >= era_start) & (panel["date"] <= era_end)]
-    return panel, counts
-
-
-# ---------------------------------------------------------------------------
-# IC computation and cell evaluation
-# ---------------------------------------------------------------------------
-
-def _date_level_ic(panel: pd.DataFrame, feature: str, target: str
-                   ) -> tuple[np.ndarray, np.ndarray]:
-    """One Spearman IC per date across scored roots. Returns (dates, ic_values).
-
-    When EITHER ``feature`` or ``target`` is absent from the panel (sparse cell,
-    feature builder produced no rows in this era), the cell contributes zero
-    IC dates and is therefore NON_EVALUABLE downstream — never an error.
-    """
-    df = panel[panel["feature"].isin([feature, target])].copy()
-    if df.empty:
-        return np.array([], dtype="datetime64[ns]"), np.array([], dtype=float)
-    pivot = df.pivot_table(index=["date", "root"], columns="feature",
-                           values="value", aggfunc="first").reset_index()
-    if feature not in pivot.columns or target not in pivot.columns:
-        return np.array([], dtype="datetime64[ns]"), np.array([], dtype=float)
-    pivot = pivot.dropna(subset=[feature, target], how="any")
-    if pivot.empty:
-        return np.array([], dtype="datetime64[ns]"), np.array([], dtype=float)
-    out_dates: list[pd.Timestamp] = []
-    out_ic: list[float] = []
-    for d, g in pivot.groupby("date"):
-        if len(g) < MIN_ROOTS_PER_IC_DATE:
-            continue
-        try:
-            ic, _ = stats.spearmanr(g[feature], g[target])
-        except Exception:
-            continue
-        if np.isfinite(ic):
-            out_dates.append(pd.Timestamp(d))
-            out_ic.append(float(ic))
-    return (np.array(out_dates, dtype="datetime64[ns]"),
-            np.array(out_ic, dtype=float))
-
-
-def _effective_blocks(dates: np.ndarray, horizon: int) -> int:
-    """Greedy NON-OVERLAPPING inclusive target windows >= horizon sessions.
-
-    Spec: report n_dates AND effective_blocks, where effective_blocks is the
-    count of greedily selected non-overlapping h-session label windows among
-    eligible IC dates.
-    """
-    if len(dates) == 0:
-        return 0
-    sorted_dates = np.sort(dates)
-    n_blocks = 0
-    cursor: pd.Timestamp | None = None
-    for d in sorted_dates:
-        ts = pd.Timestamp(d)
-        if cursor is None:
-            cursor = ts
-            n_blocks = 1
-            continue
-        # How many sessions between cursor and ts (inclusive target >= horizon).
-        if cursor > ts:
-            continue
-        # Use is_session calendar count.
-        delta_days = (ts - cursor).days
-        if delta_days < horizon - 1:
-            continue
-        cursor = ts
-        n_blocks += 1
-    return n_blocks
-
-
-def _cell_evaluate(panel: pd.DataFrame, feature: str, target: str,
-                   horizon: int
-                   ) -> dict[str, Any]:
-    """One (contrast, era, horizon) cell -> IC time-series + HAC inference.
-
-    Returns a dict with n_dates, n_rows (root+date rows fed in), effective_blocks,
-    raw_p, t_stat, mean_ic, median_ic, lag, lag_kind, ci95_lo, ci95_hi.
-    """
-    dates, ics = _date_level_ic(panel, feature, target)
-    n_dates = int(len(dates))
-    n_rows = int(len(panel))
-    if n_dates < MIN_IC_DATES:
-        return {
-            "feature": feature, "target": target, "horizon": horizon,
-            "n_rows": n_rows, "n_dates": n_dates,
-            "effective_blocks": 0,
-            "lag": None, "mean_ic": None, "median_ic": None,
-            "t_stat": None, "raw_p": None, "ci95_lo": None, "ci95_hi": None,
-            "state": "NON_EVALUABLE",
-            "reason": (
-                "n_dates<min"
-                if n_dates > 0
-                else "no_observed_inevaluable"),
-        }
-    # Full-calendar HAC: missing dates stay absent; covariance uses observed
-    # pairs at their true session separation, an absent-date pair contributes
-    # zero residual product.
-    n = n_dates
-    auto = max(int(np.floor(4.0 * (n / 100.0) ** (2.0 / 9.0))), 2 * horizon)
-    lag = max(2 * horizon, min(auto, n - 2))
-    # Student-t HAC: same formula as options_history_gauntlet._hac_ttest but
-    # we recompute here against the documented t/regression semantics on the full
-    # canonical calendar (unchanged canonical return math).
-    mu = float(np.mean(ics))
-    resid = ics - mu
-    gamma0 = float(np.dot(resid, resid) / n)
-    nw_var = gamma0
-    for j in range(1, lag + 1):
-        gamma_j = float(np.dot(resid[j:], resid[:-j]) / n)
-        nw_var += 2.0 * (1.0 - j / (lag + 1.0)) * gamma_j
-    se = float(np.sqrt(max(nw_var, 1e-30) / n))
-    t_stat = mu / se if se > 0 else float("nan")
-    raw_p = float(2.0 * stats.t.sf(abs(t_stat), df=max(n - 1, 1))) \
-        if np.isfinite(t_stat) else float("nan")
-    # 95% CI on the HAC t reference (df=n-1).
-    if np.isfinite(t_stat) and se > 0:
-        tc = float(stats.t.ppf(0.975, df=max(n - 1, 1)))
-        ci_lo = mu - tc * se
-        ci_hi = mu + tc * se
-    else:
-        ci_lo = ci_hi = float("nan")
-    blocks = _effective_blocks(dates, horizon)
-    if blocks < MIN_EFFECTIVE_BLOCKS:
-        return {
-            "feature": feature, "target": target, "horizon": horizon,
-            "n_rows": n_rows, "n_dates": n_dates,
-            "effective_blocks": blocks,
-            "lag": lag, "mean_ic": mu, "median_ic": float(np.median(ics)),
-            "t_stat": t_stat, "raw_p": raw_p,
-            "ci95_lo": ci_lo, "ci95_hi": ci_hi,
-            "state": "NON_EVALUABLE",
-            "reason": "effective_blocks<min",
-        }
-    return {
-        "feature": feature, "target": target, "horizon": horizon,
-        "n_rows": n_rows, "n_dates": n_dates,
-        "effective_blocks": blocks,
-        "lag": lag, "mean_ic": mu, "median_ic": float(np.median(ics)),
-        "t_stat": t_stat, "raw_p": raw_p,
-        "ci95_lo": ci_lo, "ci95_hi": ci_hi,
-        "state": "EVALUABLE",
+        "excess": float(root_return - spy_return),
+        "rv": float(np.std(np.diff(np.log(window.to_numpy())), ddof=1) * np.sqrt(252)),
         "reason": None,
     }
 
 
-# ---------------------------------------------------------------------------
-# Top-level analyze
-# ---------------------------------------------------------------------------
+def add_calendar_changes(daily, root, prices, calendar):
+    """Feature grids preserve missing dates. Native price series are never reindexed."""
+    if daily.index.has_duplicates:
+        raise ValueError("duplicate root/date aggregate")
+    out = daily.reindex(calendar).copy()
+    out["date"] = calendar
+    out["underlying"] = root
+    for name in ["atm_iv", "cw_ivspread", "skew", "oi_total"]:
+        if name not in out:
+            out[name] = np.nan
+    for name in ["atm_iv", "cw_ivspread", "skew", "oi_total", *FEATURES.values()]:
+        out[name] = pd.to_numeric(
+            out.get(name, pd.Series(np.nan, index=calendar)), errors="coerce"
+        ).astype(float)
+    out["d5_atm_iv"] = _d5_by_session(out, "atm_iv")
+    out["d5_cw_ivspread"] = _d5_by_session(out, "cw_ivspread")
+    out["d5_skew"] = _d5_by_session(out, "skew")
+    out["skew_accel"] = _d5_by_session(out, "d5_skew")
+    oi_change = _d5_by_session(out, "oi_total")
+    prior_oi = out["oi_total"] - oi_change
+    out["doi5"] = oi_change / prior_oi.where(prior_oi > 0)
+    out["vanna_relief"] = out.get("net_vanna_norm", np.nan) * -out["d5_atm_iv"]
+    price_map = {} if prices is None else prices.to_dict()
+    momentum = []
+    for t in calendar:
+        before = nyse_calendar.session_n_back(t.date(), 5)
+        a, b = price_map.get(t, np.nan), price_map.get(pd.Timestamp(before), np.nan)
+        momentum.append(
+            float(a / b - 1)
+            if np.isfinite(a) and np.isfinite(b) and a > 0 and b > 0
+            else np.nan
+        )
+    out["mom5"] = momentum
+    for feature in FEATURES.values():
+        if feature not in out:
+            out[feature] = np.nan
+    return out
 
-def analyze(
-    *, manifest_path: str, manifest_sha: str, protocol_path: str,
-    fixture_root: str,
-) -> dict[str, Any]:
-    """Run analyze mode against a frozen manifest + protocol.
 
-    Verification chain (per spec):
-      1. Protocol SHA matches EXPECTED_PROTOCOL_SHA (refuses protocol mutation).
-      2. Manifest SHA matches ``manifest_sha`` (refuses manifest mutation).
-      3. Every manifest record's file exists, sha256 matches, schema matches.
-      4. No duplicate manifest paths.
-      5. Root/year alignment matches the protocol population.
-      6. Run every (contrast, era, horizon) cell → 60 cells always.
-      7. Run global BH FDR at k=60 alpha=0.10.
-    """
-    mp = Path(manifest_path)
-    pp = Path(protocol_path)
-    fr = Path(fixture_root)
-    # 1 + 2
-    proto = load_frozen_protocol(pp)
-    manifest = load_manifest(mp, expected_sha=manifest_sha)
-    if manifest.protocol_sha != proto.sha256:
-        raise ValueError(
-            "manifest protocol_sha does not match the on-disk protocol — "
-            "refusing to analyze (frozen)")
-    # 3-5
-    # We can't resolve the real store/price_store paths from the manifest alone
-    # (the manifest carries abs_paths); use those for re-hash checks.
-    verify_manifest_against_inputs(
-        manifest,
-        store=Path("/nonexistent"),
-        price_store=Path("/nonexistent"),
-    )
-    # 5: root/year alignment.
-    roots_years = {(r["root"], r["year"])
-                   for r in manifest.results
-                   if r["kind"] in ("greeks", "oi")}
-    if not roots_years:
-        raise ManifestVerificationError(
-            "manifest contains no greeks/oi records — refusing analyze")
-    # Load synthetic fixture once.
-    spy_prices = _load_fixture_price(fr, BENCHMARK_ONLY_ROOT)
-    if spy_prices is None:
-        raise ValueError(
-            f"missing SPY fixture at {fr}/adjusted_price/{BENCHMARK_ONLY_ROOT}.parquet — refusing")
-    # 6: 60 cells.
-    cells: list[dict[str, Any]] = []
-    for era_name, era_start_str, era_end_str in ERAS:
-        era_start = pd.Timestamp(era_start_str)
-        era_end = pd.Timestamp(era_end_str)
-        panel, _ = _build_panel(
-            fr, era_name, era_start, era_end, spy_prices,
-            scored_roots=[r for r in SCORED_ROOTS
-                         if r not in COVERAGE_ONLY_ROOTS])
-        for contrast in CONTRAST_IDS:
-            feature = CONTRAST_FEATURES[contrast]
-            target_kind = CONTRAST_TARGETS[contrast]
-            for horizon in HORIZONS:
-                if contrast == "GEX_NORM_TO_FWD_RV":
-                    target = f"rv_{horizon}"
-                else:
-                    target = f"fwd_ret_{horizon}"
-                cells.append(_cell_evaluate(panel, feature, target, horizon))
-    # 7: BH FDR over all 60 cells (sparse cells still consume slots).
-    bh_input = {f"cell_{i:02d}": c.get("raw_p") if c.get("raw_p") is not None
-                else float("nan")
-                for i, c in enumerate(cells)}
-    # BH refuses NaN; skip NaN cells from the BH pass but keep the slot.
-    bh_clean = {k: v for k, v in bh_input.items()
-                if np.isfinite(v)}
-    bh = _bh_fdr(bh_clean, k_family=BH_K, alpha=BH_ALPHA)
-    for i, c in enumerate(cells):
-        key = f"cell_{i:02d}"
-        if key in bh:
-            c["bh_adj_p"] = bh[key]["bh_adj_p"]
-            c["bh_rank"] = bh[key]["rank"]
-            c["bh_reject"] = bool(bh[key]["reject_h0"])
-        else:
-            c["bh_adj_p"] = None
-            c["bh_rank"] = None
-            c["bh_reject"] = False
+def rank_ic(x, y, min_roots=5):
+    mask = np.isfinite(x) & np.isfinite(y)
+    n = int(mask.sum())
+    if n < min_roots:
+        return None, n, "INSUFFICIENT_ROOTS"
+    x, y = x[mask], y[mask]
+    if np.ptp(x) == 0:
+        return None, n, "CONSTANT_FEATURE"
+    if np.ptp(y) == 0:
+        return None, n, "CONSTANT_TARGET"
+    value = float(stats.spearmanr(x, y).statistic)
+    if not np.isfinite(value):
+        return None, n, "INVALID_IC"
+    return value, n, None
+
+
+def effective_blocks(dates, h):
+    end = None
+    count = 0
+    for t in sorted(dates):
+        start = nyse_calendar.session_n_forward(pd.Timestamp(t).date(), 1)
+        finish = nyse_calendar.session_n_forward(start, h)
+        if end is None or start > end:
+            count += 1
+            end = finish
+    return count
+
+
+def calendar_hac(values, h):
+    """Exact v1.1 estimator: canonical positions, zero absent residuals, no pair renormalization."""
+    values = np.asarray(values, dtype=float)
+    observed = np.isfinite(values)
+    n = int(observed.sum())
+    if n < 3:
+        return {"reason": "INSUFFICIENT_HAC_OBSERVATIONS"}
+    mean = float(values[observed].mean())
+    u = np.where(observed, values - mean, 0.0)
+    lag = min(max(int(np.floor(4 * (n / 100) ** (2 / 9))), 2 * h), n - 2)
+    numerator = float(u @ u)
+    for shift in range(1, lag + 1):
+        numerator += 2 * (1 - shift / (lag + 1)) * float(u[shift:] @ u[:-shift])
+    variance = numerator / (n * n)
+    if not np.isfinite(variance) or variance <= 0:
+        return {"reason": "DEGENERATE_HAC_VARIANCE", "lag": lag, "variance": variance}
+    se = float(np.sqrt(variance))
+    statistic = mean / se
+    critical = float(stats.t.ppf(0.975, n - 1))
     return {
-        "study_id": "THETA-EOD-RETROSPECTIVE-ASSOCIATION-V1",
-        "fdr_family": FDR_FAMILY,
-        "protocol_sha256": proto.sha256,
-        "manifest_sha256": manifest_sha,
-        "n_cells": len(cells),
-        "cells": cells,
-        "bh_k": BH_K, "bh_alpha": BH_ALPHA,
-        "pit_status": "PIT_UNPROVEN",
+        "reason": None,
+        "lag": lag,
+        "variance": variance,
+        "standard_error": se,
+        "t_stat": statistic,
+        "raw_p": float(2 * stats.t.sf(abs(statistic), n - 1)),
+        "ci95": [mean - critical * se, mean + critical * se],
+        "df": n - 1,
     }
 
 
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
+def evaluate_cell(panels, roots, calendar, era, h, contrast):
+    dates = calendar[(calendar >= era["start"]) & (calendar <= era["end"])]
+    feature = FEATURES[contrast]
+    target = ("rv" if contrast == "GEX_NORM_TO_FWD_RV" else "excess") + f"_{h}"
+    series, baseline, ablation = [], [], []
+    reasons, root_coverage = Counter(), Counter()
+    values = []
+    target_reasons = Counter()
+    for t in dates:
+        x = np.array([panels[r].at[t, feature] for r in roots], dtype=float)
+        y = np.array([panels[r].at[t, target] for r in roots], dtype=float)
+        m = np.array([panels[r].at[t, "mom5"] for r in roots], dtype=float)
+        eligible = np.isfinite(x) & np.isfinite(y)
+        for i, r in enumerate(roots):
+            if eligible[i]:
+                root_coverage[r] += 1
+            reason = panels[r].at[t, f"label_reason_{h}"]
+            if reason:
+                target_reasons[reason] += 1
+        ic, n, reason = rank_ic(x, y)
+        values.append(np.nan if ic is None else ic)
+        if reason:
+            reasons[reason] += 1
+        else:
+            series.append({"date": t.date().isoformat(), "ic": ic, "n_roots": n})
+        if contrast != "MOM5_BASELINE_TO_SPY_EXCESS":
+            paired = eligible & np.isfinite(m)
+            a, _, _ = rank_ic(x[paired], y[paired])
+            b, _, _ = rank_ic(m[paired], y[paired])
+            if a is not None and b is not None:
+                baseline.append(
+                    {
+                        "date": t.date().isoformat(),
+                        "ic_difference": a - b,
+                        "n_roots": int(paired.sum()),
+                    }
+                )
+        if contrast == "VANNA_RELIEF_TO_SPY_EXCESS":
+            v = np.array(
+                [panels[r].at[t, "net_vanna_norm"] for r in roots], dtype=float
+            )
+            paired = eligible & np.isfinite(v)
+            a, _, _ = rank_ic(x[paired], y[paired])
+            b, _, _ = rank_ic(v[paired], y[paired])
+            if a is not None and b is not None:
+                ablation.append(
+                    {
+                        "date": t.date().isoformat(),
+                        "ic_difference": a - b,
+                        "n_roots": int(paired.sum()),
+                    }
+                )
+    observed = [row["ic"] for row in series]
+    blocks = effective_blocks([row["date"] for row in series], h)
+    result = {
+        "id": f"{contrast}.{era['id']}.{h}",
+        "contrast": contrast,
+        "era": era["id"],
+        "horizon": h,
+        "feature": feature,
+        "target": target,
+        "n_dates": len(series),
+        "n_root_date_pairs": sum(row["n_roots"] for row in series),
+        "canonical_dates": len(dates),
+        "nominal_root_date_slots": len(dates) * len(roots),
+        "effective_blocks": blocks,
+        "mean_ic": float(np.mean(observed)) if observed else None,
+        "median_ic": float(np.median(observed)) if observed else None,
+        "date_exclusions": dict(reasons),
+        "target_exclusions": dict(target_reasons),
+        "root_eligible_pairs": {r: root_coverage[r] for r in roots},
+        "ic_series": series,
+        "state": "NON_EVALUABLE",
+        "reason": None,
+        "raw_p": None,
+        "ci95": None,
+        "bh_adj_p": None,
+        "bh_rank": None,
+        "bh_reject": False,
+    }
+    if len(series) < 126:
+        result["reason"] = "INSUFFICIENT_IC_DATES"
+    elif blocks < 30:
+        result["reason"] = "INSUFFICIENT_NONOVERLAPPING_BLOCKS"
+    else:
+        inference = calendar_hac(values, h)
+        if inference["reason"]:
+            result["reason"] = inference["reason"]
+        else:
+            result.update(inference)
+            result["state"] = "EVALUABLE"
+    for name, rows in [
+        ("versus_momentum_descriptive", baseline),
+        ("vanna_ablation_descriptive", ablation),
+    ]:
+        result[name] = {
+            "n_dates": len(rows),
+            "mean_paired_ic_difference": (
+                float(np.mean([r["ic_difference"] for r in rows])) if rows else None
+            ),
+            "series": rows,
+            "inferential_test": False,
+        }
+    return result
 
-def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Theta EOD retrospective association v1 — frozen protocol helper"
+
+def run_analysis(
+    manifest, manifest_sha, store, price_store, protocol_path, source_root
+):
+    """All reads use the same roots passed to manifest verification; there is no fixture data ingress."""
+    verify_manifest(
+        manifest, manifest_sha, store, price_store, protocol_path, source_root
     )
-    sub = parser.add_subparsers(dest="cmd", required=True)
-    p_prep = sub.add_parser("prepare-manifest", help="Inventory selected files")
-    p_prep.add_argument("--store", required=True,
-                        help="ThetaEOD store root (e.g. /Volumes/STORAGE/macro-data/thetadata_eod)")
-    p_prep.add_argument("--price-store", required=True,
-                        help="Adjusted-price store root (e.g. .../data/yahoo)")
-    p_prep.add_argument("--protocol", required=True,
-                        help="Path to the frozen protocol JSON")
-    p_prep.add_argument("--out", required=True,
-                        help="Output manifest JSON path")
+    protocol = load_protocol(protocol_path)
+    roots = protocol["population"]["scored_roots"]
+    calendar = study_sessions()
+    spy, spy_reason = read_prices(price_store / "SPY.parquet")
+    panels, quality = {}, {
+        "spy_price_reason": spy_reason,
+        "root_years": [],
+        "root_coverage": {},
+    }
+    for root in roots:
+        frames = []
+        print(f"aggregate {root}", file=sys.stderr, flush=True)
+        for year in range(2017, 2026):
+            gp, op = (
+                store / "greeks" / root / f"{year}.parquet",
+                store / "oi" / root / f"{year}.parquet",
+            )
+            g = pd.read_parquet(gp, columns=GREEK_COLUMNS) if gp.exists() else None
+            o = pd.read_parquet(op, columns=OI_COLUMNS) if op.exists() else None
+            daily, receipt = features_for_year(g, o, root, year)
+            quality["root_years"].append(receipt)
+            frames.append(daily)
+            del g, o
+        combined = pd.concat(frames).sort_index()
+        prices, price_reason = read_prices(price_store / f"{root}.parquet")
+        panel = add_calendar_changes(combined, root, prices, calendar)
+        counts = {
+            "price_reason": price_reason,
+            "canonical_dates": len(calendar),
+            "features": {
+                f: int(np.isfinite(panel[f]).sum()) for f in FEATURES.values()
+            },
+        }
+        for h in protocol["horizons_nyse_sessions"]:
+            labels = []
+            for i, t in enumerate(calendar):
+                era_end = next(
+                    pd.Timestamp(e["end"])
+                    for e in protocol["eras"]
+                    if e["start"] <= t.date().isoformat() <= e["end"]
+                )
+                labels.append(
+                    label_at(prices, spy, t, h, era_end, calendar[i + 1 : i + h + 2])
+                )
+            panel[f"excess_{h}"] = [v["excess"] for v in labels]
+            panel[f"rv_{h}"] = [v["rv"] for v in labels]
+            panel[f"label_reason_{h}"] = [v["reason"] for v in labels]
+            counts[f"label_reasons_{h}"] = dict(
+                Counter(v["reason"] or "EVALUABLE" for v in labels)
+            )
+        quality["root_coverage"][root] = counts
+        panels[root] = panel
+    cells = [
+        evaluate_cell(panels, roots, calendar, era, h, contrast)
+        for era in protocol["eras"]
+        for h in protocol["horizons_nyse_sessions"]
+        for contrast in FEATURES
+    ]
+    pvalues = {
+        c["id"]: c["raw_p"]
+        for c in cells
+        if c["state"] == "EVALUABLE" and c["raw_p"] is not None
+    }
+    adjusted = _bh_fdr(pvalues, k_family=60, alpha=0.1)
+    for cell in cells:
+        if cell["id"] in adjusted:
+            b = adjusted[cell["id"]]
+            cell.update(
+                bh_adj_p=float(b["bh_adj_p"]),
+                bh_rank=int(b["rank"]),
+                bh_reject=bool(b["reject_h0"]),
+            )
+    result = {
+        "study_id": protocol["study_id"],
+        "protocol_sha256": sha_file(protocol_path),
+        "manifest_sha256": manifest_sha,
+        "pit_status": "PIT_UNPROVEN",
+        "research_only": True,
+        "historical_alpha_validated": False,
+        "n_cells": len(cells),
+        "family_size": 60,
+        "bh_alpha": 0.1,
+        "cells": cells,
+        "quality": quality,
+        "unsupported": protocol["costs_and_unsupported"],
+        "interpretation": "Retrospective associations; BH correction covers this 60-cell run, not historical program-wide trial selection. No OOS, option PnL, calibration or production promotion.",
+    }
+    # Validate JSON and rerun the full input binding before returning any final result.
+    canonical_bytes(result)
+    verify_manifest(
+        manifest, manifest_sha, store, price_store, protocol_path, source_root
+    )
+    return result
 
-    p_ana = sub.add_parser("analyze", help="Run analyze against a frozen manifest")
-    p_ana.add_argument("--manifest", required=True)
-    p_ana.add_argument("--manifest-sha", required=True,
-                       help="Frozen manifest SHA256 (hex)")
-    p_ana.add_argument("--protocol", required=True)
-    p_ana.add_argument("--fixture-root", required=True,
-                       help="Root of the synthetic-fixture directory")
 
-    args = parser.parse_args()
-    if args.cmd == "prepare-manifest":
-        m = prepare_manifest(
-            store=Path(args.store),
-            price_store=Path(args.price_store),
-            protocol_path=Path(args.protocol),
+def _unique_object(pairs):
+    value = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError(f"duplicate JSON key: {key}")
+        value[key] = item
+    return value
+
+
+def load_manifest_file(path, expected_sha):
+    raw = path.read_bytes()
+    if sha_bytes(raw) != expected_sha:
+        raise ValueError("manifest file hash mismatch")
+    value = json.loads(raw, object_pairs_hook=_unique_object)
+    if canonical_bytes(value) != raw:
+        raise ValueError("manifest must use the frozen canonical encoding")
+    return value
+
+
+def write_artifact(path, content, input_roots):
+    """Create a new immutable artifact atomically; never overwrite source or inputs."""
+    target = path.resolve()
+    if any(target.is_relative_to(root.resolve()) for root in input_roots):
+        raise ValueError("output must be outside source and input directories")
+    if target.exists():
+        raise FileExistsError(f"artifact already exists: {target}")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            dir=target.parent, prefix=target.name + ".", delete=False
+        ) as stream:
+            temporary = Path(stream.name)
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.link(temporary, target)  # Atomic creation fails if another writer won.
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(
+        description="Frozen Theta retrospective study; research only"
+    )
+    parser.add_argument("mode", choices=["prepare-manifest", "analyze"])
+    parser.add_argument("--store", type=Path, required=True)
+    parser.add_argument("--price-store", type=Path, required=True)
+    parser.add_argument("--protocol", type=Path, required=True)
+    parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--manifest", type=Path)
+    parser.add_argument("--manifest-sha")
+    args = parser.parse_args(argv)
+    source_root = Path(__file__).resolve().parents[2]
+    if args.mode == "prepare-manifest":
+        value = prepare_manifest(
+            args.store, args.price_store, args.protocol, source_root
         )
-        sha = write_manifest(m, Path(args.out))
-        # The protocol forbids NaN in numerical outcomes; we serialize them via
-        # JSON-safe primitives. The manifest itself only carries bytes/hashes/
-        # sizes/dates/strings — all JSON-safe by construction.
-        print(f"manifest_written: {args.out}")
-        print(f"manifest_sha256: {sha}")
-        return 0
-    if args.cmd == "analyze":
-        result = analyze(
-            manifest_path=args.manifest,
-            manifest_sha=args.manifest_sha,
-            protocol_path=args.protocol,
-            fixture_root=args.fixture_root,
+    else:
+        if args.manifest is None or not args.manifest_sha:
+            parser.error("analyze requires --manifest and --manifest-sha")
+        manifest = load_manifest_file(args.manifest, args.manifest_sha)
+        value = run_analysis(
+            manifest,
+            args.manifest_sha,
+            args.store,
+            args.price_store,
+            args.protocol,
+            source_root,
         )
-        print(json.dumps(result, indent=2, sort_keys=True, default=str))
-        return 0
-    parser.error(f"unknown cmd: {args.cmd}")
-    return 2
+    content = canonical_bytes(value)
+    write_artifact(args.out, content, [args.store, args.price_store, source_root])
+    print(
+        json.dumps(
+            {"artifact": str(args.out), "sha256": sha_bytes(content), "mode": args.mode}
+        )
+    )
+    return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())
