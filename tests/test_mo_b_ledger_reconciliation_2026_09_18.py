@@ -29,6 +29,10 @@ INTEGRATION_BASE_SHA = "5332d876e75837c158c6f42a2862734451bb7158"
 # us_stocks.html == main with id=regime-read); MO-PAID-008 RETRACTS the 07:5xZ 'no pin layer' receipt (layer live since #7377, D26),
 # MO-DELTA-009 (#6958 closed), MO-PAID-011 (natural run observed), MO-PAID-023 (#8267 merged) MO-PAID-006 (plane merged #8276) restamped, states
 # unchanged. All are union rows, so the outside-union digest is unchanged.
+# 2026-10-02 wave 6 (same writer, D27/D28 as F02 owner): MO-PAID-008 BUILT_NOT_PROVEN->PROVEN_LIVE (#8278 c88f7b288b36, 16 cells viewed,
+# served == main) and MO-PAID-023 PARTIAL->PROVEN_LIVE (whitehouse-sentinel 37007365383 state=no_new + served policy_watch.html == main);
+# MO-PAID-011 (DEC §6 proof satisfied by #8280, D29) and MO-PAID-017 (#8265 merged 36d83f1330ff, D30) restamped, states unchanged.
+# All four are union rows, so the outside-union digest is unchanged.
 OUTSIDE_UNION_SHA256 = "cb9c1bf581b30bbb75e9fa3fd1f7f953d01f313dff98601dddc45e37ba43ef3c"
 CAPABILITY_STATES = {"NOT_BUILT", "SPEC_ONLY", "PARTIAL", "BUILT_NOT_PROVEN", "PROVEN_LIVE"}
 
@@ -170,12 +174,12 @@ EXPECTED = {
   ],
   "MO-PAID-008": [
     "NEW_BOUNDED_BUILD",
-    "BUILT_NOT_PROVEN"
-  ],  # D7 2026-10-02: PARTIAL->BUILT_NOT_PROVEN
+    "PROVEN_LIVE"
+  ],  # D27 2026-10-02: BUILT_NOT_PROVEN->PROVEN_LIVE (#8278 c88f7b288b36, 16 cells viewed); D7: PARTIAL->BUILT_NOT_PROVEN
   "MO-PAID-023": [
     "UPGRADE_EXISTING_OWNER",
-    "PARTIAL"
-  ],  # D7 2026-10-02: PROVEN_LIVE->PARTIAL
+    "PROVEN_LIVE"
+  ],  # D28 2026-10-02: PARTIAL->PROVEN_LIVE (sentinel 37007365383 + served no_new); D7: PROVEN_LIVE->PARTIAL
   "MO-PAID-034": [
     "UPGRADE_EXISTING_OWNER",
     "PROVEN_LIVE"
@@ -498,10 +502,12 @@ def test_sol_adjudicated_closure_fields_are_not_stale():
     r = _rows()
 
     uk = r["MO-PAID-023"]
-    # D7 (2026-10-02): PROVEN_LIVE->PARTIAL — the desk still renders but the served
-    # policy_watch.html reads model_unavailable (MO-PAID-023_UK_DIAG_R1: placement fault
-    # + latent fallback defect). Sol's #7351 closure receipt stays pinned below.
-    assert uk["capability_state_c2"] == "PARTIAL"
+    # D7 (2026-10-02): PROVEN_LIVE->PARTIAL — the served policy_watch.html read
+    # model_unavailable (MO-PAID-023_UK_DIAG_R1: placement fault + latent fallback defect).
+    # D28 (2026-10-02): PARTIAL->PROVEN_LIVE after the #8267 cure — sentinel run 37007365383
+    # (state=no_new) and the served page == main with data-uk-state="no_new". Sol's #7351
+    # closure receipt stays pinned below.
+    assert uk["capability_state_c2"] == "PROVEN_LIVE"
     assert "no_new" in (uk["state_delta"] + uk["missing_contract_or_proof"])
     assert "#7351" in uk["missing_contract_or_proof"]
 
