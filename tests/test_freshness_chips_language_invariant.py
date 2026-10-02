@@ -49,7 +49,7 @@ TEMPLATES = ROOT / "templates"
 THEME = TEMPLATES / "theme.css"
 
 TEXT_SUFFIXES = {".j2", ".html", ".css", ".js"}
-FRESHNESS_WORD_RE = re.compile(r"(?<!re)fresh|stale|verified|updated|asof")
+FRESHNESS_WORD_RE = re.compile(r"(?<!re)fresh|stale|verified|updated|asof|(?<![a-z])live$")
 CLASS_RE = re.compile(r"\.([A-Za-z0-9_-]+)")
 VAR_RE = re.compile(r"--[A-Za-z0-9_-]+")
 DECL_RE = re.compile(r"(--[A-Za-z0-9_-]+)\s*:\s*([^;]+)")
@@ -419,6 +419,26 @@ def test_matcher_catches_the_original_defect_and_skips_signal_states():
     # Jinja tags inside a <style> block do not break rule extraction
     jinja = '<style>{% if x %}.a{color:red}{% endif %}\n.tp-node.fresh-live{ box-shadow:0 0 0 4px var(--ch,var(--up)); }</style>'
     assert [o[0] for o in freshness_offenders(jinja, swapped)] == [2]
+
+
+def test_dtp_chip_live_is_a_freshness_chip_pinned_by_the_class_form():
+    # Pin the O27 defect: a freshness/provenance chip (".dtp-chip--live") painted with
+    # var(--ink-up) swaps under html[data-lang="zh"] — green in EN, red in ZH. The class
+    # form "live" must name a freshness rule, but bare substrings ("alive", "live-signal",
+    # "deliver") must NOT, otherwise the matcher fans out into unrelated selectors.
+    swapped = {"--up", "--down", "--ink-up", "--ink-down"}
+    defect = '.dtp-chip--live { color: var(--ink-up); }\n'
+    assert freshness_offenders(defect, swapped) == [
+        (1, ".dtp-chip--live", ["--ink-up"])
+    ], "the original O27 defect must be caught under the swapped closure"
+    healed = '.dtp-chip--live { color: var(--ink-ok); }\n'
+    assert freshness_offenders(healed, swapped) == [], (
+        "a freshness chip painted with the status plane (--ink-ok) must NOT be flagged"
+    )
+    # boundary cases that must NOT be flagged as freshness rules
+    assert freshness_offenders('.live-signal { color: var(--ink-up); }\n', swapped) == []
+    assert freshness_offenders('.alive { color: var(--ink-up); }\n', swapped) == []
+    assert freshness_offenders('.deliver { color: var(--ink-up); }\n', swapped) == []
 
 
 def test_matcher_resolves_local_indirection_and_scoped_zh_remaps():
