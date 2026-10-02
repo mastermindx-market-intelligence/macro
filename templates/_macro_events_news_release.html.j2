@@ -13,6 +13,11 @@
   'gdp_real_annualized':['Real GDP','实际 GDP'],
   'nfp_payroll_change':['Payroll change','非农就业变化'], 'claims_initial':['Initial claims','初请失业金人数']
 } %}
+{% set gdp_vintages = {
+  'advance':['Advance estimate','初值'],
+  'second':['Second estimate','第二次估计'],
+  'third':['Third estimate','第三次估计']
+} %}
 {% set reasons = {
  'unsupported_event_type':['Result coverage is not connected for this release.','此数据类型尚未接入官方结果。'],
  'invalid_as_of':['The evidence cutoff is missing or invalid.','证据截止时间缺失或无效。'],
@@ -55,6 +60,7 @@
           {% if ev.get('status') in ['available','partial'] and m.get('status') == 'available' and m.get('actual') is number and m.get('actual') is not sameas true and m.get('actual') is not sameas false and m.get('display_value') is string and m.get('metric_id') in labels and m.get('unit') in ['percent','percent_annualized','thousands'] %}
             <p class="nd-official-value">{{ m.display_value }}{% if m.unit in ['percent','percent_annualized'] %}<span>%</span>{% endif %}</p>
             <p class="nd-official-unit">{% if m.unit == 'percent_annualized' %}{{ bi('Annualized quarter-over-quarter rate','年化季度环比') }}{% elif m.unit == 'percent' %}{{ bi('Month over month','环比') }}{% elif m.get('metric_id') == 'nfp_payroll_change' %}{{ bi('Thousands of payroll jobs','千个非农就业岗位') }}{% else %}{{ bi('Thousands of initial claims','千份初请失业金申请') }}{% endif %}</p>
+            {% if m.get('metric_id') == 'gdp_real_annualized' and m.get('estimate_vintage') in gdp_vintages %}{% set gv = gdp_vintages.get(m.estimate_vintage) %}<p class="nd-official-vintage">{{ bi(gv[0],gv[1]) }}</p>{% endif %}
             <p class="nd-official-period">{{ bi('Reference period','数据时期') }} · {{ m.get('period') if m.get('release') != 'claims' else m.get('official_reference_period') }}</p>
             {% if m.get('correction_pending') is sameas true %}<p class="nd-official-correction">{{ bi('A proposed correction needs review. The first value is retained.','有待核查的更正，暂保留首次公布值。') }}</p>{% endif %}
             <details class="nd-official-provenance" data-nd-provenance>
