@@ -4,7 +4,7 @@ This frozen, fit-free daily-archive study may produce reproducible retrospective
 
 Before any outcome or financial value is computed, prepare mode inventories and hashes every selected 2017-2025 Theta and adjusted-price input, including schemas and availability/vintage-column scans. Analyze mode accepts only that exact manifest. The prior metadata audit inventoried 13,119 files (66,282,226,978 bytes; 381 roots), while only a 240-file, 311,665,900-row subset was hash/date/schema scanned and contained zero known-at fields. That sample does not prove a whole-archive vintage fact; the study's full selected-file manifest must make its own scan. Pending attributable availability receipts, every result is `PIT_UNPROVEN`.
 
-The scored universe is 20 ETF/index-equivalent roots after excluding duplicate SPX/SPXW and benchmark-only SPY. DIA and ARKK lack the required native adjusted-price files, so they remain visible non-evaluable and no fallback source is allowed. Each label starts on the first NYSE session after the archive observation date and ends after 5 or 21 NYSE sessions. Root and SPY must both contain every native adjusted-close date in that canonical interval. Labels cannot cross an era seam or 2025-12-31; seam rows are null.
+The scored universe is 20 ETF/equity roots, including NVDA, after excluding duplicate SPX/SPXW and benchmark-only SPY. DIA and ARKK lack the required native adjusted-price files, so they remain visible non-evaluable and no fallback source is allowed. Each label starts on the first NYSE session after the archive observation date and ends after 5 or 21 NYSE sessions. Root and SPY must both contain every native adjusted-close date in that canonical interval. Labels cannot cross an era seam or 2025-12-31; seam rows are null.
 
 The 60 cells cover ten exact contrasts in Era1 (2017-19), Era2 (2020-22), and Era3 (2023-25): normalized gamma, vanna, charm, Vanna-relief interaction, CW IV-spread level/change, skew acceleration, IV term slope, five-session OI growth, and five-session price momentum. The actual family token is `options_theta_retrospective_association_v1`; it must be registered in `config/ruling_graph.yml` before analyze mode. There is one global BH step-up family at alpha 0.10. Vanna and baseline IC differences are descriptive paired effects only, with no extra p-value or family cell. Return-feature comparisons use identical root/date sets; any gamma/RV momentum comparison must use the same RV target and matched set.
 
@@ -26,15 +26,17 @@ The implementation CLI is:
 python -m scripts.research.options_history_retrospective \
   prepare-manifest --store <theta-root> --price-store <price-root> \
   --protocol research/options_estate/theta_eod_retrospective_association_v1_1_protocol.json \
-  --out manifest.json
+  --out /outside/source/options_theta_retrospective_20261002_manifest.json
 
 python -m scripts.research.options_history_retrospective \
   analyze --store <theta-root> --price-store <price-root> \
   --protocol research/options_estate/theta_eod_retrospective_association_v1_1_protocol.json \
-  --manifest manifest.json --manifest-sha <hex> \
-  --out result.json
+  --manifest /outside/source/options_theta_retrospective_20261002_manifest.json --manifest-sha <hex> \
+  --out /outside/source/options_theta_retrospective_20261002_result.json
 ```
 
-Analyze does not accept a separate fixture directory: its inputs are fully bound to the bytes that prepare-manifest hashed, and any drift refuses the study. The store/price-store values must be byte-identical to those used at prepare-manifest time. The gauntlet's `--study retrospective-v1` only prints a usage banner pointing at the helper CLI above; real-data analysis is not run from the gauntlet.
+Analyze does not accept a separate fixture directory: its inputs are fully bound to the bytes that prepare-manifest hashed, and any drift refuses the study. The store/price-store values must be byte-identical to those used at prepare-manifest time. The gauntlet's `--study retrospective-v1` or `--study retrospective-v1.1` delegates to the helper CLI and forwards its remaining arguments; it does not print a usage-only banner.
 
-The empirical run has NOT yet occurred: every contract specified above is wired and verified, but no real-data, target, IC, p-value, or outcome summary has been accessed, and production authority remains unchanged.
+The first execution used computation head `a7ee15312486cac5992e2fb658135adff465939e` and failed at final JSON serialization because a nullable diagnostic reason became a NaN mapping key. It computed cells internally but emitted no valid result artifact; no numerical cell result was inspected. The diagnostic-only correction preserved the frozen specification and all 435 input entries. The whole manifest changed solely to bind the corrected helper source.
+
+The successful second execution used computation head `07186d356cf2a3ef9d24a2d17fe60bd397f570cd`, manifest `6b678a65f531eb31735cca7641b898887739475a9c1a479c2a0ebbecd8a164dc`, and result `7af1b1ae1c871892384388695d17977cea1a6b6aa4fd21fc1625b5dad55073f3`. All 60 cells are evaluable, with three within-run BH rejections. Independent summary/HAC/BH reproduction passed, as did all 18 fixed-date raw rank checks. The [complete report](../../reports/artifacts/options_theta_retrospective_20261002.md) contains every cell, uncertainty, coverage, exact replay commands and limitations. [PR #8286](https://github.com/mastermindx-market-intelligence/macro/pull/8286) owns publication status. Production authority remains unchanged.

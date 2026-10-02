@@ -104,8 +104,7 @@ waves:
     next_action: >
       FIT-FREE REPAIR OPEN under the Chairman 2026-10-02 historical research assignment.
       Evaluation contract #7401 is accepted/merged as dc4fd0766709188cba8d16a9fc16479c0e9c110f.
-      Signal-science #7395 retains its independently reviewed method after a normal current-main
-      update and awaits fresh delivery checks. Repair the accepted contracts now; new fitting
+      Signal-science #7395 is accepted/merged as 7476142cdcb654b521c7d77eb8f2ef1657148bbd. Repair the accepted contracts now; new fitting
       still requires frozen study specifications, eligible data and verified repairs.
       Preserve target Y_H=1[spy_excess_H>0] at the registered horizons, one
       source/detector-version construction per fitted artifact, canonical NYSE trading-session
@@ -116,16 +115,20 @@ waves:
       production fusion and promotion restrictions remain.
   - id: OA-2R
     title: Historical Options research revival and empirical evidence package
-    status: in_progress
+    status: done
     next_action: >
-      Apply DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY: complete fit-free source/PIT
-      coverage and method repairs, freeze individual studies before outcome access,
-      then report actual supported historical findings and unsupported cells.
-      The pinned episode-only descriptive study is complete: 36 cells reproduced, all
-      observed labels are proxies and no aligned-true cell exists. See the 2026-10-02
-      report and DSC:OPTIONS-EPISODE-PROXY-COVERAGE-20261002. Broader validation still
-      needs archive access, known-at/aligned labels and a frozen OOS study.
-      Reuse the existing Options owners; no production or promotion authority.
+      The bounded Theta EOD retrospective association v1.1 research package is complete.
+      Archive access was resolved without a configuration change. All 60 registered cells are
+      evaluable and three within-family BH rejections are recorded in
+      reports/artifacts/options_theta_retrospective_20261002.md. The accepted retry is bound to
+      frozen protocol 67011db3d3aed08827f027cafc5b5a2bf890289a1017b227cad15fc240826e68,
+      result 7af1b1ae1c871892384388695d17977cea1a6b6aa4fd21fc1625b5dad55073f3, manifest
+      6b678a65f531eb31735cca7641b898887739475a9c1a479c2a0ebbecd8a164dc, and an independent
+      IC-summary/HAC/BH receipt. The first attempt failed only at final serialization and produced
+      no valid artifact; the retry had identical 435 input entries, protocol, calendar and runtime,
+      with its changed manifest digest limited to helper-source provenance. This closes only the
+      bounded research package. PIT/known-at, fresh OOS, exact option economics, promotion and all
+      production authority remain closed under DEC:OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY.
   - id: OA-3
     title: Exact-option NBBO lifecycle and outcome contract under existing owners
     status: todo
@@ -155,6 +158,7 @@ decisions:
   - "DEC:AD-OPTIONS-CANONICAL-SOURCE-THETADATA"
 discoveries:
   - "DSC:OPTIONS-EPISODE-PROXY-COVERAGE-20261002"
+  - "DSC:OPTIONS-THETA-EOD-RETROSPECTIVE-20261002"
   - "DSC:OPTIONS-ALPHA-DEAD-UI-MASKS-LIVE-EVIDENCE-ESTATE"
 landmines:
   - >
@@ -199,6 +203,11 @@ artifacts:
   - reports/artifacts/options_historical_signal_science_20261002.md
   - reports/artifacts/options_historical_signal_science_20261002.json
   - reports/artifacts/options_historical_signal_science_20261002_protocol.json
+  - reports/artifacts/options_theta_retrospective_20261002.md
+  - reports/artifacts/options_theta_retrospective_20261002_result.json
+  - reports/artifacts/options_theta_retrospective_20261002_manifest.json
+  - reports/artifacts/options_theta_retrospective_20261002_independent_receipt.json
+  - reports/artifacts/options_theta_retrospective_20261002_reproduce.py
   - agentos/decisions/DEC-OPTIONS-HISTORICAL-REVIVAL-RESEARCH-ONLY.md
   - research/options_estate/OPTIONS_HISTORICAL_REVIVAL_CHARTER_V1.md
   - docs/superpowers/specs/2026-08-27-options-alpha-intelligence-recovery-design.md
@@ -209,7 +218,7 @@ artifacts:
   - data/flow_signals/gate.json
   - data/options_signal_campaign/checkpoint.json
   - "MERGED #7290 / 9a4dabe574e228789bf6e0bfaa9d916ac9b8917e: research/options_estate/OPTIONS_ALPHA_CANDIDATE_FORMATION_PREREG_V1.md + machine policy"
-  - "PENDING #7395: research/options_estate/OPTIONS_ALPHA_SIGNAL_SCIENCE_PREREG_V1.md + machine policy"
+  - "MERGED #7395 / 7476142cdcb654b521c7d77eb8f2ef1657148bbd: research/options_estate/OPTIONS_ALPHA_SIGNAL_SCIENCE_PREREG_V1.md + machine policy"
   - "PENDING #7398: research/options_estate/OPTIONS_SIGNAL_CAMPAIGN_OUTCOME_CORRECTION_PREREG_V1.md + machine policy"
 next_action: >
   OA-1T-MACRO remains BUILT_NOT_PROVEN. Natural measured source->Flow consumer proof is
@@ -226,7 +235,7 @@ next_action: >
   AD-1T2 remains owned by WS:ADVANCED-DATA-OPTIONS and is currently blocked by the exact M1
   host's emergency disk floor plus shared runner-admission custody. OA-1T-TERMINAL #667 is
   BUILT_NOT_PROVEN and waits on independent review/release + real post-merge browser proof.
-  OA-2 #7401 is accepted/merged; #7395 awaits fresh checks. OA-2R research scope is
+  OA-2 #7401 and #7395 are accepted/merged. OA-2R research scope is
   Chairman-authorized, including immediate fit-free repairs. Preserve data eligibility,
   preregistration and independent review before empirical acceptance or any promotion.
 ---
