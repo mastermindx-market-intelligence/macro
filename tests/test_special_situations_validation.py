@@ -199,3 +199,13 @@ def test_regressions_are_enrolled_in_pull_request_code_ci():
     assert owners[0]["gate"] == "code"
     assert suite in owners[0]["paths"]
     assert "scripts/validate_special_situations.py" in owners[0]["paths"]
+
+
+def test_ci_job_scope_preserves_all_existing_commands():
+    from pathlib import Path
+    from scripts.run_ci_pack import load_legacy_jobs
+
+    manifest = Path(__file__).resolve().parents[1] / ".github/ci/legacy-jobs.yml"
+    # Reuse the real manifest validator rather than a second scope parser.
+    jobs = load_legacy_jobs(manifest, gate="code")
+    assert any(job.job_id == "unrun-dark-guards" for job in jobs)
