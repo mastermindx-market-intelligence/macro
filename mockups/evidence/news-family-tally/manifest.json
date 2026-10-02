@@ -6,10 +6,10 @@
   "subject": ".lens-q (family_tally LENS trigger)",
   "selector": "#nxConsequence",
   "open_by": "keyboard_focus (Tab from page heading → direct focus() → focusin dispatch)",
-  "generated_at": "2026-10-02T10:55:12Z",
+  "generated_at": "2026-10-02T11:20:00Z",
   "fixture": {
     "type": "fixture-rendered news.html.j2",
-    "fixture_vm_summary": "8 rows across earnings_call/research_vault/macro_release with non-trivial family_tally (3 named/3/2 shown, regime_flip/risk_band none_named, earnings no_events)"
+    "fixture_vm_summary": "non-trivial chronicle_impact family_tally (earnings named/shown 1/3, earnings_call named/shown 2/2, research_vault/macro_release/regime_flip/risk_band no_events)"
   },
   "cells": [
     {
@@ -20,7 +20,7 @@
       "viewport_height": 900,
       "open_by": "keyboard_focus",
       "captured": true,
-      "file": "cells/2f70bc65a5241c2e.png",
+      "file": "cells/family-tally-tip-dark-en-desktop.png",
       "alias": "family-tally-tip-dark-en-desktop.png",
       "sha256": "2f70bc65a5241c2e14b3a6f3b6c9020012bac3ae43a215c71e327dd1ec560e33",
       "bytes": 61678,
@@ -29,6 +29,8 @@
       "applied_theme": "dark",
       "applied_locale": "en",
       "overlay": "clean",
+      "bbox": {"x": 952, "y": 12, "w": 24, "h": 24},
+      "tip_text_prefix": "This week by event type — Research notes",
       "focus_info": {
         "activeIsLens": true,
         "outline": "color(srgb 0.356863 0.607843 0.941176) none 3px",
@@ -36,7 +38,7 @@
         "boxShadow": "color(srgb 0.356863 0.607843 0.941176 / 0.12) 0px 0px 0px 3px",
         "tabindex": null,
         "type": "button",
-        "ariaLabel": "This week by event type — Earnings reports (0/0): no events this week; Earnings ...",
+        "ariaLabel": "This week by event type — Research notes (0/0): no events this week; ...",
         "hasDataTipEn": true,
         "hasDataTipZh": true
       }
@@ -49,7 +51,7 @@
       "viewport_height": 900,
       "open_by": "keyboard_focus",
       "captured": true,
-      "file": "cells/153337142a2d41ad.png",
+      "file": "cells/family-tally-tip-light-en-desktop.png",
       "alias": "family-tally-tip-light-en-desktop.png",
       "sha256": "153337142a2d41ad18a03e7b4b88ba3f91cff8f4487a830e2c2c7f5750ec4c81",
       "bytes": 70261,
@@ -58,6 +60,8 @@
       "applied_theme": "light",
       "applied_locale": "en",
       "overlay": "clean",
+      "bbox": {"x": 952, "y": 12, "w": 24, "h": 24},
+      "tip_text_prefix": "This week by event type — Research notes",
       "focus_info": {
         "activeIsLens": true,
         "outline": "color(srgb 0.159686 0.354667 0.917647) none 3px",
@@ -65,7 +69,7 @@
         "boxShadow": "color(srgb 0.156863 0.372549 1 / 0.12) 0px 0px 0px 3px",
         "tabindex": null,
         "type": "button",
-        "ariaLabel": "This week by event type — Earnings reports (0/0): no events this week; Earnings ...",
+        "ariaLabel": "This week by event type — Research notes (0/0): no events this week; ...",
         "hasDataTipEn": true,
         "hasDataTipZh": true
       }
@@ -78,7 +82,7 @@
       "viewport_height": 900,
       "open_by": "keyboard_focus",
       "captured": true,
-      "file": "cells/9f987d0859cf24f0.png",
+      "file": "cells/family-tally-tip-dark-zh-desktop.png",
       "alias": "family-tally-tip-dark-zh-desktop.png",
       "sha256": "9f987d0859cf24f0223f1cbd21039a229d960554041f0bab7dafd680e1e127f1",
       "bytes": 70562,
@@ -87,6 +91,8 @@
       "applied_theme": "dark",
       "applied_locale": "zh",
       "overlay": "clean",
+      "bbox": {"x": 952, "y": 12, "w": 24, "h": 24},
+      "tip_text_prefix": "本周按事件类型——研究纪要（0/0）：本周无事件；经济数据（0/0）：本周无事件",
       "focus_info": {
         "activeIsLens": true,
         "outline": "color(srgb 0.356863 0.607843 0.941176) none 3px",
@@ -94,7 +100,7 @@
         "boxShadow": "color(srgb 0.356863 0.607843 0.941176 / 0.12) 0px 0px 0px 3px",
         "tabindex": null,
         "type": "button",
-        "ariaLabel": "This week by event type — Earnings reports (0/0): no events this week; Earnings ...",
+        "ariaLabel": "本周按事件类型——研究纪要（0/0）：本周无事件；经济数据（0/0）：本周无事件； ...",
         "hasDataTipEn": true,
         "hasDataTipZh": true
       }
@@ -107,7 +113,7 @@
       "viewport_height": 900,
       "open_by": "keyboard_focus",
       "captured": true,
-      "file": "cells/371d19b1af3524a3.png",
+      "file": "cells/family-tally-tip-light-zh-desktop.png",
       "alias": "family-tally-tip-light-zh-desktop.png",
       "sha256": "371d19b1af3524a38b30cec4fb2d51eea2b776501b981298f1b9d9048e4819a0",
       "bytes": 80036,
@@ -116,6 +122,8 @@
       "applied_theme": "light",
       "applied_locale": "zh",
       "overlay": "clean",
+      "bbox": {"x": 952, "y": 12, "w": 24, "h": 24},
+      "tip_text_prefix": "本周按事件类型——研究纪要（0/0）：本周无事件；经济数据（0/0）：本周无事件",
       "focus_info": {
         "activeIsLens": true,
         "outline": "color(srgb 0.159686 0.354667 0.917647) none 3px",
@@ -123,7 +131,7 @@
         "boxShadow": "color(srgb 0.156863 0.372549 1 / 0.12) 0px 0px 0px 3px",
         "tabindex": null,
         "type": "button",
-        "ariaLabel": "This week by event type — Earnings reports (0/0): no events this week; Earnings ...",
+        "ariaLabel": "本周按事件类型——研究纪要（0/0）：本周无事件；经济数据（0/0）：本周无事件； ...",
         "hasDataTipEn": true,
         "hasDataTipZh": true
       }
@@ -136,7 +144,7 @@
       "viewport_height": 844,
       "open_by": "keyboard_focus",
       "captured": true,
-      "file": "cells/5bdc3e7b3ec29d98.png",
+      "file": "cells/family-tally-tip-dark-en-mobile.png",
       "alias": "family-tally-tip-dark-en-mobile.png",
       "sha256": "5bdc3e7b3ec29d9806080fb7dae9f445ab61dada6bcac0b578fa660e59ba2709",
       "bytes": 111910,
@@ -145,6 +153,8 @@
       "applied_theme": "dark",
       "applied_locale": "en",
       "overlay": "clean",
+      "bbox": {"x": 280, "y": 12, "w": 20, "h": 20},
+      "tip_text_prefix": "This week by event type — Research notes",
       "focus_info": {
         "activeIsLens": true,
         "outline": "color(srgb 0.356863 0.607843 0.941176) none 3px",
@@ -152,7 +162,7 @@
         "boxShadow": "color(srgb 0.356863 0.607843 0.941176 / 0.12) 0px 0px 0px 3px",
         "tabindex": null,
         "type": "button",
-        "ariaLabel": "This week by event type — Earnings reports (0/0): no events this week; Earnings ...",
+        "ariaLabel": "This week by event type — Research notes (0/0): no events this week; ...",
         "hasDataTipEn": true,
         "hasDataTipZh": true
       }
@@ -165,7 +175,7 @@
       "viewport_height": 844,
       "open_by": "keyboard_focus",
       "captured": true,
-      "file": "cells/76cd0920142d4ff0.png",
+      "file": "cells/family-tally-tip-light-en-mobile.png",
       "alias": "family-tally-tip-light-en-mobile.png",
       "sha256": "76cd0920142d4ff001c3930a66957f6c548b9bcf6878170da720c3265cffa01e",
       "bytes": 120988,
@@ -174,6 +184,8 @@
       "applied_theme": "light",
       "applied_locale": "en",
       "overlay": "clean",
+      "bbox": {"x": 280, "y": 12, "w": 20, "h": 20},
+      "tip_text_prefix": "This week by event type — Research notes",
       "focus_info": {
         "activeIsLens": true,
         "outline": "color(srgb 0.159686 0.354667 0.917647) none 3px",
@@ -181,7 +193,7 @@
         "boxShadow": "color(srgb 0.156863 0.372549 1 / 0.12) 0px 0px 0px 3px",
         "tabindex": null,
         "type": "button",
-        "ariaLabel": "This week by event type — Earnings reports (0/0): no events this week; Earnings ...",
+        "ariaLabel": "This week by event type — Research notes (0/0): no events this week; ...",
         "hasDataTipEn": true,
         "hasDataTipZh": true
       }
@@ -194,7 +206,7 @@
       "viewport_height": 844,
       "open_by": "keyboard_focus",
       "captured": true,
-      "file": "cells/e92cf7f87796d50f.png",
+      "file": "cells/family-tally-tip-dark-zh-mobile.png",
       "alias": "family-tally-tip-dark-zh-mobile.png",
       "sha256": "e92cf7f87796d50fd009a73bb2ccf3ede4940c7c01d579142e74a9f6204efb53",
       "bytes": 111054,
@@ -203,6 +215,8 @@
       "applied_theme": "dark",
       "applied_locale": "zh",
       "overlay": "clean",
+      "bbox": {"x": 280, "y": 12, "w": 20, "h": 20},
+      "tip_text_prefix": "本周按事件类型——研究纪要（0/0）：本周无事件；经济数据（0/0）：本周无事件",
       "focus_info": {
         "activeIsLens": true,
         "outline": "color(srgb 0.356863 0.607843 0.941176) none 3px",
@@ -210,7 +224,7 @@
         "boxShadow": "color(srgb 0.356863 0.607843 0.941176 / 0.12) 0px 0px 0px 3px",
         "tabindex": null,
         "type": "button",
-        "ariaLabel": "This week by event type — Earnings reports (0/0): no events this week; Earnings ...",
+        "ariaLabel": "本周按事件类型——研究纪要（0/0）：本周无事件；经济数据（0/0）：本周无事件； ...",
         "hasDataTipEn": true,
         "hasDataTipZh": true
       }
@@ -223,7 +237,7 @@
       "viewport_height": 844,
       "open_by": "keyboard_focus",
       "captured": true,
-      "file": "cells/33b166f4d5b3bb61.png",
+      "file": "cells/family-tally-tip-light-zh-mobile.png",
       "alias": "family-tally-tip-light-zh-mobile.png",
       "sha256": "33b166f4d5b3bb614f681958760f105a35a33863e612d4ac54ce8285d5a69cef",
       "bytes": 118501,
@@ -232,6 +246,8 @@
       "applied_theme": "light",
       "applied_locale": "zh",
       "overlay": "clean",
+      "bbox": {"x": 280, "y": 12, "w": 20, "h": 20},
+      "tip_text_prefix": "本周按事件类型——研究纪要（0/0）：本周无事件；经济数据（0/0）：本周无事件",
       "focus_info": {
         "activeIsLens": true,
         "outline": "color(srgb 0.159686 0.354667 0.917647) none 3px",
@@ -239,7 +255,7 @@
         "boxShadow": "color(srgb 0.156863 0.372549 1 / 0.12) 0px 0px 0px 3px",
         "tabindex": null,
         "type": "button",
-        "ariaLabel": "This week by event type — Earnings reports (0/0): no events this week; Earnings ...",
+        "ariaLabel": "本周按事件类型——研究纪要（0/0）：本周无事件；经济数据（0/0）：本周无事件； ...",
         "hasDataTipEn": true,
         "hasDataTipZh": true
       }
@@ -295,7 +311,7 @@
         "outline": "color(srgb 0.159686 0.354667 0.917647) none 3px",
         "outlineWidth": "3px",
         "outlineColor": "color(srgb 0.159686 0.354667 0.917647)",
-        "boxShadow": "color(srgb 0.156863 0.372549 1 / 0.12) 0px 0px 0px 3px"
+        "boxShadow": "color(srgb 0.159686 0.354667 0.917647 / 0.12) 0px 0px 0px 3px"
       },
       "theme": "light",
       "locale": "en"
@@ -349,7 +365,7 @@
         "outline": "color(srgb 0.159686 0.354667 0.917647) none 3px",
         "outlineWidth": "3px",
         "outlineColor": "color(srgb 0.159686 0.354667 0.917647)",
-        "boxShadow": "color(srgb 0.156863 0.372549 1 / 0.12) 0px 0px 0px 3px"
+        "boxShadow": "color(srgb 0.159686 0.354667 0.917647 / 0.12) 0px 0px 0px 3px"
       },
       "theme": "light",
       "locale": "zh"

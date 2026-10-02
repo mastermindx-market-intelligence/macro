@@ -981,7 +981,7 @@ def _ci_with_rows(extra_rows=None, tally=None, **overrides):
          "named": 1, "shown": 1},
         {"family": "earnings_call", "label_en": "Earnings calls",
          "label_zh": "业绩电话会", "state": "named", "in_window": 2,
-         "named": 2, "shown": 0},
+         "named": 2, "shown": 2},
         {"family": "regime_flip", "label_en": "Macro backdrop shifts",
          "label_zh": "宏观环境转向", "state": "no_events", "in_window": 0,
          "named": 0, "shown": 0},

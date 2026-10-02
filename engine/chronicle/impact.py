@@ -947,8 +947,10 @@ def plain_glance_titles(proj: dict) -> tuple[str, str]:
 def _format_family_state(state: str, in_window: int, named: int) -> tuple[str, str]:
     """Return the (en, zh) state phrase for a family_tally entry.
 
-    EN pluralization is R2: ``1 event`` (singular) vs ``N events`` (plural)
-    and ``1 names a stock`` vs ``N name a stock``. ZH pluralization is
+    EN pluralization is R2: ``1 event`` (singular) vs ``N events`` (plural).
+    The named clause is the literal phrase ``{named} name a stock`` for EVERY
+    count — the source string (``_FAMILY_STATE_PHRASES["named"]``) is a
+    single fixed template and is NOT inflected per count. ZH pluralization is
     handled by 个 (no surface change). ``none_named`` always uses the plural
     form because the count is necessarily >= 1.
     """
@@ -956,9 +958,8 @@ def _format_family_state(state: str, in_window: int, named: int) -> tuple[str, s
         return _FAMILY_STATE_PHRASES["no_events"]
     if state == "named":
         ev_word = "event" if in_window == 1 else "events"
-        name_word = "name" if named == 1 else "names"
         return (
-            f"{in_window} {ev_word}, {named} {name_word} a stock",
+            f"{in_window} {ev_word}, {named} name a stock",
             f"{in_window}个事件，{named}个点名个股",
         )
     # none_named: in_window >= 1, named == 0.

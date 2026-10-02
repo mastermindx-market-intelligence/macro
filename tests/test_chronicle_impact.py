@@ -591,7 +591,7 @@ def test_glance_mixed_corpus_keeps_only_exposure_rows_newest_first_capped_at_8()
     surface = impact.glance_consequence_surface(notes + named)
     assert surface["empty_kind"] is None
     assert len(surface["rows"]) == 8
-    assert all(r["direct_tickers"] or r["second_order_tickers"] for r in surface["rows"])
+    assert all(r["direct_tickers"] for r in surface["rows"])
     times = [r["event_time"] for r in surface["rows"]]
     assert times == sorted(times, reverse=True)
     assert all(r["family"] != "research_vault" for r in surface["rows"])
@@ -1143,56 +1143,123 @@ def test_glance_pinned_glance_named_exposure_families_absence_holds():
 
 
 def test_glance_fair_share_three_families_cap_break_3_3_2():
-    """F05-017 R7: a 3-family fixture with different head dates forces a
-    3/3/2 split under cap=8 — earnings=3 (newest), earnings_call=3
-    (tied head → schema.SOURCES tie-break → wins), macro_release=2.
+    """F05-017 R7 (strengthened R3): a 3-family fixture with TWO families
+    sharing the same head date (a real tie on D-7) — earnings_call=3 on
+    D-7, earnings=3 on D-7, macro_release=2 on D-5 — under cap=8 forces
+    a 3/3/2 split.
+
     Bucket order = newest head event_time desc; ties broken by
-    schema.SOURCES index asc (earnings_call before macro_release).
-    Mid-pass cap break is exercised at slot 8.
+    ``schema.SOURCES`` index asc. earnings_call has the larger
+    ``SOURCES.index`` (4 vs earnings=3), so on the D-7 tie it wins
+    bucket order and leads the water-fill pass. macro_release falls to
+    D-5 (later date → lower bucket order).
+
+    Mid-pass cap break is exercised at slot 8: pass 3 produces
+    ``earnings_call[2] + earnings[2]`` (macro_release has no third
+    row, so it stops contributing after pass 2).
+
+    The literal expected row-id order pins every property at once:
+    the family counts (3/3/2), the bucket tie-break (earnings_call
+    before earnings on D-7), the per-family ``shown``, and the
+    post-fill event_time desc / event_id desc sort.
     """
-    # earnings: 3 events on D-7, 1 event on D-6, 1 event on D-5 (5 total).
-    earnings = (
-        [_ev(f"fs3-e-{i}", "2026-09-07", source="earnings",
-             tickers=[f"E{i}"]) for i in range(3)]
-        + [_ev("fs3-e-D6", "2026-09-06", source="earnings", tickers=["E5"]),
-           _ev("fs3-e-D5", "2026-09-05", source="earnings", tickers=["E6"])]
-    )
-    # earnings_call: 3 events on D-6 (head = D-6, beats macro's D-5).
+    # Two families SHARE head D-7 — the tie that exercises the
+    # schema.SOURCES tie-break (earnings_call index=4 > earnings index=3).
     earnings_calls = [
-        _ev(f"fs3-c-{i}", "2026-09-06", source="earnings_call",
+        _ev(f"fs3x-c-{i}", "2026-09-07", source="earnings_call",
             tickers=[f"C{i}"]) for i in range(3)
     ]
     for c in earnings_calls:
         c["title"] = f"Earnings call: {c['tickers'][0]} Q3 FY2026 — neutral"
-    # macro_release: 2 events on D-5.
+    earnings = [
+        _ev(f"fs3x-e-{i}", "2026-09-07", source="earnings",
+            tickers=[f"E{i}"]) for i in range(3)
+    ]
+    # macro_release falls to D-5 — its head loses to D-7 in bucket order.
+    # Three events (NOT two) so total=9 > cap=8 — the bucket order picks
+    # which family's third event gets excluded when the cap breaks.
     macros = [
-        _ev(f"fs3-m-{i}", "2026-09-05", source="macro_release",
-            tickers=[f"M{i}"]) for i in range(2)
+        _ev(f"fs3x-m-{i}", "2026-09-05", source="macro_release",
+            tickers=[f"M{i}"]) for i in range(3)
     ]
     for m in macros:
         m["title"] = f"Macro print {m['tickers'][0]}: claims = +200"
-    events = earnings + earnings_calls + macros
+    events = earnings_calls + earnings + macros
     surface = impact.glance_consequence_surface(events, limit=8)
     assert surface["empty_kind"] is None
     assert len(surface["rows"]) == 8
+    # Per-family shown — exercises both the water-fill (3/3/2 split) AND
+    # the family_tally.shown field post-fill. The asymmetric input (9
+    # events, cap=8) means bucket order picks which family's third
+    # event is excluded; the current order pins earnings_call at the
+    # front of the bucket, which means macro_release[2] loses (the
+    # pass-3 slot).
     fam_counts: dict[str, int] = {}
     for row in surface["rows"]:
         fam_counts[row["family"]] = fam_counts.get(row["family"], 0) + 1
-    # 3/3/2 split — earnings wins the head (D-7), earnings_call takes
-    # the next 3 (head D-6, tied index tie-break → no echo), and
-    # macro_release rounds out the cap with 2.
-    assert fam_counts == {"earnings": 3, "earnings_call": 3,
+    assert fam_counts == {"earnings_call": 3, "earnings": 3,
                           "macro_release": 2}, fam_counts
-    # The 'families' dict is byte-compatible with the prior shape
-    # (shown count per family, not in_window count).
     assert surface["families"] == {
-        "earnings": 3, "earnings_call": 3, "macro_release": 2,
+        "earnings_call": 3, "earnings": 3, "macro_release": 2,
     }
-    # Deterministic.
-    again = impact.glance_consequence_surface(events, limit=8)
-    assert [r["event_id"] for r in again["rows"]] == [
-        r["event_id"] for r in surface["rows"]
+    # family_tally.shown (post-fill) reflects the per-family shown count
+    # verbatim — the D1 regression (shown==0 pre-fill) is also pinned
+    # here.
+    all_tally = {ft["family"]: ft for ft in surface["family_tally"]}
+    assert all_tally["earnings_call"]["shown"] == 3
+    assert all_tally["earnings"]["shown"] == 3
+    assert all_tally["macro_release"]["shown"] == 2
+    # Literal row-id order — pins bucket_order (earnings_call leads),
+    # per-pass choice (one slot per family per pass), the cap break at
+    # slot 8, AND the post-fill (event_time desc, event_id desc) sort.
+    # Derived from engine/chronicle/schema.py:45 make_id hash recipe
+    # ("cev-<source>-<sha256(source|source_ref|date)[:12]>"). The
+    # asymmetric input (9 events, cap=8) means the bucket order picks
+    # which family's third event gets excluded — earnings_call wins the
+    # head-date tie on D-7 (SOURCES.index=4 > earnings index=3), so
+    # macro_release[2] loses the pass-3 slot.
+    expected_ids = [
+        "cev-earnings_call-5fa160d3c6f2",
+        "cev-earnings_call-0c54a4dea4c6",
+        "cev-earnings_call-096ed093f1da",
+        "cev-earnings-b7a523cd028b",
+        "cev-earnings-b58fa17455d4",
+        "cev-earnings-43d0220640bd",
+        "cev-macro_release-ef839b67ffee",
+        "cev-macro_release-d475ede4e553",
     ]
+    actual_ids = [r["event_id"] for r in surface["rows"]]
+    assert actual_ids == expected_ids, (actual_ids, expected_ids)
+    # Deterministic — same input, same order.
+    again = impact.glance_consequence_surface(events, limit=8)
+    assert [r["event_id"] for r in again["rows"]] == actual_ids
+
+
+def test_glance_d1_tip_segment_shows_full_in_window_when_all_named_fit():
+    """F05-017 R3 D1: with 3 earnings events (all with direct tickers) and a
+    generous cap, the ``Earnings reports`` segment in the tip reads
+    ``Earnings reports (3/3)`` in EN and ``业绩公告（3/3）`` in ZH. This is
+    the regression that pins the D1 fix — the tip is built AFTER the
+    bucket water-fill, so every ``ft["shown"]`` reflects the actual chosen
+    count per family. Pre-fix, ``shown`` was always 0 at tip-build time,
+    so the segment read ``Earnings reports (0/3)`` and ``业绩公告（0/3）``.
+    """
+    earnings = [
+        _ev(f"d1-earn-{i}", "2026-09-07", source="earnings",
+            tickers=[f"E{i}"]) for i in range(3)
+    ]
+    surface = impact.glance_consequence_surface(earnings, limit=8)
+    assert surface["empty_kind"] is None
+    assert len(surface["rows"]) == 3
+    tip_en = surface["family_tally_tip_en"]
+    tip_zh = surface["family_tally_tip_zh"]
+    assert "Earnings reports (3/3)" in tip_en, tip_en
+    assert "业绩公告（3/3）" in tip_zh, tip_zh
+    # R3-2 frozen-§7 invariant: the named clause is the literal
+    # ``{named} name a stock`` for every count — the engine never
+    # inflects ``name`` per count.
+    assert "3 name a stock" in tip_en, tip_en
+    assert "names a stock" not in tip_en, tip_en
 
 
 def test_glance_tip_strings_have_all_families_and_state_phrases():
